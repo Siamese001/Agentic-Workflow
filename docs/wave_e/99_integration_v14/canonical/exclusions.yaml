@@ -1,0 +1,61 @@
+# Canonical v1.4 - Exclusions (3 records).
+# Delta from v1.3: OOS-003 revised per F4 proposal.
+#   reason NOT_YET_DECIDED -> SUPERSEDED
+#   decided_at_wave E1c -> F4
+#   decided_by updated; revisit_trigger rewritten; notes added citing SRC-ADR-007.
+# OOS-001 and OOS-002 are unchanged. See F4 exclusion_review_log.md for the
+# full supersession analysis.
+
+exclusions:
+
+  - id: OOS-001
+    title: "Dynamic L6 learning influencing current-run L0 route selection"
+    scope_statement: >
+      L6 observations MUST NOT feed back into the current run's L0 route
+      decisions. Future-run influence via a later run's L1 is permitted.
+    reason: OUT_OF_CHARTER
+    decided_at_wave: E1b
+    decided_by: "E1b_exclusions_charter lane"
+    revisit_trigger: >
+      Never. Dynamic L6 -> current-run L0 coupling is FORBIDDEN per
+      constitutional rule that L6 is future-run only.
+    related_atoms: [F12.06]
+    related_families: [F12]
+
+  - id: OOS-002
+    title: "Allowing L2 to mutate L4 outside the Universal Write Gate"
+    scope_statement: >
+      L2 MUST NOT mutate authoritative durable state except through the UWG.
+    reason: OUT_OF_CHARTER
+    decided_at_wave: E1b
+    decided_by: "E1b_exclusions_charter lane"
+    revisit_trigger: >
+      Never. UWG-bypass is a constitutional prohibition.
+    related_atoms: [F06.05, F09.01, F09.02, F09.03, F10.03]
+    related_families: [F06, F09, F10]
+
+  - id: OOS-003
+    title: "Adding a C0 layer to the owning_layer enum"
+    scope_statement: >
+      F04 is re-homed to L1 per DEC-E1c-F04-LAYER. A C0 layer MAY be
+      revisited only via an explicit E0 schema revision with HITL approval.
+    reason: SUPERSEDED
+    decided_at_wave: F4
+    decided_by: "F4_edge_exclusion_cleanup lane"
+    revisit_trigger: >
+      Original trigger (operational constraint that L1 cannot satisfy for
+      context grounding) was satisfied in Wave F3 by SRC-ADR-007
+      (ADR-CTX-001), which codifies that L1 CAN and MUST satisfy the
+      context-grounding invariants (CTX-I1 attribution, CTX-I2
+      single-grounded-path, CTX-I3 idempotence). The original rationale
+      to open a C0 layer is therefore superseded; L1 ownership of F04 is
+      normatively supported in v1.3.
+    related_atoms: [F04.01, F04.02, F04.03, F04.04]
+    related_families: [F04]
+    notes: >
+      Revised in Wave F4: reason NOT_YET_DECIDED -> SUPERSEDED.
+      Supersession source: SRC-ADR-007
+      (docs/architecture/context_assembly_adr.md). No ACTIVE atom
+      references OOS-003 as authority; revision is schema-safe per the
+      rule "An Exclusion MUST NOT be referenced by any ACTIVE atom as
+      authority". Original decided_at_wave was E1c.

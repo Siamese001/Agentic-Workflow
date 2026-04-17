@@ -1,0 +1,18 @@
+id: SCORE-F07-INTEGRATION
+family_id: F07
+produced_at_wave: v1.3
+atom_count_total: 4
+atom_count_by_status: {ACTIVE: 4}
+atom_count_by_evidence: {NORMATIVE: 4}
+edge_count_total: 3
+weak_evidence_count: 0
+excluded_count: 0
+unresolved_count: 0
+coverage_score: 1.0
+bucket: GREEN
+blockers: []
+notes: >
+  F07.03 upgraded WEAK->NORMATIVE via SRC-ADR-009 (ADR-ESC-001 ESC-I1, emitting
+  half) + SRC-ADR-008 (ADR-L3-001 L3-I3, receiving half). SRC-ADR-001 remains
+  ADVISORY and unbound. v1.2 YELLOW 0.75 -> v1.3 GREEN 1.00.
+  Normative-escalation-target blocker closed.

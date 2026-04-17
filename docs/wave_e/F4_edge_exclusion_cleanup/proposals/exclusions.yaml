@@ -1,0 +1,29 @@
+# Wave F4 - Edge-Evidence and Exclusion Cleanup - Exclusion patches
+# Single revision: OOS-003 state transition from NOT_YET_DECIDED to SUPERSEDED.
+# Full rationale in exclusion_review_log.md and cleanup_decision_log.md DEC-F4-02.
+# OOS-001 and OOS-002 are unchanged.
+
+exclusion_patches:
+
+  - id: OOS-003
+    title: "Adding a C0 layer to the owning_layer enum"
+    scope_statement: >
+      F04 is re-homed to L1 per DEC-E1c-F04-LAYER. A C0 layer MAY be
+      revisited only via an explicit E0 schema revision with HITL approval.
+    reason: SUPERSEDED
+    decided_at_wave: F4
+    decided_by: "F4_edge_exclusion_cleanup lane"
+    revisit_trigger: >
+      Original trigger (operational constraint that L1 cannot satisfy for
+      context grounding) was satisfied in Wave F3 by SRC-ADR-007 (ADR-CTX-001),
+      which codifies that L1 CAN and MUST satisfy the context-grounding
+      invariants. The original rationale to open a C0 layer is therefore
+      superseded; L1 ownership of F04 is normatively supported in v1.3.
+    related_atoms: [F04.01, F04.02, F04.03, F04.04]
+    related_families: [F04]
+    notes: >
+      Revised in Wave F4 proposal: reason NOT_YET_DECIDED -> SUPERSEDED.
+      Supersession source: SRC-ADR-007 (docs/architecture/context_assembly_adr.md).
+      No atom references OOS-003 as authority; revision is safe per
+      schema cross-enum rule "An Exclusion MUST NOT be referenced by any
+      ACTIVE atom as authority".

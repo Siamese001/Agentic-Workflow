@@ -1,0 +1,15 @@
+id: SCORE-F03-INTEGRATION
+family_id: F03
+produced_at_wave: v1.3
+atom_count_total: 4
+atom_count_by_status: {ACTIVE: 4}
+atom_count_by_evidence: {NORMATIVE: 4}
+edge_count_total: 4
+weak_evidence_count: 0
+excluded_count: 0
+unresolved_count: 0
+coverage_score: 1.0
+bucket: GREEN
+blockers: []
+notes: >
+  F03.04 upgraded WEAK->NORMATIVE via SRC-ADR-004. v1.1 YELLOW 0.75 -> v1.2 GREEN 1.00.

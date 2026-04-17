@@ -1,0 +1,15 @@
+id: SCORE-F08-INTEGRATION
+family_id: F08
+produced_at_wave: v1.4
+atom_count_total: 5
+atom_count_by_status: {ACTIVE: 5}
+atom_count_by_evidence: {NORMATIVE: 5}
+edge_count_total: 4
+weak_evidence_count: 0
+excluded_count: 0
+unresolved_count: 0
+coverage_score: 1.0
+bucket: GREEN
+blockers: []
+notes: >
+  F08.01/03/04/05 upgraded via SRC-ADR-003. v1.1 RED 0.20 -> v1.2 GREEN 1.00. TWO-LEVEL BUCKET FLIP.

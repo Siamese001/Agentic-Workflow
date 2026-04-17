@@ -1,0 +1,183 @@
+# Wave E1 + F1 + F2 + F3 Integration - Canonical SourceAuthorityRecords (v1.4 - unchanged from v1.3; F4 authored no new sources)
+# v1.2 had 12 sources. F3 adds SRC-ADR-007, SRC-ADR-008, SRC-ADR-009.
+# Total: 15 sources.
+
+sources:
+
+  - id: SRC-RULE-001
+    subtype: RULE
+    title: "Constitutional Rules (Agentic Workflow)"
+    locator: ".windsurf/rules/constitutional.md"
+    authority_class: CONSTITUTIONAL
+    retrieved_at_wave: E1c
+    notes: "Rank 1."
+
+  - id: SRC-RULE-002
+    subtype: RULE
+    title: "Global Rules - Tier 2 SSOT"
+    locator: ".windsurf/rules/global_rules.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-001
+    subtype: INT
+    title: "AGENTS.md - Layer Separation and Governing Intent"
+    locator: "AGENTS.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-002
+    subtype: INT
+    title: "Wave E Downstream Lane Contract - Section 1 Governing Semantics"
+    locator: "docs/wave_e/00_schema/downstream_lane_contract.md#1-governing-semantics-non-negotiable"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-003
+    subtype: INT
+    title: "Wave E Schema Frontmatter - Governing Semantics (Non-Negotiable)"
+    locator: "docs/wave_e/00_schema/requirement_graph_schema.yaml#governing-semantics"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: E1c
+    notes: "Rank 4."
+
+  - id: SRC-INT-004
+    subtype: INT
+    title: "AGENTS.md - Memory Lifecycle"
+    locator: "AGENTS.md#memory-lifecycle"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: F1
+    excerpt: >
+      Memory lifecycle mandatory. At session start, call mem_recall_session_start
+      to load persistent project context. After architecture decisions, HITL
+      resolutions, or new patterns, write to memory. Entities survive across
+      IDE restarts.
+    notes: "Rank 2. Precise anchor for F12.05, F12.07, F12.08 citations."
+
+  # === F2 additions ==========================================================
+
+  - id: SRC-ADR-001
+    subtype: ADR
+    title: "ADR-F25-int - Confidence-Scored Tiered Healing Dispatch Routing"
+    locator: "docs/architecture/healing_dispatch_routing_adr.md"
+    authority_class: ADVISORY
+    retrieved_at_wave: F2
+    notes: >
+      Rank 6 ADVISORY. Explicitly labeled invalid_for_normative_use=True
+      in the source document. NOT bound to any atom. Unchanged in v1.3.
+      F3 explicitly declined to add this to F07.03 binding; escalation
+      authority is provided by SRC-ADR-009 instead.
+
+  - id: SRC-ADR-002
+    subtype: ADR
+    title: "Healer Retry Hardening Specification"
+    locator: "docs/specs/hardening/HEALER_RETRY_HARDENING_SPEC.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    notes: >
+      Rank 4. Defines RetryConfig.max_attempts=3,
+      strictness_escalation=[0.70, 0.85, 0.95],
+      timeout_escalation=[30, 20, 10], scope_lock=True.
+      Supports F07.01, F07.02.
+
+  - id: SRC-ADR-003
+    subtype: ADR
+    title: "Evaluation Pipeline Release Acceptance - Exit Control Gate"
+    locator: "docs/architecture/eval_pipeline_acceptance.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    notes: >
+      Rank 4. Names ExitControlGate.evaluate_sealed() as sole live gate
+      call, evaluate_and_emit() as sole canonical choke point,
+      GovernedHandoffAgent as sole durable-write seam.
+      Supports F08.01, F08.03, F08.04, F08.05, F09.05.
+
+  - id: SRC-ADR-004
+    subtype: ADR
+    title: "L0 Decomposition Specification (L0a/L0b/L0c)"
+    locator: "docs/specs/hardening/L0_DECOMPOSITION_SPEC.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    notes: >
+      Rank 4. Defines L0a ingress validation with structured
+      rejection_reason, L0b deterministic routing with one path per
+      step. Supports F01.06, F03.04.
+
+  - id: SRC-ADR-005
+    subtype: ADR
+    title: "Replay Determinism Rules"
+    locator: "docs/specs/hardening/REPLAY_DETERMINISM_RULES.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    notes: >
+      Rank 4. Mutation replay determinism via signed ExecutionTrace
+      and mutation_hash. Bound to F04.04 as supplementary support.
+      SRC-ADR-007 (F3) is the direct normative source for F04.04.
+
+  - id: SRC-ADR-006
+    subtype: ADR
+    title: "Authority Hierarchy Invariants"
+    locator: "docs/specs/hardening/AUTHORITY_HIERARCHY_INVARIANTS.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    notes: >
+      Rank 4. Formal authority matrix across L0/L1/L2/L4/L5/L6 and
+      UWG. Registered for canonical archive. No atom bindings.
+
+  # === F3 additions ==========================================================
+
+  - id: SRC-ADR-007
+    subtype: ADR
+    title: "ADR-CTX-001 - Context Assembly Grounding Invariants"
+    locator: "docs/architecture/context_assembly_adr.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F3
+    version_or_rev: "v1.0 (2026-04-17)"
+    notes: >
+      Rank 4 ARCHITECTURAL. Normative scope.
+      Declares three invariants CTX-I1/CTX-I2/CTX-I3 that directly support
+      F04.02 (attribution), F04.03 (no private unattributed substitute),
+      and F04.04 (assembly idempotence for identical inputs).
+      Implementation grounding:
+      agentic_core/L1_cognition/reasoning/context_assembler.py
+      (ContextAssembler.assemble_context, _convert_to_context_items,
+      _filter_and_rank_items, _apply_diversity_filtering,
+      _apply_length_constraints, _create_context, source_distribution).
+      invalid_for_normative_use=False. Satisfies OOS-003 revisit trigger.
+
+  - id: SRC-ADR-008
+    subtype: ADR
+    title: "ADR-L3-001 - L3 Orchestration Charter"
+    locator: "docs/architecture/l3_orchestration_charter_adr.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F3
+    version_or_rev: "v1.0 (2026-04-17)"
+    notes: >
+      Rank 4 ARCHITECTURAL. Normative scope.
+      Declares invariants L3-I1/L3-I2/L3-I3 defining L3's dispatch,
+      sequencing, and escalation roles relative to L0, L1, L2, L4, L5,
+      and UWG. Directly supports F05.04 via L3-I1 step 2 ("L3 MUST
+      dispatch each plan step to L2"). Also supports F07.03 via
+      L3-I3 (unrecoverable-failure escalation handling).
+      Implementation grounding: agentic_core/L3_orchestration/ module
+      and agentic_core/L3_orchestration/core/orchestrator_state_retry.py.
+      invalid_for_normative_use=False.
+
+  - id: SRC-ADR-009
+    subtype: ADR
+    title: "ADR-ESC-001 - Unrecoverable Failure Escalation to L3"
+    locator: "docs/architecture/unrecoverable_failure_escalation_adr.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F3
+    version_or_rev: "v1.0 (2026-04-17)"
+    notes: >
+      Rank 4 ARCHITECTURAL. Normative scope.
+      Declares ESC-I1 naming L3 as the sole escalation target for
+      unrecoverable L2 task-execution failures. Directly supports F07.03.
+      Does NOT supersede ADR-F25-int (SRC-ADR-001); ADR-F25-int remains
+      invalid_for_normative_use=True by design. This ADR sits above
+      the healing-tier decision at the post-healing escalation layer.
+      invalid_for_normative_use=False.

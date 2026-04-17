@@ -1,0 +1,130 @@
+# Wave F4 - Edge-Evidence and Exclusion Cleanup - Edge patches
+# 8 patches: all 8 v1.3 weak edges upgraded WEAK_EVIDENCE -> NORMATIVE.
+# Each patch preserves edge_kind, direction, source_atom_id, target_atom_id,
+# status, and (where applicable) condition verbatim from v1.3.
+# Only evidence_class and authority_binding are changed.
+# Direct-support analysis is in weak_edge_upgrade_matrix.md.
+
+edge_patches:
+
+  - id: INT-F02.01-F01.05-01
+    source_atom_id: F02.01
+    target_atom_id: F01.05
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-003]
+    rationale: >
+      F01.05's claim ("Downstream reasoning, routing, and execution MUST NOT
+      be invoked before admission completes") is itself the direct statement
+      of this DEPENDS_ON relation. SRC-INT-001 (AGENTS.md layer separation)
+      and SRC-INT-003 (governing semantics) both ground the admission-first
+      ordering normatively. SRC-RULE-001 constitutional admission discipline
+      also applies.
+
+  - id: INT-F05.04-F06.01-01
+    source_atom_id: F05.04
+    target_atom_id: F06.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-008]
+    rationale: >
+      SRC-ADR-008 (ADR-L3-001) L3-I1 step 2 explicitly declares L3 MUST
+      dispatch each plan step to L2 and treats L2's ExecutionResult as
+      authoritative. This directly states the REQUIRES relation: L3 dispatch
+      requires L2 execution. Source endpoint F05.04 became NORMATIVE in v1.3
+      via the same SRC-ADR-008.
+
+  - id: INT-F07.03-F02.01-01
+    source_atom_id: F07.03
+    target_atom_id: F02.01
+    edge_kind: CONDITIONAL_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-008, SRC-ADR-009]
+    condition: "Unrecoverable L2 task failure detected."
+    rationale: >
+      SRC-ADR-009 (ADR-ESC-001) ESC-I1 names L3 as the sole escalation target
+      for unrecoverable L2 failures. SRC-ADR-008 L3-I3 declares the receiving
+      half: L3 emits a re-plan request to L1 (F02.01's owning family). Together
+      they form the L2 -> L3 -> L1 re-plan contract that directly supports this
+      CONDITIONAL_ON edge.
+
+  - id: INT-F07.03-F05.01-01
+    source_atom_id: F07.03
+    target_atom_id: F05.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-008, SRC-ADR-009]
+    rationale: >
+      SRC-ADR-009 ESC-I1 binds the escalation to L3 orchestration
+      (F05.01's family). SRC-ADR-008 L3-I3 defines L3's acceptance of
+      escalation signals. The REQUIRES relation (F07.03 escalation
+      requires L3 orchestration path) is directly stated.
+
+  - id: INT-F08.04-F09.01-01
+    source_atom_id: F08.04
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    rationale: >
+      F08.04's claim ("The evaluation spine MUST signal the Universal Write
+      Gate for durable outcome writes") is itself the REQUIRES relation.
+      SRC-ADR-003 (eval_pipeline_acceptance) names GovernedHandoffAgent as the
+      sole durable-write seam and binds spine outcome emission to UWG
+      signaling - a direct statement.
+
+  - id: INT-F09.05-F08.04-01
+    source_atom_id: F09.05
+    target_atom_id: F08.04
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    rationale: >
+      F09.05's claim ("The Universal Write Gate MUST reject writes that lack
+      an exit signal from the evaluation spine") is itself the REQUIRES
+      relation. SRC-ADR-003 names ExitControlGate.evaluate_sealed() as the
+      sole live gate call - directly supporting the UWG dependency on the
+      spine's exit signal.
+
+  - id: INT-F12.05-F02.01-01
+    source_atom_id: F12.05
+    target_atom_id: F02.01
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-004]
+    rationale: >
+      F12.05's claim ("Future-run learning artifacts MUST be consumed only by
+      L1 reasoning of a later run") literally names L1 as the consumer.
+      SRC-INT-004 (AGENTS.md Memory Lifecycle) declares the session-start
+      recall protocol binding L1 reasoning to prior-run artifacts.
+      SRC-RULE-001 §17 (memory lifecycle mandatory) gives constitutional
+      force. Direct relationship statement.
+
+  - id: INT-F12.08-F08.03-01
+    source_atom_id: F12.08
+    target_atom_id: F08.03
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-004, SRC-ADR-003]
+    rationale: >
+      F12.08's claim ("L6 MUST record run outcomes produced by the F08
+      evaluation spine into persistent memory") literally names F08's spine
+      outcome as the input. SRC-ADR-003 names the spine's outcome-recording
+      responsibility. SRC-INT-004 memory lifecycle defines the write-back
+      path. Direct relationship statement.

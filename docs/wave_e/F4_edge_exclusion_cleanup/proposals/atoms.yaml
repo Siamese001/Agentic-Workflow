@@ -1,0 +1,5 @@
+# Wave F4 - Edge-Evidence and Exclusion Cleanup - Atoms proposal
+# No atom changes. F4 MUST NOT reopen any already-closed atom claim.
+# All 60 ACTIVE NORMATIVE atoms in v1.3 are unchanged; F12.06 EXCLUDED is unchanged.
+
+atom_patches: []
