@@ -1,0 +1,534 @@
+# G3 Pipeline Catalogue
+# Schema: docs/wave_g/G0_full_runtime_plan/output_contracts.md §"Pipeline catalogue schema (G3)"
+# ADG snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite (04172026_0611)
+
+wave: G3
+adg_snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite
+adg_snapshot_timestamp: "04172026_0611"
+
+pipelines:
+
+  - id: PIPE-APP-REQUEST
+    title: "Canonical app request — operator input to memory write-back"
+    triggers:
+      - kind: app_entry
+        name: "apps_*/integrations/governed_*_run.py (APP-EVAL, APP-EXEC, APP-LIC, APP-RESEARCH, APP-RFP, APP-RG, APP-UNDERWRITING-AI)"
+      - kind: cli
+        command: "python -m apps_lic | python -m apps_rg | python -m apps_research"
+    inputs:
+      - operator prompt / brief / RFP / job payload
+      - app config (apps_*/config/*.py, *.yaml)
+    stages:
+      - s01_bootstrap (optional shim install — apps_rg/bootstrap_runtime.py, apps_exec/_optional_agentic_core.py)
+      - s02_admission (L5 admission spine — 368 L5→L0 edges; per G2 canonical_request_walk.md stage 1)
+      - s03_capability_resolution (L0_routing/enforcement/runtime_guard.py)
+      - s04_agent_engine (agentic_core/runtime/engine/agent_engine.py Observe–Think–Act loop)
+      - s05_reasoning (L1_cognition + L2_execution reasoning engines)
+      - s06_model_routing (apps_shared/types/model_router_types.py → dispatch by TaskComplexity)
+      - s07_llm_inference (EGRESS-* via SovereignLLMGateway or MultiProviderRouterAgent)
+      - s08_retrieval_augmentation (optional — tools/retrieval/vector_service.py)
+      - s09_evaluation (agentic_core/evaluation/judges/orchestrator.py)
+      - s10_exit_control_gate (L5_safety/enforcement/exit_control_gate.py — X1A/X1B/X1C/X1D)
+      - s11_disposition_dispatch (ALLOW_RESPONSE | DENY_RETURN | ESCALATE_TO_HITL | COMMIT_TO_UWG)
+      - s12_uwg_write (unified write gateway — agentic_core/L2_execution/utils/write_gateway.py)
+      - s13_trace_emit (agentic_core/runtime/contracts/lifecycle_trace_contract.py)
+      - s14_memory_writeback (tools/memory/adg_memory_server.py — create_entities/add_observations)
+    outputs:
+      - app response artefact
+      - trace file (runtime-ADG)
+      - optional durable state via UWG
+      - memory graph update
+    terminal_condition: >-
+      ExitControlGate emits ALLOW_RESPONSE or COMMIT_TO_UWG, OR DENY_RETURN
+      is returned to the operator, OR ESCALATE_TO_HITL enters PIPE-EVAL-HITL.
+    source_modules:
+      - agentic_core/runtime/engine/agent_engine.py
+      - agentic_core/runtime/contracts/lifecycle_trace_contract.py
+      - agentic_core/L5_safety/enforcement/exit_control_gate.py
+      - agentic_core/L2_execution/utils/write_gateway.py
+      - apps_shared/types/model_router_types.py
+      - apps_*/integrations/governed_*_run.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Refined from G2 canonical_request_walk.md. Bootstrap stage is optional
+      (only 2 of 8 apps install shims per G1b adapter_patterns.md B+D). Model
+      routing at s06 is dynamic (data-driven) per G2b provider_inventory.md §2.2.
+
+  - id: PIPE-EVAL-EXIT
+    title: "Exit-control evaluation — four-dimensional disposition"
+    triggers:
+      - kind: internal_call
+        name: "invoked by PIPE-APP-REQUEST stage s10"
+    inputs:
+      - sealed L2 artefact (CompiledPromptArtifact + response)
+      - evidence bundle from retrieval/reasoning
+    stages:
+      - x1a_rules_compliant (policy-rule check)
+      - x1b_answer_fit (response answers the question)
+      - x1c_safety_clear (secrets/PII/injection residue)
+      - x1d_grounded_replayable (grounded + deterministically reproducible)
+      - disposition_emit (ExitDisposition enum)
+    outputs:
+      - ExitDisposition value (ALLOW_RESPONSE | DENY_RETURN | ESCALATE_TO_HITL | COMMIT_TO_UWG)
+      - exit_control trace record
+    terminal_condition: >-
+      Exactly one ExitDisposition is emitted. No silent fallback. No code
+      path exits without a disposition.
+    source_modules:
+      - agentic_core/L5_safety/enforcement/exit_control_gate.py
+      - agentic_core/L5_safety/types (ExitDisposition)
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      HITL-001/003. Write authority is NONE — commits route OUT to UWG only.
+
+  - id: PIPE-EVAL-HITL
+    title: "Exit-control HITL re-clearance — H1 through H5"
+    triggers:
+      - kind: internal_call
+        name: "ExitControlGate emits ESCALATE_TO_HITL"
+    inputs:
+      - frozen state snapshot
+      - bounded HITL packet (materialized from sealed data only)
+    stages:
+      - h1_freeze (authority_state=FROZEN; write_auth=NONE)
+      - h2_materialize (produce bounded packet; no live state reference)
+      - h3_human_review (human receives packet; state remains frozen)
+      - h4_validate_input (human response treated as UNTRUSTED DATA; routed through L5 validator)
+      - h5_reclearance (L5 re-clearance gate is the ONLY path back to ALLOW/COMMIT)
+    outputs:
+      - ALLOW_RESPONSE | DENY_RETURN | COMMIT_TO_UWG (via re-clearance)
+    terminal_condition: >-
+      H5 re-clearance gate emits a new ExitDisposition, OR the packet is
+      abandoned (DENY_RETURN).
+    source_modules:
+      - agentic_core/L5_safety/enforcement/exit_control_hitl.py
+      - agentic_core/L5_safety/enforcement/hitl_gate.py (separate: healing TTY prompts)
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      HITL-004. No SOVEREIGN_AUTO_APPROVE / ARCHIVE_BATCH_ACCEPT bypass.
+      MODIFY_DIFF without re-clear is BLOCKED. This module is STATEFUL —
+      see state_machines.md §Authority-State.
+
+  - id: PIPE-HEALING
+    title: "Failure signal → healing → retry / escalation"
+    triggers:
+      - kind: internal_call
+        name: "L2/L3 guardrails detect a failure signal"
+      - kind: internal_call
+        name: "SovereignHealingEngineEnforcer dispatch"
+    inputs:
+      - FailureSignal (agentic_core/L2_execution/healers/failure_signal.py)
+      - activation criteria (activation_criteria.py / activation_state.py)
+    stages:
+      - s01_classify (heal_classifier_model.py)
+      - s02_route (healing_router.py — imports qwen_vllm predicate)
+      - s03_confidence_score (confidence_scorer.py — may call local vLLM)
+      - s04_strategy_select (HealingStrategy / SurgicalHealingAdapter / VectorHealingStrategy / GitKrakenHealingStrategy / AuditHealingStrategy / ErrorRecoveryStrategy)
+      - s05_gateway_dispatch (sovereign_gateway.py)
+      - s06_apply (local_healer.py)
+      - s07_containment (zero_loss_containment.py)
+      - s08_audit (healing_invocation_audit_enforcer.py + secure_reading_room.py)
+      - s09_retry_or_escalate (OrchestratorStateRetry → MAX_HEALING_ROUNDS → escalate)
+    outputs:
+      - patched artefact
+      - healing audit record
+      - escalation to PIPE-EVAL-HITL if exhausted
+    terminal_condition: >-
+      Artefact healed within GLOBAL_HEALING_BUDGET / MAX_HEALING_ROUNDS,
+      OR escalation to H1 freeze.
+    source_modules:
+      - agentic_core/L2_execution/healers/**
+      - agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py
+      - agentic_core/L3_orchestration/core/orchestrator_state_retry.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Retry is stateful — see state_machines.md §OrchestratorStateRetry.
+      Config knobs: MAX_HEALING_PER_FILE, MAX_HEALING_ROUNDS, GLOBAL_HEALING_BUDGET,
+      HEAL_POLICY_MODEL_ESCALATION, HEAL_MAX_ESCALATIONS_PER_RUN,
+      HEAL_MAX_HIGH_TIER_PER_RUN, HEALING_LEASE_DURATION, MAX_LEASE_BACKOFF.
+
+  - id: PIPE-INFERENCE-LLM
+    title: "LLM inference via SovereignLLMGateway"
+    triggers:
+      - kind: internal_call
+        name: "PIPE-APP-REQUEST stage s07 or PIPE-HEALING stage s05"
+    inputs:
+      - CompiledPromptArtifact (signed)
+      - ProviderType selection
+    stages:
+      - s01_signature_verify (CompiledPromptArtifact signature check)
+      - s02_provider_abstract (select OPENAI | ANTHROPIC | VERTEX_AI | AZURE_OPENAI | LOCAL_VLLM)
+      - s03_egress_guard (network_egress_guard.py — unless EGRESS_GUARD_DISABLED)
+      - s04_sdk_call (retries=3 default, no circuit breaker at gateway level)
+      - s05_telemetry_ledger (append to audit trail)
+      - s06_response_return
+    outputs:
+      - LLM response payload
+      - telemetry ledger entry
+    terminal_condition: "Response returned or retries exhausted"
+    source_modules:
+      - agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+      - agentic_core/L2_execution/enforcement/network_egress_guard.py
+      - agentic_core/L5_safety/guardrails/multi_provider_router_agent.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Uses EGRESS-OPENAI-01 / EGRESS-ANTHROPIC-01 / EGRESS-GEMINI-01 per
+      G2b egress_points.yaml. Retry posture: 3 attempts default, no circuit
+      breaker at gateway layer. CircuitBreaker only appears in hardened
+      per-provider wrappers (hardened_vllm_client, hardened_gemini_executor).
+
+  - id: PIPE-INFERENCE-VLLM
+    title: "Local Qwen vLLM inference"
+    triggers:
+      - kind: internal_call
+        name: "qwen_inference_gateway.py invoked (from 6 apps + healers)"
+    inputs:
+      - QwenInferenceRequest
+    stages:
+      - s01_request_build
+      - s02_route_predicate (L4_state/config/vllm_routing_predicates.py)
+      - s03_hardened_client (hardened_vllm_client.py — circuit breaker + retry with jitter)
+      - s04_http_aiohttp (localhost vLLM endpoint)
+      - s05_response_parse
+    outputs:
+      - VLLMResponse
+    terminal_condition: "Response returned, circuit OPEN short-circuits, or retries exhausted"
+    source_modules:
+      - agentic_core/L3_orchestration/inference/qwen_vllm/reasoning/qwen_inference_gateway.py
+      - agentic_core/L3_orchestration/inference/qwen_vllm/engines/hardened_vllm_client.py
+      - agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py
+      - agentic_core/L4_state/config/vllm_routing_predicates.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Egress target: EGRESS-QWEN-VLLM-LOCAL-01. Stateful circuit breaker —
+      see state_machines.md §CircuitBreaker.
+
+  - id: PIPE-EMBEDDING
+    title: "Embedding generation via EmbeddingSovereignAgent"
+    triggers:
+      - kind: internal_call
+        name: "retrieval / memory / healing modules request embeddings"
+    inputs:
+      - text batch
+      - provider preference (gemini | openai | local_bge)
+    stages:
+      - s01_input_guard (agentic_core/embeddings/embedding_input_guard.py)
+      - s02_tokenize (agentic_core/embeddings/tokenizer.py)
+      - s03_provider_select (EmbeddingSovereignAgent — Gemini | OpenAI | local BAAI/bge-m3)
+      - s04_cache_lookup (Redis via mixin)
+      - s05_egress_or_local (EGRESS-GEMINI-01 | EGRESS-OPENAI-01 | in-process sentence_transformers)
+      - s06_dimension_validate (EMBEDDING_DIMENSION)
+      - s07_store_result
+    outputs:
+      - embedding vectors
+      - Redis cache entry (if enabled)
+    terminal_condition: "Embedding returned or error propagated"
+    source_modules:
+      - agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py
+      - agentic_core/embeddings/**
+      - tools/retrieval/embedder.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Local path uses sentence_transformers + BAAI/bge-m3. HF Hub egress
+      only if VECTOR_DB_ALLOW_MODEL_DOWNLOAD=1 (EGRESS-HF-HUB-01).
+
+  - id: PIPE-VECTOR-RETRIEVAL
+    title: "Vector retrieval — semantic search / embed / query"
+    triggers:
+      - kind: mcp_tool
+        name: "vector_db MCP: semantic_search | query_collection | embed_text"
+      - kind: internal_call
+        name: "tools/retrieval/vector_service.py invoked from retrieval layers"
+    inputs:
+      - query text or pre-computed vectors
+      - collection name(s)
+    stages:
+      - s01_request_validate (vector_errors.py shape check)
+      - s02_embedding_lifecycle (embedder.py — reuses PIPE-EMBEDDING)
+      - s03_vector_store_open (vector_store.py — ChromaDB)
+      - s04_search (ChromaDB query)
+      - s05_format (formatters.py)
+      - s06_metrics_emit
+    outputs:
+      - ranked chunks
+      - readiness / stats payload
+    terminal_condition: "Result returned within VECTOR_DB_SEARCH_GLOBAL_TIMEOUT"
+    source_modules:
+      - tools/retrieval/vector_service.py
+      - tools/retrieval/embedder.py
+      - tools/retrieval/vector_store.py
+      - tools/mcp/vector_db_server.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      MCP adapter is thin; real runtime is vector_service.py. Timeouts:
+      VECTOR_DB_ENCODE_TIMEOUT, VECTOR_DB_QUERY_COLLECTION_TIMEOUT,
+      VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT, VECTOR_DB_SEARCH_GLOBAL_TIMEOUT.
+
+  - id: PIPE-ADG-GEN
+    title: "ADG full graph regeneration"
+    triggers:
+      - kind: cli
+        command: "python tools/generate_full_adg.py"
+      - kind: workflow
+        name: "/adg-redis-refresh"
+    inputs:
+      - repo Python source tree
+    stages:
+      - s01_discover_repo_root
+      - s02_scan_repo (agentic_core/adg/extraction/static_scanner.py)
+      - s03_build_nodes
+      - s04_build_edges (18 edge types)
+      - s05_write_sqlite (artifacts/adg/adg_indexed_<ts>.sqlite)
+      - s06_write_json_tiers (snapshot, file_graph, symbol_graph, governance_graph)
+      - s07_write_graphsnap (E7 drift detection)
+      - s08_defect_table_print
+      - s09_redis_auto_ingest (unless ADG_SKIP_REDIS)
+      - s10_auto_commit (unless ADG_SKIP_GIT)
+    outputs:
+      - artifacts/adg/adg_indexed_<ts>.sqlite (~38 MB)
+      - artifacts/adg/adg_snapshot_<ts>.json (~50 KB)
+      - artifacts/adg/adg_file_graph_<ts>.json
+      - artifacts/adg/adg_symbol_graph_<ts>.json
+      - artifacts/adg/adg_governance_graph_<ts>.json
+      - artifacts/adg/adg_graphsnap_<ts>.json
+      - redis: adg:v1:<ts>:node:* / adg:v1:<ts>:edge:* / adg:v1:<ts>:_hot
+      - git commit (auto-commit of artefacts)
+    terminal_condition: >-
+      SQLite snapshot written AND (adg_health returns healthy OR --force override)
+    source_modules:
+      - tools/generate_full_adg.py
+      - tools/generate/generate_full_adg.py
+      - tools/adg/**
+      - agentic_core/adg/extraction/**
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Fail-fast repo-state-change check. Kill-switches: ADG_SKIP_REDIS,
+      ADG_SKIP_GIT, ADG_SKIP_SELF_TEST.
+
+  - id: PIPE-ADG-REDIS-INGEST
+    title: "Bulk-load ADG SQLite snapshot into Redis hot cache"
+    triggers:
+      - kind: cli
+        command: "python tools/adg/adg_redis_ingest.py [--force|--check|--dry-run]"
+      - kind: internal_call
+        name: "PIPE-ADG-GEN stage s09"
+    inputs:
+      - latest artifacts/adg/adg_indexed_<ts>.sqlite
+    stages:
+      - s01_discover_latest_snapshot
+      - s02_connect_redis (ADG_REDIS_URL)
+      - s03_optional_flush_old (--force)
+      - s04_ingest_nodes (batch 5000, tqdm progress)
+      - s05_ingest_edges (fanout + fanin indexes)
+      - s06_ingest_edge_details
+      - s07_set_hot_sentinel (adg:v1:<ts>:_hot = 1)
+    outputs:
+      - redis keys under adg:v1:<ts>:* namespace
+    terminal_condition: "Hot sentinel key set"
+    source_modules:
+      - tools/adg/adg_redis_ingest.py
+      - tools/adg/cache/redis_cache.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Egress: EGRESS-REDIS-01. --check exits 0 if hot, 1 if cold.
+
+  - id: PIPE-MEMORY-LIFECYCLE
+    title: "Persistent memory graph — session recall → write → purge"
+    triggers:
+      - kind: mcp_tool
+        name: "memory MCP: mem_recall_session_start | create_entities | add_observations | search_nodes | mem_cleanup_stale | mem_import_adg_context"
+      - kind: cli
+        command: "python tools/memory/purge_sync.py"
+    inputs:
+      - session trigger (start of conversation)
+      - Cascade-initiated entity/observation writes
+      - ADG hot-cache (for mem_import_adg_context seeding)
+    stages:
+      - s01_session_recall (mem_recall_session_start — load durable entities)
+      - s02_optional_seed (mem_import_adg_context — import Project:ADG + Layer:L0..L6)
+      - s03_runtime_writes (create_entities / add_observations / create_relations)
+      - s04_search (search_nodes — full-text across names/types/observations)
+      - s05_cleanup_stale (mem_cleanup_stale — entities older than N days; protected types never deleted)
+      - s06_purge_sync (tools/memory/purge_sync.py — telemetry-reported purge)
+    outputs:
+      - artifacts/memory/knowledge_graph.sqlite
+      - docs/reports/telemetry/memory_purge_<ts>.json
+    terminal_condition: >-
+      Purge completes with protected-type invariant preserved.
+    source_modules:
+      - tools/memory/adg_memory_server.py
+      - tools/memory/sqlite_memory_store.py
+      - tools/memory/purge_sync.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      Protected types (never deleted): ArchitectureLayer, ProjectContext,
+      ConstitutionalRule, EpisodicEvent, ProceduralPattern, ArchitecturalDecision.
+
+  - id: PIPE-REPLAY
+    title: "Replay / determinism — evidence reproduction"
+    triggers:
+      - kind: cli_or_test
+        name: "agentic_core/evaluation/runners/replay_eval_runner.py invocation"
+      - kind: internal_call
+        name: "X1D grounded_replayable dimension of PIPE-EVAL-EXIT"
+    inputs:
+      - execution trace record (from lifecycle_trace_contract)
+      - determinism digest (emit_determinism_digest)
+      - replay key (emit_replay_key)
+    stages:
+      - s01_load_trace
+      - s02_load_fingerprint
+      - s03_replay_agent_engine (deterministic re-execution with fixed clock / fixed inputs)
+      - s04_compare_digests
+      - s05_verdict_emit (deterministic | divergent)
+    outputs:
+      - replay verdict
+      - divergence report if mismatched
+    terminal_condition: "Digest match or explicit divergence report"
+    source_modules:
+      - agentic_core/evaluation/runners/replay_eval_runner.py
+      - agentic_core/runtime/contracts/lifecycle_trace_contract.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      PARTIAL. Only replay_eval_runner.py + emit_replay_key/emit_determinism_digest
+      primitives observed. Full replay topology (divergence scoring, digest
+      canonicalization) not fully enumerated here — see README §5 risks.
+
+  - id: PIPE-JUDGE-EVAL
+    title: "Judge orchestration — multi-rubric evaluation"
+    triggers:
+      - kind: api
+        name: "JudgeOrchestrator.evaluate(file_path)"
+      - kind: internal_call
+        name: "offline eval runs / shadow eval"
+    inputs:
+      - target file path
+      - applicable rubrics (rubrics.json)
+      - ADG SQLite path
+    stages:
+      - s01_load_rubrics (RubricEngine)
+      - s02_assemble_evidence (EvidenceAssembler)
+      - s03_route_judges (deterministic | LLM)
+      - s04_run_deterministic (DETERMINISTIC_JUDGES table)
+      - s05_run_llm (llm_judge.py → provider_registry → Gemini/OpenAI)
+      - s06_collect_verdicts (Scorecard + JudgeReport)
+      - s07_persist_verdicts (VerdictStore)
+    outputs:
+      - JudgeReport (overall_score, fail_count, per-rubric verdicts)
+      - VerdictStore entries
+    terminal_condition: "All applicable rubrics evaluated and persisted"
+    source_modules:
+      - agentic_core/evaluation/judges/orchestrator.py
+      - agentic_core/evaluation/judges/**
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      This is the CANONICAL evaluation pipeline. Distinct from eval_spine.py
+      which self-declares as NON_CANONICAL_EVAL_LAB (no UWG handoff, no exit gate).
+
+  - id: PIPE-OBSERVABILITY
+    title: "L6 observability — trace / telemetry / drift"
+    triggers:
+      - kind: internal_call
+        name: "record_execution_trace / emit_determinism_digest / _emit_* helpers invoked throughout runtime"
+    inputs:
+      - lifecycle events from all layers
+    stages:
+      - s01_event_emit (lifecycle_trace_contract._emit_* helpers)
+      - s02_observability_record (L6_observability/execution/observability_recorder.py)
+      - s03_drift_detect (mcp_drift_store.py)
+      - s04_dashboard_aggregate (utils/dashboard/dashboard_aggregate.py)
+      - s05_trace_persist (runtime-ADG trace files)
+    outputs:
+      - runtime-ADG trace artefacts
+      - dashboard snapshot (HEALTHY | DEGRADED | CRITICAL | UNKNOWN)
+    terminal_condition: "Trace persisted and dashboard aggregated"
+    source_modules:
+      - agentic_core/L6_observability/**
+      - agentic_core/runtime/contracts/lifecycle_trace_contract.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      G2 flagged 44 L6→L0/L2 "downstream_mutation" breaches (boundary_violations.md).
+      L6 is NOT a pure observer in practice; this pipeline implicitly reads lower-layer state.
+
+  - id: PIPE-APP-BOOTSTRAP-RG
+    title: "APP-RG bootstrap — pydantic/typing compat shims"
+    triggers:
+      - kind: import
+        name: "import apps_rg triggers bootstrap_runtime.py"
+    inputs:
+      - runtime Python environment
+    stages:
+      - s01_ensure_module (synthetic module placeholder in sys.modules)
+      - s02_install_pydantic_compat (monkeypatch BaseModel.model_dump / model_copy if missing)
+      - s03_install_typing_compat (Python version compat shims)
+    outputs:
+      - patched sys.modules entries
+    terminal_condition: "Shim installation complete; apps_rg importable"
+    source_modules:
+      - apps_rg/bootstrap_runtime.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      G1b adapter pattern D. Bootstrap has side-effects on import.
+
+  - id: PIPE-APP-BOOTSTRAP-EXEC
+    title: "APP-EXEC optional-agentic_core shim"
+    triggers:
+      - kind: import
+        name: "import apps_exec triggers _optional_agentic_core.py"
+    inputs:
+      - runtime Python environment (with or without agentic_core)
+    stages:
+      - s01_detect_agentic_core
+      - s02_synthesize_shim_modules (lifecycle_trace_contract no-op helpers, LayerSegment enum)
+      - s03_install_to_sys_modules
+    outputs:
+      - synthetic agentic_core.* modules in sys.modules
+    terminal_condition: "Either real agentic_core or shim present"
+    source_modules:
+      - apps_exec/_optional_agentic_core.py
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      G1b adapter pattern B. Allows APP-EXEC to run in degraded-dependency mode.
+
+  - id: PIPE-SYSTEM-LEARNING
+    title: "Meta-learning pipeline — feedback → golden → approval"
+    triggers:
+      - kind: internal_call
+        name: "system_learning/pipelines/pipeline_factory.py invocation"
+      - kind: cli
+        name: "system_learning/scripts/* runners"
+    inputs:
+      - runtime feedback signals
+      - golden datasets
+    stages:
+      - s01_signal_collect (system_learning/correlation/ + raw/)
+      - s02_meta_learn (meta_learning_pipeline.py)
+      - s03_approval_gate (approval_gates.py — HIVE_MIND_PROMOTION_THRESHOLD)
+      - s04_commit_or_reject (approval_gate_impl.py)
+    outputs:
+      - updated meta-learning state
+      - approval ledger entry
+    terminal_condition: "Approval decision emitted"
+    source_modules:
+      - system_learning/pipelines/**
+    embodies_atoms: []
+    embodies_edges: []
+    notes: >-
+      PARTIAL coverage. system_learning has 28+ subpackages; only the pipelines/
+      subtree was traced at G3. Deeper enumeration is deferred to G3b.
