@@ -214,7 +214,7 @@ class StateSyncManager:
 
             return result
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             log.error(f"Error checking file {path_str}: {e}")
             self._handle_error(path_str, e)
             return SyncResult(
@@ -324,7 +324,7 @@ class StateSyncManager:
         for callback in self._on_sync_callbacks:
             try:
                 callback(result)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Sync callback error: {e}")
 
     def _handle_error(self, file_path: str, error: Exception) -> None:
@@ -337,7 +337,7 @@ class StateSyncManager:
         for callback in self._on_error_callbacks:
             try:
                 callback(file_path, error)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Error callback error: {e}")
 
 

@@ -45,41 +45,41 @@ adg_server_name = "adg_sqlite"
 
 # Additional MCP servers requiring health gates
 # These names MUST match the keys in .windsurf/mcp_config.json exactly.
-PYTEST_SERVER_NAME = "pytest_mcp"
-REDIS_SERVER_NAME = "redis"  # mcp_config.json key is "redis", not "redis_mcp"
-MEMORY_SERVER_NAME = "memory"
-TASK_MANAGER_SERVER_NAME = "task_manager"
-VECTOR_DB_SERVER_NAME = "vector_db"
-OTEL_MCP_SERVER_NAME = "otel_mcp"
-DEEPWIKI_SERVER_NAME = "deepwiki"
+pytest_server_name = "pytest_mcp"
+redis_server_name = "redis"  # mcp_config.json key is "redis", not "redis_mcp"
+memory_server_name = "memory"
+task_manager_server_name = "task_manager"
+vector_db_server_name = "vector_db"
+otel_mcp_server_name = "otel_mcp"
+deepwiki_server_name = "deepwiki"
 gitkraken_server_name = "GitKraken"
 notion_server_name = "notion"
 
 # Recovery tools that MUST pass even when MCP is unhealthy.
 # Without this whitelist, the gate blocks the very tools needed to recover.
-ADG_RECOVERY_TOOLS = {
+adg_recovery_tools = {
     "adg_health",  # mcp1_adg_health — liveness probe
     "adg_status",  # mcp1_adg_status — snapshot status
     "adg_close_connections",  # needed to release SQLite locks
     "adg_reopen_connections",  # needed after lock release
 }
 
-PYTEST_RECOVERY_TOOLS = {
+pytest_recovery_tools = {
     "list_pytest_config",  # mcp8_list_pytest_config — health probe
     "discover_tests",  # mcp8_discover_tests — basic discovery
 }
 
-REDIS_RECOVERY_TOOLS = {
+redis_recovery_tools = {
     "redis_health",  # mcp11_redis_health — liveness probe
 }
 
-MEMORY_RECOVERY_TOOLS = {
+memory_recovery_tools = {
     "mem_recall_session_start",  # mcp6_mem_recall_session_start — session context
     "mem_get_stats",  # mcp6_mem_get_stats — health metrics
     "search_nodes",  # mcp6_search_nodes — lightweight query probe
 }
 
-TASK_MANAGER_RECOVERY_TOOLS = {
+task_manager_recovery_tools = {
     # Real tool names from @blizzy/mcp-task-manager — verified against MCP registry
     "task_info",  # lightweight read — used as health probe
     "create_task",  # first call in any T2/T3 session — must always be allowed
@@ -87,12 +87,12 @@ TASK_MANAGER_RECOVERY_TOOLS = {
     "decompose_task",  # T3 decomposition gate — must not be blocked by probe failure
 }
 
-VECTOR_DB_RECOVERY_TOOLS = {
+vector_db_recovery_tools = {
     "vector_stats",  # mcp10_vector_stats — health probe
     "list_collections",  # mcp10_list_collections — lightweight check
 }
 
-OTEL_MCP_RECOVERY_TOOLS = {
+otel_mcp_recovery_tools = {
     "otel_status",  # liveness probe — must bypass gate to diagnose otel_mcp itself
 }
 
@@ -111,20 +111,20 @@ sqlite_probe_timeout_ms = 500  # busy_timeout for probe connections
 # tool call — cache the result for the lifetime of the hook process.
 _probe_cache: dict[str, bool] = {}
 
-FILESYSTEM_SERVER_NAME = "filesystem"
+filesystem_server_name = "filesystem"
 # Write tools on the filesystem MCP that bypass pre_write_code. Blocked here
 # so all .py writes are forced through Cascade's native tools and the
 # constitutional anti-pattern + syntax gates.
 # move_file included: rename/relocate operations mutate the filesystem and
 # bypass pre_write_code just as write_file and edit_file do.
-FILESYSTEM_WRITE_TOOLS = {
+filesystem_write_tools = {
     "write_file",  # mcp5_write_file — full overwrite
     "edit_file",  # mcp5_edit_file  — line-based edits
     "move_file",  # mcp4_move_file  — rename/relocate; mutates filesystem
 }
 
 repo_root = Path(__file__).resolve().parents[2]
-ARTIFACTS_ADG = repo_root / "artifacts" / "adg"
+artifacts_adg = repo_root / "artifacts" / "adg"
 # Session-state isolation boundary
 #
 # Current isolation unit: one IDE window / one VS Code process.
@@ -139,15 +139,15 @@ ARTIFACTS_ADG = repo_root / "artifacts" / "adg"
 # - per-chat / per-tab isolation inside the same IDE window
 #
 # Per-chat isolation requires Windsurf to expose a conversation-scoped
-# identifier, for example WINDSURF_CHAT_ID. If such an ID becomes available,
-# replace VSCODE_PID in the _SESSION_ID derivation and keep the rest of the
+# identifier, for example windsurf_chat_id. If such an ID becomes available,
+# replace vscode_pid in the _session_id derivation and keep the rest of the
 # session-state mechanism unchanged.
-_SESSION_ID = os.environ.get("VSCODE_PID") or str(os.getppid())
-session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
+_session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
+session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_session_id}.json"
 
 # After this many consecutive blocks without a successful memory recall,
 # the gate degrades to open so Cascade is never permanently stuck.
-MAX_MEMORY_BLOCK_ATTEMPTS = 3
+max_memory_block_attempts = 3
 
 # Stale session-state files older than this are removed on each gate startup.
 _session_state_max_age_hours = 24
@@ -166,7 +166,7 @@ _fs_allowed_dir = repo_root
 gitkraken_workspace_root = repo_root
 
 # Tools that mutate LOCAL git state (stage, commit, checkout, stash, worktree add, branch create)
-GITKRAKEN_LOCAL_WRITE_TOOLS: set[str] = {
+gitkraken_local_write_tools: set[str] = {
     "git_add_or_commit",
     "git_checkout",
     "git_stash",
@@ -177,7 +177,7 @@ GITKRAKEN_LOCAL_WRITE_TOOLS: set[str] = {
 }
 
 # Tools that mutate REMOTE state (push, PR creation, issue comments)
-GITKRAKEN_REMOTE_WRITE_TOOLS: set[str] = {
+gitkraken_remote_write_tools: set[str] = {
     "git_push",
     "pull_request_create",
     "pull_request_create_review",
@@ -186,10 +186,10 @@ GITKRAKEN_REMOTE_WRITE_TOOLS: set[str] = {
 }
 
 # All write-capable tools (local + remote)
-GITKRAKEN_ALL_WRITE_TOOLS: set[str] = GITKRAKEN_LOCAL_WRITE_TOOLS | GITKRAKEN_REMOTE_WRITE_TOOLS
+gitkraken_all_write_tools: set[str] = gitkraken_local_write_tools | gitkraken_remote_write_tools
 
 # These remote-write tools additionally require upstream tracking validation
-GITKRAKEN_PUSH_TOOLS: set[str] = {"git_push", "pull_request_create"}
+gitkraken_push_tools: set[str] = {"git_push", "pull_request_create"}
 
 
 def _exit_block(reason: str) -> int:
@@ -211,7 +211,7 @@ def _read_session_state() -> dict:
 def _increment_memory_block_attempts() -> int:
     """
     Increment max_memory_block_attempts in session state and return the new count.
-    Fail-open: returns MAX_MEMORY_BLOCK_ATTEMPTS on any I/O error so the gate
+    Fail-open: returns max_memory_block_attempts on any I/O error so the gate
     immediately degrades rather than looping.
     """
     try:
@@ -222,7 +222,7 @@ def _increment_memory_block_attempts() -> int:
         session_state.write_text(json.dumps(state), encoding="utf-8")
         return count
     except (OSError, json.JSONDecodeError):
-        return MAX_MEMORY_BLOCK_ATTEMPTS  # fail-open: treat counter as exhausted
+        return max_memory_block_attempts  # fail-open: treat counter as exhausted
 
 
 def _mark_memory_recalled() -> None:
@@ -239,14 +239,14 @@ def _mark_memory_recalled() -> None:
 
 # Recovery/health tools across ALL servers that should never be blocked
 # by the memory-first gate. These are precondition-free probes.
-_MEMORY_GATE_EXEMPT_TOOLS: set[str] = (
-    ADG_RECOVERY_TOOLS
-    | PYTEST_RECOVERY_TOOLS
-    | REDIS_RECOVERY_TOOLS
-    | MEMORY_RECOVERY_TOOLS
-    | TASK_MANAGER_RECOVERY_TOOLS
-    | VECTOR_DB_RECOVERY_TOOLS
-    | OTEL_MCP_RECOVERY_TOOLS
+_memory_gate_exempt_tools: set[str] = (
+    adg_recovery_tools
+    | pytest_recovery_tools
+    | redis_recovery_tools
+    | memory_recovery_tools
+    | task_manager_recovery_tools
+    | vector_db_recovery_tools
+    | otel_mcp_recovery_tools
 )
 
 
@@ -262,24 +262,24 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
         precondition-free probes and must not consume retry budget.
     2. memory_recalled=True in session state → gate satisfied, allow.
     3. Memory MCP unhealthy → degrade-open (auto-mark recalled) to avoid blockage.
-    4. max_memory_block_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS → degrade-open
+    4. max_memory_block_attempts >= max_memory_block_attempts → degrade-open
        (auto-mark recalled) to prevent permanent blocking.
     5. Otherwise: increment attempt counter and block with redirect message.
 
     Return 0 (allow) or 2 (block).
     """
     # Rule 1: never block the memory server itself
-    if server_name == MEMORY_SERVER_NAME:
+    if server_name == memory_server_name:
         return 0
 
     # Rule 1a: never block filesystem read tools — pure stateless reads need no session context.
     # Write tools (write_file, edit_file, move_file) are still blocked by check_filesystem_write_gate.
-    if server_name == FILESYSTEM_SERVER_NAME and tool_name not in FILESYSTEM_WRITE_TOOLS:
+    if server_name == filesystem_server_name and tool_name not in filesystem_write_tools:
         return 0
 
     # Rule 1b: never block recovery/health tools on any server — these are
     # precondition-free probes and blocking them wastes retry budget on non-work.
-    if tool_name in _MEMORY_GATE_EXEMPT_TOOLS:
+    if tool_name in _memory_gate_exempt_tools:
         return 0
 
     state = _read_session_state()
@@ -300,10 +300,10 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
 
     # Rule 4: degrade-open after too many consecutive blocks (prevent infinite loop)
     current_attempts = state.get("max_memory_block_attempts", 0)
-    if current_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS:
+    if current_attempts >= max_memory_block_attempts:
         print(
             f"[pre_mcp_gate] memory-first gate: max_memory_block_attempts={current_attempts} "
-            f">= {MAX_MEMORY_BLOCK_ATTEMPTS} — degrading to open "
+            f">= {max_memory_block_attempts} — degrading to open "
             "(auto-marking recalled to prevent further blocking).",
             file=sys.stderr,
         )
@@ -314,7 +314,7 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     attempts = _increment_memory_block_attempts()
     return _exit_block(
         f"memory-first gate: call mem_recall_session_start (memory MCP) before any other "
-        f"MCP tool [attempt {attempts}/{MAX_MEMORY_BLOCK_ATTEMPTS}]. "
+        f"MCP tool [attempt {attempts}/{max_memory_block_attempts}]. "
         "Server: memory | Tool: mem_recall_session_start | Parameters: none."
     )
 
@@ -401,7 +401,7 @@ def _probe_sqlite_read(db_path: Path) -> tuple[bool, str]:
             conn.close()
     except sqlite3.OperationalError as exc:
         return False, f"open_failed: {exc}"
-    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
         return False, f"unexpected: {exc}"
 
 
@@ -429,7 +429,7 @@ def _probe_sqlite_write(db_path: Path) -> tuple[bool, str]:
             conn.close()
     except sqlite3.OperationalError as exc:
         return False, f"open_failed: {exc}"
-    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
         return False, f"unexpected: {exc}"
 
 
@@ -467,7 +467,7 @@ def _check_sqlite_access(repo_root: Path, needs_write: bool) -> tuple[bool, str]
         row = c.execute("PRAGMA journal_mode").fetchone()
         journal_mode = row[0] if row else "unknown"
         c.close()
-    except Exception:  # guardian: allow-broad-exception -- diagnostic only, must not crash
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
         pass
 
     diag["journal_mode"] = journal_mode
@@ -588,7 +588,7 @@ def check_filesystem_write_gate(tool_name: str) -> int:
     redirect writes to Cascade's native write tools (write_to_file / edit /
     multi_edit) which DO fire pre_write_code and the constitutional gates.
     """
-    if tool_name in FILESYSTEM_WRITE_TOOLS:
+    if tool_name in filesystem_write_tools:
         return _exit_block(
             f"filesystem MCP tool '{tool_name}' is blocked — "
             "use Cascade's native write_to_file / edit / multi_edit tools instead. "
@@ -723,7 +723,7 @@ def check_redis_gate(repo_root: Path) -> int:
         redis_error = "redis package not installed"
     except redis_lib.ConnectionError as exc:
         redis_error = f"Cannot connect to Redis at {host}:{port}: {exc}"
-    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
         redis_error = f"Unexpected error: {exc}"
 
     if redis_ok:
@@ -796,7 +796,7 @@ def check_memory_gate(repo_root: Path) -> int:
         return _exit_block(
             f"Memory MCP health check failed: SQLite DB inaccessible: {exc}",
         )
-    except Exception as exc:  # guardian: allow-broad-exception -- probe must not crash the gate
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
         return _exit_block(f"Memory MCP health check unexpected error: {exc}")
 
     return 0
@@ -1028,7 +1028,7 @@ def check_gitkraken_gate(tool_name: str, payload: dict) -> int:
     repo = _resolve_gitkraken_repo(payload)
 
     # Read-only tools: only require repo confinement check
-    if tool_name not in GITKRAKEN_ALL_WRITE_TOOLS:
+    if tool_name not in gitkraken_all_write_tools:
         # For read tools, repo confinement is advisory (fail-open) to avoid
         # blocking legitimate cross-repo reads (e.g. issues_get_detail targets GitHub)
         return 0
@@ -1067,7 +1067,7 @@ def check_gitkraken_gate(tool_name: str, payload: dict) -> int:
             )
 
     # --- Missing-upstream check (blocks push and PR creation) ---
-    if tool_name in GITKRAKEN_PUSH_TOOLS:
+    if tool_name in gitkraken_push_tools:
         missing, upstream_desc = _check_gitkraken_missing_upstream(repo)
         if missing:
             return _exit_block(
@@ -1172,7 +1172,7 @@ def main() -> int:
         return rc
 
     # Filesystem MCP: startup health check then write-tool block
-    if server_name == FILESYSTEM_SERVER_NAME:
+    if server_name == filesystem_server_name:
         rc = check_filesystem_startup_gate()
         if rc != 0:
             return rc
@@ -1180,19 +1180,19 @@ def main() -> int:
 
     # ADG SQLite MCP: health, lock, and staleness checks
     if server_name == adg_server_name:
-        if tool_name in ADG_RECOVERY_TOOLS:
+        if tool_name in adg_recovery_tools:
             # Always allow recovery probes — blocking them creates a dead loop
             return 0
         return check_adg_gate(repo_root, tool_name)
 
     # Pytest MCP: verify pytest is available
-    if server_name == PYTEST_SERVER_NAME:
+    if server_name == pytest_server_name:
         print(
             f"[pre_mcp_gate] PYTEST_MCP_TRACE: candidate=entered server={server_name!r} "
-            f"tool={tool_name!r} recovery={tool_name in PYTEST_RECOVERY_TOOLS}",
+            f"tool={tool_name!r} recovery={tool_name in pytest_recovery_tools}",
             file=sys.stderr,
         )
-        if tool_name in PYTEST_RECOVERY_TOOLS:
+        if tool_name in pytest_recovery_tools:
             print(
                 "[pre_mcp_gate] PYTEST_MCP_TRACE: ALLOW reason=recovery_tool",
                 file=sys.stderr,
@@ -1201,37 +1201,37 @@ def main() -> int:
         return check_pytest_gate(repo_root)
 
     # Redis MCP: verify Redis connectivity with ADG SQLite fallback
-    if server_name == REDIS_SERVER_NAME:
-        if tool_name in REDIS_RECOVERY_TOOLS:
+    if server_name == redis_server_name:
+        if tool_name in redis_recovery_tools:
             return 0
         return check_redis_gate(repo_root)
 
     # Memory MCP: verify SQLite DB is accessible
-    if server_name == MEMORY_SERVER_NAME:
+    if server_name == memory_server_name:
         if tool_name in MEMORY_RECOVERY_TOOLS:
             return 0
         return check_memory_gate(repo_root)
 
     # Task Manager MCP: verify Node.js is available
-    if server_name == TASK_MANAGER_SERVER_NAME:
-        if tool_name in TASK_MANAGER_RECOVERY_TOOLS:
+    if server_name == task_manager_server_name:
+        if tool_name in task_manager_recovery_tools:
             return 0
         return check_task_manager_gate()
 
     # Vector DB MCP: verify ChromaDB is available
-    if server_name == VECTOR_DB_SERVER_NAME:
-        if tool_name in VECTOR_DB_RECOVERY_TOOLS:
+    if server_name == vector_db_server_name:
+        if tool_name in vector_db_recovery_tools:
             return 0
         return check_vector_db_gate()
 
     # OpenTelemetry MCP: verify opentelemetry SDK is available
-    if server_name == OTEL_MCP_SERVER_NAME:
-        if tool_name in OTEL_MCP_RECOVERY_TOOLS:
+    if server_name == otel_mcp_server_name:
+        if tool_name in otel_mcp_recovery_tools:
             return 0
         return check_otel_gate()
 
     # DeepWiki MCP: remote URL — advisory connectivity check only
-    if server_name == DEEPWIKI_SERVER_NAME:
+    if server_name == deepwiki_server_name:
         return check_deepwiki_gate()
 
     # GitKraken MCP: write-tool preflight + repo confinement

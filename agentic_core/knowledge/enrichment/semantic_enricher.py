@@ -310,7 +310,7 @@ Respond with ONLY valid JSON."""
                 enrichment_hash=content_hash,
             )
 
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"LLM enrichment failed for {chunk_id}: {e}")
             # Fallback to mock on error
             return self._mock_enrich(chunk_id, raw_text, source_metadata)

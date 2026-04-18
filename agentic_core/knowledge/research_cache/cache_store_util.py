@@ -206,7 +206,7 @@ class ResearchCache:
                         except json.JSONDecodeError:
                             continue
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
             Logger.error(f"Failed to load cache index: {e}")
 
@@ -249,7 +249,7 @@ class ResearchCache:
                         entry = json.loads(line.strip())
                         return entry.get("result")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to retrieve cache entry: {e}")
         return None
 
@@ -276,7 +276,7 @@ class ResearchCache:
                 self._index[query_hash] = line_num
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to write cache entry: {e}")
             return False
 
@@ -288,7 +288,7 @@ class ResearchCache:
             self._index = {}
             Logger.info("Research cache cleared")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to clear cache: {e}")
 
     def get_stats(self) -> dict[str, Any]:

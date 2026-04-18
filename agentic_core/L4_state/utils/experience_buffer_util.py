@@ -244,7 +244,7 @@ class ExperienceBuffer:
             with self.path.open("r", encoding="utf-8") as f:
                 lines = f.readlines()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as e:
             self.Logger.error(f"Failed to read experience buffer: {e}")
             return
         if len(lines) > self.max_entries:
@@ -254,7 +254,7 @@ class ExperienceBuffer:
                 _get_write_gateway().write_text(self.path, "".join(kept), encoding="utf-8")
                 self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 raise
                 self.Logger.error(f"Failed to trim buffer: {e}")
 
@@ -269,7 +269,7 @@ class ExperienceBuffer:
                         entries.append(json.loads(line))
             return list(reversed(entries))
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as e:
             self.Logger.error(f"Failed to load experience buffer: {e}")
             return []
 

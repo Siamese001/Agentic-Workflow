@@ -196,7 +196,7 @@ class CacheDecisionEngine:
                     result = dict(policy["decision"])
                     result["policy_name"] = policy["name"]
                     return result
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Policy {policy['name']} evaluation error: {e}")
 
         # Default decision

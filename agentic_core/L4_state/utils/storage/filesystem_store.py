@@ -317,7 +317,7 @@ class FileSystemStore:
             temp_path.rename(artifact_path)
 
         # guardian: allow-silent-swallow
-        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Clean up temp file if it exists
@@ -336,7 +336,7 @@ class FileSystemStore:
                     gateway = get_write_gateway()
                     gateway.execute_instruction(cleanup_instruction)
                 # guardian: allow-silent-swallow
-                except Exception:
+                except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
                     # If UWG cleanup fails, try direct removal as last resort
                     temp_path.unlink(missing_ok=True)
             raise

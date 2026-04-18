@@ -29,8 +29,8 @@ fail_policy = "closed_for_t2t3_adg"
 
 repo_root = Path(__file__).resolve().parents[2]
 # Namespaced per logical session — matches pre_mcp_gate.py and post_mcp_audit.py.
-_SESSION_ID = os.environ.get("VSCODE_PID") or str(os.getppid())
-session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
+_session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
+session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_session_id}.json"
 
 t3_keywords = {
     "architecture",
@@ -484,7 +484,7 @@ def check_redis_adg_hot() -> bool:
             if cursor == 0:
                 break
         return False  # no sentinel found — cache is cold
-    except Exception:  # guardian: allow-broad-exception -- startup probe, fail-open
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
         return False
 
 

@@ -60,7 +60,7 @@ class VisualDetector:
         if content is None and file_path.exists():
             try:
                 content = file_path.read_text(encoding="utf-8", errors="replace")
-            except Exception as e:
+            except (OSError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Failed to read file for modality detection: {e}")
                 return DocumentModality.UNKNOWN
 
@@ -100,7 +100,7 @@ class VisualDetector:
         if content is None and file_path.exists():
             try:
                 content = file_path.read_text(encoding="utf-8", errors="replace")
-            except Exception as e:
+            except (OSError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Failed to read file for metadata extraction: {e}")
                 content = ""
 

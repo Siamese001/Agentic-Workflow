@@ -118,7 +118,7 @@ class IntakeClerk:
                 warnings=content_result.warnings,
             )
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             log.error(f"Document ingestion failed for {file_path}: {e}")
             return IngestionResult(
                 success=False,
@@ -222,7 +222,7 @@ class IntakeClerk:
                 warnings=warnings,
             )
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             log.error(f"Content extraction failed for {file_path}: {e}")
             return IngestionResult(
                 success=False,

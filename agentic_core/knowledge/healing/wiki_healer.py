@@ -231,7 +231,7 @@ class DeepWikiHealingStrategy:
                         undocumented.append(py_file)
             return undocumented[: config.DEEPWIKI_HEALING_BATCH_SIZE]
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[L0 DEEPWIKI HEALING] Error finding undocumented files: {e}")
             return []
 
@@ -248,7 +248,7 @@ class DeepWikiHealingStrategy:
             )
             return set()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[L0 DEEPWIKI HEALING] Error getting documented paths: {e}")
             return set()
 
@@ -290,7 +290,7 @@ class DeepWikiHealingStrategy:
                 Logger.error(f"[L0 DEEPWIKI HEALING] Failed to update DeepWiki for {file_path}")
                 return False
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(
                 f"[L0 DEEPWIKI HEALING] DeepWiki update failed for {fix.get('file', 'unknown')}: {e}",
             )
@@ -323,7 +323,7 @@ class DeepWikiHealingStrategy:
             Logger.debug(f"[L0 DEEPWIKI HEALING] DeepWiki response: {str(result)[:200]}")
             return result is not None
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[L0 DEEPWIKI HEALING] DeepWiki update failed: {e}")
             return False
 

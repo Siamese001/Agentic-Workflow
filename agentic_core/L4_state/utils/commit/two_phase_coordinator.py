@@ -61,14 +61,14 @@ class TwoPhaseCoordinator:
             resource_result = resource_write()
             resource_ok = True
             logger.debug("2PC Phase 1 ACK: resource write OK [%s]", ctx_str)
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             raise MutationCommitFailure(
                 f"2PC Phase 1 FAILED: resource write error — {exc} [{ctx_str}]",
             ) from exc
         try:
             ledger_result = ledger_write()
             logger.debug("2PC Phase 2 ACK: ledger write OK [%s]", ctx_str)
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             raise MutationCommitFailure(
                 f"2PC Phase 2 FAILED: ledger write error — {exc} (resource write already committed — manual rollback required) [{ctx_str}]",
             ) from exc
