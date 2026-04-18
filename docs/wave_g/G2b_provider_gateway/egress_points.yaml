@@ -1,0 +1,311 @@
+# Canonical egress-point catalogue for Wave G2b.
+# Schema: docs/wave_g/G0_full_runtime_plan/output_contracts.md §"Egress point schema (G2b)"
+# ADG snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite (04172026_0611)
+# Names only for env_keys - never values.
+
+wave: G2b
+adg_snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite
+adg_snapshot_timestamp: "04172026_0611"
+
+egress_points:
+
+  - id: EGRESS-OPENAI-01
+    provider: openai
+    protocol: https
+    module_path: infrastructure/sdks_mcps/__init__.py
+    consumer_modules:
+      - agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+      - apps_shared/types/model_router_types.py
+      - agentic_core/L5_safety/guardrails/multi_provider_router_agent.py
+      - agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py
+      - agentic_core/L4_state/reasoning/retrieval_layers.py
+    auth_mode: api_key_env
+    env_keys:
+      - OPENAI_API_KEY
+      - OPENAI_MODEL
+      - OPENAI_MAX_TOKENS
+      - OPENAI_TEMPERATURE
+    retry_posture:
+      max_attempts: 3
+      backoff: unspecified
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      Raw SDK imported only in infrastructure/sdks_mcps/__init__.py (migration
+      wrapper) and apps_shared/types/model_router_types.py. Production path is
+      via SovereignLLMGateway (retries=3 default).
+
+  - id: EGRESS-ANTHROPIC-01
+    provider: anthropic
+    protocol: https
+    module_path: infrastructure/sdks_mcps/__init__.py
+    consumer_modules:
+      - agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+      - apps_shared/types/model_router_types.py
+      - agentic_core/L5_safety/guardrails/multi_provider_router_agent.py
+      - agentic_core/L1_cognition/enforcement/consensus_validator.py
+    auth_mode: api_key_env
+    env_keys:
+      - ANTHROPIC_API_KEY
+      - ANTHROPIC_MODEL
+    retry_posture:
+      max_attempts: 3
+      backoff: unspecified
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      Same SDK-wrapper + production-gateway split as OpenAI.
+
+  - id: EGRESS-GEMINI-01
+    provider: google_genai
+    protocol: https
+    module_path: apps_shared/utils/providers_google_genai_client_util.py
+    consumer_modules:
+      - agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+      - apps_shared/types/model_router_types.py
+      - apps_shared/types/hardened_gemini_executor_types.py
+      - agentic_core/evaluation/judges/provider_registry.py
+      - agentic_core/evaluation/judges/llm_judge.py
+      - agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py
+      - agentic_core/L2_execution/reasoning/StructuredEngineAgent.py
+      - agentic_core/L2_execution/utils/job_analyzer_impl.py
+      - agentic_core/L5_safety/validators/dependencygraph_validator.py
+      - agentic_core/mixins/instructional_injection_mixin.py
+      - agentic_core/L1_cognition/reasoning/codebase_mapper.py
+      - agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py
+      - infrastructure/sdks_mcps/__init__.py
+    auth_mode: api_key_env
+    env_keys:
+      - GOOGLE_API_KEY
+      - GEMINI_API_KEY
+      - GEMINI_MODEL
+      - GEMINI_PRO_MODEL
+    retry_posture:
+      max_attempts: unknown
+      backoff: exponential
+      circuit_breaker: true
+    rate_limit_known: false
+    notes: >-
+      Hardened posture in apps_shared/types/hardened_gemini_executor_types.py:
+      tenacity @retry with stop_after_attempt + wait_exponential + circuit
+      breaker. Documented as the only sanctioned google.generativeai import
+      site (per module docstring).
+
+  - id: EGRESS-GOOGLE-CSE-01
+    provider: google_custom_search
+    protocol: https
+    module_path: apps_lic/tools/GoogleSearchClient.py
+    consumer_modules:
+      - apps_lic/tools/GoogleSearchClient.py
+    auth_mode: api_key_env
+    env_keys:
+      - GOOGLE_API_KEY
+      - GOOGLE_CSE_ID
+    retry_posture:
+      max_attempts: unknown
+      backoff: unknown
+      circuit_breaker: true
+    rate_limit_known: false
+    notes: >-
+      Circuit breaker injected via CircuitBreakerProtocol (caller-provided).
+      Uses googleapiclient.discovery.build; APP-LIC only consumer.
+
+  - id: EGRESS-HF-HUB-01
+    provider: huggingface_hub
+    protocol: https
+    module_path: tools/retrieval/embedder.py
+    consumer_modules:
+      - tools/retrieval/embedder.py
+      - tools/mcp/vector_db_server.py
+      - agentic_core/embeddings/model_loader.py
+      - agentic_core/embeddings/bge_runtime.py
+    auth_mode: none
+    env_keys:
+      - HF_HUB_OFFLINE
+      - VECTOR_DB_ALLOW_MODEL_DOWNLOAD
+      - BGE_ALLOW_MODEL_DOWNLOAD
+      - VECTOR_DB_EMBEDDING_MODEL
+      - EMBEDDING_MODEL_ID
+      - EMBEDDING_LOCAL_FILES_ONLY
+      - TOKENIZERS_PARALLELISM
+      - TQDM_DISABLE
+    retry_posture:
+      max_attempts: sentence_transformers_default
+      backoff: sentence_transformers_default
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      Offline-by-default (HF_HUB_OFFLINE=1 enforced via mcp_config.json for the
+      vector_db MCP). Real network fetch only if VECTOR_DB_ALLOW_MODEL_DOWNLOAD=1
+      or BGE_ALLOW_MODEL_DOWNLOAD=1.
+
+  - id: EGRESS-OTEL-01
+    provider: otel_collector
+    protocol: http_or_grpc
+    module_path: apps_shared/utils/open_telemetry_tracing_adapter_util.py
+    consumer_modules:
+      - apps_shared/utils/open_telemetry_tracing_adapter_util.py
+    auth_mode: none
+    env_keys:
+      - OTEL_EXPORTER_OTLP_HTTP_ENDPOINT
+      - OTEL_EXPORTER_OTLP_GRPC_ENDPOINT
+    retry_posture:
+      max_attempts: otel_sdk_default
+      backoff: otel_sdk_default
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      External only if endpoint env vars are set. Default configuration ships
+      with no collector bound.
+
+  - id: EGRESS-QWEN-VLLM-LOCAL-01
+    provider: local
+    protocol: http
+    module_path: agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py
+    consumer_modules:
+      - agentic_core/L3_orchestration/inference/qwen_vllm/reasoning/qwen_inference_gateway.py
+      - agentic_core/L3_orchestration/inference/qwen_vllm/engines/hardened_vllm_client.py
+      - agentic_core/L2_execution/healers/confidence_scorer.py
+      - agentic_core/L2_execution/healers/healing_router.py
+      - agentic_core/base_agents/SovereignBaseAgent.py
+      - apps_eval
+      - apps_exec
+      - apps_lic
+      - apps_research
+      - apps_rfp
+      - apps_rg
+    auth_mode: none
+    env_keys: []
+    retry_posture:
+      max_attempts: configurable
+      backoff: exponential_with_jitter
+      circuit_breaker: true
+    rate_limit_known: false
+    notes: >-
+      Localhost vLLM server. hardened_vllm_client.py implements full retry +
+      circuit breaker (CircuitState = CLOSED / OPEN / HALF_OPEN). Consumed by
+      6 apps (G2 unexpected-edge class).
+
+  - id: EGRESS-REDIS-01
+    provider: local
+    protocol: tcp
+    module_path: agentic_core/cache/redis_cache_client.py
+    consumer_modules:
+      - agentic_core/cache/redis_cache_client.py
+      - agentic_core/config/redis_config.py
+      - agentic_core/L2_execution/reasoning/RedisSovereignAgent.py
+      - agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py
+      - agentic_core/L4_state/reasoning/CachedStateLedger.py
+      - agentic_core/L4_state/utils/memory/semantic_cache_manager.py
+      - agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py
+      - tools/adg/adg_redis_ingest.py
+      - tools/adg/cache/redis_cache.py
+      - tools/adg/queries/adg_redis_live_query.py
+      - tools/memory/adg_memory_server.py
+      - tools/mcp/redis_mcp_server.py
+      - apps_shared/types/event_bus_types.py
+      - apps_shared/utils/resource_manager_types_util.py
+    auth_mode: password_env_optional
+    env_keys:
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_DB
+      - REDIS_PASSWORD
+      - REDIS_URL
+      - REDIS_TIMEOUT
+      - REDIS_SSL
+      - REDIS_SSL_CERT_PATH
+      - REDIS_SSL_KEY_PATH
+      - REDIS_WINDOWS_PATHS
+      - REDIS_CACHE_STRICT_HASH_VALIDATION
+      - ADG_REDIS_URL
+      - USE_REDIS_CACHE
+      - ENABLE_REDIS
+    retry_posture:
+      max_attempts: unknown
+      backoff: unknown
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      G2 bridge chokepoint (fan_in=fan_out=70). Single largest external
+      dependency bridge in the repo. Auth mode is password_env_optional
+      because REDIS_PASSWORD is a common-but-not-required env key.
+
+  - id: EGRESS-NEO4J-01
+    provider: local
+    protocol: bolt
+    module_path: agentic_core/L4_state/enforcement/neo4j_store.py
+    consumer_modules:
+      - agentic_core/L4_state/enforcement/neo4j_store.py
+      - agentic_core/config/env_loader.py
+    auth_mode: user_password_env
+    env_keys:
+      - NEO4J_URI
+      - NEO4J_USERNAME
+      - NEO4J_PASSWORD
+    retry_posture:
+      max_attempts: unknown
+      backoff: unknown
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      B7-G2b-05: retry posture unknown; neo4j-driver defaults only. No wrapping
+      CircuitBreaker or tenacity retry observed.
+
+  - id: EGRESS-PINECONE-STUB-01
+    provider: pinecone
+    protocol: https
+    module_path: apps_shared/utils/etl_pipeline_util.py
+    consumer_modules:
+      - apps_shared/utils/etl_pipeline_util.py
+    auth_mode: api_key_env
+    env_keys:
+      - PINECONE_INDEX_NAME
+    retry_posture:
+      max_attempts: stub
+      backoff: stub
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      B7-G2b-02: config stub. PINECONE_INDEX_NAME read in one file; `import
+      pinecone` has ZERO occurrences repo-wide. Declared, not wired.
+
+  - id: EGRESS-MCP-DEEPWIKI-01
+    provider: mcp-external
+    protocol: https
+    module_path: .windsurf/mcp_config.json
+    consumer_modules:
+      - Cascade (Windsurf IDE client - not repo source)
+    auth_mode: none
+    env_keys: []
+    retry_posture:
+      max_attempts: mcp_client_default
+      backoff: mcp_client_default
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      Only MCP server configured with external URL (mcp.deepwiki.com).
+      All other MCP servers are stdio-loopback. See mcp_as_transport.md.
+
+  - id: EGRESS-MCP-LOOPBACK-BUCKET
+    provider: mcp-loopback
+    protocol: stdio
+    module_path: tools/mcp/
+    consumer_modules:
+      - .windsurf/mcp_config.json
+    auth_mode: none
+    env_keys:
+      - NOTION_TOKEN
+      - GITKRAKEN_GK_PATH
+      - AGENTIC_REPO_ROOT
+    retry_posture:
+      max_attempts: mcp_client_default
+      backoff: mcp_client_default
+      circuit_breaker: false
+    rate_limit_known: false
+    notes: >-
+      Bucket entry covering 9 stdio-loopback MCP servers: adg_sqlite, memory,
+      vector_db, otel_mcp, redis, pytest_mcp, enhanced_http, filesystem,
+      notion, task_manager. See mcp_as_transport.md for per-server records.
+      Notion ultimately egresses to api.notion.com; treated as loopback from
+      the repo's perspective because the Node subprocess is the network actor.
