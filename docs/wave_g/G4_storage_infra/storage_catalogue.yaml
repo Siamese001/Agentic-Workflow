@@ -1,0 +1,603 @@
+# G4 Storage Catalogue
+# Schema: docs/wave_g/G0_full_runtime_plan/output_contracts.md §"Storage catalogue schema (G4)"
+# ADG snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite (04172026_0611)
+# Schema additions per G4 request: owner_modules (list), writer_modules, reader_modules,
+# durability, retention_behavior, pipelines_using_it, notes.
+
+wave: G4
+adg_snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite
+adg_snapshot_timestamp: "04172026_0611"
+
+stores:
+
+  - id: STORE-ADG-SQLITE
+    kind: sqlite
+    path_or_namespace: artifacts/adg/adg_indexed_<MMDDYYYY_HHMM>.sqlite
+    owner_modules:
+      - tools/adg/mcp/server.py
+      - tools/generate/generate_full_adg.py
+    writer_modules:
+      - tools/generate/generate_full_adg.py
+      - tools/generate_full_adg.py  # delegate shim
+      - agentic_core/adg/extraction/static_scanner.py
+    reader_modules:
+      - tools/adg/mcp/server.py
+      - tools/adg/adg_redis_ingest.py
+      - tools/adg/core/service.py
+      - tools/adg/queries/**
+      - agentic_core/adg/**
+      - mcp1_adg_* tool surface (Cascade)
+    durability: durable
+    retention_behavior: >-
+      Per-regeneration snapshots accumulate in artifacts/adg/. Observed state:
+      ~166 files / 4.9 GB. No automatic pruning observed — manual or external
+      rotation only. B7-G4-01.
+    pipelines_using_it:
+      - PIPE-ADG-GEN (writer)
+      - PIPE-ADG-REDIS-INGEST (reader)
+      - every ADG MCP query (reader via hot cache)
+    notes: >-
+      Canonical ADG store. Current snapshot: 04172026_0611 (adg_health=healthy).
+      Companion projection: artifacts/adg/adg_graph_<ts>.sqlite (~197 MB,
+      graph-algorithms projection).
+
+  - id: STORE-ADG-GRAPH-PROJECTION
+    kind: sqlite
+    path_or_namespace: artifacts/adg/adg_graph_<MMDDYYYY_HHMM>.sqlite
+    owner_modules:
+      - tools/adg/mcp/server.py
+    writer_modules:
+      - tools/generate/generate_full_adg.py (derived projection)
+    reader_modules:
+      - tools/adg/mcp/server.py (graph_projection surface)
+    durability: durable
+    retention_behavior: >-
+      Mirrors ADG snapshot cadence. Three latest observed: 0522 / 0608 / 0611
+      on 04172026 (~197 MB each). Staleness tracked via adg_stale_guard.py
+      (SM-09).
+    pipelines_using_it:
+      - PIPE-ADG-GEN
+    notes: >-
+      Graph-algorithm projection alongside indexed snapshot. Used for
+      mv_* materialised views and chokepoint / bridge analysis.
+
+  - id: STORE-ADG-JSON-TIERS
+    kind: disk_artefact
+    path_or_namespace: artifacts/adg/adg_{snapshot,file_graph,symbol_graph,governance_graph}_<ts>.json + adg_graphsnap_<ts>.json
+    owner_modules:
+      - tools/generate/generate_full_adg.py
+    writer_modules:
+      - tools/generate/generate_full_adg.py
+    reader_modules:
+      - tools/adg/core/service.py (drift detection)
+      - CI gates (ops_scripts/ci/*_gates/**)
+    durability: durable
+    retention_behavior: >-
+      Accumulates per regeneration; ~62 MB per graphsnap. No auto-pruning.
+    pipelines_using_it:
+      - PIPE-ADG-GEN (stages s06, s07)
+    notes: "Tiered ADG artefacts (CI-light snapshot, file/symbol/governance graphs, E7 drift)."
+
+  - id: STORE-ADG-LEGACY-ARCHIVES
+    kind: disk_artefact
+    path_or_namespace: artifacts/_legacy_adg_archives/
+    owner_modules: []
+    writer_modules: []
+    reader_modules: []
+    durability: durable
+    retention_behavior: >-
+      Observed: 1162 files / 229 MB. Quiesced — no live writers. Candidate for
+      archival pruning. B7-G4-02.
+    pipelines_using_it: []
+    notes: "Historical ADG snapshots, unreferenced by current runtime."
+
+  - id: STORE-ADG-RUNTIME-TRACES
+    kind: disk_artefact
+    path_or_namespace: artifacts/runtime_adg/ + artifacts/runtime_adg_snapshots/
+    owner_modules:
+      - agentic_core/L6_observability/**
+      - system_learning/runtime_adg/**
+    writer_modules:
+      - agentic_core/runtime/contracts/lifecycle_trace_contract.py (_emit_* helpers)
+      - agentic_core/L6_observability/execution/observability_recorder.py
+    reader_modules:
+      - tools/otel/otel_mcp_server.py (otel_mcp MCP)
+      - agentic_core/evaluation/runners/replay_eval_runner.py
+    durability: durable
+    retention_behavior: >-
+      Observed: 36 + 184 files, ~0.5 MB total. Small per-file traces; no auto-pruning observed.
+    pipelines_using_it:
+      - PIPE-OBSERVABILITY (writer)
+      - PIPE-REPLAY (reader — partial pipeline per G3 §5)
+    notes: "Runtime-ADG ingest feeds otel_mcp queries."
+
+  - id: STORE-MEMORY-SQLITE-CANONICAL
+    kind: sqlite
+    path_or_namespace: artifacts/memory/knowledge_graph.sqlite
+    owner_modules:
+      - tools/memory/sqlite_memory_store.py
+      - tools/memory/adg_memory_server.py
+    writer_modules:
+      - tools/memory/adg_memory_server.py (create_entities, add_observations, create_relations)
+      - tools/memory/purge_sync.py (delete stale)
+    reader_modules:
+      - tools/memory/adg_memory_server.py (search_nodes, open_nodes, read_graph, mem_recall_session_start)
+      - agentic_core/L4_state/enforcement/graph_memory_bridge.py
+    durability: durable
+    retention_behavior: >-
+      Default: entities not updated in older_than_days=30 purged; 7-day
+      variant available. Protected types (ArchitectureLayer, ProjectContext,
+      ConstitutionalRule, EpisodicEvent, ProceduralPattern, ArchitecturalDecision)
+      are NEVER deleted. Size: 1.5 MB.
+    pipelines_using_it:
+      - PIPE-MEMORY-LIFECYCLE (primary store)
+      - PIPE-APP-REQUEST s14 (memory write-back)
+    notes: "Canonical location set by MEMORY_DB env var default in adg_memory_server.py and purge_sync.py."
+
+  - id: STORE-MEMORY-SQLITE-DUPLICATE
+    kind: sqlite
+    path_or_namespace: data/memory/knowledge_graph.sqlite
+    owner_modules: []
+    writer_modules: []
+    reader_modules:
+      - agentic_core/L4_state/enforcement/graph_memory_bridge.py (if MEMORY_DB points here)
+    durability: durable
+    retention_behavior: >-
+      12 MB copy in data/memory/. Ambiguous ownership — MEMORY_DB env var
+      determines which is live. Co-located data/memory/unified_memory.db
+      (5.5 MB) is a third candidate. B7-G4-03.
+    pipelines_using_it:
+      - PIPE-MEMORY-LIFECYCLE (if MEMORY_DB redirected)
+    notes: >-
+      Larger than canonical (12 MB vs 1.5 MB) suggesting historical drift.
+      ambiguity recorded — not resolved by G4.
+
+  - id: STORE-MEMORY-UNIFIED-DB
+    kind: sqlite
+    path_or_namespace: data/memory/unified_memory.db
+    owner_modules: []
+    writer_modules: []
+    reader_modules: []
+    durability: durable
+    retention_behavior: "5.5 MB; no writers enumerated at G4. B7-G4-03."
+    pipelines_using_it: []
+    notes: "Third memory SQLite. Ownership ambiguous."
+
+  - id: STORE-REDIS-ADG-HOT
+    kind: redis
+    path_or_namespace: "adg:v1:<snapshot_id>:{node:*, edge:*, fanin:*, edge_detail:*, _hot}"
+    owner_modules:
+      - tools/adg/cache/redis_cache.py
+      - tools/adg/adg_redis_ingest.py
+    writer_modules:
+      - tools/adg/adg_redis_ingest.py (bulk ingest)
+      - tools/adg/cache/redis_cache.py (lazy warm on miss)
+    reader_modules:
+      - tools/adg/mcp/server.py (adg_sqlite MCP, Redis-first path)
+      - tools/adg/queries/adg_redis_live_query.py
+      - tools/adg/queries/adg_rlhf_sft_query*.py
+      - agentic_core/adg/extraction/optimized_tools.py
+    durability: ephemeral_cache
+    retention_behavior: >-
+      Cache tied to <snapshot_id>. New snapshot → fresh namespace. Old
+      snapshots optionally flushed via `adg_redis_ingest.py --force`.
+      Hot sentinel: adg:v1:<ts>:_hot = 1 (SM-07). Currently hot:
+      adg:v1:04172026_0611:_hot.
+    pipelines_using_it:
+      - PIPE-ADG-REDIS-INGEST (writer)
+      - every ADG MCP query (reader — fast path)
+    notes: >-
+      Per redis_health: 2.38M total keys, 1.67 GB used. adg namespace:
+      38,803 in sample scan of 50k (dominant). bench: 11,228 keys (test fixture,
+      candidate for flush).
+
+  - id: STORE-REDIS-BENCH
+    kind: redis
+    path_or_namespace: "bench:*"
+    owner_modules: []
+    writer_modules: []
+    reader_modules: []
+    durability: ephemeral_cache
+    retention_behavior: >-
+      11,228 keys in sample scan. Residual benchmark data; writers not present
+      in current runtime code. Candidate for flush. B7-G4-04.
+    pipelines_using_it: []
+    notes: "Tracked here only to record presence; not in any G3 pipeline."
+
+  - id: STORE-REDIS-COORD
+    kind: redis
+    path_or_namespace: "coord:*"
+    owner_modules:
+      - agentic_core/cache/redis_coordination_fabric.py
+    writer_modules:
+      - agentic_core/cache/redis_coordination_fabric.py
+    reader_modules:
+      - agentic_core/cache/redis_coordination_fabric.py
+      - tools/mcp/redis_mcp/read_tools.py
+    durability: ephemeral_cache
+    retention_behavior: "Per-session coordination state; TTL by code path (not globally enumerated)."
+    pipelines_using_it:
+      - PIPE-APP-REQUEST (coordination side-channel)
+    notes: "Coordination fabric for distributed-reasoning primitives."
+
+  - id: STORE-REDIS-RAG
+    kind: redis
+    path_or_namespace: "rag:*"
+    owner_modules:
+      - agentic_core/cache/cache_key_builders.py
+    writer_modules:
+      - agentic_core/cache/core/cache_key_builders.py
+      - agentic_core/runtime/config/model_provider_config.py
+    reader_modules:
+      - agentic_core/cache/redis_coordination_fabric.py
+    durability: ephemeral_cache
+    retention_behavior: "RAG-key namespace under Redis cache. TTL per key-builder recipe."
+    pipelines_using_it:
+      - PIPE-VECTOR-RETRIEVAL (cache layer)
+    notes: "RAG query / result caching."
+
+  - id: STORE-REDIS-CACHE-GENERIC
+    kind: redis
+    path_or_namespace: "cache:*"
+    owner_modules:
+      - agentic_core/cache/redis_cache_client.py
+    writer_modules:
+      - agentic_core/cache/redis_cache_client.py
+      - agentic_core/cache/graph_aware_cache.py
+      - agentic_core/cache/policy_registry_cache.py
+      - agentic_core/cache/schema_validator_cache.py
+      - agentic_core/cache/tool_embedding_cache.py
+      - agentic_core/cache/discovery_cache.py
+      - agentic_core/cache/config_file_cache.py
+    reader_modules:
+      - same as writers
+    durability: ephemeral_cache
+    retention_behavior: "TTL per cache-key builder; generic bucket."
+    pipelines_using_it:
+      - PIPE-APP-REQUEST (reasoning cache)
+      - PIPE-HEALING (classifier cache)
+    notes: >-
+      agentic_core/cache/redis_cache_client.py is G2 chokepoint bridge
+      (fan_in=fan_out=70 — largest external-dependency bridge in repo).
+
+  - id: STORE-CHROMA-CANONICAL
+    kind: vector
+    path_or_namespace: data/cache/chromadb/
+    owner_modules:
+      - tools/retrieval/vector_store.py
+      - tools/retrieval/vector_service.py
+    writer_modules:
+      - tools/retrieval/vector_service.py (add_documents)
+      - tools/mcp/vector_db_server.py (MCP write tools)
+      - agentic_core/L4_state/utils/client/chroma_client.py
+    reader_modules:
+      - tools/retrieval/vector_service.py (query, semantic_search)
+      - agentic_core/L1_cognition/reasoning/semantic_retriever.py
+      - agentic_core/L3_orchestration/reasoning/engines/hybrid_search_engine.py
+      - agentic_core/L4_state/reasoning/retrieval_layers.py
+      - agentic_core/L4_state/utils/memory/in_memory_vector_cache.py
+    durability: durable
+    retention_behavior: >-
+      Persistent on disk, ~10.2 GB observed. SQLite registry at
+      data/cache/chromadb/chroma.sqlite3 maps 11 collections:
+      code_chunks, dupe_col, ext_authority, ext_raw, incidents_rca,
+      process_docs, repo_evidence, runtime_evidence, symbols, test_col,
+      tests_guardrails. 56 HNSW persist directories (1 per collection version).
+      VECTOR_DB_CHROMA_PATH env-overridable. See vector_collections.md for per-collection details.
+    pipelines_using_it:
+      - PIPE-VECTOR-RETRIEVAL (primary)
+      - PIPE-EMBEDDING (cache lookup)
+    notes: >-
+      Embedded local store, NOT network egress. Per G2b provider_inventory §P09,
+      explicitly excluded from egress_points.yaml.
+
+  - id: STORE-CHROMA-ARTEFACT
+    kind: vector
+    path_or_namespace: artifacts/chromadb/chroma.sqlite3
+    owner_modules: []
+    writer_modules:
+      - tools/diag/** (diagnostic runners)
+    reader_modules:
+      - tools/diag/**
+      - tools/debug/**
+    durability: durable
+    retention_behavior: >-
+      0.2 MB sqlite-only registry listing 2 collections: docs, traces.
+      No HNSW persist dirs present — registry-only remnant.
+    pipelines_using_it: []
+    notes: "Diagnostic/test ChromaDB. Not a runtime store. B7-G4-05: consolidate or remove."
+
+  - id: STORE-CHROMA-SPARSE
+    kind: vector
+    path_or_namespace: data/cache/sparse/
+    owner_modules: []
+    writer_modules: []
+    reader_modules:
+      - agentic_core/L3_orchestration/reasoning/engines/hybrid_search_engine.py (if configured)
+    durability: durable
+    retention_behavior: >-
+      Sparse-vector cache subtree under data/cache/. Ownership not enumerated
+      at G4. Size present but writer attribution deferred.
+    pipelines_using_it:
+      - PIPE-VECTOR-RETRIEVAL (hybrid search leg)
+    notes: "Part of the 10.5 GB data/cache/ aggregate."
+
+  - id: STORE-GPTCACHE
+    kind: in_process_cache
+    path_or_namespace: data/cache/gptcache/ + artifacts/gptcache/
+    owner_modules:
+      - agentic_core/L4_state/cache/gptcache_client.py
+    writer_modules:
+      - agentic_core/L4_state/cache/gptcache_client.py
+    reader_modules:
+      - agentic_core/L4_state/utils/memory/semantic_cache_manager.py
+    durability: persistent_cache
+    retention_behavior: >-
+      GPTCache SQLite-backed semantic cache. 14 files, 0.7 MB in
+      artifacts/gptcache/. L4 critical-write via self.cache_dir.mkdir
+      (per G2 boundary_violations.md L4 bucket) — direct infra write.
+    pipelines_using_it:
+      - PIPE-EMBEDDING (cache layer)
+      - PIPE-APP-REQUEST s05 (reasoning cache)
+    notes: "L4 direct-infra-write flagged by G2 — candidate for UWG mediation. B7-G4-06."
+
+  - id: STORE-NEO4J
+    kind: other
+    path_or_namespace: "bolt://<NEO4J_URI>"
+    owner_modules:
+      - agentic_core/L4_state/enforcement/neo4j_store.py
+    writer_modules:
+      - agentic_core/L4_state/enforcement/neo4j_store.py
+    reader_modules:
+      - agentic_core/L4_state/enforcement/graph_memory_bridge.py (if configured)
+      - agentic_core/L4_state/enforcement/neo4j_store.py
+    durability: durable
+    retention_behavior: "Retention managed by Neo4j instance (external to repo)."
+    pipelines_using_it:
+      - (optional) graph-memory bridge pipeline
+    notes: >-
+      Localhost bolt egress per G2b EGRESS-NEO4J-01. Auth: NEO4J_URI /
+      NEO4J_USERNAME / NEO4J_PASSWORD. Retry posture unknown (B7-G2b-05).
+
+  - id: STORE-MEMORY-MANIFESTS
+    kind: disk_artefact
+    path_or_namespace: data/manifests/ + artifacts/manifests/
+    owner_modules:
+      - agentic_core/L4_state/utils/memory/chunk_manifest_registry.py
+      - agentic_core/L4_state/utils/memory/completeness_snapshot_registry.py
+      - agentic_core/L4_state/utils/memory/retrieval_eval_registry.py
+    writer_modules:
+      - agentic_core/L4_state/utils/memory/*_registry.py (via parent.mkdir + json.dump)
+    reader_modules:
+      - same
+    durability: durable
+    retention_behavior: "Per-chunk manifest + snapshot registries; writers use parent.mkdir (L4 critical-write)."
+    pipelines_using_it:
+      - PIPE-VECTOR-RETRIEVAL
+      - PIPE-MEMORY-LIFECYCLE
+    notes: "Three of the 7 L4 critical-infra-write sites flagged by G2 live here."
+
+  - id: STORE-GOLDEN-STATE
+    kind: disk_artefact
+    path_or_namespace: data/golden_state/
+    owner_modules:
+      - agentic_core/evaluation/golden/**
+      - system_learning/golden/
+    writer_modules:
+      - system_learning/golden/**
+    reader_modules:
+      - agentic_core/evaluation/judges/**
+      - system_learning/arbitration/**
+    durability: durable
+    retention_behavior: "56 files, 0.2 MB. Version-controlled reference corpora for eval."
+    pipelines_using_it:
+      - PIPE-JUDGE-EVAL (reference source)
+      - PIPE-SYSTEM-LEARNING (golden anchor)
+    notes: "Stable golden dataset; curated, not auto-generated."
+
+  - id: STORE-PROMPT-GOVERNANCE
+    kind: disk_artefact
+    path_or_namespace: data/prompt_governance/
+    owner_modules:
+      - agentic_core/knowledge/** (prompt canonical + compiled)
+    writer_modules:
+      - agentic_core/knowledge/canonical/
+      - agentic_core/knowledge/engine/
+    reader_modules:
+      - agentic_core/L2_execution/reasoning/** (CompiledPromptArtifact consumers)
+      - agentic_core/L5_safety/enforcement/SovereignLLMGateway (signature verify)
+    durability: durable
+    retention_behavior: "83 files, 0.2 MB. Version-controlled prompt artefacts."
+    pipelines_using_it:
+      - PIPE-APP-REQUEST s05 (reasoning)
+      - PIPE-INFERENCE-LLM s01 (signature verify)
+    notes: "Prompt governance corpus. Feeds CompiledPromptArtifact + HMAC signing."
+
+  - id: STORE-CORPUS
+    kind: disk_artefact
+    path_or_namespace: data/corpus/
+    owner_modules: []
+    writer_modules: []
+    reader_modules:
+      - tools/retrieval/vector_service.py (ingest source)
+    durability: durable
+    retention_behavior: "1 file, 18.8 MB. Text corpus seed for retrieval."
+    pipelines_using_it:
+      - PIPE-VECTOR-RETRIEVAL (ingest)
+    notes: "Static corpus; no live writer at G4."
+
+  - id: STORE-RAG-SEEDS
+    kind: disk_artefact
+    path_or_namespace: data/rag_seeds/
+    owner_modules: []
+    writer_modules: []
+    reader_modules:
+      - tools/retrieval/vector_service.py
+    durability: durable
+    retention_behavior: "1 file, small. Seed corpus bootstrap."
+    pipelines_using_it:
+      - PIPE-VECTOR-RETRIEVAL (bootstrap)
+    notes: ""
+
+  - id: STORE-SNAPSHOTS
+    kind: disk_artefact
+    path_or_namespace: data/snapshots/
+    owner_modules:
+      - tools/adg/core/service.py (cross-repo snapshots)
+    writer_modules: []
+    reader_modules:
+      - tools/adg/**
+    durability: durable
+    retention_behavior: "8 files, 22.3 MB. Includes cross_repo_import/ subdirectory + snapshot_manifest.json."
+    pipelines_using_it: []
+    notes: "Cross-repo import snapshots. Usage scope narrow."
+
+  - id: STORE-REPORTS
+    kind: disk_artefact
+    path_or_namespace: artifacts/reports/ + docs/reports/
+    owner_modules:
+      - ops_scripts/ci/**
+      - various diagnostic runners
+    writer_modules:
+      - ops_scripts/ci/**
+      - tools/diag/**
+      - tools/memory/purge_sync.py (telemetry)
+    reader_modules:
+      - human operators
+      - .windsurf/scripts/post_cascade_*
+    durability: durable
+    retention_behavior: >-
+      artifacts/reports/: 2,687 files, 188.8 MB. No auto-pruning observed.
+      docs/reports/telemetry/ accumulates memory purge telemetry.
+    pipelines_using_it:
+      - PIPE-MEMORY-LIFECYCLE s06 (writer)
+      - PIPE-OBSERVABILITY (reports writer)
+    notes: "Largest artefact directory by file count. B7-G4-01 (retention)."
+
+  - id: STORE-EVIDENCE
+    kind: disk_artefact
+    path_or_namespace: artifacts/evidence/
+    owner_modules: []
+    writer_modules:
+      - ops_scripts/ci/**
+      - tools/eval/**
+    reader_modules:
+      - agentic_core/evaluation/judges/evidence_assembler.py
+    durability: durable
+    retention_behavior: "115 files, 1.5 MB. Evidence bundles for eval runs."
+    pipelines_using_it:
+      - PIPE-JUDGE-EVAL s02 (evidence assembly)
+    notes: ""
+
+  - id: STORE-HITL
+    kind: disk_artefact
+    path_or_namespace: artifacts/hitl/
+    owner_modules:
+      - agentic_core/L5_safety/enforcement/exit_control_hitl.py
+    writer_modules:
+      - agentic_core/L5_safety/enforcement/exit_control_hitl.py (packet materialization)
+    reader_modules:
+      - human operators
+      - agentic_core/L5_safety/enforcement/exit_control_hitl.py (re-clearance)
+    durability: durable
+    retention_behavior: "1 file, 0.3 MB. Bounded HITL packet records."
+    pipelines_using_it:
+      - PIPE-EVAL-HITL (H2 materialize, H5 re-clearance)
+    notes: "Packets authored during H1 freeze. No auto-prune."
+
+  - id: STORE-SYSTEM-LEARNING
+    kind: disk_artefact
+    path_or_namespace: system_learning/{memory,snapshots,runtime_adg,golden,state,stores,telemetry,provenance,raw,logs}/
+    owner_modules:
+      - system_learning/**
+    writer_modules:
+      - system_learning/pipelines/meta_learning_pipeline.py
+      - system_learning/enforcement/**
+      - system_learning/stores/**
+    reader_modules:
+      - system_learning/arbitration/**
+      - system_learning/meta_learning/**
+    durability: durable
+    retention_behavior: >-
+      Small aggregate (~0.5 MB across subtrees). Contains stores/, state/,
+      telemetry/, provenance/, raw/ — partial enumeration per G3 B7-G3-06.
+    pipelines_using_it:
+      - PIPE-SYSTEM-LEARNING
+    notes: "Partial coverage at G3. Deeper store attribution deferred to G3b."
+
+  - id: STORE-LOGS
+    kind: transient_output
+    path_or_namespace: logs/
+    owner_modules: []
+    writer_modules:
+      - logging.FileHandler across multiple modules (not centrally owned)
+    reader_modules:
+      - human operators
+    durability: transient
+    retention_behavior: "14 files, 10.7 MB. No structured retention."
+    pipelines_using_it: []
+    notes: "Generic repo logs. Rotation not enforced at repo level."
+
+  - id: STORE-TEST-ARTIFACTS
+    kind: test_only
+    path_or_namespace: test_artifacts/ + artifacts/test_g1/ + artifacts/test_g2/ + artifacts/test_g3/ + artifacts/test_g4/
+    owner_modules: []
+    writer_modules:
+      - tests/**
+      - pytest fixtures
+    reader_modules:
+      - tests/**
+    durability: test_only
+    retention_behavior: "Created per test run. Minimal footprint."
+    pipelines_using_it: []
+    notes: "Test-only storage. Not part of runtime."
+
+  - id: STORE-CI-SCAN-OUTPUTS
+    kind: disk_artefact
+    path_or_namespace: artifacts/ci/ + artifacts/ci_gates/ + artifacts/guardian_analysis/ + artifacts/import_health/ + artifacts/ssot_scans/ + artifacts/structure/ + artifacts/audits/
+    owner_modules:
+      - ops_scripts/ci/**
+      - ops_scripts/enforcement/**
+    writer_modules:
+      - ops_scripts/ci/**
+    reader_modules:
+      - CI workflows (.github/workflows/*)
+      - human reviewers
+    durability: durable
+    retention_behavior: "Accumulates per CI run. No auto-prune."
+    pipelines_using_it: []
+    notes: "CI gate outputs. Out of scope for G3 pipelines but part of storage topology."
+
+  - id: STORE-WINDSURF-TELEMETRY
+    kind: disk_artefact
+    path_or_namespace: artifacts/windsurf/
+    owner_modules:
+      - .windsurf/scripts/post_cascade_adg_audit.py
+      - .windsurf/scripts/post_cascade_hitl_capture.py
+      - .windsurf/scripts/post_mcp_audit.py
+    writer_modules:
+      - .windsurf/scripts/post_*
+    reader_modules:
+      - .windsurf/scripts/pre_prompt_classifier.py
+      - human reviewers
+    durability: durable
+    retention_behavior: "14 files, 0.4 MB. Includes adg_first_violations.jsonl (append-only)."
+    pipelines_using_it: []
+    notes: "Windsurf hook telemetry. Not in runtime pipelines; kept for reference."
+
+  - id: STORE-ADG-ANOMALY-WATCHLIST
+    kind: disk_artefact
+    path_or_namespace: artifacts/adg/adg_anomaly_watchlist_<ts>.json + artifacts/adg/adg_graph_watchlist_<ts>.json
+    owner_modules:
+      - tools/adg/**
+      - agentic_core/adg/analysis/**
+    writer_modules:
+      - tools/adg/** (watchlist writers not individually enumerated)
+    reader_modules:
+      - agentic_core/adg/analysis/**
+      - CI gates
+    durability: durable
+    retention_behavior: "Per-scan watchlists. ~10-26 KB each; multiple timestamps accumulate."
+    pipelines_using_it:
+      - PIPE-ADG-GEN (indirect via defect table)
+    notes: "Anomaly tracking for ADG defect classes."
