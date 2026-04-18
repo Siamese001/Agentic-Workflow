@@ -354,7 +354,7 @@ class EvaluationSignalIntegrator:
                 policy_hash=policy_hash,
                 policy_sensitive=bool(policy_hash),
             )
-        except Exception as _exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as _exc:
             logger.debug("EVAL_INTEGRATOR evaluate_and_attach skipped: %s", _exc)
         logger.info(
             "EVAL_INTEGRATOR evaluates_output invokes_eval src=%s layer=%s kind=%s score=%.3f label=%s",
@@ -373,7 +373,7 @@ class EvaluationSignalIntegrator:
                     score,
                 )
             # guardian: allow-silent-swallow
-            except Exception as exc:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
                 logger.error("EVAL_INTEGRATOR callback error layer=%s: %s", target_layer, exc)
         return signal
 

@@ -343,7 +343,7 @@ class EvaluationLearningBridge:
 
             return learning_event
 
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             # Fail-open: log error but don't block evaluation
             logger.error("EVAL_LEARNING_BRIDGE error feeding to learning: %s", exc, exc_info=True)
             return None

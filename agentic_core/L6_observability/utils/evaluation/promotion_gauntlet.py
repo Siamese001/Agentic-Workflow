@@ -8,11 +8,13 @@ import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+get_clock: Any = None
+
 try:
     from agentic_core.L2_execution.utils.providers import (
         get_clock,
     )  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
-except Exception:  # guardian: allow-broad-exception
+except ImportError:
     get_clock = None
 
 if TYPE_CHECKING:
@@ -31,7 +33,7 @@ def _now_epoch() -> float:
     if get_clock is not None:
         try:
             return float(get_clock().now_epoch())
-        except Exception:  # guardian: allow-broad-exception
+        except (AttributeError, RuntimeError, TypeError, ValueError):
             pass
     return time.time()
 
