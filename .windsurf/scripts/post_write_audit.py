@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 fail_policy = "open"
-MCP_CONFIG_SUFFIX = "mcp_config.json"
+mcp_config_suffix = "mcp_config.json"
 
 repo_root = Path(__file__).resolve().parents[2]
 audit_log = repo_root / "artifacts" / "windsurf" / "mcp_lint_audit.jsonl"
@@ -46,7 +46,7 @@ def _append_audit(record: dict) -> None:
 
 def lint_mcp_config(file_path: str, edits: list[dict]) -> list[str]:
     """Run JSON-native lint checks on mcp_config.json writes. Returns list of findings."""
-    findings = []
+    findings: list[str] = []
 
     path = Path(file_path)
     if not path.exists():
@@ -107,7 +107,7 @@ def main() -> int:
     file_path = tool_info.get("file_path", "")
     edits = tool_info.get("edits", [])
 
-    if not file_path.endswith(MCP_CONFIG_SUFFIX):
+    if not file_path.endswith(mcp_config_suffix):
         return 0
 
     findings = lint_mcp_config(file_path, edits)

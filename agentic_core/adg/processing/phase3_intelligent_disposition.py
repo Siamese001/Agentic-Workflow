@@ -22,6 +22,18 @@ from enum import Enum
 from pathlib import Path
 from tqdm import tqdm
 
+_PHASE3_NON_FATAL_EXCEPTIONS = (
+    sqlite3.Error,
+    OSError,
+    UnicodeError,
+    AttributeError,
+    IndexError,
+    KeyError,
+    TypeError,
+    ValueError,
+    RuntimeError,
+)
+
 
 class DispositionType(Enum):
     """Types of violation dispositions."""
@@ -185,7 +197,7 @@ class FeatureExtractor:
                 row = cursor.fetchone()
                 if row and row[0] and row[0] not in ("", "tests", "unknown"):
                     return row[0]
-            except Exception:  # guardian: allow-silent-swallow -- fail-closed: layer lookup unavailable
+            except _PHASE3_NON_FATAL_EXCEPTIONS:
                 pass
 
         # 2. Fallback: infer from path string
@@ -230,7 +242,7 @@ class FeatureExtractor:
                     elif line.startswith("class "):
                         return line.split("(")[0].replace("class ", "")
 
-        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
+        except _PHASE3_NON_FATAL_EXCEPTIONS:
             pass
 
         return None
@@ -245,7 +257,7 @@ class FeatureExtractor:
                 line = lines[line_no - 1].strip()
                 return "# guardian:" in line
 
-        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
+        except _PHASE3_NON_FATAL_EXCEPTIONS:
             pass
 
         return False
@@ -271,7 +283,7 @@ class FeatureExtractor:
             count = cursor.fetchone()[0]
             return count > 0
 
-        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
+        except _PHASE3_NON_FATAL_EXCEPTIONS:
             pass
 
         return False
@@ -287,7 +299,7 @@ class FeatureExtractor:
 
             return import_count + from_count
 
-        except Exception:  # guardian: allow-return-none-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+        except _PHASE3_NON_FATAL_EXCEPTIONS:
             return 0
 
     def _calculate_function_complexity(self, file_path: str, line_no: int) -> int:
@@ -311,7 +323,7 @@ class FeatureExtractor:
 
                 return complexity
 
-        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
+        except _PHASE3_NON_FATAL_EXCEPTIONS:
             pass
 
         return 0
@@ -366,7 +378,7 @@ class FeatureExtractor:
 
             return cursor.fetchone()[0]
 
-        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
+        except _PHASE3_NON_FATAL_EXCEPTIONS:
             pass
 
         return 0
@@ -387,7 +399,7 @@ class FeatureExtractor:
 
             return cursor.fetchone()[0]
 
-        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
+        except _PHASE3_NON_FATAL_EXCEPTIONS:
             pass
 
         return 0
@@ -747,14 +759,14 @@ class IntelligentDispositionSystem:
                     historical_data.append(
                         {"disposition": disposition, "source": source, "features": asdict(features)},
                     )
-                except Exception as e:  # Intentionally allow silent swallow to prevent feature extraction from blocking analysis
+                except _PHASE3_NON_FATAL_EXCEPTIONS as e:
                     # Fail-closed: feature extraction unavailable, skip this historical data point
                     print(f"    Could not extract features for historical data: {e}")
                     continue
 
             return historical_data
 
-        except Exception as e:  # Intentionally allow silent swallow to prevent historical data loading from blocking analysis
+        except _PHASE3_NON_FATAL_EXCEPTIONS as e:
             # Fail-closed: historical data unavailable, skip training
             print(f"    Could not load historical dispositions: {e}")
             return []
@@ -783,7 +795,7 @@ class IntelligentDispositionSystem:
 
             return violations
 
-        except Exception as e:  # guardian: allow-silent-swallow -- fail-closed: violation loading unavailable
+        except _PHASE3_NON_FATAL_EXCEPTIONS as e:
             print(f"    ⚠️  Could not load untriaged violations: {e}")
             return []
 

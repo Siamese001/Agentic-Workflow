@@ -140,7 +140,7 @@ class ADGGateBase(ABC):
     gate_family: str = ""
     severity: str = ""
     source_views: list[str] = []
-    execution_policy: ExecutionPolicy = field(default_factory=ExecutionPolicy)
+    execution_policy: ExecutionPolicy = ExecutionPolicy()
 
     def __init__(
         self,

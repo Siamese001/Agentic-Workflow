@@ -169,8 +169,7 @@ class SovereignRAGManager(SovereignBaseAgent):
             from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
 
             self.bm25_store = get_bm25_store()
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (ImportError, AttributeError, OSError, RuntimeError, TypeError, ValueError):
             self.bm25_store = None
         try:
             from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
@@ -214,8 +213,7 @@ class SovereignRAGManager(SovereignBaseAgent):
 
             self.embedder = _BGEEmbedder()
             self.vector_store = _InMemVectorStore()
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             self.logger.warning(f"BGE embedder/vector store unavailable: {e}")
         self.static_knowledge: dict[str, Any] = self._load_static_index()
         super().__init__()
@@ -257,8 +255,7 @@ class SovereignRAGManager(SovereignBaseAgent):
                         for i, chunk in enumerate(chunks)
                     ],
                 )
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 self.logger.warning(f"BM25 indexing failed: {e}")
         if self.embedder and self.vector_store:
             try:
@@ -268,8 +265,7 @@ class SovereignRAGManager(SovereignBaseAgent):
                     for i, (emb, chunk) in enumerate(zip(embeddings, chunks, strict=False))
                 ]
                 self.vector_store.upsert(vectors)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 self.logger.warning(f"Vector indexing failed: {e}")
 
     def retrieve(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
@@ -279,8 +275,7 @@ class SovereignRAGManager(SovereignBaseAgent):
 
             _root = Path(__file__).resolve().parents[3]
             _adg_confidence = _gbp(Path(__file__).resolve(), _root).behavioral_score
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             import logging
 
             logging.getLogger(__name__).debug("SovereignRAGManagerAgent: Exception swallowed at L279: %s", e)
@@ -302,8 +297,7 @@ class SovereignRAGManager(SovereignBaseAgent):
                         }
                         for r in raw or []
                     ]
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 self.logger.warning(f"Vector retrieval failed: {e}")
         if self.bm25_store:
             try:
@@ -318,8 +312,7 @@ class SovereignRAGManager(SovereignBaseAgent):
                     }
                     for r in bm25_results or []
                 ]
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 self.logger.warning(f"BM25 retrieval failed: {e}")
         combined = self._fuse_results(vector_results, bm25_results)
         return combined[:top_k]

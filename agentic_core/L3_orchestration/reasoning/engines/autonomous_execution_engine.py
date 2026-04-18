@@ -233,7 +233,7 @@ class autonomous_execution_engine:
                 data = json.loads(self.state_path.read_text(encoding="utf-8"))
                 self.last_mission_result = data.get("last_mission")
                 Logger.info("L3: Loaded execution state")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 raise
                 Logger.error(f"Failed to load execution state: {e}")
 
@@ -247,7 +247,7 @@ class autonomous_execution_engine:
             }
             _wg.write_json_atomic(self.state_path, data)
             Logger.debug("L3: Execution state saved atomically")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
             Logger.error(f"Execution state save failed: {e}")
 
@@ -284,7 +284,7 @@ class autonomous_execution_engine:
             }
             self.consecutive_failures = 0
             Logger.info("L3 MISSION COMPLETE: Canon state verified")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
             Logger.error(f"L3 MISSION FAILED: {e}")
             self.consecutive_failures += 1
@@ -317,7 +317,7 @@ class autonomous_execution_engine:
                 Logger.info("L3: Starting execution cycle")
                 await self.execute_validation_mission()
                 self.save_state()
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 raise
                 Logger.error(f"L3 Execution cycle error: {e}")
                 self.consecutive_failures += 1

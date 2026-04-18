@@ -36,17 +36,17 @@ from typing import Optional
 fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[2]
-DB_DIR = repo_root / ".windsurf" / "state" / "refactor_decisions"
-db_path = DB_DIR / "refactor_decision_ledger.sqlite"
-_LOG_PATH = DB_DIR / "hitl_capture.log"
+db_dir = repo_root / ".windsurf" / "state" / "refactor_decisions"
+db_path = db_dir / "refactor_decision_ledger.sqlite"
+_log_path = db_dir / "hitl_capture.log"
 
 
 def _debug_log(msg: str) -> None:
     """Append a timestamped line to the capture log (diagnostic only)."""
     try:
-        DB_DIR.mkdir(parents=True, exist_ok=True)
+        db_dir.mkdir(parents=True, exist_ok=True)
         ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
-        with _LOG_PATH.open("a", encoding="utf-8") as f:
+        with _log_path.open("a", encoding="utf-8") as f:
             f.write(f"{ts}  {msg}\n")
     except OSError:
         pass
@@ -92,7 +92,7 @@ _DECISION_TYPE_KEYWORDS: list[tuple[str, str]] = [
 # Schema
 # ---------------------------------------------------------------------------
 
-_DDL = """\
+_ddl = """\
 PRAGMA journal_mode=WAL;
 
 CREATE TABLE IF NOT EXISTS decisions (
@@ -157,9 +157,9 @@ CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
 
 def _init_db() -> Optional[sqlite3.Connection]:
     try:
-        DB_DIR.mkdir(parents=True, exist_ok=True)
+        db_dir.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(str(db_path), timeout=10)
-        conn.executescript(_DDL)
+        conn.executescript(_ddl)
         conn.commit()
         return conn
     except (sqlite3.Error, OSError):

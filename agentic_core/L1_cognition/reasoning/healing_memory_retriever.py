@@ -325,13 +325,13 @@ class HealingMemoryRetriever:
 
             query_vec = bmg_embed_text(signal_text)
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("[HealingMemoryRetriever] bmg_embed_text unavailable: %s", exc)
             return []
         try:
             raw = self._store.search(self._index_id, query_vec, top_k=effective_top_k, cutoff=cutoff)
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("[HealingMemoryRetriever] store.search failed: %s", exc)
             return []
         results: list[SimilarIncident] = []
@@ -382,7 +382,7 @@ class HealingMemoryRetriever:
                 top_k_used=effective_top_k,
                 timestamp_utc=int(time.time() * 1000),
             )
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # System learning unavailable - continue without tracking
             import logging
 

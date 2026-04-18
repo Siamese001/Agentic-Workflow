@@ -17,13 +17,13 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-REPO_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
-GLOBAL_CONFIG = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
-AGENTS_MD = REPO_ROOT / "AGENTS.md"
-GLOBAL_BACKUP = Path.home() / ".codeium" / "windsurf" / "mcp_config.backup.json"
+repo_root = Path(__file__).resolve().parents[2]
+repo_config = repo_root / ".windsurf" / "mcp_config.json"
+global_config = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
+agents_md = repo_root / "AGENTS.md"
+global_backup = Path.home() / ".codeium" / "windsurf" / "mcp_config.backup.json"
 
-SERVER_ROWS = [
+server_rows = [
     (
         "GitKraken",
         "Git operations, GitLens, pull requests, issues",
@@ -99,7 +99,7 @@ SERVER_ROWS = [
 ]
 
 
-def load_repo_config(path: Path = REPO_CONFIG) -> dict[str, Any]:
+def load_repo_config(path: Path = repo_config) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as fh:
         return json.load(fh)
 
@@ -134,7 +134,7 @@ def generate_agents_quick_reference() -> str:
     lines.append("")
     lines.append("| Server ID | Use For | Example Tools | Notes |")
     lines.append("|---|---|---|---|")
-    for sid, use_for, tools, notes in SERVER_ROWS:
+    for sid, use_for, tools, notes in server_rows:
         lines.append(f"| `{sid}` | {use_for} | `{tools}` | {notes} |")
     lines.append("")
     lines.append("<!-- MCP-QUICK-REFERENCE:END -->")
@@ -142,7 +142,7 @@ def generate_agents_quick_reference() -> str:
     return "\n".join(lines)
 
 
-def sync_agents_md(agents_path: Path = AGENTS_MD) -> bool:
+def sync_agents_md(agents_path: Path = agents_md) -> bool:
     if not agents_path.exists():
         return False
     text = agents_path.read_text(encoding="utf-8")
@@ -164,10 +164,10 @@ def sync_agents_md(agents_path: Path = AGENTS_MD) -> bool:
     return True
 
 
-def sync_global_config(data: dict[str, Any], global_path: Path = GLOBAL_CONFIG) -> None:
+def sync_global_config(data: dict[str, Any], global_path: Path = global_config) -> None:
     global_path.parent.mkdir(parents=True, exist_ok=True)
     if global_path.exists():
-        shutil.copy2(global_path, GLOBAL_BACKUP)
+        shutil.copy2(global_path, global_backup)
     global_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
@@ -182,14 +182,14 @@ def run(check_only: bool = False, dry_run: bool = False) -> int:
         print(f"[mcp_sync] OK: {len(data['mcpServers'])} MCP servers validated.")
         return 0
     if dry_run:
-        print(f"[mcp_sync] DRY RUN: would sync {len(data['mcpServers'])} servers to {GLOBAL_CONFIG}")
-        if AGENTS_MD.exists():
-            print(f"[mcp_sync] DRY RUN: would refresh {AGENTS_MD}")
+        print(f"[mcp_sync] DRY RUN: would sync {len(data['mcpServers'])} servers to {global_config}")
+        if agents_md.exists():
+            print(f"[mcp_sync] DRY RUN: would refresh {agents_md}")
         return 0
     sync_global_config(data)
-    print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to {GLOBAL_CONFIG}")
+    print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to {global_config}")
     if sync_agents_md():
-        print(f"[mcp_sync] Refreshed AGENTS.md MCP Quick Reference at {AGENTS_MD}")
+        print(f"[mcp_sync] Refreshed AGENTS.md MCP Quick Reference at {agents_md}")
     else:
         print("[mcp_sync] AGENTS.md not found; skipped AGENTS sync.")
     return 0

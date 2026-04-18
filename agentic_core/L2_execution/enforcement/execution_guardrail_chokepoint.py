@@ -264,6 +264,17 @@ emit_determinism_digest(
 
 logger = logging.getLogger(__name__)
 
+_EXECUTION_NON_FATAL_EXCEPTIONS = (
+    AttributeError,
+    KeyError,
+    TypeError,
+    ValueError,
+    RuntimeError,
+    OSError,
+    TimeoutError,
+)
+_PROOF_EMISSION_EXCEPTIONS = _EXECUTION_NON_FATAL_EXCEPTIONS + (DeterminismViolation,)
+
 
 # ---------------------------------------------------------------------------
 # Custom exceptions
@@ -763,7 +774,7 @@ def authorize_and_execute(
 
         _emit_reenters_safety(bound_ctx, f"TYPED_TOOL_CONTRACT_VIOLATION:{type(exc).__name__}")
         raise
-    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except _EXECUTION_NON_FATAL_EXCEPTIONS as exc:
         # P3/L2: Record execution observability for general errors
         try:
             obs_context = ExecutionObservabilityContext.create(
@@ -802,7 +813,7 @@ def authorize_and_execute(
             target_callable=target_callable,
             elapsed_ms=_elapsed_ms,
         )
-    except Exception as _proof_exc:  # guardian: allow-silent-swallow
+    except _PROOF_EMISSION_EXCEPTIONS as _proof_exc:
         _emit_reenters_safety(bound_ctx, f"PROOF_EMISSION_FAILED:{type(_proof_exc).__name__}")
         raise RuntimeError(
             f"authorize_and_execute: execution proof emission failed for "

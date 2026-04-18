@@ -674,7 +674,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             },
                         )
                 # guardian: allow-silent-swallow
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                     raise
                     Logger.warning(f"Hierarchy cross-check failed for {root_name}: {e}")
                 for violation in tqdm(report.violations, desc="Processing", unit="item"):
@@ -1155,7 +1155,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 file_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()
                 manifest["files"][relative_path] = file_hash
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (OSError, RuntimeError, ValueError, TypeError) as e:
                 raise
                 Logger.warning(f"Skipping file {file_path.name} in baseline: {e}")
         _wg.ensure_dir(self.baseline_dir)
@@ -1391,7 +1391,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         },
                     )
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise
             Logger.warning(f"Unified Audit: Hierarchy ingestion failed: {e}")
         try:
@@ -1412,7 +1412,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             },
                         )
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise
             Logger.warning(f"Unified Audit: Architecture ingestion failed: {e}")
         audit_results["stats"]["violations_found"] = len(audit_results["violations"])

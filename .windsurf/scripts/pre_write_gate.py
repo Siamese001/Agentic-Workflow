@@ -42,7 +42,7 @@ _SHELL_TRUE_RE = re.compile(r"shell\s*=\s*True")
 _SUBPROCESS_CALL_RE = re.compile(r"subprocess\.(run|Popen|call|check_output|check_call)\s*\(")
 _TIMEOUT_RE = re.compile(r"timeout\s*=")
 
-MCP_CONFIG_SUFFIX = "mcp_config.json"
+mcp_config_suffix = "mcp_config.json"
 _RISKY_MCP_PATTERNS = [
     re.compile(r'"mcpServers"\s*:\s*\{'),
     re.compile(r'"command"\s*:'),
@@ -225,7 +225,7 @@ def check_mcp_config(file_path: str, edits: list[dict]) -> tuple[bool, list[str]
     Block if: no edits provided (file being deleted).
     Warn if: risky patterns detected in new_string values.
     """
-    if not file_path.endswith(MCP_CONFIG_SUFFIX):
+    if not file_path.endswith(mcp_config_suffix):
         return False, []
 
     if not edits:
@@ -254,7 +254,7 @@ def main() -> int:
     # This prevents fail-closed stdin logic from blocking non-.py/.json writes.
     if len(sys.argv) > 1:
         argv_path = sys.argv[1]
-        if not argv_path.endswith(".py") and not argv_path.endswith(MCP_CONFIG_SUFFIX):
+        if not argv_path.endswith(".py") and not argv_path.endswith(mcp_config_suffix):
             return 0
 
     raw = sys.stdin.read()
@@ -292,7 +292,7 @@ def main() -> int:
         edits = []
 
     # Payload-level file type check (covers cases where argv is not provided).
-    if not file_path.endswith(".py") and not file_path.endswith(MCP_CONFIG_SUFFIX):
+    if not file_path.endswith(".py") and not file_path.endswith(mcp_config_suffix):
         return 0
 
     # --- Task existence check for T2/T3 (enforce plan-first discipline) ---

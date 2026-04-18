@@ -28,8 +28,8 @@ repo_root = Path(__file__).resolve().parents[2]
 audit_log = repo_root / "artifacts" / "windsurf" / "mcp_tool_audit.jsonl"
 gitkraken_write_audit_log = repo_root / "artifacts" / "windsurf" / "gitkraken_write_audit.jsonl"
 # Namespaced per logical session — matches pre_mcp_gate.py and pre_prompt_classifier.py.
-_SESSION_ID = os.environ.get("VSCODE_PID") or str(os.getppid())
-session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
+_session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
+session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_session_id}.json"
 
 gitkraken_server_name = "GitKraken"
 notion_server_name = "notion"

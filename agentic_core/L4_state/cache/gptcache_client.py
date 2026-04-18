@@ -121,7 +121,14 @@ class NativePersistentCacheClient:
                     _expected_dim,
                 )
                 self._chroma_client.delete_collection(col_name)
-        except Exception:  # guardian: allow-broad-exception -- chromadb raises ValueError (pre-1.5) or NotFoundError (1.5+) for missing collections; safe to swallow in migration guard
+        except (
+            AttributeError,
+            KeyError,
+            TypeError,
+            ValueError,
+            RuntimeError,
+            OSError,
+        ):
             pass  # Collection does not yet exist — will be created below
 
         kwargs: dict[str, Any] = {"name": col_name, "metadata": {"hnsw:space": "cosine"}}

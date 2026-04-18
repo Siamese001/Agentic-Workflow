@@ -219,7 +219,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             self.redis = get_redis_client()
             Logger.info("[L4 REDIS] Sovereign MCP cache armed.")
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise
             Logger.critical(f"[L4 REDIS BREACH] MCP cache failed: {e}")
             self.redis = None
@@ -241,7 +241,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
                 "lines": len(code.splitlines()),
             }
         # guardian: allow-silent-swallow
-        except Exception:
+        except (SyntaxError, ValueError, TypeError):
             return {"lines": len(code.splitlines()), "parse_error": True}
 
     def _calculate_depth(self, node, current=0) -> int:
@@ -267,7 +267,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
                     Logger.info(f"[L4 HIT] Redis MCP recall for {Path(file_path).name}")
                     return
             # guardian: allow-silent-swallow
-            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (AttributeError, OSError, RuntimeError, ValueError, TypeError):
                 raise
                 pass
         ast_features: Any = self._extract_ast_features(code)
@@ -295,7 +295,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             }
             Logger.info(f"[L4 STORE] Dual-sync complete for {Path(file_path).name}")
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise
             Logger.error(f"[L4 CACHE FAILURE] Could not cache {file_path}: {e}")
 
@@ -307,7 +307,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             try:
                 self.redis.delete(key)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -350,7 +350,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
                 return []
             q_vec = vecs[0]
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError):
             return []
 
         q_mag = math.sqrt(sum(x * x for x in q_vec))

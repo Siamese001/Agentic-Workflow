@@ -213,7 +213,7 @@ class AgentRegistry:
                 file_agents = self._scan_file_for_agents(file_path)
                 agents.extend(file_agents)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 logger.warning(f"Failed to scan {file_path}: {e}")
         self.discovered_agents = agents
         logger.info(f"Discovered {len(agents)} agents across {len(python_files)} files")
@@ -276,7 +276,7 @@ class AgentRegistry:
             )
             agents.append(agent)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.debug(f"Failed to parse {file_path}: {e}")
         return agents
 
@@ -322,7 +322,7 @@ class AgentRegistry:
         try:
             return None
         # guardian: allow-silent-swallow
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
             return None
 
     def _get_module_path(self, file_path: Path) -> str:

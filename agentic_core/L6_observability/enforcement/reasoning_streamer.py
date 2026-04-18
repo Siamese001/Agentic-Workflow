@@ -127,7 +127,14 @@ class L5Streamer:
                                     client.send(message),
                                     self._websocket_loop,
                                 ).result(timeout=DEFAULT_TIMEOUT)
-                            except Exception as exc:  # guardian: allow-broad-exception -- websocket client handler; network and protocol errors are expected
+                            except (
+                                OSError,
+                                ConnectionError,
+                                RuntimeError,
+                                ValueError,
+                                TypeError,
+                                asyncio.TimeoutError,
+                            ) as exc:
                                 LOGGER.warning("reasoning_streamer websocket_send_failed: %s", exc)
                                 disconnected.add(client)
                         self._websocket_clients -= disconnected
@@ -135,7 +142,7 @@ class L5Streamer:
                     self.stream_queue.task_done()
             except asyncio.CancelledError:
                 break
-            except Exception as exc:  # guardian: allow-broad-exception -- asyncio stream worker error boundary; worker must not die on transient write errors
+            except (OSError, RuntimeError, ValueError, TypeError) as exc:
                 LOGGER.exception("reasoning_streamer worker failure: %s", exc)
 
     def _run_websocket_server(self):
@@ -156,7 +163,7 @@ class L5Streamer:
                     ),
                 )
                 await websocket.wait_closed()
-            except Exception as exc:  # guardian: allow-broad-exception -- websocket client handler; network and protocol errors are expected and must not kill the server
+            except (OSError, ConnectionError, RuntimeError, ValueError, TypeError) as exc:
                 LOGGER.warning("reasoning_streamer websocket_client_error: %s", exc)
             finally:
                 self._websocket_clients.discard(websocket)
@@ -170,7 +177,7 @@ class L5Streamer:
                 self._websocket_ready.set()
                 LOGGER.info("WebSocket server started at ws://127.0.0.1:8765")
                 await self._websocket_stop
-            except Exception as exc:  # guardian: allow-broad-exception -- websocket server error boundary; all errors logged and trigger graceful shutdown
+            except (OSError, ConnectionError, RuntimeError, ValueError, TypeError) as exc:
                 LOGGER.exception("reasoning_streamer websocket_server_error: %s", exc)
             finally:
                 if self._websocket_server is not None:
@@ -188,9 +195,7 @@ class L5Streamer:
             pending = asyncio.all_tasks(loop)
             for task in pending:
                 task.cancel()
-            with suppress(
-                Exception
-            ):  # guardian: allow-broad-exception -- suppress task cancellation errors during event loop shutdown
+            with suppress(asyncio.CancelledError, RuntimeError, OSError, ValueError, TypeError):
                 loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
             loop.close()
             self._websocket_loop = None
@@ -281,7 +286,14 @@ class L5Streamer:
                     asyncio.run_coroutine_threadsafe(client.close(), self._websocket_loop).result(
                         timeout=DEFAULT_TIMEOUT,
                     )
-            except Exception as exc:  # guardian: allow-broad-exception -- websocket close errors during shutdown are non-critical and must not block cleanup
+            except (
+                OSError,
+                ConnectionError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+                asyncio.TimeoutError,
+            ) as exc:
                 LOGGER.debug("reasoning_streamer websocket_close_failed: %s", exc)
         if self._websocket_loop and self._websocket_stop and not self._websocket_stop.done():
             self._websocket_loop.call_soon_threadsafe(self._websocket_stop.set_result, None)

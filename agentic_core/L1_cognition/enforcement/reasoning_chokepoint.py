@@ -92,6 +92,15 @@ emit_determinism_digest("trace_reasoning_chokepoint", "reasoning_chokepoint_poli
 
 logger = logging.getLogger(__name__)
 
+_REASONING_NON_FATAL_EXCEPTIONS = (
+    AttributeError,
+    KeyError,
+    TypeError,
+    ValueError,
+    RuntimeError,
+    OSError,
+)
+
 
 class MissingReasoningTranscript(RuntimeError):
     """Raised when a reasoning response has no transcript artifact.
@@ -254,7 +263,7 @@ def reason_and_record(
             _rpe,
         )
         # Continue without plan - planning failure should not block reasoning
-    except Exception as _plan_exc:
+    except _REASONING_NON_FATAL_EXCEPTIONS as _plan_exc:
         logger.error(
             "REASONING_PLAN_ERROR: %s, continuing without plan",
             _plan_exc,
@@ -265,7 +274,7 @@ def reason_and_record(
     reasoning_success = True
     try:
         output = model_callable(prompt_payload, retrieved_context)
-    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except _REASONING_NON_FATAL_EXCEPTIONS as exc:
         reasoning_success = False
         trace_id = trace.reasoning_trace_id
         _emit_hard_fails_untranscripted(trace_id, f"model_callable raised: {exc}")
@@ -289,7 +298,7 @@ def reason_and_record(
                 reasoning_context.model_id,
                 reasoning_perf.duration_ms,
             )
-        except Exception as _perf_exc:
+        except _REASONING_NON_FATAL_EXCEPTIONS as _perf_exc:
             logger.error(
                 "REASONING_PERFORMANCE_ERROR: %s (model_id=%s)",
                 _perf_exc,
@@ -324,7 +333,7 @@ def reason_and_record(
                 reasoning_plan.reasoning_plan_id,
             )
 
-        except Exception as _step_exc:
+        except _REASONING_NON_FATAL_EXCEPTIONS as _step_exc:
             logger.error(
                 "PLAN_STEP_EXECUTION_ERROR: %s (plan_id=%s)",
                 _step_exc,
@@ -359,7 +368,7 @@ def reason_and_record(
         )
         trace.transcript_id = transcript.transcript_id
         _emit_transcripts_response(transcript)
-    except Exception as exc:
+    except _REASONING_NON_FATAL_EXCEPTIONS as exc:
         _emit_hard_fails_untranscripted(trace.reasoning_trace_id, f"transcript_creation_failed: {exc}")
         raise MissingReasoningTranscript(
             f"reason_and_record: transcript creation failed for trace {trace.reasoning_trace_id}: {exc}",
@@ -387,7 +396,7 @@ def reason_and_record(
         OrphanReasoningEvaluationError
     ) as _oee:  # guardian: OrphanReasoningEvaluationError should be handled with specific context
         logger.warning("reason_and_record: orphan evaluation guard triggered: %s", _oee)
-    except Exception as _ee:  # guardian: allow-silent-swallow
+    except _REASONING_NON_FATAL_EXCEPTIONS as _ee:
         logger.debug("reason_and_record: evaluation emission failed: %s", _ee)
 
     # P4/L1: Capture reasoning pattern for knowledge base
@@ -435,7 +444,7 @@ def reason_and_record(
             trace.reasoning_trace_id,
         )
 
-    except Exception as _knowledge_exc:
+    except _REASONING_NON_FATAL_EXCEPTIONS as _knowledge_exc:
         logger.warning(
             "REASONING_KNOWLEDGE_CAPTURE_ERROR: %s (trace_id=%s)",
             _knowledge_exc,

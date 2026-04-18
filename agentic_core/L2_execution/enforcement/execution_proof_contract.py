@@ -415,7 +415,7 @@ class ExecutionProofRecord:
         if replay_callable is not None and replay_input is not None:
             try:
                 replay_output = replay_callable(replay_input)
-            except Exception as exc:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
                 raise DeterminismViolation(f"validate_replay: replay execution raised {exc}") from exc
             replay_output_hash = _hash_any(replay_output)
             recomputed_digest = _compute_determinism_digest(recomputed_key, replay_output_hash, p.elapsed_ms)

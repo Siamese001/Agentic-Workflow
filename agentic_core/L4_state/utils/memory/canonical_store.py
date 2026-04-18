@@ -218,7 +218,7 @@ class PostgresBackend(StorageBackend):
 
         except ImportError:
             Logger.warning("psycopg2 not available, Postgres backend disabled")
-        except Exception as e:
+        except (psycopg2.Error, OSError, ValueError, RuntimeError) as e:
             Logger.error(f"Failed to init PostgreSQL backend: {e}")
 
     def store(self, content: bytes, metadata: dict[str, Any]) -> StoredArtifact:
@@ -284,7 +284,10 @@ class PostgresBackend(StorageBackend):
 
             return row[0] if row else None
 
-        except Exception as e:
+        except ImportError as e:
+            Logger.error(f"Failed to retrieve from Postgres: {e}")
+            return None
+        except (psycopg2.Error, OSError, ValueError, RuntimeError) as e:
             Logger.error(f"Failed to retrieve from Postgres: {e}")
             return None
 
@@ -309,7 +312,10 @@ class PostgresBackend(StorageBackend):
         except psycopg2.Error as e:
             Logger.debug(f"Postgres exists check failed: {e}")
             return False
-        except Exception as e:
+        except ImportError as e:
+            Logger.error(f"Postgres exists check failed: {e}")
+            return False
+        except (OSError, ValueError, RuntimeError) as e:
             Logger.error(f"Postgres exists check failed: {e}")
             return False
 
@@ -335,7 +341,10 @@ class PostgresBackend(StorageBackend):
         except psycopg2.Error as e:
             Logger.debug(f"Postgres delete failed: {e}")
             return False
-        except Exception as e:
+        except ImportError as e:
+            Logger.error(f"Postgres delete failed: {e}")
+            return False
+        except (OSError, ValueError, RuntimeError) as e:
             Logger.error(f"Postgres delete failed: {e}")
             return False
 
@@ -403,7 +412,13 @@ class S3Backend(StorageBackend):
             s3 = self._get_s3_client()
             response = s3.get_object(Bucket=self.bucket, Key=key)
             return response["Body"].read()
-        except Exception as e:
+        except botocore.exceptions.ClientError as e:
+            code = e.response.get("Error", {}).get("Code")
+            if code in {"404", "NoSuchKey"}:
+                return None
+            Logger.error(f"Failed to retrieve from S3: {e}")
+            return None
+        except (ImportError, OSError, KeyError, TypeError, ValueError) as e:
             Logger.error(f"Failed to retrieve from S3: {e}")
             return None
 
@@ -420,7 +435,7 @@ class S3Backend(StorageBackend):
             else:
                 Logger.debug(f"S3 exists check failed: {e}")
                 return False
-        except Exception as e:
+        except (ImportError, OSError, KeyError, TypeError, ValueError) as e:
             Logger.error(f"S3 exists check failed: {e}")
             return False
 
@@ -437,7 +452,7 @@ class S3Backend(StorageBackend):
             else:
                 Logger.debug(f"S3 delete failed: {e}")
                 return False
-        except Exception as e:
+        except (ImportError, OSError, KeyError, TypeError, ValueError) as e:
             Logger.error(f"S3 delete failed: {e}")
             return False
 

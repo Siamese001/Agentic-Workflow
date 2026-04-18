@@ -40,6 +40,10 @@ record_execution_trace("enhanced_observability", "enhanced_observability_trace")
 
 Logger = logging.getLogger(__name__)
 
+_OBS_PSUTIL_EXCEPTIONS = (psutil.Error, OSError, RuntimeError, TypeError, ValueError)
+_OBS_COLLECTION_EXCEPTIONS = (ImportError, AttributeError, KeyError, TypeError, ValueError, RuntimeError)
+_OBS_ALERT_EXCEPTIONS = (AttributeError, KeyError, TypeError, ValueError, RuntimeError)
+
 
 class AlertSeverity(Enum):
     """Alert severity levels."""
@@ -148,7 +152,7 @@ class EnhancedObservability:
         try:
             psutil.cpu_percent(interval=None)
             psutil.Process().cpu_percent(interval=None)
-        except Exception:
+        except _OBS_PSUTIL_EXCEPTIONS:
             pass
 
         # Initialize default health checks and alert thresholds
@@ -263,7 +267,7 @@ class EnhancedObservability:
                 if self._stop_event.wait(timeout=sleep_time):
                     break
 
-            except Exception as e:  # guardian: allow-broad-exception -- monitoring loop must not die on transient collection errors; all errors are logged
+            except _OBS_PSUTIL_EXCEPTIONS + _OBS_COLLECTION_EXCEPTIONS + _OBS_ALERT_EXCEPTIONS as e:
                 Logger.error(f"[OBSERVABILITY] Monitoring loop error: {e}")
                 if self._stop_event.wait(timeout=min(5.0, self._interval_seconds)):
                     break
@@ -311,7 +315,7 @@ class EnhancedObservability:
             # Collect tracing-specific metrics
             self._collect_tracing_metrics(timestamp)
 
-        except Exception as e:
+        except _OBS_PSUTIL_EXCEPTIONS + _OBS_COLLECTION_EXCEPTIONS as e:
             Logger.error(f"[OBSERVABILITY] Failed to collect system metrics: {e}")
 
     def _collect_tracing_metrics(self, timestamp: float) -> None:
@@ -349,7 +353,7 @@ class EnhancedObservability:
                 for name, metric in tracing_metrics.items():
                     self._metrics_history[name].append(metric)
 
-        except Exception as e:  # guardian: allow-broad-exception -- tracing metrics collection is best-effort; import and attribute errors are expected
+        except _OBS_COLLECTION_EXCEPTIONS as e:
             Logger.debug(f"[OBSERVABILITY] Failed to collect tracing metrics: {e}")
 
         try:
@@ -399,7 +403,7 @@ class EnhancedObservability:
                 for name, metric in optimized_metrics.items():
                     self._metrics_history[name].append(metric)
 
-        except Exception as e:  # guardian: allow-broad-exception -- performance collector metrics are best-effort; import and attribute errors are expected
+        except _OBS_COLLECTION_EXCEPTIONS as e:
             Logger.debug(f"[OBSERVABILITY] Failed to collect optimized collector metrics: {e}")
 
     def _run_health_checks(self) -> None:
@@ -423,7 +427,7 @@ class EnhancedObservability:
 
                 health_results.append(health_check)
 
-            except Exception as e:
+            except _OBS_PSUTIL_EXCEPTIONS + _OBS_COLLECTION_EXCEPTIONS + _OBS_ALERT_EXCEPTIONS as e:
                 health_check = HealthCheck(
                     name=check_name,
                     status=HealthStatus.UNKNOWN,
@@ -474,7 +478,7 @@ class EnhancedObservability:
                 },
             }
 
-        except Exception as e:
+        except _OBS_PSUTIL_EXCEPTIONS as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check memory: {e}",
@@ -504,7 +508,7 @@ class EnhancedObservability:
                 },
             }
 
-        except Exception as e:
+        except _OBS_PSUTIL_EXCEPTIONS as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check CPU: {e}",
@@ -537,7 +541,7 @@ class EnhancedObservability:
                 },
             }
 
-        except Exception as e:
+        except _OBS_PSUTIL_EXCEPTIONS as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check disk: {e}",
@@ -579,7 +583,7 @@ class EnhancedObservability:
                 },
             }
 
-        except Exception as e:
+        except _OBS_COLLECTION_EXCEPTIONS as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check tracing system: {e}",
@@ -613,7 +617,7 @@ class EnhancedObservability:
                 },
             }
 
-        except Exception as e:
+        except _OBS_COLLECTION_EXCEPTIONS as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check Runtime ADG: {e}",
@@ -650,7 +654,7 @@ class EnhancedObservability:
                 },
             }
 
-        except Exception as e:
+        except _OBS_COLLECTION_EXCEPTIONS as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check span collection: {e}",
@@ -696,7 +700,7 @@ class EnhancedObservability:
                 },
             }
 
-        except Exception as e:
+        except _OBS_ALERT_EXCEPTIONS as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check performance metrics: {e}",
@@ -816,7 +820,7 @@ class EnhancedObservability:
                     del self._active_alerts[alert_id]
                     Logger.info(f"[OBSERVABILITY] RESOLVED ALERT: {alert.name}")
 
-        except Exception as e:
+        except _OBS_ALERT_EXCEPTIONS as e:
             Logger.error(f"[OBSERVABILITY] Failed to check alert for {metric_name}: {e}")
 
     def _update_performance_trends(self) -> None:

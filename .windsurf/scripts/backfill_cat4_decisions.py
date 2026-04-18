@@ -14,7 +14,7 @@ from pathlib import Path
 
 repo_root = Path(__file__).resolve().parents[2]
 db_path = repo_root / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-DDL = """
+ddl = """
 PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS decisions (
     decision_id TEXT PRIMARY KEY, created_at TEXT NOT NULL, branch TEXT, commit_sha TEXT,
@@ -39,10 +39,10 @@ CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
 );
 """
 
-BRANCH = "main"
-SHA = "7a97507efe"  # last Cat 4 commit
+branch = "main"
+sha = "7a97507efe"  # last Cat 4 commit
 
-DECISIONS = [
+decisions = [
     # --- L3 Group B ---
     {
         "key": "l3_coordination_declare",
@@ -189,11 +189,11 @@ def make_id(key: str) -> str:
 
 def main() -> None:
     conn = sqlite3.connect(str(db_path), timeout=10)
-    conn.executescript(DDL)
+    conn.executescript(ddl)
 
     ts_base = datetime(2026, 4, 10, 11, 30, 0, tzinfo=timezone.utc)
 
-    for i, d in enumerate(DECISIONS):
+    for i, d in enumerate(decisions):
         did = make_id(str(d["key"]))
         ts = ts_base.replace(minute=30 + i * 3).isoformat()
 
@@ -212,8 +212,8 @@ def main() -> None:
             (
                 did,
                 ts,
-                BRANCH,
-                SHA,
+                branch,
+                sha,
                 d["decision_type"],
                 d["request_summary"],
                 d["normalized_intent"],

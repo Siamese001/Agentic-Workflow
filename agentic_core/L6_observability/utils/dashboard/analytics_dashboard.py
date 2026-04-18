@@ -37,6 +37,16 @@ record_execution_trace("analytics_dashboard", "analytics_dashboard_trace")
 
 Logger = logging.getLogger(__name__)
 
+_DASHBOARD_NON_FATAL_EXCEPTIONS = (
+    AttributeError,
+    ImportError,
+    KeyError,
+    TypeError,
+    ValueError,
+    RuntimeError,
+    OSError,
+)
+
 
 @dataclass
 class DashboardConfig:
@@ -318,7 +328,7 @@ class AnalyticsDashboard:
                 if self._stop_event.wait(timeout=sleep_time):
                     break
 
-            except Exception as e:
+            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
                 Logger.error(f"[DASHBOARD] Dashboard loop error: {e}")
                 if self._stop_event.wait(timeout=5.0):
                     break
@@ -337,7 +347,7 @@ class AnalyticsDashboard:
                     self._update_widget(widget)
                     widget._last_update = current_time
 
-            except Exception as e:
+            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
                 Logger.error(f"[DASHBOARD] Failed to update widget {widget_id}: {e}")
 
     def _update_widget(self, widget: DashboardWidget) -> None:
@@ -450,7 +460,7 @@ class AnalyticsDashboard:
                 perf_collector = get_global_optimized_collector()
                 with self._lock:
                     self._real_time_data["performance_stats"] = perf_collector.get_performance_stats()
-            except Exception as e:
+            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
                 import logging
 
                 logging.getLogger(__name__).debug("analytics_dashboard: Exception swallowed at L380: %s", e)
@@ -459,7 +469,7 @@ class AnalyticsDashboard:
             with self._lock:
                 self._real_time_data["timestamp"] = time.time()
 
-        except Exception as e:
+        except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
             Logger.error(f"[DASHBOARD] Failed to update real-time data: {e}")
 
     def get_dashboard_data(self) -> dict[str, Any]:
@@ -502,7 +512,7 @@ class AnalyticsDashboard:
             Logger.info(f"[DASHBOARD] Added widget: {widget.widget_id}")
             return True
 
-        except Exception as e:
+        except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
             Logger.error(f"[DASHBOARD] Failed to add widget: {e}")
             return False
 
@@ -523,7 +533,7 @@ class AnalyticsDashboard:
             Logger.warning(f"[DASHBOARD] Widget {widget_id} not found")
             return False
 
-        except Exception as e:
+        except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
             Logger.error(f"[DASHBOARD] Failed to remove widget: {e}")
             return False
 
@@ -550,7 +560,7 @@ class AnalyticsDashboard:
             Logger.warning(f"[DASHBOARD] Widget {widget_id} not found")
             return False
 
-        except Exception as e:
+        except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
             Logger.error(f"[DASHBOARD] Failed to update widget config: {e}")
             return False
 
@@ -628,7 +638,7 @@ class AnalyticsDashboard:
             Logger.info("[DASHBOARD] Imported dashboard configuration")
             return True
 
-        except Exception as e:
+        except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
             Logger.error(f"[DASHBOARD] Failed to import dashboard config: {e}")
             return False
 

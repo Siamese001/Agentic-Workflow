@@ -33,6 +33,9 @@ from agentic_core.L2_execution.types.l2_execution_contract import (
     L2PhaseResult,
 )
 
+_L2_INIT_EXCEPTIONS = (AttributeError, TypeError, ValueError)
+_L2_EXECUTE_EXCEPTIONS = (AttributeError, TypeError, ValueError, RuntimeError)
+
 # =============================================================================
 # L2EmbeddingSovereignAgent
 # =============================================================================
@@ -67,7 +70,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
                 success=True,
                 metadata={"content_length": len(content)},
             )
-        except Exception as e:
+        except _L2_INIT_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
@@ -108,7 +111,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
                 output=embedding,
                 metadata={"dimensions": len(embedding) if embedding else 0},
             )
-        except Exception as e:
+        except _L2_EXECUTE_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,
@@ -147,7 +150,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
                 output=retry_result.output,
                 metadata={"heal_attempted": True, "fallback_provider": fallback},
             )
-        except Exception as e:
+        except _L2_EXECUTE_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EVALUATE_HEAL,
                 success=False,
@@ -216,7 +219,7 @@ class L2RedisSovereignAgent(L2ExecutionAgent):
                 success=True,
                 metadata={"operation": operation},
             )
-        except Exception as e:
+        except _L2_INIT_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
@@ -248,7 +251,7 @@ class L2RedisSovereignAgent(L2ExecutionAgent):
                 output=result,
                 metadata={"operation": operation},
             )
-        except Exception as e:
+        except _L2_EXECUTE_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,
@@ -318,7 +321,7 @@ class L2SovereignMCPGatewayAgent(L2ExecutionAgent):
                 success=True,
                 metadata={"tool_name": tool_name},
             )
-        except Exception as e:
+        except _L2_INIT_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
@@ -345,7 +348,7 @@ class L2SovereignMCPGatewayAgent(L2ExecutionAgent):
                 output=result,
                 metadata={"tool_name": tool_name},
             )
-        except Exception as e:
+        except _L2_EXECUTE_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,
@@ -415,7 +418,7 @@ class L2StructuredEngineAgent(L2ExecutionAgent):
                 success=True,
                 metadata={"intent_type": type(intent).__name__},
             )
-        except Exception as e:
+        except _L2_INIT_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
@@ -437,7 +440,7 @@ class L2StructuredEngineAgent(L2ExecutionAgent):
                 output=result,
                 metadata={},
             )
-        except Exception as e:
+        except _L2_EXECUTE_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,
@@ -507,7 +510,7 @@ class L2SubAtomicRegistryAgent(L2ExecutionAgent):
                 success=True,
                 metadata={"operation": registry_operation},
             )
-        except Exception as e:
+        except _L2_INIT_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
@@ -537,7 +540,7 @@ class L2SubAtomicRegistryAgent(L2ExecutionAgent):
                 output=result,
                 metadata={"operation": operation},
             )
-        except Exception as e:
+        except _L2_EXECUTE_EXCEPTIONS as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,

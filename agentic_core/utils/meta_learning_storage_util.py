@@ -200,7 +200,7 @@ class MetaLearningStorage:
 
                         cls._memory = SemanticCacheManager.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Hive Mind")
-                    except Exception as e:  # guardian: allow-broad-exception -- optional subsystem must trip circuit breaker, not fail caller
+                    except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                         cls._memory = None
                         cls._lobotomized = True
                         Logger.critical(
@@ -226,7 +226,7 @@ class MetaLearningStorage:
             if result:
                 Logger.info("%s INSTINCT TRIGGERED: Recalled previous experience.", namespace)
             return result
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.warning("%s Recall error: %s", namespace, e)
             return None
 
@@ -238,9 +238,7 @@ class MetaLearningStorage:
         try:
             _ = json.dumps(result)
             await cls._memory.learn_async(context, namespace, result)
-        except (
-            Exception
-        ) as e:  # guardian: allow-broad-exception -- background path must not raise into task callback
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.warning("%s Async learn failed: %s", namespace, e)
 
     @classmethod
@@ -271,7 +269,7 @@ class MetaLearningStorage:
                     )
                     return True
             return False
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.warning("%s Learn with feedback failed: %s", namespace, e)
             return False
 
@@ -298,9 +296,7 @@ class MetaLearningStorage:
 
                         cls._graph_bridge = GraphMemoryBridge.get_instance()
                         Logger.debug("%s Connected to Graph Memory Bridge", agent_name)
-                    except (
-                        Exception
-                    ) as e:  # guardian: allow-broad-exception -- optional subsystem must not fail caller
+                    except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                         cls._graph_bridge = None
                         Logger.warning("%s Graph Memory Bridge unavailable: %s", agent_name, e)
                         cls.reset_graph_bridge()
@@ -316,7 +312,7 @@ class MetaLearningStorage:
                 agent_type="Agent",
                 observations=[f"Agent {agent_name} initialized"],
             )
-        except Exception as e:  # guardian: allow-broad-exception -- optional graph path must not fail caller
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.warning("%s Agent entity registration failed: %s", agent_name, e)
 
     @classmethod
@@ -330,7 +326,7 @@ class MetaLearningStorage:
                 task_description=context,
                 feedback_score=feedback_score,
             )
-        except Exception as e:  # guardian: allow-broad-exception -- optional graph path must not fail caller
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.warning("%s MASTERED_TASK relation creation failed: %s", agent_name, e)
 
     @classmethod

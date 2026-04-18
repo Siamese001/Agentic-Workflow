@@ -239,7 +239,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit("llm_route", True, latency)
             return result
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit("llm_route", False, latency)
             Logger.error(f"[MCP Gateway] LLM Route failed: {e}")
@@ -262,7 +262,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit("kg_query", True, latency)
             return result
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit("kg_query", False, latency)
             Logger.error(f"[MCP Gateway] KG Query failed: {e}")
@@ -285,7 +285,7 @@ class SovereignMCPGateway(SovereignBaseAgent):
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit("archive_op", True, latency)
             return result
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit("archive_op", False, latency)
             Logger.error(f"[MCP Gateway] Archive Op failed: {e}")

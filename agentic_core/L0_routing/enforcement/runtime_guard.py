@@ -140,7 +140,7 @@ def _guarded_call(
             correlation_id,
         )
         return result
-    except Exception:  # guardian: allow-broad-exception -- guard enforcement boundary must capture and log all exceptions before re-raising
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
         Logger.exception(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,
@@ -179,7 +179,7 @@ async def _async_guarded_call(
             correlation_id,
         )
         return result
-    except Exception:  # guardian: allow-broad-exception -- guard enforcement boundary must capture and log all exceptions before re-raising
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
         Logger.exception(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,

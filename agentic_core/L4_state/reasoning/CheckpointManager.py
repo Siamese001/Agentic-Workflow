@@ -323,7 +323,14 @@ class CheckpointManager(SovereignBaseAgent):
                 ok = done_task.result()
                 if not ok:
                     Logger.error("[MIRROR] Background mirror task completed unsuccessfully")
-            except Exception as exc:  # guardian: allow-broad-exception -- done callbacks must survive all task failure types to prevent silent mirror loss
+            except (
+                asyncio.CancelledError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as exc:
                 Logger.exception(f"[MIRROR] Background mirror task crashed: {exc}")
             finally:
                 self._mirror_tasks = [t for t in self._mirror_tasks if t is not done_task]
@@ -448,7 +455,7 @@ class CheckpointManager(SovereignBaseAgent):
             Logger.info(f"[SYNC] Checkpoint saved: {checkpoint_id}")
             return file_path
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.error(f"Failed to save checkpoint {checkpoint_id}: {e}")
             raise
 
@@ -506,7 +513,7 @@ class CheckpointManager(SovereignBaseAgent):
             Logger.debug(f"[MIRROR] Redundant copy created: {mirror_path.name}")
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.error(f"[MIRROR] Failed for {primary_path.name}: {e}")
             return False
 
@@ -547,7 +554,7 @@ class CheckpointManager(SovereignBaseAgent):
                     return False
                 return True
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, RuntimeError, ValueError, TypeError) as e:
                 Logger.error(f"Integrity check failed for {checkpoint_id}: {e}")
                 return False
         return primary.exists()
@@ -573,7 +580,7 @@ class CheckpointManager(SovereignBaseAgent):
                     self._save_index()
                 return True
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                 Logger.error(f"[RECOVERY] Failed to restore {checkpoint_id}: {e}")
                 return False
         Logger.error(f"[RECOVERY] No mirror available for {checkpoint_id}")
@@ -600,7 +607,7 @@ class CheckpointManager(SovereignBaseAgent):
                 self.checkpoints[checkpoint_id] = checkpoint
                 return checkpoint
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, RuntimeError, ValueError, TypeError) as e:
                 Logger.error(f"Failed to load checkpoint {checkpoint_id}: {e}")
         return None
 
@@ -653,7 +660,7 @@ class CheckpointManager(SovereignBaseAgent):
             Logger.info(f"[ROLLBACK] Successfully rolled back to {checkpoint_id}")
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             result.errors.append(str(e))
             Logger.error(f"[ROLLBACK] Failed to rollback to {checkpoint_id}: {e}")
             return result
@@ -672,7 +679,7 @@ class CheckpointManager(SovereignBaseAgent):
                         self.checkpoints[cp_id] = checkpoint
                 Logger.debug(f"Loaded {len(self.checkpoints)} checkpoints from index")
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (OSError, RuntimeError, ValueError, TypeError) as e:
                 raise
                 Logger.warning(f"Failed to load checkpoint index: {e}")
 
@@ -688,7 +695,7 @@ class CheckpointManager(SovereignBaseAgent):
             assert_no_persistent_write("L4", "json.dump")
             _get_write_gateway().write_json(index_path, index_data, indent=2)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise
             Logger.error(f"Failed to save checkpoint index: {e}")
 
@@ -715,7 +722,7 @@ class CheckpointManager(SovereignBaseAgent):
             Logger.debug(f"Deleted checkpoint: {checkpoint_id}")
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.error(f"Failed to delete checkpoint {checkpoint_id}: {e}")
             return False
 
@@ -788,7 +795,7 @@ class CheckpointManager(SovereignBaseAgent):
                     "errors": [],
                 }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             Logger.error(f"Heal operation failed in CheckpointManagerAgent: {e}")
             return {
                 "status": "failed",

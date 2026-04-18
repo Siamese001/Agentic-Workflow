@@ -327,8 +327,7 @@ class RetrievalDriftMonitor:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (ImportError, AttributeError, OSError, ValueError, TypeError, RuntimeError):
             _logger.debug("RetrievalDriftMonitor._persist failed", exc_info=True)
 
 
@@ -452,8 +451,7 @@ class EmbeddingDriftMonitor:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (ImportError, AttributeError, OSError, ValueError, TypeError, RuntimeError):
             _logger.debug("EmbeddingDriftMonitor._persist failed", exc_info=True)
 
 
@@ -581,8 +579,7 @@ class AnswerQualityMonitor:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (ImportError, AttributeError, OSError, ValueError, TypeError, RuntimeError):
             _logger.debug("AnswerQualityMonitor._persist failed", exc_info=True)
 
 
@@ -612,8 +609,7 @@ def emit_alerts_to_registry(
             DriftRegistryEntry,
             get_drift_registry,
         )
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError, OSError, RuntimeError):
         _logger.debug("emit_alerts_to_registry: drift_registry unavailable", exc_info=True)
         return
     registry = get_drift_registry()
@@ -649,8 +645,7 @@ def emit_alerts_to_registry(
                 deterministic_digest=deterministic_digest,
             )
             registry.record(entry)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (AttributeError, OSError, ValueError, TypeError, RuntimeError):
             _logger.debug(
                 "emit_alerts_to_registry: failed to record entry for %s",
                 alert.metric_name,
@@ -678,8 +673,7 @@ def emit_alerts_to_registry(
                     proposal_only=True,
                 )
                 bus.enqueue(pkg)
-            # guardian: allow-silent-swallow
-            except Exception:
+            except (ImportError, AttributeError, OSError, ValueError, TypeError, RuntimeError):
                 _logger.debug(
                     "emit_alerts_to_registry: MetaLearningBus publish failed for critical alert %s",
                     alert.alert_id,

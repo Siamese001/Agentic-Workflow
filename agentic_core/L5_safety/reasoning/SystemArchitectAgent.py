@@ -397,7 +397,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
 
             return circular_deps
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.warning(f"SystemArchitect: Graph store cycle detection failed: {e}")
             return None
 

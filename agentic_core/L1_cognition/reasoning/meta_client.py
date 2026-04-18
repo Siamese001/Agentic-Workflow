@@ -294,7 +294,7 @@ class MetaLearningClient:
             redis_agent = _get_redis_sovereign_agent()(Path.cwd())
             self._redis_client = redis_agent.get_client()
             Logger.info("[MetaLearningClient] Redis connection established")
-        except Exception as e:
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise InfrastructureDependencyError(
                 f"[MetaLearningClient] Redis is a mandatory dependency and is unavailable: {e}",
             ) from e
@@ -363,7 +363,7 @@ class MetaLearningClient:
                 self.stats["cache_hits"] += 1
                 self._update_domain_stats(domain, "cache_hits")
                 return json.loads(value)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
             raise InfrastructureDependencyError(f"[MetaLearningClient] Redis get failed: {e}") from e
         self.stats["cache_misses"] += 1
         self._update_domain_stats(domain, "cache_misses")
@@ -395,7 +395,7 @@ class MetaLearningClient:
         try:
             self._redis_client.setex(cache_key, effective_ttl, json.dumps(value))
             return True
-        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises heterogeneous exceptions (RedisError, ConnectionError, ResponseError); re-wrapped as InfrastructureDependencyError
+        except (OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
             raise InfrastructureDependencyError(f"[MetaLearningClient] Redis set failed: {e}") from e
 
     def cache_delete(self, key: str, domain: str = "agentic_core") -> bool:
@@ -409,7 +409,7 @@ class MetaLearningClient:
             raise InfrastructureDependencyError("[MetaLearningClient] Redis client is not initialised.")
         try:
             self._redis_client.delete(cache_key)
-        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises heterogeneous exceptions (RedisError, ConnectionError, ResponseError); re-wrapped as InfrastructureDependencyError
+        except (OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
             raise InfrastructureDependencyError(f"[MetaLearningClient] Redis delete failed: {e}") from e
         return True
 
@@ -450,7 +450,7 @@ class MetaLearningClient:
                 self._update_domain_stats(domain, "pattern_stores")
                 Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
                 return pattern_id
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
                 raise
                 Logger.warning(f"[MetaLearningClient] Vector store failed: {e}")
         cache_key = f"pattern:{error_signature}"
@@ -482,7 +482,7 @@ class MetaLearningClient:
             embedding = self._generate_embedding(violation)
             if not embedding:
                 return []
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
             Logger.warning(f"[MetaLearningClient] Failed to generate embedding: {e}")
             return []
         effective_threshold = min_similarity or self.domain_thresholds.get(
@@ -536,8 +536,7 @@ class MetaLearningClient:
                 f"[MetaLearningClient] Retrieved {len(patterns)} patterns for {domain} (threshold={effective_threshold:.2f})",
             )
             return patterns
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
             Logger.error(f"[MetaLearningClient] Pattern retrieval failed: {e}")
             return []
 
@@ -553,8 +552,7 @@ class MetaLearningClient:
             v_path = violation.get("path", "")
             text = f"{v_type} {v_msg} {v_path}"
             return bmg_embed_text(text)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
             Logger.warning(f"[MetaLearningClient] Embedding generation failed: {e}")
             return None
 
