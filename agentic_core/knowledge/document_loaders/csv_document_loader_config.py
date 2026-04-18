@@ -201,7 +201,7 @@ class CsvDocumentLoader:
             df: Any = pd.read_csv(file_path, **kwargs)
             records: list[dict[str, Any]] = df.to_dict(orient="records")
             return records
-        except Exception as e:
+        except (OSError, ValueError, TypeError) as e:
             raise ValueError(f"CSV loading failed for {file_path}: {e}") from e
 
     @staticmethod
@@ -212,7 +212,7 @@ class CsvDocumentLoader:
 
         try:
             return pd.read_csv(file_path, **kwargs)
-        except Exception as e:
+        except (OSError, ValueError, TypeError) as e:
             raise ValueError(f"CSV DataFrame load failed: {e}") from e
 
     @staticmethod
@@ -224,7 +224,7 @@ class CsvDocumentLoader:
         try:
             df: Any = pd.read_csv(file_path, nrows=rows, **kwargs)
             return df.to_dict(orient="records")
-        except Exception as e:
+        except (OSError, ValueError, TypeError) as e:
             raise ValueError(f"CSV sample load failed: {e}") from e
 
 

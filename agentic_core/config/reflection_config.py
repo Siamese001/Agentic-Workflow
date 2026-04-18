@@ -387,7 +387,12 @@ class ReflectionEngine:
                 validation_type="circuit_breaker_fallback",
             )
 
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+            json.JSONDecodeError,
+        ) as e:  # guardian: allow-silent-swallower
             # GAP-02 FIX: fail-closed on unexpected errors when required criteria present
             has_required = any(getattr(c, "is_required", True) for c in normalized_criteria)
             logger.error(f"Reflection evaluation failed: {e}")
@@ -454,7 +459,7 @@ class ReflectionEngine:
 
                 total_weight += criterion.weight
 
-            except Exception as e:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 logger.error(f"Validation error for {criterion.name}: {e}")
                 results.append(f"Error: {criterion.name} - {str(e)}")
 
@@ -523,7 +528,12 @@ Respond in JSON format:
                 validation_type="llm",
             )
 
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+            json.JSONDecodeError,
+        ) as e:  # guardian: allow-silent-swallower
             logger.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result
             return CritiqueResult(

@@ -295,7 +295,7 @@ class SovereignBaseAgent(
         try:
             CoreIntegrityVerifier.verify_core_integrity()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError, OSError) as e:
             emergency_shutdown(f"CORE INTEGRITY COMPROMISED. TERMINATING AGENT. {e}")
 
         # 2. Security Validation
@@ -331,7 +331,7 @@ class SovereignBaseAgent(
                     raise ConfigurationError(f"Unsafe directory detected: {dir_path}")
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ConfigurationError, RuntimeError, ValueError, TypeError, OSError) as e:
             raise ConfigurationError(f"Security validation failed: {str(e)}") from e
 
     def _is_safe_path(self, path: Path) -> bool:
@@ -735,7 +735,7 @@ class SovereignBaseAgent(
                     )
 
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallower
             errors = 1
             logger.error(f"[heal_repository] {agent_name} error: {e}")
 

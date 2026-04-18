@@ -138,7 +138,7 @@ async def judge_gov_001(
 
     try:
         result = await provider.judge(prompt, "GOV-001")
-    except Exception as exc:
+    except (RuntimeError, ValueError, TypeError, KeyError) as exc:
         _log.warning("[judge_gov_001] Provider error: %s", exc)
         return JudgeVerdict(
             verdict_id=_verdict_id(),
@@ -218,7 +218,7 @@ async def judge_gov_003(
 
     try:
         result = await provider.judge(prompt, "GOV-003")
-    except Exception as exc:
+    except (RuntimeError, ValueError, TypeError, KeyError) as exc:
         _log.warning("[judge_gov_003] Provider error: %s", exc)
         return JudgeVerdict(
             verdict_id=_verdict_id(),
@@ -317,7 +317,7 @@ async def judge_sec_001(
 
     try:
         result = await provider.judge(prompt, "SEC-001")
-    except Exception as exc:
+    except (RuntimeError, ValueError, TypeError, KeyError) as exc:
         _log.warning("[judge_sec_001] Provider error: %s", exc)
         return JudgeVerdict(
             verdict_id=_verdict_id(),

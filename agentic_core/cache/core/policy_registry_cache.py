@@ -6,6 +6,7 @@ Keyed by policy ID for fast O(1) lookups.
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any
 
@@ -201,7 +202,7 @@ class PolicyRegistryCache:
                     logger.debug(f"[Policy cache] HIT for {policy_id}")
                     return cached
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
                 logger.warning(f"[Policy cache] Cache read failed: {e}")
         logger.debug(f"[Policy cache] MISS for {policy_id} — fetching from registry")
         result = fetch_policy()
@@ -210,7 +211,7 @@ class PolicyRegistryCache:
                 cache_key = f"policy:{policy_id}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ValueError, TypeError) as e:
                 logger.warning(f"[Policy cache] Cache write failed: {e}")
         return result
 
@@ -221,7 +222,7 @@ class PolicyRegistryCache:
             self._cache.delete(cache_key)
             logger.debug(f"[Policy cache] Invalidated {policy_id}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, ValueError, TypeError) as e:
             logger.warning(f"[Policy cache] Invalidation failed: {e}")
 
 
