@@ -322,7 +322,7 @@ def _try_emit_to_bus(traces: list[dict[str, Any]], timestamp_utc: int) -> None:
         MetaLearningBus, MetaLearningBusConfig = _get_meta_learning_bus()
         bus = MetaLearningBus(config=MetaLearningBusConfig())
         bus.process_traces(traces, timestamp_utc=timestamp_utc)
-    except Exception as exc:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError, RuntimeError, TypeError, ValueError) as exc:
         Logger.warning(
             "react_chunking_telemetry_bus_unavailable",
             extra={"error": str(exc)},

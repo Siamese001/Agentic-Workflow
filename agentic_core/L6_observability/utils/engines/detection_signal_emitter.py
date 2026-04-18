@@ -114,7 +114,7 @@ def emit_detection_signal_with_l4a(
                 created_utc=created_at_utc,
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             import logging
 
             logging.getLogger(__name__).debug("detection_signal_emitter: Exception swallowed at L117: %s", e)

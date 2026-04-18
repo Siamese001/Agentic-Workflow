@@ -293,7 +293,7 @@ class DeskDGovernedBoard:
         for callback in tqdm(self._processing_callbacks, desc="Processing", unit="item"):
             try:
                 callback(record, result)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 logger.warning(f"Desk D callback error: {e}")
 
         logger.info(

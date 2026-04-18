@@ -271,7 +271,7 @@ class PerformanceAnalystAgentSimple:
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"PerformanceAnalystAgentSimple heal() failed: {str(e)}",
