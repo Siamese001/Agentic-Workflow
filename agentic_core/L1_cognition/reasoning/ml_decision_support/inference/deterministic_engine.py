@@ -129,7 +129,7 @@ class DeterministicInferenceEngine:
 
             return result
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             # Inference failed
             inference_time = (time.time() - start_time) * 1000
             self._update_stats(inference_time, request.shadow_mode, False)
@@ -348,7 +348,7 @@ class DeterministicInferenceEngine:
                 logging_mode=ShadowMode.LOG_ONLY,
             )
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             # Log failure but don't fail the inference
             print(f"Failed to log shadow prediction: {e}")
 
@@ -410,7 +410,7 @@ class DeterministicInferenceEngine:
                 operation="inference_completed",
             )
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             print(f"Failed to log inference completion: {e}")
 
     def _log_inference_failure(self, request: InferenceRequest, result: InferenceResult) -> None:
@@ -433,7 +433,7 @@ class DeterministicInferenceEngine:
                 operation="inference_failed",
             )
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             print(f"Failed to log inference failure: {e}")
 
     def register_model(self, model: BaseMLModel) -> None:

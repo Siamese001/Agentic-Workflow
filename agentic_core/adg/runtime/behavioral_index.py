@@ -397,7 +397,7 @@ class ADGBehavioralIndex:
         if self._con is not None:
             try:
                 self._con.close()
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except sqlite3.Error as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.debug(f"Error closing SQLite connection: {e}")
             self._con = None
 
@@ -435,7 +435,7 @@ class ADGBehavioralIndex:
 
         try:
             profile = self._query_profile(key)
-        except Exception as exc:
+        except (sqlite3.Error, ValueError) as exc:
             logger.debug("[ADGBehavioralIndex] Query failed for %s: %s", key, exc)
             profile = BehavioralProfile(resolved_path=key)
 
@@ -585,7 +585,7 @@ class ADGBehavioralIndex:
                 if p not in result:
                     result[p] = BehavioralProfile(resolved_path=p)
 
-        except Exception as exc:
+        except (sqlite3.Error, ValueError) as exc:
             logger.debug("[ADGBehavioralIndex] Bulk query failed: %s", exc)
             for p in uncached:
                 result[p] = BehavioralProfile(resolved_path=p)

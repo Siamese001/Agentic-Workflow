@@ -297,7 +297,11 @@ class AutoRemediationEngine:
                         ),
                     )
 
-            except Exception as e:  # guardian: allow-silent-swallow -- fail-closed: file analysis unavailable
+            except (
+                OSError,
+                ValueError,
+                IndexError,
+            ) as e:  # guardian: allow-silent-swallow -- fail-closed: file analysis unavailable
                 print(f"    ⚠️  Could not analyze {file_path}:{line_no}: {e}")
                 continue
 
@@ -500,7 +504,9 @@ class AutoRemediationEngine:
                 return True
 
         except (
-            Exception
+            OSError,
+            ValueError,
+            IndexError,
         ) as e:  # guardian: allow-silent-swallow -- fail-closed: remediation application failed
             print(f"    ❌ Failed to apply remediation: {e}")
             return False
@@ -530,7 +536,8 @@ class AutoRemediationEngine:
                 self.conn.commit()
 
         except (
-            Exception
+            sqlite3.Error,
+            ValueError,
         ) as e:  # guardian: allow-silent-swallow -- fail-closed: disposition update unavailable
             print(f"    ⚠️  Could not update disposition: {e}")
 

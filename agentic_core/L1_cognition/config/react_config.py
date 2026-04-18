@@ -196,7 +196,7 @@ class ReActEngine:
         try:
             await self._execute_reasoning_loop(Task, think_fn, act_fn, should_continue_fn, trace, trace_id)
             trace = await self._finalize_trace(Task, think_fn, trace, trace_id)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             self._handle_trace_error(trace, trace_id, e)
 
         return trace
@@ -246,7 +246,7 @@ class ReActEngine:
         try:
             observation = await act_fn(action, action_input)
             step.observation = observation
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             Logger.error(
@@ -311,7 +311,7 @@ class ReActEngine:
                     import json
 
                     action_input = json.loads(input_str)
-                except Exception:  # guardian: allow-silent-swallow
+                except (ValueError, TypeError):  # guardian: allow-silent-swallow
                     action_input = {"input": input_str}
 
         return action, action_input
@@ -353,7 +353,7 @@ class ReActEngine:
                 },
             )
 
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             Logger.warning(

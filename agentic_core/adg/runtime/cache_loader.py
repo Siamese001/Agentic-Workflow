@@ -178,7 +178,7 @@ def _get_commit_sha() -> str:
         )
         return r.stdout.strip() if r.returncode == 0 else ""
     # guardian: allow-silent-swallow
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         return ""
 
 
@@ -219,7 +219,7 @@ def _is_cache_valid(cached: dict) -> bool:
                 return True
 
         return False
-    except Exception:
+    except ValueError:
         return False
 
 
@@ -255,7 +255,7 @@ def load_or_scan(
                 return ScanResult.from_dict(cached)
             logger.info("ADG cache miss (key changed): %s", cache)
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (OSError, json.JSONDecodeError, ValueError) as exc:
             logger.warning("ADG cache read error (%s): %s — running fresh scan", cache, exc)
     root = Path(repo_root) if repo_root else Path.cwd()
     scanner = ADGStaticScanner(repo_root=root)
@@ -267,7 +267,7 @@ def load_or_scan(
         cache.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         logger.info("ADG cache written: %s (%d edges)", cache, len(result.edges))
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (OSError, ValueError) as exc:
         logger.warning("ADG cache write failed: %s", exc)
     return result
 
