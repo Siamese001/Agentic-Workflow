@@ -1,0 +1,1297 @@
+wave: G4b
+produced_at: 2026-04-18
+adg_snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite
+adg_snapshot_timestamp: "04172026_0611"
+upstream_artefacts:
+  - docs/wave_g/G2b_provider_gateway/env_key_consumer_map.md
+  - docs/wave_g/G3_pipelines/pipeline_catalogue.yaml
+  - docs/wave_g/G4_storage_infra/storage_catalogue.yaml
+
+# G4b canonical classes: secret | provider_config | runtime_tunable | feature_flag |
+# path_override | retention_policy | mcp_runtime_env
+
+knobs:
+  - id: KNOB-MEMORY-DB
+    key_name: MEMORY_DB
+    class: path_override
+    default_value_if_observable: ${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite
+    consumer_modules:
+      - tools/memory/adg_memory_server.py
+      - tools/memory/sqlite_memory_store.py
+      - tools/memory/purge_sync.py
+      - agentic_core/L4_state/enforcement/graph_memory_bridge.py
+    affects_pipelines: [PIPE-MEMORY-LIFECYCLE, PIPE-APP-REQUEST]
+    affects_stores: [STORE-MEMORY-SQLITE-CANONICAL, STORE-MEMORY-SQLITE-DUPLICATE, STORE-MEMORY-UNIFIED-DB]
+    read_time: module import / constructor init
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: tools/memory/adg_memory_server.py
+    key_path: MEMORY_DB
+    default: ${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite
+    consumers: [tools/memory/*, agentic_core/L4_state/enforcement/graph_memory_bridge.py]
+    scope: process
+    reload_policy: restart
+    notes: Selects which memory sqlite file is live (G4 B7-G4-03).
+
+  - id: KNOB-VECTOR-DB-CHROMA-PATH
+    key_name: VECTOR_DB_CHROMA_PATH
+    class: path_override
+    default_value_if_observable: ${AGENTIC_REPO_ROOT}/data/cache/chromadb
+    consumer_modules:
+      - tools/retrieval/vector_config.py
+      - tools/mcp/vector_db_server.py
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL, PIPE-EMBEDDING]
+    affects_stores: [STORE-CHROMA-CANONICAL, STORE-CHROMA-ARTEFACT, STORE-CHROMA-SPARSE]
+    read_time: tools/retrieval/vector_config.py import
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_CHROMA_PATH
+    default: ${AGENTIC_REPO_ROOT}/data/cache/chromadb
+    consumers: [tools/retrieval/vector_config.py, tools/mcp/vector_db_server.py]
+    scope: process
+    reload_policy: restart
+    notes: Store-binding knob for vector persistence root.
+
+  - id: KNOB-ADG-REDIS-URL
+    key_name: ADG_REDIS_URL
+    class: path_override
+    default_value_if_observable: redis://localhost:6379/0
+    consumer_modules:
+      - tools/adg/adg_redis_ingest.py
+      - tools/adg/core/service.py
+      - tools/memory/adg_memory_server.py
+    affects_pipelines: [PIPE-ADG-REDIS-INGEST, PIPE-ADG-GEN, PIPE-MEMORY-LIFECYCLE]
+    affects_stores: [STORE-REDIS-ADG-HOT]
+    read_time: module import
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: tools/adg/adg_redis_ingest.py
+    key_path: ADG_REDIS_URL
+    default: redis://localhost:6379/0
+    consumers: [tools/adg/*, tools/memory/adg_memory_server.py]
+    scope: process
+    reload_policy: restart
+    notes: ADG hot-cache binding; mismatch yields cold-cache / degraded mode.
+
+  - id: KNOB-REDIS-HOST
+    key_name: REDIS_HOST
+    class: path_override
+    default_value_if_observable: localhost
+    consumer_modules:
+      - tools/mcp/redis_mcp/config.py
+      - agentic_core/cache/redis_cache_client.py
+      - agentic_core/config/redis_config.py
+      - apps_shared/utils/resource_manager_types_util.py
+    affects_pipelines: [PIPE-APP-REQUEST, PIPE-HEALING]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    read_time: RedisConnectionConfig.from_env / cache client init
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: tools/mcp/redis_mcp/config.py
+    key_path: REDIS_HOST
+    default: localhost
+    consumers: [tools/mcp/redis_mcp/config.py, agentic_core/cache/*]
+    scope: process
+    reload_policy: restart
+    notes: One of core Redis binding knobs from G4 hand-off.
+
+  - id: KNOB-REDIS-PORT
+    key_name: REDIS_PORT
+    class: path_override
+    default_value_if_observable: "6379"
+    consumer_modules:
+      - tools/mcp/redis_mcp/config.py
+      - agentic_core/cache/redis_cache_client.py
+    affects_pipelines: [PIPE-APP-REQUEST, PIPE-HEALING]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    read_time: Redis config init
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/mcp/redis_mcp/config.py
+    key_path: REDIS_PORT
+    default: "6379"
+    consumers: [tools/mcp/redis_mcp/config.py, agentic_core/cache/*]
+    scope: process
+    reload_policy: restart
+    notes: Endpoint selector.
+
+  - id: KNOB-REDIS-DB
+    key_name: REDIS_DB
+    class: path_override
+    default_value_if_observable: "0"
+    consumer_modules:
+      - tools/mcp/redis_mcp/config.py
+      - agentic_core/cache/redis_cache_client.py
+    affects_pipelines: [PIPE-APP-REQUEST, PIPE-HEALING]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    read_time: Redis config init
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/mcp/redis_mcp/config.py
+    key_path: REDIS_DB
+    default: "0"
+    consumers: [tools/mcp/redis_mcp/config.py, agentic_core/cache/*]
+    scope: process
+    reload_policy: restart
+    notes: Redis namespace partition by DB index.
+
+  - id: KNOB-REDIS-PASSWORD
+    key_name: REDIS_PASSWORD
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - agentic_core/cache/redis_cache_client.py
+      - agentic_core/config/env_loader.py
+      - apps_shared/utils/resource_manager_types_util.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    read_time: cache connection init
+    reload_behavior: process_start
+    risk_level: critical
+    plane: env
+    source: agentic_core/cache/redis_cache_client.py
+    key_path: REDIS_PASSWORD
+    default: unknown
+    consumers: [agentic_core/cache/*, apps_shared/utils/resource_manager_types_util.py]
+    scope: process
+    reload_policy: restart
+    notes: Secret/auth binding only; value never exposed in G4b docs.
+
+  - id: KNOB-REDIS-URL
+    key_name: REDIS_URL
+    class: path_override
+    default_value_if_observable: unknown
+    consumer_modules:
+      - agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py
+      - agentic_core/L4_state/reasoning/CachedStateLedger.py
+      - agentic_core/L4_state/utils/memory/semantic_cache_manager.py
+    affects_pipelines: [PIPE-APP-REQUEST, PIPE-HEALING]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    read_time: module init / client creation
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py
+    key_path: REDIS_URL
+    default: unknown
+    consumers: [agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py, agentic_core/L4_state/*]
+    scope: process
+    reload_policy: restart
+    notes: Alternative Redis binding path independent of REDIS_HOST/PORT/DB split.
+
+  - id: KNOB-ADG-DIR
+    key_name: ADG_DIR
+    class: mcp_runtime_env
+    default_value_if_observable: ${AGENTIC_REPO_ROOT}/artifacts/adg
+    consumer_modules:
+      - .windsurf/mcp_config.json (adg_sqlite env block)
+      - tools/adg/mcp/server.py runtime backend
+    affects_pipelines: [PIPE-ADG-GEN, PIPE-ADG-REDIS-INGEST]
+    affects_stores: [STORE-ADG-SQLITE, STORE-ADG-GRAPH-PROJECTION, STORE-ADG-JSON-TIERS]
+    read_time: MCP subprocess start
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: .windsurf/mcp_config.json
+    key_path: mcpServers.adg_sqlite.env.ADG_DIR
+    default: ${AGENTIC_REPO_ROOT}/artifacts/adg
+    consumers: [adg_sqlite MCP subprocess]
+    scope: mcp_subprocess
+    reload_policy: restart
+    notes: MCP-injected env; not typically read by in-process repo Python.
+
+  - id: KNOB-ADG-SKIP-REDIS
+    key_name: ADG_SKIP_REDIS
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - tools/generate/generate_full_adg.py
+    affects_pipelines: [PIPE-ADG-GEN]
+    affects_stores: [STORE-REDIS-ADG-HOT]
+    read_time: CLI execution path
+    reload_behavior: per_call
+    risk_level: high
+    plane: env
+    source: tools/generate/generate_full_adg.py
+    key_path: ADG_SKIP_REDIS
+    default: "0"
+    consumers: [tools/generate/generate_full_adg.py]
+    scope: run
+    reload_policy: per_run
+    notes: Kill-switch for stage s09 redis ingest; can leave cache cold.
+
+  - id: KNOB-ADG-SKIP-GIT
+    key_name: ADG_SKIP_GIT
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - tools/generate/generate_full_adg.py
+    affects_pipelines: [PIPE-ADG-GEN]
+    affects_stores: []
+    read_time: CLI execution path
+    reload_behavior: per_call
+    risk_level: medium
+    plane: env
+    source: tools/generate/generate_full_adg.py
+    key_path: ADG_SKIP_GIT
+    default: "0"
+    consumers: [tools/generate/generate_full_adg.py]
+    scope: run
+    reload_policy: per_run
+    notes: Governance-control toggle, not storage selector.
+
+  - id: KNOB-ADG-SKIP-SELF-TEST
+    key_name: ADG_SKIP_SELF_TEST
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - tools/generate/generate_full_adg.py
+      - agentic_core/adg/extraction/static_scanner.py
+    affects_pipelines: [PIPE-ADG-GEN]
+    affects_stores: []
+    read_time: ADG generation start
+    reload_behavior: per_call
+    risk_level: high
+    plane: env
+    source: tools/generate/generate_full_adg.py
+    key_path: ADG_SKIP_SELF_TEST
+    default: "0"
+    consumers: [tools/generate/generate_full_adg.py, agentic_core/adg/extraction/static_scanner.py]
+    scope: run
+    reload_policy: per_run
+    notes: Validation bypass; high integrity risk.
+
+  - id: KNOB-VECTOR-ALLOW-DOWNLOAD
+    key_name: VECTOR_DB_ALLOW_MODEL_DOWNLOAD
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - tools/retrieval/vector_config.py
+      - tools/retrieval/embedder.py
+    affects_pipelines: [PIPE-EMBEDDING, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import; embedder first load
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_ALLOW_MODEL_DOWNLOAD
+    default: "0"
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/embedder.py]
+    scope: process
+    reload_policy: restart
+    notes: Egress gate for HF model download path.
+
+  - id: KNOB-HF-HUB-OFFLINE
+    key_name: HF_HUB_OFFLINE
+    class: feature_flag
+    default_value_if_observable: unknown
+    consumer_modules:
+      - tools/retrieval/embedder.py
+      - .windsurf/mcp_config.json (vector_db env block)
+    affects_pipelines: [PIPE-EMBEDDING, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: embedder model load
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/embedder.py
+    key_path: HF_HUB_OFFLINE
+    default: unknown
+    consumers: [tools/retrieval/embedder.py, vector_db MCP subprocess]
+    scope: process
+    reload_policy: restart
+    notes: Offline/online model fetch behavior; often set to 1 in MCP config.
+
+  - id: KNOB-BGE-ALLOW-DOWNLOAD
+    key_name: BGE_ALLOW_MODEL_DOWNLOAD
+    class: feature_flag
+    default_value_if_observable: unknown
+    consumer_modules:
+      - agentic_core/L4_state/reasoning/retrieval_layers.py
+      - agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py
+    affects_pipelines: [PIPE-EMBEDDING, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: embedding init path
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: agentic_core/L4_state/reasoning/retrieval_layers.py
+    key_path: BGE_ALLOW_MODEL_DOWNLOAD
+    default: unknown
+    consumers: [agentic_core/L4_state/reasoning/retrieval_layers.py, agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py]
+    scope: process
+    reload_policy: restart
+    notes: Secondary download gate for BGE-model acquisition.
+
+  - id: KNOB-VECTOR-EMBED-MODEL
+    key_name: VECTOR_DB_EMBEDDING_MODEL
+    class: provider_config
+    default_value_if_observable: BAAI/bge-m3
+    consumer_modules:
+      - tools/retrieval/vector_config.py
+      - tools/retrieval/vector_store.py
+    affects_pipelines: [PIPE-EMBEDDING, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL, STORE-CHROMA-ARTEFACT]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_EMBEDDING_MODEL
+    default: BAAI/bge-m3
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/vector_store.py]
+    scope: process
+    reload_policy: restart
+    notes: Provider/model selector for embedding vectors.
+
+  - id: KNOB-VECTOR-DEVICE
+    key_name: VECTOR_DB_DEVICE
+    class: provider_config
+    default_value_if_observable: cpu
+    consumer_modules:
+      - tools/retrieval/vector_config.py
+    affects_pipelines: [PIPE-EMBEDDING]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_DEVICE
+    default: cpu
+    consumers: [tools/retrieval/vector_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Runtime compute placement control.
+
+  - id: KNOB-OPENAI-API-KEY
+    key_name: OPENAI_API_KEY
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - infrastructure/sdks_mcps/__init__.py
+      - apps_shared/types/model_router_types.py
+      - agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py
+    affects_pipelines: [PIPE-INFERENCE-LLM, PIPE-EMBEDDING]
+    affects_stores: []
+    read_time: provider client construction
+    reload_behavior: lazy_first_use
+    risk_level: critical
+    plane: env
+    source: infrastructure/sdks_mcps/__init__.py
+    key_path: OPENAI_API_KEY
+    default: unknown
+    consumers: [infrastructure/sdks_mcps/__init__.py, apps_shared/types/model_router_types.py]
+    scope: process
+    reload_policy: restart
+    notes: Secret/auth binding for EGRESS-OPENAI-01.
+
+  - id: KNOB-ANTHROPIC-API-KEY
+    key_name: ANTHROPIC_API_KEY
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - infrastructure/sdks_mcps/__init__.py
+      - apps_shared/types/model_router_types.py
+    affects_pipelines: [PIPE-INFERENCE-LLM]
+    affects_stores: []
+    read_time: provider client construction
+    reload_behavior: lazy_first_use
+    risk_level: critical
+    plane: env
+    source: infrastructure/sdks_mcps/__init__.py
+    key_path: ANTHROPIC_API_KEY
+    default: unknown
+    consumers: [infrastructure/sdks_mcps/__init__.py, apps_shared/types/model_router_types.py]
+    scope: process
+    reload_policy: restart
+    notes: Secret/auth binding for EGRESS-ANTHROPIC-01.
+
+  - id: KNOB-GOOGLE-API-KEY
+    key_name: GOOGLE_API_KEY
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - infrastructure/sdks_mcps/__init__.py
+      - apps_shared/utils/providers_google_genai_client_util.py
+      - apps_lic/tools/GoogleSearchClient.py
+    affects_pipelines: [PIPE-INFERENCE-LLM, PIPE-APP-REQUEST]
+    affects_stores: []
+    read_time: provider/search client init
+    reload_behavior: lazy_first_use
+    risk_level: critical
+    plane: env
+    source: infrastructure/sdks_mcps/__init__.py
+    key_path: GOOGLE_API_KEY
+    default: unknown
+    consumers: [infrastructure/sdks_mcps/__init__.py, apps_shared/utils/providers_google_genai_client_util.py, apps_lic/tools/GoogleSearchClient.py]
+    scope: process
+    reload_policy: restart
+    notes: Shared secret for Gemini + Google CSE surfaces.
+
+  - id: KNOB-GEMINI-API-KEY
+    key_name: GEMINI_API_KEY
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - infrastructure/sdks_mcps/__init__.py
+      - apps_shared/utils/providers_google_genai_client_util.py
+    affects_pipelines: [PIPE-INFERENCE-LLM]
+    affects_stores: []
+    read_time: provider client init
+    reload_behavior: lazy_first_use
+    risk_level: critical
+    plane: env
+    source: apps_shared/utils/providers_google_genai_client_util.py
+    key_path: GEMINI_API_KEY
+    default: unknown
+    consumers: [infrastructure/sdks_mcps/__init__.py, apps_shared/utils/providers_google_genai_client_util.py]
+    scope: process
+    reload_policy: restart
+    notes: Alternative secret path for Gemini provider.
+
+  - id: KNOB-NEO4J-URI
+    key_name: NEO4J_URI
+    class: provider_config
+    default_value_if_observable: unknown
+    consumer_modules:
+      - agentic_core/L4_state/enforcement/neo4j_store.py
+      - agentic_core/config/env_loader.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-NEO4J]
+    read_time: neo4j store init
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: agentic_core/L4_state/enforcement/neo4j_store.py
+    key_path: NEO4J_URI
+    default: unknown
+    consumers: [agentic_core/L4_state/enforcement/neo4j_store.py]
+    scope: process
+    reload_policy: restart
+    notes: Store-binding endpoint for external graph DB.
+
+  - id: KNOB-NEO4J-USERNAME
+    key_name: NEO4J_USERNAME
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - agentic_core/L4_state/enforcement/neo4j_store.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-NEO4J]
+    read_time: neo4j store init
+    reload_behavior: process_start
+    risk_level: critical
+    plane: env
+    source: agentic_core/L4_state/enforcement/neo4j_store.py
+    key_path: NEO4J_USERNAME
+    default: unknown
+    consumers: [agentic_core/L4_state/enforcement/neo4j_store.py]
+    scope: process
+    reload_policy: restart
+    notes: Auth binding for Neo4j session.
+
+  - id: KNOB-NEO4J-PASSWORD
+    key_name: NEO4J_PASSWORD
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - agentic_core/L4_state/enforcement/neo4j_store.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-NEO4J]
+    read_time: neo4j store init
+    reload_behavior: process_start
+    risk_level: critical
+    plane: env
+    source: agentic_core/L4_state/enforcement/neo4j_store.py
+    key_path: NEO4J_PASSWORD
+    default: unknown
+    consumers: [agentic_core/L4_state/enforcement/neo4j_store.py]
+    scope: process
+    reload_policy: restart
+    notes: Secret/auth binding.
+
+  - id: KNOB-LLM-GATEWAY-SECRET
+    key_name: LLM_GATEWAY_SECRET
+    class: secret
+    default_value_if_observable: empty -> random token_bytes(32)
+    consumer_modules:
+      - agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+    affects_pipelines: [PIPE-INFERENCE-LLM]
+    affects_stores: []
+    read_time: singleton creation (get_llm_gateway)
+    reload_behavior: lazy_first_use
+    risk_level: critical
+    plane: env
+    source: agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+    key_path: LLM_GATEWAY_SECRET
+    default: empty -> random token_bytes(32)
+    consumers: [agentic_core/L2_execution/enforcement/SovereignLLMGateway.py]
+    scope: process
+    reload_policy: restart
+    notes: HMAC/signing secret for gateway trace integrity.
+
+  - id: KNOB-AUTHORITY-SECRET
+    key_name: AGENTIC_AUTHORITY_SECRET
+    class: secret
+    default_value_if_observable: unknown (fail-closed when absent)
+    consumer_modules:
+      - agentic_core/runtime/engine/execution_bound_token.py
+    affects_pipelines: [PIPE-APP-REQUEST, PIPE-EVAL-EXIT]
+    affects_stores: []
+    read_time: authority construction
+    reload_behavior: process_start
+    risk_level: critical
+    plane: env
+    source: agentic_core/runtime/engine/execution_bound_token.py
+    key_path: AGENTIC_AUTHORITY_SECRET
+    default: unknown
+    consumers: [agentic_core/runtime/engine/execution_bound_token.py]
+    scope: process
+    reload_policy: restart
+    notes: Capability-token signing key; core governance secret.
+
+  - id: KNOB-RG-VALIDATION-SECRET
+    key_name: RG_VALIDATION_SECRET
+    class: secret
+    default_value_if_observable: unknown
+    consumer_modules:
+      - apps_rg/validators/validation_gate_validator.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: []
+    read_time: validator init
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: apps_rg/validators/validation_gate_validator.py
+    key_path: RG_VALIDATION_SECRET
+    default: unknown
+    consumers: [apps_rg/validators/validation_gate_validator.py]
+    scope: process
+    reload_policy: restart
+    notes: App-specific signing/validation secret.
+
+  - id: KNOB-EGRESS-GUARD-DISABLED
+    key_name: EGRESS_GUARD_DISABLED
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - agentic_core/L2_execution/enforcement/network_egress_guard.py
+    affects_pipelines: [PIPE-INFERENCE-LLM, PIPE-APP-REQUEST]
+    affects_stores: []
+    read_time: per egress check and install_egress_guard
+    reload_behavior: per_call
+    risk_level: critical
+    plane: env
+    source: agentic_core/L2_execution/enforcement/network_egress_guard.py
+    key_path: EGRESS_GUARD_DISABLED
+    default: "0"
+    consumers: [agentic_core/L2_execution/enforcement/network_egress_guard.py]
+    scope: runtime
+    reload_policy: immediate
+    notes: Explicit policy bypass; existing B7-G2b-06.
+
+  - id: KNOB-RUNTIME-MUTATION-GUARD-DISABLED
+    key_name: DISABLE_RUNTIME_MUTATION_GUARD
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - agentic_core/L0_routing/enforcement/runtime_mutation_guard.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: []
+    read_time: RuntimeMutationGuard.install
+    reload_behavior: per_call
+    risk_level: critical
+    plane: env
+    source: agentic_core/L0_routing/enforcement/runtime_mutation_guard.py
+    key_path: DISABLE_RUNTIME_MUTATION_GUARD
+    default: "0"
+    consumers: [agentic_core/L0_routing/enforcement/runtime_mutation_guard.py]
+    scope: runtime
+    reload_policy: immediate
+    notes: Guard bypass primarily for tests/dev tooling.
+
+  - id: KNOB-SOVEREIGN-AUTO-APPROVE
+    key_name: SOVEREIGN_AUTO_APPROVE
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py
+      - agentic_core/L5_safety/reasoning/LocationHealerAgent.py
+    affects_pipelines: [PIPE-EVAL-HITL]
+    affects_stores: [STORE-HITL]
+    read_time: approval request path
+    reload_behavior: per_call
+    risk_level: critical
+    plane: env
+    source: agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py
+    key_path: SOVEREIGN_AUTO_APPROVE
+    default: "0"
+    consumers: [agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py, agentic_core/L5_safety/reasoning/LocationHealerAgent.py]
+    scope: runtime
+    reload_policy: immediate
+    notes: Auto-approve switch for archival gate; ignored by hitl_gate/exit_control_hitl.
+
+  - id: KNOB-ARCHIVE-BATCH-ACCEPT
+    key_name: ARCHIVE_BATCH_ACCEPT
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py
+      - ops_scripts/maintenance/archive_duplicates.py
+    affects_pipelines: [PIPE-EVAL-HITL]
+    affects_stores: [STORE-HITL]
+    read_time: approval path
+    reload_behavior: per_call
+    risk_level: high
+    plane: env
+    source: agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py
+    key_path: ARCHIVE_BATCH_ACCEPT
+    default: "0"
+    consumers: [agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py, ops_scripts/maintenance/archive_duplicates.py]
+    scope: runtime
+    reload_policy: immediate
+    notes: Batch bypass in archival context; governance-sensitive.
+
+  - id: KNOB-USE-REDIS-CACHE
+    key_name: USE_REDIS_CACHE
+    class: feature_flag
+    default_value_if_observable: "true"
+    consumer_modules:
+      - agentic_core/config/constants_config.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC]
+    read_time: constants module import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: agentic_core/config/constants_config.py
+    key_path: USE_REDIS_CACHE
+    default: "true"
+    consumers: [agentic_core/config/constants_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Global cache enable flag.
+
+  - id: KNOB-ENABLE-REDIS
+    key_name: ENABLE_REDIS
+    class: feature_flag
+    default_value_if_observable: "true"
+    consumer_modules:
+      - apps_shared/utils/resource_manager_types_util.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC]
+    read_time: resource manager init
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: apps_shared/utils/resource_manager_types_util.py
+    key_path: ENABLE_REDIS
+    default: "true"
+    consumers: [apps_shared/utils/resource_manager_types_util.py]
+    scope: process
+    reload_policy: restart
+    notes: Alternative Redis feature switch in shared utils.
+
+  - id: KNOB-GRACEFUL-DEGRADATION
+    key_name: GRACEFUL_DEGRADATION
+    class: feature_flag
+    default_value_if_observable: "true"
+    consumer_modules:
+      - agentic_core/config/constants_config.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC]
+    read_time: constants module import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: agentic_core/config/constants_config.py
+    key_path: GRACEFUL_DEGRADATION
+    default: "true"
+    consumers: [agentic_core/config/constants_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Degradation mode toggle when cache infra unavailable.
+
+  - id: KNOB-CACHE-METRICS-ENABLED
+    key_name: CACHE_METRICS_ENABLED
+    class: feature_flag
+    default_value_if_observable: "false"
+    consumer_modules:
+      - agentic_core/config/constants_config.py
+    affects_pipelines: [PIPE-OBSERVABILITY]
+    affects_stores: [STORE-LOGS]
+    read_time: constants module import
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: agentic_core/config/constants_config.py
+    key_path: CACHE_METRICS_ENABLED
+    default: "false"
+    consumers: [agentic_core/config/constants_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Telemetry-only behavior toggle.
+
+  - id: KNOB-VECTOR-MODEL-LOAD-TIMEOUT
+    key_name: VECTOR_DB_MODEL_LOAD_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "120"
+    consumer_modules:
+      - tools/retrieval/vector_config.py
+      - tools/retrieval/vector_service.py
+    affects_pipelines: [PIPE-EMBEDDING, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_MODEL_LOAD_TIMEOUT
+    default: "120"
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    scope: process
+    reload_policy: restart
+    notes: Mandatory hand-off timeout knob.
+
+  - id: KNOB-VECTOR-CHROMA-INIT-TIMEOUT
+    key_name: VECTOR_DB_CHROMA_INIT_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "30"
+    consumer_modules: [tools/retrieval/vector_config.py]
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_CHROMA_INIT_TIMEOUT
+    default: "30"
+    consumers: [tools/retrieval/vector_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Chroma bootstrap timeout.
+
+  - id: KNOB-VECTOR-ENCODE-TIMEOUT
+    key_name: VECTOR_DB_ENCODE_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "20"
+    consumer_modules: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    affects_pipelines: [PIPE-EMBEDDING]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_ENCODE_TIMEOUT
+    default: "20"
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    scope: process
+    reload_policy: restart
+    notes: Encode budget.
+
+  - id: KNOB-VECTOR-ENCODE-QUEUE-WAIT-TIMEOUT
+    key_name: VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "20"
+    consumer_modules: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    affects_pipelines: [PIPE-EMBEDDING]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT
+    default: "20"
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    scope: process
+    reload_policy: restart
+    notes: Queue backpressure budget.
+
+  - id: KNOB-VECTOR-QUERY-COLLECTION-TIMEOUT
+    key_name: VECTOR_DB_QUERY_COLLECTION_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "40"
+    consumer_modules: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_QUERY_COLLECTION_TIMEOUT
+    default: "40"
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    scope: process
+    reload_policy: restart
+    notes: Per-collection query timeout.
+
+  - id: KNOB-VECTOR-SEARCH-PER-COLLECTION-TIMEOUT
+    key_name: VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "20"
+    consumer_modules: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT
+    default: "20"
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    scope: process
+    reload_policy: restart
+    notes: Inner-loop search timeout.
+
+  - id: KNOB-VECTOR-SEARCH-GLOBAL-TIMEOUT
+    key_name: VECTOR_DB_SEARCH_GLOBAL_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "60"
+    consumer_modules: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_SEARCH_GLOBAL_TIMEOUT
+    default: "60"
+    consumers: [tools/retrieval/vector_config.py, tools/retrieval/vector_service.py]
+    scope: process
+    reload_policy: restart
+    notes: End-to-end search budget.
+
+  - id: KNOB-VECTOR-COUNT-CACHE-TTL
+    key_name: VECTOR_DB_COUNT_CACHE_TTL
+    class: retention_policy
+    default_value_if_observable: "60"
+    consumer_modules: [tools/retrieval/vector_config.py]
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL, STORE-REDIS-CACHE-GENERIC]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_COUNT_CACHE_TTL
+    default: "60"
+    consumers: [tools/retrieval/vector_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Cache-retention style knob (count-cache freshness window).
+
+  - id: KNOB-VECTOR-MAX-QUERY-RESULTS
+    key_name: VECTOR_DB_MAX_QUERY_RESULTS
+    class: runtime_tunable
+    default_value_if_observable: "100"
+    consumer_modules: [tools/retrieval/vector_config.py]
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_MAX_QUERY_RESULTS
+    default: "100"
+    consumers: [tools/retrieval/vector_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Upper bound on result cardinality.
+
+  - id: KNOB-VECTOR-MAX-BATCH
+    key_name: VECTOR_DB_MAX_BATCH
+    class: runtime_tunable
+    default_value_if_observable: "32"
+    consumer_modules: [tools/retrieval/vector_config.py]
+    affects_pipelines: [PIPE-EMBEDDING]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_MAX_BATCH
+    default: "32"
+    consumers: [tools/retrieval/vector_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Batch sizing guardrail.
+
+  - id: KNOB-VECTOR-MAX-SEARCH-RESULTS
+    key_name: VECTOR_DB_MAX_SEARCH_RESULTS
+    class: runtime_tunable
+    default_value_if_observable: "20"
+    consumer_modules: [tools/retrieval/vector_config.py]
+    affects_pipelines: [PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_MAX_SEARCH_RESULTS
+    default: "20"
+    consumers: [tools/retrieval/vector_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Search result cap.
+
+  - id: KNOB-VECTOR-PREWARM-ENABLED
+    key_name: VECTOR_DB_ENABLE_STARTUP_PREWARM
+    class: feature_flag
+    default_value_if_observable: "1"
+    consumer_modules: [tools/retrieval/vector_config.py, tools/mcp/vector_db_server.py]
+    affects_pipelines: [PIPE-EMBEDDING, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-CHROMA-CANONICAL]
+    read_time: vector_config import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/retrieval/vector_config.py
+    key_path: VECTOR_DB_ENABLE_STARTUP_PREWARM
+    default: "1"
+    consumers: [tools/retrieval/vector_config.py, tools/mcp/vector_db_server.py]
+    scope: process
+    reload_policy: restart
+    notes: Bootstrap-mode toggle (startup behavior).
+
+  - id: KNOB-OTEL-HTTP-ENDPOINT
+    key_name: OTEL_EXPORTER_OTLP_HTTP_ENDPOINT
+    class: provider_config
+    default_value_if_observable: http://localhost:4318
+    consumer_modules:
+      - apps_shared/utils/open_telemetry_tracing_adapter_util.py
+    affects_pipelines: [PIPE-OBSERVABILITY]
+    affects_stores: [STORE-ADG-RUNTIME-TRACES, STORE-LOGS]
+    read_time: tracer setup
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: apps_shared/utils/open_telemetry_tracing_adapter_util.py
+    key_path: OTEL_EXPORTER_OTLP_HTTP_ENDPOINT
+    default: http://localhost:4318
+    consumers: [apps_shared/utils/open_telemetry_tracing_adapter_util.py]
+    scope: process
+    reload_policy: restart
+    notes: Optional external sink selector.
+
+  - id: KNOB-OTEL-GRPC-ENDPOINT
+    key_name: OTEL_EXPORTER_OTLP_GRPC_ENDPOINT
+    class: provider_config
+    default_value_if_observable: http://localhost:4317
+    consumer_modules:
+      - apps_shared/utils/open_telemetry_tracing_adapter_util.py
+    affects_pipelines: [PIPE-OBSERVABILITY]
+    affects_stores: [STORE-ADG-RUNTIME-TRACES, STORE-LOGS]
+    read_time: tracer setup
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: apps_shared/utils/open_telemetry_tracing_adapter_util.py
+    key_path: OTEL_EXPORTER_OTLP_GRPC_ENDPOINT
+    default: http://localhost:4317
+    consumers: [apps_shared/utils/open_telemetry_tracing_adapter_util.py]
+    scope: process
+    reload_policy: restart
+    notes: Optional external sink selector.
+
+  - id: KNOB-OTEL-MAX-TRACE-CACHE
+    key_name: OTEL_MCP_MAX_TRACE_CACHE
+    class: runtime_tunable
+    default_value_if_observable: "256"
+    consumer_modules:
+      - tools/otel/otel_config.py
+    affects_pipelines: [PIPE-OBSERVABILITY, PIPE-REPLAY]
+    affects_stores: [STORE-ADG-RUNTIME-TRACES]
+    read_time: otel server config build
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: tools/otel/otel_config.py
+    key_path: OTEL_MCP_MAX_TRACE_CACHE
+    default: "256"
+    consumers: [tools/otel/otel_config.py]
+    scope: process
+    reload_policy: restart
+    notes: In-memory cache sizing for otel MCP server.
+
+  - id: KNOB-OTEL-ALLOW-MOCK-TRACES
+    key_name: OTEL_MCP_ALLOW_MOCK_TRACES
+    class: feature_flag
+    default_value_if_observable: "0"
+    consumer_modules:
+      - tools/otel/otel_config.py
+      - tests/unit/tools/otel/test_otel_mcp.py
+    affects_pipelines: [PIPE-OBSERVABILITY]
+    affects_stores: [STORE-ADG-RUNTIME-TRACES]
+    read_time: otel server config build
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: tools/otel/otel_config.py
+    key_path: OTEL_MCP_ALLOW_MOCK_TRACES
+    default: "0"
+    consumers: [tools/otel/otel_config.py, tests/unit/tools/otel/test_otel_mcp.py]
+    scope: process
+    reload_policy: restart
+    notes: Test/diagnostic mode flag; should remain off in production.
+
+  - id: KNOB-NOTION-TOKEN
+    key_name: NOTION_TOKEN
+    class: mcp_runtime_env
+    default_value_if_observable: unknown
+    consumer_modules:
+      - .windsurf/mcp_config.json (notion env block)
+    affects_pipelines: []
+    affects_stores: []
+    read_time: MCP subprocess spawn
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: .windsurf/mcp_config.json
+    key_path: mcpServers.notion.env.NOTION_TOKEN
+    default: unknown
+    consumers: [notion MCP subprocess only]
+    scope: mcp_subprocess
+    reload_policy: restart
+    notes: MCP-only auth key; not read by repo runtime Python.
+
+  - id: KNOB-AGENTIC-REPO-ROOT
+    key_name: AGENTIC_REPO_ROOT
+    class: mcp_runtime_env
+    default_value_if_observable: unknown
+    consumer_modules:
+      - .windsurf/mcp_config.json
+      - tools/mcp/mcp_bootstrap.py
+    affects_pipelines: [PIPE-ADG-GEN, PIPE-MEMORY-LIFECYCLE, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: [STORE-ADG-SQLITE, STORE-MEMORY-SQLITE-CANONICAL, STORE-CHROMA-CANONICAL]
+    read_time: MCP subprocess start
+    reload_behavior: process_start
+    risk_level: high
+    plane: env
+    source: .windsurf/mcp_config.json
+    key_path: _bootstrap_env.AGENTIC_REPO_ROOT
+    default: unknown
+    consumers: [all python MCP subprocesses]
+    scope: mcp_subprocess
+    reload_policy: restart
+    notes: Root path interpolation anchor for MCP env blocks.
+
+  - id: KNOB-PYTHONPATH-MCP
+    key_name: PYTHONPATH
+    class: mcp_runtime_env
+    default_value_if_observable: ${AGENTIC_REPO_ROOT}
+    consumer_modules:
+      - .windsurf/mcp_config.json
+    affects_pipelines: [PIPE-ADG-REDIS-INGEST, PIPE-MEMORY-LIFECYCLE, PIPE-VECTOR-RETRIEVAL]
+    affects_stores: []
+    read_time: MCP subprocess start
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: .windsurf/mcp_config.json
+    key_path: mcpServers.*.env.PYTHONPATH
+    default: ${AGENTIC_REPO_ROOT}
+    consumers: [all python MCP subprocesses]
+    scope: mcp_subprocess
+    reload_policy: restart
+    notes: Module resolution control for MCP processes.
+
+  - id: KNOB-PYTHONUNBUFFERED-MCP
+    key_name: PYTHONUNBUFFERED
+    class: mcp_runtime_env
+    default_value_if_observable: "1"
+    consumer_modules:
+      - .windsurf/mcp_config.json
+    affects_pipelines: []
+    affects_stores: []
+    read_time: MCP subprocess start
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: .windsurf/mcp_config.json
+    key_path: mcpServers.*.env.PYTHONUNBUFFERED
+    default: "1"
+    consumers: [all python MCP subprocesses]
+    scope: mcp_subprocess
+    reload_policy: restart
+    notes: Logging/stdio behavior only.
+
+  - id: KNOB-GITKRAKEN-PATH
+    key_name: GITKRAKEN_GK_PATH
+    class: mcp_runtime_env
+    default_value_if_observable: unknown
+    consumer_modules:
+      - .windsurf/mcp_config.json
+    affects_pipelines: []
+    affects_stores: []
+    read_time: MCP spawn command interpolation
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: .windsurf/mcp_config.json
+    key_path: mcpServers.GitKraken.command
+    default: unknown
+    consumers: [GitKraken MCP subprocess]
+    scope: mcp_subprocess
+    reload_policy: restart
+    notes: Tool-path control only; does not alter repo runtime code paths.
+
+  - id: KNOB-PINECONE-INDEX-NAME
+    key_name: PINECONE_INDEX_NAME
+    class: provider_config
+    default_value_if_observable: unknown
+    consumer_modules:
+      - apps_shared/utils/etl_pipeline_util.py
+    affects_pipelines: []
+    affects_stores: []
+    read_time: etl utility call path
+    reload_behavior: per_call
+    risk_level: medium
+    plane: env
+    source: apps_shared/utils/etl_pipeline_util.py
+    key_path: PINECONE_INDEX_NAME
+    default: unknown
+    consumers: [apps_shared/utils/etl_pipeline_util.py]
+    scope: runtime
+    reload_policy: per_call
+    notes: Declared-not-wired stub (EGRESS-PINECONE-STUB-01); no `import pinecone` in repo.
+
+  - id: KNOB-OPENAI-MODEL
+    key_name: OPENAI_MODEL
+    class: provider_config
+    default_value_if_observable: unknown
+    consumer_modules:
+      - apps_shared/types/model_router_types.py
+      - apps_shared/config/routing_tier_config.py
+    affects_pipelines: [PIPE-INFERENCE-LLM]
+    affects_stores: []
+    read_time: router/provider selection path
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: apps_shared/types/model_router_types.py
+    key_path: OPENAI_MODEL
+    default: unknown
+    consumers: [apps_shared/types/model_router_types.py, apps_shared/config/routing_tier_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Provider model selector.
+
+  - id: KNOB-ANTHROPIC-MODEL
+    key_name: ANTHROPIC_MODEL
+    class: provider_config
+    default_value_if_observable: unknown
+    consumer_modules:
+      - apps_shared/types/model_router_types.py
+      - apps_shared/config/routing_tier_config.py
+    affects_pipelines: [PIPE-INFERENCE-LLM]
+    affects_stores: []
+    read_time: router/provider selection path
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: apps_shared/types/model_router_types.py
+    key_path: ANTHROPIC_MODEL
+    default: unknown
+    consumers: [apps_shared/types/model_router_types.py, apps_shared/config/routing_tier_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Provider model selector.
+
+  - id: KNOB-GEMINI-MODEL
+    key_name: GEMINI_MODEL
+    class: provider_config
+    default_value_if_observable: unknown
+    consumer_modules:
+      - apps_shared/types/model_router_types.py
+      - apps_shared/utils/providers_google_genai_client_util.py
+    affects_pipelines: [PIPE-INFERENCE-LLM]
+    affects_stores: []
+    read_time: provider selection path
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: apps_shared/types/model_router_types.py
+    key_path: GEMINI_MODEL
+    default: unknown
+    consumers: [apps_shared/types/model_router_types.py, apps_shared/utils/providers_google_genai_client_util.py]
+    scope: process
+    reload_policy: restart
+    notes: Provider model selector.
+
+  - id: KNOB-AGENT-TIMEOUT-SECONDS
+    key_name: AGENT_TIMEOUT_SECONDS
+    class: runtime_tunable
+    default_value_if_observable: "300"
+    consumer_modules:
+      - agentic_core/config/constants_config.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: []
+    read_time: constants import
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: agentic_core/config/constants_config.py
+    key_path: AGENT_TIMEOUT_SECONDS
+    default: "300"
+    consumers: [agentic_core/config/constants_config.py]
+    scope: process
+    reload_policy: restart
+    notes: Agent operation timeout budget.
+
+  - id: KNOB-MISSION-TIMEOUT-SECONDS
+    key_name: MISSION_TIMEOUT_SECONDS
+    class: runtime_tunable
+    default_value_if_observable: "3600"
+    consumer_modules:
+      - agentic_core/config/constants_config.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: []
+    read_time: constants import
+    reload_behavior: process_start
+    risk_level: medium
+    plane: env
+    source: agentic_core/config/constants_config.py
+    key_path: MISSION_TIMEOUT_SECONDS
+    default: "3600"
+    consumers: [agentic_core/config/constants_config.py]
+    scope: process
+    reload_policy: restart
+    notes: End-to-end mission timeout budget.
+
+  - id: KNOB-REDIS-TIMEOUT
+    key_name: REDIS_TIMEOUT
+    class: runtime_tunable
+    default_value_if_observable: "5"
+    consumer_modules:
+      - tools/mcp/redis_mcp/config.py
+    affects_pipelines: [PIPE-APP-REQUEST]
+    affects_stores: [STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    read_time: RedisConnectionConfig.from_env
+    reload_behavior: process_start
+    risk_level: low
+    plane: env
+    source: tools/mcp/redis_mcp/config.py
+    key_path: REDIS_TIMEOUT
+    default: "5"
+    consumers: [tools/mcp/redis_mcp/config.py]
+    scope: process
+    reload_policy: restart
+    notes: Connection timeout budget.

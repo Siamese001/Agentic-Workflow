@@ -1,0 +1,390 @@
+wave: G5
+produced_at: 2026-04-18
+adg_snapshot: artifacts/adg/adg_indexed_04182026_0814.sqlite
+upstream_artefacts:
+  - docs/wave_g/G0_full_runtime_plan/output_contracts.md
+  - docs/wave_g/G2b_provider_gateway/mcp_as_transport.md
+  - docs/wave_g/G3_pipelines/pipeline_catalogue.yaml
+  - docs/wave_g/G4_storage_infra/storage_catalogue.yaml
+  - docs/wave_g/G4b_control_plane/config_knob_catalogue.yaml
+  - .windsurf/mcp_config.json
+snapshot_timestamp: "04182026_0814"
+process_count: 27
+processes:
+  - id: PROC-APP-EVAL
+    process_name: apps_eval
+    launch_mode: manual_cli
+    entrypoint: apps_eval/__main__.py (python -m apps_eval)
+    process_type: in-process runtime
+    transport_mode: in-process Python
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-APP-CORE-RUNTIME]
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-REDIS-CACHE-GENERIC, STORE-CHROMA-CANONICAL]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-EVAL-EXIT, PIPE-HEALING]
+    env_classes_used: [provider_config, secret, runtime_tunable, path_override]
+    health_surfaces: [adg_health, adg_status]
+    restart_mode_if_known: manual process restart
+    notes: ADG bootstrap executed at startup; exits on route_mode=HUMAN_REVIEW.
+
+  - id: PROC-APP-EXEC
+    process_name: apps_exec
+    launch_mode: manual_cli
+    entrypoint: apps_exec/__main__.py (python -m apps_exec)
+    process_type: in-process runtime
+    transport_mode: in-process Python
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-APP-CORE-RUNTIME]
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-REDIS-CACHE-GENERIC, STORE-CHROMA-CANONICAL]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-INFERENCE-LLM, PIPE-HEALING]
+    env_classes_used: [provider_config, secret, runtime_tunable, path_override, feature_flag]
+    health_surfaces: [adg_health, adg_status]
+    restart_mode_if_known: manual process restart
+    notes: Supports optional shim path via apps_exec/_optional_agentic_core.py when core package absent.
+
+  - id: PROC-APP-LIC
+    process_name: apps_lic
+    launch_mode: manual_cli
+    entrypoint: apps_lic/__main__.py (python -m apps_lic)
+    process_type: in-process runtime
+    transport_mode: in-process Python
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-APP-CORE-RUNTIME]
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-REDIS-CACHE-GENERIC]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-INFERENCE-LLM, PIPE-EVAL-EXIT]
+    env_classes_used: [provider_config, secret, runtime_tunable, feature_flag]
+    health_surfaces: [adg_health, adg_status]
+    restart_mode_if_known: manual process restart
+    notes: Uses asyncio main path; ADG bootstrap is best-effort with graceful degradation.
+
+  - id: PROC-APP-RESEARCH
+    process_name: apps_research
+    launch_mode: manual_cli
+    entrypoint: apps_research/__main__.py (python -m apps_research)
+    process_type: in-process runtime
+    transport_mode: in-process Python
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-APP-CORE-RUNTIME]
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-CHROMA-CANONICAL]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-VECTOR-RETRIEVAL]
+    env_classes_used: [provider_config, secret, runtime_tunable]
+    health_surfaces: [adg_health, adg_status]
+    restart_mode_if_known: manual process restart
+    notes: Startup imports ADG bootstrap via importlib and exits if report route_mode is HUMAN_REVIEW.
+
+  - id: PROC-APP-RFP
+    process_name: apps_rfp
+    launch_mode: manual_cli
+    entrypoint: apps_rfp/__main__.py (python -m apps_rfp)
+    process_type: in-process runtime
+    transport_mode: in-process Python
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-APP-CORE-RUNTIME]
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-REDIS-CACHE-GENERIC]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-EVAL-EXIT]
+    env_classes_used: [provider_config, secret, feature_flag]
+    health_surfaces: [adg_health, adg_status]
+    restart_mode_if_known: manual process restart
+    notes: Uses apps_rfp/_compat/lifecycle_trace compatibility layer for startup trace surface.
+
+  - id: PROC-APP-RG
+    process_name: apps_rg
+    launch_mode: manual_cli
+    entrypoint: apps_rg/__main__.py (python -m apps_rg) + apps_rg/bootstrap_runtime.py
+    process_type: in-process runtime
+    transport_mode: in-process Python with import bootstrap
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-APP-CORE-RUNTIME]
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-REDIS-RAG, STORE-CHROMA-CANONICAL]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-APP-BOOTSTRAP-RG, PIPE-INFERENCE-VLLM]
+    env_classes_used: [provider_config, secret, runtime_tunable, feature_flag, path_override]
+    health_surfaces: [adg_health, adg_status]
+    restart_mode_if_known: manual process restart
+    notes: Bootstrap mutates module environment before app dispatch; boundary is explicit in G1b adapter patterns.
+
+  - id: PROC-ADG-SQLITE-MCP
+    process_name: adg_sqlite MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: python -u -m tools.adg.mcp.server
+    process_type: python stdio subprocess
+    transport_mode: stdio loopback
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-REDIS-LOCAL]
+    stores_touched: [STORE-ADG-SQLITE-CANONICAL, STORE-REDIS-ADG-HOT]
+    pipelines_touched: [PIPE-ADG-GEN, PIPE-ADG-REDIS-INGEST]
+    env_classes_used: [mcp_runtime_env, path_override, runtime_tunable]
+    health_surfaces: [adg_health, adg_status, adg_runtime_info, adg_reload]
+    restart_mode_if_known: windsurf restart or adg_reload snapshot repoint
+    notes: SQLite is canonical; Redis optional cache. Supports lock-safe close/reopen tool pair.
+
+  - id: PROC-MEMORY-MCP
+    process_name: memory MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: python -u tools/memory/adg_memory_server.py
+    process_type: python stdio subprocess
+    transport_mode: stdio loopback
+    depends_on: [PROC-REDIS-LOCAL, PROC-ADG-SQLITE-MCP]
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-REDIS-ADG-HOT]
+    pipelines_touched: [PIPE-MEMORY-LIFECYCLE]
+    env_classes_used: [mcp_runtime_env, path_override, runtime_tunable]
+    health_surfaces: [mem_recall_session_start, mem_get_stats]
+    restart_mode_if_known: windsurf restart
+    notes: Durable knowledge graph server; mem_import_adg_context uses Redis hot cache bridge.
+
+  - id: PROC-VECTOR-DB-MCP
+    process_name: vector_db MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: python -u tools/mcp/vector_db_server.py
+    process_type: python stdio subprocess
+    transport_mode: stdio loopback
+    depends_on: [PROC-CHROMA-LOCAL]
+    stores_touched: [STORE-CHROMA-CANONICAL, STORE-CHROMA-ARTEFACT]
+    pipelines_touched: [PIPE-VECTOR-RETRIEVAL, PIPE-EMBEDDING]
+    env_classes_used: [mcp_runtime_env, path_override, runtime_tunable, feature_flag]
+    health_surfaces: [readiness, vector_stats]
+    restart_mode_if_known: windsurf restart
+    notes: Starts daemon prewarm thread; first-query cold-load cost reduced via startup prewarm.
+
+  - id: PROC-OTEL-MCP
+    process_name: otel_mcp MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: python -u tools/otel/otel_mcp_server.py
+    process_type: python stdio subprocess
+    transport_mode: stdio loopback
+    depends_on: [PROC-RUNTIME-ADG-ARTEFACTS]
+    stores_touched: [STORE-RUNTIME-ADG-ARTEFACTS]
+    pipelines_touched: [PIPE-OBSERVABILITY]
+    env_classes_used: [mcp_runtime_env, runtime_tunable]
+    health_surfaces: [otel_status, otel_server_info]
+    restart_mode_if_known: windsurf restart
+    notes: Prewarm loaders run at start; server_info provides stale-process detection surface.
+
+  - id: PROC-REDIS-MCP
+    process_name: redis MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: python -u tools/mcp/redis_mcp_server.py
+    process_type: python stdio subprocess
+    transport_mode: stdio loopback
+    depends_on: [PROC-REDIS-LOCAL]
+    stores_touched: [STORE-REDIS-ADG-HOT, STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    pipelines_touched: [PIPE-ADG-REDIS-INGEST, PIPE-HEALING]
+    env_classes_used: [mcp_runtime_env, path_override, runtime_tunable, secret]
+    health_surfaces: [redis_health, redis_namespace_stats, redis_ttl]
+    restart_mode_if_known: windsurf restart
+    notes: Bounded scan/invalidation tools for operator inspection and cache hygiene.
+
+  - id: PROC-PYTEST-MCP
+    process_name: pytest_mcp MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: python -u tools/mcp/pytest_server.py
+    process_type: python stdio subprocess
+    transport_mode: stdio loopback
+    depends_on: [PROC-APP-CORE-RUNTIME]
+    stores_touched: [STORE-TEST-ARTEFACTS]
+    pipelines_touched: [PIPE-EVAL-EXIT]
+    env_classes_used: [mcp_runtime_env]
+    health_surfaces: [discover_tests, list_pytest_config]
+    restart_mode_if_known: windsurf restart
+    notes: Uses mcp_subprocess safe_run discipline for protocol-safe child command execution.
+
+  - id: PROC-ENHANCED-HTTP-MCP
+    process_name: enhanced_http MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: python -u tools/mcp/enhanced_http_server.py
+    process_type: python stdio subprocess
+    transport_mode: stdio loopback + external HTTP egress
+    depends_on: [PROC-NETWORK-EGRESS]
+    stores_touched: []
+    pipelines_touched: [PIPE-APP-REQUEST]
+    env_classes_used: [mcp_runtime_env, runtime_tunable, secret]
+    health_surfaces: [test_connectivity, http_auth_preview]
+    restart_mode_if_known: windsurf restart
+    notes: Sole authority for programmatic HTTP requests in governance rules.
+
+  - id: PROC-NOTION-MCP
+    process_name: notion MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: cmd /c npx -y @notionhq/notion-mcp-server
+    process_type: node stdio subprocess
+    transport_mode: stdio loopback + external HTTPS egress
+    depends_on: [PROC-NETWORK-EGRESS]
+    stores_touched: []
+    pipelines_touched: [PIPE-APP-REQUEST]
+    env_classes_used: [mcp_runtime_env, secret]
+    health_surfaces: [API-get-self]
+    restart_mode_if_known: windsurf restart
+    notes: Requires NOTION_TOKEN injection; operator-managed external workspace state.
+
+  - id: PROC-TASK-MANAGER-MCP
+    process_name: task_manager MCP server
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: cmd /c npx -y @blizzy/mcp-task-manager stdio
+    process_type: node stdio subprocess
+    transport_mode: stdio loopback
+    depends_on: []
+    stores_touched: []
+    pipelines_touched: [PIPE-APP-REQUEST]
+    env_classes_used: [mcp_runtime_env]
+    health_surfaces: [task_info]
+    restart_mode_if_known: windsurf restart
+    notes: Task state is service-managed; persistent backing implementation not repo-owned.
+
+  - id: PROC-FILESYSTEM-MCP
+    process_name: filesystem MCP server launcher
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: node .windsurf/scripts/filesystem_mcp_launcher.js <repo_root>
+    process_type: binary subprocess
+    transport_mode: node wrapper stdio
+    depends_on: [PROC-NODE-GLOBAL-NPM]
+    stores_touched: [STORE-REPO-FILESYSTEM]
+    pipelines_touched: [PIPE-APP-REQUEST]
+    env_classes_used: [mcp_runtime_env, path_override]
+    health_surfaces: [launcher readiness marker on stderr]
+    restart_mode_if_known: windsurf restart
+    notes: Wrapper enforces 15s startup watchdog and deterministic child teardown.
+
+  - id: PROC-GITKRAKEN-MCP
+    process_name: GitKraken MCP bridge
+    launch_mode: windsurf_mcp_autostart
+    entrypoint: ${env:GITKRAKEN_GK_PATH} mcp --host=windsurf --source=gitlens --scheme=windsurf
+    process_type: binary subprocess
+    transport_mode: proprietary stdio bridge
+    depends_on: [PROC-NETWORK-EGRESS]
+    stores_touched: [STORE-GIT-METADATA]
+    pipelines_touched: [PIPE-APP-REQUEST]
+    env_classes_used: [mcp_runtime_env, secret]
+    health_surfaces: [git_status]
+    restart_mode_if_known: windsurf restart
+    notes: Credentials and remote API behavior are operator-managed outside repo Python runtime.
+
+  - id: PROC-DEEPWIKI-MCP
+    process_name: deepwiki MCP endpoint
+    launch_mode: windsurf_remote_endpoint
+    entrypoint: https://mcp.deepwiki.com/mcp
+    process_type: pure external endpoint
+    transport_mode: external HTTPS MCP
+    depends_on: [PROC-NETWORK-EGRESS]
+    stores_touched: []
+    pipelines_touched: [PIPE-APP-REQUEST]
+    env_classes_used: [mcp_runtime_env]
+    health_surfaces: [HTTP connectivity only]
+    restart_mode_if_known: unknown
+    notes: No local subprocess; external SLA and lifecycle are operator-external.
+
+  - id: PROC-REDIS-LOCAL
+    process_name: Redis local service
+    launch_mode: operator-managed daemon
+    entrypoint: redis-server service / redis:7-alpine in CI service container
+    process_type: localhost daemon/service
+    transport_mode: TCP localhost:6379
+    depends_on: []
+    stores_touched: [STORE-REDIS-ADG-HOT, STORE-REDIS-CACHE-GENERIC, STORE-REDIS-COORD, STORE-REDIS-RAG]
+    pipelines_touched: [PIPE-ADG-REDIS-INGEST, PIPE-HEALING, PIPE-APP-REQUEST]
+    env_classes_used: [path_override, runtime_tunable, secret]
+    health_surfaces: [redis_health, adg_redis_ingest --check, adg_stale_guard]
+    restart_mode_if_known: manual service restart
+    notes: Major bridge dependency across ADG cache, memory, orchestration cache, and MCP redis tools.
+
+  - id: PROC-CHROMA-LOCAL
+    process_name: ChromaDB persistent store (embedded)
+    launch_mode: on-demand inside vector_db MCP process
+    entrypoint: tools/retrieval/vector_store.py via vector_service singleton
+    process_type: in-process runtime
+    transport_mode: embedded library
+    depends_on: []
+    stores_touched: [STORE-CHROMA-CANONICAL, STORE-CHROMA-ARTEFACT]
+    pipelines_touched: [PIPE-VECTOR-RETRIEVAL, PIPE-EMBEDDING]
+    env_classes_used: [path_override, runtime_tunable, feature_flag]
+    health_surfaces: [vector_db readiness]
+    restart_mode_if_known: vector_db MCP process restart
+    notes: Not a standalone daemon in this repo; lifecycle tied to vector_db process.
+
+  - id: PROC-RUNTIME-ADG-ARTEFACTS
+    process_name: runtime ADG artefact writer path
+    launch_mode: on-demand pipeline writes
+    entrypoint: system_learning.runtime_adg.materializer + tools/otel/otel_services_ingest.py
+    process_type: in-process runtime
+    transport_mode: filesystem write path
+    depends_on: []
+    stores_touched: [STORE-RUNTIME-ADG-ARTEFACTS]
+    pipelines_touched: [PIPE-OBSERVABILITY]
+    env_classes_used: [runtime_tunable, path_override]
+    health_surfaces: [otel_status, otel_metrics_summary]
+    restart_mode_if_known: n/a
+    notes: Materialized by ingest tool path; consumed via otel query surfaces.
+
+  - id: PROC-ADG-SNAPSHOT
+    process_name: ADG sqlite snapshot lifecycle
+    launch_mode: workflow/CLI operator trigger
+    entrypoint: python tools/generate_full_adg.py + python tools/adg/adg_redis_ingest.py --force
+    process_type: CI/hook/operator trigger surface
+    transport_mode: CLI pipeline
+    depends_on: [PROC-REDIS-LOCAL]
+    stores_touched: [STORE-ADG-SQLITE-CANONICAL, STORE-REDIS-ADG-HOT]
+    pipelines_touched: [PIPE-ADG-GEN, PIPE-ADG-REDIS-INGEST]
+    env_classes_used: [feature_flag, path_override, runtime_tunable]
+    health_surfaces: [adg_status, adg_health, adg_stale_guard]
+    restart_mode_if_known: rerun command pipeline
+    notes: Operationally orchestrated through /adg-redis-refresh and CI gates.
+
+  - id: PROC-METRICS-SIDECAR
+    process_name: metrics sidecar
+    launch_mode: manual_cli
+    entrypoint: python ops_scripts/dev_tools/start_metrics_sidecar.py
+    process_type: localhost daemon/service
+    transport_mode: HTTP localhost:8000/metrics
+    depends_on: [PROC-APP-CORE-RUNTIME]
+    stores_touched: []
+    pipelines_touched: [PIPE-OBSERVABILITY]
+    env_classes_used: [runtime_tunable]
+    health_surfaces: [Prometheus scrape endpoint]
+    restart_mode_if_known: manual process restart
+    notes: Optional companion service for semantic-cache observability.
+
+  - id: PROC-HOOK-ENFORCERS
+    process_name: Windsurf hook gate chain
+    launch_mode: IDE lifecycle hooks
+    entrypoint: .windsurf/hooks.json -> pre_* / post_* python scripts
+    process_type: CI/hook/operator trigger surface
+    transport_mode: hook subprocess execution
+    depends_on: [PROC-ADG-SQLITE-MCP]
+    stores_touched: [STORE-ADG-SQLITE-CANONICAL]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-ADG-GEN]
+    env_classes_used: [runtime_tunable, feature_flag]
+    health_surfaces: [hook exit code + script diagnostics]
+    restart_mode_if_known: IDE restart / hook file reload
+    notes: Includes pre_run_gate, pre_mcp_gate, pre_prompt_classifier, post_cascade_adg_audit.
+
+  - id: PROC-CI-GITHUB-ACTIONS
+    process_name: GitHub Actions runtime posture gates
+    launch_mode: ci_trigger
+    entrypoint: .github/workflows/{adg-ci-gates.yml,guardian-tests.yml,infra_wiring_check.yml,pytest-config-ssot.yml}
+    process_type: CI/hook/operator trigger surface
+    transport_mode: ephemeral CI runners + service containers
+    depends_on: [PROC-ADG-SNAPSHOT, PROC-REDIS-LOCAL]
+    stores_touched: [STORE-ADG-SQLITE-CANONICAL, STORE-REDIS-ADG-HOT, STORE-CI-ARTIFACTS]
+    pipelines_touched: [PIPE-ADG-GEN, PIPE-ADG-REDIS-INGEST]
+    env_classes_used: [runtime_tunable, feature_flag, path_override]
+    health_surfaces: [workflow job status, gate script exits]
+    restart_mode_if_known: per-job ephemeral restart only
+    notes: CI redis service is containerized and isolated from local operator Redis.
+
+  - id: PROC-APP-CORE-RUNTIME
+    process_name: agentic_core runtime libraries
+    launch_mode: imported by app or tooling processes
+    entrypoint: agentic_core/* modules (no single daemon entrypoint)
+    process_type: in-process runtime
+    transport_mode: python import/runtime
+    depends_on: []
+    stores_touched: [STORE-MEMORY-SQLITE-CANONICAL, STORE-REDIS-CACHE-GENERIC, STORE-RUNTIME-ADG-ARTEFACTS]
+    pipelines_touched: [PIPE-APP-REQUEST, PIPE-HEALING, PIPE-EVAL-EXIT, PIPE-OBSERVABILITY]
+    env_classes_used: [secret, provider_config, feature_flag, runtime_tunable, path_override]
+    health_surfaces: [dashboard aggregate health flags, exit-control and evaluator traces]
+    restart_mode_if_known: parent process restart
+    notes: Represents shared in-process layer runtime consumed by all app entrypoints.
+
+  - id: PROC-NETWORK-EGRESS
+    process_name: operator network boundary
+    launch_mode: ambient environment dependency
+    entrypoint: OS/network policy + remote provider endpoints
+    process_type: pure external endpoint
+    transport_mode: HTTPS/TCP external
+    depends_on: []
+    stores_touched: []
+    pipelines_touched: [PIPE-INFERENCE-LLM, PIPE-INFERENCE-VLLM, PIPE-APP-REQUEST]
+    env_classes_used: [secret, provider_config, feature_flag]
+    health_surfaces: [connectivity probes, provider response errors]
+    restart_mode_if_known: unknown
+    notes: Consolidated external failure domain for OpenAI/Anthropic/Gemini/Notion/DeepWiki and optional HF model download.
