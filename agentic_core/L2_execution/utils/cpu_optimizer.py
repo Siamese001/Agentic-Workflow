@@ -152,7 +152,7 @@ class AMD9950X3DOptimizer:
         try:
             processor = platform.processor()
             return "AMD" in processor.upper()
-        except Exception:
+        except (AttributeError, RuntimeError, TypeError, ValueError):
             return False
 
     def _should_use_processes(self, workload_class: WorkloadClass) -> bool:
@@ -288,7 +288,7 @@ class AMD9950X3DOptimizer:
             else:
                 return cpu_temp, "ok"
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.warning(f"Failed to check temperature: {e}")
             return 0.0, "error"
 
@@ -327,7 +327,7 @@ class AMD9950X3DOptimizer:
             process.cpu_affinity(cores)
             logger.debug(f"Set CPU affinity for PID {pid} to cores: {cores}")
             return True
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.warning(f"Failed to set CPU affinity: {e}")
             return False
 
@@ -404,7 +404,7 @@ class AMD9950X3DOptimizer:
 
                 try:
                     yield future.result()
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                     logger.error(f"Parallel task failed: {e}")
                     raise
         finally:
@@ -456,7 +456,7 @@ class AMD9950X3DOptimizer:
                 "pytest_dist": rec.pytest_dist,
                 "use_processes": rec.use_processes,
             }
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.warning(f"Failed to get CPU metrics: {e}")
             return {"error": str(e)}
 

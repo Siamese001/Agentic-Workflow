@@ -97,7 +97,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
                     "dimensions": len(embedding) if embedding else 0,
                 },
             )
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,

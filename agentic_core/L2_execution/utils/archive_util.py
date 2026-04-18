@@ -261,7 +261,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
         )
     try:
         module = importlib.import_module(module_name)
-    except Exception as exc:
+    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
         if spec.optional:
             Logger.warning(
                 f"Optional MCP client '{spec.name}' module '{module_name}' not available, using stub: {exc}",
@@ -289,7 +289,7 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
         instance = client_cls(**spec.parameters)
         Logger.info(f"Initialized MCP client '{spec.name}' via {module_name}.{class_name}")
         return instance
-    except Exception as exc:
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
         if spec.optional:
             Logger.warning(f"Optional MCP client '{spec.name}' failed to initialize, using stub: {exc}")
             return MCPClientStub(spec.name, {"error": f"Initialization failed: {exc}"})

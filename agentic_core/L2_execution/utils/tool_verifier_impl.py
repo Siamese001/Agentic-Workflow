@@ -501,7 +501,7 @@ class ToolVerifier:
                         suggestion="Fix syntax errors before execution",
                     ),
                 )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
             issues.append(
                 VerificationIssue(

@@ -314,7 +314,7 @@ class CoreIntegrityVerifier:
         """
         try:
             return hashlib.sha256(path.read_bytes()).hexdigest()
-        except Exception as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as e:
             raise ConfigurationError(f"Failed to hash file {path}: {e}")
 
     @classmethod

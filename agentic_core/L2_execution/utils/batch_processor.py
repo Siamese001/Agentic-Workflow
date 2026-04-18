@@ -119,7 +119,7 @@ class BatchProcessor(Generic[T, R]):
 
                 results.extend(batch_results)
 
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 logger.error(f"Batch {batch_num} failed: {e}")
                 raise
 
@@ -141,7 +141,7 @@ class BatchProcessor(Generic[T, R]):
             try:
                 result = self.processor_func(item)
                 results.append(result)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 logger.warning(f"Item processing failed: {e}")
                 # Add None or sentinel value for failed items
                 results.append(None)  # type: ignore
@@ -172,7 +172,7 @@ class BatchProcessor(Generic[T, R]):
                 try:
                     result = future.result()
                     results.append(result)
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                     if self.error_isolation:
                         logger.warning(f"Parallel item failed: {e}")
                         results.append(None)  # type: ignore

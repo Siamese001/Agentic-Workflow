@@ -79,7 +79,7 @@ class AsyncFileProcessor:
                     success=True,
                 )
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             elapsed_ms = (time.time() - start) * 1000
             return FileReadResult(
                 file_path=file_path,

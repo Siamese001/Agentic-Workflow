@@ -580,7 +580,7 @@ def invoke_typed_tool(
     _start = _time.monotonic()
     try:
         raw_output = _callable(typed_input)
-    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
         _elapsed = (_time.monotonic() - _start) * 1000.0
         result = ToolContractResult(
             tool_contract=tool_contract,
