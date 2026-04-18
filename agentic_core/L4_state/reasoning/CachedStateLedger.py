@@ -302,7 +302,7 @@ class CachedStateLedger(SovereignBaseAgent):
                 raw = self.redis.lrange(f"{self.prefix_historian}:successful_traces", 0, -1)
                 return [json.loads(r) for r in raw]
             # guardian: allow-silent-swallow
-            except:
+            except (AttributeError, TypeError, ValueError, OSError, RuntimeError):
                 return []
         else:
             return self._successful_traces
@@ -341,7 +341,7 @@ class CachedStateLedger(SovereignBaseAgent):
                     for key in keys:
                         self.redis.delete(key)
                 # guardian: allow-silent-swallow
-                except:
+                except (AttributeError, TypeError, ValueError, OSError, RuntimeError):
                     pass
             else:
                 self._memory_cache.clear()

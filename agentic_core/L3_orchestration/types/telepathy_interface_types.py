@@ -319,7 +319,7 @@ class TelepathyInterface:
             _wg.write_text(self.instructions_path, done_content, encoding="utf-8")
             self._last_consumed = instructions
             LOGGER.info(f"Instructions consumed and marked done (Cycle {self._cycle})")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (OSError, ValueError, TypeError):
             raise
             LOGGER.error(f"Failed to mark instructions as done: {e}")
 
@@ -350,7 +350,7 @@ class TelepathyInterface:
             if self.instructions_path.exists():
                 _wg.remove_file(self.instructions_path)
                 LOGGER.info("Telepathy instructions cleared")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (OSError, ValueError, TypeError):
             raise
             LOGGER.error(f"Failed to clear instructions: {e}")
 

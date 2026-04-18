@@ -303,7 +303,7 @@ class GraphAwareIndexer:
                 Logger.warning(
                     f"Semantic enrichment produced empty fields for chunk {chunk_id}; using metadata fallback"
                 )
-        except Exception as e:
+        except (ImportError, AttributeError, RuntimeError, ValueError, TypeError, OSError) as e:
             Logger.warning(f"Semantic enrichment failed for chunk {chunk_id}: {e}; using metadata fallback")
 
         # Extract enrichment fields from metadata or enrichment

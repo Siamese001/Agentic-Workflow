@@ -88,7 +88,7 @@ def discover_capable_agents(
     if use_cache and redis_client and capable and cache_key:
         try:
             redis_client.set(cache_key, json.dumps(capable), ex=3600)
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
             import logging
 
             logging.getLogger(__name__).debug(
