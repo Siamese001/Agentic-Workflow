@@ -213,7 +213,7 @@ class SchemaValidatorCache:
                 # TODO: Add proper input validation
                 logger.warning(f"Invalid input: {e}")
                 raise
-            except Exception as e:
+            except (OSError, TypeError) as e:
                 logger.warning(f"[Schema validator cache] Cache read failed: {e}")
         logger.debug("[Schema validator cache] MISS — compiling validator")
         result = fetch_validator()
@@ -225,7 +225,7 @@ class SchemaValidatorCache:
             except ValueError:
                 pass
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, TypeError) as e:
                 logger.warning(f"[Schema validator cache] Cache write failed: {e}")
         return result
 

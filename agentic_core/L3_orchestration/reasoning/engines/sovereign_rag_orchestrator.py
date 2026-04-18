@@ -44,12 +44,12 @@ class SovereignRagOrchestrator:
     def _normalize_top_k(top_k: int, budget_max_k: int | None = None) -> int:
         try:
             normalized = max(1, int(top_k))
-        except Exception:
+        except (TypeError, ValueError):
             normalized = 1
         if budget_max_k is not None:
             try:
                 normalized = min(normalized, max(1, int(budget_max_k)))
-            except Exception:
+            except (TypeError, ValueError):
                 pass
         return normalized
 

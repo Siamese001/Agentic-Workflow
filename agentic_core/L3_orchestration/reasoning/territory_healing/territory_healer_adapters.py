@@ -122,7 +122,7 @@ class AdapterCoordinator:
                 try:
                     scan = agent.scan_territory(territory)
                     violations.extend(scan.violations)
-                except Exception as exc:
+                except (RuntimeError, ValueError, TypeError, OSError) as exc:
                     errors.append(str(exc))
         return CoordinatorReport(
             territory=territory,
@@ -141,7 +141,7 @@ class AdapterCoordinator:
             if agent.can_handle(territory):
                 try:
                     fixed += agent.heal_territory(territory, ctx).violations_fixed
-                except Exception as exc:
+                except (RuntimeError, ValueError, TypeError, OSError) as exc:
                     report.errors.append(str(exc))
         report.total_violations_fixed = fixed
         report.success = len(report.errors) == 0

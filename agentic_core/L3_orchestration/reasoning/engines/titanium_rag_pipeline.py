@@ -37,7 +37,7 @@ class TitaniumRAGPipeline:
     def _normalize_top_k(top_k: int) -> int:
         try:
             return max(0, int(top_k))
-        except Exception:
+        except (TypeError, ValueError):
             return 0
 
     @staticmethod
@@ -71,7 +71,7 @@ class TitaniumRAGPipeline:
             return []
         try:
             raw_results = await self._maybe_await(self.retriever.search(query, collection_name="code_chunks"))
-        except Exception:
+        except (RuntimeError, ValueError, TypeError, AttributeError):
             return []
         converted: list[TitaniumRetrievalResult] = []
         for result in self._iter_results(raw_results)[:normalized_top_k]:

@@ -343,7 +343,7 @@ class DependencyGraph:
                 self.module_map[module_name] = file_path
             except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
                 LOGGER.warning(f"Syntax error in {file_path}: {e}")
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (OSError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
                 raise
                 LOGGER.error(f"Error parsing {file_path}: {e}")
         self._build_reverse_index()
@@ -876,7 +876,7 @@ class GovernanceAgent(SovereignBaseAgent):
                         )
         except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (OSError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
             raise
             LOGGER.error(f"Error checking complexity in {file_path}: {e}")
         nesting_violations: Any = self._check_nesting_depth(file_path)
