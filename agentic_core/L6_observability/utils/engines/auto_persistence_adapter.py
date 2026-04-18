@@ -170,7 +170,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
         if should_persist and spans and self._materializer:
             try:
                 self._materialize_and_persist(spans, mission)
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 # Graceful degradation: log error but don't fail
                 if self.enable_logging:
                     logger.warning(
@@ -288,7 +288,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
                 logger.debug("uwg_not_available_using_local_fallback")
             return self._persist_locally(snapshot)
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             if self.enable_logging:
                 logger.warning("uwg_persist_failed", extra={"error": str(e)})
             return self._persist_locally(snapshot)
@@ -333,7 +333,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
 
             return True
 
-        except Exception as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as e:
             if self.enable_logging:
                 logger.error(
                     "local_persist_failed",

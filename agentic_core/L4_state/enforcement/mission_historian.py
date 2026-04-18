@@ -69,7 +69,7 @@ class MissionHistorian:
             )
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (OSError, RuntimeError, TypeError, ValueError) as e:
             raise
             Logger.error(f"[MissionHistorian] Failed to record action: {e}")
 
@@ -98,7 +98,7 @@ class MissionHistorian:
                     if file_name is None or row.get("file") == file_name:
                         history.append(row)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, csv.Error, UnicodeError, ValueError) as e:
             Logger.error(f"[MissionHistorian] Failed to read history: {e}")
         return history
 

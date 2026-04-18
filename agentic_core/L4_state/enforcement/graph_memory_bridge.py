@@ -212,7 +212,7 @@ class GraphMemoryBridge:
                     self._sqlite_store = _SqliteMemoryStore(_db_path)
                     self._mcp_available = True
                     Logger.info("[GraphMemoryBridge] Initialized (SQLite fallback mode) db=%s", _db_path)
-                except Exception as _e:
+                except (OSError, RuntimeError, TypeError, ValueError) as _e:
                     self._sqlite_store = None
                     self._mcp_available = False
                     Logger.warning("[GraphMemoryBridge] SQLite store init failed: %s — no-op mode", _e)
@@ -327,7 +327,7 @@ class GraphMemoryBridge:
         try:
             result = fn(*args, **kwargs)
             return result
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             with self._lock:
                 self.stats["mcp_errors"] += 1
             Logger.warning(f"[GraphMemoryBridge] {operation} failed: {e}")

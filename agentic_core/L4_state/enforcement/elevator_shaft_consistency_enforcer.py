@@ -230,7 +230,7 @@ class ElevatorShaftConsistencyEnforcer:
                     _bp.behavioral_score,
                 )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
             import logging
 
             logging.getLogger(__name__).debug(

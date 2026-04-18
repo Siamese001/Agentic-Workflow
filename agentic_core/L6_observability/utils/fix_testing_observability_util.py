@@ -88,7 +88,7 @@ def add_logging_to_file(file_path: Path) -> bool:
     """Add logging import and logger initialization to a file."""
     try:
         source = file_path.read_text(encoding="utf-8")
-    except Exception as exc:  # guardian: allow-broad-exception
+    except (OSError, UnicodeError, ValueError) as exc:
         print(f"  [ERROR] Cannot read {file_path}: {exc}")
         return False
 
@@ -116,7 +116,7 @@ def add_logging_to_file(file_path: Path) -> bool:
     try:
         _write_text(file_path, "\n".join(lines) + ("\n" if source.endswith("\n") else ""))
         return True
-    except Exception as exc:  # guardian: allow-broad-exception
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
         print(f"  [ERROR] Cannot write {file_path}: {exc}")
         return False
 
@@ -125,7 +125,7 @@ def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
     """Add ``SubatomicTestingMixin`` to a class definition if absent."""
     try:
         source = file_path.read_text(encoding="utf-8")
-    except Exception as exc:  # guardian: allow-broad-exception
+    except (OSError, UnicodeError, ValueError) as exc:
         print(f"  [ERROR] Cannot read {file_path}: {exc}")
         return False
 
@@ -161,7 +161,7 @@ def add_testing_mixin_to_class(file_path: Path, class_name: str) -> bool:
             file_path, new_source + ("\n" if source.endswith("\n") and not new_source.endswith("\n") else "")
         )
         return True
-    except Exception as exc:  # guardian: allow-broad-exception
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
         print(f"  [ERROR] Cannot write {file_path}: {exc}")
         return False
 
