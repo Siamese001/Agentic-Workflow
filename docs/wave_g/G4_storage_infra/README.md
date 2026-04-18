@@ -41,14 +41,23 @@ Met.
 
 - **Schema validation**: every entry records `id`, `kind`, `path_or_namespace`, `owner_modules`, `writer_modules`, `reader_modules`, `durability`, `retention_behavior`, `pipelines_using_it`, `notes`. Required `owner_modules` and `pipelines_using_it` fields populated (some explicitly `[]` for orphans/legacy, which is honest attribution — not omission).
 
-- **Store categories distinguished**:
-  - **Durable state**: 7 stores (ADG SQLite, memory canonical, prompt governance, golden state, Neo4j, ADG graph projection, ADG runtime traces).
-  - **Cache**: 5 stores (Redis ADG hot, Redis coord, Redis rag, Redis cache generic, GPTCache).
-  - **Embedded local**: 3 stores (Chroma canonical, Chroma artefact, Chroma sparse).
-  - **Artifact store**: 8 stores (reports, evidence, HITL, CI-scan outputs, windsurf telemetry, manifests, ADG JSON tiers, ADG anomaly watchlist).
-  - **Transient output**: 1 store (logs).
-  - **Test-only**: 1 store (test artefacts).
-  - **Orphan**: 3 flagged (Redis `bench:*`, ADG legacy archives, `data/memory/unified_memory.db`).
+- **Top-level storage taxonomy reconciled to `storage_catalogue.yaml::kind` (source of truth)**:
+  - `disk_artefact`: **16**
+  - `sqlite`: **5**
+  - `redis`: **5**
+  - `vector`: **3**
+  - `in_process_cache`: **1**
+  - `transient_output`: **1**
+  - `test_only`: **1**
+  - `other`: **1**
+  - **Total**: **33**
+- **Orphan / vestigial tally (reporting label, not a `kind`)**: **3**
+  - `STORE-ADG-LEGACY-ARCHIVES`
+  - `STORE-REDIS-BENCH`
+  - `STORE-CHROMA-ARTEFACT`
+- **Durability language reconciliation**:
+  - Use `durability` values in `storage_catalogue.yaml` (`durable`, `ephemeral_cache`, `persistent_cache`, `transient`, `test_only`) as authoritative.
+  - Treat phrases like "authoritative durable" as descriptive wording only, not a separate taxonomy class.
 
 - **Pipeline-to-storage linkage complete**: every G3 pipeline that touches durable / cache state is cross-referenced in `storage_catalogue.yaml pipelines_using_it`. PIPE-ADG-GEN, PIPE-ADG-REDIS-INGEST, PIPE-MEMORY-LIFECYCLE, PIPE-APP-REQUEST, PIPE-EVAL-HITL, PIPE-VECTOR-RETRIEVAL, PIPE-EMBEDDING, PIPE-JUDGE-EVAL, PIPE-OBSERVABILITY, PIPE-HEALING all bound.
 

@@ -4,16 +4,26 @@ Lifecycle, retention, staleness, and purge behaviour for every catalogued store,
 
 **ADG snapshot**: `artifacts/adg/adg_indexed_04172026_0611.sqlite` (04172026_0611).
 
-## 1. Category summary
+## 1. Store category summary (canonical model)
 
-| Category | Stores | Total size | Retention policy |
-|---|---:|---:|---|
-| Durable (authoritative) | 7 | ~5 GB | varies; see §2 |
-| Cache / semi-persistent | 5 | ~12 GB | varies; see §3 |
-| Vector (embedded local) | 3 | ~10.2 GB | none observed (manual) |
-| Disk artefact (reports, evidence) | 8 | ~230 MB live + 229 MB legacy | none observed |
-| Transient output (logs) | 1 | 10.7 MB | none observed |
-| Test-only | 1 | small | per-test-run |
+Top-level class is `kind` from `storage_catalogue.yaml`.
+
+| Kind | Count | Notes |
+|---|---:|---|
+| `disk_artefact` | 16 | reports/evidence/ADG tiers/runtime traces and other artifact-like surfaces |
+| `sqlite` | 5 | ADG + memory sqlite surfaces |
+| `redis` | 5 | ADG hot + bench + coord + rag + generic cache namespaces |
+| `vector` | 3 | Chroma canonical/artefact + sparse store |
+| `in_process_cache` | 1 | GPT cache process-local layer |
+| `transient_output` | 1 | logs |
+| `test_only` | 1 | test artefacts |
+| `other` | 1 | Neo4j (external DB binding surface) |
+| **Total** | **33** | matches `storage_catalogue.yaml` |
+
+Overlay labels (not top-level classes):
+
+- **Orphan / vestigial (3)**: `STORE-ADG-LEGACY-ARCHIVES`, `STORE-REDIS-BENCH`, `STORE-CHROMA-ARTEFACT`
+- **Durability overlay**: `durable` 25, `ephemeral_cache` 5, `persistent_cache` 1, `transient` 1, `test_only` 1
 
 ## 2. Durable stores
 

@@ -1,0 +1,167 @@
+wave: G7
+produced_at: 2026-04-18
+adg_snapshot: artifacts/adg/adg_indexed_04182026_0814.sqlite
+adg_snapshot_timestamp: "04182026_0814"
+wave_f_baseline: docs/wave_e/99_integration_v14/canonical
+notes:
+  - Bindings are only listed where direct support exists in signed-off G evidence.
+  - Unresolved bindings are explicit and not inferred.
+
+surfaces:
+  - surface_id: G7-RS-01
+    surface_name: app_runtime_bundle
+    source_artifacts:
+      - docs/wave_g/G1b_apps_inventory/app_inventory.yaml
+      - docs/wave_g/G5_runtime_topology/process_topology.yaml
+      - docs/wave_g/G3_pipelines/pipeline_catalogue.yaml
+    wave_f_atom_bindings:
+      - F01.05
+      - F02.01
+      - F03.01
+      - F05.01
+      - F06.01
+    wave_f_edge_bindings:
+      - INT-F02.01-F01.05-01
+      - INT-F05.01-F02.03-01
+      - INT-F06.02-F03.01-01
+    binding_confidence: direct
+    unresolved_bindings: []
+
+  - surface_id: G7-RS-04
+    surface_name: memory_lifecycle_surface
+    source_artifacts:
+      - docs/wave_g/G4_storage_infra/storage_catalogue.yaml
+      - docs/wave_g/G5_runtime_topology/process_topology.yaml
+      - docs/wave_g/G3_pipelines/pipeline_catalogue.yaml
+    wave_f_atom_bindings:
+      - F10.02
+      - F12.07
+    wave_f_edge_bindings:
+      - INT-F12.07-F02.01-01
+    binding_confidence: direct
+    unresolved_bindings:
+      - canonical durable-state single-source binding unresolved due memory SQLite triplet ambiguity
+
+  - surface_id: G7-RS-07
+    surface_name: observability_runtime_adg_surface
+    source_artifacts:
+      - docs/wave_g/G3_pipelines/README.md
+      - docs/wave_g/G5_runtime_topology/process_topology.yaml
+    wave_f_atom_bindings:
+      - F12.01
+      - F12.04
+      - F12.08
+      - F08.03
+    wave_f_edge_bindings:
+      - INT-F12.08-F08.03-01
+    binding_confidence: direct
+    unresolved_bindings:
+      - L6 observer-role purity unresolved due G3/G2 downstream-mutation signal
+
+  - surface_id: G7-RS-10
+    surface_name: governance_exit_writegate_surface
+    source_artifacts:
+      - docs/wave_g/G3_pipelines/README.md
+      - docs/wave_g/G4b_control_plane/kill_switches_and_risk.md
+    wave_f_atom_bindings:
+      - F08.01
+      - F08.02
+      - F08.04
+      - F09.01
+      - F11.04
+      - F11.05
+    wave_f_edge_bindings:
+      - INT-F08.02-F11.05-01
+      - INT-F08.04-F09.01-01
+      - INT-F09.04-F11.04-01
+    binding_confidence: direct
+    unresolved_bindings:
+      - policy override toggles can weaken practical enforcement posture
+
+  - surface_id: G7-RS-12
+    surface_name: replay_and_system_learning_partial_surfaces
+    source_artifacts:
+      - docs/wave_g/G3_pipelines/README.md
+      - docs/wave_g/G3_pipelines/pipeline_catalogue.yaml
+    wave_f_atom_bindings:
+      - F12.04
+      - F12.05
+      - F12.07
+    wave_f_edge_bindings:
+      - INT-F12.05-F12.07-01
+    binding_confidence: partial
+    unresolved_bindings:
+      - replay topology incomplete
+      - system_learning topology incomplete
+
+  - surface_id: G7-RS-11
+    surface_name: contract_surface_integrity
+    source_artifacts:
+      - docs/wave_g/G2_service_wiring/seam_usage_report.md
+      - docs/wave_g/G6_taxonomy_cleanup/normalization_matrix.md
+    wave_f_atom_bindings:
+      - F08.02
+      - F11.05
+    wave_f_edge_bindings:
+      - INT-F08.02-F11.05-01
+    binding_confidence: partial
+    unresolved_bindings:
+      - dead/unwired L_CONTRACTS status
+      - duplicate execution-trace ownership
+
+  - surface_id: G7-RS-03
+    surface_name: adg_generation_and_hotcache
+    source_artifacts:
+      - docs/wave_g/G5_runtime_topology/process_topology.yaml
+      - docs/wave_g/G4_storage_infra/storage_catalogue.yaml
+    wave_f_atom_bindings: []
+    wave_f_edge_bindings: []
+    binding_confidence: unresolved
+    unresolved_bindings:
+      - no direct one-to-one Wave F atom semantics for ADG cache lifecycle
+
+  - surface_id: G7-RS-05
+    surface_name: vector_retrieval_embedding_surface
+    source_artifacts:
+      - docs/wave_g/G4_storage_infra/vector_collections.md
+      - docs/wave_g/G5_runtime_topology/process_topology.yaml
+    wave_f_atom_bindings:
+      - F04.01
+      - F04.02
+    wave_f_edge_bindings: []
+    binding_confidence: partial
+    unresolved_bindings:
+      - no direct Wave F edge binding asserted from signed-off G evidence
+
+  - surface_id: G7-RS-08
+    surface_name: mcp_transport_plane
+    source_artifacts:
+      - docs/wave_g/G5_runtime_topology/mcp_server_registry.md
+      - docs/wave_g/G5_runtime_topology/process_topology.yaml
+    wave_f_atom_bindings: []
+    wave_f_edge_bindings: []
+    binding_confidence: unresolved
+    unresolved_bindings:
+      - MCP transport split has no direct atom-level binding in Wave F set
+
+  - surface_id: G7-RS-09
+    surface_name: provider_egress_boundary
+    source_artifacts:
+      - docs/wave_g/G2b_provider_gateway/egress_points.yaml
+      - docs/wave_g/G3_pipelines/README.md
+    wave_f_atom_bindings:
+      - F07.01
+      - F07.02
+      - F11.01
+    wave_f_edge_bindings: []
+    binding_confidence: partial
+    unresolved_bindings:
+      - gateway-level circuit breaker requirement not directly encoded as a Wave F edge binding
+
+summary:
+  total_surfaces_mapped: 10
+  surfaces_with_direct_atom_bindings: 8
+  surfaces_with_edge_bindings: 6
+  total_unique_wave_f_atom_ids_bound: 23
+  total_unique_wave_f_edge_ids_bound: 9
+  surfaces_explicitly_unresolved_or_partial: 6
