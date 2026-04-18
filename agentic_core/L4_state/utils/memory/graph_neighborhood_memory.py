@@ -357,7 +357,7 @@ class GraphNeighborhoodMemory:
             self._graph_store = create_sqlite_graph_store_or_none()
             if self._graph_store:
                 logger.info("GraphNeighborhoodMemory: Graph store initialized for enhanced retrieval")
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.warning(f"GraphNeighborhoodMemory: Graph store initialization failed: {e}")
             self._graph_store = None
 
@@ -541,7 +541,7 @@ class GraphNeighborhoodMemory:
             )
             return related_cards
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.warning(f"Graph-distance search failed: {e}, falling back to text search")
             return []
 
@@ -597,7 +597,7 @@ class GraphNeighborhoodMemory:
             )
             return high_centrality_cards
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.warning(f"Centrality-based search failed: {e}, returning all cached cards")
             return list(self._cards.values())
 

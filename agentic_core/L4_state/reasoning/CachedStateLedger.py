@@ -217,7 +217,7 @@ class CachedStateLedger(SovereignBaseAgent):
             self.redis.ping()
             print("   [OK] CachedStateLedgerAgent: Redis Sovereign cache ONLINE")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
             raise InfrastructureDependencyError(
@@ -288,7 +288,7 @@ class CachedStateLedger(SovereignBaseAgent):
             try:
                 self.redis.rpush(f"{self.prefix_historian}:successful_traces", json.dumps(trace))
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 import logging
 
                 logging.getLogger(__name__).debug("CachedStateLedger: Exception swallowed at L289: %s", e)

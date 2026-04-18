@@ -248,7 +248,7 @@ class AgentEngine:
                     agent_id="agent_engine",
                 )
             # guardian: allow-silent-swallow
-            except Exception as exc:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
                 logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
 
         state = AgentState(task_id=task_id, user_input=user_input)
@@ -281,7 +281,7 @@ class AgentEngine:
 
             try:
                 observation = await tool.run(**tool_args)
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 logger.error(f"Tool execution failed: {tool_name} - {e}", exc_info=True)
                 raise ToolExecutionError(
                     tool_name=tool_name,

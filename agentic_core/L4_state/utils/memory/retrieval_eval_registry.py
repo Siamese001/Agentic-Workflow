@@ -356,7 +356,7 @@ class RetrievalEvalRegistry:
             Logger.info(f"Evaluated answer: {eval_id[:32]}... (F1={f1_groundedness:.2f})")
             return True
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to evaluate answer: {e}")
             return False
         finally:
@@ -403,7 +403,7 @@ class RetrievalEvalRegistry:
             conn.commit()
             return True
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to store evaluation: {e}")
             return False
         finally:
@@ -497,7 +497,7 @@ class RetrievalEvalRegistry:
                     triggers = json.loads(triggers_json)
                     for trigger in triggers:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
-                except Exception as e:
+                except (AttributeError, json.JSONDecodeError, RuntimeError, TypeError, ValueError) as e:
                     import logging
 
                     logging.getLogger(__name__).debug(

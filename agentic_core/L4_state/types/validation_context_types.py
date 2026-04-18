@@ -265,7 +265,7 @@ class Historian:
                     self.file_history = json.load(f)
                 LOGGER.info(f"Loaded history for {len(self.file_history)} files")
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 raise
                 LOGGER.error(f"Failed to load file history: {e}")
                 self.file_history = {}
@@ -275,7 +275,7 @@ class Historian:
         try:
             _get_write_gateway().write_json(self.file_history_file, self.file_history, indent=2)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
             LOGGER.error(f"Failed to save file history: {e}")
 
@@ -296,7 +296,7 @@ class Historian:
                     hash_md5.update(chunk)
                 return hash_md5.hexdigest()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             LOGGER.error(f"Failed to hash {file_path}: {e}")
             return ""
 

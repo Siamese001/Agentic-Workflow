@@ -139,7 +139,7 @@ class ExecutionOrchestrator:
                 Logger.error(f"[L0-ORCH] L3 orchestration failed: {e}")
                 orchestration = {"error": f"L3 orchestration failed: {e}", "completed": False}
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 Logger.critical(f"[L0-ORCH] Critical L3 orchestration error: {e}")
                 orchestration = {"error": f"Critical L3 orchestration error: {e}", "completed": False}
                 raise

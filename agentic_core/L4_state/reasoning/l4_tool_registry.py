@@ -287,7 +287,7 @@ class ToolRegistry:
                 "trace_id": _trace_id,
             }
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Tool execution failed: {tool_name} - {e}")
             return {
                 "success": False,
@@ -371,7 +371,7 @@ class ToolRegistry:
 
             Logger.info(f"Auto-discovered {len(discovered)} tools in {module_path}")
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to auto-discover tools in {module_path}: {e}")
 
         return discovered

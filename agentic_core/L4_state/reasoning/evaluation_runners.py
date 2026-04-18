@@ -373,7 +373,7 @@ class EvaluationOrchestrator:
             Logger.info(f"Exported {len(data)} evaluations to {path}")
             return True
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to export evaluations: {e}")
             return False
 

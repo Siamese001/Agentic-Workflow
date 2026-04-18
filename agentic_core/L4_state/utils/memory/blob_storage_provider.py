@@ -363,7 +363,7 @@ class S3Adapter:
         try:
             self.s3.head_object(Bucket=self.bucket, Key=key)
             return True
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
             return False
 
     async def delete_blob(self: Any, key: str) -> bool:
@@ -380,7 +380,7 @@ class S3Adapter:
             self.s3.delete_object(Bucket=self.bucket, Key=key)
             LOGGER.debug(f"Deleted S3 blob: {key}")
             return True
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             LOGGER.error(f"Failed to delete S3 blob {key}: {e}")
             return False
 

@@ -130,7 +130,7 @@ class L2SemanticCache:
                 input=text,
             )
             return response.data[0].embedding
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to generate embedding: {e}")
             return None
 
@@ -337,7 +337,7 @@ class L3SemanticRAG:
 
             return formatted_results
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"L3 RAG query failed: {e}")
             return []
 

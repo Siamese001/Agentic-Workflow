@@ -219,7 +219,7 @@ class ChunkManifestRegistry:
             Logger.info(f"Stored manifest: {manifest.chunk_id[:16]}...")
             return True
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to store manifest: {e}")
             return False
         finally:
@@ -439,7 +439,7 @@ class ChunkManifestRegistry:
                 else:
                     chroma_result = chroma_collection.get()
                     chroma_ids = set(chroma_result.get("ids", []))
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 Logger.warning(f"Failed to query ChromaDB for drift check: {e}")
                 chroma_ids = set()
 

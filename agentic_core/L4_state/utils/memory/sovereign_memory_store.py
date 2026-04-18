@@ -213,7 +213,7 @@ class SovereignMemoryMcp:
                 created.append(name)
             return {"status": "success", "created": created}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[SovereignMemoryMcp] Entity creation failure: {e}")
             return {"status": "error", "msg": str(e)}
 
@@ -230,7 +230,7 @@ class SovereignMemoryMcp:
                     added.setdefault(name, []).append(content)
             return {"status": "success", "added_count": len(added)}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[SovereignMemoryMcp] Observation failure: {e}")
             return {"status": "error", "msg": str(e)}
 
@@ -239,5 +239,5 @@ class SovereignMemoryMcp:
         try:
             return self._bridge.search_entities(query)
         # guardian: allow-silent-swallow
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
             return []

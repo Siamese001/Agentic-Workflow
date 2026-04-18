@@ -435,7 +435,7 @@ class CacheAdmissionGate:
                 timestamp_utc=timestamp_utc,
             )
 
-        except Exception as exc:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
             self._stats["errors"] += 1
             logger.warning("[CacheAdmissionGate] Evaluation error (fail-closed): %s", exc)
             return CacheAdmissionDecision(

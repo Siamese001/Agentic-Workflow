@@ -211,7 +211,7 @@ class ParentChildExpander:
                         }
                     )
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to get neighbors for {chunk_id}: {e}")
 
         return neighbors

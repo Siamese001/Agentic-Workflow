@@ -241,7 +241,7 @@ class SovereignReasoningMemory(SovereignBaseAgent):
                 self.redis_client.ltrim(self.redis_reasoning_key, -self.max_history_per_file, -1)
                 self.redis_client.expire(self.redis_reasoning_key, self.redis_cache_ttl)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 self.log_warning(f"Redis write failed: {e}")
 
     def get_history(self, file_path: str = None) -> list[dict]:
@@ -250,7 +250,7 @@ class SovereignReasoningMemory(SovereignBaseAgent):
                 raw = self.redis_client.lrange(self.redis_reasoning_key, 0, -1)
                 return [json.loads(x) for x in raw]
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 import logging
 
                 logging.getLogger(__name__).debug(

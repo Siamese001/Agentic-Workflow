@@ -373,7 +373,7 @@ class CompletenessSnapshotRegistry:
             conn.commit()
             return True
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to store snapshot: {e}")
             return False
         finally:
@@ -516,7 +516,7 @@ class CompletenessSnapshotRegistry:
                     triggers = json.loads(triggers_json)
                     for trigger in triggers:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
-                except Exception as e:
+                except (AttributeError, json.JSONDecodeError, RuntimeError, TypeError, ValueError) as e:
                     import logging
 
                     logging.getLogger(__name__).debug(
