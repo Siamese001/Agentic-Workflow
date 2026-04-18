@@ -3,7 +3,7 @@
 Every `os.getenv` / `os.environ[...]` read in `agentic_core/`, `apps_*/`, `infrastructure/`, `tools/`, mapped to consumer modules. **Names only — no values anywhere.**
 
 **ADG snapshot**: `artifacts/adg/adg_indexed_04172026_0611.sqlite` (04172026_0611).
-**Scan totals**: 269 reads, 154 unique env keys, ≈ 140 reader files. Scan excludes `__pycache__/` and `archive/`.
+**Scan totals**: 269 reads, 154 unique env keys, **114 reader files**. Scan excludes `__pycache__/` and `archive/`.
 
 ## 1. Classification
 

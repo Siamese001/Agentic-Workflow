@@ -378,8 +378,8 @@ pipelines:
   - id: PIPE-REPLAY
     title: "Replay / determinism — evidence reproduction"
     triggers:
-      - kind: cli_or_test
-        name: "agentic_core/evaluation/runners/replay_eval_runner.py invocation"
+      - kind: cli
+        command: "python agentic_core/evaluation/runners/replay_eval_runner.py"
       - kind: internal_call
         name: "X1D grounded_replayable dimension of PIPE-EVAL-EXIT"
     inputs:
@@ -409,8 +409,8 @@ pipelines:
   - id: PIPE-JUDGE-EVAL
     title: "Judge orchestration — multi-rubric evaluation"
     triggers:
-      - kind: api
-        name: "JudgeOrchestrator.evaluate(file_path)"
+      - kind: internal_call
+        name: "JudgeOrchestrator.evaluate(file_path) API call"
       - kind: internal_call
         name: "offline eval runs / shadow eval"
     inputs:

@@ -92,7 +92,7 @@ Met.
 | Pipelines catalogued | **17** |
 | State machines | **9** |
 | Mandatory pipeline families covered | 9 / 9 |
-| Trigger classes mapped | 9 (cli, app_entry, mcp_tool, workflow, import, internal_call, hook, ci, operator) |
+| Trigger classes mapped | 9 total — 6 pipeline-fired (`cli`, `app_entry`, `mcp_tool`, `workflow`, `import`, `internal_call`) + 3 infrastructural (`hook`, `ci`, `operator`) |
 | Dynamic-dispatch stages flagged | 4 |
 | B7 candidates surfaced | 6 |
 | Partial pipelines (honest gaps) | 2 (PIPE-REPLAY, PIPE-SYSTEM-LEARNING) |

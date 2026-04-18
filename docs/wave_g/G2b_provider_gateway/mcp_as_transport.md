@@ -150,7 +150,7 @@ Every MCP server configured in `.windsurf/mcp_config.json`, classified by ingres
 ## 4. Key findings
 
 - **Repo Python code has no MCP-ingress path**. MCPs exist only to let Cascade (Windsurf IDE) call into the repo's tools. The repo never acts as a client of its own MCP servers at runtime.
-- **10 of 12 MCP servers are stdio-loopback from the repo's perspective** (subprocess launched by Windsurf, IPC via stdio). Network actors are the subprocesses themselves, not repo Python.
+- **11 of 12 MCP servers are locally-launched** by Windsurf: **9 via stdio-loopback** (`adg_sqlite`, `memory`, `vector_db`, `otel_mcp`, `redis`, `pytest_mcp`, `enhanced_http`, `notion`, `task_manager`) and **2 via binary-subprocess** (`filesystem` Node launcher, `GitKraken` gk.exe). Network actors are the subprocesses themselves, not repo Python.
 - **2 servers have by-design external egress from their subprocesses** (`enhanced_http`, `notion`). Both are sanctioned transport surfaces — `enhanced_http` is the constitutional sole-authority for programmatic HTTP (per MCP Authority rule); `notion` is a cooperative PM integration. Neither is part of the repo's LLM inference or embedding pipelines.
 - **`deepwiki` is the only pure-external MCP** (no subprocess; Windsurf ↔ remote URL). Repo code does not reference it.
 - **`GitKraken` binary-subprocess** has opaque credentials and opaque egress to git-hosting providers. Out of scope for repo env-key catalogue; G4b may record as a side-channel integration surface.

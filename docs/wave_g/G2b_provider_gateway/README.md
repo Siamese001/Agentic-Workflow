@@ -13,7 +13,7 @@
 - **G2**: `import_edge_matrix.md` (bridge candidate `cache/redis_cache_client.py` fan_in=fan_out=70), `canonical_request_walk.md`, `boundary_violations.md` (dynamic-wiring sites).
 - **Wave F v1.4 canonical**: `docs/wave_e/99_integration_v14/canonical/*` (used only for citation; not mutated).
 - **Repo evidence scan** (ADG-first + literal env-key scan; constitutionally allowed for literal matches):
-  - 269 `os.getenv` / `os.environ` reads across 154 unique env keys in `agentic_core/`, `apps_*/`, `infrastructure/`, `tools/`.
+  - 269 `os.getenv` / `os.environ` reads across 154 unique env keys spread over 114 reader files in `agentic_core/`, `apps_*/`, `infrastructure/`, `tools/`.
   - HTTP-library import scan: `requests` (4), `aiohttp` (4), `openai` (2), `anthropic` (2), `google.generativeai` (3), `neo4j` (1), `chromadb` (39), `redis` (19).
   - MCP server catalogue: `.windsurf/mcp_config.json` (12 servers).
 
@@ -29,7 +29,7 @@
 
 Met.
 
-- Every egress point catalogued: **12** entries in `egress_points.yaml` (6 external, 3 localhost/internal, 3 MCP-transport buckets), each record carries all 10 required schema fields.
+- Every egress point catalogued: **12** entries in `egress_points.yaml` (6 external providers [4 unconditional + 2 conditional], 3 localhost/internal, 1 stub, 1 MCP-external, 1 MCP-loopback bucket), each record carries all 10 required schema fields.
 - Every `os.getenv` / `os.environ[...]` read mapped to consumer modules: 269 reads / 154 unique keys across 4 repo roots. Full table in `env_key_consumer_map.md`.
 - MCP loopback documented in `mcp_as_transport.md` — 9 stdio-loopback servers + 1 HTTPS external (`deepwiki`) + 1 binary subprocess (`GitKraken`) + 1 ingress-perspective FastMCP (`enhanced_http` both ingresses tool calls from Windsurf AND egresses HTTP from the repo).
 - Real external egress distinguished from MCP loopback transport and local-only stubs (see §5 of `provider_inventory.md` for the canonical matrix).
@@ -74,13 +74,17 @@ Met.
 | Dimension | Value |
 |---|---:|
 | Egress points catalogued | 12 |
-| Real external providers | 5 (OpenAI, Anthropic, Google GenAI / Vertex, Google Custom Search, HuggingFace Hub) |
-| Localhost / internal egress | 4 (Qwen vLLM, Redis, Neo4j, OTel collector) |
-| MCP loopback transports | 10 (stdio-loopback + 1 HTTPS external + 1 binary subprocess) |
+| External provider egress (direct) | 6 (OpenAI, Anthropic, Gemini, Google-CSE, HF-Hub [gated], OTel [optional]) |
+| &nbsp; of which unconditional external | 4 (OpenAI, Anthropic, Gemini, Google-CSE) |
+| &nbsp; of which conditional / optional external | 2 (HF-Hub gated by env, OTel env-dependent) |
+| Localhost / internal egress | 3 (Qwen vLLM, Redis, Neo4j) |
+| Config stub (declared, not wired) | 1 (Pinecone) |
+| MCP external URL | 1 (deepwiki) |
+| MCP loopback bucket entry | 1 (covers 10 stdio-loopback + binary-subprocess MCPs per `mcp_as_transport.md`) |
+| Total egress rows (sum) | 12 |
 | Total `os.getenv` / `os.environ` reads | 269 |
 | Unique env-key names | 154 |
-| Files reading env vars | ≈ 140 |
-| Config stub (declared, not wired) | 1 (Pinecone) |
+| Files reading env vars | 114 |
 | B7 candidates surfaced | 6 |
 
 Ready for G3 and G4b.

@@ -140,7 +140,7 @@ The repo uses a `.env` loader (`agentic_core/config/env_loader.py::SovereignEnv`
 
 ## 10. Summary
 
-- **12 egress points** catalogued (6 external, 3 localhost, 1 optional external, 1 stub, 1 local-embedded reclassification).
+- **12 egress points** catalogued: 6 external-provider rows (4 unconditional: OpenAI, Anthropic, Gemini, Google-CSE; 2 conditional: HF-Hub gated, OTel optional) + 3 localhost/internal (Qwen-vLLM, Redis, Neo4j) + 1 stub (Pinecone) + 1 MCP-external (deepwiki) + 1 MCP-loopback bucket. ChromaDB stays out of `egress_points.yaml` by design (embedded local, not network egress).
 - **4 canonical gateway / router surfaces**: `SovereignLLMGateway`, `ModelRouter`, `MultiProviderRouterAgent`, `EmbeddingSovereignAgent`.
 - **Retry + circuit-breaker posture**: strong for vLLM and Gemini hardened executor; default `retries=3` for SovereignLLMGateway and ModelRouter; unknown for Redis client and Neo4j store.
 - **No raw SDK call exists outside** `infrastructure/sdks_mcps/__init__.py` **and the 3 `apps_shared` utility / type modules** for OpenAI, Anthropic, Google GenAI.

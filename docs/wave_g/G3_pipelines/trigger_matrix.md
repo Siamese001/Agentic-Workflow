@@ -1,6 +1,13 @@
 # G3 — Trigger Matrix
 
-Every catalogued pipeline (from `pipeline_catalogue.yaml`) mapped to its triggering surface(s). Trigger kinds: `cli`, `app_entry`, `api`, `mcp_tool`, `workflow`, `import`, `test`, `hook`, `ci`, `operator`, `internal_call`.
+Every catalogued pipeline (from `pipeline_catalogue.yaml`) mapped to its triggering surface(s).
+
+**Canonical trigger taxonomy — 9 classes**, split into two bands:
+
+- **6 pipeline-fired classes** used as `kind:` values in `pipeline_catalogue.yaml` — `cli`, `app_entry`, `mcp_tool`, `workflow`, `import`, `internal_call`.
+- **3 infrastructural classes** that affect pipeline execution but are not `kind:` values in the YAML — `hook` (Windsurf pre/post hooks), `ci` (GitHub CI workflows), `operator` (env-var kill-switches, HITL approvals).
+
+Earlier drafts used `api` and `cli_or_test` as trigger kinds. Per G3.1 reconciliation, `api` → `internal_call` (programmatic API call from another caller) and `cli_or_test` → `cli` (tests invoke the CLI entry). Test triggering is covered under §5 as a CI/test surface that fires the `cli` band.
 
 **ADG snapshot**: `artifacts/adg/adg_indexed_04172026_0611.sqlite` (04172026_0611).
 
@@ -140,7 +147,9 @@ Per G2 §Class 3, these stages have runtime-variable shape:
 
 - **17 pipelines** catalogued (see `pipeline_catalogue.yaml`).
 - **9 state machines** catalogued (see `state_machines.md`).
-- **9 trigger classes** mapped: cli, app_entry, mcp_tool, workflow, import, internal_call, hook, ci, operator.
+- **9 trigger classes** in canonical taxonomy (per §1):
+  - 6 pipeline-fired (appear as `kind:` in YAML): `cli`, `app_entry`, `mcp_tool`, `workflow`, `import`, `internal_call`.
+  - 3 infrastructural (do not appear as `kind:`): `hook`, `ci`, `operator`.
 - **Biggest surface**: `internal_call` (most pipelines are fired from within other pipelines — consistent with layered runtime).
 - **Highest-risk surface**: operator env-var kill-switches (`EGRESS_GUARD_DISABLED`, `DISABLE_RUNTIME_MUTATION_GUARD`, `ADG_SKIP_*`).
 - **Only autonomous external-egress trigger**: `enhanced_http` MCP tool (Cascade → any URL).
