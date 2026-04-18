@@ -498,8 +498,9 @@ class MemoryEventBus(EventBus):
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError) as e:
                 logger.error(f"Worker error for channel {channel}: {e}")
+                raise
 
     async def _notify_subscribers(self, event: SystemEvent, subscribers: list[Callable]) -> None:
         """Notify all subscribers of an event.
@@ -529,9 +530,10 @@ class MemoryEventBus(EventBus):
         try:
             await callback(event)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self._stats["subscriber_errors"] += 1
             logger.error(f"Subscriber callback error: {e}", exc_info=True)
+            raise
 
 
 class RedisEventBus(EventBus):
@@ -743,9 +745,10 @@ class RedisEventBus(EventBus):
         try:
             await callback(event)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             self._stats["subscriber_errors"] += 1
             logger.error(f"Subscriber callback error: {e}", exc_info=True)
+            raise
 
     async def _handle_connection_error(self, error: Exception) -> None:
         """Handle Redis connection errors.
@@ -762,8 +765,9 @@ class RedisEventBus(EventBus):
                 logger.info("Redis reconnected successfully")
                 break
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ConnectionError, RuntimeError, OSError) as e:
                 logger.error(f"Reconnection attempt {attempt + 1} failed: {e}")
+                raise
 
 
 def create_event_bus(connection_string: str | None = None) -> EventBus:

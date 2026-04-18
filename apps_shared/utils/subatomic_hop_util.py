@@ -649,15 +649,17 @@ class SubatomicHop:
                     # Store injection info for logging
                     plan["prompt_injections_applied"] = True
 
-                except json.JSONDecodeError:
+                except json.JSONDecodeError as e:
                     # Fallback to original plan if parsing fails
                     logger.warning("Failed to parse enhanced plan, using original")
+                    raise ValueError("Enhanced prompt payload is not valid JSON") from e
 
                 logger.debug(f"Applied prompt injections for hop type: {hop_type}")
 
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ImportError, ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Failed to apply prompt injections: {e}")
+                raise
 
         # Store plan in context for ACT stage
         self.context["execution_plan"] = plan
@@ -777,7 +779,7 @@ class SubatomicHop:
 
                         return enhanced_kwargs
 
-                    except json.JSONDecodeError:
+                    except json.JSONDecodeError as e:
                         # If parsing fails, add injections as context
                         kwargs["instructional_injections"] = {
                             "applied": True,
@@ -787,6 +789,7 @@ class SubatomicHop:
                         logger.warning(
                             "Failed to parse enhanced kwargs, keeping original with injection metadata",
                         )
+                        raise ValueError("Enhanced kwargs payload is not valid JSON") from e
 
             return kwargs
 
@@ -1039,9 +1042,9 @@ class SubatomicHop:
             self.checkpoints[checkpoint.stage] = checkpoint
             logger.debug(f"Saved secure checkpoint for stage {checkpoint.stage.value}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, CheckpointIntegrityError, ValueError) as e:
             logger.error(f"Failed to save secure checkpoint: {e}")
-            # Continue execution - checkpoint failure shouldn't stop the hop
+            raise
 
     async def _load_checkpoint(self) -> None:
         """Load the most recent checkpoint using the secure checkpoint manager."""
@@ -1067,10 +1070,11 @@ class SubatomicHop:
             # Quarantine all checkpoints and start fresh
             self.checkpoint_manager.quarantine_all_checkpoints()
             logger.warning("Quarantined all checkpoints due to integrity failure")
+            raise
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, ValueError) as e:
             logger.warning(f"Failed to load secure checkpoint: {e}")
-            # Continue without checkpoint - start fresh
+            raise
 
     def get_status(self) -> dict[str, Any]:
         """Get current status of the hop."""
@@ -1102,8 +1106,9 @@ class SubatomicHop:
             try:
                 checkpoint_file.unlink()
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (OSError, PermissionError) as e:
                 logger.warning(f"Failed to cleanup {checkpoint_file}: {e}")
+                raise
 
         logger.debug(f"Cleaned up hop {self.config.hop_id}")
 

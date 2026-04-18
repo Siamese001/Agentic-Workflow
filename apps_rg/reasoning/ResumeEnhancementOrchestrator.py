@@ -241,8 +241,9 @@ class ResumeEnhancementOrchestrator:
                         ),
                     )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to handle resume generation started: {e}")
+            raise
 
     async def _handle_persona_analyzed(self, event: SystemEvent) -> None:
         """Handle persona analyzed event.
@@ -254,8 +255,9 @@ class ResumeEnhancementOrchestrator:
             payload = event.payload
             logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, ValueError, TypeError) as e:
             logger.error(f"Failed to handle persona analyzed: {e}")
+            raise
 
     def _extract_company_from_jd(self, jd_text: str) -> str | None:
         """Extract company name from job description.

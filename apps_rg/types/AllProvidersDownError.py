@@ -217,8 +217,9 @@ class HardenedRouter:
                 else:
                     logger.warning(f"No hardened executor available for provider: {provider}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, ImportError) as e:
                 logger.error(f"Failed to initialize executor for {provider}: {e}")
+                raise
 
     def get_config(self, tier: str | RoutingTier) -> RouteConfig:
         """Get routing configuration for a tier.
@@ -346,8 +347,9 @@ class HardenedRouter:
                     **kwargs,
                 )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError) as e:
                 logger.warning(f"Primary provider {primary.value} failed: {e}. Attempting fallback...")
+                raise
         else:
             logger.warning(
                 f"Primary provider {primary.value} circuit breaker is OPEN. Routing to fallback...",
@@ -376,8 +378,9 @@ class HardenedRouter:
                         **kwargs,
                     )
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, ValueError, TypeError) as e:
                     logger.warning(f"Fallback provider {fallback.value} failed: {e}. Trying next fallback...")
+                    raise
             else:
                 logger.warning(f"Fallback provider {fallback.value} circuit breaker is OPEN. Skipping...")
         all_providers = config.get_all_providers()

@@ -193,8 +193,9 @@ class RgReflectionAgent(BaseReflectionAgent):
                 observations=["RG reflection agent with meta-learning and quality scoring"],
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, RuntimeError, ValueError, OSError) as e:
             Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
+            raise
 
     def _post_reflect(self, passed_agents: list[str], failed_agents: list[str], converged: bool) -> None:
         """RG-specific post-reflection: quality scoring and context recording."""
@@ -248,8 +249,9 @@ class RgReflectionAgent(BaseReflectionAgent):
                     relation_type="REFLECTS_ON",
                 )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, RuntimeError, ValueError, OSError) as e:
             Logger.debug(f"[{self.__class__.__name__}] KG reflection persistence skipped: {e}")
+            raise
 
     def _search_external_best_practices(self, topic: str) -> list[dict[str, Any]]:
         """Search for external best practices via Brave Search MCP when quality is low.

@@ -177,9 +177,9 @@ def aggressive_cleanup():
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
-                raise
+            except (OSError, PermissionError) as e:
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
+                raise
     temp_patterns = SOVEREIGN_EXCLUDED_FOLDERS
     from pathlib import Path
 
@@ -192,8 +192,9 @@ def aggressive_cleanup():
                 os.remove(file)
                 Logger.info(f"🗑️ Purged temp file: {file}")
                 purged_count += 1
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (OSError, PermissionError) as e:
                 Logger.error(f"❌ Failed to delete {file}: {e}")
+                raise
     for root, dirs, _files in os.walk("."):
         if "__pycache__" in dirs:
             pycache_path = Path(root) / "__pycache__"
@@ -202,8 +203,9 @@ def aggressive_cleanup():
                 Logger.info(f"🗑️ PURGED DIRECTORY: {pycache_path}")
                 purged_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (OSError, PermissionError) as e:
                 Logger.error(f"❌ Failed to delete directory {pycache_path}: {e}")
+                raise
     return purged_count
 
 
@@ -242,8 +244,9 @@ def organize_structure():
                             Logger.info(f"📁 Moved {file} to {target_dir}/")
                             moved_count += 1
                     # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except (OSError, PermissionError, shutil.Error) as e:
                         Logger.error(f"❌ Failed to move {file}: {e}")
+                        raise
     Logger.info(f"\n✨ Reorganization complete. Moved {moved_count} files.")
     return moved_count
 
@@ -253,8 +256,9 @@ def get_file_hash(filepath):
     try:
         with open(filepath, "rb") as f:
             return hashlib.md5(f.read()).hexdigest()
-    except OSError:  # guardian: Add error context logging
-        return None
+    except OSError as e:
+        Logger.error(f"❌ Failed to hash file {filepath}: {e}")
+        raise
 
 
 def extract_functions(filepath):
@@ -380,9 +384,9 @@ def purge_everything(
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
+            except (OSError, PermissionError) as e:
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
+                raise
     for root, _dirs, files in tqdm(os.walk("."), desc="Processing", unit="item"):
         for file in tqdm(files, desc="Processing", unit="item"):
             file_path = Path(root) / file
@@ -392,9 +396,9 @@ def purge_everything(
                     Logger.info(f"🗑️ Purged File: {file_path}")
                     purged_count += 1
                 # guardian: allow-silent-swallow
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                    raise
+                except (OSError, PermissionError) as e:
                     Logger.error(f"❌ Failed to delete {file_path}: {e}")
+                    raise
     if aggressive:
         purged_count += aggressive_cleanup()
     Logger.info(f"\n✨ Aggressive Cleanup Complete. {purged_count} items removed.")
