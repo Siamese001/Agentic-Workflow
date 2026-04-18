@@ -212,7 +212,7 @@ def measure_stage_timing(
     status = StageStatus.SUCCESS
     try:
         yield start_tick
-    except Exception:
+    except (RuntimeError, TypeError, ValueError):
         status = StageStatus.ERROR
         raise
     finally:
@@ -227,7 +227,7 @@ def measure_stage_timing(
                 status=status,
                 registry=registry,
             )
-        except Exception as perf_exc:  # guardian: allow-broad-exception
+        except (AttributeError, RuntimeError, TypeError, ValueError) as perf_exc:
             logger.error("PERFORMANCE_RECORDING_FAILED stage=%s error=%s", stage_name, perf_exc)
 
 
