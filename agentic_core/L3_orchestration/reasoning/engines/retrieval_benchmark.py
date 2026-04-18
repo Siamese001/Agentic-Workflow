@@ -38,7 +38,7 @@ class RetrievalBenchmark:
     def _search(self, query: str, collection_name: str = "code_chunks") -> list[Any]:
         try:
             results = self.engine.search(query, collection_name=collection_name)
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
             return []
         if results is None:
             return []
@@ -46,7 +46,7 @@ class RetrievalBenchmark:
             return results
         try:
             return list(results)
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
             return []
 
     @staticmethod
@@ -140,7 +140,7 @@ class RetrievalBenchmark:
             try:
                 filtered = self.engine._apply_governance_filters(results, governance_filter)
                 filtered_count = len(filtered) if filtered is not None else 0
-            except Exception:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
                 filtered_count = 0
             with_filter.append(filtered_count)
         avg_without = sum(without_filter) / len(without_filter)

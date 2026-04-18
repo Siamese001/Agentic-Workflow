@@ -261,7 +261,7 @@ class query_planner:
             queries: Any = result.get("queries", [])[:8]
             if original_query not in queries:
                 queries.insert(0, original_query)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             print(f"   [!] Multi-query parse failure: {e}")
             queries: Any = [original_query]
         self.cache.set(cache_key, {"queries": queries})
@@ -284,7 +284,7 @@ class query_planner:
             sub_queries: Any = list(dict.fromkeys([q.strip() for q in sub_queries if q.strip()]))
             if not sub_queries:
                 sub_queries: Any = [query]
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             print(f"   [!] Decomposition parse error: {e}")
             sub_queries: Any = [query]
         self.cache.set(cache_key, {"sub_queries": sub_queries})
@@ -303,7 +303,7 @@ class query_planner:
         try:
             result: Any = json.loads(self._clean_json_response(response))
             expanded: Any = result.get("queries", [])[:8]
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"L1 Decomposition failure: {e}")
             expanded: Any = [query]
         return expanded
@@ -321,7 +321,7 @@ class query_planner:
         try:
             result: Any = json.loads(self._clean_json_response(response))
             return result.get("passages", [])[:3]
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"L1 HyDE failure: {e}")
             return []
 

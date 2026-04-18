@@ -353,7 +353,7 @@ class CircuitBreaker:
             result = fn(*args, **kwargs)
             self._on_success()
             return result
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             self._on_failure()
             raise
 
@@ -582,7 +582,7 @@ class SovereignLLMGateway:
             error_message = "Circuit breaker is open"
             raise
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             error_type = type(e).__name__
             error_message = str(e)
             raise ProviderError(f"Provider call failed: {e}") from e
@@ -667,7 +667,7 @@ class SovereignLLMGateway:
             error_message = "Circuit breaker is open"
             raise
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             error_type = type(e).__name__
             error_message = str(e)
             raise ProviderError(f"Provider call failed: {e}") from e

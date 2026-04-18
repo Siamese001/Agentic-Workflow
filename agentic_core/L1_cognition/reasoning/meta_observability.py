@@ -373,7 +373,7 @@ class MetaLearningObservability:
                 message="Connected" if pinecone_available else "Unavailable",
             )
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             self._health_status["MetaLearningClient"] = HealthStatus(
@@ -399,7 +399,7 @@ class MetaLearningObservability:
                 details={"domains_configured": len(stats.get("domain_configs", {}))},
             )
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             self._health_status["CacheStrategyManager"] = HealthStatus(
@@ -425,7 +425,7 @@ class MetaLearningObservability:
                 details={"registered_domains": stats.get("registered_domains", [])},
             )
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             self._health_status["DomainContextManager"] = HealthStatus(

@@ -97,6 +97,7 @@ from tools.generate.integration import (  # noqa: E402  # M.5 modularization
     _persist_adg_to_memory,
     _run_p1_p2_auto_fix,
     _emit_p0_remediation_wave_plan,
+    _run_p0_two_pass_runner,
 )
 from tools.generate.reporting import (  # noqa: E402  # M.4 modularization
     _generate_standardized_reports,
@@ -233,11 +234,6 @@ def generate_full_adg(
     repair_routes = route_violations(violation_edges)
     routing_summary = repair_routing_summary(repair_routes)
 
-    # --- Archive old artifacts BEFORE validation gates so cleanup always runs ---
-    # (ratchet/gate failures call sys.exit before the post-zip archive block)
-    if archive_old:
-        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
-
     # --- Write artifacts to temp directory first for fail-fast check ---
     print("[ADG] Writing artifact tiers to temp directory...")
     import shutil
@@ -287,6 +283,11 @@ def generate_full_adg(
     prod_sqlite_path = production_sqlite[-1] if production_sqlite else None
     p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
+    _run_p0_two_pass_runner(
+        sqlite_path=prod_sqlite_path,
+        plan_path=p0_wave_plan.get("markdown_path"),
+    )
+
     _check_p0_violations(
         routing_summary,
         sqlite_path=prod_sqlite_path,
@@ -311,7 +312,7 @@ def generate_full_adg(
 
         _graph_proj_path = build_graph_projection(paths.sqlite, adg_artifacts_dir, ts)
         print(f"[ADG] P6 graph projection: {_graph_proj_path.name}")
-    except Exception as e:  # guardian: allow-silent-swallow -- graph projection is a non-critical derived artifact; failure must never block the canonical CI truth path
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
         print(f"[ADG] P6 graph projection skipped: {e}")
 
     # --- Architecture witness-tier gates: Class A positive / Class B absence ---
@@ -325,7 +326,7 @@ def generate_full_adg(
             print_summary=True,
         )
         print(f"[ADG] P4 watchlist artifact: {watchlist_path.name}")
-    except Exception as e:  # guardian: allow-silent-swallow -- watchlist is non-critical intelligence
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
         print(f"[ADG] P4 watchlist skipped: {e}")
 
     # --- P5: Graph-native intelligence watchlist (non-blocking graph layer) ---
@@ -338,7 +339,7 @@ def generate_full_adg(
             graph_watchlist_path = builder.emit_artifact(graph_watchlist_items, adg_artifacts_dir)
             print(builder.emit_terminal_summary(graph_watchlist_items, top_n=10))
         print(f"[ADG] P5 graph watchlist artifact: {graph_watchlist_path.name}")
-    except Exception as e:  # guardian: allow-silent-swallow -- graph watchlist is non-critical intelligence
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
         print(f"[ADG] P5 graph watchlist skipped: {e}")
 
     # --- Repair orchestrator: classify + fix remaining issues ---
@@ -382,7 +383,7 @@ def generate_full_adg(
 
             bridge = get_sl_memory_bridge()
             bridge.persist_adg_confidence_summary(conf_summary, ts)
-        except Exception:  # guardian: allow-silent-swallow -- system learning unavailable: continue ADG generation without confidence persistence
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError):
             pass
 
     # --- E10: Repair routing ---
@@ -475,7 +476,7 @@ def generate_full_adg(
 
             with ADGGraphWatchlistBuilder(paths.sqlite) as builder:
                 graph_delta_result = builder._compute_deltas(graph_watchlist_items, adg_artifacts_dir)
-        except Exception:  # guardian: allow-silent-swallow -- delta tracking is optional intelligence
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError):
             graph_delta_result = None
 
         print(f"[ADG] E11 graph-native SQL analytics:")
@@ -600,6 +601,11 @@ def generate_full_adg(
         print(f"[ADG] WARNING: Zip creation failed: {e}")
         print("[ADG] Individual files will be archived using legacy path")
         zip_created = False
+
+    # --- Archive old artifacts AFTER successful current-run zip creation ---
+    # This ensures keep_runs=1 retains exactly one total run (the current run).
+    if archive_old and zip_created:
+        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
 
     # --- Closure validation check ---
     if closure_report is not None and not closure_report["summary"]["all_gaps_passed"]:

@@ -56,12 +56,12 @@ try:
     from ops_scripts.ci.adg_gates.gate_p0_write_sovereignty import WriteSovereigntyGate
     from ops_scripts.ci.adg_gates.gate_p0_authority import AuthorityBoundaryGate
     from ops_scripts.ci.adg_gates.gate_p0_capability_egress import CapabilityEgressGate
-    from ops_scripts.ci.adg_gates.gate_p0_critical_path import CriticalPathGate
-    from ops_scripts.ci.adg_gates.gate_p0_determinism import DeterminismGate
+    from ops_scripts.ci.adg_gates.gate_p0_critical_path import CriticalPathIntegrityGate as CriticalPathGate
+    from ops_scripts.ci.adg_gates.gate_p0_determinism import DeterminismProvenanceGate as DeterminismGate
     from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
 
     _GATE_IMPORTS_OK = True
-except Exception as _exc:  # guardian: runner must record import-side-effect failures instead of crashing
+except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _exc:
     _IMPORT_ERROR = f"{type(_exc).__name__}: {_exc}"
 
 
@@ -169,7 +169,7 @@ def run_preflight(
                     f"({len(result.violations)} violations)",
                     file=sys.stderr,
                 )
-        except Exception as exc:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
             print(
                 f"[p0_runner] PREFLIGHT ERROR running {cls_name}: {type(exc).__name__}: {exc}",
                 file=sys.stderr,
@@ -219,7 +219,7 @@ def run_full(
                     f"[p0_runner] FULL BLOCKED: {result.gate_family} ({len(result.violations)} violations)",
                     file=sys.stderr,
                 )
-        except Exception as exc:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
             print(f"[p0_runner] FULL ERROR running {cls_name}: {type(exc).__name__}: {exc}", file=sys.stderr)
             any_blocked = True
 

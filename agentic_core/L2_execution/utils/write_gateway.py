@@ -479,7 +479,7 @@ def write_text(
     gateway_approved = True
     try:
         enforce_protected_root(p, allow_override=allow_override)
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
         raise
     _deny_writes_into_source_roots(p, "write")
     try:
@@ -496,7 +496,7 @@ def write_text(
         )
         Logger.debug(f"[WriteGateway] write_text: {p}")
         return str(p)
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
         raise
 
 
@@ -514,7 +514,7 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
     gateway_approved = True
     try:
         enforce_protected_root(p, allow_override=allow_override)
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
         raise
     _deny_writes_into_source_roots(p, "write")
     try:
@@ -531,7 +531,7 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
         )
         Logger.debug(f"[WriteGateway] write_bytes: {p}")
         return str(p)
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
         raise
 
 

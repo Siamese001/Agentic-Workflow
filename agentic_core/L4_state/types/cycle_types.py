@@ -368,7 +368,7 @@ class ThinkActObserveEngine:
                         actions.append({"type": "action", "action": step.action, "thought": step.thought})
                 return {"success": True, "actions": actions, "reasoning_trace": reasoning_trace.to_dict()}
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 if self.enable_logging:
                     LOGGER.error("think_phase_failed", extra={"error": str(e)}, exc_info=True)
                 return {"success": False, "error": str(e), "actions": []}
@@ -377,7 +377,7 @@ class ThinkActObserveEngine:
                 result = await think_fn(self.state.mission, self.state.scene)
                 return {"success": True, "actions": result.get("actions", [])}
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 return {"success": False, "error": str(e), "actions": []}
 
     async def _act_phase(self, actions: list[dict[str, Any]], act_fn: Any) -> dict[str, Any]:
@@ -415,7 +415,7 @@ class ThinkActObserveEngine:
                     "dag_result": dag_result.to_dict(),
                 }
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 if self.enable_logging:
                     LOGGER.error("act_phase_failed", extra={"error": str(e)}, exc_info=True)
                 return {"success": False, "error": str(e), "results": []}
@@ -427,7 +427,7 @@ class ThinkActObserveEngine:
                     results.append(result)
                     self.state.actions_taken.append(action)
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                     if self.enable_logging:
                         LOGGER.error("action_failed", extra={"action": action, "error": str(e)})
                     results.append({"success": False, "error": str(e)})
