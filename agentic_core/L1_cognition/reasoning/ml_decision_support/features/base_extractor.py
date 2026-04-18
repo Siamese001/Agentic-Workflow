@@ -115,7 +115,7 @@ class DeterministicFeatureExtractor(ABC):
                     elif feature_def.required:
                         errors.append(f"Required feature '{feature_def.name}' could not be extracted")
 
-                except Exception as e:
+                except (RuntimeError, ValueError, TypeError, KeyError) as e:
                     error_msg = f"Error extracting feature '{feature_def.name}': {str(e)}"
                     errors.append(error_msg)
 
@@ -166,7 +166,7 @@ class DeterministicFeatureExtractor(ABC):
                 deterministic_hash=deterministic_hash,
             )
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, KeyError) as e:
             # Catastrophic failure
             error_msg = f"Catastrophic extraction failure: {str(e)}"
             errors.append(error_msg)

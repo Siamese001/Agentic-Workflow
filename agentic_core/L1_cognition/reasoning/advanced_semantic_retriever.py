@@ -302,7 +302,7 @@ class AdvancedSemanticRetriever:
                         }
                     )
 
-                except Exception as e:
+                except (RuntimeError, ValueError, TypeError) as e:
                     logger.error(f"Benchmark query failed: {query} - {e}")
                     strategy_results.append(
                         {
@@ -380,7 +380,7 @@ async def main():
                 if hasattr(result, "score"):
                     print(f"     Score: {result.score:.3f}")
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             print(f"Error: {e}")
 
     # Show retrieval stats

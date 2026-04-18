@@ -332,7 +332,7 @@ class CognitiveNode:
                 success=True,
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, OSError) as e:
             latency_ms = (get_clock().now_epoch() - start_time) * 1000
             return CognitiveResult(
                 output=f"Error: {str(e)}",
@@ -349,7 +349,7 @@ class CognitiveNode:
             results = self.semantic_memory.query(query, top_k=3)
             return results
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, ValueError, TypeError, OSError):
             return []
 
     def _compute_mission_reward(self, output: str, plan: dict, reasoned: dict) -> float:
@@ -368,7 +368,11 @@ class CognitiveNode:
         if self.meta_learner:
             try:
                 self.meta_learner.replay_and_learn(batch_size=BATCH_SIZE)
-            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ):  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 pass
 
