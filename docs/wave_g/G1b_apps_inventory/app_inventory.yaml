@@ -1,0 +1,370 @@
+# G1b Apps Runtime and Adapter Inventory
+wave: G1b
+produced_at: 2026-04-18
+adg_snapshot: artifacts/adg/adg_indexed_04172026_0611.sqlite
+upstream_artefacts:
+  - docs/wave_g/G0_full_runtime_plan/output_contracts.md
+  - docs/wave_g/G1_core_runtime_inventory/component_inventory.yaml
+  - docs/wave_e/99_integration_v14/canonical/atoms.yaml
+app_count: 8
+apps:
+  - id: APP-EVAL
+    path: apps_eval
+    module_count: 59
+    is_library_only: false
+    entry_points:
+      - path: apps_eval/__main__.py
+        kind: cli
+      - path: apps_eval/scripts/run_eval.py
+        kind: cli_script
+    sub_surfaces:
+      engines: apps_eval/engines
+      reasoning: apps_eval/reasoning
+      integrations: apps_eval/integrations
+      services: apps_eval/services
+      spine: apps_eval/spine
+      outputs: apps_eval/outputs
+      validators: apps_eval/validators
+      types: apps_eval/types
+      tools: apps_eval/tools
+      config: apps_eval/config
+      tests: apps_eval/tests
+    core_bindings:
+      direct_imports_from: [agentic_core.L0_routing.enforcement.policy_hash_enforcer, agentic_core.L2_execution.enforcement.key_source, agentic_core.L2_execution.types.agent_output_contract_types, agentic_core.L3_orchestration.inference.qwen_vllm, agentic_core.L5_safety.validators.static_checks.determinism_serialization_check, agentic_core.adg.applications.execute_ssot_integration, agentic_core.adg.runtime.behavioral_index, agentic_core.evaluation.metrics.classification, agentic_core.evaluation.metrics.f1_score, agentic_core.mixins.embedding_mixin, agentic_core.mixins.semantic_cache_mixin]
+      imports_by_layer:
+        CROSS_CUTTING: 11
+        L0: 3
+        L2: 2
+        L3: 2
+        L5: 3
+      resolved_target_files: 21
+      seam_uses: []
+      interface_uses: []
+      l_contract_uses: []
+      adapter_shims: [apps_eval/_telemetry.py]
+      unresolved_imports: []
+    apps_shared_uses: [apps_shared.data_adapters, apps_shared.spine.base_spine_adapter]
+    data_and_outputs_paths: [apps_eval/data, apps_eval/outputs]
+    notes: ""
+  - id: APP-EXEC
+    path: apps_exec
+    module_count: 59
+    is_library_only: false
+    entry_points:
+      - path: apps_exec/__main__.py
+        kind: cli
+      - path: apps_exec/scripts/run_exec.py
+        kind: cli_script
+    sub_surfaces:
+      engines: apps_exec/engines
+      reasoning: apps_exec/reasoning
+      integrations: apps_exec/integrations
+      services: apps_exec/services
+      spine: apps_exec/spine
+      outputs: apps_exec/outputs
+      validators: apps_exec/validators
+      types: apps_exec/types
+      tools: apps_exec/tools
+      config: apps_exec/config
+      tests: apps_exec/tests
+    core_bindings:
+      direct_imports_from: [agentic_core.L2_execution.types.local_first_disposition, agentic_core.L2_execution.types.vllm_gateway_adapter_types, agentic_core.L3_orchestration.inference.qwen_vllm, agentic_core.L4_state.config.vllm_routing_predicates, agentic_core.adg.applications.execute_ssot_integration, agentic_core.adg.runtime.behavioral_index, agentic_core.mixins.embedding_mixin, agentic_core.mixins.semantic_cache_mixin, agentic_core.runtime.contracts.lifecycle_trace_contract]
+      imports_by_layer:
+        CROSS_CUTTING: 36
+        L2: 2
+        L3: 1
+        L4: 1
+      resolved_target_files: 40
+      seam_uses: []
+      interface_uses: []
+      l_contract_uses: []
+      adapter_shims: [apps_exec/_optional_agentic_core.py]
+      unresolved_imports: []
+    apps_shared_uses: [apps_shared.data_adapters, apps_shared.integrations.governed_app_runner, apps_shared.spine.base_spine_adapter]
+    data_and_outputs_paths: [apps_exec/outputs]
+    notes: ""
+  - id: APP-LIC
+    path: apps_lic
+    module_count: 134
+    is_library_only: false
+    entry_points:
+      - path: apps_lic/__main__.py
+        kind: cli
+      - path: apps_lic/scripts/migrate_agents.py
+        kind: cli_script
+      - path: apps_lic/scripts/move_lics2_to_legacy.py
+        kind: cli_script
+      - path: apps_lic/scripts/purge_legacy_archive.py
+        kind: cli_script
+    sub_surfaces:
+      engines: apps_lic/engines
+      reasoning: apps_lic/reasoning
+      integrations: apps_lic/integrations
+      services: apps_lic/services
+      spine: null
+      outputs: apps_lic/outputs
+      validators: apps_lic/validators
+      types: apps_lic/types
+      tools: apps_lic/tools
+      config: apps_lic/config
+      tests: apps_lic/tests
+    core_bindings:
+      direct_imports_from: [agentic_core.L0_routing.config, agentic_core.L0_routing.config.path_constants, agentic_core.L1_cognition.reasoning.meta_client, agentic_core.L1_cognition.types.client_types, agentic_core.L1_cognition.utils.guardrails_util, agentic_core.L2_execution.cid_registry, agentic_core.L2_execution.types.local_first_disposition, agentic_core.L2_execution.types.vllm_gateway_adapter_types, agentic_core.L2_execution.utils, agentic_core.L3_orchestration.healers.healing_tier_config, agentic_core.L3_orchestration.inference.qwen_vllm, agentic_core.L4_state.config.vllm_routing_predicates, agentic_core.L4_state.enforcement.graph_memory_bridge, agentic_core.L4_state.utils.client.chroma_client, agentic_core.adg.applications.execute_ssot_integration, agentic_core.adg.runtime.behavioral_index, agentic_core.base_agents.SovereignBaseAgent, agentic_core.interfaces.gateway, agentic_core.interfaces.mixins, agentic_core.interfaces.routing_types, agentic_core.interfaces.spine, agentic_core.interfaces.validators, agentic_core.mixins.embedding_mixin, agentic_core.mixins.healer_mixin, agentic_core.mixins.mcp_hardened_mixin, agentic_core.mixins.semantic_cache_mixin, agentic_core.mixins.subatomic_testing_mixin, agentic_core.prompt_governance, agentic_core.runtime.contracts.lifecycle_trace_contract]
+      imports_by_layer:
+        CROSS_CUTTING: 126
+        L0: 3
+        L1: 3
+        L2: 6
+        L3: 2
+        L4: 4
+      resolved_target_files: 144
+      seam_uses: []
+      interface_uses: [agentic_core/interfaces/gateway.py, agentic_core/interfaces/mixins.py, agentic_core/interfaces/routing_types.py, agentic_core/interfaces/spine.py, agentic_core/interfaces/validators.py]
+      l_contract_uses: []
+      adapter_shims: []
+      unresolved_imports: []
+    apps_shared_uses: [apps_shared.data_adapters, apps_shared.integrations.governed_app_runner, apps_shared.mixins.apps_tracing_mixin, apps_shared.reasoning.BaseDispatchAgent, apps_shared.reasoning.BaseHealingOrchestrator, apps_shared.reasoning.BaseProactiveAgent, apps_shared.reasoning.BaseReflectionAgent, apps_shared.reasoning.ParameterizedValidator, apps_shared.spine.base_spine_adapter, apps_shared.spine.d0_engine_adapter, apps_shared.spine.risk_gate_adapter, apps_shared.spine.vigilance_dispatcher_adapter, apps_shared.utils.app_base_util]
+    data_and_outputs_paths: [apps_lic/outputs]
+    notes: ""
+  - id: APP-RESEARCH
+    path: apps_research
+    module_count: 55
+    is_library_only: false
+    entry_points:
+      - path: apps_research/__main__.py
+        kind: cli
+      - path: apps_research/scripts/run_research.py
+        kind: cli_script
+    sub_surfaces:
+      engines: apps_research/engines
+      reasoning: apps_research/reasoning
+      integrations: apps_research/integrations
+      services: apps_research/services
+      spine: apps_research/spine
+      outputs: apps_research/outputs
+      validators: apps_research/validators
+      types: apps_research/types
+      tools: apps_research/tools
+      config: apps_research/config
+      tests: apps_research/tests
+    core_bindings:
+      direct_imports_from: [agentic_core.L2_execution.types.local_first_disposition, agentic_core.L2_execution.types.vllm_gateway_adapter_types, agentic_core.L3_orchestration.inference.qwen_vllm, agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge, agentic_core.L3_orchestration.reasoning.engines.evidence_shaper, agentic_core.L4_state.config.vllm_routing_predicates, agentic_core.L6_observability.utils.evaluation.async_eval_packet, agentic_core.adg.runtime.behavioral_index, agentic_core.mixins.embedding_mixin, agentic_core.mixins.semantic_cache_mixin, agentic_core.runtime.contracts.lifecycle_trace_contract]
+      imports_by_layer:
+        CROSS_CUTTING: 23
+        L2: 2
+        L3: 3
+        L4: 1
+        L6: 1
+      resolved_target_files: 30
+      seam_uses: []
+      interface_uses: []
+      l_contract_uses: []
+      adapter_shims: [apps_research/_telemetry.py]
+      unresolved_imports: []
+    apps_shared_uses: [apps_shared.data_adapters, apps_shared.integrations.governed_app_runner, apps_shared.spine.base_spine_adapter]
+    data_and_outputs_paths: [apps_research/outputs]
+    notes: ""
+  - id: APP-RFP
+    path: apps_rfp
+    module_count: 56
+    is_library_only: false
+    entry_points:
+      - path: apps_rfp/__main__.py
+        kind: cli
+      - path: apps_rfp/scripts/run_rfp.py
+        kind: cli_script
+    sub_surfaces:
+      engines: apps_rfp/engines
+      reasoning: apps_rfp/reasoning
+      integrations: apps_rfp/integrations
+      services: apps_rfp/services
+      spine: apps_rfp/spine
+      outputs: apps_rfp/outputs
+      validators: apps_rfp/validators
+      types: apps_rfp/types
+      tools: apps_rfp/tools
+      config: apps_rfp/config
+      tests: apps_rfp/tests
+    core_bindings:
+      direct_imports_from: [agentic_core.L2_execution.types.local_first_disposition, agentic_core.L2_execution.types.vllm_gateway_adapter_types, agentic_core.L3_orchestration.inference.qwen_vllm, agentic_core.L4_state.config.vllm_routing_predicates, agentic_core.adg.applications.execute_ssot_integration, agentic_core.adg.runtime.behavioral_index, agentic_core.mixins.embedding_mixin, agentic_core.mixins.semantic_cache_mixin, agentic_core.runtime.contracts.lifecycle_trace_contract]
+      imports_by_layer:
+        CROSS_CUTTING: 7
+        L2: 2
+        L3: 1
+        L4: 1
+      resolved_target_files: 11
+      seam_uses: []
+      interface_uses: []
+      l_contract_uses: []
+      adapter_shims: [apps_rfp/_compat/__init__.py, apps_rfp/_compat/lifecycle_trace.py]
+      unresolved_imports: []
+    apps_shared_uses: [apps_shared.data_adapters, apps_shared.integrations.governed_app_runner, apps_shared.spine.base_spine_adapter]
+    data_and_outputs_paths: [apps_rfp/data, apps_rfp/outputs]
+    notes: ""
+  - id: APP-RG
+    path: apps_rg
+    module_count: 164
+    is_library_only: false
+    entry_points:
+      - path: apps_rg/__main__.py
+        kind: cli
+      - path: apps_rg/bootstrap_runtime.py
+        kind: runtime_bootstrap
+      - path: apps_rg/scripts/generate_final_report.py
+        kind: cli_script
+      - path: apps_rg/scripts/generate_resume.py
+        kind: cli_script
+      - path: apps_rg/scripts/migration_executor.py
+        kind: cli_script
+      - path: apps_rg/scripts/rg_final_audit.py
+        kind: cli_script
+      - path: apps_rg/scripts/rg_inject_archives.py
+        kind: cli_script
+      - path: apps_rg/scripts/rg_json_miner.py
+        kind: cli_script
+      - path: apps_rg/scripts/rg_live_fire.py
+        kind: cli_script
+      - path: apps_rg/scripts/rg_sovereign_auditor.py
+        kind: cli_script
+    sub_surfaces:
+      engines: apps_rg/engines
+      reasoning: apps_rg/reasoning
+      integrations: apps_rg/integrations
+      services: null
+      spine: null
+      outputs: apps_rg/outputs
+      validators: apps_rg/validators
+      types: apps_rg/types
+      tools: apps_rg/tools
+      config: apps_rg/config
+      tests: apps_rg/tests
+    core_bindings:
+      direct_imports_from: [agentic_core.L0_routing.config, agentic_core.L0_routing.config.path_constants, agentic_core.L0_routing.types.reasoning_intensity_types, agentic_core.L1_cognition.reasoning.meta_client, agentic_core.L1_cognition.types.client_types, agentic_core.L1_cognition.utils.guardrails_util, agentic_core.L2_execution.types.local_first_disposition, agentic_core.L2_execution.types.vllm_gateway_adapter_types, agentic_core.L2_execution.utils, agentic_core.L3_orchestration.healers.bmg_embedding_similarity, agentic_core.L3_orchestration.healers.healing_event_emitter, agentic_core.L3_orchestration.inference.qwen_vllm, agentic_core.L3_orchestration.reasoning.mcp_manager, agentic_core.L4_state.config.vllm_routing_predicates, agentic_core.L4_state.enforcement.graph_memory_bridge, agentic_core.adg.applications.execute_ssot_integration, agentic_core.adg.runtime.behavioral_index, agentic_core.base_agents.timeout_decorator, agentic_core.interfaces.execution, agentic_core.interfaces.execution_contracts, agentic_core.interfaces.gateway, agentic_core.interfaces.observability, agentic_core.interfaces.spine, agentic_core.mixins.hardening_mixin, agentic_core.mixins.healer_mixin, agentic_core.mixins.mcp_hardened_mixin, agentic_core.mixins.subatomic_testing_mixin, agentic_core.prompt_governance, agentic_core.runtime.contracts.lifecycle_trace_contract, agentic_core.runtime.types.reasoning_config, agentic_core.utils.timeout_decorator_util]
+      imports_by_layer:
+        CROSS_CUTTING: 243
+        L0: 9
+        L1: 4
+        L2: 9
+        L3: 4
+        L4: 2
+      resolved_target_files: 271
+      seam_uses: []
+      interface_uses: [agentic_core/interfaces/__init__.py, agentic_core/interfaces/execution.py, agentic_core/interfaces/gateway.py, agentic_core/interfaces/observability.py, agentic_core/interfaces/spine.py]
+      l_contract_uses: []
+      adapter_shims: [apps_rg/bootstrap_runtime.py]
+      unresolved_imports: []
+    apps_shared_uses: [apps_shared.data_adapters, apps_shared.integrations.governed_app_runner, apps_shared.reasoning.BaseDispatchAgent, apps_shared.reasoning.BaseHealingOrchestrator, apps_shared.reasoning.BaseProactiveAgent, apps_shared.reasoning.BaseReflectionAgent, apps_shared.reasoning.ParameterizedValidator, apps_shared.spine.base_spine_adapter, apps_shared.spine.d0_engine_adapter, apps_shared.spine.risk_gate_adapter, apps_shared.spine.vigilance_dispatcher_adapter, apps_shared.utils.Provider, apps_shared.utils.app_base_util, apps_shared.utils.governed_prompt_adapter, apps_shared.utils.observability_clients_util, apps_shared.utils.provider_util]
+    data_and_outputs_paths: [apps_rg/outputs]
+    notes: ""
+  - id: APP-SHARED
+    path: apps_shared
+    module_count: 268
+    is_library_only: true
+    entry_points:
+      - path: apps_shared/scripts/app_remediation_dispatcher.py
+        kind: cli_script
+      - path: apps_shared/scripts/assess_dependencies.py
+        kind: cli_script
+      - path: apps_shared/scripts/batch_refactor_agents.py
+        kind: cli_script
+      - path: apps_shared/scripts/clean_shims_simple.py
+        kind: cli_script
+      - path: apps_shared/scripts/compare_agent_lists.py
+        kind: cli_script
+      - path: apps_shared/scripts/find_long_lines.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_all_agentic_imports.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_all_dataclass_underscores.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_all_indentation.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_all_violations.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_global_variables.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_indentation.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_long_lines.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_markdown_fences.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_specific_long_lines.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_structural_debt.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_syntax_errors.py
+        kind: cli_script
+      - path: apps_shared/scripts/fix_whitespace_in_container.py
+        kind: cli_script
+      - path: apps_shared/scripts/manage_false_positives.py
+        kind: cli_script
+      - path: apps_shared/scripts/refactor_agents_to_subatomic.py
+        kind: cli_script
+      - path: apps_shared/scripts/run_hardened_job.py
+        kind: cli_script
+      - path: apps_shared/scripts/update_observability_usage_safety_type.py
+        kind: cli_script
+      - path: apps_shared/scripts/update_validator_imports.py
+        kind: cli_script
+    sub_surfaces:
+      engines: null
+      reasoning: apps_shared/reasoning
+      integrations: apps_shared/integrations
+      services: apps_shared/services
+      spine: apps_shared/spine
+      outputs: null
+      validators: apps_shared/validators
+      types: apps_shared/types
+      tools: null
+      config: apps_shared/config
+      tests: apps_shared/tests
+    core_bindings:
+      direct_imports_from: [agentic_core.L0_routing.config, agentic_core.L0_routing.config.path_constants, agentic_core.L0_routing.reasoning.agentic_router, agentic_core.L0_routing.reasoning.assembly_stage, agentic_core.L0_routing.reasoning.prompt_bom_builder, agentic_core.L0_routing.types.l0_instruction_packet, agentic_core.L0_routing.utils.clock_provider, agentic_core.L1_cognition.reasoning.query_planner, agentic_core.L2_execution.enforcement.SovereignLLMGateway, agentic_core.L2_execution.enforcement.execution_guardrail_chokepoint, agentic_core.L3_orchestration.healers.bmg_embedding_similarity, agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge, agentic_core.L3_orchestration.reasoning.engines.evidence_shaper, agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine, agentic_core.L3_orchestration.reasoning.mcp_manager, agentic_core.L4_state.enforcement.graph_memory_bridge, agentic_core.L4_state.enforcement.neo4j_store, agentic_core.L4_state.utils.context.execution_context, agentic_core.L4_state.utils.memory.semantic_cache_manager, agentic_core.L4_state.utils.memory.template_registry, agentic_core.L5_safety.enforcement.conf_calib_gate, agentic_core.L5_safety.enforcement.d0_injection_engine_enforcer, agentic_core.L5_safety.enforcement.eval_guard, agentic_core.L6_observability.dashboards.verify_dashboard_e2e_playwright_util, agentic_core.L6_observability.utils.engines.vigilance_dispatcher, agentic_core.L6_observability.utils.evaluation.async_eval_packet, agentic_core.adg.applications.execute_ssot_integration, agentic_core.adg.runtime.behavioral_index, agentic_core.base_agents.SovereignBaseAgent, agentic_core.interfaces.determinism, agentic_core.interfaces.execution, agentic_core.interfaces.meta_control, agentic_core.interfaces.mixins, agentic_core.interfaces.path_constants, agentic_core.mixins.tracing_mixin, agentic_core.prompt_governance.contracts, agentic_core.runtime.contracts.lifecycle_trace_contract]
+      imports_by_layer:
+        CROSS_CUTTING: 363
+        L0: 30
+        L1: 1
+        L2: 2
+        L3: 5
+        L4: 8
+        L5: 3
+        L6: 3
+      resolved_target_files: 415
+      seam_uses: []
+      interface_uses: [agentic_core/interfaces/determinism.py, agentic_core/interfaces/execution.py, agentic_core/interfaces/meta_control.py, agentic_core/interfaces/mixins.py, agentic_core/interfaces/path_constants.py]
+      l_contract_uses: []
+      adapter_shims: [apps_shared/_compat/__init__.py, apps_shared/_compat/agentic_core_shim.py]
+      unresolved_imports: []
+    apps_shared_uses: []
+    data_and_outputs_paths: [apps_shared/data]
+    notes: ""
+  - id: APP-UNDERWRITING_AI
+    path: apps_underwriting_ai
+    module_count: 72
+    is_library_only: true
+    entry_points: []
+    sub_surfaces:
+      engines: apps_underwriting_ai/engines
+      reasoning: apps_underwriting_ai/reasoning
+      integrations: apps_underwriting_ai/integrations
+      services: null
+      spine: null
+      outputs: apps_underwriting_ai/outputs
+      validators: apps_underwriting_ai/validators
+      types: apps_underwriting_ai/types
+      tools: null
+      config: apps_underwriting_ai/config
+      tests: apps_underwriting_ai/tests
+    core_bindings:
+      direct_imports_from: []
+      imports_by_layer: {}
+      resolved_target_files: 0
+      seam_uses: []
+      interface_uses: []
+      l_contract_uses: []
+      adapter_shims: []
+      unresolved_imports: []
+    apps_shared_uses: []
+    data_and_outputs_paths: [apps_underwriting_ai/outputs]
+    notes: ""
