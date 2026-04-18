@@ -157,7 +157,7 @@ def start_metrics_server(
 
         return handle
 
-    except Exception as e:
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
         logger.error(
             "metrics_server_start_failed",
             extra={"port": port, "addr": addr, "error": str(e)},
@@ -205,7 +205,7 @@ def stop_metrics_server(server: Any) -> bool:
 
         return True
 
-    except Exception as e:
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
         logger.error(
             "metrics_server_stop_failed",
             extra={"error": str(e)},

@@ -234,7 +234,7 @@ class SovereignHealthMonitor:
             _bp = _gbp(_Path(__file__).resolve(), _root)
             _adg_trust_score = round(_bp.behavioral_score, 4)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
             import logging
 
             logging.getLogger(__name__).debug("SovereignHealthMonitor: Exception swallowed at L235: %s", e)
@@ -253,7 +253,7 @@ class SovereignHealthMonitor:
             )
             self.redis.incr("autonomous_fixes_total", amount=fixes)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             print(f"[WARNING] Failed to persist health snapshot: {e}")
 
     def get_domain_health(self, domain: str) -> dict[str, Any] | None:

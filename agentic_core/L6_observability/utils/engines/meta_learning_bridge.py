@@ -244,7 +244,7 @@ class L6MetaLearningBridge:
             )
 
             return True
-        except Exception as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as e:
             logger.warning(
                 "record_persist_failed",
                 extra={"snapshot_id": record.snapshot_id[:16], "error": str(e)},
@@ -274,7 +274,7 @@ class L6MetaLearningBridge:
                         record = MetaLearningRecord.from_dict(data)
                         self._records[snapshot_id] = record
                         return record
-            except Exception as e:
+            except (OSError, RuntimeError, TypeError, ValueError, json.JSONDecodeError) as e:
                 logger.warning(
                     "record_load_failed",
                     extra={"snapshot_id": snapshot_id[:16], "error": str(e)},
