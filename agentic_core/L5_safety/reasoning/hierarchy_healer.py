@@ -852,8 +852,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     results["errors"].append(f"{py_file.name}: {rejection_reason}")
                     return
             except (ImportError, AttributeError) as e:
-                Logger.debug(f"Gatekeeper check failed for {py_file.name}: {e}")
-                # Non-blocking - continue without gatekeeper check
+                raise RuntimeError(f"Gatekeeper check failed for {py_file.name}") from e
 
             target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
             target_path = agentic_core_path / target_layer_l2
@@ -874,7 +873,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 file_type = fca.classify_file(py_file)
                 target_territory_l3 = fca._get_correct_folder_for_type(file_type)
             except (ImportError, AttributeError, OSError) as e:
-                Logger.debug(f"FCA classification failed for {py_file.name}: {e}")
+                raise RuntimeError(f"FCA classification failed for {py_file.name}") from e
 
             # Fallback to heuristic if FCA unavailable or returns None
             if not target_territory_l3:
@@ -915,6 +914,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
             results["errors"].append(f"{py_file.name}: {e}")
+            raise RuntimeError(f"L2 relocation failed for {py_file.name}") from e
 
     def _relocate_l3_territory_files(
         self,
@@ -1065,6 +1065,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
             results["errors"].append(f"Remove {folder_label}: {e}")
+            raise RuntimeError(f"Cleanup empty folder failed for {folder_label}") from e
 
     # ========================================================================
     # DEPTH ENFORCEMENT (from HierarchyEnforcerAgent)
@@ -1368,9 +1369,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 try:
                     _wg.remove_tree(pycache)  # Keep shutil for __pycache__ (not tracked)
                 except (OSError, RuntimeError) as e:
-                    import logging
-
-                    logging.getLogger(__name__).debug("hierarchy_healer: OSError swallowed at L1360: %s", e)
+                    raise RuntimeError(f"Failed to remove __pycache__ under {path}") from e
             # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
             gitkeep = path / ".gitkeep"
             if gitkeep.exists():
@@ -1379,9 +1378,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             try:
                 _wg.remove_dir(path)
             except (OSError, RuntimeError) as e:
-                import logging
-
-                logging.getLogger(__name__).debug("hierarchy_healer: OSError swallowed at L1369: %s", e)
+                raise RuntimeError(f"Failed to remove empty directory {path}") from e
 
     # ========================================================================
     # ORPHAN PURGING (from HierarchyHealerAgent)
@@ -1479,6 +1476,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             # guardian: allow-silent-swallow
             except (RuntimeError, OSError) as e:
                 errors.append(f"Failed to purge {file_path}: {e}")
+                raise RuntimeError(f"Failed to purge orphan file {file_path}") from e
 
         if violations_found > 0:
             Logger.info(f"HierarchyAgent: [PURGE] Found {violations_found} orphaned files")
@@ -1532,7 +1530,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
             _wg.write_text(gitignore_path, new_content, encoding="utf-8")
         except (OSError, UnicodeDecodeError) as e:
-            Logger.debug(f"Failed to update .gitignore: {e}")
+            raise RuntimeError("Failed to update .gitignore for purge artifacts") from e
 
     # ========================================================================
     # UNIFIED INTERFACE

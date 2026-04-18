@@ -262,13 +262,13 @@ def reason_and_record(
             "REASONING_PLAN_FAILED: %s, continuing without plan",
             _rpe,
         )
-        # Continue without plan - planning failure should not block reasoning
+        raise RuntimeError("REASONING_PLAN_FAILED") from _rpe
     except _REASONING_NON_FATAL_EXCEPTIONS as _plan_exc:
         logger.error(
             "REASONING_PLAN_ERROR: %s, continuing without plan",
             _plan_exc,
         )
-        # Continue without plan - planning failure should not block reasoning
+        raise RuntimeError("REASONING_PLAN_ERROR") from _plan_exc
 
     # 4. Execute reasoning
     reasoning_success = True
@@ -304,7 +304,7 @@ def reason_and_record(
                 _perf_exc,
                 reasoning_context.model_id,
             )
-            # Continue - performance failure should not block reasoning
+            raise RuntimeError("REASONING_PERFORMANCE_ERROR") from _perf_exc
 
     # P3/L1: Execute plan steps and checkpoints if plan exists
     if reasoning_plan:
@@ -339,7 +339,7 @@ def reason_and_record(
                 _step_exc,
                 reasoning_plan.reasoning_plan_id,
             )
-            # Continue - step execution failure should not block reasoning
+            raise RuntimeError("PLAN_STEP_EXECUTION_ERROR") from _step_exc
 
     # 5–6. Post-execution: attach output hash
     output_hash = _hash_output(output)
@@ -396,8 +396,10 @@ def reason_and_record(
         OrphanReasoningEvaluationError
     ) as _oee:  # guardian: OrphanReasoningEvaluationError should be handled with specific context
         logger.warning("reason_and_record: orphan evaluation guard triggered: %s", _oee)
+        raise RuntimeError("ORPHAN_REASONING_EVALUATION_ERROR") from _oee
     except _REASONING_NON_FATAL_EXCEPTIONS as _ee:
         logger.debug("reason_and_record: evaluation emission failed: %s", _ee)
+        raise RuntimeError("REASONING_EVALUATION_EMISSION_FAILED") from _ee
 
     # P4/L1: Capture reasoning pattern for knowledge base
     try:
@@ -450,7 +452,7 @@ def reason_and_record(
             _knowledge_exc,
             trace.reasoning_trace_id,
         )
-        # Continue - knowledge capture failure should not block reasoning
+        raise RuntimeError("REASONING_KNOWLEDGE_CAPTURE_ERROR") from _knowledge_exc
 
     logger.info(
         "REASONING completed trace_id=%s run_id=%s signed=%s transcript_id=%s",

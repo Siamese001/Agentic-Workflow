@@ -131,6 +131,7 @@ def _emit_block_event(
             f.write("\n")
     except (OSError, TypeError) as e:
         logger.warning("Failed to log mutation event for %s: %s", target, e)
+        raise RuntimeError(f"Failed to log mutation event for {target}") from e
 
 
 def _get_repo_root() -> Path:
@@ -180,9 +181,8 @@ def enforce_protected_root(
     try:
         resolved = target_path.resolve(strict=False)
     # guardian: allow-silent-swallow - acceptable exception handling
-    except (OSError, RuntimeError):
-        # If resolution fails, use the original path
-        resolved = target_path
+    except (OSError, RuntimeError) as e:
+        raise RuntimeError(f"Failed to resolve protected root path: {target_path}") from e
 
     # Check if path is under any immutable root
     for immutable_root in tqdm(immutable_roots, desc="Processing", unit="item"):
