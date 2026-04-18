@@ -102,7 +102,7 @@ class CanonicalStore:
             log.debug(f"Stored canonical unit: {unit.identifier.unit_id}:v{unit.identifier.version}")
             return True
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             log.error(f"Failed to store unit {unit.identifier.unit_id}: {e}")
             return False
 
@@ -140,7 +140,7 @@ class CanonicalStore:
             self._unit_cache[cache_key] = unit
             return unit
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             log.error(f"Failed to load unit {unit_id}:v{version}: {e}")
             return None
 
@@ -416,7 +416,7 @@ class CanonicalStore:
             try:
                 with open(index_file, encoding="utf-8") as f:
                     self._index_cache[unit_id] = json.load(f)
-            except Exception as e:
+            except (OSError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Failed to load index for {unit_id}: {e}")
 
         # Load lineage data
@@ -426,7 +426,7 @@ class CanonicalStore:
                 with open(lineage_file, encoding="utf-8") as f:
                     child_set = set(json.load(f))
                     self._lineage_cache[parent_id] = child_set
-            except Exception as e:
+            except (OSError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Failed to load lineage for {parent_id}: {e}")
 
     def _save_index(self, unit_id: str):

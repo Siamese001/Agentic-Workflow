@@ -412,7 +412,7 @@ class Trace3DVisualizer:
                 # Sleep for next frame
                 time.sleep(0.016)  # ~60 FPS
 
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 Logger.error(f"[3D_VIZ] Server loop error: {e}")
                 time.sleep(1.0)
 
@@ -497,7 +497,7 @@ class Trace3DVisualizer:
 
             return trace_id
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[3D_VIZ] Failed to add trace graph: {e}")
             return ""
 
@@ -560,7 +560,7 @@ class Trace3DVisualizer:
 
             return True
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[3D_VIZ] Failed to update node positions: {e}")
             return False
 
@@ -581,7 +581,7 @@ class Trace3DVisualizer:
 
             return True
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[3D_VIZ] Failed to highlight path: {e}")
             return False
 
@@ -601,7 +601,7 @@ class Trace3DVisualizer:
 
             return True
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[3D_VIZ] Failed to select node: {e}")
             return False
 
@@ -634,7 +634,7 @@ class Trace3DVisualizer:
             else:
                 return None
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[3D_VIZ] Failed to export graph: {e}")
             return None
 

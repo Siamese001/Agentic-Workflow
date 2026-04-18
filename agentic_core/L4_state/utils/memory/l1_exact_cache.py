@@ -153,7 +153,7 @@ class L1ExactCache:
             # _emit_records_cache_miss(_trace_id, cache_key, "l1_exact")
             return None
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.warning(f"L1 cache get failed: {e}")
             return None
 
@@ -198,7 +198,7 @@ class L1ExactCache:
             Logger.debug(f"Cached L1 entry: {cache_key[:32]}...")
             return True
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.warning(f"L1 cache set failed: {e}")
             return False
 
@@ -222,7 +222,7 @@ class L1ExactCache:
             else:
                 return bool(self.redis.delete(cache_key))
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.warning(f"L1 cache delete failed: {e}")
             return False
 
@@ -243,7 +243,7 @@ class L1ExactCache:
             Logger.info("Cleared L1 exact cache")
             return True
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"L1 cache clear failed: {e}")
             return False
 
@@ -299,7 +299,7 @@ class L1ExactCache:
             Logger.info(f"Invalidated {count} L1 cache entries matching '{pattern}'")
             return count
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"L1 cache pattern invalidation failed: {e}")
             return 0
 

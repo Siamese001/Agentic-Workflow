@@ -272,7 +272,7 @@ class SovereignRagOrchestrator:
 
             self.Bm25Store = get_bm25_store()
         # guardian: allow-silent-swallow
-        except Exception:
+        except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):
             self.Bm25Store = None
         self.engine = None
 
@@ -334,7 +334,7 @@ class SovereignRagOrchestrator:
                 )
             print(f"Indexed {len(text_chunks)} chunks for {doc_id}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             print(f"Document indexing failed: {e}")
 
     # guardian: allow-magic-config
@@ -354,7 +354,7 @@ class SovereignRagOrchestrator:
 
             _adg_confidence = _gbp(Path(__file__).resolve(), self.project_root).behavioral_score
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             import logging
 
             logging.getLogger(__name__).debug("rag_orchestrator: Exception swallowed at L344: %s", e)
@@ -375,7 +375,7 @@ class SovereignRagOrchestrator:
                     for i, res in enumerate(raw_results)
                 ]
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 print(f"Vector search failed: {e}")
         if self.Bm25Store:
             bm25_candidates = self.Bm25Store.query(query, top_k=top_k * 3)
@@ -447,7 +447,7 @@ class SovereignRagOrchestrator:
             indices = json_lib.loads(response)
             return [candidates[i] for i in indices if i < len(candidates)][:top_k]
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             print(f"Reranking failed: {e}")
             return candidates[:top_k]
 

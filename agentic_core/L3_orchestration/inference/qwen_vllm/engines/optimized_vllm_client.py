@@ -206,7 +206,7 @@ class OptimizedVLLMClient:
             if response.success and len(self._cache) < self._cache_size:
                 self._cache[cache_key] = response
             return response
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             return VLLMResponse(
                 success=False,
                 text="",
@@ -271,7 +271,7 @@ class OptimizedVLLMClient:
             except asyncio.CancelledError:
                 logger.info("Batch processor cancelled")
                 break
-            except Exception as e:
+            except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
                 logger.error("Batch processor error: %s", e)
                 await asyncio.sleep(0.1)
 
@@ -314,7 +314,7 @@ class OptimizedVLLMClient:
                             else:
                                 future.set_result(response)
 
-            except Exception as e:
+            except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
                 logger.error("Batch execution failed: %s", e)
                 for req_id in request_ids:
                     if req_id in self._batch_results:
@@ -380,7 +380,7 @@ class OptimizedVLLMClient:
                 latency_ms=latency_ms,
                 error_message=f"HTTP error: {e}",
             )
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             latency_ms = (time.time() - start_time) * 1000
             logger.error("vLLM unexpected error: %s", e)
             return VLLMResponse(
@@ -435,7 +435,7 @@ class OptimizedVLLMClient:
                         "status": f"unhealthy_http_{resp.status}",
                         "healthy": False,
                     }
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             return {
                 "status": f"error: {e}",
                 "healthy": False,

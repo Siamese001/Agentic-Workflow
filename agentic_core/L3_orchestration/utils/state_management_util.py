@@ -157,11 +157,11 @@ class StateManager:
                 for key, entry_data in data.get("entries", {}).items():
                     try:
                         self._manifest[key] = StateEntry.from_dict(entry_data)
-                    except Exception as e:
+                    except (AttributeError, KeyError, TypeError, ValueError) as e:
                         Logger.warning(f"Failed to load manifest entry {key}: {e}")
 
                 Logger.debug(f"Loaded {len(self._manifest)} manifest entries")
-            except Exception as e:
+            except (OSError, RuntimeError, TypeError, ValueError) as e:
                 Logger.error(f"Failed to load manifest: {e}")
                 if self.manifest_backup.exists():
                     Logger.info("Attempting to restore from backup...")
@@ -493,7 +493,7 @@ class StateManager:
         for callback in self._registry_callbacks:
             try:
                 callback(key, action)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 Logger.warning(f"Registry callback failed: {e}")
 
 
@@ -555,7 +555,7 @@ def heal(violation: dict[str, Any], project_root: Path | None = None) -> dict[st
                 "artifacts": ["manifest.json"],
                 "errors": [],
             }
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"Failed to restore manifest: {str(e)}",

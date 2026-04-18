@@ -126,7 +126,7 @@ class RerankingEngine:
 
         except ImportError:
             logger.warning("LightGBM not installed, using rule-based reranking")
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.error(f"Failed to load LightGBM model: {e}")
 
     def rerank_results(
@@ -264,7 +264,7 @@ class RerankingEngine:
                         timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                         days_ago = (datetime.now() - timestamp).days
                         recency_score = max(0.1, 1.0 - (days_ago / 365.0))  # Decay over year
-                    except Exception as e:
+                    except (TypeError, ValueError) as e:
                         import logging
 
                         logging.getLogger(__name__).debug(
@@ -344,7 +344,7 @@ class RerankingEngine:
 
             return reranked_results, reranked_scores
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
             logger.error(f"ML reranking failed: {e}")
             # Fallback to rule-based
             return self._rule_based_rerank(results, features_list)

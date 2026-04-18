@@ -252,7 +252,7 @@ class DistributedTracingCoordinator:
             self._registered_services[self._service_id] = node
             self._stats["active_services"] = len(self._registered_services)
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[DISTRIBUTED_TRACING] Failed to register self: {e}")
 
     def _unregister_service(self, service_id: str) -> None:
@@ -327,7 +327,7 @@ class DistributedTracingCoordinator:
 
             return success
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[DISTRIBUTED_TRACING] Failed to propagate trace context: {e}")
             self._stats["errors"] += 1
             return False
@@ -403,7 +403,7 @@ class DistributedTracingCoordinator:
 
             return context
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[DISTRIBUTED_TRACING] Failed to receive propagated context: {e}")
             self._stats["errors"] += 1
             return None
@@ -420,7 +420,7 @@ class DistributedTracingCoordinator:
 
             Logger.debug(f"[DISTRIBUTED_TRACING] Added span {span.span_id} to trace {span.trace_id}")
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[DISTRIBUTED_TRACING] Failed to add span: {e}")
             self._stats["errors"] += 1
 
@@ -466,7 +466,7 @@ class DistributedTracingCoordinator:
             Logger.info(f"[DISTRIBUTED_TRACING] Registered service: {service_node.service_name}")
             return True
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"[DISTRIBUTED_TRACING] Failed to register service: {e}")
             return False
 
@@ -512,7 +512,7 @@ class DistributedTracingCoordinator:
                 # Sleep for next iteration
                 time.sleep(30.0)  # Check every 30 seconds
 
-            except Exception as e:
+            except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
                 Logger.error(f"[DISTRIBUTED_TRACING] Coordination loop error: {e}")
                 time.sleep(5.0)
 

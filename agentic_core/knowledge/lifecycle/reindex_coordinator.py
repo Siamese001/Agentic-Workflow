@@ -192,7 +192,7 @@ class ReindexCoordinator:
                     processing_time_ms=processing_time,
                 )
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             processing_time = (time.time() - start_time) * 1000
             log.error(f"Error reindexing {file_path}: {e}")
 
@@ -238,7 +238,7 @@ class ReindexCoordinator:
                 try:
                     result = future.result()
                     results.append(result)
-                except Exception as e:
+                except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
                     results.append(
                         ReindexResult(
                             file_path=str(path),
@@ -312,7 +312,7 @@ class ReindexCoordinator:
         for callback in self._on_complete_callbacks:
             try:
                 callback(job)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Complete callback error: {e}")
 
     def _notify_progress(self, job_id: str, progress: float) -> None:
@@ -320,7 +320,7 @@ class ReindexCoordinator:
         for callback in self._on_progress_callbacks:
             try:
                 callback(job_id, progress)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 log.warning(f"Progress callback error: {e}")
 
 
