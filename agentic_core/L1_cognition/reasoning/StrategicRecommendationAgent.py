@@ -59,7 +59,7 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
             try:
                 response = self.llm_client.complete(plan)
                 return _parse_llm_response(response)
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:
                 import logging
 
                 logging.getLogger(__name__).debug(

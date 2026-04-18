@@ -205,8 +205,12 @@ class ConfidenceScorer:
         try:
             self._telemetry_sink(event)
         except (
-            Exception
-        ):  # guardian: allow-exception -- telemetry sink errors must not interrupt heal scoring
+            RuntimeError,
+            ValueError,
+            TypeError,
+            OSError,
+            AttributeError,
+        ):
             pass
 
     def _tier_from_score(self, score: float) -> HealTier:
