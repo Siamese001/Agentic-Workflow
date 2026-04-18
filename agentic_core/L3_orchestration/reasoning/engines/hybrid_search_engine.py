@@ -41,7 +41,7 @@ class HybridSearchEngine:
     def __del__(self) -> None:
         try:
             self.close_adg_connection()
-        except Exception:
+        except sqlite3.Error:
             pass
 
     @staticmethod
@@ -246,7 +246,12 @@ class HybridSearchEngine:
                 fetcher = fetchers[relation]
                 try:
                     neighbours = fetcher(parent_node_id)
-                except Exception:  # guardian: allow-broad-exception -- ADG helpers can raise sqlite.Error / RuntimeError; degrade to no-op per D2.3 contract
+                except (
+                    sqlite3.Error,
+                    RuntimeError,
+                    ValueError,
+                    TypeError,
+                ):  # guardian: allow-broad-exception -- ADG helpers can raise sqlite.Error / RuntimeError; degrade to no-op per D2.3 contract
                     neighbours = []
                 if not neighbours:
                     continue
@@ -554,7 +559,12 @@ class HybridSearchEngine:
             query_embedding = self._generate_query_embedding(normalized_query)
         try:
             collection = self.chroma_client.get_collection(collection_name)
-        except Exception:  # guardian: allow-broad-exception -- chromadb raises collection-not-found as an untyped internal exception across client versions
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+        ):  # guardian: allow-broad-exception -- chromadb raises collection-not-found as an untyped internal exception across client versions
             return []
         raw = self._collection_query(collection, normalized_query, query_embedding, where=metadata_filter)
         ids = self._coerce_query_payload(raw, "ids")
@@ -636,14 +646,22 @@ class HybridSearchEngine:
             return []
         try:
             index = get_sparse_index(collection_name)
-        except Exception:  # guardian: allow-broad-exception -- sparse backend can raise untyped sqlite errors across versions during sidecar probing
+        except (
+            sqlite3.Error,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-broad-exception -- sparse backend can raise untyped sqlite errors across versions during sidecar probing
             return []
         if index is None or not index.is_available:
             return []
         try:
             hits = index.search(normalized_query, top_k=self.top_k)
         except (
-            Exception
+            sqlite3.Error,
+            RuntimeError,
+            ValueError,
+            TypeError,
         ):  # guardian: allow-broad-exception -- FTS5 query layer raises untyped sqlite errors across versions
             return []
         results: list[HybridSearchResult] = []
@@ -843,7 +861,7 @@ def get_global_hybrid_engine() -> HybridSearchEngine:
             import chromadb
 
             client = chromadb.PersistentClient()
-        except Exception:
+        except (ImportError, RuntimeError, ValueError, TypeError, OSError):
             client = None
         _global_hybrid_engine = HybridSearchEngine(chroma_client=client)
     return _global_hybrid_engine

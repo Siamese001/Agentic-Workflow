@@ -156,7 +156,11 @@ class ConfidenceScorer:
             t_start = time.perf_counter()
             result = self._model.predict(features)
             elapsed_us = int((time.perf_counter() - t_start) * 1_000_000)
-        except Exception:  # guardian: allow-exception -- model.predict() may raise any framework error; fallback required for routing safety
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-exception -- model.predict() may raise any framework error; fallback required for routing safety
             return self._classify_heuristic(signal)
 
         if elapsed_us > 1000:

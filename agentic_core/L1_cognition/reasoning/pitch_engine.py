@@ -245,7 +245,7 @@ class PitchGenerator:
                 },
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, KeyError, OSError) as e:
             Logger.error(f"LLM pitch generation failed: {e}")
             return self._generate_with_template(context, relationships)
 
@@ -306,7 +306,7 @@ class PitchGenerator:
                 },
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, KeyError, OSError) as e:
             Logger.error(f"LLM pitch refinement failed: {e}")
             return self._refine_with_rules(pitch, error_reason)
 

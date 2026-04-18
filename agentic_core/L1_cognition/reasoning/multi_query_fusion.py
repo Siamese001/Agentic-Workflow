@@ -197,7 +197,7 @@ class MultiQueryFusion:
 
             return collection, results
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, OSError) as e:
             logger.error(f"Failed to search collection {collection}: {e}")
             return collection, []
 
@@ -461,7 +461,7 @@ async def main():
 
                 print(f"  {strategy}: {result.total_results} results in {result.execution_time_ms:.2f}ms")
 
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, OSError) as e:
                 print(f"  {strategy}: Error - {e}")
 
 

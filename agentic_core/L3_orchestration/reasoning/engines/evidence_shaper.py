@@ -33,7 +33,7 @@ class CitationAnchor:
         object.__setattr__(self, "layer", str(self.layer or ""))
         try:
             confidence = float(self.provenance_confidence)
-        except Exception:
+        except (TypeError, ValueError):
             confidence = 0.0
         object.__setattr__(self, "provenance_confidence", max(0.0, min(1.0, confidence)))
 
@@ -53,7 +53,7 @@ class ContradictionFlag:
         for attr in ("score_a", "score_b"):
             try:
                 value = float(getattr(self, attr))
-            except Exception:
+            except (TypeError, ValueError):
                 value = 0.0
             object.__setattr__(self, attr, value)
 
