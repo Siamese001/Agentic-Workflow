@@ -99,7 +99,7 @@ class L5RiskCalibrator(BaseMLModel):
 
             self.is_loaded = True
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise RuntimeError(f"Failed to load model: {e}")
 
     def save_model(self, model_file_path: Path) -> None:
@@ -241,7 +241,7 @@ class L5RiskCalibrator(BaseMLModel):
 
             return prediction
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             # Prediction failed
             return self.create_prediction(
                 prediction="Medium",
@@ -413,7 +413,7 @@ class L5RiskCalibrator(BaseMLModel):
             # Return top 10 features
             return feature_importance[:10]
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             # Failed to compute importance
             return []
 
@@ -505,7 +505,7 @@ class L5RiskCalibrator(BaseMLModel):
 
             return np.array(feature_vector)
 
-        except Exception as e:
+        except (TypeError, ValueError):
             return None
 
     def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:

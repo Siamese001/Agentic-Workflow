@@ -469,7 +469,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 results = self._apply_filesystem_alignment(proposals)
                 Logger.info("Filesystem alignment complete")
                 return self._create_applied_result(proposals, results)
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                 Logger.error(f"Alignment failed: {e}")
                 raise
         Logger.info("Dry-run mode - proposals generated but not applied")
@@ -542,7 +542,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             Logger.debug(f"Extracted signal '{name_lower}' from {class_name}")
                 Logger.info(f"[SSOT] Loaded {len(self.actual_agents)} agents from discovery JSON")
                 return
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (OSError, RuntimeError, ValueError, TypeError) as e:
                 raise
                 Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
         agentic_core = self.project_root / AGENTIC_CORE_DIR
@@ -562,7 +562,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             if name_lower:
                                 self.actual_signals.add(name_lower)
                                 Logger.debug(f"Extracted signal '{name_lower}' from {node.name}")
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (SyntaxError, OSError, RuntimeError, ValueError, TypeError) as e:
                 raise
                 Logger.debug(f"Failed to parse {py_file}: {e}")
         Logger.info(
@@ -1084,7 +1084,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         try:
             content = self.blueprint_file.read_text(encoding="utf-8")
             compile(content, str(self.blueprint_file), "exec")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (SyntaxError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise
             issues.append(f"Blueprint syntax error: {e}")
 
@@ -1192,7 +1192,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "PREVIEW: Would update signals in blueprint" if dry_run else "Signals updated"
                     )
                     action["applied"] = not dry_run
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                 raise
                 action["error"] = str(e)
                 Logger.error(f"[FilesystemSSOTReconcilerAgent] Cleanup error: {e}")

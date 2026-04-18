@@ -90,7 +90,7 @@ class L6AnomalyDetector(BaseMLModel):
 
             self.is_loaded = True
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise RuntimeError(f"Failed to load model: {e}")
 
     def save_model(self, model_file_path: Path) -> None:
@@ -232,7 +232,7 @@ class L6AnomalyDetector(BaseMLModel):
 
             return prediction
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             # Prediction failed
             return self.create_prediction(
                 prediction=0.5,
@@ -361,7 +361,7 @@ class L6AnomalyDetector(BaseMLModel):
             # Return top 10 features
             return contributions[:10]
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             # Failed to compute importance
             return []
 
@@ -386,7 +386,7 @@ class L6AnomalyDetector(BaseMLModel):
 
             return np.array(feature_vector)
 
-        except Exception as e:
+        except (TypeError, ValueError):
             return None
 
     def _normalize_anomaly_score(self, raw_score: float) -> float:

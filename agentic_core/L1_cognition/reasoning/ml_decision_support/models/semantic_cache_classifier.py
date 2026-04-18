@@ -194,7 +194,7 @@ class EWMACacheClassifier(BaseMLModel):
 
             self.is_loaded = True
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise RuntimeError(f"Failed to load model: {e}")
 
     def save_model(self, model_file_path: Path) -> None:
@@ -320,7 +320,7 @@ class EWMACacheClassifier(BaseMLModel):
 
             return prediction
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             # Prediction failed
             return self.create_prediction(
                 prediction="Cold",
@@ -635,7 +635,7 @@ class EWMACacheClassifier(BaseMLModel):
 
             return np.array(feature_vector)
 
-        except Exception as e:
+        except (TypeError, ValueError):
             return None
 
     def _get_recommended_action(self, classification: str) -> str:

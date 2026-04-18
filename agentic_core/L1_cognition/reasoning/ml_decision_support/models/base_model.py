@@ -330,7 +330,7 @@ class BaseMLModel(ABC):
                 operation="prediction_made",
             )
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # Log failure but don't fail the prediction
             print(f"Failed to log prediction: {e}")
 

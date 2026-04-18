@@ -37,7 +37,7 @@ def safe_pickle_dump(payload: Any, path: Path | str) -> Path:
         pickle.dump(payload, handle, protocol=pickle.HIGHEST_PROTOCOL)
     try:
         os.replace(tmp_path, normalized)
-    except Exception:  # guardian: allow-broad-exception -- temp file cleanup before re-raise; all exception types must trigger unlink
+    except OSError:
         if tmp_path.exists():
             tmp_path.unlink(missing_ok=True)
         raise

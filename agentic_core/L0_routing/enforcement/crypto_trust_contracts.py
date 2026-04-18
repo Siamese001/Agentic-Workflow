@@ -67,7 +67,7 @@ def sign_artifact(
         raise SigningError(
             f"FAIL (P5): Signing failed for key '{key_id}': {exc}",
         ) from exc
-    except Exception as exc:
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
         raise SigningError(
             f"FAIL (P5): Unexpected signing error: {exc}",
         ) from exc

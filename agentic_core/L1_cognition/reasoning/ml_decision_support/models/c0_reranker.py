@@ -88,7 +88,7 @@ class C0RetrievalReranker(BaseMLModel):
 
             self.is_loaded = True
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise RuntimeError(f"Failed to load model: {e}")
 
     def save_model(self, model_file_path: Path) -> None:
@@ -219,7 +219,7 @@ class C0RetrievalReranker(BaseMLModel):
 
             return prediction
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             # Prediction failed
             return self.create_prediction(
                 prediction=0.3,
@@ -364,7 +364,7 @@ class C0RetrievalReranker(BaseMLModel):
             # Return top 10 features
             return feature_importance[:10]
 
-        except Exception as e:
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             # Failed to compute importance
             return []
 
@@ -389,7 +389,7 @@ class C0RetrievalReranker(BaseMLModel):
 
             return np.array(feature_vector)
 
-        except Exception as e:
+        except (TypeError, ValueError):
             return None
 
     def _calculate_prediction_confidence(self, feature_vector: np.ndarray, prediction: float) -> float:

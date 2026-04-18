@@ -368,7 +368,7 @@ class V15ExecutionGateway:
             error = str(e)
             commit_valid = False
             Logger.error(f"[V15-GW] Healing failed with known error: {e}")
-        except Exception as e:  # guardian: allow-broad-exception -- catch-all in mutation boundary; re-raises as ExecutionGatewayError after logging
+        except (OSError, RuntimeError, TypeError) as e:
             error = str(e)
             commit_valid = False
             Logger.exception("[V15-GW] Unexpected healing error")
@@ -388,7 +388,7 @@ class V15ExecutionGateway:
                 rollback_verified = False
                 if error is None:
                     error = str(e)
-            except Exception as e:  # guardian: allow-broad-exception -- rollback verification boundary; re-raises as ExecutionGatewayError after logging
+            except (AttributeError, RuntimeError, TypeError) as e:
                 Logger.exception("[V15-GW] Critical rollback integrity error")
                 rollback_verified = False
                 if error is None:
