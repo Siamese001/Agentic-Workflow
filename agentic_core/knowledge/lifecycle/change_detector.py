@@ -99,7 +99,7 @@ class ChangeHandler(FileSystemEventHandler if HAS_WATCHDOG else object):
         )
         try:
             self.callback(event)
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             log.error(f"Error in change callback: {e}")
 
 
@@ -168,7 +168,7 @@ class ChangeDetector:
 
                 log.info(f"Started monitoring {path_str} (recursive={recursive})")
                 return True
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 log.error(f"Error starting monitoring for {path_str}: {e}")
                 with self._paths_lock:
                     self._monitored_paths.discard(path_str)
@@ -250,7 +250,7 @@ class ChangeDetector:
         for callback in self._on_change_callbacks:
             try:
                 callback(event)
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                 log.error(f"Error in change callback: {e}")
 
 

@@ -104,14 +104,14 @@ class GPUMemoryMonitor:
                     for callback in self._callbacks:
                         try:
                             callback(info)
-                        except Exception as e:
+                        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
                             logger.error("GPU monitor callback error: %s", e)
 
                 await asyncio.sleep(self.check_interval_sec)
 
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 logger.error("GPU monitor loop error: %s", e)
                 await asyncio.sleep(self.check_interval_sec)
 
@@ -147,7 +147,7 @@ class GPUMemoryMonitor:
                         utilization_percent=util,
                         timestamp=time.time(),
                     )
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             logger.debug("Failed to get GPU memory: %s", e)
 
         return None

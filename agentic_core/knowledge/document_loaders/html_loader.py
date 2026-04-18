@@ -197,7 +197,7 @@ def _try_load_text(file_path: Path) -> str | None:
     try:
         raw = Path(file_path).read_text(encoding="utf-8", errors="ignore")
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
         log.warning("HTML read failed for %s: %s", file_path, exc)
         return None
     try:
@@ -212,7 +212,7 @@ def _try_load_text(file_path: Path) -> str | None:
     except ImportError:
         pass
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
         log.warning("bs4 extraction failed, falling back to stdlib: %s", exc)
     try:
         stripper = _TagStripper()
@@ -222,7 +222,7 @@ def _try_load_text(file_path: Path) -> str | None:
         text = _RE_WHITESPACE.sub(" ", text).strip()
         return text
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
         log.warning("Stdlib HTML extraction failed for %s: %s", file_path, exc)
     try:
         text = _RE_SCRIPT_STYLE.sub("", raw)
@@ -231,7 +231,7 @@ def _try_load_text(file_path: Path) -> str | None:
         text = _RE_WHITESPACE.sub(" ", text).strip()
         return text
     # guardian: allow-silent-swallow
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError, ValueError):
         return None
 
 

@@ -46,14 +46,14 @@ class EvidenceMetrics:
 def _safe_float(value: Any, default: float = 0.0) -> float:
     try:
         return float(value)
-    except Exception:
+    except (TypeError, ValueError):
         return default
 
 
 def _safe_len(value: Any) -> int:
     try:
         return len(value)
-    except Exception:
+    except (TypeError, ValueError):
         return 0
 
 
@@ -250,7 +250,7 @@ def evaluate_and_emit(
     gate_failed = False
     try:
         gate_result = _run_sealed_exit_gate(bundle, ctx, disposition)
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError, ValueError):
         gate_result = _default_gate_result(disposition)
         gate_failed = True
 
@@ -260,6 +260,6 @@ def evaluate_and_emit(
         return gate_result, disposition
     try:
         _enqueue_eval_packets(ctx, metrics, gate_result, disposition, artifact, tool_name)
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError, ValueError):
         pass
     return gate_result, disposition
