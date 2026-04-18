@@ -372,7 +372,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 self._naming_agent = get_naming_agent(self.project_root)
             except (ImportError, RecursionError):
-                Logger.warning("NamingAgent not available - post-heal naming validation disabled")
+                raise RuntimeError("NamingAgent not available - post-heal naming validation disabled")
         return self._naming_agent
 
     @property
@@ -387,7 +387,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 self._import_agent = create_legacy_import_healer()
             except (ImportError, RecursionError):
-                Logger.warning("Import healer not available - post-heal import validation disabled")
+                raise RuntimeError("Import healer not available - post-heal import validation disabled")
         return self._import_agent
 
     def heal(self, violation: dict) -> HealResult:
@@ -429,7 +429,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             _adg_score = _bp.behavioral_score
         # guardian: allow-silent-swallow
         except (ValueError, TypeError):
-            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            raise RuntimeError(f"Behavioral profile resolution failed for {file_path}")
 
         message = violation.get("message", "Location violation")
 
@@ -857,6 +857,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Move failed: {e}")
+            raise RuntimeError(f"Move failed for {src_path} -> {final_dst}") from e
 
         return result
 
@@ -894,6 +895,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Delete failed: {e}")
+            raise RuntimeError(f"Delete failed for {file_path}") from e
 
         return result
 
@@ -965,6 +967,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             report["post_heal_status"] = "ERROR"
             report["post_heal_message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[LocationHealerAgent] Post-heal validation failed: {e}")
+            raise RuntimeError(f"Post-heal validation failed for {original_path}") from e
 
         return report
 
@@ -1206,7 +1209,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                         decision=decision,
                     )
                 except (ImportError, AttributeError) as e:
-                    self.logger.debug(f"HITL logging failed: {e}")
+                    raise RuntimeError(f"HITL logging failed for {file_path}") from e
                 return {
                     "action_taken": f"SKIPPED: HITL gate rejected archive ({decision})",
                     "applied": False,
@@ -1234,7 +1237,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     decision="APPROVED",
                 )
             except (ImportError, AttributeError) as e:
-                self.logger.debug(f"HITL logging failed: {e}")
+                raise RuntimeError(f"HITL logging failed for {file_path}") from e
         return move_result
 
     # ========================================================================
@@ -1463,6 +1466,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Void violation healing failed: {e}")
+            raise RuntimeError(f"Void violation healing failed for {file_path}") from e
 
         return result
 
@@ -1609,6 +1613,9 @@ class LocationHealerAgent(SovereignBaseAgent):
         except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] SSOT update failed: {e}")
+            raise RuntimeError(
+                f"SSOT update failed for {file_path} while creating {new_subfolder}",
+            ) from e
 
         return result
 
@@ -1751,7 +1758,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if file_type in ("AGENT", "ORCHESTRATOR"):
                     _is_agent = True
             except (ImportError, AttributeError, OSError) as e:
-                Logger.debug(f"File classification failed for {file_path.name}: {e}")
+                raise RuntimeError(f"File classification failed for {file_path.name}") from e
             # Filename heuristic always fires for *Agent.py regardless of path classification.
             # A file named *Agent.py that lives in tests/ is a misplaced production agent.
             if not _is_agent and file_path.name.endswith("Agent.py"):
@@ -1865,7 +1872,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if file_type in ("AGENT", "ORCHESTRATOR"):
                     is_agent_type = True
             except (ImportError, AttributeError, OSError) as e:
-                Logger.debug(f"File classification failed for {file_path.name}: {e}")
+                raise RuntimeError(f"File classification failed for {file_path.name}") from e
             # Filename heuristic always fires for *Agent.py — a production agent
             # named *Agent.py must never be routed to a non-source subfolder.
             if not is_agent_type and file_path.name.endswith("Agent.py"):
@@ -2010,6 +2017,9 @@ class LocationHealerAgent(SovereignBaseAgent):
         except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Autonomous subfolder creation failed: {e}")
+            raise RuntimeError(
+                f"Autonomous subfolder creation failed for {file_path} -> {root_folder}/{new_subfolder}",
+            ) from e
 
         return result
 
@@ -2385,6 +2395,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             naming_report["naming_post_heal_status"] = "ERROR"
             naming_report["naming_message"] = f"Naming validation error: {e}"
             Logger.error(f"[LocationHealerAgent] Naming validation failed: {e}")
+            raise RuntimeError("Post-naming validation failed") from e
 
         return naming_report
 
@@ -2454,6 +2465,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         except (OSError, ImportError, AttributeError, ValueError) as e:
             heal_report["naming_heal_message"] = f"ERROR during naming auto-heal: {e}"
             Logger.error(f"[LocationHealerAgent] Naming auto-heal failed: {e}")
+            raise RuntimeError("Naming auto-heal failed") from e
 
         return heal_report
 
@@ -2552,6 +2564,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             full_report["import_validation_status"] = "ERROR"
             full_report["import_message"] = f"Import validation error: {e}"
             Logger.error(f"[LocationHealerAgent] Import validation failed: {e}")
+            raise RuntimeError("Import validation/heal cycle failed") from e
 
         return full_report
 
@@ -2820,6 +2833,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             deep_report["import_deep_status"] = "ERROR"
             deep_report["import_message"] = f"Deep import error: {e}"
             Logger.error(f"[LocationHealerAgent] Deep import heal failed: {e}")
+            raise RuntimeError("Deep import validation/heal failed") from e
 
         return deep_report
 
@@ -3021,6 +3035,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 batch_report["batch_post_heal_status"] = "ERROR"
                 batch_report["batch_message"] = f"Batch validation error: {e}"
                 Logger.error(f"[LocationHealerAgent] Batch post-heal failed: {e}")
+                raise RuntimeError("Batch post-heal validation failed") from e
 
         # === NAMING + IMPORT POST-HEAL CYCLES ===
         all_naming_affected = list(set(affected_paths + import_touched_paths))
@@ -3111,6 +3126,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 duplicate_report["duplicate_message"] = f"ERROR: {e}"
                 Logger.error(f"[LocationHealerAgent] Duplicate resolution failed: {e}")
+                raise RuntimeError("Duplicate resolution failed") from e
 
         batch_report["duplicate_resolution"] = duplicate_report
         batch_report["batch_message"] += f" | Duplicates: {duplicate_report['duplicate_message'][:50]}"

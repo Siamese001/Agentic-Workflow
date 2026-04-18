@@ -436,6 +436,9 @@ def _evaluate_guardrail(
                 audit_exc,
                 ctx.execution_request_id,
             )
+            raise RuntimeError(
+                f"SAFETY_PLANE_UNAVAILABLE_AUDIT_ERROR req={ctx.execution_request_id}",
+            ) from audit_exc
         return GuardrailOutcome.ERROR
 
     from agentic_core.L2_execution.enforcement.guardrail_gate import (  # noqa: PLC0415
@@ -480,6 +483,9 @@ def _evaluate_guardrail(
             audit_exc,
             ctx.execution_request_id,
         )
+        raise RuntimeError(
+            f"SAFETY_PLANE_VALIDATION_AUDIT_ERROR req={ctx.execution_request_id}",
+        ) from audit_exc
 
     if result.verdict == GuardrailVerdict.DENY:
         return GuardrailOutcome.DENY
@@ -585,7 +591,9 @@ def authorize_and_execute(
                 audit_exc,
                 execution_context.execution_request_id,
             )
-            # Continue - audit failure should not block safety decisions
+            raise RuntimeError(
+                f"HUMAN_REVIEW_AUDIT_ERROR req={execution_context.execution_request_id}",
+            ) from audit_exc
 
         if not human_approved:
             _emit_reenters_safety(execution_context, "HUMAN_REVIEW_REQUIRED")
@@ -639,7 +647,9 @@ def authorize_and_execute(
             execution_context.execution_request_id,
             _tgt,
         )
-        # Continue execution - audit failure should not block safety decisions
+        raise RuntimeError(
+            f"EXECUTION_GUARDRAIL_AUDIT_FAILED req={execution_context.execution_request_id} target={_tgt}",
+        ) from audit_exc
     except (RuntimeError, ValueError) as audit_exc:
         logger.error(
             "EXECUTION_GUARDRAIL_AUDIT_ERROR: %s (req=%s target=%s)",
@@ -647,19 +657,22 @@ def authorize_and_execute(
             execution_context.execution_request_id,
             _tgt,
         )
-        # Continue execution - audit failure should not block safety decisions
+        raise RuntimeError(
+            f"EXECUTION_GUARDRAIL_AUDIT_ERROR req={execution_context.execution_request_id} target={_tgt}",
+        ) from audit_exc
 
     # Bind decision
     decision_id = str(uuid.uuid4())
     decision_hash = _make_decision_hash(execution_context, outcome)
     bound_ctx = execution_context.with_guardrail_decision(decision_id, decision_hash)
+    import time as _time  # noqa: PLC0415
+
+    _exec_start = _time.monotonic()
 
     # 9. Fail-closed: abort on any non-ALLOW outcome
     if not outcome.may_proceed:
         # P3/L2: Record execution observability for policy blocks
         try:
-            import time as _time  # noqa: PLC0415
-
             obs_context = ExecutionObservabilityContext.create(
                 run_id=bound_ctx.run_id,
                 trace_id=bound_ctx.trace_id,
@@ -679,6 +692,9 @@ def authorize_and_execute(
             )
         except (RuntimeError, ValueError) as _obs_exc:
             logger.error("EXECUTION_OBSERVABILITY_BLOCK_ERROR: %s", _obs_exc)
+            raise RuntimeError(
+                f"EXECUTION_OBSERVABILITY_BLOCK_ERROR req={bound_ctx.execution_request_id}",
+            ) from _obs_exc
 
         _emit_reenters_safety(bound_ctx, f"GUARDRAIL_{outcome.value}")
         raise GuardrailDenied(
@@ -771,6 +787,9 @@ def authorize_and_execute(
             )
         except (RuntimeError, ValueError) as _obs_exc:
             logger.error("EXECUTION_OBSERVABILITY_FAILURE_ERROR: %s", _obs_exc)
+            raise RuntimeError(
+                f"EXECUTION_OBSERVABILITY_FAILURE_ERROR req={bound_ctx.execution_request_id}",
+            ) from _obs_exc
 
         _emit_reenters_safety(bound_ctx, f"TYPED_TOOL_CONTRACT_VIOLATION:{type(exc).__name__}")
         raise
@@ -797,6 +816,9 @@ def authorize_and_execute(
             )
         except (RuntimeError, ValueError) as _obs_exc:
             logger.error("EXECUTION_OBSERVABILITY_FAILURE_ERROR: %s", _obs_exc)
+            raise RuntimeError(
+                f"EXECUTION_OBSERVABILITY_FAILURE_ERROR req={bound_ctx.execution_request_id}",
+            ) from _obs_exc
 
         _emit_reenters_safety(bound_ctx, f"EXECUTION_ERROR:{type(exc).__name__}")
         raise
@@ -862,7 +884,9 @@ def authorize_and_execute(
             _obs_exc,
             bound_ctx.execution_request_id,
         )
-        # Continue - observability failure should not block execution
+        raise RuntimeError(
+            f"EXECUTION_OBSERVABILITY_ERROR req={bound_ctx.execution_request_id}",
+        ) from _obs_exc
 
     logger.info(
         "EXEC completed req=%s outcome=%s class=%s",

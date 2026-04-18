@@ -188,7 +188,9 @@ class DeterministicRedisCache:
             return client.get(key)
         except redis.RedisError as e:
             logger.warning("Redis get failed for db=%s key=%s: %s", self.db if db is None else db, key, e)
-            return None
+            raise RuntimeError(
+                f"Redis get failed for db={self.db if db is None else db} key={key}",
+            ) from e
 
     def get_json(self, key: str, db: CacheDB | None = None) -> Any | None:
         """Get JSON-deserialized value from cache.
@@ -207,7 +209,7 @@ class DeterministicRedisCache:
             return json.loads(data)
         except json.JSONDecodeError:
             logger.warning(f"Invalid JSON in cache for key: {key}")
-            return None
+            raise ValueError(f"Invalid JSON in cache for key: {key}")
 
     def set(
         self,

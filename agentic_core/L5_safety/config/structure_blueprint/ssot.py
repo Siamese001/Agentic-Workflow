@@ -328,9 +328,7 @@ def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[
             if item.is_dir() and item.name.startswith("apps_"):
                 apps_folders.add(item.name)
     except (OSError, PermissionError) as e:
-        import logging
-
-        logging.getLogger(__name__).debug("ssot: OSError swallowed at L488: %s", e)
+        raise RuntimeError(f"Failed wildcard apps_* discovery under {repo_root}") from e
 
     return frozenset(apps_folders)
 
@@ -402,10 +400,7 @@ def _build_test_canonical_location_map(repo_root: Path | None = None) -> dict[st
         for app_name in discovered:
             base_map[app_name] = f"tests/unit/{app_name}"
     except NameError as e:
-        # get_validated_project_root not yet defined during module load
-        import logging
-
-        logging.getLogger(__name__).debug("ssot: NameError swallowed at L554: %s", e)
+        raise RuntimeError("Failed to build canonical test path map due to unresolved project root") from e
 
     return base_map
 

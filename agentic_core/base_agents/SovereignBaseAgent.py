@@ -550,8 +550,8 @@ class SovereignBaseAgent(
             # guardian: allow-silent-swallow - acceptable exception handling
             try:
                 _git_bytes = _git_head.read_bytes()
-            except OSError:
-                _git_bytes = b"no-git"
+            except OSError as exc:
+                raise RuntimeError(f"Unable to read git HEAD at {_git_head}") from exc
             _git_hash = _hl.sha256(_git_bytes).hexdigest()
 
             # mem_hash: stable agent identity hash
