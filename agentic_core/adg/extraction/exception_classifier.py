@@ -67,7 +67,7 @@ def scan_file_for_exceptions(filepath: str) -> list[tuple[int, str, str]]:
         with open(filepath, encoding="utf-8", errors="replace") as f:
             source = f.read()
             lines = source.splitlines()
-    except Exception:
+    except OSError:
         return violations
 
     try:
@@ -125,7 +125,7 @@ def run_regression_tests() -> bool:
                         print(f"✗ FAIL: {code!r} -> {result} (expected: {expected})")
                         all_passed = False
                     break
-        except Exception as e:
+        except (SyntaxError, RuntimeError, ValueError, TypeError) as e:
             print(f"✗ ERROR: {code!r} -> {e}")
             all_passed = False
 

@@ -419,7 +419,7 @@ class ADGMemoryAdapter:
                         file_path = obs[7:]  # Remove "source=" prefix
                         file_paths.add(file_path)
             return frozenset(file_paths)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError) as e:
             logging.getLogger(__name__).warning(f"Failed to query violation file set: {e}")
             return frozenset()
 
@@ -451,7 +451,7 @@ class ADGMemoryAdapter:
             # Sort by fan_out descending and take top N
             hotspots.sort(key=lambda x: x[1], reverse=True)
             return frozenset(module for module, _ in hotspots[:limit])
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError) as e:
             logging.getLogger(__name__).warning(f"Failed to query hotspot modules: {e}")
             return frozenset()
 

@@ -224,7 +224,7 @@ class ConfigFileCache:
             except FileNotFoundError:
                 raise
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ValueError, TypeError) as e:
                 logger.warning(f"[Config cache] Cache read failed: {e}")
 
         logger.debug(f"[Config cache] MISS for {config_path.name} — parsing from disk")
@@ -239,7 +239,7 @@ class ConfigFileCache:
             except FileNotFoundError:
                 pass  # File may have been deleted after fetch
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ValueError, TypeError) as e:
                 logger.warning(f"[Config cache] Cache write failed: {e}")
 
         return result

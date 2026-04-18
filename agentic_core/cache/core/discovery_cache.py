@@ -225,7 +225,7 @@ class AgentDiscoveryCache:
                         logger.debug("[Discovery cache] HIT")
                         return cached
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (OSError, ValueError, TypeError) as e:
                     logger.warning(f"[Discovery cache] Cache read failed: {e}")
         logger.debug("[Discovery cache] MISS — fetching from disk")
         result = fetch_from_disk()
@@ -238,7 +238,7 @@ class AgentDiscoveryCache:
             except FileNotFoundError:
                 pass
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ValueError, TypeError) as e:
                 logger.warning(f"[Discovery cache] Cache write failed: {e}")
         return result
 

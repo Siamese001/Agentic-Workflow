@@ -121,7 +121,7 @@ class PrecisionHardeningEngine:
             self.precision_graphs[file_path] = graph
             return graph
 
-        except Exception as e:
+        except (OSError, RuntimeError, ValueError, TypeError) as e:
             raise RuntimeError(f"Failed to harden {file_path}: {e}")
 
     def harden_directory(self, directory: str, pattern: str = "*.py") -> dict[str, PrecisionGraph]:
@@ -135,7 +135,7 @@ class PrecisionHardeningEngine:
                 try:
                     graph = self.harden_file(str(py_file))
                     results[str(py_file)] = graph
-                except Exception as e:
+                except (OSError, RuntimeError, ValueError, TypeError) as e:
                     print(f"Failed to harden {py_file}: {e}")
                     continue
 
