@@ -223,7 +223,7 @@ class ToolEmbeddingCache:
                 # TODO: Add proper input validation
                 logger.warning(f"Invalid input: {e}")
                 raise
-            except Exception as e:
+            except (AttributeError, KeyError, TypeError, OSError, RuntimeError) as e:
                 logger.warning(f"[Tool embedding cache] Cache read failed: {e}")
         logger.debug("[Tool embedding cache] MISS — computing embeddings")
         embeddings, tool_names = fetch_embeddings()
@@ -239,7 +239,7 @@ class ToolEmbeddingCache:
             except ValueError:
                 pass
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, TypeError, OSError, RuntimeError) as e:
                 logger.warning(f"[Tool embedding cache] Cache write failed: {e}")
         return (embeddings, tool_names)
 

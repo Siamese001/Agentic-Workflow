@@ -338,7 +338,7 @@ class InjectionDetector:
                     detection_counts=self._detection_counts.copy(),
                     timestamp_utc=int(time.time() * 1000),
                 )
-        except Exception as e:
+        except (ImportError, AttributeError, OSError, TypeError, ValueError, RuntimeError) as e:
             # System learning unavailable - continue without emission
             import logging
 
@@ -422,7 +422,7 @@ class InjectionDetector:
                     detection_counts=self._context_detection_counts.copy(),
                     timestamp_utc=int(time.time() * 1000),
                 )
-        except Exception as e:
+        except (ImportError, AttributeError, OSError, TypeError, ValueError, RuntimeError) as e:
             # System learning unavailable - continue without emission
             import logging
 

@@ -173,7 +173,7 @@ class JudgeOrchestrator:
                             provider,
                             self._rubric_engine,
                         )
-                    except Exception as exc:
+                    except (RuntimeError, ValueError, TypeError, OSError, ConnectionError) as exc:
                         _log.warning(
                             "[JudgeOrchestrator] LLM judge %s failed: %s",
                             rid,
@@ -221,7 +221,7 @@ class JudgeOrchestrator:
         if persist and verdicts:
             try:
                 self._store.store_verdicts(verdicts)
-            except Exception as exc:
+            except (OSError, RuntimeError, ValueError, TypeError) as exc:
                 _log.warning("[JudgeOrchestrator] Persist failed: %s", exc)
 
         return report
