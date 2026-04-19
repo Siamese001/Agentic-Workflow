@@ -173,6 +173,22 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6g: Hardcoded Exclusion Ratchet (R3) ---------------------------------------
+      # Detects Python set/frozenset literals containing 3+ canonical exclusion tokens
+      # (".git", "__pycache__", "node_modules", "archives", etc.) outside the SSOT
+      # modules. Ratchet mode: only NET-NEW shadow sets fail; baseline of 37 known
+      # violations is tracked in ops_scripts/ci/baselines/hardcoded_exclusions_baseline.json
+      # for burndown. To refresh baseline after fixing one:
+      #     python ops_scripts/ci/check_hardcoded_exclusions.py --refresh-baseline
+      - id: hardcoded-exclusions
+        name: "T6g: Hardcoded Exclusion Ratchet"
+        entry: py ops_scripts/ci/check_hardcoded_exclusions.py
+        language: system
+        pass_filenames: false
+        files: ^(agentic_core/.*\.py|apps_[^/]+/.*\.py|ops_scripts/.*\.py|tools/.*\.py|\.windsurf/scripts/.*\.py|ops_scripts/ci/check_hardcoded_exclusions\.py|ops_scripts/ci/baselines/hardcoded_exclusions_baseline\.json)$
+        always_run: false
+        require_serial: true
+
       # -- T6f: Exclusion Consistency (R2) ---------------------------------------------
       # Validates that YAML mirror categories (sovereign_excluded_folders,
       # global_excluded_dirs, discovery_excluded_territories) are byte-equal to the

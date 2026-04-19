@@ -1,0 +1,450 @@
+{
+  "description": "Known hardcoded exclusion-set violations as of baseline freeze. These are tech debt; see R3 in docs/reports/exclusion-ssot-consolidated-review-2026-04-19.md. The gate blocks only NEW entries. Shrinking this baseline over time is the burndown goal.",
+  "count": 37,
+  "violations": [
+    {
+      "path": "agentic_core/L1_cognition/utils/constants_util.py",
+      "lineno": 179,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "build",
+        "dist",
+        "htmlcov",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
+      "lineno": 311,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+      "lineno": 531,
+      "canonical_tokens": [
+        ".git",
+        ".github",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "build",
+        "dist",
+        "eggs",
+        "htmlcov",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
+      "lineno": 224,
+      "canonical_tokens": [
+        ".git",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "lineno": 385,
+      "canonical_tokens": [
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        "__pycache__"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "lineno": 386,
+      "canonical_tokens": [
+        ".healing_backups",
+        ".nox",
+        ".tox"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "lineno": 543,
+      "canonical_tokens": [
+        ".git",
+        ".github",
+        ".windsurf"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "lineno": 616,
+      "canonical_tokens": [
+        ".healing_backups",
+        ".mypy_cache",
+        ".nox",
+        ".ruff_cache",
+        ".tox"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+      "lineno": 712,
+      "canonical_tokens": [
+        ".healing_backups",
+        ".nox",
+        ".tox"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/credential_scanner_util.py",
+      "lineno": 158,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".sovereign_healing_backup",
+        ".venv",
+        "__pycache__",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
+      "lineno": 459,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".sovereign_healing_backup",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
+      "lineno": 689,
+      "canonical_tokens": [
+        ".git",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/adg/extraction/agent_registry_scanner.py",
+      "lineno": 192,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".venv",
+        "__pycache__",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "agentic_core/adg/extraction/agent_registry_scanner.py",
+      "lineno": 192,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".venv",
+        "__pycache__",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "agentic_core/adg/identity/normalizer.py",
+      "lineno": 277,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/adg/identity/normalizer.py",
+      "lineno": 278,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/config/constants_config.py",
+      "lineno": 77,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/config/constants_config.py",
+      "lineno": 78,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/config/non_conforming_agent_finder_config.py",
+      "lineno": 210,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/config/non_conforming_agent_finder_config.py",
+      "lineno": 210,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "agentic_core/runtime/utils/sovereign_index_util.py",
+      "lineno": 195,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".sovereign_healing_backup",
+        ".venv",
+        "__pycache__",
+        "build",
+        "dist",
+        "htmlcov",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "apps_shared/_compat/agentic_core_shim.py",
+      "lineno": 141,
+      "canonical_tokens": [
+        ".git",
+        ".pytest_cache",
+        "__pycache__"
+      ]
+    },
+    {
+      "path": "apps_shared/_compat/agentic_core_shim.py",
+      "lineno": 141,
+      "canonical_tokens": [
+        ".git",
+        ".pytest_cache",
+        "__pycache__"
+      ]
+    },
+    {
+      "path": "ops_scripts/general/analyze_duplicates_detailed.py",
+      "lineno": 29,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "venv"
+      ]
+    },
+    {
+      "path": "ops_scripts/general/rename_test_files.py",
+      "lineno": 25,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".venv",
+        "__pycache__",
+        "venv"
+      ]
+    },
+    {
+      "path": "ops_scripts/general/suffix_cleanup_executor.py",
+      "lineno": 21,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".venv",
+        "__pycache__",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "ops_scripts/general/update_orchestrator_imports.py",
+      "lineno": 94,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archive",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "ops_scripts/general/validate_structure.py",
+      "lineno": 39,
+      "canonical_tokens": [
+        ".git",
+        ".github",
+        ".sovereign_healing_backup",
+        ".windsurf"
+      ]
+    },
+    {
+      "path": "ops_scripts/general/validate_structure.py",
+      "lineno": 40,
+      "canonical_tokens": [
+        ".git",
+        ".github",
+        ".sovereign_healing_backup",
+        ".windsurf"
+      ]
+    },
+    {
+      "path": "tools/generate/ingestion/ingest_arch_docs.py",
+      "lineno": 64,
+      "canonical_tokens": [
+        ".git",
+        ".pytest_cache",
+        ".windsurf",
+        "__pycache__",
+        "archives",
+        "artifacts",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "tools/generate/ingestion/ingest_code_chunks.py",
+      "lineno": 69,
+      "canonical_tokens": [
+        ".git",
+        ".windsurf",
+        "__pycache__",
+        "archives",
+        "artifacts",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "tools/generate/ingestion/ingest_incidents_rca.py",
+      "lineno": 71,
+      "canonical_tokens": [
+        ".git",
+        "__pycache__",
+        "archives",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "tools/generate/ingestion/ingest_process_docs.py",
+      "lineno": 125,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        "__pycache__",
+        "archives",
+        "artifacts",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "tools/generate/ingestion/ingest_repo_evidence.py",
+      "lineno": 59,
+      "canonical_tokens": [
+        ".git",
+        ".pytest_cache",
+        ".windsurf",
+        "__pycache__",
+        "archives",
+        "artifacts",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "tools/generate/ingestion/ingest_symbols.py",
+      "lineno": 72,
+      "canonical_tokens": [
+        ".git",
+        ".windsurf",
+        "__pycache__",
+        "archives",
+        "artifacts",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "tools/generate/ingestion/ingest_tests_guardrails.py",
+      "lineno": 64,
+      "canonical_tokens": [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        "__pycache__",
+        "archives",
+        "artifacts",
+        "node_modules"
+      ]
+    },
+    {
+      "path": "tools/guardian/idempotency_check.py",
+      "lineno": 154,
+      "canonical_tokens": [
+        ".git",
+        "__pycache__",
+        "archives",
+        "node_modules"
+      ]
+    }
+  ]
+}
