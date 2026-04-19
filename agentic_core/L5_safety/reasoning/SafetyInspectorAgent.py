@@ -298,7 +298,7 @@ class ConstitutionalOverseer:
             self._compiled_patterns.append(compiled)
             self._forbidden_commands.append(pattern)
             Logger.info(f"Added forbidden pattern: {pattern}")
-        except re.error as e:
+        except re.error as e:  # guardian: allow-log-and-swallow -- invalid regex: logged and skipped, pattern not added to list
             Logger.error(f"Invalid regex pattern: {e}")
 
     def get_forbidden_patterns(self) -> list[str]:
@@ -508,7 +508,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                 verdict = "YES"
                 reason = "llm_ambiguous"
                 Logger.warning(f"Socratic Judge ambiguous response: {result}")
-        except asyncio.TimeoutError:
+        except asyncio.TimeoutError:  # guardian: allow-log-and-swallow -- Socratic Judge timeout: default to safe verdict YES, logged and continued
             verdict = "YES"
             reason = "timeout"
             Logger.error(f"Socratic Judge timed out (5s) for: {file_path}")

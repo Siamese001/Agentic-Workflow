@@ -123,8 +123,8 @@ try:
         CORE_SUBFOLDER_MAP,
         SOVEREIGN_REGISTRY,
     )
-except ImportError:
-    pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+except ImportError:  # guardian: allow-silent-swallow -- optional module-level import: agent degrades gracefully if absent
+    pass
 BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
     "L0_Governance": {
         "path": "agentic_core/L0_routing",
@@ -505,9 +505,8 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         try:
             try:
                 super().heal_repository(dry_run=dry_run)
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except Exception:  # guardian: allow-broad-exception -- parent chain error re-raised to caller for handling
                 raise
-                Logger.debug(f"Parent chain warning: {e}")
             violations = self.run()
             result = {
                 "violations_found": len(violations),

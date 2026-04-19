@@ -261,9 +261,9 @@ def emit_safety_audit_record(
             reason=audit.reason_hash,
             timestamp_utc=int(audit.audit_epoch * 1000),
         )
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow -- system learning unavailable: audit emission skipped, caller continues
         # System learning unavailable - continue without emission
-        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+        pass
 
     # Explicit ADG edge emission for static scanner detection
     def safety_audit_emitted(
@@ -383,7 +383,7 @@ def query_safety_audits(
             return _registry.query_by_trace_id(trace_id)
         else:
             raise AuditQueryError("query_safety_audits: must specify run_id, trace_id, or audit_id")
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- wrapped and re-raised as AuditQueryError for caller handling
         raise AuditQueryError(f"query_safety_audits failed: {exc}") from exc
 
 

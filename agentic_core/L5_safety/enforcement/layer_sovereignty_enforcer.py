@@ -336,11 +336,11 @@ class LayerSovereigntyEnforcer:
         try:
             source = file_path.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(file_path))
-        except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as exc:  # guardian: allow-return-none-swallow -- per-file syntax error: recorded and skipped, enforcement continues
             report.parse_errors.append(f"{file_path}: SyntaxError: {exc}")
             report.files_skipped += 1
             return
-        except OSError as exc:  # guardian: Add error context logging
+        except OSError as exc:  # guardian: allow-return-none-swallow -- per-file read error: recorded and skipped, enforcement continues
             report.parse_errors.append(f"{file_path}: OSError: {exc}")
             report.files_skipped += 1
             return

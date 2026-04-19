@@ -642,9 +642,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                     layer = rel.parts[0] if len(rel.parts) > 1 else None
                     if layer:
                         return self.project_root / AGENTIC_CORE_DIR / layer / correct_folder
-                except ValueError:
-                    pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
-        except (AttributeError, KeyError, IndexError) as e:
+                except ValueError:  # guardian: allow-silent-swallow -- path not relative to agentic_core: fallback to default target
+                    pass
+        except (AttributeError, KeyError, IndexError) as e:  # guardian: allow-log-and-swallow -- target path lookup failure: non-fatal, default target used
             self.logger.debug(f"Failed to determine target path for {src_path.name}: {e}")
 
         return self.project_root / DEFAULT_APP_HEALING_TARGET
@@ -2203,10 +2203,10 @@ class LocationHealerAgent(SovereignBaseAgent):
                         ):  # guardian: Parsing and encoding errors need separate handling strategies
                             semantic_issues.append({"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"})
                             heal_actions.append({"path": path, "rel": rel, "type": "SOVEREIGN_MARKER"})
-                except ValueError:
-                    pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                except ValueError:  # guardian: allow-silent-swallow -- path not relative: naming check skipped, other checks continue
+                    pass
 
-            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:  # guardian: allow-log-and-swallow -- per-file parse failure: recorded as naming error, scan continues
                 heal_actions.append({"type": "NAMING_FILE_ERROR", "error": str(e)})
 
         return heal_actions, semantic_issues
