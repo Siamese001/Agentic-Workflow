@@ -252,14 +252,14 @@ class DistributedTracingCoordinator:
             self._registered_services[self._service_id] = node
             self._stats["active_services"] = len(self._registered_services)
 
-        except (
+        except (  # guardian: allow-log-and-swallow -- self registration best-effort: non-fatal, tracing continues unregistered
             AttributeError,
             KeyError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- self registration best-effort: non-fatal, tracing continues unregistered
+        ) as e:
             Logger.error(f"[DISTRIBUTED_TRACING] Failed to register self: {e}")
 
     def _unregister_service(self, service_id: str) -> None:
@@ -410,14 +410,14 @@ class DistributedTracingCoordinator:
 
             return context
 
-        except (
+        except (  # guardian: allow-return-none-swallow allow-log-and-swallow -- context propagation failure: non-fatal, caller treats None as no upstream context
             AttributeError,
             KeyError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- context propagation failure: non-fatal, caller treats None as no upstream context
+        ) as e:
             Logger.error(f"[DISTRIBUTED_TRACING] Failed to receive propagated context: {e}")
             self._stats["errors"] += 1
             return None
