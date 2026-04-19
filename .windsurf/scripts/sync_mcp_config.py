@@ -21,7 +21,16 @@ repo_root = Path(__file__).resolve().parents[2]
 repo_config = repo_root / ".windsurf" / "mcp_config.json"
 global_config = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
 agents_md = repo_root / "AGENTS.md"
+notion_databases_yaml = repo_root / "config" / "notion_databases.yaml"
 global_backup = Path.home() / ".codeium" / "windsurf" / "mcp_config.backup.json"
+
+# Backward-compatible aliases for downstream hooks/tests.
+REPO_ROOT = repo_root
+REPO_CONFIG = repo_config
+GLOBAL_CONFIG = global_config
+AGENTS_MD = agents_md
+NOTION_DATABASES_YAML = notion_databases_yaml
+GLOBAL_BACKUP = global_backup
 
 server_rows = [
     (
@@ -101,7 +110,10 @@ server_rows = [
 
 def load_repo_config(path: Path = repo_config) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as fh:
-        return json.load(fh)
+        data = json.load(fh)
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must contain a top-level JSON object")
+    return data
 
 
 def validate_config(data: dict[str, Any]) -> list[str]:
@@ -122,7 +134,24 @@ def validate_config(data: dict[str, Any]) -> list[str]:
     return issues
 
 
+def generate_mcp_quick_reference_block() -> str:
+    """Inner payload for the MCP-QUICK-REFERENCE autogen block (markers excluded)."""
+    lines: list[str] = []
+    lines.append("")
+    lines.append("| Server ID | Use For | Example Tools | Notes |")
+    lines.append("|---|---|---|---|")
+    for sid, use_for, tools, notes in server_rows:
+        lines.append(f"| `{sid}` | {use_for} | `{tools}` | {notes} |")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def generate_agents_quick_reference() -> str:
+    """Full MCP Quick Reference section (heading + intro + autogen block).
+
+    Retained for backward compatibility with check_mcp_sync_integrity.py.
+    The autogen block within is identical to generate_mcp_quick_reference_block().
+    """
     lines: list[str] = []
     lines.append("## MCP Quick Reference")
     lines.append("")
@@ -131,44 +160,205 @@ def generate_agents_quick_reference() -> str:
     )
     lines.append("")
     lines.append("<!-- MCP-QUICK-REFERENCE:START -->")
-    lines.append("")
-    lines.append("| Server ID | Use For | Example Tools | Notes |")
-    lines.append("|---|---|---|---|")
-    for sid, use_for, tools, notes in server_rows:
-        lines.append(f"| `{sid}` | {use_for} | `{tools}` | {notes} |")
-    lines.append("")
+    lines.append(generate_mcp_quick_reference_block())
     lines.append("<!-- MCP-QUICK-REFERENCE:END -->")
     lines.append("")
     return "\n".join(lines)
 
 
-def sync_agents_md(agents_path: Path = agents_md) -> bool:
-    if not agents_path.exists():
-        return False
-    text = agents_path.read_text(encoding="utf-8")
-    section = generate_agents_quick_reference().rstrip() + "\n"
+def extract_agents_quick_reference(text: str) -> str:
+    """Extract the canonical MCP Quick Reference section from AGENTS.md text."""
     start = "## MCP Quick Reference"
     next_heading = "\n## "
     start_idx = text.find(start)
     if start_idx == -1:
+        return ""
+    end_idx = text.find(next_heading, start_idx + len(start))
+    if end_idx == -1:
+        return text[start_idx:].strip()
+    return text[start_idx:end_idx].strip()
+
+
+def load_notion_databases() -> dict[str, Any]:
+    """Parse config/notion_databases.yaml with a minimal stdlib parser.
+
+    The file is hand-curated and follows a strict schema: top-level `workspace`
+    mapping + `databases` list of mappings. Using PyYAML is acceptable but this
+    module is stdlib-only (called from hooks), so we parse the narrow format.
+    """
+    if not notion_databases_yaml.exists():
+        raise FileNotFoundError(f"Missing SSOT: {notion_databases_yaml}")
+    text = notion_databases_yaml.read_text(encoding="utf-8")
+
+    # Narrow parser: strip comments, parse workspace block + databases list.
+    workspace: dict[str, str] = {}
+    databases: list[dict[str, str]] = []
+    section: str | None = None
+    # Use a 1-element list so Pylint's flow analysis retains dict type through
+    # the else-branch. Functionally equivalent to Optional[dict].
+    current_holder: list[dict[str, str]] = []
+
+    def _current() -> dict[str, str]:
+        return current_holder[0]
+
+    def _has_current() -> bool:
+        return bool(current_holder)
+
+    def _flush_current() -> None:
+        if current_holder:
+            databases.append(current_holder.pop())
+
+    for raw_line in text.splitlines():
+        line = raw_line.rstrip()
+        stripped = line.lstrip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if line.startswith("workspace:"):
+            section = "workspace"
+            continue
+        if line.startswith("databases:"):
+            section = "databases"
+            continue
+        if section == "workspace" and line.startswith("  ") and ":" in line:
+            k, _, v = stripped.partition(":")
+            workspace[k.strip()] = _unquote_yaml(v.strip())
+        elif section == "databases":
+            if stripped.startswith("- "):
+                _flush_current()
+                current_holder.append({})
+                inline = stripped[2:]
+                if ":" in inline:
+                    k, _, v = inline.partition(":")
+                    _current()[k.strip()] = _unquote_yaml(v.strip())
+            elif _has_current() and ":" in stripped:
+                k, _, v = stripped.partition(":")
+                _current()[k.strip()] = _unquote_yaml(v.strip())
+    _flush_current()
+
+    return {"workspace": workspace, "databases": databases}
+
+
+def _unquote_yaml(value: str) -> str:
+    """Unquote a YAML scalar using the subset the Notion config uses."""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+        inner = value[1:-1]
+        # YAML doubled-quote escape for single-quoted strings
+        if value[0] == "'":
+            inner = inner.replace("''", "'")
+        else:
+            inner = inner.replace('\\"', '"')
+        return inner
+    return value
+
+
+def generate_notion_map_block() -> str:
+    """Inner payload for the NOTION-MAP autogen block (markers excluded).
+
+    Covers: workspace attribution + database table + auto-routing rules + sync
+    enforcement pointers. Sourced from `config/notion_databases.yaml`.
+    """
+    data = load_notion_databases()
+    ws = data["workspace"]
+    dbs = data["databases"]
+
+    lines: list[str] = []
+    lines.append("")
+    lines.append(f"Bot: **{ws.get('bot', '?')}** | Workspace: **{ws.get('space', '?')}**")
+    lines.append("")
+    lines.append("| Database | Data Source ID | Read Trigger (query) | Write Trigger (auto-route) |")
+    lines.append("|----------|---------------|-----------------|--------------------------|")
+    for db in dbs:
+        lines.append(
+            f"| {db['name']} | `{db['id']}` | {db.get('read_trigger', '')} | {db.get('write_trigger', '')} |"
+        )
+    lines.append("")
+    lines.append(
+        "**Query pattern**: `API-query-data-source` with `data_source_id` from table above. Add `filter`/`sorts` as needed."
+    )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _replace_block(text: str, marker: str, new_inner: str) -> str:
+    """Replace content between `<!-- marker:START -->` and `<!-- marker:END -->`.
+
+    Appends the block at EOF if the markers are absent. Raises ValueError if
+    only one marker is present (invalid state; force user to repair manually).
+    """
+    start_tag = f"<!-- {marker}:START -->"
+    end_tag = f"<!-- {marker}:END -->"
+    start_idx = text.find(start_tag)
+    end_idx = text.find(end_tag)
+    # Normalise inner to have exactly one blank line separating the START/END
+    # markers from surrounding table content (matches the full-section render
+    # produced by generate_agents_quick_reference for byte-identical integrity).
+    stripped_inner = new_inner.strip("\n")
+    block = f"{start_tag}\n\n{stripped_inner}\n\n{end_tag}"
+    if start_idx == -1 and end_idx == -1:
         if not text.endswith("\n"):
             text += "\n"
-        text += "\n" + section
-    else:
-        end_idx = text.find(next_heading, start_idx + len(start))
-        if end_idx == -1:
-            text = text[:start_idx] + section
-        else:
-            text = text[:start_idx] + section + text[end_idx + 1 :]
-    agents_path.write_text(text, encoding="utf-8")
+        return text + "\n" + block + "\n"
+    if start_idx == -1 or end_idx == -1 or end_idx < start_idx:
+        raise ValueError(
+            f"Invalid autogen block state for marker '{marker}': malformed or out-of-order markers"
+        )
+    # Replace [start_tag ... end_tag] inclusive
+    return text[:start_idx] + block + text[end_idx + len(end_tag) :]
+
+
+def sync_agents_md(agents_path: Path = agents_md) -> bool:
+    """Refresh all autogen blocks in AGENTS.md.
+
+    Blocks refreshed:
+      - MCP-QUICK-REFERENCE (from mcp_config.json via server_rows)
+      - NOTION-MAP         (from config/notion_databases.yaml)
+
+    The surrounding `## MCP Quick Reference` heading + intro paragraph are NOT
+    regenerated; they are hand-authored narrative. Only the content between
+    markers is replaced.
+
+    Returns True when the file was updated (or no-op write because unchanged),
+    False when AGENTS.md does not exist.
+    """
+    if not agents_path.exists():
+        return False
+    original = agents_path.read_text(encoding="utf-8")
+    text = original
+    text = _replace_block(text, "MCP-QUICK-REFERENCE", generate_mcp_quick_reference_block())
+    try:
+        text = _replace_block(text, "NOTION-MAP", generate_notion_map_block())
+    except FileNotFoundError:
+        # notion_databases.yaml missing — skip block, leave AGENTS.md as-is
+        pass
+    if text != original:
+        agents_path.write_text(text, encoding="utf-8")
     return True
 
 
-def sync_global_config(data: dict[str, Any], global_path: Path = global_config) -> None:
+def _same_file(a: Path, b: Path) -> bool:
+    """True when both paths resolve to the same filesystem object (symlink-aware)."""
+    if not a.exists() or not b.exists():
+        return False
+    try:
+        return a.samefile(b)
+    except OSError:
+        return False
+
+
+def sync_global_config(data: dict[str, Any], global_path: Path = global_config) -> bool:
+    """Copy the repo SSOT to the Windsurf-read global path.
+
+    Returns True if a copy was performed, False if the two paths already point
+    to the same file (symlink in place — no-op is correct and zero-drift).
+    """
     global_path.parent.mkdir(parents=True, exist_ok=True)
+    if _same_file(repo_config, global_path):
+        return False
     if global_path.exists():
         shutil.copy2(global_path, global_backup)
     global_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    return True
 
 
 def run(check_only: bool = False, dry_run: bool = False) -> int:
@@ -186,8 +376,11 @@ def run(check_only: bool = False, dry_run: bool = False) -> int:
         if agents_md.exists():
             print(f"[mcp_sync] DRY RUN: would refresh {agents_md}")
         return 0
-    sync_global_config(data)
-    print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to {global_config}")
+    copied = sync_global_config(data)
+    if copied:
+        print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to {global_config}")
+    else:
+        print(f"[mcp_sync] No-op: repo SSOT and {global_config} are the same file (symlink).")
     if sync_agents_md():
         print(f"[mcp_sync] Refreshed AGENTS.md MCP Quick Reference at {agents_md}")
     else:

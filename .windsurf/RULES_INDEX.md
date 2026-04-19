@@ -251,6 +251,7 @@ All `model_decision` and `glob` rules require a `description` field in frontmatt
 | `mcp-config-ssot.md` | `glob` | Fires on edits to `.windsurf/mcp_config.json` |
 | `mcp-pytest-enforcement.md` | `glob` | Fires on edits to `test_*.py` and `conftest.py` |
 | `refactor-decision-memory.md` | `model_decision` | Before opening HITL for any refactor-class decision, consult the refactor-decision-memory skill for historical precedent |
+| `agents-memory-lifecycle.md` | `model_decision` | Apply when reading/writing the persistent memory knowledge graph, or deciding memory MCP boundaries |
 
 ---
 

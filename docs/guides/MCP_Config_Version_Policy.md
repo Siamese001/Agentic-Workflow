@@ -52,22 +52,66 @@ Required fields:
 
 ## Enforcement Points
 
-1. **Post-write audit** (`post_write_audit.py`): Lints `.windsurf/mcp_config.json` writes for schema issues, logs to `artifacts/windsurf/mcp_lint_audit.jsonl`
-2. **CI validation**: `python ops_scripts/ci/validate_mcp_config.py` — runs on every change to `.windsurf/mcp_config.json`
-3. **Sovereignty check**: `python ops_scripts/ci/check_mcp_config_sovereignty.py` — validates filesystem server is present and scoped to repo root
+### Layer 1 — Zero-drift on-machine (preferred)
+
+**Symlink** `~/.codeium/windsurf/mcp_config.json` → `.windsurf/mcp_config.json`. When set up, the repo SSOT and the Windsurf-read path are the same file on disk — edit once, no sync step required, drift structurally impossible.
+
+One-time contributor setup (Windows — requires Developer Mode or admin):
+
+```
+pwsh -File tools/setup/setup_symlinks.ps1
+```
+
+POSIX (macOS / Linux / WSL):
+
+```
+bash tools/setup/setup_symlinks.sh
+```
+
+When the symlink is in place, `.windsurf/scripts/post_write_mcp_config_sync.py` detects same-inode and prints "No-op: repo SSOT and global config are the same file (symlink in place)." The hook stays installed as a safety net for contributors who skip the symlink step.
+
+### Layer 2 — Copy-based sync (fallback)
+
+Contributors who cannot create symlinks rely on the post-write hook to copy `.windsurf/mcp_config.json` → `~/.codeium/windsurf/mcp_config.json` on every save. This is fully backward compatible but NOT zero-drift: the two files can diverge between save and sync.
+
+### Layer 3 — PR-blocking CI gates (guaranteed)
+
+Runs on every pull request regardless of whether a contributor symlinked or not. Located in `.github/workflows/config-sync-gates.yml`:
+
+| Gate | Source | Detects |
+|------|--------|---------|
+| **T6b** `check_mcp_sync_integrity.py` | `mcp_config.json` ↔ AGENTS.md MCP Quick Reference section | Content drift |
+| **T6c** `check_agents_mcp_coverage.py` | `mcpServers` keys vs AGENTS.md rows | Missing rows |
+| **T6d** `check_agents_md_sync.py` | AGENTS.md autogen markers (MCP-QUICK-REFERENCE, NOTION-MAP) vs generator output | Block-level drift |
+| **T6e** `check_exclusion_sync.py` | `config/excluded_paths.yaml` ↔ `.pre-commit-config.yaml` + `.gitignore` | Exclusion drift |
+| **T6**  `_validate_pytest_config.py --strict` | `pytest.ini` ↔ `pyproject.toml` | Pytest config split |
+
+### Layer 4 — Legacy linting (complementary)
+
+- `post_write_audit.py` — lints writes, logs to `artifacts/windsurf/mcp_lint_audit.jsonl`
+- `validate_mcp_config.py` — schema check (if present)
+- `check_mcp_config_sovereignty.py` — scope check (if present)
 
 ---
 
 ## Change Procedure
 
-When modifying MCP server configuration:
+With the symlink (recommended):
 
 ```
-1. Edit .windsurf/mcp_config.json  (SSOT — single file, mcpServers format)
-2. Run: python ops_scripts/ci/validate_mcp_config.py
-3. If valid: copy to global — python -c "import shutil,pathlib; shutil.copy('.windsurf/mcp_config.json', str(pathlib.Path.home()/'.codeium/windsurf/mcp_config.json'))"
-4. Commit .windsurf/mcp_config.json
-5. Restart Windsurf to pick up new config
+1. Edit .windsurf/mcp_config.json
+2. python .windsurf/scripts/sync_mcp_config.py   # regenerates AGENTS.md autogen blocks
+3. Commit both files
+4. Restart Windsurf
+```
+
+Without the symlink (fallback):
+
+```
+1. Edit .windsurf/mcp_config.json
+2. Save — post_write_mcp_config_sync.py copies to ~/.codeium/windsurf/ + refreshes AGENTS.md
+3. Commit
+4. Restart Windsurf
 ```
 
 ---
@@ -79,7 +123,7 @@ If a bad MCP config is deployed:
 ```
 1. git log .windsurf/mcp_config.json   -- find last good commit
 2. git checkout <good-sha> -- .windsurf/mcp_config.json
-3. Copy to global: python -c "import shutil,pathlib; shutil.copy('.windsurf/mcp_config.json', str(pathlib.Path.home()/'.codeium/windsurf/mcp_config.json'))"
+3. python .windsurf/scripts/sync_mcp_config.py   -- regenerates AGENTS.md + syncs global (no-op if symlinked)
 4. Restart Windsurf
 ```
 

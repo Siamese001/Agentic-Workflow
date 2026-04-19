@@ -1,0 +1,81 @@
+name: Config Sync Gates
+
+on:
+  pull_request:
+    branches: ["**"]
+    paths:
+      - '.windsurf/mcp_config.json'
+      - '.windsurf/scripts/sync_mcp_config.py'
+      - '.windsurf/scripts/post_write_mcp_config_sync.py'
+      - '.windsurf/scripts/pre_prompt_classifier.py'
+      - '.windsurf/rules/mcp-config-ssot.md'
+      - 'AGENTS.md'
+      - '.windsurf/AGENTS.md'
+      - 'config/excluded_paths.yaml'
+      - 'config/notion_databases.yaml'
+      - '.pre-commit-config.yaml'
+      - '.gitignore'
+      - 'pytest.ini'
+      - 'pyproject.toml'
+      - 'ops_scripts/ci/check_mcp_sync_integrity.py'
+      - 'ops_scripts/ci/check_agents_mcp_coverage.py'
+      - 'ops_scripts/ci/check_agents_md_sync.py'
+      - 'ops_scripts/ci/_validate_pytest_config.py'
+      - 'tools/generate/check_exclusion_sync.py'
+      - '.github/workflows/config-sync-gates.yml'
+  push:
+    branches: [main, master]
+    paths:
+      - '.windsurf/mcp_config.json'
+      - '.windsurf/AGENTS.md'
+      - 'AGENTS.md'
+      - 'config/excluded_paths.yaml'
+      - 'config/notion_databases.yaml'
+
+jobs:
+  config-sync-gates:
+    name: Config Sync — Fail-Closed Drift Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install minimal deps (stdlib + pyyaml)
+        run: python -m pip install --quiet pyyaml
+
+      - name: T6b — MCP config <-> AGENTS.md integrity
+        run: python ops_scripts/ci/check_mcp_sync_integrity.py
+        env:
+          PYTHONPATH: .
+
+      - name: T6c — AGENTS.md MCP coverage
+        run: python ops_scripts/ci/check_agents_mcp_coverage.py
+        env:
+          PYTHONPATH: .
+
+      - name: T6d — AGENTS.md autogen blocks in sync
+        # This gate becomes active after W2 of config-drift-reconciliation plan.
+        # Until then the script is absent and the step is a no-op.
+        run: |
+          if [ -f ops_scripts/ci/check_agents_md_sync.py ]; then
+            python ops_scripts/ci/check_agents_md_sync.py
+          else
+            echo "[config-sync-gates] check_agents_md_sync.py not yet present — skipping (will activate after W2)"
+          fi
+        env:
+          PYTHONPATH: .
+
+      - name: T6e — excluded_paths.yaml <-> .pre-commit-config.yaml + .gitignore
+        run: python tools/generate/check_exclusion_sync.py
+        env:
+          PYTHONPATH: .
+
+      - name: T6 — pytest config SSOT
+        run: python ops_scripts/ci/_validate_pytest_config.py --strict
+        env:
+          PYTHONPATH: .

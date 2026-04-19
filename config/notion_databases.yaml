@@ -1,0 +1,61 @@
+# Notion Workspace Map — SSOT for all Notion database IDs and routing triggers.
+#
+# Consumed by:
+#   - .windsurf/scripts/sync_mcp_config.py  -> regenerates AGENTS.md NOTION-MAP autogen block
+#   - .windsurf/scripts/post_write_mcp_config_sync.py -> picks MCP Registry DB ID
+#   - ops_scripts/ci/check_agents_md_sync.py -> fails PRs on drift
+#
+# NEVER hand-edit Notion DB IDs in AGENTS.md or post_write_mcp_config_sync.py.
+# Change them here and regenerate via: python .windsurf/scripts/sync_mcp_config.py
+workspace:
+  bot: "Agentic-Workflow"
+  space: "Amit Ayer's Space"
+
+databases:
+  - key: wave_phase_convergence
+    name: "Wave/Phase Convergence"
+    id: "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+    read_trigger: '"plan status", "phase progress", "wave status", "what''s blocked"'
+    write_trigger: "On wave/phase completion or status change"
+
+  - key: sc_ap_violation_backlog
+    name: "SC/AP Violation Backlog"
+    id: "803834e1-0af8-4c3c-b45a-f513f80a7fef"
+    read_trigger: '"SC/AP violations", "check severity", "promotion status"'
+    write_trigger: "When `generate_full_adg` emits new SC/AP rows"
+
+  - key: hitl_decision_ledger
+    name: "HITL Decision Ledger"
+    id: "5b60fdde-7259-491e-9f2d-e088f1f741ef"
+    read_trigger: '"HITL decisions", "past decisions", "decision history"'
+    write_trigger: "Immediately after any scored `ask_user_question` resolution"
+
+  - key: constitutional_rules_registry
+    name: "Constitutional Rules Registry"
+    id: "9bd2523e-7a6e-434d-89a7-ce4166457069"
+    read_trigger: '"constitutional rules", "rule status"'
+    write_trigger: "On rule addition/modification"
+
+  - key: mcp_registry
+    name: "MCP Registry"
+    id: "e7b149b4-0496-4e98-a5dd-074dbe31881b"
+    read_trigger: '"MCP status", "which MCPs are active", "server registry"'
+    write_trigger: "On ANY `mcp_config.json` change or gate-behavior change"
+
+  - key: svp_engineering_reviews
+    name: "SVP Engineering Reviews"
+    id: "814e26d3-d665-4472-9b92-c7e0f89241d0"
+    read_trigger: '"SVP review", "module certification", "test pass rate"'
+    write_trigger: "On SVP review completion"
+
+  - key: adr_registry
+    name: "ADR Registry"
+    id: "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"
+    read_trigger: '"ADR status", "architectural decisions", "which ADRs"'
+    write_trigger: "On every new ADR spec file — POST row with ADR ID, Status, Impact Layers, Summary, Filename"
+
+  - key: antipattern_burndown
+    name: "Anti-Pattern Burndown"
+    id: "4599fe37-8c24-4d89-96af-438b99a967c4"
+    read_trigger: '"anti-pattern counts", "burndown trend", "ratchet ceiling"'
+    write_trigger: "On burndown run or ratchet adjustment"

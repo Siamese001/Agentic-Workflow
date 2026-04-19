@@ -140,6 +140,116 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6b: MCP Config Sync Integrity ----------------------------------------------
+      - id: mcp-sync-integrity
+        name: "T6b: MCP Sync Integrity"
+        entry: py ops_scripts/ci/check_mcp_sync_integrity.py
+        language: system
+        pass_filenames: false
+        files: ^(\.windsurf/mcp_config\.json|AGENTS\.md|\.windsurf/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
+        always_run: false
+        require_serial: true
+
+      # -- T6c: AGENTS.md MCP Coverage --------------------------------------------------
+      # Ensures every `mcpServers` key in mcp_config.json has a row in the
+      # AGENTS.md MCP Quick Reference table. Complements T6b (strict integrity):
+      # T6b checks content, T6c checks coverage. Both are cheap (no subprocess).
+      - id: agents-mcp-coverage
+        name: "T6c: AGENTS.md MCP Coverage"
+        entry: py ops_scripts/ci/check_agents_mcp_coverage.py
+        language: system
+        pass_filenames: false
+        files: ^(\.windsurf/mcp_config\.json|AGENTS\.md)$
+        always_run: false
+        require_serial: true
+
+      # -- T6d: AGENTS.md Autogen Block Integrity --------------------------------------
+      # Validates every <!-- MARKER:START/END --> autogen block in AGENTS.md is
+      # byte-identical to the SSOT generator output. Currently covers:
+      #   - MCP-QUICK-REFERENCE (mcp_config.json)
+      #   - NOTION-MAP          (config/notion_databases.yaml)
+      # Fix drift: `python .windsurf/scripts/sync_mcp_config.py`
+      - id: agents-md-autogen-sync
+        name: "T6d: AGENTS.md Autogen Sync"
+        entry: py ops_scripts/ci/check_agents_md_sync.py
+        language: system
+        pass_filenames: false
+        files: ^(\.windsurf/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.windsurf/scripts/sync_mcp_config\.py)$
+        always_run: false
+        require_serial: true
+
+      # -- T7a: Governed-App Conformance ------------------------------------------------
+      # Validates apps_* packages against the governed-app contract:
+      # runner subclass, capability token, exception entries, APP_REGISTRY coverage.
+      # Triggers on apps_* package changes or registry edits.
+      - id: governed-app-conformance
+        name: "T7a: Governed-App Conformance"
+        entry: py ops_scripts/ci/check_governed_app_conformance.py
+        language: system
+        pass_filenames: false
+        files: ^(apps_[^/]+/.*\.py|apps_shared/integrations/app_registry\.py)$
+        always_run: false
+        require_serial: true
+
+      # -- T7b: Structure Policy --------------------------------------------------------
+      # Validates the repository directory structure against
+      # config/structure_blueprint/structure_policy.yaml. Triggers only when the
+      # policy itself changes (cheap — full check is policy-driven, not per-file).
+      - id: structure-policy
+        name: "T7b: Structure Policy"
+        entry: py ops_scripts/ci/check_structure_policy.py
+        language: system
+        pass_filenames: false
+        files: ^config/structure_blueprint/structure_policy\.yaml$
+        always_run: false
+        require_serial: true
+
+      # -- T7c: HITL Packet Format ------------------------------------------------------
+      # Validates ask_user_question packet shape in rule/doc files:
+      # confidence scores, dominance markers, option format. Triggers on HITL rule
+      # files and packet documentation only.
+      - id: hitl-format
+        name: "T7c: HITL Packet Format"
+        entry: py ops_scripts/ci/validate_hitl_format.py
+        language: system
+        files: ^\.windsurf/rules/(hitl-|.*hitl).*\.md$
+        always_run: false
+        require_serial: true
+
+      # -- T7e: HITL Rules Corpus Validator ---------------------------------------------
+      # Validates the HITL rule *corpus* (all 4 files together): §HITL-9 threshold
+      # config, §HITL-10 option shape, forbidden 2-4-count patterns, and required
+      # pipeline patterns. The validator was refactored 2026-04-19 to accept the
+      # post-consolidation split layout (enforcement.md + decision-points.md +
+      # svp-calibration.md + anti-pattern-hitl-gate.md). Triggers on any HITL file
+      # change; passes all 4 files together so corpus-level checks work.
+      - id: hitl-rules-corpus
+        name: "T7e: HITL Rules Corpus"
+        entry: py ops_scripts/ci/validate_hitl_rules.py .windsurf/rules/hitl-enforcement.md .windsurf/rules/hitl-decision-points.md .windsurf/rules/hitl-svp-calibration.md .windsurf/rules/anti-pattern-hitl-gate.md
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/rules/(hitl-|anti-pattern-hitl).*\.md$
+        always_run: false
+        require_serial: true
+
+      # -- T7d: Query Progress Bar (§16) ------------------------------------------------
+      # Enforces Constitutional §16 (progress bars on operations >30s, proxied
+      # by loop/function body >50 lines). All 8 pre-existing violations triaged
+      # and resolved on 2026-04-19 (2 real tqdm wraps, 6 compliance comments
+      # documenting bounded-small-n exemptions). Safe to block commits.
+      - id: query-progress-bar
+        name: "T7d: Query Progress Bar (§16)"
+        entry: py ops_scripts/ci/check_query_progress_bar.py --staged
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: false
+        require_serial: true
+
+      # NOTE: infra_wiring_scan.py NOT wired — 5 pre-existing violations (google,
+      # chromadb, sqlite3 direct imports) need remediation first. Wired at
+      # `stages: [manual]` below for on-demand audit.
+
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # Run manually: pre-commit run <id> --hook-stage manual
       - id: adg-stale-guard
@@ -154,6 +264,18 @@ repos:
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty"
         entry: py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # Raw infra import hygiene — run on demand until 5 direct-import sites
+      # (google, chromadb, sqlite3) are remediated through sanctioned adapters.
+      # Invoke: pre-commit run infra-wiring --hook-stage manual --all-files
+      - id: infra-wiring
+        name: "CI: Infrastructure Wiring Scan"
+        entry: py ops_scripts/ci/infra_wiring_scan.py
         language: system
         pass_filenames: false
         always_run: true

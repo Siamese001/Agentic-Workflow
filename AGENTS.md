@@ -74,64 +74,63 @@ Keep these four layers separate at all times:
 <!-- MCP-QUICK-REFERENCE:END -->
 ## Notion Workspace Map
 
+<!-- NOTION-MAP:START -->
+
 Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 
-| Database | Data Source ID | Routing Trigger |
-|----------|---------------|-----------------|
-| Wave/Phase Convergence | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | "plan status", "phase progress", "wave status", "what's blocked" |
-| SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | "SC/AP violations", "check severity", "promotion status" |
-| HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | "HITL decisions", "past decisions", "decision history" |
-| Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | "constitutional rules", "rule status" |
-| MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | "MCP status", "which MCPs are active", "server registry" |
-| SVP Engineering Reviews | `814e26d3-d665-4472-9b92-c7e0f89241d0` | "SVP review", "module certification", "test pass rate" |
-| ADR Registry | `e59d7640-dc09-48f9-8bdc-b0c94bf98c2a` | "ADR status", "architectural decisions", "which ADRs" |
-| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | "anti-pattern counts", "burndown trend", "ratchet ceiling" |
+| Database | Data Source ID | Read Trigger (query) | Write Trigger (auto-route) |
+|----------|---------------|-----------------|--------------------------|
+| Wave/Phase Convergence | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | "plan status", "phase progress", "wave status", "what's blocked" | On wave/phase completion or status change |
+| SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | "SC/AP violations", "check severity", "promotion status" | When `generate_full_adg` emits new SC/AP rows |
+| HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | "HITL decisions", "past decisions", "decision history" | Immediately after any scored `ask_user_question` resolution |
+| Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | "constitutional rules", "rule status" | On rule addition/modification |
+| MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
+| SVP Engineering Reviews | `814e26d3-d665-4472-9b92-c7e0f89241d0` | "SVP review", "module certification", "test pass rate" | On SVP review completion |
+| ADR Registry | `e59d7640-dc09-48f9-8bdc-b0c94bf98c2a` | "ADR status", "architectural decisions", "which ADRs" | On every new ADR spec file — POST row with ADR ID, Status, Impact Layers, Summary, Filename |
+| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
 **Query pattern**: `API-query-data-source` with `data_source_id` from table above. Add `filter`/`sorts` as needed.
 
+<!-- NOTION-MAP:END -->
+
+### Auto-Routing Rules (proactive — do NOT wait for a prompt)
+
+Cascade MUST route these events to Notion without being asked. Filesystem remains SSOT for the full artifact; Notion holds the searchable row.
+
+| Event in Cascade | Filesystem Artifact | Notion Write (parallel) |
+|---|---|---|
+| Create `docs/architecture/adr/ADR-NNN-*.md` | ADR markdown | `API-post-page` into ADR Registry with ADR ID, Status, Decision Date, Impact Layers, Summary, Filename, Deciders |
+| Modify `.windsurf/mcp_config.json` (add/remove/reconfigure server) | JSON edit | `API-patch-page` (or post new) into MCP Registry with Notes + updated Last Validated; link ADR if applicable |
+| Change gate behavior in `.windsurf/scripts/pre_mcp_gate.py` | Python edit | `API-patch-page` affected MCP Registry entries with Notes (behavior description) + Linked ADR |
+| Resolve a scored HITL decision via `ask_user_question` | — | `API-post-page` into HITL Decision Ledger with decision type, options, selection, rationale |
+| Run `generate_full_adg.py` and produce SC/AP defects | `artifacts/adg/*.sqlite`, violation JSON | `API-post-page` per NEW violation into SC/AP Violation Backlog |
+| Write RCA in `docs/reports/plans/*.md` | Markdown | Link from relevant registry row (no new database — RCA detail lives on disk) |
+
+**Non-goals**: do NOT duplicate narrative content in Notion. Store the row; link the file.
+
+### Sync Enforcement
+
+Two existing gates validate AGENTS.md ↔ `.windsurf/mcp_config.json` consistency. Both are wired into pre-commit (`.pre-commit-config.yaml`) and invoked by `run_contract_gates.py`:
+
+| Gate | Scope |
+|---|---|
+| `ops_scripts/ci/check_mcp_sync_integrity.py` | **Strict**: compares exact Quick Reference content against the canonical output of `.windsurf/scripts/sync_mcp_config.py`. Fails if any row drifts. |
+| `ops_scripts/ci/check_agents_mcp_coverage.py` | **Coverage**: every `mcpServers` key in mcp_config.json must appear as a row in the Quick Reference. |
+
+Run manually:
+```bash
+python ops_scripts/ci/check_mcp_sync_integrity.py  # strict content check
+python ops_scripts/ci/check_agents_mcp_coverage.py # coverage check
+```
+
+Auto-regeneration (when drift is detected):
+```bash
+python .windsurf/scripts/sync_mcp_config.py  # rewrites AGENTS.md Quick Reference block
+```
+
 ## Memory Lifecycle
 
-The memory MCP server provides **persistent, cross-session knowledge** via a SQLite-backed knowledge graph. Unlike Windsurf's built-in `create_memory`, this survives IDE restarts and supports structured entities, relations, and observations.
-
-### When to Read (mandatory)
-
-| Trigger | Action |
-|---------|--------|
-| **Start of every conversation** | Call `mem_recall_session_start` to load persistent project context (layers, constitutional rules, architectural decisions). This is the **first tool call** in any session. |
-| User asks "what do you know about X", "past decisions", "project context" | Call `search_nodes(query=X)` or `open_nodes(names=[...])` |
-| Before HITL decisions | Call `search_nodes` to check for historical precedent on similar decisions |
-| Debugging or investigating a module | Call `search_nodes` with module/layer name to retrieve stored context |
-
-### When to Write (proactive)
-
-| Trigger | Action |
-|---------|--------|
-| **Significant architecture decision made** | `create_entities` with `entityType="ArchitecturalDecision"` + observations describing the decision, rationale, and outcome |
-| **HITL decision resolved** | `add_observations` to record the chosen option and reasoning |
-| **New pattern or convention established** | `create_entities` with `entityType="ProceduralPattern"` |
-| **User explicitly says "remember this"** | `create_entities` or `add_observations` |
-| **After ADG regeneration** | `mem_import_adg_context` to refresh layer/project context |
-| **Refactor or major change completed** | `add_observations` to the affected entity with outcome and lessons learned |
-
-### When to Maintain
-
-| Trigger | Action |
-|---------|--------|
-| Weekly or after major milestones | `mem_cleanup_stale(older_than_days=7)` to prune session-scoped entities |
-| Memory health check needed | `mem_get_stats` to inspect entity/observation/relation counts |
-| After ADG regeneration + cleanup | `mem_import_adg_context` to re-seed fresh context |
-
-### Entity Type Conventions
-
-| Type | Purpose | Protected |
-|------|---------|-----------|
-| `ArchitectureLayer` | L0–L6 layer definitions | Yes |
-| `ProjectContext` | Project metadata (e.g., `Project:ADG`) | Yes |
-| `ConstitutionalRule` | Governance rules | Yes |
-| `ArchitecturalDecision` | ADR-level decisions | Yes |
-| `ProceduralPattern` | Established patterns/conventions | Yes |
-| `EpisodicEvent` | Session-scoped events (purgeable after 7d) | Yes |
-| *(other)* | General/session entities | No — pruned by `mem_cleanup_stale` |
+Detailed read/write/maintain triggers and entity-type conventions live in `.windsurf/rules/agents-memory-lifecycle.md` (model_decision). Key session-start requirement: **first tool call of every session is `mem_recall_session_start`** (constitutional §17).
 
 ## Constitutional Constraints (always-on)
 

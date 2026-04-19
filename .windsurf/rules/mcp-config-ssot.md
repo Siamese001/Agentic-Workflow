@@ -10,12 +10,20 @@ globs:
 
 ```text
 .windsurf/mcp_config.json           ← EDIT HERE (repo-local, version-controlled, strict JSON)
-~/.codeium/windsurf/mcp_config.json ← auto-synced mirror that Windsurf reads at startup
-AGENTS.md                           ← auto-synced MCP Quick Reference section at repo root
+~/.codeium/windsurf/mcp_config.json ← what Windsurf actually reads at startup; prefer symlink
+AGENTS.md                           ← auto-regenerated autogen blocks at repo root
+config/notion_databases.yaml        ← SSOT for Notion DB IDs + routing triggers
 ```
 
-**`.windsurf/mcp_config.json` is the one repo-local SSOT.** It uses the native Windsurf `mcpServers` JSON format.  
-There is no YAML layer, no second repo-local mirror, and no hidden MCP registry file inside `.windsurf/`.
+**`.windsurf/mcp_config.json` is the one repo-local SSOT.** It uses the native Windsurf `mcpServers` JSON format. There is no YAML layer, no second repo-local mirror, and no hidden MCP registry file inside `.windsurf/`.
+
+### Preferred: zero-drift via symlink
+
+Contributors should run `tools/setup/setup_symlinks.ps1` (Windows) or `tools/setup/setup_symlinks.sh` (POSIX) once per machine. This symlinks `~/.codeium/windsurf/mcp_config.json` → `.windsurf/mcp_config.json`, making drift structurally impossible. The post-write hook detects the symlink and becomes a no-op.
+
+### Fallback: copy-based sync
+
+Without the symlink the post-write hook (`.windsurf/scripts/post_write_mcp_config_sync.py`) copies on every save. This is still correct — just not zero-drift between save and sync.
 
 ## Format
 
