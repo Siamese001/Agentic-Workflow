@@ -491,7 +491,11 @@ def run_standard_mode():
                                 owner_agent_id="mission_runner",
                                 initial_stage=f"cycle_{cycle}",
                             )
-                        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- coordination ledger init best-effort: control-flow skip, execution continues
+                        except (
+                            ValueError,
+                            TypeError,
+                            RuntimeError,
+                        ) as e:  # guardian: allow-silent-swallow -- coordination ledger init best-effort: control-flow skip, execution continues
                             pass
                     try:
                         update_coordination_ledger(

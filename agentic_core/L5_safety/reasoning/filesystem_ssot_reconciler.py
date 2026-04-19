@@ -542,9 +542,8 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             Logger.debug(f"Extracted signal '{name_lower}' from {class_name}")
                 Logger.info(f"[SSOT] Loaded {len(self.actual_agents)} agents from discovery JSON")
                 return
-            except (OSError, RuntimeError, ValueError, TypeError) as e:
+            except (OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-broad-exception -- discovery JSON load failure propagated to caller for handling
                 raise
-                Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
         agentic_core = self.project_root / AGENTIC_CORE_DIR
         from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
 
@@ -562,9 +561,8 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             if name_lower:
                                 self.actual_signals.add(name_lower)
                                 Logger.debug(f"Extracted signal '{name_lower}' from {node.name}")
-            except (SyntaxError, OSError, RuntimeError, ValueError, TypeError) as e:
+            except (SyntaxError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-broad-exception -- per-file parse failure propagated to caller for handling
                 raise
-                Logger.debug(f"Failed to parse {py_file}: {e}")
         Logger.info(
             f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered",
         )
@@ -1192,10 +1190,8 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "PREVIEW: Would update signals in blueprint" if dry_run else "Signals updated"
                     )
                     action["applied"] = not dry_run
-            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
+            except (AttributeError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-broad-exception -- cleanup action failure propagated to caller for handling
                 raise
-                action["error"] = str(e)
-                Logger.error(f"[FilesystemSSOTReconcilerAgent] Cleanup error: {e}")
             actions.append(action)
         batch_report = {
             "batch_post_heal_status": "PREVIEW" if dry_run else "APPLIED",

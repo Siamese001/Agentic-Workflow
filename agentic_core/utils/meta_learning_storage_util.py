@@ -226,9 +226,9 @@ class MetaLearningStorage:
             if result:
                 Logger.info("%s INSTINCT TRIGGERED: Recalled previous experience.", namespace)
             return result
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-return-none-swallow -- memory recall: non-fatal, caller treats None as no prior context
             Logger.warning("%s Recall error: %s", namespace, e)
-            return None  # guardian: allow-return-none-swallow -- memory recall: non-fatal, caller treats None as no prior context
+            return None
 
     @classmethod
     async def learn_async(cls, context: str, namespace: str, result: dict[str, Any]) -> None:
@@ -238,13 +238,13 @@ class MetaLearningStorage:
         try:
             _ = json.dumps(result)
             await cls._memory.learn_async(context, namespace, result)
-        except (
+        except (  # guardian: allow-log-and-swallow -- async learn: fire-and-forget memory write, non-fatal
             AttributeError,
             OSError,
             RuntimeError,
             ValueError,
             TypeError,
-        ) as e:  # guardian: allow-log-and-swallow -- async learn: fire-and-forget memory write, non-fatal
+        ) as e:
             Logger.warning("%s Async learn failed: %s", namespace, e)
 
     @classmethod
@@ -322,13 +322,13 @@ class MetaLearningStorage:
                 agent_type="Agent",
                 observations=[f"Agent {agent_name} initialized"],
             )
-        except (
+        except (  # guardian: allow-log-and-swallow -- agent entity registration: optional graph write, non-fatal
             AttributeError,
             OSError,
             RuntimeError,
             ValueError,
             TypeError,
-        ) as e:  # guardian: allow-log-and-swallow -- agent entity registration: optional graph write, non-fatal
+        ) as e:
             Logger.warning("%s Agent entity registration failed: %s", agent_name, e)
 
     @classmethod
@@ -342,13 +342,13 @@ class MetaLearningStorage:
                 task_description=context,
                 feedback_score=feedback_score,
             )
-        except (
+        except (  # guardian: allow-log-and-swallow -- relation creation: optional graph write, non-fatal
             AttributeError,
             OSError,
             RuntimeError,
             ValueError,
             TypeError,
-        ) as e:  # guardian: allow-log-and-swallow -- relation creation: optional graph write, non-fatal
+        ) as e:
             Logger.warning("%s MASTERED_TASK relation creation failed: %s", agent_name, e)
 
     @classmethod

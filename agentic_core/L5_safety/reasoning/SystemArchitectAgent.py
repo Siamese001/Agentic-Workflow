@@ -397,7 +397,13 @@ class SystemArchitectAgent(SovereignBaseAgent):
 
             return circular_deps
 
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow -- graph store cycle detection best-effort: caller falls back to AST DFS on None
+        except (  # guardian: allow-return-none-swallow -- graph store cycle detection best-effort: caller falls back to AST DFS on None
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:
             Logger.warning(f"SystemArchitect: Graph store cycle detection failed: {e}")
             return None
 
@@ -458,7 +464,11 @@ class SystemArchitectAgent(SovereignBaseAgent):
                         elif isinstance(node, ast.ImportFrom):
                             if node.module:
                                 dependency_graph[mod].add(node.module)
-                except (OSError, UnicodeDecodeError, SyntaxError) as e:  # guardian: allow-log-and-swallow -- per-file AST parse best-effort: skipped file excluded from dependency graph
+                except (
+                    OSError,
+                    UnicodeDecodeError,
+                    SyntaxError,
+                ) as e:  # guardian: allow-log-and-swallow -- per-file AST parse best-effort: skipped file excluded from dependency graph
                     Logger.warning(f"Failed to parse {p}: {e}")
             self._cached_scan_root = cache_key
             self._cached_module_map = module_map
@@ -485,7 +495,10 @@ class SystemArchitectAgent(SovereignBaseAgent):
                         _adg_score,
                         _adg_antipatterns,
                     )
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- ADG behavioral profile optional: falls back to default score, scoring continues
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow -- ADG behavioral profile optional: falls back to default score, scoring continues
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -661,7 +674,10 @@ class SystemArchitectAgent(SovereignBaseAgent):
             resolved_path = Path(file_path).resolve()
             with open(resolved_path, encoding="utf-8") as f:
                 original_code = f.read()
-        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-return-none-swallow -- file read best-effort: unreadable source skipped, healing continues
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: allow-return-none-swallow -- file read best-effort: unreadable source skipped, healing continues
             print(f"      [!] Cannot read {file_path}: {e}")
             return
         if any(
@@ -696,7 +712,10 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 _wg.open_write(file_path, mutated_code)
                 print(f"      [OK] Round {round_num}: Fixed {Path(file_path).name}")
                 return
-            except (OSError, TypeError) as e:  # guardian: allow-return-none-swallow -- write failure best-effort: healing round aborts, loop continues
+            except (
+                OSError,
+                TypeError,
+            ) as e:  # guardian: allow-return-none-swallow -- write failure best-effort: healing round aborts, loop continues
                 print(f"      [X] Cannot write {file_path}: {e}")
                 return
         print(f"      [X] Failed to fix {Path(file_path).name} after {max_rounds} rounds")

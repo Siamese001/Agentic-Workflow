@@ -389,7 +389,10 @@ class LocationValidatorAgent(SovereignBaseAgent):
             import logging
 
             logging.getLogger(__name__).debug("location_validator: SyntaxError swallowed at L379")
-        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow -- file read best-effort: unreadable file skipped, caller continues
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: allow-log-and-swallow -- file read best-effort: unreadable file skipped, caller continues
             self.logger.debug(f"Failed to check import depth for {rel_path}: {e}")
         return (True, "OK")
 
@@ -472,12 +475,18 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 if file_path.stat().st_size < 1000000:
                     try:
                         content = file_path.read_text(encoding="utf-8", errors="ignore")
-                    except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow -- file read best-effort: content=None triggers downstream skip
+                    except (
+                        OSError,
+                        UnicodeDecodeError,
+                    ) as e:  # guardian: allow-log-and-swallow -- file read best-effort: content=None triggers downstream skip
                         self.logger.debug(f"Failed to read content for artifact check: {e}")
             rejection_reason = check_forbidden_signals(file_path.name, content)
             if rejection_reason:
                 return (False, f"ARTIFACT ROUTING VIOLATION: {rejection_reason}")
-        except (ImportError, AttributeError) as e:  # guardian: allow-log-and-swallow -- artifact routing check optional: dep absent, validation passes
+        except (
+            ImportError,
+            AttributeError,
+        ) as e:  # guardian: allow-log-and-swallow -- artifact routing check optional: dep absent, validation passes
             self.logger.debug(f"Artifact routing check failed: {e}")
         return (True, "OK")
 
@@ -514,7 +523,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
             result = self._check_semantic_alignment(tree, current_territory, rel_path)
             if not result[0]:
                 return result
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:  # guardian: allow-log-and-swallow -- AST parse best-effort: unparseable/unreadable file skipped, validation passes
+        except (
+            OSError,
+            UnicodeDecodeError,
+            SyntaxError,
+        ) as e:  # guardian: allow-log-and-swallow -- AST parse best-effort: unparseable/unreadable file skipped, validation passes
             self.logger.debug(f"AST parsing failed for {rel_path}: {e}")
         return (True, "OK")
 
@@ -627,7 +640,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
                             False,
                             f"TERRITORY ALIGNMENT (FCA): File classified as {file_type}, belongs in '{correct_folder}/' not '{current_subfolder}/'. File: {rel_path}",
                         )
-        except (ImportError, AttributeError, OSError) as e:  # guardian: allow-log-and-swallow -- FCA classification optional: falls through to territory alignment check
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- FCA classification optional: falls through to territory alignment check
             self.logger.debug(f"FCA classification failed for {rel_path}: {e}")
         return self._check_territory_alignment(current_territory, territory_scores, rel_path)
 

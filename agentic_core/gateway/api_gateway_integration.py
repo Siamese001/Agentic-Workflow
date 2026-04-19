@@ -233,7 +233,11 @@ class KongGatewayClient(GatewayClient):
                 sampled=sampled,
             )
 
-        except (KeyError, ValueError, TypeError) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
+        except (
+            KeyError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
@@ -387,7 +391,11 @@ class EnvoyGatewayClient(GatewayClient):
                 sampled=sampled,
             )
 
-        except (KeyError, ValueError, TypeError) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
+        except (
+            KeyError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
@@ -487,7 +495,11 @@ class CustomGatewayClient(GatewayClient):
                 sampled=sampled,
             )
 
-        except (KeyError, ValueError, TypeError) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
+        except (
+            KeyError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
@@ -621,7 +633,11 @@ class APIGatewayIntegration:
         try:
             return self._client.extract_tracing_headers(response_headers)
 
-        except (AttributeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
             Logger.error(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 

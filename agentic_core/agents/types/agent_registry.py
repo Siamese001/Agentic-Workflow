@@ -105,7 +105,7 @@ def _emit_bootstrap_telemetry() -> None:
 
     try:
         from agentic_core.runtime.contracts import lifecycle_trace_contract as lifecycle
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- telemetry bootstrap: lifecycle contract absent, early exit prevents further emission
         logger.debug("Lifecycle trace contract unavailable; skipping agent registry bootstrap telemetry")
         _BOOTSTRAP_TELEMETRY_EMITTED = True
         return
@@ -118,7 +118,7 @@ def _emit_bootstrap_telemetry() -> None:
 
         try:
             emitter(*emitter_args)
-        except Exception:  # guardian: allow-broad-except -- lifecycle telemetry emitters are untrusted; failures must never crash module load
+        except Exception:  # guardian: allow-broad-exception allow-log-and-swallow -- lifecycle telemetry emitters are untrusted; failures must never crash module load
             logger.debug("Lifecycle bootstrap emitter %s failed", emitter_name, exc_info=True)
 
     _BOOTSTRAP_TELEMETRY_EMITTED = True

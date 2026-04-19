@@ -221,10 +221,10 @@ class FileBackedTelemetryStore:
                                 sort_keys=True,
                             ).encode("utf-8")
                             events.append((ts, event_type, payload))
-                    except (json.JSONDecodeError, ValueError, TypeError) as exc:
+                    except (json.JSONDecodeError, ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow -- malformed telemetry line: counted and skipped, aggregate warning emitted after loop
                         malformed_lines += 1
                         logger.debug("Skipping malformed telemetry line in %s: %s", self._path, exc)
-        except OSError as exc:  # guardian: Add error context logging
+        except OSError as exc:  # guardian: allow-log-and-swallow -- telemetry file unreadable: non-fatal, empty event tuple returned
             logger.debug("Failed to read telemetry file %s: %s", self._path, exc)
         if malformed_lines:
             logger.warning("Ignored %d malformed telemetry lines in %s", malformed_lines, self._path)
@@ -236,7 +236,7 @@ class FileBackedTelemetryStore:
                     window_start=window_start_utc,
                     window_end=window_end_utc,
                 )
-            except Exception as exc:  # guardian: allow-silent-swallower
+            except Exception as exc:  # guardian: allow-broad-exception allow-log-and-swallow -- telemetry persistence best-effort: non-fatal, events still returned to caller
                 logger.debug("Failed to persist telemetry window for %s: %s", self._path, exc)
         return tuple(events)
 

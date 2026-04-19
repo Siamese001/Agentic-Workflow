@@ -299,7 +299,9 @@ class ShadowLogger:
 
                         training_examples.append(training_example)
 
-        except FileNotFoundError:  # guardian: allow-silent-swallow -- log file absent: training export proceeds with no prior data
+        except (
+            FileNotFoundError
+        ):  # guardian: allow-silent-swallow -- log file absent: training export proceeds with no prior data
             pass
 
         # Write training data
@@ -483,7 +485,9 @@ class ShadowLogger:
                     if entry.get("trace_id") == trace_id:
                         return entry
 
-        except FileNotFoundError:  # guardian: allow-silent-swallow -- log file absent: returns None, caller handles missing record
+        except (
+            FileNotFoundError
+        ):  # guardian: allow-silent-swallow -- log file absent: returns None, caller handles missing record
             pass
 
         return None
@@ -515,7 +519,10 @@ class ShadowLogger:
                     entry = json.loads(first_line.strip())
                     return entry.get("timestamp")
 
-        except (FileNotFoundError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- log missing or corrupt: returns None, caller handles
+        except (
+            FileNotFoundError,
+            json.JSONDecodeError,
+        ):  # guardian: allow-silent-swallow -- log missing or corrupt: returns None, caller handles
             pass
 
         return None

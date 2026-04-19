@@ -824,7 +824,10 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     else:
                         # Default to UTILITY violations for MISNAMED_UTILITY
                         self.stats["violations"]["UTILITY"] += 1
-            except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow -- purity/config check best-effort: unreadable file skipped, classification continues
+            except (
+                OSError,
+                UnicodeDecodeError,
+            ) as e:  # guardian: allow-log-and-swallow -- purity/config check best-effort: unreadable file skipped, classification continues
                 self.logger.debug(f"File read failure for {path.name}, skipping purity/config check: {e}")
 
             # [BASE_AGENTS PURITY] Enforce STRICT IDENTITY ONLY
@@ -2230,7 +2233,9 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:  # guardian: allow-return-none-swallow -- file read optional: None signals no routing suggestion
+        except (
+            OSError
+        ):  # guardian: allow-return-none-swallow -- file read optional: None signals no routing suggestion
             return None
 
         # === SIGNAL 1: Direct imports (strongest signal) ===
@@ -2586,7 +2591,9 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:  # guardian: allow-return-none-swallow -- file read optional: None signals no layer suggestion
+        except (
+            OSError
+        ):  # guardian: allow-return-none-swallow -- file read optional: None signals no layer suggestion
             return None
 
         content_lower = content.lower()
@@ -2636,7 +2643,11 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError):  # guardian: allow-return-none-swallow -- AST parse optional: None signals no agent layer routing
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+            OSError,
+        ):  # guardian: allow-return-none-swallow -- AST parse optional: None signals no agent layer routing
             return None
 
         parts = path.parts
@@ -4263,7 +4274,10 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             new_content = content.replace(old_name, new_name)
             if new_content != content:
                 _wg.write_text(path, new_content, encoding="utf-8")
-        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow -- docstring update best-effort: file unchanged, caller treats rename as successful
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: allow-log-and-swallow -- docstring update best-effort: file unchanged, caller treats rename as successful
             self.logger.debug(f"Failed to update docstring in {path.name}: {e}")
 
     def sync_companion_test(self, src_path: Path, new_name: str):

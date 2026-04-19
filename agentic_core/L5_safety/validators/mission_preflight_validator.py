@@ -210,8 +210,8 @@ class MissionPreflight:
                 from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
-            except ImportError:
-                pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: HierarchyAgent optional, caller handles None
+                pass
         return self._hierarchy_agent
 
     def _get_import_agent(self):
@@ -222,8 +222,8 @@ class MissionPreflight:
                 from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
 
                 self._import_agent = create_legacy_import_healer()
-            except ImportError:
-                pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: import healer optional, caller handles None
+                pass
         return self._import_agent
 
     def run_preflight(self, target_sector: str) -> dict[str, Any]:
@@ -279,9 +279,8 @@ class MissionPreflight:
                     f"   [ADG] {target_sector}: {_adg_antipattern_count} antipattern signal(s) "
                     f"(score={_bp.behavioral_score:.2f})",
                 )
-        # guardian: allow-silent-swallower
-        except (ValueError, TypeError):
-            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow -- ADG antipattern count optional: non-fatal, preflight proceeds with count=0
+            pass
         results["adg_antipattern_count"] = _adg_antipattern_count
         self._print_dashboard(results)
         total_violations = results["Span"] + results["hierarchy"] + results["naming"] + results["gravity"]

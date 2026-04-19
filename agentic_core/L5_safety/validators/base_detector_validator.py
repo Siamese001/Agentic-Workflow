@@ -375,8 +375,7 @@ class AntiPatternDetector(ABC):
                             ):
                                 violation.severity = "hard_block"
                                 violation.metadata["adg_confirmed"] = True
-                # guardian: allow-silent-swallower -- ADG behavioral profile lookup is optional telemetry; failure is non-critical
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- ADG behavioral profile lookup is optional telemetry; failure is non-critical
                     import logging
 
                     logging.getLogger(__name__).debug(
@@ -459,11 +458,10 @@ class AntiPatternDetector(ABC):
             self._ast_cache[cache_key] = (content_hash, tree)
 
             return tree
-        # guardian: Syntax errors should be caught at parser level, not runtime
-        except SyntaxError as e:
+        except SyntaxError as e:  # guardian: allow-return-none-swallow -- syntax error in scanned file: non-fatal, caller skips file
             Logger.warning(f"Syntax error in {file_path}: {e}")
             return None
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow -- file read failure: non-fatal, caller skips file
             Logger.error(f"Error reading {file_path}: {e}")
             return None
 

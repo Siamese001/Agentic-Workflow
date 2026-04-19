@@ -473,7 +473,11 @@ class TracingMixin:
 
         except ImportError:  # guardian: allow-log-and-swallow -- optional OpenTelemetry bridge: dep absent, tracing degrades silently
             Logger.debug("[TRACING] OpenTelemetry not available for bridging")
-        except (AttributeError, RuntimeError, TypeError) as e:  # guardian: allow-log-and-swallow -- OTel bridge failure: non-fatal, tracing continues in TracingMixin-only mode
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow -- OTel bridge failure: non-fatal, tracing continues in TracingMixin-only mode
             Logger.error(f"[TRACING] Failed to bridge to OpenTelemetry: {e}")
 
     def _create_otel_span_from_trace(self, trace: dict[str, Any], tracer: Any) -> None:
@@ -507,7 +511,10 @@ class TracingMixin:
             with span_context:
                 pass  # Span is created and automatically closed
 
-        except (AttributeError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- OTel span creation best-effort: failure logged, span omitted
+        except (
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- OTel span creation best-effort: failure logged, span omitted
             Logger.debug(f"[TRACING] Failed to create OpenTelemetry span: {e}")
 
     def get_tracing_status(self) -> dict[str, Any]:

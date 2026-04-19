@@ -207,13 +207,17 @@ class ADGBackedAgentRegistry:
         """Return the canonical execution profile when available."""
         try:
             from agentic_core.agents.types.agent_registry import get_profile
-        except ImportError:  # guardian: allow-return-none-swallow -- registry unavailable: non-fatal, caller handles None
+        except (
+            ImportError
+        ):  # guardian: allow-return-none-swallow -- registry unavailable: non-fatal, caller handles None
             logger.debug("Canonical AGENT_REGISTRY is unavailable; agent_id=%s", agent_id)
             return None
 
         try:
             return get_profile(agent_id)
-        except KeyError:  # guardian: allow-return-none-swallow -- agent not found: non-fatal, caller handles None
+        except (
+            KeyError
+        ):  # guardian: allow-return-none-swallow -- agent not found: non-fatal, caller handles None
             logger.debug("Canonical AGENT_REGISTRY missing agent_id=%s", agent_id)
             return None
 

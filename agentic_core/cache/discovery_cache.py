@@ -215,7 +215,10 @@ class AgentDiscoveryCache:
                 cache_key = f"agent_discovery:{content_hash}"
             except FileNotFoundError:
                 raise
-            except (OSError, ValueError) as e:  # guardian: allow-log-and-swallow -- hash compute best-effort: non-fatal, fetch proceeds from disk without cache key
+            except (
+                OSError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- hash compute best-effort: non-fatal, fetch proceeds from disk without cache key
                 logger.warning(f"[Discovery cache] Hash computation failed: {e}")
             else:
                 try:
