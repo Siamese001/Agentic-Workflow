@@ -202,38 +202,23 @@ discovery_excluded_territories:
 # Gate: ops_scripts/ci/check_agents_md_sync.py (T6d extension) validates byte-match.
 # ============================================================================
 
-# Glob patterns emitted to .codeiumignore (supports ** and ! negations).
-# Keep this list focused on index-noise rather than disk-noise: Windsurf
-# indexes file content, so exclude binaries, runtime artifacts, and archives.
+# .codeiumignore is a DELTA file. Windsurf indexing already ignores:
+#   1. Everything in .gitignore (see docs/windsurf/llms-full.txt §Windsurf Ignore)
+#   2. node_modules/
+#   3. Hidden paths (anything starting with ".")
+# So this list contains ONLY additions beyond gitignore + Windsurf defaults.
+# Anything you can add to .gitignore should go there instead — don't duplicate.
 codeium_patterns:
-  # Python bytecode
-  - "**/__pycache__/"
-  - "**/*.pyc"
-  - "**/*.pyo"
-  # Binary / database files
-  - "**/*.sqlite"
+  # Binary database files (no wildcard in gitignore for *.db, deliberately kept
+  # out of gitignore so humans can commit fixtures by path if needed)
   - "**/*.db"
-  # Runtime log artifacts (JSONL audit logs, session summaries)
-  - "**/*.jsonl"
-  - "artifacts/windsurf/"
-  # Protobuf session data
+  # Protobuf session blobs (not in gitignore; Windsurf-indexing-only noise)
   - "**/*.pb"
-  - ".codeium/windsurf/cascade/"
-  # Archive graveyard — do not index archived/deleted code
-  - "tools/archive/"
-  # Memory database (binary SQLite)
-  - "artifacts/memory/"
-  # ADG generated snapshots and burndown artifacts
-  - "artifacts/adg/"
-  - "artifacts/_legacy_adg_archives/"
-  - "artifacts/adg_clean/"
-  # Local learning corpora and virtual env
-  - "data/corpus/"
-  - ".venv/"
-  # ADG cache — exclude only __pycache__ inside, keep redis_cache.py indexed
-  - "tools/adg/cache/__pycache__/"
 
-# Negation patterns re-include specific paths (emitted with leading "!")
+# Negation patterns re-include specific paths (emitted with leading "!").
+# session_state.json lives inside the gitignored /artifacts/ tree but is
+# high-signal context for Cascade — the ONLY reason .codeiumignore exists
+# as a persisted file today is to carry this single re-inclusion.
 codeium_negations:
   - "artifacts/windsurf/session_state.json"
 

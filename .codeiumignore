@@ -5,23 +5,8 @@
 
 
 # Exclusions
-**/__pycache__/
-**/*.pyc
-**/*.pyo
-**/*.sqlite
 **/*.db
-**/*.jsonl
-artifacts/windsurf/
 **/*.pb
-.codeium/windsurf/cascade/
-tools/archive/
-artifacts/memory/
-artifacts/adg/
-artifacts/_legacy_adg_archives/
-artifacts/adg_clean/
-data/corpus/
-.venv/
-tools/adg/cache/__pycache__/
 
 # Re-included (negations)
 !artifacts/windsurf/session_state.json
