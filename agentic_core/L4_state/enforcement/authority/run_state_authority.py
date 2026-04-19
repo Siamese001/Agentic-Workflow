@@ -250,11 +250,11 @@ class RunStateAuthority(WriteGovernorMixin):
                     versioned.source_hash,
                 )
                 return versioned.value, versioned.state_version
-            except (
+            except (  # guardian: allow-log-and-swallow -- versioned read failed: falls back to legacy read path
                 StateVersionMissingError,
                 StateNamespaceError,
                 UnversionedStateError,
-            ) as exc:  # guardian: Multiple exceptions (StateVersionMissingError, StateNamespaceError) need specific handling
+            ) as exc:
                 logger.warning(
                     "RUN_STATE_AUTHORITY versioned_read failed, falling back: %s (namespace=%s key=%s)",
                     exc,
@@ -572,8 +572,7 @@ class RunStateAuthority(WriteGovernorMixin):
                 result = self._backend.get(key)
                 if result is not None:
                     return result
-            # guardian: allow-silent-swallower -- multi-backend read is best-effort; failure logged and next backend tried
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- multi-backend read best-effort; failure logged and next backend tried
                 logger.debug("RUN_STATE_AUTHORITY backend_read failed key=%s: %s", key, exc)
         return default
 

@@ -251,7 +251,7 @@ class VerifiableCheckpointManager:
         key: Any = f"checkpoints/{session_id}/{node_id}.json"
         try:
             data_bytes: Any = await self.storage.read_blob(key)
-        except FileNotFoundError:  # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: allow-return-none-swallow -- checkpoint absent: caller treats None as missing, proceeds without restore
             LOGGER.debug(f"Checkpoint not found: {session_id}/{node_id}")
             return None
         if verify:
@@ -361,7 +361,7 @@ class VerifiableCheckpointManager:
             state: Any = json.loads(data_bytes)
             LOGGER.info(f"Loaded snapshot: {session_id}/{snapshot_name}")
             return state
-        except FileNotFoundError:  # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: allow-return-none-swallow -- snapshot absent: caller treats None as missing, proceeds without restore
             LOGGER.debug(f"Snapshot not found: {session_id}/{snapshot_name}")
             return None
 

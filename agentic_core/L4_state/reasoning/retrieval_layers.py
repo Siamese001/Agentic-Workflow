@@ -128,9 +128,9 @@ class L2SemanticCache:
                 input=text,
             )
             return response.data[0].embedding
-        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- embedding: non-fatal, caller treats None as unavailable
             Logger.error(f"Failed to generate embedding: {e}")
-            return None  # guardian: allow-return-none-swallow -- embedding: non-fatal, caller treats None as unavailable
+            return None
 
     def get(self, query: str) -> str | None:
         """Get semantically similar cached response."""
@@ -346,10 +346,10 @@ class L3SemanticRAG:
         """Get BGE-M3 embedding for text."""
         try:
             return bge_embed_query(text)
-        except (RuntimeError, ImportError) as e:
+        except (RuntimeError, ImportError) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- BGE-M3 embedding: non-fatal, caller handles None as unavailable source
             Logger.error(
                 "Failed to generate BGE-M3 embedding: %s", e
-            )  # guardian: allow-return-none-swallow -- file read: non-fatal, caller handles None as unavailable source
+            )
             return None
 
     def get_stats(self) -> dict[str, Any]:

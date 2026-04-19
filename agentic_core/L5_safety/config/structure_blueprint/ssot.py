@@ -339,16 +339,12 @@ try:
     ENFORCED_TERRITORIES: Final[frozenset[str]] = (
         _ENFORCED_TERRITORIES_BASE | _discover_apps_wildcard_folders()
     )
-except (
-    Exception
-):  # guardian: allow-broad-except -- module-init fallback; discovery failure must not block import
+except Exception:  # guardian: allow-broad-exception -- module-init fallback; discovery failure must not block import
     ENFORCED_TERRITORIES = _ENFORCED_TERRITORIES_BASE  # type: ignore[misc]
 
 try:
     CODE_TERRITORIES: Final[frozenset[str]] = _CODE_TERRITORIES_BASE | _discover_apps_wildcard_folders()
-except (
-    Exception
-):  # guardian: allow-broad-except -- module-init fallback; discovery failure must not block import
+except Exception:  # guardian: allow-broad-exception -- module-init fallback; discovery failure must not block import
     CODE_TERRITORIES = _CODE_TERRITORIES_BASE  # type: ignore[misc]
 
 
