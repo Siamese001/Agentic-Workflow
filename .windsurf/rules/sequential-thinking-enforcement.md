@@ -20,7 +20,7 @@ NOT required for T0/T1 tasks (question, typo, docstring, single config value, si
 
 ## Required Pattern at T2/T3 Start
 
-Emit SR_INTAKE before any tool calls:
+Emit the full 4-phase packet across the task lifecycle:
 
     ## SR_INTAKE
     Objective: <one sentence>
@@ -33,9 +33,30 @@ Emit SR_INTAKE before any tool calls:
     ...
     N. [verification step]
 
-Then gather evidence (reads only). Then emit SR_APPROVAL: APPROVED before any writes or edits.
+    Tools needed: [list]
+    Risks: [list]
+
+    ## SR_EXECUTE
+    - inspect
+    - diagnose
+    - act
+
+    ## SR_VERIFY
+    - what was checked
+    - what passed
+    - what remains unresolved
+
+Emit SR_INTAKE + SR_PLAN before any tool calls. Then gather evidence (reads only). Emit `SR_APPROVAL: APPROVED` before any writes or edits. SR_EXECUTE and SR_VERIFY are emitted inline during and after the execute phase.
 
 Use Task Manager MCP for decomposition when tasks have multiple sequential steps.
+
+## Rules
+
+- keep assumptions explicit
+- front-load exact scope
+- sequence work before editing
+- use bounded phases for complex work
+- do not turn the packet into a novel
 
 ## Hard Limits
 

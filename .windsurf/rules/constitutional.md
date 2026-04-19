@@ -29,6 +29,20 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 15. **Precise exception handling.** Catch specific types. Bare `except:` FORBIDDEN. `except Exception` without guardian comment FORBIDDEN.
 16. **Query progress bar mandatory.** All operations >5s, loops >10 lines, or heavy-named functions (`scan_*`, `build_*`, `query_*`, etc.) >12 lines MUST display a colored progress bar. CI gate: `check_query_progress_bar.py`. See `query-progress-bar.md`.
 17. **Memory lifecycle mandatory.** At the start of every conversation, call `mem_recall_session_start` to load persistent project context. After significant architecture decisions, HITL resolutions, or new patterns, write to memory via `create_entities`/`add_observations`. See AGENTS.md Memory Lifecycle section.
+18. **No hidden scope expansion.** Do not quietly widen scope. If the task grows, state it in the working packet and keep the change bounded.
+19. **Mode separation is mandatory.** Separate `analyze` (inspect, no edits), `plan` (sequence, no edits), `edit` (make the change), and `verify` (prove the change). Do not blur these modes.
+20. **Fact grading is mandatory.** Classify claims as **DIRECTLY OBSERVED**, **DERIVED**, or **UNRESOLVED**. Do not present unresolved items as facts.
+21. **Zero-loss overwrite discipline.** When overwriting a rule, skill, or workflow: preserve useful constraints, remove redundancy, clarify triggers, preserve references relied on by scripts, and do not silently delete operational intent.
+
+## Quick Non-Negotiables
+
+- No PowerShell.
+- No shell=True.
+- No silent scope growth.
+- No graph questions answered by grep when ADG is healthy.
+- No completion claims without verification.
+- No new anti-pattern without approval.
+- No long opaque work without progress.
 
 ## Tier Classification
 

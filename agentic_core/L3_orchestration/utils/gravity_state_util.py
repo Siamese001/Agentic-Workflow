@@ -103,7 +103,7 @@ class GravityStateManager:
             self.state["metadata"]["last_updated"] = datetime.now().isoformat()
             with open(self.state_file, "w", encoding="utf-8") as f:
                 json.dump(self.state, f, indent=2)
-        except OSError as e:
+        except OSError as e:  # guardian: allow-log-and-swallow -- state persist: non-fatal, self.logger.error already called
             self.logger.error(f"Failed to save state: {e}")
 
     def _normalize_and_hash(self, import_line: str) -> str:

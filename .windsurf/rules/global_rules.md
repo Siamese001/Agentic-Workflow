@@ -95,19 +95,21 @@ Tier 1 enforcement: `pre_mcp_gate.py` blocks ADG calls when SQLite write lock de
 
 ## MCP Authority: One SSOT Per Capability
 
-Each capability has exactly ONE authoritative MCP. Overlaps documented in `docs/guides/MCP_Registry.md`.
+Each capability has exactly ONE authoritative MCP. **Full MCP routing table is in `AGENTS.md` Quick Reference section** (auto-generated, always loaded, CI-enforced). Overlap details live in `docs/guides/MCP_Registry.md`.
+
 Before adding a new MCP, verify no existing MCP covers the capability.
 
-Known authority assignments:
-- **Structural dependencies**: `adg_sqlite` (live prefix varies) — sole authority for imports, consumers, blast radius, layer analysis. `grep_search` FORBIDDEN for dependency analysis.
-- **Persistent memory**: `memory` (live prefix varies) — sole authority for cross-session knowledge graph (entities, relations, observations). NOT Windsurf built-in `create_memory`.
-- **Semantic search**: `vector_db` (live prefix varies) — sole authority for meaning-based lookup, embeddings, similarity search. NOT for structural deps (→ `adg_sqlite`), NOT for episodic recall (→ `memory`).
-- **Task tracking**: `task_manager` (live prefix varies) — sole authority for structured task decomposition and status tracking.
-- **File system**: `filesystem` (live prefix varies) — local file operations. Prefer native `read_file` for normal reads; use `mcp4_` for head/tail, media files, batch reads, directory trees.
-- **Tests**: `pytest_mcp` (live prefix varies) — sole authority for test execution, discovery, coverage. Prefer over `run_command` with pytest.
-- **Git operations**: `GitKraken` (live prefix varies) — sole authority for git state, commits, branches, PRs, issues, GitLens features.
-- **Notion**: `notion` (live prefix varies) — sole authority for project management databases (plans, HITL decisions, ADRs, SC/AP violations, MCP registry, SVP reviews).
-- **Observability**: `otel_mcp` (live prefix varies) — sole authority for runtime traces, anomalies, policy decisions, healing chains, metrics.
-- **HTTP requests**: `enhanced_http` (live prefix varies) — **sole authority** for ALL programmatic HTTP calls. Use `read_url_content` ONLY when explicit user approval of the URL is required before fetching. Decision rule: autonomous/programmatic → `enhanced_http`; user must approve → `read_url_content`.
-- **Redis cache**: `redis` (live prefix varies) — sole authority for ADG hot-cache inspection, cache invalidation, and Redis health monitoring.
-- **External repo docs**: `deepwiki` (live prefix varies) — sole authority for AI-powered documentation lookup on external GitHub repositories. NOT for this repo (use `adg_sqlite` + `read_file`).
+**Key routing invariants**:
+- Structural dependencies → `adg_sqlite` only. `grep_search` FORBIDDEN for dependency analysis.
+- Persistent memory → `memory` MCP only. NOT Windsurf built-in `create_memory`.
+- Semantic search → `vector_db` only. NOT for structural deps, NOT for episodic recall.
+- Programmatic HTTP → `enhanced_http` only. Use `read_url_content` ONLY when user approval of the URL is required.
+- Git state / PRs / issues → `GitKraken` only.
+
+## Continuous Execution
+
+Execute continuously without stopping UNLESS a genuine HITL decision point is reached.
+
+FORBIDDEN: stopping after tool calls to check in; asking permission for deterministic actions; presenting options when there is one correct path; breaking work into artificial phase-breaks; narrating work-in-progress without advancing it.
+
+REQUIRED: chain all deterministic tool calls; stop only when scoring reveals genuine decision ambiguity; validate before declaring done.

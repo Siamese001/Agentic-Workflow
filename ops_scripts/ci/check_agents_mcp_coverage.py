@@ -21,8 +21,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 MCP_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
 
-# Matches `server: `<name>`` patterns used in the AGENTS.md Quick Reference table
-_SERVER_REF_RE = re.compile(r"server:\s*`([^`]+)`")
+# Matches the first backtick-quoted cell of each Quick Reference table row:
+#   | `GitKraken` | Git operations ... |
+_SERVER_REF_RE = re.compile(r"^\|\s*`([^`]+)`\s*\|", re.MULTILINE)
 
 
 def load_registered_servers(config_path: Path) -> list[str]:

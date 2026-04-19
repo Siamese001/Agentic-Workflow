@@ -18,6 +18,16 @@ Plans MUST be saved to exactly ONE location:
 
 `docs/reports/plans/` is for **evidence and reports only** — never plans.
 
+## When a Plan Is Required
+
+A plan is required when ANY of the following apply:
+- Task is T2 or T3 (see constitutional.md Tier Classification)
+- Work crosses architectural layers
+- Output has irreversible side effects (deletion, migration, schema change)
+- Scope is ambiguous or has multiple valid approaches
+
+A plan is NOT required for T0/T1 work, single-file single-concern changes, typo fixes, or pure questions.
+
 ## Format Requirements
 
 Before writing any execution plan:

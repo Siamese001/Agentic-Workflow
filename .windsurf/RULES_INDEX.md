@@ -1,116 +1,146 @@
-# Windsurf Rules & CI Gates — Master Index
+# Windsurf Rules and Skills — Master Index
 
-**Last Updated**: 2026-04-16
-**Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
+**Last Updated**: 2026-04-19
+**Purpose**: Zero-loss two-tier operating system for this repo. Keep the global layer thin, route specialized work to skills and workflows, preserve strict repo evidence discipline.
 
-> **2026-04-09 SSOT CLARIFICATION**: Windsurf discovers rules directly from `.windsurf/rules/*.md` (one file per rule, 12,000 char limit each). There is no preprocessor — rule files ARE the source of truth. The previously generated `.windsurfrules` aggregate has been deleted.
-
----
-
-## SSOT Structure
-
-| File | Type | Role | Editable |
-|------|------|------|----------|
-| `.windsurf/rules/*.md` | **Source** (18 files) | Modular rule definitions — discovered directly by Windsurf | ✅ YES |
-| `AGENTS.md` (repo root) | **Conventions** | Concise repo-wide agent guidance including Windsurf config doc policy | ✅ YES |
-
-### Maintenance Workflow
-
-```bash
-# Edit any rule file directly — no preprocessing step required
-vim .windsurf/rules/hitl-enforcement.md
-# Windsurf picks up changes automatically on next session
-```
+> **SSOT**: Windsurf discovers rules directly from `.windsurf/rules/*.md` (one file per rule). Skills are entry-file-based: each `.windsurf/skills/<name>/SKILL.md` is authoritative. No preprocessor.
 
 ---
 
-## Constitutional Rules
+## Operating Model
 
-| Rule | Layer | Timing | Type | Location | Status |
-|------|-------|--------|------|----------|--------|
-| **§0: DEFAULT ANALYSIS MODE (Tier-Aware)** | Windsurf | Before work | Behavioural | `.windsurf/skills/graph-analysis/` | ✅ ENFORCED |
-| **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
-| **Windsurf Config Lookup** | Windsurf | On demand | Behavioural | `.windsurf/rules/windsurf-config-lookup.md` | ✅ ENFORCED |
-| **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | Referenced by `.windsurf/rules/adg-repair-discipline.md` — supporting doc at `docs/technical/TEST_FAILURE_decision_tree.md` (not a Windsurf-discoverable rule file) | ✅ ENFORCED (CI: cond. 8b) |
-| **Global Rules Policy** | Windsurf | Always | Behavioural | `.windsurf/rules/global_rules.md` (always_on, 3.0K) | ✅ ENFORCED |
-| **HITL Core Pipeline** | Windsurf | During work | Behavioural | `.windsurf/rules/hitl-enforcement.md` (always_on, 2.7K) | ✅ ENFORCED |
-| **HITL Decision Points** | Windsurf | On demand | Behavioural | `.windsurf/rules/hitl-decision-points.md` (model_decision) | ✅ ENFORCED |
-| **§10.0: Wave/Micro-Wave Plan Model** | Windsurf | Before plan draft | Behavioural | `.windsurf/rules/plan-location.md` + Constitutional Rule #13 | ✅ ENFORCED |
-| **Plan Location Rule** | Pre-commit | After work | Structural | `.windsurf/rules/plan-location.md` | ✅ ENFORCED |
-| **§16: Query Progress Bar** | Both | During work | Behavioural + Structural | `.windsurf/rules/query-progress-bar.md` (always_on) + CI: `check_query_progress_bar.py` | ✅ ENFORCED |
+The old failure mode was not too little guidance — it was too much guidance loaded at once.
 
-**Notes**:
-- §0: CI gate removed (was misplaced — process rule cannot be verified at commit time)
-- §ADG-1: Pre-commit gate reverted to manual stage (repair phase state is session context)
-- §10.0: Windsurf-only behavioural enforcement — fires before any plan content is drafted; mandates wave decomposition, ≤15 modules/micro-wave, wave summary table first, token estimates per wave
-- Plan Location: Pure structural rule — file path observable at commit time
+This repo uses a **two-tier model**:
 
----
+1. **Always-on constitutional floor**
+   - tiny set of rules that are always true
+   - authority boundaries, tool routing guardrails, safety/scope/validation rules
 
-## Skills & Enforcement Gates
+2. **Load-on-demand skills and workflows**
+   - only load deep procedure when the task matches
+   - each skill has a sharp purpose, negative boundary, and output contract
+   - workflows exist for repeatable operational loops
 
-| # | Skill | Layer | Timing | Type | CI Gate | Pre-commit Hook | Status |
-|---|-------|-------|--------|------|---------|----------------|--------|
-| 1 | **graph-analysis** | Windsurf | Before work | Behavioural + Structural | None | None | ✅ ENFORCED |
-| 2 | **boundary-enforcement** | Pre-commit | After work | Structural | ADG GV edges | T2a, T4a | ✅ ENFORCED |
-| 3 | **operational-gates** | Both | Before work | Behavioural + Structural | `check_rollback_checkpoints.py` | T3a-rollback | ✅ ENFORCED |
-| 4 | **testing-framework** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py` | T3a-skip | ✅ ENFORCED |
-| 5 | **artifact-management** | Pre-commit | After work | Structural | `validate_report_location.py` | T3b | ✅ ENFORCED |
-| 6 | **structured-reasoning** | Windsurf | Before work | Behavioural | None (behavioral) | None | ✅ ENFORCED |
-| 7 | **refactor-decision-memory** | Windsurf | On demand | Behavioural | None (behavioral) | None | ✅ ENFORCED |
+## Design Principles
 
-**Note**: 30 individual skills consolidated into 5 canonical skills (2026-04-03). `structured-reasoning` added 2026-04-07; `refactor-decision-memory` added 2026-04-15. Current total: **7 canonical skills**. See [Consolidation Note](#skill-consolidation-2026-04-03) below.
-
-**2026-04-14 update**: All skill entry files renamed `skill.md` → `SKILL.md` (uppercase) per Windsurf canonical naming. Support files (5 per skill) added for all incomplete skill directories.
-**2026-04-15 update**: `constitutional.md` shrunk 29K→3.3K (always_on core only); `hitl-enforcement.md` shrunk 33K→2.7K (always_on core only); `hitl-decision-points.md` added (model_decision, full doctrine); `sequential-thinking-enforcement.md` converted from always_on to model_decision; `adg-test-accelerator-enforcement.md` description frontmatter added; `skills/graph-analysis/fail_closed_discipline.md` added.
-
-**Key**:
-- **Layer**: Windsurf (AI-time only) | Pre-commit (commit-time only) | Both (dual enforcement)
-- **Timing**: Before work (process rules) | After work (structural checks) | During work (runtime)
-- **Type**: Behavioural (HOW AI works) | Structural (WHAT is in code) | Both
-- **CI Gate**: Script name or "None" if Windsurf-only enforcement
-- **(proxy)** = Pre-commit can only detect symptoms, not full violation
-- **(artifact)** = Pre-commit verifies artifact exists, not process compliance
+- Keep the global prompt lean.
+- Preserve strict repo evidence over guesswork.
+- Separate **analyze**, **plan**, **edit**, and **verify** modes.
+- Use ADG for structural dependency questions.
+- Use MCPs by capability, not by habit.
+- Stop only for genuine ambiguity, risk, or approval gates.
+- Validate before claiming completion.
 
 ---
 
-## Skill Consolidation (2026-04-03)
+## Always-On Files
 
-**Previous State**: 30 individual skill directories + 2 duplicate directories = 32 total
-**Current State**: 5 consolidated canonical skills
-**Archived Skills**: 30 individual skills archived to `tools/archive/.windsurf/skills/`
-**Rationale**: SVP Engineering principle — operational simplicity through reduced moving parts
+| File | Role |
+|---|---|
+| `.windsurf/rules/constitutional.md` | Non-negotiable constitutional floor; section numbers referenced by hooks/scripts |
+| `.windsurf/rules/global_rules.md` | Thin operating kernel for tool use, scope, and validation |
+| `.windsurf/rules/hitl-enforcement.md` | Compact continuous-execution and HITL core |
+| `.windsurf/rules/plan-location.md` | SSOT plan location and overwrite rules |
+| `.windsurf/rules/query-progress-bar.md` | Long-running operation progress contract |
 
-### Consolidation Mapping
+## On-Demand Rule Files
 
-| Canonical Skill | Replaces (Archived) |
-|-----------------|---------------------|
-| `graph-analysis` | `dependency-graph-analysis`, `scope-guard`, `dedup-guard` |
-| `boundary-enforcement` | `layer-boundary-guard`, `import-hygiene`, `shim-discipline` |
-| `operational-gates` | `rollback-gate`, `mcp-tool-verify` |
-| `testing-framework` | `test-rigor-enforcement`, `pytest-integrity` |
-| `artifact-management` | `evidence-bundle`, `ssot-write-gate`, `progress-display` |
+| File | Use When |
+|---|---|
+| `adg-repair-discipline.md` | ADG break/fix, graph-first debugging, repair loops |
+| `adg-test-accelerator-enforcement.md` | Working in `tools/adg/**` or `test_*_adg.py` |
+| `agents-memory-lifecycle.md` | Session start/end and persistent memory decisions |
+| `anti-pattern-hitl-gate.md` | A change may require a guardian exception |
+| `approval-exception-policy.md` | Evaluating whether an exception is even eligible |
+| `hitl-decision-points.md` | Need to build a proper HITL packet |
+| `hitl-svp-calibration.md` | Need to rank options and recommend one |
+| `mcp-config-ssot.md` | Editing `.windsurf/mcp_config.json` |
+| `mcp-pytest-enforcement.md` | MCP tests, `conftest.py`, or pytest execution discipline |
+| `memory-management.md` | Memory graph hygiene, purges, sync, write thresholds |
+| `refactor-decision-memory.md` | Refactor-class HITL requires historical precedent check |
+| `security-hardening.md` | Secrets, auth, external service credentials, env handling |
+| `sequential-thinking-enforcement.md` | T2/T3 work needs structured reasoning packet |
+| `windsurf-config-lookup.md` | Question is about Windsurf config, docs, hooks, rules, skills, workflows |
 
-### Also Archived (Non-Consolidated Skills)
+## Skill Catalog
 
-The following CI-specific and utility skills were also archived (not consolidated into canonical skills):
-- `agent-deletion-gate`
-- `ci-grep-ban`
-- `ci-guardian-comments`
-- `ci-hollow-file`
-- `ci-integration`
-- `ci-layer-sovereignty`
-- `ci-schema-validation`
-- `guardian-exemption-validator`
-- `hitl-decision-validator`
-- `performance-monitor`
-- `plan-validation`
-- `powershell-guard`
-- `pre-write-orchestrator`
-- `redis-hitl-gate`
-- `repair-gate-validator`
-- `script-sprawl-guard`
-- `skill-status-dashboard`
+| Skill | Primary Use | Do Not Use When |
+|---|---|---|
+| `artifact-management` | Plans, reports, evidence, progress display, path validation | Core code reasoning or architecture decisions |
+| `boundary-enforcement` | Imports, layer sovereignty, shims, relocation discipline | Non-code writing or business analysis |
+| `graph-analysis` | Structural dependency analysis, blast radius, ADG-first routing | Pure literal text search or non-code lookup |
+| `operational-gates` | Preflight, rollback, gate evidence, recovery | Feature design without execution risk |
+| `refactor-decision-memory` | Pull precedent before refactor-class HITL | Routine edits with no meaningful design choice |
+| `structured-reasoning` | T2/T3 task framing, decomposition, failure packets, verification | T0/T1 trivial work |
+| `testing-framework` | Scoped validation strategy, skip discipline, collection integrity | Work that does not touch code or tests |
+
+## Workflow Catalog
+
+| Workflow | Use When |
+|---|---|
+| `adg-redis-refresh.md` | Redis cache is cold, stale, or after full ADG regen |
+| `adg-repair-loop.md` | Running a scoped cluster repair loop |
+| `adg-test-triage-gate.md` | Evaluating `_adg.py` deletion/archive decisions |
+| `adg-timeout-recovery.md` | ADG or long-running analysis timed out |
+| `agent-deletion-gate.md` | Production agent/module deletion is proposed |
+| `antipattern-hitl-gate.md` | Guardian exception or anti-pattern gate triggered |
+| `hitl-decision-gate.md` | Need a HITL packet with options |
+| `mcp-failure-rca.md` | MCP appears broken, unhealthy, or never invoked |
+| `memory-purge-sync.md` | Cleaning stale memory entities or syncing memory state |
+| `progress-display-enforcement.md` | Long operation needs progress instrumentation |
+| `refresh-windsurf-docs.md` | Local Windsurf docs mirror refresh |
+| `structured-reasoning.md` | Need the structured packet flow in one place |
+| `timeout-progress-enforcement.md` | Timeout risk plus long-running progress obligations |
+
+## Routing Order
+
+Use this order whenever a task is non-trivial:
+
+1. Read `constitutional.md` and `global_rules.md`
+2. Classify mode: analyze / plan / edit / verify
+3. Pick the one most relevant skill
+4. Pull the supporting checklist/template file if needed
+5. Pull a workflow only if the task is repeatable or operationally stateful
+6. Validate before declaring done
+
+## Quick Start Matrix
+
+| Task Pattern | First File |
+|---|---|
+| "Why did this break?" / blast radius / imports / consumers | `skills/graph-analysis/SKILL.md` |
+| "Fix this ADG issue" | `rules/adg-repair-discipline.md` |
+| "Should we stop for HITL?" | `rules/hitl-enforcement.md` then `rules/hitl-decision-points.md` |
+| "Need a plan" | `rules/sequential-thinking-enforcement.md` + `templates/execution-plan-template.md` |
+| "Where should this artifact go?" | `skills/artifact-management/SKILL.md` |
+| "Can we add this exception?" | `rules/approval-exception-policy.md` + `rules/anti-pattern-hitl-gate.md` |
+| "Which tests should I run?" | `skills/testing-framework/SKILL.md` |
+| "Why is this MCP not being used?" | `workflows/mcp-failure-rca.md` |
+| "How do Windsurf rules/hooks/config work?" | `rules/windsurf-config-lookup.md` |
+
+## Authoring Rules for Future Updates
+
+- Prefer adding detail to a skill or workflow, not the always-on files.
+- One file, one job.
+- Put trigger language in the first three lines.
+- Every skill should answer: what it does, when to use it, when NOT to use it, required evidence, output contract, stop conditions.
+- Preserve constitutional section numbers already referenced by scripts.
+
+---
+
+## Skills & Enforcement Gates (CI Mapping)
+
+| # | Skill | Layer | Timing | Type | CI Gate | Pre-commit Hook |
+|---|-------|-------|--------|------|---------|----------------|
+| 1 | **graph-analysis** | Windsurf | Before work | Behavioural + Structural | None | None |
+| 2 | **boundary-enforcement** | Pre-commit | After work | Structural | ADG GV edges | T2a, T4a |
+| 3 | **operational-gates** | Both | Before work | Behavioural + Structural | `check_rollback_checkpoints.py` | T3a-rollback |
+| 4 | **testing-framework** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py` | T3a-skip |
+| 5 | **artifact-management** | Pre-commit | After work | Structural | `validate_report_location.py` | T3b |
+| 6 | **structured-reasoning** | Windsurf | Before work | Behavioural | None (behavioral) | None |
+| 7 | **refactor-decision-memory** | Windsurf | On demand | Behavioural | None (behavioral) | None |
+
+**Key**: Layer = Windsurf (AI-time) / Pre-commit (commit-time) / Both. Timing = Before work (process) / After work (structural) / During work (runtime).
 
 ---
 
