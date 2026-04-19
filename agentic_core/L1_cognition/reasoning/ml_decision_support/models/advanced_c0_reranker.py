@@ -6,6 +6,7 @@ semantic embeddings, attention mechanisms, cross-encoder architecture,
 and sophisticated relevance scoring.
 """
 
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -960,7 +961,11 @@ class AdvancedC0Reranker(BaseMLModel):
 
             return np.array(feature_vector)
 
-        except (TypeError, ValueError):
+        except (
+            TypeError,
+            ValueError,
+        ) as _fe:  # guardian: allow-return-none-swallow -- _extract_feature_vector: Optional return by contract, callers explicitly handle None, warning now logged
+            logging.getLogger(__name__).warning("Feature vector construction failed: %s", _fe)
             return None
 
     def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:

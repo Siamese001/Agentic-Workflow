@@ -444,21 +444,11 @@ class MetaLearningClient:
         )
         embedding = self._generate_embedding(violation)
         if embedding:
-            try:
-                self._vector_store[pattern_id] = {"embedding": embedding, "metadata": pattern.to_dict()}
-                self.stats["pattern_stores"] += 1
-                self._update_domain_stats(domain, "pattern_stores")
-                Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
-                return pattern_id
-            except (
-                OSError,
-                ValueError,
-                TypeError,
-                AttributeError,
-                RuntimeError,
-            ) as e:  # guardian: allow-log-and-swallow -- vector store: re-raises immediately, scanner false positive
-                raise
-                Logger.warning(f"[MetaLearningClient] Vector store failed: {e}")
+            self._vector_store[pattern_id] = {"embedding": embedding, "metadata": pattern.to_dict()}
+            self.stats["pattern_stores"] += 1
+            self._update_domain_stats(domain, "pattern_stores")
+            Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
+            return pattern_id
         cache_key = f"pattern:{error_signature}"
         self.cache_set(cache_key, pattern.to_dict(), domain, ttl=86400)
         return pattern_id
@@ -558,9 +548,9 @@ class MetaLearningClient:
             v_path = violation.get("path", "")
             text = f"{v_type} {v_msg} {v_path}"
             return bmg_embed_text(text)
-        except (ImportError, OSError, ValueError, TypeError, AttributeError, RuntimeError) as e:
+        except (ImportError, OSError) as e:
             Logger.warning(f"[MetaLearningClient] Embedding generation failed: {e}")
-            return None  # guardian: allow-return-none-swallow -- embedding: non-fatal, caller treats None as unavailable
+            return None
 
     def check_healing_depth(self, agent_name: str, violation_id: str) -> bool:
         """
