@@ -331,11 +331,11 @@ def reset() -> None:
         from agentic_core.L5_safety.types.healing_orchestration_types import ValidatorOrchestrator
 
         ValidatorOrchestrator.reset_instance()
-    except ImportError:
-        pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+    except ImportError:  # guardian: allow-silent-swallow -- optional orchestrator: reset only if available
+        pass
     try:
         from agentic_core.L5_safety.types.healing_orchestration_types import HealingSovereignOrchestrator
 
         HealingSovereignOrchestrator.reset_instance()
-    except ImportError:
-        pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+    except ImportError:  # guardian: allow-silent-swallow -- optional orchestrator: reset only if available
+        pass

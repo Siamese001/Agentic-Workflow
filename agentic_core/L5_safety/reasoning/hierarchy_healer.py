@@ -993,7 +993,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     Logger.warning(f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}")
                     results["errors"].append(f"{py_file.name}: {rejection_reason}")
                     return
-            except (ImportError, AttributeError) as e:
+            except (ImportError, AttributeError) as e:  # guardian: allow-log-and-swallow -- gatekeeper check optional: non-fatal, continue without validation
                 Logger.debug(f"Gatekeeper check failed for {py_file.name}: {e}")
                 # Non-blocking - continue without gatekeeper check
 
@@ -1012,7 +1012,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 )
                 file_type = fca.classify_file(py_file)
                 target_territory_l3 = fca._get_correct_folder_for_type(file_type)
-            except (ImportError, AttributeError, OSError) as e:
+            except (ImportError, AttributeError, OSError) as e:  # guardian: allow-log-and-swallow -- FCA classification optional: non-fatal, falls back to heuristic
                 Logger.debug(f"FCA classification failed for {py_file.name}: {e}")
 
             # Fallback to heuristic if FCA unavailable or returns None

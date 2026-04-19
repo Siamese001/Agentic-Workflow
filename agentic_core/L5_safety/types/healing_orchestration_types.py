@@ -234,7 +234,7 @@ class HealingOrchestrationSuite:
             from agentic_core.L5_safety.validators.chaos_healing_integration_types import get_chaos_strategy
 
             self._strategies["chaos_resilience"] = get_chaos_strategy()
-        except ImportError as e:
+        except ImportError as e:  # guardian: allow-log-and-swallow -- chaos strategy optional: non-fatal, other strategies loaded
             Logger.warning(f"[HealingSuite] Could not import chaos strategy: {e}")
         try:
             from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
@@ -242,7 +242,7 @@ class HealingOrchestrationSuite:
             )
 
             self._strategies["dependency_pruning"] = get_dependency_strategy()
-        except ImportError as e:
+        except ImportError as e:  # guardian: allow-log-and-swallow -- dependency strategy optional: non-fatal, other strategies loaded
             Logger.warning(f"[HealingSuite] Could not import dependency strategy: {e}")
         self._initialized = True
         Logger.info(f"[HealingSuite] Initialized with {len(self._strategies)} strategies")

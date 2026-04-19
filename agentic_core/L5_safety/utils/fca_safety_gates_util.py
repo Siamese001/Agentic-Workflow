@@ -370,7 +370,7 @@ def check_init_reexports(path: Path) -> int:
             pattern = f"from\\s+\\.{re.escape(module_stem)}\\s+import\\s+"
             if re.search(pattern, content):
                 bonus += 10
-        except OSError:  # guardian: Add error context logging
+        except OSError as e:  # guardian: allow-log-and-swallow -- __init__ read best-effort: non-fatal, bonus remains 0
             import logging
 
             logging.getLogger(__name__).debug("fca_safety_gates_util: OSError swallowed at L367: %s", e)
@@ -546,10 +546,7 @@ def check_observability_violation(path: Path, parts: tuple[str, ...] | None = No
     try:
         content = path.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
-    except (
-        SyntaxError,
-        OSError,
-    ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+    except (SyntaxError, OSError):  # guardian: allow-return-none-swallow -- parse/read failure: caller treats None as unparseable
         return None
     obs_imports_found = []
     for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

@@ -124,7 +124,7 @@ class CodeDetector:
         if self._detector_config.baseline_path and self._detector_config.baseline_path.exists():
             try:
                 self._baseline = json.loads(self._detector_config.baseline_path.read_text())
-            except (json.JSONDecodeError, OSError) as e:
+            except (json.JSONDecodeError, OSError) as e:  # guardian: allow-log-and-swallow -- baseline load best-effort: non-fatal, detector runs without baseline
                 Logger.warning(f"Failed to load baseline: {e}")
 
     def run_full_scan(self) -> list[Detection]:
@@ -223,7 +223,7 @@ class CodeDetector:
                         message=f"Potentially unused definition: {name}",
                     ),
                 )
-        except SyntaxError as e:
+        except SyntaxError as e:  # guardian: allow-log-and-swallow -- per-file syntax error: logged and skipped, scan continues
             import logging
 
             logging.getLogger(__name__).debug("code_detector_util: SyntaxError swallowed at L223: %s", e)

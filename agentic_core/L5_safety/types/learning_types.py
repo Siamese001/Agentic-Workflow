@@ -321,9 +321,8 @@ class AdaptiveLearningEngine:
                     )
                     self.patterns[key].append(pattern)
             Logger.info(f"Loaded {sum(len(p) for p in self.patterns.values())} healing patterns")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except Exception:  # guardian: allow-broad-exception -- pattern load error re-raised to caller for handling
             raise
-            Logger.error(f"Failed to load patterns: {e}")
 
     def _save_patterns(self):
         """Save learned patterns to storage with versioned rotation (Keep Last 10)."""
@@ -361,9 +360,8 @@ class AdaptiveLearningEngine:
                 ]
             _wg.write_json(self.pattern_storage_path, data, indent=2)
             Logger.debug(f"Saved patterns to {self.pattern_storage_path}")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except Exception:  # guardian: allow-broad-exception -- pattern save error re-raised to caller for handling
             raise
-            Logger.error(f"Failed to save patterns: {e}")
 
     def learn_from_healing(
         self,
