@@ -174,8 +174,7 @@ def extract_template_schema(template_path: Path, base_dir: Path) -> dict[str, li
                     ]
                 return {"required_vars": required_vars}
         return {"required_vars": []}
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception allow-return-none-swallow -- template parse failure: return empty vars, caller treats as unparseable
         return {"required_vars": []}
 
 
@@ -281,8 +280,7 @@ def audit_agent_compliance(base_dir: Path) -> list[dict]:
             visitor.current_file = str(py_file.relative_to(base_dir))
             visitor.visit(tree)
             violations.extend(visitor.violations)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- per-file parse isolation: non-fatal, scan continues with other files
             print(f"WARNING: Could not parse {py_file}: {e}")
     return violations
 

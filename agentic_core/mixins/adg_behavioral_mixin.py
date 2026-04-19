@@ -205,7 +205,7 @@ class ADGBehavioralMixin:
                 return None
             rel = Path(src).resolve().relative_to(Path(project_root).resolve())
             return rel.as_posix()
-        except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError):  # guardian: allow-return-none-swallow -- path normalization failure: caller treats None as non-relative path
             return None
 
     def _adg_load_profile(self) -> Any:
@@ -229,7 +229,7 @@ class ADGBehavioralMixin:
                 return None
 
             return idx.profile_for(resolved)
-        except (ImportError, AttributeError, OSError) as exc:
+        except (ImportError, AttributeError, OSError) as exc:  # guardian: allow-return-none-swallow allow-log-and-swallow -- ADG profile load: optional telemetry, caller handles None
             logger.debug("[ADGBehavioralMixin] Profile load failed: %s", exc)
             return None
 

@@ -21,7 +21,7 @@ def initialize_jinja_environment(template_dir: Path):
     try:
         env = Environment(loader=FileSystemLoader(str(template_dir)), trim_blocks=True, lstrip_blocks=True)
         return env
-    except Exception as e:  # guardian: allow-silent-swallow
+    except Exception as e:  # guardian: allow-broad-exception -- jinja init failure halts process with sys.exit(1) after logging
         print(f"ERROR: Failed to initialize Jinja2 environment: {e}")
         sys.exit(1)
 
@@ -60,7 +60,7 @@ def compile_template(env: Environment, template_path: Path, relative_to: Path) -
             "error": f"Template error: {str(e)}",
             "error_type": "TEMPLATE_ERROR",
         }
-    except Exception as e:  # guardian: allow-silent-swallow
+    except Exception as e:  # guardian: allow-broad-exception -- template compile error: structured FAIL result returned to caller
         return {
             "status": "FAIL",
             "template_path": relative_path,

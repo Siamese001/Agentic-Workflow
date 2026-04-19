@@ -99,7 +99,7 @@ class ChangeHandler(FileSystemEventHandler if HAS_WATCHDOG else object):
         )
         try:
             self.callback(event)
-        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- watchdog callback isolation: non-fatal, watcher continues
             log.error(f"Error in change callback: {e}")
 
 
@@ -250,7 +250,7 @@ class ChangeDetector:
         for callback in self._on_change_callbacks:
             try:
                 callback(event)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- change callback isolation: non-fatal, other callbacks continue
                 log.error(f"Error in change callback: {e}")
 
 

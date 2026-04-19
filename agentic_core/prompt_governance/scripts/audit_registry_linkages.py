@@ -16,8 +16,7 @@ def load_registry(registry_path: Path) -> dict:
     try:
         with open(registry_path, encoding="utf-8") as f:
             return json.load(f)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- registry load failure halts process with sys.exit(1) after logging
         print(f"ERROR: Failed to load registry: {e}")
         sys.exit(1)
 
@@ -40,8 +39,7 @@ def extract_schema_from_template(template_path: Path) -> dict[str, list[str]]:
                     optional_vars = [v.strip() for v in opt_part.split(",") if v.strip()]
                 return {"required_vars": required_vars, "optional_vars": optional_vars, "has_header": True}
         return {"has_header": False, "required_vars": [], "optional_vars": []}
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- template read failure: non-fatal, empty vars returned, audit continues
         print(f"ERROR reading template {template_path}: {e}")
         return {"has_header": False, "required_vars": [], "optional_vars": []}
 
