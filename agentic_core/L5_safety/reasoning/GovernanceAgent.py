@@ -341,11 +341,10 @@ class DependencyGraph:
                         self.graph[file_path]["functions"].append(node.name)
                 module_name: Any = str(Path(file_path).as_posix()).replace("/", ".").replace(".py", "")
                 self.module_map[module_name] = file_path
-            except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError as e:  # guardian: allow-log-and-swallow -- per-file syntax error: logged and skipped, graph build continues
                 LOGGER.warning(f"Syntax error in {file_path}: {e}")
-            except (OSError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
+            except (OSError, ValueError, TypeError, RuntimeError):  # guardian: allow-broad-exception -- per-file parse failure propagated to caller for handling
                 raise
-                LOGGER.error(f"Error parsing {file_path}: {e}")
         self._build_reverse_index()
         self._calculate_dependencies()
         self._built = True
@@ -572,9 +571,8 @@ class GovernanceAgent(SovereignBaseAgent):
                 _mod = importlib.import_module("agentic_core.L5_safety.reasoning.hierarchy_healer")
                 HierarchyAgent = _mod.HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.root_dir)
-            # guardian: allow-silent-degradation - Optional hierarchy agent
-            except ImportError:
-                pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: HierarchyAgent optional, caller handles None
+                pass
         return self._hierarchy_agent
 
     @property
@@ -586,9 +584,8 @@ class GovernanceAgent(SovereignBaseAgent):
                 from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
 
                 self._import_agent = create_legacy_import_healer()
-            # guardian: allow-silent-degradation - Optional import healer
-            except ImportError:
-                pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: import healer optional, caller handles None
+                pass
         return self._import_agent
 
     # guardian: allow-type-erasure

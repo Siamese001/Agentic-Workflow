@@ -199,10 +199,7 @@ def estimate_directory_size(dir_path: Path) -> int:
                     PermissionError,
                 ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
                     continue
-    except (
-        OSError,
-        PermissionError,
-    ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+    except (OSError, PermissionError) as e:  # guardian: allow-log-and-swallow -- directory size scan best-effort: non-fatal, partial size returned
         import logging
 
         logging.getLogger(__name__).debug("cache_guard: OSError swallowed at L201: %s", e)
@@ -233,8 +230,8 @@ def is_forbidden_location(dir_path: Path, root_path: Path) -> bool:
             return True
         if path_parts and path_parts[0].startswith("apps_"):
             return True
-    except ValueError:
-        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+    except ValueError:  # guardian: allow-silent-swallow -- path not relative to root: control-flow fallthrough to False
+        pass
     return False
 
 
@@ -305,8 +302,8 @@ def main():
                 total_size += size_bytes
                 if size_bytes > 10 * 1024 * 1024:
                     oversize_count += 1
-            except (ValueError, IndexError):
-                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except (ValueError, IndexError):  # guardian: allow-silent-swallow -- malformed size detail: skip accumulation, continue scan
+                pass
     if total_size > 0:
         print(f"Total cache size: {total_size:,} bytes")
     if oversize_count > 0:

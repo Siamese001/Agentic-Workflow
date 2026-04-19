@@ -261,13 +261,13 @@ class PytestEnforcementGuard:
         """Validate conftest.py for hook transparency."""
         try:
             tree = ast.parse(conftest.read_text(encoding="utf-8"))
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: allow-return-none-swallow -- per-file syntax error: recorded and skipped, validator continues
             self.errors.append(f"Syntax error in {conftest}: {e}")
             return
-        except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError:  # guardian: allow-return-none-swallow -- non-UTF-8 conftest: recorded and skipped, validator continues
             self.errors.append(f"Unicode error in {conftest}: file must be UTF-8 encoded")
             return
-        for node in ast.walk(tree):  # guardian: Encoding errors should specify fallback encoding strategy
+        for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef) and node.name == "pytest_collection_modifyitems":
                 self._validate_collection_modifyitems(conftest, node)
 
@@ -275,7 +275,7 @@ class PytestEnforcementGuard:
         """Validate pytest_collection_modifyitems hook."""
         try:
             source = ast.get_source_segment(conftest.read_text(encoding="utf-8"), node)
-        except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError:  # guardian: allow-return-none-swallow -- non-UTF-8 conftest: warned and skipped, validator continues
             self.warnings.append(f"{conftest}: Cannot read file for hook validation (encoding issue)")
             return
         if source and "deselected" not in source:

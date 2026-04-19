@@ -121,7 +121,7 @@ class NativePersistentCacheClient:
                     _expected_dim,
                 )
                 self._chroma_client.delete_collection(col_name)
-        except (  # guardian: allow-log-and-swallow -- cache cleanup: non-fatal, collection deletion failures ignored on shutdown
+        except (  # guardian: allow-silent-swallow -- cache cleanup: non-fatal, collection deletion failures ignored on shutdown
             AttributeError,
             KeyError,
             TypeError,
@@ -228,7 +228,7 @@ class NativePersistentCacheClient:
                         )
 
                         _prom_evict("eviction", "")
-                    except ImportError:  # guardian: allow-log-and-swallow -- prometheus optional: metric emission skipped, eviction continues
+                    except ImportError:  # guardian: allow-silent-swallow -- prometheus optional: metric emission skipped, eviction continues
                         pass
                 return  # Success, exit retry loop
             except (OSError, sqlite3.Error, RuntimeError) as e:
@@ -310,10 +310,10 @@ class NativePersistentCacheClient:
                                     self._miss_count += 1
                                     Logger.debug(f"[L2Cache] l2_hard_evict_expired entry_id={top_id[:8]}")
                                     return None
-                            except (
+                            except (  # guardian: allow-silent-swallow -- TTL parse: malformed expires_at treated as no expiry, non-fatal
                                 ValueError,
                                 TypeError,
-                            ):  # guardian: allow-log-and-swallow -- TTL parse: malformed expires_at treated as no expiry, non-fatal
+                            ):
                                 pass  # malformed expires_at: treat as no expiry
 
                         # Update last_access_at
