@@ -12,6 +12,8 @@ import sys
 import time
 from pathlib import Path
 
+from tqdm import tqdm
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "ext_authority"
@@ -139,7 +141,7 @@ def main() -> None:
     THRESHOLD_RELEVANT = 0.50
     THRESHOLD_STRONG = 0.35
 
-    for tq in TARGET_QUERIES:
+    for tq in tqdm(TARGET_QUERIES, desc="B6 validation queries", unit="query"):
         fid = tq["family"]
         print(f"\n--- {fid}: {tq['label']} ---")
         t0 = time.time()

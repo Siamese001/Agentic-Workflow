@@ -52,6 +52,8 @@ _IMPORT_ERROR: str = ""
 
 try:
     from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult
+    from ops_scripts.ci.adg_gates.gate_executor_theater import ExecutorTheaterGate
+    from ops_scripts.ci.adg_gates.gate_infra_wiring import InfraWiringGate
     from ops_scripts.ci.adg_gates.gate_p0_text_to_action import TextToActionGate
     from ops_scripts.ci.adg_gates.gate_p0_write_sovereignty import WriteSovereigntyGate
     from ops_scripts.ci.adg_gates.gate_p0_authority import AuthorityBoundaryGate
@@ -82,6 +84,8 @@ FULL_GATE_CLASSES = [
     "CapabilityEgressGate",
     "CriticalPathGate",
     "DeterminismGate",
+    "ExecutorTheaterGate",
+    "InfraWiringGate",
 ]
 
 
@@ -101,6 +105,8 @@ def _build_gate(
         "CapabilityEgressGate": CapabilityEgressGate,
         "CriticalPathGate": CriticalPathGate,
         "DeterminismGate": DeterminismGate,
+        "ExecutorTheaterGate": ExecutorTheaterGate,
+        "InfraWiringGate": InfraWiringGate,
     }
     cls = mapping.get(cls_name)
     if cls is None:

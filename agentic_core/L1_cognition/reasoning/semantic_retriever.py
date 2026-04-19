@@ -11,7 +11,6 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any
 
-import chromadb
 import numpy as np
 
 from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM, bge_embed_query
@@ -61,7 +60,6 @@ class SemanticRetriever:
         chroma_module = import_module("agentic_core.L4_state.utils.client.chroma_client")
         sovereign_chroma_client_cls = getattr(chroma_module, "SovereignChromaClient")
         self.chroma = sovereign_chroma_client_cls(persist_dir=chroma_persist_dir)
-        self._bge_chroma = chromadb.PersistentClient(path=chroma_persist_dir)
 
         # BGE-aligned collection routing — all targets hold BAAI/bge-m3 1024-dim vectors
         self.collection_routing = {
@@ -72,8 +70,8 @@ class SemanticRetriever:
             "general": ["code_chunks", "arch_docs"],
         }
 
-        # Available collections
-        self.available_collections = [c.name for c in self._bge_chroma.list_collections()]
+        # Available collections (SovereignChromaClient.list_collections() returns names).
+        self.available_collections = self.chroma.list_collections()
         logger.info(f"Semantic retriever initialized with collections: {self.available_collections}")
 
     async def retrieve(self, query: RetrievalQuery) -> list[RetrievalResult]:
@@ -155,7 +153,7 @@ class SemanticRetriever:
         try:
             query_embedding = bge_embed_query(query.text)
 
-            chroma_col = self._bge_chroma.get_collection(collection)
+            chroma_col = self.chroma.get_collection(collection)
 
             # Guard: verify stored dimension matches query dimension before querying
             sample = chroma_col.get(limit=1, include=["embeddings"])

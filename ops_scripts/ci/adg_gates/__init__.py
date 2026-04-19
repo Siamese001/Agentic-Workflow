@@ -53,6 +53,10 @@ from ops_scripts.ci.adg_gates.gate_p0_text_to_action import TextToActionGate
 from ops_scripts.ci.adg_gates.gate_p0_determinism import DeterminismProvenanceGate
 from ops_scripts.ci.adg_gates.gate_p1_lifecycle import LifecycleCoverageGate
 from ops_scripts.ci.adg_gates.gate_p1_trace_replay import TraceReplayEvalGate
+from ops_scripts.ci.adg_gates.gate_p1_architecture_witness import ArchitectureWitnessGate
+from ops_scripts.ci.adg_gates.gate_p1_prompt_wiring import PromptAssemblyWiringGate
+from ops_scripts.ci.adg_gates.gate_executor_theater import ExecutorTheaterGate
+from ops_scripts.ci.adg_gates.gate_infra_wiring import InfraWiringGate
 
 __all__ = [
     "ADGGateBase",
@@ -66,12 +70,20 @@ __all__ = [
     "CapabilityEgressGate",
     "TextToActionGate",
     "DeterminismProvenanceGate",
+    "ExecutorTheaterGate",
+    "InfraWiringGate",
     # P1 Gates
     "LifecycleCoverageGate",
     "TraceReplayEvalGate",
+    "ArchitectureWitnessGate",
+    "PromptAssemblyWiringGate",
 ]
 
 # Gate registry: gate_id -> (class, phase, severity)
+# Gates 9+ added 2026-04-19 to surface existing ADG gate classes that were
+# present on disk but previously unreachable via CLI (run-all / run-phase /
+# list). Registration here is the canonical discovery point; p0_runner.py
+# holds the separate two-pass orchestration list for P0 blocking.
 GATE_REGISTRY: dict[str, tuple[type[ADGGateBase], str, str]] = {
     # Phase A: P0 Hard-Block
     "1": (CriticalPathIntegrityGate, "A", "P0"),
@@ -80,9 +92,13 @@ GATE_REGISTRY: dict[str, tuple[type[ADGGateBase], str, str]] = {
     "4": (CapabilityEgressGate, "A", "P0"),
     "5": (TextToActionGate, "A", "P0"),
     "6": (DeterminismProvenanceGate, "A", "P0"),
+    "9": (ExecutorTheaterGate, "A", "P0"),
+    "10": (InfraWiringGate, "A", "P0"),
     # Phase B: P1 Ratchet
     "7": (LifecycleCoverageGate, "B", "P1"),
     "8": (TraceReplayEvalGate, "B", "P1"),
+    "11": (ArchitectureWitnessGate, "B", "P1"),
+    "12": (PromptAssemblyWiringGate, "B", "P1"),
 }
 
 

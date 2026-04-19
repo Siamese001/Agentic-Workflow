@@ -203,6 +203,9 @@ class VectorRetrievalService:
         where: dict[str, Any] | None = None,
         include: list[str] | None = None,
     ) -> QueryCollectionReport:
+        # progress_bar: N/A — single-query call, function body is long due to
+        # phased timing/logging (embed → chroma query → response assembly) not
+        # due to iteration. Bounded by n_results (typ. 10). §16 exempt.
         if not query_text or not query_text.strip():
             raise VectorValidationError("EMPTY_QUERY — query_text must be non-empty")
 

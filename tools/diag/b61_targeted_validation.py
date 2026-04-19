@@ -11,6 +11,8 @@ import os
 import sys
 import time
 
+from tqdm import tqdm
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 CHROMA_PATH = os.path.join("data", "cache", "chromadb")
@@ -145,7 +147,7 @@ except (
 # ── Run queries ───────────────────────────────────────────────────────────────
 results: list[dict] = []
 
-for tq in TARGET_QUERIES:
+for tq in tqdm(TARGET_QUERIES, desc="B6.1 validation queries", unit="query"):
     fid = tq["family"]
     query_text = tq["query"]
     print(f"\n{'─' * 60}")

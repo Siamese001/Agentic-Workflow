@@ -18,7 +18,7 @@ from typing import Any
 from typing import Protocol, runtime_checkable
 from typing import cast
 
-import google.generativeai as genai
+from infrastructure.sdks_mcps import create_gemini_model
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -267,17 +267,14 @@ class GeminiJudge:
             return self._client
 
         try:
-            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-            if not api_key:
-                raise ValueError("Gemini API key not configured")
-            genai.configure(api_key=api_key)
+            client = create_gemini_model(self._model)
         except (ImportError, ValueError) as exc:
             raise RuntimeError(
                 "GeminiJudge: google-genai package not installed or GOOGLE_API_KEY missing.",
             ) from exc
 
         self._configured = True
-        return genai.GenerativeModel(self._model)
+        return client
 
     @staticmethod
     def _clean(raw: str) -> str:

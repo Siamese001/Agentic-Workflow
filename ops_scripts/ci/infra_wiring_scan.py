@@ -77,6 +77,7 @@ SANCTIONED_ADAPTER_FILES = {
     "retrieval_eval_registry.py",
     "verdict_store.py",
     "evidence_assembler.py",
+    "bm25_store.py",  # L4 BM25 SparseIndex (SQLite FTS5 + term_freq sidecar); peer of above adapters
     # Boto3 adapters/owners (L4)
     "blob_storage_provider.py",
     "canonical_store.py",

@@ -235,6 +235,7 @@ class HybridSearchEngine:
         first_seen_order: list[tuple[str, str]] = []
 
         for parent_index, parent in enumerate(results):
+            # progress_bar: N/A — bounded search results (<=50 items), user-facing hot path <200ms total. §16 exempt.
             meta = parent.metadata or {}
             raw_node_id = meta.get("node_id")
             if raw_node_id is None:
@@ -245,6 +246,7 @@ class HybridSearchEngine:
                 continue  # un-parseable node_id -> no-op
 
             for relation in active:
+                # progress_bar: N/A — 3-5 ADG relations per parent, sub-ms per iteration. §16 exempt.
                 fetcher = fetchers[relation]
                 try:
                     neighbours = fetcher(parent_node_id)
@@ -259,6 +261,7 @@ class HybridSearchEngine:
                     continue
 
                 for neighbour in neighbours[:limit_per_relation]:
+                    # progress_bar: N/A — capped at limit_per_relation (typ. 10), sub-ms per iteration. §16 exempt.
                     if not isinstance(neighbour, dict):
                         continue
                     neighbour_id_raw = neighbour.get("id")
@@ -407,6 +410,7 @@ class HybridSearchEngine:
         parent_first_seen_order: list[tuple[str, str]] = []
 
         for child_index, child in enumerate(results):
+            # progress_bar: N/A — bounded search results (<=50 items), user-facing hot path <200ms total. §16 exempt.
             meta = child.metadata or {}
             collapse_group = str(meta.get("collapse_group") or "")
             heading_path = str(meta.get("heading_path") or "")

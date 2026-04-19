@@ -93,6 +93,35 @@ def create_vertex_client():
     return genai
 
 
+def create_gemini_model(model_name: str):
+    """Create a configured Gemini ``GenerativeModel`` instance.
+
+    Canonical chokepoint for all Gemini SDK usage outside this package.
+    Replaces scattered ``import google.generativeai as genai`` +
+    ``genai.configure`` + ``genai.GenerativeModel(name)`` triples in
+    production code. See ``ops_scripts/ci/infra_wiring_scan.py`` for the
+    governance policy that forces callers through this adapter.
+
+    Args:
+        model_name: Gemini model identifier (e.g. ``"gemini-2.5-flash"``).
+
+    Returns:
+        A ``google.generativeai.GenerativeModel`` configured with the
+        ``GEMINI_API_KEY`` or ``GOOGLE_API_KEY`` environment variable.
+
+    Raises:
+        ValueError: if neither env var is set.
+        ImportError: if the ``google-generativeai`` SDK is not installed.
+    """
+    import google.generativeai as genai
+
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY must be set")
+    genai.configure(api_key=api_key)
+    return genai.GenerativeModel(model_name)
+
+
 # Import minimal classes
 class OpenAIClient:
     pass

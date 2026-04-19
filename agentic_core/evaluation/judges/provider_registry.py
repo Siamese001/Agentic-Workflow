@@ -25,7 +25,7 @@ import re
 from typing import cast
 from typing import Any
 
-import google.generativeai as genai
+from infrastructure.sdks_mcps import create_gemini_model
 
 from agentic_core.evaluation.judges.types import JudgeProvider
 
@@ -94,17 +94,14 @@ class GeminiJudgeProvider:
             return self._client
 
         try:
-            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-            if not api_key:
-                raise ValueError("Gemini API key not configured")
-            genai.configure(api_key=api_key)
+            client = create_gemini_model(self._model)
         except (ImportError, ValueError) as exc:
             raise RuntimeError(
                 "GeminiJudgeProvider: google-genai package not installed or GOOGLE_API_KEY missing.",
             ) from exc
 
         self._configured = True
-        return genai.GenerativeModel(self._model)
+        return client
 
     @staticmethod
     def _clean(raw: str) -> str:
@@ -245,12 +242,8 @@ def create_default_registry() -> JudgeProviderRegistry:
 
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         try:
-            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-            if not api_key:
-                raise ValueError("Gemini API key not configured")
-            genai.configure(api_key=api_key)
             default_model = os.getenv("GEMINI_MODEL", GeminiJudgeProvider.DEFAULT_MODEL)
-            gemini_model = genai.GenerativeModel(default_model)
+            gemini_model = create_gemini_model(default_model)
             gemini = GeminiJudgeProvider(gemini_client=gemini_model)
             registry.register(gemini, default=True)
             _log.info("[create_default_registry] Gemini provider auto-registered (API key found)")

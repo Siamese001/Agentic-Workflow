@@ -305,6 +305,10 @@ def collect_documents(repo_root: Path) -> list[dict]:
     docs = []
 
     def process_file(md_file: Path) -> None:
+        # progress_bar: N/A — processes ONE file per call; function body is
+        # long due to many metadata fields being assembled per chunk, not
+        # due to iteration over many items. Caller loop (collect_documents)
+        # handles progress at the file-count granularity. §16 exempt.
         rel_path = str(md_file.relative_to(repo_root)).replace("\\", "/")
         if rel_path in seen_paths:
             return

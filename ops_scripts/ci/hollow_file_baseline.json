@@ -10930,8 +10930,8 @@
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },
-    "ops_scripts\\ci\\run_all_guardrails.py": {
-      "classification": "boilerplate_heavy",
+    "ops_scripts\\ci\\run_all_guardrails.py__DELETED_2026-04-19": {
+      "classification": "deleted",
       "first_seen": "f31432fca8dc88880d3b82f6943e833001f83429",
       "max_allowed_count": 1
     },

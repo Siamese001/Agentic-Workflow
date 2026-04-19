@@ -173,9 +173,7 @@ class ExecutorTheaterGate(ADGGateBase):
                         in_modified_area=in_mod,
                         message=raw,
                         extra={"sub_gate": code, "sub_gate_label": label},
-                        path_criticality_class=(
-                            "sink" if code in {"G1", "G3"} else "informational"
-                        ),
+                        path_criticality_class=("sink" if code in {"G1", "G3"} else "informational"),
                     )
                 )
                 idx += 1
