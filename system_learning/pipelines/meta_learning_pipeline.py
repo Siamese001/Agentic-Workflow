@@ -947,13 +947,13 @@ def run_pipeline(
 
         adapter = get_adapter()
         violation_file_set = adapter.get_violation_file_set()
-    except (
+    except (  # guardian: allow-log-and-swallow -- ADG violation lookup: non-fatal, continues without correlation
         AttributeError,
         ImportError,
         RuntimeError,
         TypeError,
         ValueError,
-    ) as exc:  # guardian: allow-log-and-swallow -- ADG violation lookup: non-fatal, continues without correlation
+    ) as exc:
         # ADG unavailable - continue without violation correlation
         import logging
 
@@ -1077,8 +1077,8 @@ def run_pipeline(
             elif hasattr(dpo_proposal, "timestamp_utc"):
                 try:
                     dpo_proposal.timestamp_utc = now_utc
-                except (AttributeError, TypeError):
-                    pass  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow
+                except (AttributeError, TypeError):  # guardian: allow-silent-swallow -- DPO proposal timestamp assign: non-fatal, caller handles missing timestamp
+                    pass
             # DPO proposals enter before Stage 7 validation loop
             proposals.append(dpo_proposal)
         except (ImportError, AttributeError, ValueError) as e:

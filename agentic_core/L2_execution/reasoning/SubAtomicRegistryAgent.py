@@ -456,16 +456,14 @@ def get_UnifiedAgent_class(agent_id: str) -> type:
         if agent_id in validator_mapping:
             Logger.info(f"Registry: Mapping legacy validator '{agent_id}' to Unified Class (Phase 2).")
             return validator_mapping[agent_id]
-    # guardian: allow-silent-degradation - Optional validator mapping
-    except ImportError as e:
+    except ImportError as e:  # guardian: allow-log-and-swallow -- phase 2 validator mapping optional: logged and skipped, fallback to other phases
         Logger.warning(f"Phase 2 validator mapping not available: {e}")
     try:
         phase3_mapping = _get_phase3_manager_enforcer_mapping()
         if agent_id in phase3_mapping:
             Logger.info(f"Registry: Mapping legacy manager/enforcer '{agent_id}' to Unified Class (Phase 3).")
             return phase3_mapping[agent_id]
-    # guardian: allow-silent-degradation - Optional manager mapping
-    except ImportError as e:
+    except ImportError as e:  # guardian: allow-log-and-swallow -- phase 3 manager/enforcer mapping optional: logged and skipped, fallback to other phases
         Logger.warning(f"Phase 3 manager/enforcer mapping not available: {e}")
     try:
         phase4_mapping = _get_phase4_detector_healer_router_executor_mapping()
@@ -474,8 +472,7 @@ def get_UnifiedAgent_class(agent_id: str) -> type:
                 f"Registry: Mapping legacy detector/healer/router/executor '{agent_id}' to Unified Class (Phase 4).",
             )
             return phase4_mapping[agent_id]
-    # guardian: allow-silent-degradation - Optional detector mapping
-    except ImportError as e:
+    except ImportError as e:  # guardian: allow-log-and-swallow -- phase 4 detector/healer/router/executor mapping optional: logged and skipped, ValueError raised if no mapping found
         Logger.warning(f"Phase 4 detector/healer/router/executor mapping not available: {e}")
     raise ValueError(f"Agent ID '{agent_id}' not found in unified agent registry.")
 

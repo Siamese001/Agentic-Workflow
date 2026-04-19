@@ -427,14 +427,14 @@ class ADGQueryClient:
                     max_depth,
                     relation_types,
                 )
-        except (
+        except (  # guardian: allow-log-and-swallow -- graph store impact: non-fatal, falls back to manual BFS
             AttributeError,
             KeyError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- graph store impact: non-fatal, falls back to manual BFS
+        ) as e:
             Logger.warning(f"Graph store impact analysis failed: {e}, using manual BFS")
 
         # Fallback to manual BFS traversal (original implementation)
@@ -564,13 +564,13 @@ class ADGQueryClient:
                 centrality_score = centrality
             elif isinstance(centrality, dict):
                 centrality_score = centrality.get("degree_centrality", 0.0)
-        except (
+        except (  # guardian: allow-log-and-swallow -- centrality score: non-fatal, defaults to 0.0
             AttributeError,
             KeyError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- centrality score: non-fatal, defaults to 0.0
+        ) as e:
             import logging
 
             logging.getLogger(__name__).debug("adg_integration: Exception swallowed at L554: %s", e)
@@ -619,14 +619,14 @@ class ADGQueryClient:
                     graph_store,
                     file_path,
                 )
-        except (
+        except (  # guardian: allow-log-and-swallow -- graph store violation detect: non-fatal, falls back to manual SQL
             AttributeError,
             KeyError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- graph store violation detect: non-fatal, falls back to manual SQL
+        ) as e:
             Logger.warning(f"Graph store layer violation detection failed: {e}, using manual SQL")
 
         # Fallback to manual SQL query (original implementation)

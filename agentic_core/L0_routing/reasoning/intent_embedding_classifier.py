@@ -119,9 +119,9 @@ class IntentEmbeddingClassifier:
             factory = EmbeddingServiceFactory.get_instance()
             self._embedder = factory
             return self._embedder
-        except (ImportError, RuntimeError) as exc:  # embedder initialization failure
+        except (ImportError, RuntimeError) as exc:  # guardian: allow-return-none-swallow -- embedder init: non-fatal, caller skips embedding when None returned
             logger.debug("IntentEmbeddingClassifier: embedder unavailable: %s", exc)
-            return None  # guardian: allow-return-none-swallow -- embedder init: non-fatal, caller skips embedding when None returned
+            return None
 
     def _embed_texts(self, texts: list[str]) -> list[list[float]] | None:
         """Embed a list of texts, returning None if embedding is disabled."""
@@ -140,9 +140,9 @@ class IntentEmbeddingClassifier:
                     vec = list(result)
                 results.append(vec)
             return results if results else None
-        except (ValueError, TypeError, RuntimeError) as exc:  # embedding operation failure
+        except (ValueError, TypeError, RuntimeError) as exc:  # guardian: allow-return-none-swallow -- embedding: non-fatal, caller treats None as unavailable embedding
             logger.debug("IntentEmbeddingClassifier: embedding failed: %s", exc)
-            return None  # guardian: allow-return-none-swallow -- embedding: non-fatal, caller treats None as unavailable embedding
+            return None
 
     # ------------------------------------------------------------------
     # Prototype registration
@@ -248,9 +248,9 @@ class IntentEmbeddingClassifier:
 
             logger.debug("IntentEmbeddingClassifier.classify: best=%r score=%.4f", best_name, best_score)
             return (best_name, max(0.0, min(1.0, best_score)))
-        except (ValueError, TypeError) as exc:  # classification computation error
+        except (ValueError, TypeError) as exc:  # guardian: allow-return-none-swallow -- classify: non-fatal, caller treats None as unclassified intent
             logger.debug("IntentEmbeddingClassifier.classify: exception swallowed: %s", exc)
-            return None  # guardian: allow-return-none-swallow -- classify: non-fatal, caller treats None as unclassified intent
+            return None
 
     # ------------------------------------------------------------------
     # Prototype update (for feedback-loop driven refresh)
