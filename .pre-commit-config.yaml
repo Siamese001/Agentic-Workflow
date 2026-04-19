@@ -173,6 +173,20 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6f: Exclusion Consistency (R2) ---------------------------------------------
+      # Validates that YAML mirror categories (sovereign_excluded_folders,
+      # global_excluded_dirs, discovery_excluded_territories) are byte-equal to the
+      # Python frozensets in agentic_core/L0_routing/config/path_constants.py.
+      # Fix drift by editing whichever surface is wrong; the gate does not auto-fix.
+      - id: exclusion-consistency
+        name: "T6f: Exclusion YAML <-> Python Consistency"
+        entry: py ops_scripts/ci/check_exclusion_consistency.py
+        language: system
+        pass_filenames: false
+        files: ^(config/excluded_paths\.yaml|agentic_core/L0_routing/config/path_constants\.py|ops_scripts/ci/check_exclusion_consistency\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T7a: Governed-App Conformance ------------------------------------------------
       # Validates apps_* packages against the governed-app contract:
       # runner subclass, capability token, exception entries, APP_REGISTRY coverage.

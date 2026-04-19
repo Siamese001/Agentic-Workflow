@@ -20,8 +20,10 @@ on:
       - 'ops_scripts/ci/check_mcp_sync_integrity.py'
       - 'ops_scripts/ci/check_agents_mcp_coverage.py'
       - 'ops_scripts/ci/check_agents_md_sync.py'
+      - 'ops_scripts/ci/check_exclusion_consistency.py'
       - 'ops_scripts/ci/_validate_pytest_config.py'
       - 'tools/generate/check_exclusion_sync.py'
+      - 'agentic_core/L0_routing/config/path_constants.py'
       - '.github/workflows/config-sync-gates.yml'
   push:
     branches: [main, master]
@@ -72,6 +74,16 @@ jobs:
 
       - name: T6e — excluded_paths.yaml <-> .pre-commit-config.yaml + .gitignore
         run: python tools/generate/check_exclusion_sync.py
+        env:
+          PYTHONPATH: .
+
+      - name: T6f — exclusion YAML <-> Python frozensets consistency (R2)
+        run: |
+          if [ -f ops_scripts/ci/check_exclusion_consistency.py ]; then
+            python ops_scripts/ci/check_exclusion_consistency.py
+          else
+            echo "[config-sync-gates] check_exclusion_consistency.py not yet present — skipping"
+          fi
         env:
           PYTHONPATH: .
 

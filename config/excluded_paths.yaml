@@ -141,6 +141,61 @@ precommit_excludes:
 windsurf_state_dirs:
   - ".windsurf/state"
 
+# ============================================================================
+# RUNTIME SCANNER EXCLUSIONS (mirror of Python frozensets in
+# agentic_core/L0_routing/config/path_constants.py — validated by
+# ops_scripts/ci/check_exclusion_consistency.py to prevent drift).
+#
+# These are deliberately separate from the .gitignore categories above because
+# runtime Python scanners have different needs (e.g. they exclude .windsurf
+# whereas git tracks most of it). Keep them in sync with path_constants.py.
+# ============================================================================
+
+# Mirrors path_constants.SOVEREIGN_EXCLUDED_FOLDERS
+sovereign_excluded_folders:
+  - "__pycache__"
+  - ".git"
+  - ".venv"
+  - "node_modules"
+  - ".pytest_cache"
+  - ".mypy_cache"
+  - ".ruff_cache"
+  - "artifacts"
+  - ".sovereign_healing_backup"
+  - ".healing_backups"
+
+# Mirrors path_constants.GLOBAL_EXCLUDED_DIRS
+# NOTE: includes ".windsurf" — runtime scanners skip it entirely even though
+# git tracks .windsurf/rules, .windsurf/plans, .windsurf/scripts, etc. Review
+# flagged as drift risk in docs/reports/exclusion-ssot-consolidated-review-2026-04-19.md §2.1.
+global_excluded_dirs:
+  - ".git"
+  - ".github"
+  - ".venv"
+  - ".windsurf"
+  - "__pycache__"
+  - ".mypy_cache"
+  - ".pytest_cache"
+  - ".ruff_cache"
+  - "node_modules"
+  - "venv"
+  - "build"
+  - "dist"
+  - "htmlcov"
+  - ".tox"
+  - ".nox"
+  - "eggs"
+  - "*.egg-info"
+
+# Mirrors path_constants.DISCOVERY_EXCLUDED_TERRITORIES
+discovery_excluded_territories:
+  - "runtime_shared"
+  - "legacy_code"
+  - "legacy_engines"
+  - "archives"
+  - "stubs"
+  - "examples"
+
 # File patterns to exclude (glob-style)
 file_patterns:
   - "*.pyc"
