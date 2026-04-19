@@ -67,7 +67,7 @@ class AdversarialValidator:
         try:
             from agentic_core.L4_state.memory import ValidationContext
             from agentic_core.L5_safety.reasoning.AdversarialProbeAgent_validator import AdversarialProbeAgent
-        except ImportError as exc:
+        except ImportError as exc:  # guardian: allow-log-and-swallow allow-return-none-swallow -- adversarial probe agent optional: logged and skipped, validator runs in degraded mode
             Logger.warning("[AdversarialValidator] Could not import agent: %s", exc)
             self._initialized = True
             return
@@ -122,7 +122,7 @@ class BoundaryValidator:
         try:
             from agentic_core.L4_state.memory import ValidationContext
             from agentic_core.L5_safety.reasoning.BoundaryTestingAgent_validator import BoundaryTestingAgent
-        except ImportError as exc:
+        except ImportError as exc:  # guardian: allow-log-and-swallow allow-return-none-swallow -- boundary testing agent optional: logged and skipped, validator runs in degraded mode
             Logger.warning("[BoundaryValidator] Could not import agent: %s", exc)
             self._initialized = True
             return

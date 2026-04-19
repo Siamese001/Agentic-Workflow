@@ -104,7 +104,7 @@ class RecoveryManager:
                     log.info(f"Recovery action succeeded: {action.name}")
                     return True
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- recovery action isolation: non-fatal, next action attempted
                 log.warning(f"Recovery action failed: {action.name} - {e}")
                 self._record_recovery(action.name, False, failure_context, str(e))
 
@@ -165,7 +165,7 @@ class RecoveryManager:
         if degradation_level == 0:
             try:
                 return normal_fn(*args, **kwargs)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- normal execution failure: degraded fallback invoked
                 log.warning(f"Normal execution failed, attempting degraded: {e}")
                 return degraded_fn(*args, **kwargs)
         else:

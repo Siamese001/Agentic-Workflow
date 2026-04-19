@@ -244,7 +244,7 @@ class ToolEmbeddingCache:
             except ValueError as e:
                 logger.warning(f"Invalid input: {e}")
                 raise
-            except (ConnectionError, OSError) as e:
+            except (ConnectionError, OSError) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to compute
                 logger.warning(f"[Tool embedding cache] Cache read failed: {e}")
         logger.debug("[Tool embedding cache] MISS — computing embeddings")
         embeddings, tool_names = fetch_embeddings()
@@ -258,7 +258,7 @@ class ToolEmbeddingCache:
                     {"embeddings": embeddings, "tool_names": tool_names},
                     ttl_seconds=self._ttl,
                 )
-            except (ValueError, ConnectionError, OSError) as e:
+            except (ValueError, ConnectionError, OSError) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, computed embeddings already returned
                 logger.warning(f"[Tool embedding cache] Cache write failed: {e}")
         return (embeddings, tool_names)
 

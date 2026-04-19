@@ -20,12 +20,10 @@ class PDFDocumentLoader:
             for page in reader.pages:
                 try:
                     text_parts.append(page.extract_text() or "")
-                # guardian: allow-silent-swallow
-                except Exception:
+                except Exception:  # guardian: allow-broad-exception -- per-page text extract failure: empty string substituted, extraction continues
                     text_parts.append("")
             return "\n".join(text_parts)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- PDF load failure: non-fatal, empty string returned to caller
             log.warning(f"PDF load failed ({e})")
             return ""
 

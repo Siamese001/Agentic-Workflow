@@ -125,9 +125,9 @@ class SourceRetriever:
         try:
             # guardian: allow-silent-swallow - acceptable exception handling
             tree = ast.parse(source, filename=str(path))
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-return-none-swallow allow-log-and-swallow -- AST parse: non-fatal, caller handles None as missing function
             _log.warning("[SourceRetriever] Syntax error parsing %s", path)
-            return None  # guardian: allow-return-none-swallow -- AST parse: non-fatal, caller handles None as missing function
+            return None
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -174,9 +174,9 @@ class SourceRetriever:
         # guardian: allow-silent-swallow - acceptable exception handling
         try:
             tree = ast.parse(source, filename=str(path))
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-return-none-swallow allow-log-and-swallow -- AST parse: non-fatal, caller handles None as missing class
             _log.warning("[SourceRetriever] Syntax error parsing %s", path)
-            return None  # guardian: allow-return-none-swallow -- AST parse: non-fatal, caller handles None as missing class
+            return None
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef) and node.name == class_name:
