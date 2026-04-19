@@ -36,7 +36,6 @@ exclude: |
     .*\.debug\.log|
     .*/logs/.*|
     .*_sites\.txt|
-    .backup/guardian_tests/.*|
     .tmp/.*|
     .tmp_.*sites\.txt|
     0[0-9]_[^/]*/.*|
@@ -54,17 +53,13 @@ exclude: |
     artifacts/healing/healing_events\.jsonl|
     artifacts/import_health/import_health_report\.json|
     artifacts/windsurf/.*|
-    core/.*|
     docs/store/.*|
     guardian_.*\.(txt|json)|
     pytestdebug\.log|
     runtime_state.*\.json|
     temp_[^/]*/.*|
     temp_complete_rules.*\.md|
-    tmp.*|
-    v15_d_evidence_.*\.json|
-    v15_d_inventory_p4\.json|
-    v15_p2_evidence_temp\.json
+    tmp.*
   )
 
 repos:

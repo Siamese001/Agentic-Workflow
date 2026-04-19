@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-19T11:15:54.871631
+# Last generated: 2026-04-19T11:21:52.971720
 
 
 # Build & Cache
@@ -65,7 +65,6 @@
 
 # Other
 .hypothesis/
-/06_data/
 /_compat/
 /artifacts/_legacy_adg_archives/
 /artifacts/adg_clean/

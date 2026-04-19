@@ -71,7 +71,6 @@ vendor_dirs:
 
 # Data and log directories (content, not code)
 data_dirs:
-  - "06_data"  # Legacy ingestion staging dir — purged from history 2026-04-19
   - "data/cache"
   - "data/corpus"
   - "data/external"
@@ -129,11 +128,12 @@ precommit_excludes:
   - ".tmp_.*sites.txt"  # Temp sites files
   - ".*_sites.txt"  # Generic sites files
   - "0[0-9]_[^/]*/.*"  # Numbered temp directories
-  - "core/.*"  # Core directory (legacy)
-  - ".backup/guardian_tests/.*"  # Backup test files
-  - "v15_d_evidence_.*.json"  # Legacy evidence files
-  - "v15_p2_evidence_temp.json"  # Legacy temp evidence
-  - "v15_d_inventory_p4.json"  # Legacy inventory
+  # Removed 2026-04-19 (exclusion-ssot-consolidated-review-2026-04-19.md §3):
+  #   - "core/.*"                       — directory does not exist
+  #   - ".backup/guardian_tests/.*"     — redundant (.backup/ already excluded at category level)
+  #   - "v15_d_evidence_.*.json"        — Wave 15 retired
+  #   - "v15_p2_evidence_temp.json"     — Wave 15 retired
+  #   - "v15_d_inventory_p4.json"       — Wave 15 retired
   - ".*/logs/.*"  # Log directories
   - "docs/store/.*"  # Docs store directory
 
