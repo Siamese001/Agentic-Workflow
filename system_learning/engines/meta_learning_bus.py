@@ -608,13 +608,13 @@ class MetaLearningBus:
                         f"ADG::TraceFeatureRecord::{record.record_id[:12]}",
                     ),
                 )
-            except (
+            except (  # guardian: allow-log-and-swallow -- record promotion: fire-and-forget, records still returned
                 AttributeError,
                 KeyError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as exc:  # guardian: allow-log-and-swallow -- record promotion: fire-and-forget, records still returned
+            ) as exc:
                 logger.warning(
                     "meta_learning_bus: record promotion failed",
                     extra={"trace_id": bundle.trace_id, "error": str(exc)},
@@ -851,13 +851,13 @@ class MetaLearningBus:
                         timestamp_utc=timestamp_utc,
                     ),
                 )
-            except (
+            except (  # guardian: allow-log-and-swallow -- reward synthesis: fire-and-forget, signals still returned
                 AttributeError,
                 KeyError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as exc:  # guardian: allow-log-and-swallow -- reward synthesis: fire-and-forget, signals still returned
+            ) as exc:
                 logger.warning(
                     "meta_learning_bus: reward signal synthesis failed",
                     extra={"trace_id": bundle.trace_id, "error": str(exc)},

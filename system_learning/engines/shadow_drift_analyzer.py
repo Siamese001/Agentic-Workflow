@@ -268,13 +268,13 @@ class ShadowDriftAnalyzer:
                 if violation_delta > 0:
                     # Violations increased - this is structural drift
                     drift_source = "adg_structural"
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- violation lookup: optional ADG query, non-fatal
             # ADG data unavailable - continue with embedding-only analysis
             import logging
 
             logging.getLogger(__name__).debug(
                 "shadow_drift_analyzer: violation count lookup failed: %s", exc
-            )  # guardian: allow-log-and-swallow -- violation lookup: optional ADG query, non-fatal
+            )
 
         mean_cosine = statistics.mean(cosine_values)
         p95_cosine = self._compute_percentile(cosine_values, 95)
@@ -383,13 +383,13 @@ class ShadowDriftAnalyzer:
                     logging.getLogger(__name__).debug(
                         "shadow_drift_analyzer: drift alert enqueue failed: %s", exc
                     )
-        except (
+        except (  # guardian: allow-log-and-swallow -- registry emission: optional observability call, non-fatal
             AttributeError,
             ImportError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- registry emission: optional observability call, non-fatal
+        ) as exc:
             import logging
 
             logging.getLogger(__name__).debug("shadow_drift_analyzer: registry emission failed: %s", exc)

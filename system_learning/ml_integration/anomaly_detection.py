@@ -357,7 +357,7 @@ class MLAnomalyDetector:
                     metadata={"z_score": z_score, "mean": mean, "std": std},
                 )
 
-        except (AttributeError, TypeError, ValueError, ZeroDivisionError) as e:
+        except (AttributeError, TypeError, ValueError, ZeroDivisionError) as e:  # guardian: allow-log-and-swallow allow-return-none-swallow -- z-score detection: non-fatal, caller treats None as no anomaly detected
             Logger.debug(f"[ML_DETECTOR] Z-score detection failed: {e}")
 
         return None
@@ -405,7 +405,7 @@ class MLAnomalyDetector:
                     metadata={"q1": q1, "q3": q3, "iqr": iqr, "distance": distance},
                 )
 
-        except (AttributeError, TypeError, ValueError) as e:
+        except (AttributeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow allow-return-none-swallow -- IQR detection: non-fatal, caller treats None as no anomaly detected
             Logger.debug(f"[ML_DETECTOR] IQR detection failed: {e}")
 
         return None

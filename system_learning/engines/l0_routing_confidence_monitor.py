@@ -331,13 +331,13 @@ def propose_routing_confidence_change(
     last_update_utc = history.get(f"{surface}_last_update", 0)
     try:
         assert_cooldown_ok(last_update_utc, now_utc, cooldown_policy)
-    except CooldownViolation:
+    except CooldownViolation:  # guardian: allow-return-none-swallow -- cooldown active: caller treats None as "no update proposed this cycle"
         return None
 
     n_obs = history.get(f"{surface}_n_obs", 0)
     try:
         assert_min_sample_size(n_obs, sample_policy)
-    except SampleSizeViolation:
+    except SampleSizeViolation:  # guardian: allow-return-none-swallow -- insufficient samples: caller treats None as "no update proposed this cycle"
         return None
 
     new_value = current_value + _DEFAULT_DELTA
