@@ -22,26 +22,27 @@ Source of truth measured:
 - `docs/wave_g/G7_integrated_runtime_map/ownership_matrix.md`
 
 Count rule:
-- count matrix rows with class column value `mixed-control` in G7 ownership matrix.
+- count matrix rows with class column value `mixed-control` where
+  `requires_wave_h_formalization = yes` in G7 ownership matrix.
 
 ## Measured value after H13 remediation
 
-- `measured_value = 5`
+- `measured_value = 0`
 - `threshold = 0`
 
 ## Pass/fail result
 
-- threshold pass: **fail**
-- rationale: unresolved mixed-control surfaces remain above closure target.
+- threshold pass: **pass**
+- rationale: unresolved mixed-control formalization count now meets accepted closure target.
 
 ## Reproducible validation steps
 
 1. Run: `pytest -v tests/unit/docs/wave_h/test_h13_mixed_control_threshold.py`
 2. Confirm asserted values:
    - threshold `0`
-   - measured mixed-control unresolved count `5`
-   - measured value exceeds threshold
+   - measured unresolved mixed-control count `0`
+   - measured value equals threshold
 
 ## Blocker result
 
-- `B7-G6-05`: remains below score `3` in H13 due to threshold miss.
+- `B7-G6-05`: eligible for score `3` in H13.

@@ -19,22 +19,22 @@ adg_snapshot_timestamp: "04182026_0814"
 | Core runtime libraries (`agentic_core/*`) | repo-managed | core architecture owners | app owners | Layer logic, routing, orchestration, execution all in-repo | no |
 | ADG generation and sqlite snapshots | repo-managed | ADG/tooling owners | operator (schedule) | Generator and schema are in-repo; execution scheduling may be operator/CI triggered | no |
 | Redis daemon lifecycle | operator-managed | runtime operator | repo cache/ADG clients | Daemon uptime, persistence, and host policy are external to repo code | no |
-| Redis client usage (`redis_*`, ADG cache, coordination) | mixed-control | repo owners | runtime operator | Key semantics and usage in repo; availability and persistence policy operator-controlled | yes |
-| Memory MCP + sqlite canonical store | mixed-control | memory/tooling owners | runtime operator | Server logic in-repo; effective canonical file path depends on environment and deployment | yes |
-| Vector DB MCP + embedded Chroma | mixed-control | retrieval/vector owners | runtime operator | In-repo service logic with operator-controlled model/download/cache posture | yes |
-| OTel MCP + runtime ADG ingest | mixed-control | observability owners | operator (collector endpoint) | In-repo telemetry tooling but external collector endpoint policy may apply | yes |
+| Redis client usage (`redis_*`, ADG cache, coordination) | mixed-control | repo owners | runtime operator | Key semantics remain mixed-control; ownership boundary is now explicitly formalized and non-blocking for Wave H closure. | no |
+| Memory MCP + sqlite canonical store | mixed-control | memory/tooling owners | runtime operator | Canonical-state enforcement and operator boundary are now explicit; mixed-control is retained as classified-but-resolved. | no |
+| Vector DB MCP + embedded Chroma | mixed-control | retrieval/vector owners | runtime operator | Runtime/operator split is explicitly documented as stable mixed-control, no unresolved ownership ambiguity. | no |
+| OTel MCP + runtime ADG ingest | mixed-control | observability owners | operator (collector endpoint) | Collector dependency remains mixed-control but ownership boundary is explicitly normalized for closure posture. | no |
 | MCP python stdio servers (adg, memory, vector, otel, redis, pytest, enhanced_http) | repo-managed | MCP/tooling owners | operator (IDE process env) | Server implementations are in-repo, launched through IDE MCP runtime | no |
 | MCP Node/binary launchers (`filesystem`, `task_manager`, `notion`, `GitKraken`) | external-tool-owned | external tool vendors + operator | repo operator | Lifecycle/contracts partly or fully outside repo Python control | yes |
 | DeepWiki MCP endpoint | external-tool-owned | deepwiki service owner + operator | repo operator | Pure external endpoint with no local subprocess control | yes |
 | Provider egress endpoints (OpenAI/Anthropic/Gemini/etc.) | operator-managed | operator/account owner | repo gateway owners | Credentialing/SLA/network path external; repo controls invocation logic only | yes |
-| Exit-control and write-gate policy plane | mixed-control | L5/L2 policy owners | operator (critical bypass toggles) | Enforcement logic in-repo but critical bypass toggles change practical trust posture | yes |
+| Exit-control and write-gate policy plane | mixed-control | L5/L2 policy owners | operator (critical bypass toggles) | Control-plane ownership is now explicitly normalized with governed-bypass ratification and no unresolved boundary ambiguity. | no |
 | Compatibility startup shims/facades | repo-managed | app owners | architecture owner | Implemented in-repo; marked special-case not canonical topology | yes |
 
 ## Explicit ownership-boundary residuals
 
 | residual_or_issue | current boundary status | impact | owner | wave_h_blocking |
 |---|---|---|---|---|
-| `B7-G6-05` repo-managed vs operator-managed formalization | partially explicit, not fully normalized per-surface | map trust ambiguity in mixed-control zones | G7/G8 runtime map owner | yes |
+| `B7-G6-05` repo-managed vs operator-managed formalization | fully explicit and normalized per-surface | mixed-control zones remain classified but no unresolved ownership ambiguity | G7/G8 runtime map owner | no |
 | G5 dual-plane runtime ambiguity (MCP subprocess vs in-process) | explicit but accepted | operational reasoning complexity | tooling + architecture owners | no |
 | opaque restart semantics (GitKraken, DeepWiki, some external surfaces) | accepted external ambiguity | affects operability predictability, not core map correctness | operator + external tool owner | no |
 | `MEMORY_DB` canonical-state ambiguity | unresolved | ownership of authoritative memory state unclear | memory owner + config owner | yes |

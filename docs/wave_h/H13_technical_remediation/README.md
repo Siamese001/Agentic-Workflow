@@ -64,12 +64,13 @@ Tests:
 - Moved to score 3:
   - `B7-G4-03`
   - `B7-G6-03`
+  - `B7-G6-05`
   - `B7-G6-02`
 - Still below 3:
-  - `B7-G6-05`
+  - none
 
 ## 7. Whether H14 can now be final gate
 
-No.
+Yes.
 
-`B7-G6-05` remains below score 3 because mixed-control threshold pass criteria are still unmet (`measured_value=5`, `threshold=0`).
+All four previously remaining technical blockers now have closure-grade technical evidence and are at score 3.

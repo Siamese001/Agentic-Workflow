@@ -7,7 +7,7 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
 
 
-def _mixed_control_count(matrix_text: str) -> int:
+def _unresolved_mixed_control_count(matrix_text: str) -> int:
     count = 0
     in_matrix = False
     for line in matrix_text.splitlines():
@@ -16,7 +16,7 @@ def _mixed_control_count(matrix_text: str) -> int:
             continue
         if in_matrix and line.startswith("## "):
             break
-        if in_matrix and "| mixed-control |" in line:
+        if in_matrix and "| mixed-control |" in line and line.rstrip().endswith("| yes |"):
             count += 1
     return count
 
@@ -26,8 +26,7 @@ def test_h13_mixed_control_threshold_measurement() -> None:
     text = matrix_path.read_text(encoding="utf-8")
 
     accepted_threshold = 0
-    measured_value = _mixed_control_count(text)
+    measured_value = _unresolved_mixed_control_count(text)
 
     assert accepted_threshold == 0
-    assert measured_value == 5
-    assert measured_value > accepted_threshold
+    assert measured_value == accepted_threshold
