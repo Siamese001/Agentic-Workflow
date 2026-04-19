@@ -26,7 +26,6 @@ on:
       - 'ops_scripts/ci/_validate_pytest_config.py'
       - 'tools/generate/check_exclusion_sync.py'
       - 'tools/generate/generate_gitignore.py'
-      - '.codeiumignore'
       - 'agentic_core/L0_routing/config/path_constants.py'
       - '.github/workflows/config-sync-gates.yml'
   push:
@@ -91,15 +90,7 @@ jobs:
         env:
           PYTHONPATH: .
 
-      - name: T6h — .codeiumignore <-> YAML sync (R4)
-        run: |
-          if grep -q "check_codeiumignore\|check-codeiumignore" tools/generate/generate_gitignore.py; then
-            python tools/generate/generate_gitignore.py --check-codeiumignore
-          else
-            echo "[config-sync-gates] --check-codeiumignore not yet present — skipping"
-          fi
-        env:
-          PYTHONPATH: .
+      # T6h retired 2026-04-19 (L2 consolidation): .codeiumignore eliminated.
 
       - name: T6g — hardcoded exclusion ratchet (R3)
         run: |

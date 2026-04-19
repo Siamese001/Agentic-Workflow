@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-19T11:21:52.971720
+# Last generated: 2026-04-19T12:19:02.107300
 
 
 # Build & Cache
@@ -86,11 +86,13 @@
 /tools/archive/
 
 # File Patterns
+*.db
 *.dll
 *.egg-info
 *.gz
 *.jsonl
 *.log
+*.pb
 *.pkl
 *.pyc
 *.pyd

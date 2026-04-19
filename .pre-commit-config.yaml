@@ -168,17 +168,7 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T6h: .codeiumignore Sync (R4) -----------------------------------------------
-      # Validates .codeiumignore is byte-equivalent to what YAML codeium_patterns +
-      # codeium_negations generate. Fix: python tools/generate/generate_gitignore.py --write-codeiumignore
-      - id: codeiumignore-sync
-        name: "T6h: .codeiumignore <-> YAML Sync"
-        entry: py tools/generate/generate_gitignore.py --check-codeiumignore
-        language: system
-        pass_filenames: false
-        files: ^(config/excluded_paths\.yaml|\.codeiumignore|tools/generate/generate_gitignore\.py)$
-        always_run: false
-        require_serial: true
+      # T6h RETIRED 2026-04-19 (L2 consolidation): .codeiumignore eliminated.
 
       # -- T6g: Hardcoded Exclusion Ratchet (R3) ---------------------------------------
       # Detects Python set/frozenset literals containing 3+ canonical exclusion tokens

@@ -201,30 +201,17 @@ discovery_excluded_territories:
   - "examples"
 
 # ============================================================================
-# WINDSURF INDEXING EXCLUSIONS (.codeiumignore)
-# Generated from these keys by tools/generate/generate_gitignore.py --write-codeiumignore
-# Gate: ops_scripts/ci/check_agents_md_sync.py (T6d extension) validates byte-match.
+# L2 CONSOLIDATION 2026-04-19 — .codeiumignore and its codeium_* keys RETIRED.
+#
+# Why: Windsurf indexing already honors .gitignore + hidden paths + node_modules
+# by default (docs/windsurf/llms-full.txt:810-819). The only deltas we ever
+# carried were **/*.db and **/*.pb (now moved into file_patterns above) plus
+# a !artifacts/windsurf/session_state.json negation that was vestigial —
+# per tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py:1695-1704
+# the pre-mcp-gate explicitly REFUSES to consult that path now (stale
+# fallback; Fix 2 regression guard). Indexing it had no remaining upside.
+# Net: .codeiumignore file deleted, T6h gate retired, 1 fewer surface.
 # ============================================================================
-
-# .codeiumignore is a DELTA file. Windsurf indexing already ignores:
-#   1. Everything in .gitignore (see docs/windsurf/llms-full.txt §Windsurf Ignore)
-#   2. node_modules/
-#   3. Hidden paths (anything starting with ".")
-# So this list contains ONLY additions beyond gitignore + Windsurf defaults.
-# Anything you can add to .gitignore should go there instead — don't duplicate.
-codeium_patterns:
-  # Binary database files (no wildcard in gitignore for *.db, deliberately kept
-  # out of gitignore so humans can commit fixtures by path if needed)
-  - "**/*.db"
-  # Protobuf session blobs (not in gitignore; Windsurf-indexing-only noise)
-  - "**/*.pb"
-
-# Negation patterns re-include specific paths (emitted with leading "!").
-# session_state.json lives inside the gitignored /artifacts/ tree but is
-# high-signal context for Cascade — the ONLY reason .codeiumignore exists
-# as a persisted file today is to carry this single re-inclusion.
-codeium_negations:
-  - "artifacts/windsurf/session_state.json"
 
 # File patterns to exclude (glob-style)
 file_patterns:
@@ -246,3 +233,5 @@ file_patterns:
   - "*.gz"  # Compressed artifacts should stay local or in LFS-only flows
   - "*.pkl"  # Serialized local cache/models should not be committed
   - "repo_root.txt"  # Local diagnostic export; never commit
+  - "*.db"  # Binary databases (L2 consolidation 2026-04-19; prior deliberately kept out, now unified)
+  - "*.pb"  # Protobuf session blobs (L2 consolidation 2026-04-19; never committed)

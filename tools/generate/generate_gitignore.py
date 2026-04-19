@@ -211,59 +211,11 @@ def generate_precommit_exclude(precommit_patterns: set[str]) -> str:
     return "\n".join(lines)
 
 
-def load_codeium_spec() -> tuple[list[str], list[str]]:
-    """Load .codeiumignore spec from YAML.
-
-    Returns (patterns, negations). Both preserve YAML order (not sorted) because
-    .codeiumignore semantics can be order-sensitive when negations are involved.
-    """
-    import yaml
-
-    config_path = _REPO_ROOT / "config" / "excluded_paths.yaml"
-    with open(config_path, "r", encoding="utf-8") as f:
-        data = yaml.safe_load(f) or {}
-    if not isinstance(data, dict):
-        return [], []
-    patterns = data.get("codeium_patterns") or []
-    negations = data.get("codeium_negations") or []
-    if not isinstance(patterns, list):
-        patterns = []
-    if not isinstance(negations, list):
-        negations = []
-    return [str(p) for p in patterns], [str(n) for n in negations]
-
-
-CODEIUMIGNORE_HEADER = """# .codeiumignore — Windsurf indexing exclusions
-# GENERATED from config/excluded_paths.yaml (codeium_patterns + codeium_negations).
-# Do NOT edit manually — run: python tools/generate/generate_gitignore.py --write-codeiumignore
-# Gate: ops_scripts/ci/check_agents_md_sync.py enforces byte-match with YAML.
-"""
-
-
-def generate_codeiumignore_content() -> str:
-    """Generate .codeiumignore body from YAML spec (no timestamp)."""
-    patterns, negations = load_codeium_spec()
-    lines: list[str] = [CODEIUMIGNORE_HEADER, ""]
-    if patterns:
-        lines.append("# Exclusions")
-        lines.extend(patterns)
-        lines.append("")
-    if negations:
-        lines.append("# Re-included (negations)")
-        lines.extend(f"!{n}" for n in negations)
-        lines.append("")
-    return "\n".join(lines)
-
-
-def write_codeiumignore(content: str) -> None:
-    """Write .codeiumignore file atomically."""
-    target = _REPO_ROOT / ".codeiumignore"
-    with NamedTemporaryFile("w", encoding="utf-8", dir=target.parent, delete=False) as tmp:
-        tmp.write(content)
-        tmp.flush()
-        tmp_path = Path(tmp.name)
-    tmp_path.replace(target)
-    print(f"Updated: {target}")
+# .codeiumignore generator RETIRED 2026-04-19 (L2 consolidation). Windsurf
+# indexing honors .gitignore + hidden paths + node_modules natively; the two
+# deltas (**/*.db, **/*.pb) moved into file_patterns, and the stale
+# !artifacts/windsurf/session_state.json negation was vestigial.
+# See config/excluded_paths.yaml L2 CONSOLIDATION block for rationale.
 
 
 def read_current_gitignore() -> str | None:
@@ -343,26 +295,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         content = generate_precommit_exclude(precommit_patterns)
         print(content)
         return 0
-
-    if args.write_codeiumignore:
-        content = generate_codeiumignore_content()
-        write_codeiumignore(content)
-        return 0
-
-    if args.check_codeiumignore:
-        target = _REPO_ROOT / ".codeiumignore"
-        expected = generate_codeiumignore_content()
-        if not target.exists():
-            print("❌ .codeiumignore does not exist")
-            return 1
-        current = target.read_text(encoding="utf-8")
-        # Compare ignoring trailing whitespace differences only
-        if current.strip("\n") == expected.strip("\n"):
-            print("✅ .codeiumignore is in sync with config/excluded_paths.yaml")
-            return 0
-        print("❌ .codeiumignore is out of sync with config/excluded_paths.yaml")
-        print("Run: python tools/generate/generate_gitignore.py --write-codeiumignore")
-        return 1
 
     # Default: print to stdout
     dirs, patterns, _ = load_exclusions()
