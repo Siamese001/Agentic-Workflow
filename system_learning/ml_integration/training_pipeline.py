@@ -730,7 +730,7 @@ class MLTrainingPipeline:
 
         except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             Logger.error(f"[ML_PIPELINE] Anomaly detection model training failed: {exc}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- model training: non-fatal, caller checks for None before using model
 
     def _create_model(self, model_type: ModelType, config: ModelConfig) -> BaseMLModel:
         """Create model instance based on type."""
@@ -802,7 +802,7 @@ class MLTrainingPipeline:
 
         except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             Logger.error(f"[ML_PIPELINE] Model evaluation failed: {exc}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- model eval: non-fatal, caller checks for None before using metrics
 
     def deploy_model(self, model_id: str, environment: str = "production") -> str | None:
         """
@@ -841,7 +841,7 @@ class MLTrainingPipeline:
 
         except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             Logger.error(f"[ML_PIPELINE] Model deployment failed: {exc}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- model deploy: non-fatal, caller checks for None before routing traffic
 
     def get_model_predictions(self, model_id: str, data: pd.DataFrame) -> np.ndarray | None:
         """
@@ -872,7 +872,7 @@ class MLTrainingPipeline:
 
         except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
             Logger.error(f"[ML_PIPELINE] Model prediction failed: {exc}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- model prediction: non-fatal, caller checks for None before using results
 
     def get_model_metrics(self, model_id: str | None = None) -> TrainingMetrics | dict[str, TrainingMetrics]:
         """Get metrics for a specific model or all models."""

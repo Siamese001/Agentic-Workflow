@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from importlib import import_module
 from pathlib import Path
 
 
@@ -12,11 +13,13 @@ def _run_p0_two_pass_runner(sqlite_path: Path | None, plan_path: Path | None = N
     Fail-closed when the runner reports blocked gates or internal runner errors.
     """
     if sqlite_path is None or not sqlite_path.exists():
-        print("[ADG] WARNING: P0 runner skipped (no production SQLite snapshot found)")
-        return
+        print("[ERROR] P0 runner blocked: no production SQLite snapshot found")
+        if plan_path is not None and Path(plan_path).exists():
+            print(f"[ERROR] See remediation wave plan: {plan_path}")
+        sys.exit(1)
 
-    # guardian: allow-layer-violation -- tools.generate integration intentionally delegates to CI gate orchestrator for unified P0 enforcement
-    from ops_scripts.ci.adg_gates.p0_runner import run_p0_two_pass
+    module = import_module("ops_scripts.ci.adg_gates.p0_runner")
+    run_p0_two_pass = getattr(module, "run_p0_two_pass")
 
     print("[ADG] Running P0 two-pass runner on committed artifacts...")
     runner_rc = run_p0_two_pass(

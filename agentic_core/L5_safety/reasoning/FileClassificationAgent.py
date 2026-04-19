@@ -3674,7 +3674,11 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                             "top3": str([(n, round(s / total, 3)) for n, s in top3]),
                         },
                     )
-                except (ValueError, ZeroDivisionError, KeyError) as e:
+                except (
+                    ValueError,
+                    ZeroDivisionError,
+                    KeyError,
+                ) as e:  # guardian: allow-log-and-swallow -- top3 stats: non-fatal, classification continues without extra stats
                     self.logger.debug(f"Failed to generate top3 stats for classification: {e}")
                     # Continue without the extra stats
                 warnings.append(
@@ -4444,7 +4448,11 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     print("[WARNING] Windows LongPathsEnabled is NOT set to 1.")
                     if not self.dry_run:
                         return False
-            except (ImportError, OSError, AttributeError) as e:
+            except (
+                ImportError,
+                OSError,
+                AttributeError,
+            ) as e:  # guardian: allow-log-and-swallow -- registry check: non-fatal, defaults to True (paths enabled)
                 self.logger.debug(f"Failed to check LongPathsEnabled registry: {e}")
         return True
 

@@ -179,7 +179,7 @@ def _existing_hashes(corpus_path: Path) -> set[str]:
                 continue
             try:
                 hashes.add(json.loads(line).get("content_hash", ""))
-            except json.JSONDecodeError as exc:
+            except json.JSONDecodeError as exc:  # guardian: allow-log-and-swallow -- corpus parse: malformed lines skipped, backfill continues
                 malformed_lines += 1
                 logger.debug("[Backfill] Skipping malformed corpus line in %s: %s", corpus_path, exc)
     if malformed_lines:
@@ -197,7 +197,7 @@ def _load_jsonl_lenient(path: Path) -> list[dict[str, Any]]:
                 continue
             try:
                 records.append(json.loads(line))
-            except json.JSONDecodeError as exc:
+            except json.JSONDecodeError as exc:  # guardian: allow-log-and-swallow -- JSONL parse: malformed lines skipped, backfill continues
                 malformed_lines += 1
                 logger.debug("[Backfill] Skipping malformed JSONL line in %s: %s", path, exc)
     if malformed_lines:
@@ -213,7 +213,7 @@ def _load_json_lenient(path: Path) -> dict[str, Any] | None:
         return json.loads(fixed)
     except json.JSONDecodeError as exc:
         logger.warning("[Backfill] Could not parse %s: %s", path.name, exc)
-        return None
+        return None  # guardian: allow-return-none-swallow -- file parse: non-fatal, caller skips unreadable files
 
 
 # ── Wave 3a: JSONL → corpus ───────────────────────────────────────────────────
@@ -260,7 +260,11 @@ def backfill_protected_root_blocks(
 
             dt = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))
             created_utc = int(dt.replace(tzinfo=timezone.utc).timestamp())
-        except (ValueError, TypeError, RuntimeError) as exc:
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as exc:  # guardian: allow-log-and-swallow -- timestamp normalization: non-fatal, created_utc defaults to current time
             logger.debug("[Backfill] Invalid ts_utc=%r for caller=%s: %s", ts_utc, caller, exc)
 
         entry = {

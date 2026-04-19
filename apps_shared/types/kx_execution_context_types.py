@@ -354,7 +354,7 @@ class KXNodeExecutor:
             logger.info(f"Retrieved {len(sources)} sources for K.X node {config.node_id}")
             return sources[: config.rag_config.min_retrievers]
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             logger.warning(f"RAG retrieval failed for K.X node {config.node_id}: {e}")
             return []
 

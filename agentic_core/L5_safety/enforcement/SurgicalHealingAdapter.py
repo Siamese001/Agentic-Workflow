@@ -282,7 +282,7 @@ class SurgicalHealingAdapter:
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as exc:
             Logger.error("Failed to parse %s: %s", file_path, exc)
-            return None
+            return None  # guardian: allow-return-none-swallow -- detection parse: non-fatal, caller handles None as no constraint
 
         line = detection_result.get("line", 1) or 1
         constraint_type = detection_result.get("type", "unknown")
@@ -343,7 +343,7 @@ class SurgicalHealingAdapter:
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as exc:
             Logger.error("Failed to parse %s: %s", file_path, exc)
-            return None
+            return None  # guardian: allow-return-none-swallow -- violation parse: non-fatal, caller handles None as no violations
 
         violations: list[ViolationConstraint] = []
         coordinates: list[ASTCoordinate] = []

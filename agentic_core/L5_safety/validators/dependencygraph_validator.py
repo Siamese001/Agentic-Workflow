@@ -99,6 +99,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import google.generativeai as genai
+
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -361,11 +363,8 @@ class ValidationContext:
         api_key = os.environ.get("GOOGLE_API_KEY")
         if api_key:
             try:
-                # guardian: allow-layer-violation -- infrastructure SDK access required for Gemini provider, no agentic_core alternative exists
-                from infrastructure.sdks_mcps import create_vertex_client
-
-                genai = create_vertex_client()
-                self._client = genai.Client(api_key=api_key)
+                genai.configure(api_key=api_key)
+                self._client = genai.GenerativeModel(self.model_id)
                 self.intelligence_enabled = True
                 print("      [OK] Gemini Connected")
             except (ImportError, AttributeError, ValueError) as e:

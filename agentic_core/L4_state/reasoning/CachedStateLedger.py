@@ -245,7 +245,10 @@ class CachedStateLedger(SovereignBaseAgent):
                 self.redis.set(full_key, json.dumps(context), ex=86400)
             else:
                 self._memory_cache[full_key] = context
-        except (AttributeError, TypeError) as e:
+        except (
+            AttributeError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow -- cache write: non-fatal, context stored in memory fallback
             self.logger.debug(f"Cache write failed for {key}: {e}")
         self._record_successful_trace(
             {"operation": "cache_validation_context", "key": key, "timestamp": time.time()},
@@ -278,7 +281,10 @@ class CachedStateLedger(SovereignBaseAgent):
                         },
                     )
                 return result
-        except (AttributeError, KeyError) as e:
+        except (
+            AttributeError,
+            KeyError,
+        ) as e:  # guardian: allow-log-and-swallow -- cache read: non-fatal, caller handles None as cache miss
             self.logger.debug(f"Cache read failed for {key}: {e}")
         return None
 
@@ -316,7 +322,10 @@ class CachedStateLedger(SovereignBaseAgent):
                 self.redis.expire(trail_key, 31536000)
             else:
                 self._audit_trail.append(event)
-        except (AttributeError, TypeError) as e:
+        except (
+            AttributeError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow -- audit log append: non-fatal, audit trail degrades gracefully
             self.logger.debug(f"Audit logging failed: {e}")
 
     def _run_self_tests(self) -> bool:

@@ -401,7 +401,10 @@ class SparseIndex:
                 if meta_row and meta_row[0]:
                     try:
                         metadata = json.loads(meta_row[0])
-                    except (json.JSONDecodeError, ValueError):
+                    except (
+                        json.JSONDecodeError,
+                        ValueError,
+                    ):  # guardian: allow-silent-swallow -- metadata parse: malformed row, metadata simply omitted
                         pass
 
                 results.append(
@@ -416,7 +419,9 @@ class SparseIndex:
 
             conn.close()
 
-        except sqlite3.OperationalError as e:
+        except (
+            sqlite3.OperationalError
+        ) as e:  # guardian: allow-log-and-swallow -- BM25 query: non-fatal, returns empty results
             _SparseLogger.error("SparseIndex query failed for '%s': %s", self.collection_name, e)
 
         return results[:top_k]

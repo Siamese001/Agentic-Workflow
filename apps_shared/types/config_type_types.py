@@ -484,7 +484,7 @@ class ConfigLoadPlanner:
             )
             return result
 
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             self.logger.error(f"Config load planning failed: {str(e)}")
             return ConfigLoadResult(
                 success=False,

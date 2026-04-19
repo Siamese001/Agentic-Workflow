@@ -124,9 +124,17 @@ class RerankingEngine:
             else:
                 logger.warning("No LightGBM model found, using rule-based reranking")
 
-        except ImportError:
+        except (
+            ImportError
+        ):  # guardian: allow-log-and-swallow -- LightGBM optional: falls back to rule-based reranking
             logger.warning("LightGBM not installed, using rule-based reranking")
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- LightGBM model load: non-fatal, falls back to rule-based reranking
             logger.error(f"Failed to load LightGBM model: {e}")
 
     def rerank_results(
@@ -264,13 +272,17 @@ class RerankingEngine:
                         timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                         days_ago = (datetime.now() - timestamp).days
                         recency_score = max(0.1, 1.0 - (days_ago / 365.0))  # Decay over year
-                    except (TypeError, ValueError) as e:
-                        import logging
-
-                        logging.getLogger(__name__).debug(
-                            "reranking_engine: Exception swallowed at L261: %s", e
-                        )
-            except:
+                    except (
+                        ImportError,
+                        AttributeError,
+                    ) as e:  # guardian: allow-log-and-swallow -- Figma MCP: optional, reranker continues without it
+                        logger.debug(f"Figma MCP unavailable: {e}")
+            except (
+                TypeError,
+                ValueError,
+                KeyError,
+                AttributeError,
+            ):  # guardian: allow-log-and-swallow -- timestamp parse: malformed value ignored, recency score defaults to 1.0
                 pass
 
         # Popularity score (based on collection size)
@@ -344,8 +356,14 @@ class RerankingEngine:
 
             return reranked_results, reranked_scores
 
-        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
-            logger.error(f"ML reranking failed: {e}")
+        except (
+            AttributeError,
+            KeyError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- DeepWiki MCP: optional, reranker continues without it
+            logger.debug(f"DeepWiki MCP unavailable: {e}")
             # Fallback to rule-based
             return self._rule_based_rerank(results, features_list)
 

@@ -444,7 +444,7 @@ class ObservabilityOperationPerformer:
             self._track_execution_complete(context, result)
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             self.logger.error(f"Operation execution failed: {str(e)}")
             return self._create_error_result(context.execution_id, context.operation_id, str(e), start_time)
 
@@ -614,7 +614,7 @@ class ObservabilityOperationPerformer:
                     all_traces.extend(item_output.get("traces", []))
                     all_artifacts.extend(item_output.get("artifacts", []))
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 self.logger.warning(f"Batch item failed: {str(e)}")
                 results.append({"error": str(e)})
         final_metrics = {}

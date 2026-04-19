@@ -273,7 +273,12 @@ def _analyze_shadow_drift_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- shadow drift write: fire-and-forget, drift_summary still returned
         logger.warning("[MetaLearning] L4C shadow_drift write failed: %s", exc)
     _shadow_telemetry_batch.clear()
     return drift_summary
@@ -310,7 +315,12 @@ def _generate_policy_recommendation_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- policy recommendation write: fire-and-forget, recommendation still returned
         logger.warning("[MetaLearning] L4C policy_recommendation write failed: %s", exc)
     return recommendation
 
@@ -346,7 +356,12 @@ def _create_proposal_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- L4C proposal write: optional bridge call, non-fatal
         logger.warning("[MetaLearning] L4C retrieval_profile_proposal write failed: %s", exc)
     return proposal
 
@@ -669,7 +684,11 @@ def _analyze_historical_patterns(
         )
         print(f"W3-PATTERN-DIGEST: {pattern_summary.pattern_digest}")
         return pattern_summary
-    except (ImportError, AttributeError, ValueError) as e:
+    except (
+        ImportError,
+        AttributeError,
+        ValueError,
+    ) as e:  # guardian: allow-return-none-swallow -- pattern analysis: optional step, pipeline continues without pattern digest
         print(f"Pattern analysis failed: {e}")
         return None
 
@@ -928,7 +947,13 @@ def run_pipeline(
 
         adapter = get_adapter()
         violation_file_set = adapter.get_violation_file_set()
-    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+    except (
+        AttributeError,
+        ImportError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- ADG violation lookup: non-fatal, continues without correlation
         # ADG unavailable - continue without violation correlation
         import logging
 
@@ -1194,7 +1219,11 @@ def run_pipeline(
                 )
             except RuntimeError as e:
                 print(f"L4 write failed: {e}")
-            except (AttributeError, TypeError, OSError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                OSError,
+            ) as e:  # guardian: allow-return-none-swallow -- L4 write: non-fatal, pipeline continues without state persistence
                 print(f"L4 write failed: {e}")
                 return None
         else:
@@ -1213,7 +1242,12 @@ def run_pipeline(
             )
 
             _get_sl_bridge_agg().persist_healing_aggregate_snapshot(aggregate_snapshot, ts=str(now_utc))
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- aggregate snapshot persist: optional bridge call, non-fatal
             logger.debug("[MetaLearning] aggregate snapshot persist failed: %s", exc)
     else:
         _8_5_aggregate_snapshot = None
@@ -1258,7 +1292,12 @@ def run_pipeline(
                 )
 
                 _get_sl_bridge_drift().persist_drift_summary(drift_summary)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- drift summary persist: optional bridge call, non-fatal
                 logger.debug("[MetaLearning] drift summary persist failed: %s", exc)
         policy_recommendation = _generate_policy_recommendation_and_write(
             drift_summary=drift_summary,
@@ -1274,7 +1313,12 @@ def run_pipeline(
                 )
 
                 _get_sl_bridge_pol().persist_policy_recommendation(policy_recommendation)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- policy recommendation persist: optional bridge call, non-fatal
                 logger.debug("[MetaLearning] policy recommendation persist failed: %s", exc)
         profile_proposal = _create_proposal_and_write(
             policy_recommendation=policy_recommendation,
@@ -1361,7 +1405,12 @@ def run_pipeline(
         # Query recent Execute_SSOT phase outcomes
         # This would need a query method in the bridge - for now track that we attempted
         bridge._query_execute_ssot_outcomes(now_utc)
-    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- Execute_SSOT query: optional bridge call, non-fatal
         # Query failed - continue without it
         import logging
 

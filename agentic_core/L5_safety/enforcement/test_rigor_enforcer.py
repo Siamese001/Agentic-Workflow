@@ -396,7 +396,7 @@ class TestRigorEnforcer:
 
         except (RuntimeError, OSError) as e:
             print(f"[TEST-RIGOR] Collection failed: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- test collection: non-fatal, caller handles None as no tests
 
     def _run_pytest_execute(self, test_path: str | None) -> tuple[int, int, int] | None:
         """Run pytest and return (passed, failed, skipped) counts."""
@@ -441,7 +441,7 @@ class TestRigorEnforcer:
 
         except (RuntimeError, OSError) as e:
             print(f"[TEST-RIGOR] Execution failed: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- test execution: non-fatal, caller handles None as failed run
 
     def generate_validation_report(self, result: ValidationResult) -> str:
         """Generate validation report for post-code validation."""

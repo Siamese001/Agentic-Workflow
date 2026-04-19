@@ -302,7 +302,7 @@ class FeedbackLoopOrchestrator:
             try:
                 content = await generator(context, temperature)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 logger.error(f"Generation failed on attempt {attempt}: {e}")
                 continue
             validation_result = await validator(content, context)

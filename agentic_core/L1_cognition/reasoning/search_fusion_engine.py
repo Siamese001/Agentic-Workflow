@@ -182,7 +182,7 @@ class SearchFusionEngine:
 
             return fused_response
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, ConnectionError, TimeoutError) as e:
             return SearchResponse(
                 query=query,
                 results=[],

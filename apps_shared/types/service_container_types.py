@@ -257,7 +257,7 @@ class ServiceContainer:
                 try:
                     return type(implementation)()
                 # guardian: allow-silent-swallow
-                except Exception:
+                except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError):
                     logger.warning(
                         f"Could not create transient instance of {interface.__name__}, returning singleton",
                     )

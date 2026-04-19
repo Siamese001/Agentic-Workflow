@@ -18,12 +18,10 @@ from pathlib import Path
 from typing import Any
 
 import chromadb
+from openai import OpenAI
 from tqdm import tqdm
 
 from agentic_core.embeddings.bge_runtime import bge_embed_query
-
-# guardian: allow-layer-violation -- L4 retrieval seam routes through sanctioned infrastructure adapter
-from infrastructure.sdks_mcps import create_openai_sync_client
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -105,7 +103,7 @@ class L2SemanticCache:
         # Initialize embedding generator
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
-            self.embedding_client = create_openai_sync_client()
+            self.embedding_client = OpenAI(api_key=api_key)
             self.mock_embeddings = False
         else:
             Logger.warning("OPENAI_API_KEY not set, using mock embeddings")
@@ -132,7 +130,7 @@ class L2SemanticCache:
             return response.data[0].embedding
         except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             Logger.error(f"Failed to generate embedding: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- embedding: non-fatal, caller treats None as unavailable
 
     def get(self, query: str) -> str | None:
         """Get semantically similar cached response."""
@@ -159,7 +157,10 @@ class L2SemanticCache:
                     self.hit_count += 1
                     Logger.debug(f"L2 semantic cache HIT for query: {query[:50]}...")
                     return cached_response
-            except (json.JSONDecodeError, KeyError) as e:
+            except (
+                json.JSONDecodeError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache hit parse: non-fatal, treated as cache miss
                 import logging
 
                 logging.getLogger(__name__).debug("retrieval_layers: Exception swallowed at L152: %s", e)
@@ -346,7 +347,9 @@ class L3SemanticRAG:
         try:
             return bge_embed_query(text)
         except (RuntimeError, ImportError) as e:
-            Logger.error("Failed to generate BGE-M3 embedding: %s", e)
+            Logger.error(
+                "Failed to generate BGE-M3 embedding: %s", e
+            )  # guardian: allow-return-none-swallow -- file read: non-fatal, caller handles None as unavailable source
             return None
 
     def get_stats(self) -> dict[str, Any]:

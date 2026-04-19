@@ -236,7 +236,10 @@ class ConfigFileCache:
                     return cached
             except FileNotFoundError:
                 raise
-            except (OSError, ValueError) as e:
+            except (
+                OSError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- config cache read: non-fatal, falls back to disk parse
                 logger.warning(f"[Config cache] Cache read failed: {e}")
 
         logger.debug(f"[Config cache] MISS for {config_path.name} — parsing from disk")
@@ -249,9 +252,15 @@ class ConfigFileCache:
                 content_hash = self._compute_file_hash(config_path)
                 cache_key = _config_identity_key(config_path, content_hash)
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            except FileNotFoundError:
+            except (
+                FileNotFoundError
+            ):  # guardian: allow-silent-swallow -- config cache write: file deleted after fetch, non-fatal
                 pass  # File may have been deleted after fetch
-            except (OSError, ValueError, TypeError) as e:
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow -- config cache write: non-fatal, result returned without caching
                 logger.warning(f"[Config cache] Cache write failed: {e}")
 
         return result

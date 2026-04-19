@@ -303,7 +303,7 @@ class ConfigurationLoader:
             logger.debug(f"Loaded configuration: {config_path}")
             return config_data
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             logger.error(f"Failed to load configuration {config_path}: {e}")
             return {}
 

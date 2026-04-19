@@ -364,7 +364,11 @@ class V15ExecutionGateway:
         try:
             healing_output = heal_fn(manifest)
             commit_valid = healing_output.get("errors", 0) == 0
-        except (ValueError, KeyError, AttributeError) as e:
+        except (
+            ValueError,
+            KeyError,
+            AttributeError,
+        ) as e:  # guardian: allow-log-and-swallow -- healing: non-fatal, commit_valid set to False and error recorded
             error = str(e)
             commit_valid = False
             Logger.error(f"[V15-GW] Healing failed with known error: {e}")
@@ -507,7 +511,7 @@ class V15ExecutionGateway:
         # guardian: allow-silent-swallow - acceptable exception handling
         try:
             guard.read_config(current_config)
-        except PolicyMutationIncident as pmi:
+        except PolicyMutationIncident as pmi:  # guardian: allow-log-and-swallow -- policy mutation: non-fatal, recorded and surfaced in validation result
             record = {
                 "type": "policy_mutation",
                 "trace_id": trace_id,

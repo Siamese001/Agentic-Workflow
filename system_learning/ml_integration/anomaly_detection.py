@@ -454,7 +454,12 @@ class MLAnomalyDetector:
                     metadata={"moving_avg": moving_avg, "moving_std": moving_std, "deviation": deviation},
                 )
 
-        except (AttributeError, TypeError, ValueError, ZeroDivisionError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            ZeroDivisionError,
+        ) as e:  # guardian: allow-log-and-swallow -- moving average detector: returns None on failure, caller falls back to next detector
             Logger.debug(f"[ML_DETECTOR] Moving average detection failed: {e}")
 
         return None
@@ -472,7 +477,11 @@ class MLAnomalyDetector:
                 if anomaly:
                     anomalies.append(anomaly)
 
-        except (AttributeError, KeyError, ValueError) as e:
+        except (
+            AttributeError,
+            KeyError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- ML anomaly detector: returns partial list on failure, non-fatal
             Logger.debug(f"[ML_DETECTOR] ML anomaly detection failed: {e}")
 
         return anomalies
@@ -529,7 +538,11 @@ class MLAnomalyDetector:
                     metadata={"anomaly_score": anomaly_score, "prediction": prediction},
                 )
 
-        except (AttributeError, KeyError, ValueError) as e:
+        except (
+            AttributeError,
+            KeyError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- isolation forest detector: returns None on failure, non-fatal
             Logger.debug(f"[ML_DETECTOR] Isolation Forest detection failed: {e}")
 
         return None
@@ -560,7 +573,12 @@ class MLAnomalyDetector:
                 self._prediction_history.append(prediction)
                 return prediction
 
-        except (AttributeError, TypeError, ValueError, IndexError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            IndexError,
+        ) as e:  # guardian: allow-log-and-swallow -- performance predictor: returns None on failure, non-fatal
             Logger.error(f"[ML_DETECTOR] Performance prediction failed: {e}")
 
         return None
@@ -612,7 +630,12 @@ class MLAnomalyDetector:
                 metadata={"alpha": alpha, "std_error": std_error},
             )
 
-        except (AttributeError, TypeError, ValueError, ZeroDivisionError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            ZeroDivisionError,
+        ) as e:  # guardian: allow-log-and-swallow -- exponential smoothing predictor: returns None on failure, non-fatal
             Logger.debug(f"[ML_DETECTOR] Exponential smoothing prediction failed: {e}")
 
         return None
@@ -647,7 +670,12 @@ class MLAnomalyDetector:
 
             self._last_training_time = time.time()
 
-        except (AttributeError, TypeError, ValueError, KeyError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            KeyError,
+        ) as e:  # guardian: allow-log-and-swallow -- model retraining: failure logged, model uses previous weights
             Logger.error(f"[ML_DETECTOR] Model retraining failed: {e}")
 
     def get_anomaly_statistics(self) -> dict[str, Any]:

@@ -596,6 +596,102 @@ class TestRepoStateChangeCheck:
         assert start_hash == end_hash, "Matching hashes should be detected as unchanged"
 
 
+class TestP0TwoPassRunnerIntegration:
+    """Tests for tools.generate.integration.p0_runner._run_p0_two_pass_runner."""
+
+    def test_missing_sqlite_fails_closed(self, tmp_path, capsys):
+        """Missing production sqlite must hard-fail instead of silently skipping."""
+        from tools.generate.integration.p0_runner import _run_p0_two_pass_runner
+
+        missing_sqlite = tmp_path / "missing.sqlite"
+
+        with pytest.raises(SystemExit) as exc_info:
+            _run_p0_two_pass_runner(missing_sqlite)
+        assert exc_info.value.code == 1
+
+        out = capsys.readouterr().out
+        assert "P0 runner blocked: no production SQLite snapshot found" in out
+
+    def test_missing_sqlite_prints_plan_path_when_available(self, tmp_path, capsys):
+        """When plan path exists, failure output should include remediation plan pointer."""
+        from tools.generate.integration.p0_runner import _run_p0_two_pass_runner
+
+        missing_sqlite = tmp_path / "missing.sqlite"
+        plan_path = tmp_path / "p0_plan.md"
+        plan_path.write_text("# plan\n", encoding="utf-8")
+
+        with pytest.raises(SystemExit) as exc_info:
+            _run_p0_two_pass_runner(missing_sqlite, plan_path=plan_path)
+        assert exc_info.value.code == 1
+
+        out = capsys.readouterr().out
+        assert "See remediation wave plan" in out
+        assert str(plan_path) in out
+
+    def test_runner_rc_zero_passes(self, tmp_path, monkeypatch, capsys):
+        """Runner rc=0 should pass and not raise."""
+        from tools.generate.integration.p0_runner import _run_p0_two_pass_runner
+
+        sqlite_path = tmp_path / "adg.sqlite"
+        sqlite_path.write_text("stub", encoding="utf-8")
+
+        import types
+
+        fake_module = types.ModuleType("ops_scripts.ci.adg_gates.p0_runner")
+
+        def _fake_run_p0_two_pass(**kwargs):
+            return 0
+
+        fake_module.run_p0_two_pass = _fake_run_p0_two_pass
+        monkeypatch.setitem(sys.modules, "ops_scripts.ci.adg_gates.p0_runner", fake_module)
+
+        _run_p0_two_pass_runner(sqlite_path)
+        out = capsys.readouterr().out
+        assert "P0 two-pass runner: PASSED" in out
+
+    def test_runner_rc_one_blocks(self, tmp_path, monkeypatch):
+        """Runner rc=1 must fail-closed with SystemExit(1)."""
+        from tools.generate.integration.p0_runner import _run_p0_two_pass_runner
+
+        sqlite_path = tmp_path / "adg.sqlite"
+        sqlite_path.write_text("stub", encoding="utf-8")
+
+        import types
+
+        fake_module = types.ModuleType("ops_scripts.ci.adg_gates.p0_runner")
+
+        def _fake_run_p0_two_pass(**kwargs):
+            return 1
+
+        fake_module.run_p0_two_pass = _fake_run_p0_two_pass
+        monkeypatch.setitem(sys.modules, "ops_scripts.ci.adg_gates.p0_runner", fake_module)
+
+        with pytest.raises(SystemExit) as exc_info:
+            _run_p0_two_pass_runner(sqlite_path)
+        assert exc_info.value.code == 1
+
+    def test_runner_unexpected_rc_blocks(self, tmp_path, monkeypatch):
+        """Any unexpected non-zero/non-one rc must fail-closed with SystemExit(1)."""
+        from tools.generate.integration.p0_runner import _run_p0_two_pass_runner
+
+        sqlite_path = tmp_path / "adg.sqlite"
+        sqlite_path.write_text("stub", encoding="utf-8")
+
+        import types
+
+        fake_module = types.ModuleType("ops_scripts.ci.adg_gates.p0_runner")
+
+        def _fake_run_p0_two_pass(**kwargs):
+            return 42
+
+        fake_module.run_p0_two_pass = _fake_run_p0_two_pass
+        monkeypatch.setitem(sys.modules, "ops_scripts.ci.adg_gates.p0_runner", fake_module)
+
+        with pytest.raises(SystemExit) as exc_info:
+            _run_p0_two_pass_runner(sqlite_path)
+        assert exc_info.value.code == 1
+
+
 # ---------------------------------------------------------------------------
 # Wave 1 completion tests: SC/AP infrastructure
 # ---------------------------------------------------------------------------

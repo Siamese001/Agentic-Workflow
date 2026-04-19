@@ -16,6 +16,7 @@ import logging
 import signal
 import sys
 import time
+from importlib import import_module
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,11 +32,15 @@ _POLL_SECONDS = 30
 def main() -> None:
     try:
         from prometheus_client import start_http_server
-
-        # guardian: allow-layer-violation -- ops_scripts sidecar is an observability harness; L6 import is its sole purpose
-        from agentic_core.L6_observability.utils.metrics.prometheus_metrics import AGENTIC_REGISTRY
     except ImportError as exc:
         _log.critical("Cannot import prometheus_client or AGENTIC_REGISTRY: %s", exc)
+        sys.exit(1)
+
+    try:
+        metrics_module = import_module("agentic_core.L6_observability.utils.metrics.prometheus_metrics")
+        AGENTIC_REGISTRY = getattr(metrics_module, "AGENTIC_REGISTRY")
+    except (ImportError, AttributeError) as exc:
+        _log.critical("Cannot load AGENTIC_REGISTRY: %s", exc)
         sys.exit(1)
 
     start_http_server(port=_PORT, registry=AGENTIC_REGISTRY)

@@ -22,7 +22,10 @@ import json
 import logging
 import os
 import re
+from typing import cast
 from typing import Any
+
+import google.generativeai as genai
 
 from agentic_core.evaluation.judges.types import JudgeProvider
 
@@ -70,7 +73,8 @@ class GeminiJudgeProvider:
 
     def __init__(self, gemini_client: Any = None, model: str | None = None) -> None:
         self._client = gemini_client
-        self._model = model or os.getenv("GEMINI_MODEL", self.DEFAULT_MODEL)
+        env_model = os.getenv("GEMINI_MODEL")
+        self._model = model or env_model or self.DEFAULT_MODEL
         self._configured = False
 
     @property
@@ -88,11 +92,12 @@ class GeminiJudgeProvider:
     def _get_client(self) -> Any:
         if self._client is not None:
             return self._client
-        # guardian: allow-layer-violation -- infrastructure SDK access required for LLM provider, no agentic_core alternative exists
-        from infrastructure.sdks_mcps import create_vertex_client
 
         try:
-            genai = create_vertex_client()
+            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            if not api_key:
+                raise ValueError("Gemini API key not configured")
+            genai.configure(api_key=api_key)
         except (ImportError, ValueError) as exc:
             raise RuntimeError(
                 "GeminiJudgeProvider: google-genai package not installed or GOOGLE_API_KEY missing.",
@@ -108,9 +113,9 @@ class GeminiJudgeProvider:
     @staticmethod
     def _parse(raw: str) -> dict[str, Any]:
         try:
-            return json.loads(raw)
+            return cast(dict[str, Any], json.loads(raw))
         except json.JSONDecodeError:
-            return json.loads(GeminiJudgeProvider._clean(raw))
+            return cast(dict[str, Any], json.loads(GeminiJudgeProvider._clean(raw)))
 
     async def judge(self, prompt: str, rubric_id: str) -> dict[str, Any]:
         client = self._get_client()
@@ -120,7 +125,7 @@ class GeminiJudgeProvider:
                 generation_config={"temperature": 0.0},
             )
             raw = response.text
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             _log.warning(
                 "[GeminiJudgeProvider] Gemini API error for %s: %s",
                 rubric_id,
@@ -240,9 +245,10 @@ def create_default_registry() -> JudgeProviderRegistry:
 
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         try:
-            from infrastructure.sdks_mcps import create_vertex_client
-
-            genai = create_vertex_client()
+            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            if not api_key:
+                raise ValueError("Gemini API key not configured")
+            genai.configure(api_key=api_key)
             default_model = os.getenv("GEMINI_MODEL", GeminiJudgeProvider.DEFAULT_MODEL)
             gemini_model = genai.GenerativeModel(default_model)
             gemini = GeminiJudgeProvider(gemini_client=gemini_model)

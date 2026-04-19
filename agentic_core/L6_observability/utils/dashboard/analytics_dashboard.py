@@ -129,7 +129,7 @@ class AnalyticsDashboard:
 
             self._analytics_engine = get_global_analytics()
 
-        except ImportError:
+        except ImportError:  # guardian: allow-log-and-swallow -- optional import: advanced analytics unavailable, dashboard degrades gracefully
             Logger.debug("[DASHBOARD] Advanced analytics not available")
 
         try:
@@ -138,7 +138,7 @@ class AnalyticsDashboard:
 
             self._observability_system = get_global_observability()
 
-        except ImportError:
+        except ImportError:  # guardian: allow-log-and-swallow -- optional import: enhanced observability unavailable, dashboard degrades gracefully
             Logger.debug("[DASHBOARD] Enhanced observability not available")
 
         try:
@@ -147,7 +147,7 @@ class AnalyticsDashboard:
 
             self._distributed_coordinator = get_global_coordinator()
 
-        except ImportError:
+        except ImportError:  # guardian: allow-log-and-swallow -- optional import: distributed tracing coordinator unavailable, dashboard degrades gracefully
             Logger.debug("[DASHBOARD] Distributed tracing coordinator not available")
 
     def _initialize_default_widgets(self) -> None:
@@ -347,7 +347,7 @@ class AnalyticsDashboard:
                     self._update_widget(widget)
                     widget._last_update = current_time
 
-            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
+            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:  # guardian: allow-log-and-swallow -- widget update: non-fatal, other widgets continue updating
                 Logger.error(f"[DASHBOARD] Failed to update widget {widget_id}: {e}")
 
     def _update_widget(self, widget: DashboardWidget) -> None:
@@ -460,7 +460,7 @@ class AnalyticsDashboard:
                 perf_collector = get_global_optimized_collector()
                 with self._lock:
                     self._real_time_data["performance_stats"] = perf_collector.get_performance_stats()
-            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
+            except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:  # guardian: allow-log-and-swallow -- real-time data update: non-fatal, stale data used until next refresh
                 import logging
 
                 logging.getLogger(__name__).debug("analytics_dashboard: Exception swallowed at L380: %s", e)
@@ -469,7 +469,7 @@ class AnalyticsDashboard:
             with self._lock:
                 self._real_time_data["timestamp"] = time.time()
 
-        except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:
+        except _DASHBOARD_NON_FATAL_EXCEPTIONS as e:  # guardian: allow-log-and-swallow -- real-time data update: non-fatal, stale data used until next refresh
             Logger.error(f"[DASHBOARD] Failed to update real-time data: {e}")
 
     def get_dashboard_data(self) -> dict[str, Any]:

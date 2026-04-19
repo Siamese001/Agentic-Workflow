@@ -100,9 +100,11 @@ class CodeFormatter:
             if result.returncode == 0 and "reformatted" in result.stderr:
                 changed = True
                 Logger.info(f"Black reformatted: {path}")
-        except FileNotFoundError:
+        except (
+            FileNotFoundError
+        ):  # guardian: allow-log-and-swallow -- Black optional: not installed, formatter degrades gracefully
             Logger.warning("Black not installed or not in PATH")
-        except subprocess.SubprocessError as e:
+        except subprocess.SubprocessError as e:  # guardian: allow-log-and-swallow -- Black subprocess: non-fatal, formatter continues without Black
             Logger.error(f"Black error: {e}")
 
         # Run Ruff
@@ -117,9 +119,11 @@ class CodeFormatter:
 
             if result.returncode == 0:
                 Logger.debug(f"Ruff check passed: {path}")
-        except FileNotFoundError:
+        except (
+            FileNotFoundError
+        ):  # guardian: allow-log-and-swallow -- Ruff optional: not installed, formatter degrades gracefully
             Logger.warning("Ruff not installed or not in PATH")
-        except subprocess.SubprocessError as e:
+        except subprocess.SubprocessError as e:  # guardian: allow-log-and-swallow -- Ruff subprocess: non-fatal, formatter continues without Ruff
             Logger.error(f"Ruff error: {e}")
 
         return FormatResult(

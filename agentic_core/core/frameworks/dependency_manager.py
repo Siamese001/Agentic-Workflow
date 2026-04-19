@@ -156,7 +156,7 @@ class DependencyManager:
                     if circuit_breaker["state"] == "half_open":
                         circuit_breaker["state"] = "closed"
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- dependency health check: broad catch required to classify any failure as UNAVAILABLE
                 dependency.status = DependencyStatus.UNAVAILABLE
                 dependency.error_message = str(e)
                 dependency.last_check = time.time()
@@ -187,7 +187,7 @@ class DependencyManager:
             instance = self._create_instance(name)
             self._instances[name] = instance
             return instance
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- instance creation: broad catch required to wrap any error into DependencyError, re-raises immediately
             self._record_failure(name)
             suggestion = self._get_suggestion(name)
             raise DependencyError(f"Failed to create instance of '{name}': {e}", name, suggestion)
@@ -322,7 +322,7 @@ class OptionalDependency:
         except (DependencyError, CircuitBreakerError):
             if self.fallback is not None:
                 return self.fallback
-            return None
+            return None  # guardian: allow-return-none-swallow -- context manager exit: non-fatal, caller handles None as unavailable dependency
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         return False  # Don't suppress exceptions

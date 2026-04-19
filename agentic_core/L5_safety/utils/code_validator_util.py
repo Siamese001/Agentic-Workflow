@@ -133,7 +133,10 @@ class CodeValidator:
                         auto_fixable=False,
                     ),
                 )
-        except (RuntimeError, OSError) as e:
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- file read: non-fatal, returns empty violation list for unreadable files
             Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations
@@ -182,7 +185,10 @@ class CodeValidator:
                             auto_fixable=False,
                         ),
                     )
-        except (RuntimeError, OSError) as e:
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- file read: non-fatal, returns empty violation list for unreadable files
             Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations
@@ -229,7 +235,10 @@ class CodeValidator:
                                 auto_fixable=False,
                             ),
                         )
-        except (RuntimeError, OSError) as e:
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- file read: non-fatal, returns empty violation list for unreadable files
             Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations
@@ -261,7 +270,10 @@ class CodeValidator:
                             auto_fixable=False,
                         ),
                     )
-        except (RuntimeError, OSError) as e:
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- file read: non-fatal, returns empty violation list for unreadable files
             Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations

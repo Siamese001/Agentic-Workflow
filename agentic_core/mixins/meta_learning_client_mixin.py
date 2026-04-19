@@ -390,7 +390,7 @@ class MetaLearningClientMixin:
 
         except (AttributeError, RuntimeError, ValueError) as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern recall failed: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- pattern recall: non-fatal, caller treats None as no prior pattern
 
     def ml_store_healing_pattern(
         self,
@@ -446,7 +446,7 @@ class MetaLearningClientMixin:
 
         except (AttributeError, RuntimeError, ValueError) as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern storage failed: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- pattern storage: non-fatal, operation logged and skipped
 
     # ==================== CACHE OPERATIONS ====================
 
@@ -484,7 +484,7 @@ class MetaLearningClientMixin:
             return MetaLearningClientMixin._ml_client.cache_get(key, domain)
         except (AttributeError, RuntimeError, OSError) as e:
             Logger.error(f"[{self.__class__.__name__}] Cache get failed: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- cache get: non-fatal, caller treats None as cache miss
 
     def ml_cache_set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """

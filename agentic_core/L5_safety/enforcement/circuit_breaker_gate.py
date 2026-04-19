@@ -292,18 +292,27 @@ class CircuitBreaker:
                 error = CircuitBreakerTimeoutError(self.name, self.config.execution_timeout_seconds)
                 try:
                     self.record_failure(error)
-                except (AttributeError, TypeError) as e:
+                except (
+                    AttributeError,
+                    TypeError,
+                ) as e:  # guardian: allow-log-and-swallow -- record failure: non-fatal, exception is re-raised below
                     self.logger.debug(f"Failed to record failure: {e}")
                 raise error
             if "exception" in result_container:
                 try:
                     self.record_failure(result_container["exception"])
-                except (AttributeError, TypeError) as e:
+                except (
+                    AttributeError,
+                    TypeError,
+                ) as e:  # guardian: allow-log-and-swallow -- record failure: non-fatal, result_container exception is re-raised below
                     self.logger.debug(f"Failed to record failure: {e}")
                 raise result_container["exception"]
             try:
                 self.record_success()
-            except (AttributeError, TypeError) as e:
+            except (
+                AttributeError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow -- record success: non-fatal, result is still returned to caller
                 self.logger.debug(f"Failed to record success: {e}")
             return result_container["result"]
 

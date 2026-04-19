@@ -487,7 +487,7 @@ class JudgeEvaluator:
                 response = await self.llm_client(prompt)
                 verdict = self._parse_llm_response(response, criterion)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 if self.enable_logging:
                     logger.error(
                         "llm_evaluation_failed",

@@ -608,7 +608,13 @@ class MetaLearningBus:
                         f"ADG::TraceFeatureRecord::{record.record_id[:12]}",
                     ),
                 )
-            except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            except (
+                AttributeError,
+                KeyError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- record promotion: fire-and-forget, records still returned
                 logger.warning(
                     "meta_learning_bus: record promotion failed",
                     extra={"trace_id": bundle.trace_id, "error": str(exc)},
@@ -845,7 +851,13 @@ class MetaLearningBus:
                         timestamp_utc=timestamp_utc,
                     ),
                 )
-            except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            except (
+                AttributeError,
+                KeyError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- reward synthesis: fire-and-forget, signals still returned
                 logger.warning(
                     "meta_learning_bus: reward signal synthesis failed",
                     extra={"trace_id": bundle.trace_id, "error": str(exc)},
@@ -872,7 +884,12 @@ class MetaLearningBus:
                     relation_type=relation_type,
                     to_entity=to_entity,
                 )
-            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- ADG relation emit: fire-and-forget, telemetry must not crash caller
                 logger.debug(
                     "meta_learning_bus: ADG relation emission failed",
                     extra={

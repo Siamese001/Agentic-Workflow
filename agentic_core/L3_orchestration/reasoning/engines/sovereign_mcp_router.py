@@ -301,7 +301,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
                                 return {"status": "l2_deepwiki_unavailable", "reason": str(wiki_e)}
                 except (ImportError, AttributeError) as e:
-                    Logger.debug(f"DeepWiki MCP unavailable: {e}")
+                    Logger.debug(
+                        f"DeepWiki MCP unavailable: {e}"
+                    )  # guardian: allow-log-and-swallow -- DeepWiki MCP: optional routing target, non-fatal
             elif key_id in {42, 49} and "ui" in violation_desc.lower():
                 try:
                     ValidationContext = self._get_ValidationContext()
@@ -319,7 +321,10 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             except (RuntimeError, ValueError, TypeError) as figma_e:
                                 Logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
                                 return {"status": "l2_figma_unavailable", "reason": str(figma_e)}
-                except (ImportError, AttributeError) as e:
+                except (
+                    ImportError,
+                    AttributeError,
+                ) as e:  # guardian: allow-log-and-swallow -- Figma MCP: optional routing target, non-fatal
                     Logger.debug(f"Figma MCP unavailable: {e}")
             if key_id in {40, 41, 42, 49}:
                 try:
@@ -331,7 +336,10 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         if cached:
                             cached_template: Any = json.loads(cached)
                             Logger.info(f"[L1 CACHE HIT] Using proven template for Key {key_id}")
-                    except (json.JSONDecodeError, AttributeError) as e:
+                    except (
+                        json.JSONDecodeError,
+                        AttributeError,
+                    ) as e:  # guardian: allow-log-and-swallow -- template cache retrieval: non-fatal, router falls back to default
                         Logger.debug(f"Cache retrieval failed: {e}")
                     max_thoughts = min(len(cached_template) if cached_template else 8, 15)
                     thoughts: list[str] = (
@@ -371,7 +379,10 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                     json.dumps(steps_out),
                                     ex=60 * 60 * 24 * 30,
                                 )
-                        except (AttributeError, TypeError) as e:
+                        except (
+                            AttributeError,
+                            TypeError,
+                        ) as e:  # guardian: allow-log-and-swallow -- template cache write: non-fatal, template used without caching
                             Logger.debug(f"Cache write failed: {e}")
                     return {
                         "status": "l1_sequential",

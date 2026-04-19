@@ -481,7 +481,7 @@ class MemoryManager:
                 self._check_memory_limits()
                 time.sleep(interval_seconds)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 logger.error(f"Memory monitoring error: {e}")
 
     def get_stats(self) -> dict[str, Any]:

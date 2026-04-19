@@ -157,7 +157,12 @@ class StateManager:
                 for key, entry_data in data.get("entries", {}).items():
                     try:
                         self._manifest[key] = StateEntry.from_dict(entry_data)
-                    except (AttributeError, KeyError, TypeError, ValueError) as e:
+                    except (
+                        AttributeError,
+                        KeyError,
+                        TypeError,
+                        ValueError,
+                    ) as e:  # guardian: allow-log-and-swallow -- manifest entry load: non-fatal, entry skipped
                         Logger.warning(f"Failed to load manifest entry {key}: {e}")
 
                 Logger.debug(f"Loaded {len(self._manifest)} manifest entries")
@@ -277,7 +282,7 @@ class StateManager:
                     return json.load(f)
             except (json.JSONDecodeError, OSError) as e:
                 Logger.error(f"Failed to read state {key}: {e}")
-                return None
+                return None  # guardian: allow-return-none-swallow -- state read: non-fatal, caller handles None as missing state
 
     def delete_state(self, key: str) -> bool:
         """Atomically delete state data and manifest entry.
@@ -356,7 +361,7 @@ class StateManager:
                             current_hash = hashlib.md5(f.read()).hexdigest()
                         if current_hash != entry.file_hash:
                             hash_mismatches.append(key)
-                    except OSError as e:
+                    except OSError as e:  # guardian: allow-log-and-swallow -- integrity check: non-fatal, file skipped from hash validation
                         import logging
 
                         logging.getLogger(__name__).debug(
@@ -493,7 +498,12 @@ class StateManager:
         for callback in self._registry_callbacks:
             try:
                 callback(key, action)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- registry callback: non-fatal, other callbacks continue
                 Logger.warning(f"Registry callback failed: {e}")
 
 

@@ -1043,7 +1043,10 @@ class LocationHealerAgent(SovereignBaseAgent):
                         backup_path = backup_dir / py_file.relative_to(self.project_root)
                         _wg.ensure_dir(backup_path.parent)
                         _wg.copy_file(py_file, backup_path)
-                    except (OSError, ValueError) as e:
+                    except (
+                        OSError,
+                        ValueError,
+                    ) as e:  # guardian: allow-log-and-swallow -- backup: best-effort, healing continues without backup
                         self.logger.debug(f"Backup failed for {py_file.name}: {e}")
                         # Best effort backup - continue anyway
 
@@ -1103,7 +1106,12 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"{import_result['import_post_fix_status']} ({remaining_count} remaining)",
             )
 
-        except (OSError, ImportError, AttributeError, ValueError) as e:
+        except (
+            OSError,
+            ImportError,
+            AttributeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- import fix: non-fatal, result records error status
             import_result["import_message"] = f"ERROR during import fix: {e}"
             import_result["import_post_fix_status"] = "ERROR"
             Logger.error(f"[LocationHealerAgent] Import fix failed: {e}")

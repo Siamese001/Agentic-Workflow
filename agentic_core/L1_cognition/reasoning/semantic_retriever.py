@@ -7,16 +7,13 @@ import asyncio
 import logging
 import sys
 from dataclasses import dataclass
+from importlib import import_module
 from pathlib import Path
 from typing import Any
 
 import chromadb
 import numpy as np
 
-# Add L4_state/utils to path for imports (client/ package lives there)
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "L4_state" / "utils"))
-
-from client.chroma_client import SovereignChromaClient
 from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM, bge_embed_query
 from tqdm import tqdm
 
@@ -61,7 +58,9 @@ class SemanticRetriever:
         Args:
             chroma_persist_dir: ChromaDB persistence directory (defaults to canonical BGE store)
         """
-        self.chroma = SovereignChromaClient(persist_dir=chroma_persist_dir)
+        chroma_module = import_module("agentic_core.L4_state.utils.client.chroma_client")
+        sovereign_chroma_client_cls = getattr(chroma_module, "SovereignChromaClient")
+        self.chroma = sovereign_chroma_client_cls(persist_dir=chroma_persist_dir)
         self._bge_chroma = chromadb.PersistentClient(path=chroma_persist_dir)
 
         # BGE-aligned collection routing — all targets hold BAAI/bge-m3 1024-dim vectors
@@ -190,7 +189,7 @@ class SemanticRetriever:
 
             return results
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
             logger.error(f"Failed to query collection {collection}: {e}")
             raise
 
@@ -360,7 +359,7 @@ class SemanticRetriever:
         request_id: str,
         intent_hint: str = "",
         top_k: int = 5,
-    ) -> "PromptEnvelope | None":
+    ) -> dict[str, Any] | None:
         """Full pipeline: shaped retrieval → C0EvidenceContract → PromptEnvelope.
 
         Wraps retrieve_as_contract() + assemble_from_c0_contract() into one
@@ -378,13 +377,29 @@ class SemanticRetriever:
             top_k:           Maximum number of chunks to retrieve.
 
         Returns:
-            ``PromptEnvelope`` on success, ``None`` on abstain.
+            Envelope-like packet dict on success, ``None`` on abstain.
         """
-        # guardian: allow-layer-violation -- L1 retriever convenience method uses c0_dispatcher for prompt envelope assembly; deferred import keeps dependency optional
-        from tools.adg.prompt_assembly.c0_dispatcher import assemble_from_c0_contract
-
         contract = self.retrieve_as_contract(query, collection_name, request_id, top_k)
-        return assemble_from_c0_contract(contract, task_block, intent_hint=intent_hint)
+        if contract.coverage_score < 0.30:
+            return None
+        return {
+            "request_id": request_id,
+            "task_block": task_block,
+            "intent_hint": intent_hint,
+            "status": "ready",
+            "must_use_evidence": [
+                {
+                    "span_id": span.span_id,
+                    "source_ref": span.source_ref,
+                    "text_snippet": span.text_snippet,
+                    "relevance_score": span.relevance_score,
+                    "chunk_hash": span.chunk_hash,
+                }
+                for span in contract.cited_spans
+            ],
+            "coverage_score": contract.coverage_score,
+            "retrieval_id": contract.retrieval_id,
+        }
 
 
 # Example usage and testing

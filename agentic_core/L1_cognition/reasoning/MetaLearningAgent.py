@@ -472,7 +472,7 @@ class MetaLearningAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
             return {
                 "status": "failed",
                 "details": f"MetaLearningAgent heal() failed: {str(e)}",

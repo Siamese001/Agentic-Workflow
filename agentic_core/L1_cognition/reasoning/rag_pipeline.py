@@ -246,7 +246,7 @@ class RAGPipeline:
 
             return response
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, ConnectionError, TimeoutError) as e:
             # Return error response
             total_time = (datetime.utcnow() - start_time).total_seconds() * 1000
 

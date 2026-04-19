@@ -228,7 +228,7 @@ class SafetyEvaluator:
 
             return evaluation
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, ConnectionError, TimeoutError) as e:
             # Return error evaluation
             return SafetyEvaluation(
                 evaluation_id=evaluation_id,

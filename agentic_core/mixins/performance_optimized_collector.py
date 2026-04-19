@@ -242,7 +242,7 @@ class PerformanceOptimizedCollector:
             try:
                 self._batch_queue.put_nowait(span)
                 self._performance_metrics.spans_processed += 1
-            except:
+            except Exception:  # guardian: allow-silent-swallow -- queue full: drop spans to prevent memory exhaustion, non-fatal
                 # Queue full, drop spans to prevent memory issues
                 Logger.warning("[PERF_COLLECTOR] Batch queue full, dropping spans")
                 break
@@ -318,7 +318,10 @@ class PerformanceOptimizedCollector:
                     spans = agent_instance.flush_traces()
                     if spans:
                         self.collect_spans_from_agent(agent_id, spans)
-            except (AttributeError, RuntimeError) as e:
+            except (
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-log-and-swallow -- collection loop: agent unavailable at flush time; non-fatal
                 Logger.error(f"[PERF_COLLECTOR] Failed to collect from {agent_id}: {e}")
 
     def _processing_loop(self) -> None:
@@ -373,7 +376,11 @@ class PerformanceOptimizedCollector:
             if len(self._span_buffer) >= self._config.batch_size:
                 self._compress_buffer()
 
-        except (OSError, ValueError, RuntimeError) as e:
+        except (
+            OSError,
+            ValueError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- batch processing: failure logged, loop continues
             Logger.error(f"[PERF_COLLECTOR] Batch processing error: {e}")
 
     def _compress_buffer(self) -> None:
@@ -406,7 +413,10 @@ class PerformanceOptimizedCollector:
                     f"[PERF_COLLECTOR] Compressed {len(spans_to_compress)} spans, ratio: {compression_ratio:.2f}"
                 )
 
-        except (OSError, RuntimeError) as e:
+        except (
+            OSError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- compression: non-fatal, buffer continues uncompressed
             Logger.error(f"[PERF_COLLECTOR] Compression error: {e}")
 
     def _flush_loop(self) -> None:
@@ -472,7 +482,10 @@ class PerformanceOptimizedCollector:
             if spans_flushed > 0:
                 Logger.info(f"[PERF_COLLECTOR] Flushed {spans_flushed} spans to Runtime ADG")
 
-        except (OSError, RuntimeError) as e:
+        except (
+            OSError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- flush loop: failure logged, loop continues on next interval
             Logger.error(f"[PERF_COLLECTOR] Flush error: {e}")
 
     def _create_runtime_adg_span(self, span: dict[str, Any]) -> None:
@@ -509,7 +522,10 @@ class PerformanceOptimizedCollector:
             with span_context:
                 pass  # Span is created and automatically closed
 
-        except (AttributeError, RuntimeError) as e:
+        except (
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- span creation: fire-and-forget observability, non-fatal
             Logger.debug(f"[PERF_COLLECTOR] Failed to create Runtime ADG span: {e}")
 
     def _update_performance_metrics(self) -> None:
@@ -534,7 +550,11 @@ class PerformanceOptimizedCollector:
             process = psutil.Process()
             self._performance_metrics.memory_usage_mb = process.memory_info().rss / 1024 / 1024
             self._performance_metrics.cpu_usage_percent = process.cpu_percent()
-        except (ImportError, AttributeError, RuntimeError) as e:
+        except (
+            OSError,
+            RuntimeError,
+            AttributeError,
+        ) as e:  # guardian: allow-log-and-swallow -- psutil metrics: non-fatal, counters degrade gracefully
             import logging
 
             logging.getLogger(__name__).debug(
@@ -578,7 +598,11 @@ class PerformanceOptimizedCollector:
                 # Low load - increase collection frequency
                 self._adaptive_interval = max(5.0, self._adaptive_interval * 0.8)
 
-        except (OSError, RuntimeError, AttributeError) as e:
+        except (
+            OSError,
+            RuntimeError,
+            AttributeError,
+        ) as e:  # guardian: allow-log-and-swallow -- adaptive scheduler: non-fatal, uses previous interval
             Logger.debug(f"[PERF_COLLECTOR] Adaptive scheduling error: {e}")
 
     def _update_flush_interval(self) -> None:

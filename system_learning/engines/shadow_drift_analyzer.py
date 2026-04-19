@@ -272,7 +272,9 @@ class ShadowDriftAnalyzer:
             # ADG data unavailable - continue with embedding-only analysis
             import logging
 
-            logging.getLogger(__name__).debug("shadow_drift_analyzer: violation count lookup failed: %s", exc)
+            logging.getLogger(__name__).debug(
+                "shadow_drift_analyzer: violation count lookup failed: %s", exc
+            )  # guardian: allow-log-and-swallow -- violation lookup: optional ADG query, non-fatal
 
         mean_cosine = statistics.mean(cosine_values)
         p95_cosine = self._compute_percentile(cosine_values, 95)
@@ -305,7 +307,12 @@ class ShadowDriftAnalyzer:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
             get_sl_memory_bridge().persist_drift_summary(summary)
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- drift summary persist: optional bridge call, non-fatal
             import logging
 
             logging.getLogger(__name__).debug(
@@ -365,13 +372,24 @@ class ShadowDriftAnalyzer:
                         proposal_only=True,
                     )
                     bus.enqueue(pkg)
-                except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+                except (
+                    AttributeError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ) as exc:  # guardian: allow-log-and-swallow -- drift alert enqueue: non-fatal, other alerts continue
                     import logging
 
                     logging.getLogger(__name__).debug(
                         "shadow_drift_analyzer: drift alert enqueue failed: %s", exc
                     )
-        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+        except (
+            AttributeError,
+            ImportError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- registry emission: optional observability call, non-fatal
             import logging
 
             logging.getLogger(__name__).debug("shadow_drift_analyzer: registry emission failed: %s", exc)
@@ -450,7 +468,12 @@ class ShadowDriftAnalyzer:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=now_utc,
             )
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- infrastructure drift persist: optional bridge call, non-fatal
             # Bridge unavailable - continue without it
             import logging
 

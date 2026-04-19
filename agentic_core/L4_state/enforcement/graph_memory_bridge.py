@@ -1,7 +1,11 @@
 # guardian: allow-silent-swallower -- Memory bridge operations logged, failures non-critical for system continuity
 from __future__ import annotations
 
-"\n[PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.\n\nProvides a programmatic interface to the Memory MCP server for:\n- Entity creation (agents, tasks, protocols)\n- Relation creation (MASTERED_TASK, INTERACTS_WITH, etc.)\n- Observation storage\n- Graph queries\n\nThis bridge uses the live Windsurf Memory MCP tools:\n- mcp11_create_entities: Create entities in the knowledge graph\n- mcp11_create_relations: Create relations between entities\n- mcp11_add_observations: Add observations to entities\n- mcp11_search_nodes: Search for nodes in the graph\n- mcp11_open_nodes: Open specific nodes by name\n- mcp11_read_graph: Read the full graph\n\nResilient Mode: If MCP is unavailable, operations are logged but don't crash.\n\n[SSOT] This is the canonical interface for Memory MCP operations.\n"
+"""[PHASE 21] Graph Memory Bridge - Interface to Memory MCP Knowledge Graph.
+
+Provides a programmatic interface to the Memory MCP server for entity/relation
+creation, observation storage, and graph queries.
+"""
 import hashlib
 import logging
 import threading
@@ -9,6 +13,9 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L4_state.enforcement.memory_db_canonical_policy import (
+    resolve_canonical_memory_db_path,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
@@ -89,6 +96,7 @@ class GraphMemoryBridge:
         """Initialize the Graph Memory Bridge with isolated state."""
         self._lock = threading.RLock()
         self._mcp_available = False
+        self._mcp_module: Any = None
         self._sqlite_store: Any = None
         self._create_entities_fn: Callable | None = None
         self._create_relations_fn: Callable | None = None
@@ -204,15 +212,17 @@ class GraphMemoryBridge:
             self._mcp_module = None
             # mcp11 unavailable (CLI context) — wire SQLite store as persistent fallback
             if _SQLITE_STORE_AVAILABLE:
-                import os
-                from pathlib import Path as _Path
-
-                _db_path = _Path(os.environ.get("MEMORY_DB", "artifacts/memory/knowledge_graph.sqlite"))
                 try:
+                    _db_path = resolve_canonical_memory_db_path()
                     self._sqlite_store = _SqliteMemoryStore(_db_path)
                     self._mcp_available = True
                     Logger.info("[GraphMemoryBridge] Initialized (SQLite fallback mode) db=%s", _db_path)
-                except (OSError, RuntimeError, TypeError, ValueError) as _e:
+                except (
+                    OSError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ) as _e:  # guardian: allow-log-and-swallow -- SQLite fallback init: non-fatal, bridge operates in degraded mode
                     self._sqlite_store = None
                     self._mcp_available = False
                     Logger.warning("[GraphMemoryBridge] SQLite store init failed: %s — no-op mode", _e)
@@ -331,7 +341,7 @@ class GraphMemoryBridge:
             with self._lock:
                 self.stats["mcp_errors"] += 1
             Logger.warning(f"[GraphMemoryBridge] {operation} failed: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- MCP operation: non-fatal, caller handles None as unavailable
 
     def create_agent_entity(
         self,

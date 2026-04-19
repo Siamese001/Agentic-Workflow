@@ -201,7 +201,7 @@ class ReActStrategy(BaseReasoningPattern):
                 result = await tool_def.function(action_input)
                 tools.update_tool_stats(action, success=True)
                 return str(result)
-            except Exception as exc:  # guardian: allow-silent-swallower
+            except (AttributeError, TypeError, ValueError, OSError, RuntimeError) as exc:
                 tools.update_tool_stats(action, success=False)
                 Logger.error("react_tool_error", extra={"action": action, "error": str(exc)})
                 return f"Error executing '{action}': {exc}"

@@ -626,13 +626,18 @@ def telemetry_traced(
                         args_count=len(args),
                         kwargs_count=len(kwargs),
                     )
-                except (AttributeError, RuntimeError, TypeError, ValueError) as end_exc:
+                except (
+                    AttributeError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ) as end_exc:  # guardian: allow-log-and-swallow -- telemetry end_operation on error path: fire-and-forget, original exception re-raised
                     logger.warning("Telemetry end_operation failed during error path: %s", end_exc)
 
                 if emit_on_error:
                     raise
 
-                return None
+                return None  # guardian: allow-return-none-swallow -- emit_on_error=False: caller suppressed error telemetry, non-fatal
 
             try:
                 emitter.end_operation(
@@ -642,7 +647,12 @@ def telemetry_traced(
                     args_count=len(args),
                     kwargs_count=len(kwargs),
                 )
-            except (AttributeError, RuntimeError, TypeError, ValueError) as end_exc:
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as end_exc:  # guardian: allow-log-and-swallow -- telemetry end_operation on success path: fire-and-forget, result still returned
                 logger.warning("Telemetry end_operation failed during success path: %s", end_exc)
 
             return result

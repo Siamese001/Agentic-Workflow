@@ -405,7 +405,7 @@ class ObservabilityToolExecutor:
             self._track_execution_complete(context, result)
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(context.execution_id, context.tool_id, str(e), start_time)
 
@@ -537,7 +537,7 @@ class ObservabilityToolExecutor:
                     total_metrics[key].append(value)
                 all_artifacts.extend(item_result.get("artifacts", []))
                 all_warnings.extend(item_result.get("warnings", []))
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 raise
                 all_warnings.append(f"Batch item failed: {str(e)}")
         final_metrics = {}

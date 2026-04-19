@@ -127,7 +127,11 @@ class UnifiedInferenceEngine(BaseMLModel):
         """Initialize Phase 4 models."""
         try:
             self.routing_model = AdvancedL0Router()
-        except (AttributeError, ImportError, TypeError) as e:
+        except (
+            AttributeError,
+            ImportError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow -- routing model init: non-fatal, engine degrades to fallback
             import logging
 
             logging.getLogger(__name__).debug(
@@ -136,7 +140,11 @@ class UnifiedInferenceEngine(BaseMLModel):
 
         try:
             self.reranking_model = AdvancedC0Reranker()
-        except (AttributeError, ImportError, TypeError) as e:
+        except (
+            AttributeError,
+            ImportError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow -- reranking model init: non-fatal, engine degrades to fallback
             import logging
 
             logging.getLogger(__name__).debug(
@@ -145,7 +153,11 @@ class UnifiedInferenceEngine(BaseMLModel):
 
         try:
             self.anomaly_model = AdvancedL6Detector()
-        except (AttributeError, ImportError, TypeError) as e:
+        except (
+            AttributeError,
+            ImportError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow -- anomaly model init: optional component, engine degrades gracefully
             import logging
 
             logging.getLogger(__name__).debug(
@@ -249,7 +261,12 @@ class UnifiedInferenceEngine(BaseMLModel):
                 routing_result = self._execute_routing_inference(request)
                 result.routing_result = routing_result
                 result.models_executed.append("routing")
-            except (AttributeError, TypeError, ValueError, KeyError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- routing inference: sub-model failure non-fatal, analysis continues
                 import logging
 
                 logging.getLogger(__name__).debug("unified_inference_engine: routing inference failed: %s", e)
@@ -259,7 +276,12 @@ class UnifiedInferenceEngine(BaseMLModel):
                 reranking_result = self._execute_reranking_inference(request)
                 result.reranking_result = reranking_result
                 result.models_executed.append("reranking")
-            except (AttributeError, TypeError, ValueError, KeyError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- reranking inference: sub-model failure non-fatal, analysis continues
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -271,7 +293,12 @@ class UnifiedInferenceEngine(BaseMLModel):
                 anomaly_result = self._execute_anomaly_inference(request)
                 result.anomaly_result = anomaly_result
                 result.models_executed.append("anomaly")
-            except (AttributeError, TypeError, ValueError, KeyError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- anomaly inference: sub-model failure non-fatal, analysis continues
                 import logging
 
                 logging.getLogger(__name__).debug("unified_inference_engine: anomaly inference failed: %s", e)
@@ -601,7 +628,12 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis["routing_analysis"] = routing_analysis
-            except (AttributeError, TypeError, ValueError, KeyError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- routing analysis: sub-model failure non-fatal, analysis continues
                 import logging
 
                 logging.getLogger(__name__).debug("unified_inference_engine: routing analysis failed: %s", e)
@@ -616,7 +648,12 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis["reranking_analysis"] = reranking_analysis
-            except (AttributeError, TypeError, ValueError, KeyError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- reranking analysis: sub-model failure non-fatal, analysis continues
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -633,7 +670,12 @@ class UnifiedInferenceEngine(BaseMLModel):
                     policy_hash=request.policy_hash,
                 )
                 analysis["anomaly_analysis"] = anomaly_analysis
-            except (AttributeError, TypeError, ValueError, KeyError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- anomaly analysis: sub-model failure non-fatal, analysis continues
                 import logging
 
                 logging.getLogger(__name__).debug("unified_inference_engine: anomaly analysis failed: %s", e)

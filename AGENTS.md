@@ -72,7 +72,6 @@ Keep these four layers separate at all times:
 | `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Use for ADRs, HITL ledgers, MCP registry, and plan/status data. |
 
 <!-- MCP-QUICK-REFERENCE:END -->
-
 ## Notion Workspace Map
 
 Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**

@@ -407,7 +407,7 @@ class ObservabilityToolInvoker:
             response.execution_time = time.time() - start_time
             return response
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             return self._create_error_response(request.invocation_id, request.tool_name, str(e), start_time)
 

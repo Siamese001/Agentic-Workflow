@@ -41,7 +41,9 @@ class HybridSearchEngine:
     def __del__(self) -> None:
         try:
             self.close_adg_connection()
-        except sqlite3.Error:
+        except (
+            sqlite3.Error
+        ):  # guardian: allow-silent-swallow -- __del__ cleanup: destructor context, cannot propagate errors
             pass
 
     @staticmethod
@@ -470,7 +472,7 @@ class HybridSearchEngine:
             try:
                 from sentence_transformers import SentenceTransformer  # type: ignore
             except ImportError:
-                return None
+                return None  # guardian: allow-return-none-swallow -- SentenceTransformer unavailable: optional dep, caller treats None as no embedding
             self._bge_model = SentenceTransformer("BAAI/bge-m3")
         encoded = self._bge_model.encode(query)
         if hasattr(encoded, "tolist"):

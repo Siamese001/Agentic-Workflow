@@ -320,7 +320,11 @@ class HandoffDispatcher:
                 handoff.task_id or handoff.handoff_key,
             )
 
-        except (RuntimeError, ValueError, ImportError) as _viz_exc:
+        except (
+            RuntimeError,
+            ValueError,
+            ImportError,
+        ) as _viz_exc:  # guardian: allow-log-and-swallow -- workflow visualization: non-fatal, execution continues
             logger.error("WORKFLOW_VISUALIZATION_ERROR: %s", _viz_exc)
             # Continue - visualization failure should not block execution
 
@@ -343,7 +347,11 @@ class HandoffDispatcher:
                         workflow_status=WorkflowStatus.COMPLETED,
                         trace_context=trace_context,
                     )
-                except (RuntimeError, ValueError, ImportError) as _viz_exc:
+                except (
+                    RuntimeError,
+                    ValueError,
+                    ImportError,
+                ) as _viz_exc:  # guardian: allow-log-and-swallow -- workflow completion telemetry: non-fatal, handoff result already returned
                     logger.error("WORKFLOW_COMPLETION_ERROR: %s", _viz_exc)
 
             logger.info(
@@ -370,7 +378,11 @@ class HandoffDispatcher:
                         workflow_status=WorkflowStatus.FAILED,
                         trace_context=trace_context,
                     )
-                except (RuntimeError, ValueError, ImportError) as _viz_exc:
+                except (
+                    RuntimeError,
+                    ValueError,
+                    ImportError,
+                ) as _viz_exc:  # guardian: allow-log-and-swallow -- workflow failure telemetry: non-fatal, exception re-raised below
                     logger.error("WORKFLOW_FAILURE_ERROR: %s", _viz_exc)
 
             logger.error("HANDOFF_FAILED dst=%s key=%s error=%s", handoff.dst, handoff.handoff_key[:12], exc)

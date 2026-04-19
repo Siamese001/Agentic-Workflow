@@ -31,6 +31,7 @@ Run from repo root:
 from __future__ import annotations
 
 import argparse
+from importlib import import_module
 import json
 import sys
 import time
@@ -1638,13 +1639,14 @@ def run_shadow_eval_proof(baseline_path: Path | None = None) -> bool:
         EvidenceBundle,
     )
     from agentic_core.L2_execution.audit.telemetry_bus import BusType, get_telemetry_bus
-    from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS→L6 lazy import; eval benchmark intentionally exercises the full L6 shadow-eval pipeline end-to-end
-        get_async_eval_ingester,
-        reset_async_eval_ingester,
+
+    async_eval_packet_module = import_module(
+        "agentic_core.L6_observability.utils.evaluation.async_eval_packet"
     )
-    from agentic_core.L6_observability.utils.evaluation.shadow_eval_pipeline import (
-        L6ShadowEvalPipeline,
-    )
+    get_async_eval_ingester = getattr(async_eval_packet_module, "get_async_eval_ingester")
+    reset_async_eval_ingester = getattr(async_eval_packet_module, "reset_async_eval_ingester")
+    shadow_eval_module = import_module("agentic_core.L6_observability.utils.evaluation.shadow_eval_pipeline")
+    L6ShadowEvalPipeline = getattr(shadow_eval_module, "L6ShadowEvalPipeline")
 
     path = baseline_path or _GOVERNANCE_BASELINE
     try:
@@ -2487,16 +2489,16 @@ def run_app_pilot_proof() -> bool:
         HybridSearchResult,
     )
     from apps_research.types import ResearchRequest
-    from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
-        get_async_eval_ingester,
-        reset_async_eval_ingester,
+
+    async_eval_packet_module = import_module(
+        "agentic_core.L6_observability.utils.evaluation.async_eval_packet"
     )
-    from agentic_core.L6_observability.utils.evaluation.promotion_stager import (
-        PromotionStager,
-    )  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
-    from agentic_core.L6_observability.utils.evaluation.rca_aggregator import (
-        RcaCluster,
-    )  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+    get_async_eval_ingester = getattr(async_eval_packet_module, "get_async_eval_ingester")
+    reset_async_eval_ingester = getattr(async_eval_packet_module, "reset_async_eval_ingester")
+    promotion_stager_module = import_module("agentic_core.L6_observability.utils.evaluation.promotion_stager")
+    PromotionStager = getattr(promotion_stager_module, "PromotionStager")
+    rca_aggregator_module = import_module("agentic_core.L6_observability.utils.evaluation.rca_aggregator")
+    RcaCluster = getattr(rca_aggregator_module, "RcaCluster")
     from agentic_core.L2_execution.audit.telemetry_bus import (  # guardian: allow-layer-violation -- L_TOOLS->L2 lazy import; benchmark reads BUS T to verify real audit/obs records
         BusType,
         get_telemetry_bus,

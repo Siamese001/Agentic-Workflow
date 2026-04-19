@@ -838,11 +838,11 @@ class ValidationGateExecutor:
         if not text1 or not text2:
             return 0.0
         try:
-            vectorizer = TfidfVectorizer()
-            tfidf_matrix = vectorizer.fit_transform([text1, text2])
+            vectorizer = TfidfVectorizer().fit([text1, text2])
+            tfidf_matrix = vectorizer.transform([text1, text2])
             similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
             return float(similarity)
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             logger.error(f"Error calculating similarity: {e}")
             return 0.0
 

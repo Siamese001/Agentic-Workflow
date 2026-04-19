@@ -152,7 +152,7 @@ class EnhancedObservability:
         try:
             psutil.cpu_percent(interval=None)
             psutil.Process().cpu_percent(interval=None)
-        except _OBS_PSUTIL_EXCEPTIONS:
+        except _OBS_PSUTIL_EXCEPTIONS:  # guardian: allow-log-and-swallow -- psutil warmup: optional, non-fatal if CPU percent unavailable at init
             pass
 
         # Initialize default health checks and alert thresholds
@@ -315,7 +315,9 @@ class EnhancedObservability:
             # Collect tracing-specific metrics
             self._collect_tracing_metrics(timestamp)
 
-        except _OBS_PSUTIL_EXCEPTIONS + _OBS_COLLECTION_EXCEPTIONS as e:
+        except (
+            _OBS_PSUTIL_EXCEPTIONS + _OBS_COLLECTION_EXCEPTIONS
+        ) as e:  # guardian: allow-log-and-swallow -- system metrics: non-fatal, stale metrics used until next collection
             Logger.error(f"[OBSERVABILITY] Failed to collect system metrics: {e}")
 
     def _collect_tracing_metrics(self, timestamp: float) -> None:
@@ -353,7 +355,7 @@ class EnhancedObservability:
                 for name, metric in tracing_metrics.items():
                     self._metrics_history[name].append(metric)
 
-        except _OBS_COLLECTION_EXCEPTIONS as e:
+        except _OBS_COLLECTION_EXCEPTIONS as e:  # guardian: allow-log-and-swallow -- tracing metrics: non-fatal, stale metrics used until next collection
             Logger.debug(f"[OBSERVABILITY] Failed to collect tracing metrics: {e}")
 
         try:
@@ -403,7 +405,7 @@ class EnhancedObservability:
                 for name, metric in optimized_metrics.items():
                     self._metrics_history[name].append(metric)
 
-        except _OBS_COLLECTION_EXCEPTIONS as e:
+        except _OBS_COLLECTION_EXCEPTIONS as e:  # guardian: allow-log-and-swallow -- collector metrics: non-fatal, stale metrics used until next collection
             Logger.debug(f"[OBSERVABILITY] Failed to collect optimized collector metrics: {e}")
 
     def _run_health_checks(self) -> None:
@@ -820,7 +822,9 @@ class EnhancedObservability:
                     del self._active_alerts[alert_id]
                     Logger.info(f"[OBSERVABILITY] RESOLVED ALERT: {alert.name}")
 
-        except _OBS_ALERT_EXCEPTIONS as e:
+        except (
+            _OBS_ALERT_EXCEPTIONS
+        ) as e:  # guardian: allow-log-and-swallow -- alert check: non-fatal, other alerts continue
             Logger.error(f"[OBSERVABILITY] Failed to check alert for {metric_name}: {e}")
 
     def _update_performance_trends(self) -> None:

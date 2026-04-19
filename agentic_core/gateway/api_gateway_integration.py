@@ -216,7 +216,7 @@ class KongGatewayClient(GatewayClient):
             if baggage_str:
                 try:
                     baggage = json.loads(baggage_str)
-                except json.JSONDecodeError as e:
+                except json.JSONDecodeError as e:  # guardian: allow-log-and-swallow -- baggage parsing: malformed JSON treated as no baggage, non-fatal
                     import logging
 
                     logging.getLogger(__name__).debug(
@@ -235,7 +235,7 @@ class KongGatewayClient(GatewayClient):
 
         except (KeyError, ValueError, TypeError) as e:
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
 
     def get_metrics(self) -> GatewayMetrics:
         """Get Kong gateway metrics."""
@@ -370,7 +370,7 @@ class EnvoyGatewayClient(GatewayClient):
             if baggage_str:
                 try:
                     baggage = json.loads(baggage_str)
-                except json.JSONDecodeError as e:
+                except json.JSONDecodeError as e:  # guardian: allow-log-and-swallow -- baggage parsing: malformed JSON treated as no baggage, non-fatal
                     import logging
 
                     logging.getLogger(__name__).debug(
@@ -389,7 +389,7 @@ class EnvoyGatewayClient(GatewayClient):
 
         except (KeyError, ValueError, TypeError) as e:
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
 
     def get_metrics(self) -> GatewayMetrics:
         """Get Envoy gateway metrics."""
@@ -470,7 +470,7 @@ class CustomGatewayClient(GatewayClient):
             if baggage_str:
                 try:
                     baggage = json.loads(baggage_str)
-                except json.JSONDecodeError as e:
+                except json.JSONDecodeError as e:  # guardian: allow-log-and-swallow -- baggage parsing: malformed JSON treated as no baggage, non-fatal
                     import logging
 
                     logging.getLogger(__name__).debug(
@@ -489,7 +489,7 @@ class CustomGatewayClient(GatewayClient):
 
         except (KeyError, ValueError, TypeError) as e:
             Logger.debug(f"[GATEWAY] Failed to extract tracing headers: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
 
     def get_metrics(self) -> GatewayMetrics:
         """Get custom gateway metrics."""
@@ -623,7 +623,7 @@ class APIGatewayIntegration:
 
         except (AttributeError, TypeError, ValueError) as e:
             Logger.error(f"[GATEWAY] Failed to extract tracing headers: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- tracing header extraction: non-fatal, caller treats None as no trace context
 
     def register_service(self, service_name: str, service_config: dict[str, Any]) -> bool:
         """

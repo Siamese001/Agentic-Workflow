@@ -142,7 +142,7 @@ class CanonicalStore:
 
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             log.error(f"Failed to load unit {unit_id}:v{version}: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- unit load: non-fatal, caller handles None as missing unit
 
     def get_latest_unit(self, unit_id: str) -> CanonicalRawUnit | None:
         """Get the latest version of a unit.
@@ -416,7 +416,12 @@ class CanonicalStore:
             try:
                 with open(index_file, encoding="utf-8") as f:
                     self._index_cache[unit_id] = json.load(f)
-            except (OSError, RuntimeError, TypeError, ValueError) as e:
+            except (
+                OSError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- index load: non-fatal, unit skipped from cache
                 log.warning(f"Failed to load index for {unit_id}: {e}")
 
         # Load lineage data
@@ -426,7 +431,12 @@ class CanonicalStore:
                 with open(lineage_file, encoding="utf-8") as f:
                     child_set = set(json.load(f))
                     self._lineage_cache[parent_id] = child_set
-            except (OSError, RuntimeError, TypeError, ValueError) as e:
+            except (
+                OSError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- lineage load: non-fatal, lineage entry skipped
                 log.warning(f"Failed to load lineage for {parent_id}: {e}")
 
     def _save_index(self, unit_id: str):

@@ -267,7 +267,12 @@ class L1MetaAdapter:
                     window_start=min(timestamps),
                     window_end=max(timestamps),
                 )
-            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- telemetry persist: fire-and-forget, events still returned
                 logger.debug("Failed to persist L1 telemetry events: %s", exc)
         return events
 
@@ -293,7 +298,7 @@ class L1MetaAdapter:
         try:
             floats = [float(v) for v in history]
         except (TypeError, ValueError):
-            return None
+            return None  # guardian: allow-return-none-swallow -- float parse: non-fatal, caller treats None as no drift signal
         mid = len(floats) // 2
         if mid == 0:
             return None
@@ -311,7 +316,12 @@ class L1MetaAdapter:
         )
         try:
             get_sl_memory_bridge().persist_l1_drift_signal(signal)
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- drift signal persist: fire-and-forget, signal still returned
             logger.debug("Failed to persist L1 drift signal: %s", exc)
         return signal
 

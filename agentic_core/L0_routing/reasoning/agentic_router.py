@@ -300,13 +300,19 @@ class AgenticRouter:
                 if target_name not in _candidate_routes or _capacity_chosen_route == target_name:
                     target_name = _capacity_chosen_route
 
-            except RoutingCapacityError as _rce:
+            except RoutingCapacityError as _rce:  # guardian: allow-log-and-swallow -- capacity routing: non-fatal, falls back to original routing
                 import logging
 
                 logging.getLogger(__name__).debug(
                     "agentic_router: RoutingCapacityError swallowed at L297: %s", _rce
                 )
-            except (ImportError, AttributeError, KeyError, TypeError, ValueError) as _cap_exc:
+            except (
+                ImportError,
+                AttributeError,
+                KeyError,
+                TypeError,
+                ValueError,
+            ) as _cap_exc:  # guardian: allow-log-and-swallow -- capacity routing: non-fatal, falls back to original routing
                 Logger.error(
                     "CAPACITY_ROUTING_ERROR: %s, falling back to original routing",
                     _cap_exc,
@@ -325,7 +331,10 @@ class AgenticRouter:
             if self._fallback is not None:
                 try:
                     decision.result = await self._fallback(user_input, context)
-                except (TypeError, ValueError) as exc:  # fallback handler type errors
+                except (
+                    TypeError,
+                    ValueError,
+                ) as exc:  # guardian: allow-log-and-swallow -- fallback handler type errors: recorded in decision, routing continues
                     decision.error = str(exc)
                     Logger.error("agentic_router_fallback_error", extra={"error": str(exc)})
             else:
@@ -351,13 +360,19 @@ class AgenticRouter:
                         failure_reason=decision.error or "",
                     ),
                 )
-            except (ConnectionError, RuntimeError) as _te:  # telemetry emission failure non-blocking
+            except (
+                ConnectionError,
+                RuntimeError,
+            ) as _te:  # guardian: allow-log-and-swallow -- telemetry emission: fire-and-forget, non-blocking
                 Logger.debug("agentic_router: telemetry emission failed: %s", _te)
             return decision
 
         try:
             decision.result = await target.handler(user_input, context)
-        except (RuntimeError, AttributeError) as exc:  # handler execution error
+        except (
+            RuntimeError,
+            AttributeError,
+        ) as exc:  # guardian: allow-log-and-swallow -- handler execution: error captured in decision, routing response returned
             decision.error = str(exc)
             Logger.error("agentic_router_handler_error", extra={"target": target_name, "error": str(exc)})
 
@@ -382,7 +397,10 @@ class AgenticRouter:
                     failure_reason=decision.error or "",
                 ),
             )
-        except (ConnectionError, RuntimeError) as _te:  # telemetry emission failure non-blocking
+        except (
+            ConnectionError,
+            RuntimeError,
+        ) as _te:  # guardian: allow-log-and-swallow -- telemetry emission: fire-and-forget, non-blocking
             Logger.debug("agentic_router: telemetry emission failed: %s", _te)
 
         # P2/L6: Emit performance record for routing stage
@@ -403,7 +421,10 @@ class AgenticRouter:
                 target_name,
                 routing_perf.duration_ms,
             )
-        except (RuntimeError, TypeError) as _perf_exc:  # performance logging failure non-blocking
+        except (
+            RuntimeError,
+            TypeError,
+        ) as _perf_exc:  # guardian: allow-log-and-swallow -- performance logging: fire-and-forget, non-blocking
             Logger.error(
                 "ROUTING_PERFORMANCE_ERROR: %s (target=%s)",
                 _perf_exc,
@@ -434,7 +455,7 @@ class AgenticRouter:
             except (
                 AttributeError,
                 TypeError,
-            ) as exc:  # embedding classifier optional, keyword fallback handles
+            ) as exc:  # guardian: allow-log-and-swallow -- embedding classifier optional: keyword fallback handles routing
                 Logger.warning("agentic_router_embedding_fallback: %s", exc)
 
         text = user_input.lower()

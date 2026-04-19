@@ -297,7 +297,7 @@ def build_pipeline_deps(
         from system_learning.confidence.engine import HealingConfidenceScorer
 
         confidence_scorer = HealingConfidenceScorer()
-    except ImportError:
+    except ImportError:  # guardian: allow-log-and-swallow -- optional component: HealingConfidenceScorer unavailable, pipeline degrades gracefully
         logger.debug("HealingConfidenceScorer not available; skipping.")
 
     failure_fingerprinter = None
@@ -305,7 +305,7 @@ def build_pipeline_deps(
         from system_learning.fingerprinting.engine import FailureFingerprinter
 
         failure_fingerprinter = FailureFingerprinter()
-    except ImportError:
+    except ImportError:  # guardian: allow-log-and-swallow -- optional component: FailureFingerprinter unavailable, pipeline degrades gracefully
         logger.debug("FailureFingerprinter not available; skipping.")
 
     risk_correlator = None
@@ -313,7 +313,7 @@ def build_pipeline_deps(
         from system_learning.correlation.engine import RiskCorrelator
 
         risk_correlator = RiskCorrelator()
-    except ImportError:
+    except ImportError:  # guardian: allow-log-and-swallow -- optional component: RiskCorrelator unavailable, pipeline degrades gracefully
         logger.debug("RiskCorrelator not available; skipping.")
 
     # GAP-013: Wire Stage 7 arbitration surfaces
@@ -330,7 +330,10 @@ def build_pipeline_deps(
             thresholds={"min_score": 0.0},
             allowed_kinds={"generic"},
         )
-    except (ImportError, TypeError):
+    except (
+        ImportError,
+        TypeError,
+    ):  # guardian: allow-log-and-swallow -- optional component: ArbitrationEngine/Policy unavailable, pipeline degrades gracefully
         logger.debug("ArbitrationEngine/Policy not available; skipping.")
 
     # GAP-013: Wire DPO/RLHF optimizer
@@ -339,7 +342,7 @@ def build_pipeline_deps(
         from system_learning.engines.rlhf_optimizer import DefaultDeterministicRLHFOptimizer
 
         rlhf_optimizer = DefaultDeterministicRLHFOptimizer()
-    except ImportError:
+    except ImportError:  # guardian: allow-log-and-swallow -- optional component: RLHFOptimizer unavailable, pipeline degrades gracefully
         logger.debug("RLHFOptimizer not available; skipping.")
 
     # GAP-014: Wire freeze reader from runtime_state.json
@@ -348,7 +351,7 @@ def build_pipeline_deps(
         from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         freeze_reader = JsonFileBackedFreezeReader(runtime_state_path)
-    except ImportError:
+    except ImportError:  # guardian: allow-log-and-swallow -- optional component: FreezeStateReader unavailable, pipeline degrades gracefully
         logger.debug("FreezeStateReader not available; skipping.")
 
     cross_repo_learning_context = load_cross_repo_learning_context(repo_root)
@@ -360,7 +363,7 @@ def build_pipeline_deps(
 
         otel_telemetry_store = OTelTelemetryStoreAdapter()
         logger.debug("OTel telemetry store adapter registered")
-    except ImportError:
+    except ImportError:  # guardian: allow-log-and-swallow -- optional component: OTel telemetry store unavailable, pipeline degrades gracefully
         logger.debug("OTel telemetry store adapter not available; skipping.")
 
     return PipelineDependencies(

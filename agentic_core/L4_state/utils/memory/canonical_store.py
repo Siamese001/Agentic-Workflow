@@ -216,9 +216,14 @@ class PostgresBackend(StorageBackend):
             conn.close()
             Logger.info("Initialized PostgreSQL canonical store")
 
-        except ImportError:
+        except ImportError:  # guardian: allow-log-and-swallow -- psycopg2 optional: Postgres backend disabled, other backends continue
             Logger.warning("psycopg2 not available, Postgres backend disabled")
-        except (psycopg2.Error, OSError, ValueError, RuntimeError) as e:
+        except (
+            psycopg2.Error,
+            OSError,
+            ValueError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- Postgres init: non-fatal, store operates without Postgres backend
             Logger.error(f"Failed to init PostgreSQL backend: {e}")
 
     def store(self, content: bytes, metadata: dict[str, Any]) -> StoredArtifact:
@@ -286,10 +291,10 @@ class PostgresBackend(StorageBackend):
 
         except ImportError as e:
             Logger.error(f"Failed to retrieve from Postgres: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- Postgres retrieve: non-fatal, treated as cache miss
         except (psycopg2.Error, OSError, ValueError, RuntimeError) as e:
             Logger.error(f"Failed to retrieve from Postgres: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- Postgres retrieve: non-fatal, treated as cache miss
 
     def exists(self, artifact_id: str) -> bool:
         try:
@@ -417,10 +422,14 @@ class S3Backend(StorageBackend):
             if code in {"404", "NoSuchKey"}:
                 return None
             Logger.error(f"Failed to retrieve from S3: {e}")
-            return None
+            return (
+                None  # guardian: allow-return-none-swallow -- S3 retrieve: non-fatal, treated as cache miss
+            )
         except (ImportError, OSError, KeyError, TypeError, ValueError) as e:
             Logger.error(f"Failed to retrieve from S3: {e}")
-            return None
+            return (
+                None  # guardian: allow-return-none-swallow -- S3 retrieve: non-fatal, treated as cache miss
+            )
 
     def exists(self, artifact_id: str) -> bool:
         key = f"artifacts/{artifact_id[:2]}/{artifact_id}"

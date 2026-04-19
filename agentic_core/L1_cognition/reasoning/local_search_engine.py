@@ -182,7 +182,7 @@ class LocalSearchEngine:
 
             return response
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
             return SearchResponse(
                 query=query,
                 results=[],

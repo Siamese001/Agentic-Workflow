@@ -47,6 +47,7 @@ coverage_dirs:
 archive_dirs:
   - "archives"
   - "archive"
+  - "tools/archive"
   - "artifacts"
   - ".sovereign_healing_backup"
   - ".healing_backups"

@@ -197,7 +197,7 @@ class FeatureExtractor:
                 row = cursor.fetchone()
                 if row and row[0] and row[0] not in ("", "tests", "unknown"):
                     return row[0]
-            except _PHASE3_NON_FATAL_EXCEPTIONS:
+            except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- ADG query: SQLite/IO failure gracefully falls back to path inference
                 pass
 
         # 2. Fallback: infer from path string
@@ -283,7 +283,7 @@ class FeatureExtractor:
             count = cursor.fetchone()[0]
             return count > 0
 
-        except _PHASE3_NON_FATAL_EXCEPTIONS:
+        except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- has_test_coverage query: SQLite/IO failure returns False (safe default)
             pass
 
         return False
@@ -323,7 +323,7 @@ class FeatureExtractor:
 
                 return complexity
 
-        except _PHASE3_NON_FATAL_EXCEPTIONS:
+        except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- import complexity query: SQLite/IO failure returns 0 (safe default)
             pass
 
         return 0
@@ -378,7 +378,7 @@ class FeatureExtractor:
 
             return cursor.fetchone()[0]
 
-        except _PHASE3_NON_FATAL_EXCEPTIONS:
+        except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- business criticality query: SQLite/IO failure returns 0 (safe default)
             pass
 
         return 0
@@ -399,7 +399,7 @@ class FeatureExtractor:
 
             return cursor.fetchone()[0]
 
-        except _PHASE3_NON_FATAL_EXCEPTIONS:
+        except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- similar violations count: SQLite/IO failure returns 0 (safe default)
             pass
 
         return 0

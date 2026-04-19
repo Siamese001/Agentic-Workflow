@@ -142,7 +142,12 @@ class L5Streamer:
                     self.stream_queue.task_done()
             except asyncio.CancelledError:
                 break
-            except (OSError, RuntimeError, ValueError, TypeError) as exc:
+            except (
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as exc:  # guardian: allow-log-and-swallow -- stream worker: non-fatal, worker loop continues
                 LOGGER.exception("reasoning_streamer worker failure: %s", exc)
 
     def _run_websocket_server(self):
@@ -163,7 +168,13 @@ class L5Streamer:
                     ),
                 )
                 await websocket.wait_closed()
-            except (OSError, ConnectionError, RuntimeError, ValueError, TypeError) as exc:
+            except (
+                OSError,
+                ConnectionError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as exc:  # guardian: allow-log-and-swallow -- websocket client: non-fatal, client removed from active set
                 LOGGER.warning("reasoning_streamer websocket_client_error: %s", exc)
             finally:
                 self._websocket_clients.discard(websocket)
@@ -177,7 +188,13 @@ class L5Streamer:
                 self._websocket_ready.set()
                 LOGGER.info("WebSocket server started at ws://127.0.0.1:8765")
                 await self._websocket_stop
-            except (OSError, ConnectionError, RuntimeError, ValueError, TypeError) as exc:
+            except (
+                OSError,
+                ConnectionError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as exc:  # guardian: allow-log-and-swallow -- websocket server: non-fatal, server teardown proceeds in finally
                 LOGGER.exception("reasoning_streamer websocket_server_error: %s", exc)
             finally:
                 if self._websocket_server is not None:
@@ -218,7 +235,7 @@ class L5Streamer:
         }
         try:
             self.stream_queue.put_nowait(payload)
-        except asyncio.QueueFull:
+        except asyncio.QueueFull:  # guardian: allow-log-and-swallow -- stream queue full: drop payload to prevent memory exhaustion, non-fatal
             LOGGER.warning("reasoning_streamer queue full, dropping payload level=%s agent=%s", level, agent)
 
     async def broadcast_reasoning(self, response_text: str, agent: str = None) -> Any:
@@ -275,7 +292,7 @@ class L5Streamer:
             self.stream_task.cancel()
             try:
                 await self.stream_task
-            except asyncio.CancelledError as e:
+            except asyncio.CancelledError as e:  # guardian: allow-log-and-swallow -- stream task cancellation: expected during shutdown, non-fatal
                 import logging
 
                 logging.getLogger(__name__).debug("reasoning_streamer: Exception swallowed at L238: %s", e)
@@ -286,7 +303,7 @@ class L5Streamer:
                     asyncio.run_coroutine_threadsafe(client.close(), self._websocket_loop).result(
                         timeout=DEFAULT_TIMEOUT,
                     )
-            except (
+            except (  # guardian: allow-log-and-swallow -- broadcast send: non-fatal, client removed on failure
                 OSError,
                 ConnectionError,
                 RuntimeError,

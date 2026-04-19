@@ -304,7 +304,12 @@ class ToolCallStore:
                 )
                 if artifact.payload["call"]["tool_id"] == tool_id:
                     return artifact.payload
-        except (ValueError, TypeError, FileNotFoundError, KeyError) as exc:
+        except (
+            ValueError,
+            TypeError,
+            FileNotFoundError,
+            KeyError,
+        ) as exc:  # guardian: allow-log-and-swallow -- best-effort lookup: non-fatal, returns None to caller
             Logger.debug(
                 "ToolCallStore.get_call best-effort lookup failed for tool_id=%s call_id=%s: %s",
                 tool_id,
@@ -331,7 +336,13 @@ class ToolCallStore:
             )
             if result.returncode == 0:
                 return result.stdout.strip()
-        except (ValueError, TypeError, FileNotFoundError, OSError, subprocess.TimeoutExpired) as exc:
+        except (
+            ValueError,
+            TypeError,
+            FileNotFoundError,
+            OSError,
+            subprocess.TimeoutExpired,
+        ) as exc:  # guardian: allow-log-and-swallow -- git commit lookup: non-fatal, falls back to 'unknown'
             Logger.debug("ToolCallStore._get_code_commit falling back to 'unknown': %s", exc)
         return "unknown"
 

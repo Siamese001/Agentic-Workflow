@@ -96,7 +96,7 @@ class ContextAssembler:
 
             return context
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
             # Return empty context on error
             return RAGContext(
                 query=query,

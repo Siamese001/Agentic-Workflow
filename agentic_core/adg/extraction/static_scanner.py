@@ -311,6 +311,11 @@ _COVERAGE_ONLY_SCAN_ROOTS: tuple[str, ...] = (TESTS_DIR,)
 
 _SCAN_ROOTS: tuple[str, ...] = _STRUCTURAL_SCAN_ROOTS + _NON_STRUCTURAL_SCAN_ROOTS
 
+# Hard-exclude these path prefixes from all scans regardless of scan root.
+# These are full relative-path prefixes (forward-slash), matched against normalized paths.
+# Add here when a subtree is archived/inert and should never appear in violation reports.
+_EXCLUDED_PATH_PREFIXES: tuple[str, ...] = ("tools/archive/",)
+
 _RUNTIME_ONLY_SCAN_SUBDIRS: frozenset[str] = frozenset(
     {
         "artifacts",
@@ -550,6 +555,9 @@ def _get_selective_visitors(file_path: str) -> list[str]:
 def _is_scannable_static_path(rel_path: str, include_tests: bool, scan_mode: str = "full") -> bool:
     """Check if path is scannable based on scan roots and mode."""
     normalized = rel_path.replace("\\", "/")
+    # Hard-exclude archived subtrees before any root or mode check
+    if any(normalized.startswith(prefix) for prefix in _EXCLUDED_PATH_PREFIXES):
+        return False
     root_matched = any(
         normalized == root or normalized.startswith(f"{root}/")
         for root in _selected_scan_roots(include_tests, scan_mode)

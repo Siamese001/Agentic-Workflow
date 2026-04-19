@@ -236,7 +236,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         visitor.visit(tree)
         issues.extend(visitor.issues)
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (SyntaxError, ValueError, TypeError, AttributeError, OSError, RuntimeError) as e:
         import logging
 
         logging.getLogger(__name__).debug(

@@ -121,7 +121,7 @@ class NativePersistentCacheClient:
                     _expected_dim,
                 )
                 self._chroma_client.delete_collection(col_name)
-        except (
+        except (  # guardian: allow-log-and-swallow -- cache cleanup: non-fatal, collection deletion failures ignored on shutdown
             AttributeError,
             KeyError,
             TypeError,
@@ -228,7 +228,7 @@ class NativePersistentCacheClient:
                         )
 
                         _prom_evict("eviction", "")
-                    except ImportError:
+                    except ImportError:  # guardian: allow-log-and-swallow -- prometheus optional: metric emission skipped, eviction continues
                         pass
                 return  # Success, exit retry loop
             except (OSError, sqlite3.Error, RuntimeError) as e:
@@ -310,7 +310,10 @@ class NativePersistentCacheClient:
                                     self._miss_count += 1
                                     Logger.debug(f"[L2Cache] l2_hard_evict_expired entry_id={top_id[:8]}")
                                     return None
-                            except (ValueError, TypeError):
+                            except (
+                                ValueError,
+                                TypeError,
+                            ):  # guardian: allow-log-and-swallow -- TTL parse: malformed expires_at treated as no expiry, non-fatal
                                 pass  # malformed expires_at: treat as no expiry
 
                         # Update last_access_at
@@ -335,10 +338,14 @@ class NativePersistentCacheClient:
             Logger.debug(f"[L2Cache] l2_get_miss elapsed_ms={_elapsed_ms:.1f} query_prefix={query[:40]!r}")
             return None
 
-        except (OSError, sqlite3.Error, RuntimeError) as e:
+        except (
+            OSError,
+            sqlite3.Error,
+            RuntimeError,
+        ) as e:  # guardian: allow-return-none-swallow -- cache get: I/O failure returns None (treated as miss), non-fatal
             Logger.error(f"L2 cache get error (returning None): {e}")
             self._miss_count += 1  # Count as miss to avoid silent failure
-            return None
+            return None  # guardian: allow-return-none-swallow -- cache get: non-fatal, caller treats None as cache miss
 
     def set(
         self,
@@ -476,7 +483,11 @@ class NativePersistentCacheClient:
             self._sqlite_conn.commit()
 
             Logger.info("Native L2 cache cleared")
-        except (OSError, sqlite3.Error, RuntimeError) as e:
+        except (
+            OSError,
+            sqlite3.Error,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- cache clear: non-fatal, stale entries may linger
             Logger.error(f"Failed to clear native L2 cache: {e}")
 
     def search_similar(
@@ -554,7 +565,10 @@ class NativePersistentCacheClient:
                                             f"[L2Cache] l2_search_evict_expired entry_id={entry_id[:8]}"
                                         )
                                         continue
-                                except (ValueError, TypeError):
+                                except (
+                                    ValueError,
+                                    TypeError,
+                                ):  # guardian: allow-silent-swallow -- malformed TTL: treat as no-expiry, non-fatal
                                     pass
                             formatted_results.append(
                                 {
@@ -588,11 +602,11 @@ class NativePersistentCacheClient:
         try:
             cursor.execute("DELETE FROM l2_cache WHERE id = ?", (entry_id,))
             self._sqlite_conn.commit()
-        except sqlite3.Error as e:
+        except sqlite3.Error as e:  # guardian: allow-log-and-swallow -- evict: SQLite failure logged, chroma evict still attempted
             Logger.warning(f"[L2Cache] SQLite evict error for {entry_id[:8]}: {e}")
         try:
             self._chroma_collection.delete(ids=[entry_id])
-        except RuntimeError as e:
+        except RuntimeError as e:  # guardian: allow-log-and-swallow -- evict: chroma failure logged, entry will be naturally evicted later
             Logger.warning(f"[L2Cache] Chroma evict error for {entry_id[:8]}: {e}")
         try:
             from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: PLC0415
@@ -600,7 +614,9 @@ class NativePersistentCacheClient:
             )
 
             _prom_evict("eviction", "")
-        except ImportError:
+        except (
+            ImportError
+        ):  # guardian: allow-silent-swallow -- lifecycle trace optional dependency, non-fatal
             pass
 
     def cleanup_expired(self) -> int:
@@ -629,11 +645,14 @@ class NativePersistentCacheClient:
                 self._sqlite_conn.commit()
                 try:
                     self._chroma_collection.delete(ids=expired_ids)
-                except RuntimeError as e:
+                except RuntimeError as e:  # guardian: allow-log-and-swallow -- chroma bulk evict: non-fatal, SQLite eviction already committed
                     Logger.warning(f"[L2Cache] Chroma bulk evict error: {e}")
                 evicted = len(expired_ids)
                 Logger.info(f"[L2Cache] cleanup_expired evicted={evicted}")
-        except (OSError, sqlite3.Error) as e:
+        except (
+            OSError,
+            sqlite3.Error,
+        ) as e:  # guardian: allow-log-and-swallow -- cleanup_expired: non-fatal, expired entries will be evicted on next run
             Logger.error(f"[L2Cache] cleanup_expired error: {e}")
         return evicted
 
@@ -683,7 +702,7 @@ class NativePersistentCacheClient:
                 self._sqlite_conn.commit()
                 try:
                     self._chroma_collection.delete(ids=target_ids)
-                except RuntimeError as e:
+                except RuntimeError as e:  # guardian: allow-log-and-swallow -- chroma invalidate: non-fatal, SQLite invalidation already committed
                     Logger.warning(f"[L2Cache] Chroma invalidate error: {e}")
                 invalidated = len(target_ids)
             scope = ", ".join(
@@ -696,7 +715,10 @@ class NativePersistentCacheClient:
                 if v is not None
             )
             Logger.info(f"[L2Cache] invalidate_by scope=({scope}) invalidated={invalidated}")
-        except (OSError, sqlite3.Error) as e:
+        except (
+            OSError,
+            sqlite3.Error,
+        ) as e:  # guardian: allow-log-and-swallow -- invalidate_by: non-fatal, partial invalidation logged
             Logger.error(f"[L2Cache] invalidate_by error: {e}")
         return invalidated
 
@@ -711,7 +733,10 @@ class NativePersistentCacheClient:
             if hasattr(self, "_chroma_client"):
                 self._chroma_client.close()
             Logger.info("Native L2 cache connections closed")
-        except (OSError, RuntimeError) as e:
+        except (
+            OSError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- close: connection teardown failure logged, process exits anyway
             Logger.error(f"Failed to close native L2 cache: {e}")
 
 

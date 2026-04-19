@@ -257,7 +257,7 @@ class PhaseLockStore:
             return lock_data
         except (OSError, ValueError, json.JSONDecodeError) as e:
             Logger.error(f"Failed to restore phase lock: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- phase lock restore: non-fatal, caller handles None
 
     def is_locked(self, phase: int) -> bool:
         """Check if a specific phase is locked.
@@ -343,7 +343,7 @@ class ActivationFlagsStore:
             return flags
         except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
             Logger.error(f"Failed to restore activation flags: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- activation flags restore: non-fatal, caller handles None
 
 
 _metrics_enforcer = MetricsEmissionEnforcer()

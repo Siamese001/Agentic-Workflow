@@ -21,6 +21,8 @@ import os
 from dataclasses import dataclass, field
 from typing import Any
 
+from openai import OpenAI
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
@@ -134,10 +136,10 @@ class SemanticEnricher:
         """Initialize default LLM client based on provider."""
         if self.provider == "openai":
             try:
-                # guardian: allow-layer-violation -- infrastructure SDK access required for OpenAI provider, no agentic_core alternative exists
-                from infrastructure.sdks_mcps import create_openai_sync_client
-
-                self.llm_client = create_openai_sync_client()
+                api_key = os.getenv("OPENAI_API_KEY")
+                if not api_key:
+                    raise ValueError("OPENAI_API_KEY not configured")
+                self.llm_client = OpenAI(api_key=api_key)
             except (ImportError, ValueError):
                 Logger.warning("OpenAI not configured, enrichment will use mock")
                 self.llm_client = None

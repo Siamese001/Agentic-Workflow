@@ -199,7 +199,10 @@ class CloudNativeManager:
             try:
                 config.load_incluster_config()
                 Logger.info("[CLOUD_NATIVE] Loaded in-cluster Kubernetes config")
-            except (OSError, config.ConfigException):
+            except (
+                OSError,
+                config.ConfigException,
+            ):  # guardian: allow-silent-swallow -- k8s config: falls back to kubeconfig, non-fatal
                 # Fall back to kubeconfig
                 config.load_kube_config()
                 Logger.info("[CLOUD_NATIVE] Loaded kubeconfig")
@@ -387,7 +390,12 @@ class CloudNativeManager:
                 timestamp=time.time(),
             )
 
-        except (AttributeError, TypeError, KeyError, ValueError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            KeyError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- cluster metrics collection: non-fatal, stale metrics used
             Logger.debug(f"[CLOUD_NATIVE] Failed to collect cluster metrics: {e}")
 
     def _collect_resource_metrics(self) -> None:
@@ -435,7 +443,12 @@ class CloudNativeManager:
 
                 self._resources[f"{pod.metadata.namespace}/{pod.metadata.name}"] = metrics
 
-        except (AttributeError, TypeError, KeyError, ValueError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            KeyError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- resource metrics collection: non-fatal, stale metrics used
             Logger.debug(f"[CLOUD_NATIVE] Failed to collect resource metrics: {e}")
 
     def _determine_deployment_status(self, deployment) -> HealthStatus:
@@ -535,7 +548,11 @@ class CloudNativeManager:
                 self._k8s_client["autoscaling_v1"].read_namespaced_horizontal_pod_autoscaler(name, namespace)
                 Logger.info(f"[CLOUD_NATIVE] HPA already exists for {resource_name}")
                 return True
-            except (AttributeError, KeyError, ValueError) as e:
+            except (
+                AttributeError,
+                KeyError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- HPA read check: non-fatal, autoscaling check continues
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -598,7 +615,12 @@ class CloudNativeManager:
                 elif should_scale_down:
                     self._scale_resource(resource_name, "scale_down", config, metrics)
 
-            except (AttributeError, TypeError, ValueError, KeyError) as e:
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                KeyError,
+            ) as e:  # guardian: allow-log-and-swallow -- auto-scaling check: non-fatal, resource continues without scaling
                 Logger.error(f"[CLOUD_NATIVE] Auto-scaling check failed for {resource_name}: {e}")
 
     def _evaluate_scaling_conditions(
@@ -674,7 +696,12 @@ class CloudNativeManager:
                 f"[CLOUD_NATIVE] {scaling_type} {resource_name}: {current_replicas} -> {new_replicas}"
             )
 
-        except (AttributeError, TypeError, KeyError, ValueError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            KeyError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- scaling operation: non-fatal, resource continues at current capacity
             Logger.error(f"[CLOUD_NATIVE] Failed to scale {resource_name}: {e}")
 
     def _optimize_resources(self) -> None:
@@ -690,7 +717,12 @@ class CloudNativeManager:
                         Logger.debug(f"[CLOUD_NATIVE] Resource optimization opportunity for {resource_name}")
                         # In real implementation, would update resource requests/limits
 
-        except (AttributeError, TypeError, ValueError, KeyError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            KeyError,
+        ) as e:  # guardian: allow-log-and-swallow -- resource optimization: non-fatal, previous allocation maintained
             Logger.error(f"[CLOUD_NATIVE] Resource optimization failed: {e}")
 
     def get_cluster_health(self) -> dict[str, Any]:

@@ -212,7 +212,7 @@ def _get_CodeEnforcerAgent():
 
         return CodeEnforcerAgent
     except ImportError:
-        return None
+        return None  # guardian: allow-return-none-swallow -- CodeEnforcerAgent import: optional agent, caller checks for None
 
 
 CodeEnforcerAgent = _get_CodeEnforcerAgent()
@@ -345,7 +345,7 @@ class AgentFactory:
                 return None
             return agent_class(AgentFactory._create_impl(ctx))
         except (ValueError, TypeError, RuntimeError) as e:
-            return None
+            return None  # guardian: allow-return-none-swallow -- agent create: non-fatal, caller handles None
 
 
 def create_all_agents(ctx: Any | None = None) -> dict:

@@ -353,7 +353,7 @@ class GoldenStateEvaluator:
         except FileNotFoundError:
             if self.enable_logging:
                 Logger.warning("golden_dataset_not_found", extra={"path": str(self.dataset_path)})
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             raise
             if self.enable_logging:
                 Logger.error("failed_to_load_golden_cases", extra={"error": str(e)}, exc_info=True)

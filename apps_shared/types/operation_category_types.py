@@ -420,7 +420,7 @@ class ObservabilityOperationAdapter:
             result.execution_time = time.time() - start_time
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             self.logger.error(f"Operation failed: {str(e)}")
             return self._create_error_outcome(context.operation_id, str(e), start_time)
 
@@ -551,7 +551,7 @@ class ObservabilityOperationAdapter:
                     warnings=warnings,
                 )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 last_error = str(e)
                 if attempt < self.config.retry_attempts:
                     self.logger.warning(f"Operation attempt {attempt + 1} failed, retrying: {last_error}")

@@ -14,7 +14,11 @@ import json
 import os
 import re
 from dataclasses import dataclass
+from typing import Any
 from typing import Protocol, runtime_checkable
+from typing import cast
+
+import google.generativeai as genai
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -250,7 +254,8 @@ class GeminiJudge:
 
     def __init__(self, gemini_client=None, model: str | None = None) -> None:
         self._client = gemini_client
-        self._model = model or os.getenv("GEMINI_MODEL", self.DEFAULT_MODEL)
+        env_model = os.getenv("GEMINI_MODEL")
+        self._model = model or env_model or self.DEFAULT_MODEL
         self._configured = False
 
     @property
@@ -260,11 +265,12 @@ class GeminiJudge:
     def _get_client(self):
         if self._client is not None:
             return self._client
-        # guardian: allow-layer-violation -- infrastructure SDK access required for LLM provider, no agentic_core alternative exists
-        from infrastructure.sdks_mcps import create_vertex_client
 
         try:
-            genai = create_vertex_client()
+            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            if not api_key:
+                raise ValueError("Gemini API key not configured")
+            genai.configure(api_key=api_key)
         except (ImportError, ValueError) as exc:
             raise RuntimeError(
                 "GeminiJudge: google-genai package not installed or GOOGLE_API_KEY missing.",
@@ -278,11 +284,11 @@ class GeminiJudge:
         return re.sub("```(?:json)?|```", "", raw).strip()
 
     @staticmethod
-    def _parse(raw: str) -> dict:
+    def _parse(raw: str) -> dict[str, Any]:
         try:
-            return json.loads(raw)
+            return cast(dict[str, Any], json.loads(raw))
         except json.JSONDecodeError:
-            return json.loads(GeminiJudge._clean(raw))
+            return cast(dict[str, Any], json.loads(GeminiJudge._clean(raw)))
 
     def score(self, query: str, context: str, answer: str) -> JudgeScore:
         prompt = f"{_RUBRIC}\n\nQuery: {query}\n\nContext:\n{context}\n\nAnswer:\n{answer}"

@@ -427,7 +427,7 @@ class ObservabilityToolExecutor:
             self._track_execution_complete(request, result)
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(
                 request.execution_id,
@@ -597,7 +597,7 @@ class ObservabilityToolExecutor:
                 if isinstance(output, dict) and output.get("exit_code", 0) != 0:
                     total_exit_code = output["exit_code"]
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 self.logger.warning(f"Batch command failed: {str(e)}")
                 results.append({"error": str(e)})
                 total_exit_code = 1

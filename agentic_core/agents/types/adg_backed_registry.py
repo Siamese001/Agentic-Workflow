@@ -106,7 +106,7 @@ def _emit_bootstrap_telemetry() -> None:
     except ImportError:
         logger.debug("Lifecycle trace contract unavailable; skipping ADG registry bootstrap telemetry")
         _BOOTSTRAP_TELEMETRY_EMITTED = True
-        return
+        return  # guardian: allow-return-none-swallow -- telemetry bootstrap: already emitted, early exit is intentional
 
     for emitter_name, emitter_args in _BOOTSTRAP_TELEMETRY_EVENTS:
         emitter = getattr(lifecycle, emitter_name, None)
@@ -209,13 +209,15 @@ class ADGBackedAgentRegistry:
             from agentic_core.agents.types.agent_registry import get_profile
         except ImportError:
             logger.debug("Canonical AGENT_REGISTRY is unavailable; agent_id=%s", agent_id)
-            return None
+            return None  # guardian: allow-return-none-swallow -- registry unavailable: non-fatal, caller handles None
 
         try:
             return get_profile(agent_id)
         except KeyError:
             logger.debug("Canonical AGENT_REGISTRY missing agent_id=%s", agent_id)
-            return None
+            return (
+                None  # guardian: allow-return-none-swallow -- agent not found: non-fatal, caller handles None
+            )
 
     def all_sovereign_agents(self) -> list[str]:
         """Return all known SovereignBaseAgent subclasses via the ADG inheritance graph."""

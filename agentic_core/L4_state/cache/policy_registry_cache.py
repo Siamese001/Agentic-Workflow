@@ -220,7 +220,10 @@ class PolicyRegistryCache:
                 if cached is not None:
                     logger.debug(f"[Policy cache] HIT for {policy_id}")
                     return cached
-            except (OSError, ConnectionError) as e:
+            except (
+                OSError,
+                ConnectionError,
+            ) as e:  # guardian: allow-log-and-swallow -- policy cache read: non-fatal, falls back to live fetch
                 logger.warning(f"[Policy cache] Cache read failed: {e}")
         logger.debug(f"[Policy cache] MISS for {policy_id} — fetching from registry")
         result = fetch_policy()
@@ -228,7 +231,10 @@ class PolicyRegistryCache:
             try:
                 cache_key = f"policy:{policy_id}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            except (OSError, ConnectionError) as e:
+            except (
+                OSError,
+                ConnectionError,
+            ) as e:  # guardian: allow-log-and-swallow -- policy cache write: non-fatal, policy returned without caching
                 logger.warning(f"[Policy cache] Cache write failed: {e}")
         return result
 
@@ -238,7 +244,10 @@ class PolicyRegistryCache:
             cache_key = f"policy:{policy_id}"
             self._cache.delete(cache_key)
             logger.debug(f"[Policy cache] Invalidated {policy_id}")
-        except (OSError, ConnectionError) as e:
+        except (
+            OSError,
+            ConnectionError,
+        ) as e:  # guardian: allow-log-and-swallow -- policy cache invalidate: non-fatal, stale entry may persist until TTL
             logger.warning(f"[Policy cache] Invalidation failed: {e}")
 
 

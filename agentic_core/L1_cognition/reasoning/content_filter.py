@@ -263,7 +263,7 @@ class ContentFilterEngine:
 
             return report
 
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
             # Return error report
             return GuardrailReport(
                 report_id=f"error_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",

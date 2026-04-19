@@ -579,7 +579,14 @@ class AnswerQualityMonitor:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        except (ImportError, AttributeError, OSError, ValueError, TypeError, RuntimeError):
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ):  # guardian: allow-log-and-swallow -- answer quality persist: fire-and-forget, must not crash monitor
             _logger.debug("AnswerQualityMonitor._persist failed", exc_info=True)
 
 
@@ -611,7 +618,7 @@ def emit_alerts_to_registry(
         )
     except (ImportError, AttributeError, OSError, RuntimeError):
         _logger.debug("emit_alerts_to_registry: drift_registry unavailable", exc_info=True)
-        return
+        return  # guardian: allow-return-none-swallow -- registry unavailable: non-fatal, alerts dropped gracefully
     registry = get_drift_registry()
     if registry is None:
         _logger.debug("emit_alerts_to_registry: registry factory returned None")
@@ -673,7 +680,14 @@ def emit_alerts_to_registry(
                     proposal_only=True,
                 )
                 bus.enqueue(pkg)
-            except (ImportError, AttributeError, OSError, ValueError, TypeError, RuntimeError):
+            except (
+                ImportError,
+                AttributeError,
+                OSError,
+                ValueError,
+                TypeError,
+                RuntimeError,
+            ):  # guardian: allow-log-and-swallow -- bus publish: fire-and-forget, alert already processed
                 _logger.debug(
                     "emit_alerts_to_registry: MetaLearningBus publish failed for critical alert %s",
                     alert.alert_id,

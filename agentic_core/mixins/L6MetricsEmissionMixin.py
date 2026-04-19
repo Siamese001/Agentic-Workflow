@@ -22,7 +22,11 @@ _LOG = logging.getLogger(__name__)
 def _safe_metric_call(metric_fn: Callable[[], None], *, metric_name: str) -> None:
     try:
         metric_fn()
-    except (AttributeError, ValueError, TypeError) as exc:
+    except (
+        AttributeError,
+        ValueError,
+        TypeError,
+    ) as exc:  # guardian: allow-log-and-swallow -- metric emit: fire-and-forget, must not crash caller
         _LOG.debug("metric emission skipped for %s: %s", metric_name, exc)
 
 
@@ -113,7 +117,11 @@ class L6MetricsEmissionMixin:
                     component=labels.get("component", "unknown"),
                     status=labels.get("status", "success"),
                 ).inc(value)
-        except (AttributeError, ValueError, TypeError) as exc:
+        except (
+            AttributeError,
+            ValueError,
+            TypeError,
+        ) as exc:  # guardian: allow-log-and-swallow -- metric emit: fire-and-forget, must not crash caller
             _LOG.debug("metric emission skipped for %s: %s", metric_name, exc)
 
     def emit_execution_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:
@@ -134,7 +142,11 @@ class L6MetricsEmissionMixin:
                     component=labels.get("component", "unknown"),
                     status=labels.get("status", "success"),
                 ).inc(value)
-        except (AttributeError, ValueError, TypeError) as exc:
+        except (
+            AttributeError,
+            ValueError,
+            TypeError,
+        ) as exc:  # guardian: allow-log-and-swallow -- metric emit: fire-and-forget, must not crash caller
             _LOG.debug("metric emission skipped for %s: %s", metric_name, exc)
 
     def emit_orchestration_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:

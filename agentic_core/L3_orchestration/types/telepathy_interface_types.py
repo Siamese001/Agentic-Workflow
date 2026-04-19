@@ -237,7 +237,7 @@ class TelepathyInterface:
             return content
         except (ValueError, TypeError) as e:
             LOGGER.error(f"Failed to read telepathy instructions: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- telepathy read: non-fatal, caller checks for None
 
     def parse_instructions(self, instructions: str) -> dict[str, Any]:
         """
@@ -319,7 +319,11 @@ class TelepathyInterface:
             _wg.write_text(self.instructions_path, done_content, encoding="utf-8")
             self._last_consumed = instructions
             LOGGER.info(f"Instructions consumed and marked done (Cycle {self._cycle})")
-        except (OSError, ValueError, TypeError):
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-log-and-swallow -- mark done: re-raises immediately, error log unreachable but preserved for diagnostics
             raise
             LOGGER.error(f"Failed to mark instructions as done: {e}")
 
@@ -350,7 +354,11 @@ class TelepathyInterface:
             if self.instructions_path.exists():
                 _wg.remove_file(self.instructions_path)
                 LOGGER.info("Telepathy instructions cleared")
-        except (OSError, ValueError, TypeError):
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-log-and-swallow -- clear instructions: re-raises immediately, error log unreachable but preserved for diagnostics
             raise
             LOGGER.error(f"Failed to clear instructions: {e}")
 

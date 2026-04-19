@@ -285,7 +285,7 @@ class HealingStrategy:
             return agent
         except (RuntimeError, OSError) as e:
             Logger.error(f"[HealingStrategy] Failed to load {agent_name}: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- agent class load: non-fatal, caller checks for None
 
     def _get_dedup_agent(self) -> Any | None:
         """Get or create the shared TwoPhaseDeduplicationAgent instance."""
@@ -298,7 +298,7 @@ class HealingStrategy:
                 self._dedup_agent = TwoPhaseDeduplicationAgent(project_root=self.project_root)
             except (RuntimeError, OSError) as e:
                 Logger.error(f"[HealingStrategy] Failed to load TwoPhaseDeduplicationAgent: {e}")
-                return None
+                return None  # guardian: allow-return-none-swallow -- dedup agent init: non-fatal, caller handles None
         return self._dedup_agent
 
     def _load_agent(self, agent_name: str) -> Any | None:
@@ -379,7 +379,7 @@ class HealingStrategy:
                 return None
         except ImportError as e:
             Logger.error(f"[HealingStrategy] Import error for {agent_name}: {e}")
-            return None
+            return None  # guardian: allow-return-none-swallow -- agent name import: non-fatal, caller checks for None
 
     def execute_agent(
         self,

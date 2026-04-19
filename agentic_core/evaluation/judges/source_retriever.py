@@ -64,7 +64,7 @@ class SourceRetriever:
         # guardian: allow-silent-swallow - acceptable exception handling
         except OSError as exc:
             _log.warning("[SourceRetriever] Cannot read %s: %s", path, exc)
-            return None
+            return None  # guardian: allow-return-none-swallow -- file read: non-fatal, caller handles None as missing source
 
     def get_context(
         self,
@@ -127,7 +127,7 @@ class SourceRetriever:
             tree = ast.parse(source, filename=str(path))
         except SyntaxError:
             _log.warning("[SourceRetriever] Syntax error parsing %s", path)
-            return None
+            return None  # guardian: allow-return-none-swallow -- AST parse: non-fatal, caller handles None as missing function
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -176,7 +176,7 @@ class SourceRetriever:
             tree = ast.parse(source, filename=str(path))
         except SyntaxError:
             _log.warning("[SourceRetriever] Syntax error parsing %s", path)
-            return None
+            return None  # guardian: allow-return-none-swallow -- AST parse: non-fatal, caller handles None as missing class
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef) and node.name == class_name:

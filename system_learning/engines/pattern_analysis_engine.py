@@ -414,7 +414,11 @@ class PatternAnalysisEngine:
                                 metrics=tuple(sorted([("drift_score", round(score, 6))])),
                             ),
                         )
-            except (KeyError, TypeError, ValueError) as exc:
+            except (
+                KeyError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- drift snapshot parse: non-fatal, snapshot skipped
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -424,7 +428,11 @@ class PatternAnalysisEngine:
             try:
                 det = _json.loads(detection_signal_bytes.decode("utf-8"))
                 detection_version = det.get("version")
-            except (UnicodeDecodeError, ValueError, TypeError) as exc:
+            except (
+                UnicodeDecodeError,
+                ValueError,
+                TypeError,
+            ) as exc:  # guardian: allow-log-and-swallow -- detection signal decode: non-fatal, signal skipped
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -702,7 +710,12 @@ class PatternAnalysisEngine:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=now_utc,
             )
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- cross-domain persist: fire-and-forget, analysis still returned
             import logging
 
             logging.getLogger(__name__).debug(
