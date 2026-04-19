@@ -128,13 +128,13 @@ class RerankingEngine:
             ImportError
         ):  # guardian: allow-log-and-swallow -- LightGBM optional: falls back to rule-based reranking
             logger.warning("LightGBM not installed, using rule-based reranking")
-        except (
+        except (  # guardian: allow-log-and-swallow -- LightGBM model load: non-fatal, falls back to rule-based reranking
             AttributeError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- LightGBM model load: non-fatal, falls back to rule-based reranking
+        ) as e:
             logger.error(f"Failed to load LightGBM model: {e}")
 
     def rerank_results(
@@ -282,7 +282,7 @@ class RerankingEngine:
                 ValueError,
                 KeyError,
                 AttributeError,
-            ):  # guardian: allow-log-and-swallow -- timestamp parse: malformed value ignored, recency score defaults to 1.0
+            ):  # guardian: allow-silent-swallow -- timestamp parse: malformed value ignored, recency score defaults to 1.0
                 pass
 
         # Popularity score (based on collection size)

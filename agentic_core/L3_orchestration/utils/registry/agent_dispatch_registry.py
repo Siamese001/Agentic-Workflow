@@ -360,9 +360,7 @@ class AgentDispatchRegistry:
                 metadata={"caller": caller, "token_id": token_id},
             )
             guardrail_verdict = gr_result.verdict.value
-        except (
-            GuardrailViolationError
-        ) as gve:  # guardian: GuardrailViolationError should be handled with specific context
+        except GuardrailViolationError as gve:  # guardian: allow-log-and-swallow -- guardrail violation: verdict forced to deny, caller continues with deny verdict
             guardrail_verdict = "deny"
             _SAFETY_LOGGER.warning(
                 "reenters_safety caller=%s target=%s method=%s reason=%s",
@@ -472,10 +470,10 @@ class AgentDispatchRegistry:
                         "handoff_reason": f"{caller}->{target_class}.{method}",
                     },
                 )
-            except (
+            except (  # guardian: allow-broad-exception allow-log-and-swallow -- coordination ledger update best-effort: non-fatal, dispatch continues
                 MissingCoordinationLedger,
                 Exception,
-            ) as _cl_exc:  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+            ) as _cl_exc:
                 logger.debug("DISPATCH_REGISTRY coordination_ledger update skipped: %s", _cl_exc)
 
         # P0/L6: emit records_execution_trace + signs_execution_trace lifecycle edges

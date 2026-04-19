@@ -273,8 +273,8 @@ class ValidationOrchestrator(SovereignBaseAgent):
         self.name = name or self.__class__.__name__
         try:
             self.__post_init__()
-        except AttributeError:
-            pass  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow
+        except AttributeError:  # guardian: allow-silent-swallow -- missing __post_init__: not all subclasses define it, skip silently
+            pass
         self.ctx = context
         self.layer = layer
 
@@ -534,8 +534,8 @@ class ValidationOrchestrator(SovereignBaseAgent):
                 max_depth=max_depth,
                 _call_path=_call_path,
             )
-        except AttributeError:
-            pass  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow
+        except AttributeError:  # guardian: allow-silent-swallow -- missing attribute in validation context: fallback to default, execution continues
+            pass
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__

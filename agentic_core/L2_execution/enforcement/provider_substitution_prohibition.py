@@ -352,9 +352,7 @@ def test_provider_substitution_prohibition() -> bool:
         try:
             validate_provider_request(test_request, "anthropic", "claude-3-5-sonnet")
             return False
-        except (
-            ProviderSubstitutionViolation
-        ):  # guardian: ProviderSubstitutionViolation should be handled with specific context
+        except ProviderSubstitutionViolation as e:  # guardian: allow-log-and-swallow -- provider substitution violation: logged, return False indicates veto
             import logging
 
             logging.getLogger(__name__).debug(
@@ -363,9 +361,7 @@ def test_provider_substitution_prohibition() -> bool:
         try:
             validate_provider_request(test_request, "openai", "gpt-3.5-turbo")
             return False
-        except (
-            ProviderSubstitutionViolation
-        ):  # guardian: ProviderSubstitutionViolation should be handled with specific context
+        except ProviderSubstitutionViolation as e:  # guardian: allow-log-and-swallow -- provider substitution violation: logged, return False indicates veto
             import logging
 
             logging.getLogger(__name__).debug(

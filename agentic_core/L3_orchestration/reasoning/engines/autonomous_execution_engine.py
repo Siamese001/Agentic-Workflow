@@ -233,15 +233,14 @@ class autonomous_execution_engine:
                 data = json.loads(self.state_path.read_text(encoding="utf-8"))
                 self.last_mission_result = data.get("last_mission")
                 Logger.info("L3: Loaded execution state")
-            except (
+            except (  # guardian: allow-broad-exception -- state load error re-raised to caller for handling
                 AttributeError,
                 OSError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- state load: re-raises immediately, scanner false positive
+            ):
                 raise
-                Logger.error(f"Failed to load execution state: {e}")
 
     def save_state(self):
         """L3: Atomic state save to prevent corruption"""
@@ -253,15 +252,14 @@ class autonomous_execution_engine:
             }
             _wg.write_json_atomic(self.state_path, data)
             Logger.debug("L3: Execution state saved atomically")
-        except (
+        except (  # guardian: allow-broad-exception -- state save error re-raised to caller for handling
             AttributeError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- state save: re-raises immediately, scanner false positive
+        ):
             raise
-            Logger.error(f"Execution state save failed: {e}")
 
     async def execute_validation_mission(self):
         """

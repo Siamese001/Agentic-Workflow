@@ -211,8 +211,8 @@ def _get_CodeEnforcerAgent():
         from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
 
         return CodeEnforcerAgent
-    except ImportError:
-        return None  # guardian: allow-return-none-swallow -- CodeEnforcerAgent import: optional agent, caller checks for None
+    except ImportError:  # guardian: allow-return-none-swallow -- CodeEnforcerAgent import: optional agent, caller checks for None
+        return None
 
 
 CodeEnforcerAgent = _get_CodeEnforcerAgent()
@@ -344,8 +344,8 @@ class AgentFactory:
             if agent_class is None:
                 return None
             return agent_class(AgentFactory._create_impl(ctx))
-        except (ValueError, TypeError, RuntimeError) as e:
-            return None  # guardian: allow-return-none-swallow -- agent create: non-fatal, caller handles None
+        except (ValueError, TypeError, RuntimeError):  # guardian: allow-return-none-swallow -- agent create: non-fatal, caller handles None
+            return None
 
 
 def create_all_agents(ctx: Any | None = None) -> dict:

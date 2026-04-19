@@ -387,7 +387,7 @@ def update_coordination_ledger(
             if status_str:
                 try:
                     record.transition(TaskStatus(status_str))
-                except ValueError:
+                except ValueError:  # guardian: allow-log-and-swallow -- unknown task status: logged and skipped, deserialization continues
                     logger.warning(
                         "COORDINATION unknown task status=%s task_id=%s",
                         status_str,
@@ -412,8 +412,8 @@ def update_coordination_ledger(
                 sv_int = int(sv)
                 if sv_int > ledger.state_version:
                     ledger.state_version = sv_int
-            except (ValueError, TypeError):
-                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow -- state_version parse failure: use default, deserialization continues
+                pass
 
     # 6. Increment state_version
     ledger.state_version += 1

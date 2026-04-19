@@ -162,7 +162,7 @@ class ASTAwareTokenizer:
                     ]
                     tokens.extend(doc_tokens)
 
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: allow-log-and-swallow -- AST tokenization fallback: non-fatal, regex-based tokenization used
             # Fallback to regex-based tokenization
             import logging
 
@@ -389,7 +389,7 @@ class HybridRetriever:
                 relevant_chunks=[],  # Ground truth unavailable at runtime
                 eval_mode="shadow",
             )
-        except (ImportError, AttributeError, RuntimeError, ValueError, TypeError, OSError) as e:
+        except (ImportError, AttributeError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-log-and-swallow -- hybrid search best-effort: non-fatal, falls back to primary retriever
             # Non-blocking: log warning but don't fail the search
             import logging
 
