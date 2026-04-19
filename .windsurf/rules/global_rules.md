@@ -52,6 +52,20 @@ Violations logged to: `artifacts/windsurf/adg_first_violations.jsonl`
 
 ---
 
+## Hotspot-First Refactoring Gate
+
+Before drafting ANY T2/T3 refactoring plan, AFTER the MCP green light, BEFORE any edits:
+
+1. **Violations snapshot** — call `adg_violations` → open P0/P1 counts by file and category
+2. **Wave plan** — call `adg_p0_wave_plan` → P0-first remediation ordering (address P0 before P1)
+3. **Fan-in rank** — for top violation files, call `adg_edge_fanin(relation_type="imports")` → compute impact = violations × (1 + log10(1 + fan_in))
+4. **Drive scope** — refactoring target selection and wave ordering MUST be derived from hotspot rank, not arbitrary file choice
+
+FORBIDDEN: drafting a refactoring plan or wave queue without a ranked hotspot report.
+Extended protocol: `adg-hotspot-enforcement.md`
+
+---
+
 ## Subprocess Timeout Discipline
 
 ALL subprocess calls MUST include `timeout=`. No exceptions.

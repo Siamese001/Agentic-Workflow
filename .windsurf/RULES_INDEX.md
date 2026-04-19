@@ -48,6 +48,7 @@ This repo uses a **two-tier model**:
 
 | File | Use When |
 |---|---|
+| `adg-hotspot-enforcement.md` | T2/T3 refactoring, anti-pattern burndown, wave scope selection — violations + centrality MUST drive target order |
 | `adg-repair-discipline.md` | ADG break/fix, graph-first debugging, repair loops |
 | `adg-test-accelerator-enforcement.md` | Working in `tools/adg/**` or `test_*_adg.py` |
 | `agents-memory-lifecycle.md` | Session start/end and persistent memory decisions |
@@ -109,6 +110,7 @@ Use this order whenever a task is non-trivial:
 | Task Pattern | First File |
 |---|---|
 | "Why did this break?" / blast radius / imports / consumers | `skills/graph-analysis/SKILL.md` |
+| "Which files to refactor first?" / wave queue / hotspot rank / anti-pattern priority | `rules/adg-hotspot-enforcement.md` |
 | "Fix this ADG issue" | `rules/adg-repair-discipline.md` |
 | "Should we stop for HITL?" | `rules/hitl-enforcement.md` then `rules/hitl-decision-points.md` |
 | "Need a plan" | `rules/sequential-thinking-enforcement.md` + `templates/execution-plan-template.md` |
@@ -270,6 +272,7 @@ All `model_decision` and `glob` rules require a `description` field in frontmatt
 
 | Rule File | Trigger | Description |
 |---|---|---|
+| `adg-hotspot-enforcement.md` | `model_decision` | Before any refactoring or wave planning — run violations snapshot + fan-in rank; hotspot report must drive scope |
 | `adg-repair-discipline.md` | `model_decision` | Use when diagnosing ADG failures or running the ADG repair loop |
 | `anti-pattern-hitl-gate.md` | `model_decision` | Use before introducing any new anti-pattern instance |
 | `memory-management.md` | `model_decision` | Use when reading/writing the persistent memory graph |
@@ -340,7 +343,8 @@ Include justification keywords in commit message:
 **Changelog**:
 - 2026-04-11: **VSCODIUM EXTENSIONS POLICY PACK** — New standards doc set at `docs/standards/windsurf/` and `docs/external/vscodium/`. Four upstream source notes created (retrieval date 2026-04-11). Policy file (`windsurf_vscodium_extensions_policy.md`) covers approved/blocked galleries, 8 blocked extensions, 5 approved replacements, proprietary debugger policy, alternate gallery config, Copilot (PROVISIONAL), and fallback paths. Decision log (`windsurf_vscodium_decision_log.md`) records D001–D011 (9 FINAL, 2 PROVISIONAL). Prompt pack (`windsurf_vscodium_prompt_pack.md`) provides 6 reusable templates. Discoverable from this index under §VSCodium Extensions Policy Pack.
 - 2026-04-11: **QUERY PROGRESS BAR** — New constitutional rule §16 (`query-progress-bar.md`, always_on). New CI gate `check_query_progress_bar.py` (detects bare long loops ≥10 lines and heavy-named functions ≥12 lines without progress reporting). New pre-commit hook `check-query-progress-bar` on staged Python files. 38 unit tests added (`tests/ci/test_check_query_progress_bar.py`). `constitutional.md` updated with §16. RULES_INDEX coverage updated: 6 Constitutional Rules, 42 CI Gates, 26+ Pre-commit Hooks.
-- 2026-04-15: **REFACTOR DECISION MEMORY** — New rule `refactor-decision-memory.md` (model_decision). New skill `refactor-decision-memory/` with `lookup_refactor_decisions.py`. New hook `post_cascade_hitl_capture.py` wired into `post_cascade_response`. SQLite+FTS5 ledger at `.windsurf/state/refactor_decisions/`. `hitl-enforcement.md` unchanged — memory system sits under the policy layer. 30 unit tests added.
+- 2026-04-19: **ADG HOTSPOT ENFORCEMENT** — New rule `adg-hotspot-enforcement.md` (model_decision). Enforces mandatory hotspot report before any T2/T3 refactoring: `adg_violations` snapshot + `adg_p0_wave_plan` + fan-in rank (impact = violations × (1 + log10(1+fan_in))) + layer multipliers. Plans without `## ADG_HOTSPOT_REPORT` section are invalid. Compact always-on gate added to `global_rules.md` §Hotspot-First Refactoring Gate. RULES_INDEX wired: On-Demand table, Conditional Rules table, Quick Start Matrix.
+- 2026-04-19: **REFACTOR DECISION MEMORY** — New rule `refactor-decision-memory.md` (model_decision). New skill `refactor-decision-memory/` with `lookup_refactor_decisions.py`. New hook `post_cascade_hitl_capture.py` wired into `post_cascade_response`. SQLite+FTS5 ledger at `.windsurf/state/refactor_decisions/`. `hitl-enforcement.md` unchanged — memory system sits under the policy layer. 30 unit tests added.
 - 2026-04-15: **RULE SIZE REDUCTION** — `constitutional.md` 29K→3.3K (always_on core, 16 constraints + tier table). `hitl-enforcement.md` 33K→2.7K (always_on pipeline + bypass + thresholds). New `hitl-decision-points.md` (model_decision, 10 decision triggers + HITL-10 shape + telemetry). `sequential-thinking-enforcement.md` converted from always_on (6.9K) to model_decision (1.8K). `adg-test-accelerator-enforcement.md` description frontmatter added. `skills/graph-analysis/fail_closed_discipline.md` created. All 7 skill entry files confirmed as `SKILL.md`. Always_on rules: constitutional (3.3K), global_rules (3.0K), hitl-enforcement (2.7K), plan-location (1.9K).
 - 2026-04-14: **WINDSURF DOC ALIGNMENT** — All 6 skill entry files renamed `skill.md` → `SKILL.md` (canonical naming). Added `description` frontmatter to 4 `model_decision` rules (`adg-repair-discipline`, `anti-pattern-hitl-gate`, `memory-management`, `security-hardening`) and 2 `glob` rules (`mcp-config-ssot`, `mcp-pytest-enforcement`). New rule: `windsurf-config-lookup.md`. Removed non-standard `file_pattern` fields from `hooks.json`; moved path filtering logic into `post_write_mcp_config_sync.py`. Added 25 support files across all 5 incomplete skill directories (5 per skill). Added `## Windsurf Configuration Docs` block to repo-root `AGENTS.md`. Updated RULES_INDEX: file count 13→14, skills count 5→6, added Conditional Rules table.
 - 2026-04-09: **WINDSURF DRIFT CLEANUP** — Deleted `.windsurf/rules/.windsurfrules` (90KB aggregate, not a documented Windsurf rule artifact, preprocessor archived). Deleted `.windsurf/rules/_variables.yaml` (orphaned config for archived preprocessor). Relocated `pytest-optimization.md` from `.windsurf/` root to `docs/` (no activation path at root). Flattened `.windsurf/plans/plans/` and `.windsurf/plans/tasks/` subdirs into `.windsurf/plans/` per plan-location.md SSOT. Archived `_show_diffs.py` to `tools/archive/`. Updated RULES_INDEX.md: removed dead preprocessor workflow, corrected file count (9→13), fixed `.windsurfrules` status claim. All 7 `SKILL.md` files: moved non-standard frontmatter fields (`enforcement_layer`, `enforcement_timing`, `enforcement_type`) into `metadata:` block per Agent Skills spec.
