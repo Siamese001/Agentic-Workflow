@@ -342,9 +342,8 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
                     if violation:
                         violations.append(violation)
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except Exception:  # guardian: allow-broad-exception -- scan error re-raised to caller for handling
             raise
-            logger.warning(f"Error scanning {file_path}: {e}")
 
         return violations
 
@@ -432,8 +431,8 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
                     or "guardian: allow_silent_swallower" in line
                 ):
                     return True
-        except (IndexError, TypeError):
-            pass  # guardian: allow-silent-swallow -- intentional: IndexError used for control flow
+        except (IndexError, TypeError):  # guardian: allow-silent-swallow -- boundary access best-effort: caller treats False as "no match"
+            pass
         return False
 
     def _has_reraise(self, handler: ast.ExceptHandler) -> bool:

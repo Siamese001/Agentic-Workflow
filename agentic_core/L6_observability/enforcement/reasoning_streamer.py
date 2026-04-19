@@ -168,13 +168,13 @@ class L5Streamer:
                     ),
                 )
                 await websocket.wait_closed()
-            except (
+            except (  # guardian: allow-log-and-swallow -- websocket client: non-fatal, client removed from active set
                 OSError,
                 ConnectionError,
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ) as exc:  # guardian: allow-log-and-swallow -- websocket client: non-fatal, client removed from active set
+            ) as exc:
                 LOGGER.warning("reasoning_streamer websocket_client_error: %s", exc)
             finally:
                 self._websocket_clients.discard(websocket)
@@ -188,13 +188,13 @@ class L5Streamer:
                 self._websocket_ready.set()
                 LOGGER.info("WebSocket server started at ws://127.0.0.1:8765")
                 await self._websocket_stop
-            except (
+            except (  # guardian: allow-log-and-swallow -- websocket server: non-fatal, server teardown proceeds in finally
                 OSError,
                 ConnectionError,
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ) as exc:  # guardian: allow-log-and-swallow -- websocket server: non-fatal, server teardown proceeds in finally
+            ) as exc:
                 LOGGER.exception("reasoning_streamer websocket_server_error: %s", exc)
             finally:
                 if self._websocket_server is not None:

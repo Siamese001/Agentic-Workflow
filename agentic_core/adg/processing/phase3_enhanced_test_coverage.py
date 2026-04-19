@@ -397,7 +397,7 @@ class TestCoverageAnalyzer:
                     elif line.startswith("class "):
                         return line.split("(")[0].replace("class ", "")
 
-        except (OSError, RuntimeError, ValueError, TypeError):
+        except (OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-silent-swallow allow-return-none-swallow -- coverage lookup best-effort: caller treats None as no coverage data
             pass
 
         return None
@@ -422,7 +422,7 @@ class TestCoverageAnalyzer:
         try:
             cursor = self.conn.execute("DELETE FROM edges WHERE relation_type = 'tests_execution_of'")
             deleted_count = cursor.rowcount
-        except sqlite3.Error:
+        except sqlite3.Error:  # guardian: allow-silent-swallow -- DELETE best-effort: empty table or missing edges, continue with insert
             pass
         print(f"  Cleared {deleted_count} existing test edges")
 

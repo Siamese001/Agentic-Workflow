@@ -369,7 +369,7 @@ class InterventionServer:
             self._server_task.cancel()
             try:
                 await self._server_task
-            except asyncio.CancelledError as e:
+            except asyncio.CancelledError as e:  # guardian: allow-log-and-swallow -- task cancellation during shutdown: non-fatal, proceed to cleanup
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -425,10 +425,8 @@ class InterventionServer:
             if instructions:
                 Logger.info(f"Telepathy instructions received: {instructions[:100]}...")
                 return instructions
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except Exception:  # guardian: allow-broad-exception -- telepathy read error re-raised to caller for handling
             raise
-            Logger.error(f"Failed to read telepathy file: {e}")
-        return None
 
     def parse_telepathy_commands(self, instructions: str) -> dict[str, Any]:
         """Parse telepathy instructions for commands."""
