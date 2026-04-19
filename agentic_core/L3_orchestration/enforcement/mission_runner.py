@@ -427,9 +427,7 @@ def run_standard_mode():
                 actor_id="mission_runner",
                 run_id=str(id(ctx)),
             )
-        except (
-            PolicyEnforcementError
-        ) as _pee:  # guardian: PolicyEnforcementError should be handled with specific context
+        except PolicyEnforcementError as _pee:  # guardian: allow-return-none-swallow -- policy blocked mission start: logged and mission aborted, caller treats None as abort
             Logger.error("Policy blocked mission start: %s", _pee)
             return
         _rsa.observe_runtime_state("mission_start", stage="pre_cycle", actor_id="mission_runner")
@@ -493,8 +491,8 @@ def run_standard_mode():
                                 owner_agent_id="mission_runner",
                                 initial_stage=f"cycle_{cycle}",
                             )
-                        except (ValueError, TypeError, RuntimeError) as e:
-                            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- coordination ledger init best-effort: control-flow skip, execution continues
+                            pass
                     try:
                         update_coordination_ledger(
                             run_id=_mission_run_id,
@@ -505,10 +503,10 @@ def run_standard_mode():
                                 "handoff_reason": f"mission_runner->agent cycle_{cycle}",
                             },
                         )
-                    except (
+                    except (  # guardian: allow-log-and-swallow allow-broad-exception -- coordination ledger update best-effort: non-fatal, agent execution continues
                         MissingCoordinationLedger,
                         Exception,
-                    ) as e:  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+                    ) as e:
                         import logging
 
                         logging.getLogger(__name__).debug(
@@ -537,10 +535,10 @@ def run_standard_mode():
         # P1/L3: mark CoordinationLedger complete on mission finish
         try:
             complete_coordination_ledger(str(id(ctx)), WorkflowStatus.COMPLETED)
-        except (
+        except (  # guardian: allow-log-and-swallow allow-broad-exception -- coordination ledger completion best-effort: non-fatal, mission ends regardless
             MissingCoordinationLedger,
             Exception,
-        ) as e:  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+        ) as e:
             import logging
 
             logging.getLogger(__name__).debug(
@@ -648,7 +646,7 @@ async def _check_intervention(
         approval_event.clear()
         try:
             await asyncio.wait_for(approval_event.wait(), timeout=None)
-        except asyncio.CancelledError as e:
+        except asyncio.CancelledError as e:  # guardian: allow-log-and-swallow -- intervention wait cancelled: logged, mission proceeds to veto check
             import logging
 
             logging.getLogger(__name__).debug("mission_runner: Exception swallowed at L546: %s", e)

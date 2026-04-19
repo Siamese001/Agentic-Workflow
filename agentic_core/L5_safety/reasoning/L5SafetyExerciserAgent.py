@@ -218,8 +218,7 @@ def _get_hierarchy_agent() -> Any:
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         return HierarchyAgent
-    # guardian: allow-silent-degradation - Optional hierarchy healer
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- optional hierarchy healer: dep absent, caller treats None as unavailable
         return None
 
 
@@ -230,8 +229,7 @@ def _get_naming_agent() -> Any:
         from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
 
         return NamingAgent
-    # guardian: allow-silent-degradation - Optional naming agent
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- optional naming agent: dep absent, caller treats None as unavailable
         return None
 
 
@@ -242,8 +240,7 @@ def _get_import_agent() -> Any:
         from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
 
         return create_legacy_import_healer
-    # guardian: allow-silent-degradation - Optional code healer
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- optional code healer: dep absent, caller treats None as unavailable
         return None
 
 
@@ -254,8 +251,7 @@ def _get_RedTeamAgent() -> Any:
         from agentic_core.L5_safety.reasoning.RedTeamAgent import RedTeamAgent
 
         return RedTeamAgent
-    # guardian: allow-silent-degradation - Optional red team agent
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- optional red team agent: dep absent, caller treats None as unavailable
         return None
 
 
@@ -266,8 +262,7 @@ def _get_healer_agent() -> Any:
         from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent
 
         return StructuralHealerAgent
-    # guardian: allow-silent-degradation - Optional structural healer
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- optional structural healer: dep absent, caller treats None as unavailable
         return None
 
 

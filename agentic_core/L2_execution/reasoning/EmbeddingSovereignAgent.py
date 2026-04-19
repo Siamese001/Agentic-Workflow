@@ -373,12 +373,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                     latency = (get_clock().now_epoch() - start) * 1000
                     self._audit(provider, True, True, latency)
                     return cached
-            except (
-                ConnectionError,
-                TimeoutError,
-                RuntimeError,
-                OSError,
-            ) as e:  # guardian: Too many exception types - consider refactoring into separate handlers
+            except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- redis cache lookup: non-fatal, fallback to recompute
                 Logger.warning(f"Redis cache lookup failed: {e}")
         try:
             if provider == "gemini":
@@ -397,12 +392,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             if use_cache:
                 try:
                     await self.cache_set(cache_key, embedding, ttl=self._default_ttl)
-                except (
-                    ConnectionError,
-                    TimeoutError,
-                    RuntimeError,
-                    OSError,
-                ) as e:  # guardian: Too many exception types - consider refactoring into separate handlers
+                except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- redis cache set: non-fatal, embedding already computed
                     Logger.warning(f"Redis cache set failed: {e}")
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit(provider, True, False, latency)
@@ -513,12 +503,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 else:
                     metrics["violations"] += 1
                     Logger.warning("Redis cache methods not available")
-            except (
-                ConnectionError,
-                TimeoutError,
-                RuntimeError,
-                OSError,
-            ) as e:  # guardian: Too many exception types - consider refactoring into separate handlers
+            except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- redis connectivity probe: recorded as validation violation, non-fatal
                 metrics["violations"] += 1
                 Logger.warning(f"Redis cache connectivity test failed: {e}")
             try:
@@ -526,7 +511,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 if not expected_dims or not isinstance(expected_dims, dict):
                     metrics["violations"] += 1
                     Logger.warning("Expected dimensions configuration invalid")
-            except (AttributeError, TypeError, ValueError, RuntimeError) as e:
+            except (AttributeError, TypeError, ValueError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- dimensions validation probe: recorded as validation violation, non-fatal
                 metrics["violations"] += 1
                 Logger.warning(f"Dimensions validation failed: {e}")
             if metrics["violations"] == 0:

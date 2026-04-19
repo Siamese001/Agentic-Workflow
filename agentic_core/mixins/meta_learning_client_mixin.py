@@ -228,13 +228,8 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_client = get_meta_learning_client()
                 Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
-            except (
-                ImportError,
-                AttributeError,
-            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                Logger.warning(f"[{self.__class__.__name__}] MetaLearningClient unavailable: {e}")
+            except (ImportError, AttributeError):  # guardian: allow-broad-exception -- intentional error boundary, re-raises ImportError/AttributeError to caller
+                raise
 
     def _ensure_ml_embedder(self) -> None:
         """Ensure HealingMemoryEmbedder is initialized (lazy loading)."""
@@ -246,13 +241,8 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_embedder = get_healing_memory_embedder()
                 Logger.debug(f"[{self.__class__.__name__}] HealingMemoryEmbedder initialized")
-            except (
-                ImportError,
-                AttributeError,
-            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                Logger.warning(f"[{self.__class__.__name__}] HealingMemoryEmbedder unavailable: {e}")
+            except (ImportError, AttributeError):  # guardian: allow-broad-exception -- intentional error boundary, re-raises ImportError/AttributeError to caller
+                raise
 
     def _ensure_ml_cache_manager(self) -> None:
         """Ensure CacheStrategyManager is initialized (lazy loading)."""
@@ -264,13 +254,8 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_cache_manager = get_cache_strategy_manager()
                 Logger.debug(f"[{self.__class__.__name__}] CacheStrategyManager initialized")
-            except (
-                ImportError,
-                AttributeError,
-            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                Logger.warning(f"[{self.__class__.__name__}] CacheStrategyManager unavailable: {e}")
+            except (ImportError, AttributeError):  # guardian: allow-broad-exception -- intentional error boundary, re-raises ImportError/AttributeError to caller
+                raise
 
     def _ensure_ml_guardrails(self) -> None:
         """Ensure guardrails are initialized (lazy loading)."""
@@ -280,13 +265,8 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")
-            except (
-                ImportError,
-                AttributeError,
-            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                Logger.warning(f"[{self.__class__.__name__}] Guardrails unavailable: {e}")
+            except (ImportError, AttributeError):  # guardian: allow-broad-exception -- intentional error boundary, re-raises ImportError/AttributeError to caller
+                raise
 
     def _get_ml_domain(self) -> str:
         """
@@ -388,9 +368,9 @@ class MetaLearningClientMixin:
 
             return None
 
-        except (AttributeError, RuntimeError, ValueError) as e:
+        except (AttributeError, RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow -- pattern recall: non-fatal, caller treats None as no prior pattern
             Logger.error(f"[{self.__class__.__name__}] Pattern recall failed: {e}")
-            return None  # guardian: allow-return-none-swallow -- pattern recall: non-fatal, caller treats None as no prior pattern
+            return None
 
     def ml_store_healing_pattern(
         self,
@@ -444,9 +424,9 @@ class MetaLearningClientMixin:
 
             return pattern_id
 
-        except (AttributeError, RuntimeError, ValueError) as e:
+        except (AttributeError, RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow -- pattern storage: non-fatal, operation logged and skipped
             Logger.error(f"[{self.__class__.__name__}] Pattern storage failed: {e}")
-            return None  # guardian: allow-return-none-swallow -- pattern storage: non-fatal, operation logged and skipped
+            return None
 
     # ==================== CACHE OPERATIONS ====================
 
@@ -482,9 +462,9 @@ class MetaLearningClientMixin:
 
         try:
             return MetaLearningClientMixin._ml_client.cache_get(key, domain)
-        except (AttributeError, RuntimeError, OSError) as e:
+        except (AttributeError, RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow -- cache get: non-fatal, caller treats None as cache miss
             Logger.error(f"[{self.__class__.__name__}] Cache get failed: {e}")
-            return None  # guardian: allow-return-none-swallow -- cache get: non-fatal, caller treats None as cache miss
+            return None
 
     def ml_cache_set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """

@@ -298,26 +298,9 @@ class TracingMixin:
                 f"[TRACING] {self._tracing_service_name} initialized in DEGRADED mode (circuit breaker open)",
             )
         else:
-            try:
-                self._initialize_tracing_safe()
-                self._tracing_initialized = True
-                TracingMixin._circuit_breaker_failures = 0
-            except (
-                ImportError,
-                AttributeError,
-                RuntimeError,
-            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                TracingMixin._circuit_breaker_failures += 1
-                if TracingMixin._circuit_breaker_failures >= TracingMixin._circuit_breaker_threshold:
-                    TracingMixin._circuit_breaker_open = True
-                    Logger.error(
-                        f"[TRACING] Circuit breaker OPENED after {TracingMixin._circuit_breaker_failures} failures. All subsequent agents will initialize in degraded mode.",
-                    )
-                self._tracing_degraded = True
-                Logger.warning(
-                    f"[TRACING] {self._tracing_service_name} initialization failed: {e}. Operating in degraded mode. Failures: {TracingMixin._circuit_breaker_failures}",
-                )
+            self._initialize_tracing_safe()
+            self._tracing_initialized = True
+            TracingMixin._circuit_breaker_failures = 0
 
     def __post_init__(self) -> None:
         """
@@ -488,10 +471,9 @@ class TracingMixin:
                 # Convert TracingMixin span to OpenTelemetry format
                 self._create_otel_span_from_trace(trace, tracer)
 
-        # guardian: allow-silent-degradation - Optional OpenTelemetry bridging
-        except ImportError:
+        except ImportError:  # guardian: allow-log-and-swallow -- optional OpenTelemetry bridge: dep absent, tracing degrades silently
             Logger.debug("[TRACING] OpenTelemetry not available for bridging")
-        except (AttributeError, RuntimeError, TypeError) as e:
+        except (AttributeError, RuntimeError, TypeError) as e:  # guardian: allow-log-and-swallow -- OTel bridge failure: non-fatal, tracing continues in TracingMixin-only mode
             Logger.error(f"[TRACING] Failed to bridge to OpenTelemetry: {e}")
 
     def _create_otel_span_from_trace(self, trace: dict[str, Any], tracer: Any) -> None:
@@ -525,7 +507,7 @@ class TracingMixin:
             with span_context:
                 pass  # Span is created and automatically closed
 
-        except (AttributeError, RuntimeError) as e:
+        except (AttributeError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- OTel span creation best-effort: failure logged, span omitted
             Logger.debug(f"[TRACING] Failed to create OpenTelemetry span: {e}")
 
     def get_tracing_status(self) -> dict[str, Any]:

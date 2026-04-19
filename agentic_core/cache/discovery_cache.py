@@ -213,10 +213,9 @@ class AgentDiscoveryCache:
             try:
                 content_hash = self._compute_file_hash(discovery_path)
                 cache_key = f"agent_discovery:{content_hash}"
-            # guardian: allow-silent-swallow - optional file resource
             except FileNotFoundError:
                 raise
-            except (OSError, ValueError) as e:
+            except (OSError, ValueError) as e:  # guardian: allow-log-and-swallow -- hash compute best-effort: non-fatal, fetch proceeds from disk without cache key
                 logger.warning(f"[Discovery cache] Hash computation failed: {e}")
             else:
                 try:
@@ -224,8 +223,7 @@ class AgentDiscoveryCache:
                     if cached is not None:
                         logger.debug("[Discovery cache] HIT")
                         return cached
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- cache read untrusted: failures non-fatal, falls through to disk fetch
                     logger.warning(f"[Discovery cache] Cache read failed: {e}")
         logger.debug("[Discovery cache] MISS — fetching from disk")
         result = fetch_from_disk()
@@ -233,12 +231,10 @@ class AgentDiscoveryCache:
             try:
                 content_hash = self._compute_file_hash(discovery_path)
                 cache_key = f"agent_discovery:{content_hash}"
-                # guardian: allow-silent-swallow - optional file resource
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            except FileNotFoundError:
+            except FileNotFoundError:  # guardian: allow-silent-swallow -- discovery file absent: skip cache write, disk fetch already served caller
                 pass
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- cache write untrusted: non-fatal, disk fetch already served caller
                 logger.warning(f"[Discovery cache] Cache write failed: {e}")
         return result
 

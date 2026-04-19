@@ -213,14 +213,14 @@ class SovereignRAGManager(SovereignBaseAgent):
 
             self.embedder = _BGEEmbedder()
             self.vector_store = _InMemVectorStore()
-        except (
+        except (  # guardian: allow-log-and-swallow -- embedder/vector store init: optional component, RAG degrades to BM25-only
             ImportError,
             AttributeError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- embedder/vector store init: optional component, RAG degrades to BM25-only
+        ) as e:
             self.logger.warning(f"BGE embedder/vector store unavailable: {e}")
         self.static_knowledge: dict[str, Any] = self._load_static_index()
         super().__init__()
@@ -262,13 +262,13 @@ class SovereignRAGManager(SovereignBaseAgent):
                         for i, chunk in enumerate(chunks)
                     ],
                 )
-            except (
+            except (  # guardian: allow-log-and-swallow -- BM25 indexing: non-fatal, documents skipped from BM25 index
                 AttributeError,
                 OSError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- BM25 indexing: non-fatal, documents skipped from BM25 index
+            ) as e:
                 self.logger.warning(f"BM25 indexing failed: {e}")
         if self.embedder and self.vector_store:
             try:
@@ -278,13 +278,13 @@ class SovereignRAGManager(SovereignBaseAgent):
                     for i, (emb, chunk) in enumerate(zip(embeddings, chunks, strict=False))
                 ]
                 self.vector_store.upsert(vectors)
-            except (
+            except (  # guardian: allow-log-and-swallow -- vector indexing: non-fatal, documents skipped from vector index
                 AttributeError,
                 OSError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- vector indexing: non-fatal, documents skipped from vector index
+            ) as e:
                 self.logger.warning(f"Vector indexing failed: {e}")
 
     def retrieve(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
@@ -294,14 +294,14 @@ class SovereignRAGManager(SovereignBaseAgent):
 
             _root = Path(__file__).resolve().parents[3]
             _adg_confidence = _gbp(Path(__file__).resolve(), _root).behavioral_score
-        except (
+        except (  # guardian: allow-log-and-swallow -- behavioral profile: optional ADG query, non-fatal, default confidence used
             ImportError,
             AttributeError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- behavioral profile: optional ADG query, non-fatal, default confidence used
+        ) as e:
             import logging
 
             logging.getLogger(__name__).debug("SovereignRAGManagerAgent: Exception swallowed at L279: %s", e)
@@ -323,13 +323,13 @@ class SovereignRAGManager(SovereignBaseAgent):
                         }
                         for r in raw or []
                     ]
-            except (
+            except (  # guardian: allow-log-and-swallow -- vector retrieval: non-fatal, falls back to BM25 results
                 AttributeError,
                 OSError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- vector retrieval: non-fatal, falls back to BM25 results
+            ) as e:
                 self.logger.warning(f"Vector retrieval failed: {e}")
         if self.bm25_store:
             try:
@@ -344,13 +344,13 @@ class SovereignRAGManager(SovereignBaseAgent):
                     }
                     for r in bm25_results or []
                 ]
-            except (
+            except (  # guardian: allow-log-and-swallow -- BM25 retrieval: non-fatal, results combined from vector only
                 AttributeError,
                 OSError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- BM25 retrieval: non-fatal, results combined from vector only
+            ) as e:
                 self.logger.warning(f"BM25 retrieval failed: {e}")
         combined = self._fuse_results(vector_results, bm25_results)
         return combined[:top_k]

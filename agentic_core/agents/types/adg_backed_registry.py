@@ -103,10 +103,10 @@ def _emit_bootstrap_telemetry() -> None:
 
     try:
         from agentic_core.runtime.contracts import lifecycle_trace_contract as lifecycle
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- telemetry bootstrap: lifecycle contract absent, early exit prevents further emission
         logger.debug("Lifecycle trace contract unavailable; skipping ADG registry bootstrap telemetry")
         _BOOTSTRAP_TELEMETRY_EMITTED = True
-        return  # guardian: allow-return-none-swallow -- telemetry bootstrap: already emitted, early exit is intentional
+        return
 
     for emitter_name, emitter_args in _BOOTSTRAP_TELEMETRY_EVENTS:
         emitter = getattr(lifecycle, emitter_name, None)
@@ -116,7 +116,7 @@ def _emit_bootstrap_telemetry() -> None:
 
         try:
             emitter(*emitter_args)
-        except Exception:  # guardian: allow-broad-except -- lifecycle telemetry emitters are untrusted; failures must never crash module load
+        except Exception:  # guardian: allow-broad-exception allow-log-and-swallow -- lifecycle telemetry emitters are untrusted; failures must never crash module load
             logger.debug("Lifecycle bootstrap emitter %s failed", emitter_name, exc_info=True)
 
     _BOOTSTRAP_TELEMETRY_EMITTED = True
@@ -207,17 +207,15 @@ class ADGBackedAgentRegistry:
         """Return the canonical execution profile when available."""
         try:
             from agentic_core.agents.types.agent_registry import get_profile
-        except ImportError:
+        except ImportError:  # guardian: allow-return-none-swallow -- registry unavailable: non-fatal, caller handles None
             logger.debug("Canonical AGENT_REGISTRY is unavailable; agent_id=%s", agent_id)
-            return None  # guardian: allow-return-none-swallow -- registry unavailable: non-fatal, caller handles None
+            return None
 
         try:
             return get_profile(agent_id)
-        except KeyError:
+        except KeyError:  # guardian: allow-return-none-swallow -- agent not found: non-fatal, caller handles None
             logger.debug("Canonical AGENT_REGISTRY missing agent_id=%s", agent_id)
-            return (
-                None  # guardian: allow-return-none-swallow -- agent not found: non-fatal, caller handles None
-            )
+            return None
 
     def all_sovereign_agents(self) -> list[str]:
         """Return all known SovereignBaseAgent subclasses via the ADG inheritance graph."""

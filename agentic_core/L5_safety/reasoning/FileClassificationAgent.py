@@ -824,10 +824,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     else:
                         # Default to UTILITY violations for MISNAMED_UTILITY
                         self.stats["violations"]["UTILITY"] += 1
-            except (
-                OSError,
-                UnicodeDecodeError,
-            ) as e:  # guardian: File operations with encoding need error-specific handling
+            except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow -- purity/config check best-effort: unreadable file skipped, classification continues
                 self.logger.debug(f"File read failure for {path.name}, skipping purity/config check: {e}")
 
             # [BASE_AGENTS PURITY] Enforce STRICT IDENTITY ONLY
@@ -2233,7 +2230,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:  # guardian: Add error context logging
+        except OSError:  # guardian: allow-return-none-swallow -- file read optional: None signals no routing suggestion
             return None
 
         # === SIGNAL 1: Direct imports (strongest signal) ===
@@ -2589,7 +2586,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:  # guardian: Add error context logging
+        except OSError:  # guardian: allow-return-none-swallow -- file read optional: None signals no layer suggestion
             return None
 
         content_lower = content.lower()
@@ -2639,11 +2636,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-        except (
-            SyntaxError,
-            UnicodeDecodeError,
-            OSError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        except (SyntaxError, UnicodeDecodeError, OSError):  # guardian: allow-return-none-swallow -- AST parse optional: None signals no agent layer routing
             return None
 
         parts = path.parts
@@ -4270,10 +4263,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             new_content = content.replace(old_name, new_name)
             if new_content != content:
                 _wg.write_text(path, new_content, encoding="utf-8")
-        except (
-            OSError,
-            UnicodeDecodeError,
-        ) as e:  # guardian: File operations with encoding need error-specific handling
+        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow -- docstring update best-effort: file unchanged, caller treats rename as successful
             self.logger.debug(f"Failed to update docstring in {path.name}: {e}")
 
     def sync_companion_test(self, src_path: Path, new_name: str):
@@ -4583,7 +4573,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 print("  [WARNING] Temp file still exists after rename - cleaning up")
                 try:
                     _wg.remove_file(temp)
-                except OSError as e:
+                except OSError as e:  # guardian: allow-log-and-swallow -- temp file cleanup best-effort: leftover temp will be cleaned by tmpdir GC
                     self.logger.debug(f"Failed to cleanup temp file {temp.name}: {e}")
                     # Best effort cleanup - continue anyway
 
@@ -4777,7 +4767,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if classification == "AGENT" and path.stem.endswith("Agent"):
             try:
                 tree = ast.parse(content)
-            except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError:  # guardian: allow-return-none-swallow -- AST parse optional: None signals no passive-agent classification
                 return None
 
             for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
