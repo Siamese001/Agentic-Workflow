@@ -103,11 +103,15 @@ special_dirs:
 # These patterns are specific to pre-commit hooks and should be excluded
 # from hook execution to prevent infinite loops and unnecessary processing
 precommit_excludes:
-  - "artifacts/adg_ci_lane_gate_result.json"
-  - "artifacts/healing/healing_events.jsonl"
-  - "artifacts/bypass_audit.jsonl"
-  - "artifacts/import_health/import_health_report.json"
-  - "artifacts/windsurf/*"  # Windsurf temporary output files
+  # Removed 2026-04-19 (C2 consolidation): all paths under /artifacts/ are
+  # already gitignored, and pre-commit with --all-files respects .gitignore,
+  # so these entries never matched anything. Verified: `git ls-files artifacts/`
+  # returned empty at time of removal.
+  #   - "artifacts/adg_ci_lane_gate_result.json"
+  #   - "artifacts/healing/healing_events.jsonl"
+  #   - "artifacts/bypass_audit.jsonl"
+  #   - "artifacts/import_health/import_health_report.json"
+  #   - "artifacts/windsurf/*"
   - "temp_[^/]*/.*"  # Temporary directories
   - "tmp.*"  # Generic temp files
   - "_temp_cmd.*"  # Temp command files

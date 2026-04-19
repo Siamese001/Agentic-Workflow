@@ -48,11 +48,6 @@ exclude: |
     _temp_cmd.*|
     _typed_.*|
     _typed_emitted_.*|
-    artifacts/adg_ci_lane_gate_result\.json|
-    artifacts/bypass_audit\.jsonl|
-    artifacts/healing/healing_events\.jsonl|
-    artifacts/import_health/import_health_report\.json|
-    artifacts/windsurf/.*|
     docs/store/.*|
     guardian_.*\.(txt|json)|
     pytestdebug\.log|
