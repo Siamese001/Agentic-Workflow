@@ -153,11 +153,11 @@ def safe_unparse(node: ast.AST) -> str | None:
     """
     try:
         return ast.unparse(node)
-    except (
+    except (  # guardian: allow-return-none-swallow -- AST unparse failure: caller treats None as unsupported node
         AttributeError,
         TypeError,
         ValueError,
-    ):  # guardian: allow-return-none-swallow -- AST unparse failure: caller treats None as unsupported node
+    ):
         return None
 
 

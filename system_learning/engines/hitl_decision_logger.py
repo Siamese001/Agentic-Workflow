@@ -305,12 +305,12 @@ def log_routing_correction(
         snapshot_id = f"hitl_routing_{decision_n}"
         optimizer = DefaultRLHFOptimizer()
         optimizer.propose_from_dpo(dpo_batch_bytes=dpo_batch.encode("utf-8"), snapshot_id=snapshot_id)
-    except (
+    except (  # guardian: allow-log-and-swallow -- DPO emission best-effort: non-fatal, routing decision still recorded
         AttributeError,
         ImportError,
         RuntimeError,
         TypeError,
         ValueError,
-    ) as exc:  # guardian: allow-log-and-swallow -- DPO emission best-effort: non-fatal, routing decision still recorded
+    ) as exc:
         logger.warning("Failed to emit DPO pair for routing correction: %s", exc)
     return decision_n
