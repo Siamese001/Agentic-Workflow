@@ -445,6 +445,38 @@ class TestHealthGraphProjectionVisibility:
         assert report["graph_projection"]["projection_path"] is None
 
 
+class TestToolHandlersAutoReload:
+    """Ensure health/status surfaces auto-reload stale snapshot state."""
+
+    def test_adg_health_invokes_runtime_reload_first(self):
+        from tools.adg.mcp import tool_handlers
+
+        with patch.object(tool_handlers.runtime, "reload_latest_snapshot", return_value={"status": "ok"}) as reload_mock:
+            with patch.object(tool_handlers.runtime.diagnostics, "full_report", return_value={"adg_snapshot_id": "04192026_0657"}):
+                result = tool_handlers.adg_health()
+
+        reload_mock.assert_called_once()
+        assert result["status"] == "ok"
+        assert result["data"]["adg_snapshot_id"] == "04192026_0657"
+
+    def test_adg_status_invokes_runtime_reload_first(self):
+        from tools.adg.mcp import tool_handlers
+        from tools.adg.core.models import ADGResponse
+
+        response = ADGResponse(
+            status="ok",
+            data={"timestamp": "04192026_0657", "sqlite_path": "artifacts/adg/adg_indexed_04192026_0657.sqlite"},
+            backend_used="sqlite",
+        )
+        with patch.object(tool_handlers.runtime, "reload_latest_snapshot", return_value={"status": "ok"}) as reload_mock:
+            with patch.object(tool_handlers.runtime.service, "get_status", return_value=response):
+                result = tool_handlers.adg_status()
+
+        reload_mock.assert_called_once()
+        assert result["status"] == "ok"
+        assert result["data"]["timestamp"] == "04192026_0657"
+
+
 # ---------------------------------------------------------------------------
 # Test 6 — Silent degraded fallback detection in post_cascade_adg_audit.py
 # ---------------------------------------------------------------------------

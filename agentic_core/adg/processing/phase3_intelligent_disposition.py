@@ -22,6 +22,8 @@ from enum import Enum
 from pathlib import Path
 from tqdm import tqdm
 
+from agentic_core.adg.artifact.multi_writer import has_guardian_for_violation
+
 _PHASE3_NON_FATAL_EXCEPTIONS = (
     sqlite3.Error,
     OSError,
@@ -61,6 +63,7 @@ class ViolationFeatures:
 
     file_path: str
     line_no: int
+    edge_kind: str
     exception_type: str
     severity: str
     architectural_layer: str
@@ -133,10 +136,11 @@ class FeatureExtractor:
         file_path = violation_data["file_path"]
         line_no = violation_data["line_no"]
         evidence = violation_data["evidence"]
+        edge_kind = violation_data.get("edge_kind", "")
         severity = violation_data.get("severity", "MEDIUM")
 
-        # Extract exception type from evidence
-        exception_type = evidence.replace("except:", "") if evidence.startswith("except:") else "Unknown"
+        # Persisted schema stores raw exception symbols (e.g. Exception, ValueError)
+        exception_type = evidence if evidence else "Unknown"
 
         # Determine architectural layer
         architectural_layer = self._determine_architectural_layer(file_path)
@@ -148,7 +152,7 @@ class FeatureExtractor:
         function_name = self._extract_function_name(file_path, line_no)
 
         # Check for guardian comments
-        has_guardian_comment = self._has_guardian_comment(file_path, line_no)
+        has_guardian_comment = self._has_guardian_comment(file_path, line_no, edge_kind)
 
         # Check test coverage
         test_coverage = self._has_test_coverage(file_path, line_no)
@@ -169,6 +173,7 @@ class FeatureExtractor:
         return ViolationFeatures(
             file_path=file_path,
             line_no=line_no,
+            edge_kind=edge_kind,
             exception_type=exception_type,
             severity=severity,
             architectural_layer=architectural_layer,
@@ -196,7 +201,7 @@ class FeatureExtractor:
                 )
                 row = cursor.fetchone()
                 if row and row[0] and row[0] not in ("", "tests", "unknown"):
-                    return row[0]
+                    return str(row[0])
             except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- ADG query: SQLite/IO failure gracefully falls back to path inference
                 pass
 
@@ -247,20 +252,9 @@ class FeatureExtractor:
 
         return None
 
-    def _has_guardian_comment(self, file_path: str, line_no: int) -> bool:
+    def _has_guardian_comment(self, file_path: str, line_no: int, edge_kind: str) -> bool:
         """Check if violation has guardian comment."""
-        try:
-            with open(file_path, encoding="utf-8") as f:
-                lines = f.readlines()
-
-            if line_no <= len(lines):
-                line = lines[line_no - 1].strip()
-                return "# guardian:" in line
-
-        except _PHASE3_NON_FATAL_EXCEPTIONS:
-            pass
-
-        return False
+        return bool(edge_kind) and has_guardian_for_violation(file_path, line_no, edge_kind)
 
     def _has_test_coverage(self, file_path: str, line_no: int) -> bool:
         """Check if violation has test coverage."""
@@ -280,7 +274,8 @@ class FeatureExtractor:
                 (file_path, line_no, line_no),
             )
 
-            count = cursor.fetchone()[0]
+            row = cursor.fetchone()
+            count = int(row[0]) if row else 0
             return count > 0
 
         except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- has_test_coverage query: SQLite/IO failure returns False (safe default)
@@ -373,10 +368,11 @@ class FeatureExtractor:
                 WHERE v.evidence LIKE ?
                   AND v.file_path LIKE ?
             """,
-                (f"except:{exception_type}%", f"%{module_name}%"),
+                (exception_type, f"%{module_name}%"),
             )
 
-            return cursor.fetchone()[0]
+            row = cursor.fetchone()
+            return int(row[0]) if row else 0
 
         except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- business criticality query: SQLite/IO failure returns 0 (safe default)
             pass
@@ -394,10 +390,11 @@ class FeatureExtractor:
                 SELECT COUNT(*) FROM violations
                 WHERE file_path = ? AND evidence LIKE ?
             """,
-                (file_path, f"except:{exception_type}%"),
+                (file_path, exception_type),
             )
 
-            return cursor.fetchone()[0]
+            row = cursor.fetchone()
+            return int(row[0]) if row else 0
 
         except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-silent-swallow -- similar violations count: SQLite/IO failure returns 0 (safe default)
             pass
@@ -488,7 +485,7 @@ class DispositionClassifier:
         feature_correlations = {}
 
         # Convert feature list to feature matrix
-        all_features = {}
+        all_features: dict[str, list] = {}
         for features in feature_list:
             for key, value in features.items():
                 if key not in all_features:
@@ -778,19 +775,26 @@ class IntelligentDispositionSystem:
 
         try:
             cursor = self.conn.execute("""
-                SELECT file_path, line_no, evidence, severity
-                FROM violations
-                WHERE disposition = 'untriaged'
-                  AND category = 'antipattern'
-                  AND (evidence LIKE 'except:Exception%' OR evidence LIKE 'except:bare%')
-                ORDER BY severity DESC, file_path, line_no
+                SELECT v.file_path, v.line_no, v.evidence, v.severity, COALESCE(e.edge_kind, '')
+                FROM violations v
+                LEFT JOIN edges e ON v.edge_id = e.id
+                WHERE v.disposition = 'untriaged'
+                  AND v.category = 'antipattern'
+                  AND e.edge_kind IN ('broad_exception_catch','silent_exception_swallow','log_and_swallow','return_none_swallow')
+                ORDER BY v.severity DESC, v.file_path, v.line_no
             """)
 
             violations = []
             for row in cursor.fetchall():
-                file_path, line_no, evidence, severity = row
+                file_path, line_no, evidence, severity, edge_kind = row
                 violations.append(
-                    {"file_path": file_path, "line_no": line_no, "evidence": evidence, "severity": severity},
+                    {
+                        "file_path": file_path,
+                        "line_no": line_no,
+                        "evidence": evidence,
+                        "severity": severity,
+                        "edge_kind": edge_kind,
+                    },
                 )
 
             return violations

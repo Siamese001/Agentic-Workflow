@@ -190,8 +190,6 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
         # Analyze handler body for antipatterns
         if node.body:
-            body_lines = [n.lineno for n in node.body]
-
             # Check for empty/pass-only handlers (silent swallow)
             if self._is_silent_swallow(node.body):
                 self._antipatterns.append(
@@ -216,7 +214,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             if self._is_return_none_after_exception(node.body):
                 self._antipatterns.append(
                     (
-                        body_lines[-1] if body_lines else node.lineno,
+                        node.lineno,
                         "return_none_swallow",
                         handler_type or "Exception",
                     )

@@ -19,7 +19,7 @@ from tqdm import tqdm
 from tools.adg.core.graph_projection_backend import GraphProjectionBackend
 from tools.adg.core.models import ADGEdge, ADGNode
 from tools.adg.core.p0_wave_plan import build_p0_remediation_wave_plan
-from tools.adg.shared_modules.path_resolver import get_adg_dir
+from tools.adg.shared_modules.path_resolver import get_adg_dir, latest_sqlite
 
 logger = logging.getLogger(__name__)
 
@@ -87,12 +87,11 @@ class SQLiteBackend:
 
     def _connect(self) -> None:
         """Establish read-only connection to latest SQLite file."""
-        adg_dir = get_adg_dir()
-        files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
-        if not files:
+        sqlite_file = latest_sqlite()
+        if sqlite_file is None:
             raise RuntimeError("No ADG SQLite file found")
 
-        self._sqlite_path = files[-1]
+        self._sqlite_path = sqlite_file
         self._last_mtime = self._sqlite_path.stat().st_mtime
         self._conn = sqlite3.connect(
             self._readonly_uri(self._sqlite_path),
@@ -112,16 +111,15 @@ class SQLiteBackend:
         is_fresh = current_mtime == self._last_mtime
 
         # Check if current snapshot is stale (newer file exists)
-        adg_dir = get_adg_dir()
-        files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
-        is_stale = bool(files) and files[-1] != self._sqlite_path
+        latest_path = latest_sqlite()
+        is_stale = latest_path is not None and latest_path != self._sqlite_path
 
         return "healthy", {
             "path": str(self._sqlite_path),
             "mtime": current_mtime,
             "is_fresh": is_fresh,
             "is_stale": is_stale,
-            "latest_path": str(files[-1]) if files else None,
+            "latest_path": str(latest_path) if latest_path else None,
         }
 
     @staticmethod

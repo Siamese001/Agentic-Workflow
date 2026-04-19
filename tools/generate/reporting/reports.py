@@ -8,6 +8,8 @@ from collections import Counter
 from pathlib import Path
 from tqdm import tqdm
 
+from tools.adg.shared_modules.path_resolver import latest_sqlite
+
 
 def _discover_repo_root(start: Path) -> Path:
     """Best-effort repository root discovery for direct script and package execution."""
@@ -22,19 +24,37 @@ def _discover_repo_root(start: Path) -> Path:
 ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
+def _resolve_reporting_sqlite(sqlite_path: Path | None) -> tuple[Path | None, bool]:
+    """Resolve deterministic sqlite source and flag mismatch with latest snapshot."""
+    latest = latest_sqlite()
+
+    if sqlite_path is not None and sqlite_path.exists():
+        mismatch = latest is not None and sqlite_path.resolve() != latest.resolve()
+        return sqlite_path, mismatch
+    return latest, False
+
+
 def _print_defect_table(
     routing_summary: dict,
     semantic_warnings: list[str] | None = None,
     sqlite_path: Path | None = None,
 ) -> None:
     """Print P0-P3 defect table in terminal output."""
+    sqlite_source, source_mismatch = _resolve_reporting_sqlite(sqlite_path)
+    if sqlite_source is None:
+        print("[ADG] WARNING: No sqlite source available for burndown reporting")
+    elif source_mismatch:
+        print(
+            f"[ADG] WARNING: reporting sqlite differs from latest snapshot: using={sqlite_source.name}",
+        )
+
     by_severity = routing_summary.get("by_severity", {})
 
     p0_count = 0
     _violation_rows: list = []
-    if sqlite_path is not None and sqlite_path.exists():
+    if sqlite_source is not None and sqlite_source.exists():
         try:
-            with sqlite3.connect(str(sqlite_path)) as _conn:
+            with sqlite3.connect(str(sqlite_source)) as _conn:
                 _violation_rows = _conn.execute(
                     "SELECT source_file, line_no FROM edges WHERE relation_type='violates'",
                 ).fetchall()
@@ -149,7 +169,7 @@ def _print_defect_table(
                 "L_PG",
                 "L_RUNTIME",
             )
-            with sqlite3.connect(str(sqlite_path)) as _cc:
+            with sqlite3.connect(str(sqlite_source)) as _cc:
                 _p0_layer_pairs = _cc.execute("""
                     SELECT n_src.layer, n_dst.layer, COUNT(*)
                     FROM edges e
@@ -325,9 +345,9 @@ def _print_defect_table(
 
     # --- SC/AP audit violation counts for defect table ---
     _sc_ap_counts: dict[str, int] = {}
-    if sqlite_path is not None and sqlite_path.exists():
+    if sqlite_source is not None and sqlite_source.exists():
         try:
-            with sqlite3.connect(str(sqlite_path)) as _sa_conn:
+            with sqlite3.connect(str(sqlite_source)) as _sa_conn:
                 _sa_cols = {r[1] for r in _sa_conn.execute("PRAGMA table_info(violations)").fetchall()}
                 if "violation_class" in _sa_cols:
                     _sa_rows = _sa_conn.execute(
@@ -482,7 +502,7 @@ def _print_defect_table(
                 "P2": "P2",
                 "P3": "P3",
             }
-            with sqlite3.connect(str(sqlite_path)) as _bc_conn:
+            with sqlite3.connect(str(sqlite_source)) as _bc_conn:
                 _bc_rows = _bc_conn.execute(
                     "SELECT violation_class, severity, COUNT(*) FROM violations "
                     "WHERE violation_class IN ('structural_conformance', 'agentic_antipattern') "
@@ -530,6 +550,17 @@ def _print_defect_table(
 
     _burndown: dict = {
         "schema_version": "2.1",
+        "provenance": {
+            "generator_module": "tools.generate.reporting.reports._print_defect_table",
+            "sqlite_source_path": str(sqlite_source) if sqlite_source else "",
+            "sqlite_source_name": sqlite_source.name if sqlite_source else "",
+            "sqlite_source_timestamp": sqlite_source.stem.replace("adg_indexed_", "")
+            if sqlite_source
+            else "",
+            "source_mismatch_with_latest": source_mismatch,
+            "counting_mode": "violations_plus_exempted_edge_inference",
+            "historical_interpretation_note": "defensible broad trend is ~1254 to 631; single-tranche ~623 attribution is not proven",
+        },
         "summary": {
             "P0": {
                 "net": p0_count,
@@ -626,7 +657,7 @@ def _generate_standardized_reports(
     reports_dir = adg_dir
     sqlite_path = adg_dir / f"adg_indexed_{ts}.sqlite"
     if not sqlite_path.exists():
-        from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         write_all_artifacts(artifact, out_dir=adg_dir, ts=ts)
 
@@ -653,13 +684,14 @@ def _generate_standardized_reports(
                 )
     layer_report["layer_distribution"] = dict(layer_counts)
     layer_report["unknown_modules"] = unknown_modules[:50]
+    total_modules_count = len(artifact.entities)
     layer_report["coverage_metrics"] = {
-        "known_modules": layer_report["total_modules"] - len(unknown_modules),
+        "known_modules": total_modules_count - len(unknown_modules),
         "unknown_modules": len(unknown_modules),
-        "coverage_percentage": (layer_report["total_modules"] - len(unknown_modules))
-        / layer_report["total_modules"]  # type: ignore[operator]
+        "coverage_percentage": (total_modules_count - len(unknown_modules))
+        / total_modules_count
         * 100
-        if layer_report["total_modules"]
+        if total_modules_count
         else 0,
     }
 
@@ -750,7 +782,7 @@ def _generate_standardized_reports(
         repo_root,
         enable_determinism_probe,
     )
-    closure_report = None
+    closure_report: dict[str, object] | None = None
     if result is not None:
         audited = {
             "decomposes_into_expected": result.manifest.decomposes_into_expected_count,
@@ -848,12 +880,12 @@ def _generate_standardized_reports(
                 "numerator": stored_edge_counts.get("decomposes_into", 0),
                 "denominator": max(result.manifest.decomposes_into_expected_count, 1),
                 "ratio": _ratio(
-                    stored_edge_counts.get("decomposes_into", 0),
+                    int(stored_edge_counts.get("decomposes_into", 0)),
                     result.manifest.decomposes_into_expected_count,
                 ),
                 "threshold": 0.95,
                 "passed": _ratio(
-                    stored_edge_counts.get("decomposes_into", 0),
+                    int(stored_edge_counts.get("decomposes_into", 0)),
                     result.manifest.decomposes_into_expected_count,
                 )
                 >= 0.95,
@@ -880,9 +912,11 @@ def _generate_standardized_reports(
                 "capability": "DATA LINEAGE",
                 "numerator": semantic_stats["flows_to_total"],
                 "denominator": max(result.manifest.flows_to_expected_count, 1),
-                "ratio": _ratio(semantic_stats["flows_to_total"], result.manifest.flows_to_expected_count),
+                "ratio": _ratio(int(semantic_stats["flows_to_total"]), result.manifest.flows_to_expected_count),
                 "threshold": 0.95,
-                "passed": _ratio(semantic_stats["flows_to_total"], result.manifest.flows_to_expected_count)
+                "passed": _ratio(
+                    int(semantic_stats["flows_to_total"]), result.manifest.flows_to_expected_count
+                )
                 >= 0.95,
             },
             {
@@ -891,11 +925,11 @@ def _generate_standardized_reports(
                 "numerator": semantic_stats["controls_flow_total"],
                 "denominator": max(result.manifest.controls_flow_expected_count, 1),
                 "ratio": _ratio(
-                    semantic_stats["controls_flow_total"], result.manifest.controls_flow_expected_count
+                    int(semantic_stats["controls_flow_total"]), result.manifest.controls_flow_expected_count
                 ),
                 "threshold": 0.95,
                 "passed": _ratio(
-                    semantic_stats["controls_flow_total"], result.manifest.controls_flow_expected_count
+                    int(semantic_stats["controls_flow_total"]), result.manifest.controls_flow_expected_count
                 )
                 >= 0.95,
             },
@@ -905,11 +939,11 @@ def _generate_standardized_reports(
                 "numerator": semantic_stats["side_effect_total"],
                 "denominator": max(result.manifest.emits_side_effect_expected_count, 1),
                 "ratio": _ratio(
-                    semantic_stats["side_effect_total"], result.manifest.emits_side_effect_expected_count
+                    int(semantic_stats["side_effect_total"]), result.manifest.emits_side_effect_expected_count
                 ),
                 "threshold": 0.95,
                 "passed": _ratio(
-                    semantic_stats["side_effect_total"], result.manifest.emits_side_effect_expected_count
+                    int(semantic_stats["side_effect_total"]), result.manifest.emits_side_effect_expected_count
                 )
                 >= 0.95,
             },
@@ -928,11 +962,11 @@ def _generate_standardized_reports(
                 "numerator": semantic_stats["callsite_total"],
                 "denominator": max(result.manifest.resolves_callsite_expected_count, 1),
                 "ratio": _ratio(
-                    semantic_stats["callsite_total"], result.manifest.resolves_callsite_expected_count
+                    int(semantic_stats["callsite_total"]), result.manifest.resolves_callsite_expected_count
                 ),
                 "threshold": 0.95,
                 "passed": _ratio(
-                    semantic_stats["callsite_total"], result.manifest.resolves_callsite_expected_count
+                    int(semantic_stats["callsite_total"]), result.manifest.resolves_callsite_expected_count
                 )
                 >= 0.95,
             },
@@ -992,7 +1026,7 @@ def _generate_standardized_reports(
     from agentic_core.L2_execution.utils.async_file_ops import BufferedFileWriter
     from tools.generate.generate_full_adg import _json_dumps  # type: ignore[attr-defined]
 
-    reports = [
+    reports: list[tuple[str, dict[str, object]]] = [
         (f"layer_coverage_report_{ts}.json", layer_report),
         (f"edge_density_report_{ts}.json", edge_report),
         (f"provenance_report_{ts}.json", provenance_report),

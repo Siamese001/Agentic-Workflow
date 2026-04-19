@@ -37,7 +37,7 @@ import json
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from agentic_core.adg.artifact.layer_splitter import split_artifact
 from agentic_core.adg.artifact.normalizer import ArtifactNormalizer
@@ -111,7 +111,7 @@ _emit_updates_meta_learning_state("p4", "multi_writer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "multi_writer", "exec_snapshot_link")
 
 if TYPE_CHECKING:
-    from agentic_core.adg.artifact.builder import ADGArtifact
+    from agentic_core.adg.artifact.builder_types import ADGArtifact
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: E402
     LayerSegment,
     _emit_captures_pattern,
@@ -453,6 +453,15 @@ _LAYER_VIOLATION_GUARDIANS = ("guardian: allow-layer-violation",)
 
 _file_cache: dict[str, list[str]] = {}
 
+_CANONICAL_GUARDIAN_TOKENS = frozenset(
+    {
+        "allow-silent-swallow",
+        "allow-log-and-swallow",
+        "allow-return-none-swallow",
+        "allow-broad-exception",
+    }
+)
+
 
 def _read_lines_cached(filepath: str) -> list[str]:
     """Read file lines with caching to avoid repeated I/O for hot files."""
@@ -471,6 +480,74 @@ def _read_lines_cached(filepath: str) -> list[str]:
     return _file_cache[filepath]
 
 
+def _extract_guardian_tokens(line: str) -> set[str]:
+    """Extract canonical guardian allow tokens from a single source line."""
+    if "guardian:" not in line:
+        return set()
+    tokens: set[str] = set()
+    marker = "guardian:"
+    idx = line.find(marker)
+    if idx < 0:
+        return tokens
+    payload = line[idx + len(marker) :]
+    for raw in payload.split():
+        cleaned = raw.strip().strip(",;()[]{}")
+        if cleaned.startswith("allow-") and cleaned in _CANONICAL_GUARDIAN_TOKENS:
+            tokens.add(cleaned)
+    return tokens
+
+
+def _resolve_except_anchor_lines(lines: list[str], line_no: int) -> set[int]:
+    """Resolve structural anchor lines for an exception handler site.
+
+    Supports:
+    - inline guardian on except line
+    - guardian line above except header
+    - guardian on closing line of a multi-line except header
+    """
+    if line_no < 1 or not lines:
+        return set()
+
+    max_idx = len(lines) - 1
+    idx = min(max(line_no - 1, 0), max_idx)
+    start = idx
+
+    for probe in range(idx, max(-1, idx - 6), -1):
+        stripped = lines[probe].lstrip()
+        if stripped.startswith("except"):
+            start = probe
+            break
+
+    end = start
+    for probe in range(start, min(len(lines), start + 6)):
+        end = probe
+        if ":" in lines[probe]:
+            break
+
+    anchors = {start + 1, end + 1, idx + 1}
+    if start > 0:
+        anchors.add(start)
+    return {ln for ln in anchors if 1 <= ln <= len(lines)}
+
+
+def has_guardian_for_violation(source_file: str, line_no: int, edge_kind: str) -> bool:
+    """Canonical guardian matcher used across write-time, phase2, and phase3."""
+    guardians = _GUARDIAN_MAP.get(edge_kind)
+    if not guardians:
+        return False
+
+    lines = _read_lines_cached(source_file)
+    if not lines:
+        return False
+
+    valid_tokens = {g.split("guardian:", 1)[1].strip() for g in guardians if "guardian:" in g}
+    for anchor_line in _resolve_except_anchor_lines(lines, line_no):
+        tokens = _extract_guardian_tokens(lines[anchor_line - 1])
+        if any(token in valid_tokens for token in tokens):
+            return True
+    return False
+
+
 def _has_guardian_comment(
     source_file: str,
     line_no: int,
@@ -480,12 +557,11 @@ def _has_guardian_comment(
     lines = _read_lines_cached(source_file)
     if not lines or line_no < 1:
         return False
-    start = max(0, line_no - 3)
-    end = min(len(lines), line_no + 3)
-    for ln in lines[start:end]:
-        for gs in guardian_strings:
-            if gs in ln:
-                return True
+    valid_tokens = {g.split("guardian:", 1)[1].strip() for g in guardian_strings if "guardian:" in g}
+    for anchor_line in _resolve_except_anchor_lines(lines, line_no):
+        tokens = _extract_guardian_tokens(lines[anchor_line - 1])
+        if any(token in valid_tokens for token in tokens):
+            return True
     return False
 
 
@@ -509,8 +585,7 @@ def _filter_guardian_exempted_violations(conn: sqlite3.Connection) -> int:
 
     exempt_ids: list[int] = []
     for vid, edge_kind, fpath, lno in rows:
-        guardians = _GUARDIAN_MAP.get(edge_kind)
-        if guardians and _has_guardian_comment(fpath, lno, guardians):
+        if has_guardian_for_violation(fpath, lno, edge_kind):
             exempt_ids.append(vid)
 
     # Collect layer-violation violations
@@ -771,68 +846,19 @@ def write_all_artifacts(
     write_sqlite: bool = True,
     create_latest_symlinks: bool = False,
 ) -> ArtifactPaths:
-    """Write Tier 1 (snapshot), Tier 2 (sqlite) and three non-overlapping
-    split-plane graphs to out_dir. Zero redundancy, 100% edge coverage.
+    """Compatibility wrapper delegating to canonical ArtifactPaths writer."""
+    from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts as _canonical_write_all_artifacts
 
-    Parameters
-    ----------
-    artifact:
-        The fully-built ADGArtifact to serialize.
-    out_dir:
-        Target directory (will be created if missing).
-    ts:
-        Timestamp string for filenames, e.g. ``"20260311T154637Z"``.
-        If empty, no timestamp suffix is added.
-    write_split_planes:
-        Whether to write the three plane sub-graphs.
-    write_sqlite:
-        Whether to write the SQLite index.
-    create_latest_symlinks:
-        Whether to create LATEST symlinks pointing to the newest artifacts.
-    """
-    out_dir.mkdir(parents=True, exist_ok=True)
-    suffix = f"_{ts}" if ts else ""
-
-    # --- Tier 1: lightweight snapshot ---
-    snap_dict = _build_snapshot(artifact)
-    snap_path = out_dir / f"adg_snapshot{suffix}.json"
-    snap_path.write_text(json.dumps(snap_dict, sort_keys=True, indent=2), encoding="utf-8")
-
-    # --- Tier 2: SQLite index (primary store, replaces adg_full.json) ---
-    normalizer = ArtifactNormalizer()
-    ng_full = normalizer.normalize(artifact)
-    sqlite_path = out_dir / f"adg_indexed{suffix}.sqlite"
-    if write_sqlite:
-        _write_sqlite(ng_full, sqlite_path)
-
-    # --- Split planes (non-overlapping, together = 100% edge coverage) ---
-    file_graph_path = out_dir / f"adg_file_graph{suffix}.json"
-    symbol_graph_path = out_dir / f"adg_symbol_graph{suffix}.json"
-    governance_graph_path = out_dir / f"adg_governance_graph{suffix}.json"
-
-    if write_split_planes:
-        planes = split_artifact(artifact)
-        planes.file_graph.write(file_graph_path, indent=None)
-        planes.symbol_graph.write(symbol_graph_path, indent=None)
-        planes.governance_graph.write(governance_graph_path, indent=None)
-
-    # --- Create LATEST symlinks for easy discovery ---
-    if create_latest_symlinks and ts:
-        _create_latest_symlinks(
-            out_dir,
-            sqlite_path,
-            snap_path,
-            file_graph_path,
-            symbol_graph_path,
-            governance_graph_path,
-        )
-
-    return ArtifactPaths(
-        snapshot=snap_path,
-        sqlite=sqlite_path,
-        file_graph=file_graph_path,
-        symbol_graph=symbol_graph_path,
-        governance_graph=governance_graph_path,
+    return cast(
+        ArtifactPaths,
+        _canonical_write_all_artifacts(
+            artifact,
+            out_dir=out_dir,
+            ts=ts,
+            write_split_planes=write_split_planes,
+            write_sqlite=write_sqlite,
+            create_latest_symlinks=create_latest_symlinks,
+        ),
     )
 
 

@@ -9,6 +9,7 @@ Usage:
 
 from __future__ import annotations
 
+from datetime import datetime
 import os
 from pathlib import Path
 
@@ -44,8 +45,23 @@ def latest_sqlite() -> Path | None:
     if not adg_dir.exists():
         return None
 
-    files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
-    return files[-1] if files else None
+    files = list(adg_dir.glob("adg_indexed_*.sqlite"))
+    if not files:
+        return None
+
+    def _is_valid_snapshot_file(path: Path) -> bool:
+        snapshot_id = path.stem.replace("adg_indexed_", "")
+        try:
+            datetime.strptime(snapshot_id, "%m%d%Y_%H%M")
+            return True
+        except ValueError:
+            return False
+
+    valid_files = [p for p in files if _is_valid_snapshot_file(p)]
+    if not valid_files:
+        return None
+
+    return max(valid_files, key=lambda p: p.stat().st_mtime)
 
 
 def get_reports_dir() -> Path:

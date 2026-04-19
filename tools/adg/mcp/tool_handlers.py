@@ -24,6 +24,7 @@ def adg_health() -> JsonDict:
     """PRIMARY health check. Always call this first."""
 
     def operation() -> JsonDict:
+        runtime.reload_latest_snapshot()
         report = runtime.diagnostics.full_report()
         return {"status": "ok", "data": report}
 
@@ -34,6 +35,7 @@ def adg_status() -> JsonDict:
     """Get ADG snapshot status."""
 
     def operation() -> JsonDict:
+        runtime.reload_latest_snapshot()
         response = runtime.service.get_status()
         return {
             "status": response.status,

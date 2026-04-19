@@ -22,6 +22,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import os
 import sqlite3
 import sys
@@ -42,11 +43,25 @@ def _find_latest_sqlite(adg_dir: Path) -> Path:
     if not adg_dir.exists() or not adg_dir.is_dir():
         print(f"ERROR: ADG artifacts directory not found: {adg_dir}", file=sys.stderr)
         sys.exit(1)
-    files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
+    files = list(adg_dir.glob("adg_indexed_*.sqlite"))
     if not files:
         print(f"ERROR: No adg_indexed_*.sqlite found in {adg_dir}", file=sys.stderr)
         sys.exit(1)
-    return files[-1]
+
+    def _is_valid_snapshot_file(path: Path) -> bool:
+        snapshot_id = path.stem.replace("adg_indexed_", "")
+        try:
+            datetime.strptime(snapshot_id, "%m%d%Y_%H%M")
+            return True
+        except ValueError:
+            return False
+
+    valid_files = [p for p in files if _is_valid_snapshot_file(p)]
+    if not valid_files:
+        print(f"ERROR: No valid timestamped adg_indexed_*.sqlite found in {adg_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    return max(valid_files, key=lambda p: p.stat().st_mtime)
 
 
 def _snapshot_id_from_path(sqlite_path: Path) -> str:

@@ -78,7 +78,7 @@ from agentic_core.adg.analysis.ImpactReport import impact_summary, predict_impac
 from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry, _infer_ownership  # noqa: E402
 from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations  # noqa: E402
 from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts  # noqa: E402
-from agentic_core.adg.artifact.builder_types import build_artifact  # noqa: E402
+from agentic_core.adg.artifact.builder_types import ADGArtifact, build_artifact  # noqa: E402
 from agentic_core.adg.extraction.static_scanner import (  # noqa: E402
     ADGStaticScanner,
 )
@@ -125,6 +125,27 @@ from tools.generate.validation import (  # noqa: E402  # M.3 modularization
 )
 
 # M.4: _print_defect_table extracted to tools.generate.reporting.reports
+
+
+def _resolve_post_commit_sqlite(paths: object, adg_artifacts_dir: Path, ts: str) -> Path:
+    """Resolve and validate the canonical post-commit SQLite for Tier-2 gates."""
+    sqlite_candidate: Path | None = None
+    if hasattr(paths, "sqlite") and getattr(paths, "sqlite") is not None:
+        sqlite_candidate = Path(getattr(paths, "sqlite")).resolve()
+
+    if sqlite_candidate is None or not sqlite_candidate.exists():
+        fallback = (adg_artifacts_dir / f"adg_indexed_{ts}.sqlite").resolve()
+        if fallback.exists():
+            sqlite_candidate = fallback
+
+    if sqlite_candidate is None or not sqlite_candidate.exists():
+        print("\n[ERROR] Tier-2 sqlite source missing after artifact commit")
+        print(f"[ERROR] Expected current-run sqlite under: {adg_artifacts_dir}")
+        raise SystemExit(1)
+
+    _check_sqlite_integrity(sqlite_candidate)
+    print(f"[ADG] Tier-2 sqlite source: {sqlite_candidate}")
+    return sqlite_candidate
 
 
 def generate_full_adg(
@@ -269,7 +290,10 @@ def generate_full_adg(
             write_split_planes=False,
         )
     except SystemExit as e:
-        exit_code = e.code if e.code is not None else 1
+        if isinstance(e.code, int):
+            exit_code = e.code
+        else:
+            exit_code = 1
     finally:
         # Clean up temp directory with ignore_errors=True to handle Windows file handle timing
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -277,10 +301,9 @@ def generate_full_adg(
     if exit_code != 0:
         sys.exit(exit_code)
 
-    # --- Tier-2: Code quality gates (run on PRODUCTION SQLite, never temp) ---
+    # --- Tier-2: Code quality gates (run on current-run PRODUCTION SQLite, never temp) ---
     # Orchestrator runs inline here. No SQLite contention with temp directory.
-    production_sqlite = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"))
-    prod_sqlite_path = production_sqlite[-1] if production_sqlite else None
+    prod_sqlite_path = _resolve_post_commit_sqlite(paths, adg_artifacts_dir, ts)
     p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
     _run_p0_two_pass_runner(
@@ -344,7 +367,7 @@ def generate_full_adg(
 
     # --- Repair orchestrator: classify + fix remaining issues ---
     print("[ADG] Running repair orchestrator on committed artifacts...")
-    _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
+    _run_p1_p2_auto_fix(adg_artifacts_dir, ts, sqlite_path=prod_sqlite_path)
 
     # Size report
     sizes = paths.size_report()

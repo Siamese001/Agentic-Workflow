@@ -21,6 +21,8 @@ from pathlib import Path
 from tqdm import tqdm
 from typing import NamedTuple
 
+from agentic_core.adg.artifact.multi_writer import has_guardian_for_violation
+
 
 class RemediationStrategy(Enum):
     """Auto-remediation strategies for exception handlers."""
@@ -60,6 +62,7 @@ class ViolationContext(NamedTuple):
 
     file_path: str
     line_no: int
+    edge_kind: str
     original_line: str
     evidence: str
     severity: str
@@ -221,43 +224,55 @@ class AutoRemediationEngine:
 
     def _load_remediation_candidates(self) -> list[ViolationContext]:
         """Load violations that are candidates for auto-remediation."""
+        conn = self.conn
+        if conn is None:
+            return []
+        candidate_kinds = (
+            "broad_exception_catch",
+            "silent_exception_swallow",
+            "log_and_swallow",
+            "return_none_swallow",
+        )
         # Check if Phase 1 schema exists
-        cursor = self.conn.execute("PRAGMA table_info(violations)")
+        cursor = conn.execute("PRAGMA table_info(violations)")
         columns = {row[1] for row in cursor.fetchall()}
 
         if "severity" in columns and "disposition" in columns:
             # Full Phase 1 schema
-            cursor = self.conn.execute("""
-                SELECT file_path, line_no, evidence, severity
-                FROM violations
-                WHERE category = 'antipattern'
-                  AND disposition = 'untriaged'
-                  AND severity IN ('HIGH', 'MEDIUM')
-                  AND (evidence LIKE 'except:Exception%' OR evidence LIKE 'except:bare%')
-                ORDER BY severity DESC, file_path, line_no
-            """)
+            cursor = conn.execute("""
+                SELECT v.file_path, v.line_no, COALESCE(e.edge_kind, ''), v.evidence, v.severity
+                FROM violations v
+                LEFT JOIN edges e ON v.edge_id = e.id
+                WHERE v.category = 'antipattern'
+                  AND v.disposition = 'untriaged'
+                  AND v.severity IN ('HIGH', 'MEDIUM')
+                  AND e.edge_kind IN (?, ?, ?, ?)
+                ORDER BY v.severity DESC, v.file_path, v.line_no
+            """, candidate_kinds)
         elif "severity" in columns:
             # Partial Phase 1 schema - assume all are untriaged
-            cursor = self.conn.execute("""
-                SELECT file_path, line_no, evidence, severity
-                FROM violations
-                WHERE category = 'antipattern'
-                  AND severity IN ('HIGH', 'MEDIUM')
-                  AND (evidence LIKE 'except:Exception%' OR evidence LIKE 'except:bare%')
-                ORDER BY severity DESC, file_path, line_no
-            """)
+            cursor = conn.execute("""
+                SELECT v.file_path, v.line_no, COALESCE(e.edge_kind, ''), v.evidence, v.severity
+                FROM violations v
+                LEFT JOIN edges e ON v.edge_id = e.id
+                WHERE v.category = 'antipattern'
+                  AND v.severity IN ('HIGH', 'MEDIUM')
+                  AND e.edge_kind IN (?, ?, ?, ?)
+                ORDER BY v.severity DESC, v.file_path, v.line_no
+            """, candidate_kinds)
         else:
             # Pre-Phase 1 schema - use default severity, treat all as candidates
-            cursor = self.conn.execute("""
-                SELECT file_path, line_no, evidence, 'MEDIUM'
-                FROM violations
-                WHERE category = 'antipattern'
-                  AND (evidence LIKE 'except:Exception%' OR evidence LIKE 'except:bare%')
-                ORDER BY file_path, line_no
-            """)
+            cursor = conn.execute("""
+                SELECT v.file_path, v.line_no, COALESCE(e.edge_kind, ''), v.evidence, 'MEDIUM'
+                FROM violations v
+                LEFT JOIN edges e ON v.edge_id = e.id
+                WHERE v.category = 'antipattern'
+                  AND e.edge_kind IN (?, ?, ?, ?)
+                ORDER BY v.file_path, v.line_no
+            """, candidate_kinds)
 
         violations = []
-        for file_path, line_no, evidence, severity in tqdm(
+        for file_path, line_no, edge_kind, evidence, severity in tqdm(
             cursor.fetchall(), desc="load violations", unit="row", leave=False
         ):
             try:
@@ -287,6 +302,7 @@ class AutoRemediationEngine:
                         ViolationContext(
                             file_path=file_path,
                             line_no=line_no,
+                            edge_kind=edge_kind,
                             original_line=original_line,
                             evidence=evidence,
                             severity=severity,
@@ -352,7 +368,7 @@ class AutoRemediationEngine:
         """Analyze a single violation and suggest remediation."""
 
         # Check if already has guardian comment
-        if "# guardian:" in violation.original_line:
+        if has_guardian_for_violation(violation.file_path, violation.line_no, violation.edge_kind):
             return None
 
         # Infer exception types
@@ -361,7 +377,7 @@ class AutoRemediationEngine:
 
         # Merge and deduplicate candidates
         all_candidates = code_candidates + import_candidates
-        unique_candidates = {}
+        unique_candidates: dict[str, ExceptionType] = {}
         for candidate in all_candidates:
             if (
                 candidate.name not in unique_candidates
@@ -488,7 +504,7 @@ class AutoRemediationEngine:
             if action.line_no <= len(lines):
                 original_line = lines[action.line_no - 1].rstrip()
 
-                if original_line != action.original_line:
+                if not self._verify_target_line(original_line, action.original_line):
                     print("    ⚠️  Line changed since analysis, skipping")
                     return False
 
@@ -512,6 +528,13 @@ class AutoRemediationEngine:
             return False
 
         return False
+
+    def _verify_target_line(self, current_line: str, expected_line: str) -> bool:
+        """Fail-closed verification that remediation still targets an except header."""
+        if current_line != expected_line:
+            return False
+        stripped = current_line.strip()
+        return stripped.startswith("except") and ":" in stripped
 
     def update_disposition(self, action: RemediationAction, status: str) -> None:
         """Update violation disposition in ADG after remediation."""

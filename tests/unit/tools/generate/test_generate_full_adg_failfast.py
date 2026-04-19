@@ -7,6 +7,7 @@ conditions correctly abort generation when critical conditions are not met.
 
 import sqlite3
 import sys
+import json
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -148,6 +149,111 @@ class TestSQLiteIntegrityCheck:
 
         # Should not raise
         _check_sqlite_integrity(sqlite_path)
+
+
+class TestPostCommitSqliteResolution:
+    """Tests for deterministic Tier-2 sqlite source selection."""
+
+    @staticmethod
+    def _create_valid_sqlite(path: Path) -> None:
+        conn = sqlite3.connect(str(path))
+        conn.execute("CREATE TABLE nodes (id INTEGER PRIMARY KEY)")
+        conn.execute("CREATE TABLE edges (id INTEGER PRIMARY KEY)")
+        conn.execute("CREATE TABLE violations (id INTEGER PRIMARY KEY)")
+        conn.execute("CREATE TABLE meta (key TEXT, value TEXT)")
+        conn.commit()
+        conn.close()
+
+    def test_prefers_current_run_paths_sqlite_over_lexicographic_latest(self, tmp_path):
+        """Use current run ArtifactPaths sqlite even when a lexicographically newer sentinel exists."""
+        from tools.generate.generate_full_adg import _resolve_post_commit_sqlite
+
+        adg_dir = tmp_path / "adg"
+        adg_dir.mkdir()
+        sentinel = adg_dir / "adg_indexed_99999999_9999.sqlite"
+        sentinel.write_text("not-a-sqlite", encoding="utf-8")
+
+        current = adg_dir / "adg_indexed_04192026_0622.sqlite"
+        self._create_valid_sqlite(current)
+
+        mock_paths = Mock()
+        mock_paths.sqlite = current
+
+        resolved = _resolve_post_commit_sqlite(mock_paths, adg_dir, "04192026_0622")
+        assert resolved == current.resolve()
+
+    def test_falls_back_to_timestamped_sqlite_when_paths_sqlite_missing(self, tmp_path):
+        """Fallback should resolve deterministic current timestamp sqlite file."""
+        from tools.generate.generate_full_adg import _resolve_post_commit_sqlite
+
+        adg_dir = tmp_path / "adg"
+        adg_dir.mkdir()
+        fallback = adg_dir / "adg_indexed_04192026_0622.sqlite"
+        self._create_valid_sqlite(fallback)
+
+        mock_paths = Mock()
+        mock_paths.sqlite = adg_dir / "missing.sqlite"
+
+        resolved = _resolve_post_commit_sqlite(mock_paths, adg_dir, "04192026_0622")
+        assert resolved == fallback.resolve()
+
+    def test_fails_fast_when_no_post_commit_sqlite_available(self, tmp_path):
+        """Fail fast when neither ArtifactPaths sqlite nor timestamp fallback exists."""
+        from tools.generate.generate_full_adg import _resolve_post_commit_sqlite
+
+        adg_dir = tmp_path / "adg"
+        adg_dir.mkdir()
+
+        mock_paths = Mock()
+        mock_paths.sqlite = adg_dir / "missing.sqlite"
+
+        with pytest.raises(SystemExit) as exc_info:
+            _resolve_post_commit_sqlite(mock_paths, adg_dir, "04192026_0622")
+        assert exc_info.value.code == 1
+
+
+class TestRepairRunnerSqliteResolution:
+    """Tests for deterministic repair orchestrator sqlite resolution."""
+
+    @staticmethod
+    def _create_valid_sqlite(path: Path) -> None:
+        conn = sqlite3.connect(str(path))
+        conn.execute("CREATE TABLE nodes (id INTEGER PRIMARY KEY)")
+        conn.execute("CREATE TABLE edges (id INTEGER PRIMARY KEY)")
+        conn.execute("CREATE TABLE violations (id INTEGER PRIMARY KEY)")
+        conn.execute("CREATE TABLE meta (key TEXT, value TEXT)")
+        conn.commit()
+        conn.close()
+
+    def test_repair_resolver_prefers_explicit_sqlite_path(self, tmp_path):
+        from tools.generate.integration.repair_runner import _resolve_repair_sqlite
+
+        adg_dir = tmp_path / "adg"
+        adg_dir.mkdir()
+
+        sentinel = adg_dir / "adg_indexed_99999999_9999.sqlite"
+        sentinel.write_text("invalid", encoding="utf-8")
+
+        current = adg_dir / "adg_indexed_04192026_0622.sqlite"
+        self._create_valid_sqlite(current)
+
+        resolved = _resolve_repair_sqlite(adg_dir, "04192026_0622", current)
+        assert resolved == current.resolve()
+
+    def test_repair_resolver_rejects_missing_required_tables(self, tmp_path):
+        from tools.generate.integration.repair_runner import _resolve_repair_sqlite
+
+        adg_dir = tmp_path / "adg"
+        adg_dir.mkdir()
+
+        invalid = adg_dir / "adg_indexed_04192026_0622.sqlite"
+        conn = sqlite3.connect(str(invalid))
+        conn.execute("CREATE TABLE nodes (id INTEGER PRIMARY KEY)")
+        conn.commit()
+        conn.close()
+
+        resolved = _resolve_repair_sqlite(adg_dir, "04192026_0622", invalid)
+        assert resolved is None
 
 
 class TestArtifactConsistencyCheck:
@@ -347,9 +453,14 @@ class TestP0ViolationsCheck:
         sqlite_path = tmp_path / "test.sqlite"
 
         # Create SQLite without in_cycle or dynamic_exec
+        # Schema must include columns read by _check_p0_violations (source_file, line_no)
         conn = sqlite3.connect(str(sqlite_path))
-        conn.execute("CREATE TABLE edges (relation_type TEXT)")
-        conn.execute("INSERT INTO edges (relation_type) VALUES ('imports')")
+        conn.execute(
+            "CREATE TABLE edges (relation_type TEXT, source_file TEXT, line_no INTEGER)"
+        )
+        conn.execute(
+            "INSERT INTO edges (relation_type, source_file, line_no) VALUES ('imports', 'a.py', 1)"
+        )
         conn.commit()
         conn.close()
 
@@ -764,8 +875,12 @@ class TestSCAPConfig:
         config = _load_sc_ap_config(tmp_path / "nonexistent.json")
         assert "SC-1" in config
         assert "AP-17" in config
-        assert config["SC-1"]["enabled"] is False
+        assert "AP-18" in config
+        # SC-1 was promoted 2026-04-17 (enabled by default, audit_mode still on)
+        assert config["SC-1"]["enabled"] is True
         assert config["SC-1"]["audit_mode"] is True
+        # AP-1 remains disabled by default
+        assert config["AP-1"]["enabled"] is False
 
     def test_load_config_merges_user_overrides(self, tmp_path):
         """User config file overrides specific fields while preserving defaults."""
@@ -797,13 +912,13 @@ class TestSCAPConfig:
         assert reloaded["SC-2"]["audit_mode"] is False
 
     def test_all_25_checks_present_in_defaults(self):
-        """All 8 SC + 17 AP checks must be in the default config."""
+        """All 8 SC + 18 AP checks must be in the default config."""
         from tools.generate.validation.gates import _DEFAULT_SC_AP_CONFIG
 
         sc_keys = [k for k in _DEFAULT_SC_AP_CONFIG if k.startswith("SC-")]
         ap_keys = [k for k in _DEFAULT_SC_AP_CONFIG if k.startswith("AP-")]
         assert len(sc_keys) == 8, f"Expected 8 SC checks, got {len(sc_keys)}: {sc_keys}"
-        assert len(ap_keys) == 17, f"Expected 17 AP checks, got {len(ap_keys)}: {ap_keys}"
+        assert len(ap_keys) == 18, f"Expected 18 AP checks, got {len(ap_keys)}: {ap_keys}"
 
 
 class TestViolationClassConstants:
@@ -896,13 +1011,18 @@ class TestStructuralConformanceGate:
 
     def test_returns_empty_when_no_checks_enabled(self, tmp_path, capsys):
         """All checks disabled returns empty results and prints 'no checks enabled'."""
+        import json as _json
+
         from tools.generate.validation.gates import _check_structural_conformance
 
         db = tmp_path / "test_sc.sqlite"
         sqlite3.connect(str(db)).close()
 
-        # Use a path guaranteed to not exist so defaults (all disabled) are used
-        cfg = tmp_path / "subdir" / "no_config.json"
+        # Explicitly disable every SC check (SC-1/SC-5 are enabled by default post-promotion)
+        cfg = tmp_path / "all_disabled.json"
+        cfg.write_text(
+            _json.dumps({f"SC-{i}": {"enabled": False, "audit_mode": True} for i in range(1, 9)})
+        )
         result = _check_structural_conformance(sqlite_path=db, config_path=cfg)
         assert result == {}
         assert "no checks enabled" in capsys.readouterr().out
@@ -937,12 +1057,18 @@ class TestAgenticAntipatternGate:
 
     def test_returns_empty_when_no_checks_enabled(self, tmp_path, capsys):
         """All checks disabled returns empty results and prints 'no checks enabled'."""
+        import json as _json
+
         from tools.generate.validation.gates import _check_agentic_antipatterns
 
         db = tmp_path / "test_ap.sqlite"
         sqlite3.connect(str(db)).close()
 
-        cfg = tmp_path / "subdir" / "no_config.json"
+        # Explicitly disable every AP check (AP-18 is enabled by default)
+        cfg = tmp_path / "all_disabled.json"
+        cfg.write_text(
+            _json.dumps({f"AP-{i}": {"enabled": False, "audit_mode": True} for i in range(1, 19)})
+        )
         result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
         assert result == {}
         assert "no checks enabled" in capsys.readouterr().out
@@ -1896,6 +2022,7 @@ class TestW2ExportsComplete:
             "AP-15",
             "AP-16",
             "AP-17",
+            "AP-18",
         }
 
 
@@ -3695,8 +3822,10 @@ class TestDefectTableSCAPRows:
 
         _print_defect_table({"by_severity": {}}, sqlite_path=db)
         output = capsys.readouterr().out
-        assert "[SC] Structural conformance" in output
-        assert "[AP] Agentic anti-patterns" in output
+        # Output format: aggregate SC/AP rows appear as 'structural conformance'
+        # and 'agentic antipatterns' banded rows in the burndown table.
+        assert "structural conformance" in output
+        assert "agentic antipatterns" in output
         assert "SC-1" in output
         assert "AP-5" in output
 
@@ -3735,7 +3864,9 @@ class TestAllChecksDisabledByDefault:
     """Default config has all checks disabled — no violations on any graph."""
 
     def test_default_config_no_violations(self, tmp_path):
-        """With default config (all disabled), no SC/AP violations are produced."""
+        """With all checks explicitly disabled, no SC/AP violations are produced."""
+        import json as _json
+
         from tools.generate.validation.gates import (
             _check_structural_conformance,
             _check_agentic_antipatterns,
@@ -3752,10 +3883,16 @@ class TestAllChecksDisabledByDefault:
         conn.commit()
         conn.close()
 
-        # Default config path that doesn't exist → all disabled
-        fake_cfg = tmp_path / "nonexistent_config.json"
-        sc_result = _check_structural_conformance(sqlite_path=db, config_path=fake_cfg)
-        ap_result = _check_agentic_antipatterns(sqlite_path=db, config_path=fake_cfg)
+        # Explicit all-disabled config (SC-1/SC-5/AP-18 are enabled in production defaults)
+        all_disabled_cfg = tmp_path / "all_disabled.json"
+        disabled_map: dict[str, dict[str, object]] = {}
+        for i in range(1, 9):
+            disabled_map[f"SC-{i}"] = {"enabled": False, "audit_mode": True}
+        for i in range(1, 19):
+            disabled_map[f"AP-{i}"] = {"enabled": False, "audit_mode": True}
+        all_disabled_cfg.write_text(_json.dumps(disabled_map))
+        sc_result = _check_structural_conformance(sqlite_path=db, config_path=all_disabled_cfg)
+        ap_result = _check_agentic_antipatterns(sqlite_path=db, config_path=all_disabled_cfg)
         assert all(len(v) == 0 for v in sc_result.values())
         assert all(len(v) == 0 for v in ap_result.values())
 
@@ -3964,6 +4101,95 @@ class TestDefectTableOldDB:
         output = capsys.readouterr().out
         # No SC/AP rows since column is absent
         assert "[SC]" not in output
+
+
+class TestBurndownProvenance:
+    """Burndown writer emits deterministic provenance and mismatch signal."""
+
+    def test_burndown_includes_provenance_fields(self, tmp_path, capsys):
+        from tools.generate.reporting.reports import _print_defect_table
+
+        db, conn = _make_adg_db(tmp_path)
+        conn.execute(
+            "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol) "
+            "VALUES (1,2,'antipattern','return_none_swallow','agentic_core/x.py',5,'ValueError')"
+        )
+        conn.execute(
+            "INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity, violation_class) "
+            "VALUES (1, 'antipattern', 'ValueError', 'agentic_core/x.py', 5, 'HIGH', 'hygiene')"
+        )
+        conn.commit()
+        conn.close()
+
+        _print_defect_table({"by_severity": {}}, sqlite_path=db)
+        capsys.readouterr()
+
+        burndown_path = Path("artifacts/adg/adg_burndown_table.json")
+        data = json.loads(burndown_path.read_text(encoding="utf-8"))
+        assert "provenance" in data
+        provenance = data["provenance"]
+        assert provenance["generator_module"] == "tools.generate.reporting.reports._print_defect_table"
+        assert provenance["sqlite_source_path"].endswith(".sqlite")
+        assert provenance["counting_mode"] == "violations_plus_exempted_edge_inference"
+        assert "single-tranche" in provenance["historical_interpretation_note"]
+
+    def test_defect_table_reports_snapshot_mismatch_warning(self, tmp_path, capsys):
+        from tools.generate.reporting.reports import _print_defect_table
+
+        latest_db = tmp_path / "adg_indexed_04192026_0724.sqlite"
+        sentinel_db = tmp_path / "adg_indexed_99999999_9999.sqlite"
+        other_db = tmp_path / "older.sqlite"
+        for db in (latest_db, sentinel_db, other_db):
+            conn = sqlite3.connect(str(db))
+            conn.execute(
+                "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, relation_type TEXT, source_file TEXT, line_no INTEGER)"
+            )
+            conn.execute(
+                "CREATE TABLE violations (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, severity TEXT, violation_class TEXT)"
+            )
+            conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+            conn.commit()
+            conn.close()
+
+        adg_dir = Path("artifacts/adg")
+        adg_dir.mkdir(parents=True, exist_ok=True)
+        copied_latest = adg_dir / latest_db.name
+        copied_latest.write_bytes(latest_db.read_bytes())
+
+        _print_defect_table({"by_severity": {}}, sqlite_path=other_db)
+        output = capsys.readouterr().out
+        assert "reporting sqlite differs from latest snapshot" in output
+
+    def test_defect_table_ignores_sentinel_latest_when_source_is_valid_latest(self, tmp_path, capsys):
+        from tools.generate.reporting.reports import _print_defect_table
+
+        latest_db = tmp_path / "adg_indexed_04192026_0724.sqlite"
+        sentinel_db = tmp_path / "adg_indexed_99999999_9999.sqlite"
+        for db in (latest_db, sentinel_db):
+            conn = sqlite3.connect(str(db))
+            conn.execute(
+                "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, relation_type TEXT, source_file TEXT, line_no INTEGER)"
+            )
+            conn.execute(
+                "CREATE TABLE violations (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, severity TEXT, violation_class TEXT)"
+            )
+            conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+            conn.commit()
+            conn.close()
+
+        adg_dir = Path("artifacts/adg")
+        adg_dir.mkdir(parents=True, exist_ok=True)
+        copied_latest = None
+        for db in (latest_db, sentinel_db):
+            copied = adg_dir / db.name
+            copied.write_bytes(db.read_bytes())
+            if db == latest_db:
+                copied_latest = copied
+
+        assert copied_latest is not None
+        _print_defect_table({"by_severity": {}}, sqlite_path=copied_latest)
+        output = capsys.readouterr().out
+        assert "reporting sqlite differs from latest snapshot" not in output
 
 
 if __name__ == "__main__":

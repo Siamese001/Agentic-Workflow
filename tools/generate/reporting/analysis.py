@@ -7,7 +7,11 @@ import re
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
 from tqdm import tqdm
+
+if TYPE_CHECKING:
+    from agentic_core.adg.artifact.builder_types import ADGArtifact
 
 
 def _audit_semantic_surfaces(repo_root: Path, realized_node_names: set[str]) -> dict[str, int]:
@@ -272,7 +276,7 @@ def _artifact_determinism_probe(
     import tempfile
 
     from agentic_core.adg.artifact.builder import build_artifact
-    from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+    from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
     from tools.generate.utils.digest_utils import _sqlite_table_digest
 
@@ -302,7 +306,7 @@ def _artifact_determinism_probe(
     try:
         with tempfile.TemporaryDirectory() as tmpdir_str:
             tmpdir = Path(tmpdir_str)
-            probe_paths = write_all_artifacts(probe_artifact, out_dir=tmpdir, ts=f"{ts}_probe")
+            probe_paths = write_all_artifacts(cast(Any, probe_artifact), out_dir=tmpdir, ts=f"{ts}_probe")
             probe_node_row_digest = _sqlite_table_digest(probe_paths.sqlite, "nodes")
             probe_edge_row_digest = _sqlite_table_digest(probe_paths.sqlite, "edges")
     except (AttributeError, OSError, sqlite3.Error) as exc:

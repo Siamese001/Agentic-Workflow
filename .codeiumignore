@@ -27,5 +27,8 @@ tools/archive/
 # Memory database (binary SQLite)
 artifacts/memory/
 
+# ADG generated snapshots and burndown artifacts (large, regenerated frequently)
+artifacts/adg/
+
 # ADG cache directory — exclude pycache only; redis_cache.py is an editable source file
 tools/adg/cache/__pycache__/
