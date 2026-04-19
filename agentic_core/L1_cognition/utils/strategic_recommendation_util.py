@@ -121,10 +121,8 @@ def parse_llm_response(response: str) -> dict[str, Any]:
         json_match = re.search(r"\{.*\}", response, re.DOTALL)
         if json_match:
             return json.loads(json_match.group())
-    except json.JSONDecodeError as e:
-        import logging
-
-        logging.getLogger(__name__).debug("strategic_recommendation_util: Exception swallowed at L124: %s", e)
+    except json.JSONDecodeError as e:  # guardian: allow-log-and-swallow -- JSON parse failure: falls back to empty recommendations dict; intentional fallback for malformed LLM responses
+        logging.getLogger(__name__).warning("strategic_recommendation_util: JSON parse failed, returning empty recommendations: %s", e)
 
     # Fallback: return empty structure
     return {"review": "", "recommendations": []}

@@ -5,6 +5,7 @@ Loads templates by category, detects slot codes from filenames,
 and provides template content for slot assembly.
 """
 
+import logging
 import re
 from pathlib import Path
 from string import Template as StringTemplate
@@ -187,11 +188,8 @@ class TemplateLoader:
             try:
                 template = self._jinja_env.from_string(content)
                 return template.render(**variables)
-            except jinja2.TemplateError as e:
-                # Fall back to string.Template
-                import logging
-
-                logging.getLogger(__name__).debug("loader: Exception swallowed at L182: %s", e)
+            except jinja2.TemplateError as e:  # guardian: allow-log-and-swallow -- Jinja2 template render failure: falls back to StringTemplate; intentional degraded-mode fallback
+                logging.getLogger(__name__).warning("loader: Jinja2 template render failed, falling back to StringTemplate: %s", e)
 
         # Use string.Template as fallback
         return StringTemplate(content).safe_substitute(variables)

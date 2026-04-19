@@ -265,7 +265,7 @@ class RedisSovereignAgent(SovereignBaseAgent):
         self.client: redis.Redis = redis.Redis(connection_pool=self.pool)
         try:
             self.client.ping()
-        except Exception as e:
+        except (redis.RedisError, OSError) as e:
             raise ConnectionError(f"[L6 CRITICAL] Redis gateway failed: {e}")
 
     def _run_self_tests(self) -> bool:

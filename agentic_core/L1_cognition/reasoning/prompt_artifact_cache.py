@@ -370,7 +370,7 @@ class TemplateRenderCache:
             return None
         try:
             return raw.decode("utf-8")
-        except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError:  # guardian: allow-return-none-swallow -- raw cache bytes: UnicodeDecodeError means corrupt/binary artifact; None triggers cache miss, caller fetches fresh
             return None
 
     def set(

@@ -285,7 +285,7 @@ def try_load_artifact(
         return None, ""
     try:
         return load_artifact(Path(artifact_dir))
-    except Exception:  # guardian: allow-exception -- artifact loading may raise any sklearn/pickle/IO error; fail-closed fallback to heuristic required for routing safety
+    except Exception:  # guardian: allow-broad-exception -- artifact loading may raise any sklearn/pickle/IO error; fail-closed fallback to heuristic required for routing safety
         return None, ""
 
 

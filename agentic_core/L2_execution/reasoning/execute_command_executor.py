@@ -400,7 +400,7 @@ def execute_command(args: ExecuteCommandArgs) -> tuple[int, str, str]:
         )
     except ExecutionTimeoutError:  # guardian: ExecutionTimeoutError should be handled with specific context
         raise
-    except Exception as e:
+    except (OSError, ValueError, ExecutionError) as e:
         raise ExecutionError(f"Command execution failed: {e}") from e
 
 

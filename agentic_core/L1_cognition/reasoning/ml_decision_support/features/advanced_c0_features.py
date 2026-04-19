@@ -6,6 +6,7 @@ semantic embeddings, attention patterns, document relevance,
 and retrieval optimization signals.
 """
 
+import logging
 import math
 from datetime import datetime
 from typing import Any
@@ -355,7 +356,8 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
                 doc_datetime = datetime.fromisoformat(document_date.replace("Z", "+00:00"))
                 days_old = (datetime.now() - doc_datetime).days
                 recency_score = max(0.0, 1.0 - (days_old / 365))  # Decay over 1 year
-            except:
+            except (ValueError, AttributeError) as _date_err:
+                logging.getLogger(__name__).warning("Recency score: date parse failed: %s", _date_err)
                 recency_score = 0.5
         else:
             recency_score = 0.5
