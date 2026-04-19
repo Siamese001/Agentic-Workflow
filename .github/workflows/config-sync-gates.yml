@@ -25,6 +25,8 @@ on:
       - 'ops_scripts/ci/baselines/hardcoded_exclusions_baseline.json'
       - 'ops_scripts/ci/_validate_pytest_config.py'
       - 'tools/generate/check_exclusion_sync.py'
+      - 'tools/generate/generate_gitignore.py'
+      - '.codeiumignore'
       - 'agentic_core/L0_routing/config/path_constants.py'
       - '.github/workflows/config-sync-gates.yml'
   push:
@@ -85,6 +87,16 @@ jobs:
             python ops_scripts/ci/check_exclusion_consistency.py
           else
             echo "[config-sync-gates] check_exclusion_consistency.py not yet present — skipping"
+          fi
+        env:
+          PYTHONPATH: .
+
+      - name: T6h — .codeiumignore <-> YAML sync (R4)
+        run: |
+          if grep -q "check_codeiumignore\|check-codeiumignore" tools/generate/generate_gitignore.py; then
+            python tools/generate/generate_gitignore.py --check-codeiumignore
+          else
+            echo "[config-sync-gates] --check-codeiumignore not yet present — skipping"
           fi
         env:
           PYTHONPATH: .

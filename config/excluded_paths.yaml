@@ -196,6 +196,47 @@ discovery_excluded_territories:
   - "stubs"
   - "examples"
 
+# ============================================================================
+# WINDSURF INDEXING EXCLUSIONS (.codeiumignore)
+# Generated from these keys by tools/generate/generate_gitignore.py --write-codeiumignore
+# Gate: ops_scripts/ci/check_agents_md_sync.py (T6d extension) validates byte-match.
+# ============================================================================
+
+# Glob patterns emitted to .codeiumignore (supports ** and ! negations).
+# Keep this list focused on index-noise rather than disk-noise: Windsurf
+# indexes file content, so exclude binaries, runtime artifacts, and archives.
+codeium_patterns:
+  # Python bytecode
+  - "**/__pycache__/"
+  - "**/*.pyc"
+  - "**/*.pyo"
+  # Binary / database files
+  - "**/*.sqlite"
+  - "**/*.db"
+  # Runtime log artifacts (JSONL audit logs, session summaries)
+  - "**/*.jsonl"
+  - "artifacts/windsurf/"
+  # Protobuf session data
+  - "**/*.pb"
+  - ".codeium/windsurf/cascade/"
+  # Archive graveyard — do not index archived/deleted code
+  - "tools/archive/"
+  # Memory database (binary SQLite)
+  - "artifacts/memory/"
+  # ADG generated snapshots and burndown artifacts
+  - "artifacts/adg/"
+  - "artifacts/_legacy_adg_archives/"
+  - "artifacts/adg_clean/"
+  # Local learning corpora and virtual env
+  - "data/corpus/"
+  - ".venv/"
+  # ADG cache — exclude only __pycache__ inside, keep redis_cache.py indexed
+  - "tools/adg/cache/__pycache__/"
+
+# Negation patterns re-include specific paths (emitted with leading "!")
+codeium_negations:
+  - "artifacts/windsurf/session_state.json"
+
 # File patterns to exclude (glob-style)
 file_patterns:
   - "*.pyc"

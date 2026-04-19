@@ -1,34 +1,27 @@
 # .codeiumignore — Windsurf indexing exclusions
-# Excludes binary files, runtime artifacts, and archive graveyards
-# that add index noise without retrieval value.
-# Created by Windsurf Config Audit (CHG-008).
+# GENERATED from config/excluded_paths.yaml (codeium_patterns + codeium_negations).
+# Do NOT edit manually — run: python tools/generate/generate_gitignore.py --write-codeiumignore
+# Gate: ops_scripts/ci/check_agents_md_sync.py enforces byte-match with YAML.
 
-# Python bytecode
+
+# Exclusions
 **/__pycache__/
 **/*.pyc
 **/*.pyo
-
-# Binary / database files
 **/*.sqlite
 **/*.db
-
-# Runtime log artifacts (JSONL audit logs, session summaries)
 **/*.jsonl
 artifacts/windsurf/
-!artifacts/windsurf/session_state.json
-
-# Protobuf session data
 **/*.pb
 .codeium/windsurf/cascade/
-
-# Archive graveyard — do not index archived/deleted code
 tools/archive/
-
-# Memory database (binary SQLite)
 artifacts/memory/
-
-# ADG generated snapshots and burndown artifacts (large, regenerated frequently)
 artifacts/adg/
-
-# ADG cache directory — exclude pycache only; redis_cache.py is an editable source file
+artifacts/_legacy_adg_archives/
+artifacts/adg_clean/
+data/corpus/
+.venv/
 tools/adg/cache/__pycache__/
+
+# Re-included (negations)
+!artifacts/windsurf/session_state.json
