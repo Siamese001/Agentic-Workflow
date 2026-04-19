@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-10T11:14:09.041961
+# Last generated: 2026-04-19T11:15:54.871631
 
 
 # Build & Cache
@@ -65,7 +65,11 @@
 
 # Other
 .hypothesis/
+/06_data/
 /_compat/
+/artifacts/_legacy_adg_archives/
+/artifacts/adg_clean/
+/artifacts/reports/test_enforcement/
 /data/cache/
 /data/corpus/
 /data/external/
@@ -80,19 +84,24 @@
 /data/store/
 /docs/reference/_archive/
 /docs/windsurf/
+/tools/archive/
 
 # File Patterns
 *.dll
 *.egg-info
+*.gz
+*.jsonl
 *.log
+*.pkl
 *.pyc
 *.pyd
 *.pyo
 *.so
 *.sqlite
 *.tmp
+*.zip
 *_test/
 .coverage.*/
 /Thumbs.db/
+/repo_root.txt/
 /runtime_adg//
-adg_audit_*.zip

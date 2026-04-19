@@ -71,6 +71,7 @@ vendor_dirs:
 
 # Data and log directories (content, not code)
 data_dirs:
+  - "06_data"  # Legacy ingestion staging dir — purged from history 2026-04-19
   - "data/cache"
   - "data/corpus"
   - "data/external"
@@ -83,6 +84,9 @@ data_dirs:
   - "data/snapshots"
   - "data/ssot_artifacts"
   - "data/store"
+  - "artifacts/_legacy_adg_archives"
+  - "artifacts/adg_clean"
+  - "artifacts/reports/test_enforcement"
   # - "data/golden_state"  # Needed for testing and evaluation
   # - "docs"  # Now an enforced territory per territories.yaml
   - "docs/reference/_archive"
@@ -153,3 +157,7 @@ file_patterns:
   - "*_test/"  # Runtime test directories (never committed)
   - "runtime_adg/"  # Live ChromaDB vector store directories (regenerated at runtime, never committed)
   - "*.jsonl"  # JSON Lines runtime output files (drift timelines, trace logs — never committed)
+  - "*.zip"  # Archives should stay local or in LFS-only flows
+  - "*.gz"  # Compressed artifacts should stay local or in LFS-only flows
+  - "*.pkl"  # Serialized local cache/models should not be committed
+  - "repo_root.txt"  # Local diagnostic export; never commit
