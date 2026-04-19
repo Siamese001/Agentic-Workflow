@@ -209,12 +209,12 @@ class DynamicLoader:
             cls._cache[cache_key] = implementation
             logger.debug(f"[LOADER] Loaded {class_name} from {module_path}")
             return implementation
-        except ImportError as e:
+        except ImportError as e:  # guardian: allow-return-none-swallow -- dynamic import: caller handles None as unavailable component
             logger.warning(f"[LOADER] Could not import {module_path}: {e}")
-            return None  # guardian: allow-return-none-swallow -- dynamic import: caller handles None as unavailable component
-        except AttributeError as e:
+            return None
+        except AttributeError as e:  # guardian: allow-return-none-swallow -- dynamic import: caller handles None as unavailable component
             logger.warning(f"[LOADER] Class {class_name} not found in {module_path}: {e}")
-            return None  # guardian: allow-return-none-swallow -- dynamic import: caller handles None as unavailable component
+            return None
 
     @classmethod
     def load_implementation(cls, protocol_name: str) -> type[T] | None:
@@ -262,13 +262,13 @@ class DynamicLoader:
                 cls._instance_cache[protocol_name] = instance
             logger.debug(f"[LOADER] Created instance of {protocol_name}")
             return instance
-        except (
+        except (  # guardian: allow-return-none-swallow allow-log-and-swallow -- dynamic instantiation: non-fatal, caller handles None as unavailable
             ImportError,
             AttributeError,
             TypeError,
             RuntimeError,
             OSError,
-        ) as e:  # guardian: allow-return-none-swallow -- dynamic instantiation: non-fatal, caller handles None as unavailable
+        ) as e:
             logger.warning(f"[LOADER] Could not create instance of {protocol_name}: {e}")
             return None
 

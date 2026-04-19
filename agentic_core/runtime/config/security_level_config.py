@@ -1058,10 +1058,8 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 else:
                     agent_func()
                 agents_executed.append(agent_name)
-            except Exception as e:  # guardian: allow-silent-swallow
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                errors.append(f"{agent_name}: {str(e)}")
+            except Exception:  # guardian: allow-broad-exception -- agent execution failure propagated to caller for handling
+                raise
 
         duration = (time.time() - start_time) * 1000
 
@@ -1167,7 +1165,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 )
                 if gw_result.success:
                     return gw_result.healing_output
-            except Exception:  # guardian: allow-silent-swallow
+            except Exception:  # guardian: allow-broad-exception allow-silent-swallow -- gateway heal best-effort: non-fatal, caller falls back to super() repair
                 pass
 
         return super().heal_repository()

@@ -251,11 +251,10 @@ class FileCache:
                         new_files["python"].append(file_path)
                     elif suffix in {".md", ".markdown"}:
                         new_files["markdown"].append(file_path)
-        except PermissionError as e:  # guardian: Permission errors should validate access before operation
+        except PermissionError as e:  # guardian: allow-log-and-swallow -- permission denied during scan: non-fatal, partial file cache produced
             Logger.warning(f"[FileCache] Permission error during scan: {e}")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[FileCache] Error during scan: {e}")
         self._files = new_files
         self._is_populated = True
         Logger.debug(f"[FileCache] Scan complete: {len(new_files['all'])} files found")

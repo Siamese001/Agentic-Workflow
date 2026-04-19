@@ -432,8 +432,8 @@ class SovereignIndex:
             current_mtime = os.path.getmtime(self._project_root)
             if current_mtime != self._root_mtime:
                 Logger.debug("[INDEX] Project root mtime changed, refreshing")
-                self.refresh()  # guardian: Add error context logging
-        except OSError as e:
+                self.refresh()
+        except OSError as e:  # guardian: allow-log-and-swallow -- mtime check best-effort: non-fatal, next check retries
             import logging
 
             logging.getLogger(__name__).debug("sovereign_index_util: OSError swallowed at L436: %s", e)
@@ -483,7 +483,7 @@ class SovereignIndex:
                             )  # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
                     except (PermissionError, OSError):
                         continue  # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
-        except (PermissionError, OSError) as e:
+        except (PermissionError, OSError) as e:  # guardian: allow-log-and-swallow -- directory scan denied: non-fatal, continues with partial index
             Logger.debug(f"[INDEX] Cannot scan {directory}: {e}")
 
 

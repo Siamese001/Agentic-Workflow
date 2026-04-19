@@ -263,15 +263,14 @@ class event_emission_mixin:
                     return
                 except asyncio.TimeoutError:  # guardian: allow-log-and-swallow -- redis dispatch timeout: non-fatal, retry loop continues
                     self._ee_logger.warning(f"Redis dispatch timeout (attempt {attempt}/{MAX_RETRIES})")
-                except (
+                except (  # guardian: allow-broad-exception -- redis dispatch error: re-raised to outer handler for retry or fallback
                     AttributeError,
                     OSError,
                     RuntimeError,
                     TypeError,
                     ValueError,
-                ) as e:  # guardian: allow-log-and-swallow -- redis dispatch error: re-raises immediately, scanner false positive
+                ):
                     raise
-                    self._ee_logger.warning(f"Redis dispatch failed (attempt {attempt}/{MAX_RETRIES}): {e}")
                 if attempt < MAX_RETRIES:
                     await asyncio.sleep(base_delay * 2 ** (attempt - 1))
             self._ee_logger.error(f"Failed to dispatch event {event.event_id} after {MAX_RETRIES} attempts")
@@ -286,15 +285,14 @@ class event_emission_mixin:
                     {"event": json.dumps(event.model_dump())},
                     maxlen=10000,
                 )
-            except (
+            except (  # guardian: allow-broad-exception -- redis sync dispatch error: re-raised to caller for handling
                 AttributeError,
                 OSError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- redis dispatch: re-raises immediately, scanner false positive
+            ):
                 raise
-                self._ee_logger.error(f"Redis Dispatch Failed: {e}")
 
     @staticmethod
     def observe_execution(event_prefix: str):

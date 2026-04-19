@@ -272,8 +272,7 @@ class GuardianSignalBus:
         for subscriber in self._subscribers:
             try:
                 subscriber(signal)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- subscriber callback isolation: non-fatal, other subscribers continue
                 logger.error(f"Signal subscriber error: {e}")
 
         logger.info(f"Guardian signal emitted: {signal_type} ({severity})")
@@ -436,8 +435,7 @@ class ContextualRouter:
                 decision = rule(request)
                 if decision is not None:
                     return decision
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- policy rule evaluation isolation: non-fatal, rule skipped
                 logger.error(f"Policy rule error: {e}")
 
         return None
