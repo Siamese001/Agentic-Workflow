@@ -194,15 +194,15 @@ def estimate_directory_size(dir_path: Path) -> int:
                     total_size += file_path.stat().st_size
                     if total_size > max_scan_bytes:
                         return total_size
-                except (
+                except (  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
                     OSError,
                     PermissionError,
-                ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+                ):
                     continue
-    except (
+    except (  # guardian: allow-log-and-swallow -- directory size scan best-effort: non-fatal, partial size returned
         OSError,
         PermissionError,
-    ) as e:  # guardian: allow-log-and-swallow -- directory size scan best-effort: non-fatal, partial size returned
+    ) as e:
         import logging
 
         logging.getLogger(__name__).debug("cache_guard: OSError swallowed at L201: %s", e)
@@ -233,9 +233,9 @@ def is_forbidden_location(dir_path: Path, root_path: Path) -> bool:
             return True
         if path_parts and path_parts[0].startswith("apps_"):
             return True
-    except (
+    except (  # guardian: allow-silent-swallow -- path not relative to root: control-flow fallthrough to False
         ValueError
-    ):  # guardian: allow-silent-swallow -- path not relative to root: control-flow fallthrough to False
+    ):
         pass
     return False
 

@@ -310,25 +310,25 @@ class MemoryAwarePolicyRecommendationEngine(PolicyRecommendationEngine):
                     recommendation.confidence_score = max(
                         0.0, min(1.0, recommendation.confidence_score + quality_adjustment)
                     )
-            except (
+            except (  # guardian: allow-log-and-swallow -- quality adjustment optional: non-fatal, recommendation returned without adjustment
                 AttributeError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as exc:  # guardian: allow-log-and-swallow -- quality adjustment optional: non-fatal, recommendation returned without adjustment
+            ) as exc:
                 # Quality adjustment unavailable - continue without it
                 import logging
 
                 logging.getLogger(__name__).debug(
                     "policy_recommendation_engine: retrieval quality adjustment failed: %s", exc
                 )
-        except (
+        except (  # guardian: allow-log-and-swallow -- memory-aware augmentation optional: non-fatal, base recommendation returned
             AttributeError,
             ImportError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- memory-aware augmentation optional: non-fatal, base recommendation returned
+        ) as exc:
             import logging
 
             logging.getLogger(__name__).debug(

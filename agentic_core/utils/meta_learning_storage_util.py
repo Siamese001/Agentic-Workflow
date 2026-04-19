@@ -226,13 +226,13 @@ class MetaLearningStorage:
             if result:
                 Logger.info("%s INSTINCT TRIGGERED: Recalled previous experience.", namespace)
             return result
-        except (
+        except (  # guardian: allow-return-none-swallow -- memory recall: non-fatal, caller treats None as no prior context
             AttributeError,
             OSError,
             RuntimeError,
             ValueError,
             TypeError,
-        ) as e:  # guardian: allow-return-none-swallow -- memory recall: non-fatal, caller treats None as no prior context
+        ) as e:
             Logger.warning("%s Recall error: %s", namespace, e)
             return None
 
@@ -292,11 +292,11 @@ class MetaLearningStorage:
             return None
         try:
             return cls._memory.get_statistics()
-        except (
+        except (  # guardian: allow-return-none-swallow -- graph stats: optional monitoring call, non-fatal
             ValueError,
             TypeError,
             RuntimeError,
-        ) as e:  # guardian: allow-return-none-swallow -- graph stats: optional monitoring call, non-fatal
+        ) as e:
             return None
 
     @classmethod
@@ -364,11 +364,11 @@ class MetaLearningStorage:
             return None
         try:
             return cls._graph_bridge.get_statistics()
-        except (
+        except (  # guardian: allow-return-none-swallow -- graph stats query: optional monitoring call, non-fatal
             ValueError,
             TypeError,
             RuntimeError,
-        ) as e:  # guardian: allow-return-none-swallow -- graph stats query: optional monitoring call, non-fatal
+        ) as e:
             return None
 
     @classmethod

@@ -229,12 +229,12 @@ class DefaultOutcomeWriteBackHook:
 
         try:
             self._store.record_outcome(healing_input.error_signature, success)
-        except (
+        except (  # guardian: allow-log-and-swallow -- outcome store write best-effort: non-fatal, healing completes regardless
             AttributeError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- outcome store write best-effort: non-fatal, healing completes regardless
+        ) as exc:
             logger.warning(
                 "write_back_store_failed",
                 extra={
@@ -252,13 +252,13 @@ class DefaultOutcomeWriteBackHook:
                 )
 
                 update_qwen_confidence_prior(healing_input.error_signature, success)
-            except (
+            except (  # guardian: allow-log-and-swallow -- qwen prior update best-effort: non-fatal, healing tier unaffected
                 AttributeError,
                 ImportError,
                 RuntimeError,
                 TypeError,
                 ValueError,
-            ) as exc:  # guardian: allow-log-and-swallow -- qwen prior update best-effort: non-fatal, healing tier unaffected
+            ) as exc:
                 logger.warning(
                     "write_back_qwen_prior_failed",
                     extra={

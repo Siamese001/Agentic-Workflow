@@ -728,13 +728,13 @@ class MLTrainingPipeline:
 
             return model_id
 
-        except (
+        except (  # guardian: allow-return-none-swallow -- model training: non-fatal, caller checks for None before using model
             AttributeError,
             ImportError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-return-none-swallow -- model training: non-fatal, caller checks for None before using model
+        ) as exc:
             Logger.error(f"[ML_PIPELINE] Anomaly detection model training failed: {exc}")
             return None
 
@@ -806,13 +806,13 @@ class MLTrainingPipeline:
 
             return test_metrics
 
-        except (
+        except (  # guardian: allow-return-none-swallow -- model eval: non-fatal, caller checks for None before using metrics
             AttributeError,
             ImportError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-return-none-swallow -- model eval: non-fatal, caller checks for None before using metrics
+        ) as exc:
             Logger.error(f"[ML_PIPELINE] Model evaluation failed: {exc}")
             return None
 
@@ -851,12 +851,12 @@ class MLTrainingPipeline:
 
             return deployment_id
 
-        except (
+        except (  # guardian: allow-return-none-swallow -- model deploy: non-fatal, caller checks for None before routing traffic
             AttributeError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-return-none-swallow -- model deploy: non-fatal, caller checks for None before routing traffic
+        ) as exc:
             Logger.error(f"[ML_PIPELINE] Model deployment failed: {exc}")
             return None
 
@@ -887,13 +887,13 @@ class MLTrainingPipeline:
 
             return predictions
 
-        except (
+        except (  # guardian: allow-return-none-swallow -- model prediction: non-fatal, caller checks for None before using results
             AttributeError,
             KeyError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-return-none-swallow -- model prediction: non-fatal, caller checks for None before using results
+        ) as exc:
             Logger.error(f"[ML_PIPELINE] Model prediction failed: {exc}")
             return None
 

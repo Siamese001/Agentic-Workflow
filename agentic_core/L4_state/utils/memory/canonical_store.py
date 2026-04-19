@@ -218,12 +218,12 @@ class PostgresBackend(StorageBackend):
 
         except ImportError:  # guardian: allow-log-and-swallow -- psycopg2 optional: Postgres backend disabled, other backends continue
             Logger.warning("psycopg2 not available, Postgres backend disabled")
-        except (
+        except (  # guardian: allow-log-and-swallow -- Postgres init: non-fatal, store operates without Postgres backend
             psycopg2.Error,
             OSError,
             ValueError,
             RuntimeError,
-        ) as e:  # guardian: allow-log-and-swallow -- Postgres init: non-fatal, store operates without Postgres backend
+        ) as e:
             Logger.error(f"Failed to init PostgreSQL backend: {e}")
 
     def store(self, content: bytes, metadata: dict[str, Any]) -> StoredArtifact:
@@ -292,12 +292,12 @@ class PostgresBackend(StorageBackend):
         except ImportError as e:  # guardian: allow-return-none-swallow -- psycopg2 unavailable: non-fatal, treated as cache miss
             Logger.error(f"Failed to retrieve from Postgres: {e}")
             return None
-        except (
+        except (  # guardian: allow-return-none-swallow -- Postgres retrieve: non-fatal, treated as cache miss
             psycopg2.Error,
             OSError,
             ValueError,
             RuntimeError,
-        ) as e:  # guardian: allow-return-none-swallow -- Postgres retrieve: non-fatal, treated as cache miss
+        ) as e:
             Logger.error(f"Failed to retrieve from Postgres: {e}")
             return None
 
@@ -428,13 +428,13 @@ class S3Backend(StorageBackend):
                 return None
             Logger.error(f"Failed to retrieve from S3: {e}")
             return None
-        except (
+        except (  # guardian: allow-return-none-swallow -- S3 retrieve: non-fatal, treated as cache miss
             ImportError,
             OSError,
             KeyError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-return-none-swallow -- S3 retrieve: non-fatal, treated as cache miss
+        ) as e:
             Logger.error(f"Failed to retrieve from S3: {e}")
             return None
 

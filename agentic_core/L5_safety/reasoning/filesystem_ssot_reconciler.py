@@ -542,12 +542,12 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             Logger.debug(f"Extracted signal '{name_lower}' from {class_name}")
                 Logger.info(f"[SSOT] Loaded {len(self.actual_agents)} agents from discovery JSON")
                 return
-            except (
+            except (  # guardian: allow-broad-exception -- discovery JSON load failure propagated to caller for handling
                 OSError,
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ):  # guardian: allow-broad-exception -- discovery JSON load failure propagated to caller for handling
+            ):
                 raise
         agentic_core = self.project_root / AGENTIC_CORE_DIR
         from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
@@ -566,13 +566,13 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             if name_lower:
                                 self.actual_signals.add(name_lower)
                                 Logger.debug(f"Extracted signal '{name_lower}' from {node.name}")
-            except (
+            except (  # guardian: allow-broad-exception -- per-file parse failure propagated to caller for handling
                 SyntaxError,
                 OSError,
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ):  # guardian: allow-broad-exception -- per-file parse failure propagated to caller for handling
+            ):
                 raise
         Logger.info(
             f"Agent scan complete: {len(self.actual_agents)} agents, {len(self.actual_signals)} signals discovered",
@@ -1201,13 +1201,13 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "PREVIEW: Would update signals in blueprint" if dry_run else "Signals updated"
                     )
                     action["applied"] = not dry_run
-            except (
+            except (  # guardian: allow-broad-exception -- cleanup action failure propagated to caller for handling
                 AttributeError,
                 OSError,
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ):  # guardian: allow-broad-exception -- cleanup action failure propagated to caller for handling
+            ):
                 raise
             actions.append(action)
         batch_report = {

@@ -268,12 +268,12 @@ class ShadowDriftAnalyzer:
                 if violation_delta > 0:
                     # Violations increased - this is structural drift
                     drift_source = "adg_structural"
-        except (
+        except (  # guardian: allow-log-and-swallow -- violation lookup: optional ADG query, non-fatal
             AttributeError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- violation lookup: optional ADG query, non-fatal
+        ) as exc:
             # ADG data unavailable - continue with embedding-only analysis
             import logging
 
@@ -310,12 +310,12 @@ class ShadowDriftAnalyzer:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
             get_sl_memory_bridge().persist_drift_summary(summary)
-        except (
+        except (  # guardian: allow-log-and-swallow -- drift summary persist: optional bridge call, non-fatal
             AttributeError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- drift summary persist: optional bridge call, non-fatal
+        ) as exc:
             import logging
 
             logging.getLogger(__name__).debug(
@@ -375,12 +375,12 @@ class ShadowDriftAnalyzer:
                         proposal_only=True,
                     )
                     bus.enqueue(pkg)
-                except (
+                except (  # guardian: allow-log-and-swallow -- drift alert enqueue: non-fatal, other alerts continue
                     AttributeError,
                     RuntimeError,
                     TypeError,
                     ValueError,
-                ) as exc:  # guardian: allow-log-and-swallow -- drift alert enqueue: non-fatal, other alerts continue
+                ) as exc:
                     import logging
 
                     logging.getLogger(__name__).debug(
@@ -471,12 +471,12 @@ class ShadowDriftAnalyzer:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=now_utc,
             )
-        except (
+        except (  # guardian: allow-log-and-swallow -- infrastructure drift persist: optional bridge call, non-fatal
             AttributeError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- infrastructure drift persist: optional bridge call, non-fatal
+        ) as exc:
             # Bridge unavailable - continue without it
             import logging
 

@@ -119,10 +119,10 @@ class IntentEmbeddingClassifier:
             factory = EmbeddingServiceFactory.get_instance()
             self._embedder = factory
             return self._embedder
-        except (
+        except (  # guardian: allow-return-none-swallow -- embedder init: non-fatal, caller skips embedding when None returned
             ImportError,
             RuntimeError,
-        ) as exc:  # guardian: allow-return-none-swallow -- embedder init: non-fatal, caller skips embedding when None returned
+        ) as exc:
             logger.debug("IntentEmbeddingClassifier: embedder unavailable: %s", exc)
             return None
 
@@ -143,11 +143,11 @@ class IntentEmbeddingClassifier:
                     vec = list(result)
                 results.append(vec)
             return results if results else None
-        except (
+        except (  # guardian: allow-return-none-swallow -- embedding: non-fatal, caller treats None as unavailable embedding
             ValueError,
             TypeError,
             RuntimeError,
-        ) as exc:  # guardian: allow-return-none-swallow -- embedding: non-fatal, caller treats None as unavailable embedding
+        ) as exc:
             logger.debug("IntentEmbeddingClassifier: embedding failed: %s", exc)
             return None
 
@@ -255,10 +255,10 @@ class IntentEmbeddingClassifier:
 
             logger.debug("IntentEmbeddingClassifier.classify: best=%r score=%.4f", best_name, best_score)
             return (best_name, max(0.0, min(1.0, best_score)))
-        except (
+        except (  # guardian: allow-return-none-swallow -- classify: non-fatal, caller treats None as unclassified intent
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-return-none-swallow -- classify: non-fatal, caller treats None as unclassified intent
+        ) as exc:
             logger.debug("IntentEmbeddingClassifier.classify: exception swallowed: %s", exc)
             return None
 

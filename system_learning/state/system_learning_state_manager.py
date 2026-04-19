@@ -533,12 +533,12 @@ class SystemLearningStateManager:
 
             self._cache.set_json(cache_key, cache_data, ttl_seconds=self.state_cache_ttl)
 
-        except (
+        except (  # guardian: allow-log-and-swallow -- snapshot cache best-effort: non-fatal, authoritative snapshot already persisted
             AttributeError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- snapshot cache best-effort: non-fatal, authoritative snapshot already persisted
+        ) as exc:
             logger.debug("Failed to cache snapshot %s: %s", snapshot.state_id, exc)
 
     async def _get_cached_snapshot(
@@ -573,13 +573,13 @@ class SystemLearningStateManager:
 
             return snapshot
 
-        except (
+        except (  # guardian: allow-return-none-swallow -- cached snapshot read: non-fatal, caller falls back to authoritative store
             AttributeError,
             KeyError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-return-none-swallow -- cached snapshot read: non-fatal, caller falls back to authoritative store
+        ) as exc:
             logger.debug("Failed to get cached snapshot %s: %s", state_id, exc)
             return None
 

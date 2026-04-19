@@ -288,12 +288,12 @@ class FileBackedVersionStore:
         self._save_index()
         try:
             get_sl_memory_bridge().persist_active_version("version_store", version_id, ts=str(uuid.uuid4()))
-        except (
+        except (  # guardian: allow-log-and-swallow -- version metadata persistence best-effort: non-fatal, version still stored on disk
             AttributeError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as exc:  # guardian: allow-log-and-swallow -- version metadata persistence best-effort: non-fatal, version still stored on disk
+        ) as exc:
             logger.debug("Failed to persist version metadata for %s: %s", version_id, exc)
         return version_id
 
@@ -307,12 +307,12 @@ class FileBackedVersionStore:
         try:
             meta = json.loads(entry_path.read_text(encoding="utf-8"))
             return bytes.fromhex(meta["payload_hex"])
-        except (
+        except (  # guardian: allow-return-none-swallow -- version entry missing/corrupt: non-fatal, caller treats None as unavailable
             json.JSONDecodeError,
             OSError,
             KeyError,
             ValueError,
-        ):  # guardian: allow-return-none-swallow -- version entry missing/corrupt: non-fatal, caller treats None as unavailable
+        ):
             return None
 
     def list_versions(self) -> list[str]:
