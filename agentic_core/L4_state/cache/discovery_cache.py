@@ -226,7 +226,10 @@ class AgentDiscoveryCache:
                 cache_key = f"agent_discovery:{content_hash}"
             except FileNotFoundError:
                 raise
-            except (OSError, ValueError) as e:  # guardian: allow-log-and-swallow -- hash compute best-effort: non-fatal, fetch proceeds from disk without cache key
+            except (
+                OSError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- hash compute best-effort: non-fatal, fetch proceeds from disk without cache key
                 logger.warning(f"[Discovery cache] Hash computation failed: {e}")
             else:
                 try:
@@ -234,7 +237,10 @@ class AgentDiscoveryCache:
                     if cached is not None:
                         logger.debug("[Discovery cache] HIT")
                         return cached
-                except (OSError, ConnectionError) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to disk fetch
+                except (
+                    OSError,
+                    ConnectionError,
+                ) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to disk fetch
                     logger.warning(f"[Discovery cache] Cache read failed: {e}")
         logger.debug("[Discovery cache] MISS — fetching from disk")
         result = fetch_from_disk()
@@ -245,7 +251,10 @@ class AgentDiscoveryCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:  # guardian: allow-silent-swallow -- discovery file absent: skip cache write, disk fetch already served caller
                 pass
-            except (OSError, ConnectionError) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, disk fetch already served caller
+            except (
+                OSError,
+                ConnectionError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, disk fetch already served caller
                 logger.warning(f"[Discovery cache] Cache write failed: {e}")
         return result
 

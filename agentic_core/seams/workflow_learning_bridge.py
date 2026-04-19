@@ -317,7 +317,7 @@ class WorkflowLearningBridge:
                     name,
                     outcome.bundle_id,
                 )
-            except Exception:  # guardian: allow-broad-exception -- third-party learner callbacks can raise any type; isolate failures to prevent one bad learner from dropping all others
+            except Exception:  # guardian: allow-broad-exception allow-log-and-swallow -- third-party learner callbacks can raise any type; isolate failures to prevent one bad learner from dropping all others
                 logger.exception("LEARNING_BRIDGE learner=%s failed bundle=%s", name, outcome.bundle_id)
 
     def ledger(self) -> list[WorkflowOutcome]:
@@ -365,7 +365,7 @@ def ensure_sl_adapter_registered() -> None:
 
     try:
         from system_learning.adapters.workflow_outcome_sl_adapter import register_with_workflow_bridge
-    except ImportError as exc:
+    except ImportError as exc:  # guardian: allow-return-none-swallow allow-log-and-swallow -- SL adapter optional: bridge operates without system-learning registration
         logger.info("System learning adapter unavailable: %s", exc)
         return
 

@@ -229,9 +229,7 @@ def _write_baseline(violations: list[tuple[str, int, list[str]]]) -> None:
             for rel, lineno, hits in sorted(violations)
         ],
     }
-    BASELINE_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=False) + "\n", encoding="utf-8"
-    )
+    BASELINE_PATH.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n", encoding="utf-8")
     print(f"[hardcoded_exclusions] Baseline written: {BASELINE_PATH}", flush=True)
 
 

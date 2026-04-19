@@ -72,14 +72,10 @@ def main() -> int:
     for yaml_key, const_name in CATEGORY_TO_CONSTANT.items():
         yaml_entries_raw = yaml_data.get(yaml_key)
         if yaml_entries_raw is None:
-            issues.append(
-                f"YAML missing category '{yaml_key}' (mirror of path_constants.{const_name})"
-            )
+            issues.append(f"YAML missing category '{yaml_key}' (mirror of path_constants.{const_name})")
             continue
         if not isinstance(yaml_entries_raw, list):
-            issues.append(
-                f"YAML category '{yaml_key}' must be a list, got {type(yaml_entries_raw).__name__}"
-            )
+            issues.append(f"YAML category '{yaml_key}' must be a list, got {type(yaml_entries_raw).__name__}")
             continue
         yaml_set = frozenset(str(e) for e in yaml_entries_raw)
         py_set = py_consts[const_name]

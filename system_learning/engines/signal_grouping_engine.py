@@ -396,7 +396,12 @@ class SignalGroupingEngine:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=analysis["timestamp_utc"],
             )
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- bridge persist best-effort: non-fatal, analysis still returned to caller
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- bridge persist best-effort: non-fatal, analysis still returned to caller
             # Bridge unavailable - continue without it
             import logging
 

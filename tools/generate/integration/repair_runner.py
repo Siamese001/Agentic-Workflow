@@ -30,7 +30,9 @@ def _resolve_repair_sqlite(adg_artifacts_dir: Path, ts: str, sqlite_path: Path |
         if ts_candidate.exists():
             candidate = ts_candidate
         else:
-            sqlite_files = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime)
+            sqlite_files = sorted(
+                adg_artifacts_dir.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime
+            )
             if sqlite_files:
                 candidate = sqlite_files[-1].resolve()
 
@@ -43,7 +45,9 @@ def _resolve_repair_sqlite(adg_artifacts_dir: Path, ts: str, sqlite_path: Path |
             existing_tables = {
                 row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
             }
-    except sqlite3.Error:  # guardian: allow-silent-swallow -- invalid sqlite candidate should be skipped, not crash generation
+    except (
+        sqlite3.Error
+    ):  # guardian: allow-silent-swallow -- invalid sqlite candidate should be skipped, not crash generation
         return None
 
     if required_tables - existing_tables:
@@ -67,7 +71,9 @@ def _run_p1_p2_auto_fix(adg_artifacts_dir: Path, ts: str, sqlite_path: Path | No
     if resolved_sqlite is not None:
         print(f"[ADG] Repair orchestrator sqlite source: {resolved_sqlite}")
     else:
-        print("[ADG] WARNING: Repair orchestrator sqlite source unavailable or invalid; continuing without sqlite-backed repair analysis")
+        print(
+            "[ADG] WARNING: Repair orchestrator sqlite source unavailable or invalid; continuing without sqlite-backed repair analysis"
+        )
 
     orchestrator = _orchestrator_cls(
         adg_dir=adg_artifacts_dir,

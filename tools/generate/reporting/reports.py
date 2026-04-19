@@ -688,9 +688,7 @@ def _generate_standardized_reports(
     layer_report["coverage_metrics"] = {
         "known_modules": total_modules_count - len(unknown_modules),
         "unknown_modules": len(unknown_modules),
-        "coverage_percentage": (total_modules_count - len(unknown_modules))
-        / total_modules_count
-        * 100
+        "coverage_percentage": (total_modules_count - len(unknown_modules)) / total_modules_count * 100
         if total_modules_count
         else 0,
     }
@@ -912,7 +910,9 @@ def _generate_standardized_reports(
                 "capability": "DATA LINEAGE",
                 "numerator": semantic_stats["flows_to_total"],
                 "denominator": max(result.manifest.flows_to_expected_count, 1),
-                "ratio": _ratio(int(semantic_stats["flows_to_total"]), result.manifest.flows_to_expected_count),
+                "ratio": _ratio(
+                    int(semantic_stats["flows_to_total"]), result.manifest.flows_to_expected_count
+                ),
                 "threshold": 0.95,
                 "passed": _ratio(
                     int(semantic_stats["flows_to_total"]), result.manifest.flows_to_expected_count

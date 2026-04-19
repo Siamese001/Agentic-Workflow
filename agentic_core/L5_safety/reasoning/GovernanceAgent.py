@@ -127,7 +127,7 @@ except ImportError as e:
 
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, GLOBAL_EXCLUDED_DIRS, TESTS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -343,7 +343,12 @@ class DependencyGraph:
                 self.module_map[module_name] = file_path
             except SyntaxError as e:  # guardian: allow-log-and-swallow -- per-file syntax error: logged and skipped, graph build continues
                 LOGGER.warning(f"Syntax error in {file_path}: {e}")
-            except (OSError, ValueError, TypeError, RuntimeError):  # guardian: allow-broad-exception -- per-file parse failure propagated to caller for handling
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                RuntimeError,
+            ):  # guardian: allow-broad-exception -- per-file parse failure propagated to caller for handling
                 raise
         self._build_reverse_index()
         self._calculate_dependencies()
@@ -527,35 +532,21 @@ class GovernanceAgent(SovereignBaseAgent):
         self._backup_dir: Path | None = None
         self.MAX_NESTING_SPACES = 40
         self.stats = {"files_checked": 0, "violations_found": 0, "files_sanitized": 0}
-        self.sovereign_dirs = {
+        self.sovereign_dirs = GLOBAL_EXCLUDED_DIRS | {
             AGENTIC_CORE_DIR,
+            TESTS_DIR,
             "schemas",
             "scripts",
             "docs",
-            TESTS_DIR,
             "config",
             "data",
             "cache",
             "observability",
-            ".git",
-            "__pycache__",
-            ".pytest_cache",
-            ".tox",
-            "venv",
-            ".venv",
-            "node_modules",
             ".idea",
             ".vscode",
-            "dist",
-            "build",
             "coverage",
-            ".github",
-            "htmlcov",
-            ".mypy_cache",
             ".coverage",
-            "eggs",
             ".eggs",
-            "*.egg-info",
         }
         self.MAX_FILE_LINES = 200
         self._hierarchy_agent = None
@@ -571,7 +562,9 @@ class GovernanceAgent(SovereignBaseAgent):
                 _mod = importlib.import_module("agentic_core.L5_safety.reasoning.hierarchy_healer")
                 HierarchyAgent = _mod.HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.root_dir)
-            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: HierarchyAgent optional, caller handles None
+            except (
+                ImportError
+            ):  # guardian: allow-silent-swallow -- lazy loader: HierarchyAgent optional, caller handles None
                 pass
         return self._hierarchy_agent
 
@@ -584,7 +577,9 @@ class GovernanceAgent(SovereignBaseAgent):
                 from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
 
                 self._import_agent = create_legacy_import_healer()
-            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: import healer optional, caller handles None
+            except (
+                ImportError
+            ):  # guardian: allow-silent-swallow -- lazy loader: import healer optional, caller handles None
                 pass
         return self._import_agent
 

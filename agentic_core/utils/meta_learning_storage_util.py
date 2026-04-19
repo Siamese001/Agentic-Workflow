@@ -226,7 +226,13 @@ class MetaLearningStorage:
             if result:
                 Logger.info("%s INSTINCT TRIGGERED: Recalled previous experience.", namespace)
             return result
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-return-none-swallow -- memory recall: non-fatal, caller treats None as no prior context
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-return-none-swallow -- memory recall: non-fatal, caller treats None as no prior context
             Logger.warning("%s Recall error: %s", namespace, e)
             return None
 

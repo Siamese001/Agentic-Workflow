@@ -173,7 +173,7 @@ Logger = logging.getLogger(__name__)
 def _schedule_learn_task(agent_name: str, context: str, payload: dict[str, Any]) -> None:
     try:
         loop = asyncio.get_running_loop()
-    except RuntimeError:
+    except RuntimeError:  # guardian: allow-return-none-swallow -- no event loop: caller's sync context, async write skipped intentionally
         Logger.debug("[%s] No running event loop; skipping async meta-learning write", agent_name)
         return
 
@@ -182,7 +182,7 @@ def _schedule_learn_task(agent_name: str, context: str, payload: dict[str, Any])
     def _log_task_failure(done_task: asyncio.Task[Any]) -> None:
         try:
             exc = done_task.exception()
-        except asyncio.CancelledError:
+        except asyncio.CancelledError:  # guardian: allow-return-none-swallow -- task cancelled: caller treats as aborted write, no propagation needed
             Logger.debug("[%s] Async meta-learning write cancelled", agent_name)
             return
         if exc is not None:

@@ -162,8 +162,8 @@ class EnhancedRagRetrievalCache:
             # Try to get existing client
             try:
                 return get_embedding_client("system_learning_default")
-            except ValueError:
-                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except ValueError:  # guardian: allow-silent-swallow -- no pre-existing embedding client: proceed to factory creation
+                pass
 
             # Create new client through factory
             return create_embedding_client(
@@ -172,11 +172,11 @@ class EnhancedRagRetrievalCache:
                 dimensions=1536,
             )  # guardian: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
 
-        except (
+        except (  # guardian: allow-broad-exception allow-log-and-swallow allow-return-none-swallow -- embedding client init best-effort: non-fatal, caller falls back to basic caching
             EmbeddingDisabledError,
             NotImplementedError,
             Exception,
-        ) as e:  # guardian: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
+        ) as e:
             logger.warning(f"Failed to initialize embedding client: {e}")
             return None
 

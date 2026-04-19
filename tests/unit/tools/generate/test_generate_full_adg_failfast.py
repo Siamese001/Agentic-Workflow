@@ -455,12 +455,8 @@ class TestP0ViolationsCheck:
         # Create SQLite without in_cycle or dynamic_exec
         # Schema must include columns read by _check_p0_violations (source_file, line_no)
         conn = sqlite3.connect(str(sqlite_path))
-        conn.execute(
-            "CREATE TABLE edges (relation_type TEXT, source_file TEXT, line_no INTEGER)"
-        )
-        conn.execute(
-            "INSERT INTO edges (relation_type, source_file, line_no) VALUES ('imports', 'a.py', 1)"
-        )
+        conn.execute("CREATE TABLE edges (relation_type TEXT, source_file TEXT, line_no INTEGER)")
+        conn.execute("INSERT INTO edges (relation_type, source_file, line_no) VALUES ('imports', 'a.py', 1)")
         conn.commit()
         conn.close()
 
@@ -1020,9 +1016,7 @@ class TestStructuralConformanceGate:
 
         # Explicitly disable every SC check (SC-1/SC-5 are enabled by default post-promotion)
         cfg = tmp_path / "all_disabled.json"
-        cfg.write_text(
-            _json.dumps({f"SC-{i}": {"enabled": False, "audit_mode": True} for i in range(1, 9)})
-        )
+        cfg.write_text(_json.dumps({f"SC-{i}": {"enabled": False, "audit_mode": True} for i in range(1, 9)}))
         result = _check_structural_conformance(sqlite_path=db, config_path=cfg)
         assert result == {}
         assert "no checks enabled" in capsys.readouterr().out
@@ -1066,9 +1060,7 @@ class TestAgenticAntipatternGate:
 
         # Explicitly disable every AP check (AP-18 is enabled by default)
         cfg = tmp_path / "all_disabled.json"
-        cfg.write_text(
-            _json.dumps({f"AP-{i}": {"enabled": False, "audit_mode": True} for i in range(1, 19)})
-        )
+        cfg.write_text(_json.dumps({f"AP-{i}": {"enabled": False, "audit_mode": True} for i in range(1, 19)}))
         result = _check_agentic_antipatterns(sqlite_path=db, config_path=cfg)
         assert result == {}
         assert "no checks enabled" in capsys.readouterr().out

@@ -1077,7 +1077,10 @@ def run_pipeline(
             elif hasattr(dpo_proposal, "timestamp_utc"):
                 try:
                     dpo_proposal.timestamp_utc = now_utc
-                except (AttributeError, TypeError):  # guardian: allow-silent-swallow -- DPO proposal timestamp assign: non-fatal, caller handles missing timestamp
+                except (
+                    AttributeError,
+                    TypeError,
+                ):  # guardian: allow-silent-swallow -- DPO proposal timestamp assign: non-fatal, caller handles missing timestamp
                     pass
             # DPO proposals enter before Stage 7 validation loop
             proposals.append(dpo_proposal)

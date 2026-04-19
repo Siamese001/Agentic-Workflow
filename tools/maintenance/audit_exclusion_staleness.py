@@ -122,9 +122,7 @@ def _git_log_days(path: str) -> int | None:
     return int((now - commit_time).total_seconds() // 86400)
 
 
-def _classify(
-    category: str, entry: str, dormant_days: int
-) -> tuple[str, dict]:
+def _classify(category: str, entry: str, dormant_days: int) -> tuple[str, dict]:
     """Return (status, detail) for a single entry.
 
     Status is one of:
@@ -158,9 +156,7 @@ def _classify(
     return "recent", {"fs_exists": False, "days_since_commit": days}
 
 
-def _iter_entries(
-    yaml_data: dict, categories: Iterable[str]
-) -> Iterable[tuple[str, str]]:
+def _iter_entries(yaml_data: dict, categories: Iterable[str]) -> Iterable[tuple[str, str]]:
     for category in categories:
         entries = yaml_data.get(category)
         if not isinstance(entries, list):
@@ -210,9 +206,7 @@ def main() -> int:
 
     for category, entry in _iter_entries(yaml_data, categories):
         status, detail = _classify(category, entry, args.dormant_days)
-        buckets[status].append(
-            {"category": category, "entry": entry, **detail}
-        )
+        buckets[status].append({"category": category, "entry": entry, **detail})
 
     if args.json:
         report = {
@@ -229,9 +223,15 @@ def main() -> int:
         print(f"Exclusion staleness audit — {YAML_PATH.as_posix()}")
         print(f"Total audited: {total}")
         print(f"  live:      {len(buckets['live'])}   (exists on disk today)")
-        print(f"  recent:    {len(buckets['recent'])}   (missing from disk, committed within {args.dormant_days}d)")
-        print(f"  dormant:   {len(buckets['dormant'])}   (missing from disk, last commit >={args.dormant_days}d ago)")
-        print(f"  dead:      {len(buckets['dead'])}   (retrospective category, missing, NEVER committed — REMOVE)")
+        print(
+            f"  recent:    {len(buckets['recent'])}   (missing from disk, committed within {args.dormant_days}d)"
+        )
+        print(
+            f"  dormant:   {len(buckets['dormant'])}   (missing from disk, last commit >={args.dormant_days}d ago)"
+        )
+        print(
+            f"  dead:      {len(buckets['dead'])}   (retrospective category, missing, NEVER committed — REMOVE)"
+        )
         print(f"  defensive: {len(buckets['defensive'])}   (defensive-by-design, never-committed is success)")
         print(f"  glob:      {len(buckets['glob'])}   (pattern entries, FS audit skipped)")
         if buckets["dead"]:

@@ -268,13 +268,17 @@ class DPOBatchBuilder:
                 payload=batch.to_dict(),
             )
             self.l4_store.put(artifact)
-        except (ValueError, KeyError, AttributeError) as e:
+        except (
+            ValueError,
+            KeyError,
+            AttributeError,
+        ) as e:  # guardian: allow-log-and-swallow -- DPO batch persist best-effort: non-fatal, batch already built in memory
             logging.getLogger(__name__).warning(f"Failed to store DPO batch {batch.batch_id[:8]}: {e}")
         except (
             OSError,
             RuntimeError,
             MemoryError,
-        ) as e:  # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+        ) as e:  # guardian: allow-log-and-swallow -- critical storage error: logged, batch already built in memory
             logging.getLogger(__name__).error(f"Critical error storing DPO batch {batch.batch_id[:8]}: {e}")
 
 

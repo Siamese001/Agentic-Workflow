@@ -7,10 +7,16 @@ from typing import Any, cast
 
 from agentic_core.adg.artifact import multi_writer
 from agentic_core.adg.extraction.visitors import VisitorContext, _AntipatternVisitor
-from agentic_core.adg.processing.phase3_auto_remediation import AutoRemediationEngine, RemediationAction, RemediationStrategy
+from agentic_core.adg.processing.phase3_auto_remediation import (
+    AutoRemediationEngine,
+    RemediationAction,
+    RemediationStrategy,
+)
 
 
-def _build_minimal_phase3_db(db_path: Path, file_path: Path, edge_kind: str = "broad_exception_catch") -> None:
+def _build_minimal_phase3_db(
+    db_path: Path, file_path: Path, edge_kind: str = "broad_exception_catch"
+) -> None:
     conn = sqlite3.connect(str(db_path))
     conn.execute(
         """

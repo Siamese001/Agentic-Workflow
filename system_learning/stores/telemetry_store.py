@@ -221,7 +221,11 @@ class FileBackedTelemetryStore:
                                 sort_keys=True,
                             ).encode("utf-8")
                             events.append((ts, event_type, payload))
-                    except (json.JSONDecodeError, ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow -- malformed telemetry line: counted and skipped, aggregate warning emitted after loop
+                    except (
+                        json.JSONDecodeError,
+                        ValueError,
+                        TypeError,
+                    ) as exc:  # guardian: allow-log-and-swallow -- malformed telemetry line: counted and skipped, aggregate warning emitted after loop
                         malformed_lines += 1
                         logger.debug("Skipping malformed telemetry line in %s: %s", self._path, exc)
         except OSError as exc:  # guardian: allow-log-and-swallow -- telemetry file unreadable: non-fatal, empty event tuple returned

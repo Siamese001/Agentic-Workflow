@@ -268,13 +268,16 @@ class ShadowDriftAnalyzer:
                 if violation_delta > 0:
                     # Violations increased - this is structural drift
                     drift_source = "adg_structural"
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- violation lookup: optional ADG query, non-fatal
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- violation lookup: optional ADG query, non-fatal
             # ADG data unavailable - continue with embedding-only analysis
             import logging
 
-            logging.getLogger(__name__).debug(
-                "shadow_drift_analyzer: violation count lookup failed: %s", exc
-            )
+            logging.getLogger(__name__).debug("shadow_drift_analyzer: violation count lookup failed: %s", exc)
 
         mean_cosine = statistics.mean(cosine_values)
         p95_cosine = self._compute_percentile(cosine_values, 95)

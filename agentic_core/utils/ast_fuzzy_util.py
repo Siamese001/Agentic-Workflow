@@ -51,7 +51,10 @@ def parse_ast_safe(source: str) -> ast.AST | None:
     """
     try:
         return ast.parse(source)
-    except (SyntaxError, ValueError):
+    except (
+        SyntaxError,
+        ValueError,
+    ):  # guardian: allow-return-none-swallow -- AST parse failure: caller treats None as unparseable source
         return None
 
 
@@ -150,7 +153,11 @@ def safe_unparse(node: ast.AST) -> str | None:
     """
     try:
         return ast.unparse(node)
-    except (AttributeError, TypeError, ValueError):
+    except (
+        AttributeError,
+        TypeError,
+        ValueError,
+    ):  # guardian: allow-return-none-swallow -- AST unparse failure: caller treats None as unsupported node
         return None
 
 

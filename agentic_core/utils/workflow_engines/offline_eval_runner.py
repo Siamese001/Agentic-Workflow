@@ -317,7 +317,11 @@ class OfflineEvaluationRunner:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        except (ValueError, KeyError, AttributeError) as e:
+        except (
+            ValueError,
+            KeyError,
+            AttributeError,
+        ) as e:  # guardian: allow-log-and-swallow -- evaluation snapshot persist best-effort: non-fatal, evaluation report already produced
             # Expected storage errors - log and continue
             logging.getLogger(__name__).warning(
                 f"Failed to store evaluation snapshot {report.run_id[:8]}: {e}",
@@ -326,7 +330,7 @@ class OfflineEvaluationRunner:
             OSError,
             RuntimeError,
             MemoryError,
-        ) as e:  # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+        ) as e:  # guardian: allow-log-and-swallow -- critical storage error: logged, evaluation report still produced
             # Critical storage errors - log and continue
             logging.getLogger(__name__).error(
                 f"Critical error storing evaluation snapshot {report.run_id[:8]}: {e}",

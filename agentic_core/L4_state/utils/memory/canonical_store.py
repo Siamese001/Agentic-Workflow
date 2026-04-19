@@ -292,7 +292,12 @@ class PostgresBackend(StorageBackend):
         except ImportError as e:  # guardian: allow-return-none-swallow -- psycopg2 unavailable: non-fatal, treated as cache miss
             Logger.error(f"Failed to retrieve from Postgres: {e}")
             return None
-        except (psycopg2.Error, OSError, ValueError, RuntimeError) as e:  # guardian: allow-return-none-swallow -- Postgres retrieve: non-fatal, treated as cache miss
+        except (
+            psycopg2.Error,
+            OSError,
+            ValueError,
+            RuntimeError,
+        ) as e:  # guardian: allow-return-none-swallow -- Postgres retrieve: non-fatal, treated as cache miss
             Logger.error(f"Failed to retrieve from Postgres: {e}")
             return None
 
@@ -423,7 +428,13 @@ class S3Backend(StorageBackend):
                 return None
             Logger.error(f"Failed to retrieve from S3: {e}")
             return None
-        except (ImportError, OSError, KeyError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow -- S3 retrieve: non-fatal, treated as cache miss
+        except (
+            ImportError,
+            OSError,
+            KeyError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-return-none-swallow -- S3 retrieve: non-fatal, treated as cache miss
             Logger.error(f"Failed to retrieve from S3: {e}")
             return None
 

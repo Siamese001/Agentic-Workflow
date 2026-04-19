@@ -210,7 +210,9 @@ class MissionPreflight:
                 from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
-            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: HierarchyAgent optional, caller handles None
+            except (
+                ImportError
+            ):  # guardian: allow-silent-swallow -- lazy loader: HierarchyAgent optional, caller handles None
                 pass
         return self._hierarchy_agent
 
@@ -222,7 +224,9 @@ class MissionPreflight:
                 from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
 
                 self._import_agent = create_legacy_import_healer()
-            except ImportError:  # guardian: allow-silent-swallow -- lazy loader: import healer optional, caller handles None
+            except (
+                ImportError
+            ):  # guardian: allow-silent-swallow -- lazy loader: import healer optional, caller handles None
                 pass
         return self._import_agent
 
@@ -279,7 +283,10 @@ class MissionPreflight:
                     f"   [ADG] {target_sector}: {_adg_antipattern_count} antipattern signal(s) "
                     f"(score={_bp.behavioral_score:.2f})",
                 )
-        except (ValueError, TypeError):  # guardian: allow-silent-swallow -- ADG antipattern count optional: non-fatal, preflight proceeds with count=0
+        except (
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow -- ADG antipattern count optional: non-fatal, preflight proceeds with count=0
             pass
         results["adg_antipattern_count"] = _adg_antipattern_count
         self._print_dashboard(results)

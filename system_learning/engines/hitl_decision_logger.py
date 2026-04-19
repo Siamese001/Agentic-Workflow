@@ -223,7 +223,7 @@ def log_hitl_decision(
             evidence_path.parent.mkdir(parents=True, exist_ok=True)
             with open(evidence_path, "a", encoding="ascii", errors="replace") as fh:
                 fh.write(safe_record)
-        except OSError:  # guardian: Add error context logging
+        except OSError as e:  # guardian: allow-log-and-swallow -- evidence append best-effort: non-fatal, decision count returned regardless
             import logging
 
             logging.getLogger(__name__).debug("hitl_decision_logger: OSError swallowed at L213: %s", e)
@@ -305,6 +305,12 @@ def log_routing_correction(
         snapshot_id = f"hitl_routing_{decision_n}"
         optimizer = DefaultRLHFOptimizer()
         optimizer.propose_from_dpo(dpo_batch_bytes=dpo_batch.encode("utf-8"), snapshot_id=snapshot_id)
-    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+    except (
+        AttributeError,
+        ImportError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- DPO emission best-effort: non-fatal, routing decision still recorded
         logger.warning("Failed to emit DPO pair for routing correction: %s", exc)
     return decision_n

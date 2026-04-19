@@ -80,9 +80,7 @@ def _check_global_sync() -> list[str]:
         return [f"could not compare repo/global MCP config: {exc}"]
 
     if repo_data != global_data:
-        issues.append(
-            "global MCP config drift detected; run 'python .windsurf/scripts/sync_mcp_config.py'"
-        )
+        issues.append("global MCP config drift detected; run 'python .windsurf/scripts/sync_mcp_config.py'")
     return issues
 
 

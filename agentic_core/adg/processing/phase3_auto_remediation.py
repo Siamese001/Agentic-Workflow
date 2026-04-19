@@ -239,7 +239,8 @@ class AutoRemediationEngine:
 
         if "severity" in columns and "disposition" in columns:
             # Full Phase 1 schema
-            cursor = conn.execute("""
+            cursor = conn.execute(
+                """
                 SELECT v.file_path, v.line_no, COALESCE(e.edge_kind, ''), v.evidence, v.severity
                 FROM violations v
                 LEFT JOIN edges e ON v.edge_id = e.id
@@ -248,10 +249,13 @@ class AutoRemediationEngine:
                   AND v.severity IN ('HIGH', 'MEDIUM')
                   AND e.edge_kind IN (?, ?, ?, ?)
                 ORDER BY v.severity DESC, v.file_path, v.line_no
-            """, candidate_kinds)
+            """,
+                candidate_kinds,
+            )
         elif "severity" in columns:
             # Partial Phase 1 schema - assume all are untriaged
-            cursor = conn.execute("""
+            cursor = conn.execute(
+                """
                 SELECT v.file_path, v.line_no, COALESCE(e.edge_kind, ''), v.evidence, v.severity
                 FROM violations v
                 LEFT JOIN edges e ON v.edge_id = e.id
@@ -259,17 +263,22 @@ class AutoRemediationEngine:
                   AND v.severity IN ('HIGH', 'MEDIUM')
                   AND e.edge_kind IN (?, ?, ?, ?)
                 ORDER BY v.severity DESC, v.file_path, v.line_no
-            """, candidate_kinds)
+            """,
+                candidate_kinds,
+            )
         else:
             # Pre-Phase 1 schema - use default severity, treat all as candidates
-            cursor = conn.execute("""
+            cursor = conn.execute(
+                """
                 SELECT v.file_path, v.line_no, COALESCE(e.edge_kind, ''), v.evidence, 'MEDIUM'
                 FROM violations v
                 LEFT JOIN edges e ON v.edge_id = e.id
                 WHERE v.category = 'antipattern'
                   AND e.edge_kind IN (?, ?, ?, ?)
                 ORDER BY v.file_path, v.line_no
-            """, candidate_kinds)
+            """,
+                candidate_kinds,
+            )
 
         violations = []
         for file_path, line_no, edge_kind, evidence, severity in tqdm(
