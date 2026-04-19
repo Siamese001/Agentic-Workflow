@@ -19,6 +19,7 @@ Zero hardcoded paths.
 
 import json
 import os
+import shutil
 import socket
 import subprocess
 import sys
@@ -531,6 +532,62 @@ def check_adg_health_red(repo_root: Path) -> bool:
         return False  # parse error — fail-open (probe infrastructure error)
 
 
+def _check_mcp_config_drift() -> None:
+    """
+    Detect and auto-fix env-block drift between repo MCP config and global Windsurf config.
+
+    Windsurf IDE can overwrite ~/.codeium/windsurf/mcp_config.json (e.g. via the MCP
+    settings UI) and silently drop custom env blocks (e.g. NOTION_TOKEN).  This check
+    runs on every pre_user_prompt event, compares env blocks, and re-syncs from the
+    repo SSOT when any server has env in repo but is missing or different in global.
+    Fail-open: any I/O or parse error is silently ignored.
+    """
+    repo_cfg = repo_root / ".windsurf" / "mcp_config.json"
+    global_cfg = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
+    try:
+        repo_data = json.loads(repo_cfg.read_text(encoding="utf-8"))
+        global_data = json.loads(global_cfg.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return
+
+    repo_servers = repo_data.get("mcpServers", {})
+    global_servers = global_data.get("mcpServers", {})
+
+    drifted: list[str] = []
+    for name, cfg in repo_servers.items():
+        if not isinstance(cfg, dict):
+            continue
+        repo_env = cfg.get("env")
+        if repo_env is None:
+            continue
+        global_entry = global_servers.get(name, {})
+        global_env = global_entry.get("env") if isinstance(global_entry, dict) else None
+        if global_env != repo_env:
+            drifted.append(name)
+
+    if not drifted:
+        return
+
+    try:
+        global_backup = global_cfg.parent / "mcp_config.backup.json"
+        if global_cfg.exists():
+            shutil.copy2(global_cfg, global_backup)
+        global_cfg.write_text(json.dumps(repo_data, indent=2) + "\n", encoding="utf-8")
+        print(
+            "[pre_prompt_classifier] MCP_CONFIG_DRIFT_FIXED: env drift detected in: "
+            f"{', '.join(drifted)} — global config re-synced from repo SSOT. "
+            "Restart Windsurf MCP servers to pick up the new env blocks.",
+            file=sys.stderr,
+        )
+    except (OSError, ValueError) as exc:
+        print(
+            "[pre_prompt_classifier] MCP_CONFIG_DRIFT_DETECTED: env drift in: "
+            f"{', '.join(drifted)} — auto-fix failed ({exc}); run: "
+            "python .windsurf/scripts/sync_mcp_config.py",
+            file=sys.stderr,
+        )
+
+
 def main() -> int:
     raw = sys.stdin.read()
     if not raw.strip():
@@ -552,6 +609,8 @@ def main() -> int:
 
     if not prompt:
         return 0
+
+    _check_mcp_config_drift()
 
     tier = classify_tier(prompt)
     print(f"[pre_prompt_classifier] Tier: {tier}", file=sys.stderr)
