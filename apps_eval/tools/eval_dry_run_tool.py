@@ -38,7 +38,7 @@ def main() -> int:
         for row in result.scorecard:
             print(f"    {row.dimension_id:20s} score={row.score:.2f} weight={row.weight:.1f} [{row.verdict}]")
         return 0 if status in ("dry_run", "complete") else 1
-    except Exception as exc:
+    except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as exc:
         _log.error(f"Dry-run failed: {exc}")
         print(f"  [ERROR] {exc}")
         return 1

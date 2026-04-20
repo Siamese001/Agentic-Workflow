@@ -107,7 +107,7 @@ class BriefGenerationAgent:
                 execution_time_ms=elapsed_ms,
             )
 
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as exc:
             _log.error(f"[BriefGenerationAgent] {self.agent_type} failed: {exc}")
             return BriefAgentResult(
                 agent_id=request.agent_id,

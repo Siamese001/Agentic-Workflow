@@ -221,7 +221,7 @@ class BriefDecomposer:
             try:
                 decomp = self.decompose(persona, source_material)
                 results.append(decomp)
-            except Exception as exc:
+            except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as exc:
                 _log.error(f"[BriefDecomposer] Failed to decompose for {persona}: {exc}")
                 # Return minimal decomposition on failure
                 results.append(
