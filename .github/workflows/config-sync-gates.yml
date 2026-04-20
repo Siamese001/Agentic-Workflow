@@ -24,6 +24,14 @@ on:
       - 'ops_scripts/ci/check_hardcoded_exclusions.py'
       - 'ops_scripts/ci/baselines/hardcoded_exclusions_baseline.json'
       - 'ops_scripts/ci/_validate_pytest_config.py'
+      - 'ops_scripts/ci/check_severity_band_ssot.py'
+      - 'ops_scripts/ci/check_graph_layer_evidence.py'
+      - 'ops_scripts/ci/check_structure_policy.py'
+      - 'ops_scripts/ci/baselines/graph_layer_evidence_baseline.json'
+      - 'agentic_core/adg/severity_bands.py'
+      - 'agentic_core/L5_safety/config/severity.py'
+      - 'config/structure_blueprint/structure_policy.yaml'
+      - '.windsurf/plans/**'
       - 'tools/generate/check_exclusion_sync.py'
       - 'tools/generate/generate_gitignore.py'
       - 'agentic_core/L0_routing/config/path_constants.py'
@@ -104,5 +112,20 @@ jobs:
 
       - name: T6 — pytest config SSOT
         run: python ops_scripts/ci/_validate_pytest_config.py --strict
+        env:
+          PYTHONPATH: .
+
+      - name: T7f — severity<->band SSOT (Constitutional §22/§23)
+        run: python ops_scripts/ci/check_severity_band_ssot.py
+        env:
+          PYTHONPATH: .
+
+      - name: T7g — ADG graph-layer evidence (Constitutional §22)
+        run: python ops_scripts/ci/check_graph_layer_evidence.py
+        env:
+          PYTHONPATH: .
+
+      - name: T7b — repository structure policy
+        run: python ops_scripts/ci/check_structure_policy.py
         env:
           PYTHONPATH: .

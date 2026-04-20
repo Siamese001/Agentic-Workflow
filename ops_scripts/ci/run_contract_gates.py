@@ -145,6 +145,30 @@ def main():
         sys.exit(1)
     print("✅ Graph-layer evidence gate passed")
 
+    # Gate: Severity<->Band SSOT (Constitutional §22/§23 — no hardcoded mappings)
+    print("🔍 Running severity<->band SSOT gate...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_severity_band_ssot.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Severity<->band SSOT gate passed")
+
+    # Gate: Repository structure policy (config/structure_blueprint/structure_policy.yaml)
+    print("🔍 Running structure policy gate...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_structure_policy.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Structure policy gate passed")
+
     # Gate: P0 two-pass (preflight + full ADG enforcement)
     print("\n[P0 TWO-PASS GATE]")
     try:

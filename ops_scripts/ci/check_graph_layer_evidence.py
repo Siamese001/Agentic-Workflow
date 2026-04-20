@@ -196,6 +196,51 @@ def _load_baseline() -> set[str]:
     return set(data.get("grandfathered_plans", []))
 
 
+def _validate_baseline_integrity(baseline: set[str], plans: list[Path]) -> list[str]:
+    """Validate the grandfathered-plans baseline for integrity.
+
+    Two failure modes detected:
+      1. ORPHANED entries — baseline lists a plan that no longer exists on disk
+         (silent rot: would allow a future plan with the same name to bypass
+         the gate).
+      2. DUPLICATE entries — the same plan path appears more than once in the
+         JSON list (shouldn't happen in clean SSOT; indicates human error).
+
+    Returns a list of issue strings; empty when integrity is intact.
+    """
+    issues: list[str] = []
+
+    # Duplicate detection requires re-reading the raw list (not the set form).
+    if BASELINE_FILE.exists():
+        try:
+            raw = json.loads(BASELINE_FILE.read_text(encoding="utf-8"))
+            listed = raw.get("grandfathered_plans", [])
+            if not isinstance(listed, list):
+                issues.append(
+                    "baseline_schema_invalid — grandfathered_plans is not a list"
+                )
+            else:
+                seen: set[str] = set()
+                for entry in listed:
+                    if entry in seen:
+                        issues.append(f"baseline_duplicate_entry — {entry!r} listed twice")
+                    seen.add(entry)
+        except (OSError, json.JSONDecodeError) as exc:
+            issues.append(f"baseline_parse_error — {type(exc).__name__}: {exc}")
+
+    # Orphan detection — every baseline entry must correspond to an existing plan.
+    existing_rel = {
+        str(p.relative_to(ROOT)).replace("\\", "/") for p in plans
+    }
+    for entry in sorted(baseline):
+        if entry not in existing_rel:
+            issues.append(
+                f"baseline_orphan_entry — {entry!r} is grandfathered but no such plan exists"
+            )
+
+    return issues
+
+
 def main() -> int:
     if not PLANS_DIR.is_dir():
         print(f"[check_graph_layer_evidence] plans dir missing: {PLANS_DIR}")
@@ -207,6 +252,23 @@ def main() -> int:
         return 0
 
     baseline = _load_baseline()
+
+    # Baseline integrity — orphaned and duplicate entries are silent bypasses.
+    integrity_issues = _validate_baseline_integrity(baseline, plans)
+    if integrity_issues:
+        print(
+            f"\n[check_graph_layer_evidence] FAIL — "
+            f"{len(integrity_issues)} baseline integrity issue(s):"
+        )
+        for issue in integrity_issues:
+            print(f"  - {issue}")
+        print(
+            "\nFix: remove stale entries from "
+            "ops_scripts/ci/baselines/graph_layer_evidence_baseline.json "
+            "or restore the missing plan file. Duplicate entries must be deduped."
+        )
+        return 1
+
     violations: list[dict] = []
     skipped_grandfathered = 0
     for idx, plan in enumerate(plans, 1):

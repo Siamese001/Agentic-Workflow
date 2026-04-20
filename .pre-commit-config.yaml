@@ -254,6 +254,34 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7f: Severity<->Band SSOT (Constitutional §22/§23) --------------------------
+      # Forbids local severity<->band mapping dicts outside the canonical SSOT modules
+      # (agentic_core/adg/severity_bands.py, agentic_core/L5_safety/config/severity.py).
+      # Triggers on any Python file change in agentic_core/, tools/, ops_scripts/,
+      # system_learning/, or the SSOT modules themselves.
+      - id: severity-band-ssot
+        name: "T7f: Severity<->Band SSOT"
+        entry: py ops_scripts/ci/check_severity_band_ssot.py
+        language: system
+        pass_filenames: false
+        files: ^(agentic_core/.*\.py|tools/.*\.py|ops_scripts/.*\.py|system_learning/.*\.py)$
+        always_run: false
+        require_serial: true
+
+      # -- T7g: ADG Graph-Layer Evidence (Constitutional §22) --------------------------
+      # Validates that T2/T3 refactoring plans in .windsurf/plans/ include the
+      # ## ADG_HOTSPOT_REPORT (with archetype + surface classification) and
+      # ## ADG_GRAPH_LAYER_EVIDENCE (with ≥3 materialized views + semantic edges/P-views).
+      # Triggers on plan file changes only.
+      - id: graph-layer-evidence
+        name: "T7g: ADG Graph-Layer Evidence"
+        entry: py ops_scripts/ci/check_graph_layer_evidence.py
+        language: system
+        pass_filenames: false
+        files: ^(\.windsurf/plans/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T7d: Query Progress Bar (§16) ------------------------------------------------
       # Enforces Constitutional §16 (progress bars on operations >30s, proxied
       # by loop/function body >50 lines). All 8 pre-existing violations triaged
