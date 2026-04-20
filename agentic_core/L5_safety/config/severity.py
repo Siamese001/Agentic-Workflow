@@ -1,20 +1,23 @@
-"""
-Severity Level SSOT — Single Source of Truth for severity classifications.
+"""Severity Level SSOT for pre-commit, validation, and quality reporting.
 
-Canonical definition of severity levels used across:
-- ADG violations and findings
-- Pre-commit gate reporting
-- Validation results
-- Quality metrics
+This module provides the high-level ``SeverityLevel`` enum used by pre-commit
+gates, validation systems, and quality metrics. It includes an ``INFO`` level
+for passed/skipped gate status.
+
+For the canonical ADG severity<->band mapping (CRITICAL/HIGH/MEDIUM/LOW <->
+P0/P1/P2/P3) used by ``adg_burndown_table.json`` and all ADG reports, see:
+
+    agentic_core.adg.severity_bands
+
+That module is the authoritative SSOT for ADG P0-P3 classifications. This
+module (``SeverityLevel``) delegates ADG categorization to it, so the two
+never drift.
 
 SEVERITY TAXONOMY
 -----------------
 Severity levels are defined by two dimensions:
 1. IMPACT: What happens if this issue reaches production?
 2. URGENCY: How quickly must this be addressed?
-
-LEVEL DEFINITIONS
-----------------
 """
 
 from __future__ import annotations
@@ -23,45 +26,30 @@ from enum import Enum
 
 
 class SeverityLevel(Enum):
-    """
-    Canonical severity levels for all systems.
+    """Canonical severity levels for pre-commit, validation, and ADG systems.
 
-    MAPPING TO OTHER SYSTEMS
-    ------------------------
-    Ruff:       P0 → CRITICAL, P1 → HIGH, P2 → MEDIUM, P3 → LOW
-    ADG:        P1 → CRITICAL, P2 → HIGH, P3 → MEDIUM, P4 → LOW
+    MAPPING TO OTHER SYSTEMS (authoritative)
+    ---------------------------------------
+    ADG / Ruff: CRITICAL → P0, HIGH → P1, MEDIUM → P2, LOW → P3
     Pre-commit: CRITICAL/HIGH/MEDIUM/LOW/INFO → direct mapping
+
+    The ADG mapping above is the canonical one used by
+    ``adg_burndown_table.json``. It is delegated to
+    ``agentic_core.adg.severity_bands`` so the two SSOTs never disagree.
 
     SEMANTIC DEFINITIONS
     --------------------
-    CRITICAL (P0/P1):
-        - IMPACT: System-breaking, security breach, data loss, or constitutional violation
-        - URGENCY: Immediate - MUST block commit until fixed
-        - EXAMPLES: Layer boundary violations, security vulnerabilities, PowerShell usage,
-                    missing critical dependencies, broken imports in production code
-
-    HIGH (P1/P2):
-        - IMPACT: Bugs that affect functionality, architectural violations, anti-patterns
-        - URGENCY: High - should fix before commit, degrades quality significantly
-        - EXAMPLES: Unused imports, global mutations, test coverage gaps, deprecated APIs,
-                    silent exception swallowers, circular dependencies
-
-    MEDIUM (P2/P3):
-        - IMPACT: Code quality issues, maintainability concerns, style violations
-        - URGENCY: Medium - consider fixing, technical debt accumulation
-        - EXAMPLES: Long functions, complex cyclomatic complexity, inconsistent naming,
-                    missing docstrings, TODO comments without owners
-
-    LOW (P3/P4):
-        - IMPACT: Minor style issues, formatting, informational
-        - URGENCY: Low - nice to have, can be deferred
-        - EXAMPLES: Line length violations, trailing whitespace, missing type hints in utility code,
-                    unused variables in tests, debug print statements, semantic enrichment warnings
-
-    INFO:
-        - IMPACT: No issue - informational or passed status
-        - URGENCY: N/A
-        - EXAMPLES: Hook passed successfully, hook skipped (no matching files)
+    CRITICAL (P0): System-breaking, security breach, data loss, or
+        constitutional violation. Layer boundary violations,
+        PowerShell usage, broken imports. Blocks commit.
+    HIGH (P1): Bugs, architectural violations, high-severity anti-patterns
+        (broad exception handling in production). Should fix before commit.
+    MEDIUM (P2): Medium-severity anti-patterns (silent swallow, return-none,
+        default masking, retry without bounds, double logging). Consider
+        fixing — technical debt accumulation.
+    LOW (P3): Style warnings (global mutation, hardcoded paths,
+        throw-for-normal-flow). Informational, can be deferred.
+    INFO: No issue — informational or passed gate status. Has no ADG band.
     """
 
     CRITICAL = "critical"  # P0/P1 - Blocks commit
@@ -75,15 +63,17 @@ class SeverityLevel(Enum):
 
     @property
     def p_level(self) -> str:
-        """Return the P-level designation (e.g., P0, P1, P2, P3, P4)."""
-        mapping = {
-            SeverityLevel.CRITICAL: "P0/P1",
-            SeverityLevel.HIGH: "P1/P2",
-            SeverityLevel.MEDIUM: "P2/P3",
-            SeverityLevel.LOW: "P3/P4",
-            SeverityLevel.INFO: "N/A",
-        }
-        return mapping[self]
+        """Return the canonical P-level (P0, P1, P2, P3) or 'N/A' for INFO.
+
+        Delegates to the ADG severity_bands SSOT so the mapping stays in sync
+        with ``agentic_core/adg/severity_bands.py`` and ``adg_burndown_table.json``.
+        """
+        # Lazy import avoids creating an L5<-L_ADG dependency at module load.
+        from agentic_core.adg.severity_bands import SEVERITY_TO_BAND
+
+        if self == SeverityLevel.INFO:
+            return "N/A"
+        return SEVERITY_TO_BAND[self.name]
 
     @property
     def blocks_commit(self) -> bool:
@@ -109,27 +99,17 @@ class SeverityLevel(Enum):
 
     @property
     def ruff_category(self) -> str:
-        """Map to Ruff's P0-P3 categories."""
-        mapping = {
-            SeverityLevel.CRITICAL: "P0",
-            SeverityLevel.HIGH: "P1",
-            SeverityLevel.MEDIUM: "P2",
-            SeverityLevel.LOW: "P3",
-            SeverityLevel.INFO: "N/A",
-        }
-        return mapping[self]
+        """Ruff P0-P3 category (identical to ADG band — single canonical mapping)."""
+        return self.p_level
 
     @property
     def adg_category(self) -> str:
-        """Map to ADG's P1-P4 categories."""
-        mapping = {
-            SeverityLevel.CRITICAL: "P1",
-            SeverityLevel.HIGH: "P2",
-            SeverityLevel.MEDIUM: "P3",
-            SeverityLevel.LOW: "P4",
-            SeverityLevel.INFO: "N/A",
-        }
-        return mapping[self]
+        """ADG P0-P3 band for this severity.
+
+        Returns the canonical band from ``agentic_core.adg.severity_bands``:
+        CRITICAL → P0, HIGH → P1, MEDIUM → P2, LOW → P3. INFO returns 'N/A'.
+        """
+        return self.p_level
 
 
 # Backward compatibility aliases for existing code
@@ -139,41 +119,40 @@ PreCommitSeverity = SeverityLevel  # Pre-commit schema
 
 
 def from_ruff_category(category: str) -> SeverityLevel:
-    """
-    Convert Ruff P0-P3 category to SeverityLevel.
+    """Convert a Ruff/ADG P0-P3 category to SeverityLevel.
 
     Args:
-        category: Ruff category (P0, P1, P2, P3)
+        category: Category string (``P0``, ``P1``, ``P2``, ``P3``).
 
     Returns:
-        Corresponding SeverityLevel
+        Corresponding ``SeverityLevel`` or ``INFO`` when unknown.
     """
-    mapping = {
-        "P0": SeverityLevel.CRITICAL,
-        "P1": SeverityLevel.HIGH,
-        "P2": SeverityLevel.MEDIUM,
-        "P3": SeverityLevel.LOW,
-    }
-    return mapping.get(category.upper(), SeverityLevel.INFO)
+    # Lazy import avoids creating an L5<-L_ADG dependency at module load.
+    from agentic_core.adg.severity_bands import BAND_TO_SEVERITY
+
+    severity_name = BAND_TO_SEVERITY.get(category.upper())
+    if severity_name is None:
+        return SeverityLevel.INFO
+    return SeverityLevel[severity_name]
 
 
 def from_adg_category(category: str) -> SeverityLevel:
-    """
-    Convert ADG P1-P4 category to SeverityLevel.
+    """Convert an ADG P0-P3 category to SeverityLevel.
+
+    The ADG canonical band range is P0-P3 (see
+    ``agentic_core.adg.severity_bands``). This function also accepts legacy
+    P1-P4 inputs for backward compatibility and maps them by shifting down
+    one band (P1->P0, P2->P1, P3->P2, P4->P3) so older callers degrade
+    safely instead of returning INFO.
 
     Args:
-        category: ADG category (P1, P2, P3, P4)
+        category: ADG band string (``P0``, ``P1``, ``P2``, ``P3``) or legacy
+            (``P1``, ``P2``, ``P3``, ``P4``).
 
     Returns:
-        Corresponding SeverityLevel
+        Corresponding ``SeverityLevel`` or ``INFO`` when unknown.
     """
-    mapping = {
-        "P1": SeverityLevel.CRITICAL,
-        "P2": SeverityLevel.HIGH,
-        "P3": SeverityLevel.MEDIUM,
-        "P4": SeverityLevel.LOW,
-    }
-    return mapping.get(category.upper(), SeverityLevel.INFO)
+    return from_ruff_category(category)
 
 
 def from_legacy_string(value: str) -> SeverityLevel:

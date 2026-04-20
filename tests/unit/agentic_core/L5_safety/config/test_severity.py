@@ -30,26 +30,26 @@ class TestSeverityLevelEnum:
         assert str(SeverityLevel.HIGH) == "high"
 
     def test_p_level_property(self) -> None:
-        """p_level property returns P-level mapping ranges."""
-        assert SeverityLevel.CRITICAL.p_level == "P0/P1"
-        assert SeverityLevel.HIGH.p_level == "P1/P2"
-        assert SeverityLevel.MEDIUM.p_level == "P2/P3"
-        assert SeverityLevel.LOW.p_level == "P3/P4"
+        """p_level returns the canonical P-band from the unified SSOT."""
+        assert SeverityLevel.CRITICAL.p_level == "P0"
+        assert SeverityLevel.HIGH.p_level == "P1"
+        assert SeverityLevel.MEDIUM.p_level == "P2"
+        assert SeverityLevel.LOW.p_level == "P3"
         assert SeverityLevel.INFO.p_level == "N/A"
 
     def test_ruff_category_property(self) -> None:
-        """ruff_category property returns correct Ruff categories."""
+        """ruff_category returns canonical Ruff P0-P3 categories."""
         assert SeverityLevel.CRITICAL.ruff_category == "P0"
         assert SeverityLevel.HIGH.ruff_category == "P1"
         assert SeverityLevel.MEDIUM.ruff_category == "P2"
         assert SeverityLevel.LOW.ruff_category == "P3"
 
     def test_adg_category_property(self) -> None:
-        """adg_category property returns correct ADG categories."""
-        assert SeverityLevel.CRITICAL.adg_category == "P1"
-        assert SeverityLevel.HIGH.adg_category == "P2"
-        assert SeverityLevel.MEDIUM.adg_category == "P3"
-        assert SeverityLevel.LOW.adg_category == "P4"
+        """adg_category returns canonical ADG P0-P3 bands (unified with severity_bands SSOT)."""
+        assert SeverityLevel.CRITICAL.adg_category == "P0"
+        assert SeverityLevel.HIGH.adg_category == "P1"
+        assert SeverityLevel.MEDIUM.adg_category == "P2"
+        assert SeverityLevel.LOW.adg_category == "P3"
 
 
 class TestFromRuffCategory:
@@ -77,27 +77,31 @@ class TestFromRuffCategory:
 
 
 class TestFromAdgCategory:
-    """Test from_adg_category conversion function."""
+    """Test from_adg_category conversion function (canonical P0-P3 mapping)."""
 
-    def test_adg_p1_to_critical(self) -> None:
-        """Convert ADG P1 to SeverityLevel.CRITICAL."""
-        assert from_adg_category("P1") == SeverityLevel.CRITICAL
+    def test_adg_p0_to_critical(self) -> None:
+        """Convert ADG P0 to SeverityLevel.CRITICAL."""
+        assert from_adg_category("P0") == SeverityLevel.CRITICAL
 
-    def test_adg_p2_to_high(self) -> None:
-        """Convert ADG P2 to SeverityLevel.HIGH."""
-        assert from_adg_category("P2") == SeverityLevel.HIGH
+    def test_adg_p1_to_high(self) -> None:
+        """Convert ADG P1 to SeverityLevel.HIGH."""
+        assert from_adg_category("P1") == SeverityLevel.HIGH
 
-    def test_adg_p3_to_medium(self) -> None:
-        """Convert ADG P3 to SeverityLevel.MEDIUM."""
-        assert from_adg_category("P3") == SeverityLevel.MEDIUM
+    def test_adg_p2_to_medium(self) -> None:
+        """Convert ADG P2 to SeverityLevel.MEDIUM."""
+        assert from_adg_category("P2") == SeverityLevel.MEDIUM
 
-    def test_adg_p4_to_low(self) -> None:
-        """Convert ADG P4 to SeverityLevel.LOW."""
-        assert from_adg_category("P4") == SeverityLevel.LOW
+    def test_adg_p3_to_low(self) -> None:
+        """Convert ADG P3 to SeverityLevel.LOW."""
+        assert from_adg_category("P3") == SeverityLevel.LOW
 
     def test_adg_invalid_fallback_to_info(self) -> None:
         """Invalid ADG category gracefully falls back to INFO."""
         assert from_adg_category("P99") == SeverityLevel.INFO
+
+    def test_adg_p4_legacy_fallback_to_info(self) -> None:
+        """Legacy ADG P4 (from deprecated P1-P4 mapping) is not canonical -> INFO."""
+        assert from_adg_category("P4") == SeverityLevel.INFO
 
 
 class TestFromLegacyString:

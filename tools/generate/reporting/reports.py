@@ -8,6 +8,15 @@ from collections import Counter
 from pathlib import Path
 from tqdm import tqdm
 
+from agentic_core.adg.severity_bands import (
+    BAND_LABELS,
+    BAND_ORDER,
+    BAND_TOP_LEVEL_KEYS,
+    SEVERITY_TO_BAND,
+    Band,
+    Severity,
+    severity_to_band,
+)
 from tools.adg.shared_modules.path_resolver import latest_sqlite
 
 
@@ -51,6 +60,8 @@ def _print_defect_table(
     by_severity = routing_summary.get("by_severity", {})
 
     p0_count = 0
+    p0_gross_edges = 0  # Total layer-violation edges before guardian filtering.
+    p0_guardian_edges = 0  # Layer-violation edges suppressed by guardian marker.
     _violation_rows: list = []
     if sqlite_source is not None and sqlite_source.exists():
         try:
@@ -59,12 +70,15 @@ def _print_defect_table(
                     "SELECT source_file, line_no FROM edges WHERE relation_type='violates'",
                 ).fetchall()
             for _src_file, _line_no in tqdm(_violation_rows, desc="Processing", unit="item"):
+                p0_gross_edges += 1
                 try:
                     _src_path = ROOT / _src_file
                     if _src_path.exists() and _line_no and _line_no > 0:
                         _file_lines = _src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
                         _check = _file_lines[max(0, _line_no - 2) : _line_no]
-                        if not any("guardian: allow-layer-violation" in _ln for _ln in _check):
+                        if any("guardian: allow-layer-violation" in _ln for _ln in _check):
+                            p0_guardian_edges += 1
+                        else:
                             p0_count += 1
                     else:
                         p0_count += 1
@@ -77,6 +91,9 @@ def _print_defect_table(
         except sqlite3.Error:
             pass
 
+    # SSOT-driven severity counts for antipatterns (bands P1/P2/P3 map to HIGH/MEDIUM/LOW).
+    # Also pulls CRITICAL antipatterns (band P0) so top-level P0 is never undercounted.
+    p0_antipattern = 0
     p1_antipattern = 0
     p2_antipattern = 0
     p3_antipattern = 0
@@ -87,13 +104,19 @@ def _print_defect_table(
                     "SELECT severity, COUNT(*) FROM violations WHERE category='antipattern' GROUP BY severity",
                 ).fetchall()
                 _sev_map = {r[0]: r[1] for r in rows}
-                p1_antipattern = _sev_map.get("HIGH", 0)
-                p2_antipattern = _sev_map.get("MEDIUM", 0)
-                p3_antipattern = _sev_map.get("LOW", 0)
+                p0_antipattern = _sev_map.get(Severity.CRITICAL.value, 0)
+                p1_antipattern = _sev_map.get(Severity.HIGH.value, 0)
+                p2_antipattern = _sev_map.get(Severity.MEDIUM.value, 0)
+                p3_antipattern = _sev_map.get(Severity.LOW.value, 0)
         except (
             sqlite3.Error
         ):  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to routing counts
             pass
+
+    # SSOT rule: band P0 includes BOTH layer-gravity violations (edges.relation_type='violates')
+    # AND antipattern CRITICALs. This closes the historical gap where top-level
+    # P0_layer_violations hid CRITICAL antipattern rows.
+    p0_count += p0_antipattern
 
     _p1_ratchet_file = ROOT / "artifacts" / "adg" / "p1_ratchet.json"
     if not _p1_ratchet_file.exists():
@@ -489,24 +512,22 @@ def _print_defect_table(
         _p2_label = "stable" if _p2_delta_val == 0 else "REGRESSION"
         print(f"[ADG] P2 ratchet: {p2_count}/{_p2_ceiling} ({_p2_delta_val:+d} \u2014 {_p2_label})")
 
-    # --- Query violation_class breakdown for burndown v2.0 ---
+    # --- Query violation_class breakdown for burndown v2.0 (SSOT-driven band mapping) ---
     _by_class: dict[str, dict[str, int]] = {
-        "hygiene": {"P0": p0_count, "P1": p1_count, "P2": p2_count, "P3": p3_count},
-        "structural_conformance": {"P0": 0, "P1": 0, "P2": 0, "P3": 0},
-        "agentic_antipattern": {"P0": 0, "P1": 0, "P2": 0, "P3": 0},
+        "hygiene": {b: 0 for b in BAND_ORDER},
+        "structural_conformance": {b: 0 for b in BAND_ORDER},
+        "agentic_antipattern": {b: 0 for b in BAND_ORDER},
     }
+    _by_class["hygiene"].update(
+        {
+            Band.P0.value: p0_count,
+            Band.P1.value: p1_count,
+            Band.P2.value: p2_count,
+            Band.P3.value: p3_count,
+        }
+    )
     if sqlite_path is not None and sqlite_path.exists():
         try:
-            _sev_to_band = {
-                "CRITICAL": "P0",
-                "HIGH": "P1",
-                "MEDIUM": "P2",
-                "LOW": "P3",
-                "P0": "P0",
-                "P1": "P1",
-                "P2": "P2",
-                "P3": "P3",
-            }
             with sqlite3.connect(str(sqlite_source)) as _bc_conn:
                 _bc_rows = _bc_conn.execute(
                     "SELECT violation_class, severity, COUNT(*) FROM violations "
@@ -514,14 +535,23 @@ def _print_defect_table(
                     "GROUP BY violation_class, severity",
                 ).fetchall()
                 for _vc, _sv, _cnt in _bc_rows:
-                    _band = _sev_to_band.get(_sv, "P3")
+                    # Tolerant parse: accept either severity (CRITICAL/HIGH/...) or already-banded (P0/P1/...)
+                    if _sv in SEVERITY_TO_BAND:
+                        _band = severity_to_band(_sv)
+                    elif _sv in BAND_ORDER:
+                        _band = _sv
+                    else:
+                        _band = Band.P3.value
                     if _vc in _by_class and _band in _by_class[_vc]:
                         _by_class[_vc][_band] = _cnt
         except sqlite3.OperationalError:
             pass
 
-    # Guardian counts keyed by P-band (P1=HIGH, P2=MEDIUM, P3=LOW; P0 has no guardians)
-    _guardian_p0 = 0
+    # Guardian counts keyed by P-band.
+    # P0 guardian count is sourced from layer-violation edges suppressed by
+    # "guardian: allow-layer-violation" markers captured during the p0_count pass.
+    # P1/P2/P3 guardian counts come from the severity-classified exempt-rows query above.
+    _guardian_p0 = p0_guardian_edges
     _guardian_p1 = _guardian_by_sev.get("HIGH", 0)
     _guardian_p2 = _guardian_by_sev.get("MEDIUM", 0)
     _guardian_p3 = _guardian_by_sev.get("LOW", 0)
@@ -553,10 +583,59 @@ def _print_defect_table(
             )
         return rows
 
+    # SSOT-driven band aggregates. Keys are derived from agentic_core.adg.severity_bands
+    # so the burndown schema never drifts from the canonical Severity<->Band mapping.
+    _net_by_band = {
+        Band.P0.value: p0_count,
+        Band.P1.value: p1_count,
+        Band.P2.value: p2_count,
+        Band.P3.value: p3_count,
+    }
+    _guardian_by_band = {
+        Band.P0.value: _guardian_p0,
+        Band.P1.value: _guardian_p1,
+        Band.P2.value: _guardian_p2,
+        Band.P3.value: _guardian_p3,
+    }
+    _gross_by_band = {
+        Band.P0.value: _gross_p0,
+        Band.P1.value: _gross_p1,
+        Band.P2.value: _gross_p2,
+        Band.P3.value: _gross_p3,
+    }
+    # Per-kind rows keyed by the SSOT severity for each band (P0 has no by_kind rows
+    # today because no kind-level data is produced for CRITICAL antipatterns yet).
+    _by_kind_by_band = {
+        Band.P0.value: [],
+        Band.P1.value: _build_kind_rows(Severity.HIGH.value, _gross_p1),
+        Band.P2.value: _build_kind_rows(Severity.MEDIUM.value, _gross_p2),
+        Band.P3.value: _build_kind_rows(Severity.LOW.value, _gross_p3),
+    }
+
+    _summary = {
+        b: {
+            "net": _net_by_band[b],
+            "guardian": _guardian_by_band[b],
+            "gross": _gross_by_band[b],
+            "diff": _guardian_by_band[b],
+            "label": BAND_LABELS[b],
+            "by_kind": _by_kind_by_band[b],
+        }
+        for b in BAND_ORDER
+    }
+
+    # Flat top-level keys derived from SSOT BAND_TOP_LEVEL_KEYS so every band
+    # (P0, P1, P2, P3) is represented with a stable, discoverable name.
+    _flat_top_level = {BAND_TOP_LEVEL_KEYS[b]: _net_by_band[b] for b in BAND_ORDER}
+    # Legacy alias retained so external consumers that read the historical key
+    # "P2_anti_patterns" continue to work. Canonical key is P2_anti_patterns_medium.
+    _flat_top_level["P2_anti_patterns"] = _net_by_band[Band.P2.value]
+
     _burndown: dict = {
-        "schema_version": "2.1",
+        "schema_version": "2.2",
         "provenance": {
             "generator_module": "tools.generate.reporting.reports._print_defect_table",
+            "severity_band_ssot": "agentic_core.adg.severity_bands",
             "sqlite_source_path": str(sqlite_source) if sqlite_source else "",
             "sqlite_source_name": sqlite_source.name if sqlite_source else "",
             "sqlite_source_timestamp": sqlite_source.stem.replace("adg_indexed_", "")
@@ -564,60 +643,20 @@ def _print_defect_table(
             else "",
             "source_mismatch_with_latest": source_mismatch,
             "counting_mode": "violations_plus_exempted_edge_inference",
+            "p0_includes_antipattern_critical": True,
             "historical_interpretation_note": "defensible broad trend is ~1254 to 631; single-tranche ~623 attribution is not proven",
         },
-        "summary": {
-            "P0": {
-                "net": p0_count,
-                "guardian": _guardian_p0,
-                "gross": _gross_p0,
-                "diff": _guardian_p0,
-                "label": "layer_violations",
-                "by_kind": [],
-            },
-            "P1": {
-                "net": p1_count,
-                "guardian": _guardian_p1,
-                "gross": _gross_p1,
-                "diff": _guardian_p1,
-                "label": "anti_patterns_high",
-                "by_kind": _build_kind_rows("HIGH", _gross_p1),
-            },
-            "P2": {
-                "net": p2_count,
-                "guardian": _guardian_p2,
-                "gross": _gross_p2,
-                "diff": _guardian_p2,
-                "label": "anti_patterns_medium",
-                "by_kind": _build_kind_rows("MEDIUM", _gross_p2),
-            },
-            "P3": {
-                "net": p3_count,
-                "guardian": _guardian_p3,
-                "gross": _gross_p3,
-                "diff": _guardian_p3,
-                "label": "style_warnings",
-                "by_kind": _build_kind_rows("LOW", _gross_p3),
-            },
-        },
-        # Legacy flat keys — kept for backward compatibility
-        "P0_layer_violations": p0_count,
-        "P1_anti_patterns": p1_count,
-        "P2_anti_patterns": p2_count,
-        "P3_style": p3_count,
-        "p0_clean": p0_count == 0,
+        "summary": _summary,
+        # Top-level flat keys (SSOT-derived, schema >=2.2)
+        **_flat_top_level,
+        "p0_clean": _net_by_band[Band.P0.value] == 0,
         "p1_no_ratchet": _p1_delta == 0,
         "by_class": _by_class,
         "structural_metrics": {
             "cycle_count": _p0_cycle_count,
             "dynamic_exec_count": _p0_dynamic_count,
             "guardian_exemptions": _guardian_total,
-            "guardian_by_band": {
-                "P0": _guardian_p0,
-                "P1": _guardian_p1,
-                "P2": _guardian_p2,
-                "P3": _guardian_p3,
-            },
+            "guardian_by_band": dict(_guardian_by_band),
         },
     }
     _burndown_path = ROOT / "artifacts" / "adg" / "adg_burndown_table.json"
