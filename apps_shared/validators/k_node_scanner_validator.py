@@ -238,7 +238,7 @@ class KNodeScanner:
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
-        except Exception as e:
+        except (OSError, UnicodeDecodeError) as e:
             logger.error(f"Failed to read {file_path}: {e}")
             return {"path": str(file_path), "references": [], "error": str(e)}
 
@@ -371,7 +371,7 @@ class KNodeMigrator:
                     backup_path.unlink()
                 return False
 
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, ValueError, TypeError, AttributeError) as e:
             logger.error(f"Failed to migrate {file_path}: {e}")
             return False
 
@@ -427,7 +427,7 @@ class KNodeMigrator:
 
             return False
 
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, ValueError, TypeError, AttributeError, KeyError) as e:
             logger.error(f"Failed to migrate configuration {config_path}: {e}")
             return False
 

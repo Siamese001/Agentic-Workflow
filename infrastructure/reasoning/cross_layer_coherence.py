@@ -137,7 +137,7 @@ class EventDrivenInvalidationBus:
         """Safely notify subscriber."""
         try:
             await callback(message)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:
             logger.error(f"Error notifying subscriber: {e}")
 
     def get_event_history(
@@ -662,7 +662,7 @@ class CrossLayerCoherenceManager:
             self.sync_status[layer_type].status = SyncStatus.SYNCED
             self.sync_status[layer_type].last_sync = datetime.now()
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as e:
             self.sync_status[layer_type].failed_operations += 1
             self.sync_status[layer_type].status = SyncStatus.FAILED
             logger.error(f"Error handling invalidation: {e}")
@@ -681,7 +681,7 @@ class CrossLayerCoherenceManager:
                     affected_keys=message.affected_keys[:5],  # Limit to 5 keys
                     timestamp_utc=int(datetime.now().timestamp() * 1000),
                 )
-            except Exception:
+            except (RuntimeError, AttributeError, ImportError, OSError):
                 # Bridge unavailable - continue without it
                 pass
 

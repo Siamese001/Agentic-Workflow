@@ -116,7 +116,7 @@ class IntakeRouter:
                 errors=[f"JSON parse error: {str(e)}"],
                 provenance=provenance,
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, AttributeError, KeyError) as e:
             return IngestionResult(
                 success=False,
                 errors=[f"Ingestion error: {str(e)}"],
@@ -163,7 +163,7 @@ class IntakeRouter:
                 provenance=provenance,
             )
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, AttributeError, KeyError, UnicodeDecodeError) as e:
             return IngestionResult(
                 success=False,
                 errors=[f"CSV ingestion error: {str(e)}"],
@@ -210,7 +210,7 @@ class IntakeRouter:
                 provenance=provenance,
             )
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, AttributeError, KeyError) as e:
             return IngestionResult(
                 success=False,
                 errors=[f"XLSX ingestion error: {str(e)}"],

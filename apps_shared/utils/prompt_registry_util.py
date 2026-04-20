@@ -312,7 +312,7 @@ class PromptRegistry:
         # Phase 8: Bridge to new TemplateRegistry
         try:
             self._migrate_to_template_registry(template)
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as exc:
             logger.warning(f"TemplateRegistry bridge failed (legacy mode): {exc}")
 
         # Keep legacy storage for backward compatibility
@@ -414,7 +414,7 @@ class PromptRegistry:
             for template_data in data.get("templates", []):
                 template = PromptTemplate.from_dict(template_data)
                 self._templates[template.template_id] = template
-        except Exception as e:
+        except (OSError, ValueError, TypeError, AttributeError, KeyError) as e:
             if self.enable_logging:
                 logger.error("failed_to_load_registry", extra={"error": str(e)}, exc_info=True)
             return None
@@ -426,7 +426,7 @@ class PromptRegistry:
             data = {"version": "1.0.0", "templates": [t.to_dict() for t in self._templates.values()]}
             with open(self.registry_path, "w") as f:
                 json.dump(data, f, indent=2)
-        except Exception as e:
+        except (OSError, TypeError, ValueError, AttributeError) as e:
             if self.enable_logging:
                 logger.error("failed_to_save_registry", extra={"error": str(e)}, exc_info=True)
             return None
