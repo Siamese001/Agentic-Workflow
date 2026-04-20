@@ -151,7 +151,13 @@ def scan_new_string(new_string: str, existing_content: str | None = None) -> lis
 def scan_paths(paths: list[Path], exclude_dirs: set[str] | None = None) -> list[dict]:
     """Scan a list of file/directory paths for guardian issues."""
     if exclude_dirs is None:
-        exclude_dirs = {".git", "__pycache__", "node_modules", "_archive", "archives"}
+        # SSOT: GLOBAL_EXCLUDED_DIRS + DISCOVERY_EXCLUDED_TERRITORIES ("archives") + "_archive".
+        from agentic_core.L0_routing.config.path_constants import (
+            DISCOVERY_EXCLUDED_TERRITORIES,
+            GLOBAL_EXCLUDED_DIRS,
+        )
+
+        exclude_dirs = set(GLOBAL_EXCLUDED_DIRS) | set(DISCOVERY_EXCLUDED_TERRITORIES) | {"_archive"}
 
     all_issues = []
     for path in tqdm(paths, desc="Processing", unit="item"):

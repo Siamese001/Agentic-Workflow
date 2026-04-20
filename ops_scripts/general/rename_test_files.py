@@ -22,7 +22,10 @@ LOW_SIGNAL_PATTERNS = [
     re.compile(r"(?:^|_)req\d+(?:_\d+)*(?=_|$)", re.IGNORECASE),
 ]
 MULTI_UNDERSCORE_RE = re.compile(r"_+")
-SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", "venv", ".venv"}
+# SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS  # noqa: E402
+
+SKIP_DIRS = set(GLOBAL_EXCLUDED_DIRS)
 
 
 @dataclass(slots=True)

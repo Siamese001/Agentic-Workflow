@@ -97,7 +97,11 @@ from agentic_core.L0_routing.config import (
     ROOT_PROTECTED_FILES,
     ROOT_WHITELIST,
 )
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, DEPTH_RULES
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    DEPTH_RULES,
+    GLOBAL_EXCLUDED_DIRS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -176,27 +180,9 @@ _emit_proposal_commits_routing("p1", "constants_util", "routing_commit")
 depth_map: Any = dict(DEPTH_RULES)
 max_lines: Any = 200
 min_lines: Any = 10
-excluded_dirs: Any = {
-    ".git",
-    ".venv",
-    "venv",
-    "env",
-    "__pycache__",
-    ".pytest_cache",
-    "node_modules",
-    ".tox",
-    "dist",
-    "build",
-    ".mypy_cache",
-    ".coverage",
-    ".vscode",
-    ".idea",
-    ".DS_Store",
-    "logs",
-    "tmp",
-    "temp",
-    ".tmp",
-    ".cache",
+# SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+# Domain-specific exclusions for constants scanning: cache, data, _build, site, .doctrees
+excluded_dirs: Any = set(GLOBAL_EXCLUDED_DIRS) | {
     "cache",
     "data",
     ARCHIVES_DIR,

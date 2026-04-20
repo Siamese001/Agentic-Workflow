@@ -94,7 +94,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    GLOBAL_EXCLUDED_DIRS,
+    TESTS_DIR,
+)
 from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -123,7 +127,9 @@ try:
         CORE_SUBFOLDER_MAP,
         SOVEREIGN_REGISTRY,
     )
-except ImportError:  # guardian: allow-silent-swallow -- optional module-level import: agent degrades gracefully if absent
+except (
+    ImportError
+):  # guardian: allow-silent-swallow -- optional module-level import: agent degrades gracefully if absent
     pass
 BOUNDED_CONTEXTS: dict[str, dict[str, Any]] = {
     "L0_Governance": {
@@ -308,7 +314,8 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         else:
             self.project_root = Path(self.project_root).resolve()
         self.violations: list[DDDViolation] = []
-        self._skip_patterns = {TESTS_DIR, ARCHIVES_DIR, "__pycache__", ".git", "venv", ".venv"}
+        # SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+        self._skip_patterns = {TESTS_DIR, ARCHIVES_DIR} | GLOBAL_EXCLUDED_DIRS
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -505,7 +512,9 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         try:
             try:
                 super().heal_repository(dry_run=dry_run)
-            except Exception:  # guardian: allow-broad-exception -- parent chain error re-raised to caller for handling
+            except (
+                Exception
+            ):  # guardian: allow-broad-exception -- parent chain error re-raised to caller for handling
                 raise
             violations = self.run()
             result = {

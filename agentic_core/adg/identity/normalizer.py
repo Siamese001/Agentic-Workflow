@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -274,21 +275,8 @@ class IdentityNormalizer:
         self._known_files: frozenset[str] | None = None
 
     # Directories to skip during file discovery (I/O optimization)
-    _WALK_EXCLUDE_DIRS: frozenset[str] = frozenset(
-        {
-            ".git",
-            "__pycache__",
-            ".backup",
-            "node_modules",
-            ".mypy_cache",
-            ".pytest_cache",
-            ".tox",
-            ".venv",
-            "venv",
-            ".eggs",
-            ".ruff_cache",
-        },
-    )
+    # SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+    _WALK_EXCLUDE_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS
 
     def _get_known_files(self) -> frozenset[str]:
         """Build a forward-slash repo-relative path set for all .py files.

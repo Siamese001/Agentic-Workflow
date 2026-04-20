@@ -32,6 +32,7 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS
 from agentic_core.adg.contracts.schema_util import canonical_name
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -189,7 +190,8 @@ _SPEC_FILE_PATTERNS: tuple[str, ...] = (
     "**/agent_config*.json",
 )
 
-_EXCLUDED_DIRS: frozenset[str] = frozenset({".git", "__pycache__", ".venv", "node_modules", ".mypy_cache"})
+# SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+_EXCLUDED_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS
 
 
 @dataclass(frozen=True)
@@ -279,7 +281,10 @@ def _scan_spec_file(
             return
         raw = spec_path.read_text(encoding="utf-8")
         data = json.loads(raw)
-    except (OSError, json.JSONDecodeError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         logger.debug("Skipping %s: %s", spec_path, exc)
         return
 

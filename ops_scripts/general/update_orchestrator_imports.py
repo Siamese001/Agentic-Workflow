@@ -91,7 +91,13 @@ IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
     ),
 }
 
-SKIP_PATH_PARTS = {"__pycache__", ".git", ".venv", "venv", "node_modules", "archive", "archives"}
+# SSOT: GLOBAL_EXCLUDED_DIRS + DISCOVERY_EXCLUDED_TERRITORIES ("archives") + domain-specific "archive".
+from agentic_core.L0_routing.config.path_constants import (  # noqa: E402
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+)
+
+SKIP_PATH_PARTS = set(GLOBAL_EXCLUDED_DIRS) | set(DISCOVERY_EXCLUDED_TERRITORIES) | {"archive"}
 
 
 def _resolve_repo_root(explicit_root: str | None = None) -> Path:

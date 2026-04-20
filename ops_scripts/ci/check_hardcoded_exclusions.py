@@ -103,6 +103,28 @@ ALLOWLIST_PATHS: frozenset[str] = frozenset(
         # Sovereign index — DEFAULT_EXCLUDED_DIRS already imports GLOBAL_EXCLUDED_DIRS as
         # primary; the inline literal is a deliberate ImportError fallback (see line 190-204).
         "agentic_core/runtime/utils/sovereign_index_util.py",
+        # W1-P1: DDDAlignmentAgent — uses SSOT GLOBAL_EXCLUDED_DIRS
+        "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
+        # W1-P1: PascalSovereigntyAgent — uses SSOT GLOBAL_EXCLUDED_DIRS + DISCOVERY_EXCLUDED_TERRITORIES
+        # plus domain-specific ".env" for sovereignty checks (credential scanning domain)
+        "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
+        # W1-P1: credential_scanner_util — uses SSOT GLOBAL_EXCLUDED_DIRS plus domain-specific
+        # exclusions for credential scanning (.sovereign_healing_backup, healing_backups, coverage_html)
+        "agentic_core/L5_safety/utils/credential_scanner_util.py",
+        # W2-P1: constants_config — ImportError fallback when SSOT module cannot be loaded
+        # (legitimate fallback pattern; cannot import SSOT in except block)
+        "agentic_core/config/constants_config.py",
+        # W2-P1: non_conforming_agent_finder_config — ImportError fallback when SSOT loading fails
+        # (legitimate fallback pattern; cannot import SSOT in except block)
+        "agentic_core/config/non_conforming_agent_finder_config.py",
+        # W6-P1: apps_shared shim — test/compat shim DEFINING a fake path_constants module
+        # for isolated test environments. The literal set IS the SSOT definition inside the
+        # shim, not a replacement for it. Cannot import real SSOT here by design.
+        "apps_shared/_compat/agentic_core_shim.py",
+        # W6-P1: validate_structure — VALID_TERRITORIES is a territory allowlist (what
+        # top-level dirs are valid), not an exclusion set. Semantically orthogonal to
+        # GLOBAL_EXCLUDED_DIRS; must remain a deliberate literal.
+        "ops_scripts/general/validate_structure.py",
     },
 )
 
@@ -116,6 +138,12 @@ ALLOWLIST_PATH_PREFIXES: tuple[str, ...] = (
     ".venv/",
     # Generated / vendored
     "node_modules/",
+    # W4-P1: RAG ingestion scripts — all 7 scripts share the same domain-specific
+    # exclusion pattern (archives, artifacts, .windsurf, vector_store, data) which
+    # is tied to ChromaDB ingestion topology, NOT generic file discovery. These
+    # literal sets are semantically the RAG ingestion scope, not a hardcoded
+    # replacement for GLOBAL_EXCLUDED_DIRS. Several scripts are retired (Wave B2).
+    "tools/generate/ingestion/",
 )
 
 DEFAULT_SCAN_ROOTS: tuple[str, ...] = (

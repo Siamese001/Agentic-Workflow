@@ -23,6 +23,8 @@ from pathlib import Path
 from typing import Any
 from tqdm import tqdm
 
+from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS
+
 Logger = logging.getLogger(__name__)
 
 
@@ -155,17 +157,13 @@ DEFAULT_SCANNABLE_EXTENSIONS: set[str] = {
 }
 
 # Default excluded paths
-DEFAULT_EXCLUDED_PATHS: set[str] = {
-    ".git",
-    "__pycache__",
-    "node_modules",
-    ".venv",
-    "venv",
+# SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+# Domain-specific exclusions for credential scanning: .sovereign_healing_backup,
+# healing_backups, coverage_html (allowlisted in check_hardcoded_exclusions.py).
+DEFAULT_EXCLUDED_PATHS: set[str] = set(GLOBAL_EXCLUDED_DIRS) | {
     ".sovereign_healing_backup",
     "healing_backups",
     "coverage_html",
-    ".pytest_cache",
-    ".mypy_cache",
 }
 
 
@@ -293,7 +291,10 @@ class CredentialScanner:
                                 confidence=confidence,
                             ),
                         )
-        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.debug("[CREDENTIAL SCAN] Error scanning %s: %s", file_path, e)
 
     def scan_for_credentials(

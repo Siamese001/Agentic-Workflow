@@ -24,9 +24,12 @@ class LocalDuplicateCodeDetector:
         self.project_root = project_root
 
     async def scan_duplicates(self) -> dict[str, list[Path]]:
+        # SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+        from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS
+
         duplicates: dict[str, list[Path]] = defaultdict(list)
         for path in self.project_root.rglob("*.py"):
-            if any(part in {"__pycache__", ".git", ".venv", "venv"} for part in path.parts):
+            if any(part in GLOBAL_EXCLUDED_DIRS for part in path.parts):
                 continue
             try:
                 content = path.read_bytes()

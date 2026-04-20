@@ -18,7 +18,10 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
-DEFAULT_SKIP_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", ".mypy_cache", ".pytest_cache"}
+# SSOT: GLOBAL_EXCLUDED_DIRS covers standard tooling/cache/build dirs.
+from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS  # noqa: E402
+
+DEFAULT_SKIP_DIRS = set(GLOBAL_EXCLUDED_DIRS)
 CAMEL_BOUNDARY_1 = re.compile(r"(.)([A-Z][a-z]+)")
 CAMEL_BOUNDARY_2 = re.compile(r"([a-z0-9])([A-Z])")
 MULTI_UNDERSCORE_RE = re.compile(r"_+")

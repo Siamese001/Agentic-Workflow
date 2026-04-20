@@ -23,6 +23,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
+from agentic_core.L0_routing.config.path_constants import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -221,7 +225,8 @@ def get_python_files_fast(root: Path) -> list[Path]:
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "get_python_files_fast", "p0_governance")
     python_files = []
-    exclude_dirs = {".git", "archives", "__pycache__", "node_modules", "venv", ".env"}
+    # SSOT: GLOBAL_EXCLUDED_DIRS + DISCOVERY_EXCLUDED_TERRITORIES + domain-specific ".env"
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | DISCOVERY_EXCLUDED_TERRITORIES | {".env"}
 
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in exclude_dirs]
@@ -509,7 +514,10 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     print("[WARNING] Windows LongPathsEnabled is NOT set to 1.")
                     if not self.dry_run:
                         return False
-            except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+            except (
+                ValueError,
+                TypeError,
+            ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                 pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         return True
 
@@ -629,7 +637,10 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                 print("  [WARNING] Temp file still exists after rename - cleaning up")
                 try:
                     temp.unlink()
-                except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+                except (
+                    ValueError,
+                    TypeError,
+                ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                     pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
             print(f"  [SUCCESS] {src.name} -> {dest_name}")
@@ -701,7 +712,10 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     target_name += "Stub"
 
             return f"{target_name}.py"
-        except (ValueError, TypeError):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             return None
 
     # guardian: allow-type-erasure

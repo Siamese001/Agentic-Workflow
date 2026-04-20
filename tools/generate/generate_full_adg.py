@@ -127,6 +127,293 @@ from tools.generate.validation import (  # noqa: E402  # M.3 modularization
 # M.4: _print_defect_table extracted to tools.generate.reporting.reports
 
 
+def _build_graphdb_network_projection(
+    sqlite_path: Path,
+    adg_artifacts_dir: Path,
+    ts: str,
+) -> tuple[list[Path], object | None]:
+    """Invoke the ``tools/graphdb`` NetworkX projection and stage its outputs.
+
+    Lets exceptions propagate to the caller so the caller decides the
+    non-blocking policy (see the P6b/P7 call site). This avoids the
+    ``return_none_swallow`` antipattern inside the helper itself.
+
+    Returns:
+        Tuple of ``(staged_paths, networkx_graph)``. ``networkx_graph`` is
+        returned so downstream query helpers (P7) can reuse the already-built
+        projection without re-projecting.
+    """
+    import shutil as _shutil
+
+    from tools.graphdb.project_graph import project_graph as _gdb_project_graph
+
+    work_dir = adg_artifacts_dir / f"graphdb_{ts}"
+    graph, metadata = _gdb_project_graph(
+        sqlite_path=sqlite_path,
+        output_dir=work_dir,
+        run_id=f"graphdb_{ts}",
+    )
+
+    commit_sha = metadata.commit_sha or "unknown"
+    staged: list[Path] = []
+    for src, dest in (
+        (
+            work_dir / "projections" / commit_sha / "graph.json",
+            adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
+        ),
+        (work_dir / "metadata" / f"{commit_sha}.json", adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json"),
+        (work_dir / "index.json", adg_artifacts_dir / f"adg_graphdb_index_{ts}.json"),
+    ):
+        if src.exists():
+            _shutil.copy2(src, dest)
+            staged.append(dest)
+        else:
+            print(f"[ADG] GraphDB projection missing expected file: {src}")
+
+    print(
+        f"[ADG] GraphDB NetworkX projection: nodes={metadata.node_count} "
+        f"edges={metadata.edge_count} staged={len(staged)}",
+    )
+    return staged, graph
+
+
+# ── P7: Analyst-grade report emitters (non-blocking) ─────────────────────────
+
+
+def _build_structural_outputs_report(
+    sqlite_path: Path,
+    adg_artifacts_dir: Path,
+    ts: str,
+) -> Path:
+    """Emit the 4 structural analyses from ``tools/adg/structural_outputs.py``.
+
+    Combines burndown, blast-radius (top-N), seams, and centrality into a
+    single JSON artifact ``adg_structural_outputs_<ts>.json``. Exceptions
+    propagate to the caller (P7 loop) so the helper avoids the
+    ``return_none_swallow`` antipattern.
+    """
+    import sqlite3 as _sqlite3
+
+    from tools.adg.structural_outputs import (
+        blast_radius as _so_blast_radius,
+        burndown_table as _so_burndown_table,
+        centrality as _so_centrality,
+        seam_detection as _so_seam_detection,
+    )
+
+    dest = adg_artifacts_dir / f"adg_structural_outputs_{ts}.json"
+    conn = _sqlite3.connect(str(sqlite_path))
+    try:
+        payload = {
+            "sqlite_used": sqlite_path.name,
+            "timestamp": ts,
+            "burndown": _so_burndown_table(conn),
+            "blast_radius": _so_blast_radius(conn, target=None, top_n=20),
+            "seams": _so_seam_detection(conn),
+            "centrality": _so_centrality(conn, top_n=20),
+        }
+    finally:
+        conn.close()
+    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    print(f"[ADG] P7 structural outputs: {dest.name}")
+    return dest
+
+
+def _build_refactor_accelerator_report(
+    sqlite_path: Path,
+    adg_artifacts_dir: Path,
+    ts: str,
+) -> Path:
+    """Emit a top-N refactor candidate ranking via ``tools/adg/refactor_accelerator``.
+
+    Git churn is included (bounded 90-day window); ruff lint is skipped because
+    it duplicates work already gated elsewhere and would slow ADG generation.
+    Exceptions propagate to the caller (P7 loop).
+    """
+    import sqlite3 as _sqlite3
+
+    from tools.adg.refactor_accelerator import (
+        _add_blast_radius as _ra_add_blast_radius,
+        _add_impacted_tests as _ra_add_impacted_tests,
+        _fetch_candidates as _ra_fetch_candidates,
+        _git_churn as _ra_git_churn,
+    )
+
+    dest = adg_artifacts_dir / f"adg_refactor_accelerator_{ts}.json"
+    churn = _ra_git_churn(90)
+    lint: dict[str, int] = {}  # skip ruff — keeps P7 fast
+    conn = _sqlite3.connect(str(sqlite_path))
+    try:
+        candidates = _ra_fetch_candidates(conn, None, 20, churn, lint)
+        _ra_add_blast_radius(conn, candidates)
+        _ra_add_impacted_tests(conn, candidates)
+    finally:
+        conn.close()
+    payload = {
+        "sqlite_used": sqlite_path.name,
+        "timestamp": ts,
+        "layer_filter": None,
+        "churn_window_days": 90,
+        "lint_included": False,
+        "candidates": [{k: v for k, v in c.items() if k != "node_id"} for c in candidates],
+    }
+    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    print(f"[ADG] P7 refactor accelerator: {dest.name} ({len(candidates)} candidates)")
+    return dest
+
+
+def _build_graphdb_queries_report(
+    graph: object | None,
+    adg_artifacts_dir: Path,
+    ts: str,
+) -> Path:
+    """Run canonical GraphDB query families over the P6b NetworkX graph.
+
+    Emits ``adg_graphdb_queries_<ts>.json`` with StructuralQueries,
+    BlastRadiusQueries, and AnalystQueries results. HistoricalQueries is
+    intentionally omitted (it requires a second prior snapshot and is already
+    covered by the ADG E7 drift pipeline).
+
+    Raises ``RuntimeError`` when the NetworkX projection from P6b is missing.
+    Other exceptions propagate to the caller.
+    """
+    if graph is None:
+        raise RuntimeError("NetworkX projection unavailable (P6b did not produce a graph)")
+
+    from tools.graphdb.queries.analyst import AnalystQueries
+    from tools.graphdb.queries.blast_radius import BlastRadiusQueries
+    from tools.graphdb.queries.structural import StructuralQueries
+
+    dest = adg_artifacts_dir / f"adg_graphdb_queries_{ts}.json"
+    structural = StructuralQueries(graph)
+    blast = BlastRadiusQueries(graph)
+    analyst = AnalystQueries(graph)
+
+    structural_payload: dict[str, object] = {}
+    for name, fn in (
+        ("gravity_import_violations", structural.gravity_import_violations),
+        ("illegal_layer_reach", structural.illegal_layer_reach),
+        ("l2_lifecycle_conformance", structural.l2_lifecycle_conformance),
+        ("uwg_durable_write_conformance", structural.uwg_durable_write_conformance),
+        (
+            "capability_tool_provider_chokepoint_conformance",
+            structural.capability_tool_provider_chokepoint_conformance,
+        ),
+        ("agentic_spine_completeness", structural.agentic_spine_completeness),
+        ("l0_l1_l6_role_purity", structural.l0_l1_l6_role_purity),
+        ("grounding_contract_separation", structural.grounding_contract_separation),
+        ("trace_replay_eval_coverage", structural.trace_replay_eval_coverage),
+    ):
+        try:
+            structural_payload[name] = fn()
+        except (RuntimeError, ValueError, KeyError, AttributeError) as exc:
+            structural_payload[name] = {"error": f"{type(exc).__name__}: {exc}"}
+
+    blast_payload: dict[str, object] = {}
+    try:
+        blast_payload["high_fan_in_out_hubs"] = blast.high_fan_in_out_hubs(
+            min_connections=10,
+        )
+    except (RuntimeError, ValueError, KeyError, AttributeError) as exc:
+        blast_payload["high_fan_in_out_hubs"] = {
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+    analyst_payload: dict[str, object] = {}
+    for layer in ("L0", "L1", "L2", "L3", "L4", "L5", "L6"):
+        try:
+            analyst_payload[f"subgraph_{layer}"] = analyst.extract_subgraph_by_layer(layer)
+        except (RuntimeError, ValueError, KeyError, AttributeError) as exc:
+            analyst_payload[f"subgraph_{layer}"] = {
+                "error": f"{type(exc).__name__}: {exc}",
+            }
+
+    payload = {
+        "timestamp": ts,
+        "graph_nodes": graph.number_of_nodes() if hasattr(graph, "number_of_nodes") else None,
+        "graph_edges": graph.number_of_edges() if hasattr(graph, "number_of_edges") else None,
+        "structural": structural_payload,
+        "blast_radius": blast_payload,
+        "analyst": analyst_payload,
+    }
+    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    print(f"[ADG] P7 graphdb queries: {dest.name}")
+    return dest
+
+
+def _build_runtime_spine_report(
+    sqlite_path: Path,
+    adg_artifacts_dir: Path,
+    ts: str,
+) -> Path:
+    """Emit the handoff / cross-cutting witness-tier report from ``mv_runtime_spine``.
+
+    Exceptions propagate to the caller (P7 loop).
+    """
+    from tools.adg.mv_runtime_spine import (
+        check_semantic_satisfaction as _rs_check_semantic_satisfaction,
+        run_all_views as _rs_run_all_views,
+        run_cross_cutting_views as _rs_run_cross_cutting_views,
+    )
+
+    dest = adg_artifacts_dir / f"adg_runtime_spine_{ts}.json"
+    views = _rs_run_all_views(sqlite_path)
+    cross = _rs_run_cross_cutting_views(sqlite_path)
+    semantic_failures = _rs_check_semantic_satisfaction(views)
+
+    handoff_payload = []
+    for v in views:
+        handoff_payload.append(
+            {
+                "name": v.name,
+                "description": v.description,
+                "row_count": len(v.rows),
+                "runtime_orphaned_count": len(v.runtime_orphaned_rows),
+                "zero_witness_count": len(v.zero_witnessed_rows),
+                "rows": [
+                    {
+                        "relation_type": r.relation_type,
+                        "plumbing_witness_count": r.plumbing_witness_count,
+                        "test_witness_count": r.test_witness_count,
+                        "live_runtime_witness_count": r.live_runtime_witness_count,
+                        "runtime_orphaned": r.runtime_orphaned,
+                    }
+                    for r in v.rows
+                ],
+            }
+        )
+
+    cross_payload = [
+        {
+            "family_name": c.family_name,
+            "relation_count": c.relation_count,
+            "plumbing_total": c.plumbing_total,
+            "test_total": c.test_total,
+            "live_rt_total": c.live_rt_total,
+            "orphaned_count": c.orphaned_count,
+            "zero_count": c.zero_count,
+            "runtime_orphaned": c.runtime_orphaned,
+        }
+        for c in cross
+    ]
+
+    payload = {
+        "sqlite_used": sqlite_path.name,
+        "timestamp": ts,
+        "handoff_views": handoff_payload,
+        "cross_cutting_families": cross_payload,
+        "semantic_failures": semantic_failures,
+        "semantic_satisfied": len(semantic_failures) == 0,
+    }
+    dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    print(
+        f"[ADG] P7 runtime spine: {dest.name} "
+        f"(handoff_views={len(views)} families={len(cross)} "
+        f"semantic_failures={len(semantic_failures)})",
+    )
+    return dest
+
+
 def _resolve_post_commit_sqlite(paths: object, adg_artifacts_dir: Path, ts: str) -> Path:
     """Resolve and validate the canonical post-commit SQLite for Tier-2 gates."""
     sqlite_candidate: Path | None = None
@@ -337,6 +624,45 @@ def generate_full_adg(
         print(f"[ADG] P6 graph projection: {_graph_proj_path.name}")
     except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
         print(f"[ADG] P6 graph projection skipped: {e}")
+
+    # --- P6b: GraphDB NetworkX projection (non-blocking, tools/graphdb) ---
+    # Produces three run-scoped artifacts under adg_artifacts_dir:
+    #   adg_graphdb_projection_<ts>.json  (NetworkX node-link JSON)
+    #   adg_graphdb_metadata_<ts>.json    (SnapshotMetadata)
+    #   adg_graphdb_index_<ts>.json       (SnapshotManager index)
+    # Caller owns the non-blocking policy (specific-tuple catch mirrors P6 above).
+    graphdb_staged: list[Path] = []
+    graphdb_nx_graph: object | None = None
+    try:
+        graphdb_staged, graphdb_nx_graph = _build_graphdb_network_projection(
+            paths.sqlite,
+            adg_artifacts_dir,
+            ts,
+        )
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
+        print(f"[ADG] P6b GraphDB NetworkX projection skipped: {e}")
+
+    # --- P7: Analyst-grade report artifacts (non-blocking) ---
+    # Helpers raise on failure; this caller loop enforces the non-blocking policy
+    # using a specific-tuple catch so helpers stay free of return_none_swallow.
+    #   adg_structural_outputs_<ts>.json    — burndown/blast-radius/seams/centrality
+    #   adg_refactor_accelerator_<ts>.json  — top-N refactor candidates (ADG + churn)
+    #   adg_graphdb_queries_<ts>.json       — GraphDB query families over P6b graph
+    #   adg_runtime_spine_<ts>.json         — handoff + cross-cutting witness tiers
+    p7_staged: list[Path] = []
+    for _p7_name, _p7_fn in (
+        ("structural-outputs", lambda: _build_structural_outputs_report(paths.sqlite, adg_artifacts_dir, ts)),
+        (
+            "refactor-accelerator",
+            lambda: _build_refactor_accelerator_report(paths.sqlite, adg_artifacts_dir, ts),
+        ),
+        ("graphdb-queries", lambda: _build_graphdb_queries_report(graphdb_nx_graph, adg_artifacts_dir, ts)),
+        ("runtime-spine", lambda: _build_runtime_spine_report(paths.sqlite, adg_artifacts_dir, ts)),
+    ):
+        try:
+            p7_staged.append(_p7_fn())
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError, KeyError, AttributeError) as e:
+            print(f"[ADG] P7 {_p7_name} skipped: {e}")
 
     # --- Architecture witness-tier gates: Class A positive / Class B absence ---
     _check_witness_tier_gates(sqlite_path=prod_sqlite_path)
@@ -573,6 +899,21 @@ def generate_full_adg(
     _proj_candidates = sorted(adg_artifacts_dir.glob(f"adg_graph_{ts}.sqlite"))
     if _proj_candidates:
         artifact_files.append(_proj_candidates[0])
+
+    # Include GraphDB NetworkX projection (P6b) staged outputs
+    if graphdb_staged:
+        artifact_files.extend(graphdb_staged)
+        print(
+            f"[ADG] Adding {len(graphdb_staged)} GraphDB NetworkX artifacts to zip archive",
+        )
+
+    # Include P7 analyst reports (structural outputs, refactor accelerator,
+    # GraphDB queries, runtime spine) in the zip archive
+    if p7_staged:
+        artifact_files.extend(p7_staged)
+        print(
+            f"[ADG] Adding {len(p7_staged)} P7 analyst reports to zip archive",
+        )
 
     # Add high-signal reports to zip archive
     report_files = [
