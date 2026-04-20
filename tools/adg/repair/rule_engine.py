@@ -65,7 +65,7 @@ class RuleEngine:
             try:
                 instance = rule_class()
                 self._rules[rule_id] = instance
-            except Exception as e:
+            except (TypeError, AttributeError, ImportError, ValueError) as e:
                 print(f"[RuleEngine] Warning: Failed to load rule {rule_id}: {e}")
 
         # Cache for future use
@@ -113,7 +113,7 @@ class RuleEngine:
                             confidence_adjusted=deficiency.confidence,
                         ),
                     )
-            except Exception as e:
+            except (TypeError, AttributeError, ValueError, KeyError) as e:
                 print(f"[RuleEngine] Warning: Rule {rule_id} match failed: {e}")
 
         # Sort by priority (lower = higher priority)
