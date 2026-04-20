@@ -273,7 +273,7 @@ class RegressionDetector:
             raw: dict[str, Any] = json.loads(baseline_path.read_text(encoding="utf-8"))
             _log.info("[RegressionDetector] Loaded baseline from %s", baseline_path)
             return {k: float(v) for k, v in raw.get("scores", {}).items()}
-        except Exception as exc:
+        except (OSError, UnicodeDecodeError, ValueError, TypeError, KeyError) as exc:
             _log.warning("[RegressionDetector] Could not load baseline: %s", exc)
             return None
 
@@ -314,6 +314,6 @@ class RegressionDetector:
                 baseline_loaded=result.baseline_loaded,
                 timestamp_utc=int(time.time() * 1000),
             )
-        except Exception:
+        except (RuntimeError, AttributeError, ImportError, ConnectionError, OSError):
             # System learning unavailable - continue without emission
             pass

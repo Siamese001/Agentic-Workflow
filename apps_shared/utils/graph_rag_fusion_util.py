@@ -483,7 +483,7 @@ class GraphRAGFusion:
                 sources=["vector_search"],
                 confidence=0.8,
             )
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, ConnectionError) as e:
             logger.error(f"Vector query failed: {e}")
             return None
 
@@ -522,7 +522,7 @@ class GraphRAGFusion:
                     sources=["graph_unavailable"],
                     confidence=0.0,
                 )
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, ConnectionError) as e:
             logger.error(f"Graph query failed: {e}")
             return None
 

@@ -69,7 +69,7 @@ class DocumentIngestion:
             try:
                 parsed_fields = self._extract_document_fields(file_path, doc_type)
                 extracted_text_available = bool(parsed_fields)
-            except Exception:
+            except (OSError, UnicodeDecodeError, ValueError, TypeError, KeyError):
                 pass
 
         return DocumentRef(
@@ -111,7 +111,7 @@ class DocumentIngestion:
                 # Update counts
                 manifest.by_type[doc_type] = manifest.by_type.get(doc_type, 0) + 1
 
-            except Exception as e:
+            except (OSError, UnicodeDecodeError, ValueError, TypeError, KeyError) as e:
                 manifest.errors.append(f"Failed to ingest {path}: {str(e)}")
 
         manifest.total_count = len(manifest.documents)

@@ -262,7 +262,7 @@ class PrecisionFourLayerContractGuard:
 
             return True
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, KeyError, RuntimeError) as e:
             self._record_violation(
                 "validation_exception",
                 {
@@ -469,7 +469,7 @@ class PrecisionCircuitBreaker:
             self._on_success()
             return result
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, OSError, TimeoutError) as e:
             self._on_failure()
             self.total_failures += 1
             raise e from e

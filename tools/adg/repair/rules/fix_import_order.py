@@ -167,7 +167,7 @@ class FixImportOrderRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, SyntaxError, ValueError) as e:
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,
@@ -186,7 +186,7 @@ class FixImportOrderRule(BaseRepairRule):
             content = path.read_text(encoding="utf-8")
             import_blocks = self._extract_import_blocks(content)
             return self._is_sorted(import_blocks)
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError):
             return False
 
     def _extract_import_blocks(self, content: str) -> list[tuple[int, int, str]]:

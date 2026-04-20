@@ -85,7 +85,7 @@ class FixP1LayerViolationRule(BaseRepairRule):
                 success=True,
                 deficiency_id=deficiency.id,
             )
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, ValueError, IndexError) as e:
             return FixResult(
                 success=False,
                 deficiency_id=deficiency.id,
@@ -110,5 +110,5 @@ class FixP1LayerViolationRule(BaseRepairRule):
             # Check if guardian comment exists
             guardian_line = f"# guardian: allow-layer-violation -- {justification}"
             return guardian_line in content
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             return False

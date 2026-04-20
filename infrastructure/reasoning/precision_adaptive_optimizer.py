@@ -243,7 +243,7 @@ class PrecisionLinearRegression(PrecisionMLModel):
             logger.info(f"Linear regression trained: MSE={mse:.4f}, R²={r2:.4f}, samples={len(features)}")
             return True
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, MemoryError) as e:
             logger.error(f"Training failed: {e}")
             return False
 
@@ -360,7 +360,7 @@ class PrecisionNeuralNetwork(PrecisionMLModel):
             logger.info(f"Neural network trained: samples={len(features)}, epochs={epochs}")
             return True
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, MemoryError) as e:
             logger.error(f"Neural network training failed: {e}")
             return False
 
