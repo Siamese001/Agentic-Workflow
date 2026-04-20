@@ -43,7 +43,7 @@ def main() -> int:
             print(f"  [{status:8s}] industry={industry:20s} score={score:.2f} sections={sections}")
             if status not in ("dry_run", "complete"):
                 failures += 1
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as exc:
             _log.error(f"Dry-run failed: {exc}")
             print(f"  [ERROR   ] industry={industry}: {exc}")
             failures += 1

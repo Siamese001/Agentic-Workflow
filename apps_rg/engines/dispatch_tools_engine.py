@@ -192,7 +192,7 @@ class DispatchToolsEngine(BaseRGEngine):
         except (ValueError, KeyError, TypeError) as e:
             self.record_fail(f"Tool {tool_name} failed with known error: {e}")
             return {"success": False, "error": f"Tool execution error: {str(e)}"}
-        except Exception as e:
+        except (RuntimeError, AttributeError, OSError, ArithmeticError, LookupError) as e:
             self.logger.error(f"Critical error in tool {tool_name}: {e}")
             self.record_fail(f"Tool {tool_name} failed with critical error: {e}")
             return {"success": False, "error": f"Critical tool error: {str(e)}"}

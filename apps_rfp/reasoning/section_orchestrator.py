@@ -133,7 +133,7 @@ class SectionGenerationAgent:
                 generation_time_ms=elapsed_ms,
             )
 
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as exc:
             _log.error(f"[SectionGenerationAgent] Failed to generate {request.section_id}: {exc}")
             return SectionResult(
                 section_id=request.section_id,

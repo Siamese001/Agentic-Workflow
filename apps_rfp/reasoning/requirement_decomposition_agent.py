@@ -247,7 +247,7 @@ class RequirementDecomposer:
             try:
                 decomp = self.decompose(req_id, req_text, category, priority)
                 results.append(decomp)
-            except Exception as exc:
+            except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as exc:
                 _log.error(f"[RequirementDecomposer] Failed to decompose {req_id}: {exc}")
                 # Return minimal decomposition on failure
                 results.append(
