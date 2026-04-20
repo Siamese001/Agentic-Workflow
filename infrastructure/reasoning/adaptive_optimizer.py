@@ -143,7 +143,7 @@ class SimpleMLModel:
             logger.info(f"Trained {self.model_type.value} model")
             return True
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, OSError, MemoryError) as e:
             logger.error(f"Error training model: {e}")
             return False
 
@@ -381,7 +381,7 @@ class AdaptiveOptimizer:
                 await self._train_models()
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:
                 logger.error(f"Error in periodic training: {e}")
 
     async def _periodic_optimization(self):
@@ -392,7 +392,7 @@ class AdaptiveOptimizer:
                 await self._optimize_all_layers()
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:
                 logger.error(f"Error in periodic optimization: {e}")
 
     async def add_performance_data(self, layer_type: LayerType, response: LayerResponse):
@@ -462,7 +462,7 @@ class AdaptiveOptimizer:
                 if result:
                     self.optimization_history.append(result)
                     logger.info(f"Optimized {layer_type.value}: {result.expected_improvement}")
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, AttributeError) as e:
                 logger.error(f"Error optimizing {layer_type}: {e}")
 
     async def _optimize_layer(self, layer_type: LayerType) -> OptimizationResult | None:

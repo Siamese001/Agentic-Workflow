@@ -144,7 +144,7 @@ class ChaosEngineeringFramework:
 
             results["status"] = "completed"
 
-        except Exception as e:
+        except (AssertionError, RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:
             results["status"] = "failed"
             results["error"] = str(e)
             logger.error(f"Chaos experiment {experiment_name} failed: {e}")
@@ -654,7 +654,7 @@ class PropertyBasedTestingFramework:
 
                 test_result["results"].append(result_entry)
 
-            except Exception as e:
+            except (AssertionError, RuntimeError, ValueError, TypeError, AttributeError) as e:
                 failures += 1
                 test_result["results"].append(
                     {
@@ -709,7 +709,7 @@ class PropertyBasedTestingFramework:
             try:
                 result = self.test_invariant(invariant_name, system_under_test)
                 all_results[invariant_name] = result
-            except Exception as e:
+            except (AssertionError, RuntimeError, ValueError, TypeError, AttributeError) as e:
                 all_results[invariant_name] = {
                     "error": str(e),
                     "status": "failed",
@@ -803,7 +803,7 @@ class TemporalInvariantTesting:
 
             return invariant_holds
 
-        except Exception as e:
+        except (AssertionError, RuntimeError, ValueError, TypeError, AttributeError) as e:
             self._record_violation(invariant_name, events_in_window, window_start, timestamp, str(e))
             return False
 
