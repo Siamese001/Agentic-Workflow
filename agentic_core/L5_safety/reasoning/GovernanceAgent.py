@@ -123,7 +123,6 @@ except ImportError as e:
     )  # guardian: allow-silent-degradation - Optional MCP hardened mixin
 
 
-
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, GLOBAL_EXCLUDED_DIRS, TESTS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -862,7 +861,7 @@ class GovernanceAgent(SovereignBaseAgent):
                         )
         except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
-        except (OSError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (OSError, ValueError, TypeError, RuntimeError):
             raise
         nesting_violations: Any = self._check_nesting_depth(file_path)
         for Violation in nesting_violations:
@@ -1135,7 +1134,10 @@ class GovernanceAgent(SovereignBaseAgent):
             _call_path = set()
             try:
                 super().heal_repository(dry_run=dry_run)
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.warning(f"[HEAL_REPOSITORY] Parent chain warning: {e}")
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
