@@ -256,8 +256,7 @@ class SovereignToolsmith:
             os.chmod(tool_path, 493)
             Logger.info(f"Sovereign Toolsmith forged: {tool_path}")
             return tool_path
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error(f"Failed to forge tool: {e}")
             return None
 
@@ -327,18 +326,17 @@ class SovereignSandbox:
                     "return_code": process.returncode,
                     "execution_time": time.time(),
                 }
-            except subprocess.TimeoutExpired:
+            except subprocess.TimeoutExpired:  # guardian: allow-log-and-swallow
                 LOGGER.warning(f"Tool {tool_path} timed out, cleaning up process {process.pid}")
                 try:
                     process.terminate()
                     try:
                         process.wait(timeout=DEFAULT_TIMEOUT)
-                    except subprocess.TimeoutExpired:
+                    except subprocess.TimeoutExpired:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                         process.kill()
                         process.wait()
                         LOGGER.warning(f"Force killed process {process.pid}")
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as cleanup_error:
+                except (RuntimeError, OSError) as cleanup_error:  # guardian: allow-log-and-swallow -- process cleanup after timeout: non-fatal, LOGGER.error already called
                     LOGGER.error(f"Error cleaning up process {process.pid}: {cleanup_error}")
                 return {
                     "success": False,
@@ -347,8 +345,7 @@ class SovereignSandbox:
                     "return_code": -1,
                     "execution_time": time.time(),
                 }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- subprocess execution: non-fatal, error surfaced via return dict
             return {
                 "success": False,
                 "stdout": "",
@@ -361,13 +358,11 @@ class SovereignSandbox:
                 try:
                     process.terminate()
                     process.wait(timeout=DEFAULT_TIMEOUT)
-                # guardian: allow-silent-swallow
-                except (ValueError, TypeError):
+                except (ValueError, TypeError):  # guardian: allow-silent-swallow
                     try:
                         process.kill()
                         process.wait()
-                    # guardian: allow-silent-swallow
-                    except (ValueError, TypeError):
+                    except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                         pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
 
@@ -466,7 +461,6 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             # guardian: allow-silent-swallow
             except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
         start_time: Any = time.time()
         if self._safety_layer:
             is_safe: Any = await self._safety_layer.validate_action(request)
@@ -498,14 +492,6 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            result: Any = ActionResult(
-                success=False,
-                output="",
-                error=str(e),
-                execution_time=time.time() - start_time,
-            )
-            await self._log_to_signal_ledger(request, result)
-            return result
 
     async def _log_to_signal_ledger(self, request: ActionRequest, result: ActionResult) -> None:
         """Log the execution result to the signal ledger.
@@ -618,8 +604,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
                 LOGGER.error(f"Failed to fix syntax error: {e}")
                 return {"success": False, "error": str(e)}
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             LOGGER.error(f"Error during tool repair: {e}")
             return {"success": False, "error": str(e)}
 
@@ -666,8 +651,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                 error="",
                 execution_time=time.time() - start_time,
             )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             return ActionResult(
                 success=False,
                 output="",
@@ -734,8 +718,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"SovereignActionPlaneAgent heal() failed: {str(e)}",

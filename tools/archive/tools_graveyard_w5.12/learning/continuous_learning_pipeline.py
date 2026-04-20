@@ -600,8 +600,7 @@ class AutomatedLearningPipeline:
                 priority="LOW",
             )
 
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             # psutil not available
             pass
         except (ValueError, TypeError, RuntimeError) as e:

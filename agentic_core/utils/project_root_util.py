@@ -11,7 +11,7 @@ def _validated_root(candidate: Path | None) -> Path | None:
         return None
     try:
         resolved = candidate.expanduser().resolve(strict=True)
-    except (OSError, RuntimeError):
+    except (OSError, RuntimeError):  # guardian: allow-return-none-swallow -- path resolution: non-fatal, caller falls back to None
         return None
     if (resolved / ".git").is_dir() and (resolved / AGENTIC_CORE_DIR).is_dir():
         return resolved
@@ -55,8 +55,7 @@ def get_project_root_safe(start_path: Path | None = None) -> Path:
     """
     try:
         return get_project_root(start_path)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except RuntimeError:
+    except RuntimeError:  # guardian: allow-silent-swallow - acceptable exception handling
         current = (start_path or Path(__file__).resolve()).expanduser().resolve()
         if current.is_file():
             current = current.parent

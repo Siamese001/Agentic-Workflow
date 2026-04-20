@@ -83,8 +83,7 @@ _emit_links_execution_to_snapshot("p4", "model_router_types", "exec_snapshot_lin
 
 try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     _MCPManager = None
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -759,7 +758,7 @@ class FallbackClient:
                 except Exception as fallback_error:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     logger.error(f"[FallbackClient] All providers failed: {fallback_error}")
                     raise
-            raise RuntimeError(f"All model attempts failed. Last error: {e}")
+            raise RuntimeError(f'All model attempts failed. Last error: {e}') from e
 
 
 class SequentialThinkingClient:
@@ -814,8 +813,7 @@ class SequentialThinkingClient:
             self.router._stats["total_requests"] += 1
             self.router._stats["requests_by_tier"][ModelTier.SEQUENTIAL.value] += 1
             return "\n".join(thoughts)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.warning(f"[SequentialThinkingClient] Sequential thinking failed: {e}")
             fallback_config = self.router._select_model_for_tier(ModelTier.REASONING)
             client = FallbackClient(fallback_config, self.router)

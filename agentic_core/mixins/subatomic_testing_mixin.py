@@ -168,8 +168,7 @@ try:
         InstructionalInjectionMixin,
         InstructionalInjectionMixin2,
     )
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
     class InstructionalInjectionMixin:
         """Stub for healing resilience."""

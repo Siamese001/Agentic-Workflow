@@ -94,7 +94,7 @@ def create_sqlite_graph_store_or_none(
     """
     try:
         return create_sqlite_graph_store(db_path)
-    except FileNotFoundError as e:
+    except FileNotFoundError as e:  # guardian: allow-return-none-swallow -- SQLite graph store not found: non-fatal, caller handles None
         logger.warning("[SQLiteGraphStore Factory] Failed to create graph store: %s", e)
         return None
 

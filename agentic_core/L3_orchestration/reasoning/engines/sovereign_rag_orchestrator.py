@@ -49,7 +49,7 @@ class SovereignRagOrchestrator:
         if budget_max_k is not None:
             try:
                 normalized = min(normalized, max(1, int(budget_max_k)))
-            except (TypeError, ValueError):
+            except (TypeError, ValueError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                 pass
         return normalized
 

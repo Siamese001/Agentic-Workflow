@@ -288,8 +288,7 @@ class L5ConsolidatedKnowledge:
                 if profile:
                     Logger.info("Retrieved profile from MEMemory")
                     return profile
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 Logger.warning(f"Failed to retrieve from MEMemory: {e}")
         Logger.info("Using fallback user profile")
         return self._fallback_profiles.get("default")
@@ -306,8 +305,7 @@ class L5ConsolidatedKnowledge:
                 if templates:
                     Logger.info("Retrieved template from Pinecone")
                     return templates[0].metadata
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 Logger.warning(f"Failed to retrieve from Pinecone: {e}")
         template_type = "professional" if "professional" in query.lower() else "modern"
         Logger.info(f"Using fallback template: {template_type}")
@@ -321,8 +319,7 @@ class L5ConsolidatedKnowledge:
             result = bmg_embed_text(query)
             if result:
                 return result
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
         return [0.0] * 1024
 
@@ -349,8 +346,7 @@ class L5ConsolidatedKnowledge:
                 self.memory_client.save_profile(profile)
                 Logger.info("Profile saved to MEMemory")
                 return True
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 Logger.error(f"Failed to save profile: {e}")
                 return False
         self._fallback_profiles["default"] = profile
@@ -375,8 +371,7 @@ class L5ConsolidatedKnowledge:
                 )
                 Logger.info("Template added to Pinecone")
                 return True
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 Logger.error(f"Failed to add template: {e}")
                 return False
         template_name: Any = template.get("name", "custom").lower()
@@ -481,8 +476,7 @@ class L5ConsolidatedKnowledge:
             if self.memory_client:
                 self.memory_client.add_observations(data)
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"Failed to add observations: {e}")
             return False
 

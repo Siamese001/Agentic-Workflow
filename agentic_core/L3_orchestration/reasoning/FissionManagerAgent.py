@@ -233,8 +233,7 @@ class FissionManagerAgent(SovereignBaseAgent):
             if new_files:
                 return FissionResult(True, reason, new_files, file_path, True)
             return FissionResult(True, reason, {}, file_path, False, "Empty response")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Fission failed: {e}")
             return FissionResult(True, reason, {}, file_path, False, str(e))
 
@@ -248,8 +247,7 @@ class FissionManagerAgent(SovereignBaseAgent):
             elif "```" in text:
                 text = text.split("```")[1].split("```")[0].strip()
             return json.loads(text)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"Fission parse failed: {e}")
             return {}
 
@@ -280,8 +278,7 @@ class FissionManagerAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"FissionManagerAgent heal() failed: {str(e)}",

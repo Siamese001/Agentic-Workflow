@@ -155,8 +155,7 @@ def repair_file(relpath):
 
     try:
         ast.parse(final_src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return "ERROR", f"post-fix syntax error at line {e.lineno}: {e.msg}"
 
     with open(fp, "w", encoding="utf-8") as f:

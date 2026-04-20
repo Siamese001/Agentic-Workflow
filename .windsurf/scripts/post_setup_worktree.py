@@ -84,7 +84,7 @@ def main() -> int:
             payload = json.loads(raw)
             if not isinstance(payload, dict):
                 payload = {}
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- stdin parse: non-fatal, empty payload used
             pass
 
     worktree = _get_worktree_root(payload)

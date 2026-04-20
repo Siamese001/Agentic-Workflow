@@ -178,12 +178,52 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         """Detect antipatterns in exception handlers."""
         handler_type = self._get_exception_type(node.type)
 
-        # Check for broad exception catch
-        if handler_type in self._broad_exceptions:
+        # Bare `except:` (node.type is None) is strictly MORE dangerous than
+        # `except Exception:` because it also catches SystemExit,
+        # KeyboardInterrupt, and GeneratorExit — non-exceptions that are
+        # part of normal interpreter shutdown / iteration protocol.
+        # Emitted as its own edge_kind (not subsumed by broad_exception_catch).
+        if node.type is None:
+            self._antipatterns.append(
+                (
+                    node.lineno,
+                    "bare_except",
+                    "BaseException",
+                )
+            )
+        # Broad Exception/BaseException catch
+        elif handler_type in self._broad_exceptions:
             self._antipatterns.append(
                 (
                     node.lineno,
                     "broad_exception_catch",
+                    handler_type or "Exception",
+                )
+            )
+
+        # Doc #12 — throw_for_normal_flow
+        # Conservative: narrow control-flow exception (KeyError/IndexError/
+        # AttributeError/LookupError/StopIteration) caught + body takes a
+        # non-error 'continue normal processing' path (not log/raise/return None).
+        # Intentionally P3 LOW: this is subjective and has FPs by design.
+        if self._is_throw_for_normal_flow(node, handler_type):
+            self._antipatterns.append(
+                (
+                    node.lineno,
+                    "throw_for_normal_flow",
+                    handler_type or "Exception",
+                )
+            )
+
+        # Doc #4 — default_fallback_masking
+        # Handler body is a single assignment `X = <Constant literal>` where
+        # the constant is NOT None (None is already return_none_swallow).
+        # Catches the "except Exception: price = 0" pattern.
+        if self._is_default_fallback_masking(node.body):
+            self._antipatterns.append(
+                (
+                    node.lineno,
+                    "default_fallback_masking",
                     handler_type or "Exception",
                 )
             )
@@ -216,6 +256,40 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     (
                         node.lineno,
                         "return_none_swallow",
+                        handler_type or "Exception",
+                    )
+                )
+
+            # Check for unreachable code after raise (Pattern C — dead code bug)
+            if self._has_unreachable_after_raise(node.body):
+                self._antipatterns.append(
+                    (
+                        node.lineno,
+                        "unreachable_after_raise",
+                        handler_type or "Exception",
+                    )
+                )
+
+            # Check for exception type erasure (doc #8 — raise new type without 'from')
+            erased_type = self._get_erased_exception_type(node, handler_type)
+            if erased_type is not None:
+                self._antipatterns.append(
+                    (
+                        node.lineno,
+                        "exception_type_erasure",
+                        f"{handler_type or 'Exception'}->{erased_type}",
+                    )
+                )
+
+            # Check for double-logging (doc #11 — log + re-raise).
+            # The inner half: handler invokes a logger AND re-raises. The outer caller
+            # almost always catches and logs the same error, producing duplicate alerts.
+            # Intentionally a high-precision proxy — flags only within-handler evidence.
+            if self._is_double_logging(node.body):
+                self._antipatterns.append(
+                    (
+                        node.lineno,
+                        "double_logging",
                         handler_type or "Exception",
                     )
                 )
@@ -271,8 +345,273 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 return True
         return False
 
+    def _is_default_fallback_masking(self, body: list[ast.stmt]) -> bool:
+        """Detect doc anti-pattern #4 — 'except X: price = 0'.
+
+        Handler body is a single assignment ``target = <non-None constant literal>``.
+        Return-None swallows are deliberately excluded (covered by
+        ``return_none_swallow``). Flags fabricated-value patterns where a
+        real failure is masquerading as a valid value (price=0, count=0,
+        status="ok", etc.).
+        """
+        if len(body) != 1:
+            return False
+        stmt = body[0]
+        if not isinstance(stmt, ast.Assign):
+            return False
+        if not isinstance(stmt.value, ast.Constant):
+            return False
+        # Exclude None (already return_none_swallow territory; here it's assignment)
+        if stmt.value.value is None:
+            return False
+        # Require at least one simple Name target (don't flag tuple/attribute assigns)
+        for target in stmt.targets:
+            if isinstance(target, (ast.Name, ast.Attribute)):
+                return True
+        return False
+
+    def _is_throw_for_normal_flow(
+        self, node: ast.ExceptHandler, handler_type: str | None
+    ) -> bool:
+        """Detect doc anti-pattern #12 — exception as control flow.
+
+        Conservative: only flags when BOTH:
+          1. The caught type is a narrow control-flow exception
+             (KeyError / IndexError / AttributeError / LookupError / StopIteration)
+          2. The handler body does NOT re-raise, does NOT return None, and does
+             NOT consist solely of a log call — i.e. it performs active
+             ``normal-path'' work.
+        P3 LOW severity because this is subjective by design.
+        """
+        control_flow_types = {
+            "KeyError",
+            "IndexError",
+            "AttributeError",
+            "LookupError",
+            "StopIteration",
+        }
+        # Single narrow type
+        if handler_type not in control_flow_types:
+            # Tuple: check if all members are control-flow types
+            if isinstance(node.type, ast.Tuple):
+                names: list[str] = []
+                for elt in node.type.elts:
+                    if isinstance(elt, ast.Name):
+                        names.append(elt.id)
+                if not names or not all(n in control_flow_types for n in names):
+                    return False
+            else:
+                return False
+
+        if not node.body:
+            return False
+
+        # Exclude if handler re-raises (that's proper)
+        for stmt in node.body:
+            if isinstance(stmt, ast.Raise):
+                return False
+        # Exclude return-None (that's return_none_swallow)
+        if self._is_return_none_after_exception(node.body):
+            return False
+        # Exclude log-only (that's log_and_swallow; also exclude pass-only)
+        if self._is_silent_swallow(node.body):
+            return False
+        if self._is_log_and_swallow(node.body):
+            return False
+
+        # At this point the body does 'something else' — active normal flow.
+        # This is the doc anti-pattern #12 signature.
+        return True
+
+    def _is_double_logging(self, body: list[ast.stmt]) -> bool:
+        """Detect doc anti-pattern #11 inner-side: handler logs AND re-raises.
+
+        Pattern:
+            except X as e:
+                logger.error("failed: %s", e)   # <-- log
+                raise                           # <-- re-raise
+
+        The outer caller will almost always catch-and-log the same exception,
+        producing duplicate alerts / alert fatigue (doc Pattern 11). The GOOD
+        variant is 'log OR re-raise, not both' — if re-raising, let the top
+        boundary log; don't emit duplicates at intermediate layers.
+        """
+        if not body:
+            return False
+        has_log = False
+        has_reraise = False
+        for stmt in body:
+            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+                call = stmt.value
+                if isinstance(call.func, ast.Attribute) and call.func.attr in {
+                    "debug",
+                    "info",
+                    "warning",
+                    "error",
+                    "exception",
+                    "critical",
+                }:
+                    has_log = True
+            elif isinstance(stmt, ast.Raise):
+                has_reraise = True
+        return has_log and has_reraise
+
+    def _has_unreachable_after_raise(self, body: list[ast.stmt]) -> bool:
+        """Detect 'raise' followed by executable statements in an except body.
+
+        Pattern C (cross-cutting) — dead code after a raise/re-raise. The
+        code after raise is NEVER executed and is almost always a leftover
+        log or state-mutation statement that the author forgot to delete.
+        """
+        if not body:
+            return False
+        for i, stmt in enumerate(body):
+            if not isinstance(stmt, ast.Raise):
+                continue
+            # Any remaining non-pass, non-docstring statement = dead code
+            for follow in body[i + 1 :]:
+                if isinstance(follow, ast.Pass):
+                    continue
+                if isinstance(follow, ast.Expr) and isinstance(
+                    follow.value, ast.Constant
+                ) and isinstance(follow.value.value, str):
+                    # Docstring / standalone string literal — ignore
+                    continue
+                return True
+        return False
+
+    def _get_erased_exception_type(
+        self, node: ast.ExceptHandler, handler_type: str | None
+    ) -> str | None:
+        """Detect doc anti-pattern #8 — type erasure via bare 'raise NewExc(...)'.
+
+        Returns the erased type name if the except body raises a DIFFERENT
+        exception type WITHOUT chaining the original via 'from <caught>' or
+        'from e'. Returns None if no erasure detected.
+
+        A raise without 'cause' inside an except handler is PEP 3134 compliant
+        only when raising the SAME type (bare ``raise`` or ``raise OriginalType(...)``).
+        Raising a DIFFERENT type without ``from`` silently drops the original
+        exception context from debuggers and tracebacks.
+        """
+        if not node.body or handler_type is None:
+            return None
+        # Walk the immediate except body (not nested try/except) for raises
+        for stmt in node.body:
+            if not isinstance(stmt, ast.Raise):
+                continue
+            # Bare 're-raise' — no erasure
+            if stmt.exc is None:
+                continue
+            # raise X(...) or raise X
+            raised_type: str | None = None
+            if isinstance(stmt.exc, ast.Call) and isinstance(stmt.exc.func, ast.Name):
+                raised_type = stmt.exc.func.id
+            elif isinstance(stmt.exc, ast.Name):
+                raised_type = stmt.exc.id
+            if raised_type is None:
+                continue
+            # Same-type re-raise (e.g., 'raise RuntimeError(...)' inside except RuntimeError) is fine
+            if raised_type == handler_type:
+                continue
+            # 'raise X from <anything>' documents the chain — not erasure
+            if stmt.cause is not None:
+                continue
+            # Different type, no cause → erasure
+            return raised_type
+        return None
+
+    def visit_Try(self, node: ast.Try) -> None:
+        """Detect finally-block antipatterns (doc #9/#10) and partial side effects (doc #7)."""
+        if node.finalbody:
+            # Doc #9 — 'cleanup_raises_over_original'
+            # Any Raise inside finalbody can mask the exception from the try block.
+            for stmt in node.finalbody:
+                if isinstance(stmt, ast.Raise):
+                    self._antipatterns.append(
+                        (
+                            stmt.lineno,
+                            "cleanup_raises_over_original",
+                            "finally:raise",
+                        )
+                    )
+                    break
+            # Doc #10 — 'return_in_finally'
+            # Any Return in finalbody silently overrides the try/except result.
+            for stmt in node.finalbody:
+                if isinstance(stmt, ast.Return):
+                    self._antipatterns.append(
+                        (
+                            stmt.lineno,
+                            "return_in_finally",
+                            "finally:return",
+                        )
+                    )
+                    break
+
+        # Doc #7 — 'partial_side_effects'
+        # When the try body performs side effects (writes, network, subprocess, filesystem,
+        # database ops) AND any handler SWALLOWS the exception, the system-of-record can be
+        # left inconsistent: some writes landed, the failing one did not, and the caller
+        # sees success. Uses the existing graph-layer side-effect taxonomy.
+        side_effect_count = self._count_side_effects_in_body(node.body)
+        if side_effect_count >= 1 and node.handlers:
+            for handler in node.handlers:
+                if self._handler_is_swallowing(handler):
+                    self._antipatterns.append(
+                        (
+                            handler.lineno,
+                            "partial_side_effects",
+                            f"try_body_side_effects={side_effect_count}",
+                        )
+                    )
+        self.generic_visit(node)
+
+    def _count_side_effects_in_body(self, body: list[ast.stmt]) -> int:
+        """Count side-effect calls inside a try body using graph-layer taxonomy.
+
+        Reuses the canonical WRITE_SIDE_EFFECT_SYMBOLS and NETWORK_SYMBOLS used by
+        the graph-layer _CallVisitor so detection stays consistent with the
+        ``emits_side_effect`` / ``writes_to`` edges already in the ADG.
+        """
+        from agentic_core.adg.contracts.schema_util import (
+            NETWORK_SYMBOLS,
+            WRITE_SIDE_EFFECT_SYMBOLS,
+        )
+
+        side_effect_syms = set(WRITE_SIDE_EFFECT_SYMBOLS) | set(NETWORK_SYMBOLS)
+        # Cheap string-prefix match for base symbols (subprocess.*, os.*, requests.*, etc.)
+        side_effect_prefixes = {"subprocess.", "os.", "requests.", "urllib.", "socket.", "shutil."}
+
+        count = 0
+        for stmt in body:
+            for child in ast.walk(stmt):
+                if not isinstance(child, ast.Call):
+                    continue
+                sym = self._extract_symbol(child.func)
+                if not sym:
+                    continue
+                if sym in side_effect_syms:
+                    count += 1
+                    continue
+                if any(sym.startswith(p) for p in side_effect_prefixes):
+                    count += 1
+        return count
+
+    def _handler_is_swallowing(self, handler: ast.ExceptHandler) -> bool:
+        """True if the handler swallows — no raise, or a raise that's unreachable."""
+        if not handler.body:
+            return True
+        # Walk top-level stmts; if we see a Raise, not swallowing (unless dead-code pattern).
+        for stmt in handler.body:
+            if isinstance(stmt, ast.Raise):
+                return False
+        # No raise at top level = swallowing (silent, log+continue, or return None)
+        return True
+
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
-        """Detect blocking I/O calls inside async function bodies."""
+        """Detect blocking I/O calls in async bodies + mutable default args."""
+        self._check_mutable_default_args(node)
         for child in tqdm(ast.walk(node), desc="Processing", unit="item"):
             if isinstance(child, ast.Call):
                 sym = self._extract_symbol(child.func)
@@ -287,9 +626,9 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        """Detect module-level UPPER_CASE mutation inside function bodies (lazy-init guard excluded)."""
-        # Track module-level names that are UPPER_CASE
+        """Detect global state mutation + mutable default args."""
         self._check_global_state_mutation(node)
+        self._check_mutable_default_args(node)
         self.generic_visit(node)
 
     def _check_global_state_mutation(self, node: ast.FunctionDef) -> None:
@@ -334,6 +673,135 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 )
             )
         self.generic_visit(node)
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        """Detect hardcoded credentials (conservative; FP-averse).
+
+        Flags ``foo_password = "literal"`` style assignments where the target
+        name matches known secret-indicator patterns AND the value is a
+        non-trivial string constant. Excludes obvious placeholders, empty
+        strings, env var reads, f-strings, and test files.
+        """
+        import re
+        # Exclude test files entirely to avoid FPs on fixtures
+        if self._source_file and (
+            "/tests/" in self._source_file.replace("\\", "/")
+            or self._source_file.startswith("tests/")
+            or "conftest" in self._source_file
+            or "_test.py" in self._source_file
+            or "/test_" in self._source_file.replace("\\", "/")
+        ):
+            self.generic_visit(node)
+            return
+
+        # Value must be a plain string literal (not f-string, not os.environ, not call)
+        if not (isinstance(node.value, ast.Constant) and isinstance(node.value.value, str)):
+            self.generic_visit(node)
+            return
+        value = node.value.value
+
+        # Placeholder / obvious-not-real filter
+        if len(value) < 8:
+            self.generic_visit(node)
+            return
+        low = value.lower().strip()
+        placeholder_markers = (
+            "xxx", "todo", "fixme", "example", "placeholder", "dummy", "fake",
+            "your-", "your_", "<", ">", "...", "changeme", "change-me", "change_me",
+            "replace", "n/a", "none", "null", "test",
+        )
+        if any(m in low for m in placeholder_markers):
+            self.generic_visit(node)
+            return
+
+        # Target name must look secret-like
+        secret_name_pattern = re.compile(
+            r"(?:^|_)(?:password|passwd|secret|api[_-]?key|private[_-]?key|"
+            r"access[_-]?key|auth[_-]?token|bearer[_-]?token|refresh[_-]?token|"
+            r"credential|client[_-]?secret|signing[_-]?key)s?(?:$|_)",
+            re.IGNORECASE,
+        )
+        # Identifier/label suffixes — these name a KIND of secret, not a secret itself
+        label_suffixes = ("_id", "_name", "_type", "_kind", "_label", "_key_id")
+        flagged = False
+        matched_name: str | None = None
+        for target in node.targets:
+            name: str | None = None
+            if isinstance(target, ast.Name):
+                name = target.id
+            elif isinstance(target, ast.Attribute):
+                name = target.attr
+            if not (name and secret_name_pattern.search(name)):
+                continue
+            # Skip enum-label pattern: PASSWORD = "password" (value matches name)
+            name_normalized = name.lower().replace("_", "").replace("-", "")
+            value_normalized = value.lower().replace("_", "").replace("-", "")
+            if name_normalized == value_normalized:
+                continue
+            # Skip label/identifier suffixes
+            if any(name.lower().endswith(sfx) for sfx in label_suffixes):
+                continue
+            flagged = True
+            matched_name = name
+            break
+        if flagged:
+            self._antipatterns.append(
+                (
+                    node.lineno,
+                    "hardcoded_secret",
+                    matched_name or "<unknown>",
+                )
+            )
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        """Detect star imports (``from X import *``).
+
+        Star imports pollute the namespace, hide dependency edges, and break
+        static analysis tooling. Widely recognized anti-pattern (PEP 8, pylint
+        W0401). Emits one edge per star-import statement.
+        """
+        for alias in node.names:
+            if alias.name == "*":
+                module = node.module or "<relative>"
+                self._antipatterns.append(
+                    (
+                        node.lineno,
+                        "star_import_use",
+                        f"from {module} import *",
+                    )
+                )
+                break
+        self.generic_visit(node)
+
+    def _check_mutable_default_args(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+        """Detect mutable default arguments (list/dict/set/bytearray).
+
+        Mutable defaults are evaluated once at function definition time and
+        shared across all calls — a well-known source of bugs (PEP 8, pylint
+        W0102). Emits one edge per offending default.
+        """
+        # args.defaults align with the LAST N positional/positional-only args
+        defaults = list(node.args.defaults) + list(node.args.kw_defaults)
+        for default in defaults:
+            if default is None:
+                continue
+            is_mutable = False
+            # Literal list/dict/set
+            if isinstance(default, (ast.List, ast.Dict, ast.Set)):
+                is_mutable = True
+            # Call to list()/dict()/set()/bytearray()
+            elif isinstance(default, ast.Call) and isinstance(default.func, ast.Name):
+                if default.func.id in {"list", "dict", "set", "bytearray"}:
+                    is_mutable = True
+            if is_mutable:
+                self._antipatterns.append(
+                    (
+                        default.lineno,
+                        "mutable_default_arg",
+                        node.name,
+                    )
+                )
 
     def visit_For(self, node: ast.For) -> None:
         """Detect retry loops without backoff (for loops)."""

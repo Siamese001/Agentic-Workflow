@@ -326,8 +326,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 "errors": [],
             }
 
-        # guardian: allow-silent-swallower
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -340,8 +339,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
             return len(content.strip()) == 0
-        # guardian: allow-silent-swallower
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow
             return False
 
     def _is_orphaned_init(self, file_path: Path) -> bool:
@@ -376,8 +374,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         debug_lines.append(i)
 
             return debug_lines
-        # guardian: allow-silent-swallower
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow
             return []
 
     def _has_commented_code(self, file_path: Path) -> tuple[bool, int]:
@@ -396,8 +393,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 return True, len(matches)
 
             return False, 0
-        # guardian: allow-silent-swallower
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow
             return False, 0
 
     def _has_repeated_filename_parts(self, filename: str) -> tuple[bool, str | None]:
@@ -618,8 +614,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         fixed_count += 1
                     else:
                         print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
-            # guardian: allow-silent-swallower
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 print(f"   [ERROR] Failed to fix {violation.file_path}: {e}")
 
         return fixed_count

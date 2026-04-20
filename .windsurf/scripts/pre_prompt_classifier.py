@@ -380,7 +380,7 @@ def _write_session_state(tier: str) -> None:
                 default = 0 if field in ("update_task_count", "max_memory_block_attempts") else False
                 state[field] = existing.get(field, default)
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- session state write: non-fatal, fail-open
         pass  # fail-open: don't block on state file write failure
 
 
@@ -394,7 +394,7 @@ def _warn_open_task(tier: str) -> None:
         if not session_state.exists():
             return
         state = json.loads(session_state.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task lifecycle check: non-fatal, check skipped
         return
     if not state.get("task_created", False):
         return
@@ -547,7 +547,7 @@ def _check_mcp_config_drift() -> None:
     try:
         repo_data = json.loads(repo_cfg.read_text(encoding="utf-8"))
         global_data = json.loads(global_cfg.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- MCP config read: non-fatal, check skipped
         return
 
     repo_servers = repo_data.get("mcpServers", {})

@@ -239,7 +239,7 @@ class SafetyAuditTrail:
                 for rec in records:
                     f.write(rec.to_jsonl() + "\n")
                     count += 1
-        except OSError as exc:  # guardian: Add error context logging
+        except OSError as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.warning("SafetyAuditTrail flush failed: %s", exc)
         return count
 

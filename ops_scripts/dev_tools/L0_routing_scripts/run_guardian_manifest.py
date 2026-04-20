@@ -335,12 +335,6 @@ def run_manifest_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="checksum_match",
-            status=CheckStatus.FAIL,
-            details=f"Checksum computation error: {exc}",
-        )
-        result.set_error(f"Checksum computation failed: {exc}")
 
     # --- Finalize ---
     total = len(result.checks)

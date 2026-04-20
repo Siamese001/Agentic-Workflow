@@ -343,9 +343,8 @@ class EvaluationLearningBridge:
 
             return learning_event
 
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
-            # Fail-open: log error but don't block evaluation
-            logger.error("EVAL_LEARNING_BRIDGE error feeding to learning: %s", exc, exc_info=True)
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+            logger.error("[EvalLearningBridge] Evaluation failed: %s", exc)
             return None
 
     def get_learning_events(self) -> list[LearningEvent]:

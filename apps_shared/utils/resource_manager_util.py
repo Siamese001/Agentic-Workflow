@@ -307,8 +307,7 @@ class ResourceManager:
                         asyncio.create_task(resource_info.cleanup_callback())
                     else:
                         resource_info.cleanup_callback()
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     logger.error(f"Cleanup callback failed for {resource_id}: {e}")
             return True
 
@@ -431,12 +430,6 @@ class ResourceManager:
             logger.debug(f"Atomically wrote {file_path}")
         # guardian: allow-silent-swallow
         except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            try:
-                await aiofiles.os.remove(temp_path)
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
             raise
         finally:
             self.unregister_resource(resource_id)

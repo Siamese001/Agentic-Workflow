@@ -99,8 +99,7 @@ try:
         safe_popen,
         safe_run,
     )
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
     def safe_communicate(*args, **kwargs):
         return None

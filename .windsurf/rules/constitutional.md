@@ -1,6 +1,13 @@
 ---
 trigger: always_on
 ---
+
+> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+>
+> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+>
+> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+
 # Constitutional Floor
 
 > ⛔ These constraints apply to every task, every tier, every session. No exceptions.
@@ -33,6 +40,7 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 19. **Mode separation is mandatory.** Separate `analyze` (inspect, no edits), `plan` (sequence, no edits), `edit` (make the change), and `verify` (prove the change). Do not blur these modes.
 20. **Fact grading is mandatory.** Classify claims as **DIRECTLY OBSERVED**, **DERIVED**, or **UNRESOLVED**. Do not present unresolved items as facts.
 21. **Zero-loss overwrite discipline.** When overwriting a rule, skill, or workflow: preserve useful constraints, remove redundancy, clarify triggers, preserve references relied on by scripts, and do not silently delete operational intent.
+22. **ADG graph layer is primary for refactoring.** Materialized views (`mv_*`), semantic edges (`flows_to`, `emits_side_effect`, `resolves_callsite`, `controls_flow`, `reads_from`, `writes_to`), and pre-built P-views (`v_p0_*`, `v_p1_*`, `v_p2_*`, `v_p3_*`) MUST drive T2/T3 refactoring plans — not just raw `edges`/`violations` tables. Plans missing the `## ADG_GRAPH_LAYER_EVIDENCE` section are invalid. Gate: `check_graph_layer_evidence.py`. See `adg-graph-layer-enforcement.md`.
 
 ## Quick Non-Negotiables
 
@@ -106,3 +114,5 @@ Full protocol details live in focused rules — loaded on demand, not always_on:
 - `global_rules.md` — subprocess, exception, MCP SSOT policy details
 - `adg-test-accelerator-enforcement.md` — ADG-driven test scope selection
 - `memory-management.md` — memory graph maintenance, purge sync, health thresholds
+- `adg-hotspot-enforcement.md` — mandatory hotspot report before any refactoring
+- `adg-graph-layer-enforcement.md` — MVs + semantic edges + P-views are PRIMARY for refactoring decisions

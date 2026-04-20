@@ -14,8 +14,7 @@ def fix_init_file(file_path: Path) -> bool:
     """Fix a corrupted __init__.py file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except (UnicodeDecodeError, OSError):
+    except (UnicodeDecodeError, OSError):  # guardian: allow-silent-swallow - acceptable exception handling
         return False
 
     # Check if file has the corruption pattern

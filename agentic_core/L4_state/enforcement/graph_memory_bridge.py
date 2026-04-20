@@ -25,16 +25,14 @@ try:
     from agentic_core.adg.client.InMemoryStore import ADGMCPClient as _MCPFallbackClient
 
     _FALLBACK_AVAILABLE = True
-# guardian: allow-silent-degradation - Optional ADG MCP client
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional ADG MCP client
     _FALLBACK_AVAILABLE = False
 # guardian: allow-silent-swallow - optional dependency
 try:
     from tools.memory.sqlite_memory_store import SqliteMemoryStore as _SqliteMemoryStore
 
     _SQLITE_STORE_AVAILABLE = True
-# guardian: allow-silent-degradation - Optional SQLite memory store
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional SQLite memory store
     _SqliteMemoryStore = None  # type: ignore[assignment,misc]
     _SQLITE_STORE_AVAILABLE = False
 
@@ -207,8 +205,7 @@ class GraphMemoryBridge:
             self._mcp_module = _mod
             self._mcp_available = True
             Logger.info("[GraphMemoryBridge] Initialized (live mcp11 MCP mode)")
-        # guardian: allow-silent-degradation - Optional MCP module
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - Optional MCP module
             self._mcp_module = None
             # mcp11 unavailable (CLI context) — wire SQLite store as persistent fallback
             if _SQLITE_STORE_AVAILABLE:
@@ -337,7 +334,7 @@ class GraphMemoryBridge:
         try:
             result = fn(*args, **kwargs)
             return result
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow -- MCP operation failure: non-fatal, Logger.warning already called
             with self._lock:
                 self.stats["mcp_errors"] += 1
             Logger.warning(f"[GraphMemoryBridge] {operation} failed: {e}")

@@ -59,8 +59,7 @@ def has_wirable_functions(filepath):
     try:
         src = open(filepath, encoding="utf-8", errors="replace").read()
         tree = ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except (SyntaxError, OSError):
+    except (SyntaxError, OSError):  # guardian: allow-silent-swallow - acceptable exception handling
         return False
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):

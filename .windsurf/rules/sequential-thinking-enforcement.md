@@ -2,6 +2,13 @@
 trigger: model_decision
 description: Use this rule when a T2/T3 task requires structured reasoning — planning, architecture decisions, multi-file debugging, or systematic decomposition before execution.
 ---
+
+> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+>
+> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+>
+> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+
 # Structured Reasoning Threshold
 
 
@@ -17,6 +24,18 @@ MANDATORY for T2/T3 tasks:
 - Multi-step reasoning — any task requiring systematic decomposition
 
 NOT required for T0/T1 tasks (question, typo, docstring, single config value, single import).
+
+
+## Retrieval Discipline at T2/T3
+
+Before synthesis, pull evidence in this order unless the task clearly requires a different path:
+- local repo guidance and nearby docs
+- exact files, symbols, commands, and config values
+- ADG / structured MCP tools for dependency, blast-radius, and runtime questions
+- semantic retrieval only when exact lookup leaves meaningful gaps
+- external research only when local evidence is insufficient or stale
+
+For dense evidence tasks, facts first and synthesis second.
 
 ## Required Pattern at T2/T3 Start
 

@@ -555,8 +555,7 @@ def main():
 
             purge_volatile_state()
             print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
-        # guardian: allow-silent-swallow
-        except (
+        except (  # guardian: allow-silent-swallow
             OSError,
             ImportError,
             RuntimeError,
@@ -587,8 +586,7 @@ def main():
             discovery_data = discover_all_agents(project_root)
             agents = process_discovery_data(discovery_data)
             print(f"   [OK] SSOT Verified: {len(agents)} agents discovered")
-        # guardian: allow-silent-swallow
-        except (
+        except (  # guardian: allow-silent-swallow
             OSError,
             ImportError,
             RuntimeError,
@@ -622,8 +620,7 @@ def main():
             guardian = get_autonomy_guardian(project_root)
             print("   [TARGETS] Exceptions config loaded from agentic_core/config/autonomy_targets.py")
             guardian.generate_compliance_report(context={"target_resolver": get_target})
-        # guardian: allow-silent-swallow
-        except (
+        except (  # guardian: allow-silent-swallow
             ImportError,
             OSError,
             RuntimeError,
@@ -710,8 +707,7 @@ def main():
                 print("\n[AGENT COMPLETE]")
                 if result:
                     print(f"   Result: {result}")
-        # guardian: allow-silent-swallow
-        except (
+        except (  # guardian: allow-silent-swallow
             ImportError,
             AttributeError,
             RuntimeError,
@@ -797,8 +793,7 @@ def main():
                         perf_module = importlib.util.module_from_spec(spec)
                         spec.loader.exec_module(perf_module)
                         return perf_module.get_performance_analyst(root)
-                # guardian: allow-silent-swallow
-                except (ValueError, TypeError):
+                except (ValueError, TypeError):  # guardian: allow-silent-swallow
                     pass
                 return None
 
@@ -834,8 +829,7 @@ def main():
                 get_autonomy_guardian = _load_ag2().get_autonomy_guardian
                 guardian = get_autonomy_guardian(project_root)
                 gemini_active = hasattr(guardian, "gemini_embedder") and guardian.gemini_embedder is not None
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 pass
             _runtime_state.update(
                 {
@@ -889,8 +883,7 @@ def main():
             _add_event("info", f"Heal mode completed — Unified Engine ({results.get('status', 'UNKNOWN')})")
             _save_runtime_state(project_root)
             report_consolidated_summary(consolidated_results, gemini_active)
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"   [!] Heal mode failed: {e}")
             traceback.print_exc()
             _add_event("error", f"Heal mode failed: {str(e)[:300]}...")

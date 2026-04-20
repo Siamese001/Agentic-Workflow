@@ -258,7 +258,6 @@ class SystemInvariantScanner(ast.NodeVisitor):
                         self.current_line_content = lines[node.lineno - 1].strip()
             except (ValueError, TypeError, RuntimeError) as e:
                 raise
-                self.current_line_content = ""
         super().visit(node)
 
     def _is_allowlisted(self) -> bool:
@@ -395,15 +394,6 @@ def scan_repository_for_bypasses(repo_root: Path) -> list[BypassViolation]:
                 )
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                violations.append(
-                    BypassViolation(
-                        file_path=str(file_path),
-                        line=0,
-                        rule_id="SCAN_ERROR",
-                        snippet="Scan error",
-                        description=f"Scan error: {e}",
-                    ),
-                )
     violations.sort(key=lambda v: (v.file_path, v.line, v.rule_id))
     return violations
 

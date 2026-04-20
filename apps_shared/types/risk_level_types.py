@@ -314,8 +314,7 @@ class DepthScorer:
             depth_score = DepthScore(level=level, score=score, rationale=rationale)
             logger.debug(f"Calculated depth: level={level}, score={score:.2f}")
             return depth_score
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error calculating depth: {str(e)}")
             return DepthScore(level=0, score=0.1, rationale=["Error in calculation"])
 
@@ -398,8 +397,7 @@ class MicroHookGenerator:
             hooks.sort(key=lambda h: h.relevance, reverse=True)
             logger.debug(f"Generated {len(hooks)} hooks, top relevance: {hooks[0].relevance:.2f}")
             return hooks
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error generating hooks: {str(e)}")
             return [
                 MicroHook(
@@ -506,8 +504,7 @@ class SentimentAnalyzer:
             profile = SentimentProfile(mood=mood, risk_level=risk, keywords_detected=keywords_detected[:5])
             logger.info(f"Assessed sentiment: {mood.value} (risk: {risk.value})")
             return profile
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error assessing sentiment: {str(e)}")
             return SentimentProfile(
                 mood=SentimentMood.NEUTRAL,
@@ -584,8 +581,7 @@ class WarmthManager:
             )
             logger.debug(f"Determined warmth: {strategy} (formality: {base_formality:.2f})")
             return warmth
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error determining warmth: {str(e)}")
             return WarmthSetting(formality_level=0.6, strategy_name="Professional Default", max_emojis=1)
 
@@ -658,8 +654,7 @@ class TemperatureEngine:
             }
             logger.info(f"Temperature analysis complete for {profile.get('name', 'Unknown')}")
             return results
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error in temperature analysis: {str(e)}")
             return {
                 "error": str(e),

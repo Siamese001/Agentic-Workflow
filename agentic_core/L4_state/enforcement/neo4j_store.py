@@ -90,7 +90,6 @@ try:
     from neo4j import GraphDatabase
 except ImportError as e:
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
-    GraphDatabase = None
 import os
 import uuid
 from typing import Any
@@ -215,11 +214,6 @@ class Neo4jGraphStore:
             self.run(CYPHER, {"id": entity_id, "type": etype, "name": name, "metadata": metadata or {}})
         except (ValueError, TypeError, RuntimeError) as e:
             raise
-            fallback_cypher = "\n            MERGE (e:Entity {id: $id})\n            SET e.type = $type,\n                E.NAME = $name,\n                E += $metadata\n            RETURN e\n            "
-            self.run(
-                fallback_cypher,
-                {"id": entity_id, "type": etype, "name": name, "metadata": metadata or {}},
-            )
 
     def upsert_relation(
         self,
@@ -253,8 +247,6 @@ class Neo4jGraphStore:
                 params["attrs"] = attrs
             except (ValueError, TypeError, RuntimeError) as e:
                 raise
-                CYPHER += "\nSET r += $attrs"
-                params["attrs"] = attrs
         self.run(CYPHER, params)
 
     def update_relation_invalidity(

@@ -923,8 +923,7 @@ class MCPHardenedMixin:
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-# guardian: allow-silent-degradation - Optional healer mixin
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional healer mixin
 
     class HealerMixin:  # type: ignore[no-redef]
         pass
@@ -1165,7 +1164,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 )
                 if gw_result.success:
                     return gw_result.healing_output
-            except Exception:  # guardian: allow-broad-exception allow-silent-swallow -- gateway heal best-effort: non-fatal, caller falls back to super() repair
+            except Exception:  # guardian: allow-broad-exception -- gateway heal best-effort: non-fatal, caller falls back to super() repair
                 pass
 
         return super().heal_repository()

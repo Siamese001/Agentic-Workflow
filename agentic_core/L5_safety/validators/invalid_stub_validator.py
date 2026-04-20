@@ -251,7 +251,7 @@ class InvalidStubDetector(AntiPatternDetector):
                 scan_time_ms=scan_time,
             )
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, SyntaxError, TypeError, ValueError) as e:
             import logging
 
             logging.getLogger(__name__).error(f"Error scanning {file_path}: {e}")

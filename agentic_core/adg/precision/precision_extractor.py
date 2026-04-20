@@ -44,8 +44,7 @@ class PrecisionExtractor(ast.NodeVisitor):
             tree = ast.parse(self.source_code)
             self.visit(tree)
             return self.graph
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except SyntaxError as e:
+        except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
             # Log parsing error but don't fail - return empty graph
             print(f"Syntax error in {self.file_path}: {e}")
             return self.graph
@@ -122,7 +121,7 @@ class PrecisionHardeningEngine:
             return graph
 
         except (OSError, RuntimeError, ValueError, TypeError) as e:
-            raise RuntimeError(f"Failed to harden {file_path}: {e}")
+            raise RuntimeError(f'Failed to harden {file_path}: {e}') from e
 
     def harden_directory(self, directory: str, pattern: str = "*.py") -> dict[str, PrecisionGraph]:
         """Apply precision hardening to all Python files in directory"""

@@ -330,24 +330,6 @@ def run_all_guardians(
         except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            combined.add_check(
-                check_id=f"guardian_{gid}",
-                status=CheckStatus.FAIL,
-                details=f"Guardian {gid} crashed: {exc}",
-            )
-            combined.status = GuardianStatus.ERROR.value
-            total_error += 1
-            per_guardian_results.append(
-                {
-                    "guardian_id": gid,
-                    "status": "ERROR",
-                    "error": str(exc),
-                },
-            )
-            guardian_index[gid] = {
-                "status": "ERROR",
-                "artifacts": [],
-            }
 
     # Finalize
     guardian_count = len(guardian_specs)

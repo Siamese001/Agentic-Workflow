@@ -294,8 +294,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -544,8 +543,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         fixed_count += 1
                     else:
                         print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 print(f"   [ERROR] Failed to fix {violation.file_path}: {e}")
         return fixed_count
 

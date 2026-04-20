@@ -274,18 +274,15 @@ class SovereignFilesystemMcp:
 
                         result = await asyncio.ensure_future(result)
                     return result if isinstance(result, str) else str(result)
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as direct_e:
+            except (RuntimeError, ValueError) as direct_e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.debug(f"[L4 FS] mcp8_read_text_file failed, falling back to manager: {direct_e}")
             result = await self.manager.call_tool("read_file", {"path": safe_path})
             return result.get("content", "") if isinstance(result, dict) else str(result)
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L4 FS] Read failed: {e}")
             try:
                 get_mcp_authority().record_breach(f"FS Read Failure: {safe_path}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as e:
+            except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -322,8 +319,7 @@ class SovereignFilesystemMcp:
                             write_result = await asyncio.ensure_future(write_result)
                         results.append(write_result)
                         continue
-                # guardian: allow-silent-swallow
-                except (RuntimeError, ValueError) as direct_e:
+                except (RuntimeError, ValueError) as direct_e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.debug(f"[L4 FS] mcp8_write_file failed, falling back to manager: {direct_e}")
                 result = await self.manager.call_tool("write_file", {"path": path, "content": content})
                 results.append(result)
@@ -341,17 +337,14 @@ class SovereignFilesystemMcp:
                             },
                         ),
                     )
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as ledger_e:
+            except (RuntimeError, ValueError) as ledger_e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.warning(f"[L4 FS] Ledger write failed (non-fatal): {ledger_e}")
             return {"status": "fission_complete", "count": len(results)}
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.critical(f"[L4 FS BREACH] Fission write failed: {e}")
             try:
                 get_mcp_authority().record_breach(f"Fission Write Failure: {monolith_path}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError):
+            except (RuntimeError, ValueError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                 pass
             raise
 
@@ -372,10 +365,8 @@ class SovereignFilesystemMcp:
                 _cache = get_hot_cache()
                 if _cache:
                     _cache.set(self.roots_key, json.dumps(validated), ex=60 * 60 * 24)
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as cache_e:
+            except (RuntimeError, ValueError) as cache_e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.warning(f"[L4 FS] Roots cache write failed (non-fatal): {cache_e}")
             Logger.info(f"[L4 FS] Sovereign roots locked: {validated}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.warning(f"MCP Server does not support dynamic roots: {e}")

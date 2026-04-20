@@ -164,8 +164,6 @@ def main():
                     print(f"Generated {generated_count} tests...")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            print(f"Failed to generate test for {module_path}: {e}")
-            failed_imports += 1
 
     print("\nGeneration complete:")
     print(f"  Generated: {generated_count}")

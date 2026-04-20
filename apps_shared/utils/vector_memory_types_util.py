@@ -287,8 +287,7 @@ class VectorMemoryStore:
             ]
             logger.debug(f"Found {len(results)} results above threshold")
             return results
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to search vectors: {e}")
             return []
 

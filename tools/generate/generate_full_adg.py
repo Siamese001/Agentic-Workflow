@@ -619,8 +619,7 @@ def generate_full_adg(
         _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
         zip_created = True
         print(f"[ADG] Zip creation successful for {ts}")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except RuntimeError as e:
+    except RuntimeError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         print(f"[ADG] WARNING: Zip creation failed: {e}")
         print("[ADG] Individual files will be archived using legacy path")
         zip_created = False

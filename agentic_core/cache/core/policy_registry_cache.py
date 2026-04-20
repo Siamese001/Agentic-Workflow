@@ -201,8 +201,7 @@ class PolicyRegistryCache:
                 if cached is not None:
                     logger.debug(f"[Policy cache] HIT for {policy_id}")
                     return cached
-            # guardian: allow-silent-swallow
-            except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(f"[Policy cache] Cache read failed: {e}")
         logger.debug(f"[Policy cache] MISS for {policy_id} — fetching from registry")
         result = fetch_policy()
@@ -210,8 +209,7 @@ class PolicyRegistryCache:
             try:
                 cache_key = f"policy:{policy_id}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            # guardian: allow-silent-swallow
-            except (OSError, ValueError, TypeError) as e:
+            except (OSError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(f"[Policy cache] Cache write failed: {e}")
         return result
 
@@ -221,8 +219,7 @@ class PolicyRegistryCache:
             cache_key = f"policy:{policy_id}"
             self._cache.delete(cache_key)
             logger.debug(f"[Policy cache] Invalidated {policy_id}")
-        # guardian: allow-silent-swallow
-        except (OSError, ValueError, TypeError) as e:
+        except (OSError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.warning(f"[Policy cache] Invalidation failed: {e}")
 
 

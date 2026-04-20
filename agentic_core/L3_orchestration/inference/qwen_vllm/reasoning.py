@@ -81,7 +81,7 @@ class QwenInferenceGateway:
                 model_used=self.model_id,
                 latency_ms=(time.perf_counter() - started) * 1000.0,
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- Qwen inference error boundary: all exceptions converted to QwenInferenceResponse failure
             return QwenInferenceResponse(
                 success=False,
                 response=None,

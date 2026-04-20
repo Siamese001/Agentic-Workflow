@@ -270,8 +270,7 @@ class FeatureFlaggedAgentMixin:
         if hasattr(obj, "is_available"):
             try:
                 return obj.is_available()
-            # guardian: allow-silent-swallow
-            except (AttributeError, RuntimeError):
+            except (AttributeError, RuntimeError):  # guardian: allow-silent-swallow
                 return True  # Assume available if check fails
         return True  # Assume available if no is_available method
 
@@ -346,8 +345,7 @@ class FeatureFlaggedAgentMixin:
                     success=result if isinstance(result, bool) else True,
                     reason="legacy_implementation",
                 )
-            # guardian: allow-silent-swallow
-            except (AttributeError, RuntimeError, ValueError) as e:
+            except (AttributeError, RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
                 logger.warning(f"Verification gate error: {e}")
                 return VerificationResult(
                     success=True,
@@ -543,8 +541,7 @@ class FeatureFlaggedAgentMixin:
                     result=result,
                     metadata={"flag": "ENABLE_META_LEARNING", "status": "disabled"},
                 )
-            # guardian: allow-silent-swallow
-            except (AttributeError, RuntimeError) as e:
+            except (AttributeError, RuntimeError) as e:  # guardian: allow-silent-swallow
                 return LearningResult(
                     success=False,
                     from_cache=False,
@@ -567,8 +564,7 @@ class FeatureFlaggedAgentMixin:
                     result=result,
                     metadata={"reason": "ml_unavailable"},
                 )
-            # guardian: allow-silent-swallow
-            except (AttributeError, RuntimeError) as e:
+            except (AttributeError, RuntimeError) as e:  # guardian: allow-silent-swallow
                 return LearningResult(
                     success=False,
                     from_cache=False,
@@ -716,14 +712,6 @@ class FeatureFlaggedAgentMixin:
             ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
-                result = {
-                    "status": "error",
-                    "error": str(e),
-                    "violations_found": 1,
-                    "violations_fixed": 0,
-                    "errors": [str(e)],
-                    "skipped": [],
-                }
 
         # Step 5: Audit log
         self.log_audit_event(

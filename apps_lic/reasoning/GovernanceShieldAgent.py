@@ -326,8 +326,7 @@ class GovernanceShieldAgent(LICAgentBase):
                         logger.debug(f"Replaced {category} claim with: {replacement}")
             sanitized = self._fix_privacy_language(sanitized)
             return sanitized
-        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error sanitizing claims: {str(e)}")
             return content
 
@@ -352,8 +351,7 @@ class GovernanceShieldAgent(LICAgentBase):
                 return self._generate_high_risk_protocol(risk_profile)
             else:
                 return self._generate_standard_protocol(risk_profile)
-        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error generating safety protocol: {str(e)}")
             return SafetyProtocol(
                 validation_strategy="Comprehensive testing before deployment",
@@ -375,8 +373,7 @@ class GovernanceShieldAgent(LICAgentBase):
             if any(term in audited.lower() for term in ["hipaa", "phi", "health data"]):
                 audited += "\n\n[Note: All healthcare applications maintain HIPAA compliance through on-prem deployment or BAA-compliant APIs.]"
             return audited
-        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error auditing outreach: {str(e)}")
             return email_draft
 
@@ -429,8 +426,7 @@ class GovernanceShieldAgent(LICAgentBase):
                 compliance_keywords=list(set(compliance)),
                 data_sensitivity=data_types,
             )
-        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error scanning risk level: {str(e)}")
             return RiskProfile(
                 industry_sensitivity=IndustrySensitivity.MEDIUM,

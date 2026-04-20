@@ -520,21 +520,6 @@ def standard_heal(func: F) -> F:
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            execution_time_ms = (time.time() - start_time) * 1000
-
-            Logger.error(
-                f"[standard_heal] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}",
-            )
-
-            return {
-                **HEAL_RESULT_SCHEMA,
-                "status": "ERROR",
-                "errors": 1,
-                "execution_time_ms": execution_time_ms,
-                "error_message": str(e),
-                "_exception_type": type(e).__name__,
-                "_traceback": traceback.format_exc(),
-            }
 
         finally:
             # Phase 3: Reset canonical seam capability token
@@ -584,19 +569,6 @@ def standard_heal_async(func: F) -> F:
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            execution_time_ms = (time.time() - start_time) * 1000
-
-            Logger.error(
-                f"[standard_heal_async] {agent_name}.{func.__name__} crashed: {e}\n{traceback.format_exc()}",
-            )
-
-            return {
-                **HEAL_RESULT_SCHEMA,
-                "status": "ERROR",
-                "errors": 1,
-                "execution_time_ms": execution_time_ms,
-                "error_message": str(e),
-            }
 
     return cast(F, wrapper)
 

@@ -453,8 +453,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
             elif isinstance(hop_spec, dict):
                 return hop_spec.get("hop_function")
             return None
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             logger.warning(f"Failed to extract function name for {node_id}: {e}")
             return None
 
@@ -536,8 +535,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                 if not nx.is_directed_acyclic_graph(self.dag_manager.graph):
                     metrics["errors"] = metrics.get("errors", 0) + 1
                     logger.error("DAG ACYCLICITY VIOLATION DETECTED!")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             logger.error(f"RecursiveOrchestrator healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
         return metrics

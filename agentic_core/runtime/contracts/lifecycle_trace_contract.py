@@ -1084,7 +1084,7 @@ def _record_semantic_cache_prom_event(event: str, namespace: str = "") -> None:
         )
 
         _prom_record(event, namespace)
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow -- prometheus cache: optional import, non-fatal
         pass
 
 

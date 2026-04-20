@@ -429,24 +429,56 @@ LEFT JOIN precision_call_resolution cr ON cr.edge_id = e.id;
 """
 
 
+# STRICT MAP: one canonical token per edge_kind, PLUS a single documented
+# semantic supersession: ``allow-broad-exception`` is the parent claim for
+# ``except Exception``/``except BaseException`` and subsumes the swallow
+# variants that a broad catch inherently exhibits (a broad catch always
+# either swallows silently, logs-and-swallows, returns None, or re-raises).
+# The swallow-specific tokens remain strictly scoped: they do NOT exempt
+# each other or a broad catch.
 _GUARDIAN_MAP: dict[str, tuple[str, ...]] = {
     "silent_exception_swallow": (
         "guardian: allow-silent-swallow",
-        "guardian: allow-silent-swallower",
-        "guardian: allow-silent_swallower",
-    ),
-    "broad_exception_catch": (
         "guardian: allow-broad-exception",
-        "guardian: allow-broad-except",
     ),
-    "log_and_swallow": (
+    "broad_exception_catch":    ("guardian: allow-broad-exception",),
+    "log_and_swallow":          (
         "guardian: allow-log-and-swallow",
-        "guardian: allow-silent-swallow",
+        "guardian: allow-broad-exception",
     ),
-    "return_none_swallow": (
+    "return_none_swallow":      (
         "guardian: allow-return-none-swallow",
-        "guardian: allow-silent-swallow",
+        "guardian: allow-broad-exception",
     ),
+    # Pattern C — dead code after raise. Strictly scoped: no supersession,
+    # authors must justify each site individually (this is a bug, not a choice).
+    "unreachable_after_raise":  ("guardian: allow-unreachable-after-raise",),
+    # Doc #8 — exception type erasure. Strictly scoped.
+    "exception_type_erasure":   ("guardian: allow-exception-type-erasure",),
+    # Doc #9 — cleanup raises over original exception.
+    "cleanup_raises_over_original": ("guardian: allow-cleanup-raises",),
+    # Doc #10 — return in finally silently overrides try/except result.
+    "return_in_finally":        ("guardian: allow-finally-return",),
+    # Blocking I/O inside an async function body (event-loop starvation).
+    "blocking_call_in_async":   ("guardian: allow-blocking-in-async",),
+    # Retry loops without backoff (cost/latency amplification).
+    "retry_without_backoff":    ("guardian: allow-retry-without-backoff",),
+    # Mutable default argument (shared state across calls).
+    "mutable_default_arg":      ("guardian: allow-mutable-default",),
+    # Star import (namespace pollution, breaks static analysis).
+    "star_import_use":          ("guardian: allow-star-import",),
+    # Doc #7 — partial side effects: try-body writes, except swallows.
+    "partial_side_effects":     ("guardian: allow-partial-side-effects",),
+    # Doc #11 — double logging: handler logs and re-raises.
+    "double_logging":           ("guardian: allow-double-logging",),
+    # Bare 'except:' (catches SystemExit/KeyboardInterrupt/GeneratorExit).
+    "bare_except":              ("guardian: allow-bare-except",),
+    # Doc #4 — default fallback masking: 'except: price = 0'.
+    "default_fallback_masking": ("guardian: allow-default-fallback",),
+    # Doc #12 — exception as normal control flow.
+    "throw_for_normal_flow":    ("guardian: allow-control-flow-exception",),
+    # Hardcoded credentials in source code.
+    "hardcoded_secret":         ("guardian: allow-hardcoded-secret",),
 }
 
 _LAYER_VIOLATION_GUARDIANS = ("guardian: allow-layer-violation",)
@@ -459,6 +491,20 @@ _CANONICAL_GUARDIAN_TOKENS = frozenset(
         "allow-log-and-swallow",
         "allow-return-none-swallow",
         "allow-broad-exception",
+        "allow-unreachable-after-raise",
+        "allow-exception-type-erasure",
+        "allow-cleanup-raises",
+        "allow-finally-return",
+        "allow-blocking-in-async",
+        "allow-retry-without-backoff",
+        "allow-mutable-default",
+        "allow-star-import",
+        "allow-partial-side-effects",
+        "allow-double-logging",
+        "allow-bare-except",
+        "allow-default-fallback",
+        "allow-control-flow-exception",
+        "allow-hardcoded-secret",
     }
 )
 
@@ -481,7 +527,12 @@ def _read_lines_cached(filepath: str) -> list[str]:
 
 
 def _extract_guardian_tokens(line: str) -> set[str]:
-    """Extract canonical guardian allow tokens from a single source line."""
+    """Extract canonical guardian allow tokens from a single source line.
+
+    STRICT: Requires a non-empty ``-- <justification>`` segment after the
+    token. A bare ``# guardian: allow-X`` is rejected — every guardian must
+    document *why* the swallow is justified.
+    """
     if "guardian:" not in line:
         return set()
     tokens: set[str] = set()
@@ -490,20 +541,32 @@ def _extract_guardian_tokens(line: str) -> set[str]:
     if idx < 0:
         return tokens
     payload = line[idx + len(marker) :]
-    for raw in payload.split():
-        cleaned = raw.strip().strip(",;()[]{}")
-        if cleaned.startswith("allow-") and cleaned in _CANONICAL_GUARDIAN_TOKENS:
-            tokens.add(cleaned)
+    parts = payload.split()
+    if not parts:
+        return tokens
+    head = parts[0].strip().strip(",;()[]{}")
+    if not (head.startswith("allow-") and head in _CANONICAL_GUARDIAN_TOKENS):
+        return tokens
+    # Require '-- <justification>' — at minimum, '--' followed by >=3 word chars
+    tail = " ".join(parts[1:])
+    if "--" not in tail:
+        return tokens
+    after_dashes = tail.split("--", 1)[1].strip()
+    if len(after_dashes) < 3:
+        return tokens
+    tokens.add(head)
     return tokens
 
 
 def _resolve_except_anchor_lines(lines: list[str], line_no: int) -> set[int]:
-    """Resolve structural anchor lines for an exception handler site.
+    """Resolve canonical anchor lines for an exception handler site.
 
-    Supports:
-    - inline guardian on except line
-    - guardian line above except header
-    - guardian on closing line of a multi-line except header
+    STRICT: Only two anchors are valid:
+      1. The ``except ... :`` header line itself
+      2. For multi-line except headers, the line containing the closing ``:``
+
+    Pre-except orphan comments and generic ±6-line windows are rejected so
+    guardians can no longer 'leak' between adjacent except blocks.
     """
     if line_no < 1 or not lines:
         return set()
@@ -512,21 +575,23 @@ def _resolve_except_anchor_lines(lines: list[str], line_no: int) -> set[int]:
     idx = min(max(line_no - 1, 0), max_idx)
     start = idx
 
+    # Walk back at most 6 lines to find the 'except' keyword that owns this site
     for probe in range(idx, max(-1, idx - 6), -1):
         stripped = lines[probe].lstrip()
         if stripped.startswith("except"):
             start = probe
             break
 
+    # Walk forward to find the ':' that closes the except header (multi-line)
     end = start
     for probe in range(start, min(len(lines), start + 6)):
         end = probe
         if ":" in lines[probe]:
             break
 
-    anchors = {start + 1, end + 1, idx + 1}
-    if start > 0:
-        anchors.add(start)
+    # STRICT: anchors are ONLY the except line and the closing-paren line.
+    # No +/- 1-line fallback, no pre-except comment line.
+    anchors = {start + 1, end + 1}
     return {ln for ln in anchors if 1 <= ln <= len(lines)}
 
 
@@ -782,8 +847,7 @@ def _create_latest_symlinks(
         # Try to create symlink, fall back to copy on Windows
         try:
             link_path.symlink_to(target_path.name)
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (OSError, NotImplementedError):
+        except (OSError, NotImplementedError):  # guardian: allow-silent-swallow - acceptable exception handling
             # Windows without admin rights or filesystem doesn't support symlinks
             shutil.copy2(target_path, link_path)
 

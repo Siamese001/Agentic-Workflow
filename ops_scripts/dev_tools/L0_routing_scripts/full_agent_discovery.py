@@ -340,8 +340,7 @@ def get_git_commit(root: Path) -> str:
             allow_protected_root_mutation=True,
         )
         return out.strip()
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return ""
 
 
@@ -359,7 +358,7 @@ def main() -> bool:
         try:
             validate_path_within_project(project_root, project_root)
         except Exception as e:
-            raise DiscoveryError(f"Project root validation failed: {e}")
+            raise DiscoveryError(f'Project root validation failed: {e}') from e
 
         # Run discovery inside a cache context so classifications are fresh
         # on entry and don't leak stale state to subsequent operations.
@@ -395,8 +394,7 @@ def main() -> bool:
         Logger.info("[DISCOVERY] Agent discovery and verification completed successfully")
         return True
 
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except DiscoveryError as e:
+    except DiscoveryError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         Logger.error(f"[DISCOVERY] Discovery operation failed: {e}")
         return False
     except (ValueError, TypeError) as e:
@@ -524,8 +522,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
         return report
 
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         report.rejection_reason = f"Analysis failed: {e}"
         return report
 
@@ -556,15 +553,6 @@ def perform_deep_integrity_scan(
         except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            stats["invalid"] += 1
-            agent_entry["verification_status"] = {
-                "valid": False,
-                "role": "INVALID",
-                "class": None,
-                "methods": [],
-                "reason": "Path fails validate_path_within_project",
-            }
-            continue
         # Run Analysis
         report = analyze_agent_integrity(full_path)
 

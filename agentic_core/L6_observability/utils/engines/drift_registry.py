@@ -146,8 +146,8 @@ class DriftRegistry:
                 fh.write(json.dumps(entry.to_dict(), separators=(",", ":")) + "\n")
                 fh.flush()
                 os.fsync(fh.fileno())
-        except (OSError, TypeError, ValueError):
-            _logger.warning("DriftRegistry: failed to persist entry", exc_info=True)
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            _logger.warning("[DriftRegistry] Failed to persist drift registry: %s", exc, exc_info=True)
 
 
 _registry: DriftRegistry | None = None

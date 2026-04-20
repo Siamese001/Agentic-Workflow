@@ -64,8 +64,7 @@ for scan_dir in SCAN_DIRS:
                 with open(fp, "w", encoding="utf-8") as f:
                     f.write(new_src)
                 fixed += 1
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except SyntaxError as e:
+            except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
                 errors += 1
                 if errors <= 10:
                     print(f"SYNTAX ERROR after fix: {fp}: {e}")

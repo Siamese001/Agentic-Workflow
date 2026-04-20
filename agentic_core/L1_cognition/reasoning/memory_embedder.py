@@ -268,8 +268,7 @@ class HealingMemoryEmbedder:
 
             self._embedding_agent = _get_embedding_sovereign_agent()(Path.cwd())
             Logger.info("[HealingMemoryEmbedder] Embedding agent initialized")
-        # guardian: allow-silent-swallow
-        except (
+        except (  # guardian: allow-silent-swallow
             ImportError,
             RuntimeError,
             ValueError,
@@ -277,8 +276,6 @@ class HealingMemoryEmbedder:
             OSError,
         ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.warning(f"[HealingMemoryEmbedder] Embedding agent unavailable: {e}")
-            self._embedding_agent = None
 
     def embed_violation(self, violation: dict[str, Any]) -> list[float] | None:
         """
@@ -311,8 +308,7 @@ class HealingMemoryEmbedder:
             if embedding:
                 self.stats["embeddings_generated"] += 1
                 return embedding
-        # guardian: allow-silent-swallow
-        except (ImportError, RuntimeError, ValueError, TypeError, OSError) as e:
+        except (ImportError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[HealingMemoryEmbedder] Embedding failed: {e}")
             self.stats["errors"] += 1
         self.stats["fallback_hashes"] += 1
@@ -346,8 +342,7 @@ class HealingMemoryEmbedder:
             if embedding:
                 self.stats["embeddings_generated"] += 1
                 return embedding
-        # guardian: allow-silent-swallow
-        except (ImportError, RuntimeError, ValueError, TypeError, OSError) as e:
+        except (ImportError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[HealingMemoryEmbedder] Pattern embedding failed: {e}")
             self.stats["errors"] += 1
         self.stats["fallback_hashes"] += 1

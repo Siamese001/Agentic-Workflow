@@ -439,12 +439,6 @@ def run_classification_compliance_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="naming_compliance",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"naming_compliance scan failed: {exc}")
 
     # --- Check: territory_compliance ---
     try:
@@ -471,12 +465,6 @@ def run_classification_compliance_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="territory_compliance",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"territory_compliance scan failed: {exc}")
 
     # --- Finalize ---
     total_checks = len(result.checks)

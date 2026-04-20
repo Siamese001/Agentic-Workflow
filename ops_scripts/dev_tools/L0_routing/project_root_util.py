@@ -245,8 +245,7 @@ def get_project_root(start_path: str | None = None) -> Path:
             if probe.parent == probe:
                 break
             probe = probe.parent
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         pass
 
     raise RuntimeError(

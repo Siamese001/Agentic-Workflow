@@ -464,8 +464,7 @@ class BaseAgent(IAgent[InputT, OutputT]):
                 result.execution_time_ms = (time.time() - start_time) * 1000
                 try:
                     self.post_execute(input_data, context, result)
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     self._logger.warning(f"Post-execute hook failed: {e}")
                 return result
             # guardian: allow-silent-swallow

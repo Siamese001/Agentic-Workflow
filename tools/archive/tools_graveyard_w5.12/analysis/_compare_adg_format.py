@@ -53,8 +53,7 @@ for fname in sorted(os.listdir(EXTRACT_DIR)):
                         print(f"    [{k}]: {type(v).__name__} = {str(v)[:80]}")
             elif isinstance(data, list):
                 print(f"\n  {fname}: list({len(data)})  first item: {(str(data[0])[:120] if data else '?')}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"\n  {fname}: ERROR {e}")
     elif fname.endswith(".sqlite"):
         import sqlite3
@@ -91,13 +90,11 @@ for label, fpath in new_files.items():
                 if not snippet.rstrip().endswith("}") and (not snippet.rstrip().endswith("]"))
                 else snippet
             )
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             try:
                 with open(fpath, encoding="utf-8") as f:
                     data = json.load(f)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 print(f"\n  {fname}: ERROR {e}")
                 continue
         if isinstance(data, dict):

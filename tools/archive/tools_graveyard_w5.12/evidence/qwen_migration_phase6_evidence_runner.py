@@ -236,8 +236,7 @@ def main():
                             if normalized_path not in seen_targets:
                                 test_targets.append(["python", "-m", "pytest", "-q", normalized_path])
                                 seen_targets.add(normalized_path)
-                # guardian: allow-silent-swallow
-                except:
+                except:  # guardian: allow-silent-swallow
                     pass
     print("TEST_TARGETS:")
     for i, target in enumerate(test_targets):

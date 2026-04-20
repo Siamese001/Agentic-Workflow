@@ -56,8 +56,7 @@ for row in rows:
     # Parse AST and check if emits appear as actual call statements
     try:
         tree = ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         bad_placement.append((row["source_file"], "SYNTAX_ERROR"))
         continue
 

@@ -238,9 +238,9 @@ class CircuitBreaker:
                 success_count=self._success_count,
                 current_backoff=self._current_reset_timeout,
             )
-        except (ValueError, TypeError):
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow -- SL event emission: non-fatal, continues without tracking
             # System learning unavailable - continue without emission
-            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            pass
 
     def get_time_until_retry(self) -> float:
         """Get seconds until retry is allowed (for OPEN state)."""
@@ -280,7 +280,6 @@ class CircuitBreaker:
                     result_container["result"] = func(*args, **kwargs)
                 except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
-                    result_container["exception"] = e
                 finally:
                     execution_complete.set()
 

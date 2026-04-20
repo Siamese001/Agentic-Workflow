@@ -247,8 +247,9 @@ class FeatureExtractor:
                     elif line.startswith("class "):
                         return line.split("(")[0].replace("class ", "")
 
-        except _PHASE3_NON_FATAL_EXCEPTIONS:
-            pass
+        except (OSError, UnicodeDecodeError) as exc:  # guardian: allow-log-and-swallow -- file read helper, None returned on failure
+            import logging
+            logging.getLogger(__name__).debug("_extract_function_name: could not read %s: %s", file_path, exc)
 
         return None
 
@@ -294,8 +295,8 @@ class FeatureExtractor:
 
             return import_count + from_count
 
-        except _PHASE3_NON_FATAL_EXCEPTIONS:
-            return 0
+        except _PHASE3_NON_FATAL_EXCEPTIONS:  # guardian: allow-return-none-swallow -- feature extraction: best-effort, None is valid return on missing data
+            return None
 
     def _calculate_function_complexity(self, file_path: str, line_no: int) -> int:
         """Calculate function complexity score."""

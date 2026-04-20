@@ -367,8 +367,7 @@ class CompetitorReconAgent:
                 return self._create_targeted_hook(best_match, target_company)
             else:
                 return self._create_speed_hook(all_moves[0], target_company, candidate_skills)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error generating FOMO hook: {str(e)}")
             return None
 
@@ -388,8 +387,7 @@ class CompetitorReconAgent:
             if hook and hook.is_highly_relevant:
                 return f"P.S. {hook.hook_text}"
             return None
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error getting strategic P.S.: {str(e)}")
             return None
 
@@ -408,8 +406,7 @@ class CompetitorReconAgent:
             filtered = [c for c in competitors if c.lower() != target_company.lower()]
             logger.debug(f"Identified competitors for {target_company}: {filtered}")
             return filtered
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error identifying competitors: {str(e)}")
             return []
 
@@ -429,8 +426,7 @@ class CompetitorReconAgent:
                 return []
             logger.debug(f"Found {len(moves)} moves for {competitor}")
             return moves
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error gathering intel on {competitor}: {str(e)}")
             return []
 
@@ -465,8 +461,7 @@ class CompetitorReconAgent:
                                 break
             logger.debug(f"Found {len(matches)} skill-feature matches")
             return matches
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error finding skill matches: {str(e)}")
             return []
 

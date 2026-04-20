@@ -205,8 +205,6 @@ def move_test_to_canonical_location(source: pathlib.Path, target: pathlib.Path) 
         return True
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        print(f"Failed to move {source} to {target}: {e}")
-        return False
 
 
 def update_imports_in_test(test_file: pathlib.Path, old_location: pathlib.Path, new_location: pathlib.Path):

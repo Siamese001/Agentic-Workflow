@@ -578,8 +578,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             _wg.touch_file(path / "__init__.py")
             results["created"].append(rel_label)
             Logger.info(f"   [✓] CREATED: {rel_label}/")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"   [!] FAILED: {rel_label}: {e}")
             results["errors"].append(f"Failed to create {rel_label}: {e}")
 
@@ -911,8 +910,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
             else:
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             results["errors"].append(f"{py_file.name}: {e}")
             raise RuntimeError(f"L2 relocation failed for {py_file.name}") from e
 
@@ -1051,8 +1049,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     Logger.info(f"      [SKIPPED] User declined: {py_file.name}")
             else:
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             results["errors"].append(f"{py_file.name}: {e}")
 
     def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: dict[str, Any]) -> None:
@@ -1062,8 +1059,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             if not folder_path.exists():
                 Logger.info(f"      [✓] REMOVED empty folder: {folder_label}")
                 results["folders_removed"] += 1
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             results["errors"].append(f"Remove {folder_label}: {e}")
             raise RuntimeError(f"Cleanup empty folder failed for {folder_label}") from e
 
@@ -1473,8 +1469,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                         purged_count += 1
                     else:
                         Logger.error(f"      [!] ARCHIVE FAILED: {file_path.name} - {gk_result.error}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 errors.append(f"Failed to purge {file_path}: {e}")
                 raise RuntimeError(f"Failed to purge orphan file {file_path}") from e
 
@@ -1724,8 +1719,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
             return {**parent_result, **metrics}
 
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Hierarchy healing failed: {e}")
             return {**parent_result, "errors": parent_result.get("errors", 0) + 1}
         finally:
@@ -1941,8 +1935,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     else:
                         action["error"] = gk_result.error
                         results["errors"].append(f"Failed to move {filename}: {gk_result.error}")
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     action["error"] = str(e)
                     results["errors"].append(f"Failed to move {filename}: {e}")
 
@@ -2095,8 +2088,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     else:
                         action["error"] = gk_result.error
                         result["errors"].append(f"Failed to move {src_file}: {gk_result.error}")
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     action["error"] = str(e)
                     result["errors"].append(f"Failed to move {src_file}: {e}")
 
@@ -2109,8 +2101,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 if not root_folder.exists():
                     result["folder_removed"] = True
                     Logger.info(f"   [✓] REMOVED empty folder: {folder_name}/")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 result["errors"].append(f"Failed to remove {folder_name}/: {e}")
 
         return result
@@ -2155,8 +2146,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 action["applied"] = True
                 result["handled"] = True
                 Logger.info(f"   [✓] ADDED to .gitignore: {coverage_entry}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 action["error"] = str(e)
 
         result["actions"].append(action)

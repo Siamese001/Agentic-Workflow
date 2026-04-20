@@ -472,7 +472,7 @@ class PrecisionCircuitBreaker:
         except Exception as e:
             self._on_failure()
             self.total_failures += 1
-            raise e
+            raise e from e
 
     def _should_attempt_reset(self) -> bool:
         """Check if circuit should attempt reset with mathematical precision."""

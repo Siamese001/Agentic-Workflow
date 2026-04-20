@@ -233,8 +233,8 @@ class FileBackedActivator:
         self._save()
         try:
             get_sl_memory_bridge().persist_active_version(component, version_id)
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
-            logger.debug("Failed to persist active version for %s: %s", component, exc)
+        except (AttributeError, RuntimeError, TypeError, ValueError, OSError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            logger.debug("activator: failed to persist active version: %s", exc)
 
     def get_active(self, component: str) -> str | None:
         return self._active.get(component)

@@ -258,8 +258,7 @@ def enforce_root_hygiene(*, dry_run: bool = True, force: bool = False):
 
                     print(f"  - {item.name} -> {action}")
                     _safe_move(item, target, dry_run=dry_run, force=force)
-                # guardian: allow-silent-swallow
-                except (ValueError, TypeError) as e:
+                except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                     print(f"  [ERROR] Could not move {item.name}: {e}")
 
             elif item.is_dir():
@@ -276,8 +275,7 @@ def enforce_root_hygiene(*, dry_run: bool = True, force: bool = False):
             else:
                 root_scripts.rmdir()
                 print("[SUCCESS] Illegal 'scripts/' directory eliminated.")
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except OSError:
+        except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
             print("[WARNING] 'scripts/' not empty, manual check required.")
     else:
         print("[CHECK] Root 'scripts/' is clean.")

@@ -243,8 +243,7 @@ def generate_report():
         print(f"✅ Architecture Clean: {result['status']}")
     except RuntimeError as e:  # guardian: Runtime errors should be prevented with proper validation
         print(f"❌ Void Compliance Failed: {e}")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"⚠️ Scan completed with warnings: {e}")
     print()
     print("=" * 70)

@@ -177,8 +177,7 @@ def _get_commit_sha() -> str:
             timeout=DEFAULT_TIMEOUT,
         )
         return r.stdout.strip() if r.returncode == 0 else ""
-    # guardian: allow-silent-swallow
-    except (OSError, RuntimeError, ValueError):
+    except (OSError, RuntimeError, ValueError):  # guardian: allow-silent-swallow
         return ""
 
 
@@ -254,8 +253,7 @@ def load_or_scan(
                 logger.info("ADG cache %s: %s", cache_status, cache)
                 return ScanResult.from_dict(cached)
             logger.info("ADG cache miss (key changed): %s", cache)
-        # guardian: allow-silent-swallow
-        except (OSError, json.JSONDecodeError, ValueError) as exc:
+        except (OSError, json.JSONDecodeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.warning("ADG cache read error (%s): %s — running fresh scan", cache, exc)
     root = Path(repo_root) if repo_root else Path.cwd()
     scanner = ADGStaticScanner(repo_root=root)
@@ -266,8 +264,7 @@ def load_or_scan(
         payload["_cache_key"] = _cache_key(_SCANNER_VERSION, _SCHEMA_VERSION)
         cache.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         logger.info("ADG cache written: %s (%d edges)", cache, len(result.edges))
-    # guardian: allow-silent-swallow
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         logger.warning("ADG cache write failed: %s", exc)
     return result
 

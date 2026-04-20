@@ -192,8 +192,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                 agent_type="ReflectionAgent",
                 observations=["RG reflection agent with meta-learning and quality scoring"],
             )
-        # guardian: allow-silent-swallow
-        except (AttributeError, RuntimeError, ValueError, OSError) as e:
+        except (AttributeError, RuntimeError, ValueError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
             raise
 
@@ -248,8 +247,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                     to_entity="ResumeDocument",
                     relation_type="REFLECTS_ON",
                 )
-        # guardian: allow-silent-swallow
-        except (AttributeError, RuntimeError, ValueError, OSError) as e:
+        except (AttributeError, RuntimeError, ValueError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG reflection persistence skipped: {e}")
             raise
 
@@ -280,8 +278,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                         result = future.result(timeout=10)
                 else:
                     result = loop.run_until_complete(mcp.call_tool("brave_search", args))
-            # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow
                 result = {}
             if isinstance(result, dict) and result.get("results"):
                 Logger.info(
@@ -289,8 +286,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                 )
                 return result["results"][:3]
             return []
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] Brave Search skipped: {e}")
             return []
 

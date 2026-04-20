@@ -51,7 +51,6 @@ def main():
                     reverted += 1
                 except (ValueError, TypeError, RuntimeError) as e:
                     raise
-                    errors += 1
             else:
                 skipped += 1
         elif original_path.exists():

@@ -69,7 +69,7 @@ class ADGTraceReplayCoverageVerifier:
                 """)
                 return cursor.fetchall()
         except Exception as e:
-            raise TraceReplayCoverageError(f"Failed to get first-party modules: {e}")
+            raise TraceReplayCoverageError(f'Failed to get first-party modules: {e}') from e
 
     def _get_module_edges(self, module_id: int, relation_types: list[str]) -> list[dict[str, Any]]:
         """Get edges for a specific module by relation types."""
@@ -101,7 +101,7 @@ class ADGTraceReplayCoverageVerifier:
 
                 return results
         except Exception as e:
-            raise TraceReplayCoverageError(f"Failed to get module edges: {e}")
+            raise TraceReplayCoverageError(f'Failed to get module edges: {e}') from e
 
     def _analyze_execution_surface_coverage(self, module_id: int, module_name: str) -> dict[str, Any]:
         """Analyze trace/replay coverage for a single module."""
@@ -308,7 +308,7 @@ class ADGTraceReplayCoverageVerifier:
                 }
 
         except Exception as e:
-            raise TraceReplayCoverageError(f"Trace binding verification failed: {e}")
+            raise TraceReplayCoverageError(f'Trace binding verification failed: {e}') from e
 
     def _verify_hard_fail_transcript_requirements(self) -> dict[str, Any]:
         """Verify hard failures have proper transcript requirements."""
@@ -370,7 +370,7 @@ class ADGTraceReplayCoverageVerifier:
                 }
 
         except Exception as e:
-            raise TraceReplayCoverageError(f"Hard fail verification failed: {e}")
+            raise TraceReplayCoverageError(f'Hard fail verification failed: {e}') from e
 
     def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
         """Persist report atomically with parent directory creation."""

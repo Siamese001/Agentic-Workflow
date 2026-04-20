@@ -227,7 +227,7 @@ def measure_stage_timing(
                 status=status,
                 registry=registry,
             )
-        except (AttributeError, RuntimeError, TypeError, ValueError) as perf_exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as perf_exc:  # guardian: allow-log-and-swallow -- performance recording: non-fatal, logger.error already called
             logger.error("PERFORMANCE_RECORDING_FAILED stage=%s error=%s", stage_name, perf_exc)
 
 

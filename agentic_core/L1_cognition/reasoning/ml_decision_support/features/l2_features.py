@@ -610,7 +610,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
                     sensitivity_score += 0.4
                 elif time_to_deadline < 86400:  # Less than 1 day
                     sensitivity_score += 0.2
-            except ValueError:
-                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except ValueError:  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                pass
 
         return round(min(1.0, sensitivity_score), 3)

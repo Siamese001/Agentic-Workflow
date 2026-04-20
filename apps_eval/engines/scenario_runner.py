@@ -404,8 +404,7 @@ def _scenario_policy_hash_valid() -> tuple[ScenarioOutcome, float, str]:
             1.0,
             "PolicyHashEnforcer instantiated successfully",
         )  # guardian: Test exceptions should use proper test assertions
-    # guardian: allow-silent-swallow - optional dependency
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow - optional dependency
         return " SKIP ", _SKIP_SCORE, "agentic_core not available in eval env"
     except _SCENARIO_EXCEPTIONS as exc:
         return " FAIL ", 0.0, str(exc)

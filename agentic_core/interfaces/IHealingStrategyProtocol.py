@@ -45,7 +45,7 @@ class ChaosResilienceStrategy:
         try:
             from agentic_core.L4_state.memory import ValidationContext
             from agentic_core.L5_safety.reasoning.ChaosEngineeringAgent_validator import ChaosEngineeringAgent
-        except ImportError as exc:
+        except ImportError as exc:  # guardian: allow-return-none-swallow -- optional agent not available, graceful degradation
             Logger.warning("[ChaosResilienceStrategy] Could not import agent: %s", exc)
             self._initialized = True
             return

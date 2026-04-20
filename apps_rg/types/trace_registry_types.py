@@ -353,7 +353,6 @@ class TraceRegistry(MCPHardenedMixin):
                     f.write(json.dumps(entry) + "\n")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"Failed to persist trace: {e}")
 
     def _persist_failure(self, trace: AgentTrace) -> None:
         """Write failure details to disk (legacy method)."""

@@ -554,8 +554,7 @@ class SubatomicHop:
                 # Stage completed successfully
                 break
 
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 retry_count += 1
                 self.stage_retry_counts[stage] = retry_count
 
@@ -656,8 +655,7 @@ class SubatomicHop:
 
                 logger.debug(f"Applied prompt injections for hop type: {hop_type}")
 
-            # guardian: allow-silent-swallow
-            except (ImportError, ValueError, TypeError, RuntimeError) as e:
+            except (ImportError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
                 logger.error(f"Failed to apply prompt injections: {e}")
                 raise
 
@@ -793,8 +791,7 @@ class SubatomicHop:
 
             return kwargs
 
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to apply stage injections: {e}")
             return kwargs
 
@@ -822,13 +819,12 @@ class SubatomicHop:
             # Circuit is open - generation is failing
             logger.critical("Generation Circuit OPEN. Node failed.")
             # No fallback possible for generation - raise critical failure
-            raise CriticalServiceFailure("LLM Service Unreachable - circuit breaker open")
+            raise CriticalServiceFailure('LLM Service Unreachable - circuit breaker open') from None
 
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             # Other execution errors
             logger.error(f"Hop execution failed: {e}")
-            raise StageExecutionError(f"Failed to execute hop: {e}")
+            raise StageExecutionError(f'Failed to execute hop: {e}') from e
 
     async def _critique(self, **kwargs) -> dict[str, Any]:
         """Review and validate the output using Reflection Engine and Signal Enhancer."""
@@ -1001,7 +997,7 @@ class SubatomicHop:
                 # Clean up temp file if it exists
                 if temp_file.exists():
                     temp_file.unlink()
-                raise StageExecutionError(f"Failed to commit result: {e}")
+                raise StageExecutionError(f'Failed to commit result: {e}') from e
 
         return {"committed": True, "result": validated_output}
 
@@ -1041,8 +1037,7 @@ class SubatomicHop:
             await self.checkpoint_manager.save_checkpoint(checkpoint)
             self.checkpoints[checkpoint.stage] = checkpoint
             logger.debug(f"Saved secure checkpoint for stage {checkpoint.stage.value}")
-        # guardian: allow-silent-swallow
-        except (OSError, CheckpointIntegrityError, ValueError) as e:
+        except (OSError, CheckpointIntegrityError, ValueError) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to save secure checkpoint: {e}")
             raise
 
@@ -1071,8 +1066,7 @@ class SubatomicHop:
             self.checkpoint_manager.quarantine_all_checkpoints()
             logger.warning("Quarantined all checkpoints due to integrity failure")
             raise
-        # guardian: allow-silent-swallow
-        except (OSError, ValueError) as e:
+        except (OSError, ValueError) as e:  # guardian: allow-silent-swallow
             logger.warning(f"Failed to load secure checkpoint: {e}")
             raise
 
@@ -1105,8 +1099,7 @@ class SubatomicHop:
         for checkpoint_file in self.config.checkpoint_dir.glob(f"{self.config.hop_id}_*.json"):
             try:
                 checkpoint_file.unlink()
-            # guardian: allow-silent-swallow
-            except (OSError, PermissionError) as e:
+            except (OSError, PermissionError) as e:  # guardian: allow-silent-swallow
                 logger.warning(f"Failed to cleanup {checkpoint_file}: {e}")
                 raise
 

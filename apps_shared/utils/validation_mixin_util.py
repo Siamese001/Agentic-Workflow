@@ -217,8 +217,7 @@ class ValidationMixin:
                     metadata=metadata,
                 )
             passed = len(issues) == 0
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             issues.append(f"Validation error: {str(e)}")
             passed = False
         return ValidationResult(passed=passed, issues=issues, suggestions=suggestions, metadata=metadata)

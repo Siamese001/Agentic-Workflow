@@ -285,8 +285,7 @@ def scan_cross_layer_mutations(
 
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
             continue
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

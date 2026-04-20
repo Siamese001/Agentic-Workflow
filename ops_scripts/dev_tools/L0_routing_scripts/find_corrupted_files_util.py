@@ -197,8 +197,7 @@ def is_valid_python(content: str) -> bool:
     try:
         ast.parse(content)
         return True
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         return False
 
 
@@ -253,8 +252,7 @@ def main():
                                 print(f"UNFIXABLE: {py_file} (truncation doesn't fix syntax)")
                         else:
                             print(f"CORRUPTED: {py_file}")
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 print(f"ERROR: {py_file} - {e}")
 
     print("\n" + "=" * 60)

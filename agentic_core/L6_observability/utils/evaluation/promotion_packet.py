@@ -46,7 +46,7 @@ def _now_epoch() -> float:
     if get_clock is not None:
         try:
             return float(get_clock().now_epoch())
-        except (AttributeError, RuntimeError, TypeError, ValueError):
+        except (AttributeError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow -- clock epoch fallback: non-fatal, time.time() used as fallback
             pass
     return time.time()
 

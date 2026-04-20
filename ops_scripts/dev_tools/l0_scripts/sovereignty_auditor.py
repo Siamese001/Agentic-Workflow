@@ -194,7 +194,6 @@ class SovereigntyAuditor:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            self.naming_violations.append(f"{path.name}: AST Parse Error - {e}")
         try:
             spec = importlib.util.spec_from_file_location(module_name, path)
             if spec and spec.loader:
@@ -203,8 +202,7 @@ class SovereigntyAuditor:
                 spec.loader.exec_module(module)
         except ImportError as e:
             self.import_failures.append(f"{path.name}: {e}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             self.import_failures.append(f"{path.name}: Runtime Error - {e}")
 
     def run(self):

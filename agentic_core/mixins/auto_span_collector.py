@@ -306,7 +306,7 @@ class AutoSpanCollector:
             with span_context:
                 pass  # Span is created and automatically closed
 
-        except (AttributeError, RuntimeError) as e:
+        except (AttributeError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.debug(f"[AUTO_COLLECTOR] Failed to create Runtime ADG span: {e}")
 
     def flush_all_spans(self) -> int:

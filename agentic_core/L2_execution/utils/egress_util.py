@@ -227,8 +227,7 @@ class NetworkingUtility:
             self.blocked_count += 1
             Logger.warning(f"P8_BLOCK: Host {host} is not whitelisted")
             return EgressResult(status="FAIL", reason=f"Host {host} not in whitelist", host=host)
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"P8_ERROR: Failed to parse URL {url}: {e}")
             return EgressResult(status="FAIL", reason=f"Parse error: {str(e)}", host="unknown")
 
@@ -298,8 +297,7 @@ class NetworkingUtility:
                 "content": result,
                 "host": egress_result.host,
             }
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             Logger.warning("FETCH_FALLBACK: mcp4_fetch not available, returning mock")
             return {
                 "status": "mock_success",
@@ -307,8 +305,7 @@ class NetworkingUtility:
                 "content": f"Mock content for {url} (mcp4_fetch unavailable)",
                 "host": egress_result.host,
             }
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"FETCH_ERROR: Failed to fetch {url}: {e}")
             return {"status": "error", "url": url, "reason": str(e), "host": egress_result.host}
 

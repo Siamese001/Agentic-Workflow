@@ -143,8 +143,7 @@ def get_gap_files(layer, dim_config):
             # Check if file already has the emit function
             try:
                 src = open(fp, encoding="utf-8", errors="replace").read()
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except OSError:
+            except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
                 continue
             if dim_config["emit_func"] in src:
                 continue
@@ -159,8 +158,7 @@ def _has_wirable_functions(src):
     """Check if source has functions with body >= 3 lines."""
     try:
         tree = ast.parse(src)  # guardian: Syntax errors should be caught at parser level, not runtime
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         return False
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):

@@ -104,7 +104,7 @@ def _hash_block(code: str, use_ast: bool = True) -> str:
             tree = ast.parse(code)
             norm_tree = _normalize_ast_tree(tree)
             return hashlib.sha256(str(norm_tree).encode()).hexdigest()
-        except (SyntaxError, ValueError) as e:
+        except (SyntaxError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.debug(f"AST parsing failed, using text normalization: {e}")
 
     normalized = _normalize_code(code)

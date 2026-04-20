@@ -229,8 +229,6 @@ async def main():
         Logger.info(f"📊 TELEMETRY: {summary['total_spans']} Spans Recorded. Failures: {summary['failures']}")
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        Logger.critical(f"❌ SYSTEM CRASH: {e}", exc_info=True)
-        sys.exit(1)
 
 
 if __name__ == "__main__":

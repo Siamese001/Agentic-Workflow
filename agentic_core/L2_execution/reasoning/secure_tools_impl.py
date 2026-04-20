@@ -425,8 +425,7 @@ class SecureToolsImpl:
         except subprocess.TimeoutExpired:
             Logger.error(f"Command timed out: {command}")
             return "Command Error: Execution timed out (30s limit)."
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Command execution failed: {e}")
             return f"Command Error: {str(e)}"
 

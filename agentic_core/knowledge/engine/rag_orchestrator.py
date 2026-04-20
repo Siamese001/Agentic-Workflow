@@ -84,8 +84,7 @@ try:
     from agentic_core.knowledge.research_cache.cache_store_util import ResearchCache
     from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy_types import ALL_SKILLS, SKILL_TAXONOMY
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     ACTION_VERBS, STRONG_VERBS = ({}, [])
     SKILL_TAXONOMY, ALL_SKILLS = ({}, [])
     TextDocumentLoader = None
@@ -217,8 +216,7 @@ class SovereignRagOrchestrator:
                 "size": len(_embedding_cache),
                 "maxsize": _embedding_cache.maxsize,
             }
-        # guardian: allow-silent-swallow
-        except:
+        except (AttributeError, TypeError):
             self.embedding_cache_stats = lambda: {"size": 0, "maxsize": 0}
         try:
             from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
@@ -263,16 +261,14 @@ class SovereignRagOrchestrator:
 
             self.embedder = _BGEEmbedder()
             self.vector_store = _InMemVectorStore()
-        # guardian: allow-silent-swallow
-        except (ImportError, Exception):
+        except (ImportError, Exception):  # guardian: allow-silent-swallow
             self.embedder = None
             self.vector_store = None
         try:
             from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
 
             self.Bm25Store = get_bm25_store()
-        # guardian: allow-silent-swallow
-        except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):
+        except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow
             self.Bm25Store = None
         self.engine = None
 
@@ -333,8 +329,7 @@ class SovereignRagOrchestrator:
                     ],
                 )
             print(f"Indexed {len(text_chunks)} chunks for {doc_id}")
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             print(f"Document indexing failed: {e}")
 
     # guardian: allow-magic-config
@@ -353,8 +348,7 @@ class SovereignRagOrchestrator:
             from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
 
             _adg_confidence = _gbp(Path(__file__).resolve(), self.project_root).behavioral_score
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("rag_orchestrator: Exception swallowed at L344: %s", e)
@@ -374,8 +368,7 @@ class SovereignRagOrchestrator:
                     }
                     for i, res in enumerate(raw_results)
                 ]
-            # guardian: allow-silent-swallow
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
                 print(f"Vector search failed: {e}")
         if self.Bm25Store:
             bm25_candidates = self.Bm25Store.query(query, top_k=top_k * 3)
@@ -446,8 +439,7 @@ class SovereignRagOrchestrator:
 
             indices = json_lib.loads(response)
             return [candidates[i] for i in indices if i < len(candidates)][:top_k]
-        # guardian: allow-silent-swallow
-        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             print(f"Reranking failed: {e}")
             return candidates[:top_k]
 

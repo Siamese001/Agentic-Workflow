@@ -697,8 +697,7 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
                 new_returns = cst.Annotation(annotation=annotation)
                 updated_node = updated_node.with_changes(returns=new_returns)
                 self.modifications_made += 1
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                 pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         return updated_node
 

@@ -99,8 +99,7 @@ def analyze_file_with_ast(file_path: Path) -> dict:
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
                     result["imports"].append(node.module)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         result["error"] = str(e)
     return result
 

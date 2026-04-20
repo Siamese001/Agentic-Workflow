@@ -75,5 +75,6 @@
         "show_output": true
       }
     ]
-  }
+  },
+  "_note": "Claude alignment: keep hooks deterministic and compact; use scripts for fail-closed enforcement and audits, and keep heavy procedure in skills/workflows."
 }

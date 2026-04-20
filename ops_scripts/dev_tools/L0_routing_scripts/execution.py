@@ -190,8 +190,7 @@ class DAGStrategy(ExecutionStrategy):
                     results[step_id] = result
                     completed.add(step_id)
                     steps_executed += 1
-                # guardian: allow-silent-swallow
-                except (
+                except (  # guardian: allow-silent-swallow
                     RuntimeError,
                     ValueError,
                     TypeError,
@@ -274,8 +273,7 @@ class StateMachineStrategy(ExecutionStrategy):
                         current_state = steps[idx + 1].step_id
                     else:
                         current_state = "end"
-            # guardian: allow-silent-swallow
-            except (
+            except (  # guardian: allow-silent-swallow
                 RuntimeError,
                 ValueError,
                 TypeError,
@@ -351,8 +349,7 @@ class EventDrivenStrategy(ExecutionStrategy):
                         await event_queue.put(steps[idx + 1].step_id)
                     else:
                         await event_queue.put("complete")
-            # guardian: allow-silent-swallow
-            except (
+            except (  # guardian: allow-silent-swallow
                 RuntimeError,
                 ValueError,
                 TypeError,
@@ -410,8 +407,7 @@ class ReactiveStrategy(ExecutionStrategy):
                 results[step.step_id] = result
                 current_value = result
                 steps_executed += 1
-            # guardian: allow-silent-swallow
-            except (
+            except (  # guardian: allow-silent-swallow
                 RuntimeError,
                 ValueError,
                 TypeError,

@@ -49,7 +49,7 @@ def _resolve_mcp_registry_db_id() -> str | None:
     """
     try:
         payload = load_notion_databases()
-    except (FileNotFoundError, OSError, ValueError):
+    except (FileNotFoundError, OSError, ValueError):  # guardian: allow-return-none-swallow -- notion DB load: non-fatal, caller handles None
         return None
     for db in payload.get("databases", []):
         if db.get("key") == "mcp_registry":
@@ -176,7 +176,7 @@ def _find_existing_row(token: str, db_id: str, server_name: str) -> str | None:
         result = _notion_request("POST", f"/databases/{db_id}/query", token, payload)
         results = result.get("results", [])
         return results[0]["id"] if results else None
-    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError, KeyError):
+    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError, KeyError):  # guardian: allow-return-none-swallow -- notion query: non-fatal, caller handles None
         return None
 
 

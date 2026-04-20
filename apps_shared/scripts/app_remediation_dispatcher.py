@@ -195,8 +195,7 @@ def _run_spec(spec: AppGuardianSpec) -> AppHealResult:
             return _check_duplicate_stubs(spec)
         else:
             return AppHealResult.skipped(spec.check_id, spec.app, "no handler registered")
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent-swallow
         return AppHealResult.failed(spec.check_id, spec.app, str(exc))
 
 
@@ -261,8 +260,7 @@ def _check_layer_violations(spec: AppGuardianSpec) -> AppHealResult:
                 report.scope_widening_events,
             ),
         )
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent-swallow
         return AppHealResult.skipped(spec.check_id, spec.app, "ADG unavailable: %s" % exc)
 
 

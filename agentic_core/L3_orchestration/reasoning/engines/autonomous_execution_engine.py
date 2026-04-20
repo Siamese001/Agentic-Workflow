@@ -296,18 +296,6 @@ class autonomous_execution_engine:
             Logger.info("L3 MISSION COMPLETE: Canon state verified")
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
-            Logger.error(f"L3 MISSION FAILED: {e}")
-            self.consecutive_failures += 1
-            self.last_mission_result = {
-                "status": "failed",
-                "error": str(e),
-                "completed_at": datetime.utcnow().isoformat(),
-            }
-            if self.consecutive_failures > self.max_consecutive_failures:
-                Logger.critical(
-                    f"CIRCUIT BREAKER: {self.consecutive_failures} consecutive failures. Entering Safe Mode.",
-                )
-                self.running = False
 
     async def eternal_execution_cycle(self):
         """L3: Continuous validation and healing cycle"""
@@ -329,9 +317,6 @@ class autonomous_execution_engine:
                 self.save_state()
             except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 raise
-                Logger.error(f"L3 Execution cycle error: {e}")
-                self.consecutive_failures += 1
-                await asyncio.sleep(DEFAULT_SLEEP)
         Logger.warning("L3: Eternal execution cycle stopped (Safe Mode)")
 
     def get_execution_status(self) -> dict[str, Any]:

@@ -135,8 +135,7 @@ def wrap_file_read_block(filepath, error_lineno):
 
     try:
         ast.parse(new_src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         # Try simpler approach: just wrap the single line
         block = [lines[idx]]
         indented = ["    " + lines[idx]]

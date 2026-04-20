@@ -372,10 +372,6 @@ def timed(collector: MetricsCollector | None = None, operation_name: str | None 
                 return result
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                duration_ms = (time.perf_counter() - start) * 1000
-                if collector:
-                    collector.record_metric(name, duration_ms, {"success": False, "error": str(e)})
-                raise
 
         return wrapper
 

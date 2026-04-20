@@ -37,8 +37,7 @@ def delete_dashboard_files(inventory_file):
                 shutil.rmtree(dir_path)
                 deleted["directories"].append(dir_path)
                 print(f"✓ Deleted directory: {dir_path}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             deleted["errors"].append(f"Failed to delete {dir_path}: {e}")
             print(f"✗ Error deleting {dir_path}: {e}")
 
@@ -62,8 +61,7 @@ def delete_dashboard_files(inventory_file):
                 os.remove(file_path)
                 deleted["files"].append(file_path)
                 print(f"✓ Deleted file: {file_path}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             deleted["errors"].append(f"Failed to delete {file_path}: {e}")
             print(f"✗ Error deleting {file_path}: {e}")
 

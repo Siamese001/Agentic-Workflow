@@ -77,7 +77,7 @@ class OptimizedVLLMClient:
                 tokens_used=tokens_used,
                 latency_ms=(time.perf_counter() - started) * 1000.0,
             )
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- VLLM inference error boundary: all exceptions converted to VLLMResponse failure
             return VLLMResponse(
                 success=False,
                 text="",

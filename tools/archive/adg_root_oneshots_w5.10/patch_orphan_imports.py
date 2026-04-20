@@ -104,8 +104,7 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
     # Validate parse
     try:
         ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return f"SKIP(syntax:{e.lineno})", []
 
     # Find insertion point: after the last top-level import

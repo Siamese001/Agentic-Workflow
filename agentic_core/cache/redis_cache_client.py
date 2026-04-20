@@ -173,7 +173,7 @@ class DeterministicRedisCache:
                 self._clients[target_db] = client
                 self._connected = True
                 return client
-            except redis.ConnectionError as e:
+            except redis.ConnectionError as e:  # guardian: allow-return-none-swallow -- Redis connection failure: non-fatal, caller handles None
                 logger.warning("Redis connection failed for db=%s: %s", target_db, e)
                 self._connected = False
                 return None

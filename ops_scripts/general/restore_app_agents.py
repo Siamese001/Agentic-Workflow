@@ -67,8 +67,7 @@ def extract_original_path(file_path: Path) -> str:
         match = re.search(r"# (apps_(?:lic|rg)[^\s]+\.py) was depth", content)
         if match:
             return match.group(1).replace("\\", "/")
-    # guardian: allow-silent-swallow
-    except (OSError, UnicodeDecodeError, re.error):
+    except (OSError, UnicodeDecodeError, re.error):  # guardian: allow-silent-swallow
         pass
 
     # Fallback: reconstruct from archive path
@@ -172,8 +171,7 @@ def main():
             print(f"  ✓ Restored: {rel_original}")
             restored += 1
 
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"  ✗ ERROR: {rel_original} - {e}")
             errors += 1
 

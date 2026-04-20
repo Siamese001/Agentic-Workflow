@@ -225,8 +225,7 @@ def extract_docstring(node) -> str:
     try:
         doc = ast.get_docstring(node)
         return doc[:200] if doc else ""
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return ""
 
 
@@ -311,8 +310,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
     try:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         return FileAnalysis(path=str(file_path), archive_folder=archive_folder, has_syntax_error=True, loc=0)
     except OSError:
         return None
@@ -421,8 +419,7 @@ def build_current_codebase_index(dirs: list[str]) -> dict[str, set[str]]:
                                 index["methods"].add(item.name.lower())
                     elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         index["functions"].add(node.name.lower())
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 continue
 
     return index

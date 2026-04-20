@@ -37,7 +37,7 @@ def _get_pid_best_effort(command_line: str, cwd: str) -> int | None:
 
         try:
             proc_iter = psutil.process_iter(["pid", "cmdline", "cwd"])
-        except (psutil.AccessDenied, OSError):
+        except (psutil.AccessDenied, OSError):  # guardian: allow-return-none-swallow -- psutil access denied: non-fatal, caller handles None
             return None
         for proc in proc_iter:
             try:
@@ -48,7 +48,7 @@ def _get_pid_best_effort(command_line: str, cwd: str) -> int | None:
                         return proc.info["pid"]
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow -- psutil optional: non-fatal, PID lookup skipped
         pass
     return None
 
@@ -58,7 +58,7 @@ def _append_log(record: dict) -> None:
         process_log.parent.mkdir(parents=True, exist_ok=True)
         with open(process_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- process log write: non-fatal, fail-open
         pass
 
 

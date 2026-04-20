@@ -179,8 +179,7 @@ def wire_module(filepath, missing_dims):
 
     try:
         src = fp.read_text(encoding="utf-8", errors="replace")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
         return "SKIP", "unreadable", []
 
     basename = fp.stem

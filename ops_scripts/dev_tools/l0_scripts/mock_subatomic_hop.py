@@ -401,8 +401,7 @@ async def main() -> Any:
         print("  3. Integrate with your actual resume generation pipeline")
         print("  4. Monitor metrics and adjust concurrency levels")
         print("  5. Scale up gradually to production workloads")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         Logger.error(f"Pipeline failed: {e}", exc_info=True)
         print(f"\n❌ Error: {e}")
         return 1

@@ -138,8 +138,7 @@ class ExecutionOrchestrator:
             except (ValueError, KeyError, AttributeError, TypeError, RuntimeError) as e:
                 Logger.error(f"[L0-ORCH] L3 orchestration failed: {e}")
                 orchestration = {"error": f"L3 orchestration failed: {e}", "completed": False}
-            # guardian: allow-silent-swallow
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
                 Logger.critical(f"[L0-ORCH] Critical L3 orchestration error: {e}")
                 orchestration = {"error": f"Critical L3 orchestration error: {e}", "completed": False}
                 raise
@@ -240,7 +239,7 @@ class ExecutionOrchestrator:
                         "state": "d2_cache_hit",
                         "result": _d2_hit,
                     }
-            except (ImportError, RuntimeError) as _e:
+            except (ImportError, RuntimeError) as _e:  # guardian: allow-log-and-swallow -- D2 semantic cache check: optional, debug logged
                 Logger.debug("[L0-ORCH] D2 semantic cache check skipped: %s", _e)
         if path.value in self._L3_PATHS:
             return self._delegate_to_l3(path, payload, cycle, risk)

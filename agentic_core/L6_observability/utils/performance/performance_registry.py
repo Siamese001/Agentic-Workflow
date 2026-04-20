@@ -62,7 +62,7 @@ def _now_epoch() -> float:
     if get_clock is not None:
         try:
             return float(get_clock().now_epoch())
-        except (AttributeError, RuntimeError, TypeError, ValueError):
+        except (AttributeError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
             pass
     return time.time()
 

@@ -210,8 +210,6 @@ def fix_test_imports(test_path: pathlib.Path) -> bool:
 
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        print(f"Failed to fix {test_path}: {e}")
-        return False
 
 
 def fix_critical_tests():

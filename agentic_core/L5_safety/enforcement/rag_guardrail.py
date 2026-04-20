@@ -282,8 +282,7 @@ class RagGuardrail:
             if not confident_docs:
                 print("   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.")
             return confident_docs[:top_k]
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"   [!] BGE reranking failed: {e}")
             return documents
 

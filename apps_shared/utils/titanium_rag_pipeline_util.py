@@ -602,8 +602,7 @@ class TitaniumRAGPipeline:
                     f"Graph entities: {len(fusion_result.graph_results.entities)}",
                 )
 
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 self.stats["graphrag_fallbacks"] += 1
                 logger.error(f"GraphRAG fusion failed: {e}")
                 # Continue with vector results only

@@ -229,8 +229,7 @@ class ElevatorShaftConsistencyEnforcer:
                     _adg_violates,
                     _bp.behavioral_score,
                 )
-        # guardian: allow-silent-swallow
-        except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug(

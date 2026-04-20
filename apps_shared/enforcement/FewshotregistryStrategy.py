@@ -306,8 +306,7 @@ class FewShotRegistry(BaseModel):
                         )
                         self.add_example(example)
                 logger.info(f"Loaded examples from {file_path}")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.error(f"Failed to load examples from {file_path}: {e}")
 
     def save_to_directory(self, directory: Path) -> None:

@@ -80,8 +80,7 @@ try:
         ValidatorOrchestrator,
         get_validator_orchestrator,
     )
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
     class ValidatorOrchestrator:
         """Stub orchestrator when real module is unavailable."""

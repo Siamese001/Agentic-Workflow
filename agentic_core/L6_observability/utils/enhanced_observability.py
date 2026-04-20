@@ -152,7 +152,7 @@ class EnhancedObservability:
         try:
             psutil.cpu_percent(interval=None)
             psutil.Process().cpu_percent(interval=None)
-        except _OBS_PSUTIL_EXCEPTIONS:  # guardian: allow-log-and-swallow -- psutil warmup: optional, non-fatal if CPU percent unavailable at init
+        except _OBS_PSUTIL_EXCEPTIONS:  # guardian: allow-silent-swallow -- psutil warmup: optional, non-fatal if CPU percent unavailable at init
             pass
 
         # Initialize default health checks and alert thresholds

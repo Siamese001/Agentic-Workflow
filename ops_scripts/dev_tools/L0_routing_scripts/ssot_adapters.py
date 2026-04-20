@@ -469,8 +469,7 @@ def build_adapters(agents: dict[str, Any], project_root: Path) -> dict[str, Any]
         except TypeError:
             try:
                 agent_instance = agent_cls()
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 continue
         adapters[key] = adapter_cls(agent_instance)
     return adapters

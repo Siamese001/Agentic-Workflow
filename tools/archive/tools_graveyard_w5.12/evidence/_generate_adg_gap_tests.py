@@ -497,8 +497,7 @@ def main() -> None:
         try:
             info = inspect_module(src_path)
             content = generate_test_content(mod_path, info, fan_in=entry.fan_in)
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-silent-swallow
             print(f"  [ERROR] {mod_path}: {exc}")
             errors += 1
             continue

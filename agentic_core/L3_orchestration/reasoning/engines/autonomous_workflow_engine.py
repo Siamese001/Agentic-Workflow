@@ -306,7 +306,7 @@ class AutonomousWorkflowEngine:
             )
             try:
                 action, params = await self.policy_fn(goal, result.steps, last_obs)
-            except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow -- policy execution: non-fatal, error recorded and loop terminates
                 result.error = f"Policy error at iteration {iteration}: {exc}"
                 result.stop_signal = StopSignal.ERROR
                 Logger.error("autonomous_policy_error", extra={"iteration": iteration, "error": str(exc)})
@@ -324,7 +324,7 @@ class AutonomousWorkflowEngine:
                 observation = await self.env.execute_action(action, params)
                 step.observation = observation
                 consecutive_failures = 0
-            except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow -- action execution: non-fatal, step error recorded and failure count incremented
                 step.error = str(exc)
                 observation = {"error": str(exc)}
                 consecutive_failures += 1

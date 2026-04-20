@@ -32,8 +32,7 @@ def run_command(argv: list[str], cwd: Path) -> tuple[str, int]:
         return (output, result.returncode)
     except subprocess.TimeoutExpired:
         return ("ERROR: Command timed out after 60 seconds", 1)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return (f"ERROR: {e}", 1)
 
 

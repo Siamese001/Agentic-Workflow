@@ -264,20 +264,15 @@ class Historian:
                 with open(self.file_history_file) as f:
                     self.file_history = json.load(f)
                 LOGGER.info(f"Loaded history for {len(self.file_history)} files")
-            # guardian: allow-silent-swallow
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
                 raise
-                LOGGER.error(f"Failed to load file history: {e}")
-                self.file_history = {}
 
     def _save_memory(self):
         """Save historical data to memory files."""
         try:
             _get_write_gateway().write_json(self.file_history_file, self.file_history, indent=2)
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
-            LOGGER.error(f"Failed to save file history: {e}")
 
     def calculate_file_hash(self, file_path: Path) -> str:
         """
@@ -295,8 +290,7 @@ class Historian:
                 for chunk in iter(lambda: f.read(4096), b""):
                     hash_md5.update(chunk)
                 return hash_md5.hexdigest()
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             LOGGER.error(f"Failed to hash {file_path}: {e}")
             return ""
 

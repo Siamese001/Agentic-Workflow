@@ -97,7 +97,7 @@ def _mark_notion_called(tool_name: str, tool_class: str) -> None:
         elif tool_class == "read" and state.get("notion_last_write"):
             state["notion_read_after_write"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- notion session state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -106,7 +106,7 @@ def _append_notion_audit(record: dict) -> None:
         notion_audit_log.parent.mkdir(parents=True, exist_ok=True)
         with open(notion_audit_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- notion audit log: non-fatal, fail-open
         pass
 
 
@@ -170,7 +170,7 @@ def _append_gitkraken_write_audit(record: dict) -> None:
         gitkraken_write_audit_log.parent.mkdir(parents=True, exist_ok=True)
         with open(gitkraken_write_audit_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- gitkraken audit log: non-fatal, fail-open
         pass
 
 
@@ -183,7 +183,7 @@ def _mark_task_created() -> None:
             state = {}
         state["task_created"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task created state: non-fatal, fail-open
         pass  # fail-open: don't disrupt audit on state file error
 
 
@@ -200,7 +200,7 @@ def _mark_task_started() -> None:
         if count >= 2:
             state["lessons_captured"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task started state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -213,7 +213,7 @@ def _mark_task_decomposed() -> None:
             state = {}
         state["task_decomposed"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task decomposed state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -228,7 +228,7 @@ def _mark_memory_recalled() -> None:
         state = json.loads(session_state.read_text(encoding="utf-8")) if session_state.exists() else {}
         state["memory_recalled"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- memory recalled state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -237,7 +237,7 @@ def _append_log(record: dict) -> None:
         audit_log.parent.mkdir(parents=True, exist_ok=True)
         with open(audit_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- audit log append: non-fatal, fail-open
         pass
 
 

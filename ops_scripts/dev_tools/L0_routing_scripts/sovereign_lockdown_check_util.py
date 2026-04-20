@@ -223,8 +223,7 @@ def main() -> int:
         print(f"[ERROR] Import Error: {e}")
         print("Ensure agentic_core is properly installed.")
         return 2
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         print(f"[ERROR] Verification Error: {e}")
         return 2
 

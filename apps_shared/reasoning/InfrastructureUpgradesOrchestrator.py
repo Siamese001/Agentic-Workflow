@@ -233,8 +233,7 @@ class InfrastructureUpgradesOrchestrator:
                             causation_id=event.id,
                         ),
                     )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle content generated: {e}")
 
     async def _handle_cache_miss(self, event: SystemEvent) -> None:
@@ -248,8 +247,7 @@ class InfrastructureUpgradesOrchestrator:
             query = payload.get("query", "")
             cache_type = payload.get("cache_type", "unknown")
             logger.debug(f"cache miss for {cache_type}: {query[:50]}...")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle cache miss: {e}")
 
     async def _handle_tone_violation(self, event: SystemEvent) -> None:
@@ -263,8 +261,7 @@ class InfrastructureUpgradesOrchestrator:
             violations = payload.get("violations", [])
             violation_types = [v.get("type", "unknown") for v in violations]
             logger.info(f"Tone violations detected: {violation_types}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle tone violation: {e}")
 
     async def _verify_content_facts(self, content: str, trace_id: str) -> list[VerificationResult]:
@@ -425,17 +422,6 @@ class InfrastructureUpgradesOrchestrator:
                 },
             }
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            await self.infrastructure.event_bus.publish(
-                "events.upgraded_generation_failed",
-                SystemEvent(
-                    type=EventType.ERROR_OCCURRED,
-                    trace_id=trace_id,
-                    source_component="InfrastructureUpgradesOrchestrator",
-                    payload={"error": str(e)},
-                    causation_id=trace_id,
-                ),
-            )
             raise
 
     async def load_profile_facts(self, profile_data: dict[str, Any]) -> None:

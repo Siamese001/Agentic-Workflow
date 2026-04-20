@@ -357,8 +357,6 @@ def main():
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            errors.append(f"Parse error in {py_file.name}: {e}")
-            continue
 
         # Find all agent classes - expanded detection
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

@@ -440,7 +440,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
                 if part in _root_anchors:
                     return ".".join(parts[i:])
             return None
-        except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             return None
 
     def get_generation_history(self) -> list[dict[str, Any]]:

@@ -450,7 +450,7 @@ class ToolIntentExecutor(L2ExecutionAgent):
                     "recoverable": False,
                 },
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- tool execution error boundary: all exceptions converted to L2PhaseResult failure
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,

@@ -486,8 +486,7 @@ class ProvenanceTracker:
                 if data.get("artifact_id") == artifact_id:
                     return ArtifactLineage(**data)
             return None
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to get lineage: {e}")
             return None
 
@@ -536,8 +535,7 @@ class ProvenanceTracker:
                 results.append(ArtifactLineage(**data))
                 if len(results) >= limit:
                     break
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to search lineage: {e}")
         return results
 
@@ -607,8 +605,7 @@ class ProvenanceTracker:
                 "active_contexts": len(self._active_context),
                 "stats": self._stats,
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return {"status": "unhealthy", "error": str(e), "stats": self._stats}
 
 

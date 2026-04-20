@@ -163,7 +163,6 @@ def check_past_failures(task: str) -> str:
     except (AttributeError, KeyError, ValueError, TypeError) as e:
         logging.getLogger(__name__).warning(f"State analysis error: {e}")
         return "Unable to check past failures"
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except (OSError, RuntimeError, MemoryError) as e:
+    except (OSError, RuntimeError, MemoryError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
         logging.getLogger(__name__).error(f"Critical state analysis error: {e}")
         return "Unable to check past failures"

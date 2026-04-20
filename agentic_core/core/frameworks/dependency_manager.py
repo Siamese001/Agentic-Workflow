@@ -190,7 +190,7 @@ class DependencyManager:
         except Exception as e:  # guardian: allow-broad-exception -- instance creation: broad catch required to wrap any error into DependencyError, re-raises immediately
             self._record_failure(name)
             suggestion = self._get_suggestion(name)
-            raise DependencyError(f"Failed to create instance of '{name}': {e}", name, suggestion)
+            raise DependencyError(f"Failed to create instance of '{name}': {e}", name, suggestion) from e
 
     def _create_instance(self, name: str) -> Any:
         """Create an instance of the dependency."""
@@ -319,10 +319,10 @@ class OptionalDependency:
         try:
             self.dependency = get_dependency(self.name)
             return self.dependency
-        except (DependencyError, CircuitBreakerError):
+        except (DependencyError, CircuitBreakerError):  # guardian: allow-return-none-swallow -- context manager exit: non-fatal, caller handles None as unavailable dependency
             if self.fallback is not None:
                 return self.fallback
-            return None  # guardian: allow-return-none-swallow -- context manager exit: non-fatal, caller handles None as unavailable dependency
+            return None
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         return False  # Don't suppress exceptions

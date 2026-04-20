@@ -226,8 +226,6 @@ def move_test_file(source: pathlib.Path, target: pathlib.Path, dry_run: bool = T
         return True
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        print(f"Failed to move {source}: {e}")
-        return False
 
 
 def update_imports_in_moved_test(test_file: pathlib.Path):
@@ -260,7 +258,6 @@ def update_imports_in_moved_test(test_file: pathlib.Path):
 
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        print(f"Failed to update imports in {test_file}: {e}")
 
 
 def main():

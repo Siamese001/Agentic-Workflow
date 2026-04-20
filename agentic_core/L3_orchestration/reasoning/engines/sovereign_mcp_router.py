@@ -300,7 +300,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             except (RuntimeError, ValueError, TypeError) as wiki_e:
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
                                 return {"status": "l2_deepwiki_unavailable", "reason": str(wiki_e)}
-                except (ImportError, AttributeError) as e:
+                except (ImportError, AttributeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.debug(
                         f"DeepWiki MCP unavailable: {e}"
                     )  # guardian: allow-log-and-swallow -- DeepWiki MCP: optional routing target, non-fatal

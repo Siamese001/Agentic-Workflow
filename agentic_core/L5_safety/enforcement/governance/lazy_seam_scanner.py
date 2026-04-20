@@ -197,7 +197,7 @@ def layer_of_path(path: Path, agentic_root: Path) -> int | None:
     """Extract layer number from a path."""
     try:
         rel = path.relative_to(agentic_root)
-    except ValueError:
+    except ValueError:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         return None
     parts = rel.parts
     if not parts:

@@ -208,7 +208,7 @@ class L6ObservabilityBase(SovereignBaseAgent):
                     "adg_layer_violations": len(getattr(_idx, "layer_violations", [])),
                     "adg_orphan_modules": len(getattr(_idx, "orphan_modules", [])),
                 }
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError) as e:
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.debug("L6ObservabilityBase.collect_metrics degraded gracefully: %s", e)
         return {"metrics": {}, "timestamp": None, **_adg_health}
 

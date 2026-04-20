@@ -452,7 +452,7 @@ class RetrievalProfileActivationGate:
                 component_name="activation-gate",
                 created_utc=now_utc,
             )
-        except (AttributeError, TypeError) as e:
+        except (AttributeError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.debug(f"Failed to write activation event to L4 store: {e}")
 
     def _compute_activation_digest(

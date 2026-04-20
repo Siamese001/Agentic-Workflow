@@ -1,5 +1,5 @@
 {
-  "_note": "VERSION-CONTROLLED REFERENCE ONLY. The authoritative Windsurf MCP config read at startup is ~/.codeium/windsurf/mcp_config.json. Changes here are synced to global by .windsurf/scripts/post_write_mcp_config_sync.py. Edit this file; the hook propagates to global.",
+  "_note": "VERSION-CONTROLLED REFERENCE ONLY. The authoritative Windsurf MCP config read at startup is ~/.codeium/windsurf/mcp_config.json. Changes here are synced to global by .windsurf/scripts/post_write_mcp_config_sync.py. Edit this file; the hook propagates to global. Claude alignment: keep MCP definitions tool-centric; keep usage procedures in skills, invariants in rules, and deterministic health or safety checks in hooks/scripts. Prefer local-first retrieval and exact or structural lookup before broad semantic expansion.",
   "mcpServers": {
     "GitKraken": {
       "command": "${env:GITKRAKEN_GK_PATH}",

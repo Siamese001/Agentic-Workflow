@@ -560,8 +560,7 @@ for mod_path, fan_in in VIOLATIONS:
     try:
         info = inspect_source(src_path)
         content = generate(mod_path, info, fan_in)
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent-swallow
         print(f"  [ERROR] {mod_path}: {exc}")
         errors += 1
         continue

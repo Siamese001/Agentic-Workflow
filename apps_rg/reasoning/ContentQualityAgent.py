@@ -320,8 +320,7 @@ class ContentQualityAgent(RGAgentBase):
                 issues.append(
                     f"Low skill extraction confidence ({skill_analysis.extraction_result.confidence_score:.2f})",
                 )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             issues.append(f"Skill validation failed: {str(e)}")
         return issues
 
@@ -392,8 +391,7 @@ class ContentQualityAgent(RGAgentBase):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"ContentQualityAgent heal() failed: {str(e)}",

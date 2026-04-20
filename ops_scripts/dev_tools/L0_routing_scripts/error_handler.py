@@ -346,8 +346,7 @@ class UnifiedWorkflowEngine:
             self.metrics.avg_latency = self.metrics.total_time / self.metrics.total_workflows
             result.metrics["execution_time"] = elapsed
             return result
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             self.metrics.failed_workflows += 1
             return await self.error_handler.handle_error(e, context, "abort")
         finally:

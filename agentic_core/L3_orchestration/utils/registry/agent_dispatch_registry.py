@@ -470,7 +470,7 @@ class AgentDispatchRegistry:
                         "handoff_reason": f"{caller}->{target_class}.{method}",
                     },
                 )
-            except (  # guardian: allow-broad-exception allow-log-and-swallow -- coordination ledger update best-effort: non-fatal, dispatch continues
+            except (  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallowallow-log-and-swallow -- coordination ledger update best-effort: non-fatal, dispatch continues
                 MissingCoordinationLedger,
                 Exception,
             ) as _cl_exc:

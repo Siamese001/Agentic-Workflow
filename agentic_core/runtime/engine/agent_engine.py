@@ -247,8 +247,7 @@ class AgentEngine:
                     trace_id=manifest.correlation_id,
                     agent_id="agent_engine",
                 )
-            # guardian: allow-silent-swallow
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
 
         state = AgentState(task_id=task_id, user_input=user_input)

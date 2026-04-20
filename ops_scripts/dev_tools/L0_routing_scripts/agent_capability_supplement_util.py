@@ -241,8 +241,7 @@ def extract_capabilities_from_source(source: str, class_node: ast.ClassDef) -> d
             caps["semantic_tags"].add("git_integration")
         try:
             body_source = ast.unparse(item.body) if hasattr(ast, "unparse") else ""
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError):
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow
             body_source = ""
         lower_body = body_source.lower()
         if (
@@ -417,8 +416,7 @@ def analyze_supplementation():
             class_node = next(
                 n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == agent_name
             )
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"  [!] Parse error {agent_name}: {e}")
             continue
         caps = extract_capabilities_from_source(source, class_node)

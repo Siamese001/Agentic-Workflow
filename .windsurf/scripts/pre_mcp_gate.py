@@ -203,7 +203,7 @@ def _read_session_state() -> dict:
         if session_state.exists():
             data = json.loads(session_state.read_text(encoding="utf-8"))
             return data if isinstance(data, dict) else {}
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- session state read: non-fatal, empty dict returned
         pass
     return {}
 
@@ -233,7 +233,7 @@ def _mark_memory_recalled() -> None:
         state["max_memory_block_attempts"] = 0
         session_state.parent.mkdir(parents=True, exist_ok=True)
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- memory recalled state: non-fatal, fail-open
         pass  # fail-open: worst case we block again next call
 
 
@@ -467,7 +467,7 @@ def _check_sqlite_access(repo_root: Path, needs_write: bool) -> tuple[bool, str]
         row = c.execute("PRAGMA journal_mode").fetchone()
         journal_mode = row[0] if row else "unknown"
         c.close()
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow -- SQLite journal probe: non-fatal, diagnostics best-effort
         pass
 
     diag["journal_mode"] = journal_mode
@@ -906,7 +906,7 @@ def check_otel_gate() -> int:
             "For live tracing: start OpenTelemetry Collector.",
             file=sys.stderr,
         )
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- otel health check: non-fatal, fail-open
         pass  # network unavailable — fail-open
 
     return 0
@@ -1137,7 +1137,7 @@ def _purge_stale_session_states() -> None:
         try:
             if f.stat().st_mtime < cutoff:
                 f.unlink(missing_ok=True)
-        except OSError:
+        except OSError:  # guardian: allow-silent-swallow -- stale state purge: non-fatal, best-effort cleanup
             pass  # best-effort cleanup — never block the gate
 
 

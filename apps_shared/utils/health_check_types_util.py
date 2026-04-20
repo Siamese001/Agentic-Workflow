@@ -336,8 +336,7 @@ class HealthChecker:
             result = check_fn()
             result.duration_ms = (time.perf_counter() - start) * 1000
             return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return CheckResult(
                 name=name,
                 status=HealthStatus.UNHEALTHY,
@@ -421,15 +420,13 @@ class CommonChecks:
                     status=HealthStatus.HEALTHY,
                     message=f"Redis connected at {host}:{port}",
                 )
-            # guardian: allow-silent-swallow - optional dependency
-            except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow - optional dependency
                 return CheckResult(
                     name="redis",
                     status=HealthStatus.DEGRADED,
                     message="Redis client not installed",
                 )
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 return CheckResult(
                     name="redis",
                     status=HealthStatus.UNHEALTHY,
@@ -462,8 +459,7 @@ class CommonChecks:
                         message=f"Low disk space: {free_gb:.2f} GB free",
                         metadata={"free_gb": round(free_gb, 2)},
                     )
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 return CheckResult(
                     name="disk_space",
                     status=HealthStatus.UNKNOWN,
@@ -499,8 +495,7 @@ class CommonChecks:
                     )
             except ImportError:
                 return CheckResult(name="memory", status=HealthStatus.UNKNOWN, message="psutil not installed")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 return CheckResult(
                     name="memory",
                     status=HealthStatus.UNKNOWN,

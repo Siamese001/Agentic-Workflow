@@ -172,7 +172,7 @@ class EnhancedRagRetrievalCache:
                 dimensions=1536,
             )  # guardian: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
 
-        except (  # guardian: allow-broad-exception allow-log-and-swallow allow-return-none-swallow -- embedding client init best-effort: non-fatal, caller falls back to basic caching
+        except (  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallowallow-log-and-swallow allow-return-none-swallow -- embedding client init best-effort: non-fatal, caller falls back to basic caching
             EmbeddingDisabledError,
             NotImplementedError,
             Exception,

@@ -212,8 +212,6 @@ def main() -> int:
     # guardian: allow-silent-swallow
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        print(f"ERROR: {exc}", file=sys.stderr)
-        return 1
 
     guardian = result.get("guardian_result", {})
 

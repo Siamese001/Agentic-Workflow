@@ -212,8 +212,7 @@ def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         class_files[node.name].append(str(py_file))
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 pass
 
     return class_files
@@ -249,8 +248,7 @@ def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> 
 
                 if all_redundant and len(file_classes) > 0:
                     redundant.append(str(py_file))
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 pass
 
     return redundant
@@ -310,8 +308,7 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
                         low_value.append(str(py_file))
                         continue
 
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 pass
 
     return low_value
@@ -394,8 +391,7 @@ def main(*, dry_run: bool = True, force: bool = False) -> int:
                 continue
             target.unlink()
             deleted += 1
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError, OSError) as e:
+        except (ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
             print(f"  ✗ Failed: {Path(f).name}: {e}")
 
     if dry_run:

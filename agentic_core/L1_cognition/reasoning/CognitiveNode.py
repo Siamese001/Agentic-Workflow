@@ -247,8 +247,7 @@ class CognitiveNode:
             from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
 
             self.meta_learner = MetaLearningAgent()
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             self.meta_learner = None
         try:
             from agentic_core.L1_cognition.reasoning.SemanticMemory import SemanticMemory
@@ -331,8 +330,7 @@ class CognitiveNode:
                 latency_ms=latency_ms,
                 success=True,
             )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError, TypeError, OSError) as e:
+        except (RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
             latency_ms = (get_clock().now_epoch() - start_time) * 1000
             return CognitiveResult(
                 output=f"Error: {str(e)}",
@@ -348,8 +346,7 @@ class CognitiveNode:
         try:
             results = self.semantic_memory.query(query, top_k=3)
             return results
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError, TypeError, OSError):
+        except (RuntimeError, ValueError, TypeError, OSError):  # guardian: allow-silent-swallow
             return []
 
     def _compute_mission_reward(self, output: str, plan: dict, reasoned: dict) -> float:

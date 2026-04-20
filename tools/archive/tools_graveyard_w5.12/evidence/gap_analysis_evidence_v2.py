@@ -181,8 +181,7 @@ def run_cmd(argv, cwd=None, timeout=DEFAULT_TIMEOUT):
         return (cmd_str, r.stdout, r.stderr, r.returncode)
     except subprocess.TimeoutExpired:
         return (cmd_str, "", f"TIMEOUT after {timeout}s", -1)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return (cmd_str, "", str(e), -1)
 
 

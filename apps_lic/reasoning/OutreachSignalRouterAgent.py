@@ -256,8 +256,7 @@ try:
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._mixin_init()
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
     class MCPHardenedMixin:
         def __init__(self, *args, **kwargs):
@@ -571,9 +570,6 @@ class OutreachHealingCycle:
                     failed_agents.append(agent.name)
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                agents_executed.append(agent.name)
-                failed_agents.append(agent.name)
-                self.ctx.record_result(agent.name, passed=False, details=str(e))
         rollback_triggered = self._check_rollback_conditions()
         if rollback_triggered:
             self._execute_rollback()

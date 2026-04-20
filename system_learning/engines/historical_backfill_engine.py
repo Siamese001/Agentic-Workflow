@@ -211,9 +211,9 @@ def _load_json_lenient(path: Path) -> dict[str, Any] | None:
     fixed = re.sub(r"\\(?![\"\\\/bfnrtu])", r"\\\\", raw)
     try:
         return json.loads(fixed)
-    except json.JSONDecodeError as exc:
+    except json.JSONDecodeError as exc:  # guardian: allow-return-none-swallow -- file parse: non-fatal, caller skips unreadable files
         logger.warning("[Backfill] Could not parse %s: %s", path.name, exc)
-        return None  # guardian: allow-return-none-swallow -- file parse: non-fatal, caller skips unreadable files
+        return None
 
 
 # ── Wave 3a: JSONL → corpus ───────────────────────────────────────────────────
@@ -328,8 +328,7 @@ def backfill_compliance_success_rates(
             from system_learning.engines.healing_success_rate_store import get_default_store
 
             store = get_default_store()
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.debug("[Backfill] HealingSuccessRateStore not available, skipping.")
             return {}
 

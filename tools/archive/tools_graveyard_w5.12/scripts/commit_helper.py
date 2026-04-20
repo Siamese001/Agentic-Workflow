@@ -64,6 +64,5 @@ else:
 
 try:
     os.remove(msg_file)
-# guardian: allow-silent-swallow - acceptable exception handling
-except OSError:
+except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
     pass

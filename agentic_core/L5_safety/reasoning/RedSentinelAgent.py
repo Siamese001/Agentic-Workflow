@@ -299,8 +299,7 @@ class RedSentinelAgent(SovereignBaseAgent):
             except json.JSONDecodeError:
                 LOGGER.warning("Failed to parse LLM MCP response, using defaults")
                 return self._get_default_hostile_inputs()
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             LOGGER.error(f"Failed to generate hostile inputs via MCP: {e}")
             return self._get_default_hostile_inputs()
 
@@ -368,8 +367,7 @@ class RedSentinelAgent(SovereignBaseAgent):
                 log_data["fuzz_tests"] = log_data["fuzz_tests"][-1000:]
             _wg.write_json(self.audit_path, log_data, indent=2)
             LOGGER.info(f"RedSentinelAgent: Logged fuzz results to {self.audit_path}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             LOGGER.error(f"Failed to log fuzz results: {e}")
 
     # guardian: allow-type-erasure
@@ -406,8 +404,7 @@ class RedSentinelAgent(SovereignBaseAgent):
                     results["functions_tested"] += 1
                     results["vulnerabilities_found"] += fuzz_result.get("vulnerabilities_found", 0)
                     results["details"].append(fuzz_result)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             LOGGER.error(f"Error scanning {file_path}: {e}")
             results["error"] = str(e)
         return results

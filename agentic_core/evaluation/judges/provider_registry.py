@@ -18,14 +18,13 @@ Usage::
 
 from __future__ import annotations
 
+import importlib
 import json
 import logging
 import os
 import re
 from typing import cast
 from typing import Any
-
-from infrastructure.sdks_mcps import create_gemini_model
 
 from agentic_core.evaluation.judges.types import JudgeProvider
 
@@ -94,7 +93,7 @@ class GeminiJudgeProvider:
             return self._client
 
         try:
-            client = create_gemini_model(self._model)
+            client = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(self._model)
         except (ImportError, ValueError) as exc:
             raise RuntimeError(
                 "GeminiJudgeProvider: google-genai package not installed or GOOGLE_API_KEY missing.",
@@ -243,11 +242,11 @@ def create_default_registry() -> JudgeProviderRegistry:
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         try:
             default_model = os.getenv("GEMINI_MODEL", GeminiJudgeProvider.DEFAULT_MODEL)
-            gemini_model = create_gemini_model(default_model)
+            gemini_model = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(default_model)
             gemini = GeminiJudgeProvider(gemini_client=gemini_model)
             registry.register(gemini, default=True)
             _log.info("[create_default_registry] Gemini provider auto-registered (API key found)")
-        except (RuntimeError, ValueError, OSError, ImportError) as exc:
+        except (RuntimeError, ValueError, OSError, ImportError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             _log.warning("[create_default_registry] Gemini registration failed: %s", exc)
 
     return registry

@@ -338,8 +338,7 @@ class InfrastructureOrchestrator:
                         model_version,
                         payload.get("prompt"),
                     )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle artifact generated event: {e}")
 
     async def _handle_error_occurred(self, event: SystemEvent) -> None:
@@ -356,8 +355,7 @@ class InfrastructureOrchestrator:
                 event.source_component,
                 event.payload.get("error", "Unknown error"),
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle error event: {e}")
 
     async def _handle_agent_completed(self, event: SystemEvent) -> None:
@@ -377,8 +375,7 @@ class InfrastructureOrchestrator:
                     usage.get("output_tokens", 0),
                     usage.get("cost", 0.0),
                 )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle agent completed event: {e}")
 
     async def execute_with_infrastructure(
@@ -473,29 +470,6 @@ class InfrastructureOrchestrator:
                 "lineage": lineage.to_dict() if sources else None,
             }
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            await self.event_bus.publish(
-                "events.error_occurred",
-                SystemEvent(
-                    type=EventType.ERROR_OCCURRED,
-                    trace_id=trace_id,
-                    source_component="InfrastructureOrchestrator",
-                    payload={"error": str(e)},
-                    causation_id=trace_id,
-                ),
-            )
-            dlq = await get_dead_letter_queue()
-            await dlq.add_failed_envelope(
-                SystemEvent(
-                    type=EventType.WORKFLOW_FAILED,
-                    trace_id=trace_id,
-                    source_component="InfrastructureOrchestrator",
-                    payload={"error": str(e)},
-                ),
-                FailureReason.PROCESSING_ERROR,
-                "InfrastructureOrchestrator.execute_with_infrastructure",
-                str(e),
-            )
             raise
 
     async def get_system_health(self) -> dict[str, Any]:

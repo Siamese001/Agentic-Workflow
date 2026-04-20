@@ -274,11 +274,11 @@ def analyze_file_complexity(file_path: str, max_complexity: int = 10) -> list[di
                             "message": f"Function '{node.name}' has complexity {complexity} (max {max_complexity})",
                         },
                     )
-    except (
+    except (  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         SyntaxError,
         FileNotFoundError,
         OSError,
-    ):  # guardian: Multiple exceptions (SyntaxError, FileNotFoundError) need specific handling
+    ):
         import logging
 
         logging.getLogger(__name__).debug("complexity_analyzer_util: SyntaxError swallowed at L276: %s", e)

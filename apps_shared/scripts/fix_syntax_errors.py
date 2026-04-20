@@ -234,8 +234,7 @@ def fix_file(filepath: Any) -> Any:
             return (True, "Fixed")
         else:
             return (False, f"Still broken: {error}")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return (False, f"Error: {str(e)}")
 
 
@@ -245,13 +244,11 @@ def main() -> Any:
     failed_count: Any = 0
     try:
         excluded_dirs: Any = ConfigurationService().excluded_dirs
-    # guardian: allow-silent-swallow
-    except:
+    except Exception:  # guardian: allow-silent-swallow
         excluded_dirs: Any = [".git", "__pycache__", "venv"]
     try:
         logger_instance: Any = ConfigurationService().Logger
-    # guardian: allow-silent-swallow
-    except:
+    except Exception:  # guardian: allow-silent-swallow
         logger_instance: Any = logging.getLogger(__name__)
     for root, dirs, files in tqdm(os.walk("."), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]

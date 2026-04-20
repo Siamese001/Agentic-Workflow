@@ -12,8 +12,6 @@ try:
     from jinja2 import Environment, FileSystemLoader, TemplateError, TemplateSyntaxError
 except ImportError as e:
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
-    print("ERROR: Jinja2 not installed. Run: pip install jinja2")
-    sys.exit(1)
 
 
 def initialize_jinja_environment(template_dir: Path):

@@ -285,7 +285,7 @@ def propose_rag_param_changes(
     try:
         assert_cooldown_ok(last_update, now_utc, cooldown_policy)
         assert_min_sample_size(n_obs, sample_policy)
-    except (ValueError, AssertionError, DampeningViolation) as e:
+    except (ValueError, AssertionError, DampeningViolation) as e:  # guardian: allow-return-none-swallow -- dampening: non-fatal, caller skips proposal
         # Dampening violated - no proposal
         logging.getLogger(__name__).debug(f"Dampening check failed: {e}")
         return None

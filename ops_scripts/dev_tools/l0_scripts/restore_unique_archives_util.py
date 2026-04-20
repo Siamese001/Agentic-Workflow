@@ -86,8 +86,7 @@ def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
                         classes.add(node.name.lower())
                     elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         functions.add(node.name.lower())
-            # guardian: allow-silent-swallow
-            except:
+            except Exception:  # guardian: allow-silent-swallow
                 pass
 
     return classes, functions, file_contents
@@ -237,8 +236,7 @@ def main():
                 file_hash = hashlib.md5(content.encode()).hexdigest()
                 if file_hash in file_hashes:
                     continue  # Exact duplicate
-            # guardian: allow-silent-swallow
-            except:
+            except Exception:  # guardian: allow-silent-swallow
                 continue
 
             # Analyze file

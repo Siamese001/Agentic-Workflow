@@ -617,7 +617,7 @@ def telemetry_traced(
 
             try:
                 result = func(self, *args, **kwargs)
-            except Exception as exc:  # guardian: allow-broad-exception -- preserves wrapped method semantics
+            except Exception as exc:  # guardian: allow-broad-exception -- preserves wrapped method semantics; emit_on_error=False path returns None
                 try:
                     emitter.end_operation(
                         context,

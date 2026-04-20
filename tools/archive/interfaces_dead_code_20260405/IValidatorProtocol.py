@@ -239,8 +239,7 @@ class AdversarialValidator:
                 "threat_assessment": result.get("threat_assessment", {}),
                 "probes_executed": result.get("probes_executed", 0),
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"[AdversarialValidator] Validation failed: {e}")
             return {
                 "valid": False,
@@ -313,8 +312,7 @@ class BoundaryValidator:
                 "recommendations": result.get("recommendations", []),
                 "tests_executed": result.get("tests_executed", 0),
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"[BoundaryValidator] Validation failed: {e}")
             return {"valid": False, "errors": [f"Validation error: {str(e)}"], "recommendations": []}
 

@@ -703,8 +703,6 @@ class RecursiveOrchestrator:
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            Logger.error(f"[HEAL] RecursiveOrchestrator healing failed: {e}")
-            metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
 

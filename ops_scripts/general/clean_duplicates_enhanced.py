@@ -176,8 +176,7 @@ def aggressive_cleanup():
                 shutil.rmtree(item)
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
-            # guardian: allow-silent-swallow
-            except (OSError, PermissionError) as e:
+            except (OSError, PermissionError) as e:  # guardian: allow-silent-swallow
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
                 raise
     temp_patterns = SOVEREIGN_EXCLUDED_FOLDERS
@@ -202,8 +201,7 @@ def aggressive_cleanup():
                 shutil.rmtree(pycache_path)
                 Logger.info(f"🗑️ PURGED DIRECTORY: {pycache_path}")
                 purged_count += 1
-            # guardian: allow-silent-swallow
-            except (OSError, PermissionError) as e:
+            except (OSError, PermissionError) as e:  # guardian: allow-silent-swallow
                 Logger.error(f"❌ Failed to delete directory {pycache_path}: {e}")
                 raise
     return purged_count
@@ -243,8 +241,7 @@ def organize_structure():
                             shutil.move(file_path, target_path)
                             Logger.info(f"📁 Moved {file} to {target_dir}/")
                             moved_count += 1
-                    # guardian: allow-silent-swallow
-                    except (OSError, PermissionError, shutil.Error) as e:
+                    except (OSError, PermissionError, shutil.Error) as e:  # guardian: allow-silent-swallow
                         Logger.error(f"❌ Failed to move {file}: {e}")
                         raise
     Logger.info(f"\n✨ Reorganization complete. Moved {moved_count} files.")
@@ -282,8 +279,7 @@ def extract_functions(filepath):
                     },
                 )
         return functions
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         Logger.error(f"❌ Failed to parse {filepath}: {e}")
         return []
 
@@ -349,8 +345,7 @@ def _adg_startup_warning() -> None:
                 f"Signals: {sorted(_apsigs) or 'none'}",
                 stacklevel=2,
             )
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         pass
 
 
@@ -383,8 +378,7 @@ def purge_everything(
                 shutil.rmtree(item)
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
-            # guardian: allow-silent-swallow
-            except (OSError, PermissionError) as e:
+            except (OSError, PermissionError) as e:  # guardian: allow-silent-swallow
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
                 raise
     for root, _dirs, files in tqdm(os.walk("."), desc="Processing", unit="item"):
@@ -395,8 +389,7 @@ def purge_everything(
                     os.remove(file_path)
                     Logger.info(f"🗑️ Purged File: {file_path}")
                     purged_count += 1
-                # guardian: allow-silent-swallow
-                except (OSError, PermissionError) as e:
+                except (OSError, PermissionError) as e:  # guardian: allow-silent-swallow
                     Logger.error(f"❌ Failed to delete {file_path}: {e}")
                     raise
     if aggressive:

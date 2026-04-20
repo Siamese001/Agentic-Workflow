@@ -182,8 +182,7 @@ def _adg_bootstrap() -> None:
         if report.route_mode == "HUMAN_REVIEW":
             _log.error("[ADG] route_mode=HUMAN_REVIEW — manual review required before dispatch")
             sys.exit(1)
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent-swallow
         _log.warning("[ADG] bootstrap unavailable: %s", exc)
 
 

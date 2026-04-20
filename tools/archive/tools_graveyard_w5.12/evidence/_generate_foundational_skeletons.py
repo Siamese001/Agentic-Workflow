@@ -680,8 +680,7 @@ for mod_path in adg_only_high:
     try:
         info = inspect_source(src_path)
         content = generate_foundational_test(mod_path, info, fan_in.get(mod_path, 0))
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent-swallow
         print(f"  [ERROR] {mod_path}: {exc}")
         errors += 1
         continue

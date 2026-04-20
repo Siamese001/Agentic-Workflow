@@ -429,8 +429,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                                 Logger.info(f"Socratic Judge marked eval as false positive: {file_path}")
                         else:
                             violations["evals"].append(f"Line {i}: {line.strip()}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"Error scanning file {file_path}: {e}")
         return violations
 
@@ -483,8 +482,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                     )
                 ]
                 code_snippet = "\n".join(safe_lines)[:500]
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError):
+            except (RuntimeError, OSError):  # guardian: allow-silent-swallow
                 code_snippet = "<unreadable>"
             prompt = f"Role: Socratic Judge - Expert Code Security Reviewer\n\nContext: {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet (sanitized, 500 chars):\n{code_snippet}\n\nAnswer ONLY 'YES' (real violation) or 'NO' (false positive)."
             result_dict = await asyncio.wait_for(
@@ -512,8 +510,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
             verdict = "YES"
             reason = "timeout"
             Logger.error(f"Socratic Judge timed out (5s) for: {file_path}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             verdict = "YES"
             reason = f"error: {e}"
             Logger.error(f"Socratic Judge (MCP) error: {e}")
@@ -610,8 +607,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                         if file_violations:
                             violations_found += len(file_violations)
                             all_violations.extend(file_violations)
-                    # guardian: allow-silent-swallow
-                    except (RuntimeError, OSError) as e:
+                    except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                         Logger.error(f"  Error scanning {py_file}: {e}")
                         errors += 1
             if violations_found > 0:

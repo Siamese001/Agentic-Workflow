@@ -280,9 +280,9 @@ class StateManager:
             try:
                 with open(file_path, encoding="utf-8") as f:
                     return json.load(f)
-            except (json.JSONDecodeError, OSError) as e:
+            except (json.JSONDecodeError, OSError) as e:  # guardian: allow-return-none-swallow -- state read: non-fatal, caller handles None as missing state
                 Logger.error(f"Failed to read state {key}: {e}")
-                return None  # guardian: allow-return-none-swallow -- state read: non-fatal, caller handles None as missing state
+                return None
 
     def delete_state(self, key: str) -> bool:
         """Atomically delete state data and manifest entry.

@@ -4,6 +4,18 @@ One-sentence summary of what this plan accomplishes.
 
 ---
 
+
+## Evidence Sources
+
+| Source | Why needed | Status |
+|---|---|---|
+| `.windsurf/` rule / skill / workflow | governing repo procedure | 🔲 |
+| Exact files / symbols | direct repo evidence | 🔲 |
+| ADG / MCP evidence | structural or runtime proof | 🔲 |
+| External source (only if needed) | freshness or missing local evidence | 🔲 |
+
+---
+
 ## Wave Structure
 
 | Waves | Metric | Scope | Checkpoint | Tokens |
@@ -111,3 +123,11 @@ If things go wrong:
 |---|---|---|
 | [Metric 1] | [Target] | [How to verify] |
 | [Metric 2] | [Target] | [How to verify] |
+
+## Claude Alignment Checks
+
+- Keep always-on rules lean; place detailed procedures in skills or workflows.
+- Retrieve local or scoped evidence before synthesis.
+- Prefer exact or structural matches before broad semantic expansion.
+- For high-risk outputs, extract evidence or quotes before summarizing.
+- Reserve deterministic enforcement for hooks or scripts, not template prose.

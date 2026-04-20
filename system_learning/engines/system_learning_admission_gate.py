@@ -513,8 +513,8 @@ class SystemLearningCacheAdmissionGate:
             else:
                 _emit_captures_pattern("p3lm", "system_learning_admission_gate", "denial_recorded")
 
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
-            logger.debug("Failed to record admission decision: %s", exc)
+        except (AttributeError, RuntimeError, TypeError, ValueError, OSError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            logger.debug("system_learning_admission_gate: admission decision record failure: %s", exc)
 
     def get_metrics(self) -> dict[str, Any]:
         """Get admission gate metrics."""

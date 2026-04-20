@@ -209,11 +209,11 @@ def scan_sensitive_content(file_path: Path) -> list[str]:
         for pattern in tqdm(sensitive_patterns, desc="Processing", unit="item"):
             if re.search(pattern, content):
                 violations.append(f"Sensitive pattern detected: {pattern}")
-    except (
+    except (  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         UnicodeDecodeError,
         PermissionError,
         OSError,
-    ):  # guardian: File operations with encoding need error-specific handling
+    ):
         import logging
 
         logging.getLogger(__name__).debug("artifacts_guard: UnicodeDecodeError swallowed at L209: %s", e)

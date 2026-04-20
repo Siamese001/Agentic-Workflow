@@ -202,8 +202,7 @@ class DeepBrainHarvester:
             result = bmg_embed_text(text)
             if result:
                 return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"Error generating embedding: {e}")
         return [0.0] * 1024
 
@@ -366,8 +365,6 @@ def main() -> Any:
     # guardian: allow-silent-swallow
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        Logger.error(f"❌ Error: {e}")
-        sys.exit(1)
 
 
 if __name__ == "__main__":

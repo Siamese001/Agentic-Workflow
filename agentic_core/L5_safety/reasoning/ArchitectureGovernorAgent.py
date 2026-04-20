@@ -252,8 +252,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     "orphan_modules": _raw.get("orphan_modules", []),
                     "upward_mutations": _raw.get("upward_mutations", []),
                 }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug(
@@ -399,8 +398,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Heal operation failed: {e}")
             return {
                 "status": "failed",
@@ -557,8 +555,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         Logger.warning(
                             f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}",
                         )
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.error(f"[{agent_name}] SSOT Cleanup Sub-routine failed: {e}")
             return {
                 "violations_found": violations_found,
@@ -673,10 +670,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "suggestion": "Relocate to approved subfolder (reasoning/, enforcement/, validators/, etc.)",
                             },
                         )
-                # guardian: allow-silent-swallow
-                except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
+                except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     raise
-                    Logger.warning(f"Hierarchy cross-check failed for {root_name}: {e}")
                 for violation in tqdm(report.violations, desc="Processing", unit="item"):
                     if "must end with 'Agent'" in violation.message:
                         if "'Error'" in violation.message or "'Exception'" in violation.message:
@@ -720,8 +715,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         "target_layer": None,
                     }
                     violation_details.append(violation_dict)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Guardian scan failed: {e}")
             total_errors += 1
         return {
@@ -775,8 +769,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 reason += f" to {decision.target_path}"
             reason += f" (confidence: {decision.confidence:.2f})"
             return (False, reason)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"Cognitive triage failed, using fallback: {e}")
             return (False, "File outside sovereign territories (cognitive triage unavailable)")
 
@@ -887,8 +880,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             else:
                 Logger.info(f"    [RECOMMENDATION] {fix.fix_type}: {fix.new_import}")
                 return False
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"    ❌ Gravity repair failed: {e}")
             return False
 
@@ -935,8 +927,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     else:
                         Logger.warning(f"    ⚠️ Rename failed: {result.error}")
                         return False
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     Logger.error(f"    ❌ Rename failed: {e}")
                     return False
             else:
@@ -1061,8 +1052,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     archived_count += 1
                 else:
                     Logger.warning(f"  [DEDUP] Failed to archive {file_path.name}: {result.error}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.error(f"  [DEDUP] Error archiving {file_path.name}: {e}")
         return archived_count
 
@@ -1154,10 +1144,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 relative_path = str(file_path.relative_to(self.project_root)).replace("\\", "/")
                 file_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()
                 manifest["files"][relative_path] = file_hash
-            # guardian: allow-silent-swallow
-            except (OSError, RuntimeError, ValueError, TypeError) as e:
+            except (OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 raise
-                Logger.warning(f"Skipping file {file_path.name} in baseline: {e}")
         _wg.ensure_dir(self.baseline_dir)
         baseline_path = self.baseline_dir / "golden_baseline.json"
         temp_path = baseline_path.with_suffix(".tmp")
@@ -1192,8 +1180,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "severity": "CRITICAL",
                         },
                     )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"Drift check failed: {e}")
         return violations
 
@@ -1390,10 +1377,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "severity": "ERROR",
                         },
                     )
-        # guardian: allow-silent-swallow
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
-            Logger.warning(f"Unified Audit: Hierarchy ingestion failed: {e}")
         try:
             from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
 
@@ -1411,10 +1396,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "severity": "CRITICAL",
                             },
                         )
-        # guardian: allow-silent-swallow
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
-            Logger.warning(f"Unified Audit: Architecture ingestion failed: {e}")
         audit_results["stats"]["violations_found"] = len(audit_results["violations"])
         audit_results["target_territories"] = target_territories
         return audit_results
@@ -1542,7 +1525,6 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             else:
                 Logger.warning(f"    [COGNITIVE] Unknown action: {decision.action}")
                 return False
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"    [COGNITIVE] Error processing disposition: {e}")
             return False

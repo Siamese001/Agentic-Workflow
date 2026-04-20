@@ -165,8 +165,7 @@ def repository_get_file_content(file_path: Any) -> Any:
             return f"Error: File '{file_path}' does not exist."
         with open(file_path, encoding="utf-8") as f:
             return f.read()
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return f"Error reading file: {e}"
 
 
@@ -180,8 +179,7 @@ def repository_list_files(directory: Any = ".") -> Any:
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         return [str(f) for f in get_python_files(Path(directory))]
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return f"Error listing files: {e}"
 
 
@@ -197,8 +195,7 @@ def repository_save_file(file_path: Any, content: Any) -> Any:
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
         return f"Success: File '{file_path}' saved."
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return f"Error writing file: {e}"
 
 

@@ -80,7 +80,12 @@ def load_activation_record(artifact_dir: Path) -> ActivationRecord | None:
             manual_review_passed=bool(data.get("manual_review_passed", False)),
             replay_binding_present=bool(data.get("replay_binding_present", False)),
         )
-    except (ValueError, KeyError, TypeError, json.JSONDecodeError) as _load_err:  # guardian: allow-return-none-swallow -- load_activation_record: malformed JSON returns None by contract, callers treat None as absent/shadow mode
+    except (
+        ValueError,
+        KeyError,
+        TypeError,
+        json.JSONDecodeError,
+    ) as _load_err:  # guardian: allow-return-none-swallow -- load_activation_record: malformed JSON returns None by contract, callers treat None as absent/shadow mode
         logging.getLogger(__name__).warning("Activation record malformed, treating as absent: %s", _load_err)
         return None
 

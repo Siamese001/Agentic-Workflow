@@ -482,8 +482,7 @@ class TokenBucketRateLimiter(RateLimiter):
                     await self.cleanup()
                 except asyncio.CancelledError:
                     break
-                # guardian: allow-silent-swallow
-                except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+                except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     logger.error(f"Rate limiter cleanup error: {e}")
 
         try:

@@ -195,8 +195,7 @@ class AutonomousSovereignCore:
         self.running = True
         try:
             from ..L3_orchestration.engines.adaptive_learning import create_adaptive_learning_engine
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
             def create_adaptive_learning_engine():
                 return None
@@ -284,8 +283,7 @@ class AutonomousSovereignCore:
                 status = self.l2_resource.get_resource_status()
                 if status["global_budget_remaining"] < 10:
                     print(f"   [L2] Low resource budget: {status['global_budget_remaining']}")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 print(f"   [!] Executive Worker Error: {e}")
             finally:
                 self.event_queue.task_done()

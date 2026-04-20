@@ -180,8 +180,6 @@ try:
 except ImportError as e:
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
-    class SubatomicTestingMixin:
-        pass
 
 
 class DomainPlannerOutput:
@@ -334,8 +332,6 @@ class DomainPlannerAgent(L3OrchestrationBase):
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[{agent_name}] Healing failed: {e}")
-            metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
         return metrics
@@ -445,8 +441,6 @@ class RiskAssessorAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[{agent_name}] Healing failed: {e}")
-            metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
         return metrics
@@ -557,8 +551,6 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[{agent_name}] Healing failed: {e}")
-            metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
         return metrics
@@ -701,8 +693,6 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[{agent_name}] Healing failed: {e}")
-            metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
         return metrics
@@ -862,8 +852,6 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[{agent_name}] Healing failed: {e}")
-            metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
         return metrics

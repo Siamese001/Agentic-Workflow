@@ -246,14 +246,12 @@ class ReActEngine:
         try:
             observation = await act_fn(action, action_input)
             step.observation = observation
-        except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
+        except (RuntimeError, ValueError, TypeError) as e:
             Logger.error(
                 "react_action_error",
                 extra={"trace_id": trace_id, "step": step_num, "action": action, "error": str(e)},
             )
-            step.observation = f"Error: {str(e)}"
+            raise
 
         return step
 
@@ -353,9 +351,7 @@ class ReActEngine:
                 },
             )
 
-        except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
+        except (RuntimeError, ValueError, TypeError) as e:
             Logger.warning(
                 "react_reflection_error",
                 extra={
@@ -363,6 +359,7 @@ class ReActEngine:
                     "error": str(e),
                 },
             )
+            raise
 
 
 def create_react_engine(

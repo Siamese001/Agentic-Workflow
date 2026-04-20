@@ -457,17 +457,6 @@ class SubatomicHop:
                 total_cost += self.governor.track("tool_execution", 10, 10)
             except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 raise
-                self.telemetry.record(
-                    TraceEvent(
-                        trace_id=trace_id,
-                        span_id=f"{self.id}_airlock_blocked",
-                        ROLE=self.role,
-                        event_type="AIRLOCK_BLOCKED",
-                        PAYLOAD={"tool": tool_name, "error": str(e)},
-                        TIMESTAMP=time.time(),
-                    ),
-                )
-                raise
         self.telemetry.record(
             TraceEvent(
                 trace_id=trace_id,

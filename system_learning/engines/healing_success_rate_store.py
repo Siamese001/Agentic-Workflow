@@ -250,7 +250,7 @@ class HealingSuccessRateStore:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
             get_sl_memory_bridge().persist_healing_success_rate(error_signature, rate, count)
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- persist healing rate: non-fatal, logger.debug already called
             logger.debug(
                 "Failed to persist healing success rate for %s: %s",
                 error_signature,

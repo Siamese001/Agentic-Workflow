@@ -194,7 +194,6 @@ def main(*, dry_run: bool = True, force: bool = False) -> int:
         except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            sys.exit(1)
     moved_count = 0
     missing_count = 0
     for rel_path in tqdm(TARGETS, desc="Processing", unit="item"):

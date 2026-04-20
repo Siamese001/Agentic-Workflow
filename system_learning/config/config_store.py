@@ -169,7 +169,7 @@ def _atomic_write_json(
     except BaseException:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         try:
             os.close(fd)
-        except OSError as e:
+        except OSError as e:  # guardian: allow-log-and-swallow -- fd cleanup: non-fatal
             import logging
 
             logging.getLogger(__name__).debug("config_store: OSError swallowed at L152: %s", e)

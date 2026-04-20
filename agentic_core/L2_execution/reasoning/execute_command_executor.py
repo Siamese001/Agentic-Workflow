@@ -462,8 +462,7 @@ def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None =
         success: Any = result.returncode == 0
         output: Any = result.stdout if result.stdout else result.stderr
         return (success, output)
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         return (False, str(e))
 
 

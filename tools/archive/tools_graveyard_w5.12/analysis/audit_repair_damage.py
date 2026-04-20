@@ -27,8 +27,7 @@ for row in rows:
     src = fp.read_text(encoding="utf-8", errors="ignore")
     try:
         ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         broken.append((row["source_file"], f"SyntaxError: {e}"))
         continue
 

@@ -136,7 +136,7 @@ class AdapterBase(ABC, Generic[T]):
                 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 
                 self._verification_gate = VerificationGate()
-            except ImportError:  # guardian: allow-silent-swallow
+            except ImportError:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning("VerificationGate not available")
         return self._verification_gate
 
@@ -257,8 +257,7 @@ class AdapterBase(ABC, Generic[T]):
             }
             self._audit_log.append(entry)
             logger.debug(f"Adapter audit: {entry}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.error(f"Failed to log audit: {e}")
 
     def execute(self, context: AdapterContext | None = None, *args, **kwargs) -> AdapterResult:
@@ -320,8 +319,7 @@ class AdapterBase(ABC, Generic[T]):
                     skip_reason="input_validation_failed",
                     audit_trail=audit_trail,
                 )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             logger.error(f"Input validation error: {e}")
             return AdapterResult(success=False, error=f"Input validation error: {e}", audit_trail=audit_trail)
         pre_result = self._pre_execute_hook(context, *args, **kwargs)
@@ -334,12 +332,6 @@ class AdapterBase(ABC, Generic[T]):
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            self._circuit_breaker.record_failure(e)
-            self._log_audit("execution_error", context, error=e)
-            error_result = self._on_error(e, context)
-            if error_result is not None:
-                return error_result
-            return AdapterResult(success=False, error=str(e), audit_trail=audit_trail)
         try:
             if not self._validate_output(raw_result, context):
                 self._log_audit("output_validation_failed", context)
@@ -349,8 +341,7 @@ class AdapterBase(ABC, Generic[T]):
                     error="Output validation failed",
                     audit_trail=audit_trail,
                 )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             logger.error(f"Output validation error: {e}")
             return AdapterResult(
                 success=False,

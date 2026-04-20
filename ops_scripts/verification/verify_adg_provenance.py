@@ -90,7 +90,7 @@ class ADGProvenanceVerifier:
         except subprocess.TimeoutExpired as e:
             raise ProvenanceVerificationError(f"Timed out getting git commit SHA: {e}")
         except FileNotFoundError as e:
-            raise ProvenanceVerificationError(f"git executable not found: {e}")
+            raise ProvenanceVerificationError(f'git executable not found: {e}') from e
         except subprocess.CalledProcessError as e:
             raise ProvenanceVerificationError(f"Failed to get git commit SHA: {e}")
 
@@ -112,7 +112,7 @@ class ADGProvenanceVerifier:
         except subprocess.TimeoutExpired as e:
             raise ProvenanceVerificationError(f"Timed out getting git status: {e}")
         except FileNotFoundError as e:
-            raise ProvenanceVerificationError(f"git executable not found: {e}")
+            raise ProvenanceVerificationError(f'git executable not found: {e}') from e
         except subprocess.CalledProcessError as e:
             raise ProvenanceVerificationError(f"Failed to get git status: {e}")
 
@@ -135,7 +135,7 @@ class ADGProvenanceVerifier:
             with open(artifact_path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            raise ProvenanceVerificationError(f"Failed to load {artifact_path}: {e}")
+            raise ProvenanceVerificationError(f'Failed to load {artifact_path}: {e}') from e
 
     def _load_sqlite_meta(self, sqlite_path: Path) -> dict[str, Any]:
         """Load metadata from SQLite ADG database."""
@@ -161,7 +161,7 @@ class ADGProvenanceVerifier:
 
                 return meta
         except Exception as e:
-            raise ProvenanceVerificationError(f"Failed to load SQLite metadata from {sqlite_path}: {e}")
+            raise ProvenanceVerificationError(f'Failed to load SQLite metadata from {sqlite_path}: {e}') from e
 
     def _verify_required_fields(self, artifact_name: str, metadata: dict[str, Any]) -> None:
         """Verify all required provenance fields are present."""
@@ -196,9 +196,7 @@ class ADGProvenanceVerifier:
                     f"{artifact_name} timestamp not UTC: {timestamp}",
                 )
         except ValueError as e:
-            raise ProvenanceVerificationError(
-                f"{artifact_name} invalid timestamp format: {timestamp} - {e}",
-            )
+            raise ProvenanceVerificationError(f'{artifact_name} invalid timestamp format: {timestamp} - {e}') from e
 
     def _verify_git_commit_consistency(self, artifact_name: str, commit_sha: str) -> None:
         """Verify commit_sha matches actual git HEAD."""

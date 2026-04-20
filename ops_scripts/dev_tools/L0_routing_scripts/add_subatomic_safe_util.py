@@ -205,8 +205,7 @@ def main() -> int:
                     continue
                 try:
                     ast.parse(content)
-                # guardian: allow-silent-swallow - acceptable exception handling
-                except SyntaxError as e:
+                except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
                     errors.append(f"{class_name}: Pre-existing syntax error at line {e.lineno}")
                     print(f"  ❌ {class_name}: Pre-existing syntax error")
                     continue
@@ -254,8 +253,7 @@ def main() -> int:
                 agent_path.write_text(new_content, encoding="utf-8")
                 modified.append(class_name)
                 print(f"  ✅ {class_name}")
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 errors.append(f"{class_name}: {str(e)}")
                 print(f"  ❌ {class_name}: {str(e)[:50]}")
     print(f"\n{'=' * 70}")

@@ -104,6 +104,7 @@ Rationale:
     - Adds heal_repository() method for standard healing chain integration
 """
 
+import logging
 import sys
 import uuid
 from dataclasses import dataclass, field
@@ -722,9 +723,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                                         "status": "skipped",  # guardian: Add error context logging
                                         "reason": f"{target_path.name} is recent ({age_days:.1f} days old), keeping",
                                     }
-                            except OSError as e:
-                                import logging
-
+                            except OSError as e:  # guardian: allow-log-and-swallow -- mtime check: non-fatal, file access failure skips recent-check
                                 logging.getLogger(__name__).debug(
                                     "root_hygiene_healer: OSError swallowed at L723: %s", e
                                 )

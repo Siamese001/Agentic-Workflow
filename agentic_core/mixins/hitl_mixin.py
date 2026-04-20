@@ -518,9 +518,9 @@ class HITLMixin:
                 AttributeError,
                 RuntimeError,
                 TypeError,
-            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            ) as e:
+                Logger.error(f"[HITL] Callback error for '{request.operation_name}': {e}")  # guardian: allow-log-and-swallow
                 raise
-                Logger.error(f"[HITL] Callback error for '{request.operation_name}': {e}")
 
     def _trim_history_if_needed(self) -> None:
         """[HARDENING] Trim approval history if it exceeds the configured limit."""

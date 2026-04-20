@@ -3,6 +3,12 @@ trigger: model_decision
 description: Before opening a HITL packet for any refactor-class decision, consult the refactor-decision-memory skill to surface historical precedent and bias or enrich the HITL packet accordingly.
 ---
 
+> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+>
+> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+>
+> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+
 # Refactor Decision Memory — Pre-HITL Precedent Check
 
 ## Scope

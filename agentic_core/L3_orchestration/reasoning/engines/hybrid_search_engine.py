@@ -475,8 +475,8 @@ class HybridSearchEngine:
         if self._bge_model is None:
             try:
                 from sentence_transformers import SentenceTransformer  # type: ignore
-            except ImportError:
-                return None  # guardian: allow-return-none-swallow -- SentenceTransformer unavailable: optional dep, caller treats None as no embedding
+            except ImportError:  # guardian: allow-return-none-swallow -- SentenceTransformer unavailable: optional dep, caller treats None as no embedding
+                return None
             self._bge_model = SentenceTransformer("BAAI/bge-m3")
         encoded = self._bge_model.encode(query)
         if hasattr(encoded, "tolist"):

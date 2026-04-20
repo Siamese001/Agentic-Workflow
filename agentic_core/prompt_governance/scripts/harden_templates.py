@@ -103,7 +103,7 @@ def harden_template(file_path: Path, base_dir: Path, dry_run: bool = True) -> bo
                 f.write(new_content)
             print(f"HARDENED: {relative_path}")
         return True
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, ValueError) as e:
         print(f"ERROR processing {file_path}: {e}")
         return False
 

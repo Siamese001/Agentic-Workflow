@@ -107,8 +107,7 @@ def _build_graph() -> tuple[nx.DiGraph, dict[str, str], list]:
             try:
                 src = py.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(src)
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except SyntaxError as e:
+            except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
                 syntax_errors.append((rel, str(e)))
                 continue
             for dep in _get_imports(tree):
@@ -205,8 +204,7 @@ class DepGraph:
         """Shortest directed import path from src to dst. Empty list if none."""
         try:
             return nx.shortest_path(self._g, src, dst)  # guardian:  should be handled with specific context
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (nx.NetworkXNoPath, nx.NodeNotFound):
+        except (nx.NetworkXNoPath, nx.NodeNotFound):  # guardian: allow-silent-swallow - acceptable exception handling
             return []
 
     def all_paths(self, src: str, dst: str, cutoff: int = 6) -> list[list[str]]:

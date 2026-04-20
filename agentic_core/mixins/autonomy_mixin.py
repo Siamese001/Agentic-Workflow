@@ -77,8 +77,7 @@ from typing import Any
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
     class MCPHardenedMixin:
         """Fallback stub for MCPHardenedMixin."""

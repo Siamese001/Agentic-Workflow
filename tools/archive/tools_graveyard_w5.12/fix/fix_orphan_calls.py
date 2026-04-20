@@ -69,8 +69,7 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
     # Validate current parse
     try:
         ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return f"SKIP(parse_err: {e})", []
 
     # For each orphan call, insert its import right before the FIRST occurrence of the call

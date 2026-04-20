@@ -304,8 +304,7 @@ class DependencyPruningStrategy:
                 "dry_run": self._agent.dry_run,
             }
 
-        # guardian: allow-silent-swallower
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[DependencyPruningStrategy] Healing failed: {e}")
             return {
                 "success": False,
@@ -350,13 +349,12 @@ def register_dependency_healing(project_root: Path | None = None) -> dict[str, A
         try:
             orchestrator.register_strategy("dependency_pruning", get_dependency_strategy(project_root))
             registered.append("dependency_pruning")
-        # guardian: allow-silent-swallower
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             errors.append(f"dependency_pruning: {e}")
 
         Logger.info(f"[Dependency Integration] Registered {len(registered)} strategies")
 
-    except ImportError as e:
+    except ImportError as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         errors.append(f"HealingSovereignOrchestrator import failed: {e}")
         Logger.warning(f"[Dependency Integration] Could not import orchestrator: {e}")
 

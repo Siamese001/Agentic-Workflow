@@ -198,8 +198,7 @@ class VigilanceDispatcherAdapter:
             VigilanceDispatcher, self._ArtifactCls = _build_real_dispatcher()
             self._dispatcher = VigilanceDispatcher()
             self._real = True
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("VigilanceDispatcher unavailable; using null fallback")
             self._dispatcher = None
             self._ArtifactCls = None
@@ -235,8 +234,7 @@ class VigilanceDispatcherAdapter:
             summary: str = str(kwargs.get("summary", "spine-execution"))
             event = self._ArtifactCls.create(trace_id=trace_id, signals=signals, summary=summary)
             self._dispatcher.dispatch(event=event, enqueue_fn=_EVENT_QUEUE.append)
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-silent-swallow
             logger.debug("VigilanceDispatcherAdapter.dispatch swallowed: %s", exc)
 
     @property

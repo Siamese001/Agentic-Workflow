@@ -193,8 +193,7 @@ class SDKEntry:
         try:
             __import__(self.module)
             return True
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             return False
 
     def has_api_key(self) -> bool:

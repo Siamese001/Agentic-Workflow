@@ -286,16 +286,14 @@ class AtomicStateManager:
                 f"Atomic checkpoint complete for {workflow_id} (K-Node {new_state.current_k_node}) in {duration_ms:.2f}ms",
             )
             return metadata
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             duration_ms = (time.time() - start_time) * 1000
             logger.error(f"Atomic checkpoint failed for {workflow_id}: {e}")
             try:
                 shadow_key = self._get_shadow_key(workflow_id)
                 self._delete_from_backend(shadow_key)
                 logger.debug("Cleaned up shadow state after failure")
-            # guardian: allow-silent-swallow
-            except Exception as cleanup_error:
+            except Exception as cleanup_error:  # guardian: allow-silent-swallow
                 logger.warning(f"Failed to cleanup shadow state: {cleanup_error}")
             metadata = CheckpointMetadata(
                 checkpoint_id=checkpoint_id,
@@ -355,8 +353,7 @@ class AtomicStateManager:
             self._delete_from_backend(active_key)
             logger.info(f"Deleted checkpoint for workflow: {workflow_id}")
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.warning(f"Failed to delete checkpoint for {workflow_id}: {e}")
             return False
 
@@ -376,8 +373,7 @@ class AtomicStateManager:
                     state = self._load_state(workflow_id)
                     if state:
                         checkpoints[workflow_id] = state
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     logger.warning(f"Failed to load checkpoint {workflow_id}: {e}")
         return checkpoints
 
@@ -467,8 +463,7 @@ class AtomicStateManager:
                 raise NotImplementedError("Redis backend not yet implemented")
             elif self.backend == BackendType.SQLITE:
                 raise NotImplementedError("SQLite backend not yet implemented")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load state for {workflow_id}: {e}")
             raise StatePersistenceError(f"Failed to load state: {e}") from e
 

@@ -249,8 +249,7 @@ def main() -> int:
             else:
                 print(f"⚠️ Could not find class definition: {class_name} in {agent_path}")
                 error_count += 1
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"❌ Error processing {agent_path}: {e}")
             error_count += 1
     print(f"\n{'=' * 70}")

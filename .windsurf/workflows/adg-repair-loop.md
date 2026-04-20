@@ -2,6 +2,8 @@
 description: ADG-controlled repair loop - strictly graph-first, no full-suite runs until convergence
 ---
 
+> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+
 ## ADG Repair Loop — Scoped Cluster Repair
 
 This workflow enforces §ADG-1. Invoke with `/adg-repair-loop`.

@@ -213,8 +213,7 @@ class AgentDiscoveryCache:
             try:
                 content_hash = self._compute_file_hash(discovery_path)
                 cache_key = f"agent_discovery:{content_hash}"
-            # guardian: allow-silent-swallow - optional file resource
-            except FileNotFoundError:
+            except FileNotFoundError:  # guardian: allow-silent-swallow - optional file resource
                 raise
             except (OSError, ValueError) as e:  # guardian: allow-log-and-swallow -- hash compute best-effort: non-fatal, fetch proceeds without cache key
                 logger.warning(f"[Discovery cache] Hash computation failed: {e}")
@@ -224,8 +223,7 @@ class AgentDiscoveryCache:
                     if cached is not None:
                         logger.debug("[Discovery cache] HIT")
                         return cached
-                # guardian: allow-silent-swallow
-                except (OSError, ValueError, TypeError) as e:
+                except (OSError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     logger.warning(f"[Discovery cache] Cache read failed: {e}")
         logger.debug("[Discovery cache] MISS — fetching from disk")
         result = fetch_from_disk()

@@ -472,8 +472,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                 f"Added envelope {item.envelope.trace_id} to dead letter queue: {item.failure_reason}",
             )
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to add to dead letter queue: {e}")
             return False
 
@@ -494,8 +493,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                         content = await f.read()
                     data = json.loads(content)
                     return DeadLetterItem.from_dict(data)
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     logger.error(f"Failed to read dead letter item {item_id}: {e}")
         return None
 
@@ -535,8 +533,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     item = DeadLetterItem.from_dict(data)
                     if not status or item.status == status:
                         items.append(item)
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     logger.error(f"Failed to read dead letter file {file_path}: {e}")
         items.sort(key=lambda x: x.timestamp, reverse=True)
         return items[:limit]
@@ -568,8 +565,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                 await aiofiles.os.rename(old_path, new_path)
             logger.info(f"Updated dead letter item {item_id} to status: {status.value}")
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to update dead letter item {item_id}: {e}")
             return False
 
@@ -590,8 +586,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             await aiofiles.os.remove(path)
             logger.info(f"Deleted dead letter item {item_id}")
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to delete dead letter item {item_id}: {e}")
             return False
 
@@ -830,15 +825,6 @@ def dead_letter_handler(failure_reason: FailureReason = FailureReason.UNKNOWN, i
             try:
                 return await func(envelope, *args, **kwargs)
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                dlq = await get_dead_letter_queue()
-                await dlq.add_failed_envelope(
-                    envelope,
-                    failure_reason,
-                    func.__name__,
-                    str(e),
-                    {"args": str(args), "kwargs": str(kwargs)} if include_payload else None,
-                )
                 raise
 
         return wrapper

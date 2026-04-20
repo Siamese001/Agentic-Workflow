@@ -216,8 +216,7 @@ class HardenedRouter:
                     self.executors[provider] = HardenedGeminiExecutor()
                 else:
                     logger.warning(f"No hardened executor available for provider: {provider}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError, TypeError, ImportError) as e:
+            except (RuntimeError, ValueError, TypeError, ImportError) as e:  # guardian: allow-silent-swallow
                 logger.error(f"Failed to initialize executor for {provider}: {e}")
                 raise
 
@@ -346,8 +345,7 @@ class HardenedRouter:
                     max_tokens=max_tokens,
                     **kwargs,
                 )
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError, TypeError) as e:
+            except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 logger.warning(f"Primary provider {primary.value} failed: {e}. Attempting fallback...")
                 raise
         else:
@@ -377,8 +375,7 @@ class HardenedRouter:
                         max_tokens=max_tokens,
                         **kwargs,
                     )
-                # guardian: allow-silent-swallow
-                except (RuntimeError, ValueError, TypeError) as e:
+                except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                     logger.warning(f"Fallback provider {fallback.value} failed: {e}. Trying next fallback...")
                     raise
             else:

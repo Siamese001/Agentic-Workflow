@@ -217,8 +217,7 @@ def audit_agent_file(py_file: Path, agentic_core: Path) -> list[AgentAuditResult
     try:
         content = py_file.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
-    # guardian: allow-silent-swallow (pre-existing, moved from L0)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow (pre-existing, moved from L0)
         return results
     for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.ClassDef):

@@ -230,8 +230,7 @@ def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
     except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         Logger.debug(f"Syntax error in {file_path}: {e}")
         return []
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         Logger.debug(f"Could not parse {file_path}: {e}")
         return []
 

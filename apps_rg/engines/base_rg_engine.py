@@ -83,22 +83,19 @@ try:
     )
 
     _OUTPUT_CONTRACT_AVAILABLE = True
-# guardian: allow-silent-degradation - Optional execution contracts
-except ImportError as e:
+except ImportError as e:  # guardian: allow-silent-swallow - Optional execution contracts
     _OUTPUT_CONTRACT_AVAILABLE = False
     logging.getLogger(__name__).debug(f"Output contracts not available: {e}")
 try:
     from pydantic import BaseModel
-# guardian: allow-silent-degradation - Optional pydantic
-except ImportError as e:
+except ImportError as e:  # guardian: allow-silent-swallow - Optional pydantic
     BaseModel = Any
     logging.getLogger(__name__).debug(f"Pydantic not available: {e}")
 try:
     from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
 
     MIXINS_AVAILABLE = True
-# guardian: allow-silent-degradation - Optional RG mixins
-except ImportError as e:
+except ImportError as e:  # guardian: allow-silent-swallow - Optional RG mixins
     MIXINS_AVAILABLE = False
     logging.getLogger(__name__).debug(f"RG mixins not available: {e}")
 
@@ -225,24 +222,21 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
             from apps_rg.config import load_rg_specs
 
             self.rg_specs = load_rg_specs()
-        # guardian: allow-silent-degradation - Optional RG specs
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - Optional RG specs
             self.rg_specs = None
             self.logger.warning("RG specs not available")
         try:
             from apps_rg.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
             self.toggles = DEFAULT_TOGGLES
-        # guardian: allow-silent-degradation - Optional reasoning toggles
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - Optional reasoning toggles
             self.toggles = None
             self.logger.warning("Reasoning toggles not available")
         try:
             from apps_rg.types.PromptTemplate import FROZEN_SNAPSHOT
 
             self.knowledge = FROZEN_SNAPSHOT
-        # guardian: allow-silent-degradation - Optional knowledge base
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - Optional knowledge base
             self.knowledge = None
             self.logger.warning("Knowledge base not available")
 

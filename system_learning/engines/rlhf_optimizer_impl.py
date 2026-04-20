@@ -250,7 +250,7 @@ class DefaultRLHFOptimizer:
         except (
             json.JSONDecodeError,
             UnicodeDecodeError,
-        ):  # guardian: Encoding errors should specify fallback encoding strategy
+        ):  # guardian: allow-return-none-swallow -- decode failure: non-fatal, caller skips unparseable batch
             logger.debug("Failed to decode DPO batch bytes")
             return None
         pairs = batch.get("pairs", [])

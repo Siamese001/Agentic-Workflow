@@ -291,7 +291,6 @@ class RetryPatternDetector:
             return False
         except (ValueError, TypeError, RuntimeError) as e:
             raise
-            return False
 
 
 class UtilitySilentSwallowerDetector(AntiPatternDetector):

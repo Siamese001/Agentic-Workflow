@@ -238,8 +238,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
             from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent
 
             self._shield = GovernanceShieldAgent()
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-silent-swallow
             logger.warning("ControlPlane: GovernanceShieldAgent not available: %s", exc)
 
         # Initialize knowledge base for prompt templates

@@ -115,7 +115,7 @@ class KnowledgeExtractor:
                 major, minor, patch = parts
                 new_patch = int(patch) + 1
                 return f"{major}.{minor}.{new_patch}"
-            except ValueError:
+            except ValueError:  # guardian: allow-silent-swallow -- version parse: falls back to default
                 pass
         return "1.0.0"
 

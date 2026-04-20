@@ -182,8 +182,7 @@ class CognitiveRecoveryMixin:
             return [
                 {"id": r.id, "content": r.content, "score": r.score, "metadata": r.metadata} for r in results
             ]
-        # guardian: allow-silent-swallow
-        except (AttributeError, RuntimeError) as e:
+        except (AttributeError, RuntimeError) as e:  # guardian: allow-silent-swallow
             logger.warning(f"[{self.__class__.__name__}] Brain Freeze (Knowledge Query Failed): {e}")
             return []
 
@@ -206,8 +205,7 @@ class CognitiveRecoveryMixin:
         try:
             client = self._get_cognitive_client()
             patterns = client.find_healing_pattern(query)
-        # guardian: allow-silent-swallow
-        except (AttributeError, RuntimeError) as e:
+        except (AttributeError, RuntimeError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             logger.error(f"[{self.__class__.__name__}] Cognitive RCA failed: {e}")
             return None
         if patterns:

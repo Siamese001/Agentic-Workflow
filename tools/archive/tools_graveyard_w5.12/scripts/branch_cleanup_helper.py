@@ -61,8 +61,7 @@ def categorize_branches() -> dict[str, list[dict]]:
         try:
             branch_date = datetime.strptime(last_date.split()[0], "%Y-%m-%d")
             days_old = (datetime.now() - branch_date).days
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             days_old = 999
 
         branch_info = {

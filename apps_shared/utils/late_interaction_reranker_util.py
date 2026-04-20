@@ -195,8 +195,7 @@ class LateInteractionReranker:
             from sentence_transformers import CrossEncoder  # noqa: F401
 
             return True
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("sentence_transformers not available, reranker will be in fallback mode")
             return False
 
@@ -226,8 +225,7 @@ class LateInteractionReranker:
             self._fallback_mode = True
             self._model_loaded = True
             return False
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load model {self.model_name}: {e}")
             logger.warning("Reranker will operate in fallback mode (no reranking)")
             self._fallback_mode = True
@@ -286,8 +284,7 @@ class LateInteractionReranker:
                 }
                 logger.debug(f"Score distribution: {score_stats}")
             return reranked
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Reranking failed: {e}")
             logger.info("Falling back to original document order")
             return documents[:top_k]
@@ -327,8 +324,7 @@ class LateInteractionReranker:
             scored_docs = list(zip(documents, scores, strict=False))
             scored_docs.sort(key=lambda x: x[1], reverse=True)
             return scored_docs[:top_k]
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Reranking with scores failed: {e}")
             return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
 
@@ -357,8 +353,7 @@ class LateInteractionReranker:
                             "num_labels": getattr(self._model.config, "num_labels", "unknown"),
                         },
                     )
-            # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow
                 pass
         return info
 

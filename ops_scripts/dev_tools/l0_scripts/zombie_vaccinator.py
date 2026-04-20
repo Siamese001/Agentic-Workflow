@@ -193,8 +193,7 @@ class ZombieVaccinator:
         except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             Logger.error(f"Syntax Error in {class_name}: {e}")
             return []
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"AST Error in {class_name}: {e}")
             return []
 
@@ -247,8 +246,7 @@ class ZombieVaccinator:
                 return False
             path.write_text(new_source, encoding="utf-8")
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"    Vaccination error: {e}")
             return False
 

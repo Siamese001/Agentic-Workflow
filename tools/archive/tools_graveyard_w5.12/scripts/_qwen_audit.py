@@ -30,8 +30,7 @@ for dirpath, dirnames, filenames in os.walk(root):
                 if term in content:
                     rel = fpath.replace(root + os.sep, "").replace("\\", "/")
                     found.setdefault(term, []).append(rel)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
 for term, files in sorted(found.items()):
     print(f"TERM: {term}")

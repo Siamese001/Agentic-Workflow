@@ -235,8 +235,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         visitor = DarkReasoningVisitor()
         visitor.visit(tree)
         issues.extend(visitor.issues)
-    # guardian: allow-silent-swallow
-    except (SyntaxError, ValueError, TypeError, AttributeError, OSError, RuntimeError) as e:
+    except (SyntaxError, ValueError, TypeError, AttributeError, OSError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         import logging
 
         logging.getLogger(__name__).debug(

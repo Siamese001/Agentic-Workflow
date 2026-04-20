@@ -266,8 +266,7 @@ def compute_file_hash(file_path: Path) -> str:
             for chunk in iter(lambda: f.read(8192), b""):
                 sha256.update(chunk)
         return sha256.hexdigest()[:16]
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
         return "ERROR"
 
 
@@ -362,8 +361,7 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
 
     except SyntaxError as e:
         return [], [f"SYNTAX_ERROR: {e}"], [], None
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         return [], [f"PARSE_ERROR: {e}"], [], None
 
 
@@ -664,7 +662,6 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            analysis.docstring = f"ANALYSIS_ERROR: {e}"
 
     # Classification
     classification, action, justification, risk = classify_migration_disposition(analysis)
@@ -702,8 +699,7 @@ def scan_archive_folder(archive_folder: str) -> list[FileAnalysis]:
             try:
                 analysis = analyze_file(file_path, _ARCHIVES_DIR_PATH)
                 analyses.append(analysis)
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 print(f"ERROR analyzing {file_path}: {e}")
 
     return analyses

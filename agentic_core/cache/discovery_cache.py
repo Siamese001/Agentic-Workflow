@@ -226,7 +226,7 @@ class AgentDiscoveryCache:
                     if cached is not None:
                         logger.debug("[Discovery cache] HIT")
                         return cached
-                except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- cache read untrusted: failures non-fatal, falls through to disk fetch
+                except Exception as e:  # guardian: allow-broad-exception -- cache read untrusted: failures non-fatal, falls through to disk fetch
                     logger.warning(f"[Discovery cache] Cache read failed: {e}")
         logger.debug("[Discovery cache] MISS — fetching from disk")
         result = fetch_from_disk()
@@ -237,7 +237,7 @@ class AgentDiscoveryCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:  # guardian: allow-silent-swallow -- discovery file absent: skip cache write, disk fetch already served caller
                 pass
-            except Exception as e:  # guardian: allow-broad-exception allow-log-and-swallow -- cache write untrusted: non-fatal, disk fetch already served caller
+            except Exception as e:  # guardian: allow-broad-exception -- cache write untrusted: non-fatal, disk fetch already served caller
                 logger.warning(f"[Discovery cache] Cache write failed: {e}")
         return result
 

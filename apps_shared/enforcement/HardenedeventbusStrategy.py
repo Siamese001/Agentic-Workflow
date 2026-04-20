@@ -236,16 +236,6 @@ class HardenedEventBus:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            self._stats["events_failed"] += 1
-            dlq = await get_dead_letter_queue()
-            await dlq.add_failed_envelope(
-                event,
-                FailureReason.PROCESSING_ERROR,
-                "HardenedEventBus.publish",
-                str(e),
-            )
-            logger.error(f"Failed to publish event {event.id}: {e}")
-            return False
 
     async def subscribe(self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]]) -> None:
         """Subscribe to events with hardened protection.
@@ -362,8 +352,7 @@ class HardenedEventBus:
                     event,
                     bulkhead_name="event_process",
                 )
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.error(f"Failed to process event {event.id}: {e}")
                 dlq = await get_dead_letter_queue()
                 await dlq.add_failed_envelope(
@@ -489,14 +478,6 @@ def hardened_event_publisher(event_type: EventType, priority: TaskPriority = Tas
                 )
                 return result
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                await publish_hardened_event(
-                    EventType.ERROR_OCCURRED,
-                    func.__module__ + "." + func.__name__,
-                    {"status": "failed", "error": str(e)},
-                    trace_id=trace_id,
-                    priority=TaskPriority.HIGH,
-                )
                 raise
 
         return async_wrapper

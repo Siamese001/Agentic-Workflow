@@ -254,8 +254,7 @@ class InterfaceBoundaryAgent(SovereignBaseAgent):
                 "class_count": len(classes),
                 "loc": len(file_path.read_text().splitlines()),
             }
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError):
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow
             return {"method_count": 0, "class_count": 0, "loc": 0}
 
     def generate_interface_stub(self, violation: dict) -> str:
@@ -315,8 +314,7 @@ class InterfaceBoundaryAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"InterfaceBoundaryAgent heal() failed: {str(e)}",

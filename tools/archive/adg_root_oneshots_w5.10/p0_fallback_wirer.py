@@ -110,8 +110,7 @@ def wire_file(filepath, dim_cfg):
     try:
         with open(filepath, encoding="utf-8", errors="replace") as f:
             src = f.read()
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
         return "SKIP", "unreadable"
 
     basename = os.path.splitext(os.path.basename(filepath))[0]

@@ -248,8 +248,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                 method_names=[],
                             ),
                         )
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 print(f"Error reading {py_file}: {e}")
     return agents
 
@@ -276,13 +275,11 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
             normalized_code = ast.unparse(normalized)
         except (ValueError, TypeError, RuntimeError) as e:
             raise
-            normalized_code = ast.dump(normalized)
         fingerprint = hashlib.sha256(normalized_code.encode()).hexdigest()[:16]
         return (fingerprint, normalized_code)
     except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         return ("SYNTAX_ERROR", str(e))
-    # guardian: allow-silent-swallow
-    except (RuntimeError, OSError) as e:
+    except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
         return ("ERROR", str(e))
 
 

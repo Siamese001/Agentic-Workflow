@@ -190,7 +190,6 @@ def main():
                 print("Successfully moved mislocated test")
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                print(f"Failed to move {actual_test}: {e}")
 
 
 if __name__ == "__main__":

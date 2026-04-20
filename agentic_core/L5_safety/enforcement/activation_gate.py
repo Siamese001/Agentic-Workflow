@@ -78,8 +78,7 @@ def assert_activation_allowed(trace_id: str | None = None) -> None:
             mod: Any = __import__(module_path, fromlist=[symbol_name])
             if not hasattr(mod, symbol_name):
                 missing.append(short_key)
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             missing.append(short_key)
     if missing:
         msg_parts = [

@@ -176,7 +176,7 @@ def _validate_ascii_only(value: str, name: str) -> None:
     try:
         value.encode("ascii")
     except UnicodeEncodeError:  # guardian: UnicodeEncodeError should be handled with specific context
-        raise ValueError(f"{name} must be ASCII-only, contains non-ASCII characters")
+        raise ValueError(f'{name} must be ASCII-only, contains non-ASCII characters') from None
 
 
 def _stable_round(score: float) -> float:

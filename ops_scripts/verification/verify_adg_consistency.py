@@ -108,7 +108,7 @@ class ADGConsistencyVerifier:
             with open(self.snapshot_path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            raise ConsistencyVerificationError(f"Failed to load snapshot: {e}")
+            raise ConsistencyVerificationError(f'Failed to load snapshot: {e}') from e
 
     def _execute_sql_query(self, query: str) -> int:
         """Execute SQL query and return single integer result."""
@@ -121,7 +121,7 @@ class ADGConsistencyVerifier:
                     return 0
                 return int(result[0])
         except Exception as e:
-            raise ConsistencyVerificationError(f"Failed to execute SQL query '{query}': {e}")
+            raise ConsistencyVerificationError(f"Failed to execute SQL query '{query}': {e}") from e
 
     def _get_snapshot_metric(self, snapshot: dict[str, Any], metric_name: str) -> int | None:
         """Extract metric value from snapshot."""
@@ -188,7 +188,7 @@ class ADGConsistencyVerifier:
                     self.warnings.append(f"Missing edge columns: {missing_edge_columns}")
 
         except Exception as e:
-            raise ConsistencyVerificationError(f"Schema verification failed: {e}")
+            raise ConsistencyVerificationError(f'Schema verification failed: {e}') from e
 
     def _verify_foreign_key_integrity(self) -> None:
         """Verify foreign key integrity in the database."""
@@ -218,7 +218,7 @@ class ADGConsistencyVerifier:
                     self.errors.append(f"Found {orphaned_dst} edges with orphaned destination nodes")
 
         except Exception as e:
-            raise ConsistencyVerificationError(f"Foreign key verification failed: {e}")
+            raise ConsistencyVerificationError(f'Foreign key verification failed: {e}') from e
 
     def _verify_relation_type_consistency(self) -> None:
         """Verify relation types are consistent with schema."""
@@ -246,7 +246,7 @@ class ADGConsistencyVerifier:
                     self.warnings.append(f"Found {len(long_types)} unusually long relation types")
 
         except Exception as e:
-            raise ConsistencyVerificationError(f"Relation type verification failed: {e}")
+            raise ConsistencyVerificationError(f'Relation type verification failed: {e}') from e
 
     def _calculate_derived_metrics(self) -> dict[str, int]:
         """Calculate additional derived metrics for verification."""

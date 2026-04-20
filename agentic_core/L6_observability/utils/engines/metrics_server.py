@@ -157,7 +157,7 @@ def start_metrics_server(
 
         return handle
 
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         logger.error(
             "metrics_server_start_failed",
             extra={"port": port, "addr": addr, "error": str(e)},

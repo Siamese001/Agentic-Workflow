@@ -241,8 +241,8 @@ class FileBackedConfigProvider:
                 bridge = get_sl_memory_bridge()
                 for surface_name, raw in configs.items():
                     bridge.persist_config_snapshot(surface_name, raw)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
-                logger.debug("Failed to persist config snapshots: %s", exc)
+            except (AttributeError, RuntimeError, TypeError, ValueError, OSError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                logger.debug("config_provider: failed to persist config snapshots: %s", exc)
 
         return configs
 

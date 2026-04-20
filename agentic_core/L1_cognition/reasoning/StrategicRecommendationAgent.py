@@ -59,7 +59,7 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
             try:
                 response = self.llm_client.complete(plan)
                 return _parse_llm_response(response)
-            except (RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:
+            except (RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 import logging
 
                 logging.getLogger(__name__).debug(

@@ -249,8 +249,7 @@ class ContrastiveSemanticCache:
             return False
         try:
             return True
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("sentence_transformers or numpy not available, cache will be in fallback mode")
             return False
 
@@ -279,8 +278,7 @@ class ContrastiveSemanticCache:
             self._fallback_mode = True
             self._model_loaded = True
             return False
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load model {self.model_name}: {e}")
             logger.warning("cache will operate in fallback mode (no caching)")
             self._fallback_mode = True
@@ -306,8 +304,7 @@ class ContrastiveSemanticCache:
         try:
             embedding = self._model.encode(query, convert_to_numpy=True, show_progress_bar=False)
             return embedding
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to encode query: {e}")
             return None
 
@@ -319,8 +316,7 @@ class ContrastiveSemanticCache:
         try:
             embeddings = [np.array(entry.embedding) for entry in self._cache]
             self._embedding_matrix = np.vstack(embeddings)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to update embedding matrix: {e}")
             self._embedding_matrix = None
 
@@ -344,8 +340,7 @@ class ContrastiveSemanticCache:
             )
             similarities = np.dot(cache_norm, query_norm)
             return similarities
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to calculate similarities: {e}")
             return np.array([])
 
@@ -495,8 +490,7 @@ class ContrastiveSemanticCache:
             with open(filepath, "w") as f:
                 json.dump(data, f, indent=2)
             logger.info(f"Exported {len(self._cache)} cache entries to {filepath}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to export cache: {e}")
 
     def import_cache(self, filepath: str, clear_existing: bool = False):
@@ -516,8 +510,7 @@ class ContrastiveSemanticCache:
                 self._cache.append(entry)
             self._update_embedding_matrix()
             logger.info(f"Imported {len(data.get('entries', []))} cache entries from {filepath}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to import cache: {e}")
 
 

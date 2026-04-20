@@ -161,8 +161,7 @@ class StackModernizationAgent:
             )
             logger.info(f"Diagnosed legacy stack with score {score:.2f}")
             return diagnostic
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error diagnosing stack: {str(e)}")
             return LegacyDiagnostic(detected_legacy_tech=[], implied_pain_points=[], modernization_score=0.0)
 
@@ -191,8 +190,7 @@ class StackModernizationAgent:
                 target_state_vision="Modern, cloud-native AI architecture",
                 bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity",
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error generating thesis: {str(e)}")
             return MigrationThesis(
                 current_state_diagnosis="Legacy technology stack",
@@ -218,8 +216,7 @@ class StackModernizationAgent:
             )
             hook = f"I noticed you are transitioning from {legacy_tech}. At [Previous Role], I led the architecture de-risking for this exact migration, ensuring zero downtime while modernizing to {modern_tech} using {(thesis.bridge_strategy.split(',')[0] if thesis.bridge_strategy else 'industry best practices')}."
             return hook
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error generating migration hook: {str(e)}")
             return "I have experience leading successful technology modernizations."
 
@@ -238,8 +235,7 @@ class StackModernizationAgent:
             else:
                 summary = "Senior AI Engineer with experience in system optimization and strategic technology improvements."
             return summary
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error rewriting resume summary: {str(e)}")
             return "Senior AI Engineer with modernization experience"
 
@@ -266,8 +262,7 @@ class StackModernizationAgent:
                 target_state_vision=target,
                 bridge_strategy=strategy,
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error creating thesis from playbook: {str(e)}")
             raise
 

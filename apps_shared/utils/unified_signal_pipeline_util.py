@@ -1231,12 +1231,7 @@ class UnifiedSignalPipeline:
                 await checkpoint_manager.save_checkpoint(envelope)
                 with self._lock:
                     self._stats["stage_failures"][stage_name] += 1
-                raise PipelineExecutionError(
-                    f"Pipeline failed at stage {stage_name}",
-                    envelope,
-                    stage_name,
-                    e,
-                )
+                raise PipelineExecutionError(f'Pipeline failed at stage {stage_name}', envelope, stage_name, e) from e
         return envelope
 
     async def _resume_from_checkpoint(self, trace_id: str) -> SignalEnvelope | None:

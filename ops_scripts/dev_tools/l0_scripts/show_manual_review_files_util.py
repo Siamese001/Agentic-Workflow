@@ -169,8 +169,7 @@ def read_file_content(file_path: Path) -> str:
     try:
         with open(file_path, encoding="utf-8") as f:
             return f.read()
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         return ""
 
 
@@ -180,8 +179,7 @@ def get_file_stats(file_path: Path) -> dict:
         stat = file_path.stat()
         content = read_file_content(file_path)
         return {"size": stat.st_size, "lines": len(content.splitlines()), "exists": True}
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         return {"size": 0, "lines": 0, "exists": False}
 
 

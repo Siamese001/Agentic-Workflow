@@ -240,8 +240,7 @@ def find_methods_in_file(filepath: str) -> list[dict]:
     try:
         with open(filepath, encoding="utf-8") as f:
             source = f.read()
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except (UnicodeDecodeError, PermissionError):
+    except (UnicodeDecodeError, PermissionError):  # guardian: allow-silent-swallow - acceptable exception handling
         return []
 
     if WIRED_MARKER in source:

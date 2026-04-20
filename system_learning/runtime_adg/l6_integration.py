@@ -336,8 +336,8 @@ class L6MetaLearningBridge:
         try:
             with open(self._evolution_log_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(event, separators=(",", ":")) + "\n")
-        except OSError as exc:
-            logger.warning("Failed to write evolution log %s: %s", self._evolution_log_path, exc)
+        except OSError as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            logger.warning("l6_integration: failed to write evolution log: %s", exc)
 
     def get_meta_learning_snapshots(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent snapshots for meta-learning analysis.

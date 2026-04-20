@@ -2,6 +2,8 @@
 description: Triage _adg.py test files using ADG fan-in analysis.
 ---
 
+> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+
 # ADG Fan-In Test Triage Gate
 
 This workflow provides a structured process for classifying `_adg.py` test files as either "stubs" or "non-stubs" using ADG fan-in analysis. It should be invoked before any `_adg.py` file is deleted or archived.

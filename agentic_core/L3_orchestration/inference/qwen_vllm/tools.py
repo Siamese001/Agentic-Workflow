@@ -113,7 +113,7 @@ class GPUMemoryMonitor:
             if callable(self.metrics_provider):
                 try:
                     payload = self.metrics_provider()
-                except Exception:
+                except Exception:  # guardian: allow-broad-exception -- metrics provider: non-fatal, payload defaults to None
                     payload = None
 
             snapshot = self._coerce_snapshot(payload)

@@ -254,8 +254,7 @@ class AtomicBlackboard(SovereignBaseAgent):
                 if acquired:
                     return HealingLease(file_path, agent_name, acquired_at, expires_at, lease_id)
                 return None
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 self.log_error(f"Redis lease failed: {e}")
         return None
 
@@ -267,8 +266,7 @@ class AtomicBlackboard(SovereignBaseAgent):
                 if existing and (existing == lease.lease_id or existing.decode() == lease.lease_id):
                     self.redis_client.delete(lock_key)
                     return True
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 self.log_error(f"Redis release failed: {e}")
         return False
 
@@ -300,8 +298,7 @@ class AtomicBlackboard(SovereignBaseAgent):
         try:
             with open(file_path, "rb") as f:
                 return hashlib.md5(f.read()).hexdigest()
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow
             return ""
 
     def should_heal(self, file_path: str) -> bool:

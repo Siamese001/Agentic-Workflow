@@ -230,8 +230,7 @@ class DeepWikiHealingStrategy:
                     if rel_path not in documented_paths:
                         undocumented.append(py_file)
             return undocumented[: config.DEEPWIKI_HEALING_BATCH_SIZE]
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L0 DEEPWIKI HEALING] Error finding undocumented files: {e}")
             return []
 
@@ -247,8 +246,7 @@ class DeepWikiHealingStrategy:
                 f"[L0 DEEPWIKI HEALING] Checking documented paths for repo: {config.DEEPWIKI_DEFAULT_REPO}",
             )
             return set()
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L0 DEEPWIKI HEALING] Error getting documented paths: {e}")
             return set()
 
@@ -289,8 +287,7 @@ class DeepWikiHealingStrategy:
             else:
                 Logger.error(f"[L0 DEEPWIKI HEALING] Failed to update DeepWiki for {file_path}")
                 return False
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.error(
                 f"[L0 DEEPWIKI HEALING] DeepWiki update failed for {fix.get('file', 'unknown')}: {e}",
             )
@@ -322,8 +319,7 @@ class DeepWikiHealingStrategy:
             Logger.info(f"[L0 DEEPWIKI HEALING] Documentation generated for {file_path}")
             Logger.debug(f"[L0 DEEPWIKI HEALING] DeepWiki response: {str(result)[:200]}")
             return result is not None
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L0 DEEPWIKI HEALING] DeepWiki update failed: {e}")
             return False
 

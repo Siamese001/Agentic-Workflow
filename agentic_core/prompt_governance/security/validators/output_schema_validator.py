@@ -234,7 +234,7 @@ def _validate_pydantic(obj: Any, model_cls: Any) -> tuple[bool, str | None, dict
         else:
             model_cls.parse_obj(obj)
         return (True, None, {})
-    except Exception as e:  # guardian: allow-silent-swallow
+    except (AttributeError, TypeError, ValueError) as e:
         return (False, "PYDANTIC_VALIDATION_ERROR", {"error": _redact_error_detail(e)})
 
 

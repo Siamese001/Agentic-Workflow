@@ -245,8 +245,7 @@ def validate_agent_roster() -> dict:
             "agents_validated": [],
             "integrity_errors": [str(e)],
         }
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         return {"success": False, "error": str(e), "agents_validated": [], "integrity_errors": [str(e)]}
 
 
@@ -262,8 +261,7 @@ def main() -> int:
             result = {"success": False, "error": f"Unknown action: {args.action}"}
         print(json.dumps(result, default=str))
         return 0 if result.get("success") else 1
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         print(json.dumps({"success": False, "error": str(e)}))
         return 1
 

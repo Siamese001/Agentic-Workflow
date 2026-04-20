@@ -42,8 +42,7 @@ def inject_archives():
             shutil.copy2(src, dest)
             logger.info(f"INJECTED: {src.name} -> {dest.relative_to(BASE_DIR)}")
             success_count += 1
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"FAILED: {src.name} -> {e}")
             error_count += 1
     logger.info("--- INJECTION SUMMARY ---")

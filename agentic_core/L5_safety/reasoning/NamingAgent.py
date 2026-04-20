@@ -234,8 +234,8 @@ class NamingAgent(PromptRenderingMixin, SovereignBaseAgent):
 
         try:
             super().heal_repository(dry_run=dry_run, **kwargs)
-        except (AttributeError, TypeError):
-            pass  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow
+        except (AttributeError, TypeError):  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow
+            pass
         return {"violations_found": 0, "violations_fixed": 0, "errors": 0}
 
     # guardian: allow-type-erasure -- standard_heal decorator normalizes violation dict for orchestration compatibility

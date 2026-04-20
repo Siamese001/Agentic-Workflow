@@ -397,8 +397,7 @@ class SchemaHistoryFetcher:
                 f"schema history fetched: {len(paginated_records)} records (total: {total_count})",
             )
             return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Failed to fetch schema history: {str(e)}")
             return SchemaHistoryResult(records=[], total_count=0, query=query, metadata={"error": str(e)})
 
@@ -422,8 +421,7 @@ class SchemaHistoryFetcher:
             self._save_schema_history(record.schema_id)
             self.logger.debug(f"Added change record for schema: {record.schema_id}")
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Failed to add change record: {str(e)}")
             return False
 
@@ -552,15 +550,13 @@ class SchemaHistoryFetcher:
                         )
                         records.append(record)
                     self._history_records[schema_id] = records
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     self.logger.error(f"Failed to load history from {history_file}: {str(e)}")
             total_records = sum(len(records) for records in self._history_records.values())
             self.logger.info(
                 f"Loaded {total_records} history records for {len(self._history_records)} schemas",
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Failed to load schema history: {str(e)}")
 
     def _apply_filters(
@@ -611,8 +607,7 @@ class SchemaHistoryFetcher:
             }
             with open(history_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Failed to save schema history: {str(e)}")
 
     def _save_all_histories(self) -> None:

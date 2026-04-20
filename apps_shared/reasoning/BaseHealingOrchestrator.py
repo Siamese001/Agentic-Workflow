@@ -207,8 +207,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 agent_type="HealingOrchestrator",
                 observations=[f"HealingOrchestrator {self.__class__.__name__} initialized"],
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
 
     def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
@@ -277,8 +276,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 "violation_id": violation_id,
                 "used_learned_strategy": strategy is not None,
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"[{self.__class__.__name__}] Enhanced healing failed: {e}")
             return {"status": "error", "violation_id": violation_id, "reason": str(e)}
 
@@ -362,8 +360,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
             except Exception:
                 # System learning bridge unavailable - continue without it
                 pass
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG healing cycle persistence skipped: {e}")
         self._verify_dashboard_after_healing(results)
 
@@ -390,8 +387,7 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                         verification = future.result(timeout=30)
                 else:
                     verification = loop.run_until_complete(mcp_verify_dashboard())
-            # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow
                 verification = {}
             if verification.get("success"):
                 Logger.info(f"[{self.__class__.__name__}] Dashboard verification passed after healing")
@@ -399,6 +395,5 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 Logger.warning(
                     f"[{self.__class__.__name__}] Dashboard verification flagged issues: {verification.get('errors', [])}",
                 )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] Dashboard verification skipped: {e}")

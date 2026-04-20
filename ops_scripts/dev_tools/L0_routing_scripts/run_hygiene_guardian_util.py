@@ -243,8 +243,7 @@ def scan_empty_folders(root: Path) -> list[Path]:
                 children = [x for x in current_dir.iterdir() if x.name not in IGNORE_FILES]
                 if not children:
                     empty_folders.append(current_dir)
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except PermissionError:
+            except PermissionError:  # guardian: allow-silent-swallow - acceptable exception handling
                 pass
     return empty_folders
 
@@ -295,8 +294,7 @@ def remove_artifacts(artifacts: list[Path]) -> tuple[int, list[str]]:
                 assert_no_persistent_write("L0", "shutil.mutate")
                 shutil.rmtree(path)
                 removed += 1
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             errors.append(f"{path}: {e}")
     return (removed, errors)
 
@@ -313,8 +311,7 @@ def remove_empty_folders(folders: list[Path]) -> tuple[int, list[str]]:
                 if not children:
                     folder.rmdir()
                     removed += 1
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             errors.append(f"{folder}: {e}")
     return (removed, errors)
 

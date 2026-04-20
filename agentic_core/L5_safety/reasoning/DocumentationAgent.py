@@ -221,8 +221,7 @@ class DocumentationAgent(SubAtomicAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -297,8 +296,7 @@ class DocumentationAgent(SubAtomicAgent):
                 with open(fp, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
                 violations.extend(self._find_missing_docstring_violations_in_tree(tree, fp))
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 continue
         return (len(violations) == 0, violations)
 

@@ -61,8 +61,7 @@ class SourceRetriever:
                 )
                 return None
             return lines
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except OSError as exc:
+        except OSError as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow- acceptable exception handling
             _log.warning("[SourceRetriever] Cannot read %s: %s", path, exc)
             return None  # guardian: allow-return-none-swallow -- file read: non-fatal, caller handles None as missing source
 

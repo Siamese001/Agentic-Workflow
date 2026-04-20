@@ -293,7 +293,7 @@ class RunScopedStateAuthority:
             except (
                 StateVersionMissingError,
                 UnversionedStateError,
-            ) as exc:  # guardian: Multiple exceptions (StateVersionMissingError, UnversionedStateError) need specific handling
+            ) as exc:  # guardian: allow-log-and-swallow -- versioned read: falls back to legacy path, non-fatal
                 logger.warning(
                     "RUN_SCOPED_STATE_AUTHORITY versioned_read failed, falling back: %s (namespace=%s key=%s)",
                     exc,

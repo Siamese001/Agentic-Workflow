@@ -323,7 +323,7 @@ class VectorHealingStrategy:
                     return embedding_data
             Logger.error(f"[L0 VECTOR HEALING] Invalid embedding result: {result}")
             return None
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error(f"[L0 VECTOR HEALING] Embedding generation failed: {e}")
             return None
 

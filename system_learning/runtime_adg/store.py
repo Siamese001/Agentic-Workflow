@@ -164,7 +164,7 @@ class FileBackedRuntimeADGStore:
             return None
         try:
             return _deserialise_snapshot(payload)
-        except (KeyError, ValueError, TypeError):
+        except (KeyError, ValueError, TypeError):  # guardian: allow-return-none-swallow -- deserialization: non-fatal, caller skips None
             return None
 
     def list_snapshots(self) -> list[str]:

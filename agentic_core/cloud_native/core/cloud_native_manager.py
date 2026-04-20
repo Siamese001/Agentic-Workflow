@@ -202,7 +202,7 @@ class CloudNativeManager:
             except (
                 OSError,
                 config.ConfigException,
-            ):  # guardian: allow-silent-swallow -- k8s config: falls back to kubeconfig, non-fatal
+            ):  # guardian: allow-log-and-swallow -- k8s config: falls back to kubeconfig, non-fatal
                 # Fall back to kubeconfig
                 config.load_kube_config()
                 Logger.info("[CLOUD_NATIVE] Loaded kubeconfig")

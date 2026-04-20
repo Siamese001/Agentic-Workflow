@@ -400,10 +400,8 @@ class EphemeralVm:
                 await self.vm_manager.terminate_vm(vm_id)
                 if self.enable_logging:
                     LOGGER.debug("vm_torn_down", extra={"vm_id": vm_id})
-            except Exception as e:  # guardian: allow-silent-swallow
+            except Exception as e:  # guardian: allow-broad-exception -- VM teardown: error boundary, exception re-raised to caller
                 raise
-                if self.enable_logging:
-                    LOGGER.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
 
     async def _execute_in_vm(
         self,

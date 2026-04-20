@@ -38,8 +38,7 @@ def repair_file(file_path: Path):
 
     try:
         content = textwrap.dedent(content)
-    # guardian: allow-silent-swallow
-    except:
+    except Exception:  # guardian: allow-silent-swallow
         pass
     content = re.sub("except\\s*:", "except Exception:", content)
     if "BaseModel" in content and "class BaseModel" not in content and ("import BaseModel" not in content):

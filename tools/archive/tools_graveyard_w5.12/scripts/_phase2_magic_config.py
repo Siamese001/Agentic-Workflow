@@ -16,8 +16,7 @@ def fix_magic_config_in_file(file_path: Path) -> int:
     """Fix magic configuration violations in a file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except (UnicodeDecodeError, OSError):
+    except (UnicodeDecodeError, OSError):  # guardian: allow-silent-swallow - acceptable exception handling
         return 0
 
     lines = content.splitlines()

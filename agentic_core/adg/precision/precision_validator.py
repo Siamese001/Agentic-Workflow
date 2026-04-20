@@ -70,7 +70,7 @@ class PrecisionValidator:
             self.validation_report = report
             return report
 
-        except Exception as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
             report.passed = False
             report.error_message = f"Validation error: {str(e)}"
             return report

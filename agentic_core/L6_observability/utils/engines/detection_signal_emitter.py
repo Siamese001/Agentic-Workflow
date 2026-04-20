@@ -113,8 +113,7 @@ def emit_detection_signal_with_l4a(
                 component_name="detection_signal_emitter",
                 created_utc=created_at_utc,
             )
-        # guardian: allow-silent-swallow
-        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("detection_signal_emitter: Exception swallowed at L117: %s", e)

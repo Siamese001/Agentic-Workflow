@@ -195,8 +195,7 @@ def generate_unified_diff(canonical: Path, duplicate: Path) -> str:
             check=False,
         )
         return result.stdout
-    # guardian: allow-silent-swallow
-    except:
+    except Exception:  # guardian: allow-silent-swallow
         return ""
 
 

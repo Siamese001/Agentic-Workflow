@@ -387,8 +387,7 @@ class ReasoningMemory:
         """Persist thought to storage."""
         try:
             Ledger.append({"type": "reasoning_memory", "thought": self._thought_to_dict(thought)})
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow- optional dependency
             pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
 
     def _load_persistent(self) -> None:
@@ -409,8 +408,7 @@ class ReasoningMemory:
                             metadata=thought_dict.get("metadata", {}),
                         ),
                     )
-        # guardian: allow-silent-swallow
-        except (ImportError, Exception):
+        except (ImportError, Exception):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
             pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
 
     def clear(self) -> None:

@@ -173,7 +173,6 @@ def run_simulation():
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.warning(f"    WARNING: Core Integrity check failed (expected during dev): {e}")
         Logger.info("[2] Booting Resume Generation Agent (CampaignPlanner)...")
         planner = CampaignPlannerAgent(campaign_id="SIM-2026-ALPHA", active_channels=["web", "social"])
         Logger.info(f"    PASS: Booted {planner.name} (RG Domain)")
@@ -189,8 +188,7 @@ def run_simulation():
             raise ValueError("Expected bias detection to return True")
         Logger.info("    PASS: Governance Logic Verified.")
         Logger.info(">>> SIMULATION SUCCESSFUL: SYSTEM CONVERGED <<<")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         Logger.error(f">>> SIMULATION FAILED: {e}")
         import traceback
 

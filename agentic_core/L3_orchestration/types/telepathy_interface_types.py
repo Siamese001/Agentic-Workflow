@@ -235,7 +235,7 @@ class TelepathyInterface:
                 return None
             LOGGER.info(f"🧠 Telepathic instruction received (Cycle {cycle}): {content[:100]}...")
             return content
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             LOGGER.error(f"Failed to read telepathy instructions: {e}")
             return None  # guardian: allow-return-none-swallow -- telepathy read: non-fatal, caller checks for None
 
@@ -325,7 +325,6 @@ class TelepathyInterface:
             TypeError,
         ):  # guardian: allow-log-and-swallow -- mark done: re-raises immediately, error log unreachable but preserved for diagnostics
             raise
-            LOGGER.error(f"Failed to mark instructions as done: {e}")
 
     def inject_into_context(self, context: Any, commands: dict[str, Any]) -> Any:
         """
@@ -360,7 +359,6 @@ class TelepathyInterface:
             TypeError,
         ):  # guardian: allow-log-and-swallow -- clear instructions: re-raises immediately, error log unreachable but preserved for diagnostics
             raise
-            LOGGER.error(f"Failed to clear instructions: {e}")
 
 
 _telepathy: TelepathyInterface | None = None

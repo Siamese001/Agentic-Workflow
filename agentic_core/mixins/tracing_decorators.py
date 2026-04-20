@@ -83,7 +83,7 @@ def _extract_attributes(
                 attributes[f"{name}_count"] = len(value)
             elif isinstance(value, dict):
                 attributes[f"{name}_keys"] = list(value.keys())[:10]  # Limit keys
-        except (TypeError, ValueError) as e:
+        except (TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             # Skip values that can't be serialized
             import logging
 

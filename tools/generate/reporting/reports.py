@@ -235,6 +235,11 @@ def _print_defect_table(
                     "silent_exception_swallow",
                     "log_and_swallow",
                     "return_none_swallow",
+                    "unreachable_after_raise",
+                    "exception_type_erasure",
+                    "blocking_call_in_async",
+                    "bare_except",
+                    "hardcoded_secret",
                 )
                 _prod_prefixes = ("agentic_core/", "system_learning/")
                 _exempt_rows = _cc.execute("""

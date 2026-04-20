@@ -407,8 +407,8 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
                     urgency_score = 0.1
 
                 score += priority_indicators["deadline_urgency"] * urgency_score
-            except ValueError:
-                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except ValueError:  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                pass
 
         # Error handling requirements
         error_handling = branch.get("error_handling", {})

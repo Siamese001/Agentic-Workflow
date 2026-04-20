@@ -569,8 +569,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             if cached:
                 print(f"   [CACHE HIT] Method search for '{Task[:30]}...'")
                 return json.loads(cached)
-        # guardian: allow-silent-degradation - Optional Redis cache
-        except (ImportError, AttributeError) as e:
+        except (ImportError, AttributeError) as e:  # guardian: allow-silent-swallow - Optional Redis cache
             print(f"Gemini embedding failed: {e}")
         task_lower = Task.lower()
         results = [
@@ -584,8 +583,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         try:
             if results:
                 self.redis.set(cache_key, json.dumps(results), ex=3600)
-        # guardian: allow-silent-degradation - Optional Redis cache
-        except (ImportError, AttributeError, ValueError) as e:
+        except (ImportError, AttributeError, ValueError) as e:  # guardian: allow-silent-swallow - Optional Redis cache
             print(f"Gemini reranking failed: {e}")
         return results
 
@@ -716,7 +714,6 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
             query_engine = get_runtime_query_engine()
             return query_engine.find_agents_by_base_class(base_class)
-        # guardian: allow-silent-degradation - Optional ADG discovery
-        except (ImportError, AttributeError) as exc:
+        except (ImportError, AttributeError) as exc:  # guardian: allow-silent-swallow - Optional ADG discovery
             Logger.warning("[SubAtomicRegistry] ADG discovery unavailable: %s", exc)
             return []

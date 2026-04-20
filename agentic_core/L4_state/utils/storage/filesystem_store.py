@@ -316,30 +316,10 @@ class FileSystemStore:
             # Atomic rename (this is safe as it's a metadata operation)
             temp_path.rename(artifact_path)
 
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Clean up temp file if it exists
-            if temp_path.exists():
-                try:
-                    # Use UWG for cleanup as well
-                    cleanup_instruction = InstructionPacket(
-                        instruction_id=f"filesystem_cleanup_{uuid.uuid4().hex}",
-                        payload="",
-                        metadata={
-                            "tool_name": "file_system.write",
-                            "operation": "delete",
-                            "target_path": str(temp_path),
-                        },
-                    )
-                    gateway = get_write_gateway()
-                    gateway.execute_instruction(cleanup_instruction)
-                # guardian: allow-silent-swallow
-                except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
-                    # If UWG cleanup fails, try direct removal as last resort
-                    temp_path.unlink(missing_ok=True)
-            raise
 
         # Get file size for reference
         file_size = artifact_path.stat().st_size

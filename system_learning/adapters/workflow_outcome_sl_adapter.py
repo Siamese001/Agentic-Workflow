@@ -97,7 +97,7 @@ def register_with_workflow_bridge() -> None:
 
         bridge.register_learner("system_learning", adapter.accept)
         logger.info("WorkflowOutcomeSLAdapter registered with WorkflowLearningBridge")
-    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         logger.error("Failed to register WorkflowOutcomeSLAdapter: %s", exc)
 
 

@@ -380,8 +380,6 @@ def create_test_for_module(module_info: dict) -> bool:
         return True
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        print(f"Failed to create {test_path}: {e}")
-        return False
 
 
 def create_critical_tests_first():
@@ -476,7 +474,6 @@ def validate_minimum_behavioral_bar():
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            violations.append(f"{test_file}: Error reading file - {e}")
 
     print(f"Checked {checked_count} test files")
     print(f"Violations: {len(violations)}")

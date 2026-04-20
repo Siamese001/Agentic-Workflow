@@ -319,8 +319,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
                                 f"Large static structure: {target.id}",
                                 "Use dynamic discovery.",
                             )
-                    # guardian: allow-silent-swallow
-                    except (ValueError, TypeError):
+                    except (ValueError, TypeError):  # guardian: allow-silent-swallow
                         pass
         self.generic_visit(node)
 
@@ -365,7 +364,6 @@ def main():
             except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
-                continue
     for _f in findings:
         pass
 

@@ -189,7 +189,7 @@ async def main() -> Any:
         print("\n🚀 [SYSTEM ONLINE] - Executing Sovereign Hop...\n")
         final_output: Any = await hop.run(mission)
         print(f"\n✅ [MISSION COMPLETE]\nOutput: {final_output}")
-    except Exception as e:  # guardian: allow-silent-swallow
+    except (AttributeError, ImportError, OSError, RuntimeError, ValueError) as e:
         print(f"\n❌ [CRITICAL FAILURE]: {e}")
 
 

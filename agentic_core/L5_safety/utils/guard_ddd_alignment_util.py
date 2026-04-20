@@ -172,8 +172,6 @@ try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import SCRIPTS_DIR, TESTS_DIR
 except ImportError as e:
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
-    SCRIPTS_DIR = "ops_scripts"
-    TESTS_DIR = "tests"
 
 
 def get_ddd_violations_detailed(root_path: str) -> list[dict]:
@@ -230,16 +228,6 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
             continue
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            violations.append(
-                {
-                    "file": str(relative_path),
-                    "line": 1,
-                    "type": "Read Error",
-                    "description": f"Failed to read/parse: {e}",
-                    "Severity": "LOW",
-                },
-            )
-            continue
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if not isinstance(node, ast.ClassDef):
                 continue

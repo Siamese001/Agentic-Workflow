@@ -2,6 +2,8 @@
 description: Enforce progress display requirements for all long-running operations (>5s) with colored progress bars and percentage displays
 ---
 
+> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+
 # Progress Display Enforcement Workflow
 
 This workflow enforces the constitutional requirement for progress displays on all operations exceeding 5 seconds, as specified in §5.3 of the Windsurf rules.

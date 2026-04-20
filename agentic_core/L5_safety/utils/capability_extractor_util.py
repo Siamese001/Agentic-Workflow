@@ -258,8 +258,7 @@ class CapabilityExtractor:
         """
         try:
             body_source = ast.unparse(item.body) if hasattr(ast, "unparse") else ""
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError):
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow
             body_source = ""
         lower_body = body_source.lower()
         if (

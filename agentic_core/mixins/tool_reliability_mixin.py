@@ -568,15 +568,13 @@ class ToolReliabilityMixin:
                 trace_id=trace_id,
                 agent_id="tool_reliability_mixin",
             )
-        # guardian: allow-silent-swallow
-        except (
+        except (  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             AttributeError,
             RuntimeError,
             OSError,
         ) as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            Logger.warning("[V15] Retry gateway audit failed (LOG_ONLY): %s", exc)
 
     @runtime_guard("D.with_retry.tool_reliability_mixin")
     async def with_retry(
@@ -642,8 +640,7 @@ class ToolReliabilityMixin:
                     # Re-check circuit breaker before retry
                     try:
                         self._check_circuit_breaker(tool_name)
-                    # guardian: allow-silent-swallow - acceptable exception handling
-                    except CircuitBreakerError:
+                    except CircuitBreakerError:  # guardian: allow-silent-swallow - acceptable exception handling
                         break
 
         # All retries exhausted

@@ -432,8 +432,7 @@ class ObservabilityToolInvoker:
             if self.config.enable_metrics:
                 self._record_invocation_metrics(result)
             return result
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Tool invocation failed: {str(e)}")
             self._record_failure(context.tool_id)
             return self._create_error_result(
@@ -545,8 +544,7 @@ class ObservabilityToolInvoker:
                     )
                 else:
                     return self._simulate_invocation(context, parameters)
-            # guardian: allow-silent-swallow
-            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 last_error = str(e)
                 if attempt < max_retries:
                     retry_delay = context.retry_policy.get("delay", 2**attempt)

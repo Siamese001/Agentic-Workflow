@@ -273,8 +273,7 @@ def get_changed_files() -> list[Path]:
     try:
         manifest = json.loads(MANIFEST_JSON.read_text(encoding="utf-8"))
         file_hashes: dict = manifest.get("file_hashes", {})
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         log.warning(f"Manifest invalid ({e}) → assuming all changed")
         return _scan_python_files()
 
@@ -286,8 +285,7 @@ def get_changed_files() -> list[Path]:
             current_hash = hashlib.md5(py_file.read_bytes()).hexdigest()
             if file_hashes.get(rel_path) != current_hash:
                 changed.append(py_file)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             changed.append(py_file)
     return changed
 
@@ -351,8 +349,7 @@ def run_discovery(force: bool = False) -> int:
     except subprocess.TimeoutExpired:
         log.error("Discovery timed out after 300s")
         return 1
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         log.error(f"Failed to launch discovery: {e}")
         return 1
 

@@ -424,8 +424,7 @@ class ConfigModelConverter:
             )
             return result
 
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Conversion failed: {str(e)}")
             return ConversionResult(
                 config_model=model,
@@ -613,8 +612,7 @@ class ConfigModelConverter:
 
         try:
             return self._convert_type(value, field_def.type)
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             if self.config.mode == ConversionMode.STRICT:
                 errors.append(f"Type conversion failed for {field_name}: {str(e)}")
             else:

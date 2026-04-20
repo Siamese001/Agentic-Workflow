@@ -236,7 +236,6 @@ def try_import_agent(name, module_path, class_name):
     # guardian: allow-silent-swallow
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        return None, f"{type(e).__name__}: {e}"
 
 
 def try_run_agent(cls, name, method_name, territory):
@@ -265,7 +264,6 @@ def try_run_agent(cls, name, method_name, territory):
         return {"success": True, "result": result}
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        return {"error": f"{type(e).__name__}: {str(e)[:300]}"}
 
 
 # ── PHASE 1: Import all agents ──

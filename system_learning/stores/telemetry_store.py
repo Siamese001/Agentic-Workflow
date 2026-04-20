@@ -240,7 +240,7 @@ class FileBackedTelemetryStore:
                     window_start=window_start_utc,
                     window_end=window_end_utc,
                 )
-            except Exception as exc:  # guardian: allow-broad-exception allow-log-and-swallow -- telemetry persistence best-effort: non-fatal, events still returned to caller
+            except Exception as exc:  # guardian: allow-broad-exception -- telemetry persistence best-effort: non-fatal, events still returned to caller
                 logger.debug("Failed to persist telemetry window for %s: %s", self._path, exc)
         return tuple(events)
 

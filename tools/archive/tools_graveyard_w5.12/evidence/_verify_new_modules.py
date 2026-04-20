@@ -16,8 +16,7 @@ for mod in modules:
     try:
         m = __import__(mod, fromlist=["_"])
         results.append(f"OK   {mod}")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         results.append(f"FAIL {mod}: {type(e).__name__}: {e}")
 
 for r in results:

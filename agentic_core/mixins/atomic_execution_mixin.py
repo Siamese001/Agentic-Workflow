@@ -257,8 +257,7 @@ class AtomicExecutionMixin:
         try:
             content = file_path.read_bytes()
             return hashlib.sha256(content).hexdigest()[:16]
-        # guardian: allow-silent-swallow
-        except (OSError, ValueError):
+        except (OSError, ValueError):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             logger.warning(f"Failed to compute hash for {file_path}", exc_info=True)
             return None
 
@@ -283,10 +282,9 @@ class AtomicExecutionMixin:
             txn.backups.append(backup)
             logger.debug(f"Backed up {file_path} to {backup_path}")
             return backup
-        # guardian: allow-silent-swallow
-        except (OSError, RuntimeError) as e:
+        except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to backup {file_path}: {e}")
-            raise AtomicExecutionError(f"Backup failed for {file_path}: {e}", txn.transaction_id)
+            raise AtomicExecutionError(f'Backup failed for {file_path}: {e}', txn.transaction_id) from e
 
     def _rollback_transaction(self, txn: AtomicTransaction) -> None:
         """Rollback all changes in a transaction."""
@@ -302,7 +300,6 @@ class AtomicExecutionMixin:
                 RuntimeError,
             ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                errors.append(f"Failed to restore {backup.original_path}: {e}")
         for created_path in tqdm(txn.created_files, desc="Processing", unit="item"):
             try:
                 if created_path.exists() and created_path not in [b.original_path for b in txn.backups]:
@@ -313,7 +310,6 @@ class AtomicExecutionMixin:
                 RuntimeError,
             ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                errors.append(f"Failed to remove {created_path}: {e}")
         txn.rolled_back = True
         if errors:
             logger.error(f"Rollback completed with errors: {errors}")
@@ -327,8 +323,7 @@ class AtomicExecutionMixin:
             if backup_dir.exists():
                 shutil.rmtree(backup_dir)
                 logger.debug(f"Cleaned up backup directory {backup_dir}")
-        # guardian: allow-silent-swallow
-        except (
+        except (  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             OSError,
             RuntimeError,
         ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
@@ -375,8 +370,7 @@ class AtomicExecutionMixin:
             )
             if cleanup_on_success:
                 self._cleanup_transaction(txn)
-        # guardian: allow-silent-swallow
-        except (OSError, RuntimeError, ValueError, AttributeError) as e:
+        except (OSError, RuntimeError, ValueError, AttributeError) as e:  # guardian: allow-silent-swallow
             txn.error = str(e)
             logger.error(f"Transaction {txn_id} failed: {e}")
             self._rollback_transaction(txn)

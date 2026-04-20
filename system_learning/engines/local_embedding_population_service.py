@@ -348,7 +348,7 @@ class LocalEmbeddingPopulationService:
                 embedding_model_version=self.embedding_model_version,
                 embedding_model_checksum=self.embedding_model_checksum,
             )
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
             if hasattr(self.faiss_store, "discard_build"):
                 self.faiss_store.discard_build(index_id)
             logger.exception("populate_from_jsonl failed for %s", index_id)

@@ -354,8 +354,7 @@ class StructureHealerAgent(SovereignBaseAgent):
 
         try:
             content = file_path.read_text(encoding="utf-8")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow
             return actions
 
         # Find classes without Agent suffix
@@ -402,8 +401,7 @@ class StructureHealerAgent(SovereignBaseAgent):
 
         try:
             content = file_path.read_text(encoding="utf-8")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow
             return actions
 
         lines = content.split("\n")
@@ -584,8 +582,7 @@ class StructureHealerAgent(SovereignBaseAgent):
                 "errors": 0,
                 "skipped": 0,
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal gravity violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -607,8 +604,7 @@ class StructureHealerAgent(SovereignBaseAgent):
                 "errors": 0,
                 "skipped": 0,
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal hierarchy violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -630,8 +626,7 @@ class StructureHealerAgent(SovereignBaseAgent):
                 "errors": 0,
                 "skipped": 0,
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal naming violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -653,8 +648,7 @@ class StructureHealerAgent(SovereignBaseAgent):
                 "errors": 0,
                 "skipped": 0,
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal territory violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -676,8 +670,7 @@ class StructureHealerAgent(SovereignBaseAgent):
                 "errors": 0,
                 "skipped": 0,
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[STRUCTURE_HEALER] Failed to heal blueprint violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

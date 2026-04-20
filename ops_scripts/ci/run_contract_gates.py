@@ -133,6 +133,18 @@ def main():
         sys.exit(1)
     print("✅ Executor theater gate passed")
 
+    # Gate: ADG graph-layer evidence in refactoring plans (Constitutional §22)
+    print("🔍 Running graph-layer evidence gate (refactoring plans)...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_graph_layer_evidence.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Graph-layer evidence gate passed")
+
     # Gate: P0 two-pass (preflight + full ADG enforcement)
     print("\n[P0 TWO-PASS GATE]")
     try:

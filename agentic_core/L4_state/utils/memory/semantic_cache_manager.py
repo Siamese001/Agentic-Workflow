@@ -458,8 +458,7 @@ class SemanticCacheManager:
         except ImportError as e:
             Logger.debug("[HiveMind] redis package not installed")
             return e
-        # guardian: allow-silent-swallow
-        except _REDIS_RECOVERABLE_EXCEPTIONS as e:
+        except _REDIS_RECOVERABLE_EXCEPTIONS as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[HiveMind] Redis connection failed: {e}")
             return e
 
@@ -494,9 +493,8 @@ class SemanticCacheManager:
                     corpus_version=raw_corpus,
                     query_hash=query_hash,
                 )
-            except ValueError:
-                pass
-        # Legacy path: L1 Redis and fallback
+            except ValueError:  # guardian: allow-silent-swallow -- cache key construction: optional active model context, fallback key built below
+                pass  # active_model_context may not have required attrs and fallback
         key = "|".join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, context])
         return hashlib.sha256(key.encode()).hexdigest()
 
@@ -565,8 +563,7 @@ class SemanticCacheManager:
                     )  # [Phase A]
                     _record_semantic_cache_prom_event("hit", namespace)
                     return json.loads(cached)
-            # guardian: allow-silent-swallow
-            except _REDIS_READ_EXCEPTIONS as e:
+            except _REDIS_READ_EXCEPTIONS as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.debug(f"[HiveMind] Redis recall failed: {e}")
         # Reaching here means L1 was not hit (Redis disabled, miss, or error)
         _emit_emits_metric_event("semantic_cache_manager", "p4obs", f"l1_miss:{namespace}")  # [Phase A]
@@ -589,8 +586,7 @@ class SemanticCacheManager:
                         )  # [Phase A]
                         _record_semantic_cache_prom_event("hit", namespace)
                         return cached_result
-            # guardian: allow-silent-swallow
-            except _GPTCACHE_READ_EXCEPTIONS as e:
+            except _GPTCACHE_READ_EXCEPTIONS as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.debug(f"[HiveMind] Native L2 recall failed: {e}")
         with self._lock:
             self.stats["cache_misses"] += 1
@@ -792,8 +788,7 @@ class SemanticCacheManager:
             if self.redis_enabled:
                 try:
                     self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_LONG_TERM_TTL, payload_json)
-                # guardian: allow-silent-swallow
-                except _REDIS_RECOVERABLE_EXCEPTIONS as e:
+                except _REDIS_RECOVERABLE_EXCEPTIONS as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.warning(f"[HiveMind] Redis TTL extension failed: {e}")
             with self._lock:
                 self.stats["promotions"] += 1
@@ -804,8 +799,7 @@ class SemanticCacheManager:
                 "semantic_cache_manager", "p4obs", f"l2_promote:{namespace}:{ctx_hash[:8]}"
             )  # [Phase A]
             return True
-        # guardian: allow-silent-swallow
-        except _PROMOTION_EXCEPTIONS as e:
+        except _PROMOTION_EXCEPTIONS as e:  # guardian: allow-silent-swallow
             Logger.error(f"[HiveMind] Promotion failed: {e}")
             _emit_writes_observability_log(
                 "semantic_cache_manager", "p4obs", f"l2_promote_failed:{namespace}"
@@ -887,12 +881,10 @@ class SemanticCacheManager:
                         loop.run_until_complete(
                             self.promote_to_long_term(context, namespace, clean_result, feedback_score),
                         )
-                # guardian: allow-silent-swallow
-                except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+                except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.warning(f"[HiveMind] Auto-promote failed: {e}")
             return True
-        # guardian: allow-silent-swallow
-        except _REDIS_READ_EXCEPTIONS + (KeyError,) as e:
+        except _REDIS_READ_EXCEPTIONS + (KeyError,) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[HiveMind] Feedback update failed: {e}")
             return False
 

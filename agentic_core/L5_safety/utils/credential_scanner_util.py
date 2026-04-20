@@ -293,7 +293,7 @@ class CredentialScanner:
                                 confidence=confidence,
                             ),
                         )
-        except (OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.debug("[CREDENTIAL SCAN] Error scanning %s: %s", file_path, e)
 
     def scan_for_credentials(

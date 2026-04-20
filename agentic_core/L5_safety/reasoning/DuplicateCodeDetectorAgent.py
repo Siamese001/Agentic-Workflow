@@ -212,8 +212,7 @@ class DuplicateFile:
 
 try:
     from agentic_core.utils.timeout_util import timeout
-# guardian: allow-silent-degradation - Optional timeout utility
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional timeout utility
 
     def timeout(seconds=30):
         def decorator(func):
@@ -224,8 +223,7 @@ except ImportError:
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-# guardian: allow-silent-degradation - Optional testing mixin
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional testing mixin
 
     class SubatomicTestingMixin:  # type: ignore[no-redef]
         pass
@@ -233,8 +231,7 @@ except ImportError:
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-# guardian: allow-silent-degradation - Optional healer mixin
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional healer mixin
 
     class HealerMixin:  # type: ignore[no-redef]
         pass
@@ -242,8 +239,7 @@ except ImportError:
 
 try:
     from agentic_core.interfaces.mixins import MCPHardenedMixin
-# guardian: allow-silent-degradation - Optional MCP hardened mixin
-except (ImportError, NameError):
+except (ImportError, NameError):  # guardian: allow-silent-swallow - Optional MCP hardened mixin
 
     class MCPHardenedMixin:  # type: ignore[no-redef]
         pass
@@ -335,7 +331,6 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                 self.ts_parser.language = language()
             except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                self.ts_parser = None
 
     # guardian: allow-type-erasure
     async def execute(self, file_types: set[str] = None, scan_whole_files: bool = True) -> dict:
@@ -364,8 +359,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             _adg_antipatterns = sorted(_bp.antipattern_signals)
             if _adg_antipatterns:
                 Logger.info("[ADG] DuplicateCodeDetectorAgent antipatterns=%s", _adg_antipatterns)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug(
@@ -398,8 +392,6 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                Logger.warning(f"Failed to read {file_path}: {e}")
-                continue
         duplicates = []
         for file_hash, files in file_hashes.items():
             if len(files) > 1:
@@ -430,8 +422,6 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                Logger.warning(f"Failed to scan {file_path}: {e}")
-                continue
         duplicates = [{"hash": h, "locations": locs} for h, locs in code_blocks.items() if len(locs) > 1]
         Logger.info(f"[DUPE SCAN] Found {len(duplicates)} duplicate code blocks")
         return duplicates[: self.max_report]
@@ -523,8 +513,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                             f"[ARCHIVED] {delete_path_str} -> {archive_target.relative_to(self.project_root)}",
                         )
                         archived.append(delete_path_str)
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     Logger.error(f"Failed to archive {delete_path_str}: {e}")
                     errors.append({"path": delete_path_str, "error": str(e)})
         return {
@@ -561,8 +550,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                         _wg.remove_file(full_path)
                         Logger.info(f"[DELETED] {delete_path_str}")
                         deleted.append(delete_path_str)
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     Logger.error(f"Failed to delete {delete_path_str}: {e}")
                     errors.append({"path": delete_path_str, "error": str(e)})
         return {"deleted_count": len(deleted), "deleted_files": deleted, "errors": errors, "dry_run": dry_run}
@@ -578,8 +566,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                 tree = ast.parse(code)
                 norm_tree = self._normalize_ast_tree(tree)
                 return hashlib.sha256(code.encode()).hexdigest()
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow
             return hashlib.sha256(code.encode()).hexdigest()
 
     def _normalize_ast_tree(self, node: ast.AST) -> str:

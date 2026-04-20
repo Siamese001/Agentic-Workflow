@@ -225,15 +225,6 @@ class OrchestrationMixin:
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                step.status = WorkflowStatus.FAILED
-                step.error = str(e)
-                results["errors"].append({"step": step.name, "error": str(e)})
-                results["status"] = "failed"
-                results["steps"].append({"name": step.name, "status": "failed", "error": str(e)})
-                if stop_on_failure:
-                    if rollback_on_failure:
-                        self._rollback_steps(completed_steps)
-                    break
         return results
 
     def _rollback_steps(self, steps: list[WorkflowStep]) -> None:
@@ -247,8 +238,7 @@ class OrchestrationMixin:
             if hasattr(step.func, "rollback"):
                 try:
                     step.func.rollback(step.result)
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     if hasattr(self, "log"):
                         self.log(f"Rollback failed for {step.name}: {e}")
 
@@ -270,8 +260,7 @@ class OrchestrationMixin:
             try:
                 result = func(*args, **kwargs)
                 results["tasks"][name] = {"status": "completed", "result": result}
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 results["tasks"][name] = {"status": "failed", "error": str(e)}
                 results["errors"].append({"task": name, "error": str(e)})
                 results["status"] = "partial"
@@ -311,10 +300,6 @@ class OrchestrationMixin:
                     # guardian: allow-silent-swallow
                     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         raise
-                        results[agent_name] = {"status": "failed", "error": str(e)}
-                        errors.append({"agent": agent_name, "error": str(e)})
-                        completed.add(agent_name)
-                        progress_made = True
             if not progress_made:
                 remaining = set(agent_tasks.keys()) - completed
                 errors.append({"error": f"Circular or missing dependencies for: {remaining}"})

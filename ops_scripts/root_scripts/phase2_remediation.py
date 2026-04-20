@@ -209,7 +209,6 @@ def move_mislocated_tests():
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                print(f"Failed to move {actual_test}: {e}")
 
     print(f"Moved {moved_count} tests")
     return moved_count
@@ -359,8 +358,6 @@ _emit_gated_by_confidence("p1", "phase2_remediation", "confidence_gate")
         return True
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         raise
-        print(f"Failed to create {test_path}: {e}")
-        return False
 
 
 def main():

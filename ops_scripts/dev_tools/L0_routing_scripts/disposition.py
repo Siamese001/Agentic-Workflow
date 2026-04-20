@@ -251,8 +251,7 @@ class CoreSynthesisAnalyzer:
                 sovereign_requirements=sovereign_requirements,
             )
 
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             return CoreAnalysisResult(
                 file_path=str(file_path.relative_to(self.base_path)),
                 disposition=Disposition.ARCHIVE,

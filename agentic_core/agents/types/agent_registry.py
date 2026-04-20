@@ -118,7 +118,7 @@ def _emit_bootstrap_telemetry() -> None:
 
         try:
             emitter(*emitter_args)
-        except Exception:  # guardian: allow-broad-exception allow-log-and-swallow -- lifecycle telemetry emitters are untrusted; failures must never crash module load
+        except Exception:  # guardian: allow-broad-exception -- lifecycle telemetry emitters are untrusted; failures must never crash module load
             logger.debug("Lifecycle bootstrap emitter %s failed", emitter_name, exc_info=True)
 
     _BOOTSTRAP_TELEMETRY_EMITTED = True

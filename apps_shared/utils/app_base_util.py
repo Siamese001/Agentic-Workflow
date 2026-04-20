@@ -84,8 +84,7 @@ _emit_stores_embedding("p4", "app_base_util", "embedding_store")
 
 try:
     from agentic_core.interfaces.mixins import MetaLearningMixin
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
     class MetaLearningMixin:
         """Fallback MetaLearningMixin when not available."""

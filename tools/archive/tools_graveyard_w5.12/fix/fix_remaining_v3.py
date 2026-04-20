@@ -162,8 +162,7 @@ for rel, name, imp in FIXES:
 
     try:
         ast.parse(new_src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         print(f"  SYNTAX ERROR: {rel}: {e}")
         continue
 

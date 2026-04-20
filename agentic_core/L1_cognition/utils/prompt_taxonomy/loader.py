@@ -189,7 +189,9 @@ class TemplateLoader:
                 template = self._jinja_env.from_string(content)
                 return template.render(**variables)
             except jinja2.TemplateError as e:  # guardian: allow-log-and-swallow -- Jinja2 template render failure: falls back to StringTemplate; intentional degraded-mode fallback
-                logging.getLogger(__name__).warning("loader: Jinja2 template render failed, falling back to StringTemplate: %s", e)
+                logging.getLogger(__name__).warning(
+                    "loader: Jinja2 template render failed, falling back to StringTemplate: %s", e
+                )
 
         # Use string.Template as fallback
         return StringTemplate(content).safe_substitute(variables)

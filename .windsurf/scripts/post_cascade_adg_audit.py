@@ -251,7 +251,7 @@ def _append_violations(violations: list[dict]) -> None:
         with open(violations_log, "a", encoding="utf-8") as f:
             for v in violations:
                 f.write(json.dumps(v) + "\n")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- audit log write: non-fatal, fail-open
         pass
 
 
@@ -304,7 +304,7 @@ def main() -> int:
                 file=sys.stderr,
             )
 
-    except (OSError, ValueError):
+    except (OSError, ValueError):  # guardian: allow-silent-swallow -- audit log flush: non-fatal, fail-open
         pass
 
     return 0

@@ -100,8 +100,7 @@ def fix_imports_in_file(
     try:
         with open(file_path, encoding="utf-8") as f:
             content: Any = f.read()
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         return (0, [f"ERROR reading {file_path}: {e}"])
     original_content: Any = content
     changes: Any = []
@@ -124,8 +123,7 @@ def fix_imports_in_file(
     if new_content != original_content and (not dry_run):
         try:
             _wg.open_write(file_path, new_content)
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             return (0, [f"ERROR writing {file_path}: {e}"])
     num_changes: Any = len(changes)
     return (num_changes, changes)

@@ -218,8 +218,7 @@ class CCMeasurement:
         except json.JSONDecodeError as e:
             print(f"Failed to parse radon output: {e}")
             return {}
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"Error measuring CC: {e}")
             return {}
 
@@ -324,8 +323,7 @@ class CCMeasurement:
                 assert_no_persistent_write("L0", "json.dump")
                 json.dump(report, f, indent=2)
             print(f"\nReport saved to: {output_file}")
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"Error saving report: {e}")
 
     def compare_reports(self, baseline: dict, current: dict) -> dict:

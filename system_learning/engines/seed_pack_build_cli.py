@@ -95,8 +95,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow- optional dependency
     pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
 from agentic_core.embeddings.embedding_factory import create_embedding_client
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

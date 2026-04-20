@@ -273,8 +273,7 @@ def log_event(event_type: str, payload: dict) -> Any:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
 
         _log_event(event_type, payload)
-    # guardian: allow-silent-degradation - Optional runtime logging
-    except (ImportError, AttributeError) as e:
+    except (ImportError, AttributeError) as e:  # guardian: allow-silent-swallow - Optional runtime logging
         print(f"[L5SafetyExerciserAgent] Event logging unavailable ({type(e).__name__}): {event_type}")
 
 

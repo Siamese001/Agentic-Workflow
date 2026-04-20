@@ -196,7 +196,7 @@ def check_fake_config(path: Path, content: str) -> Violation | None:
 
     try:
         tree = ast.parse(content)
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         return None
 
     for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

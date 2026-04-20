@@ -36,7 +36,7 @@ class MCPConnectionManager:
             if inspect.isawaitable(result):
                 result = await result
             return result
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- MCP tool call boundary: returns error dict instead of raising
             return {
                 "error": f"tool_call_failed:{normalized_tool}:{exc}",
                 "available": True,

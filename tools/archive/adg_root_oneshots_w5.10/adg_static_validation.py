@@ -22,8 +22,7 @@ try:
     from agentic_core.adg.runtime.query_engine import ADGQueryEngine
 
     CAN_IMPORT = True
-# guardian: allow-silent-degradation - Optional ADG runtime modules
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional ADG runtime modules
     CAN_IMPORT = False
     print("WARNING: Cannot import ADG modules - using mock validation")
 

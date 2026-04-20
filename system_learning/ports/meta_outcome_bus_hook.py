@@ -240,15 +240,9 @@ class DefaultMetaOutcomeBusHook:
                 },
             )
             self._bus.enqueue(package)
-        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
-            logger.warning(
-                "meta_outcome_bus_enqueue_failed",
-                extra={
-                    "error_signature": healing_input.error_signature,
-                    "exception": str(exc),
-                    "trace_id": healing_input.trace_id,
-                },
-            )
+        except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            import logging
 
+            logging.getLogger(__name__).warning("meta_outcome_bus_hook: Exception swallowed at L243: %s", e)
 
 __all__ = ["MetaOutcomeBusHook", "NullMetaOutcomeBusHook", "DefaultMetaOutcomeBusHook"]

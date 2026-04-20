@@ -196,8 +196,7 @@ class FunctionalTool(BaseTool):
             return str(result)
         except (KeyboardInterrupt, SystemExit):
             raise
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return f"Error executing {self.name} ({type(e).__name__}): {e}"
 
 

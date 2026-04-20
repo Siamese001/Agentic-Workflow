@@ -380,8 +380,8 @@ class EmbeddingServiceFactory:
             cpu_index.add(cpu_matrix)
             gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
             return gpu_index
-        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
-            logger.warning("faiss-gpu index construction failed, staying on CPU: %s", exc)
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- faiss-gpu unavailable: optional GPU acceleration, CPU fallback below
+            logger.warning(f"[EmbeddingServiceFactory] FAISS GPU index unavailable: {exc}")
             return None
 
     def _get_blas_fingerprint(self) -> str:

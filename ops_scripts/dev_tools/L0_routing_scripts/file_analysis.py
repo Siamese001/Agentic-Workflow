@@ -190,8 +190,7 @@ def extract_docstring(node) -> str:
     """Extract docstring from AST node."""
     try:
         return ast.get_docstring(node) or ""
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return ""
 
 
@@ -318,8 +317,7 @@ def analyze_file(file_path: Path) -> FileAnalysis | None:
     try:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         return None
     except OSError:
         return None
@@ -391,8 +389,7 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: list[str]) ->
             try:
                 content = py_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(content)
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 continue
 
             current_classes = set()

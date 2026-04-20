@@ -229,16 +229,14 @@ def force_annexation() -> Any:
             try:
                 assert_no_persistent_write("L0", "shutil.mutate")
                 shutil.move(str(item), str(target_item))
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 logging.error(f"      Failed to move {item.name}: {e}")
         try:
             if old_path.exists() and (not any(old_path.iterdir())):
                 assert_no_persistent_write("L0", "shutil.mutate")
                 shutil.rmtree(old_path)
                 logging.info(f"  [✓] Purged old root folder: {old_name}")
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             logging.error(f"  [!] Could not delete {old_name} shell: {e}")
     print("\n--- INFRASTRUCTURE AUDIT ---")
     for key in ANNEXATION_PLAN.keys():

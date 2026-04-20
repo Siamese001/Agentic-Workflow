@@ -357,8 +357,7 @@ def main() -> int:
             correlation_id=args.correlation_id,
             allow_repo_mutation=args.allow_repo_mutation,
         )
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as exc:
+    except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallow
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     guardian = result.get("guardian_result", {})

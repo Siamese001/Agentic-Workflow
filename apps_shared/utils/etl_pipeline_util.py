@@ -256,8 +256,7 @@ class ETLPipeline:
                     patterns.append(entry)
             logger.info(f"Fetched {len(patterns)} golden patterns from Pinecone")
             return patterns
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to fetch golden patterns: {e}")
             return []
 
@@ -287,8 +286,7 @@ class ETLPipeline:
             pipe.execute()
             logger.info(f"Loaded {loaded_count} patterns to Redis")
             return loaded_count
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load patterns to Redis: {e}")
             return 0
 
@@ -323,8 +321,7 @@ class ETLPipeline:
                     entry = self._create_entry_from_code(code, project_context, file_path)
                     entries.append(entry)
                     processed += 1
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     logger.error(f"Failed to process {file_path}: {e}")
                     failed += 1
             if entries:
@@ -379,8 +376,7 @@ class ETLPipeline:
                 "keyspace_hits": redis_info.get("keyspace_hits", 0),
                 "keyspace_misses": redis_info.get("keyspace_misses", 0),
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to get Redis stats: {e}")
         try:
             index = self.pinecone.Index(self.index_name)
@@ -390,8 +386,7 @@ class ETLPipeline:
                 "dimension": index_stats.get("dimension", 0),
                 "index_fullness": index_stats.get("index_fullness", 0),
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to get Pinecone stats: {e}")
         return stats
 

@@ -242,8 +242,7 @@ def main() -> int:
                 print(f"✅ Modified: {class_name}")
             else:
                 skipped.append(f"{class_name}: No changes needed")
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             errors.append(f"{class_name}: {str(e)}")
     print("\n=== SUMMARY ===")
     print(f"Modified: {len(modified)}")

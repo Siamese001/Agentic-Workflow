@@ -392,42 +392,6 @@ class RetryPolicy:
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
-                last_exception = e
-                delay = DelayCalculator.calculate_delay(retry_config, attempt)
-                total_delay += delay
-
-                attempt_info = RetryAttempt(
-                    attempt=attempt + 1,
-                    delay=delay,
-                    exception=e,
-                    timestamp=datetime.now(timezone.utc),
-                    success=False,
-                )
-                attempts_history.append(attempt_info)
-
-                # Check if should retry
-                if not retry_config.should_retry(e, attempt):
-                    logger.warning(f"Function failed on attempt {attempt + 1}, not retryable: {e}")
-                    break
-
-                # Last attempt?
-                if attempt == retry_config.max_attempts - 1:
-                    logger.error(f"Function failed after {attempt + 1} attempts: {e}")
-                    break
-
-                # Wait before retry
-                logger.warning(f"Function failed on attempt {attempt + 1}, retrying in {delay:.2f}s: {e}")
-
-                if delay > 0:
-                    await asyncio.sleep(delay)
-
-                # Call retry callback
-                if on_retry:
-                    try:
-                        on_retry(attempt_info)
-                    # guardian: allow-silent-swallow
-                    except Exception as callback_error:
-                        logger.error(f"Retry callback failed: {callback_error}")
 
         # All attempts failed
         self._update_stats(len(attempts_history), False)

@@ -640,7 +640,7 @@ def _route_to_human_review(
             },
         )
         queue.enqueue(verdict)
-    except (RuntimeError, OSError) as exc:
+    except (RuntimeError, OSError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         logger.warning("TOOL_SAFETY_CONTRACT human_review routing failed: %s", exc)
 
 

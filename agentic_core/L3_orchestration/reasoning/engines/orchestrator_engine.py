@@ -229,8 +229,7 @@ try:
     from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
 
     RUNTIME_ADG_AVAILABLE = True
-# guardian: allow-silent-degradation - Optional runtime ADG
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - Optional runtime ADG
     RUNTIME_ADG_AVAILABLE = False
 
 emit_determinism_digest("trace_orchestrator_engine", "orchestrator_engine_dispatch_entry")
@@ -481,8 +480,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
                 project_root = get_validated_project_root()
                 agent_paths = get_agent_paths(project_root)
                 self._available_agents = [Path(p).stem for p in agent_paths]
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError):
+            except (RuntimeError, ValueError):  # guardian: allow-silent-swallow
                 self._available_agents = []
         return self._available_agents
 
@@ -563,8 +561,7 @@ class Orchestrator(SovereignBaseAgent):
                 from agentic_core.L3_orchestration.reasoning.SafetyStrategy import SafetyStrategy
 
                 self._strategies = {"safety": SafetyStrategy(), "rl": RLStrategy()}
-            # guardian: allow-silent-degradation - Optional strategies
-            except ImportError as e:
+            except ImportError as e:  # guardian: allow-silent-swallow - Optional strategies
                 self.logger.warning(f"Could not load strategies: {e}")
                 self._strategies = {}
         return self._strategies
@@ -599,8 +596,7 @@ class Orchestrator(SovereignBaseAgent):
             )
             self.logger.info(f"Dispatched {domain}.{action} successfully.")
             return {"status": "success", "data": result}
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Strategy execution failed: {str(e)}")
             return {"status": "error", "message": str(e)}
 
@@ -657,8 +653,7 @@ class Orchestrator(SovereignBaseAgent):
                 total_violations_found += result.violations_found
                 total_violations_fixed += result.violations_fixed
                 total_errors += result.errors
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as e:
+            except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
                 self.logger.error(f"[MISSION] Critical error running {agent_name}: {e}")
                 agent_results.append(
                     AgentResult(
@@ -750,8 +745,7 @@ class Orchestrator(SovereignBaseAgent):
                 return self._run_ssot_mode(agent_name, dry_run, context)
             else:
                 return self._run_full_mode(agent_name, dry_run, context)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"[AGENT] {agent_name} failed: {e}")
             return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
 
@@ -796,8 +790,7 @@ class Orchestrator(SovereignBaseAgent):
                     "recommendations": credential_results.get("recommendations", []),
                 },
             )
-        # guardian: allow-silent-degradation - Optional credential scanner
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - Optional credential scanner
             self.logger.warning("[COMPLIANCE] CredentialScannerAgent not available")
             return AgentResult(
                 agent_name=agent_name,
@@ -806,8 +799,7 @@ class Orchestrator(SovereignBaseAgent):
                 message="CredentialScannerAgent missing",
                 metadata={"dry_run": dry_run},
             )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"[COMPLIANCE] Credential scan failed: {e}")
             return AgentResult(
                 agent_name=agent_name,
@@ -899,8 +891,7 @@ class Orchestrator(SovereignBaseAgent):
                 self.logger.debug(
                     f"[DISCOVERY] Found {len(self._available_agents)} agents via ssot_discovery",
                 )
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as e:
+            except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
                 self.logger.error(f"[DISCOVERY] Failed to discover agents: {e}")
                 self._available_agents = []
         return self._available_agents
@@ -1076,13 +1067,11 @@ class Orchestrator(SovereignBaseAgent):
                     if gw_result.success:
                         _call_path.discard(agent_name)
                         return gw_result.healing_output
-                # guardian: allow-silent-swallow
-                except (RuntimeError, ValueError) as exc:
+                except (RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     self.logger.warning("[V15] Gateway execution failed (LOG_ONLY): %s", exc)
         try:
             metrics = self._orchestrator_heal_body(dry_run)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Orchestrator healing failed: {e}")
             metrics["errors"] += 1
         finally:
@@ -1097,8 +1086,7 @@ class Orchestrator(SovereignBaseAgent):
             if not strategies:
                 metrics["violations_found"] += 1
                 self.logger.warning("No strategies loaded")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             metrics["violations_found"] += 1
             self.logger.warning(f"Strategy loading failed: {e}")
         try:
@@ -1108,8 +1096,7 @@ class Orchestrator(SovereignBaseAgent):
                 self.logger.warning("No agents discovered")
             else:
                 self.logger.info(f"Discovered {len(available_agents)} agents")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             metrics["violations_found"] += 1
             self.logger.warning(f"Agent discovery failed: {e}")
         if not self.project_root.exists():
@@ -1146,8 +1133,7 @@ class Orchestrator(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"Orchestrator heal() failed: {str(e)}",

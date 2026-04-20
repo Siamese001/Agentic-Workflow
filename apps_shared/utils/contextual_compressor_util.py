@@ -328,8 +328,7 @@ class ContextualCompressor:
                 messages=[{"role": "user", "content": prompt}],
             )
             return response.content[0].text.strip()
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"LLM compression failed: {e}")
             return self._compress_heuristic(chunks, query)
 

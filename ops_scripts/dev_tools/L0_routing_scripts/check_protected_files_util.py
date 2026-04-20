@@ -226,8 +226,7 @@ def get_commit_message() -> str:
         if commit_msg_file.exists():
             return commit_msg_file.read_text(encoding="utf-8", errors="replace")
         return ""
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return ""
 
 

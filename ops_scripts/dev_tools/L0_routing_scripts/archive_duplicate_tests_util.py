@@ -224,8 +224,7 @@ def main():
                     archived += 1
                 else:
                     print(f"[SKIP] Use --force to archive: {relative_path}")
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 print(f"❌ Failed to archive {dup}: {e}")
     print(f"\n{'=' * 80}")
     print("ARCHIVAL COMPLETE")

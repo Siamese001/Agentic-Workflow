@@ -301,7 +301,7 @@ class ExecutionGateway:
         except (
             SignatureVerificationError
         ):  # guardian: SignatureVerificationError should be handled with specific context
-            raise SignatureBoundaryError("Invalid SandboxEnvelope signature - execution blocked")
+            raise SignatureBoundaryError('Invalid SandboxEnvelope signature - execution blocked') from None
         builder = ExecutionTraceBuilder(
             trace_id=envelope.envelope_id,
             instruction_packet_id=envelope.instruction_packet_id,

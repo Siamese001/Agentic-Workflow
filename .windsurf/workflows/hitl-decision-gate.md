@@ -2,6 +2,8 @@
 description: Present options to user before proceeding with significant decisions
 ---
 
+> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+
 ## HITL (Human-In-The-Loop) Decision Gate
 
 Use this workflow BEFORE making any significant decision with multiple valid approaches.

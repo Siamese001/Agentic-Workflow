@@ -423,8 +423,7 @@ class SchemaSimilarityRetriever:
                 f"schema similarity computed: {similarity:.3f} (compatibility: {compatibility.value})",
             )
             return result
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Failed to compute schema similarity: {str(e)}")
             return SchemaSimilarityResult(
                 similarity_score=0.0,

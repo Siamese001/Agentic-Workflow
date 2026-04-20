@@ -245,8 +245,7 @@ def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool = Tru
     """
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"  Error reading {file_path}: {e}")
         return []
     changes = []

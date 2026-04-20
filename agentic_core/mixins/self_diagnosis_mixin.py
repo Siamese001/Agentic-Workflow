@@ -224,8 +224,7 @@ class SelfDiagnosisMixin:
                     AttributeError,
                     RuntimeError,
                     OSError,
-                ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                    raise
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     issue = {
                         "type": "component_diagnosis_failed",
                         "component": component_name,
@@ -247,8 +246,7 @@ class SelfDiagnosisMixin:
                 _bp = _gbp(_self_file, _root)
                 diagnosis["adg_antipatterns"] = sorted(_bp.antipattern_signals)
                 diagnosis["adg_behavioral_score"] = _bp.behavioral_score
-        # guardian: allow-silent-swallow
-        except (AttributeError, ImportError, RuntimeError) as e:
+        except (AttributeError, ImportError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("self_diagnosis_mixin: Exception swallowed at L243: %s", e)

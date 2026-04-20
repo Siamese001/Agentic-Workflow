@@ -92,7 +92,7 @@ def main() -> int:
         windsurf_dir.mkdir(parents=True, exist_ok=True)
         summary = run_cleanup(windsurf_dir)
         session_summary.write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- session cleanup write: non-fatal, fail-open
         pass
 
     return 0

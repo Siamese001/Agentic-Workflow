@@ -339,7 +339,7 @@ class CoordinateObservabilityOperationsOrchestratorInterface:
                 "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f"Execution failed: {e}")
+            raise SecurityError(f'Execution failed: {e}') from e
 
 
 class CoordinateObservabilityOperationsOrchestratorFactory:

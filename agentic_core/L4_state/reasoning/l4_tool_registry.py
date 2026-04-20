@@ -371,7 +371,7 @@ class ToolRegistry:
 
             Logger.info(f"Auto-discovered {len(discovered)} tools in {module_path}")
 
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"Failed to auto-discover tools in {module_path}: {e}")
 
         return discovered

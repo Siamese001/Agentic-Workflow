@@ -548,7 +548,7 @@ class PerformanceOptimizer:
                     },
                 )
 
-            except (ValueError, TypeError, RuntimeError) as e:
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- compression step: non-fatal, logger.error already called
                 logger.error(f"Compression with {type(compressor).__name__} failed: {e}")
 
         # Record optimization

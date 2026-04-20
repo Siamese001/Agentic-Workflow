@@ -213,8 +213,7 @@ def read_file_content(file_path: Path) -> str:
     try:
         with open(file_path, encoding="utf-8") as f:
             return f.read()
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return ""
 
 

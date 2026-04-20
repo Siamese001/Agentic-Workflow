@@ -240,8 +240,7 @@ def validate_sandbox(path: str) -> Path:
     project_root = get_project_root()
     try:
         resolved = (project_root / path).resolve()
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         raise SandboxViolationError(f"Invalid path: {e}")
     if not str(resolved).startswith(str(project_root)):
         raise SandboxViolationError(f"Path traversal detected: {path} resolves outside project root")
@@ -345,14 +344,12 @@ def write_file(
                                     "deletion_percentage": round((1 - new_lines / original_lines) * 100, 2),
                                 },
                             )
-                        # guardian: allow-silent-swallow
-                        except Exception:
+                        except Exception:  # guardian: allow-silent-swallow
                             pass
                 raise PreservationViolationError(
                     f"Preservation Violation: New content ({new_lines} lines) is less than 90% of original ({original_lines} lines). Minimum required: {min_lines} lines. This would delete {round((1 - new_lines / original_lines) * 100, 2)}% of the file. Set override_preservation=True if this is intentional (SystemArchitect only).",
                 )
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):  # guardian: allow-silent-swallow - acceptable exception handling
             pass
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
     with open(resolved_path, "w", encoding="utf-8") as f:

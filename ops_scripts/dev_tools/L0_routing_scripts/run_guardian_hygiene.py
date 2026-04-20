@@ -284,8 +284,7 @@ def scan_empty_folders(repo_root: Path, allowed_roots: frozenset[str]) -> list[s
                 children = [x for x in current.iterdir() if x.name not in IGNORE_NAMES]
                 if not children:
                     hits.append(normalize_repo_path(current.relative_to(repo_root)))
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except PermissionError:
+            except PermissionError:  # guardian: allow-silent-swallow - acceptable exception handling
                 pass
     return sorted(hits)
 
@@ -388,12 +387,6 @@ def run_hygiene_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="temp_artifacts",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"temp_artifacts scan failed: {exc}")
 
     # --- Check 2: Empty folders ---
     try:
@@ -416,12 +409,6 @@ def run_hygiene_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="empty_folders",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"empty_folders scan failed: {exc}")
 
     # --- Check 3: Init-only folders ---
     try:
@@ -444,12 +431,6 @@ def run_hygiene_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="init_only_folders",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"init_only_folders scan failed: {exc}")
 
     # --- Finalize summary ---
     total_checks = len(result.checks)

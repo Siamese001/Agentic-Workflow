@@ -284,11 +284,9 @@ def check_file(filepath: Path) -> list[dict]:
         visitor = HealSchemaVisitor(str(filepath))
         visitor.visit(tree)
         return visitor.violations
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         return []
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return []
 
 

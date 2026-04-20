@@ -203,7 +203,7 @@ def get_layer_emission_validator() -> LayerEmissionValidator:
         )
         return module
     except ImportError as e:
-        raise RuntimeError(f"Failed to load layer emission validator: {e}")
+        raise RuntimeError(f'Failed to load layer emission validator: {e}') from e
 
 
 def assert_layer_may_emit(artifact_type: str, emitting_layer: str, trace_id: str) -> None:

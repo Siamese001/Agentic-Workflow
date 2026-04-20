@@ -341,12 +341,12 @@ class ScanCache:
                 tmp_file.flush()
                 os.fsync(tmp_file.fileno())
             Path(tmp_name).replace(cache_path)
-        except (OSError, TypeError, ValueError) as exc:
+        except (OSError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow
             logger.warning("ScanCache save failed: %s", exc)
             if tmp_name:
                 try:
                     Path(tmp_name).unlink(missing_ok=True)
-                except OSError:
+                except OSError:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     logger.debug("Failed to clean up temporary cache file %s", tmp_name)
 
     def get(
@@ -425,8 +425,7 @@ def file_hash(filepath: Path) -> str:
             return h.hexdigest()
         data = filepath.read_bytes()
         return hashlib.sha256(data).hexdigest()
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
         return ""
 
 

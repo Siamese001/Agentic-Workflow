@@ -216,7 +216,7 @@ class PathRouter:
                     routing_end_tick=_path_end_tick,
                 ),
             )
-        except (ValueError, TypeError, RuntimeError) as _te:
+        except (ValueError, TypeError, RuntimeError) as _te:  # guardian: allow-log-and-swallow -- telemetry emission: non-fatal, routing result returned regardless
             _log.warning("path_router: telemetry emission failed: %s", _te)
         return chosen
 

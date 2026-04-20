@@ -167,6 +167,27 @@ Each revision must:
 
 ---
 
+## Retrieval Loop
+
+Use this order unless the task clearly needs a different path:
+
+1. **Local context first**: `.windsurf/`, nearby docs, direct file reads
+2. **Exact retrieval**: paths, symbols, filenames, commands
+3. **Structured retrieval**: ADG for dependency questions, pytest MCP for tests, memory MCP for durable precedent
+4. **Semantic retrieval**: vector search only when exact lookup leaves gaps
+5. **Fresh external research**: only when local evidence is insufficient or freshness matters
+
+## RAG Discipline
+
+When evidence is dense or the task is research-heavy:
+
+- Separate retrieval from synthesis — pull facts first, write second
+- Broad pass first, narrow pass second, then re-rank before answering
+- If precision matters, anchor claims to quotes, snippets, or exact tool output before summarizing
+- Keep working context lean — split a large task into phases instead of carrying every reference forward
+
+---
+
 ## MCP Role Mapping
 
 > **Note on prefixes:** Windsurf assigns live `mcp0`/`mcp1`/`mcp2`... numbers by load order from

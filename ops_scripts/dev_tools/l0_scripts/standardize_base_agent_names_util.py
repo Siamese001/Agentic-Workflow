@@ -221,8 +221,7 @@ def update_file_content(
     """Update file content with new names. Returns (changed, count)."""
     try:
         content = file_path.read_text(encoding="utf-8")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"  ⚠️  Could not read {file_path}: {e}")
         return False, 0
 

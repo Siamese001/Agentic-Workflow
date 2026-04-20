@@ -388,8 +388,7 @@ def run_contract_integrity_guardian(
         try:
             source = script_path.read_text(encoding="utf-8")
             tree = ast.parse(source, filename=str(script_path))
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except SyntaxError as exc:
+        except SyntaxError as exc:  # guardian: allow-silent-swallow - acceptable exception handling
             result.add_check(
                 check_id=f"parse_{gid}",
                 status=CheckStatus.FAIL,

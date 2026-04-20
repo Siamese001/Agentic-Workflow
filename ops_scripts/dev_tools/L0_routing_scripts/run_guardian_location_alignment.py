@@ -360,12 +360,6 @@ def run_location_alignment_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="misplaced_files",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"misplaced_files scan failed: {exc}")
 
     # --- Check 2: missing_directories ---
     try:
@@ -390,12 +384,6 @@ def run_location_alignment_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="missing_directories",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"missing_directories scan failed: {exc}")
 
     # --- Finalize summary ---
     total_checks = len(result.checks)

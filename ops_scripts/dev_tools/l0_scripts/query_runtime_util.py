@@ -182,8 +182,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
             for attempt in tqdm(range(max_retries + 1), desc="Processing", unit="item"):
                 try:
                     return func(*args, **kwargs)
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     last_exception = e
                     if attempt < max_retries:
                         # Exponential backoff with jitter

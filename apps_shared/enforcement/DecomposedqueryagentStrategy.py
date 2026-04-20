@@ -219,8 +219,7 @@ class QueryDecomposer(SimpleAgentBase):
         self.max_sub_queries = max_sub_queries
         try:
             self.gate = AdaptiveRetrievalGate()
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("AdaptiveRetrievalGate not available, skipping heuristic check")
             self.gate = None
         self.complexity_indicators = {
@@ -280,8 +279,7 @@ class QueryDecomposer(SimpleAgentBase):
                     self.content = content
 
             return LLMResponseImpl(response.content[0].text)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"LLM call failed: {e}")
 
             class LLMResponseImpl:
@@ -343,8 +341,7 @@ class QueryDecomposer(SimpleAgentBase):
                 reasoning=reasoning,
                 complexity_score=complexity,
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to decompose query: {e}")
             return DecomposedQuery(
                 original_query=query,
@@ -385,8 +382,7 @@ class QueryDecomposer(SimpleAgentBase):
                     processed_results.append(result)
             logger.info(f"Completed execution: {sum(len(r) for r in processed_results)} total results")
             return processed_results
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to execute sub-queries: {e}")
             return [[] for _ in decomposed_query.sub_queries]
 

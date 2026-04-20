@@ -259,15 +259,13 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
             "dry_run": dry_run,
         }
 
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return {
             "status": "error",
             "file": str(file_path.relative_to(PROJECT_ROOT)),
             "error": f"SyntaxError: {e}",
         }
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return {
             "status": "error",
             "file": str(file_path.relative_to(PROJECT_ROOT)),

@@ -78,8 +78,7 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
     try:
         ast.parse(src)
         was_broken = False
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         was_broken = True
 
     lines = src.split("\n")

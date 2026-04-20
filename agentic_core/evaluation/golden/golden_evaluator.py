@@ -162,7 +162,7 @@ class GoldenDatasetEvaluator:
                     else len(data.get("test_cases", data.get("examples", [])))
                 )
                 Logger.info("Loaded golden dataset: %s (%s records)", name, record_count)
-            except (OSError, ValueError, json.JSONDecodeError) as exc:
+            except (OSError, ValueError, json.JSONDecodeError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.error("Failed to load %s from %s: %s", name, full_path, exc)
 
         self._loaded = True

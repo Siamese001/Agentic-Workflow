@@ -428,8 +428,7 @@ class SchemaVectorSearcher:
             )
             self.logger.info(f"schema vector search completed: {len(results)} results in {search_time:.2f}ms")
             return search_result
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"schema vector search failed: {str(e)}")
             return SchemaSearchResult(
                 entries=[],
@@ -481,8 +480,7 @@ class SchemaVectorSearcher:
                 self._field_index[schema_id] = {field: np.array(vec) for field, vec in field_vectors.items()}
             self.logger.debug(f"Added schema vector: {schema_id}")
             return True
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Failed to add schema vector: {str(e)}")
             return False
 

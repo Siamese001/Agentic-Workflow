@@ -32,8 +32,7 @@ def fix_file(fp: str) -> bool:
     try:
         ast.parse(src)
         return False  # No error
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         pass
 
     lines = src.split("\n")

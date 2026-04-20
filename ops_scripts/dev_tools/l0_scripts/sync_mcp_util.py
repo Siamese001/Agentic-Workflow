@@ -91,8 +91,7 @@ def load_sovereign_registry() -> dict[str, Any]:
     except ImportError as e:
         print(f"❌ ERROR: Could not import SOVEREIGN_MCP_REGISTRY: {e}")
         sys.exit(1)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"❌ ERROR: Failed to load registry: {e}")
         sys.exit(1)
 
@@ -234,8 +233,7 @@ def backup_config(config_path: Path) -> Path | None:
     try:
         backup_path.write_text(config_path.read_text(encoding="utf-8"), encoding="utf-8")
         return backup_path
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"⚠️  WARNING: Could not create backup: {e}")
         return None
 
@@ -246,8 +244,7 @@ def apply_config(config_path: Path, new_config: dict[str, Any]) -> bool:
         config_path.parent.mkdir(parents=True, exist_ok=True)
         config_path.write_text(json.dumps(new_config, indent=2) + "\n", encoding="utf-8")
         return True
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"❌ ERROR: Could not write config: {e}")
         return False
 

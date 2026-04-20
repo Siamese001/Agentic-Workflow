@@ -451,16 +451,64 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             """INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)
             SELECT id, relation_type, symbol, source_file, line_no,
                 CASE
+                    -- P0 CRITICAL: architectural violations and dynamic code execution
+                    -- Layer boundary crossings break the layer contract; eval/exec is
+                    -- an arbitrary-code-execution vector. Both block production merge.
+                    WHEN relation_type = 'violates' THEN 'CRITICAL'
+                    WHEN relation_type = 'dynamic_exec' THEN 'CRITICAL'
+                    -- P1 HIGH: swallow-class antipatterns in production layers
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
                                        'log_and_swallow','return_none_swallow')
                      AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
                     THEN 'HIGH'
+                    -- P1 HIGH: unreachable-after-raise (dead code bug) and
+                    -- exception_type_erasure (PEP 3134 non-compliance) in production
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('unreachable_after_raise','exception_type_erasure')
+                     AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
+                    THEN 'HIGH'
+                    -- P1 HIGH: blocking I/O in async functions in production
+                    -- (event-loop starvation locks up all concurrent work)
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind = 'blocking_call_in_async'
+                     AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
+                    THEN 'HIGH'
+                    -- P1 HIGH: bare 'except:' in production layers (catches
+                    -- SystemExit, KeyboardInterrupt, GeneratorExit — strictly
+                    -- more dangerous than 'except Exception:').
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind = 'bare_except'
+                     AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
+                    THEN 'HIGH'
+                    -- P1 HIGH globally: hardcoded credentials are a universal
+                    -- security risk regardless of layer.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind = 'hardcoded_secret'
+                    THEN 'HIGH'
+                    -- P2 MEDIUM: swallow-class and structural antipatterns in non-production
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
-                                       'log_and_swallow','return_none_swallow')
+                                       'log_and_swallow','return_none_swallow',
+                                       'unreachable_after_raise','exception_type_erasure',
+                                       'blocking_call_in_async','bare_except')
                     THEN 'MEDIUM'
+                    -- P2 MEDIUM: finally-block antipatterns (doc #9 and #10),
+                    -- cross-cutting exception-handling antipatterns (doc #7, #11),
+                    -- and default-fallback-masking (doc #4 — except: X = 0).
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('cleanup_raises_over_original','return_in_finally',
+                                       'partial_side_effects','double_logging',
+                                       'default_fallback_masking')
+                    THEN 'MEDIUM'
+                    -- P2 MEDIUM: retry storms, mutable default args, star imports
+                    -- (all have credible paths to production incidents)
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('retry_without_backoff','mutable_default_arg','star_import_use')
+                    THEN 'MEDIUM'
+                    -- P3 LOW: style/hygiene warnings (global state, hardcoded paths)
                     WHEN relation_type = 'antipattern' THEN 'LOW'
+                    -- Everything else routes through as MEDIUM (safe default)
                     ELSE 'MEDIUM'
                 END as severity
             FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')""",
@@ -543,8 +591,7 @@ def _create_latest_symlinks(
         # Try to create symlink, fall back to copy on Windows
         try:
             link_path.symlink_to(target_path.name)
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (OSError, NotImplementedError):
+        except (OSError, NotImplementedError):  # guardian: allow-silent-swallow - acceptable exception handling
             # Windows without admin rights or filesystem doesn't support symlinks
             shutil.copy2(target_path, link_path)
 

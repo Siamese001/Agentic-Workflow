@@ -2,11 +2,15 @@
 description: Manual slash workflow for repeatable multi-step reasoning — plan first, execute second. Replaces Sequential Thinking MCP.
 ---
 
+> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+
 # Structured Reasoning Workflow
 
 Invoke with `/structured-reasoning`. Use for any T2/T3 task (2+ files, cross-layer, architecture, debugging).
 
 **First output MUST be a plan. No edits occur during planning.**
+
+**Retrieval order for this workflow:** local repo guidance -> exact lookup -> ADG / structured MCP tools -> semantic retrieval only if gaps remain -> external only when local evidence is insufficient or stale. For dense tasks, retrieve first and synthesize second.
 
 ---
 

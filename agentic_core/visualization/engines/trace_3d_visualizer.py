@@ -634,7 +634,7 @@ class Trace3DVisualizer:
             else:
                 return None
 
-        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error(f"[3D_VIZ] Failed to export graph: {e}")
             return None
 

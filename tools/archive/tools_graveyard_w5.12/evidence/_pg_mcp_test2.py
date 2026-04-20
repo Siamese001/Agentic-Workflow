@@ -34,8 +34,7 @@ proc.terminate()
 try:
     # guardian: allow-magic-config
     proc.wait(timeout=3)
-# guardian: allow-silent-swallow
-except Exception:
+except Exception:  # guardian: allow-silent-swallow
     proc.kill()
 
 stderr = proc.stderr.read().decode(errors="ignore")

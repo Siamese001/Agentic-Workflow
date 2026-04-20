@@ -80,8 +80,7 @@ class DriftDetector:
 
                     _root = _Path(__file__).resolve().parents[4]
                     _adg_score = _gbp(_Path(__file__).resolve(), _root).behavioral_score
-                # guardian: allow-silent-swallow
-                except (ImportError, AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+                except (ImportError, AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     import logging
 
                     logging.getLogger(__name__).debug("drift_detector: Exception swallowed at L82: %s", e)

@@ -279,7 +279,7 @@ def _scan_spec_file(
             return
         raw = spec_path.read_text(encoding="utf-8")
         data = json.loads(raw)
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, json.JSONDecodeError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         logger.debug("Skipping %s: %s", spec_path, exc)
         return
 

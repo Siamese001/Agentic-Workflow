@@ -257,8 +257,7 @@ class RuntimeStateGuard:
             if self.state_path.exists():
                 _get_write_gateway().copy_file(self.state_path, self.backup_path)
             os.replace(temp_path, self.state_path)
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             print(f"[StateGuard] PERSISTENCE FAILURE: {e}")
             if temp_path.exists():
                 assert_no_persistent_write("L4", "os.mutate")

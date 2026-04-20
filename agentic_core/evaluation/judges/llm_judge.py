@@ -10,6 +10,7 @@ Provides:
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import os
 import re
@@ -17,8 +18,6 @@ from dataclasses import dataclass
 from typing import Any
 from typing import Protocol, runtime_checkable
 from typing import cast
-
-from infrastructure.sdks_mcps import create_gemini_model
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -267,7 +266,7 @@ class GeminiJudge:
             return self._client
 
         try:
-            client = create_gemini_model(self._model)
+            client = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(self._model)
         except (ImportError, ValueError) as exc:
             raise RuntimeError(
                 "GeminiJudge: google-genai package not installed or GOOGLE_API_KEY missing.",

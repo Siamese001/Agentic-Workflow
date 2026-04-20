@@ -233,7 +233,6 @@ class ConfigWithLogicDetector(AntiPatternDetector):
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
         except (ValueError, TypeError, RuntimeError) as e:
             raise
-            source_lines = []
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # 1. Module-level assignment: x_config = {...lambda...}

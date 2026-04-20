@@ -29,8 +29,7 @@ def calculate_file_hash(file_path: str) -> str:
     try:
         with open(file_path, "rb") as f:
             return hashlib.sha256(f.read()).hexdigest()
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         return ""
 
 
@@ -85,8 +84,7 @@ def write_compliant_file(path: str, content: str, dry_run: bool = False) -> bool
             with open(path, "w", encoding="utf-8") as f:
                 f.write(clean_content)
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"   [X] Failed to write {path}: {e}")
             return False
     return True

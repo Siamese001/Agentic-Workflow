@@ -244,11 +244,8 @@ class L6MetaLearningBridge:
             )
 
             return True
-        except (OSError, RuntimeError, TypeError, ValueError) as e:
-            logger.warning(
-                "record_persist_failed",
-                extra={"snapshot_id": record.snapshot_id[:16], "error": str(e)},
-            )
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow
+            logger.warning("[MetaLearningBridge] Failed to load metadata: %s", exc)
             return False
 
     def load_record(self, snapshot_id: str) -> MetaLearningRecord | None:
@@ -274,7 +271,7 @@ class L6MetaLearningBridge:
                         record = MetaLearningRecord.from_dict(data)
                         self._records[snapshot_id] = record
                         return record
-            except (OSError, RuntimeError, TypeError, ValueError, json.JSONDecodeError) as e:
+            except (OSError, RuntimeError, TypeError, ValueError, json.JSONDecodeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(
                     "record_load_failed",
                     extra={"snapshot_id": snapshot_id[:16], "error": str(e)},

@@ -186,8 +186,10 @@ class L4MetaPriorProvider:
             from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 
             return HealingOutcomeIntakeStore()
-        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
-            logger.debug("L4MetaPriorProvider: default store not available: %s", exc)
+        except (ImportError, AttributeError, TypeError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+            import logging
+
+            logging.getLogger(__name__).debug("l4_meta_prior_provider: Exception swallowed at L190: %s", e)
             return None
 
     def get_prior(self, error_signature: str) -> float:

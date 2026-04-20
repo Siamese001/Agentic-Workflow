@@ -2,6 +2,12 @@
 trigger: always_on
 ---
 
+> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+>
+> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+>
+> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+
 # Global Rules - Always-On Policy (Tier 2 SSOT)
 
 These are compact, always-on policy statements covering cross-cutting concerns.
@@ -63,6 +69,23 @@ Before drafting ANY T2/T3 refactoring plan, AFTER the MCP green light, BEFORE an
 
 FORBIDDEN: drafting a refactoring plan or wave queue without a ranked hotspot report.
 Extended protocol: `adg-hotspot-enforcement.md`
+
+---
+
+## Graph-Layer Primary Driver (Refactoring)
+
+The ADG is a **graph database**, not only a flat table store. The following graph-layer primitives MUST be PRIMARY drivers of T2/T3 refactoring plans (in addition to raw `edges`/`violations`):
+
+| Primitive | Purpose | Example tables/views |
+|-----------|---------|----------------------|
+| **Materialized views** | Pre-computed hotspot / blast-radius / chokepoint analyses | `mv_graph_reverse_dependency_hotspots`, `mv_graph_chokepoint_bridges`, `mv_graph_critical_path_blast_radius`, `mv_hotspot_centrality`, `mv_dependency_cone_risk`, `mv_path_criticality_rollup`, `mv_exemptions_near_critical_paths`, `mv_debt_concentration_hotspots` |
+| **Semantic edges** | Behavior queries beyond simple imports | `flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite` |
+| **Pre-built P-views** | Pre-classified architectural concerns | `v_p0_apps_direct_infra`, `v_p0_write_bypass_uwg`, `v_p1_mis_layered_infra`, `v_p1_zero_caller_infra`, `v_p2_duplicated_adapters`, `v_p3_isolated_experimental`, ... |
+| **Precision tables** (when populated) | Dataflow / side-effects / call resolution | `precision_variable_attributes`, `precision_side_effects`, `precision_call_resolution` |
+
+FORBIDDEN: a T2/T3 refactoring plan that cites only raw `edges`/`violations` counts with no materialized views, no semantic edges beyond `imports`, and no cross-reference against the P-views.
+
+Every T2/T3 plan at `.windsurf/plans/<name>-<6hex>.md` MUST include an `## ADG_GRAPH_LAYER_EVIDENCE` section citing at least 3 materialized views, the semantic relations used, and any P-view matches. Constitutional rule §22 enforces this. Gate: `check_graph_layer_evidence.py`. Full protocol: `adg-graph-layer-enforcement.md`.
 
 ---
 

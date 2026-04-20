@@ -279,8 +279,7 @@ class SurgicalHealingAdapter:
         try:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as exc:
+        except (RuntimeError, OSError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error("Failed to parse %s: %s", file_path, exc)
             return None  # guardian: allow-return-none-swallow -- detection parse: non-fatal, caller handles None as no constraint
 
@@ -340,8 +339,7 @@ class SurgicalHealingAdapter:
         try:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as exc:
+        except (RuntimeError, OSError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error("Failed to parse %s: %s", file_path, exc)
             return None  # guardian: allow-return-none-swallow -- violation parse: non-fatal, caller handles None as no violations
 
@@ -422,8 +420,7 @@ class SurgicalHealingAdapter:
                 details=raw.get("details", ""),
                 artifacts=raw.get("artifacts", []),
             )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as exc:
+        except (RuntimeError, OSError) as exc:  # guardian: allow-silent-swallow
             Logger.error("Surgical healing failed: %s", exc)
             return SurgicalHealingResult(
                 status="error",

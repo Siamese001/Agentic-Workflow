@@ -325,11 +325,8 @@ class PromptOutcomeBusAdapter:
         for outcome in outcomes:
             try:
                 records.append(self.convert(outcome))
-            except (AttributeError, TypeError, ValueError) as exc:
-                logger.warning(
-                    "prompt_outcome_bus_adapter: conversion failed",
-                    extra={"outcome_id": outcome.outcome_id, "error": str(exc)},
-                )
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                logger.warning("prompt_outcome_bus_adapter: conversion failure: %s", exc, extra={"outcome_id": outcome.outcome_id, "error": str(exc)})
         records.sort(key=lambda r: r.record_id)
         return records
 

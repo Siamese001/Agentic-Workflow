@@ -372,8 +372,7 @@ class ObservabilityExecutionAdapter:
             if trace_id:
                 self._end_trace(trace_id, result)
             return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             self.logger.error(f"observability execution failed: {str(e)}")
             return self._create_error_result(request, str(e), start_time)
 
@@ -466,8 +465,7 @@ class ObservabilityExecutionAdapter:
                 else [],
             )
             return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return ObservabilityResult(
                 request_id=request.request_id,
                 operation_type=request.operation_type,

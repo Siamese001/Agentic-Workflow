@@ -317,12 +317,6 @@ class event_emission_mixin:
                     return result
                 except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                     raise
-                    self.emit_event(
-                        f"{event_prefix}.failed",
-                        {"error": str(e), "success": False},
-                        severity="ERROR",
-                    )
-                    raise e
 
             return wrapper
 

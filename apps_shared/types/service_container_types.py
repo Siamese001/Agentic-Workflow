@@ -256,8 +256,7 @@ class ServiceContainer:
                 implementation = self._services[interface]
                 try:
                     return type(implementation)()
-                # guardian: allow-silent-swallow
-                except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError):
+                except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError):  # guardian: allow-silent-swallow
                     logger.warning(
                         f"Could not create transient instance of {interface.__name__}, returning singleton",
                     )

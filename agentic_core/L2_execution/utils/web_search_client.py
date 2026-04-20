@@ -223,8 +223,7 @@ class WebSearchTools:
                 },
             )
             return self._parse_mcp_response(result, "web")
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L2 WEB SEARCH] MCP call failed: {e}")
             return f"Search Error: {str(e)}"
 
@@ -248,8 +247,7 @@ class WebSearchTools:
                 args={"query": query, "count": config.BRAVE_SEARCH_COUNT},
             )
             return self._parse_mcp_response(result, "local")
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L2 LOCAL SEARCH] MCP call failed: {e}")
             return f"Local search error: {str(e)}"
 

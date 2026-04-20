@@ -277,8 +277,7 @@ def scan_file_for_powershell(file_path: Path) -> list[tuple[int, str, str]]:
                     violations.append((lineno, "PS_STRING_LITERAL", stripped[:60]))
     except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         violations.append((e.lineno or 0, "PS_SYNTAX_ERROR", f"Syntax error: {e.msg}"))
-    # guardian: allow-silent-swallower
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         violations.append((0, "PS_SCAN_ERROR", f"Scan error: {e}"))
     return violations
 

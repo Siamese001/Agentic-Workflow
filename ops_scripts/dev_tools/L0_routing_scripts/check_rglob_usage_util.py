@@ -201,8 +201,7 @@ def count_rglob_in_file(file_path: Path) -> int:
     """
     try:
         content = file_path.read_text(encoding="utf-8")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except (OSError, UnicodeDecodeError):
+    except (OSError, UnicodeDecodeError):  # guardian: allow-silent-swallow - acceptable exception handling
         return 0
 
     # Pattern to match .rglob( and .glob( calls

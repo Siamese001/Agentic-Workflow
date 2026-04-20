@@ -116,7 +116,7 @@ class SafetyStrategy:
                         return self.validate_repository(**kwargs)
 
                 return CodeValidatorAgentProxy(project_root=self.project_root)
-            except ImportError as e:
+            except ImportError as e:  # guardian: allow-return-none-swallow -- CodeValidatorAgent import: optional dep, None return handled by caller
                 Logger.warning(f"[SafetyStrategy] Failed to import CodeValidatorAgent: {e}")
                 return None
         agent = self._agent_factory.get(agent_name) if self._agent_factory else None

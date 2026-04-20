@@ -64,8 +64,7 @@ def fix_file(fp: Path) -> tuple[str, str, list[str]]:
     # Validate parse first
     try:
         ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return "ERROR", f"parse error: {e}", []
 
     lines = src.split("\n")

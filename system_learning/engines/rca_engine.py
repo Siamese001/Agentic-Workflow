@@ -343,7 +343,7 @@ def analyze_failures_and_persist(
             window_start=window_start_utc,
             window_end=window_end_utc,
         )
-    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         import logging
 
         logging.getLogger(__name__).debug("Failed to persist RCA findings for %s: %s", snapshot_id, exc)

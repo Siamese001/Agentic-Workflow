@@ -317,7 +317,7 @@ class WorkflowLearningBridge:
                     name,
                     outcome.bundle_id,
                 )
-            except Exception:  # guardian: allow-broad-exception allow-log-and-swallow -- third-party learner callbacks can raise any type; isolate failures to prevent one bad learner from dropping all others
+            except Exception:  # guardian: allow-broad-exception -- third-party learner callbacks can raise any type; isolate failures to prevent one bad learner from dropping all others
                 logger.exception("LEARNING_BRIDGE learner=%s failed bundle=%s", name, outcome.bundle_id)
 
     def ledger(self) -> list[WorkflowOutcome]:

@@ -30,7 +30,7 @@ try:
     from websockets.server import WebSocketServerProtocol
 
     WEBSOCKETS_AVAILABLE: Any = True
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
     WEBSOCKETS_AVAILABLE: Any = False
     websockets = None
     WebSocketServerProtocol = Any

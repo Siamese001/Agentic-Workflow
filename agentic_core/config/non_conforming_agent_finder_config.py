@@ -119,7 +119,7 @@ try:
     # Update if import succeeds
     AGENTIC_CORE_DIR = _acquired_core_dir
     ARCHIVES_DIR = _acquired_archives_dir
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow- optional dependency
     pass
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -304,10 +304,8 @@ def main():
         try:
             source = py_file.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        except Exception:  # guardian: allow-silent-swallow
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
-            continue  # Skip unparseable files
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            raise
 
         source_lines = source.splitlines()
         finder = NonConformingAgentFinder(py_file, source_lines)

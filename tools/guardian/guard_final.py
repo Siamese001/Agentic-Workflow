@@ -108,8 +108,7 @@ for f in tqdm(FILES, desc="Processing", unit="item"):
         open(fp, "w", encoding="utf-8").write(new_src)
         fixed += 1
         print(f"OK  {f}")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         print(f"ERR {f}: {e}")
 
 print(f"\nFixed: {fixed}/9")

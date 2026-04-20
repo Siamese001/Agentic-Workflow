@@ -229,8 +229,7 @@ async def main():
     try:
         orchestrator = create_orchestrator()
         print("✓ Orchestrator initialized")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"❌ Failed to initialize orchestrator: {e}")
         sys.exit(1)
     print(f"\n{'=' * 80}")
@@ -242,8 +241,7 @@ async def main():
     except KeyboardInterrupt:  # guardian: KeyboardInterrupt should be handled with specific context
         print("\n\n⚠️  Workflow interrupted by user")
         sys.exit(130)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"\n\n❌ Workflow failed with exception: {e}")
         import traceback
 

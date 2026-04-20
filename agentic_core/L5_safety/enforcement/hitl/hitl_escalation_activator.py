@@ -324,8 +324,7 @@ class HITLEscalationActivator:
                         result,
                     )
                     break
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as exc:
+            except (ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.error("HITL handler error agent=%s: %s", agent, exc)
 
         return req

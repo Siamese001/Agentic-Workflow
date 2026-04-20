@@ -217,8 +217,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
                 ContextWindow = "\n".join(lines[i : min(i + 10, len(lines))])
                 if not any(log_sig in ContextWindow for log_sig in log_signals):
                     issues.append(f"Potential Dark Reasoning at line {i + 1}: Action without L6 footprint")
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
         pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
     return issues
 

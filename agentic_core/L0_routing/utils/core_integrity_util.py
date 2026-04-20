@@ -182,8 +182,7 @@ def _get_configuration_error():
         from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError as _CE
 
         return _CE
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return ConfigurationError
 
 
@@ -315,7 +314,7 @@ class CoreIntegrityVerifier:
         try:
             return hashlib.sha256(path.read_bytes()).hexdigest()
         except (OSError, RuntimeError, TypeError, ValueError) as e:
-            raise ConfigurationError(f"Failed to hash file {path}: {e}")
+            raise ConfigurationError(f'Failed to hash file {path}: {e}') from e
 
     @classmethod
     def update_golden_seal(cls) -> str:

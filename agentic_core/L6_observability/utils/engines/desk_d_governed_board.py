@@ -293,8 +293,8 @@ class DeskDGovernedBoard:
         for callback in tqdm(self._processing_callbacks, desc="Processing", unit="item"):
             try:
                 callback(record, result)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
-                logger.warning(f"Desk D callback error: {e}")
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                logger.error("[GovernoredBoard] Callback error: %s", exc)
 
         logger.info(
             "Desk D processed decision: trace=%s decision=%s confidence=%.2f",

@@ -341,8 +341,7 @@ def scan_for_unsafe_patterns(code: str, file_path: str) -> list[UnsafePattern]:
         tree = ast.parse(code)
         visitor = UnsafePatternVisitor(file_path)
         return visitor.visit(tree, code)
-    # guardian: allow-silent-swallow
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow
         # Return empty list for files that can't be parsed
         return []
 
@@ -377,8 +376,7 @@ def scan_directory_for_unsafe_patterns(
                     content = f.read()
                 findings = scan_for_unsafe_patterns(content, str(file_path))
                 all_findings.extend(findings)
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 # Skip files that can't be read or parsed
                 continue
 

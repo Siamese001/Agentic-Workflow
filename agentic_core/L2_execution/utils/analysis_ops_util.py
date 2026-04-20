@@ -211,8 +211,7 @@ def validate_python_syntax(file_path: str) -> tuple[bool, str | None]:
         error_msg: Any = f"SyntaxError in {file_path}: {e.msg} at line {e.lineno}"
         Logger.error(error_msg)
         return (False, error_msg)
-    # guardian: allow-silent-swallow
-    except (RuntimeError, ValueError) as e:
+    except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         error_msg: Any = f"Unexpected error validating {file_path}: {str(e)}"
         Logger.error(error_msg)
         return (False, error_msg)
@@ -239,8 +238,7 @@ def run_ruff_check(file_path: str, fix: bool = False) -> tuple[int, str, str]:
         return (-1, "", "Ruff check timed out")
     except FileNotFoundError:  # guardian: File operations should check existence before access
         return (-1, "", "Ruff not installed")
-    # guardian: allow-silent-swallow
-    except (RuntimeError, ValueError) as e:
+    except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         return (-1, "", str(e))
 
 
@@ -265,8 +263,7 @@ def run_black_format(file_path: str, check_only: bool = False) -> tuple[int, str
         return (-1, "", "Black format timed out")
     except FileNotFoundError:  # guardian: File operations should check existence before access
         return (-1, "", "Black not installed")
-    # guardian: allow-silent-swallow
-    except (RuntimeError, ValueError) as e:
+    except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         return (-1, "", str(e))
 
 
@@ -323,8 +320,7 @@ def analyze_ast(file_path: str) -> dict[str, Any]:
                     if isinstance(target, ast.Name):
                         analysis["globals"].append(target.id)
         return analysis
-    # guardian: allow-silent-swallow
-    except (RuntimeError, ValueError) as e:
+    except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         Logger.error(f"AST analysis failed for {file_path}: {e}")
         return {"error": str(e)}
 
@@ -347,8 +343,7 @@ def count_lines_of_code(file_path: str) -> dict[str, int]:
         comments: Any = sum(1 for line in lines if line.strip().startswith("#"))
         code: Any = total - blank - comments
         return {"total": total, "code": code, "comments": comments, "blank": blank}
-    # guardian: allow-silent-swallow
-    except (RuntimeError, ValueError) as e:
+    except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         Logger.error(f"Line count failed for {file_path}: {e}")
         return {"error": str(e)}
 
@@ -405,7 +400,6 @@ def detect_security_issues(file_path: str) -> list[dict[str, Any]]:
                                         },
                                     )
         return issues
-    # guardian: allow-silent-swallow
-    except (RuntimeError, ValueError) as e:
+    except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         Logger.error(f"Security analysis failed for {file_path}: {e}")
         return [{"error": str(e)}]

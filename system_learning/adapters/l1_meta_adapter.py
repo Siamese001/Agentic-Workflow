@@ -297,8 +297,8 @@ class L1MetaAdapter:
             return None
         try:
             floats = [float(v) for v in history]
-        except (TypeError, ValueError):
-            return None  # guardian: allow-return-none-swallow -- float parse: non-fatal, caller treats None as no drift signal
+        except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- float parse: non-fatal, caller treats None as no drift signal
+            return None
         mid = len(floats) // 2
         if mid == 0:
             return None

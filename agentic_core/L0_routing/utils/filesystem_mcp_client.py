@@ -27,7 +27,7 @@ class FilesystemMCPClient:
         except (
             OSError,
             UnicodeDecodeError,
-        ) as e:  # guardian: allow-silent-swallow -- file read failure returns None
+        ) as e:  # guardian: allow-return-none-swallow -- file read failure: non-fatal, caller handles None
             return None
 
     async def write_text(self, file_path: str | Path, content: str) -> bool:

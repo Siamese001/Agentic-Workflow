@@ -466,8 +466,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 agent_type="LearningAgent",
                 observations=["OutreachLearningAgent: campaign pattern recognition and confidence scoring"],
             )
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
 
     async def execute(self) -> None:
@@ -491,8 +490,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 entity_name=self.__class__.__name__,
                 observation=f"CampaignAnalysis: lead_score={avg_lead_score:.2f} message_score={avg_message_score:.2f} leads={len(lead_scores)} messages={len(message_scores)}",
             )
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
         recommendations = []
         if avg_lead_score < 0.6:
@@ -534,8 +532,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                     task_description=f"outreach:{TaskType}",
                     feedback_score=confidence,
                 )
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
 
     # guardian: allow-type-erasure
@@ -553,8 +550,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 entity_name=self.__class__.__name__,
                 observation=f"FailedTask={TaskType} error={error[:200]}",
             )
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
 
     # guardian: allow-type-erasure

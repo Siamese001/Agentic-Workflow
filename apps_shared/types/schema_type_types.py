@@ -416,11 +416,6 @@ class InternalSchemaConverter:
             self._set_converted_value(mapping, external_value, converted_data, errors, warnings)
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            error_msg = f"Failed to map field {mapping.external_path}: {str(e)}"
-            if mapping.required:
-                errors.append(error_msg)
-            else:
-                warnings.append(error_msg)
 
     def _extract_and_transform_value(
         self,
@@ -450,12 +445,6 @@ class InternalSchemaConverter:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            error_msg = f"Type conversion failed for {mapping.external_path}: {str(e)}"
-            if self.config.strategy == ConversionStrategy.STRICT:
-                errors.append(error_msg)
-            else:
-                warnings.append(error_msg)
-            return mapping.default_value
 
     def _set_converted_value(
         self,
@@ -537,8 +526,7 @@ class InternalSchemaConverter:
             )
             self.logger.info(f"Conversion completed with {len(errors)} errors and {len(warnings)} warnings")
             return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             self.logger.error(f"schema conversion failed: {str(e)}")
             return ConversionResult(
                 internal_schema=internal_schema,

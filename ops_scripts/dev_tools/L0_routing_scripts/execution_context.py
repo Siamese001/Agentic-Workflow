@@ -265,10 +265,6 @@ class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
                 break
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                result["retries"] = attempt + 1
-                result["error"] = str(e)
-                if attempt == self.max_retries - 1:
-                    result["status"] = "failed"
         return result
 
     # guardian: allow-type-erasure

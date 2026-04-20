@@ -425,8 +425,7 @@ class SSOTRelocator:
                 else:
                     result.error = gk_result.error
                     logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
         return result
@@ -479,8 +478,7 @@ class SSOTRelocator:
                 else:
                     result.error = gk_result.error
                     logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
         return result
@@ -541,8 +539,7 @@ class SSOTRelocator:
                     _wg.remove_dir(source)
                 result.success = True
                 logger.info(f"FLATTENED: {result.source} -> {result.target}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result.error = str(e)
                 logger.error(f"Failed to flatten {result.source}: {e}")
         return result
@@ -566,7 +563,5 @@ class SSOTRelocator:
         except (
             OSError,
             PermissionError,
-        ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
-            import logging
-
-            logging.getLogger(__name__).debug("ssot_relocator_types: OSError swallowed at L553: %s", e)
+        ) as e:  # guardian: allow-log-and-swallow -- empty dir cleanup: non-fatal, debug logged
+            logger.debug("ssot_relocator_types: OSError swallowed at L553: %s", e)

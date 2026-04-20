@@ -38,8 +38,7 @@ class DispatchOutreachToolsAgent(BaseDispatchAgent):
             test_result = self._perform_action("test", {"query": "diagnostic test"})
             if isinstance(test_result, dict) and "error" in test_result:
                 Logger.error(f"Diagnostics failed: {test_result['error']}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"Diagnostics exception: {e}")
 
 

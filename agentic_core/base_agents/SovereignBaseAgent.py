@@ -294,8 +294,7 @@ class SovereignBaseAgent(
         # 1. THE IMMUTABLE LOCK CHECK
         try:
             CoreIntegrityVerifier.verify_core_integrity()
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError, OSError) as e:
+        except (RuntimeError, ValueError, OSError) as e:  # guardian: allow-silent-swallow
             emergency_shutdown(f"CORE INTEGRITY COMPROMISED. TERMINATING AGENT. {e}")
 
         # 2. Security Validation
@@ -330,8 +329,7 @@ class SovereignBaseAgent(
                 if dir_path.exists() and not self._is_safe_directory(dir_path):
                     raise ConfigurationError(f"Unsafe directory detected: {dir_path}")
 
-        # guardian: allow-silent-swallow
-        except (ConfigurationError, RuntimeError, ValueError, TypeError, OSError) as e:
+        except (ConfigurationError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
             raise ConfigurationError(f"Security validation failed: {str(e)}") from e
 
     def _is_safe_path(self, path: Path) -> bool:
@@ -530,10 +528,9 @@ class SovereignBaseAgent(
                         if _f.endswith(".py"):
                             _fp = _os.path.join(_root, _f)
                             try:
-                                # guardian: allow-silent-swallow - acceptable exception handling
                                 _st = _os.stat(_fp)
                                 _fs_parts.append(f"{_fp}:{_st.st_mtime_ns}:{_st.st_size}")
-                            except OSError as e:
+                            except OSError as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                                 import logging
 
                                 logging.getLogger(__name__).debug(
@@ -734,8 +731,7 @@ class SovereignBaseAgent(
                         f"tier={heal_decision.tier.name} (unresolved={unresolved})",
                     )
 
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallower
+        except (RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-log-and-swallow -- heal pipeline broad catch; logs error and returns structured fail dict
             errors = 1
             logger.error(f"[heal_repository] {agent_name} error: {e}")
 

@@ -179,8 +179,7 @@ except (
 ):  # guardian: allow-silent-swallower -- diagnostic script; PRAGMA failure is non-fatal, error printed to stdout
     print("❌ Redis not running or not accessible")
     print("   Redis hot cache is not available")
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     print("❌ Redis Python client not installed")
 except Exception as e:
     print(f"❌ Redis error: {e}")

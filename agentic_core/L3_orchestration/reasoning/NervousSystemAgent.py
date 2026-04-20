@@ -471,7 +471,6 @@ class NervousSystemAgent(SovereignBaseAgent):
                 # guardian: allow-silent-swallow
                 except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
-                    LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
         start_time = get_clock().now_epoch()
         resume_phase = await self._restore_checkpoint_if_exists()
         context = ExecutionContext(
@@ -614,8 +613,7 @@ class NervousSystemAgent(SovereignBaseAgent):
             emit_replay_key(_rtid, f"rk:{_rtid[:16]}")
             emit_determinism_digest(_rtid, f"dd:{_rtid[:16]}")
             return result
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             _rsa.observe_runtime_state("execute_error", stage="error", actor_id="NervousSystemAgent")
             from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
@@ -791,8 +789,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 report["post_phase_status"] = "PARTIAL"
                 report["message"] = f"Phase {phase_name} post-validation: Partial completion"
             Logger.info(f"[NervousSystemAgent] {report['message']}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             report["post_phase_status"] = "ERROR"
             report["message"] = f"Post-phase validation error: {e}"
             Logger.error(f"[NervousSystemAgent] Post-phase validation failed: {e}")
@@ -861,11 +858,8 @@ class NervousSystemAgent(SovereignBaseAgent):
                                 action.update(cleanup_result[0])
                                 if not dry_run:
                                     affected_paths.append(violation.file_path)
-            # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except Exception as e:  # guardian: allow-broad-exception -- cleanup loop: re-raised immediately, broad catch needed for arbitrary violations
                 raise
-                action["error"] = str(e)
-                Logger.error(f"[NervousSystemAgent] Cleanup error: {e}")
             actions.append(action)
         batch_report = {
             "batch_post_heal_status": "PREVIEW" if dry_run else "APPLIED",
@@ -1000,8 +994,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"NervousSystemAgent heal() failed: {str(e)}",

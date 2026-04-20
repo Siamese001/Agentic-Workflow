@@ -901,9 +901,7 @@ def execute_phase2_reconciliation(
                             agent_key,
                             _HEAL_TIMEOUT_S,
                         )
-                        raise RuntimeError(
-                            f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}",
-                        )
+                        raise RuntimeError(f'heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}') from None
                     finally:
                         _uwg.revoke_write_permission(_territory_posix)
                         _uwg.record_mutation(

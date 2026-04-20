@@ -83,8 +83,7 @@ def inline():
 def above():
     try:
         pass
-    # guardian: allow-log-and-swallow -- fixture above-header guardian
-    except ValueError:
+    except ValueError:  # guardian: allow-log-and-swallow -- fixture above-header guardian
         logger.error('x')
         pass
 

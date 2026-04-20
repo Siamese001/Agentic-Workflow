@@ -480,8 +480,7 @@ class MemoryManager:
             try:
                 self._check_memory_limits()
                 time.sleep(interval_seconds)
-            # guardian: allow-silent-swallow
-            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 logger.error(f"Memory monitoring error: {e}")
 
     def get_stats(self) -> dict[str, Any]:
@@ -498,8 +497,6 @@ class MemoryManager:
                 stats["process_memory_percent"] = process.memory_percent()
             except (ValueError, TypeError, RuntimeError) as e:
                 raise
-                stats["process_memory_mb"] = 0
-                stats["process_memory_percent"] = 0
             if tracemalloc.is_tracing():
                 current, peak = tracemalloc.get_traced_memory()
                 stats["traced_memory_mb"] = current / 1024 / 1024

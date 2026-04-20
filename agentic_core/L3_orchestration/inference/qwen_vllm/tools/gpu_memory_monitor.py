@@ -152,13 +152,13 @@ class GPUMemoryMonitor:
                         utilization_percent=util,
                         timestamp=time.time(),
                     )
-        except (
+        except (  # guardian: allow-log-and-swallow -- GPU memory query: non-fatal, returns None on failure
             AttributeError,
             OSError,
             RuntimeError,
             TypeError,
             ValueError,
-        ) as e:  # guardian: allow-log-and-swallow -- GPU memory query: non-fatal, returns None on failure
+        ) as e:
             logger.debug("Failed to get GPU memory: %s", e)
 
         return None

@@ -194,8 +194,7 @@ class SyntaxScarRepairer:
                 return {"status": "repaired", "lines_removed": lines_removed, "syntax_error": str(e)}
             except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
                 return {"status": "repair_failed", "lines_removed": 0, "syntax_error": str(e)}
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             raise HealerError(f"Syntax repair failed for {init_file}: {e}") from e
 
     def _is_safe_to_modify(self, file_path: Path) -> bool:
@@ -254,8 +253,7 @@ class SyntaxScarRepairer:
                         "lines_removed": repair_result.get("lines_removed", 0),
                     }
                 )
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 results["failed"] += 1
                 results["details"].append({"file": file_rel_path, "status": "error", "error": str(e)})
         return results

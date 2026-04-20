@@ -328,7 +328,7 @@ def sync_agents_md(agents_path: Path = agents_md) -> bool:
     text = _replace_block(text, "MCP-QUICK-REFERENCE", generate_mcp_quick_reference_block())
     try:
         text = _replace_block(text, "NOTION-MAP", generate_notion_map_block())
-    except FileNotFoundError:
+    except FileNotFoundError:  # guardian: allow-silent-swallow -- notion_databases.yaml missing: non-fatal, AGENTS.md block unchanged
         # notion_databases.yaml missing — skip block, leave AGENTS.md as-is
         pass
     if text != original:

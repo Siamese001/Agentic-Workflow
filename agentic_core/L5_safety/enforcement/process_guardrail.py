@@ -305,8 +305,7 @@ class ProcessGuard:
                 self._kill_process(pid)
                 result["terminated"].append(pid)
                 logger.info(f"ProcessGuard: Terminated PID {pid}")
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result["failed"].append(pid)
                 logger.warning(f"ProcessGuard: Failed to terminate PID {pid}: {e}")
         with self._pid_lock:
@@ -325,8 +324,8 @@ class ProcessGuard:
                 os.kill(pid, signal.SIGTERM)
             else:
                 os.kill(pid, signal.SIGTERM)
-        except ProcessLookupError:  # guardian: ProcessLookupError should be handled with specific context
-            pass  # guardian: allow-silent-swallow -- intentional: ProcessLookupError used for control flow
+        except ProcessLookupError:  # guardian: allow-silent-swallow -- process already dead, non-fatal
+            pass
         except PermissionError:  # guardian: Permission errors should validate access before operation
             logger.warning(f"ProcessGuard: Permission denied killing PID {pid}")
             raise

@@ -237,8 +237,7 @@ def find_gravity_violations():
                                 "import_layer": import_layer,
                             },
                         )
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError):
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow
             pass
 
     return violations
@@ -257,11 +256,9 @@ def find_syntax_errors():
                 try:
                     content = py_file.read_text(encoding="utf-8")
                     ast.parse(content)
-                # guardian: allow-silent-swallow - acceptable exception handling
-                except SyntaxError as e:
+                except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
                     errors.append({"file": str(py_file), "line": e.lineno, "message": str(e.msg)})
-                # guardian: allow-silent-swallow
-                except (ValueError, TypeError):
+                except (ValueError, TypeError):  # guardian: allow-silent-swallow
                     pass
     return errors
 

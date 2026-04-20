@@ -59,8 +59,7 @@ def main():
                             errors.append(
                                 f"[BROKEN IMPORT] {path.relative_to(ROOT_DIR)}:{i + 1} references '{old_stem}' -> '{line.strip()}'"
                             )
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 print(f"  [WARN] Could not read {path}: {e}")
     print(f"  Scanned {scanned_count} files.")
     print("\n[Phase 3] Cataloging PascalCase Violations (Information Only)...")
@@ -79,8 +78,7 @@ def main():
                     content = path.read_text(encoding="utf-8")
                     if f"class {stem}" not in content:
                         pascal_violations.append(str(path.relative_to(ROOT_DIR)))
-                # guardian: allow-silent-swallow
-                except:
+                except Exception:  # guardian: allow-silent-swallow
                     pass
     print(
         f"  Found {len(pascal_violations)} potential PascalCase violations (Files without matching Classes)."

@@ -465,8 +465,7 @@ class SimpleEmbedder:
 
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")
-            # guardian: allow-silent-swallow - optional dependency
-            except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow - optional dependency
                 logger.warning("sentence_transformers not available, using dummy embeddings")
                 self._model = "dummy"
 
@@ -529,8 +528,7 @@ class GlobalCache:
                 from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
                 self._hive = SemanticCacheManager.get_instance()
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.warning(f"[GlobalCache] SemanticCacheManager unavailable, L2 disabled: {e}")
                 self._hive = False
         return self._hive if self._hive is not False else None
@@ -597,8 +595,7 @@ class GlobalCache:
                     self._stats["l2_hits"] += 1
                     value = recalled.get("value", recalled)
                     return [value] if max_results >= 1 else []
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.debug(f"[GlobalCache] Hive recall failed: {e}")
         query_embedding = self.embedder.embed(query_text)
         results = self.l2.search(query_embedding, threshold, max_results)
@@ -654,8 +651,7 @@ class GlobalCache:
                         self._HIVE_NAMESPACE,
                         {"value": value, "key": key, "source_engine": source_engine},
                     )
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     logger.debug(f"[GlobalCache] Hive learn failed: {e}")
 
     def _hash_key(self, key: str) -> str:

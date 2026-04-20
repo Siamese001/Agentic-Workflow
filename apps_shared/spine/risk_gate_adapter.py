@@ -198,8 +198,7 @@ class RiskGateAdapter:
             ConfCalibRiskGate = _build_real_gate()
             self._gate = ConfCalibRiskGate()
             self._real = True
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("ConfCalibRiskGate unavailable; using null fallback (allow=True)")
             self._gate = None
             self._real = False

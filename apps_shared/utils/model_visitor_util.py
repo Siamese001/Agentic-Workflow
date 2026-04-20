@@ -198,7 +198,6 @@ def main():
                 ModelVisitor().visit(ast.parse(f.read()))
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                Logger.warning(f"Parse Warning in {arg}: {e}")
 
 
 if __name__ == "__main__":

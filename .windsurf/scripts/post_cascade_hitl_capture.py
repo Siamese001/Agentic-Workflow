@@ -48,7 +48,7 @@ def _debug_log(msg: str) -> None:
         ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
         with _log_path.open("a", encoding="utf-8") as f:
             f.write(f"{ts}  {msg}\n")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- debug log write: non-fatal, fail-open
         pass
 
 
@@ -162,7 +162,7 @@ def _init_db() -> Optional[sqlite3.Connection]:
         conn.executescript(_ddl)
         conn.commit()
         return conn
-    except (sqlite3.Error, OSError):
+    except (sqlite3.Error, OSError):  # guardian: allow-return-none-swallow -- DB init: non-fatal, caller handles None
         return None
 
 
@@ -181,7 +181,7 @@ def _get_git_info() -> tuple[str, str]:
         )
         if r.returncode == 0:
             branch = r.stdout.strip()
-    except (OSError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired):  # guardian: allow-silent-swallow -- git branch probe: non-fatal, empty string used
         pass
     try:
         r = subprocess.run(
@@ -195,7 +195,7 @@ def _get_git_info() -> tuple[str, str]:
         )
         if r.returncode == 0:
             sha = r.stdout.strip()
-    except (OSError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired):  # guardian: allow-silent-swallow -- git sha probe: non-fatal, empty string used
         pass
     return branch, sha
 
@@ -414,12 +414,12 @@ def main() -> int:
         try:
             captured = detect_and_capture(text, conn)
             _debug_log(f"captured={captured}")
-        except sqlite3.Error:
+        except sqlite3.Error:  # guardian: allow-silent-swallow -- HITL capture: non-fatal, fail-open
             pass
         finally:
             conn.close()
 
-    except (OSError, ValueError):
+    except (OSError, ValueError):  # guardian: allow-silent-swallow -- HITL capture main: non-fatal, fail-open
         pass
 
     return 0

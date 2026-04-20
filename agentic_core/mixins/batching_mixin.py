@@ -353,8 +353,7 @@ class BatchingMixin:
             async with semaphore:
                 try:
                     results[index] = await awaitable
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError, ValueError, AttributeError, TypeError) as exc:
+                except (RuntimeError, OSError, ValueError, AttributeError, TypeError) as exc:  # guardian: allow-silent-swallow
                     results[index] = exc
 
         runner = _run_safe if return_exceptions else _run
@@ -381,8 +380,7 @@ class BatchingMixin:
             for task in tasks:
                 try:
                     results.append(await task)
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError, ValueError, AttributeError, TypeError) as e:
+                except (RuntimeError, OSError, ValueError, AttributeError, TypeError) as e:  # guardian: allow-silent-swallow
                     results.append(e)
             return results
         return await self.execute_batch(

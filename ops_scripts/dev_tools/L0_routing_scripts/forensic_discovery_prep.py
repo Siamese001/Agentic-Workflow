@@ -550,18 +550,6 @@ def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool 
             validate_path_within_project(project_root, full_path)
         except Exception:  # guardian: allow-silent-swallow
             raise
-            record = ForensicAgentRecord(
-                agent_name=name,
-                layer=layer,
-                file_path=str(full_path),
-                class_name="Unknown",
-                mro_signature=[],
-                status="INVALID",
-                methods_detected=[],
-                selection_reason="Path fails validate_path_within_project",
-            )
-            manifest["ignored_artifacts"].append(asdict(record))
-            continue
         record = forensic_inspect(name, layer, full_path)
         direct_bases = class_bases_map.get(record.class_name, record.mro_signature)
         if direct_bases:

@@ -303,8 +303,7 @@ class TalentSignalEnhancer:
                 enhanced = self._strengthen_generic_bullet(enhanced, team_size)
             logger.debug(f"Enhanced bullet: {bullet_text[:50]}... -> {enhanced[:50]}...")
             return enhanced
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error enhancing management bullet: {str(e)}")
             return bullet_text
 
@@ -327,8 +326,7 @@ class TalentSignalEnhancer:
             hook = f"P.S. I have a specialized network of {role_network} {target_role}s who often follow me to new ventures. I could likely fill your open {target_role} roles within 60 days."
             logger.info(f"Generated network hook for {target_role} with network size {role_network}")
             return hook
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error generating network hook: {str(e)}")
             return None
 
@@ -357,8 +355,7 @@ class TalentSignalEnhancer:
             if hiring_count >= 3:
                 return "Recruiting"
             return None
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error getting HyDE context: {str(e)}")
             return None
 
@@ -389,8 +386,7 @@ class TalentSignalEnhancer:
             if not detected and any(term in text_lower for term in ["senior", "lead", "principal"]):
                 detected.append("Senior Talent")
             return detected[:5]
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error detecting pedigree: {str(e)}")
             return []
 
@@ -416,8 +412,7 @@ class TalentSignalEnhancer:
                 if match:
                     return int(match.group(1))
             return 0
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error extracting team size: {str(e)}")
             return 0
 
@@ -446,8 +441,7 @@ class TalentSignalEnhancer:
                         growth = int(groups[1]) - int(groups[0])
                         return f"{growth} in <{groups[2]} months"
             return None
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error extracting hiring metric: {str(e)}")
             return None
 
@@ -469,8 +463,7 @@ class TalentSignalEnhancer:
             if any(phrase in text.lower() for phrase in ["no attrition", "zero turnover", "100% retained"]):
                 return "100%"
             return None
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error extracting retention metric: {str(e)}")
             return None
 
@@ -504,8 +497,7 @@ class TalentSignalEnhancer:
             if "managed" in bullet.lower():
                 bullet = bullet.replace("managed", "built and led")
             return bullet
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error strengthening generic bullet: {str(e)}")
             return bullet
 

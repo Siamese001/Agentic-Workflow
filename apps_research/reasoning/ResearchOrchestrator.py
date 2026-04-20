@@ -161,8 +161,7 @@ class ResearchOrchestrator:
             from apps_research.config import load_research_specs
 
             self._specs = load_research_specs()
-        # guardian: allow-silent-swallow -- Optional research specs dependency; not critical for core functionality
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow -- Optional research specs dependency; not critical for core functionality
             self._specs = None
 
         try:

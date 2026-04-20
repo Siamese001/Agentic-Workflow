@@ -372,7 +372,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 self._naming_agent = get_naming_agent(self.project_root)
             except (ImportError, RecursionError):
-                raise RuntimeError("NamingAgent not available - post-heal naming validation disabled")
+                raise RuntimeError('NamingAgent not available - post-heal naming validation disabled') from None
         return self._naming_agent
 
     @property
@@ -387,7 +387,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 self._import_agent = create_legacy_import_healer()
             except (ImportError, RecursionError):
-                raise RuntimeError("Import healer not available - post-heal import validation disabled")
+                raise RuntimeError('Import healer not available - post-heal import validation disabled') from None
         return self._import_agent
 
     def heal(self, violation: dict) -> HealResult:
@@ -427,9 +427,8 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             _bp = _gbp(file_path, self.project_root)
             _adg_score = _bp.behavioral_score
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError):
-            raise RuntimeError(f"Behavioral profile resolution failed for {file_path}")
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow
+            raise RuntimeError(f'Behavioral profile resolution failed for {file_path}') from None
 
         message = violation.get("message", "Location violation")
 
@@ -555,7 +554,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 proposed=str(_cp),
                                 decision=f"HITL-SSOT-{_ssot_raw if '_ssot_raw' in dir() else 'AUTO'}",
                             )
-                        except (OSError, TypeError):  # guardian: allow-silent-swallow
+                        except (OSError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                             pass
                 if file_path:
                     violation_list.append(

@@ -184,7 +184,6 @@ class HealingCycle:
             emitter = get_healing_emitter()
         except (ValueError, TypeError, RuntimeError) as e:
             raise
-            emitter = None
         passed_agents: list[str] = []
         failed_agents: list[str] = []
         converged = False
@@ -200,7 +199,6 @@ class HealingCycle:
                         passed_agents.append(f"signal:{sig}")
                     except (ValueError, TypeError, RuntimeError) as e:
                         raise
-                        failed_agents.append(f"signal:{sig}")
                 converged = len(failed_agents) == 0
             outcome = "converged" if converged else "partial"
             if emitter:
@@ -223,26 +221,6 @@ class HealingCycle:
             }
         except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error("HealingCycle[%d] failed: %s", self.cycle_num, exc)
-            if emitter:
-                emitter.emit(
-                    trace_id=getattr(self.ctx, "trace_id", "unknown"),
-                    attempt_number=self.cycle_num,
-                    failure_class=strategy,
-                    healer_selected="HealingCycle",
-                    model_used="local",
-                    outcome="error",
-                    metadata={"error": str(exc)},
-                )
-            return {
-                "status": "error",
-                "strategy": strategy,
-                "cycle_num": self.cycle_num,
-                "passed_agents": [],
-                "failed_agents": [],
-                "converged": False,
-                "rollback_triggered": False,
-            }
 
 
 __all__ = ["HealingCycle"]

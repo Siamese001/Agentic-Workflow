@@ -301,8 +301,7 @@ def scan_import_compliance(
         try:
             content = fpath.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content, filename=str(fpath))
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (SyntaxError, UnicodeDecodeError):
+        except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallow - acceptable exception handling
             continue
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
@@ -360,8 +359,7 @@ def scan_layer_gravity(
     try:
         scanner = SSOTScanner(repo_root)
         gravity_agents = scanner.find_gravity_violations()
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return []
 
     violations: list[dict] = []
@@ -433,12 +431,6 @@ def run_architecture_governance_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="import_compliance",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"import_compliance scan failed: {exc}")
 
     # --- Check: layer_gravity ---
     try:
@@ -465,12 +457,6 @@ def run_architecture_governance_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="layer_gravity",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"layer_gravity scan failed: {exc}")
 
     # --- Finalize ---
     total_checks = len(result.checks)

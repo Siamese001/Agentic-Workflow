@@ -140,9 +140,9 @@ class CanonicalStore:
             self._unit_cache[cache_key] = unit
             return unit
 
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow -- unit load: non-fatal, caller handles None as missing unit
             log.error(f"Failed to load unit {unit_id}:v{version}: {e}")
-            return None  # guardian: allow-return-none-swallow -- unit load: non-fatal, caller handles None as missing unit
+            return None
 
     def get_latest_unit(self, unit_id: str) -> CanonicalRawUnit | None:
         """Get the latest version of a unit.

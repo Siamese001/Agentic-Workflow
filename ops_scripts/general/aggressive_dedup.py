@@ -287,8 +287,7 @@ def _adg_startup_warning() -> None:
                 f"Signals: {sorted(_profile.antipattern_signals) or 'none'}",
                 stacklevel=2,
             )
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         pass
 
 

@@ -92,14 +92,13 @@ _emit_links_execution_to_snapshot("p4", "dependencygraph_validator", "exec_snaps
 "Brief description of functionality and purpose."
 import asyncio
 import functools
+import importlib
 import json
 import os
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-
-from infrastructure.sdks_mcps import create_gemini_model
 
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -363,7 +362,7 @@ class ValidationContext:
         api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
         if api_key:
             try:
-                self._client = create_gemini_model(self.model_id)
+                self._client = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(self.model_id)
                 self.intelligence_enabled = True
                 print("      [OK] Gemini Connected")
             except (ImportError, AttributeError, ValueError) as e:

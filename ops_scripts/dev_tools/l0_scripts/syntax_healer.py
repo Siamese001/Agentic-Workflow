@@ -96,8 +96,7 @@ class PatternSyntaxHealerV2:
             try:
                 with open(py_file, encoding="utf-8") as f:
                     original_content = f.read()
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 print(f"⚠️  Could not read {py_file}: {e}")
                 continue
 
@@ -127,8 +126,7 @@ class PatternSyntaxHealerV2:
                     stats["files_modified"] += 1
                     self.files_modified.append(str(py_file))
                     print(f"✅ Fixed {file_fixes} issues in: {py_file.relative_to(self.root_dir)}")
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     print(f"❌ Could not write {py_file}: {e}")
 
         self._print_summary(stats)

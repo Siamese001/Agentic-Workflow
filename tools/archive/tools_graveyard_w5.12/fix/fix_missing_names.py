@@ -66,8 +66,7 @@ def fix_root_in_file(filepath):
     # Verify syntax
     try:
         ast.parse(new_src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         print(f"  SYNTAX ERROR in {filepath}: {e}")
         return False
 

@@ -82,8 +82,7 @@ _emit_links_execution_to_snapshot("p4", "golden_state_evaluator_types", "exec_sn
 
 try:
     from apps_rg.core.JudgeEvaluation import JudgeEvaluationResult, JudgeEvaluator, create_judge_evaluator
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
 
     @dataclass
     class JudgeEvaluationResult:
@@ -355,8 +354,6 @@ class GoldenStateEvaluator:
                 Logger.warning("golden_dataset_not_found", extra={"path": str(self.dataset_path)})
         except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
             raise
-            if self.enable_logging:
-                Logger.error("failed_to_load_golden_cases", extra={"error": str(e)}, exc_info=True)
 
     async def evaluate_case(self, case: GoldenCase, output: GoldenOutput) -> EvaluationReport:
         """Evaluate output against golden case.

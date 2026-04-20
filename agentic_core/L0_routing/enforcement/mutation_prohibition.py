@@ -180,8 +180,7 @@ def enforce_protected_root(
     # Resolve path without requiring existence
     try:
         resolved = target_path.resolve(strict=False)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except (OSError, RuntimeError) as e:
+    except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
         raise RuntimeError(f"Failed to resolve protected root path: {target_path}") from e
 
     # Check if path is under any immutable root
@@ -200,8 +199,8 @@ def enforce_protected_root(
                 raise SourceMutationBlocked(
                     f"Protected root mutation blocked: target={resolved} matched_root={immutable_root.name}",
                 )
-            except ValueError:
-                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except ValueError:  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                pass
 
 
 # =============================================================================
@@ -256,9 +255,8 @@ def assert_no_persistent_write(
             )
 
             record_prohibition_hit(layer, op, path)
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
-            pass  # Gateway not available; skip signal  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency: gateway import non-fatal, signal skipped
+            pass  # Gateway not available; skip signal
 
     raise PermissionError(msg)
 

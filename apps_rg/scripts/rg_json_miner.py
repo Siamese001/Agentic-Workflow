@@ -199,8 +199,7 @@ def mine_workflows():
             print(f"[MINER] Extraction complete. Report saved to: {OUTPUT_REPORT}")
             print(f"[MINER] Prompts extracted: {prompt_count}")
             print(f"[MINER] Configs extracted: {len(configs)}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             report.write(f"\n# ❌ EXTRACTION FAILED\n\nError: {str(e)}\n")
             print(f"[MINER] Error processing {golden_master}: {e}")
             import traceback

@@ -313,8 +313,7 @@ class SSOTScanner:
                 if metadata:
                     agents.append(metadata)
                     self._cache[str(agent_file)] = metadata
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 # Skip files that can't be parsed
                 continue
 
@@ -421,10 +420,10 @@ class SSOTScanner:
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except (
+        except (  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             SyntaxError,
             UnicodeDecodeError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):
             return None
 
         # Find agent class (aligned with classification kernel: endswith "Agent", exclude Mixin)

@@ -1095,7 +1095,6 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             compile(content, str(self.blueprint_file), "exec")
         except (SyntaxError, OSError, RuntimeError, ValueError, TypeError) as e:
             raise
-            issues.append(f"Blueprint syntax error: {e}")
 
     async def _detect_action_opportunity(self) -> dict[str, Any] | None:
         """Proactively detect when blueprint needs reconciliation."""
@@ -1147,7 +1146,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                     f"Blueprint partially synchronized - {len(remaining_drift)} drift items remain"
                 )
             Logger.info(f"[FilesystemSSOTReconcilerAgent] {report['message']}")
-        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[FilesystemSSOTReconcilerAgent] Post-heal validation failed: {e}")

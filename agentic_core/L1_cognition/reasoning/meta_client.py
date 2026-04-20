@@ -548,7 +548,10 @@ class MetaLearningClient:
             v_path = violation.get("path", "")
             text = f"{v_type} {v_msg} {v_path}"
             return bmg_embed_text(text)
-        except (ImportError, OSError) as e:  # guardian: allow-return-none-swallow -- embedding generation: Optional return contract, ImportError/OSError are infra failures, warning logged, callers handle None
+        except (
+            ImportError,
+            OSError,
+        ) as e:  # guardian: allow-return-none-swallow -- embedding generation: Optional return contract, ImportError/OSError are infra failures, warning logged, callers handle None
             Logger.warning(f"[MetaLearningClient] Embedding generation failed: {e}")
             return None
 

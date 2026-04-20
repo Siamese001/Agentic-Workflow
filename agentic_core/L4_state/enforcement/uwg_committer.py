@@ -76,7 +76,7 @@ class UWGCommitter:
                     record = CommitRecord(**record_data)
                     self._records[record.ledger_index] = record
                     self._last_hash = record.commit_hash
-        except (json.JSONDecodeError, KeyError):
+        except (json.JSONDecodeError, KeyError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
             # Corrupted ledger - this is serious
             pass
 

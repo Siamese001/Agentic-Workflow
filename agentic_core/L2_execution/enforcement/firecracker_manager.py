@@ -267,15 +267,6 @@ class FirecrackerManager:
                 )
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
-            INSTANCE.STATUS = VMStatus.FAILED
-            INSTANCE.METADATA["ERROR"] = str(e)
-            if self.enable_logging:
-                Logger.error(
-                    "vm_creation_failed",
-                    EXTRA={"vm_id": config.vm_id, "error": str(e)},
-                    exc_info=True,
-                )
-            raise
         return instance
 
     async def terminate_vm(self, vm_id: str) -> bool:
@@ -421,7 +412,9 @@ class FirecrackerManager:
             try:
                 safe_execute(["docker", "rm", "-f", container_id], capture_output=True, check=True)
             except subprocess.CalledProcessError as e:  # guardian: allow-log-and-swallow -- Docker rm -f failure: container may already be gone; non-fatal, warning logged, VM termination proceeds
-                logging.getLogger(__name__).warning("firecracker_manager: Docker container removal failed (already removed?): %s", e)
+                logging.getLogger(__name__).warning(
+                    "firecracker_manager: Docker container removal failed (already removed?): %s", e
+                )
 
     @timeout(300)
     @standard_heal

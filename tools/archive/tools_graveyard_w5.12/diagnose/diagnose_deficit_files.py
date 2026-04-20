@@ -53,8 +53,7 @@ def get_module_docstring_text(lines):
 def ast_called_funcs(src):
     try:
         tree = ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         return set()
     called = set()
     for node in ast.walk(tree):

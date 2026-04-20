@@ -245,10 +245,9 @@ class SecureConfigManager:
                 encrypted_data = f.read()
             decrypted_data = self._decrypt_data(encrypted_data)
             return json.loads(decrypted_data)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load config: {e}")
-            raise ConfigurationError(f"configuration load failed: {e}")
+            raise ConfigurationError(f'configuration load failed: {e}') from e
 
     def _save_config(self) -> None:
         """Save encrypted configuration."""
@@ -259,10 +258,9 @@ class SecureConfigManager:
             with open(temp_file, "wb") as f:
                 f.write(encrypted_data)
             temp_file.replace(self.config_file)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to save config: {e}")
-            raise ConfigurationError(f"configuration save failed: {e}")
+            raise ConfigurationError(f'configuration save failed: {e}') from e
 
     def _load_keys(self) -> dict[str, dict[str, Any]]:
         """Load encryption keys with metadata.
@@ -277,8 +275,7 @@ class SecureConfigManager:
                 encrypted_data = f.read()
             decrypted_data = self._decrypt_data(encrypted_data)
             return json.loads(decrypted_data)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load keys: {e}")
             return {}
 
@@ -291,10 +288,9 @@ class SecureConfigManager:
             with open(temp_file, "wb") as f:
                 f.write(encrypted_data)
             temp_file.replace(self.keys_file)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to save keys: {e}")
-            raise ConfigurationError(f"Keys save failed: {e}")
+            raise ConfigurationError(f'Keys save failed: {e}') from e
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get a configuration value.

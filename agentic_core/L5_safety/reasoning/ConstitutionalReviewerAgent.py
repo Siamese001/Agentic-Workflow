@@ -9,10 +9,6 @@ except ImportError as e:
         f"Required dependency missing: {e}"
     )  # guardian: allow-silent-degradation - Optional L5 safety base
 
-    class L5SafetyBase:  # type: ignore[no-redef]
-        """Stub L5SafetyBase."""
-
-        pass
 
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

@@ -216,8 +216,7 @@ class CachedStateLedger(SovereignBaseAgent):
             self.redis = redis.Redis(**connection_kwargs)
             self.redis.ping()
             print("   [OK] CachedStateLedgerAgent: Redis Sovereign cache ONLINE")
-        # guardian: allow-silent-swallow
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
             from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
             raise InfrastructureDependencyError(
@@ -293,8 +292,7 @@ class CachedStateLedger(SovereignBaseAgent):
         if self.redis:
             try:
                 self.redis.rpush(f"{self.prefix_historian}:successful_traces", json.dumps(trace))
-            # guardian: allow-silent-swallow
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 import logging
 
                 logging.getLogger(__name__).debug("CachedStateLedger: Exception swallowed at L289: %s", e)
@@ -307,8 +305,7 @@ class CachedStateLedger(SovereignBaseAgent):
             try:
                 raw = self.redis.lrange(f"{self.prefix_historian}:successful_traces", 0, -1)
                 return [json.loads(r) for r in raw]
-            # guardian: allow-silent-swallow
-            except (AttributeError, TypeError, ValueError, OSError, RuntimeError):
+            except (AttributeError, TypeError, ValueError, OSError, RuntimeError):  # guardian: allow-silent-swallow
                 return []
         else:
             return self._successful_traces
@@ -349,8 +346,7 @@ class CachedStateLedger(SovereignBaseAgent):
                     keys = self.redis.keys(f"{self.prefix_context}:*")
                     for key in keys:
                         self.redis.delete(key)
-                # guardian: allow-silent-swallow
-                except (AttributeError, TypeError, ValueError, OSError, RuntimeError):
+                except (AttributeError, TypeError, ValueError, OSError, RuntimeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                     pass
             else:
                 self._memory_cache.clear()

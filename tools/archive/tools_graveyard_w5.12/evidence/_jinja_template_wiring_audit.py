@@ -20,8 +20,7 @@ def search_references(template_name: str, exclude_dirs=None):
             continue
         try:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
-        # guardian: allow-silent-swallow -- file read errors are non-critical; skip unreadable files
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- file read errors are non-critical; skip unreadable files
             continue
         if template_name in content:
             for i, line in enumerate(content.splitlines(), 1):

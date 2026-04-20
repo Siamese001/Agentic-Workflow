@@ -32,6 +32,5 @@ try:
     ast.parse(new_src)
     open(fp, "w", encoding="utf-8").write(new_src)
     print("Syntax OK. Saved.")
-# guardian: allow-silent-swallow - acceptable exception handling
-except SyntaxError as e:
+except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
     print(f"SYNTAX ERROR: {e}")

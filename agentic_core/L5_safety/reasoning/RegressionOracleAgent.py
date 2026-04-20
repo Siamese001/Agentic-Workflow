@@ -229,8 +229,6 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 # guardian: allow-silent-swallow
                 except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
-                    Logger.warning(f"[!]  Could not connect to Gemini: {e}")
-                    genai_available = False
         self.change_detector = MethodChangeDetectorAgent(self.ctx)
         self.test_generator = RegressionTestGenerator(
             self.ctx,
@@ -441,8 +439,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 report["post_heal_status"] = "FAILED"
                 report["message"] = "No regression tests passed"
             Logger.info(f"[RegressionOracleAgent] {report['message']}")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[RegressionOracleAgent] Post-heal validation failed: {e}")
@@ -495,8 +492,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                         "PREVIEW: Would flag regression for review" if dry_run else "Regression flagged"
                     )
                     action["applied"] = not dry_run
-            # guardian: allow-silent-swallow
-            except (
+            except (  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 RuntimeError,
                 OSError,
             ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
@@ -578,8 +574,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"RegressionOracleAgent heal() failed: {str(e)}",

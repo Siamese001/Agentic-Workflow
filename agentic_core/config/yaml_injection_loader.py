@@ -255,10 +255,9 @@ class YamlInjectionLoader:
                 layer_patterns = self._load_yaml_file(yaml_file)
                 layer_name = self._determine_layer_from_path(yaml_file)
                 patterns_by_layer[layer_name].extend(layer_patterns)
-            # guardian: allow-silent-swallow - acceptable exception handling
             except YamlValidationError:
                 raise
-            except Exception as e:
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
                 raise YamlValidationError(
                     filename=str(yaml_file),
                     parse_error=f"Unexpected error: {e}",

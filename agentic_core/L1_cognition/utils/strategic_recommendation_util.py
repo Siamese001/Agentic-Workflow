@@ -122,7 +122,9 @@ def parse_llm_response(response: str) -> dict[str, Any]:
         if json_match:
             return json.loads(json_match.group())
     except json.JSONDecodeError as e:  # guardian: allow-log-and-swallow -- JSON parse failure: falls back to empty recommendations dict; intentional fallback for malformed LLM responses
-        logging.getLogger(__name__).warning("strategic_recommendation_util: JSON parse failed, returning empty recommendations: %s", e)
+        logging.getLogger(__name__).warning(
+            "strategic_recommendation_util: JSON parse failed, returning empty recommendations: %s", e
+        )
 
     # Fallback: return empty structure
     return {"review": "", "recommendations": []}

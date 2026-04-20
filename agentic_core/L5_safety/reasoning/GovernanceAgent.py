@@ -122,8 +122,6 @@ except ImportError as e:
         f"Required dependency missing: {e}"
     )  # guardian: allow-silent-degradation - Optional MCP hardened mixin
 
-    class MCPHardenedMixin:
-        pass
 
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
@@ -518,12 +516,8 @@ class GovernanceAgent(SovereignBaseAgent):
                 ROOT_PROTECTED_FILES,
                 SOVEREIGN_REGISTRY,
             )
-        # guardian: allow-silent-degradation - Optional structure blueprint
-        except ImportError as e:
+        except ImportError as e:  # guardian: allow-silent-swallow - Optional structure blueprint
             raise ImportError(f"Required dependency missing: {e}")
-            from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
-
-            ROOT_PROTECTED_FILES = frozenset()
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
         self.DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
@@ -821,7 +815,7 @@ class GovernanceAgent(SovereignBaseAgent):
                                 "message": f"Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})",
                             },
                         )
-        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             LOGGER.error(f"Error checking nesting depth in {file_path}: {e}")
         return violations
 
@@ -868,9 +862,8 @@ class GovernanceAgent(SovereignBaseAgent):
                         )
         except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
-        except (OSError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
+        except (OSError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
-            LOGGER.error(f"Error checking complexity in {file_path}: {e}")
         nesting_violations: Any = self._check_nesting_depth(file_path)
         for Violation in nesting_violations:
             Violation["type"] = "nesting"
@@ -1142,7 +1135,7 @@ class GovernanceAgent(SovereignBaseAgent):
             _call_path = set()
             try:
                 super().heal_repository(dry_run=dry_run)
-            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
+            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.warning(f"[HEAL_REPOSITORY] Parent chain warning: {e}")
         agent_name = self.__class__.__name__
         if agent_name in _call_path:

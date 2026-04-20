@@ -218,8 +218,7 @@ def fix_tunnel_violations() -> Any:
                 shutil.move(str(py_file), str(target_file))
                 print(f"  [✓] Flattened: {py_file.relative_to(CORE)} -> {target_file.relative_to(CORE)}")
                 fixed += 1
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 print(f"  [!] Failed to move {py_file.name}: {e}")
     print(f"\n[OK] TUNNEL FIX COMPLETE. {fixed} files moved to proper depth.")
     print("\n[*] CLEANING UP EMPTY DIRECTORIES...")
@@ -233,8 +232,7 @@ def fix_tunnel_violations() -> Any:
                     dir_path.rmdir()
                     print(f"  [✓] Removed empty: {dir_path.relative_to(CORE)}")
                     cleaned += 1
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 pass
     print(f"\n[OK] CLEANUP COMPLETE. {cleaned} empty directories removed.")
 

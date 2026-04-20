@@ -364,9 +364,8 @@ class ToolRegistry:
                     tool_name, tool_func, description = tool_loader(tool_path)
                     if self.register_tool(tool_name, str(tool_path), tool_func, description):
                         registered += 1
-                except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
+                except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- re-raises; Logger.warning below is unreachable dead code
                     raise
-                    Logger.warning(f"[REGISTRY] Failed to load tool from {tool_path}: {e}")
             else:
                 tool_name = tool_path.stem
                 if self.register_tool(tool_name, str(tool_path), lambda: None, f"Tool from {tool_path.name}"):

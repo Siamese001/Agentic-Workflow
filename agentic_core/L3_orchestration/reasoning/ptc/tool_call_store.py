@@ -336,7 +336,7 @@ class ToolCallStore:
             )
             if result.returncode == 0:
                 return result.stdout.strip()
-        except (
+        except (  # guardian: allow-log-and-swallow -- git commit lookup: non-fatal, falls back to 'unknown'
             ValueError,
             TypeError,
             FileNotFoundError,

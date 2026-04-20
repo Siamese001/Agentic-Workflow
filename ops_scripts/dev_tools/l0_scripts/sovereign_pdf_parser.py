@@ -25,8 +25,7 @@ try:
     import pdfplumber
 
     PDF_PLUMBER_AVAILABLE: Any = True
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     PDF_PLUMBER_AVAILABLE: Any = False
     print("[!] pdfplumber not available")
 try:
@@ -72,8 +71,7 @@ class SovereignPdfParser:
             try:
                 images = convert_from_path(str(pdf_path), dpi=200)
                 return "\n".join([pytesseract.image_to_string(img) for img in images])
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 return f"OCR_ERROR: {e}"
 
         return await asyncio.to_thread(_ocr_work)

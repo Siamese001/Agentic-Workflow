@@ -246,8 +246,7 @@ class HealingInvocationAudit:
                             "priority": "HIGH",
                         },
                     )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             print(f"Error during audit: {e}")
         return self.results
 
@@ -259,8 +258,7 @@ class HealingInvocationAudit:
                 match = re.search("class\\s+(\\w+Agent)\\s*[\\(:]", content)
                 if match:
                     return match.group(1)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug(
@@ -281,8 +279,7 @@ class HealingInvocationAudit:
                 if method_match:
                     method_body = method_match.group(0)
                     return "super().heal_repository(" in method_body
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError):
+        except (RuntimeError, OSError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
             pass
         return False
 

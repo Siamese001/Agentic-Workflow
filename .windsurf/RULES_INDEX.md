@@ -34,6 +34,8 @@ This repo uses a **two-tier model**:
 
 ---
 
+
+
 ## Always-On Files
 
 | File | Role |
@@ -366,3 +368,19 @@ Include justification keywords in commit message:
   - Added `enforcement_layer` metadata to all skills
   - Created `docs/rules/enforcement_architecture.md` canonical contract
   - Updated RULES_INDEX.md with Layer, Timing, Type columns
+
+## Claude Alignment Map
+
+This index follows the Claude split described in the briefing:
+
+- **Rules**: always-on invariants, routing cues, compact standards, and non-negotiable boundaries.
+- **Skills**: heavy reusable procedures, checklists, templates, and domain execution playbooks loaded only when relevant.
+- **Scripts / Hooks**: deterministic fail-closed enforcement, audit capture, and compact machine-readable signals.
+- **Templates / Workflows**: staged execution artifacts that preserve context budget by keeping multi-step process detail out of always-on rules.
+
+### Retrieval and Context Hygiene
+
+- Prefer **local-first** retrieval for repo and config work.
+- Prefer **exact / structural** lookup before broader semantic expansion.
+- For high-risk synthesis, require **evidence extraction before summarization**.
+- Keep long reference material fragmented and scoped; avoid monolithic always-on context.

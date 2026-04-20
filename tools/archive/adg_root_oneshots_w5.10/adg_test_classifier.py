@@ -208,8 +208,7 @@ def _module_text(resolved_path: str) -> str:
     if p.exists() and p.suffix == ".py":
         try:
             return p.read_text(encoding="utf-8", errors="ignore")
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except OSError:
+        except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
             return ""
     return ""
 
@@ -234,8 +233,7 @@ def has_fallback_assertions(test_path: Path) -> bool:
     """Return True if the test body contains degraded/fallback assertion patterns."""
     try:
         src = test_path.read_text(encoding="utf-8", errors="ignore")  # guardian: Add error context logging
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
         return False
     return bool(_FALLBACK_RE.search(src))
 

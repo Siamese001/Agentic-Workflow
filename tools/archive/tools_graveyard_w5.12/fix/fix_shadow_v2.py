@@ -59,8 +59,7 @@ def fix_shadow_in_file(filepath):
     new_src = "\n".join(lines)
     try:
         ast.parse(new_src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         print(f"  SYNTAX ERROR: {os.path.relpath(filepath, ROOT)}: {e}")
         # Revert
         return False

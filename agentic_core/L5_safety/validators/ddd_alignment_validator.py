@@ -250,7 +250,7 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
         OSError,
         UnicodeDecodeError,
         SyntaxError,
-    ):  # guardian: Parsing and encoding errors need separate handling strategies
+    ):  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         import logging
 
         logging.getLogger(__name__).debug("ddd_alignment_validator: OSError swallowed at L247: %s", e)

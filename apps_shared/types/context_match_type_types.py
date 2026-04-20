@@ -395,8 +395,7 @@ class SchemaContextMatcher:
             )
             self.logger.info(f"Context matching completed: {len(top_matches)} matches found")
             return result
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Context matching failed: {str(e)}")
             return SchemaContextMatchResult(
                 query_context=request.query_context,

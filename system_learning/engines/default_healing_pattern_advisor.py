@@ -252,7 +252,7 @@ class DefaultHealingPatternAdvisor:
                             "description": f"Module {module_name} is in top-20 fan-out hotspots",
                         }
                     )
-            except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+            except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.debug("default_healing_pattern_advisor: hotspot lookup failed: %s", exc)
 
         # Take the highest-confidence pattern (advisory only)

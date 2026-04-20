@@ -22,8 +22,7 @@ logging.basicConfig(
 LOGGER = logging.getLogger(__name__)
 try:
     from runtime.shared.routing import RoutingTier
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     RoutingTier = None  # runtime not installed — tests can still collect
 TEST_JOB_ID = "titanium_acceptance_v2_002"
 TEST_CONFIG = {
@@ -152,8 +151,7 @@ async def main() -> None:
         execution_time = time.time() - start_time
         _print_success_report(state_location, execution_time)
         return 0
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         LOGGER.ERROR("=" * 60)
         logger.error("❌ WORKFLOW FAILED")
         logger.error(f"Error: {type(e).__name__}: {e}")
@@ -169,8 +167,7 @@ async def main() -> None:
         if orchestrator:
             try:
                 logger.info("🧹 Workflow execution completed")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.warning(f"Cleanup warning: {e}")
 
 
@@ -181,8 +178,7 @@ def run_sync() -> None:
     except KeyboardInterrupt:
         logger.info("\n⚠️ Workflow interrupted by user")
         return 130
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         logger.error(f"Unexpected error: {e}")
         return 1
 

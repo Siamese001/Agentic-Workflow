@@ -31,6 +31,5 @@ for mod in CANDIDATES:
         print(f"OK  {mod}")
     except ImportError as e:
         print(f"ERR {mod}: {e}")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"EXC {mod}: {e}")

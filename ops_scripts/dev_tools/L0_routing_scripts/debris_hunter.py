@@ -264,8 +264,7 @@ class DebrisHunter:
                 os.remove(path)
                 print(f"[DELETED] {path.name}")
                 deleted += 1
-            # guardian: allow-silent-swallow
-            except (OSError, ValueError, TypeError) as e:
+            except (OSError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 print(f"[ERROR] Could not delete {path.name}: {e}")
 
         print(f"\n✅ Cleanup complete. Deleted {deleted} files.")

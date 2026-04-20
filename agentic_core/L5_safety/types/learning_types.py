@@ -290,8 +290,6 @@ class AdaptiveLearningEngine:
                 Logger.debug("L1 Self-improvement cycle completed")
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                Logger.error(f"L1 Self-improvement error: {e}")
-                await asyncio.sleep(DEFAULT_SLEEP)
 
     def _load_patterns(self):
         """Load learned patterns from storage."""

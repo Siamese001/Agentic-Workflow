@@ -292,8 +292,7 @@ class BulkheadHealthChecker(HealthChecker):
                 timestamp=datetime.now(timezone.utc),
                 metrics=metrics,
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -368,8 +367,7 @@ class CircuitBreakerHealthChecker(HealthChecker):
                 },
                 details={"circuit_stats": all_stats},
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -431,8 +429,7 @@ class DeadLetterQueueHealthChecker(HealthChecker):
                 timestamp=datetime.now(timezone.utc),
                 metrics=health,
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -490,8 +487,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
                 timestamp=datetime.now(timezone.utc),
                 metrics=stats,
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -613,8 +609,7 @@ class HealthCheckRegistry:
         """
         try:
             return await checker.check_health()
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Health check failed for {checker.component_name}: {e}")
             return HealthCheckResult(
                 component_name=checker.component_name,

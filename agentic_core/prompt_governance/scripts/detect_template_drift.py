@@ -163,8 +163,7 @@ def load_registry(registry_path: Path) -> dict:
     try:
         with open(registry_path, encoding="utf-8") as f:
             return json.load(f)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except (json.JSONDecodeError, OSError) as e:
         print(f"ERROR: Failed to load registry: {e}")
         sys.exit(1)
 

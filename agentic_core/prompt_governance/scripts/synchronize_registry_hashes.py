@@ -165,8 +165,7 @@ def load_registry(registry_path: Path) -> dict:
     try:
         with open(registry_path, encoding="utf-8") as f:
             return json.load(f)
-    # guardian: allow-silent-swallow
-    except (OSError, json.JSONDecodeError, TypeError, ValueError) as e:
+    except (OSError, json.JSONDecodeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
         print(f"ERROR: Failed to load registry: {e}")
         sys.exit(1)
 
@@ -177,8 +176,7 @@ def save_registry(registry_path: Path, registry: dict):
         with open(registry_path, "w", encoding="utf-8") as f:
             json.dump(registry, f, indent=2, ensure_ascii=False)
         print(f"✅ Registry saved to {registry_path}")
-    # guardian: allow-silent-swallow
-    except (OSError, TypeError, ValueError) as e:
+    except (OSError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
         print(f"ERROR: Failed to save registry: {e}")
         sys.exit(1)
 
@@ -251,8 +249,7 @@ def main():
         shutil.copy2(registry_path, backup_path)
         print(f"📋 Backup created: {backup_path}")
         print()
-    # guardian: allow-silent-swallow
-    except OSError as e:
+    except OSError as e:  # guardian: allow-silent-swallow
         print(f"WARNING: Could not create backup: {e}")
         print()
     registry, stats = synchronize_registry_hashes(registry_path, base_dir)

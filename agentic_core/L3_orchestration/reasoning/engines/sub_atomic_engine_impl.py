@@ -210,8 +210,7 @@ class SubAtomicEngineImpl:
     async def get_embedding(self, text: str) -> list[float]:
         try:
             return await self.embedding_gateway.get_embedding(text, provider="bge-m3")
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Embedding failed: {e}")
             return [0.0] * 1024
 
@@ -258,7 +257,6 @@ class SubAtomicEngineImpl:
                 generation_config=gen_config,
             )
             return response["content"]
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Mutation failed: {e}")
             return prompt

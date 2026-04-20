@@ -257,8 +257,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
                 if re.search(pattern, line):
                     violations.append((line_num, description, line.strip()))
 
-    # guardian: allow-silent-swallow -- path validation fallback; failure logged above
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow -- path validation fallback; failure logged above
         pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
     return violations

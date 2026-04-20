@@ -59,8 +59,7 @@ def test_mcp_server(name, cmd, timeout=8):
                 line = proc.stdout.readline()
                 result["elapsed"] = round(time.time() - t0, 2)
                 result["response"] = line.strip()[:200]
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 result["error"] = str(e)
 
         t = threading.Thread(target=send_and_recv, daemon=True)
@@ -71,8 +70,7 @@ def test_mcp_server(name, cmd, timeout=8):
         try:
             # guardian: allow-magic-config
             proc.wait(timeout=2)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             proc.kill()
 
         stderr = proc.stderr.read()[:300]
@@ -86,8 +84,7 @@ def test_mcp_server(name, cmd, timeout=8):
         else:
             return f"HANG (no response in {timeout}s)"
 
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return f"FAIL: {e}"
 
 

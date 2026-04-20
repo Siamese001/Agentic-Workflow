@@ -247,8 +247,7 @@ class ReplayGuardMixin:
             from agentic_core.L4_state.config.versioned_configs import get_active_configs
 
             return get_active_configs().policy.config_hash
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             _logger.warning("[ReplayGuard] L4 versioned_configs unavailable; using fallback policy hash.")
             return "fallback-no-l4"
 
@@ -259,7 +258,7 @@ class ReplayGuardMixin:
 
             providers = patch_deterministic(self._trace_id)
             _logger.debug("[ReplayGuard] Deterministic providers installed: %s", list(providers.keys()))
-        except ImportError:
+        except ImportError:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             _logger.error(
                 "[ReplayGuard] deterministic_providers module not found; replay determinism NOT enforced.",
             )

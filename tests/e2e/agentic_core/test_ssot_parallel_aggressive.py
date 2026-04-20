@@ -53,7 +53,7 @@ def run_version(name: str, use_legacy: bool) -> dict:
             if "Discovered" in line and "agents" in line:
                 try:
                     agents_discovered = int([w for w in line.split() if w.isdigit()][0])
-                except:
+                except Exception:
                     pass
                 break
 

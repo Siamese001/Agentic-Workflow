@@ -231,8 +231,7 @@ def analyze_file_structure(file_path: Path, *, max_lines: int = 800) -> dict[str
         )
     try:
         ast.parse(content)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         structure_info["has_syntax_errors"] = True
         structure_info["issues"].append(f"Syntax error: {e}")
     structure_info["complexity_score"] = calculate_complexity(content)

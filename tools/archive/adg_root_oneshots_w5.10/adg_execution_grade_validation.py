@@ -100,8 +100,7 @@ def validate_node_coverage(conn):
         try:
             source = filepath.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(filepath))
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (SyntaxError, UnicodeDecodeError):
+        except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallow - acceptable exception handling
             continue
 
         module_adg = f"ADG::Module::{rel}"

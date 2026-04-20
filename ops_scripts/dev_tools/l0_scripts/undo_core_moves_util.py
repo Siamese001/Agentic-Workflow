@@ -191,8 +191,7 @@ def undo_core_moves() -> Any:
         try:
             core_path.rmdir()
             print(f"Removed {dir_name}/core/")
-        # guardian: allow-silent-swallow
-        except:
+        except Exception:  # guardian: allow-silent-swallow
             pass
     print(f"\nTotal files moved back: {moved_count}")
 

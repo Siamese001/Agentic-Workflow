@@ -260,8 +260,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
             )
             try:
                 data = json.loads(response["content"])
-            # guardian: allow-silent-swallow -- JSON parse fallback strips markdown fences before retry
-            except (ValueError, TypeError):  # noqa: E722
+            except (ValueError, TypeError):  # noqa: E722  # guardian: allow-silent-swallow -- JSON parse fallback strips markdown fences before retry
                 text = response["content"].replace("```json", "").replace("```", "").strip()
                 data = json.loads(text)
             decision = DispositionDecision(
@@ -279,8 +278,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
             self.analytics["average_confidence"] = (current_avg * (total - 1) + decision.confidence) / total
             await self.cache_set(cache_key, decision.__dict__, ttl=3600)
             return decision
-        # guardian: allow-silent-swallow -- analysis failure returns MANUAL_REVIEW disposition with error logged
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow -- analysis failure returns MANUAL_REVIEW disposition with error logged
             Logger.error(f"CDA Analysis failed: {e}")
             return DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {e}")
 
@@ -316,8 +314,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
                     context=ctx,
                 )
                 decisions.append(decision)
-            # guardian: allow-silent-swallow -- per-violation failure is logged and returns MANUAL_REVIEW disposition
-            except (RuntimeError, OSError) as _e:
+            except (RuntimeError, OSError) as _e:  # guardian: allow-silent-swallow -- per-violation failure is logged and returns MANUAL_REVIEW disposition
                 Logger.warning("[CDA] analyze_violations: skipping %s: %s", path_str, _e)
                 decisions.append(DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {_e}"))
         return decisions
@@ -402,8 +399,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
                 else:
                     Logger.warning(f"  Low confidence ({decision.confidence}) - requires manual review")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-            # guardian: allow-silent-swallow -- cognitive healing failure returns error count with error logged
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow -- cognitive healing failure returns error count with error logged
                 Logger.error(f"  Error in cognitive healing: {e}")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

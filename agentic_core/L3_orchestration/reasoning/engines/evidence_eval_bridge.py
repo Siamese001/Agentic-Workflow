@@ -260,6 +260,6 @@ def evaluate_and_emit(
         return gate_result, disposition
     try:
         _enqueue_eval_packets(ctx, metrics, gate_result, disposition, artifact, tool_name)
-    except (AttributeError, RuntimeError, TypeError, ValueError):
+    except (AttributeError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow -- eval packet enqueue: non-fatal, gate_result already returned
         pass
     return gate_result, disposition

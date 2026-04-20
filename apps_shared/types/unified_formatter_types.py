@@ -701,7 +701,6 @@ class JSONFormatter(FormatterStrategy):
                     parsed = json.loads(data)
                 except (ValueError, TypeError, RuntimeError) as e:
                     raise
-                    parsed = {"text": data}
             else:
                 parsed = data
             indent = config.get("indent", 2) if config else 2

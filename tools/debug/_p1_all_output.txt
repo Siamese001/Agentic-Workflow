@@ -1,0 +1,147 @@
+Total: 145 sites in 145 files
+
+  1. agentic_core/runtime/contracts/lifecycle_trace_contract.py:1087  [silent_exception_swallow]  catch=ImportError  fanin=2100  layer=L_RUNTIME
+  2. agentic_core/base_agents/SovereignBaseAgent.py:536  [log_and_swallow]  catch=OSError  fanin=132  layer=L_SHARED
+  3. agentic_core/cache/redis_cache_client.py:176  [return_none_swallow]  catch=Exception  fanin=34  layer=L_SHARED
+  4. agentic_core/L3_orchestration/reasoning/engines/evidence_shaper.py:196  [silent_exception_swallow]  catch=TypeError  fanin=14  layer=L3
+  5. agentic_core/L4_state/enforcement/graph_memory_bridge.py:340  [return_none_swallow]  catch=AttributeError  fanin=13  layer=L4
+  6. agentic_core/L3_orchestration/reasoning/engines/evidence_eval_bridge.py:263  [silent_exception_swallow]  catch=AttributeError  fanin=12  layer=L3
+  7. agentic_core/L6_observability/utils/evaluation/promotion_packet.py:49  [silent_exception_swallow]  catch=AttributeError  fanin=7  layer=L6
+  8. system_learning/engines/healing_success_rate_store.py:253  [log_and_swallow]  catch=AttributeError  fanin=7  layer=L_SL
+  9. agentic_core/L3_orchestration/reasoning/mcp_manager.py:39  [broad_exception_catch]  catch=Exception  fanin=6  layer=L3
+ 10. agentic_core/mixins/embedding_mixin.py:212  [log_and_swallow]  catch=AttributeError  fanin=6  layer=L_SHARED
+ 11. agentic_core/L3_orchestration/reasoning/engines/retrieval_coverage_scorer.py:171  [broad_exception_catch]  catch=Exception  fanin=5  layer=L3
+ 12. agentic_core/L4_state/utils/memory/graph_store_factory.py:97  [return_none_swallow]  catch=FileNotFoundError  fanin=4  layer=L4
+ 13. agentic_core/L5_safety/enforcement/hitl_gate.py:260  [silent_exception_swallow]  catch=ValueError  fanin=4  layer=L5
+ 14. agentic_core/L6_observability/utils/evaluation/governed_handoff.py:57  [silent_exception_swallow]  catch=AttributeError  fanin=4  layer=L6
+ 15. agentic_core/L6_observability/utils/performance/performance_emitter.py:230  [log_and_swallow]  catch=AttributeError  fanin=4  layer=L6
+ 16. agentic_core/knowledge/canonical/canonical_store.py:143  [return_none_swallow]  catch=AttributeError  fanin=4  layer=L_PG
+ 17. agentic_core/L3_orchestration/reasoning/engines/graph_aware_indexer.py:306  [log_and_swallow]  catch=ImportError  fanin=3  layer=L3
+ 18. agentic_core/L4_state/reasoning/parent_child_expansion.py:214  [log_and_swallow]  catch=AttributeError  fanin=3  layer=L4
+ 19. agentic_core/L5_safety/enforcement/circuit_breaker_gate.py:241  [silent_exception_swallow]  catch=ValueError  fanin=3  layer=L5
+ 20. agentic_core/L5_safety/enforcement/hitl/decision_logger.py:248  [log_and_swallow]  catch=OSError  fanin=3  layer=L5
+ 21. agentic_core/L5_safety/enforcement/registry_verification_enforcer.py:306  [return_none_swallow]  catch=SyntaxError  fanin=3  layer=L5
+ 22. agentic_core/L5_safety/reasoning/NamingAgent.py:237  [silent_exception_swallow]  catch=AttributeError  fanin=3  layer=L5
+ 23. agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py:378  [log_and_swallow]  catch=SyntaxError  fanin=3  layer=L5
+ 24. agentic_core/L6_observability/utils/performance/performance_registry.py:65  [silent_exception_swallow]  catch=AttributeError  fanin=3  layer=L6
+ 25. agentic_core/L6_observability/utils/system_telemetry_util.py:76  [silent_exception_swallow]  catch=AttributeError  fanin=3  layer=L6
+ 26. agentic_core/adg/extraction/scan_cache.py:349  [log_and_swallow]  catch=OSError  fanin=3  layer=L_TOOLS
+ 27. agentic_core/utils/workflow_engines/replay_eval_runner.py:292  [broad_exception_catch]  catch=Exception  fanin=3  layer=L_SHARED
+ 28. system_learning/engines/rlhf_optimizer_impl.py:250  [return_none_swallow]  catch=Exception  fanin=3  layer=L_SL
+ 29. system_learning/runtime_adg/store.py:167  [return_none_swallow]  catch=KeyError  fanin=3  layer=L_SL
+ 30. agentic_core/L3_orchestration/reasoning/engines/sovereign_rag_orchestrator.py:52  [silent_exception_swallow]  catch=TypeError  fanin=2  layer=L3
+ 31. agentic_core/L3_orchestration/reasoning/ptc/builtin_tools.py:316  [broad_exception_catch]  catch=Exception  fanin=2  layer=L3
+ 32. agentic_core/L3_orchestration/reasoning/ptc/tool_call_store.py:339  [log_and_swallow]  catch=ValueError  fanin=2  layer=L3
+ 33. agentic_core/L5_safety/enforcement/policy_action_contract.py:466  [log_and_swallow]  catch=ValueError  fanin=2  layer=L5
+ 34. agentic_core/L5_safety/enforcement/process_guardrail.py:328  [silent_exception_swallow]  catch=ProcessLookupError  fanin=2  layer=L5
+ 35. agentic_core/L5_safety/reasoning/gravity_validator.py:271  [return_none_swallow]  catch=ValueError  fanin=2  layer=L5
+ 36. agentic_core/L5_safety/validators/chaos_healing_integration_types.py:343  [log_and_swallow]  catch=ImportError  fanin=2  layer=L5
+ 37. agentic_core/L5_safety/validators/dependency_healing_integration_types.py:359  [log_and_swallow]  catch=ImportError  fanin=2  layer=L5
+ 38. agentic_core/L5_safety/validators/invalid_stub_validator.py:254  [broad_exception_catch]  catch=Exception  fanin=2  layer=L5
+ 39. agentic_core/L6_observability/utils/engines/drift_registry.py:149  [log_and_swallow]  catch=OSError  fanin=2  layer=L6
+ 40. agentic_core/L6_observability/utils/evaluation/promotion_gauntlet.py:36  [silent_exception_swallow]  catch=AttributeError  fanin=2  layer=L6
+ 41. agentic_core/base_agents/L3OrchestrationBase.py:296  [log_and_swallow]  catch=ImportError  fanin=2  layer=L_SHARED
+ 42. agentic_core/config/yaml_injection_loader.py:261  [broad_exception_catch]  catch=Exception  fanin=2  layer=L_SHARED
+ 43. agentic_core/evaluation/golden/golden_evaluator.py:165  [log_and_swallow]  catch=OSError  fanin=2  layer=L_SHARED
+ 44. agentic_core/evaluation/judges/rubric_engine.py:112  [log_and_swallow]  catch=Exception  fanin=2  layer=L_SHARED
+ 45. agentic_core/interfaces/IHealingStrategyProtocol.py:48  [return_none_swallow]  catch=ImportError  fanin=2  layer=L_SHARED
+ 46. agentic_core/mixins/hitl_mixin.py:517  [log_and_swallow]  catch=AttributeError  fanin=2  layer=L_SHARED
+ 47. agentic_core/mixins/tracing_decorators.py:86  [log_and_swallow]  catch=TypeError  fanin=2  layer=L_SHARED
+ 48. agentic_core/prompt_governance/security/validators/output_schema_validator.py:237  [broad_exception_catch]  catch=Exception  fanin=2  layer=L_PG
+ 49. agentic_core/utils/workflow_engines/proposer_bridge.py:435  [broad_exception_catch]  catch=Exception  fanin=2  layer=L_SHARED
+ 50. system_learning/config/config_store.py:172  [log_and_swallow]  catch=OSError  fanin=2  layer=L_SL
+ 51. agentic_core/L3_orchestration/utils/orchestration_handshake_util.py:91  [log_and_swallow]  catch=AttributeError  fanin=1  layer=L3
+ 52. agentic_core/L4_state/enforcement/uwg_committer.py:79  [silent_exception_swallow]  catch=Exception  fanin=1  layer=L4
+ 53. agentic_core/L4_state/reasoning/CheckpointManager.py:326  [log_and_swallow]  catch=Exception  fanin=1  layer=L4
+ 54. agentic_core/L4_state/utils/complexity_analyzer_util.py:277  [log_and_swallow]  catch=SyntaxError  fanin=1  layer=L4
+ 55. agentic_core/L5_safety/audit/safety_audit_emitter.py:135  [log_and_swallow]  catch=ImportError  fanin=1  layer=L5
+ 56. agentic_core/L5_safety/enforcement/mission_utils_enforcer.py:186  [return_none_swallow]  catch=ImportError  fanin=1  layer=L5
+ 57. agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py:424  [return_none_swallow]  catch=SyntaxError  fanin=1  layer=L5
+ 58. agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:187  [log_and_swallow]  catch=OSError  fanin=1  layer=L5
+ 59. agentic_core/L5_safety/reasoning/ReportLocationAgent.py:346  [return_none_swallow]  catch=RuntimeError  fanin=1  layer=L5
+ 60. agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py:336  [log_and_swallow]  catch=Exception  fanin=1  layer=L5
+ 61. agentic_core/L5_safety/reasoning/TestGeneratorAgent.py:443  [return_none_swallow]  catch=ValueError  fanin=1  layer=L5
+ 62. agentic_core/L5_safety/reasoning/file_classification/validation_rules.py:199  [return_none_swallow]  catch=SyntaxError  fanin=1  layer=L5
+ 63. agentic_core/L5_safety/utils/code_deduplication_util.py:107  [log_and_swallow]  catch=SyntaxError  fanin=1  layer=L5
+ 64. agentic_core/L5_safety/utils/credential_scanner_util.py:296  [log_and_swallow]  catch=OSError  fanin=1  layer=L5
+ 65. agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py:505  [broad_exception_catch]  catch=Exception  fanin=1  layer=L5
+ 66. agentic_core/L5_safety/validators/type_erasure_validator.py:388  [return_none_swallow]  catch=ValueError  fanin=1  layer=L5
+ 67. agentic_core/L6_observability/enforcement/outcome_logger.py:120  [silent_exception_swallow]  catch=ValueError  fanin=1  layer=L6
+ 68. agentic_core/L6_observability/utils/engines/meta_learning_bridge.py:277  [log_and_swallow]  catch=OSError  fanin=1  layer=L6
+ 69. agentic_core/L6_observability/utils/engines/metrics_server.py:160  [return_none_swallow]  catch=AttributeError  fanin=1  layer=L6
+ 70. agentic_core/L6_observability/utils/evaluation/evaluation_learning_bridge.py:346  [return_none_swallow]  catch=AttributeError  fanin=1  layer=L6
+ 71. agentic_core/L6_observability/utils/visualization/workflow_visualization.py:27  [silent_exception_swallow]  catch=AttributeError  fanin=1  layer=L6
+ 72. agentic_core/adg/extraction/agent_registry_scanner.py:282  [return_none_swallow]  catch=OSError  fanin=1  layer=L_TOOLS
+ 73. agentic_core/base_agents/L6ObservabilityBase.py:211  [log_and_swallow]  catch=ImportError  fanin=1  layer=L_SHARED
+ 74. agentic_core/evaluation/judges/provider_registry.py:249  [log_and_swallow]  catch=RuntimeError  fanin=1  layer=L_SHARED
+ 75. agentic_core/mixins/auto_span_collector.py:309  [log_and_swallow]  catch=AttributeError  fanin=1  layer=L_SHARED
+ 76. agentic_core/mixins/redis_cache_mixin.py:318  [return_none_swallow]  catch=TypeError  fanin=1  layer=L_SHARED
+ 77. agentic_core/mixins/self_diagnosis_mixin.py:223  [log_and_swallow]  catch=AttributeError  fanin=1  layer=L_SHARED
+ 78. agentic_core/mixins/state_validation_mixin.py:212  [return_none_swallow]  catch=TypeError  fanin=1  layer=L_SHARED
+ 79. agentic_core/utils/project_root_util.py:14  [return_none_swallow]  catch=OSError  fanin=1  layer=L_SHARED
+ 80. system_learning/adapters/workflow_outcome_sl_adapter.py:100  [log_and_swallow]  catch=AttributeError  fanin=1  layer=L_SL
+ 81. system_learning/engines/historical_backfill_engine.py:214  [return_none_swallow]  catch=Exception  fanin=1  layer=L_SL
+ 82. system_learning/engines/local_embedding_population_service.py:351  [broad_exception_catch]  catch=Exception  fanin=1  layer=L_SL
+ 83. system_learning/engines/prompt_outcome_embedder.py:508  [silent_exception_swallow]  catch=ValueError  fanin=1  layer=L_SL
+ 84. system_learning/engines/rca_engine.py:346  [log_and_swallow]  catch=AttributeError  fanin=1  layer=L_SL
+ 85. system_learning/engines/trace_feature_extractor.py:407  [log_and_swallow]  catch=AttributeError  fanin=1  layer=L_SL
+ 86. system_learning/runtime_adg/l6_integration.py:339  [log_and_swallow]  catch=OSError  fanin=1  layer=L_SL
+ 87. system_learning/stores/config_provider.py:244  [log_and_swallow]  catch=AttributeError  fanin=1  layer=L_SL
+ 88. agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py:62  [log_and_swallow]  catch=RuntimeError  fanin=0  layer=L1
+ 89. agentic_core/L2_execution/types/mcp_tool_types.py:449  [log_and_swallow]  catch=Exception  fanin=0  layer=L2
+ 90. agentic_core/L2_execution/utils/read_gateway.py:315  [log_and_swallow]  catch=ImportError  fanin=0  layer=L2
+ 91. agentic_core/L2_execution/utils/tool_registry_util.py:367  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L2
+ 92. agentic_core/L3_orchestration/reasoning/engines/proactive_fission_scanner.py:371  [return_none_swallow]  catch=RuntimeError  fanin=0  layer=L3
+ 93. agentic_core/L3_orchestration/reasoning/engines/rewoo_engine.py:266  [return_none_swallow]  catch=ValueError  fanin=0  layer=L3
+ 94. agentic_core/L3_orchestration/reasoning/engines/sovereign_mcp_router.py:303  [log_and_swallow]  catch=ImportError  fanin=0  layer=L3
+ 95. agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py:233  [return_none_swallow]  catch=RuntimeError  fanin=0  layer=L3
+ 96. agentic_core/L3_orchestration/types/telepathy_interface_types.py:238  [return_none_swallow]  catch=ValueError  fanin=0  layer=L3
+ 97. agentic_core/L3_orchestration/utils/state_management_util.py:283  [return_none_swallow]  catch=Exception  fanin=0  layer=L3
+ 98. agentic_core/L4_state/enforcement/authority/run_scoped_state_authority.py:293  [log_and_swallow]  catch=StateVersionMissingError  fanin=0  layer=L4
+ 99. agentic_core/L4_state/reasoning/l4_tool_registry.py:374  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L4
+100. agentic_core/L4_state/utils/memory/l1_exact_cache.py:156  [return_none_swallow]  catch=AttributeError  fanin=0  layer=L4
+101. agentic_core/L5_safety/enforcement/audit/ai_check_audit.py:115  [log_and_swallow]  catch=OSError  fanin=0  layer=L5
+102. agentic_core/L5_safety/enforcement/audit/safety_audit_trail.py:242  [log_and_swallow]  catch=OSError  fanin=0  layer=L5
+103. agentic_core/L5_safety/enforcement/audit_healing_strategy.py:114  [silent_exception_swallow]  catch=ValueError  fanin=0  layer=L5
+104. agentic_core/L5_safety/enforcement/git_kraken_healing_strategy.py:304  [return_none_swallow]  catch=RuntimeError  fanin=0  layer=L5
+105. agentic_core/L5_safety/enforcement/governance/artifacts_guard.py:212  [log_and_swallow]  catch=UnicodeDecodeError  fanin=0  layer=L5
+106. agentic_core/L5_safety/enforcement/governance/lazy_seam_scanner.py:200  [return_none_swallow]  catch=ValueError  fanin=0  layer=L5
+107. agentic_core/L5_safety/enforcement/governance/logs_guard.py:227  [log_and_swallow]  catch=UnicodeDecodeError  fanin=0  layer=L5
+108. agentic_core/L5_safety/enforcement/tool_safety_contract.py:643  [log_and_swallow]  catch=RuntimeError  fanin=0  layer=L5
+109. agentic_core/L5_safety/enforcement/vector_healing_strategy.py:326  [return_none_swallow]  catch=RuntimeError  fanin=0  layer=L5
+110. agentic_core/L5_safety/validators/ddd_alignment_validator.py:249  [log_and_swallow]  catch=OSError  fanin=0  layer=L5
+111. agentic_core/L6_observability/utils/engines/SovereignHealthMonitor.py:273  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L6
+112. agentic_core/L6_observability/utils/engines/desk_d_governed_board.py:296  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L6
+113. agentic_core/L6_observability/utils/evaluation/evaluation_signal_integrator.py:357  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L6
+114. agentic_core/L6_observability/utils/react_chunking_telemetry.py:325  [log_and_swallow]  catch=ImportError  fanin=0  layer=L6
+115. agentic_core/adg/extraction/optimized_tools.py:165  [log_and_swallow]  catch=OSError  fanin=0  layer=L_TOOLS
+116. agentic_core/adg/precision/precision_validator.py:73  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_TOOLS
+117. agentic_core/adg/processing/phase3_intelligent_disposition.py:250  [silent_exception_swallow]  catch=_PHASE3_NON_FATAL_EXCEPTIONS  fanin=0  layer=L_TOOLS
+118. agentic_core/cache/core/config_file_cache.py:239  [silent_exception_swallow]  catch=FileNotFoundError  fanin=0  layer=L_SHARED
+119. agentic_core/config/agent_defaults_config.py:242  [silent_exception_swallow]  catch=ValueError  fanin=0  layer=L_SHARED
+120. agentic_core/config/colors_config.py:245  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_SHARED
+121. agentic_core/config/non_conforming_agent_finder_config.py:307  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_SHARED
+122. agentic_core/core/frameworks/dependency_manager.py:322  [return_none_swallow]  catch=DependencyError  fanin=0  layer=L_UNKNOWN
+123. agentic_core/evaluation/judges/orchestrator.py:224  [log_and_swallow]  catch=OSError  fanin=0  layer=L_SHARED
+124. agentic_core/knowledge/dispatcher/cache_decision_engine.py:199  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_PG
+125. agentic_core/knowledge/engine/rag_orchestrator.py:221  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_PG
+126. agentic_core/mixins/adg_tracing_hooks.py:107  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SHARED
+127. agentic_core/mixins/replay_guard_mixin.py:262  [log_and_swallow]  catch=ImportError  fanin=0  layer=L_SHARED
+128. agentic_core/prompt_governance/scripts/detect_template_drift.py:167  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_PG
+129. agentic_core/prompt_governance/scripts/file_intent.py:260  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_PG
+130. agentic_core/prompt_governance/scripts/harden_templates.py:106  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_PG
+131. agentic_core/prompt_governance/scripts/import_violation_visitor.py:242  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_PG
+132. agentic_core/runtime/utils/main_util.py:192  [broad_exception_catch]  catch=Exception  fanin=0  layer=L_RUNTIME
+133. agentic_core/visualization/engines/trace_3d_visualizer.py:637  [return_none_swallow]  catch=AttributeError  fanin=0  layer=L_UNKNOWN
+134. system_learning/adapters/l1_meta_adapter.py:300  [return_none_swallow]  catch=TypeError  fanin=0  layer=L_SL
+135. system_learning/engines/default_healing_pattern_advisor.py:255  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+136. system_learning/engines/knowledge_extractor.py:118  [silent_exception_swallow]  catch=ValueError  fanin=0  layer=L_SL
+137. system_learning/engines/prompt_execution_tracer.py:518  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+138. system_learning/engines/prompt_outcome_bus_adapter.py:328  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+139. system_learning/engines/rag_optimizer.py:288  [return_none_swallow]  catch=ValueError  fanin=0  layer=L_SL
+140. system_learning/engines/retrieval_profile_activation_gate.py:455  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+141. system_learning/engines/system_learning_admission_gate.py:516  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+142. system_learning/ports/l4_meta_prior_provider.py:189  [return_none_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+143. system_learning/ports/meta_outcome_bus_hook.py:243  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+144. system_learning/stores/activator.py:236  [log_and_swallow]  catch=AttributeError  fanin=0  layer=L_SL
+145. system_learning/telemetry/system_learning_telemetry.py:620  [return_none_swallow]  catch=Exception  fanin=0  layer=L_SL

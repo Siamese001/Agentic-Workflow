@@ -315,8 +315,7 @@ def main() -> Any:
                         try:
                             safe_shutil_rmtree(legacy_path, layer="L0")
                             print(f"   [CLEAN] Purged legacy folder: {legacy_path.relative_to(project_root)}")
-                        # guardian: allow-silent-swallow
-                        except (ValueError, TypeError) as e:
+                        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                             print(f"   [!] Could not purge {legacy}: {e}")
     print("\n" + "=" * 70)
     print(f"[COMPLETE] Bulk hierarchy healing for {TARGET_ROOT}")

@@ -100,8 +100,7 @@ try:
     import yaml
 
     YAML_AVAILABLE = True
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     YAML_AVAILABLE = False
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

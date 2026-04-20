@@ -239,22 +239,19 @@ def _verify_via_sync_playwright() -> dict:
         try:
             first_row_text = page.locator("#kpiGrid table tbody tr").first.text_content() or ""
             table1_pass = "TOTAL" in first_row_text
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
         try:
             first_row_text = page.locator("#codeQualityGrid table tbody tr").first.text_content() or ""
             table2_pass = "TOTAL" in first_row_text
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
         try:
             js_response = page.goto("http://localhost:8765/js/renderers/table-renderer.js")
             js_content = js_response.text() if js_response else ""
             js_pass = "Keep TOTAL at top" in js_content
             js_old_flag = "Keep TOTAL at end" in js_content
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             pass
         browser.close()
 
@@ -290,14 +287,12 @@ def main():
         try:
             results = asyncio.run(_verify_via_mcp())
             print(f"   Source: {results['source']}")
-        # guardian: allow-silent-swallow
-        except Exception as mcp_err:
+        except Exception as mcp_err:  # guardian: allow-silent-swallow
             print(f"   MCP path unavailable ({mcp_err}) — falling back to sync_playwright")
             try:
                 results = _verify_via_sync_playwright()
                 print(f"   Source: {results['source']}")
-            # guardian: allow-silent-swallow - optional dependency
-            except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow - optional dependency
                 print("   playwright not installed — pip install playwright && playwright install chromium")
                 return 1
 

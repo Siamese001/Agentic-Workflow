@@ -204,7 +204,7 @@ class ConfidenceScorer:
         )
         try:
             self._telemetry_sink(event)
-        except (
+        except (  # guardian: allow-silent-swallow -- telemetry sink: non-fatal, scoring continues without telemetry
             RuntimeError,
             ValueError,
             TypeError,

@@ -190,8 +190,7 @@ def analyze_all_agents():
                 agents_with_methods.append(
                     {"path": path_str, "name": py_file.name, "methods": methods, "size": size},
                 )
-        # guardian: allow-silent-swallow
-        except:
+        except Exception:  # guardian: allow-silent-swallow
             pass
 
     # Sort by number of detection methods
@@ -274,8 +273,7 @@ def find_violation_specific_agents():
                         ]
                     ):
                         data["agents"].append({"name": name, "path": path_str})
-        # guardian: allow-silent-swallow
-        except:
+        except Exception:  # guardian: allow-silent-swallow
             pass
 
     print("\n=== AGENTS BY VIOLATION TYPE THEY SHOULD CATCH ===\n")

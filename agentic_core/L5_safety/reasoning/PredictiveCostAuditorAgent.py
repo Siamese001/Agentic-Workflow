@@ -566,8 +566,7 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
             report = self._generate_cost_report()
             self._display_report(report)
             metrics["violations"] = metrics.get("violations", 0) + len(report.healing_sinks)
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Cost audit failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
         return metrics
@@ -599,8 +598,7 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"PredictiveCostAuditorAgent heal() failed: {str(e)}",

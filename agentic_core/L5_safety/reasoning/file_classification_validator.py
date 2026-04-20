@@ -221,8 +221,7 @@ class FileClassificationValidatorAgent:
                     scan_result = classifier.run() or {}
             else:
                 scan_result = classifier.run() or {}
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as exc:
+        except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallow
             logger.error("[FileClassificationValidatorAgent] scan failed: %s", exc)
             scan_result = {}
         violations: list[dict[str, Any]] = []

@@ -353,8 +353,7 @@ class KXNodeExecutor:
             sources.sort(key=lambda x: x["weighted_score"], reverse=True)
             logger.info(f"Retrieved {len(sources)} sources for K.X node {config.node_id}")
             return sources[: config.rag_config.min_retrievers]
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             logger.warning(f"RAG retrieval failed for K.X node {config.node_id}: {e}")
             return []
 

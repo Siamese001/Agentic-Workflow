@@ -697,8 +697,7 @@ class SelfHealingFormatter:
             if result.success:
                 self._stats["successful_formats"] += 1
                 return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.warning(f"Standard formatting failed: {e}")
             result = FormatResult(data=data, format_type=str(format_type), success=False, errors=[str(e)])
         self._stats["repairs_needed"] += 1
@@ -731,12 +730,10 @@ class SelfHealingFormatter:
                             self._stats["successful_formats"] += 1
                             logger.info(f"Successfully healed using {strategy.strategy_name.value}")
                             return healed_result
-                    # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-silent-swallow
                         logger.warning(f"Healed data still failed to format: {e}")
                         continue
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.error(f"Repair strategy {strategy.strategy_name.value} failed: {e}")
                 continue
         logger.error("All repair strategies failed, returning safe fallback")

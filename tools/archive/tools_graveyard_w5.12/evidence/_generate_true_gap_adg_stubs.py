@@ -269,8 +269,7 @@ for mod_path in true_gaps:
     try:
         symbols = _extract_public_symbols(src_path)
         content = generate_adg_stub(mod_path, symbols)
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-silent-swallow
         print(f"  [ERROR] {mod_path}: {exc}")
         errors += 1
         continue

@@ -58,8 +58,7 @@ class AppsTaxonomyGuard:
         for py_file in apps_dir.rglob("*.py"):
             try:
                 violations.extend(self._scan_file(py_file, repo_root))
-            # guardian: allow-silent-swallow -- file system and encoding errors
-            except (OSError, UnicodeDecodeError, SyntaxError):
+            except (OSError, UnicodeDecodeError, SyntaxError):  # guardian: allow-silent-swallow -- file system and encoding errors
                 continue
         return violations
 

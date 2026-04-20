@@ -94,7 +94,7 @@ class SnapshotManager:
         try:
             self.index_file.write_text(json.dumps(self.index, indent=2), encoding="utf-8")
         except OSError as e:
-            raise RuntimeError(f"Failed to save snapshot index: {e}")
+            raise RuntimeError(f'Failed to save snapshot index: {e}') from e
 
     def _get_snapshot_paths(self, commit_sha: str) -> tuple[Path, Path]:
         """Get file paths for a snapshot."""
@@ -116,7 +116,7 @@ class SnapshotManager:
                 for chunk in iter(lambda: f.read(8192), b""):
                     hasher.update(chunk)
         except OSError as e:
-            raise RuntimeError(f"Failed to calculate artifact digest: {e}")
+            raise RuntimeError(f'Failed to calculate artifact digest: {e}') from e
         return hasher.hexdigest()
 
     def save_snapshot(
@@ -144,13 +144,13 @@ class SnapshotManager:
             graph_payload = json_graph.node_link_data(graph)
             graph_file.write_text(json.dumps(graph_payload, indent=2), encoding="utf-8")
         except (OSError, TypeError, ValueError) as e:
-            raise RuntimeError(f"Failed to save graph: {e}")
+            raise RuntimeError(f'Failed to save graph: {e}') from e
 
         # Save metadata
         try:
             metadata_file.write_text(json.dumps(metadata.to_dict(), indent=2), encoding="utf-8")
         except OSError as e:
-            raise RuntimeError(f"Failed to save metadata: {e}")
+            raise RuntimeError(f'Failed to save metadata: {e}') from e
 
         # Update index
         self.index[commit_sha] = {
@@ -194,14 +194,14 @@ class SnapshotManager:
             graph_payload = json.loads(graph_file.read_text(encoding="utf-8"))
             graph = json_graph.node_link_graph(graph_payload)
         except (OSError, json.JSONDecodeError, TypeError, ValueError) as e:
-            raise RuntimeError(f"Failed to load graph: {e}")
+            raise RuntimeError(f'Failed to load graph: {e}') from e
 
         # Load metadata
         try:
             metadata_dict = json.loads(metadata_file.read_text(encoding="utf-8"))
             metadata = SnapshotMetadata.from_dict(metadata_dict)
         except (OSError, json.JSONDecodeError) as e:
-            raise RuntimeError(f"Failed to load metadata: {e}")
+            raise RuntimeError(f'Failed to load metadata: {e}') from e
 
         return graph, metadata
 

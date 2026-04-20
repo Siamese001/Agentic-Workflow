@@ -231,8 +231,7 @@ class TieredBatchProcessor:
         if self.checkpoint_file.exists():
             try:
                 return json.loads(self.checkpoint_file.read_text(encoding="utf-8"))
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError):
+            except (RuntimeError, OSError):  # guardian: allow-silent-swallow
                 return {}
         return {}
 
@@ -244,8 +243,6 @@ class TieredBatchProcessor:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[TIERED] Checkpoint save failed: {e}")
-
     def _get_semantic_cache(self):
         """
         [PHASE 17] Lazy-load SemanticCacheManager.
@@ -261,8 +258,7 @@ class TieredBatchProcessor:
 
                 self._semantic_cache = SemanticCacheManager(api_key=self.agent.api_key)
                 Logger.info("[TIERED] SemanticCacheManager initialized")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 Logger.warning(f"[TIERED] SemanticCacheManager unavailable: {e}")
                 self._semantic_cache = None
         return self._semantic_cache
@@ -288,8 +284,7 @@ class TieredBatchProcessor:
         try:
             content = self.agent._read_file_safe(Path(file_path))
             return cache.get_cached_decision(content, violation_type)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.debug(f"[TIERED] cache check failed: {e}")
         return None
 
@@ -314,8 +309,6 @@ class TieredBatchProcessor:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.debug(f"[TIERED] cache store failed: {e}")
-
     def process_batch(self, violations: list[Any]) -> dict[str, Any]:
         """
         Process violations with tiered strategy.
@@ -439,16 +432,6 @@ class TieredBatchProcessor:
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                Logger.error(f"    -> Error: {e}")
-                self.results[file_path_str] = {
-                    "action": heuristic.action,
-                    "target_path": heuristic.target_path,
-                    "reason": f"LLM failed, using heuristic: {heuristic.reason}",
-                    "confidence": heuristic.confidence,
-                    "violation_type": v_type,
-                    "tier": "fallback",
-                }
-                self.stats["errors"] += 1
             if i % 10 == 0:
                 self._save_checkpoint()
 

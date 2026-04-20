@@ -90,8 +90,7 @@ def update_imports_in_file(file_path: Path, dry_run: bool = False) -> list[str]:
     changes = []
     try:
         content = file_path.read_text(encoding="utf-8")
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         return changes
     original_content = content
     for legacy_name, (unified_module, unified_class) in tqdm(

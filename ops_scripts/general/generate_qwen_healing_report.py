@@ -305,8 +305,7 @@ def _extract_agent_info(filepath: Path) -> dict[str, Any]:
         src = filepath.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(src, filename=str(filepath))
         src_lines = src.splitlines()
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         info["parse_error"] = str(e)
         return info
 

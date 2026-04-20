@@ -2,11 +2,22 @@
 trigger: model_decision
 description: Use this rule when reading or writing to the persistent memory graph, purging stale entities, or syncing ADG context into the memory store.
 ---
+
+> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+>
+> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+>
+> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+
 # Memory Management Rules
 
 ## Purpose
 
 Define discipline for maintaining a clean, performant memory graph. Prevent accumulation of stale session data that bloats queries and burns context window.
+
+## Knowledge File Hygiene
+
+Memory-linked guidance must stay split by purpose. Avoid giant monolithic reference files that try to carry architecture, procedures, and examples in one place. If a knowledge file grows unwieldy, fragment it into smaller purpose-built documents and keep canonical repo paths explicit so future retrieval stays grounded.
 
 ## Rule 0: Session Lifecycle (Read/Write/Maintain)
 

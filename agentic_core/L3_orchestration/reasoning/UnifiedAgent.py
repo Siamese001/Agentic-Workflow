@@ -446,8 +446,7 @@ class OrchestrationStrategy(BaseStrategy):
                 signals.extend(step_signals)
                 if step_result.get("terminate", False):
                     break
-            # guardian: allow-silent-swallow -- orchestration step failure is logged and aggregated in errors list
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow -- orchestration step failure is logged and aggregated in errors list
                 errors.append(f"Step {step_name} failed: {str(e)}")
                 agent.log_error(f"Orchestration step failed: {step_name} - {e}")
         current_stage = completed_steps[-1] if completed_steps else "not_started"
@@ -522,8 +521,7 @@ class HealingStrategy(BaseStrategy):
                         artifacts.extend(fix_result.get("artifacts", []))
                     else:
                         skipped.append(violation.get("type", "unknown"))
-                # guardian: allow-silent-swallow -- violation fix failure is logged and aggregated in errors list
-                except (ValueError, TypeError) as e:
+                except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow -- violation fix failure is logged and aggregated in errors list
                     errors.append(f"Failed to fix violation: {str(e)}")
         return HealingResult(
             violations_found=violations_found,
@@ -865,8 +863,7 @@ class UnifiedAgent(SovereignBaseAgent):
             from apps_shared.config.config_loader_config import load_agent_config
 
             return load_agent_config(self._config_name)
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("config_loader module could not be imported; using empty config")
             return {}
         # guardian: allow-silent-swallow -- config load failure is non-fatal; re-raised after logging

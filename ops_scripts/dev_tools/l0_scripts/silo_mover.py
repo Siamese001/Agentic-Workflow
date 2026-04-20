@@ -16,8 +16,7 @@ try:
         SCRIPTS_DIR,
         TESTS_DIR,
     )
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
     SCRIPTS_DIR = OPS_SCRIPTS_DIR
     TESTS_DIR = TESTS_DIR
@@ -80,8 +79,7 @@ def move_files_to_silos() -> Any:
                 shutil.move(src_path, dst_path)
                 Logger.info(f"📁 Moved {filename} -> {target_silo}/")
                 moved_count += 1
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"❌ Failed to move {filename}: {e}")
     Logger.info(f"\n✨ Moved {moved_count} files to sovereign silos")
     return moved_count

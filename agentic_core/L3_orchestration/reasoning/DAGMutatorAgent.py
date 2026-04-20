@@ -241,8 +241,7 @@ class GraphTransaction:
             self._validate_transaction_graph()
             self.manager.graph = self.transaction_graph
             Logger.debug("DAG Transaction committed successfully")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             self.manager.graph = self.original_graph
             Logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
             return False
@@ -391,13 +390,6 @@ class DAGMutatorAgent(SovereignBaseAgent):
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            error_result = MutationResult(
-                mutation_id=mutation.mutation_id,
-                success=False,
-                message=f"Mutation failed: {str(e)}",
-            )
-            self._store_mutation_result(error_result)
-            return error_result
 
     def _validate_mutation(self, graph: nx.DiGraph, mutation: DAGMutation) -> None:
         """Validate that a mutation is safe to apply."""
@@ -604,8 +596,7 @@ class DAGMutatorAgent(SovereignBaseAgent):
             if hasattr(self, "_validate_mutation"):
                 self._validate_mutation(test_graph, test_mutation)
                 metrics["fixed"] = metrics.get("fixed", 0) + 1
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"DAG Mutator healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
         return metrics
@@ -636,8 +627,7 @@ class DAGMutatorAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"DAGMutatorAgent heal() failed: {str(e)}",

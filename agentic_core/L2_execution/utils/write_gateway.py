@@ -282,7 +282,7 @@ def _check_write_amplification(path: Path, content: str, encoding: str = "utf-8"
         except (
             OSError,
             UnicodeDecodeError,
-        ) as e:  # guardian: allow-silent-swallow -- OSError/UnicodeDecodeError reading existing file for write amplification check; content unreadable so guard is skipped
+        ) as e:  # guardian: allow-log-and-swallow -- OSError/UnicodeDecodeError reading existing file for write amplification check; content unreadable so guard is skipped
             import logging
 
             logging.getLogger(__name__).debug("write_gateway: OSError swallowed: %s", e)
@@ -350,7 +350,7 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
     try:
         rel = path.resolve().relative_to(repo_root)
         rel_str = str(rel).replace("\\", "/")
-    except ValueError:  # guardian: allow-silent-swallow -- ValueError from Path.relative_to() means path is outside repo root; intended: skip source-root write check for out-of-repo paths
+    except ValueError:  # guardian: allow-return-none-swallow -- ValueError from Path.relative_to() means path is outside repo root; intended: skip source-root write check for out-of-repo paths
         return
     for safe_prefix in _SAFE_OUTPUT_PREFIXES:
         if rel_str.startswith(safe_prefix):

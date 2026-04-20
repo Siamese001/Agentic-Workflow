@@ -241,8 +241,7 @@ class RedisCacheMixin:
 
                 self._redis_client = get_hot_cache()
                 log.info(f"[{self.__class__.__name__}] Connected to Hardened Redis Gateway")
-            # guardian: allow-silent-swallow
-            except (
+            except (  # guardian: allow-silent-swallow
                 OSError,
                 RuntimeError,
                 ConnectionError,
@@ -283,8 +282,7 @@ class RedisCacheMixin:
                     log.debug(f"cache HIT (Redis): {key[:50]}...")
                     self._circuit_breaker.record_success()
                     return value
-            # guardian: allow-silent-swallow
-            except (OSError, RuntimeError) as e:
+            except (OSError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 self._circuit_breaker.record_failure()
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_get")
@@ -315,7 +313,7 @@ class RedisCacheMixin:
         metrics = get_cache_metrics()
         try:
             _ = json.dumps(value)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- serialization guard: non-fatal, skip cache write
             log.warning(f"cache SET BLOCKED: Non-serializable value for {key}")
             return
         self._local_cache[full_key] = {"value": value, "expire_at": time.monotonic() + ttl}
@@ -330,8 +328,7 @@ class RedisCacheMixin:
                 log.debug(f"cache SET (Redis): {key[:50]}... TTL={ttl}s")
                 self._circuit_breaker.record_success()
                 return
-            # guardian: allow-silent-swallow
-            except (OSError, RuntimeError) as e:
+            except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow
                 self._circuit_breaker.record_failure()
                 log.debug(f"Redis set suppressed error (local fallback used): {str(e)[:80]}")
                 if CACHE_METRICS_ENABLED:

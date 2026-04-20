@@ -257,7 +257,6 @@ class MagicConfigDetector(AntiPatternDetector):
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
         except (ValueError, TypeError, RuntimeError) as e:
             raise
-            source_lines = []
 
         # Check function/method definitions for hardcoded defaults
         for node in ast.walk(tree):

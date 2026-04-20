@@ -109,7 +109,7 @@ class RubricEngine:
                 len(self._rubrics),
                 self._rubrics_path,
             )
-        except (json.JSONDecodeError, KeyError, TypeError) as exc:
+        except (json.JSONDecodeError, KeyError, TypeError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             _log.error("[RubricEngine] Failed to parse rubrics: %s", exc)
 
         self._loaded = True

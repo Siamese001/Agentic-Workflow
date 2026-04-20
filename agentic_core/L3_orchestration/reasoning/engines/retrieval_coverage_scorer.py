@@ -168,7 +168,7 @@ def score_coverage(
             )
             _append_shadow_result(fallback)
             return None, False
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- coverage scoring boundary: fallback result returned on any error
         fallback = RetrievalCoverageResult(
             advisory=True,
             evaluator_name=getattr(scorer, "evaluator_name", "unknown"),

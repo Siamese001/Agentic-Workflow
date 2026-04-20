@@ -20,8 +20,7 @@ def read_file_content(file_path: Path) -> str:
     try:
         with open(file_path, encoding="utf-8") as f:
             return f.read()
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         return ""
 
 

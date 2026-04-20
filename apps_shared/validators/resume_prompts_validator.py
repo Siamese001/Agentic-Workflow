@@ -103,8 +103,7 @@ try:
     with open(prompts_path, encoding="utf-8") as f:
         PROMPT_TEMPLATES = json.load(f)
     logging.info(f"Successfully loaded prompts.json from {prompts_path}")
-# guardian: allow-silent-swallow
-except Exception as e:
+except Exception as e:  # guardian: allow-silent-swallow
     logging.critical(f"FATAL: Could not load prompts.json: {e}")
     PROMPT_TEMPLATES = {}
 

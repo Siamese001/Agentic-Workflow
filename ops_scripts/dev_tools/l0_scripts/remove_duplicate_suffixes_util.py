@@ -240,8 +240,7 @@ def remove_duplicates(safe_to_delete: list[tuple[Path, Path, str, bool]], dry_ru
             try:
                 dup_path.unlink()
                 removed_count += 1
-            # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow
                 pass
     return removed_count
 

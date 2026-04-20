@@ -454,7 +454,7 @@ def create_and_commit_routing_contract(
             routing_context.router_id,
             optimization.routing_optimization_id,
         )
-    except RoutingOptimizationError as _optimization_exc:  # optimization failure non-blocking
+    except RoutingOptimizationError as _optimization_exc:  # guardian: allow-log-and-swallow -- routing optimization: non-fatal, contract creation continues
         _LOG.warning("ROUTING_OPTIMIZATION_ERROR: %s", _optimization_exc)
         # Continue - optimization failure should not block contract creation
 

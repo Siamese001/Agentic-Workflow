@@ -693,8 +693,7 @@ class RGPlanner:
                         "validation_level": processing_plan.analysis_plan.validation_level,
                     },
                 )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"Failed to record telemetry: {e}")
 
     def get_planning_summary(self, processing_plan: ResumeProcessingPlan) -> dict[str, object]:

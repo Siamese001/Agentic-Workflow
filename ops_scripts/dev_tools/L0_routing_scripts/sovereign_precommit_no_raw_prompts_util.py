@@ -227,8 +227,7 @@ def check_file(filepath: Any) -> Any:
             print("=" * 80)
             return False
         return True
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         print(f"⚠️  Warning: Could not parse {filepath}: {e}")
         return True
 

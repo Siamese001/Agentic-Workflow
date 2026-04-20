@@ -67,7 +67,6 @@ else:
         ast.parse(new_src)
         open(fp, "w", encoding="utf-8").write(new_src)
         print(f"\nInserted {sum(len(v) for v in insertions.values())} aliases. Syntax OK.")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         print(f"\nSYNTAX ERROR: {e}")
         print("NOT SAVED")

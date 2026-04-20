@@ -233,8 +233,7 @@ class MigrationExecutor:
             self.moved_files[src_path.stem] = str(dest_path)
             logger.info(f"Moved: {src_path.name} -> {dest_path}")
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to move {src_path.name}: {e}")
             return False
 
@@ -322,8 +321,7 @@ class MigrationExecutor:
                             new_content = regex.sub(replacement, content)
                             path.write_text(new_content, encoding="utf-8")
                             logger.info(f"Patched imports in {path.name}")
-                    # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-silent-swallow
                         logger.error(f"Failed to patch {path.name}: {e}")
 
     def _apply_string_replace(self, old: str, new: str):
@@ -338,8 +336,7 @@ class MigrationExecutor:
                             new_content = content.replace(old, new)
                             path.write_text(new_content, encoding="utf-8")
                             logger.info(f"Replaced '{old}' in {path.name}")
-                    # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-silent-swallow
                         logger.error(f"Failed to patch {path.name}: {e}")
 
     def execute(self):

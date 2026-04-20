@@ -56,8 +56,7 @@ class SilentSwallowerFixer:
         # Parse AST to find exception handlers
         try:
             tree = ast.parse(content, filename=str(file_path))
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
             return violations
 
         for node in ast.walk(tree):

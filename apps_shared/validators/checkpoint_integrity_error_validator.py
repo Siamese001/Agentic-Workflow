@@ -272,10 +272,9 @@ class SecureCheckpointManager:
                 json.dump(secure_checkpoint, f, indent=2)
             temp_file.replace(checkpoint_file)
             logger.debug(f"Saved secure checkpoint for stage {checkpoint.stage.value}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to save secure checkpoint: {e}")
-            raise OSError(f"Checkpoint save failed: {e}")
+            raise OSError(f'Checkpoint save failed: {e}') from e
 
     async def load_latest_checkpoint(self) -> MicroCheckpoint | None:
         """Load the most recent checkpoint with integrity validation.
@@ -310,8 +309,7 @@ class SecureCheckpointManager:
                 quarantine_file = checkpoint_file.with_suffix(".corrupt")
                 checkpoint_file.replace(quarantine_file)
                 logger.warning(f"Moved corrupted checkpoint to {quarantine_file}")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.warning(f"Failed to load checkpoint {checkpoint_file}: {e}")
         if latest_checkpoint:
             logger.info(f"Loaded secure checkpoint from stage {latest_checkpoint.stage.value}")

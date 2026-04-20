@@ -215,6 +215,5 @@ class EvidenceContractV2:
         """Read file content with error handling."""
         try:
             return filepath.read_text(encoding="utf-8")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return f"ERROR: Could not read {filepath}: {e}"

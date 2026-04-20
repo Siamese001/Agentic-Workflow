@@ -78,8 +78,7 @@ def profile_scanner_safe():
 
             return result
 
-    # guardian: allow-silent-swallow - optional timeout handling
-    except TimeoutError as e:
+    except TimeoutError as e:  # guardian: allow-silent-swallow - optional timeout handling
         print(f"⏰ TIMEOUT: {e}")
         print("  Scanner appears to be hanging. Let's investigate...")
 
@@ -154,8 +153,7 @@ def investigate_hang():
         process = psutil.Process()
         memory_mb = process.memory_info().rss / (1024 * 1024)
         print(f"\n4. Memory usage: {memory_mb:.1f} MB")
-    # guardian: allow-silent-swallow - optional dependency
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow - optional dependency
         # psutil is optional for memory monitoring - this is acceptable
         print("\n4. psutil not available for memory monitoring")
 

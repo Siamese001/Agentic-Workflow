@@ -17,8 +17,7 @@ def safe_edit(filepath, old, new):
     new_src = src.replace(old, new, 1)
     try:
         ast.parse(new_src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         print(f"  SYNTAX ERROR in {filepath}: {e}")
         return False
     open(filepath, "w", encoding="utf-8").write(new_src)

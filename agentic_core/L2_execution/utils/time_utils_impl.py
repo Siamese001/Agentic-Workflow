@@ -198,11 +198,9 @@ class TimeTools:
             from datetime import datetime
 
             import pytz
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             return "Error: 'pytz' module not installed for timezone operations. Please install it (`pip install pytz`)."
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Error during fallback import for time tools: {e}"
         try:
             tz = pytz.timezone(timezone)
@@ -210,8 +208,7 @@ class TimeTools:
             return now.isoformat()
         except pytz.UnknownTimeZoneError:
             return f"Error: Unknown timezone '{timezone}'. Please provide a valid IANA timezone string."
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Error getting time with pytz: {e}"
 
     def get_current_time(self, timezone: str = "UTC") -> str:
@@ -243,8 +240,7 @@ class TimeTools:
         except ImportError:
             Logger.warning("MCP Time client not found, falling back to local time calculation.")
             return self._get_current_time_fallback(timezone)
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Error with MCP Time client for get_current_time: {e}"
 
     def convert_time(self, source_timezone: str, time: str, target_timezone: str) -> str:
@@ -267,8 +263,7 @@ class TimeTools:
             return mcp_convert_time(source_timezone, time, target_timezone)
         except ImportError:
             return "Error: MCP Time client not available for time conversion. This functionality requires 'mcp_time_client'."
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Error with MCP Time client for convert_time: {e}"
 
 

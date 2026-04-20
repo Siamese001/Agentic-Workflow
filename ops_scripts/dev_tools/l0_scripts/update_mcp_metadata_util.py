@@ -28,8 +28,7 @@ for agent in tqdm(data, desc="Processing", unit="item"):
             agent["mcp_hardened"] = False
             updated += 1
             print(f"⚠️  {agent['class_name']}: removed MCP hardened flag")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"❌ {agent['class_name']}: error - {e}")
 with open("agent_discovery_full.json", "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2)

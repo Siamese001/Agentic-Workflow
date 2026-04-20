@@ -249,8 +249,7 @@ _emit_reads_through("l4", "hardened_gemini_executor_types", "urg_read_82")
 
 try:
     from .agent_executor import AgentExecutor, AgentMessage
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:  # guardian: agent_executor module missing — provide stubs
+except ImportError:  # guardian: agent_executor module missing — provide stubs  # guardian: allow-silent-swallow - optional dependency
 
     class AgentMessage:  # type: ignore[no-redef]
         """Stub: agent_executor not installed."""
@@ -554,8 +553,7 @@ class HardenedGeminiExecutor:
                 # Fallback: estimate using tiktoken or simple heuristic
                 token_count = self._estimate_tokens(input_payload)
 
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.warning(f"Token counting failed, estimating: {e}")
             token_count = self._estimate_tokens(input_payload)
 
@@ -780,19 +778,6 @@ class HardenedGeminiExecutor:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Log error telemetry
-            latency_ms = (time.time() - start_time) * 1000
-            telemetry = InteractionTelemetry(
-                interaction_id=None,
-                model=self.config.model,
-                input_tokens=0,
-                output_tokens=0,
-                total_tokens=0,
-                latency_ms=latency_ms,
-                error=str(e),
-            )
-
-            await self.log_interaction_telemetry(telemetry)
-            raise
 
     def invoke_prompt(self, prompt: str, *, api_key: str) -> Any:
         """Synchronous healing-path invocation using google.generativeai v1 SDK.

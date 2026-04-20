@@ -74,7 +74,7 @@ def check_task_exists(file_path: str) -> str | None:
         if not session_state.exists():
             return None  # fail-open: no state file yet
         state = json.loads(session_state.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- session state read: non-fatal, fail-open
         return None  # fail-open
 
     tier = state.get("current_tier", "T0")

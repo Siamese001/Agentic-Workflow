@@ -242,7 +242,6 @@ class TypeErasureDetector(AntiPatternDetector):
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
         except (ValueError, TypeError, RuntimeError) as e:
             raise
-            source_lines = []
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
@@ -385,9 +384,8 @@ class TypeErasureDetector(AntiPatternDetector):
             elif isinstance(node, ast.Attribute):
                 return node.attr
             return ast.unparse(node)
-        except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError):
             raise
-            return None
 
     def _generate_fix_suggestion(self, method_name: str, return_type: str) -> str:
         """Generate a fix suggestion for the violation."""

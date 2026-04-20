@@ -263,8 +263,7 @@ class PascalSovereigntyFixer:
                     if not self.dry_run:
                         path.write_text(new_content, encoding="utf-8")
                     count += 1
-            # guardian: allow-silent-swallow
-            except:
+            except Exception:  # guardian: allow-silent-swallow
                 continue
         return count
 
@@ -338,8 +337,7 @@ class PascalSovereigntyFixer:
                     print("[WARNING] Windows LongPathsEnabled is NOT set to 1.")
                     if not self.dry_run:
                         return False
-            # guardian: allow-silent-swallow
-            except:
+            except Exception:  # guardian: allow-silent-swallow
                 pass
         return True
 

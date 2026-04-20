@@ -141,7 +141,7 @@ def assert_import_resolves(module_path: str) -> None:
     try:
         importlib.import_module(module_path)
     except ImportError as e:
-        raise AssertionError(f"Module '{module_path}' cannot be imported: {e}")
+        raise AssertionError(f"Module '{module_path}' cannot be imported: {e}") from e
 
 
 def assert_no_agents_outside_reasoning(root: Path) -> list[str]:

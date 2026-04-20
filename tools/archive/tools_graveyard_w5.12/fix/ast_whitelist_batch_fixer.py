@@ -425,8 +425,7 @@ def fix_file_for_category(
             "dry_run": dry_run,
         }
 
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return {"status": "error", "file": str(file_path), "error": f"SyntaxError: {e}"}
     except (ValueError, TypeError, RuntimeError) as e:
         return {"status": "error", "file": str(file_path), "error": str(e)}

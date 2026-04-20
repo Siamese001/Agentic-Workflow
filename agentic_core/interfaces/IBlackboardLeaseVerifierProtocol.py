@@ -150,7 +150,7 @@ def write_file(
                                 "deletion_percentage": round((1 - new_lines / original_lines) * 100, 2),
                             },
                         )
-                    except Exception as exc:  # guardian: allow-broad-exception allow-log-and-swallow -- log_security_event failure must not mask PreservationViolationError
+                    except Exception as exc:  # guardian: allow-broad-exception -- log_security_event failure must not mask PreservationViolationError
                         Logger.debug("Security logging failed: %s", exc)
                 raise PreservationViolationError(
                     "Preservation violation: replacement content would delete too much of the file."

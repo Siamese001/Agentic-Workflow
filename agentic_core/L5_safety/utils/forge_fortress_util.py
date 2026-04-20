@@ -248,14 +248,12 @@ def forge_fortress() -> Any:
                         logging.info(f"  [MOVED] {item.name}")
                     else:
                         logging.warning(f"  [COLLISION] {item.name} exists in target. Manual merge required.")
-                # guardian: allow-silent-swallow
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     logging.error(f"  [FAILED] Move {item.name}: {e}")
             if not any(old_path.iterdir()):
                 try:
                     _wg.remove_dir(old_path)
-                # guardian: allow-silent-swallow
-                except (ValueError, TypeError):
+                except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                     pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
     logging.info("--- FORGE COMPLETE: Sovereign Architecture In Place ---")
 

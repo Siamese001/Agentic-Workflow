@@ -40,7 +40,7 @@ def _append_audit(record: dict) -> None:
         audit_log.parent.mkdir(parents=True, exist_ok=True)
         with open(audit_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
-    except OSError:
+    except OSError:  # guardian: allow-silent-swallow -- write audit log: non-fatal, fail-open
         pass
 
 

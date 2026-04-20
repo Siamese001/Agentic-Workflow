@@ -235,8 +235,7 @@ def align_territory() -> Any:
                     f.write(content)
                 print(f"  [✓] Rewired: {py_file.relative_to(ROOT)}")
                 count += 1
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"  [!] Failed to process {py_file}: {e}")
     print(f"\n[OK] CONVERGENCE COMPLETE. {count} files rewired.")
     print("    [!] NEXT: Run 'python canon_validator_agentic_v2.py --target agentic_core'")

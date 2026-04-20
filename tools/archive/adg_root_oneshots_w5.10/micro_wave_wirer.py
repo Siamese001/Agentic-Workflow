@@ -223,8 +223,7 @@ def wire_file(filepath: str, edge_type: str, dry_run: bool) -> tuple[bool, str]:
 
     try:
         tree = ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return False, f"SKIP (syntax error: {e})"
 
     # Find best method

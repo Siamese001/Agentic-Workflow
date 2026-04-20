@@ -240,8 +240,7 @@ class ResumeEnhancementOrchestrator:
                             causation_id=event.id,
                         ),
                     )
-        # guardian: allow-silent-swallow
-        except (AttributeError, ValueError, TypeError, RuntimeError) as e:
+        except (AttributeError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle resume generation started: {e}")
             raise
 
@@ -254,8 +253,7 @@ class ResumeEnhancementOrchestrator:
         try:
             payload = event.payload
             logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})")
-        # guardian: allow-silent-swallow
-        except (AttributeError, ValueError, TypeError) as e:
+        except (AttributeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle persona analyzed: {e}")
             raise
 
@@ -374,17 +372,6 @@ class ResumeEnhancementOrchestrator:
                 },
             }
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            await self.infrastructure.event_bus.publish(
-                "events.resume_enhancement_failed",
-                SystemEvent(
-                    type=EventType.ERROR_OCCURRED,
-                    trace_id=trace_id,
-                    source_component="ResumeEnhancementOrchestrator",
-                    payload={"error": str(e)},
-                    causation_id=trace_id,
-                ),
-            )
             raise
 
     def _calculate_complexity(self, persona: ReaderPersona, recon_signal: ReconSignal | None) -> int:

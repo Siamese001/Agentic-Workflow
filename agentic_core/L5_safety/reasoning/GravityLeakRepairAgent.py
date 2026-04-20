@@ -584,7 +584,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                     return self._emit_plan_only(
                         fix
                     )  # guardian: GravityRepairProhibitedError should be handled with specific context
-                except ImportError:  # guardian: allow-silent-swallow
+                except ImportError:  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                     pass
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
             try:
@@ -593,9 +593,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                 if len(stripped_old) <= 1:
                     try:
                         os.close(temp_fd)
-                    except OSError as e:
-                        import logging
-
+                    except OSError as e:  # guardian: allow-log-and-swallow -- fd close on validation skip: non-fatal, debug logged
                         logging.getLogger(__name__).debug(
                             "GravityLeakRepairAgent: OSError swallowed at L584: %s", e
                         )
@@ -604,8 +602,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                     if os.path.exists(temp_path):
                         try:
                             _wg.remove_file(temp_path)
-                        # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
-                        except (RuntimeError, OSError):
+                        except (RuntimeError, OSError):  # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
                             pass
                     self.logger.warning(
                         f"[PLAN-ONLY] old_import too short ({stripped_old!r}), refusing replace to prevent corruption.",
@@ -645,8 +642,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                     if os.path.exists(temp_path):
                         try:
                             _wg.remove_file(temp_path)
-                        # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
-                        except (RuntimeError, OSError):
+                        except (RuntimeError, OSError):  # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
                             pass
                     return self._emit_plan_only(fix)
                 raise
@@ -654,16 +650,12 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
             except Exception as write_err:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 # guardian: allow-path-string -- temp_path is OS tempfile path requiring os.path.exists check
-                if os.path.exists(temp_path):
-                    _wg.remove_file(temp_path)
-                raise write_err
         except GravityRepairProhibitedError as prohibited:
             self.logger.warning(
                 str(prohibited)
             )  # guardian: GravityRepairProhibitedError should be handled with specific context
             return self._emit_plan_only(fix)
-        # guardian: allow-silent-swallow -- outer catch-all returns error status dict with error logged
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow -- outer catch-all returns error status dict with error logged
             self.logger.error(f"Error applying fix to {fix.file_path}: {e}")
             return {"status": "error", "error": str(e)}
 
@@ -839,8 +831,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                 return False
 
             violations = [v for v in violations if _in_sovereign_scope(v)]
-        # guardian: allow-silent-swallow -- StructureEnforcerAgent failure is logged; falls through to empty violations
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow -- StructureEnforcerAgent failure is logged; falls through to empty violations
             self.logger.error(f"Failed to get violations from StructureEnforcerAgent: {e}")
             return {
                 "agent": "GravityLeakRepairAgent",
@@ -974,8 +965,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                             agent="GravityLeakRepairAgent",
                         )
                         return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
-                # guardian: allow-silent-swallow -- gravity heal failure returns error count with error logged
-                except (RuntimeError, OSError) as e:
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow -- gravity heal failure returns error count with error logged
                     self.logger.error(f"[GRAVITY_LEAK_REPAIR] Failed to heal: {e}")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

@@ -237,8 +237,7 @@ def scan_forbidden_root_folders(repo_root: Path) -> list[str]:
         for item in tqdm(repo_root.iterdir(), desc="Processing", unit="item"):
             if item.is_dir() and item.name in FORBIDDEN_ROOT_FOLDERS:
                 hits.append(item.name)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except PermissionError:
+    except PermissionError:  # guardian: allow-silent-swallow - acceptable exception handling
         pass
     return sorted(hits)
 
@@ -363,12 +362,6 @@ def run_drift_detection_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="root_drift",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"root_drift scan failed: {exc}")
 
     # --- Finalize summary ---
     total_checks = len(result.checks)

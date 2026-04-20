@@ -179,7 +179,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             self.is_loaded = True
 
         except (OSError, IOError, KeyError, TypeError) as e:
-            raise RuntimeError(f"Failed to load model: {e}")
+            raise RuntimeError(f'Failed to load model: {e}') from e
 
     def save_model(self, model_file_path: Path) -> None:
         """Save the unified inference engine configuration."""

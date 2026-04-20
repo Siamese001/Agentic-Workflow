@@ -171,7 +171,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_state_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:
@@ -196,7 +196,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_safety_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:
@@ -221,7 +221,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_observability_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:
@@ -246,7 +246,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_tool_invocation_duration(self, duration: float, **labels: Any) -> None:
@@ -269,7 +269,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_healing_duration(self, duration: float, **labels: Any) -> None:
@@ -292,7 +292,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_policy_violation(self, violation_type: str, **labels: Any) -> None:
@@ -315,7 +315,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_human_escalation(self, escalation_reason: str, **labels: Any) -> None:
@@ -338,7 +338,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_circuit_breaker_state(self, state: str, **labels: Any) -> None:
@@ -361,7 +361,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_retry_attempt(self, **labels: Any) -> None:
@@ -383,7 +383,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def emit_snapshot_persistence_duration(self, duration: float, **labels: Any) -> None:
@@ -406,7 +406,7 @@ class L6MetricsEmissionMixin:
             AttributeError,
             ValueError,
             TypeError,
-        ) as exc:  # guardian: allow-silent-swallow -- metrics emission is fire-and-forget; failure must not crash caller
+        ) as exc:  # guardian: allow-log-and-swallow -- metrics emission is fire-and-forget; failure must not crash caller
             _LOG.debug("metric emission skipped: %s", exc)
 
     def get_metrics_status(self) -> dict[str, Any]:

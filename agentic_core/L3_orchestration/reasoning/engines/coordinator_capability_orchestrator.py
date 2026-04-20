@@ -274,8 +274,7 @@ class WorkflowCoordinator(ABC):
             else:
                 self.failures += 1
             return result
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             self.failures += 1
             return WorkflowResult(
                 workflow_id=context.workflow_id,

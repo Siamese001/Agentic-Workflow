@@ -427,8 +427,7 @@ class PersonaPlanner:
                         "confidence_score": plan.confidence_score,
                     },
                 )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"Failed to record telemetry: {e}")
 
     def get_persona_summary(self, plan: PersonaPlan) -> dict[str, object]:

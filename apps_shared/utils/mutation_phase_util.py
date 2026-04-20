@@ -344,16 +344,14 @@ class DAGSafetyManager:
             self._run_hooks(MutationPhase.COMMIT, graph, mutation_info)
             logger.info(f"Mutation successful: {mutation_id}")
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Mutation failed: {mutation_id}, error: {e}")
             try:
                 self._run_hooks(MutationPhase.ROLLBACK, graph, mutation_info)
                 if mutation_info["snapshot_id"]:
                     self.restore_snapshot(mutation_info["snapshot_id"], graph)
                 logger.info(f"Mutation rolled back: {mutation_id}")
-            # guardian: allow-silent-swallow
-            except Exception as rollback_error:
+            except Exception as rollback_error:  # guardian: allow-silent-swallow
                 logger.error(f"Rollback failed: {mutation_id}, error: {rollback_error}")
             return False
         finally:

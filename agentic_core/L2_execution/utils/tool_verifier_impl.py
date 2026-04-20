@@ -503,13 +503,6 @@ class ToolVerifier:
                 )
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             raise
-            issues.append(
-                VerificationIssue(
-                    Severity="error",
-                    message=f"Verification error: {str(e)}",
-                    suggestion="Check code for obvious errors",
-                ),
-            )
         return issues
 
     def _generate_execution_plan(self: Any, tool_name: str, tool_args: dict[str, Any]) -> str:

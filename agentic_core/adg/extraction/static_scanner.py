@@ -1338,8 +1338,7 @@ def _scan_file(
         # guardian: allow-silent-swallow - acceptable exception handling
         source = filepath.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source, filename=str(filepath))
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as exc:
+    except SyntaxError as exc:  # guardian: allow-silent-swallow - acceptable exception handling
         line_info = f"line {exc.lineno}" if exc.lineno else "unknown line"
         logger.error("SyntaxError in %s at %s: %s", filepath, line_info, exc)
         return [], True, {}, {}  # A4: parse failures tracked

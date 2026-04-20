@@ -94,8 +94,7 @@ class AuditHealingStrategy:
                 Logger.warning(f"[L0 L6 AUDIT HEALING] Audit log not found: {self.audit_log_path}")
                 return []
             log_content = await self.fs_client.read_text(str(self.audit_log_path))
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L0 L6 AUDIT HEALING] Failed to read audit log: {e}")
             return []
         gaps = []
@@ -111,8 +110,8 @@ class AuditHealingStrategy:
                         entry_time = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                         if entry_time < cutoff:
                             continue
-                    except (ValueError, AttributeError):
-                        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                    except (ValueError, AttributeError):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                        pass
                 if entry.get("action") == "apply" and "event_id" not in entry:
                     gaps.append(entry)
             except json.JSONDecodeError as e:
@@ -165,8 +164,7 @@ class AuditHealingStrategy:
             else:
                 Logger.error("[L0 L6 AUDIT HEALING] Failed to emit corrective event")
                 return False
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L0 L6 AUDIT HEALING] Audit reconstruction failed: {e}")
             return False
 
@@ -183,8 +181,7 @@ class AuditHealingStrategy:
         try:
             Logger.info(f"[L0 L6 AUDIT HEALING] Corrective event emitted: {event_data}")
             return True
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[L0 L6 AUDIT HEALING] Event emission failed: {e}")
             return False
 

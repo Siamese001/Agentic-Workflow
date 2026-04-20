@@ -85,7 +85,7 @@ class CircuitBreaker:
             return result
         except Exception as e:
             self._on_failure()
-            raise e
+            raise e from e
 
     def _should_attempt_reset(self) -> bool:
         """Check if circuit should attempt reset."""

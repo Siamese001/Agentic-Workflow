@@ -226,13 +226,11 @@ class HygieneMixin:
 
                         content = py_file.read_text(encoding="utf-8")
                         ast.parse(content)
-                    # guardian: allow-silent-swallow - acceptable exception handling
-                    except SyntaxError as e:
+                    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
                         results["syntax_errors"].append(
                             {"file": str(rel_path), "error": str(e)}
                         )  # guardian: File operations with encoding need error-specific handling
-                # guardian: allow-silent-swallow - acceptable exception handling
-                except (OSError, UnicodeDecodeError) as e:
+                except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
                     self.logger.debug(f"Failed to scan {rel_path}: {e}")
                     continue
         except (OSError, ValueError, RuntimeError) as e:
@@ -251,8 +249,7 @@ class HygieneMixin:
                 if file_path.exists():
                     file_path.unlink()  # guardian: Add error context logging
                     fixed += 1
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except OSError as e:
+            except OSError as e:  # guardian: allow-silent-swallow - acceptable exception handling
                 self.logger.debug(f"Failed to remove {file_path.name}: {e}")
                 continue
         for item in violations.get("duplicate_files", []):

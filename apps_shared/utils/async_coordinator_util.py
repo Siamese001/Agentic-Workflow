@@ -346,8 +346,7 @@ class AsyncCoordinator:
             else:
                 task_info.state = TaskState.COMPLETED
                 logger.debug(f"Task {task_id} completed successfully")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             logger.error(f"Error handling task completion for {task_id}: {e}")
         if task_info.cleanup_callback:
             try:
@@ -355,8 +354,7 @@ class AsyncCoordinator:
                     await task_info.cleanup_callback()
                 else:
                     task_info.cleanup_callback()
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 logger.error(f"Cleanup callback failed for {task_id}: {e}")
 
     async def wait_for_task(self, task_id: str, timeout: float | None = None) -> Any:

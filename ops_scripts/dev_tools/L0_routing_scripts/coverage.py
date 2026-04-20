@@ -241,8 +241,7 @@ class CoverageHealer:
             if file_path.exists():
                 print(f"    ✓ Module verified: {file_path.name}")
                 return True
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             print(f"    ✗ Healing failed: {e}")
             return False
         return False
@@ -275,12 +274,10 @@ def main() -> int:
     try:
         result = asyncio.run(run_autonomous_remediation())
         return 0 if result else 1
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except KeyboardInterrupt:
+    except KeyboardInterrupt:  # guardian: allow-silent-swallow - acceptable exception handling
         print("\n\n⚠️  Remediation interrupted by user")
         return 1
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         print(f"\n\n❌ Remediation failed: {e}")
         import traceback
 

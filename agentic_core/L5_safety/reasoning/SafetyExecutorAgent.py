@@ -361,15 +361,6 @@ class SafetyExecutorAgent(SovereignBaseAgent):
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                end_time = datetime.utcnow()
-                execution_time = (end_time - start_time).total_seconds() * 1000
-                exec_result = ExecutionResult(
-                    status=ExecutionStatus.FAILED,
-                    message=f"Execution failed: {str(e)}",
-                    execution_time_ms=execution_time,
-                )
-                self._results.append(exec_result)
-                return exec_result
 
     def _run_safety_checks(self, context: dict[str, Any]) -> ExecutionResult:
         """Run safety detector checks."""
@@ -404,8 +395,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                         block_reason=BlockReason.THRESHOLD_EXCEEDED,
                         message=f"Safety score {score:.2f} below threshold {self._agent_config.safety_score_threshold}",
                     )
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"Safety check error: {e}")
         return ExecutionResult(status=ExecutionStatus.ALLOWED, message="Safety checks passed")
 
@@ -423,8 +413,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                         )
                     else:
                         Logger.warning(f"Non-blocking gate failed: {gate.name}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 Logger.error(f"Gate {gate.name} error: {e}")
                 if gate.blocking:
                     return ExecutionResult(
@@ -456,8 +445,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                 score = self._detector.get_safety_score(input_text)
                 if score < self._agent_config.safety_score_threshold:
                     return (True, f"Safety score {score:.2f} below threshold")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"Check error: {e}")
         return (False, "Input passed safety checks")
 

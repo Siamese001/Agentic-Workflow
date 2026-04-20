@@ -303,12 +303,12 @@ class RegistryVerifier:
                 return None
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-        except (
+        except (  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             SyntaxError,
             UnicodeDecodeError,
             OSError,
             FileNotFoundError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):
             return None
         relative_path = str(file_path.relative_to(self.project_root))
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

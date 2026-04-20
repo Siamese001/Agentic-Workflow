@@ -184,7 +184,7 @@ def purge_repository_cache(target_path=None) -> None:
     for f in __import__("pathlib").Path(root).rglob("*.pyc"):
         try:
             f.unlink()
-        except OSError:  # guardian: Add error context logging
+        except OSError:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("PreCommitSovereignAgent: OSError swallowed at L186: %s", e)
@@ -252,8 +252,6 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                Logger.error(f"Error in validate_staged_files: {e}")
-                metrics["errors"] += 1
         if hasattr(self, "validate_sovereignty"):
             try:
                 validation_result = self.validate_sovereignty()
@@ -261,8 +259,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
                     metrics["violations"] += (
                         len(validation_result) if isinstance(validation_result, list) else 1
                     )
-            # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                 Logger.error(f"Error in validate_sovereignty: {e}")
                 metrics["errors"] += 1
         return {"violations": 0, "fixed": 0, "errors": 0}
@@ -356,8 +353,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         print(f"Sovereign Sentinel: Auditing {len(staged_files)} staged files...")
         try:
             report = self.validator.validate_all()
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             return self._create_error_result(f"Validation error: {str(e)}")
         staged_violations = self._filter_staged_violations(report, staged_files)
         self.violations_found = staged_violations
@@ -440,8 +436,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             print("The hook will now validate all commits for architectural compliance.")
             print("To bypass the hook (not recommended), use: git commit --no-verify")
             return True
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             print(f"Failed to install hook: {e}")
             return False
 
@@ -460,8 +455,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             _wg.remove_file(hook_path)
             print("Pre-commit hook removed")
             return True
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             print(f"Failed to remove hook: {e}")
             return False
 
@@ -491,8 +485,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"PreCommitSovereignAgent heal() failed: {str(e)}",

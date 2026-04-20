@@ -404,7 +404,7 @@ class TraceFeatureExtractor:
         for trace_id, signal, ts in traces:
             try:
                 results.append(self.extract(trace_id, signal, ts))
-            except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            except (AttributeError, KeyError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(
                     "trace_feature_extractor: extraction failed",
                     extra={"trace_id": trace_id, "error": str(exc)},

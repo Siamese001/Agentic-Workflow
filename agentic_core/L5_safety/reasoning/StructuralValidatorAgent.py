@@ -301,8 +301,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
             return violations
         try:
             content = file_path.read_text(encoding="utf-8")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Failed to read {file_path}: {e}")
             return violations
         if self.config.enable_gravity:
@@ -375,7 +374,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                                 auto_fixable=True,
                             ),
                         )
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug(
@@ -407,8 +406,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
             _wg.copy_file(file_path, backup_path)
             _wg.write_text(file_path, new_content)
             return {"applied": True, "backup": str(backup_path)}
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Rename failed: {e}")
             return {"error": str(e)}
 
@@ -450,8 +448,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
             else:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-        # guardian: allow-silent-swallow
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[STRUCTURAL_VALIDATOR] Failed to heal: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

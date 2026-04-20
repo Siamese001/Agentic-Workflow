@@ -201,8 +201,7 @@ class V15ExecutionGateway:
                 max_heal_attempts=max_heal_attempts,
                 **kwargs,
             )
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except V15SoftFailAbort as sfa:
+        except V15SoftFailAbort as sfa:  # guardian: allow-silent-swallow - acceptable exception handling
             Logger.warning("[V15-GW] SOFT_FAIL abort: %s", sfa)
             return GatewayResult(
                 success=False,
@@ -228,9 +227,7 @@ class V15ExecutionGateway:
         try:
             profile = get_profile(agent_id)
         except KeyError:
-            raise UnregisteredAgentError(
-                f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py.",
-            )
+            raise UnregisteredAgentError(f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py.") from None
         except RuntimeError as exc:
             raise ExecutionGatewayError("Agent registry lookup failed", exc) from exc
         Logger.debug("[V15-GW] Agent '%s' registry check OK (mode=%s)", agent_id, profile.execution_mode)
@@ -488,10 +485,9 @@ class V15ExecutionGateway:
         """Advance pipe to *step*. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
         if observed_steps is not None:
             observed_steps.append(step)
-        try:  # guardian: PipeOrderViolation should be handled with specific context
-            # guardian: allow-silent-swallow - acceptable exception handling
+        try:
             pipe.advance(step)
-        except PipeOrderViolation as pov:
+        except PipeOrderViolation as pov:  # guardian: allow-log-and-swallow -- pipe order violation: recorded and logged, non-fatal in non-hard-fail mode
             record = {
                 "type": "pipe_order_violation",
                 "trace_id": trace_id,
@@ -507,8 +503,7 @@ class V15ExecutionGateway:
             Logger.warning("[V15-GW] §2.5 pipe order violation (non-blocking): %s", record)
 
     def _policy_check(self, guard: PolicyConfigGuard, current_config: dict[str, Any], trace_id: str) -> None:
-        """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""  # guardian: PolicyMutationIncident should be handled with specific context
-        # guardian: allow-silent-swallow - acceptable exception handling
+        """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
         try:
             guard.read_config(current_config)
         except PolicyMutationIncident as pmi:  # guardian: allow-log-and-swallow -- policy mutation: non-fatal, recorded and surfaced in validation result

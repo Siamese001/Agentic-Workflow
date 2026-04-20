@@ -176,8 +176,7 @@ class HardenedGeminiExecutor:
             _clk = get_clock()
             _clk.emit_replay_key(context=f"rg:gemini:{self.agent_id}")
             _clk.emit_determinism_digest(inputs={"executor": self.agent_id, "provider": "google"})
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("HardenedGeminiExecutor: SovereignLLMGateway not available")
             self._gateway = None
 
@@ -231,8 +230,7 @@ class HardenedGeminiExecutor:
                     "success": True,
                     "attempt": attempt,
                 }
-            # guardian: allow-silent-swallow
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-silent-swallow
                 last_exc = exc
                 logger.warning(
                     "HardenedGeminiExecutor attempt %d/%d failed: %s",

@@ -17,8 +17,7 @@ try:
     print(f"psycopg2 OK: db={row[0]} user={row[1]}")
     print(f"  version: {row[2][:60]}")
     conn.close()
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     print("psycopg2 not installed - installing...")
     subprocess.run([sys.executable, "-m", "pip", "install", "psycopg2-binary", "-q"])
     import psycopg2
@@ -29,8 +28,7 @@ except ImportError:
     row = cur.fetchone()
     print(f"psycopg2 OK (after install): db={row[0]} user={row[1]}")
     conn.close()
-# guardian: allow-silent-swallow
-except Exception as e:
+except Exception as e:  # guardian: allow-silent-swallow
     print(f"psycopg2 FAIL: {e}")
 
 # Test npx postgres MCP server can reach the DB by checking node-postgres via node

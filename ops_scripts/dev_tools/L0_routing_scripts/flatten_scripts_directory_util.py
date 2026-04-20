@@ -237,8 +237,7 @@ def flatten_scripts() -> Any:
                 shutil.move(str(py_file), str(target))
                 print(f"  [✓] {rel_path} -> {target.relative_to(CORE)}")
                 moved += 1
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 print(f"  [X] Failed: {py_file.name} - {e}")
     print("\n[*] Cleaning empty directories...")
     for root, dirs, _files in tqdm(os.walk(SCRIPTS_DIR, topdown=False), desc="Processing", unit="item"):
@@ -249,8 +248,7 @@ def flatten_scripts() -> Any:
                 if not any(dir_path.iterdir()) and dir_path != SCRIPTS_DIR:
                     dir_path.rmdir()
                     print(f"  [✓] Removed: {dir_path.relative_to(CORE)}")
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 pass
     print(f"\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-{REQUIRED_DEPTH}.")
 

@@ -110,8 +110,7 @@ class BlastRadiusCalculator:
             else:
                 proposal_str = str(proposal)
             return len(proposal_str.encode("utf-8"))
-        # guardian: allow-silent-swallow
-        except (AttributeError, TypeError, ValueError, UnicodeError):
+        except (AttributeError, TypeError, ValueError, UnicodeError):  # guardian: allow-silent-swallow
             if hasattr(proposal, "__dict__"):
                 return len(proposal.__dict__) * 100
             return 1000

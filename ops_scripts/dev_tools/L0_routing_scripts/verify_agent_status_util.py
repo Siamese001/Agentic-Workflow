@@ -259,8 +259,7 @@ def analyze_file(file_path: Path) -> dict[str, Any]:
     try:
         source = file_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         result["verdict"] = "PARSE_ERROR"
         result["reason"] = f"Syntax error: {e}"
         return result

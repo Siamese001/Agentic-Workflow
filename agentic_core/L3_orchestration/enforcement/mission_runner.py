@@ -381,8 +381,7 @@ def run_standard_mode():
         ctx = ValidationContext()
         if WEBSOCKETS_AVAILABLE:
             _start_websocket_server(ctx)
-    # guardian: allow-silent-swallow
-    except (RuntimeError, ValueError) as e:
+    except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
         print(f"\n🛑 SYSTEM INITIALIZATION FAILED: {e}")
         sys.exit(1)
     agents = [
@@ -416,8 +415,7 @@ def run_standard_mode():
                 check=False,
             )
             print(f"   [GIT] GitOps: Created healing branch '{branch_name}'")
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError):
+        except (RuntimeError, ValueError):  # guardian: allow-silent-swallow
             print("   [!] GitOps: Could not create branch (may not be in git repo)")
         _rsa = get_run_state_authority()
         try:
@@ -695,6 +693,5 @@ def _remote_sync(ctx, branch_name: str):
                     print(f"   [X] Push failed: {push_info.summary}")
                 else:
                     print(f"   [OK] Successfully pushed {branch_name}")
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as e:
+            except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
                 print(f"   [!] Remote push failed: {e}")

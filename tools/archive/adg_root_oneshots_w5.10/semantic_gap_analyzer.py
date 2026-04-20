@@ -675,8 +675,7 @@ class ASTAnalyzer:
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content, filename=str(file_path))
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (SyntaxError, UnicodeDecodeError, OSError) as e:
+        except (SyntaxError, UnicodeDecodeError, OSError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
             failure = ParseFailure(
                 file_path=file_path,
                 error_type=type(e).__name__,

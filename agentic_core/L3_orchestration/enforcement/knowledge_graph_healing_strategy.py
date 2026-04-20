@@ -263,7 +263,7 @@ class KnowledgeGraphHealingStrategy:
                 f"[L0 KG HEALING] Extraction complete for {source_id}: {len(entities)} entities, {len(relations)} relations",
             )
             return result
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow -- entity/relation extraction: non-fatal, None return triggers upstream fallback
             Logger.error(f"[L0 KG HEALING] Entity/relation extraction failed: {e}")
             return None
 

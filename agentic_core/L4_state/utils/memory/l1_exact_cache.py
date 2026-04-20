@@ -153,7 +153,7 @@ class L1ExactCache:
             # _emit_records_cache_miss(_trace_id, cache_key, "l1_exact")
             return None
 
-        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
+        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.warning(f"L1 cache get failed: {e}")
             return None
 

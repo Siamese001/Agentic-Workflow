@@ -310,7 +310,6 @@ class MissionPreflight:
                 return violations
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                print(f"   [!] Span check failed: {e}")
         else:
             print("   [!] Hierarchy monitoring unavailable - Span-of-Two status unknown.")
         return 0
@@ -335,7 +334,6 @@ class MissionPreflight:
                 return violations
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                print(f"   [!] Hierarchy check failed: {e}")
         return []
 
     def _check_gravity(self, target_path: Path) -> int:

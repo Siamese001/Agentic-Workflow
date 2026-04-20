@@ -304,8 +304,7 @@ class LICVectorMemory:
             self._collection = self._client.get_collection(self.collection_name)
             self._initialized = True
             return True
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        except ImportError:  # guardian: allow-silent-swallow - optional dependency
             self._initialized = False
             return False
         except (ValueError, TypeError, RuntimeError, OSError):

@@ -208,8 +208,7 @@ def load_secrets() -> dict[str, str]:
         encrypted_data = SECRETS_FILE.read_bytes()
         decrypted_data = fernet.decrypt(encrypted_data)
         return json.loads(decrypted_data.decode("utf-8"))
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return {}
 
 

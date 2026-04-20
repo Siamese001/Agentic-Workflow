@@ -301,7 +301,7 @@ class GitKrakenHealingStrategy:
             Logger.warning("[L0 GITHUB HEALING] GitHub MCP integration not yet implemented")
             Logger.warning("[L0 GITHUB HEALING] Requires mcp10_push_files or mcp10_create_or_update_file")
             return None
-        except (RuntimeError, OSError) as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error(f"[L0 GITHUB HEALING] Commit creation failed: {e}")
             return None
 

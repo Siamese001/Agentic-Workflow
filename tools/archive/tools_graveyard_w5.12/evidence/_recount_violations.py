@@ -73,8 +73,7 @@ def _build_fan_in(prod: list[str]) -> dict[str, int]:
     for m in prod:
         try:
             tree = ast.parse((ROOT / m).read_text(encoding="utf-8", errors="replace"))
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             continue
         for node in ast.walk(tree):
             targets = []
@@ -101,8 +100,7 @@ def _count_asserts(path: Path) -> int:
         return 0
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         return 0
     n = 0
     for node in ast.walk(tree):

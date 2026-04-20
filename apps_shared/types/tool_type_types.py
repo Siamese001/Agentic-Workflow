@@ -404,8 +404,7 @@ class ObservabilityToolExecutor:
             result.execution_time = time.time() - start_time
             self._track_execution_complete(context, result)
             return result
-        # guardian: allow-silent-swallow
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
+        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(context.execution_id, context.tool_id, str(e), start_time)
 
@@ -539,7 +538,6 @@ class ObservabilityToolExecutor:
                 all_warnings.extend(item_result.get("warnings", []))
             except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:
                 raise
-                all_warnings.append(f"Batch item failed: {str(e)}")
         final_metrics = {}
         for key, values in total_metrics.items():
             if values:

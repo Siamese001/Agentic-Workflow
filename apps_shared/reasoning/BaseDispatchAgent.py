@@ -216,8 +216,7 @@ class BaseDispatchAgent(SovereignBaseAgent):
                     f"timeout={self.config_dict.get('timeout', _DEFAULT_TIMEOUT_S)}s",
                 ],
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
 
     def _run_self_tests(self) -> bool:
@@ -268,8 +267,7 @@ class BaseDispatchAgent(SovereignBaseAgent):
                     entity_name=self.__class__.__name__,
                     observation=f"Failed action={action} error={result.ERROR}",
                 )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG outcome persistence skipped: {e}")
 
     # guardian: allow-type-erasure
@@ -316,8 +314,7 @@ class BaseDispatchAgent(SovereignBaseAgent):
             test_result = self._perform_action("test", {"query": "diagnostic test"})
             if isinstance(test_result, dict) and "error" in test_result:
                 Logger.error(f"Diagnostics failed: {test_result['error']}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"Diagnostics exception: {e}")
 
     # guardian: allow-type-erasure

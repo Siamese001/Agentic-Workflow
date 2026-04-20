@@ -243,7 +243,6 @@ def execute_in_sandbox(
         simulated_result = operation(*args, **kwargs)
     except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
         raise
-        simulated_result = e
     expected_result = transcript.get("result")
     if str(simulated_result) != str(expected_result):
         violation = ReplayNondeterminismViolation(

@@ -291,8 +291,6 @@ class WorkflowLoader:
             self._workflow_data = self._get_fallback_workflow()
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            LOGGER.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
-            self._workflow_data = self._get_fallback_workflow()
 
     def _get_fallback_workflow(self) -> dict[str, Any]:
         """Get minimal fallback workflow configuration."""

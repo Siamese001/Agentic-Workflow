@@ -264,7 +264,7 @@ class AgenticRouter:
             _committer = ProposalCommitter()
             _contract = create_and_commit_routing_contract(_rctx)
             _routing_contract_id = _contract.routing_contract_id
-        except RoutingContractError as _rce:  # guardian: allow-specific -- routing contract creation failure
+        except RoutingContractError as _rce:  # guardian: allow-log-and-swallow -- routing contract creation: non-fatal, continues with original target
             Logger.warning("agentic_router: routing contract creation failed: %s", _rce)
 
         # P3/L0: Apply capacity-aware routing if multiple candidates exist
@@ -306,13 +306,13 @@ class AgenticRouter:
                 logging.getLogger(__name__).debug(
                     "agentic_router: RoutingCapacityError swallowed at L297: %s", _rce
                 )
-            except (
+            except (  # guardian: allow-log-and-swallow -- capacity routing: non-fatal, falls back to original routing
                 ImportError,
                 AttributeError,
                 KeyError,
                 TypeError,
                 ValueError,
-            ) as _cap_exc:  # guardian: allow-log-and-swallow -- capacity routing: non-fatal, falls back to original routing
+            ) as _cap_exc:
                 Logger.error(
                     "CAPACITY_ROUTING_ERROR: %s, falling back to original routing",
                     _cap_exc,

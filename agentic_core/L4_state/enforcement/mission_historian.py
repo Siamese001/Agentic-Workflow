@@ -68,10 +68,8 @@ class MissionHistorian:
                 [datetime.now().isoformat(), file_name, action, source, destination, reason],
             )
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
-        # guardian: allow-silent-swallow
-        except (OSError, RuntimeError, TypeError, ValueError) as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
-            Logger.error(f"[MissionHistorian] Failed to record action: {e}")
 
     def get_history(self, file_name: str | None = None) -> list:
         """
@@ -97,8 +95,7 @@ class MissionHistorian:
                 for row in reader:
                     if file_name is None or row.get("file") == file_name:
                         history.append(row)
-        # guardian: allow-silent-swallow
-        except (OSError, csv.Error, UnicodeError, ValueError) as e:
+        except (OSError, csv.Error, UnicodeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"[MissionHistorian] Failed to read history: {e}")
         return history
 

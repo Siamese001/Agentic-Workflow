@@ -179,8 +179,7 @@ class ASTEnforcementMixin:
         """
         try:
             tree = ast.parse(content)
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
             return {
                 "snake_classes": 0,
                 "aliases": 0,

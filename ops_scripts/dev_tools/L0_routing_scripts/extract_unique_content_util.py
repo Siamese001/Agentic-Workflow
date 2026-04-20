@@ -193,8 +193,7 @@ def build_codebase_index(dirs: list[str]) -> tuple[set[str], set[str]]:
                         classes.add(node.name.lower())
                     elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         functions.add(node.name.lower())
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 continue
 
     return classes, functions

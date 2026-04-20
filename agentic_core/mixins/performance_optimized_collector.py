@@ -242,7 +242,7 @@ class PerformanceOptimizedCollector:
             try:
                 self._batch_queue.put_nowait(span)
                 self._performance_metrics.spans_processed += 1
-            except Exception:  # guardian: allow-silent-swallow -- queue full: drop spans to prevent memory exhaustion, non-fatal
+            except Exception:  # guardian: allow-broad-exception -- queue full: drop spans to prevent memory exhaustion, non-fatal
                 # Queue full, drop spans to prevent memory issues
                 Logger.warning("[PERF_COLLECTOR] Batch queue full, dropping spans")
                 break

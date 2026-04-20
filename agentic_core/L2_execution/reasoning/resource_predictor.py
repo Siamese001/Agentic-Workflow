@@ -391,6 +391,6 @@ class DefaultDeterministicResourcePredictor:
                 success=success,
                 timestamp_utc=timestamp_utc,
             )
-        except (ValueError, TypeError):
+        except (ValueError, TypeError):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             # System learning unavailable - continue without tracking
-            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            pass

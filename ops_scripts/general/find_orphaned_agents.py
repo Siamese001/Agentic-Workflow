@@ -80,8 +80,7 @@ def check_if_used(project_root: Path, file_path: Path, agent_file: str) -> bool:
             content = py_file.read_text(encoding="utf-8", errors="replace")
             if import_pattern.search(content) or inheritance_pattern.search(content):
                 return True
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             continue
     return False
 

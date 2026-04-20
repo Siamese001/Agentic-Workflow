@@ -487,7 +487,7 @@ class UpdateObservabilityUsageSafetyInterface:
                 "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f"Safety application failed: {e}")
+            raise SecurityError(f'Safety application failed: {e}') from e
 
 
 class UpdateObservabilityUsageSafetyFactory:

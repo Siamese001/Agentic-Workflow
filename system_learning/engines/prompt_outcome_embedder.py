@@ -505,8 +505,8 @@ class PromptOutcomeEmbedder:
                             self._meta.pop(record.content_hash, None)
                             evicted += 1
                             continue
-                    except ValueError:
-                        pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                    except ValueError:  # guardian: allow-silent-swallow -- intentional: timestamp parse control flow
+                        pass
                 keep.append(record)
             self._records = keep
         return evicted

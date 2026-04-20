@@ -175,10 +175,6 @@ try:
     )
 except ImportError as e:
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
-    DASHBOARD_DIR = "docs/dashboards"
-
-    def get_validated_project_root():
-        return Path.cwd()
 
 
 def verify_no_mock_data():

@@ -423,8 +423,7 @@ def extract_file(rel_path: str, source: str) -> tuple[list[SemanticNode], list[S
 
     try:
         tree = ast.parse(source, filename=rel_path)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError:
+    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
         return nodes, edges
 
     layer = module_path_to_layer(rel_path)
@@ -625,8 +624,7 @@ def build_semantic_graph(repo_root: Path) -> dict:
     for rel_path, abs_path in iter_python_files(repo_root):
         try:
             source = abs_path.read_text(encoding="utf-8", errors="replace")
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             error_count += 1
 
 
@@ -793,8 +791,7 @@ def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
 def build_validation_report(latest_artifact_path: Path, semantic_graph: dict) -> dict:
     try:
         adg = json.loads(latest_artifact_path.read_text(encoding="utf-8"))
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         adg = {}
         logger.warning("Could not load adg_latest.json: %s", e)
 

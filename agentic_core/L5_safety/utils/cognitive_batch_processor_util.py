@@ -237,8 +237,7 @@ class CognitiveBatchProcessor:
                 data = json.loads(self.checkpoint_file.read_text(encoding="utf-8"))
                 Logger.info(f"[BATCH] Checkpoint loaded: {len(data)} items")
                 return data
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 Logger.warning(f"[BATCH] Failed to load checkpoint: {e}")
                 return {}
         return {}
@@ -252,8 +251,6 @@ class CognitiveBatchProcessor:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
-            Logger.error(f"[BATCH] Failed to save checkpoint: {e}")
-
     def process_batch(self, violations: list[Any], auto_execute: bool = False) -> dict[str, int]:
         """
         Process a batch of violations with rate limiting and checkpointing.
@@ -365,21 +362,6 @@ class CognitiveBatchProcessor:
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                Logger.warning(f"    Attempt {attempt}/{self.max_retries} failed: {e}")
-                if attempt < self.max_retries:
-                    backoff_delay = self.rate_limit_delay * 2 ** (attempt - 1)
-                    Logger.info(f"    Retrying in {backoff_delay:.1f}s...")
-                    time.sleep(backoff_delay)
-                else:
-                    Logger.error(f"    Max retries exceeded for {Path(file_path_str).name}")
-                    self.results[file_path_str] = {
-                        "action": "ERROR",
-                        "target_path": None,
-                        "reason": f"Processing failed after {self.max_retries} attempts: {e}",
-                        "confidence": 0.0,
-                        "violation_type": v_type,
-                    }
-                    return False
         return False
 
     def _get_violation_type(self, violation: Any) -> str:

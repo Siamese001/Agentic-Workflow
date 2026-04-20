@@ -215,8 +215,7 @@ def force_app_depth() -> Any:
                     _wg.move_path(str(item), str(dest / item.name))
                 try:
                     _wg.remove_tree(str(engine_folder))
-                # guardian: allow-silent-swallow
-                except (ValueError, TypeError):
+                except (ValueError, TypeError):  # guardian: allow-silent-swallow
                     pass
                     print(f"  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines")
         for item in tqdm(app_path.iterdir(), desc="Processing", unit="item"):
@@ -237,8 +236,7 @@ def force_app_depth() -> Any:
                 _wg.move_path(str(item), str(dest / item.name))
             try:
                 _wg.remove_tree(str(layer_folder))
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                 pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             print(f"  [✓] LAYER ANNEXED: {layer_folder.name} -> Core/{target_layer}/P1_core")
         app_p1: Any = app_path / "P1_core"

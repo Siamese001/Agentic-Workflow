@@ -288,8 +288,7 @@ class RedTeamValidationSuite:
                 warnings=result.get("warnings", []),
                 metadata={k: v for k, v in result.items() if k not in ("valid", "errors", "warnings")},
             )
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[SecuritySuite] Validator {validator_name} failed: {e}")
             return SecurityValidationResult(
                 validator_name=validator_name,

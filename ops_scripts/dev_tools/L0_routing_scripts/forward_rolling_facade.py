@@ -351,12 +351,6 @@ class ForwardRollingFacade:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Fallback on error if enabled
-            if self._config.get_config().fallback_on_error:
-                self._metrics.fallback_count += 1
-                Logger.warning(f"[ForwardRollingFacade] Fallback to static DAG due to error: {e}")
-                result = self._execute_static_dag(agent_name, context)
-            else:
-                raise
 
         # Calculate execution time
         duration_ms = (get_clock().now_epoch() - start_time) * 1000

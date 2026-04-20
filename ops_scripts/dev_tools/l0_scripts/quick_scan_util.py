@@ -183,8 +183,7 @@ for i, py_file in enumerate(test_files, 1):
         if skip_count > 0:
             total_files_with_skips += 1
             total_skips += skip_count
-    # guardian: allow-silent-swallow
-    except:
+    except Exception:  # guardian: allow-silent-swallow
         pass
 print(f"\n\n{B}{'=' * 60}{X}")
 print(f"{B}Results:{X}")

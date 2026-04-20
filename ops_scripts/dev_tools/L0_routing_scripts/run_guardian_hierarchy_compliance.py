@@ -317,8 +317,7 @@ def scan_subfolder_compliance(repo_root: Path) -> list[dict]:
                 and p.name not in SOVEREIGN_EXCLUDED_FOLDERS
                 and p.name != "__pycache__"
             }
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except PermissionError:
+        except PermissionError:  # guardian: allow-silent-swallow - acceptable exception handling
             continue
 
         non_approved = actual_l3 - approved_l3
@@ -389,12 +388,6 @@ def run_hierarchy_compliance_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="missing_structure",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"missing_structure scan failed: {exc}")
 
     # --- Check: subfolder_compliance ---
     try:
@@ -421,12 +414,6 @@ def run_hierarchy_compliance_guardian(
     except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
-        result.add_check(
-            check_id="subfolder_compliance",
-            status=CheckStatus.FAIL,
-            details=f"Scan error: {exc}",
-        )
-        result.set_error(f"subfolder_compliance scan failed: {exc}")
 
     # --- Finalize ---
     total_checks = len(result.checks)

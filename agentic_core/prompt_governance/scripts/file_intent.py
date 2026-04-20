@@ -257,7 +257,7 @@ class HardenedNamingAuditor:
                 "has_main": "__main__" in content,
                 "content_preview": content[:200] + "..." if len(content) > 200 else content,
             }
-        except Exception as e:
+        except (SyntaxError, OSError, UnicodeDecodeError, AttributeError, ValueError) as e:
             return {"error": str(e)}
 
     def _is_agent_class(self, class_node: ast.ClassDef, content: str) -> bool:

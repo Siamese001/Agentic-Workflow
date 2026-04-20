@@ -80,8 +80,7 @@ _emit_links_execution_to_snapshot("p4", "openai_embedder", "exec_snapshot_link")
 try:
     import openai as openai
     from openai import OpenAI
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError:  # guardian: allow-silent-swallow - optional dependency
     openai = None
     OpenAI = None
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

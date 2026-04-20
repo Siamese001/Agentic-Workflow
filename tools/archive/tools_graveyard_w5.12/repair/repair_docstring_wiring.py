@@ -156,8 +156,7 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
     # Check which dims are missing and need their funcs in AST
     try:
         tree = ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except SyntaxError as e:
+    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
         return "ERROR", f"parse error: {e}", []
 
     called_funcs = set()

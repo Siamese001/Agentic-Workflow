@@ -515,11 +515,8 @@ class PromptExecutionTracer:
         for prompt_hash, trace_id, signal, ts in executions:
             try:
                 results.append(self.trace(prompt_hash, trace_id, signal, ts))
-            except (AttributeError, KeyError, TypeError, ValueError) as exc:
-                logger.warning(
-                    "prompt_execution_tracer: trace failed",
-                    extra={"trace_id": trace_id, "error": str(exc)},
-                )
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                logger.warning("prompt_execution_tracer: trace failure: %s", exc, extra={"trace_id": trace_id, "error": str(exc)})
         results.sort(key=lambda r: r.execution_record.execution_id)
         return results
 

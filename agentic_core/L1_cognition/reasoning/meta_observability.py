@@ -376,11 +376,6 @@ class MetaLearningObservability:
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            self._health_status["MetaLearningClient"] = HealthStatus(
-                component="MetaLearningClient",
-                healthy=False,
-                message=f"Error: {e}",
-            )
 
     def _check_cache_strategy_manager(self) -> None:
         """Check CacheStrategyManager health."""
@@ -402,11 +397,6 @@ class MetaLearningObservability:
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            self._health_status["CacheStrategyManager"] = HealthStatus(
-                component="CacheStrategyManager",
-                healthy=False,
-                message=f"Error: {e}",
-            )
 
     def _check_domain_context_manager(self) -> None:
         """Check DomainContextManager health."""
@@ -428,11 +418,6 @@ class MetaLearningObservability:
         except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
-            self._health_status["DomainContextManager"] = HealthStatus(
-                component="DomainContextManager",
-                healthy=False,
-                message=f"Error: {e}",
-            )
 
     def get_health_summary(self) -> dict[str, Any]:
         """
