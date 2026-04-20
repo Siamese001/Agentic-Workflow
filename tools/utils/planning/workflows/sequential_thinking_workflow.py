@@ -158,7 +158,7 @@ class SequentialThinkingEnhancedWorkflow:
                 else:
                     logger.error(f"Unknown enforced template: {enforced_template}")
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Enforcement logic failed: {e}")
 
         # Fallback to manual mapping if enforcement fails
@@ -243,7 +243,7 @@ class SequentialThinkingEnhancedWorkflow:
             logger.info(f"Successfully rendered ADG template: {template_type.value}")
             return rendered
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Failed to render ADG template {template_type.value}: {e}")
             return self._get_fallback_template(step_type, step_config)
 
@@ -427,7 +427,7 @@ class SequentialThinkingEnhancedWorkflow:
                 # Use fallback data only
                 return ADG_FALLBACK_CONTEXT.copy()
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             if ENFORCEMENT_CONFIG.get("audit_trail", True):
                 logger.warning(f"Could not fetch real ADG data, using fallback: {e}")
 
@@ -635,7 +635,7 @@ Please debug this systematically using sequential thinking.
                     step_name=step_name,
                     context=context_str,
                 )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.warning(f"Template formatting failed, using fallback: {e}")
             prompt = template.format(
                 step_name=step_name,
@@ -982,7 +982,14 @@ def example_sequential_thinking_workflow():
 
         return results
 
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         logger.error(f"Workflow failed: {e}")
         raise
 

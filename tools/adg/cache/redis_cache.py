@@ -46,7 +46,14 @@ class RedisCache:
             self._client.ping()
             self._available = True
             logger.info("Redis cache available")
-        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises diverse connection/auth/protocol errors; all suppressed to keep Redis optional
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis client raises diverse connection/auth/protocol errors; all suppressed to keep Redis optional
             logger.warning("Redis unavailable: %s", e)
             self._available = False
             self._client = None
@@ -103,7 +110,14 @@ class RedisCache:
                 "version": info.get("redis_version"),
                 "used_memory_human": info.get("used_memory_human"),
             }
-        except Exception as e:  # guardian: allow-broad-exception -- Redis info() can fail with varied transport/server errors; degraded status is the safe response
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis info() can fail with varied transport/server errors; degraded status is the safe response
             return "degraded", {"reason": str(e)}
 
     def _key(self, base: str, adg_snapshot_id: str) -> str:
@@ -123,7 +137,14 @@ class RedisCache:
             self._record_success()
             if data:
                 return ADGNode(**data)
-        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout errors; all are non-fatal cache misses
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout errors; all are non-fatal cache misses
             logger.debug("Redis get_node miss: %s", e)
             self._record_error()
 
@@ -139,7 +160,14 @@ class RedisCache:
             mapping = {k: str(v) for k, v in node.model_dump().items() if v is not None}
             self._client.hset(key, mapping=mapping)
             self._record_success()
-        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
             logger.debug("Redis set_node failed: %s", e)
             self._record_error()
 
@@ -169,7 +197,14 @@ class RedisCache:
             if len(edges) != len(edge_ids):
                 return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
-        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
             logger.debug("Redis get_edge_fanout miss: %s", e)
             self._record_error()
 
@@ -195,7 +230,14 @@ class RedisCache:
                     pipe.sadd(key, edge.id)
                 pipe.execute()
             self._record_success()
-        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
             logger.debug("Redis set_edge_fanout failed: %s", e)
             self._record_error()
 
@@ -226,7 +268,14 @@ class RedisCache:
             if len(edges) != len(edge_ids):
                 return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
-        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
             logger.debug("Redis get_edge_fanin miss: %s", e)
             self._record_error()
 
@@ -252,7 +301,14 @@ class RedisCache:
                     pipe.sadd(key, edge.id)
                 pipe.execute()
             self._record_success()
-        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
             logger.debug("Redis set_edge_fanin failed: %s", e)
             self._record_error()
 
@@ -270,7 +326,14 @@ class RedisCache:
                 return None
             self._record_success()
             return [ADGNode(**n) for n in json.loads(raw)]
-        except Exception as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
             logger.debug("Redis get_nodes_by_file miss: %s", e)
             self._record_error()
         return None
@@ -285,7 +348,14 @@ class RedisCache:
             payload = [{k: str(v) for k, v in n.model_dump().items() if v is not None} for n in nodes]
             self._client.set(key, json.dumps(payload))
             self._record_success()
-        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
             logger.debug("Redis set_nodes_by_file failed: %s", e)
             self._record_error()
 
@@ -302,7 +372,14 @@ class RedisCache:
                 return None
             self._record_success()
             return [ADGNode(**n) for n in json.loads(raw)]
-        except Exception as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
             logger.debug("Redis get_nodes_by_layer miss: %s", e)
             self._record_error()
         return None
@@ -316,7 +393,14 @@ class RedisCache:
             payload = [{k: str(v) for k, v in n.model_dump().items() if v is not None} for n in nodes]
             self._client.set(key, json.dumps(payload))
             self._record_success()
-        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
             logger.debug("Redis set_nodes_by_layer failed: %s", e)
             self._record_error()
 
@@ -335,7 +419,14 @@ class RedisCache:
                 if cursor == 0:
                     break
             self._record_success()
-        except Exception as e:  # guardian: allow-broad-exception -- Redis scan/delete raises varied errors; clear_snapshot is best-effort cleanup, never blocks caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- Redis scan/delete raises varied errors; clear_snapshot is best-effort cleanup, never blocks caller
             logger.warning("Redis clear_snapshot failed: %s", e)
             self._record_error()
 
@@ -345,7 +436,14 @@ class RedisCache:
             try:
                 self._client.close()
                 logger.info("Redis connection closed")
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error("Error closing Redis connection: %s", e)
             finally:
                 self._client = None

@@ -787,7 +787,14 @@ def run_live_path_proof(
             )
         )
         print(f"  ranked_chunks={len(bundle.ranked_chunks)}  collection={bundle.collection}")
-    except Exception as exc:  # guardian: allow-broad-exception -- proof harness, exception captured
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as exc:  # guardian: allow-broad-exception -- proof harness, exception captured
         checks.append(("P6.1 shape_search()", False, f"ERROR: {exc}"))
 
     if bundle is None:
@@ -833,7 +840,14 @@ def run_live_path_proof(
             f"confidence={artifact.get('confidence_score', 0):.4f}  "
             f"_evidence_metrics={'present' if has_metrics else 'ABSENT'}"
         )
-    except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as exc:  # guardian: allow-broad-exception -- proof harness
         checks.append(("P6.2 build_exit_artifact()", False, f"ERROR: {exc}"))
 
     if artifact is None:
@@ -875,7 +889,14 @@ def run_live_path_proof(
             )
         )
         print(f"  disposition={disposition}  grounded={gate_result.dimensions.grounded_replayable}")
-    except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as exc:  # guardian: allow-broad-exception -- proof harness
         checks.append(("P6.3 run_live_exit_gate()", False, f"ERROR: {exc}"))
 
     # ── P6.5 + P6.6: emit_bundle_telemetry → BUS T ────────────────────────────
@@ -931,7 +952,14 @@ def run_live_path_proof(
             f"  metrics.citation_completeness={metrics.citation_completeness:.4f}  "
             f"bus_t_msgs={len(evidence_msgs)}"
         )
-    except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as exc:  # guardian: allow-broad-exception -- proof harness
         checks.append(("P6.5 emit_bundle_telemetry()", False, f"ERROR: {exc}"))
 
     # ── P6.8: backward compat — old query_docs() callers (L3SemanticRAG) ─────────
@@ -959,7 +987,14 @@ def run_live_path_proof(
         print(
             f"  old_results={len(old_results)} items  type={type(old_results[0]).__name__ if old_results else 'N/A'}"
         )
-    except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as exc:  # guardian: allow-broad-exception -- proof harness
         checks.append(
             (
                 "P6.8 backward compat query_docs()",
@@ -1063,7 +1098,14 @@ def run_live_path_proof(
             )
             print(f"  legacy lane evidence_msgs={len(evidence_from_legacy)} (expected 0)")
 
-        except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as exc:  # guardian: allow-broad-exception -- proof harness
             _is_keysource = "KeySource not injected" in str(exc) or "inject_key_source" in str(exc)
             checks.append(
                 (
@@ -1227,7 +1269,14 @@ def run_live_path_proof(
         )
         print(f"  P9.4 coverage=0.75, citation=0.8 -> {d_proceed.value} (expected proceed)")
 
-    except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as exc:  # guardian: allow-broad-exception -- proof harness
         checks.append(("P9 weak-support disposition tests", False, f"ERROR: {exc}"))
 
     # ── P10: evaluate_and_emit grounded happy-path (real bundle) ──────────────
@@ -1280,7 +1329,14 @@ def run_live_path_proof(
                 f"  disposition={disposition_p10.value}"
                 f"  bus_msgs={len(evidence_p10)}"
             )
-        except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as exc:  # guardian: allow-broad-exception -- proof harness
             checks.append(("P10 evaluate_and_emit happy-path", False, f"ERROR: {exc}"))
     else:
         checks.append(("P10 evaluate_and_emit happy-path", False, "SKIPPED: bundle is None"))
@@ -1304,7 +1360,14 @@ def run_live_path_proof(
             get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=200)
             try:
                 an.act(reasoning_dict)
-            except Exception:  # guardian: allow-broad-exception -- proof harness; GuardrailDenied expected
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ):  # guardian: allow-broad-exception -- proof harness; GuardrailDenied expected
                 pass
 
             bus_p11 = get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=50)
@@ -1329,7 +1392,14 @@ def run_live_path_proof(
             get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=200)
             try:
                 an.act(no_evidence_dict)
-            except Exception:  # guardian: allow-broad-exception -- proof harness
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ):  # guardian: allow-broad-exception -- proof harness
                 pass
             bus_p11_legacy = get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=50)
             evidence_p11_legacy = [
@@ -1344,7 +1414,14 @@ def run_live_path_proof(
             )
             print(f"  ActionNode legacy bus_msgs={len(evidence_p11_legacy)} (expected 0)")
 
-        except Exception as exc:  # guardian: allow-broad-exception -- proof harness
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as exc:  # guardian: allow-broad-exception -- proof harness
             checks.append(("P11 ActionNode multi-lane", False, f"ERROR: {exc}"))
     else:
         checks.append(("P11 ActionNode multi-lane", False, "SKIPPED: bundle is None"))

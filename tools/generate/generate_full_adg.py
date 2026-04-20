@@ -148,33 +148,40 @@ def _build_graphdb_network_projection(
     from tools.graphdb.project_graph import project_graph as _gdb_project_graph
 
     work_dir = adg_artifacts_dir / f"graphdb_{ts}"
-    graph, metadata = _gdb_project_graph(
-        sqlite_path=sqlite_path,
-        output_dir=work_dir,
-        run_id=f"graphdb_{ts}",
-    )
+    try:
+        graph, metadata = _gdb_project_graph(
+            sqlite_path=sqlite_path,
+            output_dir=work_dir,
+            run_id=f"graphdb_{ts}",
+        )
 
-    commit_sha = metadata.commit_sha or "unknown"
-    staged: list[Path] = []
-    for src, dest in (
-        (
-            work_dir / "projections" / commit_sha / "graph.json",
-            adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
-        ),
-        (work_dir / "metadata" / f"{commit_sha}.json", adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json"),
-        (work_dir / "index.json", adg_artifacts_dir / f"adg_graphdb_index_{ts}.json"),
-    ):
-        if src.exists():
-            _shutil.copy2(src, dest)
-            staged.append(dest)
-        else:
-            print(f"[ADG] GraphDB projection missing expected file: {src}")
+        commit_sha = metadata.commit_sha or "unknown"
+        staged: list[Path] = []
+        for src, dest in (
+            (
+                work_dir / "projections" / commit_sha / "graph.json",
+                adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
+            ),
+            (
+                work_dir / "metadata" / f"{commit_sha}.json",
+                adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
+            ),
+            (work_dir / "index.json", adg_artifacts_dir / f"adg_graphdb_index_{ts}.json"),
+        ):
+            if src.exists():
+                _shutil.copy2(src, dest)
+                staged.append(dest)
+            else:
+                print(f"[ADG] GraphDB projection missing expected file: {src}")
 
-    print(
-        f"[ADG] GraphDB NetworkX projection: nodes={metadata.node_count} "
-        f"edges={metadata.edge_count} staged={len(staged)}",
-    )
-    return staged, graph
+        print(
+            f"[ADG] GraphDB NetworkX projection: nodes={metadata.node_count} "
+            f"edges={metadata.edge_count} staged={len(staged)}",
+        )
+        return staged, graph
+    finally:
+        if work_dir.exists():
+            _shutil.rmtree(work_dir, ignore_errors=True)
 
 
 # ── P7: Analyst-grade report emitters (non-blocking) ─────────────────────────

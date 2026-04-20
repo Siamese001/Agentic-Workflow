@@ -3,16 +3,14 @@
 from __future__ import annotations
 
 import sqlite3
+import shutil
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 from tqdm import tqdm
 
-try:
-    from tools.generate.utils.file_utils import _is_file_locked
-except ImportError:
-    from utils.file_utils import _is_file_locked
+from tools.generate.utils.file_utils import _is_file_locked
 
 
 def _extract_timestamp(filename: str) -> str | None:
@@ -30,7 +28,7 @@ def _extract_timestamp(filename: str) -> str | None:
         return None
 
     # Check if last two parts form timestamp (MMDDYYYY_HHMM)
-    if len(parts) >= 4:
+    if len(parts) >= 3:
         ts_date = parts[-2]
         ts_time = parts[-1]
 
@@ -119,6 +117,31 @@ def _unlink_sqlite_family(file_path: Path) -> int:
     return deleted
 
 
+def _path_size_bytes(path: Path) -> int:
+    """Best-effort size accounting for files and directories."""
+    try:
+        if path.is_dir():
+            return sum(child.stat().st_size for child in path.rglob("*") if child.is_file())
+        return path.stat().st_size
+    except OSError:
+        return 0
+
+
+def _remove_artifact_path(path: Path) -> int:
+    """Remove an archived artifact path (file, SQLite family, or directory)."""
+    if path.is_dir():
+        shutil.rmtree(path)
+        return 1
+
+    if path.name.endswith(_SQLITE_SIDE_SUFFIXES):
+        if _sqlite_family_locked(path):
+            raise OSError(f"SQLite family locked: {_sqlite_family_root(path).name}")
+        return _unlink_sqlite_family(path)
+
+    path.unlink()
+    return 1
+
+
 def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -> None:
     """Archive old ADG runs to keep artifacts directory clean.
 
@@ -140,6 +163,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         "adg_*.sqlite-shm",
         "adg_*.sqlite-wal",
         "adg_run_*.zip",
+        "graphdb_*",
         "scan_result_cache.json",
         "*_report_*.json",
         "test_surface_coverage_*.json",
@@ -150,16 +174,16 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         for path in adg_dir.glob(pattern):  # tqdm: pre-scan accumulation, no display needed
             if "LATEST" in path.name or "latest" in path.name:
                 continue
-            if "_archive" in str(path):
+            if "_archive" in path.parts:
                 continue
 
             if path.name.startswith("adg_run_") and path.suffix == ".zip":
-                ts = path.stem.replace("adg_run_", "")
+                ts_opt: str | None = path.stem.replace("adg_run_", "")
             else:
-                ts = _extract_timestamp(path.name)
+                ts_opt = _extract_timestamp(path.name)
 
-            if ts:
-                runs[ts].append(path)
+            if ts_opt:
+                runs[ts_opt].append(path)
 
     if len(runs) <= keep_runs:
         return
@@ -176,10 +200,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     if not to_archive:
         return
 
-    try:
-        from tools.generate.archiving.zipper import _archive_zip_files
-    except ImportError:
-        from archiving.zipper import _archive_zip_files
+    from tools.generate.archiving.zipper import _archive_zip_files
 
     archived_count = 0
     bytes_original = 0
@@ -210,24 +231,15 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
             for file_path in files:  # tqdm: inner cleanup, progress shown by outer run loop
                 if file_path not in zip_files and file_path.exists():
+                    file_size = _path_size_bytes(file_path)
                     try:
-                        file_size = file_path.stat().st_size
-                    except OSError:
-                        file_size = 0
-                    try:
-                        if file_path.name.endswith(_SQLITE_SIDE_SUFFIXES):
-                            if _sqlite_family_locked(file_path):
-                                print(
-                                    f"[WARNING] Archive: locked SQLite family skipped {_sqlite_family_root(file_path).name}"
-                                )
-                                print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
-                                print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
-                                continue
-                            archived_count += _unlink_sqlite_family(file_path)
-                        else:
-                            file_path.unlink()
-                            archived_count += 1
+                        archived_count += _remove_artifact_path(file_path)
                     except OSError as e:
+                        if "SQLite family locked" in str(e):
+                            print(f"[WARNING] Archive: locked SQLite family skipped {e}")
+                            print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
+                            print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
+                            continue
                         print(f"[ADG] Archive: failed to remove {file_path.name}: {e}")
                         continue
                     bytes_original += file_size
@@ -237,29 +249,16 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             )
             for file_path in files:  # tqdm: inner cleanup, progress shown by outer run loop
                 if file_path.exists():
+                    file_size = _path_size_bytes(file_path)
+                    bytes_original += file_size
                     try:
-                        file_size = file_path.stat().st_size
-                        bytes_original += file_size
-                    except OSError:
-                        file_size = 0
-                    try:
-                        if file_path.name.endswith(_SQLITE_SIDE_SUFFIXES) and _sqlite_family_locked(
-                            file_path
-                        ):
-                            print(
-                                f"[WARNING] Archive: locked SQLite family skipped {_sqlite_family_root(file_path).name}"
-                            )
+                        archived_count += _remove_artifact_path(file_path)
+                    except OSError as e:
+                        if "SQLite family locked" in str(e):
+                            print(f"[WARNING] Archive: locked SQLite family skipped {e}")
                             print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
                             print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
-                            continue
-
-                        if file_path.name.endswith(_SQLITE_SIDE_SUFFIXES):
-                            archived_count += _unlink_sqlite_family(file_path)
-                        else:
-                            file_path.unlink()
-                            archived_count += 1
-                    except OSError as e:
-                        if "being used by another process" in str(e):
+                        elif "being used by another process" in str(e):
                             print(f"[WARNING] Archive: locked file skipped {file_path.name}")
                             print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
                             print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
@@ -273,9 +272,6 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         print(f"[ADG] Archive: archived {len(to_archive)} runs, {archived_count} files (saved {pct:.0f}%)")
 
     # Delegate cleanup of validation packages and MANIFEST files
-    try:
-        from tools.generate.reporting.analysis import _cleanup_validation_files
-    except ImportError:
-        from reporting.analysis import _cleanup_validation_files
+    from tools.generate.reporting.analysis import _cleanup_validation_files
 
     _cleanup_validation_files(adg_dir, current_ts)

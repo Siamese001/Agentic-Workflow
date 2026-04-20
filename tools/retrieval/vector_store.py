@@ -49,7 +49,7 @@ def check_embedding_alignment(client: Any, model_name: str) -> None:
 
     try:
         collections = client.list_collections()
-    except Exception:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
         return
 
     for col in collections:
@@ -136,7 +136,7 @@ class ChromaVectorStore:
         client = self.ensure_client()
         try:
             return client.get_collection(name)
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             if _is_not_found_error(exc):
                 raise VectorNotFoundError(f"Collection {name!r} not found") from exc
             raise
@@ -145,7 +145,7 @@ class ChromaVectorStore:
         client = self.ensure_client()
         try:
             client.get_collection(name)
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             if not _is_not_found_error(exc):
                 raise
         else:
@@ -191,7 +191,7 @@ class ChromaVectorStore:
                 return count
         try:
             count = int(collection.count())
-        except Exception:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
             return None
         self._count_cache[collection_name] = (count, now)
         return count
@@ -238,7 +238,7 @@ class ChromaVectorStore:
         def _close_client() -> None:
             try:
                 close_fn()
-            except Exception:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
                 logger.exception("CHROMA_CLOSE_FAIL")
 
         atexit.register(_close_client)

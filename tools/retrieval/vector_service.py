@@ -121,7 +121,7 @@ class VectorRetrievalService:
             collection = self.store.create_collection(str(name), metadata)
         except VectorConflictError:
             raise
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             raise VectorServiceError(str(exc)) from exc
         message = f"Collection '{name}' created successfully\nID: {collection.id}\n"
         if metadata:
@@ -131,7 +131,7 @@ class VectorRetrievalService:
     def list_collections(self) -> list[CollectionSummary]:
         try:
             collections = self.store.list_collections()
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             raise VectorServiceError(str(exc)) from exc
         summaries: list[CollectionSummary] = []
         for collection in collections:
@@ -151,7 +151,7 @@ class VectorRetrievalService:
             raise VectorValidationError("Collection name must be non-empty")
         try:
             self.store.delete_collection(str(name))
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             raise VectorServiceError(str(exc)) from exc
         return OperationReport(message=f"Collection '{name}' deleted successfully")
 
@@ -281,7 +281,7 @@ class VectorRetrievalService:
 
         try:
             count = int(collection.count())
-        except Exception:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
             count = None
 
         sample_documents: list[str] = []
@@ -289,7 +289,7 @@ class VectorRetrievalService:
         try:
             sample = collection.get(limit=5, include=["metadatas", "documents"])
             sample_documents = list(sample.get("documents") or [])
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             sample_error = str(exc)
 
         return CollectionInfoReport(
@@ -330,7 +330,7 @@ class VectorRetrievalService:
         if len(embeddings) > 0:
             try:
                 dimension = int(embeddings.shape[1])
-            except Exception:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
                 dimension = len(previews[0].full_vector or previews[0].preview)
 
         return EmbedTextReport(
@@ -386,7 +386,7 @@ class VectorRetrievalService:
                     where=None,
                     include=["metadatas", "documents", "distances"],
                 )
-            except Exception as exc:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
                 collection_errors[collection_name] = str(exc)
                 continue
             elapsed = time.time() - t0
@@ -434,7 +434,7 @@ class VectorRetrievalService:
                 count = self.store.get_cached_count(getattr(collection, "name", "<unknown>"), collection)
                 if count is not None:
                     total_documents += count
-            except Exception as exc:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
                 count_error = str(exc)
             collection_stats.append(
                 CollectionStat(

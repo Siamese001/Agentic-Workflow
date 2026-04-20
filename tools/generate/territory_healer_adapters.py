@@ -174,7 +174,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
                         )
                         violations_fixed += mirror_result.get("violations_found", 0)
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.exception(f"Healing failed for {territory}: {e}")
                 errors.append(str(e))
 
@@ -263,7 +263,7 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
                     violations_fixed = heal_result.get("actions_applied", 0)
                     actions_taken = heal_result.get("detailed_actions", [])
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.exception(f"Location healing failed for {territory}: {e}")
                 errors.append(str(e))
 
@@ -351,7 +351,7 @@ class GravityHealerAdapter(TerritoryHealerProtocol):
                     violations_fixed = heal_result.get("fixed", 0)
                     actions_taken = heal_result.get("actions", [])
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.exception(f"Gravity healing failed: {e}")
                 errors.append(str(e))
 
@@ -438,7 +438,7 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
                     actions_taken = heal_result.get("actions", [])
                     errors = heal_result.get("errors", [])
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.exception(f"Filesystem healing failed: {e}")
                 errors.append(str(e))
 

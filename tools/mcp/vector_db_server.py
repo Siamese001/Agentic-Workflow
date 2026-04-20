@@ -116,19 +116,19 @@ class VectorDBMCPServer:
                     args.get("metadata"),
                 )
             )
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _list_collections(self, _args: dict[str, Any]) -> ToolResultEnvelope:
         try:
             return _ok(self.service.format_list_collections())
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _delete_collection(self, args: dict[str, Any]) -> ToolResultEnvelope:
         try:
             return _ok(self.service.format_delete_collection(args["name"]))
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _add_documents(self, args: dict[str, Any]) -> ToolResultEnvelope:
@@ -141,7 +141,7 @@ class VectorDBMCPServer:
                     args.get("ids"),
                 )
             )
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _query_collection(self, args: dict[str, Any]) -> ToolResultEnvelope:
@@ -155,13 +155,13 @@ class VectorDBMCPServer:
                     include=args.get("include"),
                 )
             )
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _get_collection_info(self, args: dict[str, Any]) -> ToolResultEnvelope:
         try:
             return _ok(self.service.format_get_collection_info(args["name"]))
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _embed_text(self, args: dict[str, Any]) -> ToolResultEnvelope:
@@ -173,7 +173,7 @@ class VectorDBMCPServer:
                     return_vectors=bool(args.get("return_vectors", False)),
                 )
             )
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _semantic_search(self, args: dict[str, Any]) -> ToolResultEnvelope:
@@ -185,19 +185,19 @@ class VectorDBMCPServer:
                     n_results=args.get("n_results", 5),
                 )
             )
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _vector_stats(self, _args: dict[str, Any]) -> ToolResultEnvelope:
         try:
             return _ok(self.service.format_vector_stats())
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
     async def _readiness(self, _args: dict[str, Any]) -> ToolResultEnvelope:
         try:
             return _ok(self.service.format_readiness())
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             return _error(_translate_error(exc))
 
 

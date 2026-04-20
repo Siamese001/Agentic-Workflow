@@ -37,7 +37,7 @@ class RedisCache:
             self._client.ping()
             self._available = True
             logger.info("Redis cache available")
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.warning(f"Redis unavailable: {e}")
             self._available = False
             self._client = None
@@ -53,7 +53,7 @@ class RedisCache:
                 "version": info.get("redis_version"),
                 "used_memory_human": info.get("used_memory_human"),
             }
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return "degraded", {"reason": str(e)}
 
     def _key(self, base: str, adg_snapshot_id: str) -> str:
@@ -70,7 +70,7 @@ class RedisCache:
             data = self._client.hgetall(key)
             if data:
                 return ADGNode(**data)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis get_node miss: {e}")
 
         return None
@@ -83,7 +83,7 @@ class RedisCache:
         try:
             key = self._key(f"node:{node.id}", adg_snapshot_id)
             self._client.hset(key, mapping=node.model_dump())
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis set_node failed: {e}")
 
     def get_edge_fanout(self, src_id: str, relation_type: str, adg_snapshot_id: str) -> list[ADGEdge] | None:
@@ -104,7 +104,7 @@ class RedisCache:
                 if detail:
                     edges.append(ADGEdge(**detail))
             return edges
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis get_edge_fanout miss: {e}")
 
         return None
@@ -122,7 +122,7 @@ class RedisCache:
                 detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
                 self._client.hset(detail_key, mapping=edge.model_dump())
                 self._client.sadd(key, edge.id)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis set_edge_fanout failed: {e}")
 
     def clear_snapshot(self, adg_snapshot_id: str) -> None:
@@ -139,5 +139,5 @@ class RedisCache:
                     self._client.delete(*keys)
                 if cursor == 0:
                     break
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.warning(f"Redis clear_snapshot failed: {e}")

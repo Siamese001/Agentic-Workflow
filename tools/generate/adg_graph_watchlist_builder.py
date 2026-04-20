@@ -610,13 +610,10 @@ class ADGGraphWatchlistBuilder:
 
         # Use the most recent artifact as baseline
         baseline_path = artifacts[-1]
-        try:
-            with open(baseline_path, encoding="utf-8") as f:
-                baseline_data = json.load(f)
-            # Create lookup by file path
-            return {item["file"]: item for item in baseline_data.get("watchlist", [])}
-        except (json.JSONDecodeError, KeyError, OSError):
-            return None  # Graceful fallback if baseline is corrupted
+        with open(baseline_path, encoding="utf-8") as f:
+            baseline_data = json.load(f)
+        # Create lookup by file path
+        return {item["file"]: item for item in baseline_data.get("watchlist", [])}
 
     def _classify_delta(
         self,
@@ -793,7 +790,7 @@ class ADGGraphWatchlistBuilder:
                 # Create lookup by file path
                 return {item["file"]: item for item in baseline_data.get("watchlist", [])}
             except (json.JSONDecodeError, KeyError, OSError):
-                pass  # Fall through to legacy behavior
+                raise
 
         # Fallback: most recent artifact (legacy behavior for first-run)
         return self._load_baseline_legacy(output_dir)
@@ -812,7 +809,7 @@ class ADGGraphWatchlistBuilder:
             # Create lookup by file path
             return {item["file"]: item for item in baseline_data.get("watchlist", [])}
         except (json.JSONDecodeError, KeyError, OSError):
-            return None  # Graceful fallback if baseline is corrupted
+            raise
 
     # Prompt 10: Shadow learning / meta-learning methods
     def _load_learning_window(self, output_dir: Path) -> list[dict]:
@@ -835,7 +832,7 @@ class ADGGraphWatchlistBuilder:
                     data["_artifact_path"] = str(artifact_path)
                     window_data.append(data)
             except (json.JSONDecodeError, OSError):
-                continue  # Skip corrupted artifacts
+                raise
 
         return window_data
 
@@ -1482,7 +1479,7 @@ class ADGProposalPromotionManager:
                         )
                         self.queue.append(entry)
             except (json.JSONDecodeError, OSError, KeyError):
-                pass  # Start with empty queue
+                raise
 
     def queue_proposal(self, proposal: ProposalPacket) -> PromotionQueueEntry:
         """Add shadow proposal to review queue.
@@ -1877,7 +1874,7 @@ class AcceptedBaselineManager:
                         last_updated_by=data.get("last_updated_by"),
                     )
             except (json.JSONDecodeError, OSError):
-                pass
+                raise
 
         return ActiveState(None, None, [], None, None)
 
@@ -1902,7 +1899,7 @@ class AcceptedBaselineManager:
                         )
                     )
             except (json.JSONDecodeError, KeyError, OSError):
-                continue
+                raise
 
         return baselines
 
@@ -2082,7 +2079,7 @@ class GovernedPromotionApplicator:
                             )
                         )
             except (json.JSONDecodeError, KeyError, OSError):
-                continue
+                raise
 
     def apply_promotion(
         self,
@@ -2746,7 +2743,7 @@ class ADGPolicyReviewPack:
                     if window_start <= rollback_time <= window_end:
                         artifacts["promotion_rollbacks"].append(data.get("rollback_id", str(artifact_path)))
             except (ValueError, json.JSONDecodeError, OSError):
-                continue
+                raise
 
         # Collect shadow proposals within window
         for entry in self.promotion_manager.queue:
@@ -2795,7 +2792,7 @@ class ADGPolicyReviewPack:
                     if window_start <= rollback_time <= window_end:
                         rollbacks_in_window += 1
             except (ValueError, json.JSONDecodeError, OSError):
-                continue
+                raise
 
         return {
             "runs_analyzed": "N/A",  # Would need run tracking
@@ -2945,7 +2942,7 @@ class ADGPolicyReviewPack:
                         target_type = data.get("target_type", "unknown")
                         target_type_rollbacks[target_type] = target_type_rollbacks.get(target_type, 0) + 1
             except (ValueError, json.JSONDecodeError, OSError):
-                continue
+                raise
 
         # Calculate rollback rates
         rollback_rates = []

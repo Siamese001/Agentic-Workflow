@@ -93,7 +93,7 @@ def generate_api_documentation(source_paths: list[Path], output_dir: Path) -> bo
 
                 logger.info(f"✅ Generated: {output_path}")
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.exception("Failed to generate API docs for %s", py_file)
                 success = False
 
@@ -117,7 +117,7 @@ def generate_architecture_documentation(source_path: Path, output_dir: Path) -> 
         logger.info(f"✅ Generated: {output_path}")
         return True
 
-    except Exception as e:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
         logger.error(f"Failed to generate architecture documentation: {e}")
         return False
 
@@ -138,7 +138,7 @@ def generate_knowledge_transfer_docs(output_dir: Path) -> bool:
         logger.info(f"✅ Generated: {output_path}")
         return True
 
-    except Exception as e:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
         logger.error(f"Failed to generate knowledge transfer documentation: {e}")
         return False
 
@@ -329,7 +329,7 @@ class RobustAgent(SovereignBaseAgent):
             logger.error(f"Runtime error: {e}")
             result = {"error": "Execution failed", "details": str(e)}
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             # Handle unexpected errors
             logger.error(f"Unexpected error: {e}")
             result = {"error": "Unexpected error", "details": str(e)}
@@ -703,7 +703,7 @@ class RobustAgent(SovereignBaseAgent):
         except ExecutionError as e:
             return self.handle_execution_error(e, task)
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return self.handle_unexpected_error(e, task)
 ```
 
@@ -846,7 +846,7 @@ This guide provides comprehensive patterns and best practices for developing rob
 
             logger.info(f"✅ Generated tutorial: {tutorial_path}")
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Failed to generate tutorial {tutorial['file_name']}: {e}")
             success = False
 
@@ -877,7 +877,7 @@ def validate_documentation(docs_dir: Path) -> bool:
             else:
                 logger.warning(f"⚠️  Low quality: {md_file.name}")
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"❌ Failed to validate {md_file}: {e}")
 
     logger.info(f"Documentation validation: {valid_files}/{total_files} files passed")
@@ -1006,7 +1006,7 @@ If you need help with the documentation:
         logger.info(f"✅ Generated documentation index: {index_path}")
         return True
 
-    except Exception as e:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
         logger.error(f"Failed to generate documentation index: {e}")
         return False
 
