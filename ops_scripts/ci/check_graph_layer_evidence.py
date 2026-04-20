@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 """
 CI gate: check_graph_layer_evidence.py
-Constitutional rule §22 — the ADG SQLite snapshot is a GRAPH DATABASE
-(nodes + edges + materialized views + pre-classified P-views), not a flat
-table store. The graph layer (materialized views, semantic edges, pre-built
-P-views) must be PRIMARY drivers of T2/T3 refactoring plans — not raw
-`edges`/`violations` counts and never grep.
+Constitutional rule §22.
+
+ARCHITECTURE: The ADG is implemented as SQLite (a relational database) with
+a graph-layer overlay: ``nodes`` + ``edges`` tables, materialized views
+(``mv_*``) that pre-compute graph traversals (centrality, chokepoints, blast
+radius, critical paths), pre-classified P-views (``v_p0_*``..``v_p3_*``), and
+semantic edges (``flows_to``, ``reads_from``, ``writes_to``, ``emits_side_effect``,
+``controls_flow``, ``resolves_callsite``). The overlay provides graph-database
+semantics over a relational store — no separate Neo4j/ArangoDB backend needed.
+
+This gate enforces that T2/T3 refactoring plans use the graph-layer primitives
+(MVs, semantic edges, P-views) as PRIMARY drivers — not raw ``edges`` /
+``violations`` table aggregations and never grep.
 
 Scans .windsurf/plans/*.md and validates that plans which declare a
 refactoring intent include an ``## ADG_GRAPH_LAYER_EVIDENCE`` section with:

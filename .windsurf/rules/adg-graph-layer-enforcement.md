@@ -8,7 +8,11 @@ description: Use this rule before any T2/T3 refactoring plan, wave queue, or pri
 
 ## HARD GATE — Graph Layer Must Drive Refactoring
 
-The ADG SQLite is a **graph database**, not just a flat table store. It provides:
+The ADG is **SQLite (relational) with a graph-layer overlay** — `nodes`/`edges`
+tables + materialized views + P-views + semantic edges — providing graph-DB
+semantics (traversals, centrality, blast radius) without a separate Neo4j-style
+backend. The graph layer is NOT optional flavor on top of flat tables; it IS the
+primary analysis surface. It provides:
 
 1. **Materialized views (`mv_*`)** — 45+ pre-computed analyses (hotspots, blast radius, chokepoints, critical paths, dependency cones)
 2. **Semantic edges** — `flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite` (all populated; not just `imports`)

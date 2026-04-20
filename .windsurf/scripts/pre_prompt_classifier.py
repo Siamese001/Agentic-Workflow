@@ -249,10 +249,13 @@ _sr_mandate = """
      DEGRADED FALLBACK (graph queries only): grep is ONLY allowed after mcp1_adg_health confirms red.
        Required: call mcp1_adg_health first → if red, emit DEGRADED_FALLBACK: reason=<adg_red|snapshot_missing|...>
        Silent grep-for-graph (no health check + no reason code) = POLICY VIOLATION.
-  0b. REFACTORING-ONLY — ADG SQLITE IS A GRAPH DATABASE (constitutional §22):
-     The ADG snapshot is a GRAPH DB (nodes + edges + materialized views + P-views),
-     NOT a flat table store. Refactoring decisions MUST be driven by graph primitives,
-     not raw `SELECT COUNT(*) FROM violations` queries or grep.
+  0b. REFACTORING-ONLY — ADG GRAPH LAYER IS PRIMARY (constitutional §22):
+     ARCHITECTURE: ADG is SQLite (relational) + a graph-layer overlay (nodes/edges
+     tables + materialized views + pre-classified P-views + semantic edges).
+     The overlay provides graph-DB semantics (fan-in, blast radius, centrality,
+     chokepoints, critical paths) WITHOUT a separate Neo4j-style store.
+     Refactoring MUST use graph-layer primitives (MVs / P-views / semantic edges),
+     NOT raw `SELECT COUNT(*) FROM violations` or grep.
      If this task involves refactoring / wave planning / antipattern burndown / prioritization:
      REQUIRED BEFORE target selection:
        (i)   Hotspot report — query `mv_graph_reverse_dependency_hotspots`,

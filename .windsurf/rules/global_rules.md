@@ -74,7 +74,12 @@ Extended protocol: `adg-hotspot-enforcement.md`
 
 ## Graph-Layer Primary Driver (Refactoring)
 
-The ADG is a **graph database**, not only a flat table store. The following graph-layer primitives MUST be PRIMARY drivers of T2/T3 refactoring plans (in addition to raw `edges`/`violations`):
+The ADG is **SQLite (relational) with a graph-layer overlay** — not a native
+graph database (no Neo4j/ArangoDB). The overlay — `nodes`/`edges` tables,
+materialized views, P-views, semantic edges — provides graph-DB semantics
+(traversals, centrality, blast radius) over a relational store. The following
+graph-layer primitives MUST be PRIMARY drivers of T2/T3 refactoring plans
+(in addition to raw `edges`/`violations`):
 
 | Primitive | Purpose | Example tables/views |
 |-----------|---------|----------------------|

@@ -6,13 +6,27 @@ description: Use this rule before any refactoring, anti-pattern burndown, or wav
 
 > Reference doctrine: `docs/reference/ADG/ADG SQLite Hotspot Cheat Sheet.md`
 
-## GraphDB Foundation
+## Architecture — Graph Layer over Relational SQLite
 
-The **ADG SQLite snapshot is a graph database** (nodes + edges + materialized
-views + pre-classified P-views). Hotspot analysis is a **graph query**, not a
-text search or a flat-table aggregation. Every step below uses graph-native
-primitives: node IDs, edge traversals, centrality, fan-in/fan-out, and
-pre-computed graph analyses via materialized views.
+The ADG snapshot is **SQLite (a relational database) with a graph-layer overlay**
+that provides graph-database semantics without a separate native graph store
+(no Neo4j, no ArangoDB, no RDF triplestore).
+
+The graph layer is emulated over relational tables:
+
+| Graph Primitive | Relational Implementation |
+|-----------------|---------------------------|
+| Nodes | `nodes` table (id, entity_type, layer, file_path, adg_name) |
+| Edges | `edges` table (src_id, tgt_id, relation_type) |
+| Traversals (fan-in, fan-out, blast radius) | Recursive CTEs + materialized views (`mv_*`) |
+| Centrality / chokepoints / critical paths | Pre-computed materialized views |
+| Behavioral graph queries | Semantic edges: `flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite` |
+| Architectural concern taxonomies | Pre-built P-views (`v_p0_*`..`v_p3_*`) |
+
+**Why this matters for refactoring**: hotspot analysis is a **graph query**, not
+a text search or a simple flat-table aggregation. Use the graph-layer primitives
+(MVs, semantic edges, P-views) as PRIMARY; use raw `SELECT ... FROM edges` /
+`FROM violations` only when no MV exists for the question.
 
 ## HARD GATE — No Refactoring Without a Hotspot Report
 
