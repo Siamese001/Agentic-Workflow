@@ -372,7 +372,9 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 self._naming_agent = get_naming_agent(self.project_root)
             except (ImportError, RecursionError):
-                raise RuntimeError('NamingAgent not available - post-heal naming validation disabled') from None
+                raise RuntimeError(
+                    "NamingAgent not available - post-heal naming validation disabled"
+                ) from None
         return self._naming_agent
 
     @property
@@ -387,7 +389,9 @@ class LocationHealerAgent(SovereignBaseAgent):
 
                 self._import_agent = create_legacy_import_healer()
             except (ImportError, RecursionError):
-                raise RuntimeError('Import healer not available - post-heal import validation disabled') from None
+                raise RuntimeError(
+                    "Import healer not available - post-heal import validation disabled"
+                ) from None
         return self._import_agent
 
     def heal(self, violation: dict) -> HealResult:
@@ -428,7 +432,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             _bp = _gbp(file_path, self.project_root)
             _adg_score = _bp.behavioral_score
         except (ValueError, TypeError):  # guardian: allow-silent-swallow
-            raise RuntimeError(f'Behavioral profile resolution failed for {file_path}') from None
+            raise RuntimeError(f"Behavioral profile resolution failed for {file_path}") from None
 
         message = violation.get("message", "Location violation")
 
@@ -554,7 +558,10 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 proposed=str(_cp),
                                 decision=f"HITL-SSOT-{_ssot_raw if '_ssot_raw' in dir() else 'AUTO'}",
                             )
-                        except (OSError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+                        except (
+                            OSError,
+                            TypeError,
+                        ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                             pass
                 if file_path:
                     violation_list.append(
@@ -643,7 +650,11 @@ class LocationHealerAgent(SovereignBaseAgent):
                         return self.project_root / AGENTIC_CORE_DIR / layer / correct_folder
                 except ValueError:  # guardian: allow-silent-swallow -- path not relative to agentic_core: fallback to default target
                     pass
-        except (AttributeError, KeyError, IndexError) as e:  # guardian: allow-log-and-swallow -- target path lookup failure: non-fatal, default target used
+        except (
+            AttributeError,
+            KeyError,
+            IndexError,
+        ) as e:  # guardian: allow-log-and-swallow -- target path lookup failure: non-fatal, default target used
             self.logger.debug(f"Failed to determine target path for {src_path.name}: {e}")
 
         return self.project_root / DEFAULT_APP_HEALING_TARGET
@@ -2205,7 +2216,11 @@ class LocationHealerAgent(SovereignBaseAgent):
                 except ValueError:  # guardian: allow-silent-swallow -- path not relative: naming check skipped, other checks continue
                     pass
 
-            except (OSError, UnicodeDecodeError, SyntaxError) as e:  # guardian: allow-log-and-swallow -- per-file parse failure: recorded as naming error, scan continues
+            except (
+                OSError,
+                UnicodeDecodeError,
+                SyntaxError,
+            ) as e:  # guardian: allow-log-and-swallow -- per-file parse failure: recorded as naming error, scan continues
                 heal_actions.append({"type": "NAMING_FILE_ERROR", "error": str(e)})
 
         return heal_actions, semantic_issues
@@ -3038,7 +3053,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 ImportError,
                 AttributeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            ) as e:
                 batch_report["batch_post_heal_status"] = "ERROR"
                 batch_report["batch_message"] = f"Batch validation error: {e}"
                 Logger.error(f"[LocationHealerAgent] Batch post-heal failed: {e}")
@@ -3130,7 +3145,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 ImportError,
                 AttributeError,
                 ValueError,
-            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            ) as e:
                 duplicate_report["duplicate_message"] = f"ERROR: {e}"
                 Logger.error(f"[LocationHealerAgent] Duplicate resolution failed: {e}")
                 raise RuntimeError("Duplicate resolution failed") from e
