@@ -298,7 +298,7 @@ class MultiRegionReplicator:
                     await asyncio.sleep(1)  # Wait for new snapshots
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.error(f"Error in replication worker: {e}")
                 await asyncio.sleep(5)
 
@@ -332,7 +332,7 @@ class MultiRegionReplicator:
                     else:
                         logger.warning(f"Failed to replicate snapshot to {region}")
 
-                except Exception as e:
+                except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                     logger.error(f"Error replicating to {region}: {e}")
 
         # Update replication status
@@ -424,7 +424,7 @@ class HealthChecker:
                 await asyncio.sleep(self.check_interval)
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.error(f"Error in health check worker: {e}")
                 await asyncio.sleep(5)
 
@@ -469,7 +469,7 @@ class HealthChecker:
 
             return result
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             result = HealthCheckResult(
                 component_id=component_id,
                 region=config["region"],
@@ -541,7 +541,7 @@ class DisasterRecoveryManager:
                 await asyncio.sleep(60)  # Check every minute
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.error(f"Error in recovery monitor: {e}")
                 await asyncio.sleep(10)
 
@@ -599,7 +599,7 @@ class DisasterRecoveryManager:
             self.recovery_history.append(recovery_record)
             logger.info(f"Completed region recovery for {region}")
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             recovery_record = {
                 "recovery_id": recovery_id,
                 "type": "region_recovery",
@@ -640,7 +640,7 @@ class DisasterRecoveryManager:
             self.recovery_history.append(recovery_record)
             logger.info(f"Completed layer recovery for {layer}")
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             recovery_record = {
                 "recovery_id": recovery_id,
                 "type": "layer_recovery",

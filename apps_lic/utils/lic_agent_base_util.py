@@ -490,7 +490,7 @@ class LICAgentBase(AppBase, HealerMixin):
             if result:
                 self.update_cache_metrics(1)
             return result
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Enhanced cache failed: {e}")
             return False
 
@@ -510,7 +510,7 @@ class LICAgentBase(AppBase, HealerMixin):
         namespaced_key = self.get_namespaced_cache_key(f"{pattern_type}:{pattern_id}")
         try:
             return self.ml_cache_get(namespaced_key)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern retrieval failed: {e}")
             return None
 
@@ -703,7 +703,7 @@ class LICAgentBase(AppBase, HealerMixin):
             if result:
                 self.update_cache_metrics(1)
             return result
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Cache set failed: {e}")
             return False
 
@@ -723,7 +723,7 @@ class LICAgentBase(AppBase, HealerMixin):
         namespaced_key = self.get_namespaced_cache_key(key)
         try:
             return self.ml_cache_get(namespaced_key)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Cache get failed: {e}")
             return None
 

@@ -255,7 +255,7 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
                 self.ml_cache_incident_resolution(incident_type, result)
                 self.ml_reset_healing_depth(incident_id)
             return result
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Healing failed: {e}")
             return {"status": "error", "reason": str(e), "incident_id": incident_id}
 
@@ -299,7 +299,7 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
                 "is_safe": decision.is_safe,
                 "incident_type": incident.get("type"),
             }
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             Logger.error("[%s] _heal_structural failed: %s", self.__class__.__name__, exc)
             return {"status": "error", "healer": "ControlPlane", "reason": str(exc)}
 
@@ -318,7 +318,7 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
                 "result": result,
                 "incident_type": incident.get("type"),
             }
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             Logger.error("[%s] _heal_schema failed: %s", self.__class__.__name__, exc)
             return {"status": "error", "healer": "HOPPipelineExecutor", "reason": str(exc)}
 
@@ -352,7 +352,7 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
                 "content": response.content,
                 "incident_type": incident.get("type"),
             }
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             Logger.error("[%s] _heal_llm_call failed: %s", self.__class__.__name__, exc)
             return {"status": "error", "healer": "SovereignLLMGateway", "reason": str(exc)}
 

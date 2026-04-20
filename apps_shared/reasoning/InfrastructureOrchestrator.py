@@ -338,7 +338,14 @@ class InfrastructureOrchestrator:
                         model_version,
                         payload.get("prompt"),
                     )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle artifact generated event: {e}")
 
     async def _handle_error_occurred(self, event: SystemEvent) -> None:
@@ -355,7 +362,14 @@ class InfrastructureOrchestrator:
                 event.source_component,
                 event.payload.get("error", "Unknown error"),
             )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle error event: {e}")
 
     async def _handle_agent_completed(self, event: SystemEvent) -> None:
@@ -375,7 +389,14 @@ class InfrastructureOrchestrator:
                     usage.get("output_tokens", 0),
                     usage.get("cost", 0.0),
                 )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle agent completed event: {e}")
 
     async def execute_with_infrastructure(
@@ -469,7 +490,14 @@ class InfrastructureOrchestrator:
                 "execution_time": execution_time,
                 "lineage": lineage.to_dict() if sources else None,
             }
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
 
     async def get_system_health(self) -> dict[str, Any]:

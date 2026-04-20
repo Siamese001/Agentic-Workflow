@@ -372,7 +372,14 @@ class LLMExecutionStrategy(ExecutionStrategy):
                 context=context,
                 error="Circuit breaker is open",
             )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             return ExecutionResult(status=ExecutionStatus.FAILED, data=None, context=context, error=str(e))
 
     async def _execute_llm(self, context: ExecutionContext) -> Any:
@@ -483,7 +490,14 @@ class APIExecutionStrategy(ExecutionStrategy):
                 context=context,
                 error="API circuit breaker is open",
             )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             return ExecutionResult(status=ExecutionStatus.FAILED, data=None, context=context, error=str(e))
 
     async def _execute_api(self, context: ExecutionContext) -> Any:
@@ -554,7 +568,14 @@ class BatchExecutionStrategy(ExecutionStrategy):
                 context=context,
                 metrics=metrics,
             )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             return ExecutionResult(status=ExecutionStatus.FAILED, data=None, context=context, error=str(e))
 
     async def _process_item(self, item: Any, context: ExecutionContext) -> Any:

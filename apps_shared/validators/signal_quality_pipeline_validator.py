@@ -354,7 +354,14 @@ class SignalQualityPipeline:
                 extra={"doc_id": doc_id, "flags": assessment.flags, "is_pass": assessment.is_pass},
             )
             return assessment
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error evaluating signal for doc {doc_id}: {str(e)}")
             return QualityAssessment(is_pass=False, flags=["EVALUATION_ERROR"], doc_id=doc_id)
 
@@ -383,7 +390,14 @@ class SignalQualityPipeline:
             if query_lower in content_lower:
                 jaccard = min(1.0, jaccard * 1.5)
             return min(1.0, jaccard)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error checking relevance: {str(e)}")
             return 0.0
 
@@ -404,7 +418,14 @@ class SignalQualityPipeline:
                     if source_id in source or source_id in doc_type:
                         return tier_config["score"]
             return self.authority_tiers["tier_4"]["score"]
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error checking authority: {str(e)}")
             return 0.2
 
@@ -429,7 +450,14 @@ class SignalQualityPipeline:
                 return 0.3
             else:
                 return 0.1
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error checking specificity: {str(e)}")
             return 0.1
 
@@ -460,7 +488,14 @@ class SignalQualityPipeline:
             repetition_score = min(1.0, unique_ratio * 1.2)
             coherence = length_score * 0.4 + repetition_score * 0.4 + (1.0 - fragment_penalty) * 0.2
             return min(1.0, max(0.0, coherence))
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error checking coherence: {str(e)}")
             return 0.5
 
@@ -513,7 +548,14 @@ class SignalQualityPipeline:
                 "that",
             }
             return [token for token in tokens if len(token) > 2 and token not in stop_words]
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error normalizing text: {str(e)}")
             return []
 
@@ -540,7 +582,14 @@ class SignalQualityPipeline:
                     results.append((metadata, assessment))
             logger.info(f"Batch evaluation: {len(documents)} input, {len(results)} passed")
             return results
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error in batch evaluation: {str(e)}")
             return []
 

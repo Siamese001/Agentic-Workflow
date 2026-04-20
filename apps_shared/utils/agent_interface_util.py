@@ -453,7 +453,14 @@ class BaseAgent(IAgent[InputT, OutputT]):
         try:
             self.pre_execute(input_data, context)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             self._logger.warning(f"Pre-execute hook failed: {e}")
         last_error: Exception | None = None
@@ -464,18 +471,39 @@ class BaseAgent(IAgent[InputT, OutputT]):
                 result.execution_time_ms = (time.time() - start_time) * 1000
                 try:
                     self.post_execute(input_data, context, result)
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (
+                    OSError,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-silent-swallow
                     self._logger.warning(f"Post-execute hook failed: {e}")
                 return result
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 last_error = e
                 self._logger.warning(f"Attempt {attempt + 1}/{context.max_retries + 1} failed: {e}")
                 try:
                     self.on_error(input_data, context, e)
                 # guardian: allow-silent-swallow
-                except Exception as hook_error:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (
+                    OSError,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                ) as hook_error:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     self._logger.warning(f"Error hook failed: {hook_error}")
                 if attempt < context.max_retries:

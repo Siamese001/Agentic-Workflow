@@ -318,7 +318,14 @@ class AsyncCoordinator:
                     self._tasks[task_id].state = TaskState.FAILED
             raise
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Task {task_id} failed: {e}")
             async with self._lock:
                 if task_id in self._tasks:
@@ -346,7 +353,14 @@ class AsyncCoordinator:
             else:
                 task_info.state = TaskState.COMPLETED
                 logger.debug(f"Task {task_id} completed successfully")
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error handling task completion for {task_id}: {e}")
         if task_info.cleanup_callback:
             try:
@@ -354,7 +368,14 @@ class AsyncCoordinator:
                     await task_info.cleanup_callback()
                 else:
                     task_info.cleanup_callback()
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow
                 logger.error(f"Cleanup callback failed for {task_id}: {e}")
 
     async def wait_for_task(self, task_id: str, timeout: float | None = None) -> Any:
@@ -467,7 +488,14 @@ class AsyncCoordinator:
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Error in cleanup loop: {e}")
 
     @asynccontextmanager

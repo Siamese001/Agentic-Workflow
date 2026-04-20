@@ -742,7 +742,14 @@ class FallbackClient:
             self._record_usage(client, prompt, result)
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.warning(f"Primary model failed: {e}")
             fallback_tier = self._get_fallback_tier(self.primary_config.tier)
             if fallback_tier:
@@ -755,10 +762,17 @@ class FallbackClient:
                     logger.info(f"Fallback to {fallback_config.model_name} succeeded")
                     return result
                 # guardian: allow-silent-swallow
-                except Exception as fallback_error:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (
+                    OSError,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                ) as fallback_error:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     logger.error(f"[FallbackClient] All providers failed: {fallback_error}")
                     raise
-            raise RuntimeError(f'All model attempts failed. Last error: {e}') from e
+            raise RuntimeError(f"All model attempts failed. Last error: {e}") from e
 
 
 class SequentialThinkingClient:
@@ -813,7 +827,14 @@ class SequentialThinkingClient:
             self.router._stats["total_requests"] += 1
             self.router._stats["requests_by_tier"][ModelTier.SEQUENTIAL.value] += 1
             return "\n".join(thoughts)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.warning(f"[SequentialThinkingClient] Sequential thinking failed: {e}")
             fallback_config = self.router._select_model_for_tier(ModelTier.REASONING)
             client = FallbackClient(fallback_config, self.router)

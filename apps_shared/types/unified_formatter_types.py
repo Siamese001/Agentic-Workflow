@@ -334,7 +334,7 @@ class DefaultFormatter(FormatterStrategy):
                 format_type=self.format_name,
                 metadata={"original_type": type(data).__name__},
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
 
     @property
@@ -370,7 +370,7 @@ class ResumeBulletFormatter(FormatterStrategy):
                 format_type=self.format_name,
                 metadata={"bullet_count": len(bullets)},
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
 
     def _format_text_to_bullets(self, text: str) -> list[str]:
@@ -475,7 +475,7 @@ class ResumeSectionFormatter(FormatterStrategy):
                 format_type=self.format_name,
                 metadata={"section_type": config.get("section_type", "general")},
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
 
     def _format_dict_section(self, data: dict, config: dict | None) -> dict:
@@ -582,7 +582,7 @@ class OutreachMessageFormatter(FormatterStrategy):
                 format_type=self.format_name,
                 metadata={"message_length": len(str(formatted))},
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
 
     def _format_message_text(self, text: str, config: dict | None) -> str:
@@ -656,7 +656,7 @@ class OutreachSubjectFormatter(FormatterStrategy):
                 format_type=self.format_name,
                 metadata={"subject_length": len(formatted)},
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
 
     def _format_subject_text(self, text: str, config: dict | None) -> str:
@@ -710,7 +710,7 @@ class JSONFormatter(FormatterStrategy):
                 format_type=self.format_name,
                 metadata={"json_keys": len(parsed) if isinstance(parsed, dict) else 0},
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
 
     @property

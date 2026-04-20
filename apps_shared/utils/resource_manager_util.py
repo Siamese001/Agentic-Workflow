@@ -307,7 +307,14 @@ class ResourceManager:
                         asyncio.create_task(resource_info.cleanup_callback())
                     else:
                         resource_info.cleanup_callback()
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (
+                    OSError,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-silent-swallow
                     logger.error(f"Cleanup callback failed for {resource_id}: {e}")
             return True
 
@@ -355,7 +362,14 @@ class ResourceManager:
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Error in cleanup loop: {e}")
 
     @contextmanager
@@ -429,7 +443,14 @@ class ResourceManager:
             await aiofiles.os.replace(str(temp_path), str(file_path))
             logger.debug(f"Atomically wrote {file_path}")
         # guardian: allow-silent-swallow
-        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ):  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
         finally:
             self.unregister_resource(resource_id)

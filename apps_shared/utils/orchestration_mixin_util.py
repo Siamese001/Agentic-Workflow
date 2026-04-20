@@ -223,7 +223,14 @@ class OrchestrationMixin:
                 completed_steps.append(step)
                 results["steps"].append({"name": step.name, "status": "completed", "result": step.result})
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
         return results
 
@@ -238,7 +245,14 @@ class OrchestrationMixin:
             if hasattr(step.func, "rollback"):
                 try:
                     step.func.rollback(step.result)
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (
+                    OSError,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-silent-swallow
                     if hasattr(self, "log"):
                         self.log(f"Rollback failed for {step.name}: {e}")
 
@@ -260,7 +274,14 @@ class OrchestrationMixin:
             try:
                 result = func(*args, **kwargs)
                 results["tasks"][name] = {"status": "completed", "result": result}
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow
                 results["tasks"][name] = {"status": "failed", "error": str(e)}
                 results["errors"].append({"task": name, "error": str(e)})
                 results["status"] = "partial"
@@ -298,7 +319,14 @@ class OrchestrationMixin:
                         completed.add(agent_name)
                         progress_made = True
                     # guardian: allow-silent-swallow
-                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                    except (
+                        OSError,
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        RuntimeError,
+                    ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         raise
             if not progress_made:
                 remaining = set(agent_tasks.keys()) - completed

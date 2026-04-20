@@ -502,7 +502,15 @@ class SubatomicHop:
             return final_checkpoint.partial_result or {}
 
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            StageExecutionError,
+            InputValidationError,
+            QualityGateFailure,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            OSError,
+        ) as e:
             self.state = HopState.FAILED
             self.end_time = time.time()
             logger.error(f"Hop {self.config.hop_id} failed: {e}")
@@ -554,7 +562,15 @@ class SubatomicHop:
                 # Stage completed successfully
                 break
 
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                StageExecutionError,
+                InputValidationError,
+                QualityGateFailure,
+                RuntimeError,
+                ValueError,
+                TypeError,
+                OSError,
+            ) as e:
                 retry_count += 1
                 self.stage_retry_counts[stage] = retry_count
 
@@ -791,7 +807,7 @@ class SubatomicHop:
 
             return kwargs
 
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (ImportError, ValueError, TypeError, RuntimeError, json.JSONDecodeError) as e:
             logger.error(f"Failed to apply stage injections: {e}")
             return kwargs
 
@@ -819,12 +835,12 @@ class SubatomicHop:
             # Circuit is open - generation is failing
             logger.critical("Generation Circuit OPEN. Node failed.")
             # No fallback possible for generation - raise critical failure
-            raise CriticalServiceFailure('LLM Service Unreachable - circuit breaker open') from None
+            raise CriticalServiceFailure("LLM Service Unreachable - circuit breaker open") from None
 
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError, TypeError, OSError) as e:
             # Other execution errors
             logger.error(f"Hop execution failed: {e}")
-            raise StageExecutionError(f'Failed to execute hop: {e}') from e
+            raise StageExecutionError(f"Failed to execute hop: {e}") from e
 
     async def _critique(self, **kwargs) -> dict[str, Any]:
         """Review and validate the output using Reflection Engine and Signal Enhancer."""
@@ -993,11 +1009,11 @@ class SubatomicHop:
 
                 logger.debug(f"Committed result to {final_file}")
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
                 # Clean up temp file if it exists
                 if temp_file.exists():
                     temp_file.unlink()
-                raise StageExecutionError(f'Failed to commit result: {e}') from e
+                raise StageExecutionError(f"Failed to commit result: {e}") from e
 
         return {"committed": True, "result": validated_output}
 

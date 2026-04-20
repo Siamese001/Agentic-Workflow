@@ -60,7 +60,14 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
 
             return _TITANIUM_PIPELINE
 
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to initialize Titanium pipeline: {e}")
             if _LEGACY_FALLBACK_ENABLED:
                 logger.warning("Falling back to legacy search mode")
@@ -144,7 +151,14 @@ async def get_titanium_search_tool(
 
                 return documents, metadatas
 
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow
                 logger.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
@@ -193,7 +207,14 @@ async def get_titanium_search_tool(
 
         return "\n\n".join(formatted_results)
 
-    except Exception as e:  # guardian: allow-silent-swallow
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as e:  # guardian: allow-silent-swallow
         logger.error(f"Search failed for query '{query}': {e}")
         return "Search encountered an error. Please try rephrasing your query."
 
@@ -247,7 +268,14 @@ async def get_titanium_search_with_sources(
 
                 return documents, metadatas
 
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow
                 logger.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
@@ -276,7 +304,14 @@ async def get_titanium_search_with_sources(
             "response": results.get("response"),
         }
 
-    except Exception as e:  # guardian: allow-silent-swallow
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as e:  # guardian: allow-silent-swallow
         logger.error(f"Search with sources failed: {e}")
         return {"query": query, "sources": [], "metadata": {"error": str(e)}, "response": None}
 
@@ -297,7 +332,14 @@ def get_pipeline_stats() -> dict[str, Any]:
         component_info = _TITANIUM_PIPELINE.get_component_info()
 
         return {"status": "active", "statistics": stats, "components": component_info}
-    except Exception as e:  # guardian: allow-silent-swallow
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        RuntimeError,
+    ) as e:  # guardian: allow-silent-swallow
         return {"status": "error", "error": str(e)}
 
 

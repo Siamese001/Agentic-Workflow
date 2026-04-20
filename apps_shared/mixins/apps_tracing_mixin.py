@@ -101,7 +101,7 @@ class AppsTracingMixin:
             )
             self._apps_tracing_enabled = True
             logger.info(f"[{self._service_name}] AppsTracingMixin initialized")
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.warning(f"[{self._service_name}] Failed to initialize tracer: {e}")
 
     @contextmanager
@@ -136,7 +136,7 @@ class AppsTracingMixin:
                     "L_APP",
                     span_name,
                 )
-            except Exception:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
                 pass  # Silent degradation
 
         # Create OpenTelemetry span if available
@@ -162,7 +162,7 @@ class AppsTracingMixin:
                 # Set span status to OK initially
                 otel_span.set_status(Status(StatusCode.OK))
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.debug(f"[{self._service_name}] Failed to create OTel span: {e}")
                 otel_span = None
 
@@ -191,7 +191,14 @@ class AppsTracingMixin:
             if otel_span:
                 otel_span.set_status(Status(StatusCode.OK))
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # Mark span as error
             if otel_span:
                 otel_span.set_status(Status(StatusCode.ERROR, str(e)))
@@ -213,7 +220,7 @@ class AppsTracingMixin:
                         span_name,
                         f"span_completed_duration_ms={duration_ms:.2f}",
                     )
-                except Exception:
+                except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
                     pass
 
             logger.debug(f"[{self._service_name}] Span {span_name} completed in {duration_ms:.2f}ms")

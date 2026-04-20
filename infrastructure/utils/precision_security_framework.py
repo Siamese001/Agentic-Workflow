@@ -262,7 +262,14 @@ class PrecisionCryptographyManager:
 
             return (iv + ciphertext, tag)
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.encryption_metrics["encryption_failures"] += 1
             logger.error(f"Symmetric encryption failed: {e}")
             raise
@@ -294,7 +301,14 @@ class PrecisionCryptographyManager:
 
             return plaintext
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Symmetric decryption failed: {e}")
             raise
 
@@ -319,7 +333,14 @@ class PrecisionCryptographyManager:
             self.encryption_metrics["encryptions"] += 1
             return ciphertext
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.encryption_metrics["encryption_failures"] += 1
             logger.error(f"Asymmetric encryption failed: {e}")
             raise
@@ -345,7 +366,14 @@ class PrecisionCryptographyManager:
             self.encryption_metrics["decryptions"] += 1
             return plaintext
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Asymmetric decryption failed: {e}")
             raise
 
@@ -517,7 +545,7 @@ class PrecisionAccessController:
 
             return True, "Access granted"
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             access_log["reason"] = f"Access check error: {e}"
             self.access_metrics["access_denied"] += 1
             self.access_logs.append(access_log)
@@ -1045,7 +1073,7 @@ class PrecisionSecurityGateway:
             self.gateway_metrics["authenticated_requests"] += 1
             return context
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             self.audit_logger.log_event(
                 event_type="authentication_failure",
                 user_id=auth_data.get("user_id", "unknown"),
@@ -1083,7 +1111,7 @@ class PrecisionSecurityGateway:
 
             return authorized, reason
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             self.audit_logger.log_event(
                 event_type="authorization_error",
                 user_id=context.user_id,

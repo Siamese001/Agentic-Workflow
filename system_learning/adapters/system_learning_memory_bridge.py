@@ -252,13 +252,9 @@ class SystemLearningMemoryBridge:
         return cls._instance
 
     def _load_bridge(self) -> Any:
-        try:
-            from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
-            return GraphMemoryBridge.get_instance()
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] GraphMemoryBridge unavailable: %s", e)
-            raise
+        return GraphMemoryBridge.get_instance()
 
     @property
     def is_available(self) -> bool:
@@ -269,13 +265,9 @@ class SystemLearningMemoryBridge:
             return None
         if self._sqlite_memory is not None:
             return self._sqlite_memory
-        try:
-            from tools.implement_unified_memory import UnifiedMemoryManager
+        from tools.implement_unified_memory import UnifiedMemoryManager
 
-            self._sqlite_memory = UnifiedMemoryManager()
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] UnifiedMemoryManager unavailable: %s", e)
-            raise
+        self._sqlite_memory = UnifiedMemoryManager()
         return self._sqlite_memory
 
     @staticmethod
@@ -283,16 +275,8 @@ class SystemLearningMemoryBridge:
         if isinstance(event, tuple) and len(event) == 3:
             timestamp_utc, event_type, payload = event
             if isinstance(payload, bytes):
-                # Check if UTF-8 decodable, otherwise use hex fallback
-                try:
-                    payload.decode("utf-8")
-                    is_utf8 = True
-                except UnicodeDecodeError:
-                    is_utf8 = False
-                if is_utf8:
-                    payload = payload.decode("utf-8")
-                else:
-                    payload = payload.hex()
+                decoded = payload.decode("utf-8", errors="replace")
+                payload = decoded if "\ufffd" not in decoded else payload.hex()
             return {
                 "timestamp_utc": int(timestamp_utc),
                 "event_type": str(event_type),
@@ -301,16 +285,8 @@ class SystemLearningMemoryBridge:
 
         payload = getattr(event, "payload_bytes", None)
         if isinstance(payload, bytes):
-            # Check if UTF-8 decodable, otherwise use hex fallback
-            try:
-                payload.decode("utf-8")
-                is_utf8 = True
-            except UnicodeDecodeError:
-                is_utf8 = False
-            if is_utf8:
-                payload = payload.decode("utf-8")
-            else:
-                payload = payload.hex()
+            decoded = payload.decode("utf-8", errors="replace")
+            payload = decoded if "\ufffd" not in decoded else payload.hex()
         return {
             "timestamp_utc": int(getattr(event, "timestamp_utc", 0) or 0),
             "event_type": str(getattr(event, "event_type", event.__class__.__name__)),
@@ -450,20 +426,16 @@ class SystemLearningMemoryBridge:
             return False
         sig_hash = _content_hash(error_signature)
         entity_name = f"SLHealRate_{sig_hash}"
-        try:
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_HEALING_RATE,
-                observations=[
-                    _trunc(f"error_signature={error_signature}"),
-                    f"rate={rate:.6f}",
-                    f"count={count}",
-                ],
-            )
-            return True
-        except (ConnectionError, TimeoutError, OSError, KeyError, ValueError, TypeError) as exc:
-            logger.debug("Failed to persist healing success rate %s: %s", error_signature, exc)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_HEALING_RATE,
+            observations=[
+                _trunc(f"error_signature={error_signature}"),
+                f"rate={rate:.6f}",
+                f"count={count}",
+            ],
+        )
+        return True
 
     def persist_all_healing_rates(
         self,
@@ -498,11 +470,7 @@ class SystemLearningMemoryBridge:
         """
         if not self._bridge:
             return {}
-        try:
-            results = self._bridge.search_entities(self.ENTITY_TYPE_HEALING_RATE)
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] restore_healing_success_rates failed: %s", e)
-            raise
+        results = self._bridge.search_entities(self.ENTITY_TYPE_HEALING_RATE)
 
         restored: dict[str, tuple[float, int]] = {}
         for entity in tqdm(results, desc="restore rates", unit="entity", leave=False):
@@ -579,15 +547,11 @@ class SystemLearningMemoryBridge:
             cnt = getattr(f, "count", 0)
             obs.append(_trunc(f"finding={cat}:{sig}:n={cnt}"))
 
-        try:
-            self._bridge.create_agent_entity(
-                agent_name=report_name,
-                agent_type=self.ENTITY_TYPE_RCA_REPORT,
-                observations=obs,
-            )
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_rca_findings report failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=report_name,
+            agent_type=self.ENTITY_TYPE_RCA_REPORT,
+            observations=obs,
+        )
 
         # Individual finding entities for pattern library queries
         for finding in tqdm(
@@ -598,22 +562,18 @@ class SystemLearningMemoryBridge:
             cnt = getattr(finding, "count", 0)
             evhash = getattr(finding, "evidence_hash", "")[:16]
             finding_name = f"SLRCAFinding_{cat}_{_content_hash(sig)}"
-            try:
-                self._bridge.create_agent_entity(
-                    agent_name=finding_name,
-                    agent_type=self.ENTITY_TYPE_RCA_FINDING,
-                    observations=[
-                        f"category={cat}",
-                        f"signature={_trunc(sig, 80)}",
-                        f"count={cnt}",
-                        f"evidence_hash={evhash}",
-                        f"snapshot_id={_trunc(snapshot_id, 60)}",
-                    ],
-                )
-                self._bridge.create_relation(finding_name, report_name, self.RELATION_TRIGGERED)
-            except (TypeError, ValueError, OSError, RuntimeError) as e:
-                logger.debug("[SLMemoryBridge] persist rca finding entity failed: %s", e)
-                raise
+            self._bridge.create_agent_entity(
+                agent_name=finding_name,
+                agent_type=self.ENTITY_TYPE_RCA_FINDING,
+                observations=[
+                    f"category={cat}",
+                    f"signature={_trunc(sig, 80)}",
+                    f"count={cnt}",
+                    f"evidence_hash={evhash}",
+                    f"snapshot_id={_trunc(snapshot_id, 60)}",
+                ],
+            )
+            self._bridge.create_relation(finding_name, report_name, self.RELATION_TRIGGERED)
 
         logger.info(
             "[SLMemoryBridge] RCA report persisted: %s (%d findings)",
@@ -633,11 +593,7 @@ class SystemLearningMemoryBridge:
         """
         if not self._bridge:
             return []
-        try:
-            results = self._bridge.search_entities("SLRCAFinding")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] query_rca_pattern_frequency failed: %s", e)
-            raise
+        results = self._bridge.search_entities("SLRCAFinding")
         if not category:
             return results
         # Filter by category in observations (MCP search may not substring-match)
@@ -675,31 +631,27 @@ class SystemLearningMemoryBridge:
         batch_size = getattr(drift_summary, "batch_size", 0)
 
         entity_name = f"SLDrift_{_content_hash(f'{profile_id}:{digest}')}"
-        try:
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_DRIFT,
-                observations=[
-                    f"profile_id={_trunc(profile_id, 60)}",
-                    f"drift_flag={drift_flag}",
-                    f"drift_score={drift_score:.6f}",
-                    f"p95_cosine={p95:.6f}",
-                    f"mean_cosine={mean:.6f}",
-                    f"batch_size={batch_size}",
-                    f"digest={digest}",
-                    f"ts={ts}",
-                ],
-            )
-            logger.info(
-                "[SLMemoryBridge] Drift summary persisted: profile=%s drift=%s score=%.4f",
-                profile_id,
-                drift_flag,
-                drift_score,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_drift_summary failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_DRIFT,
+            observations=[
+                f"profile_id={_trunc(profile_id, 60)}",
+                f"drift_flag={drift_flag}",
+                f"drift_score={drift_score:.6f}",
+                f"p95_cosine={p95:.6f}",
+                f"mean_cosine={mean:.6f}",
+                f"batch_size={batch_size}",
+                f"digest={digest}",
+                f"ts={ts}",
+            ],
+        )
+        logger.info(
+            "[SLMemoryBridge] Drift summary persisted: profile=%s drift=%s score=%.4f",
+            profile_id,
+            drift_flag,
+            drift_score,
+        )
+        return True
 
     def query_drift_history(self, profile_id: str = "") -> list[dict[str, Any]]:
         """Return all persisted drift summaries, optionally filtered by profile.
@@ -712,11 +664,7 @@ class SystemLearningMemoryBridge:
         """
         if not self._bridge:
             return []
-        try:
-            results = self._bridge.search_entities("SLDriftSummary")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] query_drift_history failed: %s", e)
-            raise
+        results = self._bridge.search_entities("SLDriftSummary")
         if not profile_id:
             return results
         # Filter by profile_id in observations (MCP search may not substring-match)
@@ -761,30 +709,26 @@ class SystemLearningMemoryBridge:
         entity_name = f"SLPolicyRec_{_content_hash(f'{profile_id}:{digest}')}"
         changes_str = _trunc(json.dumps(changes, separators=(",", ":"), sort_keys=True))
 
-        try:
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_POLICY_REC,
-                observations=[
-                    f"profile_id={_trunc(profile_id, 60)}",
-                    f"confidence={confidence:.6f}",
-                    f"changes={changes_str}",
-                    f"rationale={_trunc(rationale, 120)}",
-                    f"applied={applied}",
-                    f"digest={digest}",
-                    f"ts={ts}",
-                ],
-            )
-            logger.info(
-                "[SLMemoryBridge] Policy recommendation persisted: profile=%s confidence=%.4f applied=%s",
-                profile_id,
-                confidence,
-                applied,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_policy_recommendation failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_POLICY_REC,
+            observations=[
+                f"profile_id={_trunc(profile_id, 60)}",
+                f"confidence={confidence:.6f}",
+                f"changes={changes_str}",
+                f"rationale={_trunc(rationale, 120)}",
+                f"applied={applied}",
+                f"digest={digest}",
+                f"ts={ts}",
+            ],
+        )
+        logger.info(
+            "[SLMemoryBridge] Policy recommendation persisted: profile=%s confidence=%.4f applied=%s",
+            profile_id,
+            confidence,
+            applied,
+        )
+        return True
 
     def mark_recommendation_applied(self, entity_name: str) -> bool:
         """Update a policy recommendation entity to mark it as applied.
@@ -797,11 +741,7 @@ class SystemLearningMemoryBridge:
         """
         if not self._bridge:
             return False
-        try:
-            return self._bridge.add_observation(entity_name, "applied=true")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] mark_recommendation_applied failed: %s", e)
-            raise
+        return self._bridge.add_observation(entity_name, "applied=true")
 
     def query_policy_recommendations(
         self,
@@ -821,14 +761,10 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return []
         query = f"SLPolicyRecommendation {profile_id}" if profile_id else "SLPolicyRecommendation"
-        try:
-            results = self._bridge.search_entities(query)
-            if applied_only:
-                results = [r for r in results if any("applied=true" in o for o in r.get("observations", []))]
-            return results
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] query_policy_recommendations failed: %s", e)
-            raise
+        results = self._bridge.search_entities(query)
+        if applied_only:
+            results = [r for r in results if any("applied=true" in o for o in r.get("observations", []))]
+        return results
 
     # ------------------------------------------------------------------
     # 5. Healing Aggregate Snapshots — cross-session aggregate history
@@ -862,27 +798,23 @@ class SystemLearningMemoryBridge:
             top_rates.append(f"{healer}:{rate:.3f}")
 
         entity_name = f"SLAggrSnap_{_content_hash(version_id)}"
-        try:
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_AGGREGATE,
-                observations=[
-                    f"version_id={_trunc(version_id, 60)}",
-                    f"created_utc={created_utc}",
-                    f"aggregate_count={total}",
-                    _trunc(f"top_rates={','.join(top_rates)}"),
-                    f"ts={ts}",
-                ],
-            )
-            logger.info(
-                "[SLMemoryBridge] Healing aggregate snapshot persisted: %s (%d aggregates)",
-                entity_name,
-                total,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_healing_aggregate_snapshot failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_AGGREGATE,
+            observations=[
+                f"version_id={_trunc(version_id, 60)}",
+                f"created_utc={created_utc}",
+                f"aggregate_count={total}",
+                _trunc(f"top_rates={','.join(top_rates)}"),
+                f"ts={ts}",
+            ],
+        )
+        logger.info(
+            "[SLMemoryBridge] Healing aggregate snapshot persisted: %s (%d aggregates)",
+            entity_name,
+            total,
+        )
+        return True
 
     # ------------------------------------------------------------------
     # 6. Failure Pattern Library — accumulated from PatternAnalysisEngine
@@ -913,32 +845,24 @@ class SystemLearningMemoryBridge:
             return False
 
         entity_name = f"SLFailurePattern_{pattern_id[:16]}"
-        try:
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_PATTERN,
-                observations=[
-                    f"pattern_id={pattern_id[:32]}",
-                    f"label={_trunc(pattern_label, 80)}",
-                    f"centroid_hash={centroid_hash[:16]}",
-                    f"member_count={member_count}",
-                    f"ts={ts}",
-                ],
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_failure_pattern failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_PATTERN,
+            observations=[
+                f"pattern_id={pattern_id[:32]}",
+                f"label={_trunc(pattern_label, 80)}",
+                f"centroid_hash={centroid_hash[:16]}",
+                f"member_count={member_count}",
+                f"ts={ts}",
+            ],
+        )
+        return True
 
     def query_failure_patterns(self) -> list[dict[str, Any]]:
         """Return all persisted failure pattern entities."""
         if not self._bridge:
             return []
-        try:
-            return self._bridge.search_entities("SLFailurePattern")
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] query_failure_patterns failed: %s", e)
-            raise
+        return self._bridge.search_entities("SLFailurePattern")
 
     def get_latest_violation_counts(self) -> tuple[int, int]:
         """Get violation counts from the two most recent ADG snapshots.
@@ -963,7 +887,7 @@ class SystemLearningMemoryBridge:
             previous_count = self._extract_violation_count(snapshots[1])
 
             return (current_count, previous_count)
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
+        except RuntimeError as e:
             logger.debug("[SLMemoryBridge] get_latest_violation_counts failed: %s", e)
             return (0, 0)
 
@@ -1012,25 +936,21 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"CircuitBreakerEvent_{breaker_name}_{int(timestamp_utc)}"
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=[
-                    f"breaker={breaker_name}",
-                    f"old_state={old_state}",
-                    f"new_state={new_state}",
-                    f"ts={timestamp_utc}",
-                    f"failure_count={failure_count}",
-                    f"success_count={success_count}",
-                    f"backoff={current_backoff}",
-                ],
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_circuit_breaker_event failed: %s", e)
-            raise
+        entity_name = f"CircuitBreakerEvent_{breaker_name}_{int(timestamp_utc)}"
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=[
+                f"breaker={breaker_name}",
+                f"old_state={old_state}",
+                f"new_state={new_state}",
+                f"ts={timestamp_utc}",
+                f"failure_count={failure_count}",
+                f"success_count={success_count}",
+                f"backoff={current_backoff}",
+            ],
+        )
+        return True
 
     def persist_adg_confidence_summary(self, conf_summary: dict[str, Any], timestamp: str) -> bool:
         """Persist ADG confidence tier distribution.
@@ -1045,31 +965,27 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"ADGConfidenceSummary_{timestamp}"
-            observations = [
-                f"ts={timestamp}",
-                f"total_edges={conf_summary.get('total_edges', 0)}",
-            ]
+        entity_name = f"ADGConfidenceSummary_{timestamp}"
+        observations = [
+            f"ts={timestamp}",
+            f"total_edges={conf_summary.get('total_edges', 0)}",
+        ]
 
-            # Add tier distribution
-            tier_dist = conf_summary.get("tier_distribution", {})
-            for tier, count in tier_dist.items():
-                observations.append(f"tier_{tier}={count}")
+        # Add tier distribution
+        tier_dist = conf_summary.get("tier_distribution", {})
+        for tier, count in tier_dist.items():
+            observations.append(f"tier_{tier}={count}")
 
-            # Add confidence metrics
-            for metric, value in conf_summary.get("confidence_metrics", {}).items():
-                observations.append(f"metric_{metric}={value}")
+        # Add confidence metrics
+        for metric, value in conf_summary.get("confidence_metrics", {}).items():
+            observations.append(f"metric_{metric}={value}")
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_adg_confidence_summary failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_injection_detection_counts(
         self,
@@ -1090,28 +1006,24 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"InjectionDetectionCounts_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"total_scans={total_scans}",
-                f"total_detections={sum(detection_counts.values())}",
-            ]
+        entity_name = f"InjectionDetectionCounts_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"total_scans={total_scans}",
+            f"total_detections={sum(detection_counts.values())}",
+        ]
 
-            # Add top 10 most frequent signatures
-            sorted_sigs = sorted(detection_counts.items(), key=lambda x: x[1], reverse=True)[:10]
-            for sig_id, count in sorted_sigs:
-                observations.append(f"sig_{sig_id}={count}")
+        # Add top 10 most frequent signatures
+        sorted_sigs = sorted(detection_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+        for sig_id, count in sorted_sigs:
+            observations.append(f"sig_{sig_id}={count}")
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_injection_detection_counts failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_healing_tier_outcome(
         self,
@@ -1142,28 +1054,24 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"HealingTierOutcome_{tier}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"tier={tier}",
-                f"failure_type={failure_type}",
-                f"module={module_name}",
-                f"success={success}",
-                f"duration_ms={duration_ms}",
-                f"agent={agent_name}",
-                f"trace_id={trace_id}",
-            ]
+        entity_name = f"HealingTierOutcome_{tier}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"tier={tier}",
+            f"failure_type={failure_type}",
+            f"module={module_name}",
+            f"success={success}",
+            f"duration_ms={duration_ms}",
+            f"agent={agent_name}",
+            f"trace_id={trace_id}",
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_healing_tier_outcome failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_workflow_outcome(
         self,
@@ -1196,33 +1104,29 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"WorkflowOutcome_{workflow_type}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"bundle_id={bundle_id}",
-                f"trace_id={trace_id}",
-                f"workflow_type={workflow_type}",
-                f"success={success}",
-                f"elapsed_ms={elapsed_ms}",
-                f"quality_score={quality_score}",
-                f"outcome_hash={outcome_hash}",
-                f"agent_count={len(agent_sequence)}",
-            ]
+        entity_name = f"WorkflowOutcome_{workflow_type}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"bundle_id={bundle_id}",
+            f"trace_id={trace_id}",
+            f"workflow_type={workflow_type}",
+            f"success={success}",
+            f"elapsed_ms={elapsed_ms}",
+            f"quality_score={quality_score}",
+            f"outcome_hash={outcome_hash}",
+            f"agent_count={len(agent_sequence)}",
+        ]
 
-            # Add agent sequence (up to 10 agents)
-            for i, agent in enumerate(agent_sequence[:10]):
-                observations.append(f"agent_{i}={agent}")
+        # Add agent sequence (up to 10 agents)
+        for i, agent in enumerate(agent_sequence[:10]):
+            observations.append(f"agent_{i}={agent}")
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_workflow_outcome failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_eval_regression_results(
         self,
@@ -1251,30 +1155,26 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"EvalRegressionResults_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"trace_id={trace_id}",
-                f"total_records={total_records}",
-                f"regression_count={regression_count}",
-                f"regression_rate={regression_rate}",
-                f"baseline_loaded={baseline_loaded}",
-            ]
+        entity_name = f"EvalRegressionResults_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"trace_id={trace_id}",
+            f"total_records={total_records}",
+            f"regression_count={regression_count}",
+            f"regression_rate={regression_rate}",
+            f"baseline_loaded={baseline_loaded}",
+        ]
 
-            # Add verdict counts
-            for verdict, count in verdict_counts.items():
-                observations.append(f"verdict_{verdict}={count}")
+        # Add verdict counts
+        for verdict, count in verdict_counts.items():
+            observations.append(f"verdict_{verdict}={count}")
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_eval_regression_results failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_cognitive_dispositions(
         self,
@@ -1295,23 +1195,19 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"CognitiveDispositions_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"trace_id={trace_id}",
-                f"dispositions_json={dispositions_json[:500]}...",  # Truncate for storage
-            ]
+        entity_name = f"CognitiveDispositions_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"trace_id={trace_id}",
+            f"dispositions_json={dispositions_json[:500]}...",  # Truncate for storage
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_cognitive_dispositions failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_safety_audit_record(
         self,
@@ -1346,30 +1242,26 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"SafetyAudit_{audit_id}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"audit_id={audit_id}",
-                f"run_id={run_id}",
-                f"trace_id={trace_id}",
-                f"decision_type={decision_type}",
-                f"decision_outcome={decision_outcome}",
-                f"policy_hash={policy_hash}",
-                f"actor_id={actor_id}",
-                f"action_class={action_class}",
-                f"reason={reason[:200]}...",  # Truncate for storage
-            ]
+        entity_name = f"SafetyAudit_{audit_id}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"audit_id={audit_id}",
+            f"run_id={run_id}",
+            f"trace_id={trace_id}",
+            f"decision_type={decision_type}",
+            f"decision_outcome={decision_outcome}",
+            f"policy_hash={policy_hash}",
+            f"actor_id={actor_id}",
+            f"action_class={action_class}",
+            f"reason={reason[:200]}...",  # Truncate for storage
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_safety_audit_record failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_resource_prediction_feedback(
         self,
@@ -1412,34 +1304,30 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"ResourcePredictionFeedback_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"failure_type={failure_type}",
-                f"fingerprint={fingerprint}",
-                f"predicted_cpu={predicted_cpu}",
-                f"predicted_memory={predicted_memory}",
-                f"predicted_timeout={predicted_timeout}",
-                f"actual_cpu={actual_cpu}",
-                f"actual_memory={actual_memory}",
-                f"actual_timeout={actual_timeout}",
-                f"cpu_error_rate={cpu_error_rate:.3f}",
-                f"memory_error_rate={memory_error_rate:.3f}",
-                f"timeout_error_rate={timeout_error_rate:.3f}",
-                f"confidence={confidence:.3f}",
-                f"success={success}",
-            ]
+        entity_name = f"ResourcePredictionFeedback_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"failure_type={failure_type}",
+            f"fingerprint={fingerprint}",
+            f"predicted_cpu={predicted_cpu}",
+            f"predicted_memory={predicted_memory}",
+            f"predicted_timeout={predicted_timeout}",
+            f"actual_cpu={actual_cpu}",
+            f"actual_memory={actual_memory}",
+            f"actual_timeout={actual_timeout}",
+            f"cpu_error_rate={cpu_error_rate:.3f}",
+            f"memory_error_rate={memory_error_rate:.3f}",
+            f"timeout_error_rate={timeout_error_rate:.3f}",
+            f"confidence={confidence:.3f}",
+            f"success={success}",
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_resource_prediction_feedback failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_rollback_strategy_outcome(
         self,
@@ -1470,31 +1358,27 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"RollbackStrategyOutcome_{strategy_chosen}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"failure_type={failure_type}",
-                f"failure_fingerprint={failure_fingerprint}",
-                f"strategy_chosen={strategy_chosen}",
-                f"strategy_score={strategy_score:.3f}",
-                f"success={success}",
-                f"execution_time_ms={execution_time_ms}",
-            ]
+        entity_name = f"RollbackStrategyOutcome_{strategy_chosen}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"failure_type={failure_type}",
+            f"failure_fingerprint={failure_fingerprint}",
+            f"strategy_chosen={strategy_chosen}",
+            f"strategy_score={strategy_score:.3f}",
+            f"success={success}",
+            f"execution_time_ms={execution_time_ms}",
+        ]
 
-            # Add top 5 reasons
-            for i, reason in enumerate(strategy_reasons[:5]):
-                observations.append(f"reason_{i}={reason}")
+        # Add top 5 reasons
+        for i, reason in enumerate(strategy_reasons[:5]):
+            observations.append(f"reason_{i}={reason}")
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_rollback_strategy_outcome failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_healing_memory_retrieval_quality(
         self,
@@ -1523,27 +1407,23 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"HealingMemoryRetrievalQuality_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"signal_hash={signal_hash}",
-                f"results_count={results_count}",
-                f"avg_similarity={avg_similarity:.3f}",
-                f"high_similarity_count={high_similarity_count}",
-                f"retrieval_quality={retrieval_quality}",
-                f"top_k_used={top_k_used}",
-            ]
+        entity_name = f"HealingMemoryRetrievalQuality_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"signal_hash={signal_hash}",
+            f"results_count={results_count}",
+            f"avg_similarity={avg_similarity:.3f}",
+            f"high_similarity_count={high_similarity_count}",
+            f"retrieval_quality={retrieval_quality}",
+            f"top_k_used={top_k_used}",
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_healing_memory_retrieval_quality failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_execute_ssot_phase_outcomes(
         self,
@@ -1566,24 +1446,20 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"ExecuteSSOTPhaseOutcomes_{phase_name}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"phase_name={phase_name}",
-                f"trace_id={trace_id}",
-                f"outcomes={outcomes_json[:500]}...",  # Truncate for storage
-            ]
+        entity_name = f"ExecuteSSOTPhaseOutcomes_{phase_name}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"phase_name={phase_name}",
+            f"trace_id={trace_id}",
+            f"outcomes={outcomes_json[:500]}...",  # Truncate for storage
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_execute_ssot_phase_outcomes failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_repair_routes(
         self,
@@ -1604,23 +1480,19 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"RepairRoutes_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"trace_id={trace_id}",
-                f"routes={repair_routes_json[:500]}...",  # Truncate for storage
-            ]
+        entity_name = f"RepairRoutes_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"trace_id={trace_id}",
+            f"routes={repair_routes_json[:500]}...",  # Truncate for storage
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_repair_routes failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def _query_execute_ssot_outcomes(self, timestamp_utc: int) -> None:
         """Query recent Execute_SSOT outcomes (placeholder for future implementation).
@@ -1666,29 +1538,25 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"CacheCoherenceViolation_{layer_type}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"layer_type={layer_type}",
-                f"violation_type={violation_type}",
-                f"error_message={error_message[:100]}...",  # Truncate
-                f"affected_keys_count={len(affected_keys)}",
-            ]
+        entity_name = f"CacheCoherenceViolation_{layer_type}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"layer_type={layer_type}",
+            f"violation_type={violation_type}",
+            f"error_message={error_message[:100]}...",  # Truncate
+            f"affected_keys_count={len(affected_keys)}",
+        ]
 
-            # Add first few keys as evidence
-            for i, key in enumerate(affected_keys[:3]):
-                observations.append(f"key_{i}={key[:50]}...")
+        # Add first few keys as evidence
+        for i, key in enumerate(affected_keys[:3]):
+            observations.append(f"key_{i}={key[:50]}...")
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_cache_coherence_violation failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_infrastructure_drift_analysis(
         self,
@@ -1715,26 +1583,22 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"InfrastructureDriftAnalysis_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"drift_detected={drift_detected}",
-                f"severity={severity}",
-                f"violation_count={violation_count}",
-                f"layers_affected={layers_affected}",
-                f"analysis={analysis_json[:500]}...",  # Truncate
-            ]
+        entity_name = f"InfrastructureDriftAnalysis_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"drift_detected={drift_detected}",
+            f"severity={severity}",
+            f"violation_count={violation_count}",
+            f"layers_affected={layers_affected}",
+            f"analysis={analysis_json[:500]}...",  # Truncate
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_infrastructure_drift_analysis failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_cross_domain_healing_event(
         self,
@@ -1765,28 +1629,24 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"CrossDomainHealingEvent_{domain}_{orchestrator_class}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"orchestrator_class={orchestrator_class}",
-                f"cycle_index={cycle_index}",
-                f"total_violations={total_violations}",
-                f"fixed_violations={fixed_violations}",
-                f"error_violations={error_violations}",
-                f"success_rate={success_rate:.3f}",
-                f"domain={domain}",
-            ]
+        entity_name = f"CrossDomainHealingEvent_{domain}_{orchestrator_class}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"orchestrator_class={orchestrator_class}",
+            f"cycle_index={cycle_index}",
+            f"total_violations={total_violations}",
+            f"fixed_violations={fixed_violations}",
+            f"error_violations={error_violations}",
+            f"success_rate={success_rate:.3f}",
+            f"domain={domain}",
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_cross_domain_healing_event failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_cross_domain_pattern_analysis(
         self,
@@ -1811,25 +1671,21 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"CrossDomainPatternAnalysis_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"patterns_detected={patterns_detected}",
-                f"domains_count={domains_count}",
-                f"correlations_count={correlations_count}",
-                f"analysis={analysis_json[:500]}...",  # Truncate
-            ]
+        entity_name = f"CrossDomainPatternAnalysis_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"patterns_detected={patterns_detected}",
+            f"domains_count={domains_count}",
+            f"correlations_count={correlations_count}",
+            f"analysis={analysis_json[:500]}...",  # Truncate
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_cross_domain_pattern_analysis failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_otel_span(
         self,
@@ -1854,25 +1710,21 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"OTelSpan_{span_id}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"span_id={span_id}",
-                f"trace_id={trace_id}",
-                f"span_name={span_name}",
-                f"span_data={span_data_json[:500]}...",  # Truncate
-            ]
+        entity_name = f"OTelSpan_{span_id}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"span_id={span_id}",
+            f"trace_id={trace_id}",
+            f"span_name={span_name}",
+            f"span_data={span_data_json[:500]}...",  # Truncate
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_otel_span failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_otel_span_metrics(
         self,
@@ -1891,22 +1743,18 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"OTelSpanMetrics_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"metrics={metrics_json[:500]}...",  # Truncate
-            ]
+        entity_name = f"OTelSpanMetrics_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"metrics={metrics_json[:500]}...",  # Truncate
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_otel_span_metrics failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_injection_context_data(
         self,
@@ -1931,25 +1779,21 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"InjectionContextData_{agent_id}_{route}_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"agent_id={agent_id}",
-                f"route={route}",
-                f"context_scans={scan_counts.get(f'{agent_id}:{route}', 0)}",
-                f"context_detections={detection_counts.get(f'{agent_id}:{route}', 0)}",
-            ]
+        entity_name = f"InjectionContextData_{agent_id}_{route}_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"agent_id={agent_id}",
+            f"route={route}",
+            f"context_scans={scan_counts.get(f'{agent_id}:{route}', 0)}",
+            f"context_detections={detection_counts.get(f'{agent_id}:{route}', 0)}",
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_injection_context_data failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
     def persist_signal_spike_detection(
         self,
@@ -1972,24 +1816,20 @@ class SystemLearningMemoryBridge:
         if not self._bridge:
             return False
 
-        try:
-            entity_name = f"SignalSpikeDetection_{int(timestamp_utc)}"
-            observations = [
-                f"ts={timestamp_utc}",
-                f"spike_detected={spike_detected}",
-                f"spike_count={spike_count}",
-                f"analysis={analysis_json[:500]}...",  # Truncate
-            ]
+        entity_name = f"SignalSpikeDetection_{int(timestamp_utc)}"
+        observations = [
+            f"ts={timestamp_utc}",
+            f"spike_detected={spike_detected}",
+            f"spike_count={spike_count}",
+            f"analysis={analysis_json[:500]}...",  # Truncate
+        ]
 
-            self._bridge.create_agent_entity(
-                agent_name=entity_name,
-                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
-                observations=observations,
-            )
-            return True
-        except (TypeError, ValueError, OSError, RuntimeError) as e:
-            logger.debug("[SLMemoryBridge] persist_signal_spike_detection failed: %s", e)
-            raise
+        self._bridge.create_agent_entity(
+            agent_name=entity_name,
+            agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+            observations=observations,
+        )
+        return True
 
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:

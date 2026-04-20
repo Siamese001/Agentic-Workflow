@@ -83,7 +83,7 @@ class CircuitBreaker:
                 raise Exception("Circuit breaker operation returned no result")
             self._on_success()
             return result
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             self._on_failure()
             raise e from e
 
@@ -256,7 +256,14 @@ class HealthChecker:
                 throughput=instance.total_requests / elapsed,
             )
 
-        except Exception as e:  # guardian: allow-broad-exception -- health checker must survive any endpoint failure to maintain liveness monitoring
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- health checker must survive any endpoint failure to maintain liveness monitoring
             instance.healthy = False
             instance.last_health_check = datetime.utcnow()
             instance.failed_requests += 1
@@ -370,7 +377,7 @@ class UnifiedQueryRouter:
                 if response.status in [QueryStatus.FAILED, QueryStatus.CIRCUIT_OPEN]:
                     break
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.error(f"Error routing query to {layer_type}: {e}")
 
                 error_response = LayerResponse(
@@ -417,7 +424,7 @@ class UnifiedQueryRouter:
             return await circuit_breaker.call(
                 self._invoke_layer_executor, executor, request, layer_type, instance
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             if "Circuit breaker OPEN" in str(e):
                 return LayerResponse(
                     layer_type=layer_type,

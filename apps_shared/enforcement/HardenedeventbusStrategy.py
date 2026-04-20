@@ -234,7 +234,14 @@ class HardenedEventBus:
             self._stats["events_published"] += 1
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
 
     async def subscribe(self, channel: str, callback: Callable[[SystemEvent], Awaitable[None]]) -> None:
@@ -352,7 +359,14 @@ class HardenedEventBus:
                     event,
                     bulkhead_name="event_process",
                 )
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow
                 logger.error(f"Failed to process event {event.id}: {e}")
                 dlq = await get_dead_letter_queue()
                 await dlq.add_failed_envelope(
@@ -477,7 +491,14 @@ def hardened_event_publisher(event_type: EventType, priority: TaskPriority = Tas
                     priority=priority,
                 )
                 return result
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
 
         return async_wrapper

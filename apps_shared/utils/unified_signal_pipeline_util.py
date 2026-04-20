@@ -412,7 +412,14 @@ class InputProcessingStage(PipelineStage):
                 metadata={"cache_hit": False},
             )
             return envelope
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Input processing failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -537,7 +544,14 @@ class ContextEnrichmentStage(PipelineStage):
                 metadata={"cache_hit": False},
             )
             return envelope
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Context enrichment failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -640,7 +654,14 @@ class SignalAugmentationStage(PipelineStage):
                 metadata={"cache_hit": False},
             )
             return envelope
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Signal augmentation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -789,7 +810,14 @@ class QualityValidationStage(PipelineStage):
                 metadata={"quality_score": quality_result.composite_score},
             )
             return envelope
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Quality validation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -906,7 +934,14 @@ class OutputFormattingStage(PipelineStage):
                 metadata={"output_format": formatted.get("format_type", "default")},
             )
             return envelope
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Output formatting failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -1226,12 +1261,14 @@ class UnifiedSignalPipeline:
                 if saved:
                     self._stats["checkpoints_saved"] += 1
                     logger.debug(f"Saved checkpoint after {stage_name}")
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.error(f"Stage {stage_name} failed: {e}")
                 await checkpoint_manager.save_checkpoint(envelope)
                 with self._lock:
                     self._stats["stage_failures"][stage_name] += 1
-                raise PipelineExecutionError(f'Pipeline failed at stage {stage_name}', envelope, stage_name, e) from e
+                raise PipelineExecutionError(
+                    f"Pipeline failed at stage {stage_name}", envelope, stage_name, e
+                ) from e
         return envelope
 
     async def _resume_from_checkpoint(self, trace_id: str) -> SignalEnvelope | None:

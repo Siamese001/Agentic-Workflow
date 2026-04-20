@@ -240,7 +240,14 @@ class GovernanceShieldAgent(LICAgentBase):
 
                 _emit_records_execution_trace("GovernanceShieldAgent", "L2_EXECUTION", "qwen_vllm_init")
 
-            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all captured in _qwen_init_error
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all captured in _qwen_init_error
                 _emit_records_telemetry_event("GovernanceShieldAgent", "L2_EXECUTION", "qwen_init_error")
                 self._qwen_init_error = str(e)
                 logger.error(
@@ -326,7 +333,14 @@ class GovernanceShieldAgent(LICAgentBase):
                         logger.debug(f"Replaced {category} claim with: {replacement}")
             sanitized = self._fix_privacy_language(sanitized)
             return sanitized
-        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error sanitizing claims: {str(e)}")
             return content
 
@@ -351,7 +365,14 @@ class GovernanceShieldAgent(LICAgentBase):
                 return self._generate_high_risk_protocol(risk_profile)
             else:
                 return self._generate_standard_protocol(risk_profile)
-        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error generating safety protocol: {str(e)}")
             return SafetyProtocol(
                 validation_strategy="Comprehensive testing before deployment",
@@ -373,7 +394,14 @@ class GovernanceShieldAgent(LICAgentBase):
             if any(term in audited.lower() for term in ["hipaa", "phi", "health data"]):
                 audited += "\n\n[Note: All healthcare applications maintain HIPAA compliance through on-prem deployment or BAA-compliant APIs.]"
             return audited
-        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error auditing outreach: {str(e)}")
             return email_draft
 
@@ -426,7 +454,14 @@ class GovernanceShieldAgent(LICAgentBase):
                 compliance_keywords=list(set(compliance)),
                 data_sensitivity=data_types,
             )
-        except Exception as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
             logger.error(f"Error scanning risk level: {str(e)}")
             return RiskProfile(
                 industry_sensitivity=IndustrySensitivity.MEDIUM,
@@ -659,7 +694,14 @@ class GovernanceShieldAgent(LICAgentBase):
                 "local_first_disposition": _dsp.as_dict(),
             }
 
-        except Exception as e:  # guardian: allow-broad-exception -- inference errors span aiohttp, RuntimeError, TimeoutError; all surfaced explicitly
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- inference errors span aiohttp, RuntimeError, TimeoutError; all surfaced explicitly
             _adapter.record_local_failure(severity="medium")
             _dsp = LocalFirstDisposition.for_fail_exec(
                 orchestrator="GovernanceShieldAgent",

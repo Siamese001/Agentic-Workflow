@@ -397,7 +397,14 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             await aiofiles.os.rename(temp_path, path)
             logger.debug(f"Saved checkpoint for {envelope.trace_id} to {path}")
             return True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to save checkpoint: {e}")
             return False
 
@@ -421,7 +428,14 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             envelope = SignalEnvelope.from_dict(data)
             logger.debug(f"Loaded checkpoint for {trace_id}")
             return envelope
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load checkpoint {trace_id}: {e}")
             return None
 
@@ -441,7 +455,14 @@ class FileCheckpointStorage(CheckpointStorageBackend):
                 logger.debug(f"Deleted checkpoint for {trace_id}")
                 return True
             return False
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to delete checkpoint {trace_id}: {e}")
             return False
 
@@ -465,7 +486,14 @@ class FileCheckpointStorage(CheckpointStorageBackend):
                         if len(trace_ids) >= limit:
                             return trace_ids
             return trace_ids
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to list checkpoints: {e}")
             return []
 
@@ -491,7 +519,14 @@ class FileCheckpointStorage(CheckpointStorageBackend):
             logger.info(f"Cleaned up {count} old checkpoint files")
             return count
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Failed to cleanup checkpoints: {e}")
             return 0
 
@@ -554,7 +589,14 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             await redis.setex(key, self.ttl_seconds, content)
             logger.debug(f"Saved checkpoint for {envelope.trace_id} to Redis")
             return True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to save checkpoint to Redis: {e}")
             return False
 
@@ -578,7 +620,14 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             envelope = SignalEnvelope.from_dict(data)
             logger.debug(f"Loaded checkpoint for {trace_id} from Redis")
             return envelope
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to load checkpoint {trace_id} from Redis: {e}")
             return None
 
@@ -599,7 +648,14 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
                 logger.debug(f"Deleted checkpoint for {trace_id} from Redis")
                 return True
             return False
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to delete checkpoint {trace_id} from Redis: {e}")
             return False
 
@@ -624,7 +680,14 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
                 if len(trace_ids) >= limit:
                     break
             return trace_ids
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to list checkpoints in Redis: {e}")
             return []
 
@@ -777,7 +840,14 @@ class CheckpointManager:
             else:
                 self._stats["errors"] += 1
             return success
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Checkpoint save failed: {e}")
             self._stats["errors"] += 1
             return False
@@ -796,7 +866,14 @@ class CheckpointManager:
             if envelope:
                 self._stats["loads"] += 1
             return envelope
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Checkpoint load failed: {e}")
             self._stats["errors"] += 1
             return None
@@ -815,7 +892,14 @@ class CheckpointManager:
             if success:
                 self._stats["deletes"] += 1
             return success
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Checkpoint delete failed: {e}")
             self._stats["errors"] += 1
             return False

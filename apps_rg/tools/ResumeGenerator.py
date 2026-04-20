@@ -212,7 +212,14 @@ class ResumeGenerator:
                 "north_star_metric": analysis_results.get("north_star_metric", "unknown"),
             }
             return tailored_resume
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Error generating tailored resume: {e}")
             resume_data["_tailoring_error"] = str(e)
             return resume_data
@@ -226,7 +233,14 @@ class ResumeGenerator:
         try:
             response = self._generate_response(prompt)
             return response.strip()
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Error tailoring summary: {e}")
             return original_summary
 
@@ -297,7 +311,14 @@ class ResumeGenerator:
             try:
                 response = self._generate_response(prompt)
                 tailored_bullets.append(response.strip())
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow
                 Logger.error(f"Error tailoring bullet: {e}")
                 tailored_bullets.append(bullet)
         return tailored_bullets
@@ -308,7 +329,14 @@ class ResumeGenerator:
         try:
             response = self._generate_response(prompt)
             return response.strip()
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Error tailoring description: {e}")
             return description
 
@@ -340,7 +368,14 @@ class ResumeGenerator:
             _clk.emit_determinism_digest(inputs={"agent": request.agent_id, "provider": request.provider})
             response = gateway.generate(request)
             return response.text if hasattr(response, "text") else str(response)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(
                 "ResumeGenerator._generate_with_gemini: SovereignLLMGateway failed: %s; direct SDK fallback is NOT permitted — raising",
                 e,

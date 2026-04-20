@@ -399,12 +399,12 @@ class SignalWeighter:
                             f"Applied industry modifiers for {industry}: {base_weights.as_dict()} -> {adjusted_weights.as_dict()}",
                         )
                         return adjusted_weights
-                    except Exception as e:
+                    except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                         logger.error(f"Failed to apply industry modifiers: {str(e)}")
                         return None
             logger.debug(f"Using base weights for archetype {archetype}: {base_weights.as_dict()}")
             return base_weights
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error getting weights for archetype '{archetype}': {str(e)}")
             return None
 
@@ -453,7 +453,7 @@ class SignalWeighter:
                 extra={"doc_id": doc_id, "signal_type": signal_type, "weight": weight},
             )
             return result
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error reweighting score for doc {doc_id}: {str(e)}")
             return None
 
@@ -488,7 +488,7 @@ class SignalWeighter:
             ):
                 return "cultural_fit"
             return "balanced"
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error extracting signal type: {str(e)}")
             return None
 
@@ -515,7 +515,7 @@ class SignalWeighter:
                 "balanced": 0.5,
             }
             return weight_map.get(signal_type.lower(), 0.5)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error getting weight for signal type '{signal_type}': {str(e)}")
             return None
 
@@ -545,7 +545,7 @@ class SignalWeighter:
                 result = self.reweight_score(score, metadata, weights, doc_id)
                 results.append(result)
             return results
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error in batch reweighting: {str(e)}")
             return None
 

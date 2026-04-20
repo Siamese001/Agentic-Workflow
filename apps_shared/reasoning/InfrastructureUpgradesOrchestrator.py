@@ -233,7 +233,14 @@ class InfrastructureUpgradesOrchestrator:
                             causation_id=event.id,
                         ),
                     )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle content generated: {e}")
 
     async def _handle_cache_miss(self, event: SystemEvent) -> None:
@@ -247,7 +254,14 @@ class InfrastructureUpgradesOrchestrator:
             query = payload.get("query", "")
             cache_type = payload.get("cache_type", "unknown")
             logger.debug(f"cache miss for {cache_type}: {query[:50]}...")
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle cache miss: {e}")
 
     async def _handle_tone_violation(self, event: SystemEvent) -> None:
@@ -261,7 +275,14 @@ class InfrastructureUpgradesOrchestrator:
             violations = payload.get("violations", [])
             violation_types = [v.get("type", "unknown") for v in violations]
             logger.info(f"Tone violations detected: {violation_types}")
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to handle tone violation: {e}")
 
     async def _verify_content_facts(self, content: str, trace_id: str) -> list[VerificationResult]:
@@ -421,7 +442,14 @@ class InfrastructureUpgradesOrchestrator:
                     "facts": [v.dict() for v in fact_violations],
                 },
             }
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
 
     async def load_profile_facts(self, profile_data: dict[str, Any]) -> None:

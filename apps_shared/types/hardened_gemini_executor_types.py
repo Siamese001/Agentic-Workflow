@@ -485,7 +485,14 @@ class HardenedGeminiExecutor:
             if not hasattr(self._client, "interactions"):
                 raise ImportError("google-genai v1beta not available")
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to initialize hardened Gemini client: {e}")
             raise
 
@@ -553,7 +560,14 @@ class HardenedGeminiExecutor:
                 # Fallback: estimate using tiktoken or simple heuristic
                 token_count = self._estimate_tokens(input_payload)
 
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.warning(f"Token counting failed, estimating: {e}")
             token_count = self._estimate_tokens(input_payload)
 
@@ -669,7 +683,14 @@ class HardenedGeminiExecutor:
             result = await _execute()
             self._circuit_breaker.record_success()
             return result
-        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ):  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self._circuit_breaker.record_failure()
             raise
 
@@ -774,7 +795,14 @@ class HardenedGeminiExecutor:
 
             return content
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             # Log error telemetry
@@ -855,7 +883,14 @@ class HardenedGeminiExecutor:
             response = _call()
             self._circuit_breaker.record_success()
             return response
-        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ):  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self._circuit_breaker.record_failure()
             raise
 

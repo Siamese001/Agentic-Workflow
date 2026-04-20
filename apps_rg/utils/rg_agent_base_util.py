@@ -322,7 +322,7 @@ class RGAgentBase(AppBase):
         try:
             self._meta_client = get_meta_learning_client()
             Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             self._meta_client = None
             Logger.warning(
                 f"[{self.__class__.__name__}] MetaLearningClient unavailable; proceeding without it: {exc}",
@@ -478,7 +478,7 @@ class RGAgentBase(AppBase):
             if result:
                 self.update_cache_metrics(1)
             return result
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Enhanced cache failed: {e}")
             return False
 
@@ -498,7 +498,7 @@ class RGAgentBase(AppBase):
         namespaced_key = self.get_namespaced_cache_key(f"{pattern_type}:{pattern_id}")
         try:
             return self.ml_cache_get(namespaced_key)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern retrieval failed: {e}")
             return None
 
@@ -718,7 +718,7 @@ class RGAgentBase(AppBase):
             if result:
                 self.update_cache_metrics(1)
             return result
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Cache set failed: {e}")
             return False
 
@@ -738,7 +738,7 @@ class RGAgentBase(AppBase):
         namespaced_key = self.get_namespaced_cache_key(key)
         try:
             return self.ml_cache_get(namespaced_key)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             Logger.error(f"[{self.__class__.__name__}] Cache get failed: {e}")
             return None
 

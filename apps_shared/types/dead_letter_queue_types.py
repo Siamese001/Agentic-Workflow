@@ -472,7 +472,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
                 f"Added envelope {item.envelope.trace_id} to dead letter queue: {item.failure_reason}",
             )
             return True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to add to dead letter queue: {e}")
             return False
 
@@ -493,7 +500,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
                         content = await f.read()
                     data = json.loads(content)
                     return DeadLetterItem.from_dict(data)
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (
+                    OSError,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-silent-swallow
                     logger.error(f"Failed to read dead letter item {item_id}: {e}")
         return None
 
@@ -533,7 +547,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     item = DeadLetterItem.from_dict(data)
                     if not status or item.status == status:
                         items.append(item)
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (
+                    OSError,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-silent-swallow
                     logger.error(f"Failed to read dead letter file {file_path}: {e}")
         items.sort(key=lambda x: x.timestamp, reverse=True)
         return items[:limit]
@@ -565,7 +586,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
                 await aiofiles.os.rename(old_path, new_path)
             logger.info(f"Updated dead letter item {item_id} to status: {status.value}")
             return True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to update dead letter item {item_id}: {e}")
             return False
 
@@ -586,7 +614,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
             await aiofiles.os.remove(path)
             logger.info(f"Deleted dead letter item {item_id}")
             return True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to delete dead letter item {item_id}: {e}")
             return False
 
@@ -611,7 +646,14 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     await aiofiles.os.remove(file_path)
                     count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.error(f"Failed to cleanup dead letter file {file_path}: {e}")
         logger.info(f"Cleaned up {count} old dead letter items")
         return count

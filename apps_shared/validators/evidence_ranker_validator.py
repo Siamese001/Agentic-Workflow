@@ -308,7 +308,14 @@ class EvidenceRanker:
                         f"Ranked signal {doc_id}: final={final_score:.3f}, semantic={semantic_score:.3f}, freshness={freshness_score:.3f}, corroboration={corroboration_count}",
                         extra={"doc_id": doc_id, "final_score": final_score},
                     )
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    RuntimeError,
+                    re.error,
+                ) as e:  # guardian: allow-silent-swallow
                     logger.error(f"Error processing signal at index {idx}: {str(e)}")
                     continue
             ranked_signals.sort(key=lambda x: x.final_score, reverse=True)
@@ -316,7 +323,14 @@ class EvidenceRanker:
                 f"Ranked {len(signals)} signals, top score: {ranked_signals[0].final_score:.3f if ranked_signals else 0:.3f}",
             )
             return ranked_signals
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error in rank_evidence: {str(e)}")
             return []
 
@@ -355,7 +369,14 @@ class EvidenceRanker:
                 return (0.3, year)
             else:
                 return (0.2, year)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error scoring freshness: {str(e)}")
             return (0.5, None)
 
@@ -379,7 +400,14 @@ class EvidenceRanker:
                     except ValueError:
                         continue
             return None
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error extracting year: {str(e)}")
             return None
 
@@ -410,7 +438,14 @@ class EvidenceRanker:
             total_corroboration = sum(count - 1 for count in corroboration_counts.values() if count > 1)
             key_entities = [entity for entity, count in corroboration_counts.items() if count > 1]
             return (total_corroboration, key_entities)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error counting corroboration: {str(e)}")
             return (0, [])
 
@@ -434,7 +469,14 @@ class EvidenceRanker:
                             entity_map[entity] = []
                         entity_map[entity].append(idx)
             return entity_map
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error extracting all entities: {str(e)}")
             return {}
 
@@ -492,7 +534,14 @@ class EvidenceRanker:
                     seen.add(entity)
                     unique_entities.append(entity)
             return unique_entities
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error extracting entities: {str(e)}")
             return []
 
@@ -524,7 +573,14 @@ class EvidenceRanker:
                 "top_score": ranked_evidence[0].final_score,
                 "bottom_score": ranked_evidence[-1].final_score,
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            re.error,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error getting ranking summary: {str(e)}")
             return {"error": str(e)}
 

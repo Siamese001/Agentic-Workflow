@@ -327,7 +327,13 @@ class ToneAnalyzer:
                 extra={"tone": primary_tone.value, "confidence": metrics["confidence"]},
             )
             return profile
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error analyzing style: {str(e)}")
             return self._get_neutral_profile()
 
@@ -375,7 +381,13 @@ class ToneAnalyzer:
                 "question_ratio": question_ratio,
                 "confidence": confidence,
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error calculating metrics: {str(e)}")
             return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "confidence": 0.0}
 
@@ -406,7 +418,13 @@ class ToneAnalyzer:
             if not tone_scores or max(tone_scores.values()) == 0:
                 return ToneType.AUTHORITATIVE
             return max(tone_scores, key=tone_scores.get)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error detecting primary tone: {str(e)}")
             return ToneType.AUTHORITATIVE
 
@@ -433,7 +451,13 @@ class ToneAnalyzer:
                 indicator_factor = 0.5
             formality = length_factor * 0.6 + indicator_factor * 0.4
             return max(0.0, min(1.0, formality))
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error calculating formality: {str(e)}")
             return 0.7
 
@@ -454,7 +478,13 @@ class ToneAnalyzer:
                 return 0.0
             frequency = emoji_count / sentence_count
             return min(1.0, frequency)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error calculating emoji frequency: {str(e)}")
             return 0.1
 
@@ -477,7 +507,13 @@ class ToneAnalyzer:
             complexity = avg_word_length / 10 * 0.4 + complex_ratio * 0.6
             return max(0.0, min(1.0, complexity))
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Error calculating vocabulary complexity: {str(e)}")
             return 0.5
 
@@ -555,7 +591,13 @@ class ToneAdapter:
             adapted = re.sub("\\s+", " ", adapted).strip()
             logger.debug(f"Adapted message for tone: {tone.value}")
             return adapted
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error adapting message: {str(e)}")
             return draft
 
@@ -576,7 +618,13 @@ class ToneAdapter:
                 else:
                     shortened.append(sentence)
             return ". ".join(shortened)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error shortening sentences: {str(e)}")
             return text
 
@@ -590,7 +638,13 @@ class ToneAdapter:
                     connector = connectors[i % len(connectors)]
                     sentences[i] = f"{sentences[i].strip()} {connector}"
             return ". ".join(sentences)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error lengthening sentences: {str(e)}")
             return text
 
@@ -672,7 +726,13 @@ class ToneModel:
                 f"Generated config for tone {profile.primary_tone.value} with temperature {config.temperature_setting}",
             )
             return (profile, config)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error in analyze_and_configure: {str(e)}")
             return (self.analyzer._get_neutral_profile(), self.config_templates[ToneType.AUTHORITATIVE])
 
@@ -698,7 +758,13 @@ class ToneModel:
                 config.temperature_setting = min(0.7, config.temperature_setting + 0.1)
                 config.system_prompt_fragment += " Emphasize culture and human connection."
             return config
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error adjusting for archetype: {str(e)}")
             return config
 

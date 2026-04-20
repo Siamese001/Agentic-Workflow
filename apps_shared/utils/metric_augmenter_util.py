@@ -310,7 +310,7 @@ class MetricAugmenter:
                 business_impact=business_impact,
                 final_text=final_text,
             )
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error augmenting bullet: {str(e)}")
             return None
 
@@ -359,7 +359,7 @@ class MetricAugmenter:
             augmentation_rate = sum(1 for b in augmented if b.is_augmented) / len(augmented)
             logger.info(f"Augmented {len(augmented)} bullets, rate: {augmentation_rate:.2%}")
             return augmented
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error augmenting batch: {str(e)}")
             return None
 
@@ -431,7 +431,7 @@ class MetricAugmenter:
                         {"type": metric_type, "value": "significant", "pattern": "keyword"},
                     )
             return detected_metrics
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error detecting metrics: {str(e)}")
             return None
 
@@ -497,7 +497,7 @@ class MetricAugmenter:
                 value_statement = "improving operational efficiency"
                 confidence = 0.3
             return BusinessImpact(category=category, value_statement=value_statement, confidence=confidence)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error estimating impact: {str(e)}")
             return None
 
@@ -539,7 +539,7 @@ class MetricAugmenter:
             else:
                 augmented = f"{original}, {impact_text}."
             return augmented
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Error creating augmented text: {str(e)}")
             return None
 

@@ -265,7 +265,14 @@ class ResourceManager:
         except ImportError:  # guardian: allow-silent-swallow - optional dependency
             logger.warning("Redis not installed, using in-memory cache")
             self._initialized = True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.warning(f"Redis connection failed: {e}, using in-memory cache")
             self._redis_client = None
             self._initialized = True
@@ -323,7 +330,14 @@ class ResourceManager:
                 self._memory_cache[key_str] = (serialized, expiry)
             logger.debug(f"Set resource: {key_str}")
             return True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to set resource {key_str}: {e}")
             return False
 
@@ -357,7 +371,14 @@ class ResourceManager:
                     else:
                         del self._memory_cache[key_str]
             return None
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to get resource {key_str}: {e}")
             return None
 
@@ -383,7 +404,14 @@ class ResourceManager:
                 self._memory_cache.pop(key_str, None)
             logger.debug(f"Deleted resource: {key_str}")
             return True
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to delete resource {key_str}: {e}")
             return False
 
@@ -432,7 +460,14 @@ class ResourceManager:
                     count += 1
             logger.info(f"Cleared {count} resources from namespace: {namespace.value}")
             return count
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to clear namespace {namespace.value}: {e}")
             return 0
 
@@ -472,7 +507,14 @@ class ResourceManager:
                             category = parts[2]
                             stats["categories"][category] = stats["categories"].get(category, 0) + 1
             return stats
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to get namespace stats: {e}")
             return stats
 

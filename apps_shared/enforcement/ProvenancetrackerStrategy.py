@@ -456,7 +456,14 @@ class ProvenanceTracker:
             async with asyncio.to_thread(self._append_lineage, lineage_json):
                 pass
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to store lineage: {e}")
             raise
 
@@ -486,7 +493,14 @@ class ProvenanceTracker:
                 if data.get("artifact_id") == artifact_id:
                     return ArtifactLineage(**data)
             return None
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to get lineage: {e}")
             return None
 
@@ -535,7 +549,14 @@ class ProvenanceTracker:
                 results.append(ArtifactLineage(**data))
                 if len(results) >= limit:
                     break
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to search lineage: {e}")
         return results
 
@@ -565,7 +586,14 @@ class ProvenanceTracker:
                 logger.info(f"Cleaned up {cleaned} old lineage records")
             return cleaned
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Failed to cleanup lineage: {e}")
             return 0
 
@@ -605,7 +633,14 @@ class ProvenanceTracker:
                 "active_contexts": len(self._active_context),
                 "stats": self._stats,
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             return {"status": "unhealthy", "error": str(e), "stats": self._stats}
 
 

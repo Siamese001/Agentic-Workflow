@@ -383,7 +383,7 @@ class PrecisionInMemoryStorage(PrecisionDistributedStorage):
             self.metrics["keys_count"] = len(self.storage)
 
             return True
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Storage failed for key {key}: {e}")
             return False
 
@@ -398,7 +398,7 @@ class PrecisionInMemoryStorage(PrecisionDistributedStorage):
             else:
                 self.metrics["misses"] += 1
                 return None
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Retrieval failed for key {key}: {e}")
             return None
 
@@ -416,7 +416,7 @@ class PrecisionInMemoryStorage(PrecisionDistributedStorage):
 
                 return True
             return False
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Deletion failed for key {key}: {e}")
             return False
 
@@ -484,7 +484,7 @@ class PrecisionMultiRegionReplicator:
             self.replication_metrics["total_replications"] += 1
 
             return True
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.error(f"Snapshot storage failed: {e}")
             return False
 
@@ -529,7 +529,7 @@ class PrecisionMultiRegionReplicator:
                 else:
                     self.replication_metrics["failed_replications"] += 1
 
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 end_time = datetime.now()
                 latency = (end_time - start_time).total_seconds() * 1000
 
@@ -780,7 +780,7 @@ class PrecisionDistributedStateManager:
                         PrecisionStateType.RECOVERY_POINT,
                     )
                     restored_snapshots += 1
-                except Exception as e:
+                except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                     logger.error(f"Failed to restore snapshot {snapshot_id}: {e}")
 
             self.management_metrics["successful_recoveries"] += 1
@@ -788,7 +788,7 @@ class PrecisionDistributedStateManager:
 
             return True
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             self.management_metrics["failed_recoveries"] += 1
             logger.error(f"System backup restore failed: {e}")
             return False
@@ -859,7 +859,7 @@ class PrecisionHealthChecker:
                 await asyncio.sleep(5)  # Check every 5 seconds
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.error(f"Health check worker error: {e}")
                 await asyncio.sleep(5)
 
@@ -910,7 +910,7 @@ class PrecisionHealthChecker:
                 current_avg * (total_checks - 1) + response_time
             ) / total_checks
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             self.health_status[component_id] = {
                 "status": "error",
                 "last_check": datetime.now().isoformat(),
@@ -970,7 +970,7 @@ class PrecisionDisasterRecoveryManager:
                 await asyncio.sleep(10)  # Check every 10 seconds
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                 logger.error(f"Disaster monitoring error: {e}")
                 await asyncio.sleep(10)
 

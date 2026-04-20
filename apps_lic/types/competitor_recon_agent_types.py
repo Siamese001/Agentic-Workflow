@@ -367,7 +367,14 @@ class CompetitorReconAgent:
                 return self._create_targeted_hook(best_match, target_company)
             else:
                 return self._create_speed_hook(all_moves[0], target_company, candidate_skills)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error generating FOMO hook: {str(e)}")
             return None
 
@@ -387,7 +394,14 @@ class CompetitorReconAgent:
             if hook and hook.is_highly_relevant:
                 return f"P.S. {hook.hook_text}"
             return None
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error getting strategic P.S.: {str(e)}")
             return None
 
@@ -406,7 +420,14 @@ class CompetitorReconAgent:
             filtered = [c for c in competitors if c.lower() != target_company.lower()]
             logger.debug(f"Identified competitors for {target_company}: {filtered}")
             return filtered
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error identifying competitors: {str(e)}")
             return []
 
@@ -426,7 +447,14 @@ class CompetitorReconAgent:
                 return []
             logger.debug(f"Found {len(moves)} moves for {competitor}")
             return moves
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error gathering intel on {competitor}: {str(e)}")
             return []
 
@@ -461,7 +489,14 @@ class CompetitorReconAgent:
                                 break
             logger.debug(f"Found {len(matches)} skill-feature matches")
             return matches
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             logger.error(f"Error finding skill matches: {str(e)}")
             return []
 
@@ -482,7 +517,14 @@ class CompetitorReconAgent:
             gap = f"{target_company} lacks {move.recent_launch} that {move.competitor_name} has"
             return StrategicHook(hook_text=hook_text, relevance_score=match["relevance"], competitive_gap=gap)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Error creating targeted hook: {str(e)}")
             raise
 
@@ -507,7 +549,14 @@ class CompetitorReconAgent:
             gap = f"Development velocity gap with {move.competitor_name}"
             return StrategicHook(hook_text=hook_text, relevance_score=0.6, competitive_gap=gap)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Error creating speed hook: {str(e)}")
             raise
 

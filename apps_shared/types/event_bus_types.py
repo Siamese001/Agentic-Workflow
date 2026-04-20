@@ -421,7 +421,7 @@ class MemoryEventBus(EventBus):
         try:
             json.dumps(event.payload)
         except (TypeError, ValueError) as e:
-            raise ValueError(f'Event payload is not JSON serializable: {e}') from e
+            raise ValueError(f"Event payload is not JSON serializable: {e}") from e
         if channel not in self._queues:
             self._queues[channel] = asyncio.Queue()
             self._stats["channels"] += 1
@@ -584,7 +584,14 @@ class RedisEventBus(EventBus):
         except ImportError:  # guardian: allow-silent-swallow - optional dependency
             raise ImportError("redis package required for RedisEventBus")
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to connect to Redis: {e}")
             raise
 
@@ -600,13 +607,20 @@ class RedisEventBus(EventBus):
         try:
             json.dumps(event.payload)
         except (TypeError, ValueError) as e:
-            raise ValueError(f'Event payload is not JSON serializable: {e}') from e
+            raise ValueError(f"Event payload is not JSON serializable: {e}") from e
         try:
             await self.redis.xadd(channel, event.to_dict(), maxlen=10000)
             self._stats["events_published"] += 1
             logger.debug(f"Published event {event.id} to Redis stream {channel}")
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             logger.error(f"Failed to publish to Redis: {e}")
             await self._handle_connection_error(e)
             raise
@@ -622,7 +636,14 @@ class RedisEventBus(EventBus):
             raise RuntimeError("Event bus not connected")
         try:
             await self.redis.xgroup_create(channel, self.consumer_group, id="0", mkstream=True)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             if "BUSYGROUP" not in str(e):
                 logger.warning(f"Failed to create consumer group: {e}")
         if channel not in self._subscribers:
@@ -674,7 +695,14 @@ class RedisEventBus(EventBus):
                 "channels": len(self._subscribers),
                 "stats": self._stats.copy(),
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             return {"status": "unhealthy", "type": "redis", "error": str(e), "stats": self._stats.copy()}
 
     async def _reader_loop(self, channel: str) -> None:
@@ -701,12 +729,26 @@ class RedisEventBus(EventBus):
                                 await self._notify_subscribers(event, subscribers)
                             await self.redis.xack(channel, self.consumer_group, msg_id)
                             self._stats["events_processed"] += 1
-                        except Exception as e:  # guardian: allow-silent-swallow
+                        except (
+                            OSError,
+                            ValueError,
+                            TypeError,
+                            KeyError,
+                            AttributeError,
+                            RuntimeError,
+                        ) as e:  # guardian: allow-silent-swallow
                             logger.error(f"Failed to process message {msg_id}: {e}")
                             await self.redis.xack(channel, self.consumer_group, msg_id)
             except asyncio.CancelledError:
                 break
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow
                 logger.error(f"Reader error for stream {channel}: {e}")
                 await asyncio.sleep(DEFAULT_SLEEP)
 
@@ -857,7 +899,14 @@ def event_publisher(event_type: EventType, channel: str | None = None):
                     causation_id=trace_id,
                 )
                 return result
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
 
         return async_wrapper

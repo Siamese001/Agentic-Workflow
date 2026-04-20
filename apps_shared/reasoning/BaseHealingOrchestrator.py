@@ -207,7 +207,14 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 agent_type="HealingOrchestrator",
                 observations=[f"HealingOrchestrator {self.__class__.__name__} initialized"],
             )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
 
     def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
@@ -276,7 +283,14 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 "violation_id": violation_id,
                 "used_learned_strategy": strategy is not None,
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[{self.__class__.__name__}] Enhanced healing failed: {e}")
             return {"status": "error", "violation_id": violation_id, "reason": str(e)}
 
@@ -357,10 +371,17 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                     timestamp_utc=int(time.time() * 1000),
                     domain="apps_shared",  # Cross-domain identifier
                 )
-            except Exception:
+            except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError):
                 # System learning bridge unavailable - continue without it
                 pass
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] KG healing cycle persistence skipped: {e}")
         self._verify_dashboard_after_healing(results)
 
@@ -387,7 +408,14 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                         verification = future.result(timeout=30)
                 else:
                     verification = loop.run_until_complete(mcp_verify_dashboard())
-            except Exception:  # guardian: allow-silent-swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ):  # guardian: allow-silent-swallow
                 verification = {}
             if verification.get("success"):
                 Logger.info(f"[{self.__class__.__name__}] Dashboard verification passed after healing")
@@ -395,5 +423,12 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 Logger.warning(
                     f"[{self.__class__.__name__}] Dashboard verification flagged issues: {verification.get('errors', [])}",
                 )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.debug(f"[{self.__class__.__name__}] Dashboard verification skipped: {e}")

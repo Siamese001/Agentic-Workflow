@@ -345,7 +345,7 @@ class OpenTelemetryTracingAdapter:
                     provider.add_span_processor(otlp_processor)
                     if self.enable_logging:
                         logger.info("otlp_grpc_exporter_enabled", extra={"endpoint": endpoint})
-                except Exception as e:
+                except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                     if self.enable_logging:
                         logger.warning("otlp_grpc_exporter_failed", extra={"error": str(e)})
 
@@ -367,7 +367,7 @@ class OpenTelemetryTracingAdapter:
                     provider.add_span_processor(otlp_processor)
                     if self.enable_logging:
                         logger.info("otlp_http_exporter_enabled", extra={"endpoint": endpoint})
-                except Exception as e:
+                except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
                     if self.enable_logging:
                         logger.warning("otlp_http_exporter_failed", extra={"error": str(e)})
 
@@ -614,7 +614,14 @@ class OpenTelemetryTracingAdapter:
                             "duration_ms": (time.time() - start_time) * 1000,
                         },
                     )
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 outcome = "error"
                 span.set_status(Status(StatusCode.ERROR, str(e)))
                 span.record_exception(e)
