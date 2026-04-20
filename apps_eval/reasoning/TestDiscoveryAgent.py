@@ -100,7 +100,7 @@ class TestDiscoveryAgent:
 
             return result
 
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, AttributeError, OSError, ImportError) as exc:
             _log.error("Test discovery failed: %s", exc)
             _emit_records_telemetry_event("p4", "test_discovery_agent", "discovery_error")
             return {

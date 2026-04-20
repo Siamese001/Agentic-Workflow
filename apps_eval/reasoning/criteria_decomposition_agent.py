@@ -237,7 +237,7 @@ class CriteriaDecomposer:
             try:
                 decomp = self.decompose(criteria_id, criteria_text, dimension, weight)
                 results.append(decomp)
-            except Exception as exc:
+            except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as exc:
                 _log.error(f"[CriteriaDecomposer] Failed to decompose {criteria_id}: {exc}")
                 # Return minimal decomposition on failure
                 results.append(

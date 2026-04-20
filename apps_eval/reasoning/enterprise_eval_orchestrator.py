@@ -259,7 +259,7 @@ class EnterpriseEvalOrchestrator:
             )
             _emit_captures_pattern("enterprise", "EnterpriseEvalOrchestrator", "process_complete")
 
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as exc:
             _log.error(f"[EnterpriseEvalOrchestrator] Failed: {exc}", exc_info=True)
             result.status = "failed"
             result.execution_log = self._execution_log

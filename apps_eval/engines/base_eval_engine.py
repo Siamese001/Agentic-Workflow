@@ -159,7 +159,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
                 "error_message": response.error_message,
             }
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, ConnectionError, TimeoutError) as e:
             self.logger.error(f"Qwen evaluation failed: {str(e)}")
             return {
                 "success": False,
