@@ -107,7 +107,7 @@ class ConditionRecommender:
                 days_old = (datetime.now() - appraisal_dt).days
                 if days_old > 180:
                     conditions.append("Updated appraisal required if transaction not closed within 60 days")
-            except Exception:
+            except (ValueError, TypeError, AttributeError):
                 pass
 
         return conditions

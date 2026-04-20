@@ -87,7 +87,7 @@ class CSVMapper:
             result.warnings = json_result.warnings
             result.errors = json_result.errors
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, KeyError, UnicodeDecodeError) as e:
             result.errors.append(f"CSV mapping error: {str(e)}")
 
         return result

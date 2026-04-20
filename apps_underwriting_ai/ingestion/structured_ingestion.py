@@ -176,7 +176,7 @@ class StructuredIngestion:
                                 break
                             except ValueError:
                                 continue
-                    except Exception:
+                    except (ValueError, TypeError, AttributeError):
                         pass  # Keep original if parsing fails
 
             # Standardize fiscal type

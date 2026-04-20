@@ -72,7 +72,7 @@ class XLSXMapper:
             result.warnings = json_result.warnings
             result.errors = json_result.errors
 
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, KeyError, OSError) as e:
             result.errors.append(f"XLSX mapping error: {str(e)}")
 
         return result

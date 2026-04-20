@@ -158,7 +158,7 @@ class FinancialStatementParser:
                             return dt.strftime("%Y-%m-%d")
                         except ValueError:
                             continue
-                except Exception:
+                except (ValueError, TypeError, AttributeError):
                     return date_str
         return None
 
