@@ -712,6 +712,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         llm_response_attrs = {"content", "text", "message"}
         json_loads_nodes: list[ast.Call] = []
         validation_calls: set[str] = set()
+        has_server_side_json_schema = False
         for child in ast.walk(node):
             if not isinstance(child, ast.Call):
                 continue
@@ -727,9 +728,25 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     validation_calls.add(sym)
                 elif tail.startswith("validate_") or tail == "validate":
                     validation_calls.add(sym)
+            # Track OpenAI-style server-side JSON schema enforcement:
+            #   response_format={"type": "json_object"} or
+            #   response_format={"type": "json_schema", ...}
+            # These are pre-validated by the API itself.
+            for kw in child.keywords or []:
+                if kw.arg == "response_format" and isinstance(kw.value, ast.Dict):
+                    for k, v in zip(kw.value.keys, kw.value.values):
+                        if (
+                            isinstance(k, ast.Constant)
+                            and k.value == "type"
+                            and isinstance(v, ast.Constant)
+                            and isinstance(v.value, str)
+                            and v.value in ("json_object", "json_schema")
+                        ):
+                            has_server_side_json_schema = True
         # If json.loads is followed by ANY validation call in the same function,
+        # OR if the upstream LLM call uses server-side JSON schema enforcement,
         # we treat validation as present (conservative — collapses false positives).
-        if json_loads_nodes and not validation_calls:
+        if json_loads_nodes and not (validation_calls or has_server_side_json_schema):
             for call in json_loads_nodes:
                 self._antipatterns.append(
                     (
@@ -770,10 +787,22 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         ``getattr(<something>, X)`` is used with a DYNAMIC (variable) key AND
         there is no ``X in tools`` / ``X in registry`` / ``hasattr`` check in
         the same function body.
+
+        Precision exclusions:
+          - __getattr__ delegation methods (Python protocol — receiver
+            raises AttributeError if not present)
+          - iteration over dir(X)/vars(X) (all members guaranteed real)
+          - iteration over a self._CONSTANT_ attribute (class-level literal)
+          - tqdm/enumerate/sorted/iter wrapping of a literal tuple/list/set
         """
+        # Skip Python's __getattr__ delegation — framework-enforced safety
+        if node.name == "__getattr__":
+            return
         dynamic_lookups: list[tuple[int, str]] = []  # (line, container_name)
         has_membership_check = False
         has_hasattr_check = False
+        has_attr_except = False
+        has_key_except = False
 
         # Container names we consider tool-registry-like
         registry_names = {
@@ -788,13 +817,93 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             "skills",
         }
 
+        # Collect names bound by iteration sources that guarantee the bound
+        # name is a real attribute/key. Safe sources:
+        #   - literal tuple/list/set of constants
+        #   - tqdm/enumerate/sorted/iter/list wrapping a literal collection
+        #   - dir(X) / vars(X) / X.__dict__ / X.__dict__.keys()
+        #   - self._UPPER_CASE class attribute (declared constant collection)
+        def _is_literal_collection(n: ast.expr) -> bool:
+            return isinstance(n, (ast.Tuple, ast.List, ast.Set)) and all(
+                isinstance(e, ast.Constant) for e in n.elts
+            )
+
+        def _is_safe_iter_source(n: ast.expr) -> bool:
+            if _is_literal_collection(n):
+                return True
+            # tqdm(...) / enumerate(...) / sorted(...) / list(...) / iter(...) / tuple(...)
+            if isinstance(n, ast.Call):
+                fname = None
+                if isinstance(n.func, ast.Name):
+                    fname = n.func.id
+                elif isinstance(n.func, ast.Attribute):
+                    fname = n.func.attr
+                if fname in {"tqdm", "enumerate", "sorted", "list", "iter", "tuple", "reversed"}:
+                    if n.args and _is_safe_iter_source(n.args[0]):
+                        return True
+                # dir(X), vars(X)
+                if isinstance(n.func, ast.Name) and n.func.id in ("dir", "vars"):
+                    return True
+            # self._UPPER_CASE (class-level constant collection by convention)
+            if isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name) and n.value.id == "self":
+                if n.attr.startswith("_") and n.attr.replace("_", "").isupper():
+                    return True
+                # also accept plain ALL_CAPS class attr via self.UPPER
+                if n.attr.isupper():
+                    return True
+            # X.__dict__ or X.__annotations__
+            if isinstance(n, ast.Attribute) and n.attr in ("__dict__", "__annotations__"):
+                return True
+            if (
+                isinstance(n, ast.Call)
+                and isinstance(n.func, ast.Attribute)
+                and n.func.attr in ("keys", "values", "items")
+            ):
+                # X.__dict__.keys() / X.__annotations__.keys()
+                if isinstance(n.func.value, ast.Attribute) and n.func.value.attr in (
+                    "__dict__",
+                    "__annotations__",
+                ):
+                    return True
+            return False
+
+        iter_bound_safe: set[str] = set()
         for child in ast.walk(node):
-            # Track membership checks: X in tools / X in registry / X in capabilities
+            if isinstance(child, (ast.ListComp, ast.SetComp, ast.GeneratorExp, ast.DictComp)):
+                for gen in child.generators:
+                    if _is_safe_iter_source(gen.iter) and isinstance(gen.target, ast.Name):
+                        iter_bound_safe.add(gen.target.id)
+            if isinstance(child, ast.For):
+                if _is_safe_iter_source(child.iter) and isinstance(child.target, ast.Name):
+                    iter_bound_safe.add(child.target.id)
+
+        for child in ast.walk(node):
+            # Track membership checks. Accepts:
+            #   X in <Name>       -> X in tools
+            #   X in {...}/[...]  -> X in {"a","b"} (literal set/list/tuple/dict)
             if isinstance(child, ast.Compare):
                 for op, comparator in zip(child.ops, child.comparators):
-                    if isinstance(op, ast.In) and isinstance(comparator, ast.Name):
-                        if comparator.id in registry_names:
+                    if isinstance(op, ast.In):
+                        if isinstance(comparator, ast.Name) and comparator.id in registry_names:
                             has_membership_check = True
+                        elif isinstance(comparator, (ast.Set, ast.List, ast.Tuple, ast.Dict)):
+                            has_membership_check = True
+            # Track try/except blocks wrapping attribute/key access
+            if isinstance(child, ast.Try):
+                for handler in child.handlers:
+                    htype = handler.type
+                    if isinstance(htype, ast.Name):
+                        if htype.id == "AttributeError":
+                            has_attr_except = True
+                        if htype.id in ("KeyError", "LookupError"):
+                            has_key_except = True
+                    elif isinstance(htype, ast.Tuple):
+                        for elt in htype.elts:
+                            if isinstance(elt, ast.Name):
+                                if elt.id == "AttributeError":
+                                    has_attr_except = True
+                                if elt.id in ("KeyError", "LookupError"):
+                                    has_key_except = True
             # Track hasattr / getattr with default
             if isinstance(child, ast.Call) and isinstance(child.func, ast.Name):
                 if child.func.id == "hasattr":
@@ -807,17 +916,19 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     if not has_default and len(child.args) >= 2:
                         # Key must be a variable (ast.Name), not a string constant
                         key_arg = child.args[1]
-                        if isinstance(key_arg, ast.Name):
+                        if isinstance(key_arg, ast.Name) and key_arg.id not in iter_bound_safe:
                             dynamic_lookups.append((child.lineno, "getattr"))
-            # Subscript access: tools[X] where X is a variable
-            if isinstance(child, ast.Subscript):
+            # Subscript access: tools[X] where X is a variable AND ctx is Load
+            # (Store ctx = assignment target like `tools[tool] = True` is not a lookup)
+            if isinstance(child, ast.Subscript) and isinstance(child.ctx, ast.Load):
                 container_expr = child.value
                 if isinstance(container_expr, ast.Name) and container_expr.id in registry_names:
-                    # Key must be variable, not a literal string
                     slice_node = child.slice
-                    if isinstance(slice_node, ast.Name):
+                    if isinstance(slice_node, ast.Name) and slice_node.id not in iter_bound_safe:
                         dynamic_lookups.append((child.lineno, container_expr.id))
-        if dynamic_lookups and not (has_membership_check or has_hasattr_check):
+        if dynamic_lookups and not (
+            has_membership_check or has_hasattr_check or has_attr_except or has_key_except
+        ):
             for line_no, container_name in dynamic_lookups:
                 self._antipatterns.append(
                     (
