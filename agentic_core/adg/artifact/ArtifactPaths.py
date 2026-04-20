@@ -672,6 +672,19 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '%/scripts/%'
                        OR source_file LIKE '%_scripts/%')
                     THEN 'LOW'
+                    -- P3 LOW: double_logging in enforcement/chokepoint/guardrail files.
+                    -- These modules log + re-raise INTENTIONALLY as an observability
+                    -- contract: the enforcement layer must emit a signal AND propagate
+                    -- the error so upstream can react. Downgrade these specific paths
+                    -- only for double_logging (other antipatterns still apply).
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind = 'double_logging'
+                     AND (source_file LIKE '%/enforcement/%'
+                       OR source_file LIKE '%chokepoint%'
+                       OR source_file LIKE '%guardrail%'
+                       OR source_file LIKE '%/validators/%'
+                       OR source_file LIKE 'agentic_core/L6_%')
+                    THEN 'LOW'
                     -- P2 MEDIUM: swallow-class and structural antipatterns in non-production
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',

@@ -548,12 +548,19 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     break
 
         # Doc #7 — 'partial_side_effects'
-        # When the try body performs side effects (writes, network, subprocess, filesystem,
-        # database ops) AND any handler SWALLOWS the exception, the system-of-record can be
-        # left inconsistent: some writes landed, the failing one did not, and the caller
-        # sees success. Uses the existing graph-layer side-effect taxonomy.
+        # When the try body performs MULTIPLE side effects (writes, network, subprocess,
+        # filesystem, database ops) AND any handler SWALLOWS the exception, the
+        # system-of-record can be left inconsistent: some writes landed, the failing one
+        # did not, and the caller sees success. Uses the existing graph-layer
+        # side-effect taxonomy.
+        #
+        # Precision: require >=2 side effects (1 side effect has no "partial" risk —
+        # it either fully succeeded or fully failed, and the swallow is already
+        # tracked by log_and_swallow / silent_exception_swallow / return_none_swallow).
+        # This removes the duplicate-flag pattern where every swallowing handler with
+        # a single write was triple-counted.
         side_effect_count = self._count_side_effects_in_body(node.body)
-        if side_effect_count >= 1 and node.handlers:
+        if side_effect_count >= 2 and node.handlers:
             for handler in node.handlers:
                 if self._handler_is_swallowing(handler):
                     self._antipatterns.append(
