@@ -763,20 +763,160 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             edge_rows,
         )
 
+        # -----------------------------------------------------------------
+        # Tier 1 edge-based antipattern detectors (plan agentic-antipattern-tier1-9f2c8a)
+        # These insert SYNTHETIC antipattern edges AFTER the main edge insert
+        # so downstream violations/severity CASE picks them up.
+        # -----------------------------------------------------------------
+
+        # A3 — missing_hitl_on_irreversible
+        # Flag call edges from any source_file under apps_* or agentic_core/ whose
+        # symbol resolves to a known irreversible operation, where the source_file
+        # has NO edge importing a HITL checkpoint module.
+        # Irreversible ops (conservative allow-list): shutil.rmtree, os.remove,
+        # os.unlink, pathlib.Path.unlink, Path.rmdir, os.rmdir.
+        # A "HITL-aware" file is one that imports from a module whose name
+        # contains 'hitl', 'chokepoint', 'confirm', 'approval', or 'ask_user'.
+        conn.execute(
+            """
+            INSERT INTO edges(src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
+            SELECT
+                MIN(e.src_id), MIN(e.dst_id), 'antipattern', 'missing_hitl_on_irreversible',
+                e.source_file, e.line_no, MIN(e.symbol)
+            FROM edges e
+            WHERE e.relation_type IN ('writes_to','emits_side_effect','resolves_callsite','calls')
+              AND (
+                   e.symbol LIKE '%shutil.rmtree%'
+                OR e.symbol LIKE '%os.remove%'
+                OR e.symbol LIKE '%os.unlink%'
+                OR e.symbol LIKE '%os.rmdir%'
+                OR e.symbol LIKE '%Path.unlink%'
+                OR e.symbol LIKE '%Path.rmdir%'
+              )
+              AND (
+                   e.source_file LIKE 'agentic_core/%'
+                OR e.source_file LIKE 'apps_%'
+                OR e.source_file LIKE 'system_learning/%'
+              )
+              AND e.symbol NOT LIKE '%tmp_%'
+              AND e.symbol NOT LIKE '%temp_%'
+              AND e.source_file NOT LIKE '%/scripts/%'
+              AND e.source_file NOT LIKE '%_scripts/%'
+              AND e.source_file NOT LIKE 'tests/%'
+              AND e.source_file NOT LIKE '%/tests/%'
+              AND NOT EXISTS (
+                  SELECT 1 FROM edges i
+                  WHERE i.relation_type = 'imports'
+                    AND i.source_file = e.source_file
+                    AND (
+                         i.symbol LIKE '%hitl%'
+                      OR i.symbol LIKE '%chokepoint%'
+                      OR i.symbol LIKE '%ask_user%'
+                      OR i.symbol LIKE '%approval%'
+                      OR i.symbol LIKE '%confirm%'
+                    )
+              )
+            GROUP BY e.source_file, e.line_no
+            """,
+        )
+
+        # A5 — chokepoint_bypass
+        conn.execute(
+            """
+            INSERT INTO edges(src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
+            SELECT
+                MIN(e.src_id), MIN(e.dst_id), 'antipattern', 'chokepoint_bypass',
+                e.source_file, e.line_no, MIN(e.symbol)
+            FROM edges e
+            WHERE e.relation_type IN ('writes_to','emits_side_effect','resolves_callsite','calls')
+              AND (
+                   e.symbol LIKE '%subprocess.run%'
+                OR e.symbol LIKE '%subprocess.Popen%'
+                OR e.symbol LIKE '%subprocess.check_output%'
+                OR e.symbol LIKE '%requests.get%'
+                OR e.symbol LIKE '%requests.post%'
+                OR e.symbol LIKE '%requests.put%'
+                OR e.symbol LIKE '%requests.delete%'
+                OR e.symbol LIKE '%urllib.request.urlopen%'
+              )
+              AND (
+                   e.source_file LIKE 'agentic_core/L1_%'
+                OR e.source_file LIKE 'agentic_core/L2_%'
+                OR e.source_file LIKE 'agentic_core/L3_%'
+                OR e.source_file LIKE 'apps_%'
+              )
+              AND e.source_file NOT LIKE '%/scripts/%'
+              AND e.source_file NOT LIKE '%_scripts/%'
+              AND e.source_file NOT LIKE 'tests/%'
+              AND e.source_file NOT LIKE '%/tests/%'
+              AND NOT EXISTS (
+                  SELECT 1 FROM edges i
+                  WHERE i.relation_type = 'imports'
+                    AND i.source_file = e.source_file
+                    AND (
+                         i.symbol LIKE '%chokepoint%'
+                      OR i.symbol LIKE '%guardrail%'
+                      OR i.symbol LIKE '%safety_plane%'
+                    )
+              )
+              AND e.source_file NOT LIKE '%chokepoint%'
+              AND e.source_file NOT LIKE '%guardrail%'
+              AND e.source_file NOT LIKE 'agentic_core/L5_%'
+              AND e.source_file NOT LIKE 'agentic_core/L6_%'
+            GROUP BY e.source_file, e.line_no
+            """,
+        )
+
         # Populate violations from governance edges with severity derivation
+        # Severity assignment SSOT:
+        #   CRITICAL antipattern kinds → always HIGH (P1 in prod, MEDIUM elsewhere)
+        #     - agent-safety: missing_hitl_on_irreversible, chokepoint_bypass
+        #   HIGH antipattern kinds (base) → HIGH in production layers, MEDIUM elsewhere
+        #     - error-handling: broad_exception_catch, silent_exception_swallow,
+        #       log_and_swallow, return_none_swallow, exception_type_erasure,
+        #       return_in_finally
+        #     - agent-safety: unbounded_agent_loop, llm_output_unvalidated,
+        #       hallucinated_tool_name
+        #   MEDIUM antipattern kinds → always MEDIUM (P2)
+        #     - partial_side_effects, default_fallback_masking, double_logging,
+        #       retry_without_backoff, unreachable_after_raise, bare_except,
+        #       blocking_call_in_async, cleanup_raises_over_original
+        #   Everything else antipattern → LOW (P3)
+        #     - throw_for_normal_flow, global_state_mutation, hardcoded_path,
+        #       mutable_default_arg, star_import_use
         conn.execute(
             """INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)
             SELECT id, relation_type, symbol, source_file, line_no,
                 CASE
+                    -- CRITICAL agent-safety patterns (always P0)
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('missing_hitl_on_irreversible','chokepoint_bypass')
+                    THEN 'CRITICAL'
+                    -- HIGH severity in production layers (P1)
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
-                                       'log_and_swallow','return_none_swallow')
+                                       'log_and_swallow','return_none_swallow',
+                                       'exception_type_erasure','return_in_finally',
+                                       'unbounded_agent_loop','llm_output_unvalidated',
+                                       'hallucinated_tool_name')
                      AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
                     THEN 'HIGH'
+                    -- Same HIGH-severity kinds outside production → MEDIUM (P2)
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
-                                       'log_and_swallow','return_none_swallow')
+                                       'log_and_swallow','return_none_swallow',
+                                       'exception_type_erasure','return_in_finally',
+                                       'unbounded_agent_loop','llm_output_unvalidated',
+                                       'hallucinated_tool_name')
                     THEN 'MEDIUM'
+                    -- Always-MEDIUM kinds (P2 regardless of layer)
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('partial_side_effects','default_fallback_masking',
+                                       'double_logging','retry_without_backoff',
+                                       'unreachable_after_raise','bare_except',
+                                       'blocking_call_in_async','cleanup_raises_over_original')
+                    THEN 'MEDIUM'
+                    -- All other antipatterns → P3 style warnings
                     WHEN relation_type = 'antipattern' THEN 'LOW'
                     ELSE 'MEDIUM'
                 END as severity

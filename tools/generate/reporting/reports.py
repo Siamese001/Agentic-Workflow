@@ -207,7 +207,7 @@ def _print_defect_table(
                     "SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'",
                 ).fetchone()[0]
 
-                for _sev in tqdm(("HIGH", "MEDIUM", "LOW"), desc="Processing", unit="item"):
+                for _sev in tqdm(("CRITICAL", "HIGH", "MEDIUM", "LOW"), desc="Processing", unit="item"):
                     _cat_data[_sev] = _cc.execute(
                         f"""
                         SELECT e.edge_kind, COUNT(*) cnt,
@@ -602,10 +602,11 @@ def _print_defect_table(
         Band.P2.value: _gross_p2,
         Band.P3.value: _gross_p3,
     }
-    # Per-kind rows keyed by the SSOT severity for each band (P0 has no by_kind rows
-    # today because no kind-level data is produced for CRITICAL antipatterns yet).
+    # Per-kind rows keyed by the SSOT severity for each band. Tier 1 agentic
+    # antipatterns (missing_hitl_on_irreversible, chokepoint_bypass) plus
+    # A4 write_bypass_uwg rollup now produce CRITICAL kind-level data → P0 by_kind.
     _by_kind_by_band = {
-        Band.P0.value: [],
+        Band.P0.value: _build_kind_rows(Severity.CRITICAL.value, _gross_p0),
         Band.P1.value: _build_kind_rows(Severity.HIGH.value, _gross_p1),
         Band.P2.value: _build_kind_rows(Severity.MEDIUM.value, _gross_p2),
         Band.P3.value: _build_kind_rows(Severity.LOW.value, _gross_p3),

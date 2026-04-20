@@ -446,6 +446,115 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             edge_rows,
         )
 
+        # -----------------------------------------------------------------
+        # Tier 1 edge-based antipattern detectors (plan agentic-antipattern-tier1-9f2c8a)
+        # A3 missing_hitl_on_irreversible — file-level heuristic: flag irreversible
+        # filesystem operations from production/app code when the source file does
+        # not import any HITL / chokepoint / approval module.
+        #
+        # Precision exclusions (avoid false positives):
+        #  - tempfile cleanup (symbol contains 'tmp_' or 'temp_' — atomic write pattern)
+        #  - admin/ops scripts under `scripts/` or `*_scripts/` subdirs
+        #  - tests under `tests/`
+        #  - one synthetic edge per (file, line, symbol) to avoid double-counting
+        #    when the same call is indexed under both writes_to and emits_side_effect.
+        # -----------------------------------------------------------------
+        conn.execute(
+            """
+            INSERT INTO edges(src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
+            SELECT
+                MIN(e.src_id), MIN(e.dst_id), 'antipattern', 'missing_hitl_on_irreversible',
+                e.source_file, e.line_no, MIN(e.symbol)
+            FROM edges e
+            WHERE e.relation_type IN ('writes_to','emits_side_effect','resolves_callsite','calls')
+              AND (
+                   e.symbol LIKE '%shutil.rmtree%'
+                OR e.symbol LIKE '%os.remove%'
+                OR e.symbol LIKE '%os.unlink%'
+                OR e.symbol LIKE '%os.rmdir%'
+                OR e.symbol LIKE '%Path.unlink%'
+                OR e.symbol LIKE '%Path.rmdir%'
+              )
+              AND (
+                   e.source_file LIKE 'agentic_core/%'
+                OR e.source_file LIKE 'apps_%'
+                OR e.source_file LIKE 'system_learning/%'
+              )
+              -- Precision: tempfile cleanup is an atomic-write pattern, not a user-data delete
+              AND e.symbol NOT LIKE '%tmp_%'
+              AND e.symbol NOT LIKE '%temp_%'
+              -- Precision: admin/ops scripts and tests are not agent-executed
+              AND e.source_file NOT LIKE '%/scripts/%'
+              AND e.source_file NOT LIKE '%_scripts/%'
+              AND e.source_file NOT LIKE 'tests/%'
+              AND e.source_file NOT LIKE '%/tests/%'
+              AND NOT EXISTS (
+                  SELECT 1 FROM edges i
+                  WHERE i.relation_type = 'imports'
+                    AND i.source_file = e.source_file
+                    AND (
+                         i.symbol LIKE '%hitl%'
+                      OR i.symbol LIKE '%chokepoint%'
+                      OR i.symbol LIKE '%ask_user%'
+                      OR i.symbol LIKE '%approval%'
+                      OR i.symbol LIKE '%confirm%'
+                    )
+              )
+            GROUP BY e.source_file, e.line_no
+            """,
+        )
+
+        # A5 chokepoint_bypass — file-level heuristic: flag subprocess / network
+        # calls from L1/L2/L3 production layers and apps_* that do not import
+        # from a chokepoint / guardrail / safety_plane module. Exclude L5/L6
+        # (safety-plane and observability are authorities, not consumers).
+        conn.execute(
+            """
+            INSERT INTO edges(src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
+            SELECT
+                MIN(e.src_id), MIN(e.dst_id), 'antipattern', 'chokepoint_bypass',
+                e.source_file, e.line_no, MIN(e.symbol)
+            FROM edges e
+            WHERE e.relation_type IN ('writes_to','emits_side_effect','resolves_callsite','calls')
+              AND (
+                   e.symbol LIKE '%subprocess.run%'
+                OR e.symbol LIKE '%subprocess.Popen%'
+                OR e.symbol LIKE '%subprocess.check_output%'
+                OR e.symbol LIKE '%requests.get%'
+                OR e.symbol LIKE '%requests.post%'
+                OR e.symbol LIKE '%requests.put%'
+                OR e.symbol LIKE '%requests.delete%'
+                OR e.symbol LIKE '%urllib.request.urlopen%'
+              )
+              AND (
+                   e.source_file LIKE 'agentic_core/L1_%'
+                OR e.source_file LIKE 'agentic_core/L2_%'
+                OR e.source_file LIKE 'agentic_core/L3_%'
+                OR e.source_file LIKE 'apps_%'
+              )
+              -- Precision: admin/ops scripts and tests are not agent-executed
+              AND e.source_file NOT LIKE '%/scripts/%'
+              AND e.source_file NOT LIKE '%_scripts/%'
+              AND e.source_file NOT LIKE 'tests/%'
+              AND e.source_file NOT LIKE '%/tests/%'
+              AND NOT EXISTS (
+                  SELECT 1 FROM edges i
+                  WHERE i.relation_type = 'imports'
+                    AND i.source_file = e.source_file
+                    AND (
+                         i.symbol LIKE '%chokepoint%'
+                      OR i.symbol LIKE '%guardrail%'
+                      OR i.symbol LIKE '%safety_plane%'
+                    )
+              )
+              AND e.source_file NOT LIKE '%chokepoint%'
+              AND e.source_file NOT LIKE '%guardrail%'
+              AND e.source_file NOT LIKE 'agentic_core/L5_%'
+              AND e.source_file NOT LIKE 'agentic_core/L6_%'
+            GROUP BY e.source_file, e.line_no
+            """,
+        )
+
         # Populate violations from governance edges with severity derivation
         conn.execute(
             """INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)
@@ -486,6 +595,24 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     WHEN relation_type = 'antipattern'
                      AND edge_kind = 'hardcoded_secret'
                     THEN 'HIGH'
+                    -- P0 CRITICAL agent-safety (plan agentic-antipattern-tier1-9f2c8a)
+                    -- Missing HITL on irreversible ops + chokepoint bypass.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('missing_hitl_on_irreversible','chokepoint_bypass')
+                    THEN 'CRITICAL'
+                    -- P1 HIGH agent-safety in production (Tier 1 agentic):
+                    -- unbounded agent loops, unvalidated LLM output, hallucinated
+                    -- tool names, return-in-finally.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('unbounded_agent_loop','llm_output_unvalidated',
+                                       'hallucinated_tool_name','return_in_finally')
+                     AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
+                    THEN 'HIGH'
+                    -- P2 MEDIUM: same agent-safety kinds outside production
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('unbounded_agent_loop','llm_output_unvalidated',
+                                       'hallucinated_tool_name','return_in_finally')
+                    THEN 'MEDIUM'
                     -- P2 MEDIUM: swallow-class and structural antipatterns in non-production
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',

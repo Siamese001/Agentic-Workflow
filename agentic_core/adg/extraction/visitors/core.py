@@ -626,10 +626,195 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        """Detect global state mutation + mutable default args."""
+        """Detect global state mutation + mutable default args + agent-safety patterns."""
         self._check_global_state_mutation(node)
         self._check_mutable_default_args(node)
+        # Tier 1 agent-safety detectors (plan agentic-antipattern-tier1-9f2c8a)
+        self._check_unbounded_agent_loop(node)
+        self._check_llm_output_unvalidated(node)
+        self._check_hallucinated_tool_name(node)
         self.generic_visit(node)
+
+    # -----------------------------------------------------------------
+    # Tier 1 agentic anti-pattern detectors
+    # -----------------------------------------------------------------
+
+    def _is_in_agent_method(self, func_name: str) -> bool:
+        """True if a function name looks like an agent lifecycle method.
+
+        Conservative: only flags methods named ``heal``, ``run``, ``step``,
+        ``execute``, ``loop``, ``dispatch``, ``react``. This keeps FPs low
+        for generic utility loops.
+        """
+        return func_name in {
+            "heal", "run", "step", "execute", "loop", "dispatch", "react",
+            "run_loop", "agent_loop", "reason_act", "tool_loop",
+        }
+
+    def _check_unbounded_agent_loop(self, node: ast.FunctionDef) -> None:
+        """Doc A1 — unbounded agent reasoning loop.
+
+        Flags ``while True:`` (or ``while 1:``) inside an agent lifecycle
+        method whose body contains NO ``break`` at top level AND NO bounded
+        loop counter comparison. This is the classic ReAct loop that cannot
+        terminate on persistent tool failure.
+
+        Conservative: requires method name to match agent lifecycle set.
+        """
+        if not self._is_in_agent_method(node.name):
+            return
+        # Only consider top-level while-True loops in the function body
+        for stmt in node.body:
+            if not isinstance(stmt, ast.While):
+                continue
+            # Must be 'while True:' or 'while 1:'
+            test = stmt.test
+            is_unconditional = (
+                (isinstance(test, ast.Constant) and test.value in (True, 1))
+                or (isinstance(test, ast.Name) and test.id == "True")
+            )
+            if not is_unconditional:
+                continue
+            # Check for a top-level break in the loop body
+            has_break = any(isinstance(s, ast.Break) for s in stmt.body)
+            # Check for a top-level return in the loop body (also escapes)
+            has_return = any(isinstance(s, ast.Return) for s in stmt.body)
+            if has_break or has_return:
+                continue
+            # Check for raise at top level (also escapes)
+            has_raise = any(isinstance(s, ast.Raise) for s in stmt.body)
+            if has_raise:
+                continue
+            self._antipatterns.append(
+                (
+                    stmt.lineno,
+                    "unbounded_agent_loop",
+                    node.name,
+                )
+            )
+
+    def _check_llm_output_unvalidated(self, node: ast.FunctionDef) -> None:
+        """Doc A2 — LLM output consumed without schema validation.
+
+        Conservative pattern: flag when ``json.loads(...)`` is called on an
+        argument whose expression traces to an LLM response surface
+        (``.content``, ``.choices[...].message.content``, ``.text`` on a
+        known-LLM-response variable) AND the result is NOT passed to
+        ``pydantic`` / ``.parse_obj`` / ``.model_validate`` / ``validate_*``
+        anywhere in the same function body.
+        """
+        llm_response_attrs = {"content", "text", "message"}
+        json_loads_nodes: list[ast.Call] = []
+        validation_calls: set[str] = set()
+        for child in ast.walk(node):
+            if not isinstance(child, ast.Call):
+                continue
+            sym = self._extract_symbol(child.func)
+            if sym == "json.loads":
+                # Check if argument traces to an LLM response surface
+                if child.args and self._expr_traces_to_llm_response(child.args[0], llm_response_attrs):
+                    json_loads_nodes.append(child)
+            # Track validation calls
+            if sym:
+                tail = sym.rsplit(".", 1)[-1]
+                if tail in {"parse_obj", "model_validate", "parse_raw", "model_validate_json"}:
+                    validation_calls.add(sym)
+                elif tail.startswith("validate_") or tail == "validate":
+                    validation_calls.add(sym)
+        # If json.loads is followed by ANY validation call in the same function,
+        # we treat validation as present (conservative — collapses false positives).
+        if json_loads_nodes and not validation_calls:
+            for call in json_loads_nodes:
+                self._antipatterns.append(
+                    (
+                        call.lineno,
+                        "llm_output_unvalidated",
+                        "json.loads(llm_response)",
+                    )
+                )
+
+    def _expr_traces_to_llm_response(
+        self, expr: ast.expr, response_attrs: set[str]
+    ) -> bool:
+        """Shallow trace: does this expression look like an LLM response surface?
+
+        Matches ``X.content``, ``X.text``, ``X.choices[i].message.content``,
+        ``X.choices[0].text``. No cross-statement dataflow — purely structural.
+        """
+        cur: ast.expr = expr
+        depth = 0
+        while depth < 8:
+            depth += 1
+            if isinstance(cur, ast.Attribute):
+                if cur.attr in response_attrs:
+                    return True
+                cur = cur.value
+                continue
+            if isinstance(cur, ast.Subscript):
+                cur = cur.value
+                continue
+            if isinstance(cur, ast.Call):
+                # e.g., response.json() — don't chase further
+                return False
+            return False
+        return False
+
+    def _check_hallucinated_tool_name(self, node: ast.FunctionDef) -> None:
+        """Doc A15 — hallucinated tool/API name not caught pre-execution.
+
+        Conservative pattern: flag when ``tools[X]`` or ``toolkit[X]`` or
+        ``getattr(<something>, X)`` is used with a DYNAMIC (variable) key AND
+        there is no ``X in tools`` / ``X in registry`` / ``hasattr`` check in
+        the same function body.
+        """
+        dynamic_lookups: list[tuple[int, str]] = []  # (line, container_name)
+        has_membership_check = False
+        has_hasattr_check = False
+
+        # Container names we consider tool-registry-like
+        registry_names = {
+            "tools", "toolkit", "tool_registry", "registry", "capability_registry",
+            "capabilities", "tool_map", "actions", "skills",
+        }
+
+        for child in ast.walk(node):
+            # Track membership checks: X in tools / X in registry / X in capabilities
+            if isinstance(child, ast.Compare):
+                for op, comparator in zip(child.ops, child.comparators):
+                    if isinstance(op, ast.In) and isinstance(comparator, ast.Name):
+                        if comparator.id in registry_names:
+                            has_membership_check = True
+            # Track hasattr / getattr with default
+            if isinstance(child, ast.Call) and isinstance(child.func, ast.Name):
+                if child.func.id == "hasattr":
+                    has_hasattr_check = True
+                # getattr(obj, name, default) is safe — 3rd positional arg or 'default' kwarg
+                if child.func.id == "getattr":
+                    has_default = len(child.args) >= 3 or any(
+                        kw.arg == "default" for kw in (child.keywords or [])
+                    )
+                    if not has_default and len(child.args) >= 2:
+                        # Key must be a variable (ast.Name), not a string constant
+                        key_arg = child.args[1]
+                        if isinstance(key_arg, ast.Name):
+                            dynamic_lookups.append((child.lineno, "getattr"))
+            # Subscript access: tools[X] where X is a variable
+            if isinstance(child, ast.Subscript):
+                container_expr = child.value
+                if isinstance(container_expr, ast.Name) and container_expr.id in registry_names:
+                    # Key must be variable, not a literal string
+                    slice_node = child.slice
+                    if isinstance(slice_node, ast.Name):
+                        dynamic_lookups.append((child.lineno, container_expr.id))
+        if dynamic_lookups and not (has_membership_check or has_hasattr_check):
+            for line_no, container_name in dynamic_lookups:
+                self._antipatterns.append(
+                    (
+                        line_no,
+                        "hallucinated_tool_name",
+                        container_name,
+                    )
+                )
 
     def _check_global_state_mutation(self, node: ast.FunctionDef) -> None:
         """Check for assignment to module-level UPPER_CASE names, excluding lazy-init guards."""

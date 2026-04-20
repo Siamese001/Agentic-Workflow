@@ -60,6 +60,18 @@ class AntipatternCategory(str, Enum):
     UNBOUNDED_REGISTRY_GROWTH = "unbounded_registry_growth"
     EXACT_MATCH_ONLY_CLASSIFIER = "exact_match_only_classifier"
 
+    # Tier 1 agentic antipatterns (plan agentic-antipattern-tier1-9f2c8a)
+    # Error-handling (names match scanner edge_kind strings in visitors/core.py)
+    EXCEPTION_TYPE_ERASURE = "exception_type_erasure"
+    CLEANUP_RAISES_OVER_ORIGINAL = "cleanup_raises_over_original"
+    RETURN_IN_FINALLY = "return_in_finally"
+    # Agent-safety (new detectors)
+    UNBOUNDED_AGENT_LOOP = "unbounded_agent_loop"
+    LLM_OUTPUT_UNVALIDATED = "llm_output_unvalidated"
+    MISSING_HITL_ON_IRREVERSIBLE = "missing_hitl_on_irreversible"
+    CHOKEPOINT_BYPASS = "chokepoint_bypass"
+    HALLUCINATED_TOOL_NAME = "hallucinated_tool_name"
+
 
 _SEVERITY_MAP: dict[AntipatternCategory, AntipatternSeverity] = {
     # Original static scanner patterns
@@ -95,6 +107,15 @@ _SEVERITY_MAP: dict[AntipatternCategory, AntipatternSeverity] = {
     AntipatternCategory.UNBOUNDED_REGISTRY_GROWTH: AntipatternSeverity.MEDIUM,
     AntipatternCategory.PLACEHOLDER_VALUE_IN_LIVE_CONFIG: AntipatternSeverity.LOW,
     AntipatternCategory.EXACT_MATCH_ONLY_CLASSIFIER: AntipatternSeverity.LOW,
+    # Tier 1 agentic antipatterns
+    AntipatternCategory.MISSING_HITL_ON_IRREVERSIBLE: AntipatternSeverity.CRITICAL,
+    AntipatternCategory.CHOKEPOINT_BYPASS: AntipatternSeverity.CRITICAL,
+    AntipatternCategory.EXCEPTION_TYPE_ERASURE: AntipatternSeverity.HIGH,
+    AntipatternCategory.RETURN_IN_FINALLY: AntipatternSeverity.HIGH,
+    AntipatternCategory.UNBOUNDED_AGENT_LOOP: AntipatternSeverity.HIGH,
+    AntipatternCategory.LLM_OUTPUT_UNVALIDATED: AntipatternSeverity.HIGH,
+    AntipatternCategory.HALLUCINATED_TOOL_NAME: AntipatternSeverity.HIGH,
+    AntipatternCategory.CLEANUP_RAISES_OVER_ORIGINAL: AntipatternSeverity.MEDIUM,
 }
 
 
