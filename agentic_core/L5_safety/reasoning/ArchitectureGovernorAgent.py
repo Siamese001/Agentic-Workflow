@@ -555,7 +555,10 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         Logger.warning(
                             f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}",
                         )
-                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    RuntimeError,
+                    OSError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.error(f"[{agent_name}] SSOT Cleanup Sub-routine failed: {e}")
             return {
                 "violations_found": violations_found,
@@ -670,7 +673,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "suggestion": "Relocate to approved subfolder (reasoning/, enforcement/, validators/, etc.)",
                             },
                         )
-                except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError):
                     raise
                 for violation in tqdm(report.violations, desc="Processing", unit="item"):
                     if "must end with 'Agent'" in violation.message:
@@ -1052,7 +1055,10 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     archived_count += 1
                 else:
                     Logger.warning(f"  [DEDUP] Failed to archive {file_path.name}: {result.error}")
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.error(f"  [DEDUP] Error archiving {file_path.name}: {e}")
         return archived_count
 
@@ -1144,7 +1150,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 relative_path = str(file_path.relative_to(self.project_root)).replace("\\", "/")
                 file_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()
                 manifest["files"][relative_path] = file_hash
-            except (OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (OSError, RuntimeError, ValueError, TypeError):
                 raise
         _wg.ensure_dir(self.baseline_dir)
         baseline_path = self.baseline_dir / "golden_baseline.json"
@@ -1180,8 +1186,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "severity": "CRITICAL",
                         },
                     )
-        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Drift check failed: {e}")
+            raise
         return violations
 
     def _persist_audit_report(
@@ -1377,7 +1384,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "severity": "ERROR",
                         },
                     )
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError):
             raise
         try:
             from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
@@ -1396,7 +1403,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                                 "severity": "CRITICAL",
                             },
                         )
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError):
             raise
         audit_results["stats"]["violations_found"] = len(audit_results["violations"])
         audit_results["target_territories"] = target_territories
