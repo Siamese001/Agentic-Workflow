@@ -199,7 +199,7 @@ def load_rg_specs(force_reload: bool = False) -> RGAgentSpecs:
         specs = RGAgentSpecs(**raw_data)
         _RG_SPECS_CACHE = specs
         return specs
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, ValueError, TypeError, AttributeError, KeyError) as e:
         Logger.error(f"Failed to load RG agent specs: {e}")
         Logger.info("Falling back to default configuration")
         specs = RGAgentSpecs()

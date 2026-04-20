@@ -419,20 +419,12 @@ class OutreachSignalRouterAgent(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by OutreachSignalRouterAgent."""
         violation_type = violation.get("type", "unknown")
-        try:
-            return {
-                "status": "skipped",
-                "details": f"OutreachSignalRouterAgent heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
-        except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"OutreachSignalRouterAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+        return {
+            "status": "skipped",
+            "details": f"OutreachSignalRouterAgent heal() not yet implemented for {violation_type}",
+            "artifacts": [],
+            "errors": [],
+        }
 
 
 class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):

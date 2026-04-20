@@ -31,7 +31,15 @@ class RetryExecutor:
         for attempt in range(config.max_attempts):
             try:
                 return await func(*args, **kwargs)
-            except Exception as e:
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+                AttributeError,
+                ConnectionError,
+                TimeoutError,
+                OSError,
+            ) as e:
                 last_error = e
                 if attempt < config.max_attempts - 1:
                     import asyncio

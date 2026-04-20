@@ -320,7 +320,7 @@ class BackupManager:
                     else:
                         shutil.copytree(item, dest, dirs_exist_ok=overwrite)
             return True
-        except Exception as e:
+        except (OSError, shutil.Error, ValueError) as e:
             print(f"Error restoring backup: {e}")
             return False
 
