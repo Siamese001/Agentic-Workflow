@@ -249,6 +249,22 @@ _sr_mandate = """
      DEGRADED FALLBACK (graph queries only): grep is ONLY allowed after mcp1_adg_health confirms red.
        Required: call mcp1_adg_health first → if red, emit DEGRADED_FALLBACK: reason=<adg_red|snapshot_missing|...>
        Silent grep-for-graph (no health check + no reason code) = POLICY VIOLATION.
+  0b. REFACTORING-ONLY — ADG GRAPH LAYER IS PRIMARY (constitutional §22):
+     If this task involves refactoring / wave planning / antipattern burndown / prioritization:
+     REQUIRED BEFORE target selection:
+       (i)   Hotspot report — query `mv_graph_reverse_dependency_hotspots`,
+             `mv_debt_concentration_hotspots`, `mv_hotspot_centrality` via the
+             ADG SQLite snapshot. Plan MUST contain `## ADG_HOTSPOT_REPORT`.
+       (ii)  Graph-layer evidence — cite at least 3 materialized views (`mv_*`),
+             at least 1 semantic edge beyond `imports` (`flows_to`, `reads_from`,
+             `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite`)
+             OR 1 pre-built P-view (`v_p0_*`, `v_p1_*`, `v_p2_*`, `v_p3_*`).
+             Plan MUST contain `## ADG_GRAPH_LAYER_EVIDENCE`.
+       (iii) Wave ordering — derive from `mcp1_adg_p0_wave_plan` output,
+             not from alphabetical / "feels important" intuition.
+     FORBIDDEN: refactoring plans citing only raw `edges`/`violations` counts.
+     Rules: adg-hotspot-enforcement.md, adg-graph-layer-enforcement.md
+     CI gate: ops_scripts/ci/check_graph_layer_evidence.py
   1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
   2. Call create_task (task_manager MCP) to register this task with goal + definitions of done
   3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity

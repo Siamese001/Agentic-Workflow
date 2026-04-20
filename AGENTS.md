@@ -34,7 +34,7 @@ Keep Reasoning / Routing / Execution / Verification separate. No edits before `S
 | Server ID | Use For | Example Tools | Notes |
 |---|---|---|---|
 | `GitKraken` | Git operations, GitLens, pull requests, issues | `git_status, git_add_or_commit, git_log_or_diff, pull_request_create` | Use as the git/PR authority. |
-| `adg_sqlite` | Dependency graph, blast radius, layer analysis | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file` | Primary authority for structural dependencies. |
+| `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan` | Primary authority for structural dependencies AND refactoring analysis. Constitutional §22: mv_* materialized views, v_p0_*/v_p1_*/v_p2_*/v_p3_* P-views, and semantic edges (flows_to, reads_from, writes_to, emits_side_effect, controls_flow, resolves_callsite) MUST drive T2/T3 refactoring plans. |
 | `deepwiki` | External GitHub repository docs and wiki Q&A | `read_wiki_structure, read_wiki_contents, ask_question` | Do not use for this repo's own code. |
 | `enhanced_http` | Programmatic HTTP calls, webhooks, endpoint checks | `http_get, http_post, test_connectivity, batch_requests` | Use for autonomous/programmatic HTTP only. |
 | `filesystem` | Filesystem MCP operations and directory traversal | `read_text_file, read_multiple_files, directory_tree, write_file` | Prefer native reads for ordinary file reads when available. |

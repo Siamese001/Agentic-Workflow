@@ -20,9 +20,18 @@ Unified skill that consolidates `dependency-graph-analysis`, `scope-guard`, and 
 | imports / consumers / blast radius / fanin / fanout | `adg_sqlite` fanin/fanout | **FORBIDDEN** | Only after `mcp1_adg_health` red — emit `DEGRADED_FALLBACK: reason=...` |
 | function / class / constant name in `*.py` | `adg_sqlite` find_node | **FORBIDDEN** | Same |
 | Layer analysis (L0–L6) | `adg_sqlite` nodes_by_layer | **FORBIDDEN** | Same |
+| Refactoring hotspots / centrality / chokepoints / critical paths | `adg_sqlite` SQL query on `mv_*` materialized views (e.g. `mv_graph_reverse_dependency_hotspots`, `mv_hotspot_centrality`, `mv_graph_chokepoint_bridges`, `mv_debt_concentration_hotspots`) | **FORBIDDEN** | Fallback: manual `adg_edge_fanin` walk — must cite why MV is unavailable |
+| Pre-classified concerns (apps→infra, layer bypass, mis-layered, duplicated adapters, etc.) | `adg_sqlite` SQL query on `v_p0_*`, `v_p1_*`, `v_p2_*`, `v_p3_*` P-views | **FORBIDDEN** | — |
+| Dataflow / side-effects / call resolution (what reads/writes X, what triggers Y, who calls Z) | `adg_sqlite` semantic edges: `flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite` | **FORBIDDEN** | — |
 | Semantic / concept / meaning | `vector_db` semantic_search | explicit only | Explicit reason required |
 | Runtime traces / anomalies / spans | `otel_mcp` | — | — |
 | Literal text / TODOs / comments / non-Python | `grep_search` / `filesystem` | ✅ ALWAYS OK | — |
+
+**Graph-layer primary rule (Constitutional §22):** for any refactoring,
+wave planning, or prioritization task, the materialized views (`mv_*`),
+pre-built P-views (`v_p0_*`..`v_p3_*`), and semantic edges are the PRIMARY
+analysis primitives. Using only the raw `edges`/`violations` tables is
+**insufficient** and fails the `check_graph_layer_evidence.py` CI gate.
 
 **Health-first rule**: if `adg_sqlite` may be unhealthy, call `mcp1_adg_health` BEFORE any grep fallback.
 **Silent degraded fallback** (grep for graph queries without health check + reason code) = **policy violation** (`severity: critical`).

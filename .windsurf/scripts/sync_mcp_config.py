@@ -41,9 +41,9 @@ server_rows = [
     ),
     (
         "adg_sqlite",
-        "Dependency graph, blast radius, layer analysis",
-        "adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file",
-        "Primary authority for structural dependencies.",
+        "Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges)",
+        "adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan",
+        "Primary authority for structural dependencies AND refactoring analysis. Constitutional §22: mv_* materialized views, v_p0_*/v_p1_*/v_p2_*/v_p3_* P-views, and semantic edges (flows_to, reads_from, writes_to, emits_side_effect, controls_flow, resolves_callsite) MUST drive T2/T3 refactoring plans.",
     ),
     (
         "deepwiki",

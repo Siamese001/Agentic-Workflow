@@ -39,15 +39,23 @@ Use the wave-based ordering to establish P0 remediation queue. P0 blockers MUST 
 
 ### Step 3 — Fan-In Rank (P1 hotspot scoring)
 
-For the top 20–30 P1 violation files from Step 1:
+**PRIMARY source (preferred):** query the materialized views that pre-compute
+this ranking directly from the ADG snapshot — do not recompute by hand:
+
+| Materialized View | Use |
+|-------------------|-----|
+| `mv_graph_reverse_dependency_hotspots` | Fan-in hotspots ranked by reverse_dependency_score |
+| `mv_debt_concentration_hotspots` | Files where violation density overlaps high centrality |
+| `mv_hotspot_centrality` | Per-module centrality score |
+| `mv_dependency_cone_risk` | Per-module blast-cone risk |
+
+The MV columns already encode the hotspot score; use their ordering directly.
+
+**Fallback (only if MVs are unavailable / stale):** compute manually using
+`adg_edge_fanin` for the top 20–30 P1 violation files from Step 1:
 
 ```
 adg_edge_fanin(tgt_id=<file_node_id>, relation_type="imports")
-```
-
-Compute impact score per file:
-
-```
 impact = violation_count × (1 + log10(1 + fan_in))
 ```
 
@@ -56,6 +64,9 @@ Where:
 - `fan_in` = number of distinct source files that import this file
 
 Sort descending by impact. This ranked list IS the refactoring queue.
+
+**Plans that recompute ranking by hand when the MVs are available MUST cite
+why the MVs were insufficient.** Otherwise the MV result is the canonical source.
 
 ### Step 4 — Layer Criticality Adjustment
 

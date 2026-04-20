@@ -46,6 +46,9 @@ REFACTOR_INTENT_PATTERNS = (
 EVIDENCE_HEADER = re.compile(
     r"^#{1,4}\s*ADG[_ ]GRAPH[_ ]LAYER[_ ]EVIDENCE\b", re.IGNORECASE | re.MULTILINE
 )
+HOTSPOT_HEADER = re.compile(
+    r"^#{1,4}\s*ADG[_ ]HOTSPOT[_ ]REPORT\b", re.IGNORECASE | re.MULTILINE
+)
 
 MV_PATTERN = re.compile(r"\bmv_[a-z][a-z0-9_]+\b", re.IGNORECASE)
 PVIEW_PATTERN = re.compile(r"\bv_p[0-3]_[a-z][a-z0-9_]+\b", re.IGNORECASE)
@@ -89,6 +92,13 @@ def _evaluate_plan(path: Path) -> dict | None:
 
     if not EVIDENCE_HEADER.search(text):
         missing.append("missing_adg_graph_layer_evidence_section")
+
+    if not HOTSPOT_HEADER.search(text):
+        missing.append(
+            "missing_adg_hotspot_report_section "
+            "(required by adg-hotspot-enforcement.md; "
+            "plans must include ranked hotspot report from MV-driven analysis)"
+        )
 
     mvs_cited = {m.group(0).lower() for m in MV_PATTERN.finditer(text)}
     if len(mvs_cited) < MIN_MVS:
