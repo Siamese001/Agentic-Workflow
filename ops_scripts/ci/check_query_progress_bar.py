@@ -15,6 +15,7 @@ Usage:
 from __future__ import annotations
 
 import ast
+import subprocess
 import sys
 from pathlib import Path
 
@@ -213,12 +214,49 @@ def collect_repo_files() -> list[Path]:
     return files
 
 
+def collect_staged_files() -> list[Path]:
+    """Collect staged Python files from git index (ACMR only)."""
+    try:
+        result = subprocess.run(
+            [
+                "git",
+                "diff",
+                "--cached",
+                "--name-only",
+                "--diff-filter=ACMR",
+            ],
+            cwd=_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        return []
+
+    files: list[Path] = []
+    seen: set[Path] = set()
+    for line in result.stdout.splitlines():
+        rel = line.strip()
+        if not rel:
+            continue
+        path = (_ROOT / rel).resolve()
+        if path.suffix != ".py":
+            continue
+        if not path.exists() or _should_skip(path) or path in seen:
+            continue
+        seen.add(path)
+        files.append(path)
+    return files
+
+
 def main(argv: list[str] | None = None) -> int:
     """CI entry point. Returns 0 on pass, 1 on failure."""
     if argv is None:
         argv = sys.argv[1:]
 
     verbose = "--verbose" in argv or "-v" in argv
+    staged_only = "--staged" in argv
 
     # Explicit file list (from pre-commit --filenames or manual invocation)
     explicit_files = [Path(a) for a in argv if not a.startswith("-") and a.endswith(".py")]
@@ -230,6 +268,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if explicit_files:
         target_files = explicit_files
+    elif staged_only:
+        target_files = collect_staged_files()
     else:
         target_files = collect_repo_files()
 
