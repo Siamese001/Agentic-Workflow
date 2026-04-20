@@ -650,6 +650,28 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                      AND edge_kind IN ('unbounded_agent_loop','llm_output_unvalidated',
                                        'hallucinated_tool_name','return_in_finally')
                     THEN 'MEDIUM'
+                    -- P3 LOW: non-agent-executed ops/test/tooling directories get
+                    -- downgraded for all MEDIUM-class antipatterns. These paths are
+                    -- CI gates, dev tools, test scaffolding, Windsurf hooks — not
+                    -- code that runs inside the agent execution plane. Keep them
+                    -- visible in the LOW band for hygiene, but don't block P2 gate.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
+                                       'log_and_swallow','return_none_swallow',
+                                       'unreachable_after_raise','exception_type_erasure',
+                                       'blocking_call_in_async','bare_except',
+                                       'cleanup_raises_over_original','return_in_finally',
+                                       'partial_side_effects','double_logging',
+                                       'default_fallback_masking',
+                                       'retry_without_backoff','mutable_default_arg','star_import_use')
+                     AND (source_file LIKE 'ops_scripts/%'
+                       OR source_file LIKE 'tests/%'
+                       OR source_file LIKE 'tools/%'
+                       OR source_file LIKE '.windsurf/%'
+                       OR source_file LIKE 'infrastructure/%'
+                       OR source_file LIKE '%/scripts/%'
+                       OR source_file LIKE '%_scripts/%')
+                    THEN 'LOW'
                     -- P2 MEDIUM: swallow-class and structural antipatterns in non-production
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
