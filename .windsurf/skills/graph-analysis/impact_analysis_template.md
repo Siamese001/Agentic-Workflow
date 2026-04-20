@@ -20,11 +20,24 @@ Required for all T3 operations. Include in the evidence file.
 
 ## Blast Radius Determination
 
+**PRIMARY source**: `artifacts/adg/adg_structural_outputs_<ts>.json` → `blast_radius`
+field (top-20 pre-ranked) and `artifacts/adg/adg_graphdb_queries_<ts>.json` →
+`blast_radius.high_fan_in_out_hubs`. When the snapshot is current, cite these
+artifacts in the `## DEPENDENCY_GRAPH` section; the walk below becomes fallback
+when the target file is not in the top-20 or the artifact is missing.
+
+**Fallback walk** (live MCP, only if artifact doesn't cover the file):
+
 1. Start at graph roots (changed files)
 2. Fan-out: find all nodes that import or call the changed nodes (upstream dependents)
 3. Fan-in: find all nodes the changed nodes depend on (downstream dependencies)
 4. Flag any cross-layer edges or cycles
 5. Determine if blast radius is contained (T2) or cross-layer (T3)
+
+**Impacted tests for SCOPE_DECLARATION**: prefer
+`artifacts/adg/adg_refactor_accelerator_<ts>.json` → `candidates[i].impacted_tests`
+over recomputing via `tools/adg/adg_test_selector.py` when the target file is in
+the top-20 candidates.
 
 ## SCOPE_DECLARATION Section Format
 

@@ -26,7 +26,14 @@ python -c "import json; from pathlib import Path; f = Path('artifacts/adg_failur
 
 ### STEP 2: Select scoped tests via ADG (Accelerator #5) and run them
 
-**Always use `adg_test_selector.py` — never manually expand test paths:**
+**PRIMARY source (post-P7):** when refactoring a file that appears in the top-20 of
+`artifacts/adg/adg_refactor_accelerator_<ts>.json`, use the pre-computed
+`candidates[i].impacted_tests` field directly — it is the same ADG-derived result
+as `adg_test_selector.py` but already materialized in the per-run zip. See
+`rules/adg-p7-analyst-artifacts.md` for the full routing table.
+
+**Fallback** (file not in top-20, or no current P7 artifact): use `adg_test_selector.py`
+— never manually expand test paths:
 // turbo
 ```
 python tools/adg/adg_test_selector.py --from-diff

@@ -1,6 +1,6 @@
 ---
 name: operational-gates
-description: Consolidated operational gates including rollback checkpoints and MCP tool validation. Replaces rollback-gate and mcp-tool-verify. Enforces explicit rollback checkpoints before multi-file phases and validates MCP tool parameters to prevent hallucinated usage.
+description: Enforces explicit rollback checkpoints and validates MCP tool parameters for bounded, recoverable operations. Use when planning a multi-file phase, before executing any migration or deletion step, when invoking any MCP tool that writes state, or when gating entry/exit between execution phases.
 metadata:
   enforcement_layer: pre-commit
   enforcement_timing: before_work

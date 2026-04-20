@@ -36,6 +36,13 @@ Before drafting ANY refactoring plan or wave queue at T2/T3:
 2. Target selection and wave ordering MUST be derived from that report.
 3. FORBIDDEN: choosing files based on naming convention, alphabetical order, or "feels important" intuition without ADG backing.
 
+> **PRIMARY source shortcut (post-P7):** `adg_refactor_accelerator_<ts>.json` under
+> `artifacts/adg/` already contains the ranked `candidates[]` array with layer,
+> blast_radius, centrality, 90-day churn, and impacted_tests. When present, it IS
+> the hotspot report — do not recompute by hand. See `adg-p7-analyst-artifacts.md`
+> for the full routing table. Live MCP queries below remain valid fallbacks when
+> the artifact is stale, missing, or the question isn't covered.
+
 ---
 
 ## Required Protocol (execute in order)

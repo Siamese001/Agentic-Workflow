@@ -1,6 +1,6 @@
 ---
 name: testing-framework
-description: Consolidated testing enforcement covering test rigor, collection integrity, execution counts, and skip management. Replaces test-rigor-enforcement and pytest-integrity. Enforces constitutional testing requirements with mandatory AST dependency graph backing.
+description: Enforces test rigor, pytest collection integrity, execution counts, and skip discipline with mandatory ADG-backed scope selection. Use when writing new tests, modifying existing tests, running pytest at T2/T3 scope, evaluating a proposed `pytest.mark.skip`/`xfail`, or selecting which tests must run for a given code change.
 metadata:
   enforcement_layer: pre-commit
   enforcement_timing: after_work

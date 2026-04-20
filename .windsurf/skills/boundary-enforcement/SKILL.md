@@ -1,6 +1,6 @@
 ---
 name: boundary-enforcement
-description: Consolidated layer boundary and import hygiene enforcement. Replaces layer-boundary-guard, import-hygiene, and shim-discipline. Enforces layer gravity rules, import hygiene, and backward compatibility discipline.
+description: Enforces layer gravity rules, import hygiene, and shim/backward-compatibility discipline across the L0..L6 architecture. Use when adding or modifying imports, moving files between layers, introducing a compatibility shim, or validating that a cross-layer reference respects gravity direction (higher layers depend on lower, never the reverse).
 metadata:
   enforcement_layer: pre-commit
   enforcement_timing: after_work

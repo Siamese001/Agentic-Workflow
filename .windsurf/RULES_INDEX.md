@@ -1,6 +1,6 @@
 # Windsurf Rules and Skills — Master Index
 
-**Last Updated**: 2026-04-19
+**Last Updated**: 2026-04-20 (added `adg-p7-analyst-artifacts.md` for pre-computed refactoring evidence)
 **Purpose**: Zero-loss two-tier operating system for this repo. Keep the global layer thin, route specialized work to skills and workflows, preserve strict repo evidence discipline.
 
 > **SSOT**: Windsurf discovers rules directly from `.windsurf/rules/*.md` (one file per rule). Skills are entry-file-based: each `.windsurf/skills/<name>/SKILL.md` is authoritative. No preprocessor.
@@ -52,6 +52,7 @@ This repo uses a **two-tier model**:
 | File | Use When |
 |---|---|
 | `adg-hotspot-enforcement.md` | T2/T3 refactoring, anti-pattern burndown, wave scope selection — violations + centrality MUST drive target order |
+| `adg-p7-analyst-artifacts.md` | T2/T3 refactoring, blast radius, centrality, test scope — per-run P7 JSON artifacts are PRIMARY source before live MCP |
 | `adg-repair-discipline.md` | ADG break/fix, graph-first debugging, repair loops |
 | `adg-test-accelerator-enforcement.md` | Working in `tools/adg/**` or `test_*_adg.py` |
 | `agents-memory-lifecycle.md` | Session start/end and persistent memory decisions |
@@ -113,7 +114,10 @@ Use this order whenever a task is non-trivial:
 | Task Pattern | First File |
 |---|---|
 | "Why did this break?" / blast radius / imports / consumers | `skills/graph-analysis/SKILL.md` |
-| "Which files to refactor first?" / wave queue / hotspot rank / anti-pattern priority | `rules/adg-hotspot-enforcement.md` |
+| "Which files to refactor first?" / wave queue / hotspot rank / anti-pattern priority | `rules/adg-hotspot-enforcement.md` + `rules/adg-p7-analyst-artifacts.md` (P7 accelerator ships the ranked queue pre-computed) |
+| "Blast radius / top-N centrality / seams / burndown?" | `rules/adg-p7-analyst-artifacts.md` → `adg_structural_outputs_<ts>.json` |
+| "GraphDB structural queries (layer purity, UWG bypass, spine completeness)?" | `rules/adg-p7-analyst-artifacts.md` → `adg_graphdb_queries_<ts>.json` |
+| "Runtime handoff / cross-cutting witness tier satisfaction?" | `rules/adg-p7-analyst-artifacts.md` → `adg_runtime_spine_<ts>.json` |
 | "Fix this ADG issue" | `rules/adg-repair-discipline.md` |
 | "Should we stop for HITL?" | `rules/hitl-enforcement.md` then `rules/hitl-decision-points.md` |
 | "Need a plan" | `rules/sequential-thinking-enforcement.md` + `templates/execution-plan-template.md` |

@@ -1,6 +1,6 @@
 ---
 name: structured-reasoning
-description: Teaches Cascade how to handle complex multi-step tasks consistently using native reasoning + current MCPs. Replaces Sequential Thinking MCP. Enforces plan-first, execute-second discipline with explicit branching, revision, and evidence validation.
+description: Provides the plan-first, execute-second reasoning packet (SR_INTAKE, SR_PLAN, SR_APPROVAL, SR_EXECUTE, SR_VERIFY) for complex multi-step tasks. Use when the task is T2/T3 (2+ files, cross-layer, architecture decisions, or multi-file debugging) and requires explicit decomposition, branching, revision, and evidence validation before any edits begin.
 metadata:
   enforcement_layer: windsurf
   enforcement_timing: before_work

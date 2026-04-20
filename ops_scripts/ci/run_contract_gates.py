@@ -97,6 +97,19 @@ def validate_mcp_health():
         return False
     print("✅ AGENTS.md MCP coverage validated")
 
+    # Gate: every .windsurf/skills/<name>/SKILL.md must conform to Anthropic's
+    # Agent Skills authoring spec (frontmatter, name/description rules, 500-line
+    # budget, third person, when-trigger, forward-slash paths).
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_skill_frontmatter.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Skill frontmatter check failed (Anthropic spec)")
+        print(stdout or stderr)
+        return False
+    print("✅ Skill frontmatter validated (Anthropic spec)")
+
     return True
 
 

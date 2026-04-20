@@ -21,6 +21,16 @@ primary analysis surface. It provides:
 
 Any T2/T3 refactoring plan MUST use these as **primary drivers**. Using only `edges` + `violations` tables is **insufficient** and counts as partial analysis.
 
+> **PRIMARY source shortcut (post-P7):** `adg_graphdb_queries_<ts>.json` under
+> `artifacts/adg/` ships pre-computed results for 9 StructuralQueries
+> (gravity_import_violations, illegal_layer_reach, l2_lifecycle_conformance,
+> uwg_durable_write_conformance, capability_tool_provider_chokepoint_conformance,
+> agentic_spine_completeness, l0_l1_l6_role_purity, grounding_contract_separation,
+> trace_replay_eval_coverage) plus BlastRadiusQueries hubs and per-layer subgraphs.
+> `adg_structural_outputs_<ts>.json` ships centrality + blast-radius + seams +
+> burndown. Cite these artifacts in `## ADG_GRAPH_LAYER_EVIDENCE` instead of
+> re-running MVs when the snapshot is current. Full routing: `adg-p7-analyst-artifacts.md`.
+
 ---
 
 ## Required Protocol (extends `adg-hotspot-enforcement.md`)

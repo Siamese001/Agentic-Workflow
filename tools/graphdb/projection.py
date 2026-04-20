@@ -41,40 +41,47 @@ class GraphProjector:
         self._validate_sqlite_schema()
 
     def _validate_sqlite_schema(self) -> None:
-        """Validate that the SQLite file has the expected ADG schema."""
+        """Validate that the SQLite file has the canonical ADG schema.
+
+        The canonical ADG (``tools/generate/generate_full_adg.py``) writes the
+        tables ``nodes`` / ``edges`` / ``meta``. This projection adapts those
+        to the GraphDB-internal ``entities`` / ``relations`` / ``metadata``
+        vocabulary at read time.
+        """
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
 
-                # Check for required tables
-                required_tables = ["entities", "relations", "metadata"]
+                required_tables = ["nodes", "edges", "meta"]
                 cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
                 existing_tables = {row[0] for row in cursor.fetchall()}
 
-                missing_tables = [table for table in required_tables if table not in existing_tables]
+                missing_tables = [t for t in required_tables if t not in existing_tables]
                 if missing_tables:
-                    raise ValueError(f"ADG SQLite missing required tables: {missing_tables}")
-
-                # Check entity table structure
-                cursor.execute("PRAGMA table_info(entities)")
-                entity_columns = {row[1] for row in cursor.fetchall()}
-                required_entity_columns = {"id", "type", "name", "properties"}
-                missing_entity_columns = required_entity_columns - entity_columns
-                if missing_entity_columns:
-                    raise ValueError(f"ADG SQLite entities table missing columns: {missing_entity_columns}")
-
-                # Check relation table structure
-                cursor.execute("PRAGMA table_info(relations)")
-                relation_columns = {row[1] for row in cursor.fetchall()}
-                required_relation_columns = {"id", "from_id", "to_id", "type", "properties"}
-                missing_relation_columns = required_relation_columns - relation_columns
-                if missing_relation_columns:
                     raise ValueError(
-                        f"ADG SQLite relations table missing columns: {missing_relation_columns}"
+                        f"ADG SQLite missing required canonical tables: {missing_tables}",
+                    )
+
+                cursor.execute("PRAGMA table_info(nodes)")
+                node_columns = {row[1] for row in cursor.fetchall()}
+                required_node_columns = {"id", "entity_type", "adg_name"}
+                missing_node_columns = required_node_columns - node_columns
+                if missing_node_columns:
+                    raise ValueError(
+                        f"ADG SQLite nodes table missing columns: {missing_node_columns}",
+                    )
+
+                cursor.execute("PRAGMA table_info(edges)")
+                edge_columns = {row[1] for row in cursor.fetchall()}
+                required_edge_columns = {"id", "src_id", "dst_id", "relation_type"}
+                missing_edge_columns = required_edge_columns - edge_columns
+                if missing_edge_columns:
+                    raise ValueError(
+                        f"ADG SQLite edges table missing columns: {missing_edge_columns}",
                     )
 
         except sqlite3.Error as e:
-            raise RuntimeError(f"Failed to validate ADG SQLite schema: {e}")
+            raise RuntimeError(f"Failed to validate ADG SQLite schema: {e}") from e
 
     def project_graph(self) -> nx.Graph:
         """Project the entire ADG into a NetworkX graph.
@@ -93,33 +100,62 @@ class GraphProjector:
         return graph
 
     def _add_entities_to_graph(self, graph: nx.Graph) -> None:
-        """Add ADG entities as graph nodes."""
+        """Add ADG nodes as graph nodes.
+
+        Reads from the canonical ``nodes`` table and synthesizes the per-node
+        ``properties`` dict from available columns (layer, resolved_path, span
+        line, enclosing_symbol, etc.) so downstream queries that expect the
+        legacy ``properties`` attribute keep working.
+
+        Nodes whose ``entity_type`` is not in ``NODE_TYPE_MAPPING`` are
+        silently skipped; unknown-type warnings are suppressed because the
+        canonical ADG has a wider entity vocabulary than the GraphDB layer
+        currently models, and printing per-row warnings would flood stderr.
+        """
+        skipped_types: Dict[str, int] = {}
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT id, type, name, properties FROM entities")
+                cursor.execute(
+                    "SELECT id, entity_type, adg_name, layer, resolved_path, "
+                    "span_line, enclosing_symbol, identity_kind, confidence "
+                    "FROM nodes",
+                )
 
                 for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
-                    entity_id, entity_type, name, properties_json = row
+                    (
+                        entity_id,
+                        entity_type,
+                        name,
+                        layer,
+                        resolved_path,
+                        span_line,
+                        enclosing_symbol,
+                        identity_kind,
+                        confidence,
+                    ) = row
 
-                    # Validate and map entity type
                     try:
-                        graph_type = validate_node_type(entity_type)
+                        graph_type = validate_node_type(entity_type or "")
                     except ValueError:
-                        # Skip unknown entity types with warning
-                        print(f"Warning: Unknown entity type '{entity_type}', skipping entity {entity_id}")
+                        skipped_types[entity_type or "<null>"] = (
+                            skipped_types.get(entity_type or "<null>", 0) + 1
+                        )
                         continue
 
-                    # Parse properties
-                    properties = {}
-                    if properties_json:
-                        try:
-                            properties = json.loads(properties_json)
-                        except json.JSONDecodeError:
-                            print(f"Warning: Invalid JSON in properties for entity {entity_id}")
+                    # Synthesize the legacy `properties` dict from canonical columns
+                    properties: Dict[str, Any] = {
+                        "layer": layer,
+                        "file_path": resolved_path,
+                        "line_number": span_line,
+                        "enclosing_symbol": enclosing_symbol,
+                        "identity_kind": identity_kind,
+                        "confidence": confidence,
+                    }
+                    # Drop None values to keep the payload compact
+                    properties = {k: v for k, v in properties.items() if v is not None}
 
-                    # Create node with all required properties
-                    node_attrs = {
+                    node_attrs: Dict[str, Any] = {
                         "adg_id": entity_id,
                         "adg_type": entity_type,
                         "graph_type": graph_type,
@@ -127,67 +163,97 @@ class GraphProjector:
                         "properties": properties,
                     }
 
-                    # Add type-specific properties
-                    type_specific_props = get_node_properties(entity_type)
-                    for prop in type_specific_props:
+                    # Surface the properties expected by the schema at the top level
+                    for prop in get_node_properties(entity_type):
                         if prop in properties:
                             node_attrs[prop] = properties[prop]
 
                     graph.add_node(entity_id, **node_attrs)
 
         except sqlite3.Error as e:
-            raise RuntimeError(f"Failed to load entities from ADG SQLite: {e}")
+            raise RuntimeError(f"Failed to load entities from ADG SQLite: {e}") from e
+
+        if skipped_types:
+            top = sorted(skipped_types.items(), key=lambda kv: kv[1], reverse=True)[:5]
+            print(
+                f"[GraphDB] Skipped {sum(skipped_types.values())} nodes with "
+                f"unmapped entity_type (top: {top})",
+            )
 
     def _add_relations_to_graph(self, graph: nx.Graph) -> None:
-        """Add ADG relations as graph edges."""
+        """Add ADG edges as graph edges.
+
+        Reads from the canonical ``edges`` table. Edges whose
+        ``relation_type`` is not in ``EDGE_TYPE_MAPPING`` are silently
+        skipped; same rationale as ``_add_entities_to_graph``.
+        """
+        skipped_types: Dict[str, int] = {}
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT id, from_id, to_id, type, properties FROM relations")
+                cursor.execute(
+                    "SELECT id, src_id, dst_id, relation_type, edge_kind, "
+                    "source_file, line_no, symbol, semantic_type, confidence_score "
+                    "FROM edges",
+                )
 
                 for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
-                    relation_id, from_id, to_id, relation_type, properties_json = row
+                    (
+                        relation_id,
+                        from_id,
+                        to_id,
+                        relation_type,
+                        edge_kind,
+                        source_file,
+                        line_no,
+                        symbol,
+                        semantic_type,
+                        confidence_score,
+                    ) = row
 
-                    # Skip if either endpoint doesn't exist in graph
                     if from_id not in graph or to_id not in graph:
                         continue
 
-                    # Validate and map relation type
                     try:
-                        graph_type = validate_edge_type(relation_type)
+                        graph_type = validate_edge_type(relation_type or "")
                     except ValueError:
-                        # Skip unknown relation types with warning
-                        print(
-                            f"Warning: Unknown relation type '{relation_type}', skipping relation {relation_id}"
+                        skipped_types[relation_type or "<null>"] = (
+                            skipped_types.get(relation_type or "<null>", 0) + 1
                         )
                         continue
 
-                    # Parse properties
-                    properties = {}
-                    if properties_json:
-                        try:
-                            properties = json.loads(properties_json)
-                        except json.JSONDecodeError:
-                            print(f"Warning: Invalid JSON in properties for relation {relation_id}")
+                    properties: Dict[str, Any] = {
+                        "edge_kind": edge_kind,
+                        "source_file": source_file,
+                        "line_number": line_no,
+                        "symbol": symbol,
+                        "semantic_type": semantic_type,
+                        "confidence_score": confidence_score,
+                    }
+                    properties = {k: v for k, v in properties.items() if v is not None}
 
-                    # Create edge with all required properties
-                    edge_attrs = {
+                    edge_attrs: Dict[str, Any] = {
                         "adg_id": relation_id,
                         "adg_type": relation_type,
                         "graph_type": graph_type,
                         "properties": properties,
                     }
 
-                    # Add type-specific properties
-                    type_specific_props = get_edge_properties(relation_type)
-                    for prop in type_specific_props:
+                    for prop in get_edge_properties(relation_type):
                         if prop in properties:
                             edge_attrs[prop] = properties[prop]
 
                     graph.add_edge(from_id, to_id, **edge_attrs)
 
         except sqlite3.Error as e:
-            raise RuntimeError(f"Failed to load relations from ADG SQLite: {e}")
+            raise RuntimeError(f"Failed to load relations from ADG SQLite: {e}") from e
+
+        if skipped_types:
+            top = sorted(skipped_types.items(), key=lambda kv: kv[1], reverse=True)[:5]
+            print(
+                f"[GraphDB] Skipped {sum(skipped_types.values())} edges with "
+                f"unmapped relation_type (top: {top})",
+            )
 
     def project_subgraph(
         self,

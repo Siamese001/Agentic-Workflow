@@ -153,6 +153,22 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6e: Skill Frontmatter (Anthropic spec) ------------------------------------
+      # Enforces Anthropic Agent Skills authoring spec on every
+      # .windsurf/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
+      # (<=64 chars, lowercase-hyphen, no reserved words) and `description`
+      # (<=1024 chars, third person, includes a when-trigger), plus the 500-line
+      # SKILL.md body budget and forward-slash path discipline.
+      # Reference: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+      - id: skill-frontmatter
+        name: "T6e: Skill Frontmatter (Anthropic spec)"
+        entry: py ops_scripts/ci/check_skill_frontmatter.py
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/skills/.+/SKILL\.md$
+        always_run: false
+        require_serial: true
+
       # -- T6d: AGENTS.md Autogen Block Integrity --------------------------------------
       # Validates every <!-- MARKER:START/END --> autogen block in AGENTS.md is
       # byte-identical to the SSOT generator output. Currently covers:
