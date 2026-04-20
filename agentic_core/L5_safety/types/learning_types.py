@@ -288,7 +288,14 @@ class AdaptiveLearningEngine:
                     ]
                 self._save_patterns()
                 Logger.debug("L1 Self-improvement cycle completed")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
 
     def _load_patterns(self):
@@ -319,7 +326,14 @@ class AdaptiveLearningEngine:
                     )
                     self.patterns[key].append(pattern)
             Logger.info(f"Loaded {sum(len(p) for p in self.patterns.values())} healing patterns")
-        except Exception:  # guardian: allow-broad-exception -- pattern load error re-raised to caller for handling
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ):  # guardian: allow-broad-exception -- pattern load error re-raised to caller for handling
             raise
 
     def _save_patterns(self):
@@ -358,7 +372,14 @@ class AdaptiveLearningEngine:
                 ]
             _wg.write_json(self.pattern_storage_path, data, indent=2)
             Logger.debug(f"Saved patterns to {self.pattern_storage_path}")
-        except Exception:  # guardian: allow-broad-exception -- pattern save error re-raised to caller for handling
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ):  # guardian: allow-broad-exception -- pattern save error re-raised to caller for handling
             raise
 
     def learn_from_healing(

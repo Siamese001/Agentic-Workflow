@@ -329,7 +329,14 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             try:
                 self.ts_parser = Parser()
                 self.ts_parser.language = language()
-            except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ):  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
 
     # guardian: allow-type-erasure
@@ -390,7 +397,14 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                 file_size = len(content)
                 file_hashes[file_hash].append((file_path, file_size))
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
         duplicates = []
         for file_hash, files in file_hashes.items():
@@ -420,7 +434,14 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                         rel_path = file_path
                     code_blocks[block_hash].append((str(rel_path), i + 1))
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
         duplicates = [{"hash": h, "locations": locs} for h, locs in code_blocks.items() if len(locs) > 1]
         Logger.info(f"[DUPE SCAN] Found {len(duplicates)} duplicate code blocks")

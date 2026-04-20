@@ -413,20 +413,11 @@ def _append_ledger_entry(
 def _atomic_write_bytes(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp", prefix=f".{path.stem}_")
-    try:
-        with os.fdopen(fd, "wb") as fh:
-            fh.write(payload)
-            fh.flush()
-            os.fsync(fh.fileno())
-        os.replace(tmp, path)
-    except BaseException:  # guardian: allow-broad-exception -- atomic write rollback must catch all exceptions to clean temp file
-        try:
-            os.unlink(tmp)
-        except (
-            OSError
-        ):  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
-            pass
-        raise
+    with os.fdopen(fd, "wb") as fh:
+        fh.write(payload)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
 
 
 def write_text(
@@ -464,40 +455,28 @@ def write_text(
     p = Path(path)
     before_hash: str | None = None
     if p.exists():
-        try:
-            before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-        except (
-            OSError,
-            UnicodeDecodeError,
-        ):  # guardian: allow-silent-swallow -- OSError/UnicodeDecodeError reading file bytes for before-hash; swallowed intentionally, sentinel value used
-            before_hash = "READ_ERROR"
+        before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
     if substitution_count is not None:
         expected_max = expected_max_substitutions if expected_max_substitutions is not None else 1
         if substitution_count > expected_max:
             raise MutationEntropyError(p, substitution_count, expected_max)
     _check_write_amplification(p, content, encoding)
     gateway_approved = True
-    try:
-        enforce_protected_root(p, allow_override=allow_override)
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
-        raise
+    enforce_protected_root(p, allow_override=allow_override)
     _deny_writes_into_source_roots(p, "write")
-    try:
-        _atomic_write_bytes(p, content.encode(encoding))
-        after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-        _append_ledger_entry(
-            operation="write_text",
-            path=p,
-            before_hash=before_hash,
-            after_hash=after_hash,
-            gateway_approved=gateway_approved,
-            result="SUCCESS",
-            error=None,
-        )
-        Logger.debug(f"[WriteGateway] write_text: {p}")
-        return str(p)
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
-        raise
+    _atomic_write_bytes(p, content.encode(encoding))
+    after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+    _append_ledger_entry(
+        operation="write_text",
+        path=p,
+        before_hash=before_hash,
+        after_hash=after_hash,
+        gateway_approved=gateway_approved,
+        result="SUCCESS",
+        error=None,
+    )
+    Logger.debug(f"[WriteGateway] write_text: {p}")
+    return str(p)
 
 
 def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) -> str:
@@ -505,34 +484,23 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
     p = Path(path)
     before_hash: str | None = None
     if p.exists():
-        try:
-            before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-        except (
-            OSError
-        ):  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
-            before_hash = "READ_ERROR"
+        before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
     gateway_approved = True
-    try:
-        enforce_protected_root(p, allow_override=allow_override)
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
-        raise
+    enforce_protected_root(p, allow_override=allow_override)
     _deny_writes_into_source_roots(p, "write")
-    try:
-        _atomic_write_bytes(p, data)
-        after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
-        _append_ledger_entry(
-            operation="write_bytes",
-            path=p,
-            before_hash=before_hash,
-            after_hash=after_hash,
-            gateway_approved=gateway_approved,
-            result="SUCCESS",
-            error=None,
-        )
-        Logger.debug(f"[WriteGateway] write_bytes: {p}")
-        return str(p)
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:
-        raise
+    _atomic_write_bytes(p, data)
+    after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+    _append_ledger_entry(
+        operation="write_bytes",
+        path=p,
+        before_hash=before_hash,
+        after_hash=after_hash,
+        gateway_approved=gateway_approved,
+        result="SUCCESS",
+        error=None,
+    )
+    Logger.debug(f"[WriteGateway] write_bytes: {p}")
+    return str(p)
 
 
 def write_json(path: str | Path, obj: Any, indent: int = 2) -> str:

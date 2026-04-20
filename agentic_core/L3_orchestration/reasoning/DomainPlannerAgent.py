@@ -181,7 +181,6 @@ except ImportError as e:
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
 
-
 class DomainPlannerOutput:
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
@@ -330,7 +329,14 @@ class DomainPlannerAgent(L3OrchestrationBase):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - domain planning validation")
             metrics["skipped"] = 1
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
         finally:
             _call_path.discard(agent_name)
@@ -439,7 +445,14 @@ class RiskAssessorAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - risk assessment validation")
             metrics["skipped"] = 1
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
         finally:
             _call_path.discard(agent_name)
@@ -549,7 +562,14 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - feasibility analysis validation")
             metrics["skipped"] = 1
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
         finally:
             _call_path.discard(agent_name)
@@ -691,7 +711,14 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - scenario simulation validation")
             metrics["skipped"] = 1
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
         finally:
             _call_path.discard(agent_name)
@@ -850,7 +877,14 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
         try:
             Logger.info(f"[{agent_name}] L3 orchestration - strategy coordination validation")
             metrics["skipped"] = 1
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
         finally:
             _call_path.discard(agent_name)

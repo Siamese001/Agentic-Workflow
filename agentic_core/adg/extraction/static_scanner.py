@@ -426,35 +426,30 @@ def _get_cache_aware_scan_mode(
         return "full"
 
     # Analyze cache state
-    try:
-        import json
+    import json
 
-        with open(cache_path) as f:
-            cache_data = json.load(f)
+    with open(cache_path) as f:
+        cache_data = json.load(f)
 
-        cache_stats = cache_data.get("stats", {})
-        hit_rate = cache_stats.get("hit_rate", 0.0)
-        total_entries = cache_stats.get("hits", 0) + cache_stats.get("misses", 0)
+    cache_stats = cache_data.get("stats", {})
+    hit_rate = cache_stats.get("hit_rate", 0.0)
+    total_entries = cache_stats.get("hits", 0) + cache_stats.get("misses", 0)
 
-        # High cache hit rate (>90%) - can use optimized modes
-        if hit_rate > 0.9 and total_entries > 1000:
-            if include_tests:
-                # Many test files with good cache - use structural_only for tests
-                return "structural_only"
-            else:
-                # Production only with good cache - use selective mode
-                return "selective"
-
-        # Medium cache hit rate (70-90%) - use selective mode
-        elif hit_rate > 0.7 and total_entries > 500:
+    # High cache hit rate (>90%) - can use optimized modes
+    if hit_rate > 0.9 and total_entries > 1000:
+        if include_tests:
+            # Many test files with good cache - use structural_only for tests
+            return "structural_only"
+        else:
+            # Production only with good cache - use selective mode
             return "selective"
 
-        # Low cache hit rate or small cache - use full mode
-        else:
-            return "full"
+    # Medium cache hit rate (70-90%) - use selective mode
+    elif hit_rate > 0.7 and total_entries > 500:
+        return "selective"
 
-    except (OSError, json.JSONDecodeError, KeyError):
-        # Cache analysis failed - fall back to full mode
+    # Low cache hit rate or small cache - use full mode
+    else:
         return "full"
 
 
@@ -478,27 +473,23 @@ def _should_use_incremental_scan(
     if not cache_path or not cache_path.exists():
         return False
 
-    try:
-        import json
+    import json
 
-        with open(cache_path) as f:
-            cache_data = json.load(f)
+    with open(cache_path) as f:
+        cache_data = json.load(f)
 
-        cache_stats = cache_data.get("stats", {})
-        hit_rate = cache_stats.get("hit_rate", 0.0)
-        total_entries = cache_stats.get("hits", 0) + cache_stats.get("misses", 0)
+    cache_stats = cache_data.get("stats", {})
+    hit_rate = cache_stats.get("hit_rate", 0.0)
+    total_entries = cache_stats.get("hits", 0) + cache_stats.get("misses", 0)
 
-        # Use incremental if:
-        # 1. High cache hit rate (>85%)
-        # 2. Substantial cache (>2000 entries)
-        # 3. Small number of changes (<100 files)
-        if hit_rate > 0.85 and total_entries > 2000 and (changed_files is None or len(changed_files) < 100):
-            return True
+    # Use incremental if:
+    # 1. High cache hit rate (>85%)
+    # 2. Substantial cache (>2000 entries)
+    # 3. Small number of changes (<100 files)
+    if hit_rate > 0.85 and total_entries > 2000 and (changed_files is None or len(changed_files) < 100):
+        return True
 
-        return False
-
-    except (OSError, json.JSONDecodeError, KeyError):
-        return False
+    return False
 
 
 def _get_selective_visitors(file_path: str) -> list[str]:

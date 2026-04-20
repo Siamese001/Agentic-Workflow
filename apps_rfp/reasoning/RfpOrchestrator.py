@@ -221,7 +221,14 @@ class RfpOrchestrator:
 
                 _emit_records_execution_trace("RfpOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
 
-            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
                 _emit_records_telemetry_event("RfpOrchestrator", "L2_EXECUTION", "qwen_init_error")
                 _log.error("Qwen vLLM init failed — run() will raise if LOCAL_VLLM is selected: %s", e)
                 self._qwen_init_error = str(e)
@@ -329,7 +336,14 @@ class RfpOrchestrator:
                             rfp_details={"industry": request.industry},
                         )
                         _adapter.record_local_success(severity="medium")
-                    except Exception as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
+                    except (
+                        OSError,
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        RuntimeError,
+                    ) as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
                         _adapter.record_local_failure(severity="medium")
                         _dsp = LocalFirstDisposition.for_fail_exec(
                             orchestrator="RfpOrchestrator",
@@ -573,7 +587,7 @@ class RfpOrchestrator:
                 "error_message": response.error_message,
             }
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             _emit_records_telemetry_event("apps_rfp", "RfpOrchestrator", "proposal_generation_error")
             return {"success": False, "error": f"proposal_generation_failed: {str(e)}", "content": None}
 

@@ -18,7 +18,14 @@ except ImportError:
     from agentic_core.utils.timeout_decorator_util import timeout
 try:
     from apps_rg.utils.repo_signal_service import RepoSignalService
-except Exception as exc:  # guardian: allow-broad-exception -- repo telemetry is optional during standalone/unit-test execution
+except (
+    OSError,
+    ValueError,
+    TypeError,
+    KeyError,
+    AttributeError,
+    RuntimeError,
+) as exc:  # guardian: allow-broad-exception -- repo telemetry is optional during standalone/unit-test execution
     logging.getLogger(__name__).warning("RepoSignalService unavailable: %s", exc)
 
     class _RepoSignalSnapshot:
@@ -32,7 +39,14 @@ except Exception as exc:  # guardian: allow-broad-exception -- repo telemetry is
 
 try:
     from apps_rg.utils.rg_agent_base_util import RGAgentBase
-except Exception as exc:  # guardian: allow-broad-exception -- base agent stack is optional for standalone/unit-test import hardening
+except (
+    OSError,
+    ValueError,
+    TypeError,
+    KeyError,
+    AttributeError,
+    RuntimeError,
+) as exc:  # guardian: allow-broad-exception -- base agent stack is optional for standalone/unit-test import hardening
     logging.getLogger(__name__).warning("RGAgentBase unavailable: %s", exc)
 
     class RGAgentBase:  # type: ignore[override]
@@ -238,7 +252,14 @@ class RgResumeOrchestrator(RGAgentBase):
 
                 _emit_records_execution_trace("RgResumeOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
 
-            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
                 _emit_records_telemetry_event("RgResumeOrchestrator", "L2_EXECUTION", "qwen_init_error")
                 _logger.error("Qwen vLLM init failed — run() will raise if LOCAL_VLLM is selected: %s", e)
                 self._qwen_init_error = str(e)
@@ -276,7 +297,14 @@ class RgResumeOrchestrator(RGAgentBase):
             try:
                 repo_signals = RepoSignalService().collect().as_dict()
                 self._record_hop("HOP-ENRICH", [{"passed": True}])
-            except Exception:  # guardian: allow-broad-exception -- RepoSignalService raises heterogeneous errors; failure is non-fatal and recorded in hop checkpoint
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ):  # guardian: allow-broad-exception -- RepoSignalService raises heterogeneous errors; failure is non-fatal and recorded in hop checkpoint
                 self._record_hop("HOP-ENRICH", [{"passed": False}])
 
         # --- Local-first Qwen routing (Phase 1 + adapter enforcement) ---
@@ -352,7 +380,14 @@ class RgResumeOrchestrator(RGAgentBase):
                             candidate_profile=self.master_resume,
                         )
                         _adapter.record_local_success(severity="medium")
-                    except Exception as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
+                    except (
+                        OSError,
+                        ValueError,
+                        TypeError,
+                        KeyError,
+                        AttributeError,
+                        RuntimeError,
+                    ) as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
                         _adapter.record_local_failure(severity="medium")
                         _dsp = LocalFirstDisposition.for_fail_exec(
                             orchestrator="RgResumeOrchestrator",
@@ -483,7 +518,7 @@ class RgResumeOrchestrator(RGAgentBase):
                 "error_message": response.error_message,
             }
 
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             _emit_records_telemetry_event("apps_rg", "RgResumeOrchestrator", "resume_generation_error")
             return {"success": False, "error": f"generation_failed: {str(e)}", "content": None}
 

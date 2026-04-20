@@ -180,7 +180,10 @@ class ArchivalGatekeeper:
         with self._log_lock:
             try:
                 _wg.append_text(self.audit_log_path, json.dumps(result.to_dict()) + "\n")
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.error(f"[ArchivalGatekeeper] Failed to write audit log: {e}")
             status = "SUCCESS" if result.success else "FAILED"
             Logger.info(
@@ -205,7 +208,9 @@ class ArchivalGatekeeper:
             try:
                 path.relative_to(self.archive_root)
                 return f"Cannot {operation} files within archive directory: {path}"
-            except ValueError:  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except (
+                ValueError
+            ):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
                 pass
         critical_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
         for pattern in critical_patterns:
@@ -318,7 +323,14 @@ class ArchivalGatekeeper:
                 self._l4_ledger_hook(result)
                 Logger.debug(f"[ArchivalGatekeeper] L4 Ledger notified: {result.operation.value}")
             # guardian: allow-silent-swallow
-            except Exception:  # guardian: allow-broad-exception -- L4 ledger notification is best-effort; intentional silent-swallow logged via Logger.exception
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+            ):  # guardian: allow-broad-exception -- L4 ledger notification is best-effort; intentional silent-swallow logged via Logger.exception
                 Logger.exception("[ArchivalGatekeeper] L4 Ledger hook failed for %s", result.operation.value)
 
     def set_input_function(self, func: Callable[[str], str]) -> None:
@@ -421,7 +433,14 @@ class ArchivalGatekeeper:
                 reason=reason,
                 approval_status=pending_result.approval_status,
             )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.exception("[ArchivalGatekeeper] MOVE failed: %s -> %s", source, destination)
             result = ArchivalResult(
                 success=False,
@@ -502,7 +521,14 @@ class ArchivalGatekeeper:
                 reason=reason,
                 approval_status=pending_result.approval_status,
             )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.exception("[ArchivalGatekeeper] ARCHIVE failed: %s -> %s", source, archive_path)
             result = ArchivalResult(
                 success=False,
@@ -578,7 +604,14 @@ class ArchivalGatekeeper:
                 reason=f"[SOFT DELETE] {reason}",
                 approval_status=pending_result.approval_status,
             )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.exception("[ArchivalGatekeeper] DELETE failed: %s -> %s", source, archive_path)
             result = ArchivalResult(
                 success=False,
@@ -686,7 +719,14 @@ class ArchivalGatekeeper:
                 requester_agent=requester_agent,
                 reason=f"[RESTORE] {reason}",
             )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.exception("[ArchivalGatekeeper] RESTORE failed: %s -> %s", archived_path, original_path)
             result = ArchivalResult(
                 success=False,

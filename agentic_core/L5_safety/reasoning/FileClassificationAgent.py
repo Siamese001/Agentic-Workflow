@@ -2381,10 +2381,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         # --- L5 SUBPROCESS ALLOWLIST ---
         if "L5_safety" in parts:
-            try:
-                content = path.read_text(encoding="utf-8", errors="ignore")
-            except OSError:  # guardian: Add error context logging
-                content = ""
+            content = path.read_text(encoding="utf-8", errors="ignore") if path.is_file() else ""
             if "import subprocess" in content or "from subprocess" in content:
                 if path.name not in L5_SUBPROCESS_ALLOWLIST:
                     return {
@@ -2399,10 +2396,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         # --- L6 HYBRID ALLOWLIST ---
         if "L6_observability" in parts:
-            try:
-                content = path.read_text(encoding="utf-8", errors="ignore")
-            except OSError:  # guardian: Add error context logging
-                content = ""
+            content = path.read_text(encoding="utf-8", errors="ignore") if path.is_file() else ""
             if "import subprocess" in content or "from subprocess" in content:
                 if path.name not in L6_HYBRID_ALLOWLIST:
                     return {
@@ -2487,25 +2481,16 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         # --- REASONING PURITY: non-agent files in reasoning/ ---
         if "reasoning" in parts and "base_agents" not in parts:
-            try:
-                content = path.read_text(encoding="utf-8", errors="ignore")
-                tree = ast.parse(content)
-                has_agent_class = (
-                    any(  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
-                        isinstance(n, ast.ClassDef)
-                        and (
-                            n.name.endswith("Agent")
-                            or n.name.endswith("Orchestrator")
-                            or n.name.endswith("Executor")
-                        )
-                        for n in ast.walk(tree)
-                    )
+            content = path.read_text(encoding="utf-8", errors="ignore") if path.is_file() else ""
+            import re as _re
+
+            has_agent_class = bool(
+                _re.search(
+                    r"^\s*class\s+\w*(Agent|Orchestrator|Executor)\b",
+                    content,
+                    _re.MULTILINE,
                 )
-            except (
-                SyntaxError,
-                OSError,
-            ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
-                has_agent_class = False
+            )
             if not has_agent_class:
                 current_layer = next(
                     (p for p in parts if p.startswith("L") and "_" in p and len(p) > 1 and p[1].isdigit()),

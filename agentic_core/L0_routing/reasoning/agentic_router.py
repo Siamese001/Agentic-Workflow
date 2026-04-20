@@ -301,11 +301,7 @@ class AgenticRouter:
                     target_name = _capacity_chosen_route
 
             except RoutingCapacityError as _rce:  # guardian: allow-log-and-swallow -- capacity routing: non-fatal, falls back to original routing
-                import logging
-
-                logging.getLogger(__name__).debug(
-                    "agentic_router: RoutingCapacityError swallowed at L297: %s", _rce
-                )
+                Logger.debug("agentic_router: RoutingCapacityError swallowed at L297: %s", _rce)
             except (  # guardian: allow-log-and-swallow -- capacity routing: non-fatal, falls back to original routing
                 ImportError,
                 AttributeError,
