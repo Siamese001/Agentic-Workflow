@@ -191,7 +191,7 @@ class JsonParser:
                 errors=[f"JSON decode error: {str(e)}"],
                 metadata={"line": e.lineno, "column": e.colno},
             )
-        except Exception as e:
+        except (ValueError, TypeError, AttributeError, KeyError, UnicodeDecodeError) as e:
             return ParseResult(success=False, data=None, errors=[f"Parse error: {str(e)}"], metadata={})
 
     @staticmethod

@@ -398,7 +398,7 @@ class WebSearchFallback:
                 "total_results": len(results),
                 "fallback_triggered": True,
             }
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, ConnectionError, TimeoutError) as e:
             logger.error(f"Web search failed: {e}")
             return {
                 "query": query,

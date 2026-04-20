@@ -364,7 +364,7 @@ class PromptEnhancer:
                 result["plan_extracted"] = bool(contract_result.get("plan"))
                 result["content_extracted"] = bool(contract_result.get("content"))
                 return (content, result)
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as e:
                 logger.error(f"Contract validation failed: {e}")
                 return None
         if hasattr(self.prompt_assembler, "parse_response"):

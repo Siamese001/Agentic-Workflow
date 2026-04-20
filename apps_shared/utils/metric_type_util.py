@@ -461,7 +461,7 @@ class ObservabilityPlanningOrchestrator:
             )
             self.logger.info(f"Successfully planned observability for {len(metric_definitions)} metrics")
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as e:
             self.logger.error(f"observability planning failed: {str(e)}")
             return ObservabilityPlanningResult(
                 success=False,
@@ -843,7 +843,7 @@ class OrchestrateObservabilityPlanningOrchestratorInterface:
                 "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f'Execution failed: {e}') from e
+            raise SecurityError(f"Execution failed: {e}") from e
 
 
 class OrchestrateObservabilityPlanningOrchestratorFactory:
