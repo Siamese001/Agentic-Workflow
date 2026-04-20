@@ -718,8 +718,9 @@ class NativePersistentCacheClient:
         except (
             OSError,
             sqlite3.Error,
-        ) as e:  # guardian: allow-log-and-swallow -- invalidate_by: non-fatal, partial invalidation logged
+        ) as e:
             Logger.error(f"[L2Cache] invalidate_by error: {e}")
+            raise
         return invalidated
 
     def close(self) -> None:
