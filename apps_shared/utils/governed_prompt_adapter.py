@@ -261,7 +261,7 @@ class GovernedPromptAdapter:
             try:
                 mixin_content = registry.get_i0_mixin(mixin_id)
                 parts.append(mixin_content)
-            except Exception as exc:
+            except (AttributeError, KeyError, ImportError, TypeError, ValueError) as exc:
                 logger.warning(f"Failed to load mixin {mixin_id}: {exc}")
 
         # Add D0 defensive fence (optional)

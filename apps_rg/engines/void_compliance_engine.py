@@ -233,7 +233,7 @@ class VoidComplianceEngine(BaseRGEngine):
             # Expected file reading errors
             self.logger.warning(f"Could not read file {file_path}: {e}")
             return False
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, SyntaxError) as e:
             # Critical errors during file processing
             self.logger.error(f"Unexpected error processing file {file_path}: {e}")
             return False

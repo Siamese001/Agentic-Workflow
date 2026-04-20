@@ -56,7 +56,7 @@ class Validation:
         except (ValueError, TypeError, KeyError) as e:
             self._logger.error(f"Validation error during processing: {e}")
             return ExecutionResult(success=False, error_message=str(e))
-        except Exception as e:
+        except (RuntimeError, AttributeError, OSError, ArithmeticError, LookupError) as e:
             self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 

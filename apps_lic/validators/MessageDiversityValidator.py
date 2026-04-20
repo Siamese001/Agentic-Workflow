@@ -229,17 +229,9 @@ class MessageDiversityValidator(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by MessageDiversityValidator."""
         violation_type = violation.get("type", "unknown")
-        try:
-            return {
-                "status": "skipped",
-                "details": f"MessageDiversityValidator heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
-        except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"MessageDiversityValidator heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+        return {
+            "status": "skipped",
+            "details": f"MessageDiversityValidator heal() not yet implemented for {violation_type}",
+            "artifacts": [],
+            "errors": [],
+        }

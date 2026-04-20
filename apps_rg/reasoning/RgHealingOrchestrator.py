@@ -290,20 +290,12 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal violations detected by RgHealingOrchestrator."""
         violation_type = violation.get("type", "unknown")
-        try:
-            return {
-                "status": "skipped",
-                "details": f"RgHealingOrchestrator heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
-        except Exception as e:
-            return {
-                "status": "failed",
-                "details": f"RgHealingOrchestrator heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
+        return {
+            "status": "skipped",
+            "details": f"RgHealingOrchestrator heal() not yet implemented for {violation_type}",
+            "artifacts": [],
+            "errors": [],
+        }
 
     def ml_determine_strategy(self, cycle_num: int, signals: set[str]) -> str:
         """
