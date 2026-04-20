@@ -218,7 +218,7 @@ class ScriptBridge:
 
             return ScriptResult(success=True, data=result, errors=[], metadata={})
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- dispatches arbitrary user scripts; cannot enumerate their possible failure modes
             logger.error(f"Script execution failed: {script_name}.{operation} - {e}")
             return ScriptResult(
                 success=False,

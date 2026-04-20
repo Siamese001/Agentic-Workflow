@@ -528,7 +528,7 @@ class ObservabilityLoadPlanner:
                 f"Successfully planned observability load: {query_count} queries, ~{estimated_data_points} data points",
             )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as e:
             self.logger.error(f"observability load planning failed: {str(e)}")
             return ObservabilityLoadResult(
                 success=False,
@@ -913,7 +913,7 @@ class LoadDataPlanningPlanInterface:
                 "timestamp": result.timestamp,
             }
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            raise SecurityError(f'Execution failed: {e}') from e
+            raise SecurityError(f"Execution failed: {e}") from e
 
 
 class LoadDataPlanningPlanFactory:

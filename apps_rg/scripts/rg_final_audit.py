@@ -22,7 +22,7 @@ def audit_file(path: Path):
     try:
         content = path.read_text("utf-8")
         tree = ast.parse(content)
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, SyntaxError, ValueError) as e:
         return {"error": f"Parse Error: {e}"}
 
     issues = []

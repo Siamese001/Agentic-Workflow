@@ -207,7 +207,7 @@ async def execute_request_structured(
                     attempts=attempt,
                     truncated=read_result.truncated,
                 )
-        except BaseException as exc:  # bounded to known retryables below
+        except BaseException as exc:  # guardian: allow-broad-exception -- retry loop; filtered by should_retry_exception below, non-retryables re-raised via last_error
             last_error = exc
             if should_retry_exception(exc) and attempt < retries:
                 await asyncio.sleep(compute_retry_delay(attempt))

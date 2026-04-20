@@ -93,7 +93,7 @@ def process_agent_file(file_path: Path) -> bool:
         else:
             print(f"   ℹ️  No changes needed for {file_path.name}")
             return False
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, SyntaxError, ValueError) as e:
         print(f"   ❌ Error processing {file_path.name}: {e}")
         return False
 

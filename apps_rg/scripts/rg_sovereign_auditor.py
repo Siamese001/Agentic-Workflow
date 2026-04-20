@@ -200,7 +200,7 @@ class RGSovereignAuditor:
                 "functions": functions,
                 "line_count": len(content.split("\n")),
             }
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, SyntaxError, ValueError) as e:
             return {"error": f"Error reading file: {e}"}
 
     def _extract_classes(self, tree: ast.AST) -> list[dict]:

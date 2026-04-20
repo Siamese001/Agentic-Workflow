@@ -69,7 +69,7 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
     try:
         client = chromadb.PersistentClient(path=str(store_path))
         existing = {c.name for c in client.list_collections()}
-    except Exception as exc:
+    except (OSError, RuntimeError, ValueError, AttributeError) as exc:
         print(f"  [FAIL] Could not open Chroma store: {exc}")
         return False
     if collection_name not in existing:

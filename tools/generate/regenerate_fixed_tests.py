@@ -52,7 +52,7 @@ for file_path in tqdm(files_to_fix, desc="Processing", unit="item"):
         # Write the fixed content
         fp.write_text(new_content, encoding="utf-8")
         print(f"  Fixed: {len(classes)} classes, {len(functions)} functions")
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, SyntaxError, ValueError, AttributeError) as e:
         print(f"  Error: {e}")
 
 print("Done!")
