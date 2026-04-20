@@ -80,29 +80,24 @@ def _check_p0_violations(
                 cursor.execute("SELECT source_file, line_no FROM edges WHERE relation_type='violates'")
                 violation_rows = cursor.fetchall()
 
+            # SSOT: tools/adg/core/guardian_filter.is_layer_violation_exempted
+            # (shared by reports.py and the adg_p0_wave_plan MCP tool).
+            from tools.adg.core.guardian_filter import is_layer_violation_exempted
+
             unapproved = []
             for source_file, line_no in violation_rows:
-                try:
-                    normalized_source_file = source_file or ""
-                    if "tools/archive/" in normalized_source_file:
-                        print(f"[INFO] Skipping archived file: {normalized_source_file}")
-                        continue
+                normalized_source_file = source_file or ""
+                if "tools/archive/" in normalized_source_file:
+                    print(f"[INFO] Skipping archived file: {normalized_source_file}")
+                    continue
 
-                    src_path = ROOT / normalized_source_file
-                    if src_path.exists() and line_no and line_no > 0:
-                        lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-                        check_lines = lines[max(0, line_no - 2) : line_no]
-                        exempted = any("guardian: allow-layer-violation" in ln for ln in check_lines)
-                        if not exempted:
-                            unapproved.append((normalized_source_file, line_no))
-                    else:
-                        print(
-                            f"[DEBUG] Guardian check: file not found or invalid line_no: {normalized_source_file}:{line_no}"
-                        )
-                        unapproved.append((normalized_source_file, line_no))
-                except (OSError, UnicodeDecodeError, ValueError) as e:
-                    print(f"[DEBUG] Guardian check exception for {source_file}:{line_no}: {e}")
-                    unapproved.append((source_file or "", line_no))
+                if is_layer_violation_exempted(
+                    normalized_source_file, line_no, repo_root=ROOT
+                ):
+                    continue
+
+                # Not exempted — record as unapproved.
+                unapproved.append((normalized_source_file, line_no))
 
             p0_count = len(unapproved)
             if p0_count > 0:
@@ -577,29 +572,22 @@ def _query_sc1_gravity(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         "  AND n_dst.layer IS NOT NULL AND n_dst.layer != '' "
         "  AND n_src.layer != n_dst.layer",
     ).fetchall()
+    # SSOT guardian-comment filter (shared by P0 violation scan, reports.py, and MCP wave_plan).
+    from tools.adg.core.guardian_filter import is_layer_violation_exempted
+
     for src_file, line_no, src_layer, dst_layer, rel_type in rows:
         forbidden = _GRAVITY_FORBIDDEN.get(src_layer, set())
         if dst_layer not in forbidden:
             continue
-        # Check for guardian exemption in source file at the import line
-        exempted = False
-        if src_file and line_no and line_no > 0:
-            try:
-                src_path = ROOT / src_file
-                if src_path.exists():
-                    lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-                    check_lines = lines[max(0, line_no - 2) : line_no]
-                    exempted = any("guardian: allow-layer-violation" in ln for ln in check_lines)
-            except (OSError, UnicodeDecodeError, ValueError):
-                pass
-        if not exempted:
-            violations.append(
-                {
-                    "source_file": src_file or "",
-                    "line_no": line_no or 0,
-                    "evidence": f"{src_layer}->{dst_layer} via {rel_type}",
-                }
-            )
+        if is_layer_violation_exempted(src_file, line_no, repo_root=ROOT):
+            continue
+        violations.append(
+            {
+                "source_file": src_file or "",
+                "line_no": line_no or 0,
+                "evidence": f"{src_layer}->{dst_layer} via {rel_type}",
+            }
+        )
     return violations
 
 

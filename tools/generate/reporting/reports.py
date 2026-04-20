@@ -69,17 +69,16 @@ def _print_defect_table(
                 _violation_rows = _conn.execute(
                     "SELECT source_file, line_no FROM edges WHERE relation_type='violates'",
                 ).fetchall()
+            # SSOT: tools/adg/core/guardian_filter.is_layer_violation_exempted
+            # (deduplicates the guardian-comment lookback across reports, gates,
+            # and the adg_p0_wave_plan MCP tool).
+            from tools.adg.core.guardian_filter import is_layer_violation_exempted
+
             for _src_file, _line_no in tqdm(_violation_rows, desc="Processing", unit="item"):
                 p0_gross_edges += 1
                 try:
-                    _src_path = ROOT / _src_file
-                    if _src_path.exists() and _line_no and _line_no > 0:
-                        _file_lines = _src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-                        _check = _file_lines[max(0, _line_no - 2) : _line_no]
-                        if any("guardian: allow-layer-violation" in _ln for _ln in _check):
-                            p0_guardian_edges += 1
-                        else:
-                            p0_count += 1
+                    if is_layer_violation_exempted(_src_file, _line_no, repo_root=ROOT):
+                        p0_guardian_edges += 1
                     else:
                         p0_count += 1
                 except (

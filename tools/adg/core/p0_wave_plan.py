@@ -16,6 +16,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
+from tools.adg.core.guardian_filter import is_layer_violation_exempted
+
+# Repo root — canonical reference for resolving source_file relative paths.
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+
 _MAX_PLAN_LIMIT = 1000
 _PROTECTED_LAYERS = frozenset({"L0", "L2", "L3", "L5"})
 _PROTECTED_PATH_PREFIXES = (
@@ -180,8 +185,17 @@ def build_p0_remediation_wave_plan(sqlite_path: Path, limit: int = 100) -> dict[
             LIMIT ?
         """
 
+        # Apply guardian-exemption filter (SSOT: tools/adg/core/guardian_filter.py).
+        # Rows with `# guardian: allow-layer-violation` on the violation line or
+        # the line above are legitimate exemptions and must NOT be reported as P0.
         layer_violations = [
-            _row_to_issue(row, "layer_violation") for row in conn.execute(query, ("violates", safe_limit))
+            _row_to_issue(row, "layer_violation")
+            for row in conn.execute(query, ("violates", safe_limit))
+            if not is_layer_violation_exempted(
+                row["source_file"],
+                row["line_no"],
+                repo_root=_REPO_ROOT,
+            )
         ]
         circular_imports = [
             _row_to_issue(row, "circular_import") for row in conn.execute(query, ("in_cycle", safe_limit))
