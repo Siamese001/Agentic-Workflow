@@ -6,6 +6,14 @@ description: Use this rule before any refactoring, anti-pattern burndown, or wav
 
 > Reference doctrine: `docs/reference/ADG/ADG SQLite Hotspot Cheat Sheet.md`
 
+## GraphDB Foundation
+
+The **ADG SQLite snapshot is a graph database** (nodes + edges + materialized
+views + pre-classified P-views). Hotspot analysis is a **graph query**, not a
+text search or a flat-table aggregation. Every step below uses graph-native
+primitives: node IDs, edge traversals, centrality, fan-in/fan-out, and
+pre-computed graph analyses via materialized views.
+
 ## HARD GATE — No Refactoring Without a Hotspot Report
 
 Before drafting ANY refactoring plan or wave queue at T2/T3:

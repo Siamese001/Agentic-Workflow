@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
 CI gate: check_graph_layer_evidence.py
-Constitutional rule §22 — the ADG graph layer (materialized views, semantic
-edges, pre-built P-views) must be PRIMARY drivers of T2/T3 refactoring plans.
+Constitutional rule §22 — the ADG SQLite snapshot is a GRAPH DATABASE
+(nodes + edges + materialized views + pre-classified P-views), not a flat
+table store. The graph layer (materialized views, semantic edges, pre-built
+P-views) must be PRIMARY drivers of T2/T3 refactoring plans — not raw
+`edges`/`violations` counts and never grep.
 
 Scans .windsurf/plans/*.md and validates that plans which declare a
 refactoring intent include an ``## ADG_GRAPH_LAYER_EVIDENCE`` section with:
