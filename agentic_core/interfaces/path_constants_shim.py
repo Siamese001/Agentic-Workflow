@@ -14,7 +14,7 @@ automatically via the wildcard re-export.
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.config.path_constants import *  # noqa: F401,F403
+from agentic_core.L0_routing.config.path_constants import __all__, _pc_all
 from agentic_core.L0_routing.config.path_constants import __all__ as _pc_all  # noqa: F401
 
 __all__ = list(_pc_all) if hasattr(_pc_all, "__iter__") else []
