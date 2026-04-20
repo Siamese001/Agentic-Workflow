@@ -370,9 +370,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 return True
         return False
 
-    def _is_throw_for_normal_flow(
-        self, node: ast.ExceptHandler, handler_type: str | None
-    ) -> bool:
+    def _is_throw_for_normal_flow(self, node: ast.ExceptHandler, handler_type: str | None) -> bool:
         """Detect doc anti-pattern #12 — exception as control flow.
 
         Conservative: only flags when BOTH:
@@ -472,17 +470,17 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             for follow in body[i + 1 :]:
                 if isinstance(follow, ast.Pass):
                     continue
-                if isinstance(follow, ast.Expr) and isinstance(
-                    follow.value, ast.Constant
-                ) and isinstance(follow.value.value, str):
+                if (
+                    isinstance(follow, ast.Expr)
+                    and isinstance(follow.value, ast.Constant)
+                    and isinstance(follow.value.value, str)
+                ):
                     # Docstring / standalone string literal — ignore
                     continue
                 return True
         return False
 
-    def _get_erased_exception_type(
-        self, node: ast.ExceptHandler, handler_type: str | None
-    ) -> str | None:
+    def _get_erased_exception_type(self, node: ast.ExceptHandler, handler_type: str | None) -> str | None:
         """Detect doc anti-pattern #8 — type erasure via bare 'raise NewExc(...)'.
 
         Returns the erased type name if the except body raises a DIFFERENT
@@ -647,8 +645,17 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         for generic utility loops.
         """
         return func_name in {
-            "heal", "run", "step", "execute", "loop", "dispatch", "react",
-            "run_loop", "agent_loop", "reason_act", "tool_loop",
+            "heal",
+            "run",
+            "step",
+            "execute",
+            "loop",
+            "dispatch",
+            "react",
+            "run_loop",
+            "agent_loop",
+            "reason_act",
+            "tool_loop",
         }
 
     def _check_unbounded_agent_loop(self, node: ast.FunctionDef) -> None:
@@ -669,9 +676,8 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 continue
             # Must be 'while True:' or 'while 1:'
             test = stmt.test
-            is_unconditional = (
-                (isinstance(test, ast.Constant) and test.value in (True, 1))
-                or (isinstance(test, ast.Name) and test.id == "True")
+            is_unconditional = (isinstance(test, ast.Constant) and test.value in (True, 1)) or (
+                isinstance(test, ast.Name) and test.id == "True"
             )
             if not is_unconditional:
                 continue
@@ -733,9 +739,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     )
                 )
 
-    def _expr_traces_to_llm_response(
-        self, expr: ast.expr, response_attrs: set[str]
-    ) -> bool:
+    def _expr_traces_to_llm_response(self, expr: ast.expr, response_attrs: set[str]) -> bool:
         """Shallow trace: does this expression look like an LLM response surface?
 
         Matches ``X.content``, ``X.text``, ``X.choices[i].message.content``,
@@ -773,8 +777,15 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
         # Container names we consider tool-registry-like
         registry_names = {
-            "tools", "toolkit", "tool_registry", "registry", "capability_registry",
-            "capabilities", "tool_map", "actions", "skills",
+            "tools",
+            "toolkit",
+            "tool_registry",
+            "registry",
+            "capability_registry",
+            "capabilities",
+            "tool_map",
+            "actions",
+            "skills",
         }
 
         for child in ast.walk(node):
@@ -868,6 +879,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         strings, env var reads, f-strings, and test files.
         """
         import re
+
         # Exclude test files entirely to avoid FPs on fixtures
         if self._source_file and (
             "/tests/" in self._source_file.replace("\\", "/")
@@ -891,9 +903,26 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             return
         low = value.lower().strip()
         placeholder_markers = (
-            "xxx", "todo", "fixme", "example", "placeholder", "dummy", "fake",
-            "your-", "your_", "<", ">", "...", "changeme", "change-me", "change_me",
-            "replace", "n/a", "none", "null", "test",
+            "xxx",
+            "todo",
+            "fixme",
+            "example",
+            "placeholder",
+            "dummy",
+            "fake",
+            "your-",
+            "your_",
+            "<",
+            ">",
+            "...",
+            "changeme",
+            "change-me",
+            "change_me",
+            "replace",
+            "n/a",
+            "none",
+            "null",
+            "test",
         )
         if any(m in low for m in placeholder_markers):
             self.generic_visit(node)

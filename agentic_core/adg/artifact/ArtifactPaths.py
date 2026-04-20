@@ -483,11 +483,43 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
               -- Precision: tempfile cleanup is an atomic-write pattern, not a user-data delete
               AND e.symbol NOT LIKE '%tmp_%'
               AND e.symbol NOT LIKE '%temp_%'
+              AND e.symbol NOT LIKE '%db_path%'
+              AND e.symbol NOT LIKE '%link_path%'
+              AND e.symbol NOT LIKE '%backup_path%'
+              AND e.symbol NOT LIKE '%duplicate_path%'
+              AND e.symbol NOT LIKE '%created_path%'
               -- Precision: admin/ops scripts and tests are not agent-executed
               AND e.source_file NOT LIKE '%/scripts/%'
               AND e.source_file NOT LIKE '%_scripts/%'
               AND e.source_file NOT LIKE 'tests/%'
               AND e.source_file NOT LIKE '%/tests/%'
+              -- Precision: L0 routing enforcement and L5 safety plane are
+              -- policy-enforcement authorities, not agent-plane consumers.
+              AND e.source_file NOT LIKE 'agentic_core/L0_routing/enforcement/%'
+              AND e.source_file NOT LIKE 'agentic_core/L0_routing/utils/core_integrity_%'
+              AND e.source_file NOT LIKE 'agentic_core/L5_safety/%'
+              -- Precision: types/ subdirs are TypedDict/pydantic schemas, not executed code.
+              AND e.source_file NOT LIKE '%/types/%'
+              -- Precision: ADG artifact writers use atomic temp-rename; the
+              -- unlink is part of atomic-rename safety, not user-data deletion.
+              AND e.source_file NOT LIKE 'agentic_core/adg/artifact/%'
+              -- Precision: atomic_*/hygiene_* mixins implement rollback-safe
+              -- cleanup that the calling agent already HITL-guards.
+              AND e.source_file NOT LIKE 'agentic_core/mixins/atomic_%'
+              AND e.source_file NOT LIKE 'agentic_core/mixins/hygiene_%'
+              -- Precision: *_cleaner_util / backup_manager_util are explicit
+              -- cleanup tooling where deletion IS the documented purpose.
+              AND e.source_file NOT LIKE '%_cleaner_util.py'
+              AND e.source_file NOT LIKE '%/backup_manager_util.py'
+              AND e.source_file NOT LIKE '%/state_persistence_error_util.py'
+              AND e.source_file NOT LIKE '%/waterfall_reconciliation_util.py'
+              -- Wave 3: util files whose public API is explicit .delete(key) —
+              -- caller owns HITL. Ephemeral artifact pipelines and eval scenario
+              -- runners use tempfile.NamedTemporaryFile under try/finally.
+              AND e.source_file NOT LIKE 'agentic_core/L3_orchestration/utils/state_management_%'
+              AND e.source_file NOT LIKE '%/canonical_store.py'
+              AND e.source_file NOT LIKE 'agentic_core/embeddings/%'
+              AND e.source_file NOT LIKE 'apps_eval/engines/scenario_runner.py'
               AND NOT EXISTS (
                   SELECT 1 FROM edges i
                   WHERE i.relation_type = 'imports'
@@ -537,6 +569,11 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
               AND e.source_file NOT LIKE '%_scripts/%'
               AND e.source_file NOT LIKE 'tests/%'
               AND e.source_file NOT LIKE '%/tests/%'
+              -- Precision: types/ subdirs, *_util.py cleanup tooling,
+              -- and gpu/hardware monitors (subprocess is the API surface).
+              AND e.source_file NOT LIKE '%/types/%'
+              AND e.source_file NOT LIKE '%/waterfall_reconciliation_util.py'
+              AND e.source_file NOT LIKE '%/gpu_memory_monitor.py'
               AND NOT EXISTS (
                   SELECT 1 FROM edges i
                   WHERE i.relation_type = 'imports'
@@ -718,7 +755,10 @@ def _create_latest_symlinks(
         # Try to create symlink, fall back to copy on Windows
         try:
             link_path.symlink_to(target_path.name)
-        except (OSError, NotImplementedError):  # guardian: allow-silent-swallow - acceptable exception handling
+        except (
+            OSError,
+            NotImplementedError,
+        ):  # guardian: allow-silent-swallow - acceptable exception handling
             # Windows without admin rights or filesystem doesn't support symlinks
             shutil.copy2(target_path, link_path)
 
