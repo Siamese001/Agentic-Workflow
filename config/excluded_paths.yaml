@@ -175,7 +175,9 @@ sovereign_excluded_folders:
 global_excluded_dirs:
   - ".git"
   - ".github"
+  - ".idea"
   - ".venv"
+  - ".vscode"
   - ".windsurf"
   - "__pycache__"
   - ".mypy_cache"

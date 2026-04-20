@@ -95,6 +95,14 @@ ALLOWLIST_PATHS: frozenset[str] = frozenset(
         # Test fixtures deliberately assert specific sets
         "tests/unit/tools/generate/test_generate_gitignore.py",
         "tests/unit/agentic_core/L5_safety/config/structure_blueprint/test_ssot_yaml_loading.py",
+        # Hygiene healer — cleanup/delete ACTION targets (Write Surface domain literals),
+        # semantically distinct from walk-exclusion sets. Sets ALWAYS_DELETE, DELETE_IF_OLD,
+        # and temp/backup cleanup sets represent "what to mutate on disk", not "what to
+        # exclude from scanning". Extracted tooling subset (L544) uses SSOT TOOLING_EXCLUDED_DIRS.
+        "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+        # Sovereign index — DEFAULT_EXCLUDED_DIRS already imports GLOBAL_EXCLUDED_DIRS as
+        # primary; the inline literal is a deliberate ImportError fallback (see line 190-204).
+        "agentic_core/runtime/utils/sovereign_index_util.py",
     },
 )
 

@@ -451,18 +451,20 @@ class HygieneGuardianAgent(SovereignBaseAgent):
 
     def _scan_directory(self, directory: Path) -> None:
         """Recursively scan directory for hygiene violations."""
-        # Skip common ignore directories
-        ignore_dirs = {
-            ".git",
-            ".venv",
-            "venv",
-            "__pycache__",
-            "node_modules",
-            ".pytest_cache",
-            ".mypy_cache",
-            "archives",
-            ".sovereign_healing_backup",
-        }
+        # SSOT exclusions + hygiene-specific additions.
+        # GLOBAL_EXCLUDED_DIRS covers .git/.venv/venv/__pycache__/.pytest_cache/.mypy_cache/.idea/.vscode/etc.
+        # DISCOVERY_EXCLUDED_TERRITORIES adds 'archives' and other non-code territories.
+        # .sovereign_healing_backup is a hygiene-local artifact directory.
+        from agentic_core.L0_routing.config.path_constants import (
+            DISCOVERY_EXCLUDED_TERRITORIES,
+            GLOBAL_EXCLUDED_DIRS,
+        )
+
+        ignore_dirs = (
+            GLOBAL_EXCLUDED_DIRS
+            | DISCOVERY_EXCLUDED_TERRITORIES
+            | frozenset({".sovereign_healing_backup"})
+        )
 
         for item in tqdm(directory.rglob("*"), desc="Processing", unit="item"):
             # Skip ignored directories
@@ -681,15 +683,14 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         """
         print(f"[*] Hygiene Guardian: Scanning {self.project_root} for naming violations...")
         self.naming_violations = []
-        ignored_dirs = {
-            ".git",
-            "__pycache__",
-            "venv",
-            "node_modules",
-            ".idea",
-            ".vscode",
-            "archives",
-        }
+        # SSOT scan-walk exclusions (GLOBAL_EXCLUDED_DIRS ∪ DISCOVERY_EXCLUDED_TERRITORIES).
+        # Covers all IDE/VCS/cache dirs plus 'archives' territory.
+        from agentic_core.L0_routing.config.path_constants import (
+            DISCOVERY_EXCLUDED_TERRITORIES,
+            GLOBAL_EXCLUDED_DIRS,
+        )
+
+        ignored_dirs = GLOBAL_EXCLUDED_DIRS | DISCOVERY_EXCLUDED_TERRITORIES
 
         for root, dirs, files in os.walk(self.project_root):
             # Prune ignored directories in-place to prevent traversal

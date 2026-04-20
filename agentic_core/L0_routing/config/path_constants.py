@@ -287,7 +287,9 @@ GLOBAL_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
     {
         ".git",
         ".github",
+        ".idea",
         ".venv",
+        ".vscode",
         ".windsurf",
         "__pycache__",
         ".mypy_cache",
@@ -307,6 +309,14 @@ GLOBAL_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
 
 DISCOVERY_EXCLUDED_TERRITORIES: Final[frozenset[str]] = frozenset(
     {"runtime_shared", "legacy_code", "legacy_engines", "archives", "stubs", "examples"},
+)
+
+# Tooling subset of GLOBAL_EXCLUDED_DIRS — version-control / CI / IDE / editor
+# directories. Use this when you need only tooling dirs (e.g., sovereignty checks
+# that want to EXCLUDE tooling from the sovereign-territory list without pulling
+# in caches/build artifacts).
+TOOLING_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
+    {".git", ".github", ".idea", ".vscode", ".windsurf", ".gravity_state"},
 )
 
 # ============================================================================
@@ -687,6 +697,7 @@ __all__ = [
     "TESTS_DIR",
     "TESTS_UNIT_DIR",
     "THRESHOLD",
+    "TOOLING_EXCLUDED_DIRS",
     "TOOLS_DIR",
     "VARIABLE_DEPTH_SUBFOLDERS",
     "WINDSURF_SCRIPTS_DIR",

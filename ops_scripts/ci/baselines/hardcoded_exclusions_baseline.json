@@ -1,6 +1,6 @@
 {
   "description": "Known hardcoded exclusion-set violations as of baseline freeze. These are tech debt; see R3 in docs/reports/exclusion-ssot-consolidated-review-2026-04-19.md. The gate blocks only NEW entries. Shrinking this baseline over time is the burndown goal.",
-  "count": 37,
+  "count": 28,
   "violations": [
     {
       "path": "agentic_core/L1_cognition/utils/constants_util.py",
@@ -30,25 +30,6 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
-      "lineno": 531,
-      "canonical_tokens": [
-        ".git",
-        ".github",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".tox",
-        ".venv",
-        "__pycache__",
-        "build",
-        "dist",
-        "eggs",
-        "htmlcov",
-        "node_modules",
-        "venv"
-      ]
-    },
-    {
       "path": "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
       "lineno": 224,
       "canonical_tokens": [
@@ -57,54 +38,6 @@
         "archives",
         "node_modules",
         "venv"
-      ]
-    },
-    {
-      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "lineno": 385,
-      "canonical_tokens": [
-        ".mypy_cache",
-        ".pytest_cache",
-        ".ruff_cache",
-        "__pycache__"
-      ]
-    },
-    {
-      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "lineno": 386,
-      "canonical_tokens": [
-        ".healing_backups",
-        ".nox",
-        ".tox"
-      ]
-    },
-    {
-      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "lineno": 543,
-      "canonical_tokens": [
-        ".git",
-        ".github",
-        ".windsurf"
-      ]
-    },
-    {
-      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "lineno": 616,
-      "canonical_tokens": [
-        ".healing_backups",
-        ".mypy_cache",
-        ".nox",
-        ".ruff_cache",
-        ".tox"
-      ]
-    },
-    {
-      "path": "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
-      "lineno": 712,
-      "canonical_tokens": [
-        ".healing_backups",
-        ".nox",
-        ".tox"
       ]
     },
     {
@@ -117,32 +50,6 @@
         ".sovereign_healing_backup",
         ".venv",
         "__pycache__",
-        "node_modules",
-        "venv"
-      ]
-    },
-    {
-      "path": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
-      "lineno": 459,
-      "canonical_tokens": [
-        ".git",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".sovereign_healing_backup",
-        ".venv",
-        "__pycache__",
-        "archives",
-        "node_modules",
-        "venv"
-      ]
-    },
-    {
-      "path": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
-      "lineno": 689,
-      "canonical_tokens": [
-        ".git",
-        "__pycache__",
-        "archives",
         "node_modules",
         "venv"
       ]
@@ -243,23 +150,6 @@
         ".venv",
         "__pycache__",
         "archives",
-        "node_modules",
-        "venv"
-      ]
-    },
-    {
-      "path": "agentic_core/runtime/utils/sovereign_index_util.py",
-      "lineno": 195,
-      "canonical_tokens": [
-        ".git",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".sovereign_healing_backup",
-        ".venv",
-        "__pycache__",
-        "build",
-        "dist",
-        "htmlcov",
         "node_modules",
         "venv"
       ]

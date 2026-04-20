@@ -541,18 +541,12 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         except (ImportError, AttributeError):
             _sovereign_dirs = set()
 
-        _tooling_dirs: set[str] = {
-            # Version control / CI / IDE tooling (not sovereign territories)
-            ".git",
-            ".github",
-            ".vscode",
-            ".idea",
-            ".windsurf",
-            ".gravity_state",
-            # NOTE: .nox, .tox, .pytest_tmp, .backup, .healing_backups are NOT approved
-            # They should be flagged as ILLEGAL_CACHE_DIR and deleted if unused
-        }
-        approved_dirs = _sovereign_dirs | _tooling_dirs
+        # Tooling dirs (version control / CI / IDE / editor) — SSOT import.
+        # NOTE: .nox, .tox, .pytest_tmp, .backup, .healing_backups are intentionally
+        # NOT approved; they should be flagged as ILLEGAL_CACHE_DIR and deleted if unused.
+        from agentic_core.L0_routing.config.path_constants import TOOLING_EXCLUDED_DIRS
+
+        approved_dirs = _sovereign_dirs | set(TOOLING_EXCLUDED_DIRS)
         approved_files = {
             # Standard project config
             ".gitignore",
