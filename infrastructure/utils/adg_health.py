@@ -368,7 +368,7 @@ Examples:
     except sqlite3.Error as e:
         logger.error(f"SQLite error: {e}")
         return 1
-    except Exception as e:
+    except (OSError, ValueError, TypeError, AttributeError, KeyError) as e:
         logger.error(f"Error: {e}")
         return 1
 

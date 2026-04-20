@@ -179,7 +179,7 @@ class TerritoryHealingCoordinator:
                         report.errors.extend(healing_result.errors)
                         logger.warning(f"  [{agent.agent_name}] Errors: {len(healing_result.errors)}")
 
-            except Exception as e:
+            except (RuntimeError, ValueError, TypeError, AttributeError, OSError, KeyError) as e:
                 error_msg = f"{agent.agent_name} failed on {territory}: {e}"
                 logger.exception(error_msg)
                 report.errors.append(error_msg)

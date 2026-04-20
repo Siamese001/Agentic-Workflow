@@ -60,7 +60,7 @@ class FinalComplianceReporter:
                         # For Python scripts, just note they exist
                         self.report_data[report_name] = {"script_exists": True}
                     print(f"  ✅ Found: {report_name}")
-                except Exception as e:
+                except (OSError, UnicodeDecodeError, ValueError, TypeError) as e:
                     print(f"  ❌ Error reading {report_name}: {e}")
                     self.report_data[report_name] = {"error": str(e)}
             else:
