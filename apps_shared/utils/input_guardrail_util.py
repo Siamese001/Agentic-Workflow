@@ -380,7 +380,7 @@ class InputGuardrail:
                 f"Input scan completed in {scan_time:.2f}ms - Action: {result.action.value}, Confidence: {result.confidence:.2f}"
             )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, re.error) as e:
             logger.error(f"Error during input scan: {e}")
             return None
 

@@ -402,7 +402,7 @@ class ConfigPlanningOrchestrator:
             )
             return result
 
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as e:
             self.logger.error(f"Config planning failed: {str(e)}")
             return ConfigPlanningResult(
                 success=False,

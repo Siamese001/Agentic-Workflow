@@ -320,7 +320,7 @@ class ConfigLoader:
                 source=str(config_path),
             )
 
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, ValueError, TypeError, KeyError) as e:
             return ConfigLoadResult(
                 success=False,
                 config={},

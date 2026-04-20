@@ -352,8 +352,8 @@ class InputValidator:
         if rule.custom_validator:
             try:
                 validated_value = rule.custom_validator(validated_value)
-            except Exception as e:
-                raise InputValidationError(field, f'Custom validation failed: {e}') from e
+            except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as e:
+                raise InputValidationError(field, f"Custom validation failed: {e}") from e
         if rule.sanitize:
             validated_value = self._sanitize_value(validated_value, rule)
         return validated_value
@@ -421,7 +421,7 @@ class InputValidator:
             else:
                 return value
         except (ValueError, TypeError, json.JSONDecodeError, ET.ParseError) as e:
-            raise InputValidationError('type', f'Invalid type conversion: {e}') from e
+            raise InputValidationError("type", f"Invalid type conversion: {e}") from e
 
     def _validate_json_schema(self, value: Any, schema: dict[str, Any]) -> None:
         """Validate JSON against schema.
@@ -619,4 +619,4 @@ def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInpu
         for error in e.errors():
             field = ".".join(str(x) for x in error["loc"])
             errors.append(f"{field}: {error['msg']}")
-        raise InputValidationError('pydantic', f"Validation failed: {', '.join(errors)}") from e
+        raise InputValidationError("pydantic", f"Validation failed: {', '.join(errors)}") from e
