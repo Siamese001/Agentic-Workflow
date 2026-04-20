@@ -309,7 +309,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
             with open(ConfigurationService().file_path, "w", encoding="utf-8") as f:
                 f.writelines(ConfigurationService().new_lines)
         return fixed_count
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, ValueError, IndexError, AttributeError) as e:
         ConfigurationService().Logger.info(f"Error fixing {ConfigurationService().file_path}: {e}")
         return 0
 

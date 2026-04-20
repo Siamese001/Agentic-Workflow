@@ -108,7 +108,7 @@ def process_file(file_path: Any) -> Any:
         if os.path.exists(backup_path):
             os.remove(backup_path)
         return changed
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, ValueError, SyntaxError) as e:
         print(f"   ERROR: Failed to process {file_path}: {e}")
         # guardian: allow-path-string
         if os.path.exists(backup_path):

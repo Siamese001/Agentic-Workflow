@@ -68,7 +68,7 @@ def fix_file_imports(file_path: Path) -> bool:
                 f.write(content)
             return True
         return False
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, re.error) as e:
         print(f"Error fixing {file_path}: {e}")
         return False
 

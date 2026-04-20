@@ -36,7 +36,7 @@ def fix_markdown_fences(file_path: str) -> bool:
             f.write(content)
         print(f"✅ Fixed: {file_path}")
         return True
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, re.error) as e:
         print(f"❌ Error fixing {file_path}: {e}")
         return False
 
