@@ -348,7 +348,7 @@ class RfpIngestionEngine:
                 try:
                     doc = self.ingest(file_path)
                     results.append(doc)
-                except Exception as exc:
+                except (OSError, UnicodeDecodeError, ValueError, TypeError, AttributeError) as exc:
                     _log.error(f"[RfpIngestionEngine] Failed to ingest {file_path}: {exc}")
 
         _emit_stores_embedding("enterprise", "RfpIngestionEngine", f"batch_ingested_{len(results)}")

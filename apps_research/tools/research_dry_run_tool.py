@@ -44,7 +44,7 @@ def main() -> int:
             print(f"  [{status:8s}] mode={mode:20s} score={score:.2f} sections={sections} sources={sources}")
             if status not in ("dry_run", "complete"):
                 failures += 1
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, AttributeError, KeyError, OSError) as exc:
             _log.error(f"Dry-run failed: {exc}")
             print(f"  [ERROR   ] mode={mode}: {exc}")
             failures += 1

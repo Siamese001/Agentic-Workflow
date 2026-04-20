@@ -206,7 +206,7 @@ class QueryDecomposer:
             try:
                 decomp = self.decompose(topic, mode, audience)
                 results.append(decomp)
-            except Exception as exc:
+            except (RuntimeError, ValueError, TypeError, AttributeError, KeyError) as exc:
                 _log.error(f"[QueryDecomposer] Failed to decompose {topic}: {exc}")
                 results.append(
                     QueryDecomposition(
