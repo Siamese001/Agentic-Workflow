@@ -45,6 +45,7 @@ This repo uses a **two-tier model**:
 | `.windsurf/rules/hitl-enforcement.md` | Compact continuous-execution and HITL core |
 | `.windsurf/rules/plan-location.md` | SSOT plan location and overwrite rules |
 | `.windsurf/rules/query-progress-bar.md` | Long-running operation progress contract |
+| `.windsurf/rules/adg-canonical-invariants.md` | ADG doctrinal floor — SSOT hierarchy, 5 Surfaces, 4 Antipatterns, 4 Archetypes, Zero-Loss Propagation Pipeline |
 
 ## On-Demand Rule Files
 

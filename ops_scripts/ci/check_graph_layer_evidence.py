@@ -79,6 +79,35 @@ SEMANTIC_EDGE_PATTERN = re.compile(
 # Minimum distinct materialized views required
 MIN_MVS = 3
 
+# Archetypes that must classify every hotspot row (adg-canonical-invariants.md §5).
+HOTSPOT_ARCHETYPES: frozenset[str] = frozenset(
+    {
+        "CENTRAL_DEPENDENCY",
+        "ORCHESTRATOR",
+        "STATE_NODE",
+        "SAFETY_GATEKEEPER",
+    }
+)
+ARCHETYPE_PATTERN = re.compile(
+    r"\b(" + "|".join(re.escape(a) for a in HOTSPOT_ARCHETYPES) + r")\b"
+)
+
+# 5 ADG Surfaces that hotspot reports must cross-reference
+# (adg-canonical-invariants.md §3).
+ADG_SURFACES: frozenset[str] = frozenset(
+    {
+        "Execution Surface",
+        "Write Surface",
+        "Security Surface",
+        "State Surface",
+        "Observability Surface",
+    }
+)
+SURFACE_PATTERN = re.compile(
+    r"\b(" + "|".join(re.escape(s) for s in ADG_SURFACES) + r")\b",
+    re.IGNORECASE,
+)
+
 # --- Logic --------------------------------------------------------------------
 
 
@@ -104,12 +133,30 @@ def _evaluate_plan(path: Path) -> dict | None:
     if not EVIDENCE_HEADER.search(text):
         missing.append("missing_adg_graph_layer_evidence_section")
 
-    if not HOTSPOT_HEADER.search(text):
+    hotspot_match = HOTSPOT_HEADER.search(text)
+    if not hotspot_match:
         missing.append(
             "missing_adg_hotspot_report_section "
             "(required by adg-hotspot-enforcement.md; "
             "plans must include ranked hotspot report from MV-driven analysis)"
         )
+    else:
+        # When the hotspot section exists, validate that it contains the
+        # canonical classifications required by adg-canonical-invariants.md:
+        # at least one archetype and at least one surface reference.
+        hotspot_body = text[hotspot_match.start():]
+        archetypes_cited = {m.group(1) for m in ARCHETYPE_PATTERN.finditer(hotspot_body)}
+        surfaces_cited = {m.group(1).lower() for m in SURFACE_PATTERN.finditer(hotspot_body)}
+        if not archetypes_cited:
+            missing.append(
+                "hotspot_report_missing_archetype "
+                f"(required: one of {sorted(HOTSPOT_ARCHETYPES)})"
+            )
+        if not surfaces_cited:
+            missing.append(
+                "hotspot_report_missing_surface_reference "
+                f"(required: at least one of {sorted(ADG_SURFACES)} or the literal 'none')"
+            )
 
     mvs_cited = {m.group(0).lower() for m in MV_PATTERN.finditer(text)}
     if len(mvs_cited) < MIN_MVS:

@@ -156,17 +156,92 @@ A plan without `## ADG_HOTSPOT_REPORT` is incomplete and MUST NOT be executed.
 ## Hotspot Score Mental Model
 
 ```
-HOTSPOT SCORE ≈ violation_severity × structural_centrality × blast_radius × layer_criticality
+HOTSPOT SCORE ≈ violation_severity × structural_centrality × blast_radius × layer_criticality × surface_intersection
 
-- violation_severity: silent_swallow > broad_catch > logged_catch
-- centrality:         fan-in (import concentration)
-- blast_radius:       fan-out + flows_to + controls_flow
-- layer_criticality:  L0/L5 > L3/L4 > L1/L2 > L6
+- violation_severity:   silent_swallow > broad_catch > logged_catch > return_none
+- centrality:           fan-in (import concentration)
+- blast_radius:         fan-out + flows_to + controls_flow
+- layer_criticality:    L0/L5 > L3/L4 > L1/L2 > L6
+- surface_intersection: +1 multiplier per ADG Surface the catch flow crosses
 ```
 
 High fan-in + swallow → guardian only with very strong reason (many callers get wrong signal).
 High fan-out + broad catch → narrow the catch (orchestrator hiding chain failures).
 L4/L5 silent swallow → highest skepticism; near-certain refactor target.
+
+---
+
+## The 5 ADG Surfaces (risk boundaries — MUST be cross-referenced per hotspot)
+
+Surfaces are semantic boundaries where untrusted inputs flow. Swallowing errors
+at a surface causes **system lies** — the system reports success while producing
+corrupt/missing output. A hotspot that intersects any surface is higher-priority
+than the same hotspot in an isolated module.
+
+| # | Surface | What It Guards | Query hint |
+|:-:|---------|----------------|-----------|
+| 1 | **Execution Surface** | Tool invocations, agent dispatches, subprocess, LLM calls | nodes on `mv_graph_critical_path_blast_radius` touching `L_TOOLS` / `L2_execution` |
+| 2 | **Write Surface** | State mutations via UWG / SovereignBaseAgent / canonical store | `v_p0_write_bypass_uwg` + `writes_to` fan-in |
+| 3 | **Security Surface** | Guardrails / safety plane / policy enforcement / HITL gates | `L5_safety` nodes + `v_p0_provider_bypass` |
+| 4 | **State Surface** | Memory / cache / checkpoint / canonical store | `L4_state` nodes + `reads_from` / `writes_to` high-density |
+| 5 | **Observability Surface** | OTEL spans / audit trail / evidence ledger | `L6_observability` nodes + `emits_side_effect` edges |
+
+**Required in `## ADG_HOTSPOT_REPORT`**: each hotspot row MUST list the surfaces it intersects (or "none").
+
+---
+
+## The 4 Deadly Catch-Site Antipatterns
+
+These four are **structurally dangerous** and are the canonical hotspot triggers:
+
+| Antipattern | Code Shape | Failure Mode |
+|-------------|-----------|--------------|
+| `broad_exception_catch` | `except Exception:` | Collapses specific failures into one bucket |
+| `silent_exception_swallow` | `except X: pass` | Total invisibility |
+| `log_and_swallow` | `except X: log(e); continue` | Keeps running in bad state |
+| `return_none_swallow` | `except X: return None` | Failure → ambiguity → later crash |
+
+Any of these on a surface + high fan-in = **HOTSPOT**. Guardian exemption requires HITL approval per `anti-pattern-hitl-gate.md`.
+
+---
+
+## Hotspot Archetypes (required classification)
+
+Every row in `## ADG_HOTSPOT_REPORT` MUST be tagged with exactly one archetype:
+
+| Archetype | Signature | Danger |
+|-----------|-----------|--------|
+| **CENTRAL_DEPENDENCY** | High fan-in, low fan-out | Bad swallow poisons many callers |
+| **ORCHESTRATOR** | High fan-out, dense `flows_to` | Swallow hides chain failures |
+| **STATE_NODE** | On Write / State surface; `writes_to`/`reads_from` density | Silent inconsistency across sessions |
+| **SAFETY_GATEKEEPER** | On Security surface; `L5_safety`; guardrail/policy code | Swallow suppresses guardrails — no safety |
+
+---
+
+## Zero-Loss Propagation Pipeline (required trace per hotspot)
+
+Every hotspot claim MUST be traceable through this chain. A hotspot that skips
+any step is **unproven** and cannot be scheduled for refactoring:
+
+```
+[ catch site at file:line ]
+       │
+       ▼
+[ antipattern edge ]       (one of the 4 deadly kinds)
+       │
+       ▼
+[ ownership bridge ]       (Symbol → owning Module → Layer)
+       │
+   ├─► violation_severity  (which of the 4?)
+   ├─► layer               (L0/L5 > L3/L4 > L1/L2 > L6)
+   ├─► fan-in              (reverse walk — who breaks)
+   ├─► fan-out             (forward walk — what gets hidden)
+   ├─► surfaces crossed    (any of 5 ADG Surfaces?)
+   └─► archetype           (which of the 4?)
+       │
+       ▼
+  [ HOTSPOT — ranked ]
+```
 
 ---
 

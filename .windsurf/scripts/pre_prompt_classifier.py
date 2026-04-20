@@ -268,8 +268,19 @@ _sr_mandate = """
              Plan MUST contain `## ADG_GRAPH_LAYER_EVIDENCE`.
        (iii) Wave ordering — derive from `mcp1_adg_p0_wave_plan` output,
              not from alphabetical / "feels important" intuition.
-     FORBIDDEN: refactoring plans citing only raw `edges`/`violations` counts.
-     Rules: adg-hotspot-enforcement.md, adg-graph-layer-enforcement.md
+       (iv)  Hotspot classification — every row in ## ADG_HOTSPOT_REPORT MUST
+             include one of 4 archetypes (CENTRAL_DEPENDENCY, ORCHESTRATOR,
+             STATE_NODE, SAFETY_GATEKEEPER) AND cross-reference the 5 ADG
+             Surfaces (Execution / Write / Security / State / Observability).
+       (v)   Layer multiplier — apply L0/L5 ×2.0, L3/L4 ×1.75, L1/L2 ×1.0, L6 ×0.75.
+       (vi)  Static vs Runtime — use `adg_sqlite` for structural queries;
+             use `otel_mcp` for runtime span/trace/healing-chain questions.
+             Do not conflate them.
+       (vii) SSOT hierarchy — SQLite=truth, Redis=hot projection, MCP=read-only.
+             If Redis or MCP disagrees with SQLite, SQLite wins.
+     FORBIDDEN: refactoring plans citing only raw `edges`/`violations` counts
+     or lacking archetype/surface classification.
+     Rules: adg-canonical-invariants.md, adg-hotspot-enforcement.md, adg-graph-layer-enforcement.md
      CI gate: ops_scripts/ci/check_graph_layer_evidence.py
   1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
   2. Call create_task (task_manager MCP) to register this task with goal + definitions of done
