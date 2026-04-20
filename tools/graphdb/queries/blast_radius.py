@@ -23,6 +23,28 @@ class BlastRadiusQueries:
         """
         self.graph = graph
 
+    def _incoming_edges(self, node: str) -> list[tuple[Any, Any, dict[str, Any]]]:
+        """Return incoming edges for both DiGraph and compatibility graph backends."""
+        in_edges = getattr(self.graph, "in_edges", None)
+        if callable(in_edges):
+            return list(in_edges(node, data=True))
+
+        return [(u, v, attrs) for u, v, attrs in self.graph.edges(data=True) if v == node or u == node]
+
+    def _in_degree(self, node: str) -> int:
+        """Compatibility in-degree calculation."""
+        in_degree = getattr(self.graph, "in_degree", None)
+        if callable(in_degree):
+            return int(in_degree(node))
+        return sum(1 for _, v in self.graph.edges() if v == node)
+
+    def _out_degree(self, node: str) -> int:
+        """Compatibility out-degree calculation."""
+        out_degree = getattr(self.graph, "out_degree", None)
+        if callable(out_degree):
+            return int(out_degree(node))
+        return sum(1 for u, _ in self.graph.edges() if u == node)
+
     def transitive_dependents(self, node_id: str, max_depth: int = 10) -> Dict[str, Any]:
         """Find all nodes that depend on the given node.
 
@@ -343,8 +365,8 @@ class BlastRadiusQueries:
 
         # Calculate fan-in and fan-out for each node
         for node in tqdm(self.graph.nodes(), desc="hub scan", unit="node", leave=False):
-            in_degree = self.graph.in_degree(node) if self.graph.is_directed() else self.graph.degree(node)
-            out_degree = self.graph.out_degree(node) if self.graph.is_directed() else 0
+            in_degree = self._in_degree(node) if self.graph.is_directed() else self.graph.degree(node)
+            out_degree = self._out_degree(node) if self.graph.is_directed() else 0
 
             node_attrs = self.graph.nodes[node]
 
@@ -376,7 +398,7 @@ class BlastRadiusQueries:
             node = hub["node"]
 
             # Check if hub is protected by policies
-            incoming_edges = list(self.graph.in_edges(node, data=True))
+            incoming_edges = self._incoming_edges(node)
             policy_protections = [
                 attrs.get("graph_type")
                 for _, _, attrs in incoming_edges

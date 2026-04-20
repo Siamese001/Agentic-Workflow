@@ -23,6 +23,14 @@ class StructuralQueries:
         """
         self.graph = graph
 
+    def _incoming_edges(self, node: str) -> list[tuple[Any, Any, dict[str, Any]]]:
+        """Return incoming edges for both NetworkX DiGraph and compatibility graph backends."""
+        in_edges = getattr(self.graph, "in_edges", None)
+        if callable(in_edges):
+            return list(in_edges(node, data=True))
+
+        return [(u, v, attrs) for u, v, attrs in self.graph.edges(data=True) if v == node or u == node]
+
     def gravity_import_violations(self) -> List[Dict[str, Any]]:
         """Find imports that violate layer gravity rules.
 
@@ -257,7 +265,7 @@ class StructuralQueries:
 
         for capability in tqdm(capabilities, desc="capabilities", unit="cap", leave=False):
             # Check if capability is properly gated
-            incoming_edges = list(self.graph.in_edges(capability, data=True))
+            incoming_edges = self._incoming_edges(capability)
             has_gate = any(
                 attrs.get("graph_type") in ["GATED_BY_CONFIDENCE", "APPLIES_GUARDRAIL"]
                 for _, _, attrs in incoming_edges
@@ -279,7 +287,7 @@ class StructuralQueries:
         results["tools"]["total"] = len(tools)
 
         for tool in tqdm(tools, desc="tools", unit="tool", leave=False):
-            incoming_edges = list(self.graph.in_edges(tool, data=True))
+            incoming_edges = self._incoming_edges(tool)
             has_gate = any(
                 attrs.get("graph_type") in ["GATED_BY_CONFIDENCE", "APPLIES_GUARDRAIL"]
                 for _, _, attrs in incoming_edges
@@ -302,7 +310,7 @@ class StructuralQueries:
         results["providers"]["total"] = len(providers)
 
         for provider in tqdm(providers, desc="providers", unit="provider", leave=False):
-            incoming_edges = list(self.graph.in_edges(provider, data=True))
+            incoming_edges = self._incoming_edges(provider)
             has_gate = any(
                 attrs.get("graph_type") in ["GATED_BY_CONFIDENCE", "APPLIES_GUARDRAIL"]
                 for _, _, attrs in incoming_edges

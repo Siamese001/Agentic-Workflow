@@ -322,7 +322,6 @@ class ArchivalGatekeeper:
             try:
                 self._l4_ledger_hook(result)
                 Logger.debug(f"[ArchivalGatekeeper] L4 Ledger notified: {result.operation.value}")
-            # guardian: allow-silent-swallow
             except (
                 OSError,
                 ValueError,
@@ -330,8 +329,9 @@ class ArchivalGatekeeper:
                 KeyError,
                 AttributeError,
                 RuntimeError,
-            ):  # guardian: allow-broad-exception -- L4 ledger notification is best-effort; intentional silent-swallow logged via Logger.exception
+            ):
                 Logger.exception("[ArchivalGatekeeper] L4 Ledger hook failed for %s", result.operation.value)
+                raise
 
     def set_input_function(self, func: Callable[[str], str]) -> None:
         """
