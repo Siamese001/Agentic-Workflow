@@ -1,0 +1,189 @@
+name: Runtime HITL Integrity Gate
+
+# Runs check_runtime_hitl_ledger_integrity.py against:
+#   1. A synthetic audit chain generated in-workflow (always — smoke test)
+#   2. The production ledger snapshot (optional — only when HITL_LEDGER_SNAPSHOT_URL
+#      secret is provisioned)
+#
+# References:
+#   - docs/architecture/runtime_hitl_soc2_mapping.md (§CC7.2)
+#   - .windsurf/plans/runtime-hitl-exit-control-c4e7b3.md (W7)
+#   - ADR-023 §5 (Integrity)
+#
+# Distinct from author-gate-gates.yml (developer-loop harness HITL). Do not conflate.
+
+on:
+  pull_request:
+    paths:
+      - 'agentic_core/L3_orchestration/exit_control/**'
+      - 'agentic_core/L5_safety/exit_control/**'
+      - 'ops_scripts/ci/check_runtime_hitl_ledger_integrity.py'
+      - 'tests/agentic_core/L3_orchestration/exit_control/**'
+      - 'tests/unit/ops_scripts/ci/test_check_runtime_hitl_ledger_integrity.py'
+      - '.github/workflows/hitl-integrity-gate.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'agentic_core/L3_orchestration/exit_control/**'
+      - 'agentic_core/L5_safety/exit_control/**'
+      - 'ops_scripts/ci/check_runtime_hitl_ledger_integrity.py'
+  workflow_dispatch:
+    inputs:
+      production_snapshot_url:
+        description: 'Optional URL to a production audit-chain SQLite snapshot'
+        required: false
+        type: string
+  schedule:
+    # Daily at 07:00 UTC — catches any tampering introduced outside a PR
+    - cron: '0 7 * * *'
+
+concurrency:
+  group: hitl-integrity-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Synthetic audit-chain smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/common-setup
+
+      - name: Generate synthetic ledger + audit chain
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from agentic_core.L3_orchestration.exit_control.ledger_integrity import AuditChain
+          from agentic_core.L3_orchestration.exit_control.runtime_hitl_ledger import (
+              RuntimeHitlLedger,
+          )
+          from agentic_core.L5_safety.exit_control.hitl_classes import HitlClass
+
+          artifacts = Path("artifacts/runtime")
+          artifacts.mkdir(parents=True, exist_ok=True)
+          chain = AuditChain(artifacts / "ci_audit.db")
+          ledger = RuntimeHitlLedger(artifacts / "ci_ledger.db", audit_chain=chain)
+
+          for i in range(3):
+              entry = ledger.record_escalation(
+                  run_id=f"ci-run-{i}", trace_id=f"ci-trace-{i}",
+                  hitl_class=HitlClass.FINANCIAL,
+                  approver_pool="ci_pool", timeout_s=60,
+                  policy_snapshot="ci-snap",
+              )
+              if i == 0:
+                  ledger.record_approved(entry.ledger_id, approver_id="ci")
+              elif i == 1:
+                  ledger.record_denied(entry.ledger_id, approver_id="ci", reason_code="CI_TEST")
+              else:
+                  ledger.record_timeout(entry.ledger_id)
+          chain.close()
+          ledger.close()
+          print("Synthetic ledger + audit chain generated.")
+          PY
+
+      - name: Verify synthetic chain
+        run: |
+          python ops_scripts/ci/check_runtime_hitl_ledger_integrity.py \
+            --audit-db artifacts/runtime/ci_audit.db
+
+      - name: Negative test — tampered chain MUST fail verification
+        run: |
+          python - <<'PY'
+          import sqlite3
+          conn = sqlite3.connect("artifacts/runtime/ci_audit.db")
+          conn.execute("UPDATE hitl_audit_chain SET payload_json='{\"tampered\":true}' WHERE audit_id=1")
+          conn.commit()
+          conn.close()
+          print("Tampered audit_id=1 payload.")
+          PY
+          # This MUST exit non-zero; if it exits 0 the gate is broken
+          if python ops_scripts/ci/check_runtime_hitl_ledger_integrity.py \
+               --audit-db artifacts/runtime/ci_audit.db; then
+            echo "::error::FAIL — integrity gate did not detect tampering"
+            exit 1
+          else
+            echo "Tamper detected as expected."
+          fi
+
+      - name: Upload synthetic artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hitl-synthetic-chain
+          path: artifacts/runtime/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  production:
+    name: Production ledger snapshot (optional)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Only runs when the snapshot URL secret is configured. Skipped silently otherwise.
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/common-setup
+
+      - name: Resolve snapshot URL
+        id: resolve
+        env:
+          SECRET_URL: ${{ secrets.HITL_LEDGER_SNAPSHOT_URL }}
+          DISPATCH_URL: ${{ github.event.inputs.production_snapshot_url }}
+        run: |
+          URL="${DISPATCH_URL:-$SECRET_URL}"
+          if [ -z "$URL" ]; then
+            echo "No snapshot URL configured. Skipping production verification."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            # Do not echo URL itself — treat as sensitive
+          fi
+
+      - name: Download production snapshot
+        if: steps.resolve.outputs.configured == 'true'
+        env:
+          SECRET_URL: ${{ secrets.HITL_LEDGER_SNAPSHOT_URL }}
+          DISPATCH_URL: ${{ github.event.inputs.production_snapshot_url }}
+        run: |
+          URL="${DISPATCH_URL:-$SECRET_URL}"
+          mkdir -p artifacts/runtime
+          curl -sSfL --max-time 60 --retry 3 "$URL" -o artifacts/runtime/prod_audit.db
+          ls -lh artifacts/runtime/prod_audit.db
+
+      - name: Write public key (if provisioned)
+        if: steps.resolve.outputs.configured == 'true'
+        env:
+          PUBLIC_KEY_HEX: ${{ secrets.HITL_LEDGER_PUBLIC_KEY_HEX }}
+        run: |
+          if [ -n "$PUBLIC_KEY_HEX" ]; then
+            echo -n "$PUBLIC_KEY_HEX" > artifacts/runtime/hitl_pub.hex
+            echo "public_key=provided" >> "$GITHUB_OUTPUT"
+          else
+            echo "public_key=absent" >> "$GITHUB_OUTPUT"
+          fi
+        id: key
+
+      - name: Verify production chain (signed mode)
+        if: steps.resolve.outputs.configured == 'true' && steps.key.outputs.public_key == 'provided'
+        run: |
+          python ops_scripts/ci/check_runtime_hitl_ledger_integrity.py \
+            --audit-db artifacts/runtime/prod_audit.db \
+            --public-key-file artifacts/runtime/hitl_pub.hex \
+            --require-signatures
+
+      - name: Verify production chain (unsigned mode)
+        if: steps.resolve.outputs.configured == 'true' && steps.key.outputs.public_key != 'provided'
+        run: |
+          python ops_scripts/ci/check_runtime_hitl_ledger_integrity.py \
+            --audit-db artifacts/runtime/prod_audit.db
