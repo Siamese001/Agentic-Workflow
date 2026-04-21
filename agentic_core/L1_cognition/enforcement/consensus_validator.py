@@ -3,6 +3,9 @@ from __future__ import annotations
 import logging
 import os
 
+from agentic_core.L0_routing.config.path_constants import (
+    consensus_majority_threshold,
+)
 from agentic_core.L0_routing.config.model_registry import (
     ANTHROPIC_MODEL_ID,
     GEMINI_PRO_MODEL_ID,
@@ -185,7 +188,11 @@ class ConsensusEngine:
     """
 
     CRITICAL_KEYWORDS: Any = ["hack", "delete /", "malware", "drop table"]
-    MAJORITY_THRESHOLD: Any = 0.66
+    # Wave C1 (2026-04-21): MAJORITY_THRESHOLD is now a derived property of the
+    # juror count (see `consensus_majority_threshold` in L0 path_constants).
+    # The legacy 0.66 matched a 3-juror strict majority — kept here as a
+    # fallback-only sentinel used when `len(self.providers)` is unknown.
+    MAJORITY_THRESHOLD: Any = 2 / 3  # Back-compat sentinel (3-juror default)
     # Keys resolved via L0 model_registry (env-var driven) to avoid drift.
     MODEL_CHECK_CONFIG: Any = {
         OPENAI_MODEL_ID: {
@@ -212,7 +219,9 @@ class ConsensusEngine:
         if providers is None:
             providers = [OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID]
         self.providers = providers
-        self.threshold = ConsensusEngine.MAJORITY_THRESHOLD
+        # Wave C1 (2026-04-21): threshold now derives from juror count via L0
+        # SSOT so a 4/5/7-juror configuration auto-adjusts the majority cut.
+        self.threshold = consensus_majority_threshold(len(providers))
 
     def _get_model_specific_verdict(self, model_name: str, artifact_lower: str) -> dict[str, str]:
         """

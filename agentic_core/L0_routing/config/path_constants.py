@@ -42,6 +42,32 @@ HEALING_CONFIDENCE_Y: float = 0.50  # Lower threshold: conf <= Y → GEMINI 2.5 
 SSOT_SCORE_THRESHOLD_DET: int = 13  # S <= 13  → DETERMINISTIC
 SSOT_SCORE_THRESHOLD_QWEN: int = 26  # S <= 26  → QWEN; S > 26 → GEMINI
 
+
+def consensus_majority_threshold(juror_count: int) -> float:
+    """Return the strict-majority fraction for a jury of size ``juror_count``.
+
+    Wave C1 (2026-04-21) of `.windsurf/plans/consensus-validator-unification-5e9f3a.md`.
+    Replaces the hardcoded ``MAJORITY_THRESHOLD = 0.66`` in
+    ``agentic_core.L1_cognition.enforcement.consensus_validator`` so the
+    threshold tracks the juror set rather than a magic number.
+
+    Formula: ``floor(juror_count / 2 + 1) / juror_count`` — the smallest
+    fraction that beats a tie. Examples::
+
+        consensus_majority_threshold(3) == 2/3  ≈ 0.666... (matches legacy 0.66)
+        consensus_majority_threshold(4) == 3/4  == 0.75
+        consensus_majority_threshold(5) == 3/5  == 0.6
+        consensus_majority_threshold(7) == 4/7  ≈ 0.5714...
+
+    Raises:
+        ValueError: if ``juror_count < 1``.
+    """
+    if juror_count < 1:
+        raise ValueError(f"juror_count must be >= 1, got {juror_count}")
+    votes_needed = juror_count // 2 + 1
+    return votes_needed / juror_count
+
+
 # NOTE: QWEN_14B_MODEL_ID was removed 2026-04-21 — its value "qwen/qwen-14b-chat"
 # never matched the actual deployed model. Canonical source is now:
 #   agentic_core/L0_routing/config/model_registry.QWEN_LOCAL_MODEL_ID
