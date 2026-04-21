@@ -27,6 +27,13 @@ import logging
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import Any, Mapping
+
+from apps_shared.integrations.runtime_hitl_integration import (
+    HitlResult,
+    build_exit_envelope,
+    maybe_escalate_hitl,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -103,6 +110,10 @@ class GovernedUwException:
 
     APP_NAME = "apps_underwriting_ai"
     EXCEPTION_REASON_CODE = EXCEPTION_REASON_CODE
+    # W5 P5.2: opt-in to runtime HITL for covenant-exception decisions only.
+    # This does NOT reopen the other blocked layers (L0/L1/C0/L2/L5) — the
+    # escalation is invoked from CoreAdapter at the covenant-exception point.
+    HITL_ENABLED = True
 
     def get_exception_record(self) -> UwExceptionRecord:
         """Return the formal exception record for the conformance gate."""
@@ -190,3 +201,99 @@ class GovernedUwException:
         results.append(("CC-UW-04 review cadence declared", cc04_pass, cc04_detail))
 
         return results
+
+    # ------------------------------------------------------------------
+    # Runtime HITL hook (W5 P5.2) — covenant-exception path
+    # ------------------------------------------------------------------
+
+    def maybe_escalate_covenant_exception(
+        self,
+        *,
+        request_id: str,
+        product_type: str,
+        decision_type: str,
+        recommended_decision: str,
+        confidence_score: float,
+        review_required: bool,
+        is_regulated: bool = True,
+        is_financial: bool = True,
+        covenant_exception_reason: str = "",
+        controller: Any = None,
+        run_state_store: Any = None,
+        extra_checkpoint: Mapping[str, Any] | None = None,
+    ) -> HitlResult:
+        """Classify a covenant exception for runtime HITL escalation.
+
+        apps_underwriting_ai is permanently exempt from GovernedAppRunner
+        (regulatory domain — see module docstring). Runtime HITL integration
+        therefore lives HERE, at the one decision point where a legally-binding
+        credit determination may need a human reviewer: the covenant exception.
+
+        Envelope mapping:
+        - ``is_regulated`` — defaults True (underwriting is always regulated)
+        - ``is_financial`` — defaults True (commitment-bearing)
+        - ``confidence_score`` — the decision confidence already computed
+        - ``requires_policy_override`` — True when ``review_required`` is True
+
+        Checkpoint payload captures enough business state for a resume worker
+        to reconstruct the decision context without re-running the full
+        CoreAdapter pipeline (G7 closure).
+
+        Returns
+        -------
+        HitlResult
+            ``action=COMMIT`` + ``enabled=False`` when flags are off (rollback
+            path). ``action=ESCALATE_HITL`` with a ledger row when classified.
+        """
+        # gate_disposition="block" when review_required to trigger
+        # requires_policy_override via build_exit_envelope's default mapping.
+        envelope = build_exit_envelope(
+            app_name=self.APP_NAME,
+            query=f"covenant_exception:{product_type}:{decision_type}",
+            gate_disposition="block" if review_required else "pass",
+            grounded=True,
+            citation_count=1,
+            support_coverage=max(0.0, min(1.0, float(confidence_score))),
+            disposition="weak_support" if review_required else "strong_support",
+            policy_overrides={
+                "is_regulated": bool(is_regulated),
+                "is_financial": bool(is_financial),
+                "product_type": product_type,
+                "decision_type": decision_type,
+                "recommended_decision": recommended_decision,
+                "covenant_exception_reason": covenant_exception_reason,
+            },
+        )
+        checkpoint_payload: dict[str, Any] = {
+            "app_name": self.APP_NAME,
+            "request_id": request_id,
+            "product_type": product_type,
+            "decision_type": decision_type,
+            "recommended_decision": recommended_decision,
+            "confidence_score": float(confidence_score),
+            "review_required": bool(review_required),
+            "covenant_exception_reason": covenant_exception_reason,
+        }
+        if extra_checkpoint:
+            checkpoint_payload.update(dict(extra_checkpoint))
+
+        run_id = f"uw-{request_id}"
+        result = maybe_escalate_hitl(
+            app_name=self.APP_NAME,
+            run_id=run_id,
+            trace_id=run_id,
+            envelope=envelope,
+            runner_flag=bool(self.HITL_ENABLED),
+            controller=controller,
+            run_state_store=run_state_store,
+            checkpoint_kind="covenant_exception",
+            checkpoint_payload=checkpoint_payload,
+        )
+        _LOGGER.info(
+            "uw_covenant_exception_hitl request_id=%s action=%s class=%s ledger=%s",
+            request_id,
+            result.action.value,
+            result.hitl_class or "-",
+            result.ledger_id or "-",
+        )
+        return result

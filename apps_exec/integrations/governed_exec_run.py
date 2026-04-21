@@ -90,6 +90,11 @@ class GovernedExecE2ERunRecord:
     l6_ingested: bool
     l2_executed: bool
     error: str
+    # ── Runtime HITL (W5) — threaded from GovernedAppRunRecord ───────────
+    hitl_action: str = "none"
+    hitl_class: str = ""
+    hitl_ledger_id: str = ""
+    hitl_enabled: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -117,6 +122,9 @@ class GovernedExecRun(GovernedAppRunner):
     APP_NAME = "apps_exec"
     CAPABILITY_TOKEN = "apps_exec.governed_e2e.v1"
     ROUTING_TARGET = "exec_brief_assembly"
+    # W5 P5.3: opt-in to runtime HITL. Master env flag RUNTIME_HITL_ENABLED
+    # must also be set for actual escalation to occur.
+    HITL_ENABLED = True
     ROUTING_KEYWORDS = [
         "brief",
         "executive",
@@ -173,4 +181,9 @@ class GovernedExecRun(GovernedAppRunner):
             l6_ingested=core.l6_ingested,
             l2_executed=core.l2_executed,
             error=core.error,
+            # Runtime HITL (W5)
+            hitl_action=core.hitl_action,
+            hitl_class=core.hitl_class,
+            hitl_ledger_id=core.hitl_ledger_id,
+            hitl_enabled=core.hitl_enabled,
         )

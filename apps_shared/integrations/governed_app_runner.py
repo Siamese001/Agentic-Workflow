@@ -37,7 +37,13 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Mapping
+
+from apps_shared.integrations.runtime_hitl_integration import (
+    HitlResult,
+    build_exit_envelope,
+    maybe_escalate_hitl,
+)
 
 _log = logging.getLogger(__name__)
 
@@ -125,6 +131,11 @@ class GovernedAppRunRecord:
     l6_ingested: bool
     l2_executed: bool
     error: str
+    # ── Runtime HITL (W5) — defaults preserve backward compatibility ──
+    hitl_action: str = "none"  # "none" | "commit" | "escalate_hitl" | "deny"
+    hitl_class: str = ""  # e.g. "financial", "regulated"; "" when not escalated
+    hitl_ledger_id: str = ""  # ledger row id when escalated; "" otherwise
+    hitl_enabled: bool = False  # True when the per-run HITL hook was active
 
 
 # ---------------------------------------------------------------------------
@@ -151,9 +162,16 @@ class GovernedAppRunner:
     CAPABILITY_TOKEN: str = ""
     ROUTING_TARGET: str = ""
     ROUTING_KEYWORDS: list[str] = []
+    # Runtime HITL (W5): per-app opt-in. Master env flag RUNTIME_HITL_ENABLED
+    # must ALSO be set for the hook to engage.
+    HITL_ENABLED: bool = False
 
     def __init__(self, collection: str = "process_docs") -> None:
         self._collection = collection
+        # Injectable for tests / production composition. Default None → helper
+        # lazily constructs policy + ledger from SSOT paths on first escalate.
+        self._hitl_controller: Any = None
+        self._hitl_run_state_store: Any = None
 
     # ------------------------------------------------------------------
     # Public: shared pipeline
@@ -195,6 +213,10 @@ class GovernedAppRunner:
         l2_executed = False
         c0_raw_count = 0
         c0_shaped_count = 0
+        hitl_action = "none"
+        hitl_class_str = ""
+        hitl_ledger_id = ""
+        hitl_enabled = False
 
         plan = _PlanOutput(sub_queries=(query,), fallback_used=True)
         route = _RouteOutput(
@@ -284,6 +306,23 @@ class GovernedAppRunner:
             except (ImportError, AttributeError):
                 l6_ingested = True
 
+            # ── W5: Runtime HITL step [5] — classify sealed envelope ───────
+            # Per ADR-023 §3.2 this runs AFTER L5 seal (evaluate_and_emit) and
+            # BEFORE any UWG invocation. Flag-off default keeps this a no-op.
+            hitl_result = self._maybe_escalate_hitl(
+                run_id=run_id,
+                query=query,
+                gate_disposition=gate_disposition,
+                grounded=grounded,
+                citation_count=citation_count,
+                support_coverage=support_coverage,
+                disposition=disposition_str,
+            )
+            hitl_action = hitl_result.action.value.lower()
+            hitl_class_str = hitl_result.hitl_class
+            hitl_ledger_id = hitl_result.ledger_id
+            hitl_enabled = hitl_result.enabled
+
         except (ImportError, RuntimeError, TypeError, ValueError, AttributeError, OSError) as exc:
             error = str(exc)
             _log.error(
@@ -314,6 +353,73 @@ class GovernedAppRunner:
             l6_ingested=l6_ingested,
             l2_executed=l2_executed,
             error=error,
+            hitl_action=hitl_action,
+            hitl_class=hitl_class_str,
+            hitl_ledger_id=hitl_ledger_id,
+            hitl_enabled=hitl_enabled,
+        )
+
+    # ------------------------------------------------------------------
+    # Runtime HITL hook (W5)
+    # ------------------------------------------------------------------
+
+    def _maybe_escalate_hitl(
+        self,
+        *,
+        run_id: str,
+        query: str,
+        gate_disposition: str,
+        grounded: bool,
+        citation_count: int,
+        support_coverage: float,
+        disposition: str,
+        policy_overrides: Mapping[str, Any] | None = None,
+    ) -> HitlResult:
+        """Build envelope, call :func:`classify_exit`, return the outcome.
+
+        Subclasses MAY override to stamp app-specific envelope fields (e.g.
+        apps_lic may set ``is_regulated=True`` under compliance mode) via
+        ``policy_overrides``. The default delegates to
+        :func:`build_exit_envelope` + :func:`maybe_escalate_hitl` and relies
+        on class attribute ``HITL_ENABLED`` + env flag ``RUNTIME_HITL_ENABLED``
+        for flag gating. When either is off, this is a no-op returning
+        ``HitlResult(action=COMMIT, enabled=False)``.
+
+        Checkpoint payload (G7 closure): a minimal run-continuation record so
+        a resume worker can reconstruct the pipeline context after approval.
+        """
+        envelope = build_exit_envelope(
+            app_name=self.APP_NAME,
+            query=query,
+            gate_disposition=gate_disposition,
+            grounded=grounded,
+            citation_count=citation_count,
+            support_coverage=support_coverage,
+            disposition=disposition,
+            policy_overrides=policy_overrides,
+        )
+        checkpoint_payload = {
+            "app_name": self.APP_NAME,
+            "capability_token": self.CAPABILITY_TOKEN,
+            "routing_target": self.ROUTING_TARGET,
+            "collection": self._collection,
+            "query": query,
+            "gate_disposition": gate_disposition,
+            "grounded": bool(grounded),
+            "citation_count": int(citation_count),
+            "support_coverage": float(support_coverage),
+            "disposition": disposition,
+        }
+        return maybe_escalate_hitl(
+            app_name=self.APP_NAME,
+            run_id=run_id,
+            trace_id=run_id,
+            envelope=envelope,
+            runner_flag=bool(self.HITL_ENABLED),
+            controller=self._hitl_controller,
+            run_state_store=self._hitl_run_state_store,
+            checkpoint_kind="pre_uwg",
+            checkpoint_payload=checkpoint_payload,
         )
 
     # ------------------------------------------------------------------

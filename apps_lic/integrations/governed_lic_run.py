@@ -60,6 +60,11 @@ class GovernedLicE2ERunRecord:
     campaign_id: str
     target_audience: str
     compliance_level: str
+    # ── Runtime HITL (W5) — threaded from GovernedAppRunRecord ───────────
+    hitl_action: str = "none"
+    hitl_class: str = ""
+    hitl_ledger_id: str = ""
+    hitl_enabled: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -82,6 +87,9 @@ class GovernedLicRun(GovernedAppRunner):
     APP_NAME = "apps_lic"
     CAPABILITY_TOKEN = "apps_lic.governed_e2e.v1"
     ROUTING_TARGET = "lic_campaign_assembly"
+    # W5 P5.1: opt-in to runtime HITL. Master env flag RUNTIME_HITL_ENABLED
+    # must also be set for actual escalation; default YAML policy applies.
+    HITL_ENABLED = True
     ROUTING_KEYWORDS = [
         "campaign",
         "outreach",
@@ -167,4 +175,9 @@ class GovernedLicRun(GovernedAppRunner):
             campaign_id=request.campaign_id,
             target_audience=request.config.target_audience,
             compliance_level=request.config.compliance_level,
+            # Runtime HITL (W5)
+            hitl_action=core.hitl_action,
+            hitl_class=core.hitl_class,
+            hitl_ledger_id=core.hitl_ledger_id,
+            hitl_enabled=core.hitl_enabled,
         )
