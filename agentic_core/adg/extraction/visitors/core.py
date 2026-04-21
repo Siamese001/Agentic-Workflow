@@ -219,7 +219,23 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         # Handler body is a single assignment `X = <Constant literal>` where
         # the constant is NOT None (None is already return_none_swallow).
         # Catches the "except Exception: price = 0" pattern.
-        if self._is_default_fallback_masking(node.body):
+        #
+        # Precision: exempt ImportError / ModuleNotFoundError / SyntaxError /
+        # ParseError handlers - these are standard optional-dependency,
+        # feature-detection, and parse-recovery patterns, not failure masking.
+        _optional_dep_types = {
+            "ImportError",
+            "ModuleNotFoundError",
+            "SyntaxError",
+            "ParseError",
+            "DecodeError",
+            "JSONDecodeError",
+            "EOFError",
+        }
+        if (
+            self._is_default_fallback_masking(node.body)
+            and handler_type not in _optional_dep_types
+        ):
             self._antipatterns.append(
                 (
                     node.lineno,
