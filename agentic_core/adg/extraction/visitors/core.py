@@ -583,6 +583,12 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     attr = call.func.attr
                     if attr in {"debug", "info", "warning", "error", "exception", "critical"}:
                         has_log = True
+                        # Structured log: logger.error("msg", extra={...}) or
+                        # logger.error("msg", trace_id=..., ...) - keyword args
+                        # carry structured fields, making this an observability
+                        # emit point, not a plain text log.
+                        if call.keywords:
+                            has_structured_observability = True
                     elif attr in observability_attrs:
                         has_structured_observability = True
                     # Dotted prefix match on the receiver name
@@ -598,6 +604,18 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 call = stmt.value
                 if isinstance(call.func, ast.Attribute) and call.func.attr in observability_attrs:
                     has_structured_observability = True
+            # State mutation before log + raise = state-recovery boundary.
+            # Pattern: `self._model = None; logger.error(...); raise` — the
+            # handler resets internal state on failure, logs for diagnostics,
+            # then propagates. Not duplicate alerting; the state reset is the
+            # actual recovery action.
+            elif isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+                targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+                for tgt in targets:
+                    if isinstance(tgt, ast.Attribute) and isinstance(tgt.value, ast.Name):
+                        if tgt.value.id in {"self", "cls"}:
+                            has_structured_observability = True
+                            break
             # With statement: `with tracer.start_as_current_span(...):` counts as observability
             elif isinstance(stmt, ast.With):
                 for item in stmt.items:
