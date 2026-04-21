@@ -605,7 +605,17 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     if any(p in ctx_sym for p in ("tracer", "span", "telemetry", "metric")):
                         has_structured_observability = True
             elif isinstance(stmt, ast.Raise):
-                has_reraise = True
+                # Only bare `raise` counts as re-raise (duplicate alert).
+                # `raise NewError(...)` is exception wrapping/translation -
+                # the caller gets a DIFFERENT exception, so the original log
+                # captures detail that would otherwise be lost in translation.
+                # `raise NewError(...) from e` is explicit chaining - same.
+                if stmt.exc is None:
+                    has_reraise = True
+                else:
+                    # Exception wrapping - not a double_logging pattern.
+                    # Record as "exception translation boundary".
+                    has_structured_observability = True
 
         if not (has_log and has_reraise):
             return False
