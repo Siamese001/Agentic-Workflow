@@ -232,9 +232,21 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             "JSONDecodeError",
             "EOFError",
         }
+        # Precision: exempt type-coercion / input-normalization handlers.
+        # The idiom `try: x = int(v); except (TypeError, ValueError): x = 0`
+        # is valid defensive normalization of untrusted input, not failure
+        # masking. When ALL caught types are drawn from the coercion set
+        # AND the fallback value is a numeric/bool/empty-container literal,
+        # the handler is a normalization pattern.
+        _coercion_types = {"TypeError", "ValueError", "KeyError", "IndexError", "AttributeError"}
+        caught_types = self._get_all_handler_types(node.type)
+        is_coercion_handler = bool(caught_types) and caught_types.issubset(_coercion_types)
+        is_coercion_fallback = self._is_coercion_default(node.body)
+
         if (
             self._is_default_fallback_masking(node.body)
             and handler_type not in _optional_dep_types
+            and not (is_coercion_handler and is_coercion_fallback)
         ):
             self._antipatterns.append(
                 (
@@ -325,6 +337,62 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 if isinstance(first, ast.Name):
                     return first.id
         return None
+
+    def _get_all_handler_types(self, type_node: ast.expr | None) -> set[str]:
+        """Return ALL exception type names caught by a handler.
+
+        For `except TypeError`, returns {"TypeError"}.
+        For `except (TypeError, ValueError)`, returns {"TypeError", "ValueError"}.
+        For bare `except:`, returns empty set.
+        """
+        if type_node is None:
+            return set()
+        if isinstance(type_node, ast.Name):
+            return {type_node.id}
+        if isinstance(type_node, ast.Tuple):
+            result: set[str] = set()
+            for elt in type_node.elts:
+                if isinstance(elt, ast.Name):
+                    result.add(elt.id)
+            return result
+        return set()
+
+    def _is_coercion_default(self, body: list[ast.stmt]) -> bool:
+        """True if handler body is `var = <numeric/bool/empty-container literal>`.
+
+        Matches the type-coercion fallback signature:
+            try: x = int(raw); except (TypeError, ValueError): x = 0
+            try: x = float(raw); except (TypeError, ValueError): x = 0.0
+            try: items = list(iterable); except TypeError: items = []
+        """
+        if not body or len(body) != 1:
+            return False
+        stmt = body[0]
+        if not isinstance(stmt, ast.Assign) or len(stmt.targets) != 1:
+            return False
+        target = stmt.targets[0]
+        if not isinstance(target, (ast.Name, ast.Attribute, ast.Subscript)):
+            return False
+        value = stmt.value
+        # Numeric/bool/string/bytes constants
+        if isinstance(value, ast.Constant):
+            return isinstance(value.value, (int, float, bool, str, bytes)) or value.value is None
+        # Empty containers: [], {}, (), set()
+        if isinstance(value, (ast.List, ast.Tuple, ast.Set)) and not value.elts:
+            return True
+        if isinstance(value, ast.Dict) and not value.keys:
+            return True
+        if isinstance(value, ast.Call):
+            sym = self._extract_symbol(value.func)
+            if sym in {"list", "tuple", "dict", "set", "frozenset"} and not value.args:
+                return True
+        # Negative numeric constants: -1, -1.0
+        if isinstance(value, ast.UnaryOp) and isinstance(value.op, ast.USub):
+            if isinstance(value.operand, ast.Constant) and isinstance(
+                value.operand.value, (int, float)
+            ):
+                return True
+        return False
 
     def _is_silent_swallow(self, body: list[ast.stmt]) -> bool:
         """Check if handler silently swallows exception (pass only)."""
