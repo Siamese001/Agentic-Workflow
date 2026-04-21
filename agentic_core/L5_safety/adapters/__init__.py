@@ -13,9 +13,23 @@ from agentic_core.L5_safety.adapters.human_approval_adapter import (
     ApprovalOutcomeKind,
     HumanApprovalAdapter,
 )
+from agentic_core.L5_safety.adapters.email_magic_link_adapter import (
+    EmailMagicLinkAdapter,
+    EmailTransport,
+    MagicLinkStore,
+    StoredOutcome,
+)
 from agentic_core.L5_safety.adapters.notion_approval_adapter import (
     NotionApprovalAdapter,
     NotionTransport,
+)
+from agentic_core.L5_safety.adapters.orkes_approval_adapter import (
+    OrkesApprovalAdapter,
+    OrkesTransport,
+)
+from agentic_core.L5_safety.adapters.slack_approval_adapter import (
+    SlackApprovalAdapter,
+    SlackTransport,
 )
 
 __all__ = [
@@ -23,7 +37,15 @@ __all__ = [
     "ApprovalHandle",
     "ApprovalOutcome",
     "ApprovalOutcomeKind",
+    "EmailMagicLinkAdapter",
+    "EmailTransport",
     "HumanApprovalAdapter",
+    "MagicLinkStore",
     "NotionApprovalAdapter",
     "NotionTransport",
+    "OrkesApprovalAdapter",
+    "OrkesTransport",
+    "SlackApprovalAdapter",
+    "SlackTransport",
+    "StoredOutcome",
 ]
