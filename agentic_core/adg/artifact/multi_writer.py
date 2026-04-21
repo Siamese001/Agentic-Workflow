@@ -959,10 +959,16 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE 'apps_%/tools/%'
                        OR source_file LIKE 'apps_%/services/%'
                        OR source_file LIKE 'apps_%/spine/%'
+                       OR source_file LIKE 'apps_%/engines/%'
+                       OR source_file LIKE 'apps_%/ingestion/%'
+                       OR source_file LIKE 'apps_%/__main__.py'
                        OR source_file LIKE '%_util.py'
                        OR source_file LIKE '%_mixin.py'
                        OR source_file LIKE '%_validator.py'
-                       OR source_file LIKE '%_adapter.py')
+                       OR source_file LIKE '%_adapter.py'
+                       OR source_file LIKE '%_engine.py'
+                       OR source_file LIKE '%_client.py'
+                       OR source_file LIKE '%_optional_%.py')
                     THEN 'LOW'
                     -- P3 LOW: double_logging in enforcement/safety/cache observability paths.
                     WHEN relation_type = 'antipattern'

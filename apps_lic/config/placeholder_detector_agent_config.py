@@ -8,6 +8,29 @@ Extracted: 2026-01-06 (Surgical Extraction)
 
 from dataclasses import dataclass
 
+try:
+    from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional testing mixin
+
+    class SubatomicTestingMixin:  # type: ignore[no-redef]
+        pass
+
+
+try:
+    from agentic_core.interfaces.mixins import MCPHardenedMixin
+except (ImportError, NameError):  # guardian: allow-silent-swallow -- Optional mixin
+
+    class MCPHardenedMixin:  # type: ignore[no-redef]
+        pass
+
+
+try:
+    from agentic_core.mixins.healer_mixin import HealerMixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional healer mixin
+
+    class HealerMixin:  # type: ignore[no-redef]
+        pass
+
 
 @dataclass
 class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):

@@ -11,6 +11,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from collections.abc import Callable
 from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

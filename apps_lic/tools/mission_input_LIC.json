@@ -1,0 +1,37 @@
+{
+  "sender_profile": {
+    "name": "Amit Ayer",
+    "title": "AI/ML Engineering Leader",
+    "company": "Independent",
+    "background": "Builder of agentic AI systems with layered architecture (L0 routing through L6 observability), AST dependency graphs, and multi-MCP orchestration. Deep hands-on experience with production LLM pipelines, guardrails, evaluation frameworks, and governance.",
+    "linkedin_url": ""
+  },
+  "recipient_profile": {
+    "name": "Parth Kathuria",
+    "title": "Founding Recruiter / Talent, People and Culture",
+    "company": "TrueFoundry",
+    "linkedin_url": "https://www.linkedin.com/in/parth-kathuria-057862171/",
+    "background": "Founding recruiter at TrueFoundry (Oct 2021-Present). Scaled org from 0 to 100+ across Marketing, Sales, Backend, Frontend, AI/ML in India, US, UK. Previously Talent Acquisition Lead at EntHire (IIT Kharagpur / UC Berkeley alumni founders). Focus now on hiring aligned with product-market fit, sharp positioning, and NRR-led growth."
+  },
+  "job_description": {
+    "title": "Head of Outcome Engineering",
+    "company": "TrueFoundry",
+    "location": "San Mateo, CA (Hybrid)",
+    "summary": "Lead engineering, delivery, and team-building for TrueFoundry's enterprise outcomes initiatives. Own technical delivery of GenAI-powered solutions across verticals; build and lead a high-performing engineering + applied ML team; develop domain-aligned technical frameworks, reusable components, and solution templates.",
+    "responsibilities": [
+      "Oversee delivery of ML/GenAI solutions; production-grade, scalable, referenceable",
+      "Act as technical sponsor for top accounts and POCs",
+      "Build accelerators, templates, and tools (Cognita apps, domain evals, RAG pipelines)",
+      "Codify delivery best practices into reusable playbooks",
+      "Channel technical feedback into product roadmap with TrueFoundry platform teams",
+      "Hire, grow, and manage engineering talent pipeline; own resourcing, forecasting, execution"
+    ],
+    "requirements": [
+      "Built and led Applied ML teams at large tech companies or startups",
+      "Hands-on with ML, GenAI, systems design; opinionated about repeatable AI delivery architectures",
+      "Measures success by repeatability and product-integration of delivery",
+      "Thrives in fast-paced, ambiguous environments"
+    ],
+    "company_context": "Series A, backed by Intel Capital and Sequoia. Products: AI Gateway (control plane — Prompts, LLM Gateway, MCP Gateway, Guardrails, Agent Gateway) and AI Deploy (Kubernetes-based unified compute). Customers: CVS, Mastercard, Siemens, Paytm, Synopsys, Zscaler."
+  }
+}

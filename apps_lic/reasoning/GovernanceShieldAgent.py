@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from apps_lic.utils.LICAgentBase import LICAgentBase
+from apps_lic.utils.lic_agent_base_util import LICAgentBase
 
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for governance analysis; import failure is logged and captured in _qwen_init_error
 try:

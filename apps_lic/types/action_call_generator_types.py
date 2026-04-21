@@ -38,15 +38,19 @@ class RouteType(Enum):
 
 
 @dataclass
-class CtaConfig:
+class CTAConfig:
     """Docstring."""
 
     TEMPERATURE: float = 0.5
     max_attempts: int = 3
 
 
+# Backward-compat alias for legacy PascalCase spelling
+CtaConfig = CTAConfig
+
+
 @dataclass
-class CtaResult:
+class CTAResult:
     """Docstring."""
 
     cta: str

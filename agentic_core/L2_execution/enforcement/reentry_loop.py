@@ -5,7 +5,7 @@ Implements bounded retry logic with deterministic behavior.
 No infinite loops, no sleep/time usage, pure deterministic behavior.
 """
 
-from agentic_core.L2_execution.cid_registry import CIDRegistry, ExecutionCycle
+from agentic_core.L2_execution.enforcement.cid_registry import CIDRegistry, ExecutionCycle
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,

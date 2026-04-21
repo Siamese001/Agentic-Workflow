@@ -18,6 +18,13 @@ import re
 import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
+
+try:
+    from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional testing mixin
+
+    class SubatomicTestingMixin:  # type: ignore[no-redef]
+        pass
 from enum import Enum, auto
 from typing import Any
 

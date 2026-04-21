@@ -222,7 +222,7 @@ class OutreachMission:
     mission_id: str
     sender_profile: dict[str, object]
     recipient_profile: dict[str, object]
-    JobDescription: dict[str, object]
+    job_description: dict[str, object]
     connection_status: str = "not_connected"
     prior_message_count: int = 0
     route_override: Route | None = None

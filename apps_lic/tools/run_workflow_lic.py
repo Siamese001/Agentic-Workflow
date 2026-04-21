@@ -8,9 +8,12 @@ import os
 import sys
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 from tqdm import tqdm
+
+if TYPE_CHECKING:
+    from apps_lic.types.lic_models_types import OutreachMission
 
 DEFAULT_INPUT_FILE = "mission_input_LIC.json"
 
@@ -116,8 +119,8 @@ def create_orchestrator():
                 errors.append(f"{module_name}.{class_name} does not expose execute_workflow()")
                 continue
             return instance
-        except Exception as exc:  # guardian: allow-silent-swallow - orchestrator discovery loop
-            errors.append(f"{module_name}.{class_name}: {exc}")
+        except (ImportError, AttributeError, TypeError) as exc:
+            errors.append(f"{module_name}.{class_name}: {type(exc).__name__}: {exc}")
 
     print("FATAL: No compatible workflow orchestrator is available.")
     print("Checked:")
@@ -137,7 +140,7 @@ def _build_mission(input_data: dict[str, Any]):
         mission_id=str(uuid4()),
         sender_profile=sender_profile,
         recipient_profile=recipient_profile,
-        JobDescription=job_description,
+        job_description=job_description,
         connection_status=recipient_profile.get("connection_status", "not_connected"),
         prior_message_count=int(recipient_profile.get("prior_message_count", 0) or 0),
     )
@@ -229,38 +232,41 @@ async def main():
     try:
         orchestrator = create_orchestrator()
         print("✓ Orchestrator initialized")
-    except Exception as e:  # guardian: allow-silent-swallow
-        print(f"❌ Failed to initialize orchestrator: {e}")
+    except (ImportError, AttributeError, TypeError, RuntimeError) as e:
+        print(f"❌ Failed to initialize orchestrator: {type(e).__name__}: {e}")
         sys.exit(1)
     print(f"\n{'=' * 80}")
     print("EXECUTING WORKFLOW")
     print(f"{'=' * 80}\n")
     print("⏳ Running agentic workflow (this may take 1-3 minutes)...\n")
     try:
-        result = await orchestrator.execute_workflow(mission)
-    except KeyboardInterrupt:  # guardian: KeyboardInterrupt should be handled with specific context
+        workflow_result = await orchestrator.execute_workflow(mission)
+    except KeyboardInterrupt:
         print("\n\n⚠️  Workflow interrupted by user")
         sys.exit(130)
-    except Exception as e:  # guardian: allow-silent-swallow
-        print(f"\n\n❌ Workflow failed with exception: {e}")
+    except Exception as e:  # guardian: allow-broad-catch -- outer boundary for third-party orchestrator errors; re-raised via traceback + nonzero exit
+        print(f"\n\n❌ Workflow failed with exception: {type(e).__name__}: {e}")
         import traceback
 
         print("\nStack trace:")
         traceback.print_exc()
         sys.exit(1)
-    print_results(result)
+    print_results(workflow_result)
     output_file = f"output_{mission.mission_id[:8]}.json"
     try:
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2, default=str)
+            json.dump(workflow_result, f, indent=2, default=str)
         print(f"\n💾 Full results saved to: {output_file}")
-    except OSError as e:  # guardian: Add error context logging
+    except OSError as e:
         print(f"\n⚠️  Could not save results to file: {e}")
-    return result
+    return workflow_result
 
 
 if __name__ == "__main__":
-    "\n    Entry point for command-line execution.\n\n    Usage:\n        python run_workflow_LIC.py\n\n    Environment Variables Required:\n        GEMINI_API_KEY: Google AI Studio API key\n        GOOGLE_API_KEY: Google Cloud API key for Custom Search\n        GOOGLE_CSE_ID: Google Custom Search Engine ID\n\n    Files Required:\n        mission_input_LIC.json: Mission specification\n        master_resume.json: Sender grounding data (optional)\n        sender_knowledge_base.json: Sender KB (optional)\n        manual_rag_input.json: Manual research (optional)\n    "
+    # Entry point for command-line execution.
+    # Usage: python -m apps_lic  (or: python apps_lic/tools/run_workflow_lic.py)
+    # Environment variables: GEMINI_API_KEY (required), GOOGLE_API_KEY, GOOGLE_CSE_ID (optional).
+    # Required files: mission_input_LIC.json; optional: master_resume.json, sender_knowledge_base.json, manual_rag_input.json.
     required_env_vars = ["GEMINI_API_KEY"]
     missing_env_vars = [var for var in required_env_vars if not os.environ.get(var)]
     if missing_env_vars:
@@ -269,13 +275,13 @@ if __name__ == "__main__":
         print("Set them with: export VARIABLE_NAME='value'")
         print("\nContinuing anyway...")
     try:
-        result = asyncio.run(main())
-        if result.get("status") == "success" and result.get("production_ready"):
+        cli_result = asyncio.run(main())
+        if cli_result.get("status") == "success" and cli_result.get("production_ready"):
             sys.exit(0)
         else:
             sys.exit(1)
     except KeyboardInterrupt:
         sys.exit(130)
-    except Exception as e:  # guardian: allow-silent-swallow
-        print(f"\n❌ Fatal error: {e}")
+    except Exception as e:  # guardian: allow-broad-catch -- __main__ last-resort boundary; prints type+message and exits nonzero
+        print(f"\n❌ Fatal error: {type(e).__name__}: {e}")
         sys.exit(1)

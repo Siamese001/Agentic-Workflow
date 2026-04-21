@@ -48,7 +48,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from apps_lic.utils.LICAgentBase import LICAgentBase
+from apps_lic.utils.lic_agent_base_util import LICAgentBase
 
 _emit_authorize_and_execute("p2", "ValidatorAgent", "execution_auth")
 _emit_validates_capability("p2", "ValidatorAgent", "capability_check")

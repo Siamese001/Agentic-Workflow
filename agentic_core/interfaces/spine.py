@@ -28,6 +28,6 @@ from __future__ import annotations
 from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler, GovernedPayload
 from agentic_core.L0_routing.reasoning.execution_orchestrator import ExecutionOrchestrator
 from agentic_core.L0_routing.reasoning.path_router import PathRouter
-from agentic_core.L2_execution.reentry_loop import ReEntryLoop
+from agentic_core.L2_execution.enforcement.reentry_loop import ReEntryLoop
 
 __all__ = ["AirlockAssembler", "GovernedPayload", "PathRouter", "ExecutionOrchestrator", "ReEntryLoop"]
