@@ -774,14 +774,54 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         return count
 
     def _handler_is_swallowing(self, handler: ast.ExceptHandler) -> bool:
-        """True if the handler swallows — no raise, or a raise that's unreachable."""
+        """True if the handler swallows — no raise, or a raise that's unreachable.
+
+        Precision exclusions (handler is NOT considered swallowing when):
+          - top-level `raise` (re-raise or wrap) — existing rule
+          - top-level `return <non-None-value>` — structured error signaling:
+              the caller receives an error code/string/dict and can branch
+          - counter-increment + log pattern (collector with tracked failure):
+              `summary["errors"] += 1; log.error(...)` — failure recorded via
+              both counter state AND log emission, caller can inspect summary
+        """
         if not handler.body:
             return True
-        # Walk top-level stmts; if we see a Raise, not swallowing (unless dead-code pattern).
+        has_counter_increment = False
+        has_log_call = False
         for stmt in handler.body:
             if isinstance(stmt, ast.Raise):
                 return False
-        # No raise at top level = swallowing (silent, log+continue, or return None)
+            # `return <value>` where value is not None and not a bare `return`
+            if isinstance(stmt, ast.Return) and stmt.value is not None:
+                if isinstance(stmt.value, ast.Constant) and stmt.value.value is None:
+                    # `return None` is explicit None-swallow
+                    continue
+                return False
+            # AugAssign: `x += 1`, `summary["errors"] += 1`
+            if isinstance(stmt, ast.AugAssign) and isinstance(stmt.op, ast.Add):
+                # Only count integer increments as failure counters
+                if isinstance(stmt.value, ast.Constant) and isinstance(stmt.value.value, int):
+                    has_counter_increment = True
+            # Method call on `errors`/`failures`/`issues`/`problems` list
+            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+                call = stmt.value
+                if isinstance(call.func, ast.Attribute):
+                    # logger.error/warning/critical
+                    if call.func.attr in {"error", "warning", "critical", "exception"}:
+                        has_log_call = True
+                    # <collection>.append(error_info)
+                    elif call.func.attr == "append":
+                        recv_sym = self._extract_symbol(call.func.value) or ""
+                        recv_base = recv_sym.split(".")[-1].lower()
+                        if any(
+                            k in recv_base
+                            for k in ("error", "failure", "issue", "problem", "exc", "fail")
+                        ):
+                            has_counter_increment = True
+        # Collector pattern: tracked failure via counter + log = not silent swallow
+        if has_counter_increment and has_log_call:
+            return False
+        # No raise / structured return / collector = swallowing
         return True
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
