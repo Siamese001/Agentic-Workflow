@@ -124,7 +124,12 @@ except ImportError as e:
 
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, GLOBAL_EXCLUDED_DIRS, TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    GLOBAL_EXCLUDED_DIRS,
+    HEALING_BACKUPS_DIR,
+    TESTS_DIR,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -950,7 +955,7 @@ class GovernanceAgent(SovereignBaseAgent):
         """Initialize and return the backup directory for safe operations."""
         if self._backup_dir is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self._backup_dir = self.root_dir / ARCHIVES_DIR / "healing_backups" / "governance" / timestamp
+            self._backup_dir = self.root_dir / HEALING_BACKUPS_DIR / "governance" / timestamp
             _wg.ensure_dir(self._backup_dir)
         return self._backup_dir
 

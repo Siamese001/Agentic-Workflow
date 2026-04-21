@@ -20,7 +20,9 @@ emit_determinism_digest("trace_revert_cognitive_moves_util", "revert_cognitive_m
 emit_determinism_digest("trace_revert_cognitive_moves_util", "revert_cognitive_moves_util_complete")
 _emit_validated_by_safety_plane("p1", "revert_cognitive_moves_util", "safety_validation")
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
-CHECKPOINT_FILE = PROJECT_ROOT / "archives/gatekeeper/2026-01-21/cognitive_checkpoint.json"
+CHECKPOINT_FILE = (
+    PROJECT_ROOT / "ops_scripts" / "archives" / "gatekeeper" / "2026-01-21" / "cognitive_checkpoint.json"
+)
 
 
 def main():

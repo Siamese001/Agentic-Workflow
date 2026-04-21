@@ -38,6 +38,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
+    HEALING_BACKUPS_DIR,
     get_validated_project_root,
 )
 from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
@@ -757,11 +758,7 @@ class LocationHealerAgent(SovereignBaseAgent):
     def _init_backup_dir(self) -> Path:
         """Initialize backup directory for safe mutations."""
         backup_dir = (
-            self.project_root
-            / ARCHIVES_DIR
-            / "healing_backups"
-            / "location"
-            / datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.project_root / HEALING_BACKUPS_DIR / "location" / datetime.now().strftime("%Y%m%d_%H%M%S")
         )
         _wg.ensure_dir(backup_dir)
         return backup_dir
@@ -1473,7 +1470,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             elif choice == "3":
                 # OPTION 3: Archive (last resort)
-                archives_root = self.project_root / ARCHIVES_DIR
+                archives_root = self.project_root / HEALING_BACKUPS_DIR
                 return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
             else:
@@ -1714,7 +1711,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             Logger.warning(
                 f"  ⚠️  Low confidence ({confidence_score:.2f}) - Archiving to prevent misplacement",
             )
-            archives_root = self.project_root / ARCHIVES_DIR
+            archives_root = self.project_root / HEALING_BACKUPS_DIR
             archive_result = self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
             archive_result["autonomous_decision"] = f"Low confidence ({confidence_score:.2f}) - archived"
             return archive_result
@@ -2947,7 +2944,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         Salvaged from LocationAgent.py during LCD+ decommission.
         """
         actions = []
-        archives_root = self.project_root / ARCHIVES_DIR / "healing_backups"
+        archives_root = self.project_root / HEALING_BACKUPS_DIR
         affected_paths: list[Path] = []
         import_touched_paths: list[Path] = []
 

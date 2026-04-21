@@ -102,6 +102,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -368,7 +369,7 @@ class SovereignImportSurgeon:
 
 def main() -> Any:
     """Main entry point."""
-    project_root: Any = "C:/Git/Agentic-Workflow"
+    project_root: Any = str(get_validated_project_root())
     surgeon: Any = SovereignImportSurgeon(project_root)
     surgeon.scan_all_files()
     report: Any = surgeon.generate_report()

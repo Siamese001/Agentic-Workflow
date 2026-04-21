@@ -115,7 +115,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, HEALING_BACKUPS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -750,7 +750,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                     dest = dest_dir / target_path.name
                 else:
                     # Unknown type — archive it
-                    dest_dir = self.project_root / ARCHIVES_DIR / "root_cleanup"
+                    dest_dir = self.project_root / HEALING_BACKUPS_DIR / "root_cleanup"
                     _wg.ensure_dir(dest_dir)
                     dest = dest_dir / target_path.name
 
@@ -786,7 +786,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                     }
                 else:
                     # Unknown directory — archive it
-                    dest_dir = self.project_root / ARCHIVES_DIR / "root_cleanup"
+                    dest_dir = self.project_root / HEALING_BACKUPS_DIR / "root_cleanup"
                     _wg.ensure_dir(dest_dir)
                     dest = dest_dir / dir_name
                     if not self.dry_run:

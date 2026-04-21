@@ -8,6 +8,10 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import OPS_ARCHIVES_DIR, get_validated_project_root
+
+_REPO_ROOT = get_validated_project_root()
+
 
 def get_agents_at_commit(commit_hash):
     """Get agent list from agent_discovery_full.json at a specific commit."""
@@ -15,7 +19,7 @@ def get_agents_at_commit(commit_hash):
         ["git", "show", f"{commit_hash}:agent_discovery_full.json"],
         capture_output=True,
         text=True,
-        cwd="C:/Git/Agentic-Workflow",
+        cwd=str(_REPO_ROOT),
     )
     if result.returncode == 0:
         data = json.loads(result.stdout)
@@ -28,7 +32,7 @@ def get_agents_at_commit(commit_hash):
 
 def get_current_agents():
     """Get current agent list."""
-    with open("C:/Git/Agentic-Workflow/agent_discovery_full.json") as f:
+    with open(_REPO_ROOT / "agent_discovery_full.json", encoding="utf-8") as f:
         data = json.load(f)
     agents = {}
     for a in data:
@@ -38,7 +42,7 @@ def get_current_agents():
 
 def find_agent_in_archives(agent_name):
     """Search for agent in archives directory."""
-    archives = Path("C:/Git/Agentic-Workflow/archives")
+    archives = _REPO_ROOT / OPS_ARCHIVES_DIR
     results = []
     for f in archives.rglob(f"*{agent_name}*"):
         if f.is_file():

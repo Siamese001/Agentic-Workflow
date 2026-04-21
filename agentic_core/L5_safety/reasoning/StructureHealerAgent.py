@@ -38,6 +38,7 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
+    HEALING_BACKUPS_DIR,
 )
 from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
@@ -282,7 +283,7 @@ class StructureHealerAgent(SovereignBaseAgent):
         self._actions: list[StructureHealingAction] = []
 
         if self._agent_config.backup_dir is None:
-            self._agent_config.backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "structure"
+            self._agent_config.backup_dir = self.project_root / HEALING_BACKUPS_DIR / "structure"
 
         # [PHASE 1] Initialize unified structure healing strategy
         self._unified_strategy: StructureHealingStrategy | None = StructureHealingStrategy(

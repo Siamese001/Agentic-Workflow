@@ -40,6 +40,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import HEALING_BACKUPS_DIR
 from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     HealingResult,
@@ -392,7 +393,7 @@ class CodeHealerAgent(
         self._actions: list[HealingAction] = []
 
         if self._agent_config.backup_dir is None:
-            self._agent_config.backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "code"
+            self._agent_config.backup_dir = self.project_root / HEALING_BACKUPS_DIR / "code"
 
         # [PHASE 4] Initialize unified healing strategy
         self._unified_strategy: CodeHealingStrategy | None = CodeHealingStrategy(

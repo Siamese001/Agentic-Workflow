@@ -108,7 +108,7 @@ from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger: logging.Logger = logging.getLogger(__name__)
 UTILS_DIR = "agentic_core/utils"
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, HEALING_BACKUPS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -425,7 +425,12 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         ):  # guardian: allow-retry-without-backoff -- scanner iterates files, not retry attempts; per-file failures re-raise to caller
             try:
                 lines = file_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-                for i in range(len(lines) - self.min_lines + 1):  # guardian: allow-retry-without-backoff -- inner sliding-window over lines, not retry attempts; deterministic bounded iteration
+                for i in tqdm(
+                    range(len(lines) - self.min_lines + 1),
+                    desc=f"Scanning {file_path.name}",
+                    unit="line",
+                    leave=False,
+                ):  # guardian: allow-retry-without-backoff -- inner sliding-window over lines, not retry attempts; deterministic bounded iteration; progress per §16
                     block_content = "\n".join(lines[i : i + self.min_lines])
                     if not block_content.strip():
                         continue
@@ -514,7 +519,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         archived = []
         errors = []
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        archive_dir = self.project_root / ARCHIVES_DIR / f"duplicates_{timestamp}"
+        archive_dir = self.project_root / HEALING_BACKUPS_DIR / f"duplicates_{timestamp}"
         if not dry_run:
             _wg.ensure_dir(archive_dir)
             Logger.info(f"Created archive directory: {archive_dir}")

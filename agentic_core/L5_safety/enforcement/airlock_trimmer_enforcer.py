@@ -9,7 +9,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -18,7 +18,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
-ROOT: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = get_validated_project_root()
 CORE: Any = ROOT / AGENTIC_CORE_DIR
 
 

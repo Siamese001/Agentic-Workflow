@@ -28,7 +28,7 @@ emit_determinism_digest("trace_rg_json_miner", "rg_json_miner_dispatch")
 emit_determinism_digest("trace_rg_json_miner", "rg_json_miner_complete")
 _emit_validated_by_safety_plane("p1", "rg_json_miner", "safety_validation")
 
-ARCHIVE_PATH = str(REPO_ROOT / "archives" / "resume_gen_json")
+ARCHIVE_PATH = str(REPO_ROOT / "apps_rg" / "data" / "resume_gen_json")
 OUTPUT_REPORT = str(REPO_ROOT / "apps_rg" / "RG_JSON_KNOWLEDGE_MAP.md")
 
 

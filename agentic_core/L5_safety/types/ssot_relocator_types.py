@@ -94,7 +94,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR, HEALING_BACKUPS_DIR
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -258,7 +258,7 @@ class SSOTRelocator:
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
         logger.addHandler(file_handler)
-        self.archive_root = project_root / ARCHIVES_DIR / "unmapped_drift"
+        self.archive_root = project_root / HEALING_BACKUPS_DIR / "unmapped_drift"
         if not dry_run:
             _wg.ensure_dir(self.archive_root)
         self.gatekeeper = ArchivalGatekeeper.get_instance(self.project_root)
@@ -425,7 +425,10 @@ class SSOTRelocator:
                 else:
                     result.error = gk_result.error
                     logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
         return result
@@ -478,7 +481,10 @@ class SSOTRelocator:
                 else:
                     result.error = gk_result.error
                     logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
         return result
@@ -539,7 +545,10 @@ class SSOTRelocator:
                     _wg.remove_dir(source)
                 result.success = True
                 logger.info(f"FLATTENED: {result.source} -> {result.target}")
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result.error = str(e)
                 logger.error(f"Failed to flatten {result.source}: {e}")
         return result

@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.L0_routing.config import (
+    OPS_ARCHIVES_DIR,
     ARCHIVES_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
@@ -167,7 +168,7 @@ def _find_project_root() -> Path:
 
 PROJECT_ROOT = _find_project_root()
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-ARCHIVE_BASE = PROJECT_ROOT / ARCHIVES_DIR / "consolidated_duplicates" / f"batch_{TIMESTAMP}"
+ARCHIVE_BASE = PROJECT_ROOT / OPS_ARCHIVES_DIR / "consolidated_duplicates" / f"batch_{TIMESTAMP}"
 TARGETS = [
     "agentic_core/L5_safety/enforcement/CodeDetectorAgent.py",
     "agentic_core/L5_safety/enforcement/CodeEnforcerAgent.py",

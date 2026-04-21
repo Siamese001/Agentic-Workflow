@@ -109,7 +109,9 @@ def main(argv: list[str] | None = None) -> int:
 
     repo_root = _resolve_repo_root(args.repo_root)
     archives_root = (
-        Path(args.archives_root).expanduser().resolve() if args.archives_root else repo_root / "archives"
+        Path(args.archives_root).expanduser().resolve()
+        if args.archives_root
+        else repo_root / "ops_scripts" / "archives"
     )
     output_path = (
         Path(args.output).expanduser().resolve()
@@ -129,7 +131,7 @@ def main(argv: list[str] | None = None) -> int:
     print("=" * 80)
 
     all_restore_candidates: list[dict] = []
-    for archive_name, description in archives_to_check:
+    for archive_name, description in tqdm(archives_to_check, desc="Analyzing archives", unit="archive"):
         archive_path = archives_root / archive_name
         if not archive_path.exists():
             continue

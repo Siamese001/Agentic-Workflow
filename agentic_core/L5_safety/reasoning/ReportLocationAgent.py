@@ -27,7 +27,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, HEALING_BACKUPS_DIR
 from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -245,7 +245,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
         self.project_root = self.project_root.resolve()
 
         if self.backup_dir is None:
-            self.backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / SSOT_REPORTS_DIR
+            self.backup_dir = self.project_root / HEALING_BACKUPS_DIR / SSOT_REPORTS_DIR
 
         self.agent_name = "ReportLocationAgent"
         self._validator = ReportLocationValidator(self.project_root, self.dry_run)
@@ -343,7 +343,10 @@ class ReportLocationAgent(AtomicExecutionMixin):
             _wg.ensure_dir(backup_path.parent)
             _wg.copy_file(file_path, backup_path)
             return backup_path
-        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.warning(f"[ReportLocationAgent] Backup failed for {file_path}: {e}")
             return None
 

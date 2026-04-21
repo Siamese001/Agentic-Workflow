@@ -96,7 +96,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config import ARCHIVES_DIR
+from agentic_core.L0_routing.config import ARCHIVES_DIR, HEALING_BACKUPS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -484,7 +484,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             result["message"] = "No changes needed"
             return result
         if not dry_run:
-            backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "naming"
+            backup_dir = self.project_root / HEALING_BACKUPS_DIR / "naming"
             _wg.ensure_dir(backup_dir)
             backup_path = backup_dir / f"{file_path.name}.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             _wg.copy_file(file_path, backup_path)

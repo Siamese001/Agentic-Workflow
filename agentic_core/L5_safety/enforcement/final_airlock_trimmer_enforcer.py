@@ -92,6 +92,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -170,7 +171,7 @@ _emit_validated_by_safety_plane("p1", "final_airlock_trimmer_enforcer", "safety_
 _emit_invokes_eval("p1", "final_airlock_trimmer_enforcer", "eval_call")
 _emit_proposal_commits_routing("p1", "final_airlock_trimmer_enforcer", "routing_commit")
 
-ROOT: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = get_validated_project_root()
 CORE: Any = ROOT / AGENTIC_CORE_DIR
 HEAVY_AIRLOCKS: Any = [
     "L1_cognition/P1_core/check_outreach/__init__.py",

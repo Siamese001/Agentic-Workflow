@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config.path_constants import (
     ARCHIVES_DIR,
+    HEALING_BACKUPS_DIR,
     TESTS_DIR,
 )
 from agentic_core.L2_execution.utils import write_gateway as _wg
@@ -301,8 +302,8 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         self.healing_enabled = healing_enabled
         self.ctx = ctx
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
-        # [REFACTOR 2026-03-16] Canonical path: archives/healing_backups/ (gitignored via archives/ in .gitignore)
-        self.archive_root = project_root / ARCHIVES_DIR / "healing_backups" / "hierarchy_violations"
+        # [REFACTOR 2026-04-21] SSOT: artifacts/healing_backups/ (HEALING_BACKUPS_DIR)
+        self.archive_root = project_root / HEALING_BACKUPS_DIR / "hierarchy_violations"
 
         # Initialize ArchivalGatekeeper for safe file operations
         # [PHASE 33j] Gatekeeper is the SINGLE POINT OF APPROVAL
@@ -991,7 +992,10 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     Logger.warning(f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}")
                     results["errors"].append(f"{py_file.name}: {rejection_reason}")
                     return
-            except (ImportError, AttributeError) as e:  # guardian: allow-log-and-swallow -- gatekeeper check optional: non-fatal, continue without validation
+            except (
+                ImportError,
+                AttributeError,
+            ) as e:  # guardian: allow-log-and-swallow -- gatekeeper check optional: non-fatal, continue without validation
                 Logger.debug(f"Gatekeeper check failed for {py_file.name}: {e}")
                 # Non-blocking - continue without gatekeeper check
 
@@ -1010,7 +1014,11 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 )
                 file_type = fca.classify_file(py_file)
                 target_territory_l3 = fca._get_correct_folder_for_type(file_type)
-            except (ImportError, AttributeError, OSError) as e:  # guardian: allow-log-and-swallow -- FCA classification optional: non-fatal, falls back to heuristic
+            except (
+                ImportError,
+                AttributeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow -- FCA classification optional: non-fatal, falls back to heuristic
                 Logger.debug(f"FCA classification failed for {py_file.name}: {e}")
 
             # Fallback to heuristic if FCA unavailable or returns None
@@ -1901,8 +1909,8 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             results["message"] = "No root violations to heal"
             return results
 
-        # 1. Move .archived files to archives/healing_backups/root_archived/
-        archives_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "root_archived"
+        # 1. Move .archived files to artifacts/healing_backups/root_archived/
+        archives_dir = self.project_root / HEALING_BACKUPS_DIR / "root_archived"
         if not dry_run:
             _wg.ensure_dir(archives_dir)
 
@@ -1950,9 +1958,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             Logger.info(
                 f"HierarchyAgent: Processing {len(territory_root_files)} files at {target_territory} root"
             )
-            archives_dir = (
-                self.project_root / ARCHIVES_DIR / "healing_backups" / f"{target_territory}_root_archived"
-            )
+            archives_dir = self.project_root / HEALING_BACKUPS_DIR / f"{target_territory}_root_archived"
             if not dry_run:
                 _wg.ensure_dir(archives_dir)
 

@@ -10,9 +10,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    get_validated_project_root,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -252,7 +254,7 @@ def audit_agent_file(py_file: Path, agentic_core: Path) -> list[AgentAuditResult
 
 def main():
     """Run the global healing capability audit."""
-    agentic_core = Path("C:/Git/Agentic-Workflow/agentic_core")
+    agentic_core = get_validated_project_root() / AGENTIC_CORE_DIR
     exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
     all_results = []
     for py_file in agentic_core.rglob("*.py"):

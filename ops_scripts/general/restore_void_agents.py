@@ -28,6 +28,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config import (
+    OPS_ARCHIVES_DIR,
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
 )
@@ -42,7 +43,7 @@ def _resolve_project_root() -> Path:
 
 
 PROJECT_ROOT = _resolve_project_root()
-VOID_DIR = PROJECT_ROOT / ARCHIVES_DIR / "void_violations"
+VOID_DIR = PROJECT_ROOT / OPS_ARCHIVES_DIR / "void_violations"
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # Agents to restore with their target locations

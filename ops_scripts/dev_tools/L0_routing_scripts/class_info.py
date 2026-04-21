@@ -16,6 +16,7 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.L0_routing.config import (
+    OPS_ARCHIVES_DIR,
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
     GLOBAL_EXCLUDED_DIRS,
@@ -190,7 +191,7 @@ def _find_project_root() -> Path:
 
 # Project root
 PROJECT_ROOT = _find_project_root()
-_ARCHIVES_DIR_PATH = PROJECT_ROOT / ARCHIVES_DIR
+_ARCHIVES_DIR_PATH = PROJECT_ROOT / OPS_ARCHIVES_DIR
 _AGENTIC_CORE_DIR_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # Target archive folders

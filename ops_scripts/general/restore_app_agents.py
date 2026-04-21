@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config import (
+    OPS_ARCHIVES_DIR,
     ARCHIVES_DIR,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -48,7 +49,7 @@ emit_determinism_digest("trace_restore_app_agents", "restore_app_agents_complete
 _emit_validated_by_safety_plane("p1", "restore_app_agents", "safety_validation")
 
 PROJECT_ROOT = _resolve_project_root()
-ARCHIVE_DIR = PROJECT_ROOT / ARCHIVES_DIR / "hierarchy_violations" / "apps_depth"
+ARCHIVE_DIR = PROJECT_ROOT / OPS_ARCHIVES_DIR / "hierarchy_violations" / "apps_depth"
 
 
 def extract_original_path(file_path: Path) -> str:

@@ -23,6 +23,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config import (
+    OPS_ARCHIVES_DIR,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -39,7 +40,7 @@ def _resolve_project_root() -> Path:
 
 
 PROJECT_ROOT = _resolve_project_root()
-ARCHIVES = PROJECT_ROOT / ARCHIVES_DIR
+ARCHIVES = PROJECT_ROOT / OPS_ARCHIVES_DIR
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # Target directories for restoration
@@ -138,7 +139,7 @@ def main():
     print(f"Current agents: {len(current)}")
 
     # Load manifest
-    manifest_path = PROJECT_ROOT / "archives_restoration_manifest.json"
+    manifest_path = PROJECT_ROOT / OPS_ARCHIVES_DIR / "restoration_manifest.json"
     if not manifest_path.exists():
         print("Run scan_archives_for_restoration.py first!")
         return 1

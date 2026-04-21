@@ -90,7 +90,7 @@ _emit_links_execution_to_snapshot("p4", "verify_all_checkpoint_files_util", "exe
 "Verify archival status of all files mentioned in checkpoint summary."
 import os
 
-from agentic_core.L0_routing.config import ARCHIVES_DIR
+from agentic_core.L0_routing.config import ARCHIVES_DIR, OPS_ARCHIVES_DIR
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -201,7 +201,7 @@ for file_path in tqdm(all_files, desc="Processing", unit="item"):
     full_path = PROJECT_ROOT / file_path
     exists_active = full_path.exists()
     filename = Path(file_path).name
-    archives_path = PROJECT_ROOT / ARCHIVES_DIR
+    archives_path = PROJECT_ROOT / OPS_ARCHIVES_DIR
     exists_archived = False
     if archives_path.exists():
         for root, dirs, files in os.walk(archives_path):

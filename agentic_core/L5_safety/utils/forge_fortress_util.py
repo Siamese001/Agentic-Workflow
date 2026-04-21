@@ -92,9 +92,9 @@ _emit_links_execution_to_snapshot("p4", "forge_fortress_util", "exec_snapshot_li
 "Brief description of functionality and purpose."
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR  # noqa: E402
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root  # noqa: E402
 
-ROOT: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = get_validated_project_root()
 core: Any = ROOT / AGENTIC_CORE_DIR
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 from typing import Any
@@ -248,12 +248,18 @@ def forge_fortress() -> Any:
                         logging.info(f"  [MOVED] {item.name}")
                     else:
                         logging.warning(f"  [COLLISION] {item.name} exists in target. Manual merge required.")
-                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    RuntimeError,
+                    OSError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     logging.error(f"  [FAILED] Move {item.name}: {e}")
             if not any(old_path.iterdir()):
                 try:
                     _wg.remove_dir(old_path)
-                except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+                except (
+                    ValueError,
+                    TypeError,
+                ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                     pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
     logging.info("--- FORGE COMPLETE: Sovereign Architecture In Place ---")
 

@@ -86,6 +86,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import (
+    OPS_ARCHIVES_DIR,
     ARCHIVES_DIR,
     L0_ROUTING_DIR,
     get_validated_project_root,
@@ -175,7 +176,7 @@ PROJECT_ROOT = get_validated_project_root()
 def scan_archives_for_moved_files() -> list[dict[str, Any]]:
     """Scan archives/gatekeeper/2026-01-22 for all archived files."""
     archived_files = []
-    archive_root = PROJECT_ROOT / ARCHIVES_DIR / "gatekeeper" / "2026-01-22"
+    archive_root = PROJECT_ROOT / OPS_ARCHIVES_DIR / "gatekeeper" / "2026-01-22"
 
     if not archive_root.exists():
         return archived_files

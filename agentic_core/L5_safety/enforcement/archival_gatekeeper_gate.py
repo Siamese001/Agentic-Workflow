@@ -19,7 +19,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, HEALING_BACKUPS_DIR
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -97,7 +97,8 @@ class ArchivalGatekeeper:
     _instance: ArchivalGatekeeper | None = None
     _lock: threading.Lock = threading.Lock()
     _log_lock: threading.Lock = threading.Lock()
-    ARCHIVE_ROOT_NAME = ARCHIVES_DIR
+    # [REFACTOR 2026-04-21] SSOT migration: archives/ → artifacts/healing_backups/
+    ARCHIVE_ROOT_NAME = HEALING_BACKUPS_DIR
     ARCHIVE_SUBDIR = "gatekeeper"
     AUDIT_LOG_NAME = "archival_audit.jsonl"
 

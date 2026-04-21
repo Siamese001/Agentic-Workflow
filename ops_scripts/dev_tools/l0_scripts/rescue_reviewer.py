@@ -172,7 +172,7 @@ class RescueReviewer:
 
     def __init__(self, project_root: Path):
         self.root = project_root
-        self.archive_path = project_root / "archives/depth_violations"
+        self.archive_path = project_root / "ops_scripts" / "archives" / "depth_violations"
         self.active_hashes = self._map_active_canon()
         try:
             _RedisCls = _get_redis_sovereign_agent()

@@ -90,7 +90,7 @@ _emit_links_execution_to_snapshot("p4", "comprehensive_archive_check_util", "exe
 "Comprehensive check of ALL agents that might have been archived in entire chat history."
 import os
 
-from agentic_core.L0_routing.config import ARCHIVES_DIR
+from agentic_core.L0_routing.config import ARCHIVES_DIR, OPS_ARCHIVES_DIR
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -169,7 +169,7 @@ _emit_proposal_commits_routing("p1", "comprehensive_archive_check_util", "routin
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 l4_active = PROJECT_ROOT / "agentic_core/L4_state/memory/L4Agent.py"
-archives_path = PROJECT_ROOT / ARCHIVES_DIR
+archives_path = PROJECT_ROOT / OPS_ARCHIVES_DIR
 l4_archived = []
 if archives_path.exists():
     for root, dirs, files in os.walk(archives_path):

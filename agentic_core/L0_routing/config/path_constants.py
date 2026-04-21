@@ -134,7 +134,18 @@ APPS_RESEARCH_DIR: Final[str] = "apps_research"
 APPS_RFP_DIR: Final[str] = "apps_rfp"
 APPS_RG_DIR: Final[str] = "apps_rg"
 APPS_SHARED_DIR: Final[str] = "apps_shared"
+# DEPRECATED 2026-04-21: root-level `archives/` was removed from SSOT.
+# Still defined for (a) exclusion-filter compatibility in scanners that look for
+# the token "archives" anywhere in a path, and (b) legacy reads that may still
+# reference the old location. NEW CODE MUST use one of:
+#   - HEALING_BACKUPS_DIR   (runtime healing/gatekeeper writes)
+#   - OPS_ARCHIVES_DIR      (ops-scripts historical archives)
+#   - apps_*/data/ or apps_*/archives/ (app-scoped data)
 ARCHIVES_DIR: Final[str] = "archives"
+# Runtime artifact sink for L5 healer agents, gatekeeper, duplicate detector.
+HEALING_BACKUPS_DIR: Final[str] = "artifacts/healing_backups"
+# Ops-scripts historical archives (dev-tool snapshots, deprecation waves).
+OPS_ARCHIVES_DIR: Final[str] = "ops_scripts/archives"
 OPS_SCRIPTS_DIR: Final[str] = "ops_scripts"
 SCRIPTS_DIR: Final[str] = "scripts"
 SYSTEM_LEARNING_DIR: Final[str] = "system_learning"
@@ -682,6 +693,8 @@ __all__ = [
     "APPS_SHARED_SUBFOLDER_MAP",
     "ARCHIVES_DIR",
     "BATCH_SIZE",
+    "HEALING_BACKUPS_DIR",
+    "OPS_ARCHIVES_DIR",
     "BUFFER_SIZE",
     "CORE_SUBFOLDER_MAP",
     "DASHBOARD_DIR",

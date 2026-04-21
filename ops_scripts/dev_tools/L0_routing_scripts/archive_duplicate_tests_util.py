@@ -10,7 +10,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.L0_routing.config import TESTS_DIR
+from agentic_core.L0_routing.config import TESTS_DIR, OPS_ARCHIVES_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -205,7 +205,7 @@ def main():
         print("No duplicates to archive.")
         return 0
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    archive_dir = project_root / ARCHIVES_DIR / f"duplicate_tests_{timestamp}"
+    archive_dir = project_root / OPS_ARCHIVES_DIR / f"duplicate_tests_{timestamp}"
     if not dry_run:
         archive_dir.mkdir(parents=True, exist_ok=True)
     archived = 0
