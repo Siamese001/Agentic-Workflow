@@ -240,7 +240,7 @@ class GovernanceShieldAgent(LICAgentBase):
 
                 _emit_records_execution_trace("GovernanceShieldAgent", "L2_EXECUTION", "qwen_vllm_init")
 
-            except (
+            except (  # guardian: allow-log-and-swallow -- Qwen gateway init failure captured in _qwen_init_error and error-logged; explicit Qwen calls will surface the error later
                 OSError,
                 ValueError,
                 TypeError,

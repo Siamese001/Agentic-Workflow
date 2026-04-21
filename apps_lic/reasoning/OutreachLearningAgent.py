@@ -466,7 +466,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 agent_type="LearningAgent",
                 observations=["OutreachLearningAgent: campaign pattern recognition and confidence scoring"],
             )
-        except (
+        except (  # guardian: allow-silent-swallow -- KG agent-entity creation is optional telemetry; failure is non-fatal
             OSError,
             ValueError,
             TypeError,
@@ -497,7 +497,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 entity_name=self.__class__.__name__,
                 observation=f"CampaignAnalysis: lead_score={avg_lead_score:.2f} message_score={avg_message_score:.2f} leads={len(lead_scores)} messages={len(message_scores)}",
             )
-        except (
+        except (  # guardian: allow-silent-swallow -- KG observation append is optional telemetry; failure is non-fatal
             OSError,
             ValueError,
             TypeError,
@@ -546,7 +546,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                     task_description=f"outreach:{TaskType}",
                     feedback_score=confidence,
                 )
-        except (
+        except (  # guardian: allow-silent-swallow -- KG mastered-task relation is optional telemetry; failure is non-fatal
             OSError,
             ValueError,
             TypeError,
@@ -571,7 +571,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 entity_name=self.__class__.__name__,
                 observation=f"FailedTask={TaskType} error={error[:200]}",
             )
-        except (
+        except (  # guardian: allow-silent-swallow -- KG failed-task relation is optional telemetry; failure is non-fatal
             OSError,
             ValueError,
             TypeError,

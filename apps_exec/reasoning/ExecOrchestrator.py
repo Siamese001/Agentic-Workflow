@@ -358,7 +358,7 @@ class ExecOrchestrator:
                             constraints={},
                         )
                         _adapter.record_local_success(severity="medium")
-                    except (
+                    except (  # guardian: allow-double-logging -- LOCAL_FIRST_DISPOSITION audit log emitted before re-raise; required for compliance telemetry
                         OSError,
                         ValueError,
                         TypeError,

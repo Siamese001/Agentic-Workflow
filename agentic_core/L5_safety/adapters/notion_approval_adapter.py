@@ -132,7 +132,7 @@ class NotionApprovalAdapter(HumanApprovalAdapter):
             page = self._transport.create_page(self._database_id, props.to_notion_payload())
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap any transport error as AdapterError
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Notion create_page failed: {exc}") from exc
 
         page_id = page.get("id") if isinstance(page, Mapping) else None
@@ -150,7 +150,7 @@ class NotionApprovalAdapter(HumanApprovalAdapter):
             page = self._transport.retrieve_page(handle.external_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap any transport error as AdapterError
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Notion retrieve_page failed: {exc}") from exc
 
         status = _read_status(page)
@@ -179,7 +179,7 @@ class NotionApprovalAdapter(HumanApprovalAdapter):
             self._transport.archive_page(handle.external_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- archive failures are non-fatal
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: archive errors re-raised as AdapterError; callers treat archive failures as non-fatal
             raise AdapterError(f"Notion archive_page failed: {exc}") from exc
 
     # -- helpers ---------------------------------------------------------

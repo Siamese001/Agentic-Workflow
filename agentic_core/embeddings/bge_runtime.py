@@ -40,6 +40,28 @@ BGE_MODEL: str = "BAAI/bge-m3"
 BGE_QUERY_DIM: int = 1024
 BGE_ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("BGE_ALLOW_MODEL_DOWNLOAD", "false").lower() == "true"
 
+
+def _resolve_device() -> str:
+    """Pick the inference device for BGE-M3.
+
+    Priority:
+      1. Explicit EMBEDDING_DEVICE env var if set to cpu/cuda/mps
+      2. CUDA if torch reports it available
+      3. CPU fallback
+    """
+    override = os.environ.get("EMBEDDING_DEVICE", "").strip().lower()
+    if override in {"cpu", "cuda", "mps"}:
+        return override
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            return "cuda"
+    except (ImportError, RuntimeError):  # guardian: allow-silent-swallow -- torch is an optional dep; CPU fallback is the intended behavior when CUDA/torch is unavailable
+        pass
+    return "cpu"
+
+
 # ── Process-level singleton ────────────────────────────────────────────────
 _model_lock = threading.Lock()
 _bge_model: "_ST | None" = None
@@ -64,14 +86,51 @@ def _get_model() -> "_ST":
                     raise BGEInstallError(
                         "sentence-transformers is not installed. Run: pip install sentence-transformers"
                     )
-                logger.info("Loading BGE model: %s", BGE_MODEL)
+                device = _resolve_device()
+                logger.info("Loading BGE model: %s (device=%s)", BGE_MODEL, device)
                 _bge_model = SentenceTransformer(
                     BGE_MODEL,
+                    device=device,
                     local_files_only=not BGE_ALLOW_MODEL_DOWNLOAD,
                     trust_remote_code=False,
                 )
-                logger.info("BGE model loaded: %s (dim=%d)", BGE_MODEL, BGE_QUERY_DIM)
+                logger.info("BGE model loaded: %s (dim=%d, device=%s)", BGE_MODEL, BGE_QUERY_DIM, device)
     return _bge_model
+
+
+def bge_embed_batch(texts: list[str], batch_size: int = 64) -> list[list[float]]:
+    """Embed a batch of texts in one model call for GPU throughput.
+
+    This avoids the per-text Python loop overhead that forces single-item
+    encodes when callers have many texts to embed (e.g. ChromaDB ingestion).
+
+    Args:
+        texts: List of strings to embed. Must all be non-empty after strip().
+        batch_size: Max number of texts per internal .encode() call.
+
+    Returns:
+        List of 1024-dim L2-normalised embeddings, one per input text.
+    """
+    if not texts:
+        return []
+    sanitized = [_sanitize_text(t) for t in texts]
+    model = _get_model()
+    encoded = model.encode(
+        sanitized,
+        batch_size=batch_size,
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    )
+    if encoded is None or len(encoded) != len(sanitized):
+        raise RuntimeError(
+            f"BGE_EMBED_FAILED: expected {len(sanitized)} rows, got {0 if encoded is None else len(encoded)}"
+        )
+    if encoded.shape[1] != BGE_QUERY_DIM:
+        raise RuntimeError(
+            f"BGE_DIM_MISMATCH: expected {BGE_QUERY_DIM}, got {encoded.shape[1]}"
+        )
+    return encoded.tolist()
 
 
 def bge_embed_query(text: str) -> list[float]:

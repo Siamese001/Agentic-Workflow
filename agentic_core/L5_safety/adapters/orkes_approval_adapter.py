@@ -83,7 +83,7 @@ class OrkesApprovalAdapter(HumanApprovalAdapter):
             task = self._transport.create_human_task(self._task_def, input_data)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Orkes create_human_task failed: {exc}") from exc
 
         task_id = task.get("task_id") if isinstance(task, Mapping) else None
@@ -101,7 +101,7 @@ class OrkesApprovalAdapter(HumanApprovalAdapter):
             task = self._transport.get_human_task(handle.external_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Orkes get_human_task failed: {exc}") from exc
 
         status = _read(task, "status") or TASK_IN_PROGRESS
@@ -144,7 +144,7 @@ class OrkesApprovalAdapter(HumanApprovalAdapter):
             self._transport.terminate_human_task(handle.external_id, reason=reason)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Orkes terminate_human_task failed: {exc}") from exc
 
     def _require_handle(self, handle: ApprovalHandle) -> None:

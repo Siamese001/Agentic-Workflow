@@ -226,11 +226,25 @@ class HealRouterTelemetryEmitter:
                 attrs = record.to_span_attributes()
                 with self._otel_tracer.start_as_current_span(SPAN_NAME_ROUTE, attributes=attrs):
                     pass
-            except (AttributeError, TypeError, RuntimeError) as exc:
+            except (AttributeError, TypeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- OTEL span forwarding is best-effort telemetry; must never break the heal-router hot path
                 # OTEL errors must never break the hot path
                 logger.debug("heal_router_otel forwarding failed: %s", exc)
 
         return record
+
+    def append_alias_record(self, record: RoutingSpanRecord) -> None:
+        """Append a pre-built RoutingSpanRecord emitted by a legacy feeder.
+
+        Wave F2 M2 (ADR-025): legacy telemetry surfaces dual-emit into this
+        emitter by synthesizing a `RoutingSpanRecord` and calling this
+        method. The synthetic record should set
+        `extra_attributes["routing.alias_source"]` so consumers can
+        distinguish aliased records from real route spans.
+        """
+        with self._lock:
+            self._ring.append(record)
+            if len(self._ring) > self._MAX_RING_SIZE:
+                self._ring = self._ring[-self._MAX_RING_SIZE :]
 
     def recent(self, limit: int = 100) -> list[RoutingSpanRecord]:
         """Return up to `limit` most-recent span records (copy).

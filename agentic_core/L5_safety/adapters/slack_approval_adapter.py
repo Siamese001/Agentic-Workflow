@@ -124,7 +124,7 @@ class SlackApprovalAdapter(HumanApprovalAdapter):
             )
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Slack post_message failed: {exc}") from exc
 
         ts = resp.get("ts") if isinstance(resp, Mapping) else None
@@ -142,7 +142,7 @@ class SlackApprovalAdapter(HumanApprovalAdapter):
             msg = self._transport.get_message(self._channel, handle.external_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Slack get_message failed: {exc}") from exc
 
         status = _read_status(msg)
@@ -171,7 +171,7 @@ class SlackApprovalAdapter(HumanApprovalAdapter):
             self._transport.delete_message(self._channel, handle.external_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Slack delete_message failed: {exc}") from exc
 
     def _require_handle(self, handle: ApprovalHandle) -> None:

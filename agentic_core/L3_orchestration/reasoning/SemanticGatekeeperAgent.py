@@ -270,7 +270,7 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
             Logger.debug(f"Starting execution for trace {trace_id}: {operation}")
             yield
             Logger.debug(f"Completed execution for trace {trace_id}")
-        except asyncio.TimeoutError:  # guardian: allow-log-and-swallow -- timeout recorded in dead-letter-queue; fallthrough to release semaphore
+        except asyncio.TimeoutError:  # guardian: allow-double-logging -- timeout recorded in dead-letter-queue audit log; local logger.error captures stack for observability
             Logger.error(f"Timeout for trace {trace_id}: {operation}")
             self.dead_letter_queue.append(
                 {

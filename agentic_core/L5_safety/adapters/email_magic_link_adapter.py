@@ -101,7 +101,7 @@ class EmailMagicLinkAdapter(HumanApprovalAdapter):
             self._store.record_pending(entry.ledger_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"MagicLinkStore.record_pending failed: {exc}") from exc
 
         try:
@@ -112,7 +112,7 @@ class EmailMagicLinkAdapter(HumanApprovalAdapter):
             )
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"Email send failed: {exc}") from exc
 
         if not message_id:
@@ -129,7 +129,7 @@ class EmailMagicLinkAdapter(HumanApprovalAdapter):
             outcome = self._store.get(handle.ledger_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"MagicLinkStore.get failed: {exc}") from exc
         if outcome is None:
             return None
@@ -147,7 +147,7 @@ class EmailMagicLinkAdapter(HumanApprovalAdapter):
             self._store.cancel(handle.ledger_id)
         except AdapterError:
             raise
-        except Exception as exc:  # guardian: allow-adapter-boundary -- wrap transport error
+        except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: wraps arbitrary transport errors into AdapterError so callers handle a single exception type
             raise AdapterError(f"MagicLinkStore.cancel failed: {exc}") from exc
 
     # -- signing ---------------------------------------------------------

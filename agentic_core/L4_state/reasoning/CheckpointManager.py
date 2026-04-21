@@ -454,7 +454,13 @@ class CheckpointManager(SovereignBaseAgent):
                 self._mirror_checkpoint_sync(file_path)
             Logger.info(f"[SYNC] Checkpoint saved: {checkpoint_id}")
             return file_path
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-broad-exception -- re-raises to caller after checkpoint failure
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-broad-exception -- re-raises to caller after checkpoint failure
             raise
 
     async def _save_async(
@@ -510,7 +516,13 @@ class CheckpointManager(SovereignBaseAgent):
             _get_write_gateway().copy_file(primary_path, mirror_path)
             Logger.debug(f"[MIRROR] Redundant copy created: {mirror_path.name}")
             return True
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[MIRROR] Failed for {primary_path.name}: {e}")
             return False
 
@@ -575,7 +587,13 @@ class CheckpointManager(SovereignBaseAgent):
                     self.checkpoints[checkpoint_id].recovery_count += 1
                     self._save_index()
                 return True
-            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+            except (
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-silent-swallow
                 Logger.error(f"[RECOVERY] Failed to restore {checkpoint_id}: {e}")
                 return False
         Logger.error(f"[RECOVERY] No mirror available for {checkpoint_id}")
@@ -601,7 +619,12 @@ class CheckpointManager(SovereignBaseAgent):
                 checkpoint = Checkpoint.from_dict(data)
                 self.checkpoints[checkpoint_id] = checkpoint
                 return checkpoint
-            except (OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow -- checkpoint load is best-effort; caller treats None as "checkpoint not recoverable" and proceeds without resumption
                 Logger.error(f"Failed to load checkpoint {checkpoint_id}: {e}")
         return None
 
@@ -653,7 +676,13 @@ class CheckpointManager(SovereignBaseAgent):
             result.recovery_time = time.time() - start_time
             Logger.info(f"[ROLLBACK] Successfully rolled back to {checkpoint_id}")
             return result
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-silent-swallow
             result.errors.append(str(e))
             Logger.error(f"[ROLLBACK] Failed to rollback to {checkpoint_id}: {e}")
             return result
@@ -671,7 +700,12 @@ class CheckpointManager(SovereignBaseAgent):
                     if checkpoint:
                         self.checkpoints[cp_id] = checkpoint
                 Logger.debug(f"Loaded {len(self.checkpoints)} checkpoints from index")
-            except (OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 raise
 
     def _save_index(self) -> None:
@@ -685,7 +719,13 @@ class CheckpointManager(SovereignBaseAgent):
         try:
             assert_no_persistent_write("L4", "json.dump")
             _get_write_gateway().write_json(index_path, index_data, indent=2)
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
 
     def _cleanup_old_checkpoints(self) -> None:
@@ -710,7 +750,13 @@ class CheckpointManager(SovereignBaseAgent):
                 del self.checkpoints[checkpoint_id]
             Logger.debug(f"Deleted checkpoint: {checkpoint_id}")
             return True
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Failed to delete checkpoint {checkpoint_id}: {e}")
             return False
 
@@ -782,7 +828,13 @@ class CheckpointManager(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Heal operation failed in CheckpointManagerAgent: {e}")
             return {
                 "status": "failed",

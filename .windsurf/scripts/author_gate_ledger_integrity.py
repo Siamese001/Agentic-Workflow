@@ -59,7 +59,7 @@ DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_d
 
 GENESIS_PREV_HASH = "0" * 64
 HASH_ALGO = "sha256"
-SIGNING_KEY_ENV = "AUTHOR_GATE_SIGNING_KEY"
+SIGNING_KEY_ENV = "AUTHOR_GATE_SIGNING_KEY"  # guardian: allow-hardcoded-secret -- env-var NAME, not a secret value; actual signing key loaded from os.environ at runtime
 SIG_ALG_NONE = "none"
 SIG_ALG_HMAC = "hmac-sha256"
 # ed25519 upgrade path: when cryptography lib is available + pubkey distributed,
