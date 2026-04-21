@@ -247,7 +247,7 @@ class GovernanceShieldAgent(LICAgentBase):
                 KeyError,
                 AttributeError,
                 RuntimeError,
-            ) as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all captured in _qwen_init_error
+            ) as e:  # guardian: allow-log-and-swallow -- Qwen gateway init failure captured in _qwen_init_error and error-logged; explicit Qwen calls will surface the error later
                 _emit_records_telemetry_event("GovernanceShieldAgent", "L2_EXECUTION", "qwen_init_error")
                 self._qwen_init_error = str(e)
                 logger.error(

@@ -270,7 +270,7 @@ class EnterpriseLicOrchestrator:
                         value = value.split("#", 1)[0].strip()
                     if key and key not in os.environ:
                         os.environ[key] = value
-        except OSError:
+        except OSError:  # guardian: allow-silent-swallow -- env file is optional; absence/read failure is non-fatal startup condition
             return
 
     @staticmethod

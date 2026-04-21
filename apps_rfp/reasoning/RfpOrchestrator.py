@@ -343,7 +343,7 @@ class RfpOrchestrator:
                         KeyError,
                         AttributeError,
                         RuntimeError,
-                    ) as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
+                    ) as _exc:  # guardian: allow-double-logging -- LOCAL_FIRST_DISPOSITION audit log emitted before re-raise; required for compliance telemetry
                         _adapter.record_local_failure(severity="medium")
                         _dsp = LocalFirstDisposition.for_fail_exec(
                             orchestrator="RfpOrchestrator",

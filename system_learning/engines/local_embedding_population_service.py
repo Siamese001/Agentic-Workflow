@@ -348,7 +348,7 @@ class LocalEmbeddingPopulationService:
                 embedding_model_version=self.embedding_model_version,
                 embedding_model_checksum=self.embedding_model_checksum,
             )
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-double-logging -- discard_build compensates partial index build before re-raise; logger.exception captures stack for FAISS diagnostics
             if hasattr(self.faiss_store, "discard_build"):
                 self.faiss_store.discard_build(index_id)
             logger.exception("populate_from_jsonl failed for %s", index_id)

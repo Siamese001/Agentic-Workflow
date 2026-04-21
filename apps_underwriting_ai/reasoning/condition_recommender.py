@@ -107,7 +107,7 @@ class ConditionRecommender:
                 days_old = (datetime.now() - appraisal_dt).days
                 if days_old > 180:
                     conditions.append("Updated appraisal required if transaction not closed within 60 days")
-            except (ValueError, TypeError, AttributeError):
+            except (ValueError, TypeError, AttributeError):  # guardian: allow-silent-swallow -- appraisal-date parse failure skips the optional 180-day check; underwriting continues
                 pass
 
         return conditions

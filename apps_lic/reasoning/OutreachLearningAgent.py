@@ -413,7 +413,7 @@ class OutreachMemoryPersistence:
         """Save memory to file."""
         try:
             self.memory_file.write_text(json.dumps(self._memory, indent=2), encoding="utf-8")
-        except (OSError, TypeError) as e:
+        except (OSError, TypeError) as e:  # guardian: allow-log-and-swallow -- memory save is best-effort; debug log sufficient for diagnostics
             self.logger.debug(f"Failed to save memory: {e}")
 
     # guardian: allow-type-erasure
@@ -473,7 +473,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
             KeyError,
             AttributeError,
             RuntimeError,
-        ):  # guardian: allow-silent-swallow
+        ):  # guardian: allow-silent-swallow -- KG agent-entity creation is optional telemetry; failure is non-fatal
             pass
 
     async def execute(self) -> None:
@@ -504,7 +504,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
             KeyError,
             AttributeError,
             RuntimeError,
-        ):  # guardian: allow-silent-swallow
+        ):  # guardian: allow-silent-swallow -- KG observation append is optional telemetry; failure is non-fatal
             pass
         recommendations = []
         if avg_lead_score < 0.6:
@@ -553,7 +553,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
             KeyError,
             AttributeError,
             RuntimeError,
-        ):  # guardian: allow-silent-swallow
+        ):  # guardian: allow-silent-swallow -- KG mastered-task relation is optional telemetry; failure is non-fatal
             pass
 
     # guardian: allow-type-erasure
@@ -578,7 +578,7 @@ class OutreachLearningAgent(SovereignBaseAgent):
             KeyError,
             AttributeError,
             RuntimeError,
-        ):  # guardian: allow-silent-swallow
+        ):  # guardian: allow-silent-swallow -- KG failed-task relation is optional telemetry; failure is non-fatal
             pass
 
     # guardian: allow-type-erasure
