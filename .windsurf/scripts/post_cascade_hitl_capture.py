@@ -33,6 +33,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from author_gate_ledger_integrity import ensure_row_hash as _ensure_row_hash
+except ImportError:  # pragma: no cover — integrity lib optional, capture must still work
+    _ensure_row_hash = None  # type: ignore[assignment]
+
 fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[2]
@@ -162,7 +168,10 @@ def _init_db() -> Optional[sqlite3.Connection]:
         conn.executescript(_ddl)
         conn.commit()
         return conn
-    except (sqlite3.Error, OSError):  # guardian: allow-return-none-swallow -- DB init: non-fatal, caller handles None
+    except (
+        sqlite3.Error,
+        OSError,
+    ):  # guardian: allow-return-none-swallow -- DB init: non-fatal, caller handles None
         return None
 
 
@@ -181,7 +190,10 @@ def _get_git_info() -> tuple[str, str]:
         )
         if r.returncode == 0:
             branch = r.stdout.strip()
-    except (OSError, subprocess.TimeoutExpired):  # guardian: allow-silent-swallow -- git branch probe: non-fatal, empty string used
+    except (
+        OSError,
+        subprocess.TimeoutExpired,
+    ):  # guardian: allow-silent-swallow -- git branch probe: non-fatal, empty string used
         pass
     try:
         r = subprocess.run(
@@ -195,7 +207,10 @@ def _get_git_info() -> tuple[str, str]:
         )
         if r.returncode == 0:
             sha = r.stdout.strip()
-    except (OSError, subprocess.TimeoutExpired):  # guardian: allow-silent-swallow -- git sha probe: non-fatal, empty string used
+    except (
+        OSError,
+        subprocess.TimeoutExpired,
+    ):  # guardian: allow-silent-swallow -- git sha probe: non-fatal, empty string used
         pass
     return branch, sha
 
@@ -307,6 +322,13 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
         (decision_id, area[:200], context_window[:500]),
     )
     conn.commit()
+    if _ensure_row_hash is not None:
+        try:
+            _ensure_row_hash(conn, decision_id)
+        except (
+            sqlite3.Error
+        ):  # guardian: allow-specific-sqlite -- integrity seal: fail-open (capture succeeded)
+            pass
     return True
 
 
@@ -378,6 +400,13 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     )
 
     conn.commit()
+    if _ensure_row_hash is not None:
+        try:
+            _ensure_row_hash(conn, decision_id)
+        except (
+            sqlite3.Error
+        ):  # guardian: allow-specific-sqlite -- integrity seal: fail-open (capture succeeded)
+            pass
     return True
 
 

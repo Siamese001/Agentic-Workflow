@@ -182,6 +182,39 @@ def main():
         sys.exit(1)
     print("✅ Structure policy gate passed")
 
+    # Gate: Author-gate (harness HITL) — ledger schema + outcome coverage (W2)
+    print("\n[AUTHOR-GATE HARNESS HITL]")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/author_gate/check_ledger_schema.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Author-gate ledger schema check failed")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Author-gate ledger schema validated")
+
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/author_gate/check_outcome_coverage.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Author-gate outcome coverage check failed")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Author-gate outcome coverage validated")
+
+    # Gate: Author-gate ledger hash-chain integrity (W5)
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/author_gate/check_ledger_integrity.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Author-gate ledger integrity check failed")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Author-gate ledger integrity validated")
+
     # Gate: P0 two-pass (preflight + full ADG enforcement)
     print("\n[P0 TWO-PASS GATE]")
     try:

@@ -1,5 +1,12 @@
 {
   "hooks": {
+    "pre_read_code": [
+      {
+        "command": "python .windsurf/scripts/pre_read_gate.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": true
+      }
+    ],
     "pre_run_command": [
       {
         "command": "python .windsurf/scripts/pre_run_gate.py",
@@ -8,6 +15,11 @@
       }
     ],
     "pre_write_code": [
+      {
+        "command": "python .windsurf/scripts/pre_author_gate.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": true
+      },
       {
         "command": "python .windsurf/scripts/pre_write_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
@@ -64,6 +76,10 @@
         "working_directory": "C:\\Git\\Agentic-Workflow"
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_author_gate_miss_detector.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow"
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_adg_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow"
       }
@@ -76,5 +92,5 @@
       }
     ]
   },
-  "_note": "Claude alignment: keep hooks deterministic and compact; use scripts for fail-closed enforcement and audits, and keep heavy procedure in skills/workflows."
+  "_note": "Cascade alignment: keep hooks deterministic and compact; use scripts for fail-closed enforcement and audits, and keep heavy procedure in skills/workflows."
 }

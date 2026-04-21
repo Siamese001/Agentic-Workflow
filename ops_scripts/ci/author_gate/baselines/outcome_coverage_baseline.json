@@ -1,0 +1,7 @@
+{
+  "baseline_stale_unbound": 1,
+  "window_hours": 24,
+  "last_updated": "2026-04-21T10:22:00Z",
+  "rationale": "Starting ratchet for W2 launch. One pre-W2 decision (dec_13e25e63f5bd, 2026-04-18) has no decision_scope rows so cannot be auto-bound. Baseline declines monotonically as new decisions complete the loop.",
+  "ratchet_policy": "ceiling; may only decrease. Any PR that increases the count fails CI."
+}
