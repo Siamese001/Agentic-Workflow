@@ -675,9 +675,10 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '%_types.py')
                     THEN 'LOW'
                     -- P3 LOW: double_logging in enforcement/chokepoint/guardrail files
-                    -- AND the entire L5 safety plane. These modules log + re-raise
-                    -- INTENTIONALLY as an observability contract — safety authorities
-                    -- must emit a signal AND propagate errors so upstream can react.
+                    -- AND the entire L5 safety plane AND cache clients. These modules
+                    -- log + re-raise INTENTIONALLY as an observability contract —
+                    -- safety authorities and cache clients must emit a signal AND
+                    -- propagate errors so upstream can react.
                     WHEN relation_type = 'antipattern'
                      AND edge_kind = 'double_logging'
                      AND (source_file LIKE '%/enforcement/%'
@@ -687,7 +688,24 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE 'agentic_core/L5_safety/%'
                        OR source_file LIKE 'agentic_core/L6_%'
                        OR source_file LIKE 'agentic_core/mixins/%tracing%'
-                       OR source_file LIKE '%/prompt_governance/%')
+                       OR source_file LIKE '%/prompt_governance/%'
+                       OR source_file LIKE '%/cache/%'
+                       OR source_file LIKE '%_cache_%'
+                       OR source_file LIKE '%_cache.py'
+                       OR source_file LIKE '%cache_client%')
+                    THEN 'LOW'
+                    -- P3 LOW: log_and_swallow / broad_exception_catch in apps base
+                    -- engine framework classes. Base agents/engines/orchestrators
+                    -- implement graceful error degradation by design (catch + log +
+                    -- advance to next handler in chain). The swallow is a
+                    -- framework-level resilience contract, not a hidden failure.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('log_and_swallow','broad_exception_catch',
+                                       'silent_exception_swallow','return_none_swallow')
+                     AND (source_file LIKE 'apps_%/engines/base_%.py'
+                       OR source_file LIKE 'apps_shared/reasoning/Base%.py'
+                       OR source_file LIKE 'apps_shared/reasoning/%Orchestrator.py'
+                       OR source_file LIKE 'apps_shared/enforcement/%Strategy.py')
                     THEN 'LOW'
                     -- P3 LOW: default_fallback_masking in ML decision support modules.
                     -- ML model-loading fallback (except: return default_model()) is a

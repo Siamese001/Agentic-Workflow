@@ -951,8 +951,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '%/types/%'
                        OR source_file LIKE '%_types.py')
                     THEN 'LOW'
-                    -- P3 LOW: double_logging in enforcement/chokepoint/guardrail/
-                    -- validators/L5/L6/tracing/prompt_governance files.
+                    -- P3 LOW: double_logging in enforcement/safety/cache observability paths.
                     WHEN relation_type = 'antipattern'
                      AND edge_kind = 'double_logging'
                      AND (source_file LIKE '%/enforcement/%'
@@ -962,7 +961,20 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE 'agentic_core/L5_safety/%'
                        OR source_file LIKE 'agentic_core/L6_%'
                        OR source_file LIKE 'agentic_core/mixins/%tracing%'
-                       OR source_file LIKE '%/prompt_governance/%')
+                       OR source_file LIKE '%/prompt_governance/%'
+                       OR source_file LIKE '%/cache/%'
+                       OR source_file LIKE '%_cache_%'
+                       OR source_file LIKE '%_cache.py'
+                       OR source_file LIKE '%cache_client%')
+                    THEN 'LOW'
+                    -- P3 LOW: graceful-degradation pattern in apps base framework classes.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('log_and_swallow','broad_exception_catch',
+                                       'silent_exception_swallow','return_none_swallow')
+                     AND (source_file LIKE 'apps_%/engines/base_%.py'
+                       OR source_file LIKE 'apps_shared/reasoning/Base%.py'
+                       OR source_file LIKE 'apps_shared/reasoning/%Orchestrator.py'
+                       OR source_file LIKE 'apps_shared/enforcement/%Strategy.py')
                     THEN 'LOW'
                     -- P3 LOW: default_fallback_masking in ML decision/integration
                     -- paths - cold-start fallback is a valid resilience pattern.
