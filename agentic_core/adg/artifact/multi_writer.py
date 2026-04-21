@@ -947,18 +947,29 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '.windsurf/%'
                        OR source_file LIKE 'infrastructure/%'
                        OR source_file LIKE '%/scripts/%'
-                       OR source_file LIKE '%_scripts/%')
+                       OR source_file LIKE '%_scripts/%'
+                       OR source_file LIKE '%/types/%'
+                       OR source_file LIKE '%_types.py')
                     THEN 'LOW'
                     -- P3 LOW: double_logging in enforcement/chokepoint/guardrail/
-                    -- validators/L6 files. These modules log + re-raise INTENTIONALLY
-                    -- as an observability contract.
+                    -- validators/L5/L6/tracing/prompt_governance files.
                     WHEN relation_type = 'antipattern'
                      AND edge_kind = 'double_logging'
                      AND (source_file LIKE '%/enforcement/%'
                        OR source_file LIKE '%chokepoint%'
                        OR source_file LIKE '%guardrail%'
                        OR source_file LIKE '%/validators/%'
-                       OR source_file LIKE 'agentic_core/L6_%')
+                       OR source_file LIKE 'agentic_core/L5_safety/%'
+                       OR source_file LIKE 'agentic_core/L6_%'
+                       OR source_file LIKE 'agentic_core/mixins/%tracing%'
+                       OR source_file LIKE '%/prompt_governance/%')
+                    THEN 'LOW'
+                    -- P3 LOW: default_fallback_masking in ML decision/integration
+                    -- paths - cold-start fallback is a valid resilience pattern.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind = 'default_fallback_masking'
+                     AND (source_file LIKE '%/ml_decision_support/%'
+                       OR source_file LIKE '%/ml_integration/%')
                     THEN 'LOW'
                     -- Same HIGH-severity kinds outside production → MEDIUM (P2)
                     WHEN relation_type = 'antipattern'

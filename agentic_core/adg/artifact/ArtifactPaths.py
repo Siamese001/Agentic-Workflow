@@ -670,20 +670,32 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '.windsurf/%'
                        OR source_file LIKE 'infrastructure/%'
                        OR source_file LIKE '%/scripts/%'
-                       OR source_file LIKE '%_scripts/%')
+                       OR source_file LIKE '%_scripts/%'
+                       OR source_file LIKE '%/types/%'
+                       OR source_file LIKE '%_types.py')
                     THEN 'LOW'
-                    -- P3 LOW: double_logging in enforcement/chokepoint/guardrail files.
-                    -- These modules log + re-raise INTENTIONALLY as an observability
-                    -- contract: the enforcement layer must emit a signal AND propagate
-                    -- the error so upstream can react. Downgrade these specific paths
-                    -- only for double_logging (other antipatterns still apply).
+                    -- P3 LOW: double_logging in enforcement/chokepoint/guardrail files
+                    -- AND the entire L5 safety plane. These modules log + re-raise
+                    -- INTENTIONALLY as an observability contract — safety authorities
+                    -- must emit a signal AND propagate errors so upstream can react.
                     WHEN relation_type = 'antipattern'
                      AND edge_kind = 'double_logging'
                      AND (source_file LIKE '%/enforcement/%'
                        OR source_file LIKE '%chokepoint%'
                        OR source_file LIKE '%guardrail%'
                        OR source_file LIKE '%/validators/%'
-                       OR source_file LIKE 'agentic_core/L6_%')
+                       OR source_file LIKE 'agentic_core/L5_safety/%'
+                       OR source_file LIKE 'agentic_core/L6_%'
+                       OR source_file LIKE 'agentic_core/mixins/%tracing%'
+                       OR source_file LIKE '%/prompt_governance/%')
+                    THEN 'LOW'
+                    -- P3 LOW: default_fallback_masking in ML decision support modules.
+                    -- ML model-loading fallback (except: return default_model()) is a
+                    -- valid resilience pattern - cold-start / missing-model recovery.
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind = 'default_fallback_masking'
+                     AND (source_file LIKE '%/ml_decision_support/%'
+                       OR source_file LIKE '%/ml_integration/%')
                     THEN 'LOW'
                     -- P2 MEDIUM: swallow-class and structural antipatterns in non-production
                     WHEN relation_type = 'antipattern'
