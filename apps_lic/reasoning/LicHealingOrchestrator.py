@@ -329,12 +329,14 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
 
             from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
 
+            from agentic_core.L0_routing.config.model_registry import GEMINI_PRO_MODEL_ID
+
             gateway = SovereignLLMGateway()
             prompt = incident.get("prompt", incident.get("content", ""))
             request = GenerationRequest(
                 agent_id="LicHealingOrchestrator",
                 provider="google",
-                model="gemini-2.5-pro",
+                model=GEMINI_PRO_MODEL_ID,
                 prompt=prompt,
             )
             _clk = get_clock()
@@ -348,7 +350,7 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
             return {
                 "status": "resolved",
                 "healer": "SovereignLLMGateway",
-                "model": "gemini-2.5-pro",
+                "model": GEMINI_PRO_MODEL_ID,
                 "content": response.content,
                 "incident_type": incident.get("type"),
             }

@@ -324,6 +324,38 @@ Precision tables: not populated in this snapshot — fall back to AST-based anal
 
 ---
 
+## ADG_HOTSPOT_REPORT
+
+Hotspot rank driving wave sequencing (sourced from `mv_debt_concentration_hotspots`,
+`mv_hotspot_centrality`, and band-severity cross-reference):
+
+| Rank | Node / Class | Layer | Fan-in | Archetype | Surfaces | Wave |
+|------|--------------|-------|:------:|-----------|----------|------|
+| 1 | structural_conformance SC-1 (54 P0) | L0/L1 | high | SAFETY_GATEKEEPER | Security Surface, State Surface | W0 (separate plan) |
+| 2 | hallucinated_tool_name (P1, 2 prod) | L2/L3 | medium | CENTRAL_DEPENDENCY | Execution Surface | W1 |
+| 3 | global_state_mutation (P1→P2 re-severity) | L2/L4 | high | STATE_NODE | State Surface, Write Surface | W5–W6 |
+| 4 | chokepoint_bypass (P0 hygiene, 1) | L4 | low | SAFETY_GATEKEEPER | Security Surface | W2 |
+| 5 | v_p0_write_bypass_uwg rows | L4 | medium | STATE_NODE | Write Surface, State Surface | W3 |
+| 6 | v_p2_mixed_usage rows | mixed | medium | CENTRAL_DEPENDENCY | Execution Surface | W4 |
+| 7 | v_p3_isolated_experimental rows | mixed | low | ORPHAN | none | W4 (candidates for archival) |
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Materialized views + semantic edges consulted (see §ADG Provenance above):
+
+| Primitive | Use in this plan |
+|---|---|
+| `mv_debt_concentration_hotspots` | Ranked structural debt density by file/module for W1 ordering |
+| `mv_hotspot_centrality` | Identified high-fan-in nodes for cross-band re-severity priority |
+| `mv_graph_reverse_dependency_hotspots` | Consumer blast-radius estimation for each proposed promotion |
+| `v_p0_write_bypass_uwg` | W3 gate rows — unauthorized write seams |
+| `v_p2_mixed_usage` | W4 candidates for mixed-responsibility refactor |
+| `v_p3_isolated_experimental` | W4 orphan archival candidates |
+| semantic edge `imports` | fan-in/fan-out computations supporting all above |
+| semantic edge `antipattern` (band-tagged) | drives re-severity promotion decisions |
+| semantic edge `flows_to` | Traces P1→P2 global_state_mutation propagation |
+| semantic edge `writes_to` | Confirms v_p0_write_bypass_uwg classification |
+
 ## 13. Open Questions for SR_APPROVAL
 
 1. Is the **re-severity approach** (§3) preferred over a **band-ceiling expansion** approach? (Re-severity is the cleaner answer but requires ADR + migration test.)

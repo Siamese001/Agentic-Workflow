@@ -73,8 +73,14 @@ class QwenInferenceGateway:
         max_concurrent: int = 8,
         batch_size: int = 4,
     ):
-        self.model_id = model_id or os.getenv("VLLM_MODEL_NAME") or "Qwen/Qwen2.5-14B-Instruct-AWQ"
-        self.base_url = base_url or os.getenv("VLLM_BASE_URL") or "http://localhost:8000/v1"
+        # Defaults resolved from L0 model_registry SSOT (env-var driven).
+        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+            QWEN_LOCAL_MODEL_ID,
+            VLLM_BASE_URL,
+        )
+
+        self.model_id = model_id or QWEN_LOCAL_MODEL_ID
+        self.base_url = base_url or VLLM_BASE_URL
         self.max_concurrent = max_concurrent
         self.batch_size = batch_size
         self._vllm_client: OptimizedVLLMClient | None = None

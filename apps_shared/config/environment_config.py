@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from agentic_core.L0_routing.config import model_registry as _MR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_reads_environ,
@@ -73,10 +74,12 @@ class EnvironmentConfig(BaseModel):
     NOTION_TOKEN: str | None = Field(default=None, description="Notion internal integration token")
     FIGMA_TOKEN: str | None = Field(default=None, description="Figma API token")
 
-    # Model Configuration
-    GEMINI_MODEL: str = Field(default="gemini-3-flash-preview", description="Gemini model name")
-    GEMINI_PRO_MODEL: str = Field(default="gemini-2.5-pro", description="Gemini Pro model name")
-    OPENAI_MODEL: str = Field(default="gpt-4o", description="OpenAI model name")
+    # Model Configuration — defaults sourced from L0 model_registry SSOT.
+    # To change a model, set the env var (GEMINI_MODEL / GEMINI_PRO_MODEL / OPENAI_MODEL)
+    # OR update agentic_core/L0_routing/config/model_registry.py.
+    GEMINI_MODEL: str = Field(default=_MR.GEMINI_FLASH_MODEL_ID, description="Gemini model name")
+    GEMINI_PRO_MODEL: str = Field(default=_MR.GEMINI_PRO_MODEL_ID, description="Gemini Pro model name")
+    OPENAI_MODEL: str = Field(default=_MR.OPENAI_MODEL_ID, description="OpenAI model name")
 
     # Thresholds and Limits
     # NOTE: Routing/healing confidence thresholds are NOT here. Canonical SSOT is

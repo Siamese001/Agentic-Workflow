@@ -14,6 +14,7 @@ import logging
 import os
 from dataclasses import dataclass
 
+from agentic_core.L0_routing.config import model_registry as _MR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -187,13 +188,15 @@ class SovereignConfigManager:
     DEFAULT_MAX_HEALING_ATTEMPTS: int = 3
     DEFAULT_CACHE_TTL: int = 86400  # 24 Hours
 
-    # Model Defaults (Phase 4) - Now sourced from environment
-    DEFAULT_OPENAI_MODEL: str = "gpt-4o"
-    DEFAULT_ANTHROPIC_MODEL: str = "claude-3-5-sonnet-20241022"
-    DEFAULT_GOOGLE_MODEL: str = "gemini-3-flash-preview"
-    DEFAULT_GOOGLE_PRO_MODEL: str = "gemini-2.5-pro"
-    DEFAULT_EMBEDDING_MODEL: str = "BAAI/bge-m3"
-    DEFAULT_BGE_EMBEDDING_MODEL: str = "BAAI/bge-m3"
+    # Model Defaults (Phase 4) — sourced from L0 model_registry SSOT.
+    # Env vars (OPENAI_MODEL / ANTHROPIC_MODEL / GEMINI_MODEL / GEMINI_PRO_MODEL /
+    # EMBEDDING_MODEL) still override at runtime via get_str().
+    DEFAULT_OPENAI_MODEL: str = _MR.OPENAI_MODEL_ID
+    DEFAULT_ANTHROPIC_MODEL: str = _MR.ANTHROPIC_MODEL_ID
+    DEFAULT_GOOGLE_MODEL: str = _MR.GEMINI_FLASH_MODEL_ID
+    DEFAULT_GOOGLE_PRO_MODEL: str = _MR.GEMINI_PRO_MODEL_ID
+    DEFAULT_EMBEDDING_MODEL: str = _MR.EMBEDDING_MODEL_ID
+    DEFAULT_BGE_EMBEDDING_MODEL: str = _MR.EMBEDDING_MODEL_ID
 
     # Dimensions (Phase 4)
     EMBEDDING_DIM_OPENAI: int = 1536

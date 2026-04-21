@@ -226,11 +226,18 @@ class ConfidenceScorer:
         """Get model assignment for tier.
 
         HITL-10C-003: Model assignments should be reviewed.
+        Model IDs sourced from L0 model_registry SSOT (env-var overridable).
         """
+        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+            DETERMINISTIC_MODEL_SENTINEL,
+            GEMINI_PRO_MODEL_ID,
+            QWEN_LOCAL_MODEL_ID,
+        )
+
         model_map = {
-            HealTier.HIGH: "local_deterministic",
-            HealTier.MEDIUM: "qwen_vllm",
-            HealTier.LOW: "gemini_2.5_pro",
+            HealTier.HIGH: DETERMINISTIC_MODEL_SENTINEL,
+            HealTier.MEDIUM: QWEN_LOCAL_MODEL_ID,
+            HealTier.LOW: GEMINI_PRO_MODEL_ID,
             HealTier.HITL: "human_review",
         }
         return model_map[tier]

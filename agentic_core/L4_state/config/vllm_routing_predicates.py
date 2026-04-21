@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Mapping, NamedTuple
 
-from tools.canonical_hash import canonical_hash
+from agentic_core.interfaces.determinism import canonical_hash
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -26,10 +26,20 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 
 class Provider(Enum):
-    """Routing provider enumeration."""
+    """Routing provider enumeration.
+
+    Wave 5 P5.4 (2026-04-21): added GEMINI_FLASH and GEMINI_PRO to match
+    the L2 healing tier split (see `agentic_core/L2_execution/healers/
+    healing_router.py::_PRO_REQUIRED_GATES`). Existing `OPUS` value is a
+    historical alias retained for backward-compat; new code should use
+    GEMINI_FLASH for cheap/fast cloud calls or GEMINI_PRO for
+    structural/retry/hard-override escalation.
+    """
 
     OPUS = "opus"
     LOCAL_VLLM = "local_vllm"
+    GEMINI_FLASH = "gemini_flash"
+    GEMINI_PRO = "gemini_pro"
 
 
 @dataclass(frozen=True, slots=True)

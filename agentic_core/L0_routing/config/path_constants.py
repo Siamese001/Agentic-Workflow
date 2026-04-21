@@ -42,8 +42,9 @@ HEALING_CONFIDENCE_Y: float = 0.50  # Lower threshold: conf <= Y → GEMINI 2.5 
 SSOT_SCORE_THRESHOLD_DET: int = 13  # S <= 13  → DETERMINISTIC
 SSOT_SCORE_THRESHOLD_QWEN: int = 26  # S <= 26  → QWEN; S > 26 → GEMINI
 
-# Qwen 14B model identifier
-QWEN_14B_MODEL_ID: Final[str] = "qwen/qwen-14b-chat"
+# NOTE: QWEN_14B_MODEL_ID was removed 2026-04-21 — its value "qwen/qwen-14b-chat"
+# never matched the actual deployed model. Canonical source is now:
+#   agentic_core/L0_routing/config/model_registry.QWEN_LOCAL_MODEL_ID
 
 # Architecture layer constants - SSOT for layer naming
 AGENTIC_CORE_LAYERS: Final[list[str]] = [
@@ -684,7 +685,6 @@ __all__ = [
     "OPS_SCRIPTS_DIR",
     "PROJECT_ROOT_MARKERS",
     "PROJECT_ROOT_WHITELIST",
-    "QWEN_14B_MODEL_ID",
     "ROOT_ALLOWED_PATTERNS",
     "ROOT_PROTECTED_FILES",
     "ROOT_WHITELIST",

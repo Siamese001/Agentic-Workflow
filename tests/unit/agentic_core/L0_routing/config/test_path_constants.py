@@ -15,8 +15,10 @@ EXPECTED_VALUES = {
     "HEALING_CONFIDENCE_Y": 0.50,
     "SSOT_SCORE_THRESHOLD_DET": 13,
     "SSOT_SCORE_THRESHOLD_QWEN": 26,
-    "QWEN_14B_MODEL_ID": "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4",
 }
+# QWEN_14B_MODEL_ID relocated 2026-04-21 to
+#   agentic_core/L0_routing/config/model_registry.QWEN_LOCAL_MODEL_ID
+# Registry-based coverage lives in test_model_registry.py.
 
 
 @pytest.fixture(scope="module")

@@ -3,6 +3,11 @@ from __future__ import annotations
 import logging
 import os
 
+from agentic_core.L0_routing.config.model_registry import (
+    ANTHROPIC_MODEL_ID,
+    GEMINI_PRO_MODEL_ID,
+    OPENAI_MODEL_ID,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -181,16 +186,17 @@ class ConsensusEngine:
 
     CRITICAL_KEYWORDS: Any = ["hack", "delete /", "malware", "drop table"]
     MAJORITY_THRESHOLD: Any = 0.66
+    # Keys resolved via L0 model_registry (env-var driven) to avoid drift.
     MODEL_CHECK_CONFIG: Any = {
-        os.getenv("OPENAI_MODEL", "gpt-4o"): {
+        OPENAI_MODEL_ID: {
             "keywords": ["broken", "infinite loop"],
             "reason": "OPENAI_MODEL Thinking: Detected functional regression or infinite loop risk.",
         },
-        os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"): {
+        ANTHROPIC_MODEL_ID: {
             "keywords": ["unsafe", "race condition"],
             "reason": "ANTHROPIC_MODEL Analysis: Identified potential race condition or unsafe memory access.",
         },
-        os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"): {
+        GEMINI_PRO_MODEL_ID: {
             "keywords": ["contradiction", "hallucination"],
             "reason": "GEMINI_PRO_MODEL Deep Think: Found contradiction with known context or library definitions.",
         },
@@ -204,11 +210,7 @@ class ConsensusEngine:
             providers: A list of model names to be used as jurors.
         """
         if providers is None:
-            providers = [
-                os.getenv("OPENAI_MODEL", "gpt-4o"),
-                os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"),
-                os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro"),
-            ]
+            providers = [OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID]
         self.providers = providers
         self.threshold = ConsensusEngine.MAJORITY_THRESHOLD
 

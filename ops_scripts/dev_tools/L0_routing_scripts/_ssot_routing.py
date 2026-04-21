@@ -3,13 +3,37 @@ _ssot_routing.py — Routing decision engine and SovereignDecisionEngine for exe
 
 Extracted from execute_ssot.py to reduce file size and improve cohesion.
 All public symbols are re-exported from execute_ssot.py for backward compat.
+
+.. deprecated:: 2026-04-21 (Wave 3, routing-unification-qwen plan)
+
+    `SovereignDecisionEngine` / `AutonomousDecisionEngine` at L_OPS are
+    superseded by the L2 healing pipeline:
+
+    - Tier scoring: `agentic_core.L2_execution.healers.confidence_scorer.ConfidenceScorer`
+    - Gate overrides: `agentic_core.L2_execution.healers.routing_gates.apply_routing_gates`
+    - Tier dispatch: `agentic_core.L2_execution.healers.healing_router.HealingRouter`
+    - Model SSOT: `agentic_core.L0_routing.config.model_registry`
+
+    This module remains functional as a backward-compat shim for
+    `ops_scripts/dev_tools/L0_routing_scripts/_ssot_phases.py` until that
+    file is migrated. New callers MUST use the L2 pipeline.
 """
 
 import logging
 import os
 import re
 import uuid
+import warnings
 from typing import Any
+
+warnings.warn(
+    "ops_scripts.dev_tools.L0_routing_scripts._ssot_routing is deprecated. "
+    "Use agentic_core.L2_execution.healers.{confidence_scorer, routing_gates, "
+    "healing_router} + agentic_core.L0_routing.config.model_registry instead. "
+    "See .windsurf/plans/routing-unification-qwen-abe735.md Wave 3.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
@@ -20,9 +44,6 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L0_routing.config.path_constants import (
     HEALING_CONFIDENCE_Y as _CONF_Y,
-)
-from agentic_core.L0_routing.config.path_constants import (
-    QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
 )
 from agentic_core.L0_routing.config.path_constants import (
     SSOT_SCORE_THRESHOLD_DET as _SCORE_DET,
@@ -302,27 +323,43 @@ class SovereignDecisionEngine:
 
     @staticmethod
     def _get_bmg_cosine_similarity() -> object:
-        """Lazy seam: load bmg_cosine_similarity from L2 healers without module-level import."""
-        from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_cosine_similarity
+        """Lazy seam: load bmg_cosine_similarity.
 
-        return bmg_cosine_similarity
+        Wave 3 P3.2 (2026-04-21): the original target module
+        `agentic_core.L3_orchestration.healers.bmg_embedding_similarity`
+        never existed on disk — calls raised ImportError and silently
+        fell through to Jaccard word-overlap in `_calculate_semantic_similarity`.
+        Raises ImportError unconditionally now so fallback behavior is
+        explicit instead of magical.
+        """
+        raise ImportError(
+            "bmg_embedding_similarity is not implemented in this repo. "
+            "Callers must handle ImportError; Jaccard fallback is in "
+            "_calculate_semantic_similarity. See "
+            ".windsurf/plans/routing-unification-qwen-abe735.md Wave 3 P3.2.",
+        )
 
     @staticmethod
     def _get_bmg_embedding_agent_keys() -> frozenset:
-        """Lazy seam: load BMG_EMBEDDING_AGENT_KEYS from L2 healing_tier_config."""
-        from agentic_core.L3_orchestration.healers.healing_tier_config import BMG_EMBEDDING_AGENT_KEYS
+        """Lazy seam: load BMG_EMBEDDING_AGENT_KEYS.
 
-        return BMG_EMBEDDING_AGENT_KEYS
+        Wave 3 P3.2: target module `healing_tier_config` never existed.
+        Returns an empty frozenset so callers iterating it see no keys
+        rather than hitting ImportError downstream.
+        """
+        return frozenset()
 
     @staticmethod
     def _get_qwen_14b_routing_config() -> tuple:
-        """Lazy seam: load Qwen 14B routing constants from L2 healing_tier_config."""
-        from agentic_core.L3_orchestration.healers.healing_tier_config import (
-            QWEN_14B_AGENT_KEYS,
-            QWEN_14B_MODEL_ID,
-        )
+        """Lazy seam: load Qwen 14B routing constants.
 
-        return (QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID)
+        Wave 3 P3.2: target module `healing_tier_config` never existed.
+        `QWEN_14B_AGENT_KEYS` is not re-homed (never populated); the
+        model id is sourced from the L0 model_registry SSOT.
+        """
+        from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
+        return (frozenset(), QWEN_LOCAL_MODEL_ID)
 
     @staticmethod
     def _get_qwen_vllm_arbiter():
@@ -663,20 +700,18 @@ class SovereignDecisionEngine:
             "decision": None,
             "reason": None,
         }
-        _GEMINI_MODEL_ID = "gemini-2.5-pro"
-        if routing.tier != RoutingTier.FAIL_CLOSED:
-            if confidence.value > _CONF_X:
-                tier = RoutingTier.DETERMINISTIC
-                decision_data["model"] = "deterministic-sovereign"
-            elif confidence.value > _CONF_Y:
-                tier = RoutingTier.QWEN
-                decision_data["model"] = _QWEN_14B_MODEL_ID
-            else:
-                tier = RoutingTier.GEMINI
-                decision_data["model"] = _GEMINI_MODEL_ID
-            decision_data["routing_tier"] = tier.value
-        else:
-            tier = routing.tier
+        # Wave 3 P3.1 (2026-04-21): removed duplicate tier-override block.
+        # The previous implementation silently re-bucketed tier based on raw
+        # `confidence.value` (0.80 / 0.50 cutoffs), discarding the tiered
+        # integer-score decision produced by `compute_routing_decision()`
+        # above. That made gate logic, score thresholds, and playbook /
+        # L-tiebreaker adjustments unreachable, and hardcoded gemini-2.5-pro
+        # bypassing `GEMINI_MODEL_ID` env var. `routing.tier` is now the
+        # SSOT; model_id is taken from `routing.model_id` (which resolves
+        # via `agentic_core.L0_routing.config.model_registry`).
+        tier = routing.tier
+        decision_data["model"] = routing.model_id
+        decision_data["routing_tier"] = tier.value
         if tier == RoutingTier.FAIL_CLOSED:
             reason = f"FAIL-CLOSED ({routing.gate_applied}, S={routing.score})"
             decision_data["decision"] = False

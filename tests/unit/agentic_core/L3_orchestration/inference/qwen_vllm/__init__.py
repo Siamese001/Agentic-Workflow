@@ -1,45 +1,6 @@
-"""Stable compatibility exports for the qwen_vllm shim package."""
+"""Test package marker.
 
-from .config import QwenInferenceConfig, QwenModelConfig, QwenPromptConfig
-from .engines import OptimizedVLLMClient, VLLMRequest, VLLMResponse
-from .reasoning import (
-    AppsQwenGateway,
-    AppsQwenRequest,
-    AppsQwenResponse,
-    QwenInferenceGateway,
-    QwenInferenceRequest,
-    QwenInferenceResponse,
-)
-from .telemetry import (
-    AppsQwenMetric,
-    AppsQwenSessionMetrics,
-    AppsQwenTelemetry,
-    QwenInferenceMetric,
-    QwenInferenceTelemetry,
-    QwenSessionMetrics,
-)
-from .tools import GPUMemoryInfo, GPUMemoryMonitor, GPURecommendation
-
-__all__ = [
-    "AppsQwenGateway",
-    "AppsQwenMetric",
-    "AppsQwenRequest",
-    "AppsQwenResponse",
-    "AppsQwenSessionMetrics",
-    "AppsQwenTelemetry",
-    "GPUMemoryInfo",
-    "GPUMemoryMonitor",
-    "GPURecommendation",
-    "OptimizedVLLMClient",
-    "QwenInferenceConfig",
-    "QwenInferenceGateway",
-    "QwenInferenceMetric",
-    "QwenInferenceRequest",
-    "QwenInferenceResponse",
-    "QwenInferenceTelemetry",
-    "QwenModelConfig",
-    "QwenPromptConfig",
-    "QwenSessionMetrics",
-    "VLLMRequest",
-    "VLLMResponse",
-]
+Wave 4 (2026-04-21): emptied accidental source-package mirror that tried
+to re-export symbols from .config, .engines, .reasoning, .telemetry, .tools
+relative to the TEST tree where those submodules do not exist.
+"""
