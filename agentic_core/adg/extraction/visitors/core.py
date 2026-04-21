@@ -449,26 +449,102 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         producing duplicate alerts / alert fatigue (doc Pattern 11). The GOOD
         variant is 'log OR re-raise, not both' — if re-raising, let the top
         boundary log; don't emit duplicates at intermediate layers.
+
+        Precision: skip when the handler ALSO performs a structured
+        observability action (audit/metric/telemetry/trace) in addition to the
+        log call. That combination is a deliberate instrumentation boundary,
+        not duplicate alerting — the audit records the failure event with
+        structure, the log emits a human-readable line, and the raise
+        propagates. Pure 'log + raise' without structured observability is
+        still flagged.
         """
         if not body:
             return False
         has_log = False
         has_reraise = False
+        has_structured_observability = False
+
+        # Callables that count as structured observability (recorded separately
+        # from the log line — audit trail, metric, telemetry, trace span).
+        observability_attrs = {
+            "_audit",
+            "_record",
+            "_emit",
+            "_emit_event",
+            "_record_error",
+            "_track",
+            "_track_error",
+            "_trace",
+            "audit",
+            "record",
+            "record_error",
+            "track",
+            "track_error",
+            "emit",
+            "emit_event",
+            "capture",
+            "capture_error",
+            "incr",
+            "increment",
+            "timing",
+            "histogram",
+            "gauge",
+            "log_event",
+            "log_error_event",
+            "log_failure",
+            "log_structured",
+            "count",
+        }
+        observability_prefixes = (
+            "metrics.",
+            "telemetry.",
+            "audit.",
+            "otel.",
+            "tracer.",
+            "span.",
+            "statsd.",
+            "prom.",
+            "tracing.",
+        )
+
         for stmt in body:
+            # Direct call expressions: foo(), obj.method(...)
             if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
                 call = stmt.value
-                if isinstance(call.func, ast.Attribute) and call.func.attr in {
-                    "debug",
-                    "info",
-                    "warning",
-                    "error",
-                    "exception",
-                    "critical",
-                }:
-                    has_log = True
+                if isinstance(call.func, ast.Attribute):
+                    attr = call.func.attr
+                    if attr in {"debug", "info", "warning", "error", "exception", "critical"}:
+                        has_log = True
+                    elif attr in observability_attrs:
+                        has_structured_observability = True
+                    # Dotted prefix match on the receiver name
+                    else:
+                        recv = self._extract_symbol(call.func)
+                        if recv and any(recv.startswith(p) for p in observability_prefixes):
+                            has_structured_observability = True
+                elif isinstance(call.func, ast.Name):
+                    if call.func.id in observability_attrs:
+                        has_structured_observability = True
+            # Assignment with observability call on RHS: latency = self._audit(...)
+            elif isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call):
+                call = stmt.value
+                if isinstance(call.func, ast.Attribute) and call.func.attr in observability_attrs:
+                    has_structured_observability = True
+            # With statement: `with tracer.start_as_current_span(...):` counts as observability
+            elif isinstance(stmt, ast.With):
+                for item in stmt.items:
+                    ctx_sym = self._extract_symbol(item.context_expr) or ""
+                    if any(p in ctx_sym for p in ("tracer", "span", "telemetry", "metric")):
+                        has_structured_observability = True
             elif isinstance(stmt, ast.Raise):
                 has_reraise = True
-        return has_log and has_reraise
+
+        if not (has_log and has_reraise):
+            return False
+        # Structured observability present → not duplicate logging
+        if has_structured_observability:
+            return False
+        return True
 
     def _has_unreachable_after_raise(self, body: list[ast.stmt]) -> bool:
         """Detect 'raise' followed by executable statements in an except body.
