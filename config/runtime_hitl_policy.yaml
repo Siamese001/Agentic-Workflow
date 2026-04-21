@@ -1,0 +1,62 @@
+# Runtime HITL Exit-Control Policy — SSOT
+#
+# Per ADR-023 §3.1 and plan runtime-hitl-exit-control-c4e7b3 W1.
+# L5 Policy Plane consumes this to classify runtime escalations.
+#
+# Scope: RUNTIME HITL (v30 step [5] ESCALATE). NOT the developer-loop
+# Author-Gate. Do not merge with .windsurf/ harness config.
+#
+# Defaults (G4) are conservative. Tune per tenant via policy overlay (W5+).
+
+version: 1
+
+# Novelty / confidence thresholds feeding classify_escalation_class().
+# Reuse sources resolved at runtime (G3): system_learning/confidence/engine.py.
+thresholds:
+  novelty_min: 0.72        # envelope.novelty_score >= this → novel_context
+  confidence_max: 0.60     # envelope.confidence_score <= this → low_confidence
+
+# Per-class policy. Keys MUST match agentic_core.L5_safety.exit_control.hitl_classes.HitlClass values.
+classes:
+  financial:
+    timeout_s: 3600
+    fallback: DENY
+    approver_pool: finance_oncall
+    description: Monetary or commitment-bearing actions.
+  safety:
+    timeout_s: 1800
+    fallback: DENY
+    approver_pool: safety_oncall
+    description: Physical or operational safety impact.
+  regulated:
+    timeout_s: 7200
+    fallback: DENY
+    approver_pool: compliance_oncall
+    description: Compliance-bound actions (SOC2, HIPAA, SOX, etc.).
+  novel_context:
+    timeout_s: 900
+    fallback: DENY
+    approver_pool: ops_oncall
+    description: Novelty score above threshold; reviewer calibration required.
+  low_confidence:
+    timeout_s: 600
+    fallback: DENY
+    approver_pool: ops_oncall
+    description: Model confidence below threshold.
+  policy_override:
+    timeout_s: 86400
+    fallback: DENY
+    approver_pool: policy_board
+    description: Explicit policy-override request; long timeout, board-level pool.
+
+# Classification precedence — first match wins.
+# Envelope fields consumed: requires_policy_override (bool), is_regulated (bool),
+# is_safety_impacting (bool), is_financial (bool), novelty_score (float),
+# confidence_score (float).
+precedence:
+  - policy_override
+  - regulated
+  - safety
+  - financial
+  - novel_context
+  - low_confidence
