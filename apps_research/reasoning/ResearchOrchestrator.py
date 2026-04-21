@@ -134,7 +134,7 @@ class ResearchOrchestrator:
 
             self._assembly = ResearchAssemblyEngine()
             self._gate = ResearchGateValidator()
-        except ImportError as exc:
+        except ImportError as exc:  # guardian: allow-log-and-swallow -- apps_research runtime is optional; bootstrap error recorded for later diagnostics
             self._bootstrap_error = f"apps_research runtime dependency unavailable: {exc}"
             _log.warning(self._bootstrap_error)
 
@@ -284,7 +284,7 @@ class ResearchOrchestrator:
                         KeyError,
                         AttributeError,
                         RuntimeError,
-                    ) as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
+                    ) as _exc:  # guardian: allow-double-logging -- LOCAL_FIRST_DISPOSITION audit log emitted before re-raise; required for compliance telemetry
                         _adapter.record_local_failure(severity="medium")
                         _dsp = LocalFirstDisposition.for_fail_exec(
                             orchestrator="ResearchOrchestrator",

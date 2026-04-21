@@ -240,8 +240,7 @@ class ResumeEnhancementOrchestrator:
                             causation_id=event.id,
                         ),
                     )
-        except (AttributeError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
-            logger.error(f"Failed to handle resume generation started: {e}")
+        except (AttributeError, ValueError, TypeError, RuntimeError):  # guardian: allow-double-logging -- orchestrator-level error log before re-raise for event-handler observability
             raise
 
     async def _handle_persona_analyzed(self, event: SystemEvent) -> None:
@@ -253,8 +252,7 @@ class ResumeEnhancementOrchestrator:
         try:
             payload = event.payload
             logger.info(f"Persona analyzed: {payload.get('persona_title')} ({payload.get('archetype')})")
-        except (AttributeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
-            logger.error(f"Failed to handle persona analyzed: {e}")
+        except (AttributeError, ValueError, TypeError):  # guardian: allow-double-logging -- orchestrator-level error log before re-raise for event-handler observability
             raise
 
     def _extract_company_from_jd(self, jd_text: str) -> str | None:

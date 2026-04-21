@@ -36,7 +36,7 @@ class DispatchResumeToolsAgent(BaseDispatchAgent):
             test_result = self._perform_action("search", {"query": "diagnostic test"})
             if isinstance(test_result, dict) and "error" in test_result:
                 Logger.error("Diagnostics failed: %s", test_result["error"])
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError, TypeError, AttributeError, OSError) as e:  # guardian: allow-log-and-swallow -- diagnostic smoke test; failure is non-fatal for agent startup
             Logger.error("Diagnostics exception: %s", e)
 
 

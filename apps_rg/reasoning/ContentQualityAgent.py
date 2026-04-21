@@ -320,7 +320,7 @@ class ContentQualityAgent(RGAgentBase):
                 issues.append(
                     f"Low skill extraction confidence ({skill_analysis.extraction_result.confidence_score:.2f})",
                 )
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (AttributeError, ValueError, TypeError, RuntimeError, KeyError) as e:  # guardian: allow-log-and-swallow -- skill validation failure captured as user-visible issue, not logged separately
             issues.append(f"Skill validation failed: {str(e)}")
         return issues
 
@@ -391,7 +391,7 @@ class ContentQualityAgent(RGAgentBase):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (AttributeError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-default-fallback -- heal() contract returns a status dict; failure path constructs failed-status dict with exception details
             return {
                 "status": "failed",
                 "details": f"ContentQualityAgent heal() failed: {str(e)}",

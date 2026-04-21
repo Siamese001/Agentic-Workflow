@@ -155,6 +155,7 @@ ALL_TIERS: Final[tuple[str, ...]] = (
 # TIER → MODEL MAPPING (single lookup for dispatcher)
 # ============================================================================
 
+
 def get_model_for_tier(tier: str) -> str:
     """Return the model ID for a given routing tier.
 
