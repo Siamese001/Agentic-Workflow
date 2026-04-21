@@ -188,6 +188,36 @@ the ledger side but gates allow lowering when counts drop).
 
 ---
 
+## Part A Execution Findings (2026-04-21)
+
+Scoping query against snapshot `04212026_1441` after W1+W3 burndown showed the original
+~83-site estimate was **pre-W3**. Actual Part A scope on L0/L4/L5 surfaces:
+
+| Pattern kind (promotion-candidate) | Total sites | Guardian-covered | Needed annotation |
+|---|---:|---:|---:|
+| `broad_exception_catch` (P2 on L5) | 13 | 13 | 0 |
+| `return_none_swallow` (P2 on L0/L4/L5) | 3 | 0 | **3** |
+| `partial_side_effects` | 0 | — | 0 |
+| `default_fallback_masking` | 0 | — | 0 |
+| `retry_without_backoff` | 0 | — | 0 |
+| `silent_exception_swallow` | 0 | — | 0 |
+| `log_and_swallow` | 0 | — | 0 |
+| **Total Part A target kinds** | **16** | **13** | **3** |
+
+Part A completed with **3 guardian annotations** added:
+- `agentic_core/L4_state/enforcement/activation_flags.py:96` (fail-closed flags reset)
+- `agentic_core/L4_state/enforcement/activation_flags.py:108` (fail-closed proof clear)
+- `agentic_core/L5_safety/exit_control/hitl_policy.py:222` (optional-field float parser)
+
+Zero behavior change. Part B estimates in the Decision section above are now STALE and
+must be recomputed against a post-W5 snapshot before Part B executes. Specifically, the
+`~83 items moved up` total is incorrect post-W3; the true figure is lower and should be
+re-queried via `tools/debug/_adg_part_a_final_scope.py`.
+
+Scoping diagnostics: `tools/debug/_adg_part_a_final_scope.py` (retained for Part B re-scope).
+
+---
+
 ## References
 
 - Plan: `.windsurf/plans/p2-burndown-wave-9e4c17.md`

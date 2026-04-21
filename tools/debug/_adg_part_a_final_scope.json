@@ -1,0 +1,32 @@
+{
+  "snapshot": "04212026_1441",
+  "total_candidate_sites": 16,
+  "uncovered_sites": 3,
+  "by_file": {
+    "agentic_core/L4_state/enforcement/activation_flags.py": [
+      {
+        "id": 623,
+        "kind": "return_none_swallow",
+        "file": "agentic_core/L4_state/enforcement/activation_flags.py",
+        "line": 96,
+        "sev": "HIGH"
+      },
+      {
+        "id": 624,
+        "kind": "return_none_swallow",
+        "file": "agentic_core/L4_state/enforcement/activation_flags.py",
+        "line": 108,
+        "sev": "HIGH"
+      }
+    ],
+    "agentic_core/L5_safety/exit_control/hitl_policy.py": [
+      {
+        "id": 956,
+        "kind": "return_none_swallow",
+        "file": "agentic_core/L5_safety/exit_control/hitl_policy.py",
+        "line": 222,
+        "sev": "HIGH"
+      }
+    ]
+  }
+}

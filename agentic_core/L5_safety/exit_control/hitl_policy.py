@@ -219,7 +219,7 @@ def _as_float(value: Any) -> float | None:
         return None
     try:
         return float(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- _as_float is a best-effort optional-field parser; None signals "not present" to callers that treat unset fields as policy defaults
         return None
 
 

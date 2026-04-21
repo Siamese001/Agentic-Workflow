@@ -93,7 +93,7 @@ class ActivationFlagsStore:
             with open(self.flags_file, encoding="utf-8") as f:
                 data = json.load(f)
             self._current_flags = ActivationFlags(**data)
-        except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:  # guardian: allow-return-none-swallow -- fail-closed: reset to safe default ActivationFlags and clear proof; downstream will observe flags disabled
             Logger.error(f"Failed to load activation flags, failing closed: {e}")
             self._current_flags = ActivationFlags()
             self._current_proof = None
@@ -105,7 +105,7 @@ class ActivationFlagsStore:
                 with open(self.proof_file, encoding="utf-8") as f:
                     proof_data = json.load(f)
                 self._current_proof = ActivationProof(**proof_data)
-            except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:  # guardian: allow-return-none-swallow -- fail-closed: clear proof so flags operate unattested; caller treats missing proof as non-authoritative
                 Logger.error(f"Failed to load activation proof, failing closed: {e}")
                 self._current_proof = None
                 return
