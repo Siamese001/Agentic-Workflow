@@ -23,6 +23,10 @@ from agentic_core.L0_routing.config.model_registry import (
     QWEN_LOCAL_MODEL_ID,
 )
 
+from agentic_core.L6_observability.heal_router_otel import (
+    get_default_emitter as _get_default_heal_router_emitter,
+)
+
 from .confidence_scorer import ConfidenceScore, HealTier
 from .failure_signal import FailureSignal
 from .routing_gates import RoutingContext, apply_routing_gates
@@ -179,7 +183,7 @@ class HealingRouter:
             + (f" | {demotion_reason}" if cost_demoted else "")
         )
 
-        return RoutingDecision(
+        decision = RoutingDecision(
             tier=final_tier,
             target_model=target_model,
             timeout_seconds=config["timeout"],
@@ -190,6 +194,24 @@ class HealingRouter:
             gemini_subtier=gemini_subtier,
             cost_demoted=cost_demoted,
         )
+
+        # Wave F2 M2 (ADR-025): emit unified heal_router.v1.route span.
+        # Best-effort — emitter failure must never break routing.
+        try:
+            _get_default_heal_router_emitter().emit_route_span(
+                decision=decision,
+                confidence_score=getattr(score, "score", None),
+                app_name="healing_router",
+                cost_budget_remaining_usd=budget,
+            )
+        except (
+            AttributeError,
+            TypeError,
+            RuntimeError,
+        ):  # guardian: allow-log-and-swallow -- telemetry emission is best-effort; must never break the heal-router hot path
+            pass
+
+        return decision
 
     def dispatch_to_executor(
         self,

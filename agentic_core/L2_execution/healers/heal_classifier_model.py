@@ -13,10 +13,26 @@ C1 COMPLIANCE:
 from __future__ import annotations
 
 import hashlib
+import warnings
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from ..types.heal_contract_types import ClassifierSource, HealClassifierResult
+
+# Wave F2 M4 (ADR-025, 2026-04-21): Classifier output feeds routing decisions
+# that should flow through the unified heal_router.v1 schema. Emit a one-time
+# DeprecationWarning so callers know to consume classifier results via
+# `HealRouterTelemetryEmitter` rather than building private telemetry surfaces.
+warnings.warn(
+    (
+        "agentic_core.L2_execution.healers.heal_classifier_model routes its "
+        "outputs through the unified heal_router.v1 OTEL schema "
+        "(agentic_core.L6_observability.heal_router_otel). Direct telemetry "
+        "hooks on classifier results are deprecated (ADR-025 Wave F2 M4)."
+    ),
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 class HealClassifierLoadError(Exception):
