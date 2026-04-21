@@ -645,16 +645,11 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                                        'hallucinated_tool_name','return_in_finally')
                      AND (source_file LIKE 'agentic_core/%' OR source_file LIKE 'system_learning/%')
                     THEN 'HIGH'
-                    -- P2 MEDIUM: same agent-safety kinds outside production
-                    WHEN relation_type = 'antipattern'
-                     AND edge_kind IN ('unbounded_agent_loop','llm_output_unvalidated',
-                                       'hallucinated_tool_name','return_in_finally')
-                    THEN 'MEDIUM'
                     -- P3 LOW: non-agent-executed ops/test/tooling directories get
-                    -- downgraded for all MEDIUM-class antipatterns. These paths are
-                    -- CI gates, dev tools, test scaffolding, Windsurf hooks — not
-                    -- code that runs inside the agent execution plane. Keep them
-                    -- visible in the LOW band for hygiene, but don't block P2 gate.
+                    -- downgraded for all MEDIUM-class antipatterns. Must run BEFORE
+                    -- the Tier-1 MEDIUM-outside-prod rule so that Tier-1 agentic
+                    -- kinds (hallucinated_tool_name etc.) in tests/tools/etc.
+                    -- downgrade to LOW rather than staying at MEDIUM.
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
                                        'log_and_swallow','return_none_swallow',
@@ -663,7 +658,9 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                                        'cleanup_raises_over_original','return_in_finally',
                                        'partial_side_effects','double_logging',
                                        'default_fallback_masking',
-                                       'retry_without_backoff','mutable_default_arg','star_import_use')
+                                       'retry_without_backoff','mutable_default_arg','star_import_use',
+                                       'unbounded_agent_loop','llm_output_unvalidated',
+                                       'hallucinated_tool_name')
                      AND (source_file LIKE 'ops_scripts/%'
                        OR source_file LIKE 'tests/%'
                        OR source_file LIKE 'tools/%'
@@ -689,6 +686,12 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '%_validator.py'
                        OR source_file LIKE '%_adapter.py')
                     THEN 'LOW'
+                    -- P2 MEDIUM: same Tier-1 agent-safety kinds outside production
+                    -- (this only fires if the path downgrade above did NOT match).
+                    WHEN relation_type = 'antipattern'
+                     AND edge_kind IN ('unbounded_agent_loop','llm_output_unvalidated',
+                                       'hallucinated_tool_name','return_in_finally')
+                    THEN 'MEDIUM'
                     -- P3 LOW: double_logging in enforcement/chokepoint/guardrail files
                     -- AND the entire L5 safety plane AND cache clients. These modules
                     -- log + re-raise INTENTIONALLY as an observability contract —

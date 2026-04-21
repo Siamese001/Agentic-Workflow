@@ -933,14 +933,14 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
                                        'log_and_swallow','return_none_swallow',
-                                       'exception_type_erasure','return_in_finally',
-                                       'unbounded_agent_loop','llm_output_unvalidated',
-                                       'hallucinated_tool_name',
+                                       'unreachable_after_raise','exception_type_erasure',
+                                       'blocking_call_in_async','bare_except',
+                                       'cleanup_raises_over_original','return_in_finally',
                                        'partial_side_effects','default_fallback_masking',
                                        'double_logging','retry_without_backoff',
-                                       'unreachable_after_raise','bare_except',
-                                       'blocking_call_in_async','cleanup_raises_over_original',
-                                       'mutable_default_arg','star_import_use')
+                                       'mutable_default_arg','star_import_use',
+                                       'unbounded_agent_loop','llm_output_unvalidated',
+                                       'hallucinated_tool_name')
                      AND (source_file LIKE 'ops_scripts/%'
                        OR source_file LIKE 'tests/%'
                        OR source_file LIKE 'tools/%'
@@ -997,6 +997,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '%/ml_integration/%')
                     THEN 'LOW'
                     -- Same HIGH-severity kinds outside production → MEDIUM (P2)
+                    -- BUT only if not already downgraded by the path rule above.
                     WHEN relation_type = 'antipattern'
                      AND edge_kind IN ('broad_exception_catch','silent_exception_swallow',
                                        'log_and_swallow','return_none_swallow',
