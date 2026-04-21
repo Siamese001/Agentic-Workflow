@@ -29,6 +29,10 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
+from agentic_core.L3_orchestration.exit_control.ledger_integrity import (
+    AuditChain,
+    AuditEventType,
+)
 from agentic_core.L5_safety.exit_control.hitl_classes import HitlClass
 
 DEFAULT_LEDGER_PATH = Path("artifacts/runtime/hitl_ledger.db")
@@ -112,6 +116,7 @@ class RuntimeHitlLedger:
         path: Path | str | None = None,
         *,
         now: Callable[[], float] | None = None,
+        audit_chain: AuditChain | None = None,
     ) -> None:
         self._path = Path(path) if path is not None else DEFAULT_LEDGER_PATH
         self._path.parent.mkdir(parents=True, exist_ok=True)
@@ -119,6 +124,7 @@ class RuntimeHitlLedger:
         self._conn = sqlite3.connect(str(self._path), isolation_level=None)
         self._conn.row_factory = sqlite3.Row
         self._conn.executescript(_SCHEMA)
+        self._audit_chain = audit_chain
 
     # -- lifecycle -------------------------------------------------------
 
@@ -193,6 +199,19 @@ class RuntimeHitlLedger:
                 entry_hash,
             ),
         )
+        self._emit_audit(
+            ledger_id=ledger_id,
+            run_id=args.run_id,
+            event_type=AuditEventType.CREATED,
+            payload={
+                "hitl_class": args.hitl_class.value,
+                "approver_pool": args.approver_pool,
+                "timeout_s": args.timeout_s,
+                "policy_snapshot": args.policy_snapshot,
+                "trace_id": args.trace_id,
+            },
+            event_ts=created_at,
+        )
         return self._get_entry(ledger_id)
 
     def record_approved(
@@ -231,9 +250,7 @@ class RuntimeHitlLedger:
     # -- reads -----------------------------------------------------------
 
     def get(self, ledger_id: str) -> LedgerEntry | None:
-        row = self._conn.execute(
-            "SELECT * FROM hitl_ledger WHERE ledger_id = ?", (ledger_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT * FROM hitl_ledger WHERE ledger_id = ?", (ledger_id,)).fetchone()
         return _row_to_entry(row) if row else None
 
     def list_by_run(self, run_id: str) -> list[LedgerEntry]:
@@ -265,9 +282,7 @@ class RuntimeHitlLedger:
         if current is None:
             raise KeyError(f"ledger entry not found: {ledger_id}")
         if current.state is not LedgerState.PENDING:
-            raise ValueError(
-                f"ledger entry {ledger_id} already resolved as {current.state.value}"
-            )
+            raise ValueError(f"ledger entry {ledger_id} already resolved as {current.state.value}")
         resolved_at = self._now()
         self._conn.execute(
             """UPDATE hitl_ledger
@@ -276,7 +291,37 @@ class RuntimeHitlLedger:
                WHERE ledger_id = ?""",
             (new_state.value, resolved_at, approver_id, reason_code, rationale, ledger_id),
         )
+        self._emit_audit(
+            ledger_id=ledger_id,
+            run_id=current.run_id,
+            event_type=_STATE_TO_EVENT[new_state],
+            payload={
+                "approver_id": approver_id,
+                "reason_code": reason_code,
+                "rationale": rationale,
+            },
+            event_ts=resolved_at,
+        )
         return self._get_entry(ledger_id)
+
+    def _emit_audit(
+        self,
+        *,
+        ledger_id: str,
+        run_id: str,
+        event_type: AuditEventType,
+        payload: Mapping[str, Any],
+        event_ts: float,
+    ) -> None:
+        if self._audit_chain is None:
+            return
+        self._audit_chain.append(
+            ledger_id=ledger_id,
+            run_id=run_id,
+            event_type=event_type,
+            payload=payload,
+            event_ts=event_ts,
+        )
 
     def _get_entry(self, ledger_id: str) -> LedgerEntry:
         entry = self.get(ledger_id)
@@ -318,6 +363,13 @@ def _row_to_entry(row: sqlite3.Row) -> LedgerEntry:
 def _hash_payload(payload: Mapping[str, Any]) -> str:
     blob = json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
     return sha256(blob).hexdigest()
+
+
+_STATE_TO_EVENT: dict["LedgerState", AuditEventType] = {
+    LedgerState.APPROVED: AuditEventType.APPROVED,
+    LedgerState.DENIED: AuditEventType.DENIED,
+    LedgerState.TIMEOUT: AuditEventType.TIMEOUT,
+}
 
 
 __all__ = [
