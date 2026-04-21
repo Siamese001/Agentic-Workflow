@@ -62,12 +62,12 @@ The ADG antipattern scanner emits edges based on **AST pattern** (`try: ... exce
 These are **T3 architectural refactors**, not bulk narrowings. Each requires:
 1. Per-site intent analysis (fail-soft required? or safe to fail-loud?)
 2. Test-suite verification (callers may rely on swallowing behavior)
-3. HITL decision per decision-class
+3. Author-Gate decision per decision-class
 4. Dedicated plan under `.windsurf/plans/`
 
 **Priority order by fan-in + structural feasibility:**
 1. **`double_logging` scrub wave** (199 edges, mechanical dedup, low-risk) — best candidate for automated pass
-2. **`log_and_swallow` raise-injection** (202 edges, semantic change, requires HITL per cluster) — high-value but high-caution
+2. **`log_and_swallow` raise-injection** (202 edges, semantic change, requires Author-Gate per cluster) — high-value but high-caution
 3. **`partial_side_effects` extraction** (497 edges, major surgery per site) — true T3 architectural work
 
 ## Zero Regressions Verified

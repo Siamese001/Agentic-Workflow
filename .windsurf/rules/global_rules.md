@@ -2,11 +2,11 @@
 trigger: always_on
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
 # Global Rules - Always-On Policy (Tier 2 SSOT)
 
@@ -108,7 +108,7 @@ Tier 1 enforcement: `pre_run_gate.py` blocks PowerShell commands.
 Exception handling MUST follow the Column 5 Precise Exceptions pattern.
 Catch specific types with specific recovery - never `except Exception: pass`.
 Reference: `docs/reference/Python/Error & Exception Handling.md`
-Guardian exemptions require explicit HITL approval. See Constitutional Section 8.
+Guardian exemptions require explicit Author-Gate approval. See Constitutional Section 8.
 
 ---
 
@@ -150,7 +150,7 @@ Before adding a new MCP, verify no existing MCP covers the capability.
 
 ## Continuous Execution
 
-Execute continuously without stopping UNLESS a genuine HITL decision point is reached.
+Execute continuously without stopping UNLESS a genuine Author-Gate decision point is reached.
 
 FORBIDDEN: stopping after tool calls to check in; asking permission for deterministic actions; presenting options when there is one correct path; breaking work into artificial phase-breaks; narrating work-in-progress without advancing it.
 

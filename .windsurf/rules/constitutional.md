@@ -2,11 +2,11 @@
 trigger: always_on
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
 # Constitutional Floor
 
@@ -24,9 +24,9 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 3. **No agent deletion without authorization.** Requires AGENT-DELETION-AUTHORIZED marker, 90-day deprecation, zero references.
 4. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
 5. **ADG before T2/T3 work.** Ingest `artifacts/adg/adg_indexed_<timestamp>.sqlite` before any query or edit. Regenerate: `python tools/generate_full_adg.py`.
-6. **HITL for ambiguous decisions.** Score candidates 0.00–1.00, filter at 0.72, apply dominance rule (≥0.85, gap ≥0.12 → surface alone). See `hitl-enforcement.md`.
+6. **Author-Gate for ambiguous decisions.** Score candidates 0.00–1.00, filter at 0.72, apply dominance rule (≥0.85, gap ≥0.12 → surface alone). See `hitl-enforcement.md`.
 7. **RCA auto-closure.** Execute corrective actions immediately. Never leave RCA unresolved.
-8. **Guardian exemptions require HITL.** Format: `# guardian: allow-<type> -- <specific justification>`. Generic words forbidden. Gate: `guardian_exemption_gate.py`.
+8. **Guardian exemptions require Author-Gate.** Format: `# guardian: allow-<type> -- <specific justification>`. Generic words forbidden. Gate: `guardian_exemption_gate.py`.
 9. **SVP Engineering persona for T3 architecture.** Prioritize: operational simplicity, dependency hygiene, archival over deletion, ADRs, zero-regression.
 10. **Zero-loss refactor.** After removing boilerplate, check for hollow files. Gate: `zero_loss_refactor_verifier.py`.
 11. **Terminal process lifecycle.** All `run_command`/subprocess calls must terminate when query completes. Gate: `check_terminal_cleanup.py`.
@@ -35,7 +35,7 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 14. **Subprocess timeout required.** `subprocess.run(argv, shell=False, timeout=30)`. No exceptions.
 15. **Precise exception handling.** Catch specific types. Bare `except:` FORBIDDEN. `except Exception` without guardian comment FORBIDDEN.
 16. **Query progress bar mandatory.** All operations >5s, loops >10 lines, or heavy-named functions (`scan_*`, `build_*`, `query_*`, etc.) >12 lines MUST display a colored progress bar. CI gate: `check_query_progress_bar.py`. See `query-progress-bar.md`.
-17. **Memory lifecycle mandatory.** At the start of every conversation, call `mem_recall_session_start` to load persistent project context. After significant architecture decisions, HITL resolutions, or new patterns, write to memory via `create_entities`/`add_observations`. See AGENTS.md Memory Lifecycle section.
+17. **Memory lifecycle mandatory.** At the start of every conversation, call `mem_recall_session_start` to load persistent project context. After significant architecture decisions, Author-Gate resolutions, or new patterns, write to memory via `create_entities`/`add_observations`. See AGENTS.md Memory Lifecycle section.
 18. **No hidden scope expansion.** Do not quietly widen scope. If the task grows, state it in the working packet and keep the change bounded.
 19. **Mode separation is mandatory.** Separate `analyze` (inspect, no edits), `plan` (sequence, no edits), `edit` (make the change), and `verify` (prove the change). Do not blur these modes.
 20. **Fact grading is mandatory.** Classify claims as **DIRECTLY OBSERVED**, **DERIVED**, or **UNRESOLVED**. Do not present unresolved items as facts.
@@ -109,8 +109,8 @@ Enforcement chain (4 layers):
 
 Full protocol details live in focused rules — loaded on demand, not always_on:
 - `adg-repair-discipline.md` — ADG repair loop and fail-closed recovery
-- `anti-pattern-hitl-gate.md` — anti-pattern HITL approval gate
-- `hitl-enforcement.md` — full HITL decision pipeline and option shapes
+- `anti-pattern-hitl-gate.md` — anti-pattern Author-Gate approval gate
+- `hitl-enforcement.md` — full Author-Gate decision pipeline and option shapes
 - `sequential-thinking-enforcement.md` — T2/T3 structured reasoning protocol
 - `global_rules.md` — subprocess, exception, MCP SSOT policy details
 - `adg-test-accelerator-enforcement.md` — ADG-driven test scope selection

@@ -1,10 +1,10 @@
 ---
-description: HITL prompt before introducing any new anti-pattern instance (except Exception, os.path.*, string path concat)
+description: Author-Gate prompt before introducing any new anti-pattern instance (except Exception, os.path.*, string path concat)
 ---
 
-> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
 
-## Anti-Pattern HITL Gate
+## Anti-Pattern Author-Gate Gate
 
 Run this workflow BEFORE making any code change that would introduce:
 - A new `except Exception` / `except BaseException` / bare `except:` block

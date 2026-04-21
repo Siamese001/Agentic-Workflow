@@ -16,7 +16,7 @@ Three concerns, cleanly separated:
 |------|--------|-------|------------|-------------|--------|
 | Wave 0 | 0.1 | MCP Green Light prerequisite | Z: constitutional §13 MCP health check | ~2K | ✅ DONE |
 | Wave 1 | 1.1–1.8 | Cascade Hooks: 3 hard gates + 1 advisory classifier + 4 advisory post-hooks | A: hooks block pwsh, anti-patterns; classifier tags tier; audit hooks log; response-tail cleanup | ~16K | 🟢 READY |
-| Wave 2 | 2.1–2.10 | Policy layer cleanup + MCP simplification + HITL calibration + plan format | B: all rules loading, MCP simplified, HITL calibrated, plan template updated | ~15K | 🟢 READY |
+| Wave 2 | 2.1–2.10 | Policy layer cleanup + MCP simplification + Author-Gate calibration + plan format | B: all rules loading, MCP simplified, Author-Gate calibrated, plan template updated | ~15K | 🟢 READY |
 | **Wave 2.5** | **M.1–M.7** | **ADG Generator Modularization** (3,305-line monolith → 7 subpackages) | **B2: `generate_full_adg.py` → package, tests green, pre-commit green** | **~18K** | **✅ DONE** |
 | Wave 3 | 3.1–3.7 | ADG structural truth + Refactor Accelerator + syntax/guardian hardening | C: ADG scoped to structure, RA created, syntax gate, guardian idempotent | ~16K | 🟡 DEPENDS ON W2.5 |
 | Wave 4 | 4.1–4.6 | Local quality ratchet + CI promotion authority + verification | D: fast pre-commit, explicit promotion criteria, full pipeline green | ~10K | 🟢 READY |
@@ -48,7 +48,7 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
 | W2 | 2.5 | MCP Config Version Check | Lightweight version/deprecation check (research ✅) | PP-12 | ~1K | 🟢 |
 | W2 | 2.6 | Exception Vocabulary | Column 5 Precise Exceptions in constitutional §8 | PP-14 | ~1K | 🟢 |
 | W2 | 2.7 | MCP Config Simplification | Archive YAML layer, collapse to native JSON (research ✅) | PP-15 | ~2K | 🟢 |
-| W2 | 2.8 | HITL SVP Calibration | Ground ⭐ recommendations in measurable target state | PP-16 | ~2K | 🟢 |
+| W2 | 2.8 | Author-Gate SVP Calibration | Ground ⭐ recommendations in measurable target state | PP-16 | ~2K | 🟢 |
 | W2 | 2.9 | Plan Format Enforcement | Mandate phase-level summary table at top of all plans | PP-18 | ~1K | 🟢 |
 | W2 | 2.10 | Approval & Exception Policy | Define allow/deny/require-approval classes, escalation paths, risk classes | — | ~2K | 🟢 |
 | **W2.5** | **M.1** | **Extract utils/** | Move 6 utility functions (file_utils, digest_utils) to subpackage | PP-19 | ~2K | ✅ DONE |
@@ -109,7 +109,7 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
 | PP-13 | Syntax errors in codebase | **P0** | T1 (hard) + T4 (backstop) | Pre | `pre_write_code` AST parse | W1+W3 |
 | PP-14 | Guardian comments corrupted | **P0** | T3 (structural) + T4 (backstop) | — | Guardian idempotency + quality scanner | W3 |
 | PP-15 | MCP config over-engineered | **P1** | T2 (policy) | — | Simplify to native JSON | W2 |
-| PP-16 | HITL ⭐ not calibrated | **P0** | T2 (policy) | — | Measurable target state | W2 |
+| PP-16 | Author-Gate ⭐ not calibrated | **P0** | T2 (policy) | — | Measurable target state | W2 |
 | PP-17 | ADG underutilized for refactoring | **P1** | T3 (structural) + RA | — | Blast radius + Refactor Accelerator | W3 |
 | PP-18 | Plans lack phase summary | **P1** | T2 (policy) | — | Plan template + rule | W2 |
 
@@ -207,8 +207,8 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
 - **Enforcement**: Update `.windsurf/templates/execution-plan-template.md` and `.windsurf/rules/plan-location.md` to mandate this table. A plan missing the phase-level summary is **invalid**.
 - **Benefit**: Any reader (or Cascade in a new session) can understand the full plan scope in 30 seconds by reading the top table.
 
-**GAP-22: HITL ⭐ recommendations lack concrete quality calibration (PP-16)**
-- **Symptom**: The HITL rule says "⭐ RECOMMENDED — SVP priority: operational simplicity, dependency hygiene..." but these are abstract principles. Cascade (and the user) have no concrete picture of what "good" looks like.
+**GAP-22: Author-Gate ⭐ recommendations lack concrete quality calibration (PP-16)**
+- **Symptom**: The Author-Gate rule says "⭐ RECOMMENDED — SVP priority: operational simplicity, dependency hygiene..." but these are abstract principles. Cascade (and the user) have no concrete picture of what "good" looks like.
 - **Root cause**: The recommendation anchor is a list of priorities, not a tangible target state. We say "SVP Engineering" but don’t define what an SVP-quality repo at a frontier AI company actually looks like.
 - **Proposed target state** — "OpenAI Agentic SVP Engineering" quality bar:
   - **Code architecture**: Clean layered architecture (L0-L6), zero circular dependencies, every module has a single clear responsibility, no god classes
@@ -218,8 +218,8 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
   - **Observability**: Every significant operation traceable, structured logging, performance baselines
   - **Documentation**: ADRs for every architectural decision, runbooks for operations, API contracts specified
   - **CI/CD**: <5 min full pipeline, zero manual gates, every merge provably safe
-  - **Technical debt**: Tracked, ratcheted, never increasing without explicit HITL approval
-- **Enforcement**: Update HITL rule §HITL-1 templates to replace abstract SVP priorities with concrete OpenAI Agentic SVP Engineering checklist. Every ⭐ recommendation must cite which target-state attribute it serves.
+  - **Technical debt**: Tracked, ratcheted, never increasing without explicit Author-Gate approval
+- **Enforcement**: Update Author-Gate rule §HITL-1 templates to replace abstract SVP priorities with concrete OpenAI Agentic SVP Engineering checklist. Every ⭐ recommendation must cite which target-state attribute it serves.
 - **Research needed**: RAG pull from **primary sources first**: OpenAI engineering blog, Anthropic engineering practices, Google DeepMind/Meta monorepo tooling, Windsurf/Codeium official docs. **Secondary implementation references**: LangChain, CrewAI, AutoGen, OpenAI Swarm (ecosystem examples, not quality anchors). Primary-source governance and agent-eval guidance takes precedence.
 
 **GAP-23: ADG static analysis underutilized for intelligent refactoring (PP-17)**
@@ -239,7 +239,7 @@ Token estimator UNRESOLVED — `token_budget_loader.py` has path bug (uses paren
 - **Research sources for best practices**:
   - **Neo4j graph algorithms**: Community detection, centrality, pathfinding applied to code dependency graphs
   - **OpenAI engineering blog**: How frontier AI companies manage large codebases, static analysis at scale
-  - **Anthropic engineering**: Claude codebase practices, dependency management
+  - **Anthropic engineering**: Cascade codebase practices, dependency management
   - **Google/Meta monorepo tooling**: Bazel dependency graph analysis, Meta’s IDE-integrated dependency tools
   - **Academic**: "Architectural Smells" literature, coupling/cohesion metrics from software engineering research
 - **Key principle**: **Spend more time intelligently analyzing the ADG static graph than running scripts to automatically fix things.** The graph tells you *where* to focus and *why*. The scripts are just the last mile.
@@ -428,7 +428,7 @@ TIER 3: ADG Structural Truth Layer (Analysis-Time)
   OUT OF SCOPE (moved to Tier 2 or Tier 5):
   ├── ✗ Approval semantics    → Tier 2 policy
   ├── ✗ Runtime allow/deny    → Tier 1 hooks
-  ├── ✗ HITL ownership        → Tier 2 policy
+  ├── ✗ Author-Gate ownership        → Tier 2 policy
   ├── ✗ Workflow/runbook semantics → Tier 2 workflows
   ├── ✗ Prompt/chat behavior  → Tier 2 rules
   ├── ✗ Release/promotion authority → Tier 5
@@ -793,7 +793,7 @@ A blanket "exit 0 on all errors" weakens safety-critical pre-hooks. Failure poli
 
 **Acceptance**: YAML layer archived. ≤2 MCP governance scripts remain. Config changes <5 min.
 
-#### Phase 2.8 — HITL SVP Calibration (PP-16)
+#### Phase 2.8 — Author-Gate SVP Calibration (PP-16)
 **Scope**: Ground ⭐ recommendations in measurable target state, not abstract principles.
 
 **Problem**: "SVP priority: operational simplicity, dependency hygiene..." is abstract. Every recommendation must be measurable.
@@ -802,11 +802,11 @@ A blanket "exit 0 on all errors" weakens safety-critical pre-hooks. Failure poli
 
 **Step 2 — Target state doc**: CREATE `docs/architecture/target-state-svp-engineering.md` with measurable attributes per category (Architecture, Testing, Dependencies, Error Handling, Observability, Docs, CI/CD, Tech Debt).
 
-**Step 3 — Upgrade HITL templates**: Replace abstract `⭐ RECOMMENDED — SVP priority: ...` with `⭐ RECOMMENDED — Target: <specific measurable attribute>. See target-state doc.` Add §HITL-0.2: all ⭐ must cite specific target-state attribute.
+**Step 3 — Upgrade Author-Gate templates**: Replace abstract `⭐ RECOMMENDED — SVP priority: ...` with `⭐ RECOMMENDED — Target: <specific measurable attribute>. See target-state doc.` Add §Author-Gate-0.2: all ⭐ must cite specific target-state attribute.
 
 **Step 4 — Update constitutional §9**: SVP persona calibrated to target state doc.
 
-**Acceptance**: Target state doc published. HITL templates cite measurable attributes. §9 updated.
+**Acceptance**: Target state doc published. Author-Gate templates cite measurable attributes. §9 updated.
 
 #### Phase 2.9 — Plan Format Enforcement (PP-18)
 **Scope**: Mandate phase-level summary table at top of all plans.
@@ -837,11 +837,11 @@ A blanket "exit 0 on all errors" weakens safety-critical pre-hooks. Failure poli
 #### Phase 2.10 — Approval & Exception Policy (NEW)
 **Scope**: Define approval classes, risk categories, and exception policy for Tier 2.
 
-**Approval classes**: ALLOW (auto-proceed), DENY (blocked), REQUIRE_APPROVAL (HITL), ESCALATE (senior review).
+**Approval classes**: ALLOW (auto-proceed), DENY (blocked), REQUIRE_APPROVAL (Author-Gate), ESCALATE (senior review).
 
 **Risk categories**: LOW (≤1 file, ≤20 lines → ALLOW), MEDIUM (2-5 files, single layer → ALLOW with evidence), HIGH (cross-layer, external actions → REQUIRE_APPROVAL), CRITICAL (agent deletion, security boundary → ESCALATE).
 
-**Exception policy**: T1 hard gates cannot be overridden. T2 policy overridable via HITL with rationale. T3 structural evidence informs but does not decide. T5 promotion criteria are absolute.
+**Exception policy**: T1 hard gates cannot be overridden. T2 policy overridable via Author-Gate with rationale. T3 structural evidence informs but does not decide. T5 promotion criteria are absolute.
 
 **Acceptance**: Approval classes and risk categories documented. Exception policy clear.
 
@@ -1028,7 +1028,7 @@ integration/* → (external: redis, git, memory MCP)
 **ADG OUT OF SCOPE** (explicitly removed):
 - ✗ Approval/deny semantics → Tier 2 policy
 - ✗ Runtime interception → Tier 1 hooks
-- ✗ HITL prompting → Tier 2 rules
+- ✗ Author-Gate prompting → Tier 2 rules
 - ✗ Promotion/release authority → Tier 5 CI
 
 **Acceptance**: Boundary doc published. §2 references it. No governance logic in ADG outputs.
@@ -1577,7 +1577,7 @@ os.chdir(_REPO)
 - [ ] `global_rules.md` populated with policy (not procedure)
 - [ ] YAML layer archived, JSON is SSOT
 - [ ] MCP Registry.md published, all 14 MCPs documented
-- [ ] Target state doc published, HITL ⭐ calibrated to measurable attributes
+- [ ] Target state doc published, Author-Gate ⭐ calibrated to measurable attributes
 - [ ] Plan format enforcement in template + rule
 - [ ] Approval classes (ALLOW/DENY/REQUIRE_APPROVAL/ESCALATE) documented
 - [ ] Column 5 Precise Exceptions in constitutional + global_rules
@@ -1665,7 +1665,7 @@ Each wave is independently rollbackable.
 | SSOT dedup | 0 enforcement duplicates | governance-enforcement-table.md audit |
 | Approval classes | ALLOW/DENY/REQUIRE_APPROVAL/ESCALATE | Policy doc review |
 | MCP Registry | 14 MCPs documented | `docs/guides/MCP_Registry.md` exists |
-| HITL ⭐ calibration | All cite target-state attributes | `grep "target-state" hitl-enforcement.md` |
+| Author-Gate ⭐ calibration | All cite target-state attributes | `grep "target-state" hitl-enforcement.md` |
 | Column 5 vocabulary | In constitutional §8 | `grep "Column 5" constitutional.md` |
 | **Wave 2.5 — ADG Modularization** | | |
 | Monolith → shim | 3,305 → ~30 lines | `wc -l tools/generate/generate_full_adg.py` |

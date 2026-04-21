@@ -1,6 +1,6 @@
 # ADG Gap Remediation — Wave & Microwave Plan
 
-Augment the `generate_full_adg.py` P1–P4 terminal table with high-signal observations drawn exclusively from the SSOT SQLite, eliminate report-file sprawl, and add 8 runtime/enforcement waves covering OTel ingestion, call-graph profiling, coverage linkage, secret telemetry, write-path audit, enforce-mode gate promotion, dynamic call resolution, and HITL decision logging.
+Augment the `generate_full_adg.py` P1–P4 terminal table with high-signal observations drawn exclusively from the SSOT SQLite, eliminate report-file sprawl, and add 8 runtime/enforcement waves covering OTel ingestion, call-graph profiling, coverage linkage, secret telemetry, write-path audit, enforce-mode gate promotion, dynamic call resolution, and Author-Gate decision logging.
 
 ---
 
@@ -9,7 +9,7 @@ Augment the `generate_full_adg.py` P1–P4 terminal table with high-signal obser
 **All metrics referenced below are queried directly from `adg_indexed_<ts>.sqlite` and surfaced in the P1–P4 terminal table or the Refactoring Priority table printed by `_print_defect_table()`.  No new JSON report files are created.** Existing 8 reports (`layer_coverage_report`, `edge_density_report`, etc.) are preserved but not expanded. New observations are added as new rows/sections in the terminal table output only.
 
 P1–P4 table extensions in scope:
-- **P0 section** (new): Runtime signal gaps — OTel coverage, HITL log completeness, secret access telemetry
+- **P0 section** (new): Runtime signal gaps — OTel coverage, Author-Gate log completeness, secret access telemetry
 - **P1 section** (augment): Add `L_UNKNOWN module count`, `layer_inversion pairs`, `dynamic_exec count` (already partially present — make explicit)
 - **P2 section** (augment): Add `writes_to / writes_through ratio`, `critical_edge_coverage` (6/7 missing), `star_import_count`
 - **M-gate section** (new): Print current M1–M9 mode (warn/enforce) and pass/fail status inline after the P4 row, sourced from `wave0_baseline.json` + SQLite GPC counts
@@ -38,7 +38,7 @@ P1–P4 table extensions in scope:
 | RT-5 | P0 new | `writes_to` bypass count (runtime-verified) | No — new section |
 | RT-6 | M-gate | M1–M9 enforce/warn status from `wave0_baseline.json` | M1–M3 → enforce |
 | RT-7 | P2 aug | `resolves_callsite` vs `calls` ratio (dynamic call resolution gap) | No — table row |
-| RT-8 | P0 new | HITL decision log entry count linked to ADG node IDs | No — new section |
+| RT-8 | P0 new | Author-Gate decision log entry count linked to ADG node IDs | No — new section |
 
 ---
 
@@ -58,7 +58,7 @@ P1–P4 table extensions in scope:
 | W9 | OTel span → ADG edge ingestion | 9.1–9.3 | `runtime_trace` edge type populated in SQLite | 🔴 TODO |
 | W10 | Coverage-to-code-path linkage | 10.1–10.2 | Branch-level `covers` edges > 0 in SQLite | 🔴 TODO |
 | W11 | Secret access telemetry | 11.1–11.2 | `reads_secret` instrumented count > 1 | 🔴 TODO |
-| W12 | HITL decision log | 12.1–12.2 | `hitl_decision` edges in SQLite; P0 row populated | 🔴 TODO |
+| W12 | Author-Gate decision log | 12.1–12.2 | `hitl_decision` edges in SQLite; P0 row populated | 🔴 TODO |
 | W13 | Call graph from profiling | 13.1–13.2 | Profiling-derived `calls` edges merged into SQLite | 🔴 TODO |
 
 ---
@@ -97,7 +97,7 @@ P1–P4 table extensions in scope:
 | 11.1 | Instrument `os.environ`, `boto3.client`, vault calls | 3–5 | Decorator / wrapper injection | ~3000 | 🔴 TODO |
 | 11.2 | Write instrumented calls to `reads_secret` edges in SQLite | 2 | Runtime → SQLite bridge | ~2000 | 🔴 TODO |
 | 12.1 | Define `hitl_decision` edge type + log schema | 1 | ADG node ID linkage | ~1500 | 🔴 TODO |
-| 12.2 | Wire HITL gate invocations to write `hitl_decision` edges | 3–5 | Modify HITL enforcement points | ~3000 | 🔴 TODO |
+| 12.2 | Wire Author-Gate gate invocations to write `hitl_decision` edges | 3–5 | Modify Author-Gate enforcement points | ~3000 | 🔴 TODO |
 | 13.1 | Run profiler on test suite, extract call pairs | 1 | `cProfile` / `py-spy` output | ~2000 | 🔴 TODO |
 | 13.2 | Merge profiling-derived `calls` edges into SQLite | 2 | Dedup against existing edges | ~3000 | 🔴 TODO |
 
@@ -150,7 +150,7 @@ All changes are in `tools/generate/reporting/reports.py` (`_print_defect_table` 
 ### µW-3.1 — Add P0 section (runtime signal gaps)
 New section printed **before** P1. Rows:
 - `OTel coverage` — count of `runtime_trace` edges (0 = not yet wired; expected 0 until W9)
-- `HITL log` — count of `hitl_decision` edges (0 = not yet wired; expected 0 until W12)
+- `Author-Gate log` — count of `hitl_decision` edges (0 = not yet wired; expected 0 until W12)
 - `secret_access` — count of `reads_secret` edges vs instrumented call count
 - `critical_edge_coverage` — `6/7 critical edges absent` (from existing edge density query, promoted to P0)
 
@@ -200,7 +200,7 @@ Make `sovereign_severity_types.py` a backward-compatible shim re-exporting both.
 ## Wave 5 — P2 Hotspot Reduction
 
 ### µW-5.1 — Fix top-3 L5 agent P2 files
-Target: `FileClassificationAgent.py`, `LocationHealerAgent.py`, `GovernanceAgent.py`. Replace `except Exception:` with specific types per Constitutional §15. HITL gate required before any `# guardian: allow-broad-exception` addition.
+Target: `FileClassificationAgent.py`, `LocationHealerAgent.py`, `GovernanceAgent.py`. Replace `except Exception:` with specific types per Constitutional §15. Author-Gate gate required before any `# guardian: allow-broad-exception` addition.
 
 ### µW-5.2 — Lower P2 ratchet ceiling
 Run ADG regen. Confirm `p2_ratchet.json` ceiling auto-reduced. Target: ≥ 20% reduction.
@@ -303,16 +303,16 @@ P0 row: `secret_access = N` (instrumented runtime count vs 1 static).
 
 ---
 
-## Wave 12 — HITL Decision Log
+## Wave 12 — Author-Gate Decision Log
 
-**Goal:** Every HITL gate invocation is recorded as a `hitl_decision` edge in SQLite, linked to the ADG node ID of the file/function where the decision was triggered.
+**Goal:** Every Author-Gate gate invocation is recorded as a `hitl_decision` edge in SQLite, linked to the ADG node ID of the file/function where the decision was triggered.
 
 ### µW-12.1 — Define `hitl_decision` edge schema
 New `relation_type='hitl_decision'` with columns: `decision_option`, `timestamp`, `adg_node_id`, `trigger_file`, `trigger_line`.
 
-### µW-12.2 — Wire HITL gate invocations
-Modify `ask_user_question` HITL enforcement points (in `.windsurf/rules/hitl-enforcement.md` pattern + any Python implementations) to write a `hitl_decision` record post-selection. Ingest at ADG generation time.
-P0 row: `HITL log = N decisions` (linked to ADG node IDs).
+### µW-12.2 — Wire Author-Gate gate invocations
+Modify `ask_user_question` Author-Gate enforcement points (in `.windsurf/rules/hitl-enforcement.md` pattern + any Python implementations) to write a `hitl_decision` record post-selection. Ingest at ADG generation time.
+P0 row: `Author-Gate log = N decisions` (linked to ADG node IDs).
 
 ---
 
@@ -366,7 +366,7 @@ Confirm after each wave:
 | RT-1 (OTel) | W9 | 9.1–9.3 | P0 OTel coverage row |
 | RT-3 (coverage) | W10 | 10.1–10.2 | P0 branch_covers row |
 | RT-4 (secrets) | W11 | 11.1–11.2 | P0 secret_access row |
-| RT-8 (HITL log) | W12 | 12.1–12.2 | P0 HITL log row |
+| RT-8 (Author-Gate log) | W12 | 12.1–12.2 | P0 Author-Gate log row |
 | RT-2 (profiling) | W13 | 13.1–13.2 | Merged calls edges in SQLite |
 | GAP-W7 | W3+W9 | 3.1, 9.3 | P0 critical_edge_coverage row (static now; runtime W9) |
 | GAP-A1 | W9 | 9.3 | OTel correlation proves/disproves emit→runtime |

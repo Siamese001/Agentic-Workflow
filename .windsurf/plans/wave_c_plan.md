@@ -48,7 +48,7 @@ Produce a documented, gate-proven current-state → target-state gap map for the
 
 ## 2. Frozen Constraints Inherited from Wave B
 
-All of the following are **non-negotiable**. No exception without a new HITL decision and documented blocker.
+All of the following are **non-negotiable**. No exception without a new Author-Gate decision and documented blocker.
 
 ### 2a. Topology (DO NOT CHANGE)
 
@@ -88,7 +88,7 @@ code            → code_chunks
 
 ### 2f. F25 adjudication (FINAL — DO NOT REOPEN)
 
-- **F25-ext**: ADEQUATE advisory — grounded by running_agents.md HITL/durable-execution (rank-3, dist=0.519). Do not add more sources.
+- **F25-ext**: ADEQUATE advisory — grounded by running_agents.md Author-Gate/durable-execution (rank-3, dist=0.519). Do not add more sources.
 - **F25-int**: INTERNAL — project-specific vocabulary. Route to `repo_evidence` Lane C. No ext_authority addition permitted.
 
 ### 2g. Closed B7 topics (DO NOT ADD SOURCES)
@@ -206,7 +206,7 @@ Run all 11 Wave B freeze gates against the post-Wave-C collection state and prod
 
 2. **C2.2** Draft and add F25-int architecture decision record:
    - File path: `docs/architecture/healing_dispatch_routing_adr.md` (or equivalent)
-   - Content: documents the project-specific confidence-scored tiered healing architecture — tier definitions, local rule fallback, model retry escalation, human HITL escalation thresholds
+   - Content: documents the project-specific confidence-scored tiered healing architecture — tier definitions, local rule fallback, model retry escalation, human Author-Gate escalation thresholds
    - Metadata: `source_band=repo_canonical`, `invalid_for_normative_use=True`, `source_url=docs/architecture/healing_dispatch_routing_adr.md` (repo-relative)
    - Add to `ingest_repo_evidence.py` source list
    - Verify: query `repo_evidence` after rebuild; F25-int query must return dist@1 < 0.50
@@ -287,7 +287,7 @@ Run all 11 Wave B freeze gates against the post-Wave-C collection state and prod
 
 ## 6. Exact Out-of-Scope List
 
-The following are **explicitly forbidden** in Wave C. Any proposal to do these requires a new HITL decision packet.
+The following are **explicitly forbidden** in Wave C. Any proposal to do these requires a new Author-Gate decision packet.
 
 | Category | Forbidden action |
 |----------|-----------------|

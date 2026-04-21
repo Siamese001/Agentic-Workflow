@@ -2,7 +2,7 @@
 description: Manual slash workflow for repeatable multi-step reasoning — plan first, execute second. Replaces Sequential Thinking MCP.
 ---
 
-> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
 
 # Structured Reasoning Workflow
 
@@ -70,7 +70,7 @@ BRANCH POINT — Step N:
   Waiting for evidence before selecting branch.
 ```
 
-Do not collapse branches prematurely. If genuinely unclear, invoke HITL via `ask_user_question`.
+Do not collapse branches prematurely. If genuinely unclear, invoke Author-Gate via `ask_user_question`.
 
 ---
 

@@ -138,7 +138,7 @@ BRANCH POINT — Step N:
   Selecting after evidence pull.
 ```
 
-Never collapse a branch before evidence is gathered. If the branch cannot be resolved by evidence, invoke HITL:
+Never collapse a branch before evidence is gathered. If the branch cannot be resolved by evidence, invoke Author-Gate:
 
 ```python
 ask_user_question(

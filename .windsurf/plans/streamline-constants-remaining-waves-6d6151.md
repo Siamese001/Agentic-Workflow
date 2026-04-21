@@ -226,7 +226,7 @@ grep -r "SOVEREIGN_TERRITORIES" --include="*.py" agentic_core/ | grep -v "_const
 2. **Test-first**: Run tests before and after each micro-wave
 3. **No functional changes**: Only API migration, no behavior changes
 4. **Pattern consistency**: Use `get_territory_metadata()` for lookup, `get_all_territories()` for iteration
-5. **HITL for high-impact**: Present options if >10 files affected in one micro-wave
+5. **Author-Gate for high-impact**: Present options if >10 files affected in one micro-wave
 
 ---
 

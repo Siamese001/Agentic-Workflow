@@ -37,7 +37,7 @@
 |----------|-------|---------------|-------------|-------------|--------|
 | P1 | Broken-import repair | 10 modules (see §Broken Imports) | Missing `LICAgentBase`, missing `cid_registry`, missing `get_clock` export, undefined `Callable`/`CTAConfig`/`SubatomicTestingMixin` | 4k | READY |
 | P2 | Dead entry triage | `apps_lic/tools/run_workflow.py` | References undefined `WorkflowOrchestrator`, `OutreachMission`, `uuid4` — not runnable | 1k | READY |
-| P3 | Workflow backbone decision | `reasoning/enterprise_campaign_orchestrator.py`, `engines/hop_stage_registry.py`, `tools/run_workflow_lic.py` | No `execute_workflow(OutreachMission)` method exists; HOP stages are stubs | HITL | BLOCKED |
+| P3 | Workflow backbone decision | `reasoning/enterprise_campaign_orchestrator.py`, `engines/hop_stage_registry.py`, `tools/run_workflow_lic.py` | No `execute_workflow(OutreachMission)` method exists; HOP stages are stubs | Author-Gate | BLOCKED |
 | P4 | Test collection repair | 2 test files | `apps_lic/tests/test_lic_reasoning.py` chain-imports missing module; `tests/unit/apps_lic/config/test_archetype_indicator_config.py` expects `MAX_RETRIES` export | 2k | READY |
 | P5 | Anti-pattern sweep | `tools/run_workflow_lic.py` | 4x broad `except Exception` (guardian-annotated but could narrow); 2x `result` shadowing | 1k | OPTIONAL |
 
@@ -50,7 +50,7 @@
 **Issue**: `OutreachMission.JobDescription` was PascalCase; 5 read sites expected `job_description`.
 **Fix**: renamed field to snake_case. Verified with subsequent run: mission printed successfully.
 
-### Bug #2 — BLOCKED (needs HITL direction, see P3)
+### Bug #2 — BLOCKED (needs Author-Gate direction, see P3)
 **File**: `apps_lic/tools/run_workflow_lic.py:106-124`
 **Issue**: `create_orchestrator()` requires `execute_workflow(mission)` method; no implementation exists.
 **Root cause**: Architectural gap, not a small bug.

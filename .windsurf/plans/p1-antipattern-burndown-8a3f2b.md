@@ -48,7 +48,7 @@ Burn down 98 P1 anti-pattern violations in `.windsurf/scripts/` infrastructure f
 **GAP-3: Guardian exemptions for probe safety**
 - Some broad exceptions in probe functions may require guardian comments
 - Example: `pre_mcp_gate.py` probe functions use broad `Exception` to prevent gate crashes
-- HITL approval required for new guardian exemptions per anti-pattern-hitl-gate.md
+- Author-Gate approval required for new guardian exemptions per anti-pattern-hitl-gate.md
 
 **GAP-4: Context-specific exception type selection**
 - Cannot mechanically replace all `Exception` with specific types
@@ -144,7 +144,7 @@ python tools/generate_full_adg.py
 ## Rules
 
 - Constitutional §15: Precise exception handling - catch specific types
-- Constitutional §8: Guardian exemptions require HITL approval via anti-pattern-hitl-gate.md
+- Constitutional §8: Guardian exemptions require Author-Gate approval via anti-pattern-hitl-gate.md
 - Zero production blast radius - all changes are in infrastructure scripts
 - ADG ratchet discipline - regenerate after each wave, adjust ceiling if needed
 - MCP green light protocol - check ADG health before T2/T3 work (already verified)

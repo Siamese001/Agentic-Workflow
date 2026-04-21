@@ -1,32 +1,32 @@
 ---
 trigger: model_decision
-description: Use this rule when deciding whether HITL is required and when shaping the recommendation packet for architectural or governance decisions.
+description: Use this rule when deciding whether Author-Gate is required and when shaping the recommendation packet for architectural or governance decisions.
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
-# HITL SVP Calibration — Target State & Measurable Thresholds
+# Author-Gate SVP Calibration — Target State & Measurable Thresholds
 
 **Status**: ACTIVE  
 **Phase**: Wave 2 Phase 2.8  
-**Authority**: `.windsurf/rules/hitl-enforcement.md` §HITL-0  
-**Constitutional**: §6 HITL Discipline
+**Authority**: `.windsurf/rules/hitl-enforcement.md` §Author-Gate-0  
+**Constitutional**: §6 Author-Gate Discipline
 
 ---
 
 ## Purpose
 
-Define measurable, objective thresholds for when HITL is REQUIRED vs when Cascade
-MUST continue executing without stopping. Prevents both under-HITL (silent decisions)
-and over-HITL (unnecessary interruptions).
+Define measurable, objective thresholds for when Author-Gate is REQUIRED vs when Cascade
+MUST continue executing without stopping. Prevents both under-Author-Gate (silent decisions)
+and over-Author-Gate (unnecessary interruptions).
 
 ---
 
-## Target State: HITL Decision Matrix
+## Target State: Author-Gate Decision Matrix
 
 ### REQUIRED — Stop and Present Options
 
@@ -56,7 +56,7 @@ and over-HITL (unnecessary interruptions).
 
 ## SVP Recommendation Calibration
 
-When presenting HITL options, the SVP Engineering ⭐ recommendation MUST prioritize:
+When presenting Author-Gate options, the SVP Engineering ⭐ recommendation MUST prioritize:
 
 | Priority | Lens | Example Recommendation |
 |----------|------|----------------------|
@@ -72,10 +72,10 @@ When presenting HITL options, the SVP Engineering ⭐ recommendation MUST priori
 
 | Metric | Red (Bad) | Yellow (Acceptable) | Green (Target) |
 |--------|-----------|--------------------|-|
-| HITL prompts per T2 session | >5 | 2-5 | ≤2 |
-| HITL prompts per T3 session | >8 | 3-8 | ≤4 |
-| False HITL stops (no real choice) | >2/session | 1-2/session | 0/session |
-| Missed HITL (silent architectural choice) | Any | — | 0 |
+| Author-Gate prompts per T2 session | >5 | 2-5 | ≤2 |
+| Author-Gate prompts per T3 session | >8 | 3-8 | ≤4 |
+| False Author-Gate stops (no real choice) | >2/session | 1-2/session | 0/session |
+| Missed Author-Gate (silent architectural choice) | Any | — | 0 |
 | Options presented per prompt | <2 or >4 | — | 2-4 |
 | ⭐ Recommendation included | Never | Sometimes | Always |
 
@@ -83,7 +83,7 @@ When presenting HITL options, the SVP Engineering ⭐ recommendation MUST priori
 
 ## Format Requirements
 
-Every HITL prompt MUST use `ask_user_question` tool with:
+Every Author-Gate prompt MUST use `ask_user_question` tool with:
 
 ```
 question: Must include header packet:
@@ -98,7 +98,7 @@ options: 2-4 items (HITL-10 shape, see hitl-decision-points.md)
 allowMultiple: false
 ```
 
-**FORBIDDEN HITL anti-patterns:**
+**FORBIDDEN Author-Gate anti-patterns:**
 
 - Plain text "yes/no" question without `ask_user_question` tool
 - More than 4 options (forces analysis paralysis)
@@ -111,7 +111,7 @@ allowMultiple: false
 
 ## Confidence Scoring Pipeline
 
-Before surfacing any HITL prompt, score all candidates:
+Before surfacing any Author-Gate prompt, score all candidates:
 
 | Parameter | Value |
 |-----------|-------|
@@ -135,21 +135,21 @@ DECISION_CAPTURED: type=<type>, repo_area=<area>, selected=<chosen_label>, outco
 
 ## Continuous Execution Mandate
 
-Between HITL decision points, Cascade MUST execute ALL deterministic steps without
+Between Author-Gate decision points, Cascade MUST execute ALL deterministic steps without
 interruption. The correct cadence for a T3 task:
 
 ```
-[HITL] Select approach A/B/C
+[Author-Gate] Select approach A/B/C
 → [AUTO] Read relevant files
 → [AUTO] Query ADG for blast radius
 → [AUTO] Make edits
 → [AUTO] Run scoped tests
 → [AUTO] Commit (pre-commit hooks run normally)
 → [AUTO] Push
-→ [HITL] Next decision point (if any)
+→ [Author-Gate] Next decision point (if any)
 ```
 
-Stopping between [AUTO] steps = constitutional violation of §HITL-0.1.
+Stopping between [AUTO] steps = constitutional violation of §Author-Gate-0.1.
 
 ---
 

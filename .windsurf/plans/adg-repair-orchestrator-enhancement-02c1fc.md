@@ -118,7 +118,7 @@ Fixes broken SQLite analyzer queries, wires it into the orchestrator, adds P1/P2
 - Category: always `BLOCK_FIX`
 - Produces structured output: file, line, antipattern type, suggested remediation hint
 
-**SVP rationale**: 3,924 locations — no bulk auto-fix. Classification gives actionable inventory; HITL signs off tier by tier.
+**SVP rationale**: 3,924 locations — no bulk auto-fix. Classification gives actionable inventory; Author-Gate signs off tier by tier.
 
 ---
 

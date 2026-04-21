@@ -24,7 +24,7 @@ is worse than no gate — it creates false confidence.
    - Anti-pattern: "One-and-done testing. Models, tools, and data change constantly."
    - Anti-pattern: "Relying on prompts as primary safety control" → gates must be WIRED
    - Reference architecture: Identity → Policy → Execution → Data → Observability → Assurance planes
-   - "Revisit metrics quarterly. If HITL queues lengthen, you're over-indexing on human gates."
+   - "Revisit metrics quarterly. If Author-Gate queues lengthen, you're over-indexing on human gates."
 
 2. **CSA AAGATE (NIST AI RMF-Aligned Governance, Dec 2025)**
    - "Tool-Gateway Chokepoint — funnels every interaction through ONE auditable gate"

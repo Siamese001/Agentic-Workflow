@@ -2,9 +2,9 @@
 description: Present options to user before proceeding with significant decisions
 ---
 
-> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
 
-## HITL (Human-In-The-Loop) Decision Gate
+## Author-Gate (Human-In-The-Loop) Decision Gate
 
 Use this workflow BEFORE making any significant decision with multiple valid approaches.
 
@@ -32,7 +32,7 @@ Use this workflow BEFORE making any significant decision with multiple valid app
 
 ### Step 1 — Identify Decision Point
 
-Ask: Are there 2+ valid approaches with different trade-offs and unclear user preference? If YES to all → invoke HITL.
+Ask: Are there 2+ valid approaches with different trade-offs and unclear user preference? If YES to all → invoke Author-Gate.
 
 ### Step 2 — Analyze Options
 
@@ -46,7 +46,7 @@ Minimal shape for each option:
 - `label`: concise option title (e.g. `Option A — <approach>`)
 - `description`: impact, trade-offs, risk — everything the user needs to decide, inside this field
 
-Set `allowMultiple: false`. Include the HITL header packet in the `question` field:
+Set `allowMultiple: false`. Include the Author-Gate header packet in the `question` field:
 ```
 Recommended: <option title>
 Why it wins: <one sentence, case-specific>

@@ -362,8 +362,8 @@ python tools/adg/adg_rigorous_gap_closure_0617.py
 - **Constitutional §1**: No test skipping, all changes must have test coverage
 - **Constitutional §2**: No editing while exploring — all 5 repair gates must pass
 - **Constitutional §5**: ADG artifacts must be fully ingested before any query or refactoring
-- **Constitutional §6**: HITL discipline for decisions with multiple valid approaches
-- **Constitutional §8**: Guardian exemption discipline — never add guardian comments without HITL approval
+- **Constitutional §6**: Author-Gate discipline for decisions with multiple valid approaches
+- **Constitutional §8**: Guardian exemption discipline — never add guardian comments without Author-Gate approval
 - **Constitutional §10**: Zero-loss refactor discipline — check hollow file detector after removing boilerplate
 - **Constitutional §11**: Terminal process lifecycle management — all processes must be terminated
 - **Constitutional §12**: No imports from archives/ in production code
@@ -386,7 +386,7 @@ python tools/adg/adg_rigorous_gap_closure_0617.py
 - [ ] Full test suite passes (pytest tests/)
 - [ ] ADG regenerates successfully without errors
 - [ ] No SSOT violations detected
-- [ ] No guardian exemptions added without HITL approval
+- [ ] No guardian exemptions added without Author-Gate approval
 - [ ] No imports from archives/ in production code
 - [ ] All terminal processes terminated properly
 
@@ -469,5 +469,5 @@ If things go wrong:
 | Test coverage | Mirrors all file changes | Test mirror analyzer |
 | Test suite pass rate | 100% | `pytest tests/` |
 | ADG regeneration | Success with 0 errors | `generate_full_adg.py` |
-| Guardian exemptions | 0 new without HITL | Guardian exemption gate |
+| Guardian exemptions | 0 new without Author-Gate | Guardian exemption gate |
 | Archives imports | 0 in production code | `check_no_archives_imports.py` |

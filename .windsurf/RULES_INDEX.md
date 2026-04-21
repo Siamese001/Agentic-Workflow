@@ -42,7 +42,7 @@ This repo uses a **two-tier model**:
 |---|---|
 | `.windsurf/rules/constitutional.md` | Non-negotiable constitutional floor; section numbers referenced by hooks/scripts |
 | `.windsurf/rules/global_rules.md` | Thin operating kernel for tool use, scope, and validation |
-| `.windsurf/rules/hitl-enforcement.md` | Compact continuous-execution and HITL core |
+| `.windsurf/rules/hitl-enforcement.md` | Compact continuous-execution and Author-Gate core |
 | `.windsurf/rules/plan-location.md` | SSOT plan location and overwrite rules |
 | `.windsurf/rules/query-progress-bar.md` | Long-running operation progress contract |
 | `.windsurf/rules/adg-canonical-invariants.md` | ADG doctrinal floor — SSOT hierarchy, 5 Surfaces, 4 Antipatterns, 4 Archetypes, Zero-Loss Propagation Pipeline |
@@ -58,12 +58,12 @@ This repo uses a **two-tier model**:
 | `agents-memory-lifecycle.md` | Session start/end and persistent memory decisions |
 | `anti-pattern-hitl-gate.md` | A change may require a guardian exception |
 | `approval-exception-policy.md` | Evaluating whether an exception is even eligible |
-| `hitl-decision-points.md` | Need to build a proper HITL packet |
+| `hitl-decision-points.md` | Need to build a proper Author-Gate packet |
 | `hitl-svp-calibration.md` | Need to rank options and recommend one |
 | `mcp-config-ssot.md` | Editing `.windsurf/mcp_config.json` |
 | `mcp-pytest-enforcement.md` | MCP tests, `conftest.py`, or pytest execution discipline |
 | `memory-management.md` | Memory graph hygiene, purges, sync, write thresholds |
-| `refactor-decision-memory.md` | Refactor-class HITL requires historical precedent check |
+| `refactor-decision-memory.md` | Refactor-class Author-Gate requires historical precedent check |
 | `security-hardening.md` | Secrets, auth, external service credentials, env handling |
 | `sequential-thinking-enforcement.md` | T2/T3 work needs structured reasoning packet |
 | `windsurf-config-lookup.md` | Question is about Windsurf config, docs, hooks, rules, skills, workflows |
@@ -76,7 +76,7 @@ This repo uses a **two-tier model**:
 | `boundary-enforcement` | Imports, layer sovereignty, shims, relocation discipline | Non-code writing or business analysis |
 | `graph-analysis` | Structural dependency analysis, blast radius, ADG-first routing | Pure literal text search or non-code lookup |
 | `operational-gates` | Preflight, rollback, gate evidence, recovery | Feature design without execution risk |
-| `refactor-decision-memory` | Pull precedent before refactor-class HITL | Routine edits with no meaningful design choice |
+| `refactor-decision-memory` | Pull precedent before refactor-class Author-Gate | Routine edits with no meaningful design choice |
 | `structured-reasoning` | T2/T3 task framing, decomposition, failure packets, verification | T0/T1 trivial work |
 | `testing-framework` | Scoped validation strategy, skip discipline, collection integrity | Work that does not touch code or tests |
 
@@ -90,7 +90,7 @@ This repo uses a **two-tier model**:
 | `adg-timeout-recovery.md` | ADG or long-running analysis timed out |
 | `agent-deletion-gate.md` | Production agent/module deletion is proposed |
 | `antipattern-hitl-gate.md` | Guardian exception or anti-pattern gate triggered |
-| `hitl-decision-gate.md` | Need a HITL packet with options |
+| `hitl-decision-gate.md` | Need a Author-Gate packet with options |
 | `mcp-failure-rca.md` | MCP appears broken, unhealthy, or never invoked |
 | `memory-purge-sync.md` | Cleaning stale memory entities or syncing memory state |
 | `progress-display-enforcement.md` | Long operation needs progress instrumentation |
@@ -119,7 +119,7 @@ Use this order whenever a task is non-trivial:
 | "GraphDB structural queries (layer purity, UWG bypass, spine completeness)?" | `rules/adg-p7-analyst-artifacts.md` → `adg_graphdb_queries_<ts>.json` |
 | "Runtime handoff / cross-cutting witness tier satisfaction?" | `rules/adg-p7-analyst-artifacts.md` → `adg_runtime_spine_<ts>.json` |
 | "Fix this ADG issue" | `rules/adg-repair-discipline.md` |
-| "Should we stop for HITL?" | `rules/hitl-enforcement.md` then `rules/hitl-decision-points.md` |
+| "Should we stop for Author-Gate?" | `rules/hitl-enforcement.md` then `rules/hitl-decision-points.md` |
 | "Need a plan" | `rules/sequential-thinking-enforcement.md` + `templates/execution-plan-template.md` |
 | "Where should this artifact go?" | `skills/artifact-management/SKILL.md` |
 | "Can we add this exception?" | `rules/approval-exception-policy.md` + `rules/anti-pattern-hitl-gate.md` |
@@ -285,12 +285,12 @@ All `model_decision` and `glob` rules require a `description` field in frontmatt
 | `memory-management.md` | `model_decision` | Use when reading/writing the persistent memory graph |
 | `security-hardening.md` | `model_decision` | Use when handling credentials, env vars, secrets, or external auth |
 | `windsurf-config-lookup.md` | `model_decision` | Use for Windsurf IDE configuration, rules, hooks, MCP, skills, workflows |
-| `hitl-decision-points.md` | `model_decision` | Use when a HITL decision point is reached — full trigger patterns, option shape, scoring guidance |
+| `hitl-decision-points.md` | `model_decision` | Use when a Author-Gate decision point is reached — full trigger patterns, option shape, scoring guidance |
 | `sequential-thinking-enforcement.md` | `model_decision` | Use when a T2/T3 task requires structured reasoning before execution |
 | `adg-test-accelerator-enforcement.md` | `glob` | Fires on ADG test files and tools — enforces adg_test_accelerator.py usage |
 | `mcp-config-ssot.md` | `glob` | Fires on edits to `.windsurf/mcp_config.json` |
 | `mcp-pytest-enforcement.md` | `glob` | Fires on edits to `test_*.py` and `conftest.py` |
-| `refactor-decision-memory.md` | `model_decision` | Before opening HITL for any refactor-class decision, consult the refactor-decision-memory skill for historical precedent |
+| `refactor-decision-memory.md` | `model_decision` | Before opening Author-Gate for any refactor-class decision, consult the refactor-decision-memory skill for historical precedent |
 | `agents-memory-lifecycle.md` | `model_decision` | Apply when reading/writing the persistent memory knowledge graph, or deciding memory MCP boundaries |
 
 ---
@@ -361,7 +361,7 @@ Include justification keywords in commit message:
 - 2026-04-04: **RCA FIX — WAVE/MICRO-WAVE PLAN MODEL NOT AUTO-EMPLOYED** — Root cause: §10 was reactive (validated existing plans) with no proactive trigger at plan-creation time; micro-wave discipline (≤15 modules/wave) was never codified in any rule file; template wave table columns mismatched §10.1 spec. Fix: Added Constitutional Rule #13 to `.windsurfrules` floor + §10.0 "Plan Creation Protocol" pre-draft trigger section (fires before any content is drafted) + same rule (#11) to `.windsurfrules.consolidated` + §10 section appended to consolidated file + template updated to §10.1 column spec with micro-wave sub-table example + RULES_INDEX updated with §10.0 entry.
 - 2026-04-03: **SKILLS CONSOLIDATION** — Archived 30 individual skills to `tools/archive/.windsurf/skills/`. Consolidated into 5 canonical skills per SVP Engineering principle: `graph-analysis` (replaces dependency-graph-analysis, scope-guard, dedup-guard), `boundary-enforcement` (replaces layer-boundary-guard, import-hygiene, shim-discipline), `operational-gates` (replaces rollback-gate, mcp-tool-verify), `testing-framework` (replaces test-rigor-enforcement, pytest-integrity), `artifact-management` (replaces evidence-bundle, ssot-write-gate, progress-display). Updated Skills table to show 5 consolidated skills. Coverage remains 100%.
 - 2026-03-25: **PROGRESS DISPLAY ENFORCEMENT** — Added `progress-display` skill with mandatory colored progress bars and percentage displays for all operations >5s. Updated §5.3 with detailed progress reporting requirements including ANSI color codes, ETA display, and standardized progress bar formats. Skill provides terminal protocol, color scheme reference, and implementation guide for integration across all Windsurf operations.
-- 2026-03-14: **HITL (HUMAN-IN-THE-LOOP) ENFORCEMENT** — Added §8.5 HITL Framework to `.windsurfrules` and Constitutional Rule #8. Created comprehensive rule (`.windsurf/rules/hitl-enforcement.md`) with 10 mandatory decision triggers. Created workflow (`/hitl-decision-gate`) with option presentation templates. HITL required for: architecture decisions, refactoring scope, anti-patterns, test repair, dependencies, deletions, config changes, error handling, performance trade-offs, ADG timing. Registered as constitutional rule with Windsurf-only enforcement (behavioral, no CI gate).
+- 2026-03-14: **Author-Gate (HUMAN-IN-THE-LOOP) ENFORCEMENT** — Added §8.5 Author-Gate Framework to `.windsurfrules` and Constitutional Rule #8. Created comprehensive rule (`.windsurf/rules/hitl-enforcement.md`) with 10 mandatory decision triggers. Created workflow (`/hitl-decision-gate`) with option presentation templates. Author-Gate required for: architecture decisions, refactoring scope, anti-patterns, test repair, dependencies, deletions, config changes, error handling, performance trade-offs, ADG timing. Registered as constitutional rule with Windsurf-only enforcement (behavioral, no CI gate).
 - 2026-03-12: **TEST FAILURE TRIAGE PROTOCOL** — Added canonical 5-check decision tree (`docs/technical/TEST_FAILURE_decision_tree.md`). Registered as §2.5 constitutional rule. Added CI condition 8b (`check_broken_test_fix_semantic_equivalence`) to `check_ci_integrity.py`. Updated `adg-repair-discipline.md` with triage step before repair loop. Updated `test-rigor-enforcement` skill with triage trigger. Reference added to `.windsurfrules` §2.5 without duplicating taxonomy.
 - 2026-03-11: **RULES CONSOLIDATION** — `.windsurfrules` reduced 3906→~400 lines. Removed all Python code blocks (redundant with `ops_scripts/ci/`). Added Constitutional Floor banner to top. Wired 4 previously dormant CI gates into `run_contract_gates.py`: `check_powershell_ban`, `check_test_integrity`, `check_no_unconditional_xfail`, `check_utility_silent_swallowers`.
 - 2026-03-11: Initial index creation, added 5 new CI gates
@@ -374,9 +374,9 @@ Include justification keywords in commit message:
   - Created `docs/rules/enforcement_architecture.md` canonical contract
   - Updated RULES_INDEX.md with Layer, Timing, Type columns
 
-## Claude Alignment Map
+## Cascade Alignment Map
 
-This index follows the Claude split described in the briefing:
+This index follows the Cascade split described in the briefing:
 
 - **Rules**: always-on invariants, routing cues, compact standards, and non-negotiable boundaries.
 - **Skills**: heavy reusable procedures, checklists, templates, and domain execution playbooks loaded only when relevant.

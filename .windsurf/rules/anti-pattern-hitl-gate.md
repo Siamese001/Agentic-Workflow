@@ -1,19 +1,19 @@
 ---
 trigger: model_decision
-description: Use this rule before introducing any new anti-pattern instance (bare except, shell=True, subprocess without timeout, or similar) to enforce the HITL approval gate.
+description: Use this rule before introducing any new anti-pattern instance (bare except, shell=True, subprocess without timeout, or similar) to enforce the Author-Gate approval gate.
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
-# Anti-Pattern HITL Gate
+# Anti-Pattern Author-Gate Gate
 
 ## Constitutional Rule
 
-**ALL new anti-pattern violations MUST receive explicit Human-In-The-Loop (HITL) approval before commit.**
+**ALL new anti-pattern violations MUST receive explicit Human-In-The-Loop (Author-Gate) approval before commit.**
 
 ## Scope
 
@@ -30,7 +30,7 @@ This rule applies to:
 ### 1. Pre-Commit Detection
 The ADG burndown gate (`T3a: ADG Anti-Pattern Burndown Ratchet`) automatically detects new anti-pattern violations during pre-commit hooks.
 
-### 2. HITL Approval Required
+### 2. Author-Gate Approval Required
 When new violations are detected:
 1. **STOP** - Do not bypass or override the gate
 2. **DOCUMENT** - Explain why the anti-pattern is necessary
@@ -38,7 +38,7 @@ When new violations are detected:
 4. **JUSTIFY** - Provide alternatives considered and why they were rejected
 
 ### 3. Guardian Comments
-After HITL approval is granted, add guardian comments to whitelist the violation:
+After Author-Gate approval is granted, add guardian comments to whitelist the violation:
 
 ```python
 # guardian: allow-magic_configuration
@@ -54,7 +54,7 @@ After HITL approval is granted, add guardian comments to whitelist the violation
 ### 4. Commit Message Documentation
 Include in commit message:
 ```
-HITL-APPROVED: <count> new anti-pattern violations
+Author-Gate-APPROVED: <count> new anti-pattern violations
 - <file>: <pattern> (<count>) - <justification>
 ```
 
@@ -102,7 +102,7 @@ ask_user_question(
 
 **If "Approve All":**
 1. Add guardian comments to all affected files
-2. Commit with `HITL-APPROVED:` prefix in commit message
+2. Commit with `Author-Gate-APPROVED:` prefix in commit message
 3. Document violations in commit body
 
 **If "Reject All":**
@@ -164,7 +164,7 @@ When "Review Details" is selected, present:
 
 ## Rationale
 
-Anti-patterns create technical debt and maintenance burden. HITL approval ensures:
+Anti-patterns create technical debt and maintenance burden. Author-Gate approval ensures:
 1. **Conscious decisions** - No accidental anti-patterns slip through
 2. **Documentation** - Justifications are recorded
 3. **Accountability** - Clear ownership of technical debt

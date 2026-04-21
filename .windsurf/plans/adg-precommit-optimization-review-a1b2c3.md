@@ -75,7 +75,7 @@ Comprehensive review of ADG generation process, pre-commit configuration, depend
 
 **Current Order**:
 ```
-T0:   Admission guards (no-verify, HITL, agent-deletion)
+T0:   Admission guards (no-verify, Author-Gate, agent-deletion)
 T0:   Whitespace normalization
 T1:   py_compile (syntax check)
 T2:   Ruff P0/P1/P2/P3 (linting with --fix)

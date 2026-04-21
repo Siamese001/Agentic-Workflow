@@ -2,7 +2,7 @@
 description: Authorization gate before deleting any *Agent.py file - invoke when deleting agents
 ---
 
-> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
 
 # Agent Deletion Gate
 
@@ -60,7 +60,7 @@ python tools/adg/adg_redis_query.py search-nodes --query <AgentName>
 
 Confirm zero active references outside tests and deletion registry.
 
-## Step 2: HITL Confirmation
+## Step 2: Author-Gate Confirmation
 
 Present user with:
 - Agent name and file path

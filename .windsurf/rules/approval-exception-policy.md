@@ -3,11 +3,11 @@ trigger: model_decision
 description: Use this rule when evaluating guardian exemptions, approval classes, or exception evidence requirements.
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
 # Approval & Exception Policy
 
@@ -27,7 +27,7 @@ Prevents both gateless anti-patterns and approval theater (approvals without sub
 
 ## Approval Categories
 
-### Category A - HITL Approval (User Required)
+### Category A - Author-Gate Approval (User Required)
 
 These require explicit user selection via `ask_user_question` before proceeding:
 
@@ -78,21 +78,21 @@ When `pre_write_gate.py` blocks a `except Exception` or bare `except:`:
 
 ```
 1. STOP - do not bypass with --no-verify
-2. Present HITL prompt with ask_user_question:
+2. Present Author-Gate prompt with ask_user_question:
    - What: exact anti-pattern and file
    - Why: specific technical justification (not "needed" or "temporary")
    - Alternatives: at least 2 alternatives considered and why rejected
 3. Wait for explicit user approval
 4. After approval: add guardian comment with specific justification
    Format: # guardian: allow-broad-exception -- <specific reason>
-5. Commit with HITL-APPROVED prefix in message
+5. Commit with Author-Gate-APPROVED prefix in message
 ```
 
 ### Ratchet Ceiling Management
 
 The `guardian_exemption_gate.py` maintains a ceiling of allowed exemptions:
 
-- **Ceiling only decreases** - new exemptions require explicit HITL approval
+- **Ceiling only decreases** - new exemptions require explicit Author-Gate approval
 - **Initialization**: `ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py`
 - **Check current ceiling**: `python ops_scripts/ci/guardian_exemption_gate.py --check`
 - **Commit block**: Any commit adding exemptions above the ceiling is BLOCKED
@@ -112,10 +112,10 @@ The `guardian_exemption_gate.py` maintains a ceiling of allowed exemptions:
 
 ## Approval Evidence Requirements
 
-Every HITL-approved action MUST include in the commit message:
+Every Author-Gate-approved action MUST include in the commit message:
 
 ```
-HITL-APPROVED: <brief description>
+Author-Gate-APPROVED: <brief description>
 - Approved: <what was approved>
 - Justification: <specific reason>
 - Alternatives rejected: <alt1> (reason), <alt2> (reason)
@@ -127,14 +127,14 @@ HITL-APPROVED: <brief description>
 
 All approvals are logged in:
 - `artifacts/windsurf/mcp_lint_audit.jsonl` - MCP config changes
-- Git commit history - HITL-APPROVED prefix marks all approved exceptions
+- Git commit history - Author-Gate-APPROVED prefix marks all approved exceptions
 - `ops_scripts/ci/guardian_exemption_gate.py` - ratchet state tracks exemption counts
 
 ---
 
 ## References
 
-- Constitutional Section 6 (HITL), Section 8 (Guardian), Section 3 (Agent deletion)
-- `.windsurf/rules/hitl-enforcement.md` - HITL protocol
+- Constitutional Section 6 (Author-Gate), Section 8 (Guardian), Section 3 (Agent deletion)
+- `.windsurf/rules/hitl-enforcement.md` - Author-Gate protocol
 - `.windsurf/rules/anti-pattern-hitl-gate.md` - Anti-pattern approval flow
-- `.windsurf/rules/hitl-svp-calibration.md` - When HITL is required vs forbidden
+- `.windsurf/rules/hitl-svp-calibration.md` - When Author-Gate is required vs forbidden

@@ -54,7 +54,7 @@ Items removed or descoped from `five-tier-governance-model-a3f7c2.md` during the
 ## Architectural Decisions Captured
 
 1. **Pre-hooks = hard gates, post-hooks = advisory only**: Post-hooks NEVER block. They log, audit, and clean up.
-2. **ADG stripped of governance semantics**: No approval/deny/HITL in ADG. It produces structural evidence only.
+2. **ADG stripped of governance semantics**: No approval/deny/Author-Gate in ADG. It produces structural evidence only.
 3. **Refactor Accelerator is separate from ADG**: RA consumes ADG outputs but lives in `tools/refactor_accelerator/`, not in ADG core.
 4. **Tier 2 owns ALL policy**: Approval classes, exception handling policy, risk categories — all in Tier 2 rules/docs.
 5. **Tier 5 = sole promotion authority**: Explicit, measurable criteria. No other tier can promote code.

@@ -1,19 +1,19 @@
 ---
 trigger: model_decision
-description: Before opening a HITL packet for any refactor-class decision, consult the refactor-decision-memory skill to surface historical precedent and bias or enrich the HITL packet accordingly.
+description: Before opening a Author-Gate packet for any refactor-class decision, consult the refactor-decision-memory skill to surface historical precedent and bias or enrich the Author-Gate packet accordingly.
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
-# Refactor Decision Memory — Pre-HITL Precedent Check
+# Refactor Decision Memory — Pre-Author-Gate Precedent Check
 
 ## Scope
 
-This rule fires **before** HITL for these decision classes (defined in `hitl-enforcement.md` §HITL-1):
+This rule fires **before** Author-Gate for these decision classes (defined in `hitl-enforcement.md` §HITL-1):
 
 - Architecture choice (§1.1)
 - Refactoring scope (§1.2)
@@ -24,12 +24,12 @@ This rule fires **before** HITL for these decision classes (defined in `hitl-enf
 - Error handling strategy (§1.8)
 
 This rule does **not** replace `hitl-enforcement.md`. That file remains the policy SSOT for:
-when HITL fires, scoring, filtering, dominance, and explicit selection requirements.
+when Author-Gate fires, scoring, filtering, dominance, and explicit selection requirements.
 This rule adds a precedent-lookup layer **under** that policy.
 
-## Pre-HITL Protocol
+## Pre-Author-Gate Protocol
 
-**Before assembling any HITL packet for a refactor-class decision:**
+**Before assembling any Author-Gate packet for a refactor-class decision:**
 
 1. Invoke the `refactor-decision-memory` skill
 2. Run the lookup:
@@ -41,9 +41,9 @@ This rule adds a precedent-lookup layer **under** that policy.
 
 | Verdict | Action |
 |---------|--------|
-| `strong` | Reuse or heavily bias toward the matched precedent. State `"Historical precedent recommends: …"` in the HITL question packet. If `promote_to_pattern=true` and no regression, the dominance rule from `hitl-enforcement.md` may fire — surface a single option. |
-| `suggestive` | Include a precedent summary in the HITL framing: `"Prior decision (YYYY-MM-DD): …"` in the question packet header before the standard options. |
-| `none` | Proceed with standard HITL per `hitl-enforcement.md`. No precedent bias. |
+| `strong` | Reuse or heavily bias toward the matched precedent. State `"Historical precedent recommends: …"` in the Author-Gate question packet. If `promote_to_pattern=true` and no regression, the dominance rule from `hitl-enforcement.md` may fire — surface a single option. |
+| `suggestive` | Include a precedent summary in the Author-Gate framing: `"Prior decision (YYYY-MM-DD): …"` in the question packet header before the standard options. |
+| `none` | Proceed with standard Author-Gate per `hitl-enforcement.md`. No precedent bias. |
 
 ## Capture
 

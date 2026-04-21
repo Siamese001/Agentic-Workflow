@@ -22,7 +22,7 @@
 If automatic and manual recovery both fail:
 1. STOP all work
 2. Capture full `git status` and `git diff HEAD` output
-3. Surface to user with a HITL prompt describing the failure
+3. Surface to user with a Author-Gate prompt describing the failure
 4. Wait for explicit user instruction before any further edits
 
 ## Evidence Format

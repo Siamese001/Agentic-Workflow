@@ -1,15 +1,15 @@
 ---
 trigger: model_decision
-description: Use this rule when a HITL decision point is reached to apply the correct trigger pattern, option shape, scoring guidance, and telemetry format.
+description: Use this rule when a Author-Gate decision point is reached to apply the correct trigger pattern, option shape, scoring guidance, and telemetry format.
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
-# HITL Decision Points — Full Doctrine
+# Author-Gate Decision Points — Full Doctrine
 
 ## §HITL-1: Mandatory Decision Point Triggers
 
@@ -24,7 +24,7 @@ Score by: blast radius, reversibility, test surface change, dependencies to upda
 If minimal scope dominates (score ≥ 0.85, gap ≥ 0.12): surface only minimal — do not fabricate moderate/comprehensive alternatives.
 
 ### 1.3 Anti-Pattern Introduction
-TRIGGER: Before introducing any anti-pattern instance (pre_write_gate has already blocked; this HITL determines resolution path).
+TRIGGER: Before introducing any anti-pattern instance (pre_write_gate has already blocked; this Author-Gate determines resolution path).
 Assess whether the specific anti-pattern can be narrowed without a guardian comment first.
 If narrowing is feasible: dominance rule fires — surface only narrow-exception option.
 If narrowing genuinely infeasible: score guardian-comment vs restructure.
@@ -32,22 +32,22 @@ If narrowing genuinely infeasible: score guardian-comment vs restructure.
 ### 1.4 Test Modification Strategy
 TRIGGER: Test failure has two or more genuinely credible repair paths with different correctness implications.
 Classify root cause first (production bug, stale reference, semantic update, policy regression).
-In most cases root cause resolves ambiguity — HITL only when two repair classes are both plausible.
+In most cases root cause resolves ambiguity — Author-Gate only when two repair classes are both plausible.
 
 ### 1.5 Dependency Addition
 TRIGGER: Adding a new external dependency where in-house alternative is non-trivial or an existing dep may serve.
-Check existing deps/utilities first. If they fully cover the need — no HITL.
+Check existing deps/utilities first. If they fully cover the need — no Author-Gate.
 Score external package lower if: narrow feature surface, transitive deps, version conflicts.
 
 ### 1.6 File/Module Deletion
 TRIGGER: Before deleting or archiving any production file.
 Check references. Check deprecation status (90-day period).
 If zero references + deprecation elapsed: dominance fires for archive.
-If active references remain: HITL between deprecate-first and keep-as-shim — delete is not a credible candidate.
+If active references remain: Author-Gate between deprecate-first and keep-as-shim — delete is not a credible candidate.
 
 ### 1.7 Configuration Changes
 TRIGGER: Before modifying governance/policy configuration where value or scope is genuinely ambiguous.
-If change is already decided (user specified value): no HITL — just apply it.
+If change is already decided (user specified value): no Author-Gate — just apply it.
 Do not add "keep current" as an option when config change is the stated goal.
 
 ### 1.8 Error Handling Strategy
@@ -58,18 +58,18 @@ Invalid input/missing config: fail-closed dominates — do not generate retry or
 
 ### 1.9 Performance Optimization Trade-offs
 TRIGGER: Only when optimization materially changes correctness risk or operational complexity AND two approaches have meaningfully different risk profiles.
-If optimization is clearly superior (measured speedup, no correctness risk): implement, no HITL.
+If optimization is clearly superior (measured speedup, no correctness risk): implement, no Author-Gate.
 Generate candidates only when trade-offs are non-trivial (caching staleness risk, parallelism ordering risk).
 
 ### 1.10 ADG Regeneration Timing
 TRIGGER: ADG staleness creates genuine risk of incorrect blast-radius analysis for current task.
-If ADG is fresh (newer than HEAD): no HITL — proceed.
-If ADG is stale AND T2/T3 refactoring: regenerate immediately, no HITL — this is the only correct answer.
-HITL only if regeneration cost is significant AND task can safely proceed with known-stale graph.
+If ADG is fresh (newer than HEAD): no Author-Gate — proceed.
+If ADG is stale AND T2/T3 refactoring: regenerate immediately, no Author-Gate — this is the only correct answer.
+Author-Gate only if regeneration cost is significant AND task can safely proceed with known-stale graph.
 
 ---
 
-## §HITL-9: Confidence Thresholds (SSOT reference)
+## §Author-Gate-9: Confidence Thresholds (SSOT reference)
 
 surface_threshold: 0.72
 high_confidence_band: 0.85
@@ -102,9 +102,9 @@ more flexible, more scalable, simpler, more robust, easier to maintain, higher e
 
 ---
 
-## §HITL-11: Telemetry (included in question field)
+## §Author-Gate-11: Telemetry (included in question field)
 
-Every HITL invocation MUST include in the packet header:
+Every Author-Gate invocation MUST include in the packet header:
 
     Candidates evaluated: N
     Suppressed (low confidence): X (scored below 0.72)
@@ -122,4 +122,4 @@ Every HITL invocation MUST include in the packet header:
 - Threshold gates confidence. Below 0.72 means clarify, replan, or abstain.
 - Distinctness is required. Cosmetic variants do not warrant separate options.
 - Analysis is executive-grade. Every claim tied to actual architecture, not generic software advice.
-- Wait for choice. When HITL fires, do not proceed without user selection.
+- Wait for choice. When Author-Gate fires, do not proceed without user selection.

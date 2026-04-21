@@ -2,7 +2,7 @@
 description: Triage _adg.py test files using ADG fan-in analysis.
 ---
 
-> **Claude workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
 
 # ADG Fan-In Test Triage Gate
 
@@ -32,7 +32,7 @@ Based on the classification, decide on the appropriate action:
 
 ### Step 4: Authorize Archival (for stubs only)
 
-If the file is classified as a stub, a HITL gate is required to authorize its archival. Present the following options to the user:
+If the file is classified as a stub, a Author-Gate gate is required to authorize its archival. Present the following options to the user:
 
 > The file `<file_path>` has been classified as a stub. How should I proceed?
 >

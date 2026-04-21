@@ -107,9 +107,9 @@ Wave-based plan to classify and reduce 3,924 HIGH-severity antipattern locations
 **Approach:**
 - ADG query for `broad_exception_catch` edges
 - Sub-classify via AST: does body re-raise? does it propagate? does it swallow?
-  - Re-raises: add `# guardian: allow-broad-exception -- <specific justification>` (HITL gate required per §8)
+  - Re-raises: add `# guardian: allow-broad-exception -- <specific justification>` (Author-Gate gate required per §8)
   - Silent: escalate to `silent_exception_swallow` treatment in Wave 5
-- Each guardian exemption requires HITL approval (constitutional §8)
+- Each guardian exemption requires Author-Gate approval (constitutional §8)
 
 **Acceptance:** `broad_exception_catch` count = 0 or remaining instances have approved guardian exemptions. Ratchet ceiling lowered.
 
@@ -127,7 +127,7 @@ Wave-based plan to classify and reduce 3,924 HIGH-severity antipattern locations
   - **Cleanup swallowers** (`__del__`, `__exit__`, teardown): guardian exemption with justification
   - **Best-effort operations** (cache miss, optional enrichment): convert to warn-and-continue
   - **True silent failures**: add structured error metadata return or re-raise
-- HITL gate before any guardian exemption (§8)
+- Author-Gate gate before any guardian exemption (§8)
 - Maximum 50 files per sub-wave to keep scope verifiable
 
 **Acceptance:** `silent_exception_swallow` count = 0 or all remaining have approved guardian exemptions. Ratchet ceiling lowered.
@@ -152,7 +152,7 @@ Wave-based plan to classify and reduce 3,924 HIGH-severity antipattern locations
 ## Rules
 
 - **Classify-only** — P2 rule MUST NOT write code changes autonomously
-- **HITL before guardian exemptions** — §8 requires explicit approval before any `# guardian: allow-*` comment
+- **Author-Gate before guardian exemptions** — §8 requires explicit approval before any `# guardian: allow-*` comment
 - **Scoped tests only per wave** — no full-suite run until Wave 6
 - **Ratchet enforced** — ceiling decreases after each wave; count above ceiling blocks ADG
 - **ADG-first** — every wave starts with an ADG SQL query before touching files

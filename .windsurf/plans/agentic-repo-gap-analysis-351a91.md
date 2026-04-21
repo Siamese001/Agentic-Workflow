@@ -16,7 +16,7 @@ Comprehensive analysis of 8 reference documentation files against current ADG (1
 | X1 | 02_L1_Reasoning_Plan_Generation.md | L1 Cognition & Planning | X1A-X1D: Decomposition, Strategy, Capability |
 | X2 | 03_Route_Decision_Switching.md | Route Arbitration | X2A-X2D: Arbitration, Escalation, Dispatch |
 | X3 | 04_Live_Task_Dispatch_Execution.md | Live Execution | X3A-X3D: Tool Auth, UWG Commit, Response |
-| X4 | 05_Live_Runtime_Exit_Control.md | Exit Control | X4A-X4D: Outcome routing, HITL Airlock |
+| X4 | 05_Live_Runtime_Exit_Control.md | Exit Control | X4A-X4D: Outcome routing, Author-Gate Airlock |
 | S1-S6 | 06_Shadow_Evaluation_System_Learning.md | After-Hours Review | S1-S6: Observability → Async Eval → RCA → Draft → Approve → Promote |
 
 ### 1.2 Shadow Evaluation Requirements (S1-S6)
@@ -163,9 +163,9 @@ agentic_core/L0_routing/enforcement/mutation_prohibition.py:318 → L0->L2
 - Missing shadow_replay_validator→evaluation_learning_bridge integration
 - No async_eval packet materialization
 
-**GAP-I2: HITL Airlock Integration Incomplete**
-- X3B HITL Secure Reading Room exists in docs
-- Implementation: HITL visitor exists but integration gaps remain
+**GAP-I2: Author-Gate Airlock Integration Incomplete**
+- X3B Author-Gate Secure Reading Room exists in docs
+- Implementation: Author-Gate visitor exists but integration gaps remain
 - Missing: Materialization packet → L5 re-clearance → Restart wiring
 
 **GAP-I3: UWG Integration Gaps**
@@ -333,16 +333,16 @@ Action:
 Deliverable: S3-S6 Pipeline Architecture Document
 ```
 
-**P3.2: HITL Integration Design**
+**P3.2: Author-Gate Integration Design**
 ```
 Priority: MEDIUM
 Components: H1 Freeze, H2 Materialize, H3 Review, H4 Decision, Re-clearance
 Action:
-  - Design HITL airlock state machine
+  - Design Author-Gate airlock state machine
   - Specify materialization packet format
   - Document human review UI requirements
   - Define L5 re-clearance protocol
-Deliverable: HITL Integration Specification
+Deliverable: Author-Gate Integration Specification
 ```
 
 **P3.3: UWG Commit Flow Design**
@@ -376,7 +376,7 @@ Priority: LOW
 Action:
   - Design S1→S6 end-to-end integration tests
   - Specify BUS P/T message flow tests
-  - Document HITL workflow tests
+  - Document Author-Gate workflow tests
   - Define UWG commit integration tests
 Deliverable: Integration Test Specification
 ```
@@ -419,7 +419,7 @@ P1.1 (Violation Analysis)
                 → P2.2 (S2 Design)
                     → P2.3 (BUS P/T Design)
                         → P3.1 (S3-S6 Pipeline)
-                            → P3.2 (HITL Integration)
+                            → P3.2 (Author-Gate Integration)
                                 → P3.3 (UWG Flow)
                                     → P4.1-P4.3 (Test Design)
 ```
@@ -428,7 +428,7 @@ P1.1 (Violation Analysis)
 
 - **Stream A**: P1.1 + P1.2 + P1.3 (Foundation)
 - **Stream B**: P2.1 + P2.2 (S1-S2 Design)
-- **Stream C**: P2.3 + P3.2 + P3.3 (Buses + HITL + UWG)
+- **Stream C**: P2.3 + P3.2 + P3.3 (Buses + Author-Gate + UWG)
 - **Stream D**: P3.1 + P4.1-P4.3 (Pipeline + Tests)
 
 ---
@@ -491,7 +491,7 @@ P1.1 (Violation Analysis)
 | Risk | Impact | Mitigation |
 |------|--------|------------|
 | BUS P/T design complexity | Integration delays | Early design (P2.3) |
-| HITL airlock workflow | Human-in-the-loop delays | Specification-driven (P3.2) |
+| Author-Gate airlock workflow | Human-in-the-loop delays | Specification-driven (P3.2) |
 | UWG commit flow | Write authority issues | Protocol design (P3.3) |
 
 ### 7.3 Low Risk
@@ -519,7 +519,7 @@ P1.1 (Violation Analysis)
 
 **Phase 3 (Integration)**
 - [ ] S3-S6 Pipeline Architecture Document approved
-- [ ] HITL Integration Specification approved
+- [ ] Author-Gate Integration Specification approved
 - [ ] UWG Commit Flow Specification approved
 
 **Phase 4 (Testing)**

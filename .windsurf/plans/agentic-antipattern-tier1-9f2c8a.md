@@ -3,7 +3,7 @@
 **Plan ID:** `agentic-antipattern-tier1-9f2c8a`
 **Tier:** T3 (cross-layer: registry + AST detectors + burndown report + ADG regen)
 **ADG snapshot at plan time:** `adg_indexed_04202026_1802.sqlite` (healthy sqlite+redis)
-**Decision source:** HITL Tier 1 selection (9 patterns) — DECISION_CAPTURED emitted
+**Decision source:** Author-Gate Tier 1 selection (9 patterns) — DECISION_CAPTURED emitted
 **SSOT:** `.windsurf/plans/agentic-antipattern-tier1-9f2c8a.md` (this file)
 
 ---
@@ -14,7 +14,7 @@
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | P1.1, P1.2 | Registry: enum + severity map | 3k | types file unchanged shape | 🟢 pending | 9 new `AntipatternCategory` members + `_SEVERITY_MAP` entries, py_compile clean |
 | W2 | P2.1, P2.2, P2.3 | AST detectors in `visitors/core.py` for the 6 AST-local patterns | 12k | existing visitor API stable | 🟢 pending | Unit tests pass for each new detector on fixture files |
-| W3 | P3.1, P3.2 | Cross-layer detectors (A3 HITL-gap, A5 chokepoint-bypass) via edge analysis | 8k | edge kinds `calls`/`dispatches_to` populated | 🟡 pending | Edge-based detection produces non-zero count where expected, zero FP on guardrail-exempted call sites |
+| W3 | P3.1, P3.2 | Cross-layer detectors (A3 Author-Gate-gap, A5 chokepoint-bypass) via edge analysis | 8k | edge kinds `calls`/`dispatches_to` populated | 🟡 pending | Edge-based detection produces non-zero count where expected, zero FP on guardrail-exempted call sites |
 | W4 | P4.1, P4.2 | Burndown report rollup: include A4 (write_bypass_uwg) in P0 `by_kind`, wire new categories | 4k | `_print_defect_table` is the canonical generator | 🟢 pending | Regenerated `adg_burndown_table.json` shows new `by_kind` entries |
 | W5 | P5.1 | ADG regen + burndown diff + ratchet review | 3k | `tools/generate_full_adg.py` succeeds | 🟡 pending | New snapshot created, burndown shows all 9 categories, no ratchet regression on existing counts |
 

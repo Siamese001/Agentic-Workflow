@@ -152,7 +152,7 @@ if any count > 0 in those paths → sys.exit(1)
 ## Rules
 
 - No changes outside `tools/generate/generate_full_adg.py`, `tools/adg/mcp/server.py`, `tools/adg/shared_modules/extracted_training_pipeline.py`, and direct test files
-- No guardian exemptions without HITL approval
+- No guardian exemptions without Author-Gate approval
 - Tier 2 fixes must use specific exception types — no broad `except Exception` replacement with another broad catch
 - All gates must have tests: block path + clean path
 - No full test suite run until Phase 10

@@ -77,7 +77,7 @@ Implement the IMPL_GAPs deferred by Wave C into production code so the retrieval
 
 ## 2. Frozen Invariants Inherited from Waves B + C
 
-All items below are **non-negotiable through Wave D**. Any proposed deviation requires a new HITL decision packet citing a concrete blocker.
+All items below are **non-negotiable through Wave D**. Any proposed deviation requires a new Author-Gate decision packet citing a concrete blocker.
 
 ### 2a. Collection topology (frozen since B3)
 
@@ -117,7 +117,7 @@ Wave D may add new targeted unit/integration tests but MUST NOT modify the curat
 
 ### 2f. F25 adjudication (final — NOT REOPENED in Wave D)
 
-- F25-ext: ADEQUATE advisory in `ext_authority` (running_agents.md HITL section). Do not add sources.
+- F25-ext: ADEQUATE advisory in `ext_authority` (running_agents.md Author-Gate section). Do not add sources.
 - F25-int: internal architecture captured in `docs/architecture/healing_dispatch_routing_adr.md` (repo_evidence Lane C). Wave D MAY implement `healing_tier_router.py` and `healing_tier_dispatcher.py` per the ADR tier contract — but the ADR itself and its Lane C placement are frozen.
 
 ### 2g. TS-20 disposition (final — NOT REOPENED in Wave D)
@@ -175,7 +175,7 @@ TS-03, TS-04, TS-07, TS-09, TS-19 are ADEQUATE at B7. No new `ext_authority` sou
 **Goal**: Add a confidence-score-aware abstain branch to the planner so low-confidence queries emit an abstain decision instead of a fabricated response.
 
 **Phase decomposition**:
-- **D3.1** Abstain primitive — either extend `agentic_core/L1_cognition/reasoning/query_planner.py` with an `abstain()` branch, OR create `agentic_core/L1_cognition/reasoning/abstain_planner.py` and dispatch from the planner entrypoint. Decide at D3.1 entry via a small HITL packet (both options are architecturally valid; dedicated planner gives cleaner separation, extension reuses existing planner plumbing).
+- **D3.1** Abstain primitive — either extend `agentic_core/L1_cognition/reasoning/query_planner.py` with an `abstain()` branch, OR create `agentic_core/L1_cognition/reasoning/abstain_planner.py` and dispatch from the planner entrypoint. Decide at D3.1 entry via a small Author-Gate packet (both options are architecturally valid; dedicated planner gives cleaner separation, extension reuses existing planner plumbing).
 - **D3.2** Abstain unit tests — cover `abstain fires when confidence < floor`, `abstain suppressed when evidence is strong`, and `abstain signal propagates to caller in expected shape`
 
 **Scope files (in-scope)**:
@@ -372,7 +372,7 @@ All gates below MUST remain true at every slice boundary. If any fails, Wave D i
 
 ## 7. Out-of-Scope (Explicit, Forbidden in Wave D)
 
-Any proposal to do any of the following requires a new HITL decision packet citing a concrete blocker.
+Any proposal to do any of the following requires a new Author-Gate decision packet citing a concrete blocker.
 
 | Category | Forbidden action |
 |----------|-----------------|
@@ -407,7 +407,7 @@ D1 (DONE) — this plan is written.
 │   └── gate: D2 unit tests + 11 freeze gates
 │
 ├── D3 (F06 abstain planning) — parallel with D2
-│   D3.1 abstain primitive (tiny HITL at entry: extend query_planner vs new abstain_planner)
+│   D3.1 abstain primitive (tiny Author-Gate at entry: extend query_planner vs new abstain_planner)
 │   D3.2 abstain unit tests
 │   └── gate: D3 unit tests + 11 freeze gates
 │
@@ -439,10 +439,10 @@ D1 (DONE) — this plan is written.
 **Critical path (minimum serial chain)**: D1 → D3 → D4 → D5 → D8.  
 **Parallel opportunities**: D2 with D3; D6 and D7 any time before D8.
 
-**Per-slice HITL gates**:
-- D3.1 entry: `extend query_planner` vs `new abstain_planner` — tiny HITL packet (2 options, low-ambiguity)
-- D6.1 entry: `accept F02 candidate` vs `decline` — auto-resolved by the `dist@1 < 0.45` gate; no HITL unless gate is ambiguous (e.g. dist ≈ 0.45)
-- D8.3 verdict: `Wave D COMPLETE` vs `BLOCKED by <gate>` — no HITL; verdict is evidence-driven
+**Per-slice Author-Gate gates**:
+- D3.1 entry: `extend query_planner` vs `new abstain_planner` — tiny Author-Gate packet (2 options, low-ambiguity)
+- D6.1 entry: `accept F02 candidate` vs `decline` — auto-resolved by the `dist@1 < 0.45` gate; no Author-Gate unless gate is ambiguous (e.g. dist ≈ 0.45)
+- D8.3 verdict: `Wave D COMPLETE` vs `BLOCKED by <gate>` — no Author-Gate; verdict is evidence-driven
 
 ---
 
@@ -483,4 +483,4 @@ At the end of Wave D (D8.3), every row above must be either **Closed**, **Closed
 
 ---
 
-*Wave D plan frozen at D1. Updates require a new HITL decision packet and a versioned revision (v1.1, v1.2, …).*
+*Wave D plan frozen at D1. Updates require a new Author-Gate decision packet and a versioned revision (v1.1, v1.2, …).*

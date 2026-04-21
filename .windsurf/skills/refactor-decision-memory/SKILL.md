@@ -1,6 +1,6 @@
 ---
 name: refactor-decision-memory
-description: Consult historical refactor and HITL decisions before opening a new HITL packet. Queries the local SQLite decision ledger for precedent matching the current decision type and intent, returning a strong/suggestive/none verdict with matched decisions to bias or enrich the next HITL packet. (1 supporting file)
+description: Consult historical refactor and Author-Gate decisions before opening a new Author-Gate packet. Queries the local SQLite decision ledger for precedent matching the current decision type and intent, returning a strong/suggestive/none verdict with matched decisions to bias or enrich the next Author-Gate packet. (1 supporting file)
 metadata:
   enforcement_layer: windsurf
   enforcement_timing: before_hitl
@@ -9,12 +9,12 @@ metadata:
 
 # Refactor Decision Memory Skill
 
-**PURPOSE:** Surface historical refactor/HITL decisions to bias or enrich upcoming HITL packets.
+**PURPOSE:** Surface historical refactor/Author-Gate decisions to bias or enrich upcoming Author-Gate packets.
 This skill is the lookup engine — it does **not** replace `hitl-enforcement.md` as policy SSOT.
 
 ## When to Invoke
 
-Invoke before opening HITL for any of these decision classes (per `hitl-enforcement.md` §HITL-1):
+Invoke before opening Author-Gate for any of these decision classes (per `hitl-enforcement.md` §HITL-1):
 
 - Architecture choice (§1.1)
 - Refactoring scope (§1.2)
@@ -24,7 +24,7 @@ Invoke before opening HITL for any of these decision classes (per `hitl-enforcem
 - File/module deletion (§1.6)
 - Error handling strategy (§1.8)
 
-Per `refactor-decision-memory.md` rule — this skill runs before the HITL packet is assembled.
+Per `refactor-decision-memory.md` rule — this skill runs before the Author-Gate packet is assembled.
 
 ## Files
 
@@ -72,11 +72,11 @@ Valid `decision_type` values:
 
 ## Verdict Routing
 
-| Verdict | HITL Action |
+| Verdict | Author-Gate Action |
 |---------|-------------|
-| `strong` | Reuse or heavily bias toward matched precedent. State: "Historical precedent recommends: …" Consider bypassing HITL if dominance rule fires and `promote_to_pattern=true` and no regression. |
-| `suggestive` | Include precedent summary in HITL framing. Add "Prior decision (YYYY-MM-DD): …" in the question packet header. |
-| `none` | Proceed with standard HITL per `hitl-enforcement.md`. No precedent bias. |
+| `strong` | Reuse or heavily bias toward matched precedent. State: "Historical precedent recommends: …" Consider bypassing Author-Gate if dominance rule fires and `promote_to_pattern=true` and no regression. |
+| `suggestive` | Include precedent summary in Author-Gate framing. Add "Prior decision (YYYY-MM-DD): …" in the question packet header. |
+| `none` | Proceed with standard Author-Gate per `hitl-enforcement.md`. No precedent bias. |
 
 ## Cold Start
 
@@ -86,12 +86,12 @@ If the ledger does not exist (no decisions captured yet), the script returns:
 {"verdict": "none", "matches": [], "reason": "no ledger found — no decisions captured yet"}
 ```
 
-Proceed with standard HITL.
+Proceed with standard Author-Gate.
 
 ## Ledger Location
 
 `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`
 
-Auto-created on first HITL capture by the `post_cascade_response` hook.
+Auto-created on first Author-Gate capture by the `post_cascade_response` hook.
 
 Schema tables: `decisions`, `decision_scope`, `decision_outcomes`, `decisions_fts` (FTS5 virtual).

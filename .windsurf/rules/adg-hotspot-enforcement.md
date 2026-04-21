@@ -189,7 +189,7 @@ than the same hotspot in an isolated module.
 |:-:|---------|----------------|-----------|
 | 1 | **Execution Surface** | Tool invocations, agent dispatches, subprocess, LLM calls | nodes on `mv_graph_critical_path_blast_radius` touching `L_TOOLS` / `L2_execution` |
 | 2 | **Write Surface** | State mutations via UWG / SovereignBaseAgent / canonical store | `v_p0_write_bypass_uwg` + `writes_to` fan-in |
-| 3 | **Security Surface** | Guardrails / safety plane / policy enforcement / HITL gates | `L5_safety` nodes + `v_p0_provider_bypass` |
+| 3 | **Security Surface** | Guardrails / safety plane / policy enforcement / Author-Gate gates | `L5_safety` nodes + `v_p0_provider_bypass` |
 | 4 | **State Surface** | Memory / cache / checkpoint / canonical store | `L4_state` nodes + `reads_from` / `writes_to` high-density |
 | 5 | **Observability Surface** | OTEL spans / audit trail / evidence ledger | `L6_observability` nodes + `emits_side_effect` edges |
 
@@ -208,7 +208,7 @@ These four are **structurally dangerous** and are the canonical hotspot triggers
 | `log_and_swallow` | `except X: log(e); continue` | Keeps running in bad state |
 | `return_none_swallow` | `except X: return None` | Failure → ambiguity → later crash |
 
-Any of these on a surface + high fan-in = **HOTSPOT**. Guardian exemption requires HITL approval per `anti-pattern-hitl-gate.md`.
+Any of these on a surface + high fan-in = **HOTSPOT**. Guardian exemption requires Author-Gate approval per `anti-pattern-hitl-gate.md`.
 
 ---
 

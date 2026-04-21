@@ -4,7 +4,7 @@
 **Date:** 2026-04-20
 **Tier:** T2 (3 files, single-layer-dominant at L5, fan-in=0 per ADG)
 **Scope:** Close 7 NEW hardcoded-exclusion violations + 1 P0 layer violation. Defer 34 grandfathered entries to a separate plan.
-**Status:** APPROVED (HITL `refactor_scope` — W1+W2+W3 only)
+**Status:** APPROVED (Author-Gate `refactor_scope` — W1+W2+W3 only)
 
 ## ADG Provenance
 
@@ -144,6 +144,6 @@ Include inline comment on each allowlist entry citing the justification.
 
 | Gap | Impact | Disposition |
 |-----|--------|-------------|
-| 34 grandfathered hardcoded-exclusion sites | Long-tail SSOT drift across many files/layers | Deferred to separate plan (out of scope per user HITL) |
+| 34 grandfathered hardcoded-exclusion sites | Long-tail SSOT drift across many files/layers | Deferred to separate plan (out of scope per user Author-Gate) |
 | `_validate_baseline_integrity` test coverage | New code path in `check_graph_layer_evidence.py` not yet unit-tested | Deferred; gate manually validated against current baseline |
 | Guardian-on-imports consistency in ADG generator | Root cause of W3 singular flag; may affect other files | Surfaced during W3 execution |

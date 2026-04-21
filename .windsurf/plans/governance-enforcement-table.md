@@ -52,7 +52,7 @@ Behavioral governance in Cascade context window. No blocking — advisory only.
 | `mcp-config-ssot.md` | ❌ `file_change` → FIX to `glob` | ❌ NOT LOADING | MCP YAML SSOT guidance (rewrite: behavioral only) |
 | `mcp-pytest-enforcement.md` | ❌ `file_change` → FIX to `glob` | ❌ NOT LOADING | Pytest MCP validation |
 | `security-hardening.md` | ❌ `file_change` → FIX to `model_decision` | ❌ NOT LOADING | Security practices |
-| `anti-pattern-hitl-gate.md` | ❌ `file_change` → FIX to `model_decision` | ❌ NOT LOADING | Anti-pattern HITL approval |
+| `anti-pattern-hitl-gate.md` | ❌ `file_change` → FIX to `model_decision` | ❌ NOT LOADING | Anti-pattern Author-Gate approval |
 | `adg-test-accelerator-enforcement.md` | ❌ `file_change` → FIX to `glob` | ❌ NOT LOADING | ADG test acceleration |
 | ~~`plan_ci_enforcement.md`~~ | `file_change` | **DELETE** | Dup of T1 hook + pre-commit |
 | ~~`pytest-config-ssot.md`~~ | `file_change` | **DELETE** | Dup of pre-commit T11.3 |
@@ -77,7 +77,7 @@ Behavioral governance in Cascade context window. No blocking — advisory only.
 | `adg-test-triage-gate.md` | `/adg-test-triage-gate` | Fan-in triage | KEEP |
 | `adg-timeout-recovery.md` | `/adg-timeout-recovery` | Timeout recovery | KEEP |
 | `agent-deletion-gate.md` | `/agent-deletion-gate` | Agent deletion | KEEP |
-| `antipattern-hitl-gate.md` | `/antipattern-hitl-gate` | Anti-pattern HITL | KEEP |
+| `antipattern-hitl-gate.md` | `/antipattern-hitl-gate` | Anti-pattern Author-Gate | KEEP |
 | `hitl-decision-gate.md` | `/hitl-decision-gate` | Decision options | KEEP |
 | `mcp-config-sync.md` | `/mcp-config-sync` | YAML→JSON sync | KEEP (manual action) |
 | `mcp-failure-rca.md` | `/mcp-failure-rca` | MCP diagnosis | KEEP (interactive) |
@@ -111,7 +111,7 @@ Behavioral governance in Cascade context window. No blocking — advisory only.
 | `mixed-line-ending` | T0 | (pre-commit-hooks) | LF enforcement |
 | `check-merge-conflict` | T0 | (pre-commit-hooks) | Merge conflict markers |
 | `guard-no-verify` | T0 | `ops_scripts/ci/guard_no_verify.py` | No-verify bypass auth |
-| `guard-guardian-hitl` | T0 | `ops_scripts/ci/guard_guardian_hitl.py` | Guardian HITL auth |
+| `guard-guardian-hitl` | T0 | `ops_scripts/ci/guard_guardian_hitl.py` | Guardian Author-Gate auth |
 | `guard-agent-deletion` | T0 | `ops_scripts/ci/guard_agent_deletion.py` | Agent deletion auth |
 | `python-syntax-check` | T1 | `py -m py_compile` | Syntax validation |
 | `guardian-comment-fixer` | T4 | `tools/adg/adg_antipattern_fixer.py` | Auto-fix guardian comments |
@@ -121,7 +121,7 @@ Behavioral governance in Cascade context window. No blocking — advisory only.
 | `windsurf-governance-health` | T7.7 | `ops_scripts/ci/check_windsurf_governance.py` | Rules/skills health |
 | `adg-grep-ban-gate` | T7.9 | `ops_scripts/ci/adg_grep_ban_gate.py` | Grep ban (source code) |
 | `no-unconditional-xfail-gate` | T7.10 | `ops_scripts/ci/check_no_unconditional_xfail.py` | xfail discipline |
-| `hitl-decision-record-gate` | T7.11 | `ops_scripts/ci/check_hitl_decision_record.py` | HITL records in plans |
+| `hitl-decision-record-gate` | T7.11 | `ops_scripts/ci/check_hitl_decision_record.py` | Author-Gate records in plans |
 | `rca-closure-gate` | T7.12 | `ops_scripts/ci/check_rca_closure.py` | RCA must be RESOLVED |
 | `reject-generated-artifacts-tracked` | T8 | `ops_scripts/hooks/reject_tracked_generated_artifacts.py` | No tracked artifacts |
 | `check-tooling-apps-boundary` | T9 | `ops_scripts/ci/check_tooling_apps_boundary.py` | Tooling/apps boundary |
@@ -200,7 +200,7 @@ Behavioral governance in Cascade context window. No blocking — advisory only.
 | Silent swallowers | **SSOT** (block) | behavioral | **SSOT** (detect) | evidence check | — | T1+T3 |
 | Grep ban (source) | — | behavioral | — | **SSOT** | ~~ARCHIVE~~ | T4 |
 | Timeout discipline | — | **SSOT** (§14) | — | — | ~~ARCHIVE~~ | T2 |
-| HITL enforcement | — | **SSOT** | — | record check | — | T2 |
+| Author-Gate enforcement | — | **SSOT** | — | record check | — | T2 |
 | ADG generation | — | — | **SSOT** | evidence check | conditional regen | T3 |
 | Syntax validation | — | — | — | **SSOT** | — | T4 |
 | Code style (ruff) | — | — | — | **SSOT** | — | T4 |
@@ -502,7 +502,7 @@ Constitutional §10 requires zero-loss refactor verification. Script exists but 
 | Silent swallowers | **SSOT** (block) | behavioral | **SSOT** (detect) | evidence check | — | T1+T3 |
 | Grep ban (source) | — | behavioral | — | **SSOT** | ~~ARCHIVE~~ | T4 |
 | Timeout discipline | — | **SSOT** (§14) | — | — | ~~ARCHIVE~~ | T2 |
-| HITL enforcement | — | **SSOT** | — | record check | — | T2 |
+| Author-Gate enforcement | — | **SSOT** | — | record check | — | T2 |
 | ADG generation | — | — | **SSOT** | evidence check | conditional regen | T3 |
 | Syntax validation | — | — | — | **SSOT** | — | T4 |
 | Code style (ruff) | — | — | — | **SSOT** | — | T4 |
@@ -514,7 +514,7 @@ Constitutional §10 requires zero-loss refactor verification. Script exists but 
 | Syntax error prevention (PP-13) | **SSOT** (block) | — | — | backstop (`py_compile`) | — | T1 (write-time) + T4 (commit-time) |
 | Guardian comment quality (PP-14) | — | **SSOT** (vocab §8) | flag weak | idempotent fixer + dup gate | — | T2 (vocab) + T3 (scan) + T4 (gate) |
 | MCP config simplification (PP-15) | remove drift logic | **SSOT** (Windsurf-native JSON) | — | ARCHIVE sovereignty + npx only | — | T2 (simplify) + T4 (archive gates) |
-| HITL ⭐ SVP calibration (PP-16) | — | **SSOT** (target state doc + §HITL-0.2 + §9) | — | — | — | T2 (rule + doc) |
+| Author-Gate ⭐ SVP calibration (PP-16) | — | **SSOT** (target state doc + §Author-Gate-0.2 + §9) | — | — | — | T2 (rule + doc) |
 | ADG blast radius intelligence (PP-17) | — | **SSOT** (§2.2 enhanced + playbook) | blast radius evidence | — | — | T2 (rule) + T3 (ADG analysis) |
 | Plan format enforcement (PP-18) | — | **SSOT** (template + plan-location rule) | — | — | — | T2 (rule + template) |
 | Archives import ban | — | behavioral (§12) | — | **NEW T7.13** | — | T4 (NEW) |
@@ -557,11 +557,11 @@ Constitutional §10 requires zero-loss refactor verification. Script exists but 
 - [ ] **H-26**: MCP registry lives in `docs/guides/MCP_Registry.md` (Markdown, not YAML) — rationale, scope, overlaps documented (PP-15)
 - [ ] **H-27**: MCP config change end-to-end takes <5 minutes — no sync scripts, no drift detection, no multi-step pipeline (PP-15)
 - [ ] **H-28**: `docs/architecture/target-state-svp-engineering.md` published with concrete OpenAI Agentic SVP Engineering quality bar (PP-16)
-- [ ] **H-29**: All HITL ⭐ recommendation templates cite specific target-state attributes, not abstract principles (PP-16)
+- [ ] **H-29**: All Author-Gate ⭐ recommendation templates cite specific target-state attributes, not abstract principles (PP-16)
 - [ ] **H-30**: Constitutional §9 SVP Engineering persona references target state doc (PP-16)
 - [ ] **H-31**: Constitutional §2.2 includes mandatory blast radius computation (steps 5-7) before T2/T3 refactoring (PP-17)
 - [ ] **H-32**: `docs/reference/ADG_Analysis_Playbook.md` published with 6 graph analysis patterns (blast radius, coupling hotspot, dependency cluster, orphan detection, layer violation map, weighted debt scoring) (PP-17)
-- [ ] **H-33**: HITL §1.2 refactoring scope template requires blast radius evidence from ADG `edge_fanout` + `edge_fanin` (PP-17)
+- [ ] **H-33**: Author-Gate §1.2 refactoring scope template requires blast radius evidence from ADG `edge_fanout` + `edge_fanin` (PP-17)
 - [ ] **H-34**: Blast radius intelligence validated via proof-of-concept on ≥1 real refactoring (PP-17)
 - [ ] **H-35**: `.windsurf/templates/execution-plan-template.md` includes phase-level summary table with columns: Wave, Phase, Title, Scope, Pain Points, Est. Tokens, Status (PP-18)
 - [ ] **H-36**: `.windsurf/rules/plan-location.md` mandates phase-level summary table — plan without it is invalid (PP-18)

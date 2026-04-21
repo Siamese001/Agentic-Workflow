@@ -3,11 +3,11 @@ trigger: model_decision
 description: Use this rule when reading or writing to the persistent memory graph, purging stale entities, or syncing ADG context into the memory store.
 ---
 
-> **Claude always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
 >
-> **Claude retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
 >
-> **Claude enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
 
 # Memory Management Rules
 
@@ -29,14 +29,14 @@ Memory tools MUST be invoked at these lifecycle points — they are not optional
 |---------|--------|
 | **Start of every conversation** | `mcp5_mem_recall_session_start` — load layers, constitutional rules, architectural decisions. This is the **first tool call** in any session. |
 | User asks about past context | `mcp5_search_nodes(query=...)` or `mcp5_open_nodes(names=[...])` |
-| Before HITL decisions | `mcp5_search_nodes` — check for historical precedent |
+| Before Author-Gate decisions | `mcp5_search_nodes` — check for historical precedent |
 
 ### Proactive Writes
 
 | Trigger | Action |
 |---------|--------|
 | Architecture decision made | `mcp5_create_entities` with `entityType="ArchitecturalDecision"` |
-| HITL decision resolved | `mcp5_add_observations` to record chosen option + reasoning |
+| Author-Gate decision resolved | `mcp5_add_observations` to record chosen option + reasoning |
 | New pattern established | `mcp5_create_entities` with `entityType="ProceduralPattern"` |
 | User says "remember this" | `mcp5_create_entities` or `mcp5_add_observations` |
 | After ADG regeneration | `mcp5_mem_import_adg_context` |

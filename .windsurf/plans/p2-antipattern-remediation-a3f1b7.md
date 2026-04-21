@@ -187,7 +187,7 @@ Systematic elimination of 1,879 HIGH-severity antipatterns across 526 files, ord
 3. **Ratchet auto-lowers.** Each successful ADG run after a micro-wave lowers the ceiling. This is the progress signal.
 4. **No weakening tests.** If a test fails after a fix, the fix is wrong — not the test.
 5. **Narrow exceptions first.** When replacing `except Exception`, identify the 1-2 specific exceptions that actually occur. Use ADG edge data + grep to find what exceptions are raised.
-6. **Guardian exemptions require HITL.** If a `broad_exception_catch` genuinely needs to stay broad (e.g., top-level error boundary), add `# guardian: allow-broad-exception -- <specific justification>` with HITL approval.
+6. **Guardian exemptions require Author-Gate.** If a `broad_exception_catch` genuinely needs to stay broad (e.g., top-level error boundary), add `# guardian: allow-broad-exception -- <specific justification>` with Author-Gate approval.
 7. **No batch find-and-replace.** Each fix must consider the context: what exception types are possible, what the caller expects, what side-effects occur before the try block.
 
 ---
@@ -199,7 +199,7 @@ Systematic elimination of 1,879 HIGH-severity antipatterns across 526 files, ord
 | Fix breaks caller assumptions | Micro-wave scope = 1-2 layers; scoped tests before full suite |
 | Narrowing exception type misses a case | Run integration tests after each micro-wave; monitor CI for 48h |
 | Volume overwhelm (1,042 in W4) | W4 split into 6 micro-waves of ~150-180 each |
-| Guardian exemption sprawl | HITL gate on every new guardian comment; ratchet tracks total |
+| Guardian exemption sprawl | Author-Gate gate on every new guardian comment; ratchet tracks total |
 | Re-raise changes control flow | Review each try/except for finally blocks and cleanup logic |
 | Test suite doesn't cover the path | Add regression test for each fix pattern (test the exception path) |
 
@@ -227,7 +227,7 @@ After each micro-wave, ADG defect table provides the scoreboard:
 | P2 ratchet | 0/0 | ADG ratchet output |
 | P1 violations | 0 | ADG P1 gate |
 | Test suite | 100% pass | `pytest tests/` |
-| Guardian exemptions | Minimal, HITL-approved | `guardian_exemption_gate.py` |
+| Guardian exemptions | Minimal, Author-Gate-approved | `guardian_exemption_gate.py` |
 | ADG generation | Passes clean | `python tools/generate_full_adg.py` |
 
 ---
