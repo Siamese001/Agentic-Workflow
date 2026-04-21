@@ -322,10 +322,7 @@ def commit_versioned_state_transition(
     # --- Step 2: load previous version ---
     try:
         previous_version = _registry.load_previous_version(state_context.state_namespace, state_context.key)
-    except (
-        StateVersionMissingError
-    ):  # guardian: StateVersionMissingError should be handled with specific context
-        # First write to this key is allowed
+    except StateVersionMissingError:  # guardian: allow-default-fallback -- first-write semantic: missing prior version means version=0 by versioning contract
         previous_version = 0
 
     # Conflict detection (Gate D)

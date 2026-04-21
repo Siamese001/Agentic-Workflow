@@ -127,7 +127,7 @@ RAG_CONSTRAINTS: dict[str, IntConstraint] = {
 
 L1_MODEL_POINTER_CONSTRAINTS: dict[str, PointerConstraint] = {
     "cognition_model": PointerConstraint(
-        allowlist=frozenset({"gpt-4o", "gpt-4o-mini", "claude-3.5-sonnet"}),
+        allowlist=frozenset({"gpt-4o", "gpt-4o-mini", "claude-sonnet-4-6"}),
     ),
     "embedding_model": PointerConstraint(
         allowlist=frozenset({"text-embedding-3-small", "text-embedding-3-large", "BAAI/bge-m3"}),

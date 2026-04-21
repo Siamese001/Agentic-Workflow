@@ -189,13 +189,13 @@ _AGENT_REGISTRY: dict[str, AgentExecutionProfile] = {
         agent_id="conversational_repair",
         reasoning_intensity=ReasoningIntensity.HIGH,
         execution_mode=ExecutionMode.LLM_API,
-        allowed_models=("gpt-4", "gpt-3.5-turbo", "claude-3-opus"),
+        allowed_models=("gpt-4", "gpt-3.5-turbo", "claude-sonnet-4-6"),
     ),
     "cognitive_disposition": AgentExecutionProfile(
         agent_id="cognitive_disposition",
         reasoning_intensity=ReasoningIntensity.HIGH,
         execution_mode=ExecutionMode.LLM_API,
-        allowed_models=("gpt-4", "claude-3-opus"),
+        allowed_models=("gpt-4", "claude-sonnet-4-6"),
     ),
     # Wave 4: audit-only entries for V15ExecutionGateway.execute() callers
     "sovereign_base": AgentExecutionProfile(

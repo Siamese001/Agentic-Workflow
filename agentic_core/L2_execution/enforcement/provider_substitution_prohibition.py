@@ -350,7 +350,7 @@ def test_provider_substitution_prohibition() -> bool:
             request_id="test_123",
         )
         try:
-            validate_provider_request(test_request, "anthropic", "claude-3-5-sonnet")
+            validate_provider_request(test_request, "anthropic", "claude-sonnet-4-6")
             return False
         except ProviderSubstitutionViolation as e:  # guardian: allow-log-and-swallow -- provider substitution violation: logged, return False indicates veto
             import logging

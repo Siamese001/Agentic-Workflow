@@ -346,7 +346,7 @@ class MemoryAuthority:
 
                 _at = get_active_execution_trace()
                 trace_id = _at.trace_id if _at else ""
-            except (ValueError, TypeError, RuntimeError) as e:
+            except (ValueError, TypeError, RuntimeError):  # guardian: allow-default-fallback -- optional trace context; empty string means untraced write, which is valid
                 trace_id = ""
 
         write_record = MemoryWriteRecord.create(

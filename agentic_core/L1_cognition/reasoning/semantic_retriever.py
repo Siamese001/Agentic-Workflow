@@ -187,8 +187,7 @@ class SemanticRetriever:
 
             return results
 
-        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as e:
-            logger.error(f"Failed to query collection {collection}: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError):
             raise
 
     def _fuse_results(self, collection_results: dict[str, list[RetrievalResult]]) -> list[RetrievalResult]:

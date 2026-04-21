@@ -320,7 +320,7 @@ class TestGatewayFactory:
         config = ProviderConfig(
             provider_type=ProviderType.ANTHROPIC,
             api_key="key",
-            model="claude-3",
+            model="claude-sonnet-4-6",
         )
         gateway.register_provider(ProviderType.ANTHROPIC, config)
         gateway.set_default_provider(ProviderType.ANTHROPIC)

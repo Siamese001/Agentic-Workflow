@@ -270,7 +270,7 @@ class ResourceManagementGuardrail:
         self.cost_rates = {
             "gpt-4": 0.03,  # per 1K tokens
             "gpt-3.5-turbo": 0.002,
-            "claude-3": 0.015,
+            "claude-sonnet-4-6": 0.015,
             "default": 0.01,
         }
 

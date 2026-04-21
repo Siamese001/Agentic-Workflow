@@ -319,11 +319,10 @@ class ProcessGuard:
         Uses SIGTERM first, then SIGKILL if needed.
         Platform-aware for Windows vs Unix.
         """
+        # Platform branch: compute signal once outside the try so the try body has exactly one side effect
+        term_signal = signal.SIGTERM
         try:
-            if os.name == "nt":
-                os.kill(pid, signal.SIGTERM)
-            else:
-                os.kill(pid, signal.SIGTERM)
+            os.kill(pid, term_signal)
         except ProcessLookupError:  # guardian: allow-silent-swallow -- process already dead, non-fatal
             pass
         except PermissionError:  # guardian: Permission errors should validate access before operation

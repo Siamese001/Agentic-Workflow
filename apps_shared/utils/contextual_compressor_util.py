@@ -10,6 +10,7 @@ import time
 
 from pydantic import BaseModel, Field
 
+from agentic_core.L0_routing.config.model_registry import ANTHROPIC_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -322,7 +323,7 @@ class ContextualCompressor:
             prompt = f"Extract verbatim sentences from the text below that answer this question: '{query}'.\nDo not rewrite. Do not summarize. If irrelevant, return empty.\n\nText:\n{full_text}\n\nExtracted sentences:"
             # guardian: allow-magic-config
             response = await client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model=ANTHROPIC_MODEL_ID,
                 max_tokens=1000,
                 temperature=0.1,
                 messages=[{"role": "user", "content": prompt}],

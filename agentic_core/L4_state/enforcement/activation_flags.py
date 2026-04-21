@@ -88,19 +88,28 @@ class ActivationFlagsStore:
             self.storage_path.mkdir(parents=True, exist_ok=True)
             self._current_flags = ActivationFlags()
             return
+        # Load flags (step 1 of 2 — isolate from proof load to avoid partial-side-effect masking)
         try:
             with open(self.flags_file, encoding="utf-8") as f:
                 data = json.load(f)
             self._current_flags = ActivationFlags(**data)
-            if self.proof_file.exists():
-                with open(self.proof_file, encoding="utf-8") as f:
-                    proof_data = json.load(f)
-                self._current_proof = ActivationProof(**proof_data)
-            Logger.info("Activation flags loaded from L4")
         except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
             Logger.error(f"Failed to load activation flags, failing closed: {e}")
             self._current_flags = ActivationFlags()
             self._current_proof = None
+            return
+
+        # Load proof (step 2 of 2 — independent try so proof failure cannot mask flags load)
+        if self.proof_file.exists():
+            try:
+                with open(self.proof_file, encoding="utf-8") as f:
+                    proof_data = json.load(f)
+                self._current_proof = ActivationProof(**proof_data)
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
+                Logger.error(f"Failed to load activation proof, failing closed: {e}")
+                self._current_proof = None
+                return
+        Logger.info("Activation flags loaded from L4")
 
     def _save_flags(self) -> None:
         """Save activation flags to L4 storage."""

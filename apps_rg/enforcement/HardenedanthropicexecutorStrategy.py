@@ -166,17 +166,13 @@ class HardenedAnthropicConfig:
     """configuration for HardenedAnthropicExecutor."""
 
     MODEL_LIMITS = {
-        "claude-3-5-sonnet-20241022": 200000,
-        "claude-3-5-haiku-20241022": 200000,
-        "claude-3-opus-20240229": 200000,
-        "claude-3-sonnet-20240229": 200000,
-        "claude-3-haiku-20240307": 200000,
+        "claude-sonnet-4-6": 200000,
     }
 
     # guardian: allow-magic-config
     def __init__(
         self,
-        model: str = "claude-3-5-sonnet-20241022",
+        model: str = "claude-sonnet-4-6",
         temperature: float = 0.7,
         max_tokens: int = 4096,
         timeout_s: int = 60,
@@ -455,7 +451,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
 # guardian: allow-magic-config
 def create_hardened_anthropic_executor(
-    model: str = "claude-3-5-sonnet-20241022",
+    model: str = "claude-sonnet-4-6",
     temperature: float = 0.7,
     **kwargs,
 ) -> HardenedAnthropicExecutor:

@@ -420,7 +420,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
     async def _scan_code_blocks(self) -> list[dict]:
         """Scan Python files for duplicate code blocks."""
         code_blocks = defaultdict(list)
-        for file_path in tqdm(self._iter_files({".py"}), desc="Processing", unit="item"):
+        for file_path in tqdm(self._iter_files({".py"}), desc="Processing", unit="item"):  # guardian: allow-retry-without-backoff -- scanner iterates files, not retry attempts; per-file failures re-raise to caller
             try:
                 lines = file_path.read_text(encoding="utf-8", errors="ignore").splitlines()
                 for i in range(len(lines) - self.min_lines + 1):

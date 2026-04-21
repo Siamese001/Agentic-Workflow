@@ -79,7 +79,7 @@ def get_default_model(provider: Provider) -> str:
     """
     defaults = {
         Provider.OPENAI: "gpt-4o",
-        Provider.ANTHROPIC: "claude-3-sonnet",
+        Provider.ANTHROPIC: "claude-sonnet-4-6",
         Provider.GOOGLE: "gemini-pro",
     }
     return defaults.get(provider, "unknown")

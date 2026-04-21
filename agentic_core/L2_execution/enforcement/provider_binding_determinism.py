@@ -197,7 +197,7 @@ def compute_provider_binding_digest(
 
     Args:
         provider_id: LLM provider identifier (e.g., "openai", "anthropic", "google")
-        model_id: Model identifier (e.g., "gpt-4", "claude-3-5-sonnet-20241022")
+        model_id: Model identifier (e.g., "gpt-4", "claude-sonnet-4-6")
         gateway_version: SovereignLLMGateway version
         semantic_clock: Current semantic clock snapshot
         additional_context: Optional additional context for determinism

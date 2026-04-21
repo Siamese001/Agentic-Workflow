@@ -295,7 +295,7 @@ class AgentConfig(BaseEntity):
         Validate model name against known patterns.
         HARDENED: Restrict to known safe model patterns.
         """
-        known_models = ["gpt-4o", "gpt-4", "gpt-3.5-turbo", "claude-3", "claude-2"]
+        known_models = ["gpt-4o", "gpt-4", "gpt-3.5-turbo", "claude-sonnet-4-6"]
         if v not in known_models:
             raise ValueError(f"Unknown model: {v}. Use one of: {known_models}")
         return v

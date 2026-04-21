@@ -61,8 +61,7 @@ class SQLiteGraphStore(IGraphStore):
             try:
                 self._conn = sqlite3.connect(self.db_path)
                 self._conn.row_factory = sqlite3.Row
-            except sqlite3.OperationalError as e:
-                Logger.error("Failed to connect to database at %s: %s", self.db_path, e)
+            except sqlite3.OperationalError:
                 raise
         return self._conn
 

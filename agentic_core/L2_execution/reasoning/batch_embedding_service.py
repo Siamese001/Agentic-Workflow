@@ -245,8 +245,7 @@ class BatchEmbeddingService:
             embeddings: Any = [emb for batch_result in results for emb in batch_result]
             Logger.info(f"Successfully generated {len(embeddings)} embeddings from {len(texts)} texts")
             return embeddings
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            Logger.error(f"Failed to generate embeddings: {e}")
+        except (RuntimeError, ValueError, asyncio.CancelledError):  # guardian: allow-broad-exception -- re-raises to caller; scoped to executor/task errors
             raise
 
     async def embed_single(

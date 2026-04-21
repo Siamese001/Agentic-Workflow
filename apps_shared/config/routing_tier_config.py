@@ -250,7 +250,7 @@ DEFAULT_ROUTING_CONFIGS = {
         timeout_ms=120000,  # 2 minutes for reasoning tasks
         model_overrides={
             Provider.OPENAI.value: "gpt-4o-2024-08-06",
-            Provider.ANTHROPIC.value: "claude-3-5-sonnet-20241022",
+            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
             Provider.GOOGLE.value: "gemini-2.5-flash",
         },
     ),
@@ -262,7 +262,7 @@ DEFAULT_ROUTING_CONFIGS = {
         model_overrides={
             Provider.GOOGLE.value: "gemini-2.5-flash",
             Provider.OPENAI.value: "gpt-4o-mini",
-            Provider.ANTHROPIC.value: "claude-3-5-haiku-20241022",
+            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
         },
     ),
     RoutingTier.COST_OPTIMIZED: RouteConfig(
@@ -273,7 +273,7 @@ DEFAULT_ROUTING_CONFIGS = {
         model_overrides={
             Provider.OPENAI.value: "gpt-4o-mini",
             Provider.GOOGLE.value: "gemini-2.5-flash",
-            Provider.ANTHROPIC.value: "claude-3-5-haiku-20241022",
+            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
         },
     ),
     RoutingTier.BALANCED: RouteConfig(
@@ -282,7 +282,7 @@ DEFAULT_ROUTING_CONFIGS = {
         fallback_providers=[Provider.OPENAI, Provider.GOOGLE],
         timeout_ms=60000,
         model_overrides={
-            Provider.ANTHROPIC.value: "claude-3-5-sonnet-20241022",
+            Provider.ANTHROPIC.value: "claude-sonnet-4-6",
             Provider.OPENAI.value: "gpt-4o-2024-08-06",
             Provider.GOOGLE.value: "gemini-2.5-flash",
         },

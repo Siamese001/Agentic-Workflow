@@ -59,7 +59,7 @@ DEFAULT_ROUTING_CONFIGS = {
     RoutingTier.PRIMARY: RouteConfig(provider="openai", model="gpt-4", temperature=0.7, max_tokens=2048),
     RoutingTier.SECONDARY: RouteConfig(
         provider="anthropic",
-        model="claude-3-sonnet",
+        model="claude-sonnet-4-6",
         temperature=0.7,
         max_tokens=2048,
     ),

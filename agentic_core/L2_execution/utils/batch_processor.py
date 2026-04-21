@@ -119,8 +119,7 @@ class BatchProcessor(Generic[T, R]):
 
                 results.extend(batch_results)
 
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
-                logger.error(f"Batch {batch_num} failed: {e}")
+            except (AttributeError, RuntimeError, TypeError, ValueError):
                 raise
 
             elapsed_ms = (time.time() - start) * 1000

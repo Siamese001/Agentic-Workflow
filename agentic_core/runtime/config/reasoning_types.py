@@ -93,7 +93,7 @@ class GovernorConfig(BaseModel):
         default_factory=lambda: [
             os.getenv("OPENAI_MODEL", "gpt-4o"),
             "gpt-4o-mini",
-            os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022"),
+            os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
         ],
     )
 

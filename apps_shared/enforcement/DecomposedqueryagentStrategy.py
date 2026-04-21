@@ -11,6 +11,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
+from agentic_core.L0_routing.config.model_registry import ANTHROPIC_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -268,7 +269,7 @@ class QueryDecomposer(SimpleAgentBase):
             client = get_client(Provider.ANTHROPIC)
             # guardian: allow-magic-config
             response = await client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model=ANTHROPIC_MODEL_ID,
                 max_tokens=200,
                 temperature=temperature,
                 messages=[{"role": "user", "content": prompt}],

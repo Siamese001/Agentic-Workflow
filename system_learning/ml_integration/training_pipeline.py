@@ -286,8 +286,7 @@ class RandomForestModel(BaseMLModel):
             self.is_trained = True
             return metrics
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            Logger.error(f"[ML_PIPELINE] Random Forest training failed: {e}")
+        except (ValueError, RuntimeError, MemoryError, ImportError):  # guardian: allow-broad-exception -- re-raises to caller after Random Forest training failure
             raise
 
     def predict(self, X: np.ndarray) -> np.ndarray:
@@ -396,8 +395,7 @@ class XGBoostModel(BaseMLModel):
             Logger.warning("[ML_PIPELINE] XGBoost not available, using fallback")
             # Fallback to Random Forest
             return RandomForestModel(self.config).train(X_train, y_train, X_val, y_val)
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            Logger.error(f"[ML_PIPELINE] XGBoost training failed: {e}")
+        except (ValueError, RuntimeError, MemoryError):  # guardian: allow-broad-exception -- re-raises to caller after XGBoost training failure
             raise
 
     def predict(self, X: np.ndarray) -> np.ndarray:
@@ -502,8 +500,7 @@ class NeuralNetworkModel(BaseMLModel):
             self.is_trained = True
             return metrics
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            Logger.error(f"[ML_PIPELINE] Neural Network training failed: {e}")
+        except (ValueError, RuntimeError, MemoryError, ImportError):  # guardian: allow-broad-exception -- re-raises to caller after Neural Network training failure
             raise
 
     def predict(self, X: np.ndarray) -> np.ndarray:

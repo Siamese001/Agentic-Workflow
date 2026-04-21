@@ -46,8 +46,7 @@ MODEL_PRICING: dict[str, ModelPricing] = {
     "gpt-4": ModelPricing("gpt-4", 3e-05, 6e-05),
     "gpt-4-turbo": ModelPricing("gpt-4-turbo", 1e-05, 3e-05),
     "gpt-3.5-turbo": ModelPricing("gpt-3.5-turbo", 5e-06, 1.5e-05),
-    "claude-3-opus": ModelPricing("claude-3-opus", 1.5e-05, 7.5e-05),
-    "claude-3-sonnet": ModelPricing("claude-3-sonnet", 3e-06, 1.5e-05),
+    "claude-sonnet-4-6": ModelPricing("claude-sonnet-4-6", 3e-06, 1.5e-05),
     "default": ModelPricing("default", DEFAULT_COST_PER_TOKEN, DEFAULT_COST_PER_TOKEN),
 }
 

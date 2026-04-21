@@ -404,8 +404,7 @@ class AMD9950X3DOptimizer:
 
                 try:
                     yield future.result()
-                except (AttributeError, RuntimeError, TypeError, ValueError) as e:
-                    logger.error(f"Parallel task failed: {e}")
+                except (AttributeError, RuntimeError, TypeError, ValueError):
                     raise
         finally:
             executor.shutdown(wait=True)

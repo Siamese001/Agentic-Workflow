@@ -179,7 +179,7 @@ _emit_invokes_eval("p1", "provider_binding_fingerprint", "eval_call")
 _emit_proposal_commits_routing("p1", "provider_binding_fingerprint", "routing_commit")
 
 _CANONICAL_PROVIDERS: dict[str, str] = {
-    "anthropic": "claude-3-5-sonnet",
+    "anthropic": "claude-sonnet-4-6",
     "deterministic": "LOCAL_AGENT",
     "gemini": "gemini-2.5-pro",
     "openai": "gpt-4o",

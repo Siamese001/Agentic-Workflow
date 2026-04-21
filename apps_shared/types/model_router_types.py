@@ -334,15 +334,6 @@ class ModelRouter:
             cost_per_1k_tokens=0.00015,
         )
         # guardian: allow-magic-config
-        self._models["claude-3-haiku"] = ModelConfig(
-            provider="anthropic",
-            model_name="claude-3-haiku-20240307",
-            tier=ModelTier.FAST,
-            max_tokens=4096,
-            temperature=0.7,
-            cost_per_1k_tokens=0.00025,
-        )
-        # guardian: allow-magic-config
         self._models["gpt-4o"] = ModelConfig(
             provider="openai",
             model_name="gpt-4o",
@@ -352,9 +343,9 @@ class ModelRouter:
             cost_per_1k_tokens=0.005,
         )
         # guardian: allow-magic-config
-        self._models["claude-3-5-sonnet"] = ModelConfig(
+        self._models["claude-sonnet-4-6"] = ModelConfig(
             provider="anthropic",
-            model_name="claude-3-5-sonnet-20241022",
+            model_name="claude-sonnet-4-6",
             tier=ModelTier.BALANCED,
             max_tokens=4096,
             temperature=0.7,
@@ -369,15 +360,7 @@ class ModelRouter:
             temperature=1.0,
             cost_per_1k_tokens=0.015,
         )
-        # guardian: allow-magic-config
-        self._models["claude-3-opus"] = ModelConfig(
-            provider="anthropic",
-            model_name="claude-3-opus-20240229",
-            tier=ModelTier.REASONING,
-            max_tokens=4096,
-            temperature=0.7,
-            cost_per_1k_tokens=0.015,
-        )
+
         self._task_profiles[TaskType.RESUME_FORMATTING] = TaskProfile(
             task_type=TaskType.RESUME_FORMATTING,
             default_tier=ModelTier.FAST,

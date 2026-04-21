@@ -136,10 +136,8 @@ class ExecutionOrchestrator:
                     "metadata": _metadata,
                 }
             except (ValueError, KeyError, AttributeError, TypeError, RuntimeError) as e:
-                Logger.error(f"[L0-ORCH] L3 orchestration failed: {e}")
                 orchestration = {"error": f"L3 orchestration failed: {e}", "completed": False}
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
-                Logger.critical(f"[L0-ORCH] Critical L3 orchestration error: {e}")
+            except OSError as e:  # guardian: allow-broad-exception -- raises after constructing error orchestration context for caller telemetry
                 orchestration = {"error": f"Critical L3 orchestration error: {e}", "completed": False}
                 raise
         return {

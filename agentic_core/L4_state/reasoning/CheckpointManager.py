@@ -454,8 +454,7 @@ class CheckpointManager(SovereignBaseAgent):
                 self._mirror_checkpoint_sync(file_path)
             Logger.info(f"[SYNC] Checkpoint saved: {checkpoint_id}")
             return file_path
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
-            Logger.error(f"Failed to save checkpoint {checkpoint_id}: {e}")
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-broad-exception -- re-raises to caller after checkpoint failure
             raise
 
     async def _save_async(

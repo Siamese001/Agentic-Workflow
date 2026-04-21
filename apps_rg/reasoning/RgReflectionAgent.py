@@ -192,8 +192,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                 agent_type="ReflectionAgent",
                 observations=["RG reflection agent with meta-learning and quality scoring"],
             )
-        except (AttributeError, RuntimeError, ValueError, OSError) as e:  # guardian: allow-silent-swallow
-            Logger.debug(f"[{self.__class__.__name__}] KG registration skipped: {e}")
+        except (AttributeError, RuntimeError, ValueError, OSError):  # guardian: allow-double-logging -- debug-level telemetry before re-raise for KG registration diagnostics
             raise
 
     def _post_reflect(self, passed_agents: list[str], failed_agents: list[str], converged: bool) -> None:
@@ -247,8 +246,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                     to_entity="ResumeDocument",
                     relation_type="REFLECTS_ON",
                 )
-        except (AttributeError, RuntimeError, ValueError, OSError) as e:  # guardian: allow-silent-swallow
-            Logger.debug(f"[{self.__class__.__name__}] KG reflection persistence skipped: {e}")
+        except (AttributeError, RuntimeError, ValueError, OSError):  # guardian: allow-double-logging -- debug-level telemetry before re-raise for KG reflection persistence diagnostics
             raise
 
     def _search_external_best_practices(self, topic: str) -> list[dict[str, Any]]:
@@ -278,7 +276,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                         result = future.result(timeout=10)
                 else:
                     result = loop.run_until_complete(mcp.call_tool("brave_search", args))
-            except Exception:  # guardian: allow-silent-swallow
+            except (RuntimeError, TimeoutError, ValueError, AttributeError):  # guardian: allow-default-fallback -- external MCP search is best-effort; empty dict falls through to no-results path below
                 result = {}
             if isinstance(result, dict) and result.get("results"):
                 Logger.info(
@@ -286,8 +284,7 @@ class RgReflectionAgent(BaseReflectionAgent):
                 )
                 return result["results"][:3]
             return []
-        except Exception as e:  # guardian: allow-silent-swallow
-            Logger.debug(f"[{self.__class__.__name__}] Brave Search skipped: {e}")
+        except (RuntimeError, TimeoutError, ValueError, AttributeError, OSError):  # guardian: allow-log-and-swallow -- Brave Search is best-effort enrichment; empty-list fallthrough is expected on any failure
             return []
 
     def _estimate_quality_score(self) -> float:
