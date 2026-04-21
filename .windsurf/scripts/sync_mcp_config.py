@@ -266,15 +266,20 @@ def generate_notion_map_block() -> str:
     lines.append("")
     lines.append(f"Bot: **{ws.get('bot', '?')}** | Workspace: **{ws.get('space', '?')}**")
     lines.append("")
-    lines.append("| Database | Data Source ID | Read Trigger (query) | Write Trigger (auto-route) |")
-    lines.append("|----------|---------------|-----------------|--------------------------|")
+    lines.append("| Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |")
+    lines.append("|----------|-----------------------|----------------------|--------------|----------------------------|")
     for db in dbs:
         lines.append(
-            f"| {db['name']} | `{db['id']}` | {db.get('read_trigger', '')} | {db.get('write_trigger', '')} |"
+            f"| {db['name']} | `{db['id']}` | `{db.get('database_id', '— MISSING —')}` | "
+            f"{db.get('read_trigger', '')} | {db.get('write_trigger', '')} |"
         )
     lines.append("")
     lines.append(
-        "**Query pattern**: `API-query-data-source` with `data_source_id` from table above. Add `filter`/`sorts` as needed."
+        "**Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2. Add `filter`/`sorts` as needed."
+    )
+    lines.append(
+        "**Write pattern (creates)**: `API-post-page` with `parent: {type: \"database_id\", database_id: <column 3>}`. "
+        "Using data_source_id for writes returns 404."
     )
     lines.append("")
     return "\n".join(lines)

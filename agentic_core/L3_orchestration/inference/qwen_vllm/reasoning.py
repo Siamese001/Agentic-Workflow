@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 import time
 
@@ -38,14 +39,14 @@ class QwenInferenceResponse:
 class QwenInferenceGateway:
     def __init__(
         self,
-        model_id: str = "Qwen/Qwen2.5-14B-Instruct-AWQ",
-        base_url: str = "http://localhost:8000/v1",
+        model_id: str | None = None,
+        base_url: str | None = None,
         max_concurrent: int = 8,
         batch_size: int = 4,
         client: OptimizedVLLMClient | None = None,
     ):
-        self.model_id = str(model_id or "").strip() or "Qwen/Qwen2.5-14B-Instruct-AWQ"
-        self.base_url = str(base_url or "").strip() or "http://localhost:8000/v1"
+        self.model_id = str(model_id or "").strip() or os.getenv("VLLM_MODEL_NAME") or "Qwen/Qwen2.5-14B-Instruct-AWQ"
+        self.base_url = str(base_url or "").strip() or os.getenv("VLLM_BASE_URL") or "http://localhost:8000/v1"
         self.max_concurrent = max(1, int(max_concurrent))
         self.batch_size = max(1, int(batch_size))
         self._client = client or OptimizedVLLMClient(

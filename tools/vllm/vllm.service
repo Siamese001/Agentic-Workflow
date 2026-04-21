@@ -1,0 +1,21 @@
+[Unit]
+Description=vLLM OpenAI-compatible server (Qwen2.5-14B-Instruct-AWQ)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Expects start_vllm_server.sh to be present and executable in the repo checkout.
+# Adjust WorkingDirectory / ExecStart to match your clone path inside WSL.
+WorkingDirectory=%h
+ExecStart=/bin/bash %h/Agentic-Workflow/tools/vllm/start_vllm_server.sh
+Restart=on-failure
+RestartSec=10s
+# vLLM loads ~9GiB weights; give it generous stop timeout for clean shutdown
+TimeoutStopSec=60s
+# Keep the first few stderr lines for fast diagnosis on boot failures
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

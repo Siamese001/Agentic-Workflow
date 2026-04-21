@@ -178,18 +178,12 @@ class EnvironmentValidator:
     REQUIRED_VARS: Final[list[str]] = [
         "OPENAI_API_KEY",
         "ANTHROPIC_API_KEY",
-        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
     ]
 
     OPTIONAL_VARS: Final[list[str]] = [
-        "MISTRALAI_API_KEY",
-        "COHERE_API_KEY",
-        "GROQ_API_KEY",
-        "TOGETHER_API_KEY",
-        "FIREWORKS_API_KEY",
-        "BRAVE_SEARCH_API_KEY",
         "GITHUB_TOKEN",
-        "DATABASE_URL",
+        "NOTION_TOKEN",
         "FIGMA_TOKEN",
     ]
 

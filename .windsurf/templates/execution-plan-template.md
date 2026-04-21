@@ -124,7 +124,7 @@ If things go wrong:
 | [Metric 1] | [Target] | [How to verify] |
 | [Metric 2] | [Target] | [How to verify] |
 
-## Claude Alignment Checks
+## Cascade Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

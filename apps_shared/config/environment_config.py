@@ -61,27 +61,16 @@ class EnvironmentConfig(BaseModel):
     # Core LLM Providers (Required)
     OPENAI_API_KEY: str = Field(..., min_length=1, description="OpenAI API key")
     ANTHROPIC_API_KEY: str = Field(..., min_length=1, description="Anthropic API key")
-    GEMINI_API_KEY: str = Field(..., min_length=1, description="Google Gemini API key")
+    GOOGLE_API_KEY: str = Field(..., min_length=1, description="Google AI / Gemini API key (SSOT)")
 
     # Redis Configuration (Required)
     REDIS_HOST: str = Field(default="localhost", description="Redis host")
     REDIS_PORT: int = Field(default=6379, description="Redis port")
     REDIS_URL: str = Field(default="redis://localhost:6379", description="Redis connection URL")
 
-    # Optional Providers
-    MISTRALAI_API_KEY: str | None = Field(default=None, description="Mistral AI API key")
-    COHERE_API_KEY: str | None = Field(default=None, description="Cohere API key")
-    GROQ_API_KEY: str | None = Field(default=None, description="Groq API key")
-    TOGETHER_API_KEY: str | None = Field(default=None, description="Together AI API key")
-    FIREWORKS_API_KEY: str | None = Field(default=None, description="Fireworks AI API key")
-    BRAVE_SEARCH_API_KEY: str | None = Field(default=None, description="Brave Search API key")
-
     # GitHub & MCP Configuration
     GITHUB_TOKEN: str | None = Field(default=None, description="GitHub personal access token")
-    DATABASE_URL: str | None = Field(
-        default=None,
-        description="PostgreSQL database URL for MCP server",
-    )
+    NOTION_TOKEN: str | None = Field(default=None, description="Notion internal integration token")
     FIGMA_TOKEN: str | None = Field(default=None, description="Figma API token")
 
     # Model Configuration
@@ -90,8 +79,9 @@ class EnvironmentConfig(BaseModel):
     OPENAI_MODEL: str = Field(default="gpt-4o", description="OpenAI model name")
 
     # Thresholds and Limits
-    SOVEREIGN_HIGH_CONFIDENCE: float = Field(default=0.75, ge=0.0, le=1.0)
-    SOVEREIGN_MEDIUM_CONFIDENCE: float = Field(default=0.50, ge=0.0, le=1.0)
+    # NOTE: Routing/healing confidence thresholds are NOT here. Canonical SSOT is
+    # agentic_core/L0_routing/config/path_constants.py (HEALING_CONFIDENCE_X/Y,
+    # SSOT_SCORE_THRESHOLD_DET/QWEN). Do not re-add SOVEREIGN_* here.
     RAG_SIMILARITY_THRESHOLD: float = Field(default=0.8, ge=0.0, le=1.0)
     GOVERNOR_SAFETY_THRESHOLD: float = Field(default=0.95, ge=0.0, le=1.0)
 

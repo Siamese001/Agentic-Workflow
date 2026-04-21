@@ -11,7 +11,7 @@ PORT=8000
 HOST="0.0.0.0"
 GPU_UTIL=0.90        # 0.90 * 31.84GB = 28.7GB — optimized for RTX 5090
 MAX_MODEL_LEN=32768  # AWQ 4-bit: expand context window, still fits in VRAM
-DTYPE="bfloat16"     # Best for Blackwell sm_120 (native TF32/FP16)
+DTYPE="float16"      # AWQ quantization requires float16 (bfloat16 unsupported)
 
 if [ ! -d "$MODEL_DIR" ]; then
     echo "ERROR: Model not found at $MODEL_DIR"

@@ -4,7 +4,7 @@ Reconcile MCP config + AGENTS.md drift by symlinking the actual-read paths, slim
 
 ## Objective
 
-Eliminate the recurring drift between `.windsurf/mcp_config.json` ↔ `~/.codeium/windsurf/mcp_config.json` and between `mcp_config.json` ↔ `AGENTS.md` while **preserving cross-tool (Codex/Cursor/Claude-Code) interop** via a symlinked root `AGENTS.md`.
+Eliminate the recurring drift between `.windsurf/mcp_config.json` ↔ `~/.codeium/windsurf/mcp_config.json` and between `mcp_config.json` ↔ `AGENTS.md` while **preserving cross-tool (Codex/Cursor/Cascade-Code) interop** via a symlinked root `AGENTS.md`.
 
 ## Scope
 
@@ -23,7 +23,7 @@ Out of scope (deferred):
 ## Tier & Constraints
 
 - **Tier**: T3 — cross-layer (repo config + CI + docs + contributor onboarding), >5 files.
-- **Must preserve**: `AGENTS.md` at repo root (as symlink) for Codex/Cursor/Claude-Code interop.
+- **Must preserve**: `AGENTS.md` at repo root (as symlink) for Codex/Cursor/Cascade-Code interop.
 - **Must respect**: `.windsurf/rules/*.md` 12,000-char cap per file; `global_rules.md` 6,000-char cap.
 - **Must not break**: existing pre-commit hooks `mcp-sync-integrity` (T6b) and `agents-mcp-coverage` (T6c).
 - **No PowerShell in runtime**; setup script is contributor-run, one-time, and `.ps1` is acceptable there.

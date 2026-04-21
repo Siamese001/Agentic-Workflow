@@ -7,6 +7,7 @@ Uses connection pooling, batching, and caching for maximum throughput.
 from __future__ import annotations
 
 import logging
+import os
 import time
 from dataclasses import dataclass
 from typing import Any
@@ -67,13 +68,13 @@ class QwenInferenceGateway:
 
     def __init__(
         self,
-        model_id: str = "Qwen/Qwen2.5-14B-Instruct-AWQ",
-        base_url: str = "http://localhost:8000/v1",
+        model_id: str | None = None,
+        base_url: str | None = None,
         max_concurrent: int = 8,
         batch_size: int = 4,
     ):
-        self.model_id = model_id
-        self.base_url = base_url
+        self.model_id = model_id or os.getenv("VLLM_MODEL_NAME") or "Qwen/Qwen2.5-14B-Instruct-AWQ"
+        self.base_url = base_url or os.getenv("VLLM_BASE_URL") or "http://localhost:8000/v1"
         self.max_concurrent = max_concurrent
         self.batch_size = batch_size
         self._vllm_client: OptimizedVLLMClient | None = None
@@ -346,7 +347,7 @@ _qwen_inference_gateway: QwenInferenceGateway | None = None
 
 
 async def get_qwen_inference_gateway(
-    model_id: str = "Qwen/Qwen2.5-14B-Instruct-AWQ",
+    model_id: str | None = None,
 ) -> QwenInferenceGateway:
     """Get or create singleton QwenInferenceGateway."""
     global _qwen_inference_gateway

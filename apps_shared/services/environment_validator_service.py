@@ -29,7 +29,7 @@ _log = logging.getLogger(__name__)
 class EnvironmentValidatorService:
     """Service for validating environment configuration."""
 
-    REQUIRED_VARS = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GEMINI_API_KEY"]
+    REQUIRED_VARS = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize the environment validator service."""

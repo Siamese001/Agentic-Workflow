@@ -57,7 +57,7 @@ app orchestrator
        ├─ AppsQwenGateway.infer(AppsQwenRequest)
        │       └─ HardenedVLLMClient  (circuit breaker, retry)
        │               └─ OptimizedVLLMClient  (connection pool, batching)
-       │                       └─ local vLLM server  (Qwen/Qwen2.5-7B-Instruct)
+       │                       └─ local vLLM server  (Qwen/Qwen2.5-14B-Instruct-AWQ)
        │
        └─ LocalFirstDisposition outcome
               for_allow(...)      — inference succeeded

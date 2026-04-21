@@ -53,18 +53,19 @@ Keep Reasoning / Routing / Execution / Verification separate. No edits before `S
 
 Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 
-| Database | Data Source ID | Read Trigger (query) | Write Trigger (auto-route) |
-|----------|---------------|-----------------|--------------------------|
-| Wave/Phase Convergence | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | "plan status", "phase progress", "wave status", "what's blocked" | On wave/phase completion or status change |
-| SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | "SC/AP violations", "check severity", "promotion status" | When `generate_full_adg` emits new SC/AP rows |
-| HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | "HITL decisions", "past decisions", "decision history" | Immediately after any scored `ask_user_question` resolution |
-| Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | "constitutional rules", "rule status" | On rule addition/modification |
-| MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
-| SVP Engineering Reviews | `814e26d3-d665-4472-9b92-c7e0f89241d0` | "SVP review", "module certification", "test pass rate" | On SVP review completion |
-| ADR Registry | `e59d7640-dc09-48f9-8bdc-b0c94bf98c2a` | "ADR status", "architectural decisions", "which ADRs" | On every new ADR spec file — POST row with ADR ID, Status, Impact Layers, Summary, Filename |
-| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
+| Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |
+|----------|-----------------------|----------------------|--------------|----------------------------|
+| Wave/Phase Convergence | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" | On wave/phase completion or status change |
+| SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | `0a3b8072-eabd-4516-9473-3c321bb011ff` | "SC/AP violations", "check severity", "promotion status" | When `generate_full_adg` emits new SC/AP rows |
+| HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | `18bb9145-1320-4191-8b14-6c309776bcf5` | "HITL decisions", "past decisions", "decision history" | Immediately after any scored `ask_user_question` resolution |
+| Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | `1c1379bc-32ca-4216-898a-3672f0316f69` | "constitutional rules", "rule status" | On rule addition/modification |
+| MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | `59693bbc-71b1-4c63-bc9f-b31eb8b08a0e` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
+| SVP Engineering Reviews | `814e26d3-d665-4472-9b92-c7e0f89241d0` | `6660be70-638e-4698-826a-aa7e8c17d7fd` | "SVP review", "module certification", "test pass rate" | On SVP review completion |
+| ADR Registry | `e59d7640-dc09-48f9-8bdc-b0c94bf98c2a` | `6ed25e12-bd92-4352-ac7a-3a971311f024` | "ADR status", "architectural decisions", "which ADRs" | On every new ADR spec file — POST row with ADR ID, Status, Impact Layers, Summary, Filename |
+| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
-**Query pattern**: `API-query-data-source` with `data_source_id` from table above. Add `filter`/`sorts` as needed.
+**Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2. Add `filter`/`sorts` as needed.
+**Write pattern (creates)**: `API-post-page` with `parent: {type: "database_id", database_id: <column 3>}`. Using data_source_id for writes returns 404.
 
 <!-- NOTION-MAP:END -->
 
