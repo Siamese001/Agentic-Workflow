@@ -197,13 +197,75 @@ def _exit_block(reason: str) -> int:
     return 2
 
 
+# Module-level cache of approved MCP server names (populated lazily).
+_mcp_whitelist_cache: set[str] | None = None
+
+
+def _load_mcp_whitelist() -> set[str]:
+    """Return the set of mcpServers declared in repo .windsurf/mcp_config.json.
+
+    Cached after first load. Returns empty set on any error (caller treats
+    as fail-open to avoid breaking sessions when config is temporarily invalid).
+    """
+    global _mcp_whitelist_cache
+    if _mcp_whitelist_cache is not None:
+        return _mcp_whitelist_cache
+    config_path = repo_root / ".windsurf" / "mcp_config.json"
+    try:
+        with config_path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+        servers = data.get("mcpServers", {})
+        if isinstance(servers, dict):
+            # Include only servers that are NOT disabled.
+            allowed = {
+                name
+                for name, cfg in servers.items()
+                if isinstance(cfg, dict) and not cfg.get("disabled", False)
+            }
+        else:
+            allowed = set()
+        _mcp_whitelist_cache = allowed
+        return allowed
+    except (
+        OSError,
+        json.JSONDecodeError,
+        ValueError,
+    ):  # guardian: allow-specific-io-errors -- MCP whitelist load: fail-open
+        _mcp_whitelist_cache = set()
+        return set()
+
+
+def check_mcp_whitelist(server_name: str, tool_name: str) -> int:
+    """Block calls to MCP servers not declared in repo mcp_config.json.
+
+    Fail-open when whitelist cannot be loaded (empty set → every call passes).
+    This matches prior gate conventions: hard-block only on explicit violations.
+    """
+    allowed = _load_mcp_whitelist()
+    if not allowed:
+        # Unable to load config → don't risk bricking the session.
+        return 0
+    if server_name not in allowed:
+        return _exit_block(
+            f"MCP server {server_name!r} is not in the repo whitelist "
+            f"(.windsurf/mcp_config.json mcpServers keys). "
+            f"Tool {tool_name!r} refused. "
+            f"Add the server to mcp_config.json (via .windsurf/scripts/sync_mcp_config.py) "
+            f"or verify you are not invoking a rogue user-home config override."
+        )
+    return 0
+
+
 def _read_session_state() -> dict:
     """Read session_state.json and return its contents. Return {} on any error (fail-open)."""
     try:
         if session_state.exists():
             data = json.loads(session_state.read_text(encoding="utf-8"))
             return data if isinstance(data, dict) else {}
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- session state read: non-fatal, empty dict returned
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- session state read: non-fatal, empty dict returned
         pass
     return {}
 
@@ -233,7 +295,10 @@ def _mark_memory_recalled() -> None:
         state["max_memory_block_attempts"] = 0
         session_state.parent.mkdir(parents=True, exist_ok=True)
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- memory recalled state: non-fatal, fail-open
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- memory recalled state: non-fatal, fail-open
         pass  # fail-open: worst case we block again next call
 
 
@@ -467,7 +532,13 @@ def _check_sqlite_access(repo_root: Path, needs_write: bool) -> tuple[bool, str]
         row = c.execute("PRAGMA journal_mode").fetchone()
         journal_mode = row[0] if row else "unknown"
         c.close()
-    except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow -- SQLite journal probe: non-fatal, diagnostics best-effort
+    except (
+        AttributeError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ):  # guardian: allow-silent-swallow -- SQLite journal probe: non-fatal, diagnostics best-effort
         pass
 
     diag["journal_mode"] = journal_mode
@@ -1164,6 +1235,14 @@ def main() -> int:
 
     server_name = tool_info.get("mcp_server_name", "")
     tool_name = tool_info.get("mcp_tool_name", "")
+
+    # MCP whitelist — reject any server not declared in .windsurf/mcp_config.json.
+    # Mitigates rogue server injection (e.g., user home config override leaking
+    # an unapproved server into Cascade's tool surface).
+    if server_name:
+        rc = check_mcp_whitelist(server_name, tool_name)
+        if rc != 0:
+            return rc
 
     # Memory-first gate: blocks non-memory tools until mem_recall_session_start is called.
     # Degrades to open if memory MCP is unhealthy or attempt limit is reached.

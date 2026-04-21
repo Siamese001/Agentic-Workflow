@@ -15,6 +15,7 @@ Fail policy: OPEN — any error → exit 0 silently.
 Zero hardcoded paths — repo_root resolved from __file__.
 """
 
+import hashlib
 import json
 import os
 import subprocess
@@ -27,6 +28,12 @@ fail_policy = "open"
 repo_root = Path(__file__).resolve().parents[2]
 audit_log = repo_root / "artifacts" / "windsurf" / "mcp_tool_audit.jsonl"
 gitkraken_write_audit_log = repo_root / "artifacts" / "windsurf" / "gitkraken_write_audit.jsonl"
+# Supply-chain drift detection for MCP servers (W2 hardening).
+# Tracks SHA256 of mcpServers block + per-server (command, args, env keys)
+# between sessions. Writes a drift record whenever the fingerprint changes.
+mcp_config_path = repo_root / ".windsurf" / "mcp_config.json"
+mcp_fingerprint_path = repo_root / "artifacts" / "windsurf" / "mcp_config_fingerprint.json"
+mcp_drift_log = repo_root / "artifacts" / "windsurf" / "mcp_drift.jsonl"
 # Namespaced per logical session — matches pre_mcp_gate.py and pre_prompt_classifier.py.
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
 session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_session_id}.json"
@@ -97,7 +104,10 @@ def _mark_notion_called(tool_name: str, tool_class: str) -> None:
         elif tool_class == "read" and state.get("notion_last_write"):
             state["notion_read_after_write"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- notion session state: non-fatal, fail-open
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- notion session state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -183,7 +193,10 @@ def _mark_task_created() -> None:
             state = {}
         state["task_created"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task created state: non-fatal, fail-open
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- task created state: non-fatal, fail-open
         pass  # fail-open: don't disrupt audit on state file error
 
 
@@ -200,7 +213,10 @@ def _mark_task_started() -> None:
         if count >= 2:
             state["lessons_captured"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task started state: non-fatal, fail-open
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- task started state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -213,7 +229,10 @@ def _mark_task_decomposed() -> None:
             state = {}
         state["task_decomposed"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task decomposed state: non-fatal, fail-open
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- task decomposed state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -228,7 +247,10 @@ def _mark_memory_recalled() -> None:
         state = json.loads(session_state.read_text(encoding="utf-8")) if session_state.exists() else {}
         state["memory_recalled"] = True
         session_state.write_text(json.dumps(state), encoding="utf-8")
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- memory recalled state: non-fatal, fail-open
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- memory recalled state: non-fatal, fail-open
         pass  # fail-open
 
 
@@ -241,7 +263,129 @@ def _append_log(record: dict) -> None:
         pass
 
 
+# ---------------------------------------------------------------------
+# MCP supply-chain drift detection (W2)
+# ---------------------------------------------------------------------
+
+
+def _fingerprint_mcp_config() -> dict | None:
+    """Compute SHA256 fingerprint of mcpServers block + per-server hashes.
+
+    Returns None on any IO/parse error (caller fails-open).
+    """
+    try:
+        with mcp_config_path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    servers = data.get("mcpServers", {})
+    if not isinstance(servers, dict):
+        return None
+
+    overall = hashlib.sha256()
+    overall.update(json.dumps(servers, sort_keys=True).encode("utf-8"))
+    overall_hash = overall.hexdigest()
+
+    per_server: dict[str, str] = {}
+    for name, cfg in sorted(servers.items()):
+        if not isinstance(cfg, dict):
+            continue
+        # Fingerprint command + args + env keys (NOT env values — those may be secrets)
+        shape = {
+            "command": cfg.get("command"),
+            "args": cfg.get("args"),
+            "url": cfg.get("url"),
+            "env_keys": sorted(list((cfg.get("env") or {}).keys())),
+            "disabled": bool(cfg.get("disabled", False)),
+        }
+        h = hashlib.sha256()
+        h.update(json.dumps(shape, sort_keys=True).encode("utf-8"))
+        per_server[name] = h.hexdigest()
+
+    return {
+        "mcpServers_sha256": overall_hash,
+        "per_server": per_server,
+        "server_count": len(per_server),
+        "captured_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+
+
+def _append_drift_record(record: dict) -> None:
+    try:
+        mcp_drift_log.parent.mkdir(parents=True, exist_ok=True)
+        with mcp_drift_log.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except OSError:  # guardian: allow-silent-swallow -- drift log append: non-fatal, fail-open
+        pass
+
+
+def _persist_fingerprint(fp: dict) -> None:
+    try:
+        mcp_fingerprint_path.parent.mkdir(parents=True, exist_ok=True)
+        with mcp_fingerprint_path.open("w", encoding="utf-8") as fh:
+            json.dump(fp, fh, indent=2, sort_keys=True)
+    except OSError:  # guardian: allow-silent-swallow -- fingerprint persist: non-fatal, fail-open
+        pass
+
+
+def _check_mcp_config_drift() -> None:
+    """Compare current mcp_config.json fingerprint against last stored one.
+
+    On drift, append a JSONL record documenting what changed (added/removed/
+    changed server names) and persist the new fingerprint.
+    """
+    current = _fingerprint_mcp_config()
+    if current is None:
+        return
+
+    previous: dict | None = None
+    if mcp_fingerprint_path.exists():
+        try:
+            with mcp_fingerprint_path.open("r", encoding="utf-8") as fh:
+                previous = json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            previous = None
+
+    # First run — just persist, no drift record
+    if previous is None:
+        _persist_fingerprint(current)
+        return
+
+    if previous.get("mcpServers_sha256") == current.get("mcpServers_sha256"):
+        return  # no drift
+
+    prev_servers = previous.get("per_server", {}) or {}
+    curr_servers = current.get("per_server", {}) or {}
+    added = sorted(set(curr_servers) - set(prev_servers))
+    removed = sorted(set(prev_servers) - set(curr_servers))
+    changed = sorted(
+        name
+        for name in set(prev_servers) & set(curr_servers)
+        if prev_servers.get(name) != curr_servers.get(name)
+    )
+
+    record = {
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "event": "mcp_config_drift",
+        "previous_sha256": previous.get("mcpServers_sha256"),
+        "current_sha256": current.get("mcpServers_sha256"),
+        "previous_captured_at": previous.get("captured_at"),
+        "servers_added": added,
+        "servers_removed": removed,
+        "servers_changed": changed,
+        "server_count_before": previous.get("server_count"),
+        "server_count_after": current.get("server_count"),
+    }
+    _append_drift_record(record)
+    _persist_fingerprint(current)
+
+
 def main() -> int:
+    # Run supply-chain drift check first — cheap (hashes a small JSON file) and
+    # writes to a separate JSONL so it doesn't interfere with telemetry.
+    _check_mcp_config_drift()
+
     raw = sys.stdin.read()
     if not raw.strip():
         return 0

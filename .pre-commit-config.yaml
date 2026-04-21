@@ -153,6 +153,18 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6d: Author-Gate Ledger Schema (harness HITL W2) ---------------------------
+      # Verifies decision ledger matches canonical DDL. Triggered when schema or
+      # migrator changes, and when the capture script changes.
+      - id: author-gate-ledger-schema
+        name: "T6d: Author-Gate Ledger Schema"
+        entry: py ops_scripts/ci/author_gate/check_ledger_schema.py
+        language: system
+        pass_filenames: false
+        files: ^(\.windsurf/schemas/decision_ledger\.schema\.sql|\.windsurf/scripts/(apply_ledger_schema|post_cascade_hitl_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T6e: Skill Frontmatter (Anthropic spec) ------------------------------------
       # Enforces Anthropic Agent Skills authoring spec on every
       # .windsurf/skills/<name>/SKILL.md: YAML frontmatter with valid `name`

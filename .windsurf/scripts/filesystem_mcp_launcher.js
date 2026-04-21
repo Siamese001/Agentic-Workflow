@@ -112,6 +112,64 @@ if (allowedDirs.length === 0) {
   );
 }
 
+// --- W2 hardening: validate each allowed dir against a denylist ---
+// The filesystem MCP server enforces its own path scoping to the provided
+// allowed dirs, but we additionally refuse to even launch when any allowed
+// dir resolves inside a forbidden zone (user home, system dirs). This guards
+// against misconfigured mcp_config.json invocations and rogue user-home
+// config overrides that point the server at sensitive territory.
+const FORBIDDEN_PATH_PREFIXES = [
+  // Windows user home — contains .env, .ssh, tokens
+  path.resolve("C:/Users"),
+  // Windows system dirs
+  path.resolve("C:/Windows"),
+  "C:/Program Files",
+  "C:/ProgramData",
+  // POSIX system dirs
+  "/etc",
+  "/root",
+  "/var/lib",
+  "/usr",
+  "/sys",
+  "/proc",
+  // Home dirs on macOS / Linux
+  "/Users",
+  "/home",
+];
+
+function isInsideForbiddenZone(dir) {
+  const resolved = path.resolve(dir);
+  const resolvedLower = resolved.toLowerCase();
+  // Only block if the allowed dir is EXACTLY a forbidden prefix or strictly
+  // inside one. A repo path under C:/Users/<name>/Git/<repo> is allowed by
+  // intent (user workspaces live there) — so we exempt any path that passes
+  // through the repo root (AGENTIC_REPO_ROOT env or process.cwd() fallback).
+  const repoRoot = path.resolve(
+    process.env.AGENTIC_REPO_ROOT || process.cwd()
+  ).toLowerCase();
+  if (resolvedLower.startsWith(repoRoot)) {
+    return false; // repo root itself overrides forbidden-prefix match
+  }
+  for (const prefix of FORBIDDEN_PATH_PREFIXES) {
+    const p = path.resolve(prefix).toLowerCase();
+    if (resolvedLower === p || resolvedLower.startsWith(p + path.sep)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+for (const dir of allowedDirs) {
+  if (isInsideForbiddenZone(dir)) {
+    die(
+      "Allowed directory " + dir + " resolves inside a forbidden zone. " +
+      "Filesystem MCP refuses to expose system dirs, user home, or /etc. " +
+      "Check .windsurf/mcp_config.json and AGENTIC_REPO_ROOT. " +
+      "See docs/guides/filesystem_mcp_operations.md"
+    );
+  }
+}
+
 // --- Spawn the MCP server ---
 // Do NOT use stdio: "inherit" here.
 // We proxy stdin/stdout/stderr explicitly so we can:
