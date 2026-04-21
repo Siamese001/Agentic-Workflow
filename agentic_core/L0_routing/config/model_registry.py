@@ -93,6 +93,35 @@ ANTHROPIC_MODEL_ID: Final[str] = os.getenv(
 """Identifier for the Anthropic juror in ConsensusEngine."""
 
 
+# Wave H4 C2 (2026-04-21, plan consensus-validator-unification-5e9f3a):
+# Canonical juror set for ConsensusEngine. Defaults to the 3-juror strict-
+# majority configuration. Env-var CONSENSUS_JURORS allows comma-separated
+# override (e.g. CONSENSUS_JURORS="gpt-4o,claude-sonnet-4-6,gemini-2.5-pro,o3")
+# without redeploy. Empty override → fallback to default.
+def _resolve_consensus_jurors() -> tuple[str, ...]:
+    raw = os.getenv("CONSENSUS_JURORS", "").strip()
+    if not raw:
+        return (OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID)
+    jurors = tuple(token.strip() for token in raw.split(",") if token.strip())
+    return jurors or (OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID)
+
+
+CONSENSUS_JURORS: Final[tuple[str, ...]] = _resolve_consensus_jurors()
+"""Canonical juror list for ConsensusEngine.
+
+Rationale for default selection (3 jurors, heterogeneous):
+  - OpenAI (gpt-4o) — dominant general-purpose reasoning baseline
+  - Anthropic (claude-sonnet-4-6) — alternative reasoning topology, known
+    for catching logic bugs the OpenAI family misses
+  - Google (gemini-2.5-pro) — third diverse family, strong context
+    integration; tie-breaker when the first two disagree
+
+Strict-majority threshold for 3 jurors = 2/3 (see
+`path_constants.consensus_majority_threshold`). Adding a 4th juror auto-
+raises the threshold to 3/4 without code changes.
+"""
+
+
 # ============================================================================
 # EMBEDDING MODELS (used by retrieval / semantic cache)
 # ============================================================================
@@ -183,6 +212,7 @@ def get_model_for_tier(tier: str) -> str:
 __all__ = [
     "ALL_TIERS",
     "ANTHROPIC_MODEL_ID",
+    "CONSENSUS_JURORS",
     "DETERMINISTIC_MODEL_SENTINEL",
     "EMBEDDING_MODEL_ID",
     "GEMINI_FLASH_MODEL_ID",

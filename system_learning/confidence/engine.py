@@ -1,23 +1,14 @@
-"""Healing confidence scoring engine for deterministic escalation decisions."""
+"""Healing confidence scoring engine for deterministic escalation decisions.
+
+Wave H5 M2-M4 (2026-04-21, plan meta-learning-confidence-audit-b7c4e1):
+Removed 3 orphaned "placeholder for test compatibility" symbols
+(`CONFIDENCE_THRESHOLD`, `ConfidenceScore`, `calculate_confidence`) after
+ADG fan-in analysis (docs/reports/plans/h5-wave-m1-adg-fanin-evidence.md)
+confirmed zero production consumers. The real `HealingConfidenceScorer`
+class is the only public surface of this module.
+"""
 
 from __future__ import annotations
-
-# Test compatibility exports
-CONFIDENCE_THRESHOLD = 0.8
-
-
-class ConfidenceScore:
-    """Placeholder confidence score type for test compatibility."""
-
-    def __init__(self, value=0.0, level="LOW"):
-        self.value = value
-        self.level = level
-
-
-def calculate_confidence():
-    """Placeholder calculate confidence function for test compatibility."""
-    return 0.0
-
 
 import json
 import uuid

@@ -8,6 +8,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L0_routing.config.model_registry import (
     ANTHROPIC_MODEL_ID,
+    CONSENSUS_JURORS,
     GEMINI_PRO_MODEL_ID,
     OPENAI_MODEL_ID,
 )
@@ -217,7 +218,10 @@ class ConsensusEngine:
             providers: A list of model names to be used as jurors.
         """
         if providers is None:
-            providers = [OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID]
+            # Wave C2 (2026-04-21): juror set now sourced from L0 SSOT with
+            # env-var CONSENSUS_JURORS override. Caller-supplied list still
+            # wins for custom use cases (tests, alternate jury compositions).
+            providers = list(CONSENSUS_JURORS)
         self.providers = providers
         # Wave C1 (2026-04-21): threshold now derives from juror count via L0
         # SSOT so a 4/5/7-juror configuration auto-adjusts the majority cut.
