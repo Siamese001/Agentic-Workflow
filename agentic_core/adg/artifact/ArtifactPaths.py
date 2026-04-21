@@ -672,7 +672,16 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                        OR source_file LIKE '%/scripts/%'
                        OR source_file LIKE '%_scripts/%'
                        OR source_file LIKE '%/types/%'
-                       OR source_file LIKE '%_types.py')
+                       OR source_file LIKE '%_types.py'
+                       -- Apps support/plumbing code (not agent business logic):
+                       -- utility helpers, mixins, integrations, tracing shims.
+                       OR source_file LIKE 'apps_%/utils/%'
+                       OR source_file LIKE 'apps_%/mixins/%'
+                       OR source_file LIKE 'apps_%/integrations/%'
+                       OR source_file LIKE 'apps_%/_compat/%'
+                       OR source_file LIKE 'apps_%/config/%'
+                       OR source_file LIKE '%_util.py'
+                       OR source_file LIKE '%_mixin.py')
                     THEN 'LOW'
                     -- P3 LOW: double_logging in enforcement/chokepoint/guardrail files
                     -- AND the entire L5 safety plane AND cache clients. These modules
