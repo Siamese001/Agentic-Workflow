@@ -72,7 +72,7 @@
         "working_directory": "C:\\Git\\Agentic-Workflow"
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_hitl_capture.py",
+        "command": "python .windsurf/scripts/post_cascade_author_gate_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow"
       },
       {

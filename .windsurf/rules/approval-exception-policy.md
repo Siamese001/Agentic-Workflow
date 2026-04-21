@@ -135,6 +135,6 @@ All approvals are logged in:
 ## References
 
 - Constitutional Section 6 (Author-Gate), Section 8 (Guardian), Section 3 (Agent deletion)
-- `.windsurf/rules/hitl-enforcement.md` - Author-Gate protocol
-- `.windsurf/rules/anti-pattern-hitl-gate.md` - Anti-pattern approval flow
-- `.windsurf/rules/hitl-svp-calibration.md` - When Author-Gate is required vs forbidden
+- `.windsurf/rules/author-gate-enforcement.md` - Author-Gate protocol
+- `.windsurf/rules/anti-pattern-author-gate.md` - Anti-pattern approval flow
+- `.windsurf/rules/author-gate-svp-calibration.md` - When Author-Gate is required vs forbidden

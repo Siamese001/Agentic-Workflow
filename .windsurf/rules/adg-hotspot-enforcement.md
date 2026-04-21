@@ -208,7 +208,7 @@ These four are **structurally dangerous** and are the canonical hotspot triggers
 | `log_and_swallow` | `except X: log(e); continue` | Keeps running in bad state |
 | `return_none_swallow` | `except X: return None` | Failure → ambiguity → later crash |
 
-Any of these on a surface + high fan-in = **HOTSPOT**. Guardian exemption requires Author-Gate approval per `anti-pattern-hitl-gate.md`.
+Any of these on a surface + high fan-in = **HOTSPOT**. Guardian exemption requires Author-Gate approval per `anti-pattern-author-gate.md`.
 
 ---
 

@@ -24,7 +24,7 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 3. **No agent deletion without authorization.** Requires AGENT-DELETION-AUTHORIZED marker, 90-day deprecation, zero references.
 4. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
 5. **ADG before T2/T3 work.** Ingest `artifacts/adg/adg_indexed_<timestamp>.sqlite` before any query or edit. Regenerate: `python tools/generate_full_adg.py`.
-6. **Author-Gate for ambiguous decisions.** Score candidates 0.00–1.00, filter at 0.72, apply dominance rule (≥0.85, gap ≥0.12 → surface alone). See `hitl-enforcement.md`.
+6. **Author-Gate for ambiguous decisions.** Score candidates 0.00–1.00, filter at 0.72, apply dominance rule (≥0.85, gap ≥0.12 → surface alone). See `author-gate-enforcement.md`.
 7. **RCA auto-closure.** Execute corrective actions immediately. Never leave RCA unresolved.
 8. **Guardian exemptions require Author-Gate.** Format: `# guardian: allow-<type> -- <specific justification>`. Generic words forbidden. Gate: `guardian_exemption_gate.py`.
 9. **SVP Engineering persona for T3 architecture.** Prioritize: operational simplicity, dependency hygiene, archival over deletion, ADRs, zero-regression.
@@ -109,8 +109,8 @@ Enforcement chain (4 layers):
 
 Full protocol details live in focused rules — loaded on demand, not always_on:
 - `adg-repair-discipline.md` — ADG repair loop and fail-closed recovery
-- `anti-pattern-hitl-gate.md` — anti-pattern Author-Gate approval gate
-- `hitl-enforcement.md` — full Author-Gate decision pipeline and option shapes
+- `anti-pattern-author-gate.md` — anti-pattern Author-Gate approval gate
+- `author-gate-enforcement.md` — full Author-Gate decision pipeline and option shapes
 - `sequential-thinking-enforcement.md` — T2/T3 structured reasoning protocol
 - `global_rules.md` — subprocess, exception, MCP SSOT policy details
 - `adg-test-accelerator-enforcement.md` — ADG-driven test scope selection

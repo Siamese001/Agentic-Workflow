@@ -49,7 +49,7 @@ A plan that asserts a claim NOT backed by an ADG node/edge/MV is a **guess**, no
 | `silent_exception_swallow` | `except X: pass` | Total invisibility | **P2** |
 | `return_none_swallow` | `except X: return None` | Failure → ambiguity → later crash |  **P2** |
 
-All four have guardian exemption paths BUT require explicit Author-Gate approval per `anti-pattern-hitl-gate.md` (§constitutional 8). No new instances without approval.
+All four have guardian exemption paths BUT require explicit Author-Gate approval per `anti-pattern-author-gate.md` (§constitutional 8). No new instances without approval.
 
 ## 5. Hotspot Archetypes (required classification in plans)
 

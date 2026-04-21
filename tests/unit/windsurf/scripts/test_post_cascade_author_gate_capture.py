@@ -1,8 +1,8 @@
 # pylint: disable=protected-access
 """
-test_post_cascade_hitl_capture.py
+test_post_cascade_author_gate_capture.py
 
-Unit tests for .windsurf/scripts/post_cascade_hitl_capture.py
+Unit tests for .windsurf/scripts/post_cascade_author_gate_capture.py
 
 Coverage:
     _init_db           — schema creation, idempotency
@@ -24,10 +24,10 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".windsurf" / "scripts"))
 
-import post_cascade_hitl_capture as _m  # noqa: E402  (used for monkeypatching module globals)
+import post_cascade_author_gate_capture as _m  # noqa: E402  (used for monkeypatching module globals)
 
-from post_cascade_hitl_capture import (  # noqa: E402
-    _DDL,
+from post_cascade_author_gate_capture import (  # noqa: E402
+    _ddl,
     _extract_response_text,
     _infer_decision_type,
     _init_db,
@@ -64,7 +64,7 @@ _NO_HITL_TEXT = "This is a normal response with no HITL decision packet."
 def _make_in_memory_conn():
     """Open an in-memory SQLite DB and initialise the schema."""
     conn = sqlite3.connect(":memory:")
-    conn.executescript(_DDL)
+    conn.executescript(_ddl)
     conn.commit()
     return conn
 

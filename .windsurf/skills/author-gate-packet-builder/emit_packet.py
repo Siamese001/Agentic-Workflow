@@ -51,7 +51,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "decision_record.schema.json"
 RULE_PATH = (
-    REPO_ROOT / ".windsurf" / "rules" / "hitl-enforcement.md"
+    REPO_ROOT / ".windsurf" / "rules" / "author-gate-enforcement.md"
 )  # TODO: rename → author-gate-enforcement
 PRECEDENT_SCRIPT = Path(__file__).resolve().parent / "precedent_injector.py"
 
@@ -378,7 +378,7 @@ def main() -> int:
 
     # Emit the packet. Two markers for compatibility:
     #   AUTHOR_GATE_PACKET: — canonical (per W4 didactic template)
-    #   HITL_PACKET:        — legacy alias for post_cascade_hitl_capture.py scanner
+    #   HITL_PACKET:        — legacy alias for post_cascade_author_gate_capture.py scanner
     body = json.dumps(packet, indent=2)
     sys.stdout.write("AUTHOR_GATE_PACKET: " + body + "\n")
     sys.stdout.write("HITL_PACKET: " + body + "\n")

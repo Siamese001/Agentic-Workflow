@@ -45,14 +45,14 @@ Behavioral governance in Cascade context window. No blocking — advisory only.
 |-----------|---------|--------|-----------------|
 | `constitutional.md` | `always_on` | ✅ LOADING | Master floor: 14 sections (add §13 MCP green light, §14 timeout) |
 | `adg-repair-discipline.md` | `always_on` | ✅ LOADING | ADG-first repair loops |
-| `hitl-enforcement.md` | `always_on` | ✅ LOADING | Human-in-the-loop decisions |
+| `author-gate-enforcement.md` | `always_on` | ✅ LOADING | Human-in-the-loop decisions |
 | `memory-management.md` | `always_on` | ✅ LOADING | Memory graph hygiene |
 | `plan-location.md` | `always_on` | ✅ LOADING | Plan SSOT path + wave format |
 | `sequential-thinking-enforcement.md` | `always_on` | ✅ LOADING | Task management for T2/T3, timeout recovery |
 | `mcp-config-ssot.md` | ❌ `file_change` → FIX to `glob` | ❌ NOT LOADING | MCP YAML SSOT guidance (rewrite: behavioral only) |
 | `mcp-pytest-enforcement.md` | ❌ `file_change` → FIX to `glob` | ❌ NOT LOADING | Pytest MCP validation |
 | `security-hardening.md` | ❌ `file_change` → FIX to `model_decision` | ❌ NOT LOADING | Security practices |
-| `anti-pattern-hitl-gate.md` | ❌ `file_change` → FIX to `model_decision` | ❌ NOT LOADING | Anti-pattern Author-Gate approval |
+| `anti-pattern-author-gate.md` | ❌ `file_change` → FIX to `model_decision` | ❌ NOT LOADING | Anti-pattern Author-Gate approval |
 | `adg-test-accelerator-enforcement.md` | ❌ `file_change` → FIX to `glob` | ❌ NOT LOADING | ADG test acceleration |
 | ~~`plan_ci_enforcement.md`~~ | `file_change` | **DELETE** | Dup of T1 hook + pre-commit |
 | ~~`pytest-config-ssot.md`~~ | `file_change` | **DELETE** | Dup of pre-commit T11.3 |
@@ -77,8 +77,8 @@ Behavioral governance in Cascade context window. No blocking — advisory only.
 | `adg-test-triage-gate.md` | `/adg-test-triage-gate` | Fan-in triage | KEEP |
 | `adg-timeout-recovery.md` | `/adg-timeout-recovery` | Timeout recovery | KEEP |
 | `agent-deletion-gate.md` | `/agent-deletion-gate` | Agent deletion | KEEP |
-| `antipattern-hitl-gate.md` | `/antipattern-hitl-gate` | Anti-pattern Author-Gate | KEEP |
-| `hitl-decision-gate.md` | `/hitl-decision-gate` | Decision options | KEEP |
+| `antipattern-author-gate.md` | `/antipattern-hitl-gate` | Anti-pattern Author-Gate | KEEP |
+| `author-gate-decision-gate.md` | `/hitl-decision-gate` | Decision options | KEEP |
 | `mcp-config-sync.md` | `/mcp-config-sync` | YAML→JSON sync | KEEP (manual action) |
 | `mcp-failure-rca.md` | `/mcp-failure-rca` | MCP diagnosis | KEEP (interactive) |
 | ~~`mcp-validate.md`~~ | `/mcp-validate` | MCP config check | **ARCHIVE** (dup of pre-commit T11) |

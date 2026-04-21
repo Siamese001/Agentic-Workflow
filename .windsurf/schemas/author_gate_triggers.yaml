@@ -157,7 +157,7 @@ triggers:
 # ---------------------------------------------------------------------
 # BYPASS CONDITIONS (even if triggers match, these skip the gate)
 # ---------------------------------------------------------------------
-# Mirrors hitl-enforcement.md §Bypass Conditions
+# Mirrors author-gate-enforcement.md §Bypass Conditions
 bypass:
   - description: Whitespace-only / formatting-only edits
     condition: only_whitespace_and_imports

@@ -12,7 +12,7 @@ plan_type: governance
 
 **W5 Deliverables (integrity, verified passing):**
 - `.windsurf/scripts/author_gate_ledger_integrity.py` — hash-chain lib: `canonicalize_row`, `compute_row_hash`, `verify_chain`, `backfill_chain`, `ensure_row_hash`
-- `.windsurf/scripts/post_cascade_hitl_capture.py` — calls `ensure_row_hash` after every commit (fail-open)
+- `.windsurf/scripts/post_cascade_author_gate_capture.py` — calls `ensure_row_hash` after every commit (fail-open)
 - `ops_scripts/ci/author_gate/check_ledger_integrity.py` — CI gate (PASS: 35/35 rows verified)
 - `ops_scripts/ci/run_contract_gates.py` — integrity gate wired after schema + coverage
 - `.github/workflows/author-gate-gates.yml` — integrity step added between coverage and binder dry-run
@@ -30,7 +30,7 @@ plan_type: governance
 - `.windsurf/skills/author-gate-packet-builder/packet_template.md` — full HITL-10 + didactic rules + gold-star convention
 - `.windsurf/skills/author-gate-packet-builder/emit_packet.py` — builder with routing, schema validation, precedent injection, `is_recommended`/`surface_label`/`surface_description_prefix` gold-star fields
 - `.windsurf/skills/author-gate-packet-builder/precedent_injector.py` — wrapper over refactor-decision-memory lookup
-- `.windsurf/rules/hitl-enforcement.md` — terminology note + gold-star `ask_user_question` convention added
+- `.windsurf/rules/author-gate-enforcement.md` — terminology note + gold-star `ask_user_question` convention added
 
 **W4 Exit Criteria (all met):**
 - ✅ Emits `AUTHOR_GATE_PACKET:` (canonical) + `HITL_PACKET:` (legacy alias) JSON blocks
@@ -138,8 +138,8 @@ Sum of all waves ~87k is <50% of warning threshold → 🟢 GREEN.
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|----------------|-------------|-------------|--------|
 | P1.1 | Rename rules | `.windsurf/rules/hitl-*.md` (5 files) → `author-gate-*.md` / `harness-*.md` | Cross-refs in 50+ files (plans, AGENTS.md, RULES_INDEX.md) | 3k | TODO |
-| P1.2 | Rename scripts | `.windsurf/scripts/post_cascade_hitl_capture.py`, `ops_scripts/ci/validate_hitl_*` | Hook bindings in `.windsurf/hooks.json`; back-compat shims | 3k | TODO |
-| P1.3 | Update references | `AGENTS.md`, `RULES_INDEX.md`, `constitutional.md` §17, all plans citing `hitl-enforcement.md` | Memory graph entities reference old names | 2k | TODO |
+| P1.2 | Rename scripts | `.windsurf/scripts/post_cascade_author_gate_capture.py`, `ops_scripts/ci/validate_hitl_*` | Hook bindings in `.windsurf/hooks.json`; back-compat shims | 3k | TODO |
+| P1.3 | Update references | `AGENTS.md`, `RULES_INDEX.md`, `constitutional.md` §17, all plans citing `author-gate-enforcement.md` | Memory graph entities reference old names | 2k | TODO |
 | P2.1 | Schema SSOT | `.windsurf/schemas/decision_ledger.schema.sql`, `decision_record.schema.json` | Migration from current schema | 6k | TODO |
 | P2.2 | Outcome binder | `.windsurf/scripts/post_commit_outcome_binder.py` + git hook | Commit↔decision matching by fingerprint | 7k | TODO |
 | P2.3 | Coverage CI | `ops_scripts/ci/author_gate/check_outcome_coverage.py`, `check_ledger_schema.py` | Baseline file for ratchet | 5k | TODO |
@@ -163,14 +163,14 @@ Sum of all waves ~87k is <50% of warning threshold → 🟢 GREEN.
 
 | Old | New | Reason |
 |-----|-----|--------|
-| `.windsurf/rules/hitl-enforcement.md` | `.windsurf/rules/author-gate-enforcement.md` | Reserve "Author-Gate" for runtime |
-| `.windsurf/rules/hitl-decision-points.md` | `.windsurf/rules/author-gate-decision-points.md` | Same |
-| `.windsurf/rules/hitl-svp-calibration.md` | `.windsurf/rules/author-gate-svp-calibration.md` | Same |
-| `.windsurf/rules/anti-pattern-hitl-gate.md` | `.windsurf/rules/anti-pattern-author-gate.md` | Same |
+| `.windsurf/rules/author-gate-enforcement.md` | `.windsurf/rules/author-gate-enforcement.md` | Reserve "Author-Gate" for runtime |
+| `.windsurf/rules/author-gate-decision-points.md` | `.windsurf/rules/author-gate-decision-points.md` | Same |
+| `.windsurf/rules/author-gate-svp-calibration.md` | `.windsurf/rules/author-gate-svp-calibration.md` | Same |
+| `.windsurf/rules/anti-pattern-author-gate.md` | `.windsurf/rules/anti-pattern-author-gate.md` | Same |
 | `.windsurf/rules/refactor-decision-memory.md` | **KEEP** — name is accurate | Not a Author-Gate artifact per se |
-| `.windsurf/scripts/post_cascade_hitl_capture.py` | `.windsurf/scripts/post_cascade_author_gate_capture.py` | Same |
-| `.windsurf/workflows/hitl-decision-gate.md` | `.windsurf/workflows/author-gate-decision-gate.md` | Same |
-| `.windsurf/workflows/antipattern-hitl-gate.md` | `.windsurf/workflows/antipattern-author-gate.md` | Same |
+| `.windsurf/scripts/post_cascade_author_gate_capture.py` | `.windsurf/scripts/post_cascade_author_gate_capture.py` | Same |
+| `.windsurf/workflows/author-gate-decision-gate.md` | `.windsurf/workflows/author-gate-decision-gate.md` | Same |
+| `.windsurf/workflows/antipattern-author-gate.md` | `.windsurf/workflows/antipattern-author-gate.md` | Same |
 | `ops_scripts/ci/validate_hitl_format.py` | **KEEP as shim** — add deprecation warning, new logic in `check_packet_compliance.py` | Back-compat for CI history |
 | `ops_scripts/ci/validate_hitl_rules.py` | **KEEP as shim** — same | Back-compat |
 | Memory graph entities referencing `Author-Gate*` | Rewrite to `AuthorGate*` | Sync prior conversations |

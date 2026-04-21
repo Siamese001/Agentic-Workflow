@@ -707,7 +707,7 @@ A blanket "exit 0 on all errors" weakens safety-critical pre-hooks. Failure poli
 | `mcp-config-ssot.md` | FIX + REWRITE | `glob` + `globs: config/mcp_servers.yaml` | Policy guidance only (enforcement in T1 hook) |
 | `mcp-pytest-enforcement.md` | FIX | `glob` + `globs: **/test_*.py, **/conftest.py` | Policy: test quality standards |
 | `security-hardening.md` | FIX | `model_decision` | Policy: security requirements |
-| `anti-pattern-hitl-gate.md` | FIX | `model_decision` | Policy: exception handling standards |
+| `anti-pattern-author-gate.md` | FIX | `model_decision` | Policy: exception handling standards |
 | `adg-test-accelerator-enforcement.md` | FIX | `glob` + `globs: **/test_*_adg.py, tools/adg/**` | Policy: ADG test standards |
 | `plan_ci_enforcement.md` | **DELETE** | — | Dup of T1 hook `pre_write_gate.py` + pre-commit |
 | `pytest-config-ssot.md` | **DELETE** | — | Dup of pre-commit T11.3 `_validate_pytest_config.py` |
@@ -770,7 +770,7 @@ A blanket "exit 0 on all errors" weakens safety-critical pre-hooks. Failure poli
 **Files**:
 - UPDATE: `constitutional.md` §8 — add Column 5 reference
 - UPDATE: `global_rules.md` — add exception handling policy
-- UPDATE: `.windsurf/rules/anti-pattern-hitl-gate.md` — reference Column 5
+- UPDATE: `.windsurf/rules/anti-pattern-author-gate.md` — reference Column 5
 
 **Policy**: Column 5 = REQUIRED pattern. Columns 2-4 = FORBIDDEN. Guardian exemptions only when Column 5 demonstrably impossible.
 
@@ -1328,7 +1328,7 @@ ADG generation → scan → P1 found? → RepairOrchestrator.attempt_p1_fix() �
 | `mcp-validate.md` | Superseded by Tier 4 MCP health check (Phase 2.2) |
 | `preprocess-rules.md` | One-time setup, no longer needed |
 
-**KEEP**: `adg-redis-refresh.md`, `adg-repair-loop.md`, `adg-test-triage-gate.md`, `adg-timeout-recovery.md`, `agent-deletion-gate.md`, `antipattern-hitl-gate.md`, `hitl-decision-gate.md`, `mcp-failure-rca.md`, `memory-purge-sync.md`, `adg-accelerator-optimization.md`, `progress-display-enforcement.md`, `timeout-progress-enforcement.md`.
+**KEEP**: `adg-redis-refresh.md`, `adg-repair-loop.md`, `adg-test-triage-gate.md`, `adg-timeout-recovery.md`, `agent-deletion-gate.md`, `antipattern-author-gate.md`, `author-gate-decision-gate.md`, `mcp-failure-rca.md`, `memory-purge-sync.md`, `adg-accelerator-optimization.md`, `progress-display-enforcement.md`, `timeout-progress-enforcement.md`.
 
 **UPDATE**: `.windsurf/RULES_INDEX.md` — remove entries for archived workflows.
 
@@ -1665,7 +1665,7 @@ Each wave is independently rollbackable.
 | SSOT dedup | 0 enforcement duplicates | governance-enforcement-table.md audit |
 | Approval classes | ALLOW/DENY/REQUIRE_APPROVAL/ESCALATE | Policy doc review |
 | MCP Registry | 14 MCPs documented | `docs/guides/MCP_Registry.md` exists |
-| Author-Gate ⭐ calibration | All cite target-state attributes | `grep "target-state" hitl-enforcement.md` |
+| Author-Gate ⭐ calibration | All cite target-state attributes | `grep "target-state" author-gate-enforcement.md` |
 | Column 5 vocabulary | In constitutional §8 | `grep "Column 5" constitutional.md` |
 | **Wave 2.5 — ADG Modularization** | | |
 | Monolith → shim | 3,305 → ~30 lines | `wc -l tools/generate/generate_full_adg.py` |

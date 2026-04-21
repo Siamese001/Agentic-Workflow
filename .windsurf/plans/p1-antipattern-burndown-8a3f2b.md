@@ -22,11 +22,11 @@ Burn down 98 P1 anti-pattern violations in `.windsurf/scripts/` infrastructure f
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| 1.1 | Rename ALL_CAPS constants to snake_case | pre_mcp_gate.py, pre_prompt_classifier.py, post_mcp_audit.py, post_cascade_hitl_capture.py, post_write_mcp_config_sync.py, post_cascade_adg_audit.py, post_run_audit.py, backfill_cat4_decisions.py, post_cascade_cleanup.py, post_setup_worktree.py, post_write_audit.py, pre_run_gate.py | PP-1: Mechanical renames, GAP-1: Zero production consumers | ~15K | 🔲 TODO |
+| 1.1 | Rename ALL_CAPS constants to snake_case | pre_mcp_gate.py, pre_prompt_classifier.py, post_mcp_audit.py, post_cascade_author_gate_capture.py, post_write_mcp_config_sync.py, post_cascade_adg_audit.py, post_run_audit.py, backfill_cat4_decisions.py, post_cascade_cleanup.py, post_setup_worktree.py, post_write_audit.py, pre_run_gate.py | PP-1: Mechanical renames, GAP-1: Zero production consumers | ~15K | 🔲 TODO |
 | 1.2 | Verify Wave 1 fixes | Regenerate ADG, check P1 count | PP-2: ADG generation time (~120s), GAP-2: Ratchet ceiling adjustment | ~5K | 🔲 TODO |
 | 2.1 | Replace broad exception catching with specific types | Same 12 files as Wave 1 | PP-3: Context-specific type selection, GAP-3: Guardian exemptions required | ~20K | 🔲 TODO |
 | 2.2 | Verify Wave 2 fixes | Regenerate ADG, check P1 count | PP-4: ADG generation time, GAP-4: Ratchet ceiling adjustment | ~5K | 🔲 TODO |
-| 3.1 | Evaluate and fix literal strings/regex | post_cascade_hitl_capture.py, post_cascade_adg_audit.py, post_write_mcp_config_sync.py, pre_prompt_classifier.py | PP-5: Case-by-case necessity evaluation, GAP-5: Some may be legitimate patterns | ~10K | 🔲 TODO |
+| 3.1 | Evaluate and fix literal strings/regex | post_cascade_author_gate_capture.py, post_cascade_adg_audit.py, post_write_mcp_config_sync.py, pre_prompt_classifier.py | PP-5: Case-by-case necessity evaluation, GAP-5: Some may be legitimate patterns | ~10K | 🔲 TODO |
 | 3.2 | Verify Wave 3 fixes | Regenerate ADG, final P1 count check | PP-6: ADG generation time, GAP-6: Target P1 = 0 | ~5K | 🔲 TODO |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
@@ -48,7 +48,7 @@ Burn down 98 P1 anti-pattern violations in `.windsurf/scripts/` infrastructure f
 **GAP-3: Guardian exemptions for probe safety**
 - Some broad exceptions in probe functions may require guardian comments
 - Example: `pre_mcp_gate.py` probe functions use broad `Exception` to prevent gate crashes
-- Author-Gate approval required for new guardian exemptions per anti-pattern-hitl-gate.md
+- Author-Gate approval required for new guardian exemptions per anti-pattern-author-gate.md
 
 **GAP-4: Context-specific exception type selection**
 - Cannot mechanically replace all `Exception` with specific types
@@ -144,7 +144,7 @@ python tools/generate_full_adg.py
 ## Rules
 
 - Constitutional §15: Precise exception handling - catch specific types
-- Constitutional §8: Guardian exemptions require Author-Gate approval via anti-pattern-hitl-gate.md
+- Constitutional §8: Guardian exemptions require Author-Gate approval via anti-pattern-author-gate.md
 - Zero production blast radius - all changes are in infrastructure scripts
 - ADG ratchet discipline - regenerate after each wave, adjust ceiling if needed
 - MCP green light protocol - check ADG health before T2/T3 work (already verified)

@@ -195,7 +195,7 @@ def validate_corpus_has_section(paths: list[Path], section_marker: str) -> list[
     """Ensure at least one file in the corpus contains ``section_marker``.
 
     Used for §HITL-9 and §HITL-10, which live in exactly one canonical
-    file (``hitl-decision-points.md``) after the 2026-Q1 consolidation.
+    file (``author-gate-decision-points.md``) after the 2026-Q1 consolidation.
     """
     for p in paths:
         text, _err = _read_text(p)

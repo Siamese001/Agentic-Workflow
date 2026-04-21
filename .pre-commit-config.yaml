@@ -271,11 +271,11 @@ repos:
       # config, §HITL-10 option shape, forbidden 2-4-count patterns, and required
       # pipeline patterns. The validator was refactored 2026-04-19 to accept the
       # post-consolidation split layout (enforcement.md + decision-points.md +
-      # svp-calibration.md + anti-pattern-hitl-gate.md). Triggers on any HITL file
+      # svp-calibration.md + anti-pattern-author-gate.md). Triggers on any HITL file
       # change; passes all 4 files together so corpus-level checks work.
       - id: hitl-rules-corpus
         name: "T7e: HITL Rules Corpus"
-        entry: py ops_scripts/ci/validate_hitl_rules.py .windsurf/rules/hitl-enforcement.md .windsurf/rules/hitl-decision-points.md .windsurf/rules/hitl-svp-calibration.md .windsurf/rules/anti-pattern-hitl-gate.md
+        entry: py ops_scripts/ci/validate_hitl_rules.py .windsurf/rules/author-gate-enforcement.md .windsurf/rules/author-gate-decision-points.md .windsurf/rules/author-gate-svp-calibration.md .windsurf/rules/anti-pattern-author-gate.md
         language: system
         pass_filenames: false
         files: ^\.windsurf/rules/(hitl-|anti-pattern-hitl).*\.md$

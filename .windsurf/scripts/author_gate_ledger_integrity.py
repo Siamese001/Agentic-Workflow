@@ -469,7 +469,7 @@ def resign_chain(db_path: Path = DB_PATH) -> ChainResult:
 
 
 # ===================================================================== #
-# INSERT helper (called by post_cascade_hitl_capture.py on write)       #
+# INSERT helper (called by post_cascade_author_gate_capture.py on write)       #
 # ===================================================================== #
 
 

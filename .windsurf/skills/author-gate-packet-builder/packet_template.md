@@ -16,7 +16,7 @@ Every field here has a role in producing a surfaced decision that both
 
 ## Header Packet (above the options)
 
-The header MUST start with the marker line so `post_cascade_hitl_capture.py`
+The header MUST start with the marker line so `post_cascade_author_gate_capture.py`
 can detect the packet type unambiguously:
 
 ```

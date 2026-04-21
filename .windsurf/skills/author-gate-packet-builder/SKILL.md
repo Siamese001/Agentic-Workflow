@@ -1,6 +1,6 @@
 ---
 name: author-gate-packet-builder
-description: Emit a schema-valid Author-Gate Decision packet for harness author-gate (developer-loop) decisions. Use when an author-gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Not the same as runtime Author-Gate (v30 step [5] / ADR-023). This skill consults precedent, constructs the HITL-10 option shape with didactic fields + gold-star on the recommended option, and writes AUTHOR_GATE_PACKET (with HITL_PACKET legacy alias) that post_cascade_hitl_capture consumes. Third person, deterministic, invoked before ask_user_question.
+description: Emit a schema-valid Author-Gate Decision packet for harness author-gate (developer-loop) decisions. Use when an author-gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Not the same as runtime Author-Gate (v30 step [5] / ADR-023). This skill consults precedent, constructs the HITL-10 option shape with didactic fields + gold-star on the recommended option, and writes AUTHOR_GATE_PACKET (with HITL_PACKET legacy alias) that post_cascade_author_gate_capture consumes. Third person, deterministic, invoked before ask_user_question.
 metadata:
   enforcement_layer: windsurf
   enforcement_timing: before_hitl
@@ -17,7 +17,7 @@ Every packet emitted by this skill:
 2. Carries a `context_fingerprint` matching the pending change (for gate correlation)
 3. Includes 3 didactic fields per option: `principle_at_stake`, `what_youd_miss`, `what_would_flip`
 4. Embeds precedent verdict from `refactor-decision-memory` skill
-5. Is captured by `post_cascade_hitl_capture.py` into the decision ledger
+5. Is captured by `post_cascade_author_gate_capture.py` into the decision ledger
 
 ## When to Invoke
 
@@ -68,7 +68,7 @@ echo '{
 }' | python .windsurf/skills/author-gate-packet-builder/emit_packet.py
 ```
 
-Output (stdout): a `HITL_PACKET:` block (JSON) that `post_cascade_hitl_capture.py` scans for.
+Output (stdout): a `HITL_PACKET:` block (JSON) that `post_cascade_author_gate_capture.py` scans for.
 
 ### Precedent-only lookup (without packet emit)
 
@@ -79,7 +79,7 @@ echo '{"decision_type": "refactor_scope", "normalized_intent": "..."}' | \
 
 ## Output Shape (HITL_PACKET block)
 
-Emitted to stdout, fenced. Consumed by `post_cascade_hitl_capture.py`:
+Emitted to stdout, fenced. Consumed by `post_cascade_author_gate_capture.py`:
 
 ```
 HITL_PACKET: {

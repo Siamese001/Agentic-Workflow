@@ -91,5 +91,5 @@ Create a row in the HITL Decision Ledger DB (database_id
 ## Reference
 
 - Schema: `.windsurf/schemas/author_gate_triggers.yaml` (`shadow_launch_date`, `shadow_min_days`)
-- Rule: `.windsurf/rules/hitl-enforcement.md`
+- Rule: `.windsurf/rules/author-gate-enforcement.md`
 - Plan: `.windsurf/plans/harness-enforcement-rename-a8f21c.md` (W3 shadow mode)

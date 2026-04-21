@@ -10,11 +10,11 @@ metadata:
 # Refactor Decision Memory Skill
 
 **PURPOSE:** Surface historical refactor/Author-Gate decisions to bias or enrich upcoming Author-Gate packets.
-This skill is the lookup engine — it does **not** replace `hitl-enforcement.md` as policy SSOT.
+This skill is the lookup engine — it does **not** replace `author-gate-enforcement.md` as policy SSOT.
 
 ## When to Invoke
 
-Invoke before opening Author-Gate for any of these decision classes (per `hitl-enforcement.md` §HITL-1):
+Invoke before opening Author-Gate for any of these decision classes (per `author-gate-enforcement.md` §HITL-1):
 
 - Architecture choice (§1.1)
 - Refactoring scope (§1.2)
@@ -76,7 +76,7 @@ Valid `decision_type` values:
 |---------|-------------|
 | `strong` | Reuse or heavily bias toward matched precedent. State: "Historical precedent recommends: …" Consider bypassing Author-Gate if dominance rule fires and `promote_to_pattern=true` and no regression. |
 | `suggestive` | Include precedent summary in Author-Gate framing. Add "Prior decision (YYYY-MM-DD): …" in the question packet header. |
-| `none` | Proceed with standard Author-Gate per `hitl-enforcement.md`. No precedent bias. |
+| `none` | Proceed with standard Author-Gate per `author-gate-enforcement.md`. No precedent bias. |
 
 ## Cold Start
 

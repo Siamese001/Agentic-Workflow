@@ -311,7 +311,7 @@ P0 row: `secret_access = N` (instrumented runtime count vs 1 static).
 New `relation_type='hitl_decision'` with columns: `decision_option`, `timestamp`, `adg_node_id`, `trigger_file`, `trigger_line`.
 
 ### µW-12.2 — Wire Author-Gate gate invocations
-Modify `ask_user_question` Author-Gate enforcement points (in `.windsurf/rules/hitl-enforcement.md` pattern + any Python implementations) to write a `hitl_decision` record post-selection. Ingest at ADG generation time.
+Modify `ask_user_question` Author-Gate enforcement points (in `.windsurf/rules/author-gate-enforcement.md` pattern + any Python implementations) to write a `hitl_decision` record post-selection. Ingest at ADG generation time.
 P0 row: `Author-Gate log = N decisions` (linked to ADG node IDs).
 
 ---
