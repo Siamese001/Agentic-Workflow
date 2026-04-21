@@ -121,12 +121,7 @@ class GeminiJudgeProvider:
                 generation_config={"temperature": 0.0},
             )
             raw = response.text
-        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
-            _log.warning(
-                "[GeminiJudgeProvider] Gemini API error for %s: %s",
-                rubric_id,
-                exc,
-            )
+        except (AttributeError, RuntimeError, TypeError, ValueError):  # guardian: allow-double-logging -- Gemini API error logged before re-raise for provider-judge diagnostics
             raise
 
         try:

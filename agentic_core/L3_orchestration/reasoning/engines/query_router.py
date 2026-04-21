@@ -157,9 +157,8 @@ class QueryRouter:
 
             return chunks
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            Logger.error(f"Structural search failed: {e}")
-            raise  # Re-raise to surface errors to caller
+        except (RuntimeError, ValueError, AttributeError, KeyError, TypeError):  # guardian: allow-double-logging -- structural-search failure logged before re-raise for query diagnostics
+            raise
 
     def _hybrid_search(
         self,

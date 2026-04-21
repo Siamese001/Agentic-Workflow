@@ -215,7 +215,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
             await self.manager.connect(self.role)
             self.initialized = True
             Logger.info(f"[L3 MCP] Sovereign router ARMED for role '{self.role}'")
-        except (RuntimeError, ValueError, FileNotFoundError, OSError) as e:
+        except (RuntimeError, ValueError, FileNotFoundError, OSError) as e:  # guardian: allow-double-logging -- MCP breach recorded in authority register before re-raise; critical log is audit-required
             Logger.critical(f"[L3 MCP BREACH] Initialization failed: {e}")
             get_mcp_authority().record_breach(str(e))
             raise

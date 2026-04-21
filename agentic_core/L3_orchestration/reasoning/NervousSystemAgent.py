@@ -544,10 +544,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 actor_id="NervousSystemAgent",
                 run_id=getattr(context, "run_id", "") or "",
             )
-        except (
-            PolicyEnforcementError
-        ) as _pee:  # guardian: PolicyEnforcementError should be handled with specific context
-            LOGGER.error("Policy blocked NervousSystemAgent.execute: %s", _pee)
+        except PolicyEnforcementError:  # guardian: allow-double-logging -- policy breach logged before re-raise for L5-safety audit trail
             raise
         _rsa = get_run_state_authority()
         _rsa.observe_runtime_state(

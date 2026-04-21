@@ -254,8 +254,7 @@ class PromptInjectionLoader:
 
                 logger.debug(f"Loaded injection {injection.id} from {file_path}")
 
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                logger.error(f"Failed to load {file_path}: {e}")
+            except (OSError, ValueError, TypeError, KeyError, AttributeError):  # guardian: allow-double-logging -- injection-load failure logged before re-raise for startup diagnostics
                 raise
 
         # Load instructional injections

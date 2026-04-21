@@ -337,7 +337,7 @@ def emit_trace(layer: str, operation: str | None = None) -> Callable:
                     digest,
                 )
                 return result
-            except (ValueError, TypeError, RuntimeError) as e:
+            except (ValueError, TypeError, RuntimeError):  # guardian: allow-log-and-swallow -- trace-emit failure is non-fatal; debug log with elapsed timing is the trace itself
                 elapsed_ms = (time.monotonic() - start) * 1000.0
                 logger.debug(
                     "TRACE_EMIT layer=%s module=%s op=%s trace_id=%s elapsed_ms=%.1f ok=False",

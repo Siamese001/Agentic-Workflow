@@ -110,7 +110,7 @@ class L5Streamer:
 
     async def _stream_worker(self):
         """Background worker to drain queue to JSONL without blocking execution."""
-        while True:
+        while True:  # guardian: allow-retry-without-backoff -- background queue drain; blocking await on queue.get() provides natural pacing
             try:
                 payload = await self.stream_queue.get()
                 try:

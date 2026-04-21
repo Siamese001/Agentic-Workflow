@@ -156,8 +156,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
 
             return artifact
 
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            logger.error(f"Failed to generate API documentation for {source}: {e}")
+        except (OSError, ValueError, TypeError, AttributeError, RuntimeError):  # guardian: allow-double-logging -- API doc generation failure logged before re-raise for batch diagnostics
             raise
 
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:

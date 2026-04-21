@@ -23,9 +23,9 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
         try:
             with path_to_check.open(encoding="utf-8") as f:
                 data = json.load(f)
-        except json.JSONDecodeError as exc:
+        except json.JSONDecodeError:  # guardian: allow-double-logging -- CRITICAL config-load error logged before re-raise to halt startup with clear diagnostic
             LOGGER.error(
-                "CRITICAL: Invalid JSON in %s file '%s': %s. Halting.", description, path_to_check, exc
+                "CRITICAL: Invalid JSON in %s file '%s'. Halting.", description, path_to_check
             )
             raise
 

@@ -140,7 +140,7 @@ class RetrievalBenchmark:
             try:
                 filtered = self.engine._apply_governance_filters(results, governance_filter)
                 filtered_count = len(filtered) if filtered is not None else 0
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError):
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-default-fallback -- benchmark records 0 filtered results on governance filter failure; row kept in dataset
                 filtered_count = 0
             with_filter.append(filtered_count)
         avg_without = sum(without_filter) / len(without_filter)
