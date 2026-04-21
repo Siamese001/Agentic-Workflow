@@ -1,7 +1,13 @@
+---
+plan_id: harness-enforcement-rename-a8f21c
+plan_type: governance
+---
+
 # Harness Enforcement Rename & Build Plan
 
 **Plan ID:** `harness-enforcement-rename-a8f21c`
 **Type:** T3 (cross-cutting rename + new subsystem)
+**Plan type:** governance — this plan governs gates, schemas, CI, and the Author-Gate subsystem itself; it is not a code refactor whose blast radius can be measured against the ADG graph layer. §22 graph-layer-evidence gate opted out via frontmatter.
 **Status:** W2 + W3 + W4 + W5 (integrity) + W7.1 (calibration) DELIVERED 2026-04-21; W1 DEFERRED; W3 in shadow-mode bake (flip date 2026-04-28)
 
 **W5 Deliverables (integrity, verified passing):**

@@ -1,3 +1,8 @@
+---
+plan_id: apps-lic-e2e-audit-a1b2c3
+plan_type: audit
+---
+
 # apps_lic End-to-End Audit & Gap Report
 
 **Created**: 2026-04-20 20:35 UTC-04

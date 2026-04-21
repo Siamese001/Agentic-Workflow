@@ -21,6 +21,44 @@ primary analysis surface. It provides:
 
 Any T2/T3 refactoring plan MUST use these as **primary drivers**. Using only `edges` + `violations` tables is **insufficient** and counts as partial analysis.
 
+## Plan Scope via Frontmatter — `plan_type` (since 2026-04-21)
+
+Plans carry a YAML frontmatter block declaring their type. The
+`check_graph_layer_evidence.py` gate (§22) uses `plan_type` as the
+authoritative signal for whether the graph-layer evidence sections are
+required.
+
+```yaml
+---
+plan_id: <descriptive-name>-<6hex>
+plan_type: refactor    # enforces §22: ADG_HOTSPOT_REPORT + ADG_GRAPH_LAYER_EVIDENCE required
+---
+```
+
+### Accepted values
+
+| `plan_type` | §22 gate behavior | Use for |
+|---|---|---|
+| `refactor` | **ENFORCED** — hotspot + evidence sections required | Code refactoring, antipattern burndowns, wave plans that change code |
+| `governance` | SKIPPED | Gates, schemas, CI policy, rule-system changes, Author-Gate subsystem |
+| `audit` | SKIPPED | Observational / inventory plans with no code change |
+| `doc` | SKIPPED | Documentation-only plans |
+| `infra` | SKIPPED | Infrastructure / tooling plans with no code-refactor blast radius |
+| `tracker` | SKIPPED | Descope trackers, status dashboards |
+
+### Behavior when frontmatter is absent
+
+The gate falls back to keyword heuristics (`refactor`, `burndown`, `wave plan`,
+`hotspot`, `P0–P3 ratchet`, `antipattern burn/fix/reduction`). This preserves
+legacy plan behavior; new plans SHOULD declare `plan_type` explicitly.
+
+### Unknown `plan_type` fails closed
+
+A `plan_type` value not in the accepted list triggers a §22 violation with
+`unknown_plan_type=<value>`. Add the new type to `_EXEMPT_PLAN_TYPES` or
+`_REFACTOR_PLAN_TYPES` in `ops_scripts/ci/check_graph_layer_evidence.py` if the
+value is legitimate.
+
 > **PRIMARY source shortcut (post-P7):** `adg_graphdb_queries_<ts>.json` under
 > `artifacts/adg/` ships pre-computed results for 9 StructuralQueries
 > (gravity_import_violations, illegal_layer_reach, l2_lifecycle_conformance,

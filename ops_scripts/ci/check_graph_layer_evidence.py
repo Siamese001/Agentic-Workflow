@@ -54,12 +54,47 @@ REFACTOR_INTENT_PATTERNS = (
     re.compile(r"\bantipattern (?:burn|fix|reduction)\b", re.IGNORECASE),
 )
 
-EVIDENCE_HEADER = re.compile(
-    r"^#{1,4}\s*ADG[_ ]GRAPH[_ ]LAYER[_ ]EVIDENCE\b", re.IGNORECASE | re.MULTILINE
+# Frontmatter parser: YAML-style fenced block at top of file.
+# ``plan_type`` is the authoritative signal; when present it overrides
+# the keyword heuristic below.
+_FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
+_PLAN_TYPE_RE = re.compile(r"^\s*plan_type\s*:\s*([A-Za-z0-9_\-]+)\s*$", re.MULTILINE)
+
+# plan_type values that REQUIRE the §22 evidence sections.
+_REFACTOR_PLAN_TYPES: frozenset[str] = frozenset({"refactor"})
+
+# plan_type values that are explicitly EXEMPT from §22 (governance, CI,
+# documentation, audit, or infrastructure plans that do not drive code changes
+# whose blast radius can be measured against the graph layer).
+_EXEMPT_PLAN_TYPES: frozenset[str] = frozenset(
+    {
+        "governance",  # gates, schemas, CI policy
+        "audit",  # observation / inventory, no code change
+        "doc",  # documentation only
+        "infra",  # infrastructure / tooling, not code refactor
+        "tracker",  # descope trackers, status dashboards
+    }
 )
-HOTSPOT_HEADER = re.compile(
-    r"^#{1,4}\s*ADG[_ ]HOTSPOT[_ ]REPORT\b", re.IGNORECASE | re.MULTILINE
-)
+
+
+def _parse_plan_type(text: str) -> str | None:
+    """Return the plan_type frontmatter value, or None when absent/malformed.
+
+    Only reads the first YAML-fenced block (``---`` ... ``---``) at the very
+    top of the file. Returns the lowercase token. Non-string or missing key =
+    None, which triggers the keyword heuristic fallback.
+    """
+    m = _FRONTMATTER_RE.match(text)
+    if not m:
+        return None
+    pt_match = _PLAN_TYPE_RE.search(m.group(1))
+    if not pt_match:
+        return None
+    return pt_match.group(1).strip().lower()
+
+
+EVIDENCE_HEADER = re.compile(r"^#{1,4}\s*ADG[_ ]GRAPH[_ ]LAYER[_ ]EVIDENCE\b", re.IGNORECASE | re.MULTILINE)
+HOTSPOT_HEADER = re.compile(r"^#{1,4}\s*ADG[_ ]HOTSPOT[_ ]REPORT\b", re.IGNORECASE | re.MULTILINE)
 
 MV_PATTERN = re.compile(r"\bmv_[a-z][a-z0-9_]+\b", re.IGNORECASE)
 PVIEW_PATTERN = re.compile(r"\bv_p[0-3]_[a-z][a-z0-9_]+\b", re.IGNORECASE)
@@ -88,9 +123,7 @@ HOTSPOT_ARCHETYPES: frozenset[str] = frozenset(
         "SAFETY_GATEKEEPER",
     }
 )
-ARCHETYPE_PATTERN = re.compile(
-    r"\b(" + "|".join(re.escape(a) for a in HOTSPOT_ARCHETYPES) + r")\b"
-)
+ARCHETYPE_PATTERN = re.compile(r"\b(" + "|".join(re.escape(a) for a in HOTSPOT_ARCHETYPES) + r")\b")
 
 # 5 ADG Surfaces that hotspot reports must cross-reference
 # (adg-canonical-invariants.md §3).
@@ -116,7 +149,14 @@ def _has_refactor_intent(text: str) -> bool:
 
 
 def _evaluate_plan(path: Path) -> dict | None:
-    """Return a violation dict if plan fails the gate, else None."""
+    """Return a violation dict if plan fails the gate, else None.
+
+    Scope resolution (authoritative → fallback):
+      1. Frontmatter ``plan_type: refactor``   → enforce
+      2. Frontmatter ``plan_type: <exempt>``    → skip (governance/audit/doc/...)
+      3. No frontmatter                         → keyword heuristic
+                                                  (preserves legacy behavior)
+    """
     try:
         text = path.read_text(encoding="utf-8")
     except OSError as exc:
@@ -125,8 +165,24 @@ def _evaluate_plan(path: Path) -> dict | None:
             "reason": f"read_error: {exc}",
         }
 
-    if not _has_refactor_intent(text):
-        return None  # Non-refactor plans skipped
+    plan_type = _parse_plan_type(text)
+    if plan_type is not None:
+        # Frontmatter is authoritative.
+        if plan_type in _EXEMPT_PLAN_TYPES:
+            return None
+        if plan_type not in _REFACTOR_PLAN_TYPES:
+            return {
+                "plan": str(path.relative_to(ROOT)),
+                "missing": [
+                    f"unknown_plan_type={plan_type!r} — must be one of "
+                    f"{sorted(_REFACTOR_PLAN_TYPES | _EXEMPT_PLAN_TYPES)}"
+                ],
+            }
+        # plan_type == "refactor" → fall through to enforcement below
+    else:
+        # No frontmatter → fall back to keyword heuristic for legacy plans.
+        if not _has_refactor_intent(text):
+            return None
 
     missing: list[str] = []
 
@@ -144,13 +200,12 @@ def _evaluate_plan(path: Path) -> dict | None:
         # When the hotspot section exists, validate that it contains the
         # canonical classifications required by adg-canonical-invariants.md:
         # at least one archetype and at least one surface reference.
-        hotspot_body = text[hotspot_match.start():]
+        hotspot_body = text[hotspot_match.start() :]
         archetypes_cited = {m.group(1) for m in ARCHETYPE_PATTERN.finditer(hotspot_body)}
         surfaces_cited = {m.group(1).lower() for m in SURFACE_PATTERN.finditer(hotspot_body)}
         if not archetypes_cited:
             missing.append(
-                "hotspot_report_missing_archetype "
-                f"(required: one of {sorted(HOTSPOT_ARCHETYPES)})"
+                f"hotspot_report_missing_archetype (required: one of {sorted(HOTSPOT_ARCHETYPES)})"
             )
         if not surfaces_cited:
             missing.append(
@@ -160,9 +215,7 @@ def _evaluate_plan(path: Path) -> dict | None:
 
     mvs_cited = {m.group(0).lower() for m in MV_PATTERN.finditer(text)}
     if len(mvs_cited) < MIN_MVS:
-        missing.append(
-            f"insufficient_materialized_views cited={len(mvs_cited)} required={MIN_MVS}"
-        )
+        missing.append(f"insufficient_materialized_views cited={len(mvs_cited)} required={MIN_MVS}")
 
     semantic_hits = {m.group(1).lower() for m in SEMANTIC_EDGE_PATTERN.finditer(text)}
     pview_hits = {m.group(0).lower() for m in PVIEW_PATTERN.finditer(text)}
@@ -216,9 +269,7 @@ def _validate_baseline_integrity(baseline: set[str], plans: list[Path]) -> list[
             raw = json.loads(BASELINE_FILE.read_text(encoding="utf-8"))
             listed = raw.get("grandfathered_plans", [])
             if not isinstance(listed, list):
-                issues.append(
-                    "baseline_schema_invalid — grandfathered_plans is not a list"
-                )
+                issues.append("baseline_schema_invalid — grandfathered_plans is not a list")
             else:
                 seen: set[str] = set()
                 for entry in listed:
@@ -229,14 +280,10 @@ def _validate_baseline_integrity(baseline: set[str], plans: list[Path]) -> list[
             issues.append(f"baseline_parse_error — {type(exc).__name__}: {exc}")
 
     # Orphan detection — every baseline entry must correspond to an existing plan.
-    existing_rel = {
-        str(p.relative_to(ROOT)).replace("\\", "/") for p in plans
-    }
+    existing_rel = {str(p.relative_to(ROOT)).replace("\\", "/") for p in plans}
     for entry in sorted(baseline):
         if entry not in existing_rel:
-            issues.append(
-                f"baseline_orphan_entry — {entry!r} is grandfathered but no such plan exists"
-            )
+            issues.append(f"baseline_orphan_entry — {entry!r} is grandfathered but no such plan exists")
 
     return issues
 
@@ -256,10 +303,7 @@ def main() -> int:
     # Baseline integrity — orphaned and duplicate entries are silent bypasses.
     integrity_issues = _validate_baseline_integrity(baseline, plans)
     if integrity_issues:
-        print(
-            f"\n[check_graph_layer_evidence] FAIL — "
-            f"{len(integrity_issues)} baseline integrity issue(s):"
-        )
+        print(f"\n[check_graph_layer_evidence] FAIL — {len(integrity_issues)} baseline integrity issue(s):")
         for issue in integrity_issues:
             print(f"  - {issue}")
         print(
@@ -276,9 +320,7 @@ def main() -> int:
         if rel in baseline:
             skipped_grandfathered += 1
             continue
-        print(
-            f"  [{idx}/{len(plans)}] evaluating {plan.relative_to(ROOT)}"
-        )
+        print(f"  [{idx}/{len(plans)}] evaluating {plan.relative_to(ROOT)}")
         result = _evaluate_plan(plan)
         if result is not None:
             violations.append(result)
@@ -290,18 +332,12 @@ def main() -> int:
             for v in violations:
                 v["ts"] = ts
                 fh.write(json.dumps(v, ensure_ascii=False) + "\n")
-        print(
-            f"\n[check_graph_layer_evidence] FAIL — "
-            f"{len(violations)} plan(s) missing graph-layer evidence"
-        )
+        print(f"\n[check_graph_layer_evidence] FAIL — {len(violations)} plan(s) missing graph-layer evidence")
         for v in violations:
             print(f"  - {v['plan']}")
             for m in v["missing"]:
                 print(f"      * {m}")
-        print(
-            f"\nConstitutional rule §22 violated. "
-            f"See .windsurf/rules/adg-graph-layer-enforcement.md"
-        )
+        print(f"\nConstitutional rule §22 violated. See .windsurf/rules/adg-graph-layer-enforcement.md")
         print(f"Log: {LOG_FILE.relative_to(ROOT)}")
         return 1
 

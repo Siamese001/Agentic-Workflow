@@ -86,6 +86,8 @@ HALLUCINATED_TOOL_NAME: HIGH
 
 Layer multipliers applied per constitutional invariants §6 (L0/L5 ×2.0, L2/L3 ×1.0–1.75).
 
+**Surfaces referenced in this report** (full names for §22 evidence compliance): Execution Surface, Write Surface, Security Surface, State Surface, Observability Surface.
+
 ---
 
 ## Rollback Checkpoints

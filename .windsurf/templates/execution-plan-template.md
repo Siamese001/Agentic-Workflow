@@ -1,3 +1,16 @@
+---
+plan_id: <descriptive-name>-<6hex>
+plan_type: refactor    # refactor | governance | audit | doc | infra | tracker
+# plan_type governs §22 ADG graph-layer-evidence gate:
+#   refactor   → ENFORCED (ADG_HOTSPOT_REPORT + ADG_GRAPH_LAYER_EVIDENCE required)
+#   governance → SKIPPED (gates, schemas, CI, rule changes)
+#   audit      → SKIPPED (observational / inventory)
+#   doc        → SKIPPED (documentation only)
+#   infra      → SKIPPED (tooling / infrastructure, no code refactor)
+#   tracker    → SKIPPED (descope trackers, status dashboards)
+# See: .windsurf/rules/adg-graph-layer-enforcement.md § "Plan Scope via Frontmatter"
+---
+
 # [Plan Title]
 
 One-sentence summary of what this plan accomplishes.
