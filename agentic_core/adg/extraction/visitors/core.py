@@ -1164,23 +1164,56 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         self.generic_visit(node)
 
     def _loop_contains_retry_without_backoff(self, node: ast.AST) -> bool:
-        """True only if loop iterates over range() AND body has try/except AND no sleep/backoff."""
+        """Detect retry loops that lack backoff.
+
+        Requires ALL of:
+          - loop iterates over range() OR is a while loop
+          - body contains try/except
+          - body does NOT contain sleep/backoff
+          - at least one except body contains 'continue' (actual retry semantics)
+            OR no except body exits the loop (break/return/raise)
+
+        Precision exclusions:
+          - except body begins with `break` → drain pattern, not retry
+          - except body begins with `return` → one-shot, not retry
+          - except handlers catch only queue.Empty / StopIteration → drain
+          - while guard references terminated/stopped/done/finished/active
+            state flag → event loop, not retry
+        """
         # Check if loop iterates over range() or similar integer sequence
         is_retry_loop = False
         if isinstance(node, ast.For):
-            # Check if iter is range() call
             if isinstance(node.iter, ast.Call):
                 sym = self._extract_symbol(node.iter.func)
                 is_retry_loop = sym == "range"
         elif isinstance(node, ast.While):
-            is_retry_loop = True  # while loops are often retry loops
+            # Event-loop guards (not retry): `while not self.is_terminated:`,
+            # `while state.active:`, `while not done`, etc.
+            guard_names = self._collect_name_refs(node.test)
+            event_loop_markers = {
+                "is_terminated",
+                "is_running",
+                "terminated",
+                "stopped",
+                "done",
+                "finished",
+                "active",
+                "alive",
+                "closed",
+                "shutdown",
+                "cancelled",
+                "is_cancelled",
+                "should_continue",
+                "should_stop",
+                "_running",
+                "_active",
+                "_alive",
+            }
+            if guard_names & event_loop_markers:
+                return False
+            is_retry_loop = True
 
         if not is_retry_loop:
-            return False
-
-        # Check if body contains try/except
-        has_try = any(isinstance(child, ast.Try) for child in ast.walk(node))
-        if not has_try:
             return False
 
         # Check if body contains sleep/backoff
@@ -1188,9 +1221,75 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             if isinstance(child, ast.Call):
                 sym = self._extract_symbol(child.func)
                 if sym and any(s in sym for s in ("sleep", "time.sleep", "await asyncio.sleep")):
-                    return False  # Has backoff, not a violation
+                    return False
+            # await asyncio.wait_for(...) acts as a per-iteration timeout (backoff equivalent)
+            if isinstance(child, ast.Await) and isinstance(child.value, ast.Call):
+                sym = self._extract_symbol(child.value.func)
+                if sym and "wait_for" in sym:
+                    return False
 
-        return True
+        # Require at least one try/except where the pattern is actually a RETRY
+        # (except: continue) rather than a DRAIN (except: break/return/raise).
+        has_retry_semantics = False
+        for child in ast.walk(node):
+            if not isinstance(child, ast.Try):
+                continue
+            for handler in child.handlers:
+                if not handler.body:
+                    continue
+                # Drain patterns: except X: break / return / raise
+                first_stmt = handler.body[0]
+                if isinstance(first_stmt, (ast.Break, ast.Return, ast.Raise)):
+                    continue
+                # Drain-specific exception types (queue.Empty, StopIteration)
+                htype_name = self._get_handler_type_name(handler)
+                if htype_name in {"Empty", "queue.Empty", "StopIteration", "StopAsyncIteration"}:
+                    continue
+                # Explicit retry: except: ...; continue
+                if any(isinstance(s, ast.Continue) for s in handler.body):
+                    has_retry_semantics = True
+                    break
+                # Implicit retry: handler neither breaks/returns/raises nor
+                # has explicit continue, but loop body DOES continue by falling
+                # through. Conservative: treat as retry only if handler body
+                # has no terminal statements at top level.
+                has_terminal = any(
+                    isinstance(s, (ast.Break, ast.Return, ast.Raise)) for s in handler.body
+                )
+                if not has_terminal:
+                    has_retry_semantics = True
+                    break
+            if has_retry_semantics:
+                break
+
+        return has_retry_semantics
+
+    def _collect_name_refs(self, node: ast.AST) -> set[str]:
+        """Collect all ast.Name.id and ast.Attribute.attr names referenced in node."""
+        names: set[str] = set()
+        for child in ast.walk(node):
+            if isinstance(child, ast.Name):
+                names.add(child.id)
+            elif isinstance(child, ast.Attribute):
+                names.add(child.attr)
+        return names
+
+    def _get_handler_type_name(self, handler: ast.ExceptHandler) -> str | None:
+        """Return the handler's exception type name (best-effort, first type only)."""
+        htype = handler.type
+        if isinstance(htype, ast.Name):
+            return htype.id
+        if isinstance(htype, ast.Attribute):
+            # queue.Empty -> "queue.Empty"
+            parts: list[str] = []
+            cur: ast.expr = htype
+            while isinstance(cur, ast.Attribute):
+                parts.insert(0, cur.attr)
+                cur = cur.value
+            if isinstance(cur, ast.Name):
+                parts.insert(0, cur.id)
+            return ".".join(parts)
+        return None
 
     def extract_edges(self) -> list[Edge]:
         """Convert antipattern detections to edges."""
