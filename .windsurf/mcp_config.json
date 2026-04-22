@@ -61,11 +61,11 @@
       "env": {
         "ADG_REDIS_URL": "redis://localhost:6379/0",
         "MEMORY_DB": "${env:AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite",
-        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
-        "PYTHONUNBUFFERED": "1"
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}"
       }
     },
     "vector_db": {
+      "_tuning_note": "Runtime defaults (batch sizes, timeouts) live in tools/retrieval/vector_config.py. Only non-default overrides and operational required-vars (offline mode, download policy, path, model) are pinned here. Full history of pruned vars: 2026-04-22 MCP-5.",
       "command": "python",
       "args": [
         "-u",
@@ -78,21 +78,9 @@
         "VECTOR_DB_EMBEDDING_MODEL": "BAAI/bge-m3",
         "VECTOR_DB_ALLOW_MODEL_DOWNLOAD": "0",
         "HF_HUB_OFFLINE": "1",
-        "VECTOR_DB_MAX_BATCH": "32",
-        "VECTOR_DB_MAX_QUERY_RESULTS": "100",
-        "VECTOR_DB_MAX_SEARCH_RESULTS": "20",
-        "VECTOR_DB_LOG_LEVEL": "INFO",
-        "VECTOR_DB_MODEL_LOAD_TIMEOUT": "120",
-        "TOKENIZERS_PARALLELISM": "false",
-        "VECTOR_DB_ENCODE_TIMEOUT": "20",
         "VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT": "90",
-        "VECTOR_DB_QUERY_COLLECTION_TIMEOUT": "40",
         "VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT": "15",
-        "VECTOR_DB_SEARCH_GLOBAL_TIMEOUT": "60",
-        "VECTOR_DB_PREWARM_QUERY_TEXT": "warmup",
-        "MCP_MAX_THREADPOOL_WORKERS": "2",
-        "VECTOR_DB_QUERY_BATCH_WINDOW_MS": "15",
-        "VECTOR_DB_QUERY_EMBED_MAX_BATCH": "8"
+        "MCP_MAX_THREADPOOL_WORKERS": "2"
       }
     },
     "otel_mcp": {
