@@ -36,8 +36,11 @@ from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
-# Default ADG SQLite path - uses most recent indexed ADG
-DEFAULT_ADG_PATH = Path("artifacts/adg/adg_indexed_03292026_1406.sqlite")
+# Default ADG SQLite directory - the actual snapshot is auto-discovered at
+# client construction via _discover_adg_path(). Historically a hardcoded
+# dated filename lived here (e.g. adg_indexed_03292026_1406.sqlite), which
+# silently rotted as new snapshots landed. See MCP RCA 2026-04-22.
+DEFAULT_ADG_DIR = Path("artifacts/adg")
 
 
 @dataclass(frozen=True)
@@ -159,29 +162,57 @@ class ADGQueryClient:
         """Initialize ADG query client.
 
         Args:
-            adg_db_path: Path to ADG SQLite database. If None, uses default.
+            adg_db_path: Path to ADG SQLite database. If None, auto-discovers
+                the most recent `adg_indexed_*.sqlite` under
+                ``artifacts/adg/``. Explicit paths are honored even if the
+                file is absent (caller takes responsibility).
         """
-        self.adg_db_path = Path(adg_db_path) if adg_db_path else DEFAULT_ADG_PATH
         self._cache: dict[str, Any] = {}
         self._connection: sqlite3.Connection | None = None
 
-        if not self.adg_db_path.exists():
-            Logger.warning(f"ADG database not found at {self.adg_db_path}")
-            # Try to find most recent ADG
+        if adg_db_path is not None:
+            self.adg_db_path = Path(adg_db_path)
+            if not self.adg_db_path.exists():
+                Logger.warning(f"ADG database not found at {self.adg_db_path}")
+        else:
+            # Auto-discover latest snapshot. Fail-soft to a sentinel path if
+            # none exist so callers get a clear "no such table: nodes" error
+            # rather than silent None dereferences.
+            self.adg_db_path = DEFAULT_ADG_DIR / "adg_indexed_missing.sqlite"
             self._discover_adg_path()
 
     def _discover_adg_path(self) -> None:
-        """Auto-discover most recent ADG SQLite file."""
-        adg_dir = Path("artifacts/adg")
-        if adg_dir.exists():
-            sqlite_files = sorted(
-                adg_dir.glob("adg_indexed_*.sqlite"),
-                key=lambda p: p.stat().st_mtime,
-                reverse=True,
-            )
-            if sqlite_files:
-                self.adg_db_path = sqlite_files[0]
-                Logger.info(f"Auto-discovered ADG: {self.adg_db_path}")
+        """Auto-discover most recent ADG SQLite file.
+
+        Sorts by the ``MMDDYYYY_HHMM`` stamp embedded in the filename (the
+        authoritative snapshot identity), NOT by filesystem mtime. The
+        latter is unreliable because stub/touched files can appear newer
+        than the canonical snapshot. Excludes the ``99999999_9999``
+        sentinel and any file whose size is below a minimum-plausible
+        threshold (defensive against 0-byte / stub DBs).
+        """
+        adg_dir = DEFAULT_ADG_DIR
+        if not adg_dir.exists():
+            return
+        min_bytes = 1_000_000  # 1MB - real snapshots are 100+ MB; stubs are ~24KB
+        candidates = [
+            p for p in adg_dir.glob("adg_indexed_*.sqlite")
+            if "99999999" not in p.name and p.stat().st_size >= min_bytes
+        ]
+        if not candidates:
+            return
+        # Filename format: adg_indexed_MMDDYYYY_HHMM.sqlite -> parse the stamp.
+        # Lexical sort on "YYYYMMDD_HHMM" gives chronological order.
+        def _stamp_key(p: Path) -> str:
+            stem = p.stem.replace("adg_indexed_", "")
+            # stem = "MMDDYYYY_HHMM" -> rearrange to "YYYYMMDD_HHMM" for sort.
+            if len(stem) >= 13 and stem[8] == "_":
+                mmddyyyy, hhmm = stem[:8], stem[9:13]
+                return f"{mmddyyyy[4:]}{mmddyyyy[:4]}_{hhmm}"
+            return stem
+        candidates.sort(key=_stamp_key, reverse=True)
+        self.adg_db_path = candidates[0]
+        Logger.info(f"Auto-discovered ADG: {self.adg_db_path}")
 
     def _get_connection(self) -> sqlite3.Connection:
         """Get or create SQLite connection with row factory."""
