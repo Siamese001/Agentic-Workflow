@@ -78,6 +78,11 @@ SANCTIONED_ADAPTER_FILES = {
     "verdict_store.py",
     "evidence_assembler.py",
     "bm25_store.py",  # L4 BM25 SparseIndex (SQLite FTS5 + term_freq sidecar); peer of above adapters
+    # L3 exit-control audit ledger adapters (ADR-023 §5 — canonical hash-chain / HITL persistence)
+    "ledger_integrity.py",
+    "runtime_hitl_ledger.py",
+    # L6 routing-decision events schema (ADR-025 §3 — canonical routing span projection)
+    "routing_decision_events_schema.py",
     # Boto3 adapters/owners (L4)
     "blob_storage_provider.py",
     "canonical_store.py",
