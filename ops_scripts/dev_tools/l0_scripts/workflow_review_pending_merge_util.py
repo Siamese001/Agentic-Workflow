@@ -77,7 +77,11 @@ from typing import Any
 Logger: Any = logging.getLogger(__name__)
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, SCRIPTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SCRIPTS_DIR,
+    get_validated_project_root,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -156,7 +160,7 @@ _emit_transcripts_response("p1", "workflow_review_pending_merge_util", "transcri
 _emit_hard_fails_untranscripted("p1", "workflow_review_pending_merge_util")
 _emit_gated_by_confidence("p1", "workflow_review_pending_merge_util", "confidence_gate")
 
-repo: Any = Path("c:/Git/Agentic-Workflow")
+repo: Any = get_validated_project_root()
 review_pending: Any = REPO / "config/review_pending"
 approved_folders: Any = [
     AGENTIC_CORE_DIR,

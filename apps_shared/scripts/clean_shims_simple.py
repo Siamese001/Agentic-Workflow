@@ -24,11 +24,12 @@ Logger = logging.getLogger(__name__)
 from pathlib import Path
 from typing import Any
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 
 def clean_prompt_governance() -> Any:
     """Clean up shim chains in prompt_governance."""
-    pg_dir: Any = Path("c:/Git/Agentic-Workflow/prompt_governance")
+    pg_dir: Any = get_validated_project_root() / "prompt_governance"
     UPDATES: Any = {
         "prompts.py": "prompts_v7_impl",
         "prompts_final.py": "prompts_v7_impl",
@@ -94,7 +95,7 @@ def clean_prompt_governance() -> Any:
 
 def clean_other_directories() -> Any:
     """Check and clean other directories for similar patterns."""
-    BASE: Any = Path("c:/Git/Agentic-Workflow")
+    BASE: Any = get_validated_project_root()
     for item in tqdm(BASE.iterdir(), desc="Processing", unit="item"):
         if item.is_dir() and item.name not in [
             ".git",

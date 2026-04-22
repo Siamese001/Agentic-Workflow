@@ -94,7 +94,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, get_validated_project_root
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -174,7 +174,7 @@ _emit_validated_by_safety_plane("p1", "force_annexation_util", "safety_validatio
 _emit_invokes_eval("p1", "force_annexation_util", "eval_call")
 _emit_proposal_commits_routing("p1", "force_annexation_util", "routing_commit")
 
-ROOT: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = get_validated_project_root()
 core: Any = ROOT / AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR  # noqa: E402
 from tqdm import tqdm

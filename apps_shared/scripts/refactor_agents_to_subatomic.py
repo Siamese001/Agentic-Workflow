@@ -6,6 +6,7 @@ This script systematically updates all agent files in agentic_core/agents/.
 import re
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
@@ -29,7 +30,7 @@ agent_files = [
     "analysis.py",
     "dynamic_model_router.py",
 ]
-agents_dir = Path("c:/Git/Agentic-Workflow/agentic_core/agents")
+agents_dir = get_validated_project_root() / "agentic_core/agents"
 
 
 def add_subatomic_imports(content: str) -> str:

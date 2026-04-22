@@ -144,6 +144,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 _emit_emits_metric_event("find_agents_in_low_heal_territories_util", "p4obs", "metric_1")
 _emit_emits_metric_event("find_agents_in_low_heal_territories_util", "p4obs", "metric_2")
@@ -184,23 +185,23 @@ _emit_invokes_eval("p1", "find_agents_in_low_heal_territories_util", "eval_call"
 _emit_proposal_commits_routing("p1", "find_agents_in_low_heal_territories_util", "routing_commit")
 
 print("\n=== Searching for agents in L1 Cognition ===")
-l1_agents = list(get_agent_files(Path("C:/Git/Agentic-Workflow/agentic_core/L1_cognition")))
+l1_agents = list(get_agent_files((get_validated_project_root() / "agentic_core/L1_cognition")))
 for agent in l1_agents:
     content = agent.read_text(encoding="utf-8", errors="ignore")
     has_heal = "def heal_repository" in content
     print(f"  {('✅' if has_heal else '❌')} {agent.name}")
 print("\n=== Searching for agents in L3 Orchestration ===")
-l3_agents = list(get_agent_files(Path("C:/Git/Agentic-Workflow/agentic_core/L3_orchestration")))
+l3_agents = list(get_agent_files((get_validated_project_root() / "agentic_core/L3_orchestration")))
 for agent in l3_agents:
     content = agent.read_text(encoding="utf-8", errors="ignore")
     has_heal = "def heal_repository" in content
     print(f"  {('✅' if has_heal else '❌')} {agent.name}")
 print("\n=== Agents MISSING heal_repository (need to fix) ===")
-all_agents = get_agent_files(Path("C:/Git/Agentic-Workflow/agentic_core"))
+all_agents = get_agent_files((get_validated_project_root() / "agentic_core"))
 missing = []
 for agent in all_agents:
     content = agent.read_text(encoding="utf-8", errors="ignore")
     if "def heal_repository" not in content:
         missing.append(agent)
-        print(f"  ❌ {agent.relative_to(Path('C:/Git/Agentic-Workflow'))}")
+        print(f"  ❌ {agent.relative_to(get_validated_project_root())}")
 print(f"\nTotal agents missing heal_repository: {len(missing)}")

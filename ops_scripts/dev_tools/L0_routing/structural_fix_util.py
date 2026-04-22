@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 _emit_emits_metric_event("structural_fix_util", "p4obs", "metric_1")
 _emit_emits_metric_event("structural_fix_util", "p4obs", "metric_2")
@@ -172,7 +173,7 @@ _emit_validated_by_safety_plane("p1", "structural_fix_util", "safety_validation"
 _emit_invokes_eval("p1", "structural_fix_util", "eval_call")
 _emit_proposal_commits_routing("p1", "structural_fix_util", "routing_commit")
 
-root: Any = Path("C:/Git/Agentic-Workflow")
+root: Any = get_validated_project_root()
 
 
 def fix_structural_violations() -> Any:

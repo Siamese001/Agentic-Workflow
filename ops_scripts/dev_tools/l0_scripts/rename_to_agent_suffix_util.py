@@ -58,6 +58,7 @@ _emit_records_execution_trace("p0", "evidence", "rename_to_agent_suffix_util")
 _emit_applies_guardrail("p0", "rename_to_agent_suffix_util", "p0_governance")
 _emit_reads_policy_state("p0", "rename_to_agent_suffix_util", "policy_binding")
 _emit_snapshots_state("p0", "rename_to_agent_suffix_util", "state_snapshot")
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -274,7 +275,7 @@ def main():
         print("=" * 60)
         print("EXECUTING RENAMES")
         print("=" * 60)
-    root = Path("C:/Git/Agentic-Workflow")
+    root = get_validated_project_root()
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     py_files = list(get_python_files(root))

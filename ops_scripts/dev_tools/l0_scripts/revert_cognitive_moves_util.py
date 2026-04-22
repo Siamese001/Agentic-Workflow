@@ -11,6 +11,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
 )
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 _emit_writes_through("p1", "revert_cognitive_moves_util", "uwg_governed_write")
 _emit_writes_through("p1", "revert_cognitive_moves_util", "uwg_governed_write_2")
@@ -19,7 +20,7 @@ _emit_pulls_context("p1", "revert_cognitive_moves_util", "context_retrieval_2")
 emit_determinism_digest("trace_revert_cognitive_moves_util", "revert_cognitive_moves_util_dispatch")
 emit_determinism_digest("trace_revert_cognitive_moves_util", "revert_cognitive_moves_util_complete")
 _emit_validated_by_safety_plane("p1", "revert_cognitive_moves_util", "safety_validation")
-PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
+PROJECT_ROOT = get_validated_project_root()
 CHECKPOINT_FILE = (
     PROJECT_ROOT / "ops_scripts" / "archives" / "gatekeeper" / "2026-01-21" / "cognitive_checkpoint.json"
 )

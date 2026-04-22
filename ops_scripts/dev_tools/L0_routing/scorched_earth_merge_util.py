@@ -100,6 +100,7 @@ from agentic_core.L0_routing.config.path_constants import (  # noqa: E402
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
+    get_validated_project_root,
 )
 
 TESTS_DIR = "tests"
@@ -183,7 +184,7 @@ _emit_validated_by_safety_plane("p1", "scorched_earth_merge_util", "safety_valid
 _emit_invokes_eval("p1", "scorched_earth_merge_util", "eval_call")
 _emit_proposal_commits_routing("p1", "scorched_earth_merge_util", "routing_commit")
 
-ROOT: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = get_validated_project_root()
 core: Any = ROOT / AGENTIC_CORE_DIR
 try:
     approved_root_folders: Any = [

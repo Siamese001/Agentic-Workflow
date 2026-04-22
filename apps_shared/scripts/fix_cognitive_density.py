@@ -12,6 +12,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
 )
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 _emit_writes_through("p1", "fix_cognitive_density", "uwg_governed_write")
 _emit_writes_through("p1", "fix_cognitive_density", "uwg_governed_write_2")
@@ -144,7 +145,7 @@ files_to_fix: Any = [
     "config/logic/data_access/get_info/query_v6_impl_impl.py",
     "config/logic/data_access/get_info/store_v5_impl.py",
 ]
-root: Any = Path("c:/Git/Agentic-Workflow")
+root: Any = get_validated_project_root()
 for file_path in files_to_fix:
     full_path: Any = root / file_path
     if full_path.exists():

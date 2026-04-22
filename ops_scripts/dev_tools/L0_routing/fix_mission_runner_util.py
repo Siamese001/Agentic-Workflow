@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 _emit_emits_metric_event("fix_mission_runner_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_mission_runner_util", "p4obs", "metric_2")
@@ -169,7 +170,7 @@ _emit_validated_by_safety_plane("p1", "fix_mission_runner_util", "safety_validat
 _emit_invokes_eval("p1", "fix_mission_runner_util", "eval_call")
 _emit_proposal_commits_routing("p1", "fix_mission_runner_util", "routing_commit")
 
-ROOT: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = get_validated_project_root()
 mission_runner: Any = ROOT / "agentic_core/L3_orchestration/mission_runner.py"
 
 

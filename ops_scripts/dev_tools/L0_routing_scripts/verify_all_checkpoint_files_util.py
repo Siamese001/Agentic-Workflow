@@ -90,7 +90,7 @@ _emit_links_execution_to_snapshot("p4", "verify_all_checkpoint_files_util", "exe
 "Verify archival status of all files mentioned in checkpoint summary."
 import os
 
-from agentic_core.L0_routing.config import ARCHIVES_DIR, OPS_ARCHIVES_DIR
+from agentic_core.L0_routing.config import ARCHIVES_DIR, OPS_ARCHIVES_DIR, get_validated_project_root
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -168,7 +168,7 @@ _emit_validated_by_safety_plane("p1", "verify_all_checkpoint_files_util", "safet
 _emit_invokes_eval("p1", "verify_all_checkpoint_files_util", "eval_call")
 _emit_proposal_commits_routing("p1", "verify_all_checkpoint_files_util", "routing_commit")
 
-PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
+PROJECT_ROOT = get_validated_project_root()
 edited_files = [
     "scripts/rename_UnifiedAgents.py",
     "tests/unit/test_unified_hygiene_validator.py",

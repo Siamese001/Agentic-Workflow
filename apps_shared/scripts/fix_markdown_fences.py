@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
@@ -43,7 +44,7 @@ def fix_markdown_fences(file_path: str) -> bool:
 
 def main() -> Any:
     """Find and fix all Python files with markdown fences."""
-    root: Any = Path("c:/Git/Agentic-Workflow/agentic_core")
+    root: Any = get_validated_project_root() / "agentic_core"
     fixed_count: Any = 0
     for py_file in get_python_files(root):
         if fix_markdown_fences(str(py_file)):
