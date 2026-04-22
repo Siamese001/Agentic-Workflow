@@ -9,14 +9,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from tools.mcp.mcp_bootstrap import create_mcp_server
 from tools.adg.mcp.runtime import LOG
 from tools.adg.mcp import tool_handlers as handlers
 
 LOG.info("Creating FastMCP instance...")
-mcp = FastMCP(
+# MCP-4 (2026-04-22): unified through create_mcp_server() which applies
+# standardized logging, TOKENIZERS_PARALLELISM, PYTHONUNBUFFERED, and any
+# future worker-cap config. Equivalent to raw FastMCP(...) for current
+# FastMCP versions.
+mcp = create_mcp_server(
     "adg-sqlite",
-    instructions=(
+    (
         "ADG SQLite-first MCP server. SQLite is canonical source, "
         "Redis is optional cache. Use adg_health first to check status."
     ),

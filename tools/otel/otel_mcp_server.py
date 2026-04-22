@@ -23,9 +23,9 @@ if str(_REPO_ROOT_BOOTSTRAP) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT_BOOTSTRAP))
 
 try:
-    from mcp.server.fastmcp import FastMCP
+    from tools.mcp.mcp_bootstrap import create_mcp_server
 except ImportError as exc:
-    print(f"[otel_mcp] FATAL: mcp package not found - {exc}. Install with: pip install mcp", file=sys.stderr)
+    print(f"[otel_mcp] FATAL: mcp bootstrap import failed - {exc}. Install with: pip install mcp", file=sys.stderr)
     sys.exit(1)
 
 from tools.otel.otel_config import build_config
@@ -41,7 +41,7 @@ from tools.otel.otel_write_gateway import RuntimeADGWriteGateway
 
 logger = logging.getLogger(__name__)
 config = build_config(__file__)
-mcp = FastMCP(config.mcp_server_name)
+mcp = create_mcp_server(config.mcp_server_name)
 metrics = RuntimeMetrics(last_updated=config.metrics_initial_last_updated)
 trace_cache = TraceCache(config.cache_max_traces)
 lifecycle = LifecycleRegistrar()

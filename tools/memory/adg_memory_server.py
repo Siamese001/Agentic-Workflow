@@ -54,7 +54,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from mcp.server.fastmcp import FastMCP
+from tools.mcp.mcp_bootstrap import create_mcp_server
 
 logger = logging.getLogger(__name__)
 
@@ -149,9 +149,9 @@ _store = SqliteMemoryStore(_DB_PATH)
 # ---------------------------------------------------------------------------
 # FastMCP server
 # ---------------------------------------------------------------------------
-mcp = FastMCP(
+mcp = create_mcp_server(
     "adg-memory",
-    instructions=(
+    (
         "Persistent SQLite-backed knowledge graph. "
         "Survives restarts — no data loss on Windsurf reload. "
         "Call mem_recall_session_start first. "
