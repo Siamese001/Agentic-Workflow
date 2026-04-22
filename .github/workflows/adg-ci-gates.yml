@@ -78,6 +78,14 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: Exception-Contract Gate (raise/catch symmetry over ADG fan-in)
+        # For each declared contract in config/exception_contracts.yaml,
+        # resolves the raiser's callers via ADG fan-in and asserts at least
+        # require_n_handlers of them catch the declared exception class.
+        run: python ops_scripts/ci/check_exception_contract.py
+        env:
+          PYTHONPATH: .
+
       - name: Install MCP test dependencies
         run: pip install fakeredis --quiet 2>/dev/null || true
 

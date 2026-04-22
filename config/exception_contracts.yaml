@@ -1,0 +1,47 @@
+# config/exception_contracts.yaml
+# --------------------------------
+# Declared raise/catch symmetry contracts. Each row asserts: function
+# ``raiser`` may raise ``exception_class`` under certain conditions, and at
+# least one of its static callers (per ADG fan-in) MUST handle that exception
+# — either by catching ``exception_class`` directly or by catching a parent
+# class that subsumes it.
+#
+# Schema:
+#   id                — short unique slug
+#   description       — human-readable claim
+#   raiser_module     — repo-relative .py path of the raising function
+#   raiser_symbol     — dotted symbol path inside raiser_module (Class.method
+#                        or bare function)
+#   exception_class   — class name that is raised (last segment of dotted name)
+#   parent_classes    — list of fallback parent class names that also count as
+#                        handling the exception (e.g. Exception for broad catch,
+#                        OSError, RuntimeError, ValueError)
+#   require_n_handlers — minimum number of distinct caller functions that must
+#                        handle the exception. Default: 1
+#   severity          — error | warn
+#   plan_id           — plan of record
+#
+# Enforcement: the gate resolves callers via ADG static fan-in on the raiser
+# symbol (relation_type=calls and imports). It then AST-parses each caller's
+# module to find the caller function and confirms at least one of the
+# declared handler classes is caught — either in the caller body, or in any
+# enclosing `try:` block.
+#
+# Warn severity is appropriate during seed phase. Promote to error once the
+# contract has passed one green build and the invariant is stable.
+
+contracts:
+
+  - id: semcache-learn-runtime-error-handling
+    description: >-
+      SemanticCacheManager.learn may raise RuntimeError when the Redis or
+      persistent store is unreachable. Every caller in ExecutionOrchestrator
+      MUST handle RuntimeError (or a parent like Exception) — a swallow-free
+      path here leaks infra failures to the L0 routing surface.
+    raiser_module: agentic_core/L4_state/utils/memory/semantic_cache_manager.py
+    raiser_symbol: SemanticCacheManager.learn
+    exception_class: RuntimeError
+    parent_classes: [Exception]
+    require_n_handlers: 1
+    severity: warn
+    plan_id: semcache-make-live-7a2d4b

@@ -1148,6 +1148,14 @@ def main() -> None:
             "ratchet — fails only on NEW leaks with severity=error."
         ),
     )
+    parser.add_argument(
+        "--no-exception-contract-check",
+        action="store_true",
+        help=(
+            "Skip the exception-contract gate (raise/catch symmetry over ADG "
+            "fan-in). Default: gate runs against the fresh ADG snapshot."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1221,6 +1229,18 @@ def main() -> None:
                 "python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline."
             ),
             timeout_s=60,
+        )
+    if not args.no_exception_contract_check:
+        _run_post_adg_gate(
+            label="except-contract",
+            script_rel="ops_scripts/ci/check_exception_contract.py",
+            args_list=[],
+            fail_hint=(
+                "Add a declared handler (exception_class or parent_classes) "
+                "in the offending caller's except clauses, OR relax the contract "
+                "in config/exception_contracts.yaml (requires review)."
+            ),
+            timeout_s=30,
         )
 
     # Run repair orchestrator if requested
