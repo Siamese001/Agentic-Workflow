@@ -1,11 +1,33 @@
 # Lazy-Import Architecture Defect Review
 
-- **Related RCA**: `rca-adg-ci-missed-gaps.md` (RC2 — lazy imports defeat ADG static fan-in)
-- **Scan tool**: `tools/diag/scan_lazy_import_gaps.py` + `scan_lazy_import_gaps_summary.py`
+> ⚠️ **CORRECTION 2026-04-22 (P1 wave)** — the framing below is partially wrong.
+> Empirical verification (`tools/diag/_verify_fanin.py`) shows the ADG DOES
+> capture lazy `ImportFrom` inside function bodies. Every module labeled
+> "orphan" in this review actually has 1–10 `imports` fan-in edges. The
+> scan script (`tools/diag/scan_lazy_import_gaps.py`) used a stricter
+> top-level-only filter than the ADG extractor, producing artifacts.
+>
+> The expected-wiring assertions added in commit `3ccb8e5bf8` are still
+> valuable — they assert **positive call-site presence**, which
+> `v_p1_zero_caller_infra` does NOT check. But the narrative below overstates
+> ADG blind spots. See RCA RC2 retraction for full empirical evidence.
+
+- **Related RCA**: `rca-adg-ci-missed-gaps.md` (RC2 RETRACTED — lazy imports are captured)
+- **Scan tool**: `tools/diag/scan_lazy_import_gaps.py` + `scan_lazy_import_gaps_summary.py` (known false-positive rate — see correction)
 - **Date**: 2026-04-22
 - **Question answered**: *Are other lazy imports hiding architectural defects today?*
 
-## Executive answer
+## Executive answer (CORRECTED)
+
+**The scan reported 188 "orphans". Most were false positives.** The ADG extractor
+walks function bodies and captures lazy imports. Verified sample (9 out of 188):
+every one has 1–10 `imports` fan-in edges. The review's severity tiers listed
+below describe where the SCAN SCRIPT's filter disagrees with the ADG's filter,
+not where the ADG is blind. Still, the expected-wiring P0 assertions are
+retained because they provide a **positive** signal that complements the
+ADG's **negative** (zero-caller) signal.
+
+## Original (uncorrected) framing below — retained for audit
 
 **Yes — the semantic cache was not unique.** 188 production modules are "lazy-only orphans" — zero top-level static callers, one or more callers via lazy imports inside function bodies. Every one of them is invisible to `adg_edge_fanin(relation_type="imports")`. Three severity tiers matter:
 

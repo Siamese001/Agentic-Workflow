@@ -27,14 +27,32 @@ Despite all six signals being red, every ADG CI gate (M1–M13, `infra_wiring_sc
 ### RC1 — The three cache modules are unregistered in `_APPROVED_ADAPTER_PATHS`
 `@c:/Git/Agentic-Workflow/tools/generate/infra_wiring_views.py:57-80` defines the approved-adapter set that `v_p1_zero_caller_infra` checks. **Only files on this list are eligible for the zero-caller check.** `semantic_cache_manager.py`, `sovereign_semantic_cache.py`, and `gptcache_client.py` are **not** on the list. Result: a module that is structurally orphaned produces no P1 violation because the view never looks at it. The gate has a silent enrollment boundary — absence from the list is indistinguishable from compliance.
 
-### RC2 — ADG `imports` edges are AST-top-level-only; lazy imports evade fan-in
-Every L0 call into the cache is `from agentic_core.L4_state... import ...` **inside a try block inside a method body**. The ADG extractor walks top-level `ast.Import`/`ast.ImportFrom` only, so `adg_edge_fanin(tgt_id=..., relation_type="imports")` returns **0 edges** for the cache modules even though 32 files match them by text. The gate correctly reports "zero imports" — but "zero imports" ≠ "zero usage" under the lazy-import pattern the L0 layer is required to use for boundary discipline. The gate and the required coding pattern contradict each other.
+### RC2 — ~~ADG `imports` edges are AST-top-level-only; lazy imports evade fan-in~~ ❌ RETRACTED 2026-04-22
+
+> **Correction**: empirical verification against the snapshot `adg_indexed_04222026_1218.sqlite` disproves this claim. `tools/generate/generate_static_adg.py:95` uses `ast.NodeVisitor.visit(tree)` whose default `generic_visit` recurses into `FunctionDef` bodies — so lazy `ImportFrom` nodes ARE captured. Verified counts for the supposedly-orphan adapters:
+>
+> | Adapter | `imports` fan-in (verified) |
+> |---|---|
+> | `semantic_cache_manager.py` | 8 edges |
+> | `sovereign_semantic_cache.py` | 2 |
+> | `gptcache_client.py` | 10 |
+> | `embedding_factory.py` | 10 |
+> | `conf_calib_gate.py` | 1 |
+> | `d0_injection_engine_enforcer.py` | 2 |
+> | `mcp_sovereign_authority_enforcer.py` | 1 |
+>
+> Probe: `tools/diag/_verify_fanin.py` and `tools/diag/_verify_zerocaller.py`.
+>
+> The original observation (semcache looked orphan in early diagnosis) was actually caused by **RC1 alone** — the modules were not enrolled in `_APPROVED_ADAPTER_PATHS`, so `v_p1_zero_caller_infra` did not evaluate them at all. Once enrolled (commit `92cc8afac1`), the view correctly sees the 8 edges and reports no violation.
+>
+> The follow-up "lazy-import architecture defect review" was over-calibrated by a scan script (`tools/diag/scan_lazy_import_gaps.py`) that used `ast.Module.body` top-level filtering — stricter than the ADG's full-tree walk. The 188 "orphans" it reported are artifacts of that filter, not actual ADG blind spots. Corrected: the ADG fan-in view is correct for both static and lazy `ImportFrom`.
 
 ### RC3 — ADG CI is structural-only. It has no **expected-wiring** concept
 Every gate answers negative questions: "is there a forbidden import?", "has the layer gravity been violated?", "did the violation count regress?" No gate answers the positive question: **"is the feature that this code advertises actually wired end-to-end?"** For the semantic cache, there was no registry saying:
 
 > On Path-D success, `ExecutionOrchestrator.execute()` MUST call `SemanticCacheManager.learn()`.
 
+Despite all six signals being red, every ADG CI gate (M1–M13, `infra_wiring_scan`, `adg-graph-layer-evidence`, MCP Contract, Delta Enforcement, Dead-Import, Layer-Gravity, Antipattern-Regression) reported PASS.
 Without an expectation, absence is silence.
 
 ### RC4 — `infra_wiring_scan.py` protects entry, not exit
