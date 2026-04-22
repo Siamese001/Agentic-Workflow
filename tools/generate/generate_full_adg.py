@@ -1156,6 +1156,15 @@ def main() -> None:
             "fan-in). Default: gate runs against the fresh ADG snapshot."
         ),
     )
+    parser.add_argument(
+        "--no-test-coverage-check",
+        action="store_true",
+        help=(
+            "Skip the test-harness coverage gate (production modules must be "
+            "imported from at least one file under tests/). Default: gate "
+            "runs with baseline ratchet — fails only on NEW uncovered modules."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1239,6 +1248,19 @@ def main() -> None:
                 "Add a declared handler (exception_class or parent_classes) "
                 "in the offending caller's except clauses, OR relax the contract "
                 "in config/exception_contracts.yaml (requires review)."
+            ),
+            timeout_s=30,
+        )
+    if not args.no_test_coverage_check:
+        _run_post_adg_gate(
+            label="test-coverage",
+            script_rel="ops_scripts/ci/check_test_harness_coverage.py",
+            args_list=[],
+            fail_hint=(
+                "Add any test under tests/ that imports the new module, OR "
+                "allowlist in config/test_harness_coverage_allowlist.yaml, OR "
+                "(debt row) regenerate baseline: "
+                "python ops_scripts/ci/check_test_harness_coverage.py --regenerate-baseline."
             ),
             timeout_s=30,
         )

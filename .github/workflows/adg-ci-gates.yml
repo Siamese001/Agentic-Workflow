@@ -86,6 +86,14 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: Test-Harness Coverage Gate (structural — every prod module has a test import)
+        # Queries ADG for production modules (agentic_core/L*, apps_*/engines,
+        # apps_*/integrations) that have ZERO imports edge from any file under
+        # tests/. Baseline ratchet — fails only on NEW uncovered modules.
+        run: python ops_scripts/ci/check_test_harness_coverage.py
+        env:
+          PYTHONPATH: .
+
       - name: Install MCP test dependencies
         run: pip install fakeredis --quiet 2>/dev/null || true
 

@@ -1,0 +1,18 @@
+# config/test_harness_coverage_allowlist.yaml
+# -------------------------------------------
+# SSOT for production modules that legitimately have NO test-harness import.
+# Used by ops_scripts/ci/check_test_harness_coverage.py.
+#
+# Each entry MUST include a comment explaining why the module is exempt.
+# Common legitimate reasons:
+#   - __main__.py entry points (exercised via subprocess integration tests)
+#   - bootstrap/shim modules imported indirectly via package __init__
+#   - vendored third-party code that must not be monkey-patched
+#   - deprecated modules slated for removal
+#
+# New entries require review — do not use this list as a dumping ground for
+# production modules that simply lack test coverage. Those belong in the
+# baseline ratchet (ops_scripts/ci/baselines/test_harness_coverage_baseline.json)
+# with a debt-reduction plan.
+
+allowed_uncovered_modules: []
