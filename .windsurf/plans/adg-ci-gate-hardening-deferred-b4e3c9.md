@@ -1,3 +1,7 @@
+---
+plan_type: governance
+---
+
 # ADG CI Gate Hardening — Deferred Backlog
 
 **Plan ID**: `adg-ci-gate-hardening-deferred-b4e3c9`

@@ -1,3 +1,7 @@
+---
+plan_type: tracker
+---
+
 # L0 Prompt Retrieval — Deferred Triage
 
 **Parent plan:** `l0-context-prompt-retrieval-review-b7c4a2.md` (W1+W2+W3 DONE)

@@ -1,3 +1,7 @@
+---
+plan_type: tracker
+---
+
 # Terminal Cleanup Baseline Burndown
 
 **Plan ID**: `terminal-cleanup-burndown-a7f2d1`

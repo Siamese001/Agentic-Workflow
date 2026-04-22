@@ -69,8 +69,6 @@ def _get_routing_gateway():
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "_get_routing_gateway", "state_snapshot")
-    import uuid as _uuid  # noqa: PLC0415
-
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_routing_gateway", "p0_governance")
     from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
         get_routing_gateway,  # noqa: PLC0415
@@ -235,7 +233,11 @@ class PathRouter:
                     routing_end_tick=_path_end_tick,
                 ),
             )
-        except (ValueError, TypeError, RuntimeError) as _te:  # guardian: allow-log-and-swallow -- telemetry emission: non-fatal, routing result returned regardless
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as _te:  # guardian: allow-log-and-swallow -- telemetry emission: non-fatal, routing result returned regardless
             _log.warning("path_router: telemetry emission failed: %s", _te)
         return chosen
 
@@ -385,9 +387,7 @@ class PathRouter:
                 return (
                     RoutingResult(
                         route=route_label,
-                        reason=contract["reason_codes"][0]
-                        if contract["reason_codes"]
-                        else "gate_hit",
+                        reason=contract["reason_codes"][0] if contract["reason_codes"] else "gate_hit",
                         confidence=contract["confidence"],
                         threshold=threshold,
                         action="emit_cached_response",

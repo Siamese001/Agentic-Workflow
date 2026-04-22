@@ -1,3 +1,7 @@
+---
+plan_type: audit
+---
+
 # L0 Routing — Context & Prompt Retrieval Review
 
 **Status:** W1 + W2 merged (37277cb2af, 422b41654d). W3 verification complete — fan-in confirmed; pre-existing P1 ratchet breach flagged out-of-scope.
