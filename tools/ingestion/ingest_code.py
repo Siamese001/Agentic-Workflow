@@ -17,6 +17,11 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
 from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
 from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
+from tools.ingestion.contextual_chunk_builder import (
+    ContextualChunkBuilder,
+    ContextualizationRequest,
+    prepend_context,
+)
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -45,6 +50,10 @@ class CodeChunker:
         "embedding_model",
         "ingested_at",
         "parent_id",
+        # Anthropic Contextual Retrieval: narrative context prepended to the
+        # chunk content. Populated by _apply_contextualization when --contextualize
+        # is passed to the ingest CLI.
+        "chunk_context",
     }
 
     def __init__(self):
@@ -288,7 +297,62 @@ class CodeChunker:
         }
 
 
-def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_run: bool = False):
+def _apply_contextualization(
+    all_chunks: list[dict[str, Any]],
+    *,
+    builder: ContextualChunkBuilder | None = None,
+) -> int:
+    """Enrich chunks in-place with Anthropic-style narrative context.
+
+    For each chunk, reads the full source file, generates a 50-100 token
+    contextual sentence (via the injected builder — gateway-backed when an
+    Anthropic adapter is provided, heuristic fallback otherwise), prepends
+    the context to ``chunk["content"]``, and writes it back onto the chunk
+    metadata under ``chunk_context``.
+
+    Files are read at most ONCE across all their chunks via an in-memory
+    cache keyed by file_path.
+
+    Returns the number of chunks enriched with a non-empty context.
+    """
+    builder = builder or ContextualChunkBuilder()
+    file_cache: dict[str, str] = {}
+    enriched = 0
+    for chunk in all_chunks:
+        metadata = chunk.get("metadata", {}) or {}
+        file_path = metadata.get("file_path")
+        if not file_path:
+            continue
+        if file_path not in file_cache:
+            try:
+                file_cache[file_path] = Path(file_path).read_text(encoding="utf-8", errors="replace")
+            except (OSError, ValueError) as exc:
+                logger.warning("Skip contextualization for %s: %s", file_path, exc)
+                file_cache[file_path] = ""
+        document = file_cache[file_path]
+        if not document:
+            continue
+        request = ContextualizationRequest(
+            document=document,
+            chunk=chunk.get("content", ""),
+            metadata=metadata,
+        )
+        result = builder.build(request)
+        if not result.context:
+            continue
+        metadata["chunk_context"] = result.context
+        chunk["content"] = prepend_context(chunk.get("content", ""), result.context)
+        chunk["metadata"] = metadata
+        enriched += 1
+    return enriched
+
+
+def ingest_code(
+    source_dir: str,
+    collection_name: str = "repo_code_chunks",
+    dry_run: bool = False,
+    contextualize: bool = False,
+):
     """Ingest Python code into ChromaDB using SovereignChromaClient.
 
     Args:
@@ -365,6 +429,15 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
 
     logger.info(f"Generated {len(all_chunks)} chunks from {len(python_files)} files")
 
+    # Anthropic Contextual Retrieval enrichment (opt-in).
+    # When enabled, generates a 50-100 token narrative context per chunk and
+    # prepends it to the chunk content + records it in metadata.chunk_context.
+    # Uses heuristic fallback when no Anthropic gateway is wired (offline-safe).
+    if contextualize:
+        logger.info("Contextualizing chunks (Anthropic-style narrative context)...")
+        enriched = _apply_contextualization(all_chunks)
+        logger.info(f"Contextualized {enriched}/{len(all_chunks)} chunks")
+
     # Log parent-child relationship statistics
     total_parent_child = sum(1 for c in all_chunks if c["metadata"].get("parent_id") is not None)
     if total_parent_child > 0:
@@ -433,6 +506,15 @@ def main():
         help="ChromaDB collection name (default: repo_code_chunks)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Dry run (don't ingest)")
+    parser.add_argument(
+        "--contextualize",
+        action="store_true",
+        help=(
+            "Enrich chunks with Anthropic-style narrative context (50-100 tok) "
+            "before embedding/BM25 indexing. Heuristic fallback when no gateway "
+            "is wired; live Claude calls when a gateway is injected."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -440,6 +522,7 @@ def main():
         source_dir=args.source_dir,
         collection_name=args.collection_name,
         dry_run=args.dry_run,
+        contextualize=args.contextualize,
     )
 
 
