@@ -218,18 +218,25 @@ class HardeningMixin:
             telemetry: Custom telemetry instance (uses default if None)
         """
         self.component_name = component_name
-        self.circuit_breaker = get_breaker(
+        # Resolve the lazy imports here rather than at module load time.
+        # The helper functions (_get_circuit_breaker / _get_error_recovery_strategy
+        # / _get_telemetry) break import cycles across L4/L5/L6.
+        _, _get_breaker_fn = _get_circuit_breaker()
+        _ErrorRecoveryStrategy = _get_error_recovery_strategy()
+        _, _get_telemetry_fn = _get_telemetry()
+
+        self.circuit_breaker = _get_breaker_fn(
             name=f"{component_name}_breaker",
             failure_threshold=failure_threshold,
             reset_after_s=reset_timeout_s,
         )
-        self.error_recovery = ErrorRecoveryStrategy(
+        self.error_recovery = _ErrorRecoveryStrategy(
             max_retries=max_retries,
             base_backoff_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
             enable_circuit_breaker=True,
         )
-        self.telemetry = telemetry or get_telemetry()
+        self.telemetry = telemetry or _get_telemetry_fn()
 
     async def execute_hardened(
         self,

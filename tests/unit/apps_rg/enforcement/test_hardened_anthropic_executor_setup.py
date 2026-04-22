@@ -1,18 +1,18 @@
-"""Source-level regression tests for HardenedAnthropicExecutor client setup.
+"""Regression tests for HardenedAnthropicExecutor client setup.
 
-These tests lock in the fix for the original null-client bug:
+Tests lock in the fix for the original null-client bug:
   - Before: _setup_client set self._client = None, so _completion()'s
     self._client.messages.create(...) would raise AttributeError at first call.
   - After: _setup_client instantiates anthropic.Anthropic(api_key=...) when
     ANTHROPIC_API_KEY is present, and logs a warning when absent.
 
-NOTE: We use *source-level* assertions (reading the file's text) rather than
-importing the module, because the executor module has a pre-existing import
-cascade (apps_rg.utils.agent_executor_util -> agentic_core.L2_execution.utils
--> get_clock) that prevents it from being importable in the current repo
-state. That cascade is tracked as a separate RCA and is out of scope for this
-fix. The source-level regression tests are still meaningful — they prevent a
-future refactor from silently reverting the null-client fix.
+The suite has two tiers:
+
+1. *Source-level* regression tests (robust to future import-cascade regressions)
+2. *Functional* regression tests that actually import and instantiate the
+   executor, exercising the end-to-end construction path that EX1+EX2 unblocked
+   (agentic_core package re-export of get_clock, apps_rg bootstrap_runtime
+   _ensure_module real-import preference, hardening_mixin lazy-import helpers).
 """
 
 from __future__ import annotations
@@ -150,16 +150,115 @@ def test_init_declares_client_type_as_optional_anthropic(executor_source: str):
 
 
 def test_cascade_breakage_is_acknowledged():
-    """This test is a self-documenting pin that points to the separate RCA.
+    """Historical pin: the cascade was resolved in EX1+EX2 commits.
 
-    It does NOT validate behavior — it simply fails loudly if someone deletes
-    the RCA reference below without acknowledging the cascade. Keep the link
-    so future me knows why the executor can't be imported in unit tests today.
+    The executor module can now be imported and instantiated end-to-end. This
+    test used to assert a DEFERRED_SCOPE marker; it now stands as a history
+    marker that the cascade existed and was resolved, so a future regression
+    would be easy to trace back to its origin.
     """
     rca_note = (
-        "HardenedAnthropicExecutor module import is blocked by a cascade in "
-        "apps_rg.utils.agent_executor_util -> agentic_core.L2_execution.utils."
-        "get_clock. Tracked via DEFERRED_SCOPE in plan "
-        ".windsurf/plans/anthropic-rag-gaps-7f3c2a.md W2 P2.1.followup."
+        "HardenedAnthropicExecutor import cascade RESOLVED by: "
+        "(1) agentic_core/L2_execution/utils/__init__.py get_clock re-export, "
+        "(2) apps_rg/bootstrap_runtime.py _ensure_module real-import preference, "
+        "(3) agentic_core/mixins/hardening_mixin.py __init__ lazy-import fix."
     )
-    assert rca_note  # Trivially true; serves as in-file documentation.
+    assert rca_note  # History marker; survives refactors.
+
+
+# ---------------------------------------------------------------------------
+# Functional tier — end-to-end construction path
+# ---------------------------------------------------------------------------
+
+
+def test_executor_class_is_importable():
+    """EX1 regression guard: the cascade used to prevent this import."""
+    from apps_rg.enforcement.HardenedanthropicexecutorStrategy import (
+        HardenedAnthropicExecutor,
+    )
+
+    assert HardenedAnthropicExecutor is not None
+    assert HardenedAnthropicExecutor.__name__ == "HardenedAnthropicExecutor"
+
+
+def test_executor_instantiates_with_real_anthropic_client(monkeypatch):
+    """EX2 regression guard: hardening_mixin.__init__ used to reference
+    undefined `get_breaker` / `ErrorRecoveryStrategy` / `get_telemetry`.
+    Construction now resolves the lazy-import helpers cleanly.
+    """
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test-" + "x" * 90)
+    from apps_rg.enforcement.HardenedanthropicexecutorStrategy import (
+        HardenedAnthropicExecutor,
+    )
+
+    executor = HardenedAnthropicExecutor()
+
+    # The fix produces a REAL anthropic.Anthropic client
+    import anthropic as anthropic_sdk
+
+    assert isinstance(executor._client, anthropic_sdk.Anthropic), (
+        f"Expected anthropic.Anthropic instance, got {type(executor._client).__name__}"
+    )
+    # Circuit breaker and error recovery must also be wired (EX2 fix)
+    assert executor.circuit_breaker is not None
+    assert executor.error_recovery is not None
+
+
+def test_executor_without_api_key_keeps_client_none(monkeypatch, caplog):
+    """Regression guard: when key is absent, construction logs a warning and
+    returns a None client rather than crashing. This preserves the ability to
+    construct the executor in offline tests / CI without a live key.
+    """
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    # Also need to prevent .env from repopulating the key during this test
+    monkeypatch.setattr(
+        "apps_rg.enforcement.HardenedanthropicexecutorStrategy.load_dotenv",
+        lambda *a, **kw: None,
+    )
+
+    from apps_rg.enforcement.HardenedanthropicexecutorStrategy import (
+        HardenedAnthropicExecutor,
+    )
+
+    # Use a fresh instance so we don't hit cached state
+    import importlib
+    import apps_rg.enforcement.HardenedanthropicexecutorStrategy as mod
+
+    importlib.reload(mod)
+
+    # After reload, re-delete key (reload may have re-run load_dotenv)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    with caplog.at_level("WARNING"):
+        executor = mod.HardenedAnthropicExecutor()
+
+    # When key is absent, client must be None (not a broken/half-built object)
+    assert executor._client is None
+
+
+def test_get_clock_reexport_from_l2_execution_utils():
+    """EX1 regression guard: the package-level re-export must remain."""
+    from agentic_core.L2_execution.utils import get_clock
+
+    assert callable(get_clock)
+
+
+def test_bootstrap_runtime_does_not_clobber_agentic_core_package():
+    """EX1 regression guard: _ensure_module must prefer real imports.
+
+    Before EX1: importing apps_rg would replace the real `agentic_core`
+    package with a bare types.ModuleType (no __path__), breaking all
+    subsequent `from agentic_core.X import Y` calls.
+    """
+    # Import apps_rg (which runs bootstrap_runtime.install_runtime_shims)
+    import apps_rg  # noqa: F401
+    import agentic_core
+
+    # The real package has __path__ set; a bare types.ModuleType stub does not
+    assert hasattr(agentic_core, "__path__"), (
+        "agentic_core must remain a real package after apps_rg import; "
+        "bootstrap_runtime._ensure_module has regressed if __path__ is missing"
+    )
+    assert agentic_core.__path__ is not None
+    assert agentic_core.__spec__ is not None
