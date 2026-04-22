@@ -62,3 +62,32 @@ pairs:
     description: >-
       Bare open() without a `with` statement or explicit .close() leaks a
       file descriptor. On Windows this can prevent overwrite/delete.
+
+  - name: chroma_persistent_client
+    opener: chromadb.PersistentClient
+    closers:
+      - with_stmt
+      - .close()
+      - attr:self.client
+      - attr:self._client
+      - attr:self._chroma_client
+      - attr:self._chroma
+    severity: warn
+    description: >-
+      chromadb.PersistentClient opens DuckDB + Parquet file handles. Every
+      call site must bind to self.<attr> or be passed into an owning object
+      so the collection handles can be released. A bare local-var client
+      that escapes the function leaks file handles on Windows.
+
+  - name: chroma_client
+    opener: chromadb.Client
+    closers:
+      - with_stmt
+      - .close()
+      - attr:self.client
+      - attr:self._client
+      - attr:self._chroma_client
+    severity: warn
+    description: >-
+      chromadb.Client (in-memory) still holds SQLite-backed state. Same
+      ownership contract as PersistentClient — bind to self.<attr>.

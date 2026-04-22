@@ -45,3 +45,46 @@ contracts:
     require_n_handlers: 1
     severity: warn
     plan_id: semcache-make-live-7a2d4b
+
+  - id: create-embedding-client-disabled-error
+    description: >-
+      create_embedding_client may raise EmbeddingDisabledError
+      (EMBEDDING_ENABLED=false) or EmbeddingSovereigntyViolationError (called
+      from a non-allowlisted module). Callers MUST handle at least one of
+      these — or RuntimeError (the shared parent) — otherwise a legitimate
+      disabled-state yields an unhandled exception at L2 execution.
+    raiser_module: agentic_core/embeddings/embedding_factory.py
+    raiser_symbol: create_embedding_client
+    exception_class: EmbeddingDisabledError
+    parent_classes: [RuntimeError, Exception]
+    require_n_handlers: 1
+    severity: warn
+    plan_id: lazy-import-arch-defect-review
+
+  - id: register-embedding-client-value-error
+    description: >-
+      register_embedding_client raises ValueError on empty-name registration
+      and EmbeddingSovereigntyViolationError on duplicate registration. At
+      least one caller must handle ValueError (or Exception) — a silent
+      duplicate-registration path would corrupt the embedding registry.
+    raiser_module: agentic_core/embeddings/embedding_factory.py
+    raiser_symbol: register_embedding_client
+    exception_class: ValueError
+    parent_classes: [Exception]
+    require_n_handlers: 1
+    severity: warn
+    plan_id: lazy-import-arch-defect-review
+
+  - id: semcache-initialize-critical-infra
+    description: >-
+      SemanticCacheManager._initialize raises CriticalInfrastructureError in
+      STRICT mode when Redis/L2 is unreachable. The get_instance path MUST
+      propagate or handle this error — callers relying on the cache need to
+      know it is unavailable, not receive a partially-initialized singleton.
+    raiser_module: agentic_core/L4_state/utils/memory/semantic_cache_manager.py
+    raiser_symbol: SemanticCacheManager._initialize
+    exception_class: CriticalInfrastructureError
+    parent_classes: [Exception]
+    require_n_handlers: 1
+    severity: warn
+    plan_id: semcache-make-live-7a2d4b
