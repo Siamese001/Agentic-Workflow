@@ -1,4 +1,10 @@
-"""Risk-weighted test gap report (Stage 1 + Stage 2).
+"""Risk-weighted test COVERAGE report (Stage 1 + Stage 2).
+
+Reports structural test coverage (% of modules with >=1 test-importer), NOT
+the inverted gap rate. A layer showing "Coverage 29%" has 71% of modules
+uncovered. Rank still uses gap_score (low-coverage + high-blast-radius first)
+so the top-N tables prioritize the same modules, just with human-friendly
+coverage framing in the summary.
 
 Stage 1 — structural test coverage via ADG:
   For every source module (non-L_TEST), count incoming `imports` edges whose
@@ -96,28 +102,39 @@ def _progress(i: int, total: int, label: str, start: float) -> None:
 _SYMBOL_PREFIX = "ADG::Symbol::"
 
 
-def _symbol_to_module_path(sym_name: str) -> str | None:
-    """Extract the enclosing module file path from a symbol adg_name.
+def _symbol_to_module_paths(sym_name: str) -> List[str]:
+    """Return candidate enclosing module file paths for a symbol adg_name.
 
-    Handles two shapes observed in ADG:
-      - `ADG::Symbol::path/to/file.py::func`        -> path/to/file.py
-      - `ADG::Symbol::a.b.c.func`                   -> a/b/c.py (best-effort)
-    Returns None if we cannot resolve confidently.
+    Handles three shapes observed in ADG:
+      - `ADG::Symbol::path/to/file.py::func`        -> ['path/to/file.py']
+      - `ADG::Symbol::a.b.c.module_name`            -> ['a/b/c/module_name.py',
+                                                        'a/b/c.py']
+      - `ADG::Symbol::a.b.c.func`                   -> same candidates
+
+    The dotted form is ambiguous because `from pkg.sub import module_name`
+    and `from pkg.sub.module import func` both produce `pkg.sub.module_name`
+    / `pkg.sub.module.func` respectively. We emit both candidates (full
+    dotted path as module, and stripped-final-segment path as module) and
+    let the caller pick whichever matches a known module id. This closes
+    the false-negative where tests doing `from pkg import module as seam`
+    were not credited to `pkg/module.py`.
     """
     if not sym_name or not sym_name.startswith(_SYMBOL_PREFIX):
-        return None
+        return []
     body = sym_name[len(_SYMBOL_PREFIX):]
     if "::" in body:
-        return body.split("::", 1)[0].replace("\\", "/")
-    # Dotted form. Strip trailing '.*' (wildcard imports) and the final symbol.
+        return [body.split("::", 1)[0].replace("\\", "/")]
     if body.endswith(".*"):
         body = body[:-2]
-    # Drop final dotted segment (the symbol name) -> keep module dotted path.
+    candidates: List[str] = []
+    # Candidate 1: treat the FULL dotted path as a module path.
+    # Covers `from pkg import module_name` producing `pkg.module_name`.
+    candidates.append(body.replace(".", "/") + ".py")
+    # Candidate 2: strip trailing segment (assume it is a symbol name inside a module).
+    # Covers `from pkg.module import func` producing `pkg.module.func`.
     if "." in body:
-        dotted_mod = body.rsplit(".", 1)[0]
-    else:
-        dotted_mod = body
-    return dotted_mod.replace(".", "/") + ".py"
+        candidates.append(body.rsplit(".", 1)[0].replace(".", "/") + ".py")
+    return candidates
 
 
 def load_modules_and_fanin(db: Path) -> Tuple[List[dict], Dict[int, int], Dict[int, int]]:
@@ -166,16 +183,20 @@ def load_modules_and_fanin(db: Path) -> Tuple[List[dict], Dict[int, int], Dict[i
     for i, (src_id, src_layer, dst_name) in enumerate(rows, 1):
         if i % 10000 == 0 or i == total:
             _progress(i, total, "resolving imports", start)
-        mod_path = _symbol_to_module_path(dst_name)
-        if mod_path is None:
+        candidates = _symbol_to_module_paths(dst_name)
+        if not candidates:
             unresolved += 1
             continue
-        dst_mod_id = path_to_module_id.get(mod_path)
-        if dst_mod_id is None:
+        dst_mod_id: int | None = None
+        for mod_path in candidates:
+            dst_mod_id = path_to_module_id.get(mod_path)
+            if dst_mod_id is not None:
+                break
             # Try __init__.py form.
-            init_path = mod_path[:-3] + "/__init__.py" if mod_path.endswith(".py") else None
-            if init_path:
-                dst_mod_id = path_to_module_id.get(init_path)
+            if mod_path.endswith(".py"):
+                dst_mod_id = path_to_module_id.get(mod_path[:-3] + "/__init__.py")
+                if dst_mod_id is not None:
+                    break
         if dst_mod_id is None:
             unresolved += 1
             continue
@@ -311,25 +332,34 @@ def build_report(db: Path, since_days: int) -> dict:
 
     rows.sort(key=lambda r: r["gap_score"], reverse=True)
     untested = [r for r in rows if r["test_importers"] == 0]
+    tested = [r for r in rows if r["test_importers"] > 0]
     untested_changed = [r for r in untested if r["changed_recently"]]
-    summary = {
+    total_mods = max(1, len(rows))
+    summary: Dict[str, object] = {
         "snapshot": db.name,
         "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "since_days": since_days,
         "total_source_modules": len(rows),
-        "zero_test_importers": len(untested),
-        "zero_test_importers_pct": round(100 * len(untested) / max(1, len(rows)), 2),
+        "tested_modules": len(tested),
+        "coverage_pct": round(100 * len(tested) / total_mods, 2),
+        "untested_modules": len(untested),
+        "gap_pct": round(100 * len(untested) / total_mods, 2),
         "changed_and_untested": len(untested_changed),
         "by_layer": {},
     }
+    by_layer: Dict[str, Dict[str, object]] = {}
     for layer in sorted({r["layer"] for r in rows}):
         in_layer = [r for r in rows if r["layer"] == layer]
-        zero = [r for r in in_layer if r["test_importers"] == 0]
-        summary["by_layer"][layer] = {
+        tested_in_layer = [r for r in in_layer if r["test_importers"] > 0]
+        denom = max(1, len(in_layer))
+        by_layer[layer] = {
             "modules": len(in_layer),
-            "zero_test_importers": len(zero),
-            "zero_pct": round(100 * len(zero) / max(1, len(in_layer)), 2),
+            "tested_modules": len(tested_in_layer),
+            "untested_modules": len(in_layer) - len(tested_in_layer),
+            "coverage_pct": round(100 * len(tested_in_layer) / denom, 2),
+            "gap_pct": round(100 * (len(in_layer) - len(tested_in_layer)) / denom, 2),
         }
+    summary["by_layer"] = by_layer
     return {"summary": summary, "rows": rows}
 
 
@@ -347,24 +377,25 @@ def write_outputs(report: dict, out_dir: Path) -> Tuple[Path, Path]:
     top_changed = [r for r in rows if r["test_importers"] == 0 and r["changed_recently"]][:30]
 
     lines = [
-        f"# Risk-Weighted Test Gap Report",
+        "# Risk-Weighted Test Coverage Report",
         "",
         f"- **Snapshot**: `{s['snapshot']}`",
         f"- **Generated (UTC)**: {s['generated_utc']}",
         f"- **Changed-file window**: last {s['since_days']} days",
         f"- **Total source modules scored**: {s['total_source_modules']}",
-        f"- **Zero test-importers**: {s['zero_test_importers']} "
-        f"({s['zero_test_importers_pct']}%)",
+        f"- **Structural coverage**: {s['tested_modules']}/{s['total_source_modules']} "
+        f"(**{s['coverage_pct']}% covered**, {s['gap_pct']}% gap)",
         f"- **Changed AND untested**: {s['changed_and_untested']}",
         "",
-        "## Gap Rate by Layer",
+        "## Coverage Rate by Layer",
         "",
-        "| Layer | Modules | Zero Test-Importers | Pct |",
-        "|---|---:|---:|---:|",
+        "| Layer | Modules | Tested | Coverage % | Untested | Gap % |",
+        "|---|---:|---:|---:|---:|---:|",
     ]
     for layer, agg in sorted(s["by_layer"].items()):
         lines.append(
-            f"| `{layer}` | {agg['modules']} | {agg['zero_test_importers']} | {agg['zero_pct']}% |"
+            f"| `{layer}` | {agg['modules']} | {agg['tested_modules']} | "
+            f"{agg['coverage_pct']}% | {agg['untested_modules']} | {agg['gap_pct']}% |"
         )
 
     lines += [
@@ -426,10 +457,10 @@ def main() -> int:
 
     s = report["summary"]
     print(
-        f"Summary: {s['zero_test_importers']}/{s['total_source_modules']} "
-        f"modules have zero test-importers "
-        f"({s['zero_test_importers_pct']}%); "
-        f"{s['changed_and_untested']} of those changed in last {s['since_days']}d."
+        f"Summary: {s['tested_modules']}/{s['total_source_modules']} "
+        f"modules are structurally covered "
+        f"({s['coverage_pct']}% coverage, {s['gap_pct']}% gap); "
+        f"{s['changed_and_untested']} untested modules changed in last {s['since_days']}d."
     )
     return 0
 
