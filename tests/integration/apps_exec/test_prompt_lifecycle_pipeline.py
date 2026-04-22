@@ -97,7 +97,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
         store.set_system_hash("system-hash-123")
 
         # Monkey-patch the global version store function for this test
-        import agentic_core.L0_routing.engines.prompt_bom_builder as builder_module
+        import agentic_core.L0_routing.reasoning.prompt_bom_builder as builder_module
 
         original_get_store = builder_module._get_version_store
         builder_module._get_version_store = lambda: store
@@ -133,7 +133,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
         store = InMemoryVersionStore()
 
         # Patch global function
-        import agentic_core.L0_routing.engines.prompt_bom_builder as builder_module
+        import agentic_core.L0_routing.reasoning.prompt_bom_builder as builder_module
 
         original_get_store = builder_module._get_version_store
         builder_module._get_version_store = lambda: store
