@@ -149,6 +149,83 @@ def _check_env_flags(flags: list[str]) -> list[str]:
     return missing
 
 
+def _collect_call_nodes(nodes: list[ast.AST], target_name: str) -> list[ast.Call]:
+    """Return every ``ast.Call`` whose trailing name matches ``target_name``.
+
+    Used by the signature-shape check to inspect kwargs at the call site.
+    """
+    hits: list[ast.Call] = []
+    for root in nodes:
+        for sub in ast.walk(root):
+            if not isinstance(sub, ast.Call):
+                continue
+            func = sub.func
+            name: str | None = None
+            if isinstance(func, ast.Attribute):
+                name = func.attr
+            elif isinstance(func, ast.Name):
+                name = func.id
+            if name == target_name:
+                hits.append(sub)
+    return hits
+
+
+def _check_signature_contract(
+    row_id: str,
+    required_call: str,
+    call_sites: list[ast.Call],
+    contract: dict[str, Any],
+) -> list[str]:
+    """Verify that every call site of ``required_call`` honours the declared
+    signature contract.
+
+    Contract keys (all optional):
+      required_kwargs : list[str]  — every keyword must appear in call.keywords
+      forbidden_kwargs: list[str]  — none of these may appear
+      min_args        : int        — positional-arg count lower bound
+      max_args        : int        — positional-arg count upper bound (inclusive)
+    """
+    errors: list[str] = []
+    required_kwargs = set(contract.get("required_kwargs", []) or [])
+    forbidden_kwargs = set(contract.get("forbidden_kwargs", []) or [])
+    min_args = contract.get("min_args")
+    max_args = contract.get("max_args")
+
+    if not call_sites:
+        # Absence of a call site is already reported by the wiring check;
+        # skip silently here to avoid double-counting.
+        return errors
+
+    for call in call_sites:
+        kwarg_names = {kw.arg for kw in call.keywords if kw.arg is not None}
+        missing = required_kwargs - kwarg_names
+        present_forbidden = forbidden_kwargs & kwarg_names
+        pos_count = len(call.args)
+
+        where = f"line {getattr(call, 'lineno', '?')}"
+        if missing:
+            errors.append(
+                f"[{row_id}] signature_contract violation at {where}: "
+                f"{required_call} call missing required kwargs {sorted(missing)}"
+            )
+        if present_forbidden:
+            errors.append(
+                f"[{row_id}] signature_contract violation at {where}: "
+                f"{required_call} call passes forbidden kwargs {sorted(present_forbidden)}"
+            )
+        if isinstance(min_args, int) and pos_count < min_args:
+            errors.append(
+                f"[{row_id}] signature_contract violation at {where}: "
+                f"{required_call} call has {pos_count} positional args, min is {min_args}"
+            )
+        if isinstance(max_args, int) and pos_count > max_args:
+            errors.append(
+                f"[{row_id}] signature_contract violation at {where}: "
+                f"{required_call} call has {pos_count} positional args, max is {max_args}"
+            )
+    return errors
+
+
 def _check_row(row: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     row_id = row.get("id", "<unnamed>")
@@ -183,6 +260,15 @@ def _check_row(row: dict[str, Any]) -> list[str]:
             f"[{row_id}] required_call {required_call!r} not invoked inside "
             f"{entry_symbol} subtree of {entry_module}"
         )
+
+    # Signature-shape: opt-in per-row contract on call-site kwargs/arity.
+    # Only runs when the call is actually present (else the above wiring error
+    # already covers it). This is the "contract drift" guard — catches arg
+    # renames and silent default removals that pure-name wiring checks miss.
+    contract = row.get("signature_contract")
+    if isinstance(contract, dict) and target in called:
+        call_sites = _collect_call_nodes(nodes, target)
+        errors.extend(_check_signature_contract(row_id, required_call, call_sites, contract))
 
     missing_flags = _check_env_flags(row.get("required_env_flags", []) or [])
     if missing_flags:

@@ -20,6 +20,13 @@
 #                        segments appear in any Call node)
 #   required_env_flags — flags that must default to "on" in .env.example OR
 #                        have an integration test that sets them on
+#   signature_contract — (optional) shape check on the call site:
+#                          required_kwargs  : [name, ...]
+#                          forbidden_kwargs : [name, ...]
+#                          min_args         : int  (positional lower bound)
+#                          max_args         : int  (positional upper bound)
+#                        Catches kwarg renames and silent default removals that
+#                        a pure "does call X appear?" check cannot see.
 #   proof_test         — pytest nodeid that exercises this wiring end-to-end
 #   probe_command      — CLI probe (optional) that must exit 0 when feature live
 #   plan_id            — plan of record for this wiring
@@ -38,6 +45,13 @@ wirings:
     required_call: SemanticCacheManager.recall
     required_env_flags:
       - SEMANTIC_CACHE_D2_ENABLED
+    signature_contract:
+      # recall(payload_key, namespace, *, tenant_id=None) — the tenant_id
+      # kwarg is the tenant-isolation contract. Dropping it silently reverts
+      # to cross-tenant lookup. Positional args: payload_key + namespace.
+      required_kwargs: [tenant_id]
+      min_args: 2
+      max_args: 2
     proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py
     probe_command: python tools/diag/probe_semantic_cache.py
     plan_id: semcache-make-live-7a2d4b
@@ -52,6 +66,13 @@ wirings:
     required_call: SemanticCacheManager.learn
     required_env_flags:
       - SEMANTIC_CACHE_D2_ENABLED
+    signature_contract:
+      # learn(payload_key, namespace, result, *, tenant_id=None) — same
+      # tenant isolation contract as recall. Writes without tenant_id poison
+      # the cache for other tenants.
+      required_kwargs: [tenant_id]
+      min_args: 3
+      max_args: 3
     proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py::test_l0_populate_d2_cache_wires_learn
     probe_command: python tools/diag/probe_semantic_cache.py
     plan_id: semcache-make-live-7a2d4b
