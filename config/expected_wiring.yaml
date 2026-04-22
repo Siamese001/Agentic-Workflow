@@ -1,0 +1,85 @@
+# Expected Wiring SSOT — declared call-site assertions
+# -----------------------------------------------------
+# Each entry asserts that a feature's documented "LIVE" wiring is present in
+# the source tree. The gate at `ops_scripts/ci/check_expected_wiring.py`
+# verifies — at commit time — that `required_call` appears inside the AST of
+# `entry_module` within the body (or body of a helper) of `entry_symbol`.
+#
+# Scope: this is NOT a test that the code runs. It is a guarantee that if the
+# code were to execute, it would invoke the expected dependency. Runtime
+# verification lives in the integration tests referenced by `proof_test` and
+# in the runbook probe referenced by `probe_command`.
+#
+# Schema:
+#   id                 — short unique slug
+#   description        — human-readable claim
+#   entry_module       — repo-relative .py path
+#   entry_symbol       — dotted symbol path inside entry_module
+#   required_call      — dotted qualified name that must be called from within
+#                        entry_symbol's AST subtree (match = last two or more
+#                        segments appear in any Call node)
+#   required_env_flags — flags that must default to "on" in .env.example OR
+#                        have an integration test that sets them on
+#   proof_test         — pytest nodeid that exercises this wiring end-to-end
+#   probe_command      — CLI probe (optional) that must exit 0 when feature live
+#   plan_id            — plan of record for this wiring
+#
+# Governance: new rows require the same review as an adapter enrollment.
+# Deleted rows require an approved deprecation notice.
+
+wirings:
+
+  - id: semcache-l0-path-d-recall
+    description: >-
+      L0 Path-D execution must call SemanticCacheManager.recall before dispatch
+      so the D2 semantic cache is read on every Path-D request.
+    entry_module: agentic_core/L0_routing/reasoning/execution_orchestrator.py
+    entry_symbol: ExecutionOrchestrator.execute
+    required_call: SemanticCacheManager.recall
+    required_env_flags:
+      - SEMANTIC_CACHE_D2_ENABLED
+    proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py
+    probe_command: python tools/diag/probe_semantic_cache.py
+    plan_id: semcache-make-live-7a2d4b
+
+  - id: semcache-l0-path-d-learn
+    description: >-
+      On Path-D success with completed=True, the orchestrator must write the
+      result into the semantic cache via SemanticCacheManager.learn. Without
+      this call the cache is permanently empty.
+    entry_module: agentic_core/L0_routing/reasoning/execution_orchestrator.py
+    entry_symbol: ExecutionOrchestrator._populate_d2_cache
+    required_call: SemanticCacheManager.learn
+    required_env_flags:
+      - SEMANTIC_CACHE_D2_ENABLED
+    proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py::test_l0_populate_d2_cache_wires_learn
+    probe_command: python tools/diag/probe_semantic_cache.py
+    plan_id: semcache-make-live-7a2d4b
+
+  - id: semcache-l0-path-d-promote
+    description: >-
+      When SEMANTIC_CACHE_PROMOTE_ENABLED is set and feedback qualifies, the
+      orchestrator must call promote_to_long_term so L2 (Chroma + SQLite)
+      actually receives writes.
+    entry_module: agentic_core/L0_routing/reasoning/execution_orchestrator.py
+    entry_symbol: ExecutionOrchestrator._populate_d2_cache
+    required_call: promote_to_long_term
+    required_env_flags:
+      - SEMANTIC_CACHE_D2_ENABLED
+      - SEMANTIC_CACHE_PROMOTE_ENABLED
+    proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py
+    probe_command: python tools/diag/probe_semantic_cache.py
+    plan_id: semcache-make-live-7a2d4b
+
+  - id: semcache-l1-warmup
+    description: >-
+      SemanticCacheManager._initialize must invoke _warm_l1_from_l2 so the
+      persistent L2 store is projected into Redis on singleton boot, closing
+      the "persistent vector → in-memory read" claim in the runbook.
+    entry_module: agentic_core/L4_state/utils/memory/semantic_cache_manager.py
+    entry_symbol: SemanticCacheManager._initialize
+    required_call: _warm_l1_from_l2
+    required_env_flags: []
+    proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py
+    probe_command: python tools/diag/probe_semantic_cache.py
+    plan_id: semcache-make-live-7a2d4b

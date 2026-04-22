@@ -77,6 +77,16 @@ _APPROVED_ADAPTER_PATHS = (
     # Lifecycle: start() before first request, close() on shutdown. ADG enforcement: file-scanner only.
     # Decision packet: docs/reports/plans/vllm_http_decision_packet.md §E (Path A).
     "agentic_core/L3_orchestration/inference/qwen_vllm/engines/optimized_vllm_client.py",
+    # ENROLLED 2026-04-22 semcache-make-live-7a2d4b / rca-adg-ci-missed-gaps C1:
+    # These L4 semantic-cache adapters were structurally orphaned from the ADG
+    # static-imports view while being documented as LIVE. Enrolling forces the
+    # zero-caller check to report them; they are simultaneously listed under
+    # _PROCESS_BOUNDARY_ADAPTERS below because their only callers are lazy
+    # (inside try-blocks in L0 methods). When edge-kind `lazy_imports` lands
+    # (RCA §C2), the process-boundary exemption can be removed.
+    "agentic_core/L4_state/utils/memory/semantic_cache_manager.py",
+    "agentic_core/L4_state/utils/memory/sovereign_semantic_cache.py",
+    "agentic_core/L4_state/cache/gptcache_client.py",
 )
 
 # Process-boundary adapters: invoked at process level (MCP server launch, filesystem access)
@@ -89,6 +99,15 @@ _PROCESS_BOUNDARY_ADAPTERS = (
     "agentic_core/L4_state/utils/memory/canonical_store.py",  # Filesystem store — accessed via path
     "agentic_core/L3_orchestration/reasoning/engines/sovereign_redis_orchestrator.py",  # Redis orchestrator — instantiated via registry
     "apps_shared/data_adapters/repo_signal_adapter.py",  # Signal reader — instantiated by signal collection scripts
+    # 2026-04-22 semcache-make-live-7a2d4b / rca-adg-ci-missed-gaps:
+    # Lazy-import-only adapters. Sole callers are `from ... import` statements
+    # inside function bodies in L0 / apps_shared (invisible to AST top-level
+    # extraction). Temporary exemption until `lazy_imports` edge kind lands
+    # (RCA §C2). Expected-wiring coverage is asserted via
+    # `config/expected_wiring.yaml` + `check_expected_wiring.py`.
+    "agentic_core/L4_state/utils/memory/semantic_cache_manager.py",
+    "agentic_core/L4_state/utils/memory/sovereign_semantic_cache.py",
+    "agentic_core/L4_state/cache/gptcache_client.py",
 )
 
 # Provider SDKs that must route through infrastructure/sdks_mcps
