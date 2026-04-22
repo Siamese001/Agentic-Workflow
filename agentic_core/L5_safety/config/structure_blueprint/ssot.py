@@ -405,8 +405,9 @@ def _build_test_canonical_location_map(repo_root: Path | None = None) -> dict[st
 # Uses try/except to handle circular import during module load
 try:
     TEST_CANONICAL_LOCATION_MAP: dict[str, str] = _build_test_canonical_location_map()
-except NameError:
-    # Fallback during module load
+except (NameError, RuntimeError):
+    # Fallback during module load — _build_test_canonical_location_map wraps
+    # the inner NameError as RuntimeError, so we must catch both.
     TEST_CANONICAL_LOCATION_MAP = {
         "agentic_core": "tests/unit/agentic_core",
         "system_learning": "tests/unit/system_learning",
