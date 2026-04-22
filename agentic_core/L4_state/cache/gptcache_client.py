@@ -127,7 +127,7 @@ class NativePersistentCacheClient:
                     _expected_dim,
                 )
                 self._chroma_client.delete_collection(col_name)
-        except _NotFoundError:
+        except _NotFoundError:  # guardian: allow-silent-swallow -- NotFoundError is the expected cache-miss sentinel on first run; collection is created by get_or_create_collection below
             pass  # First-run path: collection does not yet exist, created below.
         except (  # guardian: allow-silent-swallow -- cache cleanup: non-fatal, collection deletion failures ignored on shutdown
             AttributeError,
