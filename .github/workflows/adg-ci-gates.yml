@@ -53,6 +53,15 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: Expected-Wiring Gate (declared call-site assertions)
+        # Runs immediately after ADG ingest so wiring regressions surface at the
+        # ADG step, not at pre-commit. Reads config/expected_wiring.yaml + asserts
+        # each required_call is present in its entry_symbol's AST subtree.
+        # Also invoked locally at the end of `python tools/generate_full_adg.py`.
+        run: python ops_scripts/ci/check_expected_wiring.py
+        env:
+          PYTHONPATH: .
+
       - name: Install MCP test dependencies
         run: pip install fakeredis --quiet 2>/dev/null || true
 

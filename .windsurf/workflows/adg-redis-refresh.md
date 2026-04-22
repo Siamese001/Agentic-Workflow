@@ -62,6 +62,12 @@ python tools/generate_full_adg.py
 
 Wait for completion. Verify new `.sqlite` and `_snapshot_*.json` files appear in `artifacts/adg/`.
 
+**Expected-wiring gate runs automatically at the end of this step.** The ADG generator
+invokes `ops_scripts/ci/check_expected_wiring.py` after artifacts verify, so any
+violation of the declared call-site assertions in `config/expected_wiring.yaml`
+surfaces here — not hours later at pre-commit or CI. The process exits non-zero
+on violation. Emergency opt-out: `python tools/generate_full_adg.py --no-wiring-check`.
+
 ---
 
 ## STEP 3: Load refreshed ADG into Redis
