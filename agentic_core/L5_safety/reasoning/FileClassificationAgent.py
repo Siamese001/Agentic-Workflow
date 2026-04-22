@@ -178,8 +178,10 @@ try:
 
     HAS_SOVEREIGN_BASE = True
     HAS_ATOMIC_MIXIN = True
-    # Define base classes tuple for inheritance
-    BASE_CLASSES = (AtomicExecutionMixin, SovereignBaseAgent)
+    # Define base classes tuple for inheritance.
+    # SovereignBaseAgent already has AtomicExecutionMixin at MRO position 14 — listing
+    # it explicitly here causes "Cannot create a consistent MRO" at class definition.
+    BASE_CLASSES = (SovereignBaseAgent,)
 except ImportError:  # guardian: allow-silent-swallow
     HAS_SOVEREIGN_BASE = False
     HAS_ATOMIC_MIXIN = False
