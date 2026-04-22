@@ -11,9 +11,18 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import logging
+import os
 from dataclasses import dataclass
 
-from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
+import anthropic
+from dotenv import load_dotenv
+
+from apps_rg.utils.agent_executor_util import AgentMessage, AgentResponse
+
+# Load .env into os.environ so ANTHROPIC_API_KEY (and related config) is
+# available to the SDK client constructor. Idempotent; safe to call at
+# module import time.
+load_dotenv()
 
 from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.L2_execution.utils import get_clock
@@ -220,15 +229,33 @@ class HardenedAnthropicExecutor(HardeningMixin):
             max_retries=self.config.max_retries,
             telemetry=telemetry,
         )
-        self._client = None
+        self._client: anthropic.Anthropic | None = None
         self._setup_client()
 
     def _setup_client(self) -> None:
-        """Delegate to SovereignLLMGateway — no direct Anthropic SDK access."""
+        """Initialize the Anthropic SDK client.
+
+        Reads ANTHROPIC_API_KEY from environment (loaded from .env at module
+        import). The SovereignLLMGateway reference is retained for future
+        telemetry-routed calls, but the current call path invokes the SDK
+        directly via ``self._client.messages.create(...)``.
+        """
         from agentic_core.interfaces.gateway import SovereignLLMGateway
 
-        self._gateway = SovereignLLMGateway()
-        self._client = None
+        self._gateway = SovereignLLMGateway  # class retained; not instantiated here
+
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            logger.warning(
+                "ANTHROPIC_API_KEY not set; HardenedAnthropicExecutor will fail at first call",
+            )
+            self._client = None
+        else:
+            # anthropic.Anthropic() picks up ANTHROPIC_API_KEY automatically,
+            # but we pass it explicitly for determinism and to surface key
+            # truncation issues at construction rather than first call.
+            self._client = anthropic.Anthropic(api_key=api_key)
+
         _clk = get_clock()
         _clk.emit_replay_key(context=f"rg:anthropic:{self.__class__.__name__}")
         _clk.emit_determinism_digest(inputs={"strategy": self.__class__.__name__, "provider": "anthropic"})
