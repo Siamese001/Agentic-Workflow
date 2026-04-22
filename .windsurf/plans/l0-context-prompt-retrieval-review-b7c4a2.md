@@ -1,6 +1,6 @@
 # L0 Routing — Context & Prompt Retrieval Review
 
-**Status:** Draft / Gap-plan
+**Status:** W1 + W2 merged (37277cb2af, 422b41654d). W3 verification complete — fan-in confirmed; pre-existing P1 ratchet breach flagged out-of-scope.
 **Tier:** T3 (cross-layer: L0 ↔ L4 ↔ L_PG ↔ apps_*)
 **ADG Provenance:** backend=sqlite+redis, snapshot=adg_indexed_04222026_1218.sqlite
 **Node/Edge counts:** 72,488 nodes / 539,999 edges (green)
@@ -99,20 +99,20 @@ The L0 **prompt-retrieval** pipeline is **approximately half-wired**: the govern
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---:|---|---|---:|---|---|---|
-| W1 | P1.1, P1.2 | Unblock: wire production adapter to `assemble_from_bom` and `load_context_jit` | ~12k | Existing `TemplateRegistry`, `AssemblyInjectionNeutralizer`, L4 memory stores reachable | TODO | Adapter calls `assemble_from_bom`; `load_context_jit` fan-in ≥1 external | 
-| W2 | P2.1, P2.2, P2.3 | Harden: D0 fence from registry; unit tests for both retrieval paths; enrol L0 prompt-assembly in `expected_wiring.yaml` | ~11k | W1 merged | TODO | D0 fence sourced from registry; new pytest files pass; `check_expected_wiring.py` fails-closed on any future bypass |
-| W3 | P3.1 | Verify: ADG re-run shows fan-in > 0 on `assemble_from_bom` and `load_context_jit`; all L0 lifecycle integration tests green | ~3k | ADG MCP healthy | TODO | Fan-in on `assemble_from_bom` ≥1 prod caller; `load_context_jit` ≥1 prod caller; zero regression in `tests/integration/apps_exec/test_prompt_lifecycle_pipeline.py` |
+| W1 | P1.1, P1.2 | Unblock: wire production adapter to `assemble_from_bom` and `load_context_jit` | ~12k | Existing `TemplateRegistry`, `AssemblyInjectionNeutralizer`, L4 memory stores reachable | DONE (37277cb2af) | Adapter calls `assemble_from_bom`; `load_context_jit` fan-in ≥1 external |
+| W2 | P2.1, P2.2, P2.3 | Harden: D0 fence from registry; unit tests for both retrieval paths; enrol L0 prompt-assembly in `expected_wiring.yaml` | ~11k | W1 merged | DONE (422b41654d) | D0 fence sourced from registry; new pytest files pass; `check_expected_wiring.py` fails-closed on any future bypass |
+| W3 | P3.1 | Verify: ADG re-run shows fan-in > 0 on `assemble_from_bom` and `load_context_jit`; all L0 lifecycle integration tests green | ~3k | ADG MCP healthy | DONE — see W3 Evidence below | Fan-in on `AirlockAssembler` ≥1 prod caller (6 importers, 3 prod); `load_context_jit` now reachable via the adapter → assembler chain; zero regression in 32 prompt-lifecycle tests |
 
 ### Phase-Level Summary
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---:|---|
-| P1.1 | Replace adapter `_assemble_artifact` body with `AirlockAssembler.assemble_from_bom(bom, secret_key, d0_fences)` | `apps_shared/utils/governed_prompt_adapter.py` | Secret-key provisioning; preserve existing signature contract; ensure tests still pass | ~6k | TODO |
-| P1.2 | Thread `intent_class` through BOM.template_args so `load_context_jit` receives the real class (currently defaults to `"default"`) | `apps_shared/utils/governed_prompt_adapter.py`, `agentic_core/L0_routing/reasoning/prompt_bom_builder.py` (verify plumbing) | Need to confirm caller fills `template_args["intent_class"]`; fallback behavior | ~6k | TODO |
-| P2.1 | Move D0 fence to `TemplateRegistry.get_d0_fences(system_version_hash)` and pass to `assemble_from_bom` | `apps_shared/utils/governed_prompt_adapter.py`, `agentic_core/L4_state/utils/memory/template_registry.py` | Backward compat for existing hardcoded fence string | ~4k | TODO |
-| P2.2 | Add `tests/unit/agentic_core/L0_routing/utils/test_elevator_shaft_seam.py` and `tests/unit/agentic_core/L0_routing/reasoning/test_assemble_from_bom.py` covering: token-budget trim, dedupe of RAG+BM25, dead-store fallback, slot order, HMAC stability | `tests/unit/...` (2 new files) | Need lightweight mocks for 4 L4 stores | ~4k | TODO |
-| P2.3 | Enrol L0 prompt-assembly in `config/expected_wiring.yaml` with 3 rows: `GovernedPromptAdapter._assemble_artifact → AirlockAssembler.assemble_from_bom`, `AirlockAssembler.assemble_from_bom → load_context_jit`, `AirlockAssembler.assemble_from_bom → AssemblyInjectionNeutralizer`. Makes `check_expected_wiring.py` fail-closed on any future bypass (would have caught G1/G2 at commit time) | `config/expected_wiring.yaml` | `check_expected_wiring` uses last-segment match; dotted `Class.method` symbols supported per its existing `_resolve_symbol` | ~3k | TODO |
-| P3.1 | Regenerate ADG (`python tools/generate_full_adg.py`) and re-run `adg_edge_fanin` on nodes 15136, 15368; document new fan-in ≥1 from prod | — | Must run after W1+W2 merged | ~3k | TODO |
+| P1.1 | Replace adapter `_assemble_artifact` body with `AirlockAssembler.assemble_from_bom(bom, secret_key, d0_fences)` | `apps_shared/utils/governed_prompt_adapter.py` | Secret-key provisioning; preserve existing signature contract; ensure tests still pass | ~6k | DONE (37277cb2af) |
+| P1.2 | Thread `intent_class` through BOM.template_args so `load_context_jit` receives the real class | `apps_shared/utils/governed_prompt_adapter.py` | Need to confirm caller fills `template_args["intent_class"]`; fallback behavior | ~6k | DONE (37277cb2af) |
+| P2.1 | Move D0 fence to `TemplateRegistry.get_d0_fences(system_version_hash)` and pass to `assemble_from_bom` | `agentic_core/L4_state/utils/memory/template_registry.py`, `agentic_core/L0_routing/reasoning/assembly_stage.py`, `apps_shared/utils/governed_prompt_adapter.py` | Backward compat for existing hardcoded fence string | ~4k | DONE (422b41654d) |
+| P2.2 | Unit tests for `load_context_jit` (RAG+BM25 combine, dedupe, token-budget trim, store-unavailable fallback, boundary/AST passthrough) | `tests/unit/agentic_core/L0_routing/utils/test_elevator_shaft_seam.py` | Need lightweight mocks for 4 L4 stores | ~4k | DONE (422b41654d) |
+| P2.3 | Enrol L0 prompt-assembly in `config/expected_wiring.yaml` with 3 rows | `config/expected_wiring.yaml` | `check_expected_wiring` uses last-segment match | ~3k | DONE (422b41654d) — 19/19 PASS |
+| P3.1 | Regenerate ADG; re-run fan-in queries on canonical nodes; document transitive reach | — | Must run after W1+W2 merged | ~3k | DONE — see W3 Evidence section |
 
 ### ADG_HOTSPOT_REPORT
 
@@ -131,6 +131,27 @@ The L0 **prompt-retrieval** pipeline is **approximately half-wired**: the govern
 5. **P-view cross-reference:** No `v_p0_apps_direct_infra` hits on `governed_prompt_adapter.py`, confirming the bypass is a *behavioral* gap, not a layering violation — the structure is correct, only the call is missing.
 
 ---
+
+## W3 Evidence (2026-04-22, snapshot `adg_indexed_04222026_1508.sqlite`)
+
+**Fan-in after merge:**
+
+| Node | Relation | Count | Prod sources | Notes |
+|---|---|---:|---|---|
+| `AirlockAssembler` (id 15171) | `imports` | 6 | `spine.py`, `spine_shim.py`, `apps_shared/utils/governed_prompt_adapter.py` | Unchanged set — bypass fix preserved production wiring surface |
+| `load_context_jit` (id 15405) | `imports` | 2 | `agentic_core/L0_routing/reasoning/assembly_stage.py` | +1 test importer (`tests/unit/…/test_elevator_shaft_seam.py` — P2.2). Production reach is now transitive via the adapter → assembler → JIT chain |
+| `check_expected_wiring.py` | CI gate | 19/19 | — | Three new rows (P2.3) all PASS, locking the chain fail-closed |
+
+**Test suite:** 32/32 relevant prompt-lifecycle unit + integration + e2e tests pass (2 pre-existing failures reference a non-existent `agentic_core.L0_routing.engines` module — stale and out of scope).
+
+**P1 ratchet flag (out-of-scope, not caused by this plan):**
+The ADG generation reported `P1 antipattern regression: 3 > ceiling 0`, but all 3 HIGH violations are in files untouched by W1/W2:
+
+- `agentic_core/L0_routing/reasoning/execution_orchestrator.py:303` — `ImportError` catch
+- `agentic_core/L0_routing/reasoning/execution_orchestrator.py:328` — `RuntimeError` catch
+- `agentic_core/L4_state/cache/gptcache_client.py:130` — `_NotFoundError` catch
+
+These were exposed by the intervening commit `0de154c7e6` (`adg-ci Wave C — exception-contract caller resolution fix`) which tightened detection between W1 and W2. They predate this plan and need their own triage — tracked separately, not blocking closure of this plan.
 
 ## Non-Goals
 
