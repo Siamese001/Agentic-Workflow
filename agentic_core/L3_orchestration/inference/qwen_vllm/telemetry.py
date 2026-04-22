@@ -123,7 +123,7 @@ class QwenInferenceTelemetry:
             ImportError,
             AttributeError,
             TypeError,
-        ):  # guardian: allow-log-and-swallow -- telemetry dual-emit is best-effort; must never break record_metric
+        ):  # guardian: allow-silent-swallow -- telemetry dual-emit is best-effort; must never break record_metric
             pass
 
     def end_session(self, session_id: str) -> QwenSessionMetrics:

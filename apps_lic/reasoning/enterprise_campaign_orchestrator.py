@@ -331,6 +331,7 @@ class EnterpriseLicOrchestrator:
             method="POST",
         )
         try:
+            # guardian: allow-chokepoint-bypass -- Gemini REST API direct call; all error paths (HTTP/network/parse) fall back to _template_message, no silent failure
             with urllib.request.urlopen(req, timeout=30) as resp:
                 raw = resp.read().decode("utf-8")
         except urllib.error.HTTPError as exc:

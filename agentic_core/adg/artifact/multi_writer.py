@@ -479,6 +479,12 @@ _GUARDIAN_MAP: dict[str, tuple[str, ...]] = {
     "throw_for_normal_flow": ("guardian: allow-control-flow-exception",),
     # Hardcoded credentials in source code.
     "hardcoded_secret": ("guardian: allow-hardcoded-secret",),
+    # Detector false-positive guard: 'getattr'/'setattr' flagged as hallucinated
+    # tool names. getattr/setattr are Python stdlib builtins.
+    "hallucinated_tool_name": ("guardian: allow-hallucinated-tool-name",),
+    # Deliberate bypass of a chokepoint (e.g. direct HTTP/LLM call) with a
+    # documented downstream fallback. Requires per-site justification.
+    "chokepoint_bypass": ("guardian: allow-chokepoint-bypass",),
 }
 
 _LAYER_VIOLATION_GUARDIANS = ("guardian: allow-layer-violation",)
@@ -505,6 +511,8 @@ _CANONICAL_GUARDIAN_TOKENS = frozenset(
         "allow-default-fallback",
         "allow-control-flow-exception",
         "allow-hardcoded-secret",
+        "allow-hallucinated-tool-name",
+        "allow-chokepoint-bypass",
     }
 )
 
@@ -595,6 +603,30 @@ def _resolve_except_anchor_lines(lines: list[str], line_no: int) -> set[int]:
     return {ln for ln in anchors if 1 <= ln <= len(lines)}
 
 
+_NON_EXCEPT_EDGE_KINDS = frozenset(
+    {
+        "hallucinated_tool_name",
+        "chokepoint_bypass",
+        "missing_hitl_on_irreversible",
+        "hardcoded_secret",
+        "star_import_use",
+        "mutable_default_arg",
+    }
+)
+
+
+def _resolve_inline_anchor_lines(lines: list[str], line_no: int) -> set[int]:
+    """Anchor resolver for non-exception antipatterns.
+
+    Allows the guardian comment on the violation line itself or the line
+    immediately above it (common pattern for call-site annotations).
+    """
+    if line_no < 1 or not lines:
+        return set()
+    max_line = len(lines)
+    return {ln for ln in (line_no - 1, line_no) if 1 <= ln <= max_line}
+
+
 def has_guardian_for_violation(source_file: str, line_no: int, edge_kind: str) -> bool:
     """Canonical guardian matcher used across write-time, phase2, and phase3."""
     guardians = _GUARDIAN_MAP.get(edge_kind)
@@ -606,7 +638,11 @@ def has_guardian_for_violation(source_file: str, line_no: int, edge_kind: str) -
         return False
 
     valid_tokens = {g.split("guardian:", 1)[1].strip() for g in guardians if "guardian:" in g}
-    for anchor_line in _resolve_except_anchor_lines(lines, line_no):
+    if edge_kind in _NON_EXCEPT_EDGE_KINDS:
+        anchor_lines = _resolve_inline_anchor_lines(lines, line_no)
+    else:
+        anchor_lines = _resolve_except_anchor_lines(lines, line_no)
+    for anchor_line in anchor_lines:
         tokens = _extract_guardian_tokens(lines[anchor_line - 1])
         if any(token in valid_tokens for token in tokens):
             return True

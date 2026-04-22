@@ -208,7 +208,7 @@ class HealingRouter:
             AttributeError,
             TypeError,
             RuntimeError,
-        ):  # guardian: allow-log-and-swallow -- telemetry emission is best-effort; must never break the heal-router hot path
+        ):  # guardian: allow-silent-swallow -- telemetry emission is best-effort; must never break the heal-router hot path
             pass
 
         return decision
