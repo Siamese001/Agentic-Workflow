@@ -107,6 +107,25 @@ carries ``route=R5_ROUTE``.
 """
 
 
+R1A_ROUTE: str = "R1A"
+"""Stable route label for the v9 D1 exact-cache hit (audit-1f9180 W1b).
+
+Emitted by :meth:`PathRouter.route_with_gates` when
+:func:`agentic_core.L0_routing.reasoning.route_gates.check_route_gates`
+returns a D1 hit. Terminal arm — caller returns the cached payload
+immediately without invoking ``select_path`` or any L2 step.
+"""
+
+R1B_ROUTE: str = "R1B"
+"""Stable route label for the v9 D2 semantic-cache hit (audit-1f9180 W1b).
+
+Emitted by :meth:`PathRouter.route_with_gates` when
+:func:`agentic_core.L0_routing.reasoning.route_gates.check_route_gates`
+returns a D2 hit. Terminal arm — caller returns the cached payload
+immediately without invoking ``select_path`` or any L2 step.
+"""
+
+
 class RoutingResult(TypedDict):
     """Serializable result emitted by :meth:`PathRouter.route_with_confidence`.
 
@@ -282,3 +301,99 @@ class PathRouter:
             threshold=decision["threshold"],
             action=decision["action"],
         )
+
+    def route_with_gates(
+        self,
+        payload: GovernedPayload,
+        request: dict,
+        namespace: str,
+        confidence: float,
+        threshold: float = DEFAULT_ABSTAIN_THRESHOLD,
+        *,
+        tenant_id: str = "",
+        replay_mode: bool = False,
+        flow_class: str | None = None,
+    ) -> tuple[RoutingResult, dict | None]:
+        """v9 D1/D2 gate-aware dispatch (audit-1f9180 W1b).
+
+        Consults :func:`agentic_core.L0_routing.reasoning.route_gates.check_route_gates`
+        BEFORE falling through to the existing :meth:`route_with_confidence`
+        selector. Semantics:
+
+        * On **D1 exact hit**: returns ``(RoutingResult{route="R1A", ...}, cached_payload)``.
+          Caller short-circuits the pipeline, returns ``cached_payload`` to its caller.
+          ``select_path`` is NOT invoked. No routing contract is committed here.
+        * On **D2 semantic hit**: returns ``(RoutingResult{route="R1B", ...}, cached_payload)``.
+          Same short-circuit semantics as D1.
+        * On **both miss**: delegates to :meth:`route_with_confidence` and
+          returns ``(result, None)``. The ``None`` in position [1] signals
+          "no cache hit, proceed with the returned RoutingResult".
+
+        Both gates are env-gated and default to disabled; when both are off
+        this method is behaviorally identical to ``route_with_confidence``
+        (via the second-tuple-element None).
+
+        This method is purely additive — the existing
+        :meth:`route_with_confidence` and :meth:`select_path` methods are
+        unchanged, and all 5 existing callers of ``route_with_confidence``
+        continue to work without modification.
+
+        Args:
+            payload: Governed payload to route if both gates miss.
+            request: Canonical request dict consulted by the gates for
+                exact-hash and semantic-similarity matching. Must be
+                JSON-serializable. Typically mirrors ``payload`` plus
+                orchestration context (trace_id, tenant_id, etc.).
+            namespace: Logical cache namespace for the D2 gate.
+            confidence: Confidence / coverage score for the D3 abstain
+                primitive on the gate-miss fall-through.
+            threshold: Abstain floor, forwarded to
+                :meth:`route_with_confidence`.
+            tenant_id: Tenant scope for D2 key derivation.
+            replay_mode: Forces both gates to miss when True (replay parity).
+            flow_class: Forces D2 miss when in
+                :data:`~agentic_core.L4_state.utils.memory.semantic_cache_manager.SemanticCacheManager.MUST_BYPASS_FLOWS`.
+
+        Returns:
+            Tuple of ``(RoutingResult, cached_payload_or_None)``. When
+            element [1] is not ``None``, the caller MUST return that payload
+            to its own caller without further routing work.
+        """
+        # Replay mode: force gate miss so replayed traces bypass cache state
+        # entirely. Matches SemanticCacheManager.recall's replay_mode semantics.
+        if not replay_mode:
+            from agentic_core.L0_routing.reasoning.route_gates import (  # noqa: PLC0415
+                check_route_gates as _check_route_gates,
+            )
+
+            gate_result = _check_route_gates(
+                request,
+                namespace=namespace,
+                tenant_id=tenant_id,
+                replay_mode=replay_mode,
+                flow_class=flow_class,
+                confidence=confidence,
+            )
+            if gate_result is not None:
+                contract, cached_payload = gate_result
+                route_label = contract["selected_route"].value  # R1A or R1B
+                _log.info(
+                    "path_router: gate hit route=%s namespace=%s",
+                    route_label,
+                    namespace,
+                )
+                return (
+                    RoutingResult(
+                        route=route_label,
+                        reason=contract["reason_codes"][0]
+                        if contract["reason_codes"]
+                        else "gate_hit",
+                        confidence=contract["confidence"],
+                        threshold=threshold,
+                        action="emit_cached_response",
+                    ),
+                    cached_payload,
+                )
+        # Gate miss (or replay) — delegate to existing confidence-aware selector.
+        result = self.route_with_confidence(payload, confidence, threshold)
+        return result, None
