@@ -241,6 +241,8 @@ class AirlockAssembler:
         bom: PromptBOM,
         secret_key: bytes,
         d0_fences: tuple[str, ...] = (),
+        s0_override: str | None = None,
+        allowed_tools: tuple[Any, ...] = (),
     ) -> CompiledPromptArtifact:
         """Assemble CompiledPromptArtifact from PromptBOM.
 
@@ -253,6 +255,12 @@ class AirlockAssembler:
             bom: PromptBOM from PromptBOMBuilder.
             secret_key: HMAC secret key for artifact signing.
             d0_fences: Optional D0 injection fences.
+            s0_override: Optional S0 string that replaces the registry-sourced
+                S0. Used by callers that already own their system prompt (e.g.
+                `GovernedPromptAdapter` in apps_shared). When None, S0 is
+                loaded from `TemplateRegistry.get_s0(bom.system_version_hash)`.
+            allowed_tools: Tool schemas to publish on the artifact. Must be an
+                immutable tuple. Defaults to empty for gateway-level control.
 
         Returns:
             CompiledPromptArtifact with HMAC-SHA256 signature.
@@ -268,11 +276,14 @@ class AirlockAssembler:
         emit_replay_key(_trace_id, f"artifact:{bom.trace_id}")
         emit_determinism_digest(_trace_id, f"path:{bom.path}")
 
-        # 1. Load S0 from TemplateRegistry
-        from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
+        # 1. Load S0 — caller override wins, otherwise pull from TemplateRegistry
+        if s0_override is not None:
+            s0_content = s0_override
+        else:
+            from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
 
-        registry = get_template_registry()
-        s0_content = registry.get_s0(bom.system_version_hash)
+            registry = get_template_registry()
+            s0_content = registry.get_s0(bom.system_version_hash)
 
         # 2. Load I0 mixins
         i0_parts = []
@@ -337,7 +348,7 @@ class AirlockAssembler:
             trace_id=bom.trace_id,
             final_system_string=final_system,
             final_user_string=final_user,
-            allowed_tools_schema=(),  # Tools configured at gateway level
+            allowed_tools_schema=allowed_tools,  # Caller-supplied; empty tuple = gateway-level control
             token_estimate=token_estimate,
             signature="",  # Placeholder, computed below
         )

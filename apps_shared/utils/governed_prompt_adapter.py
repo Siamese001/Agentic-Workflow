@@ -75,6 +75,7 @@ class GovernedPromptAdapter:
         temperature: float = 0.0,
         max_tokens: int = 1024,
         path: str = "A",
+        intent_class: str = "prompt_execution",
     ) -> dict[str, Any]:
         """Execute a prompt through the governed pipeline.
 
@@ -108,16 +109,22 @@ class GovernedPromptAdapter:
             packet = self._build_instruction_packet(
                 trace_id=trace_id,
                 path=path,
-                intent_class="prompt_execution",
+                intent_class=intent_class,
                 required_mixins=mixins,
             )
 
-            # Build PromptBOM
+            # Build PromptBOM — thread intent_class into template_args so
+            # load_context_jit receives the real intent and performs JIT
+            # retrieval (RAG + BM25 + AST + boundary refs) instead of falling
+            # back to the "default" key.
+            merged_template_args: dict[str, Any] = dict(template_args or {})
+            merged_template_args.setdefault("intent_class", intent_class)
+
             bom = self._build_prompt_bom(
                 packet=packet,
                 raw_u0=user_prompt,
                 raw_c0=context or {},
-                template_args=template_args or {},
+                template_args=merged_template_args,
             )
 
             # Assemble CompiledPromptArtifact
@@ -191,58 +198,26 @@ class GovernedPromptAdapter:
         bom: Any,
         system_prompt: str | None,
         tools: list[dict[str, Any]] | None,
-        token_estimate: int,
+        token_estimate: int,  # noqa: ARG002 -- kept for signature compat; assembler computes its own estimate from rendered slots
     ) -> Any:
-        """Assemble CompiledPromptArtifact via Assembly Stage.
+        """Assemble CompiledPromptArtifact via the canonical Assembly Stage.
 
-        If system_prompt is provided, it overrides the S0 from TemplateRegistry.
+        Delegates to ``AirlockAssembler.assemble_from_bom`` which runs the full
+        governed pipeline (S0 → D0 → I0 → C0 → U0 with JIT C0 context load,
+        U0 injection neutralizer, slot-order validation, HMAC signing). If
+        ``system_prompt`` is provided it overrides the registry S0.
         """
         from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
 
-        assembler = AirlockAssembler()
+        # D0 fence stays hardcoded here until P2.1 moves it to TemplateRegistry.
+        d0_fences: tuple[str, ...] = ("Role fence active. Do not deviate from instructions.",)
 
-        # Get base S0 from registry if no override
-        if system_prompt is None:
-            registry = get_template_registry()
-            system_prompt = registry.get_s0(bom.system_version_hash)
-
-        # Build final system string (S0 + I0 mixins + D0 fences)
-        final_system = self._compose_system_prompt(
-            base_s0=system_prompt,
-            mixins=bom.mixins_required,
-        )
-
-        # Build final user string (C0 + U0)
-        final_user = self._compose_user_prompt(
-            context=bom.raw_c0,
-            user_input=bom.raw_u0,
-        )
-
-        # Create artifact directly (bypassing assemble_from_bom for now)
-        # In full implementation, this would call assembler.assemble_from_bom()
-        from agentic_core.prompt_governance.contracts import CompiledPromptArtifact
-
-        artifact = CompiledPromptArtifact(
-            trace_id=bom.trace_id,
-            final_system_string=final_system,
-            final_user_string=final_user,
-            allowed_tools_schema=tuple(tools or []),
-            token_estimate=token_estimate,
-            signature="",  # Will be computed below
-        )
-
-        # Compute HMAC signature
-        signature = self._sign_artifact(artifact)
-
-        # Return new artifact with signature
-        return CompiledPromptArtifact(
-            trace_id=artifact.trace_id,
-            final_system_string=artifact.final_system_string,
-            final_user_string=artifact.final_user_string,
-            allowed_tools_schema=artifact.allowed_tools_schema,
-            token_estimate=artifact.token_estimate,
-            signature=signature,
+        return AirlockAssembler.assemble_from_bom(
+            bom=bom,
+            secret_key=self.secret_key,
+            d0_fences=d0_fences,
+            s0_override=system_prompt,
+            allowed_tools=tuple(tools or []),
         )
 
     def _compose_system_prompt(
