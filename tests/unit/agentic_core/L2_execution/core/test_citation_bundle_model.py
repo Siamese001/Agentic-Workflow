@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from L2_execution._agentic_core_smoke import import_attr_or_skip, import_module_or_skip
+from agentic_core.L2_execution._agentic_core_smoke import import_attr_or_skip, import_module_or_skip
 
 
 @pytest.mark.unit

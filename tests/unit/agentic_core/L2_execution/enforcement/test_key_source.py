@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from L2_execution._placeholder_smoke import (
+from agentic_core.L2_execution._placeholder_smoke import (
     assert_basic_arithmetic,
     assert_repeat_truthy_invariant,
     assert_truthy_invariant,
