@@ -92,3 +92,14 @@ This rule is the **advisory tier**. The deterministic tier is the post-response 
 - Violations log: `@c:/Git/Agentic-Workflow/artifacts/windsurf/writeback_violations.jsonl`
 
 See the `writeback-discipline` skill for entity/row templates to copy.
+
+## Related Rule — Deferred Scope Capture
+
+This rule covers the **full writeback taxonomy** (ADRs, Wave/Phase rows, SC/AP defects, memory patterns, etc.). For the specific case of **deferred scope from refactoring**, the more strict `.windsurf/rules/deferred-scope-capture.md` rule applies in parallel:
+
+- Every deferred scope item MUST emit a `DEFERRED_SCOPE:` marker (constitutional §24)
+- Post-hook `post_cascade_deferred_scope_capture.py` auto-scores P1..P5 and auto-posts
+- Pre-session hook surfaces unresolved pendings
+- Pre-commit gate blocks prose-only deferred mentions in plan files
+
+When both rules fire (e.g., completing a refactor that defers scope), BOTH the DEFERRED_SCOPE marker AND the `WRITEBACK:` receipt should appear. The deferred-scope hook creates the Wave/Phase row; this rule's hook validates the broader writeback discipline. They are complementary, not duplicative.

@@ -342,6 +342,21 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7i: Deferred Scope Markers ----------------------------------------------
+      # Enforces the deferred-scope-capture rule (.windsurf/rules/deferred-scope-capture.md).
+      # Blocks commits that add prose deferred-scope language to .windsurf/plans/*.md
+      # files WITHOUT an accompanying DEFERRED_SCOPE: marker. Protects against
+      # scope loss between sessions — caught 2026-04-22 session-wide failure modes
+      # where prose-only mentions never became Notion rows.
+      - id: deferred-scope-markers
+        name: "T7i: Deferred Scope Markers"
+        entry: py ops_scripts/ci/check_deferred_scope_markers.py
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/plans/.*\.md$
+        always_run: false
+        require_serial: true
+
       # NOTE: infra_wiring_scan.py NOT wired — 5 pre-existing violations (google,
       # chromadb, sqlite3 direct imports) need remediation first. Wired at
       # `stages: [manual]` below for on-demand audit.
