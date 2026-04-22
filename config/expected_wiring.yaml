@@ -83,3 +83,143 @@ wirings:
     proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py
     probe_command: python tools/diag/probe_semantic_cache.py
     plan_id: semcache-make-live-7a2d4b
+
+  # --------------------------------------------------------------------
+  # P0 rollout from lazy-import-arch-defect-review.md — 2026-04-22
+  # --------------------------------------------------------------------
+
+  - id: embedding-factory-create-client
+    description: >-
+      EmbeddingSovereignAgent must reach the embedding provider through the
+      sanctioned factory (create_embedding_client) so all provider-SDK traffic
+      routes through agentic_core.embeddings.embedding_factory. Removing this
+      call would leave the approved adapter structurally orphan.
+    entry_module: agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py
+    entry_symbol: EmbeddingSovereignAgent
+    required_call: create_embedding_client
+    required_env_flags: []
+    proof_test: tests/integration/retrieval_layers/test_bge_embedding_e2e.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l5-conf-calib-risk-gate
+    description: >-
+      risk_gate_adapter._build_real_gate must resolve to ConfCalibRiskGate so
+      the confidence-calibration safety gate is reachable from the L5 spine.
+      Dormant gate = risk assessment absent.
+    entry_module: apps_shared/spine/risk_gate_adapter.py
+    entry_symbol: _build_real_gate
+    required_call: ConfCalibRiskGate
+    required_env_flags: []
+    proof_test: tests/unit/apps_shared/spine/test_risk_gate_adapter.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l5-d0-injection-engine
+    description: >-
+      d0_engine_adapter._build_real_engine must return D0InjectionEngine so
+      the prompt-injection defense is wired into execution.
+    entry_module: apps_shared/spine/d0_engine_adapter.py
+    entry_symbol: _build_real_engine
+    required_call: D0InjectionEngine
+    required_env_flags: []
+    proof_test: tests/unit/apps_shared/spine/test_d0_engine_adapter.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l5-mcp-sovereign-authority
+    description: >-
+      get_mcp_authority must resolve through mcp_sovereign_authority_enforcer
+      so MCP tool invocations pass the authority check. Silent orphan =
+      all-tools-allowed fail-open.
+    entry_module: agentic_core/seams/contracts/authority.py
+    entry_symbol: get_mcp_authority
+    required_call: mcp_authority
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/seams/contracts/test_authority.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l5-activation-gate
+    description: >-
+      unified_workflow_config._get_assert_activation_allowed must reach
+      assert_activation_allowed. Dormant = workflows activate without gate.
+    entry_module: agentic_core/L2_execution/config/unified_workflow_config.py
+    entry_symbol: _get_assert_activation_allowed
+    required_call: assert_activation_allowed
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/L2_execution/config/test_unified_workflow_config.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l5-guardian-decision-path
+    description: >-
+      execution_gateway._get_guardian_decision must resolve to L5Guardian.
+      This is the L0→L5 guardian seam — orphan = all L0 actions unguarded.
+    entry_module: agentic_core/L0_routing/enforcement/execution_gateway.py
+    entry_symbol: _get_guardian_decision
+    required_call: L5Guardian
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/L0_routing/enforcement/test_execution_gateway.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l5-injection-regression-gate
+    description: >-
+      injection_detector must call evaluate_against_baseline from the
+      injection_regression_gate so baseline drift is caught at gate time.
+    entry_module: agentic_core/prompt_governance/security/detectors/injection_detector.py
+    entry_symbol: InjectionDetector
+    required_call: evaluate_against_baseline
+    required_env_flags: []
+    proof_test: tests/unit/prompt_governance/test_injection_detector.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l4-violation-event-store
+    description: >-
+      escalation_router._get_violation_event_store_class must return
+      ViolationEventStore so escalations persist. Orphan = violations lost.
+    entry_module: agentic_core/L0_routing/reasoning/escalation_router.py
+    entry_symbol: _get_violation_event_store_class
+    required_call: ViolationEventStore
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/L0_routing/reasoning/test_escalation_router.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l4-retrieval-eval-registry
+    description: >-
+      HybridRetriever.hybrid_search must reach get_global_eval_registry so
+      retrieval quality metrics flow into the shadow eval pipeline.
+    entry_module: agentic_core/L2_execution/config/hybrid_retriever_config.py
+    entry_symbol: HybridRetriever
+    required_call: get_global_eval_registry
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/L2_execution/config/test_hybrid_retriever_config.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l4-filesystem-store
+    description: >-
+      tool_call_store must instantiate FileSystemStore so PTC tool-call
+      persistence survives process boundary.
+    entry_module: agentic_core/L3_orchestration/reasoning/ptc/tool_call_store.py
+    entry_symbol: ToolCallStore
+    required_call: FileSystemStore
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/L3_orchestration/reasoning/ptc/test_tool_call_store.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l4-in-memory-vector-store
+    description: >-
+      sovereign_semantic_cache must construct InMemoryVectorStore so the
+      vector store is present for all cache ops.
+    entry_module: agentic_core/L4_state/utils/memory/sovereign_semantic_cache.py
+    entry_symbol: SovereignSemanticCache
+    required_call: InMemoryVectorStore
+    required_env_flags: []
+    proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py
+    plan_id: lazy-import-arch-defect-review
+
+  - id: l4-runtime-state-guard
+    description: >-
+      LocationHealerAgent must instantiate RuntimeStateGuard before file
+      moves so runtime state transitions are guarded.
+    entry_module: agentic_core/L5_safety/reasoning/LocationHealerAgent.py
+    entry_symbol: LocationHealerAgent
+    required_call: RuntimeStateGuard
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/L5_safety/reasoning/test_LocationHealerAgent.py
+    plan_id: lazy-import-arch-defect-review

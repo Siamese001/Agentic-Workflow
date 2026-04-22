@@ -91,18 +91,51 @@ def _resolve_symbol(tree: ast.Module, dotted: str) -> list[ast.AST]:
 
 
 def _collect_call_names(nodes: list[ast.AST]) -> set[str]:
-    """Collect the trailing attribute name of every Call target in the subtree."""
+    """Collect every symbol "reached" within the subtree.
+
+    A symbol counts as reached if it is (a) the trailing attribute of a Call,
+    (b) the bare name of a Call, or (c) the imported name in a lazy
+    `ImportFrom` statement. Pattern (c) catches the canonical lazy-import
+    helper pattern::
+
+        def _build_real_X():
+            from module import X
+            return X
+
+    where X is referenced but never called inside the helper itself — the
+    caller of the helper does the call. Without (c) this pattern would be a
+    false negative.
+    """
+    from tqdm import tqdm as _tqdm  # noqa: PLC0415 -- §16 progress bar
+
     names: set[str] = set()
-    for root in nodes:
-        for sub in ast.walk(root):
-            if not isinstance(sub, ast.Call):
-                continue
-            func = sub.func
-            if isinstance(func, ast.Attribute):
-                names.add(func.attr)
-            elif isinstance(func, ast.Name):
-                names.add(func.id)
+    for root in _tqdm(nodes, desc="scan calls", unit="symbol", leave=False):
+        _scan_single(root, names)
     return names
+
+
+def _add_call_name(call: ast.Call, names: set[str]) -> None:
+    func = call.func
+    if isinstance(func, ast.Attribute):
+        names.add(func.attr)
+    elif isinstance(func, ast.Name):
+        names.add(func.id)
+
+
+def _add_import_names(imp: ast.ImportFrom, names: set[str]) -> None:
+    for alias in imp.names:
+        names.add(alias.name)
+        if alias.asname:
+            names.add(alias.asname)
+
+
+def _scan_single(root: ast.AST, names: set[str]) -> None:
+    """Populate ``names`` with every symbol reached inside ``root``."""
+    for sub in ast.walk(root):
+        if isinstance(sub, ast.Call):
+            _add_call_name(sub, names)
+        elif isinstance(sub, ast.ImportFrom):
+            _add_import_names(sub, names)
 
 
 def _check_env_flags(flags: list[str]) -> list[str]:
