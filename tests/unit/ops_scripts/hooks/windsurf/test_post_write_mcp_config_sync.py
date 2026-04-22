@@ -82,15 +82,31 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
         issues = _validate_ssot(self.ssot)
         self.assertTrue(any("JSON parse error" in issue for issue in issues))
 
+    @patch("sync_mcp_config.global_config")
     @patch("post_write_mcp_config_sync.GLOBAL")
     @patch("post_write_mcp_config_sync.SSOT")
-    def test_main_sync_success(self, mock_ssot, _mock_global):
-        """Happy path: successful sync to global config."""
+    def test_main_sync_success(self, mock_ssot, _mock_global, _mock_sync_global):
+        """Happy path: successful sync to global config.
+
+        Mocks BOTH the hook-level SSOT/GLOBAL module aliases AND the
+        underlying ``sync_mcp_config.global_config`` default. Prior to
+        2026-04-22, this test mocked only the hook-level aliases, so when
+        ``main()`` called through to ``sync_global_config(data)`` the
+        unpatched default ``global_path=global_config`` pointed at the
+        REAL user-home ``~/.codeium/windsurf/mcp_config.json`` and was
+        overwritten with the stub ``{"test": {"command": "python"}}``.
+        Every full-suite run silently killed the Windsurf MCP fleet.
+        Also uses ``_was_recent_write`` mock to bypass the mtime gate,
+        and redirects the global_config default to a tmp path so even
+        if the guard were bypassed, nothing real would be touched.
+        """
         mock_ssot.exists.return_value = True
         mock_ssot.read_text.return_value = json.dumps({"mcpServers": {"test": {"command": "python"}}})
         _mock_global.parent.mkdir.return_value = None
+        _mock_sync_global.return_value = self.tmp_dir / "global" / "mcp_config.json"
 
-        result = main()
+        with patch("post_write_mcp_config_sync._was_recent_write", return_value=True):
+            result = main()
         self.assertEqual(0, result)
 
     @patch("post_write_mcp_config_sync.SSOT")

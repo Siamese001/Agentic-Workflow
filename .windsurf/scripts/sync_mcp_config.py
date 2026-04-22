@@ -351,17 +351,59 @@ def _same_file(a: Path, b: Path) -> bool:
         return False
 
 
+# Minimum plausible server count for the authoritative repo config. This is
+# a defensive floor: if a caller passes fewer servers than this, we refuse
+# to overwrite a healthy global config. Historical precedent: on 2026-04-22
+# a buggy unit test silently wrote a 1-server stub (`{"test": ...}`) to the
+# real user-home config every full-suite run, taking the entire MCP fleet
+# offline. The production repo has 12+ servers; anything below this floor
+# is almost certainly a test fixture escaping its mock boundary.
+MIN_PLAUSIBLE_SERVER_COUNT = 5
+
+
 def sync_global_config(data: dict[str, Any], global_path: Path = global_config) -> bool:
     """Copy the repo SSOT to the Windsurf-read global path.
 
     Returns True if a copy was performed, False if the two paths already point
     to the same file (symlink in place — no-op is correct and zero-drift).
+
+    Refuses to overwrite an existing multi-server global config with a
+    payload containing fewer than ``MIN_PLAUSIBLE_SERVER_COUNT`` servers.
+    This guards against the failure mode documented at 2026-04-22 where a
+    unit test mocked module-level SSOT/GLOBAL but left `global_config`
+    (defaulted here) pointing at the real filesystem, writing a 1-server
+    stub and killing the entire MCP fleet.
     """
     global_path.parent.mkdir(parents=True, exist_ok=True)
     if _same_file(repo_config, global_path):
         return False
+
+    incoming_servers = data.get("mcpServers", {})
+    incoming_count = len(incoming_servers) if isinstance(incoming_servers, dict) else 0
+
     if global_path.exists():
+        # Defense-in-depth: read the current global config and compare counts.
+        # If the incoming payload has fewer servers than the plausibility floor
+        # AND the current global config has more, refuse the overwrite.
+        try:
+            existing_raw = json.loads(global_path.read_text(encoding="utf-8"))
+            existing_servers = existing_raw.get("mcpServers", {}) if isinstance(existing_raw, dict) else {}
+            existing_count = len(existing_servers) if isinstance(existing_servers, dict) else 0
+        except (OSError, json.JSONDecodeError, ValueError):
+            existing_count = 0
+
+        if incoming_count < MIN_PLAUSIBLE_SERVER_COUNT and existing_count >= MIN_PLAUSIBLE_SERVER_COUNT:
+            print(
+                f"[mcp_sync] REFUSED: incoming payload has {incoming_count} server(s) "
+                f"(< floor {MIN_PLAUSIBLE_SERVER_COUNT}), existing global has {existing_count}. "
+                f"Suspected test fixture escaping its mock boundary — refusing to overwrite "
+                f"{global_path}. See sync_mcp_config.MIN_PLAUSIBLE_SERVER_COUNT.",
+                flush=True,
+            )
+            return False
+
         shutil.copy2(global_path, global_backup)
+
     global_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     return True
 
