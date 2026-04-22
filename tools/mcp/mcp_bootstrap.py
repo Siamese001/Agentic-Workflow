@@ -245,3 +245,51 @@ def guard_single_instance(script_marker: str, *, skip_env: str | None = None) ->
         logger.info("GUARD_COMPLETE: terminated pids=%s (marker=%s)", killed, script_marker)
     else:
         logger.info("GUARD_CLEAN: no sibling processes (marker=%s)", script_marker)
+
+
+_prewarm_registry: list[tuple[str, Callable[[], None]]] = []
+
+
+def register_prewarm(fn: Callable[[], None], *, name: str) -> None:
+    """Register a zero-arg callable to run on a daemon thread at server start.
+
+    Purpose (MCP fleet standardization, 2026-04-22):
+        Prewarm logic was forked 3 ways: ``vector_db_server._start_background_prewarm``
+        (threading.Thread + try/except, ~40 lines), ``otel_mcp._prewarm``
+        (loader.prewarm + lifecycle), ``adg_sqlite._init_service`` (eager
+        singleton). This registry gives one protocol: declare prewarm
+        callables during import, invoke them all from ``run_prewarms()`` in
+        ``__main__`` before ``run_server()``.
+
+    Each callable runs on its own daemon thread. Exceptions are logged but
+    never propagated — prewarm failure should never block the MCP transport.
+
+    Args:
+        fn: Zero-arg callable performing the warmup work (open client,
+            load model, seed caches, etc.).
+        name: Human-readable identifier used in thread name + log lines.
+    """
+    _prewarm_registry.append((name, fn))
+
+
+def run_prewarms() -> None:
+    """Start a daemon thread for each registered prewarm callable."""
+    import threading as _threading
+    import time as _time
+    logger = logging.getLogger("mcp_bootstrap")
+
+    def _wrap(wname: str, wfn: Callable[[], None]) -> None:
+        t0 = _time.monotonic()
+        try:
+            wfn()
+            logger.info("PREWARM_DONE: %s (%.2fs)", wname, _time.monotonic() - t0)
+        except (OSError, RuntimeError, ValueError, TypeError, ImportError) as exc:
+            logger.warning("PREWARM_FAILED: %s: %s", wname, exc)
+
+    for wname, wfn in _prewarm_registry:
+        _threading.Thread(
+            target=_wrap,
+            args=(wname, wfn),
+            daemon=True,
+            name=f"mcp-prewarm-{wname}",
+        ).start()
