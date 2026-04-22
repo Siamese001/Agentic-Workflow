@@ -19,7 +19,7 @@
 1. **Only P1 blocks ADG generation** - Via `_check_p1_defects()` in `generate_full_adg.py` with `sys.exit(1)` in strict mode
 2. **P2 tracks but does not block** - Violations recorded in ADG SQLite database, fix scripts run post-generation
 3. **P2 auto-fix enforcement** - After ADG completes, fix scripts automatically run to rectify P2 violations
-4. **Pre-commit blocking** - P1 and P2 block commits via pre-commit hooks; P3 and P4 are warnings only
+4. **Pre-commit blocking (conditional)** - P1 and P2 block commits **via the T21 summary reporter hook** (`ops_scripts/ci/pre_commit_summary_reporter.py:314`). If T21 is disabled or skipped, P2 does NOT unconditionally block — the individual P2 hooks are tracking-only. P3 and P4 are warnings only.
 
 ### Enforcement Flow
 
