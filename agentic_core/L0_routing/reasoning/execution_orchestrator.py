@@ -300,7 +300,7 @@ class ExecutionOrchestrator:
                 "embedding_model_id": "bge-m3-v1",
             }
             _mgr.learn(payload_key, namespace, _learn_payload, tenant_id=tenant_id)
-        except (ImportError, RuntimeError, ValueError, TypeError, AttributeError) as _e:
+        except (ImportError, RuntimeError, ValueError, TypeError, AttributeError) as _e:  # guardian: allow-log-and-swallow -- D2 semantic cache learn is opportunistic: orchestration already succeeded; cache learn failure must not fail the request
             Logger.debug("[L0-ORCH] D2 semantic cache learn skipped: %s", _e)
             return
         # Optional L2 promotion — gated and quality-checked.
@@ -325,7 +325,7 @@ class ExecutionOrchestrator:
             _asyncio.run(
                 _mgr.promote_to_long_term(payload_key, namespace, _promote_payload, _feedback),
             )
-        except (RuntimeError, ValueError, TypeError) as _pe:
+        except (RuntimeError, ValueError, TypeError) as _pe:  # guardian: allow-log-and-swallow -- L2 promotion is a background quality optimization; promotion failure is non-fatal to the current request
             Logger.debug("[L0-ORCH] D2 semantic cache promote skipped: %s", _pe)
 
     def plan_execution_with_impact_analysis(self, changed_files: list[str]) -> dict[str, Any]:

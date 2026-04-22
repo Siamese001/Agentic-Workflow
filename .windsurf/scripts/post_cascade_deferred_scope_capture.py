@@ -42,6 +42,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from tqdm import tqdm as _tqdm
+except ImportError:  # fail-open: tqdm unavailable in hook context
+    _tqdm = None  # type: ignore[assignment]
+
 FAIL_POLICY = "open"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jsonl"
@@ -52,6 +57,16 @@ WAVE_PHASE_DB_ID = "aa8d2507-101e-4384-81d9-60ea3fe33876"
 NOTION_API_VERSION = "2025-09-03"
 NOTION_POST_URL = "https://api.notion.com/v1/pages"
 NOTION_HTTP_TIMEOUT_S = 15.0
+
+# Numeric Priority field values per band — ensures Notion sorts/filters work
+# regardless of whether the [Pn] prefix is parsed from Phase Title.
+BAND_TO_PRIORITY: dict[str, int] = {
+    "P1": 10,
+    "P2": 20,
+    "P3": 30,
+    "P4": 40,
+    "P5": 50,
+}
 
 # Ensure repo root on path so scorer import works
 sys.path.insert(0, str(REPO_ROOT))
@@ -175,7 +190,7 @@ def _notion_token() -> str | None:
     return os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")
 
 
-def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> dict[str, Any]:
+def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> dict[str, Any]:  # noqa: PLR0914
     plan = fields["plan"]
     if plan.startswith("NEW:"):
         plan_slug = plan[4:]
@@ -215,38 +230,21 @@ def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> d
         "Sub-Wave": {"rich_text": [{"text": {"content": sub_wave}}]},
         "Dependencies": {
             "rich_text": [
-                {
-                    "text": {
-                        "content": (
-                            "Auto-captured from DEFERRED_SCOPE marker. "
-                            "Review before execution."
-                        )
-                    }
-                }
+                {"text": {"content": ("Auto-captured from DEFERRED_SCOPE marker. Review before execution.")}}
             ]
         },
         "Success Criteria": {
             "rich_text": [
-                {
-                    "text": {
-                        "content": (
-                            "See Blocking Items for scope; Cascade to fill "
-                            "on execution start."
-                        )
-                    }
-                }
+                {"text": {"content": ("See Blocking Items for scope; Cascade to fill on execution start.")}}
             ]
         },
-        "Files In Scope": {
-            "rich_text": [
-                {"text": {"content": "TBD — Cascade to fill on execution start."}}
-            ]
-        },
+        "Files In Scope": {"rich_text": [{"text": {"content": "TBD — Cascade to fill on execution start."}}]},
         "Parent Plan Summary": {"rich_text": [{"text": {"content": parent_summary}}]},
         "Plan File": {"rich_text": [{"text": {"content": plan_file}}]},
         "Status": {"select": {"name": "Todo"}},
         "Est Tokens": {"number": est_tokens},
         "Blocking Items": {"rich_text": [{"text": {"content": blocking_items}}]},
+        "Priority": {"number": BAND_TO_PRIORITY.get(band, 30)},
     }
 
     return {
@@ -286,7 +284,10 @@ def _recent_duplicate(plan: str, wave: str, phase: str, window_minutes: int = 60
     key = f"{plan}|{wave}|{phase}"
     try:
         with CAPTURE_LOG.open("r", encoding="utf-8") as fh:
-            for line in fh:
+            lines = fh.readlines()
+        iterator = _tqdm(lines, desc="dedup-scan", unit="line", disable=True) if _tqdm else lines
+        try:
+            for line in iterator:
                 try:
                     rec = json.loads(line)
                 except (json.JSONDecodeError, ValueError):
@@ -301,13 +302,11 @@ def _recent_duplicate(plan: str, wave: str, phase: str, window_minutes: int = 60
                 if ts < cutoff:
                     continue
                 marker = rec.get("marker", {})
-                rec_key = (
-                    f"{marker.get('plan', '')}|"
-                    f"{marker.get('wave', '')}|"
-                    f"{marker.get('phase', '')}"
-                )
+                rec_key = f"{marker.get('plan', '')}|{marker.get('wave', '')}|{marker.get('phase', '')}"
                 if rec_key == key:
                     return True
+        except (json.JSONDecodeError, ValueError, OSError):
+            return False
     except OSError:
         return False
     return False
