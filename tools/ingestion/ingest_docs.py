@@ -28,14 +28,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
 
-# Import embedding factory for BGE-M3 support
+# Import embedding factory for BGE-M3 support via the sovereignty-allowlisted
+# bridge. Running as __main__ cannot call the factory directly — see
+# tools/ingestion/_embedding_factory_bridge.py for the rationale.
 try:
-    from agentic_core.embeddings.embedding_factory import create_embedding_client
+    from tools.ingestion._embedding_factory_bridge import create_embedding_client
 
     EMBEDDING_FACTORY_AVAILABLE = True
 except ImportError:
     EMBEDDING_FACTORY_AVAILABLE = False
-    logging.warning("Embedding factory not available - BGE-M3 support disabled")
+    logging.warning("Embedding factory bridge not available - BGE-M3 support disabled")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

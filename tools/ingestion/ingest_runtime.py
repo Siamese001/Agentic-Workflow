@@ -15,9 +15,9 @@ from pathlib import Path
 from typing import Any
 
 # Add agentic_core to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from L4_state.client.chroma_client import SovereignChromaClient
+from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

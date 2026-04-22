@@ -32,14 +32,14 @@ logging.basicConfig(
     force=True,
 )
 
+# Lazy import to allow module to be imported without MCP installed
+# FastMCP will be imported on first use in create_mcp_server()
+_FASTMCP_AVAILABLE = False
 try:
     from mcp.server.fastmcp import FastMCP  # type: ignore
+    _FASTMCP_AVAILABLE = True
 except ImportError:
-    print(
-        "[mcp_bootstrap] FATAL: mcp package not found. Install with: pip install mcp",
-        file=sys.stderr,
-    )
-    sys.exit(1)
+    FastMCP = None  # type: ignore
 
 
 def _parse_positive_int_env(name: str) -> int | None:
@@ -99,7 +99,15 @@ def _resolve_fastmcp_kwargs(name: str, instructions: str) -> dict[str, Any]:
 
 
 def create_mcp_server(name: str, instructions: str = "") -> FastMCP:
-    """Create a FastMCP server instance with standardized configuration."""
+    """Create a FastMCP server instance with standardized configuration.
+    
+    Raises:
+        ImportError: If the mcp package is not installed.
+    """
+    if not _FASTMCP_AVAILABLE or FastMCP is None:
+        raise ImportError(
+            "mcp package not found. Install with: pip install mcp"
+        )
     logger = logging.getLogger(name)
     logger.info("Creating FastMCP server: %s", name)
     return FastMCP(name, **_resolve_fastmcp_kwargs(name, instructions))

@@ -13,9 +13,9 @@ import sys
 from pathlib import Path
 
 # Add agentic_core to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from L4_state.client.chroma_client import SovereignChromaClient
+from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
 
 # from L2_execution.UniversalWriteGateway import UniversalWriteGateway
 

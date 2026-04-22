@@ -14,6 +14,7 @@ All real retrieval/runtime behavior lives in tools.retrieval.vector_service.
 from __future__ import annotations
 
 import logging
+import os
 import threading
 import time
 from dataclasses import dataclass
@@ -324,6 +325,63 @@ def _start_background_prewarm() -> None:
     ).start()
 
 
+def _kill_zombie_siblings() -> None:
+    """Terminate any other vector_db_server.py processes before startup.
+
+    Windsurf occasionally spawns a new MCP process on reconnect without
+    killing the prior one. Two concurrent processes deadlock on ChromaDB's
+    SQLite WAL lock, causing query hangs (RCA 2026-04-15, 2026-04-22).
+
+    This guard scans for sibling processes matching our script path and
+    terminates them before we touch the Chroma store. Opt out via
+    VECTOR_DB_SKIP_ZOMBIE_KILL=1 (useful for tests).
+    """
+    if os.environ.get("VECTOR_DB_SKIP_ZOMBIE_KILL") == "1":
+        logger.info("ZOMBIE_KILL_SKIPPED: VECTOR_DB_SKIP_ZOMBIE_KILL=1")
+        return
+
+    try:
+        import psutil  # type: ignore[import-not-found]
+    except ImportError:
+        logger.warning(
+            "ZOMBIE_KILL_UNAVAILABLE: psutil not installed; "
+            "concurrent-process deadlock guard disabled"
+        )
+        return
+
+    my_pid = os.getpid()
+    script_marker = "vector_db_server.py"
+    killed: list[int] = []
+
+    for proc in psutil.process_iter(attrs=("pid", "name", "cmdline")):
+        try:
+            if proc.info["pid"] == my_pid:
+                continue
+            cmdline = proc.info.get("cmdline") or []
+            if not any(script_marker in str(part) for part in cmdline):
+                continue
+            logger.warning(
+                "ZOMBIE_DETECTED: pid=%d cmdline=%s -- terminating",
+                proc.info["pid"],
+                " ".join(str(c) for c in cmdline)[:200],
+            )
+            proc.terminate()
+            try:
+                proc.wait(timeout=3)
+            except psutil.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=2)
+            killed.append(proc.info["pid"])
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as exc:
+            logger.debug("ZOMBIE_KILL_SKIP: pid=%s reason=%s", proc.info.get("pid"), exc)
+
+    if killed:
+        logger.info("ZOMBIE_KILL_COMPLETE: terminated pids=%s", killed)
+    else:
+        logger.info("ZOMBIE_KILL_CLEAN: no sibling processes found")
+
+
 if __name__ == "__main__":
+    _kill_zombie_siblings()
     _start_background_prewarm()
     run_server(mcp)

@@ -14,10 +14,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-# Add agentic_core to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
+import chromadb
 
-from L4_state.client.chroma_client import SovereignChromaClient
+# Add agentic_core to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -606,10 +608,16 @@ class HistoryIngestion:
         for category, count in results.items():
             logger.info(f"  {category}: {count} items")
 
-        git_stats = self.chroma.get_collection_stats("repo_git_history")
-        incident_stats = self.chroma.get_collection_stats("repo_incidents_rca")
-        logger.info(f"Collection 'repo_git_history': {git_stats['document_count']} total documents")
-        logger.info(f"Collection 'repo_incidents_rca': {incident_stats['document_count']} total documents")
+        # Post-ingest stats are best-effort. ChromaDB's background compactor
+        # can race with an immediate count() and raise InternalError; that
+        # does not invalidate the ingested data. Log the skip rather than
+        # failing the whole run.
+        for coll in ("repo_git_history", "repo_incidents_rca"):
+            try:
+                stats = self.chroma.get_collection_stats(coll)
+                logger.info(f"Collection '{coll}': {stats['document_count']} total documents")
+            except (chromadb.errors.InternalError, RuntimeError) as exc:
+                logger.warning(f"Could not read stats for '{coll}' post-ingest: {exc}")
 
         return results
 
