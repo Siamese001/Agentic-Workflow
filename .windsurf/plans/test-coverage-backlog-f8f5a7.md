@@ -12,7 +12,8 @@ Documents the residual test-coverage gap across the repo **after** Waves A/B/C l
 
 | Wave | Phase IDs | Focus | Modules in scope | Est. Tokens | Assumptions | Status |
 |---|---|---|---|---|---|---|
-| Wave D1 | D1.1–D1.3 | L0 + L5 tail (×2.0 multiplier) — next 30 rows after top-30 | ~60 untested, fan-in ≥ 2 | 30000 🟢 | ADG snapshot regenerated before start | Ready |
+| Wave D0 | D0.1 | **BLOCKER** — fix gap-report Symbol-import detection before any other wave | 1 script (`report_risk_weighted_test_gaps.py`) | 4000 🟢 | ADG snapshot regenerated (done 2026-04-22 12:18) | Ready |
+| Wave D1 | D1.1–D1.3 | L0 + L5 tail (×2.0 multiplier) — next 30 rows after top-30 | ~60 untested, fan-in ≥ 2 | 30000 🟢 | D0 done; re-run gap report; prune already-covered from queue | Ready |
 | Wave D2 | D2.1–D2.2 | L3 + L4 tail (×1.75) | ~50 untested, fan-in ≥ 2 | 22000 🟢 | After D1 | Ready |
 | Wave D3 | D3.1 | L1 + L2 tail (×1.0) | ~40 untested, fan-in ≥ 2 | 16000 🟢 | After D2 | Ready |
 | Wave D4 | D4.1 | L_RUNTIME + L_SHARED + L_PG + L_INFRA hotspots | ~30 high-fan-in | 12000 🟢 | After D3 | Ready |
@@ -72,11 +73,11 @@ Total: **3434 untested modules** across 3940 scored. Wave D1–D5 targets ~200 h
 
 ## Gap Register
 
-**GAP-1: ADG snapshot is stale**
-The gap report was generated from `adg_indexed_04222026_0441.sqlite` (04:41 AM). Wave A/B/C commits from today are not reflected — regenerate via `python tools/generate_full_adg.py` before Wave D starts, else the top of the backlog will list modules already covered.
+**GAP-1: ADG snapshot regenerated 2026-04-22 12:18 — RESOLVED**
+New canonical snapshot `adg_indexed_04222026_1218.sqlite` (248 MB, 126s generation). Redis hot cache HOT. ADG MCP reloaded. All 4 CI gates (G1-G4) PASS. P0/P1/P2 ratchets stable at 0/0. Layer gap improvements: L0 71.91%→58.43% (-13.48pp), L4 90.85%→78.17% (-12.68pp), L5 92.58%→86.70% (-5.88pp). 49 modules dropped off untested list.
 
-**GAP-2: Top-30 tests may need re-run after ADG refresh**
-Expect 18 of the 30 covered modules to drop out of the risk report once L_TEST imports are re-indexed. Remaining 12 were mechanically closed in Wave C1–C8.
+**GAP-2: Gap-report script has Symbol-import detection defect — NEW BLOCKER (Wave D0)**
+Verified 2026-04-22 via ADG MCP: `ops_scripts/verification/report_risk_weighted_test_gaps.py` counts fan-in on Module→Module edges only. Test imports of form `from pkg.subpkg import module as alias` resolve to Symbol nodes (e.g., `ADG::Symbol::...` id 15116) rather than Module nodes (id 57), so those tests are invisible to the gap-report heuristic. Effect: safety_reasoning_seam, safety_validators_seam, safety_enforcement_seam (all tested in commits `1ffb383f87` and `8c28b16753`) still list as untested at rows 1-3 of the new gap report. Fix: extend fan-in query to UNION Module-targeted and Symbol-targeted edges where the Symbol's resolved_path matches a Module's resolved_path. Expect another 30-60 modules to drop off untested list after fix. BLOCKS Wave D1+ scope accuracy.
 
 **GAP-3: MRO fix in FileClassificationAgent (commit `7531ee74d9`)**
 Wave C1 fixed a real import-time bug (`BASE_CLASSES = (AtomicExecutionMixin, SovereignBaseAgent)` → `(SovereignBaseAgent,)`). Monitor downstream agents for similar patterns where an explicit mixin duplicates an existing base.
@@ -95,7 +96,8 @@ For each wave D1–E2: per-wave microwave commits with behavioral tests (constit
 
 ## Execution Notes
 
-- **Do NOT start Wave D without regenerating ADG first.** The gap report is stale by ~8 hours; Wave A/B/C coverage is invisible.
+- **ADG regenerated 2026-04-22 12:18** — snapshot `adg_indexed_04222026_1218.sqlite`. Redis HOT. MCP reloaded.
+- **Do NOT start Wave D1 before Wave D0 lands.** The gap-report script has a detection defect (see GAP-2) — starting D1 with the current output will waste effort on already-covered seam modules.
 - **Author-Gate triggers**: any module hitting the 4 deadly antipattern edges (broad_exception_catch, log_and_swallow, silent_exception_swallow, return_none_swallow) — apply anti-pattern-author-gate rule.
 - **MRO audits**: while writing agent tests, grep for `BASE_CLASSES = (...)` patterns that duplicate mixins already in `SovereignBaseAgent.__mro__`. Fix upstream, don't work around.
 - **Backlog is non-blocking.** Waves D–E are independently shippable; no hard sequence beyond "regenerate ADG first."
