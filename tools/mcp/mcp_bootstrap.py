@@ -16,7 +16,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 REPO_ROOT: Path = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
@@ -118,3 +118,56 @@ def run_server(mcp: FastMCP, *, transport: str = "stdio") -> None:
     logger = logging.getLogger(getattr(mcp, "name", "mcp"))
     logger.info("Starting MCP server (transport=%s)", transport)
     mcp.run(transport=transport)
+
+
+def register_standard_health(
+    mcp: FastMCP,
+    server_name: str,
+    extra: "Callable[[], dict[str, Any]] | None" = None,
+) -> None:
+    """Register a uniform ``{server_name}_health`` tool on the given FastMCP.
+
+    Purpose (MCP fleet standardization, 2026-04-22):
+        Before this helper existed, each MCP server implemented health probing
+        differently: adg_sqlite used ``adg_health``, redis used ``redis_health``,
+        otel_mcp used ``otel_status`` + ``otel_server_info``, vector_db used
+        ``readiness``, and memory/pytest_mcp/enhanced_http had no explicit
+        health endpoint at all. The inconsistency forced
+        ``.windsurf/scripts/mcp_fleet_health.py`` to probe 8 different
+        preconditions per server instead of calling one uniform endpoint.
+
+    Contract:
+        Registers a tool named ``{server_name}_health`` returning a dict with
+        at minimum ``{"status": "ok", "server": <server_name>}``. If
+        ``extra`` is provided, it is called and its result merged into the
+        response; exceptions from ``extra`` are surfaced as ``status="error"``
+        with ``error`` field (never re-raised — health must never crash).
+
+    Args:
+        mcp: FastMCP instance to register the tool on.
+        server_name: Stable server name used for both the tool name and the
+            ``server`` field. Lowercase, snake_case.
+        extra: Optional zero-arg callable producing additional fields
+            (version, db_path, backing store state, etc.).
+    """
+    tool_name = f"{server_name}_health"
+
+    def _health() -> dict[str, Any]:
+        base: dict[str, Any] = {"status": "ok", "server": server_name}
+        if extra is None:
+            return base
+        try:
+            merged = extra()
+            if isinstance(merged, dict):
+                base.update(merged)
+            return base
+        except (OSError, RuntimeError, ValueError, TypeError, ImportError) as exc:
+            return {"status": "error", "server": server_name, "error": f"{type(exc).__name__}: {exc}"}
+
+    _health.__name__ = tool_name
+    _health.__doc__ = (
+        f"Health probe for the {server_name} MCP server.\n\n"
+        "Uniform fleet-health endpoint. Returns {status, server, ...}. "
+        "Never raises; errors are surfaced via status='error' + error field."
+    )
+    mcp.tool()(_health)

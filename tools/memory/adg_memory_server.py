@@ -160,6 +160,25 @@ mcp = FastMCP(
 )
 
 
+# Uniform fleet-health tool — MCP standardization 2026-04-22.
+from tools.mcp.mcp_bootstrap import register_standard_health as _register_standard_health
+
+
+def _memory_health_extra() -> dict[str, Any]:
+    try:
+        stats = _store.get_stats()
+    except (OSError, RuntimeError, AttributeError, ImportError) as exc:
+        return {"error": f"{type(exc).__name__}: {exc}"}
+    return {
+        "db_path": str(getattr(_store, "db_path", "?")),
+        "entity_count": stats.get("total_entities", 0) if isinstance(stats, dict) else 0,
+        "observation_count": stats.get("total_observations", 0) if isinstance(stats, dict) else 0,
+    }
+
+
+_register_standard_health(mcp, "memory", extra=_memory_health_extra)
+
+
 # ---------------------------------------------------------------------------
 # Core tools — API-compatible with @modelcontextprotocol/server-memory
 # ---------------------------------------------------------------------------
