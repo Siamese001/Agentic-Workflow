@@ -20,6 +20,13 @@ from agentic_core.L2_execution.types.l2_execution_contract import (
     L2PhaseResult,
 )
 
+# Re-export get_clock from the providers submodule so existing callers using
+# `from agentic_core.L2_execution.utils import get_clock` resolve. The
+# canonical definition lives in agentic_core/utils/runners/providers.py; the
+# `providers` submodule here is the stable public import path used across the
+# apps_* and ops_scripts layers.
+from agentic_core.L2_execution.utils.providers import get_clock  # noqa: E402, F401
+
 
 @dataclass
 class L2EmbeddingSovereignAgent(L2ExecutionAgent):

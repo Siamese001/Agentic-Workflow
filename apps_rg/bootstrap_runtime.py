@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import inspect
 import sys
 import types
@@ -7,8 +8,31 @@ from typing import Any
 
 
 def _ensure_module(name: str) -> types.ModuleType:
+    """Return the module for ``name``, preferring the real package on disk.
+
+    If the real package/module is importable, return it (keeps the
+    ``__path__`` and sub-package machinery intact). Only fall back to a bare
+    ``types.ModuleType`` stub when the real module does not exist at all —
+    this preserves the shim behavior for genuinely-missing test helpers
+    while not clobbering real packages.
+
+    Previously this function unconditionally created bare modules for every
+    parent of the requested dotted path. That replaced real packages like
+    ``agentic_core`` with ``types.ModuleType`` objects having no
+    ``__path__``, breaking every subsequent ``from agentic_core.X import Y``
+    call with ``"agentic_core is not a package"``.
+    """
     if name in sys.modules:
         return sys.modules[name]
+
+    # Prefer the real module on disk so packages keep __path__ / submodule
+    # resolution. ImportError signals a genuinely-absent module — in that
+    # case we synthesize a stub for shim attachment.
+    try:
+        return importlib.import_module(name)
+    except ImportError:
+        pass
+
     module = types.ModuleType(name)
     sys.modules[name] = module
     if "." in name:
