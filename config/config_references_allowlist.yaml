@@ -1,0 +1,94 @@
+# config/config_references_allowlist.yaml
+# -----------------------------------------
+# SSOT for environment flags that are READ in code but do NOT need a line in
+# .env.example. Used by ops_scripts/ci/check_config_references.py.
+#
+# Entries here fall into three categories:
+#   (a) OS / runner-provided (PATH, HOME, CI, GITHUB_*)
+#   (b) Python/toolchain-provided (PYTHONPATH, PYTHONDONTWRITEBYTECODE)
+#   (c) Provider-SDK reads (OPENAI_API_BASE, HTTP_PROXY) that have their own
+#       documented precedence and do not belong in our .env.example
+#
+# New entries REQUIRE a comment explaining category + why the flag shouldn't
+# be in .env.example. Do not use this as a dumping ground for undeclared flags.
+
+allowed_external_flags:
+  # --- (a) OS / runner-provided ---
+  - PATH
+  - HOME
+  - USER
+  - USERNAME
+  - USERPROFILE
+  - HOMEDRIVE
+  - HOMEPATH
+  - TEMP
+  - TMP
+  - TMPDIR
+  - APPDATA
+  - LOCALAPPDATA
+  - PROGRAMFILES
+  - WINDIR
+  - COMPUTERNAME
+  - HOSTNAME
+  - OS
+  - PROCESSOR_ARCHITECTURE
+  - NUMBER_OF_PROCESSORS
+  - SHELL
+  - TERM
+  - COLORTERM
+  - LANG
+  - LC_ALL
+  - LC_CTYPE
+  - TZ
+
+  # --- CI / runner-provided ---
+  - CI
+  - GITHUB_ACTIONS
+  - GITHUB_TOKEN
+  - GITHUB_REPOSITORY
+  - GITHUB_SHA
+  - GITHUB_REF
+  - GITHUB_HEAD_REF
+  - GITHUB_BASE_REF
+  - GITHUB_RUN_ID
+  - GITHUB_RUN_NUMBER
+  - GITHUB_WORKSPACE
+  - GITHUB_EVENT_NAME
+  - RUNNER_OS
+  - RUNNER_TEMP
+
+  # --- (b) Python / toolchain ---
+  - PYTHONPATH
+  - PYTHONDONTWRITEBYTECODE
+  - PYTHONUNBUFFERED
+  - PYTHONIOENCODING
+  - PYTHONHASHSEED
+  - PY_COLORS
+  - VIRTUAL_ENV
+  - CONDA_DEFAULT_ENV
+  - CONDA_PREFIX
+
+  # --- (c) Provider SDK self-reads (not our secrets layer) ---
+  - OPENAI_API_BASE
+  - OPENAI_ORG_ID
+  - OPENAI_BASE_URL
+  - ANTHROPIC_BASE_URL
+  - GOOGLE_APPLICATION_CREDENTIALS
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_DEFAULT_REGION
+  - AWS_PROFILE
+  - HTTP_PROXY
+  - HTTPS_PROXY
+  - NO_PROXY
+  - http_proxy
+  - https_proxy
+  - no_proxy
+  - REQUESTS_CA_BUNDLE
+  - SSL_CERT_FILE
+  - CURL_CA_BUNDLE
+
+  # --- Internal diagnostics / test overrides (intentionally undocumented) ---
+  - PYTEST_CURRENT_TEST
+  - PYTEST_VERSION
+  - PYTEST_XDIST_WORKER

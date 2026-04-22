@@ -1130,6 +1130,15 @@ def main() -> None:
             "Default: the gate runs and fails the process on wiring violations."
         ),
     )
+    parser.add_argument(
+        "--no-config-ref-check",
+        action="store_true",
+        help=(
+            "Skip the config-reference gate (env-flag reads vs .env.example). "
+            "Default: the gate runs with baseline ratchet — fails only on NEW "
+            "undeclared flags."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1164,59 +1173,82 @@ def main() -> None:
     # Verify artifacts
     _verify_artifacts(adg_artifacts_dir, ts, args.no_zip, args.no_reports)
 
-    # Expected-wiring gate — validate declared call-site wirings against the
-    # fresh source tree. Runs right after ADG generation so authors get wiring
-    # feedback without waiting for pre-commit. Gate fails the ADG generation
-    # process on violation unless --no-wiring-check is passed.
+    # Post-ADG gate chain — each gate is invoked as a bounded subprocess
+    # (§14 shell=False timeout=30). Authors get feedback within the same
+    # 2-5 min ADG refresh window, not later at pre-commit or remote CI.
+    # Each gate has its own --no-<gate>-check opt-out for emergencies.
     if not args.no_wiring_check:
-        _run_expected_wiring_gate()
+        _run_post_adg_gate(
+            label="wiring",
+            script_rel="ops_scripts/ci/check_expected_wiring.py",
+            args_list=[],
+            fail_hint=(
+                "Fix the declared call sites in config/expected_wiring.yaml "
+                "or run with --no-wiring-check (emergency only)."
+            ),
+            timeout_s=30,
+        )
+    if not args.no_config_ref_check:
+        _run_post_adg_gate(
+            label="config-ref",
+            script_rel="ops_scripts/ci/check_config_references.py",
+            args_list=["--allow-unreferenced"],
+            fail_hint=(
+                "Declare the new flag in .env.example, OR allowlist it in "
+                "config/config_references_allowlist.yaml, OR (debt row) "
+                "regenerate baseline: python ops_scripts/ci/check_config_references.py "
+                "--regenerate-baseline."
+            ),
+            timeout_s=60,
+        )
 
     # Run repair orchestrator if requested
     if args.repair:
         _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
 
 
-def _run_expected_wiring_gate() -> None:
-    """Invoke ops_scripts/ci/check_expected_wiring.py as a post-ADG gate.
+def _run_post_adg_gate(
+    *,
+    label: str,
+    script_rel: str,
+    args_list: list[str],
+    fail_hint: str,
+    timeout_s: int,
+) -> None:
+    """Invoke a post-ADG CI gate as a bounded subprocess.
 
-    The gate reads ``config/expected_wiring.yaml`` and verifies each declared
-    call site (AST-level). Any failure halts the ADG generation run so the
-    author sees wiring violations immediately, before any pre-commit or CI.
-
-    Non-zero exit = wiring regression. Keep the subprocess bounded by
-    constitutional §14: argv form, shell=False, timeout=30.
+    Constitutional §14: argv form, shell=False, explicit timeout. Non-zero
+    exit halts the ADG generation run so authors see the gate failure in the
+    same window, not later at pre-commit. Generic wrapper so all five post-
+    ADG gates share one invocation path and logging shape.
     """
     import subprocess
 
-    gate = ROOT / "ops_scripts" / "ci" / "check_expected_wiring.py"
+    gate = ROOT / script_rel
     if not gate.is_file():
-        print("[ADG] [wiring] gate script missing, skipping expected-wiring check")
+        print(f"[ADG] [{label}] gate script missing ({script_rel}), skipping")
         return
-    print("[ADG] Running expected-wiring gate (check_expected_wiring.py) ...")
+    print(f"[ADG] Running {label} gate ({script_rel}) ...")
     try:
         proc = subprocess.run(
-            [sys.executable, str(gate)],
+            [sys.executable, str(gate), *args_list],
             cwd=str(ROOT),
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=timeout_s,
             check=False,
         )
     except subprocess.TimeoutExpired:
-        print("[ADG] [wiring] gate timed out after 30s — failing")
+        print(f"[ADG] [{label}] gate timed out after {timeout_s}s — failing")
         sys.exit(2)
     if proc.stdout:
         print(proc.stdout.rstrip())
     if proc.stderr:
         print(proc.stderr.rstrip())
     if proc.returncode != 0:
-        print(
-            "[ADG] [wiring] Expected-wiring violations detected. "
-            "Fix the declared call sites in config/expected_wiring.yaml "
-            "or run with --no-wiring-check (emergency only).",
-        )
+        print(f"[ADG] [{label}] FAIL — {fail_hint}")
         sys.exit(proc.returncode)
-    print("[ADG] [wiring] PASS")
+    print(f"[ADG] [{label}] PASS")
 
 
 if __name__ == "__main__":
