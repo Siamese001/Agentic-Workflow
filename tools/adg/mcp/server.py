@@ -151,4 +151,9 @@ def adg_reload() -> dict[str, Any]:
 
 
 if __name__ == "__main__":
+    # Guard against Windsurf double-spawn: two adg_sqlite processes would
+    # both hold SQLite read locks on the ADG snapshot and can deadlock when
+    # one tries to rotate snapshots. Added 2026-04-22 MCP standardization.
+    from tools.mcp.mcp_bootstrap import guard_single_instance
+    guard_single_instance("tools/adg/mcp/server", skip_env="ADG_SKIP_ZOMBIE_KILL")
     mcp.run(transport="stdio")

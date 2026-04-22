@@ -434,4 +434,9 @@ def mem_cleanup_stale(older_than_days: float = 30.0) -> dict[str, Any]:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stderr)
+    # Guard against Windsurf double-spawn: two memory processes would both
+    # write to knowledge_graph.sqlite and corrupt observation dedup. Added
+    # 2026-04-22 MCP standardization.
+    from tools.mcp.mcp_bootstrap import guard_single_instance
+    guard_single_instance("adg_memory_server.py", skip_env="MEMORY_SKIP_ZOMBIE_KILL")
     mcp.run(transport="stdio")

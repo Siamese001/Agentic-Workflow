@@ -171,3 +171,77 @@ def register_standard_health(
         "Never raises; errors are surfaced via status='error' + error field."
     )
     mcp.tool()(_health)
+
+
+def guard_single_instance(script_marker: str, *, skip_env: str | None = None) -> None:
+    """Terminate any other process whose cmdline contains ``script_marker``.
+
+    Purpose (MCP fleet standardization, 2026-04-22):
+        Windsurf occasionally spawns a second MCP server process on reconnect
+        without terminating the first. Two concurrent instances deadlock on
+        shared resources: ChromaDB's SQLite WAL lock (vector_db), the memory
+        SQLite store, the ADG snapshot, etc. Originally this guard lived in
+        ``tools/mcp/vector_db_server.py`` as ``_kill_zombie_siblings()`` for
+        a vector_db-only scenario. Extracted here so every Python MCP server
+        can adopt it in one line.
+
+    Safe by construction:
+        - Matches on a specific script filename substring (never arbitrary python)
+        - Skips own PID explicitly
+        - Fails soft when psutil is not installed
+        - Honors an opt-out env var for test isolation
+        - Never raises; logs and returns
+
+    Args:
+        script_marker: Substring uniquely identifying this server's script in
+            ``proc.cmdline`` (e.g. ``"vector_db_server.py"``, ``"adg/mcp/server"``).
+        skip_env: Optional env var name. When set to ``"1"``, the guard is
+            skipped. Use for test harnesses that legitimately spawn siblings.
+    """
+    if skip_env and os.environ.get(skip_env) == "1":
+        logging.getLogger("mcp_bootstrap").info(
+            "GUARD_SKIPPED: %s=1 (script_marker=%s)", skip_env, script_marker
+        )
+        return
+
+    try:
+        import psutil  # type: ignore[import-not-found]
+    except ImportError:
+        logging.getLogger("mcp_bootstrap").warning(
+            "GUARD_UNAVAILABLE: psutil not installed; concurrent-process "
+            "deadlock guard disabled for marker=%s",
+            script_marker,
+        )
+        return
+
+    my_pid = os.getpid()
+    killed: list[int] = []
+    logger = logging.getLogger("mcp_bootstrap")
+
+    for proc in psutil.process_iter(attrs=("pid", "name", "cmdline")):
+        try:
+            if proc.info["pid"] == my_pid:
+                continue
+            cmdline = proc.info.get("cmdline") or []
+            if not any(script_marker in str(part) for part in cmdline):
+                continue
+            logger.warning(
+                "GUARD_DETECTED: pid=%d cmdline=%s -- terminating (marker=%s)",
+                proc.info["pid"],
+                " ".join(str(c) for c in cmdline)[:200],
+                script_marker,
+            )
+            proc.terminate()
+            try:
+                proc.wait(timeout=3)
+            except psutil.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=2)
+            killed.append(proc.info["pid"])
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as exc:
+            logger.debug("GUARD_SKIP: pid=%s reason=%s", proc.info.get("pid"), exc)
+
+    if killed:
+        logger.info("GUARD_COMPLETE: terminated pids=%s (marker=%s)", killed, script_marker)
+    else:
+        logger.info("GUARD_CLEAN: no sibling processes (marker=%s)", script_marker)
