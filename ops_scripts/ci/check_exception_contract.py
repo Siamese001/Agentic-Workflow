@@ -77,42 +77,49 @@ def _load_contracts() -> list[dict]:
 
 
 def _query_callers(conn: sqlite3.Connection, raiser_module: str, raiser_symbol: str) -> list[str]:
-    """Return a deduplicated list of caller file_paths.
+    """Return a deduplicated list of caller file paths (repo-relative POSIX).
 
-    We look up the raiser node(s) by (file_path, adg_name) and then pull
-    fan-in edges of relation_type in {'calls','imports'}. The source node's
-    file_path is the caller module. For class-qualified symbols like
-    'Class.method', we match against the last segment too since the graph
-    may store the method node as 'method'.
+    The ADG stores module-granularity nodes (entity_type='module'), not
+    class/method nodes. So we resolve callers coarsely: every module that
+    IMPORTS the raiser's module is a potential caller. The AST step
+    (_caller_satisfies) then confirms the module actually contains a Call
+    to the raiser's last segment and that the call is wrapped in a matching
+    try/except.
     """
-    last_seg = raiser_symbol.rsplit(".", 1)[-1]
-    # The ADG schema uses `resolved_path` (not `file_path`). Values are
-    # absolute/normalized — callers may be stored as either POSIX or Windows
-    # path; match by suffix to be portable.
+    del raiser_symbol  # module-granularity — symbol match happens in AST step
+    # ADG import edges are stored as:
+    #   edges.relation_type = 'imports'
+    #   edges.symbol        = 'pkg.sub.module.Symbol' (dotted name, abs)
+    #   edges.source_file   = caller's repo-relative POSIX path
+    # We convert raiser_module path to its dotted prefix and prefix-match.
+    dotted_prefix = raiser_module.replace("/", ".").removesuffix(".py") + "."
     rows = conn.execute(
         """
-        SELECT DISTINCT src.resolved_path
-          FROM edges e
-          JOIN nodes tgt ON tgt.id = e.dst_id
-          JOIN nodes src ON src.id = e.src_id
-         WHERE (tgt.resolved_path = ? OR tgt.resolved_path LIKE ?)
-           AND (tgt.adg_name = ? OR tgt.adg_name = ?)
-           AND e.relation_type IN ('calls', 'imports')
+        SELECT DISTINCT source_file
+          FROM edges
+         WHERE relation_type = 'imports'
+           AND symbol LIKE ?
         """,
-        (raiser_module, f"%{raiser_module}", raiser_symbol, last_seg),
+        (f"{dotted_prefix}%",),
     ).fetchall()
-    # Normalize caller paths back to repo-relative POSIX form.
     callers: set[str] = set()
     for (rp,) in rows:
         if not rp:
             continue
+        # Values may be repo-relative POSIX ("agentic_core/...") or absolute.
         p = Path(rp)
-        try:
-            rel = p.resolve().relative_to(REPO).as_posix()
-            callers.add(rel)
-        except ValueError:
-            # Not under repo (rare — tests fixtures etc.). Skip.
+        if p.is_absolute():
+            try:
+                rel = p.resolve().relative_to(REPO).as_posix()
+            except ValueError:
+                continue
+        else:
+            rel = p.as_posix()
+        # Exclude test files — they are allowed to call raisers freely and
+        # should not be expected to catch arbitrary exceptions.
+        if rel.startswith("tests/") or "/tests/" in rel:
             continue
+        callers.add(rel)
     return sorted(callers)
 
 
