@@ -482,7 +482,10 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                     )
                 ]
                 code_snippet = "\n".join(safe_lines)[:500]
-            except (RuntimeError, OSError):  # guardian: allow-default-fallback -- code snippet is optional LLM-prompt input; '<unreadable>' is a valid substitute
+            except (
+                RuntimeError,
+                OSError,
+            ):  # guardian: allow-default-fallback -- code snippet is optional LLM-prompt input; '<unreadable>' is a valid substitute
                 code_snippet = "<unreadable>"
             prompt = f"Role: Socratic Judge - Expert Code Security Reviewer\n\nContext: {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet (sanitized, 500 chars):\n{code_snippet}\n\nAnswer ONLY 'YES' (real violation) or 'NO' (false positive)."
             result_dict = await asyncio.wait_for(

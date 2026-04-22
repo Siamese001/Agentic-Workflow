@@ -237,7 +237,10 @@ class ExecutionOrchestrator:
                         "state": "d2_cache_hit",
                         "result": _d2_hit,
                     }
-            except (ImportError, RuntimeError) as _e:  # guardian: allow-log-and-swallow -- D2 semantic cache check: optional, debug logged
+            except (
+                ImportError,
+                RuntimeError,
+            ) as _e:  # guardian: allow-log-and-swallow -- D2 semantic cache check: optional, debug logged
                 Logger.debug("[L0-ORCH] D2 semantic cache check skipped: %s", _e)
         if path.value in self._L3_PATHS:
             return self._delegate_to_l3(path, payload, cycle, risk)

@@ -3,6 +3,7 @@ Sovereign ChromaDB Client
 Persistent semantic memory client aligned with Library OS SSOT principles.
 """
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -78,11 +79,33 @@ class SovereignChromaClient:
                 "Set EMBEDDING_ENABLED=true to enable BGE-M3 embedding."
             )
 
-        from agentic_core.embeddings.bge_runtime import bge_embed_query
+        from agentic_core.embeddings.bge_runtime import bge_embed_batch
 
-        embeddings = [bge_embed_query(text) for text in texts]
+        embeddings = bge_embed_batch(texts)
         logger.debug(f"Generated {len(embeddings)} BGE-M3 embeddings of dimension 1024")
         return embeddings
+
+    @staticmethod
+    def _sanitize_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
+        """Coerce metadata values to ChromaDB v2 scalar types.
+
+        ChromaDB v2 rejects non-scalar metadata values (lists, dicts, None).
+        This normalizer:
+          - JSON-encodes list/dict values into a string
+          - Replaces None with an empty string
+          - Leaves str/int/float/bool unchanged
+        """
+        sanitized: dict[str, Any] = {}
+        for key, value in metadata.items():
+            if isinstance(value, (str, int, float, bool)):
+                sanitized[key] = value
+            elif value is None:
+                sanitized[key] = ""
+            elif isinstance(value, (list, tuple, dict)):
+                sanitized[key] = json.dumps(value, ensure_ascii=False, sort_keys=True)
+            else:
+                sanitized[key] = str(value)
+        return sanitized
 
     def add_documents(
         self,
@@ -112,10 +135,13 @@ class SovereignChromaClient:
         # Get collection
         collection = self.get_collection(collection_name)
 
+        # Sanitize metadata for ChromaDB v2 (scalar values only)
+        sanitized_metadatas = [self._sanitize_metadata(m) for m in metadatas]
+
         # Add documents
         collection.add(
             documents=documents,
-            metadatas=metadatas,
+            metadatas=sanitized_metadatas,
             embeddings=embeddings,
             ids=ids or [f"doc_{i}" for i in range(len(documents))],
         )

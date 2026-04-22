@@ -305,7 +305,10 @@ class ProcessGuard:
                 self._kill_process(pid)
                 result["terminated"].append(pid)
                 logger.info(f"ProcessGuard: Terminated PID {pid}")
-            except (ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 result["failed"].append(pid)
                 logger.warning(f"ProcessGuard: Failed to terminate PID {pid}: {e}")
         with self._pid_lock:

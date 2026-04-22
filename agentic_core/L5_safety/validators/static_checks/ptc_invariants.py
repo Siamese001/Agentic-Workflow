@@ -201,7 +201,12 @@ class PTCInvariantVisitor(ast.NodeVisitor):
                     lines = f.readlines()
                     if 0 <= node.lineno - 1 < len(lines):
                         self.current_line_content = lines[node.lineno - 1]
-            except (OSError, UnicodeDecodeError, IndexError, AttributeError):  # guardian: allow-default-fallback -- allowlist-comment lookup is non-critical; empty string safely falls back to "no allowlist"
+            except (
+                OSError,
+                UnicodeDecodeError,
+                IndexError,
+                AttributeError,
+            ):  # guardian: allow-default-fallback -- allowlist-comment lookup is non-critical; empty string safely falls back to "no allowlist"
                 self.current_line_content = ""
 
         super().visit(node)

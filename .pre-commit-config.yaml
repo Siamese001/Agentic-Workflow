@@ -324,6 +324,24 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7h: Terminal/Subprocess Cleanup (§11 + §14) ---------------------------------
+      # Enforces Constitutional §11 (terminal process lifecycle) and §14 (subprocess
+      # timeout required) by catching static patterns that leak processes:
+      #   - subprocess.Popen without .wait/.terminate/.kill/communicate or `with`
+      #   - subprocess.run without timeout= kwarg
+      #   - os.system / os.popen (banned outright)
+      # --staged mode: blocks NEW violations only. 30 pre-existing violations across
+      # 25 files on 2026-04-22 baseline — tracked for separate burndown plan, not
+      # blocked here to avoid breaking existing repo state.
+      - id: terminal-cleanup
+        name: "T7h: Terminal/Subprocess Cleanup (§11 + §14)"
+        entry: py ops_scripts/ci/check_terminal_cleanup.py --staged
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: false
+        require_serial: true
+
       # NOTE: infra_wiring_scan.py NOT wired — 5 pre-existing violations (google,
       # chromadb, sqlite3 direct imports) need remediation first. Wired at
       # `stages: [manual]` below for on-demand audit.

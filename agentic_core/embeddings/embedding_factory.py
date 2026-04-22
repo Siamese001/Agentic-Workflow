@@ -415,7 +415,13 @@ def create_embedding_client(
 
     elif provider == "bge-m3":
         # BAAI/bge-m3 - Local embedding model (spec-compliant for Pipeline B/C)
-        client = _create_bge_m3_client(model or "BAAI/bge-m3", kwargs.get("device", "cpu"))
+        # Device resolution: explicit kwarg > EMBEDDING_DEVICE env > CUDA autodetect > cpu
+        device = kwargs.get("device")
+        if device is None:
+            from agentic_core.embeddings.bge_runtime import _resolve_device
+
+            device = _resolve_device()
+        client = _create_bge_m3_client(model or "BAAI/bge-m3", device)
 
     else:
         raise ValueError(f"Unsupported embedding provider: {provider}")
@@ -590,6 +596,9 @@ def guard_embedding_instantiation(module_name: str, class_name: str) -> None:
         "data.sdks_mcps.client_wrappers",
         "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent",
         "system_learning.engines.embedding_service_factory",
+        # Operational ingestion bridge — pass-through to this factory.
+        # See tools/ingestion/_embedding_factory_bridge.py for the rationale.
+        "tools.ingestion._embedding_factory_bridge",
     }
 
     if module_name not in allowed_modules:

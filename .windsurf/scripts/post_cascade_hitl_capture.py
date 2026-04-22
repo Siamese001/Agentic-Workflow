@@ -11,6 +11,7 @@ entries, external scripts, imports in historical tests) continue to work.
 Removal date: 2026-07-21 (90-day deprecation per harness-enforcement-rename
 plan §"Rollback / Shims"). Do NOT add new callers to this path.
 """
+
 # pylint: disable=wildcard-import,unused-wildcard-import
 from __future__ import annotations
 

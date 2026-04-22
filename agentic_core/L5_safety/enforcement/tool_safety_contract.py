@@ -511,7 +511,11 @@ def invoke_tool_safely(
 
             _at = get_active_execution_trace()
             trace_id = _at.trace_id if _at else ""
-        except (ValueError, TypeError, RuntimeError):  # guardian: allow-default-fallback -- optional trace context; empty string means untraced call, which is a valid execution mode
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ):  # guardian: allow-default-fallback -- optional trace context; empty string means untraced call, which is a valid execution mode
             trace_id = ""
 
     # --- ADG edges: applies_guardrail, validated_by_safety_plane ---

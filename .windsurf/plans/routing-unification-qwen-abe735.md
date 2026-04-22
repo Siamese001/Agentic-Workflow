@@ -5,21 +5,19 @@
 **Tier:** T3 — cross-layer (L0, L2, L3, L4, L_OPS), >5 files, architecture decision
 **ADG Snapshot:** `artifacts/adg/adg_indexed_04212026_0433.sqlite`
 **ADG Provenance:** backend=sqlite
-**Status:** DRAFT — awaiting Wave 1 blocker (H6 model size) + token-estimator run
+**Status:** ✅ **COMPLETE** — delivered in commit `7aa7ebd071` ("feat(routing): complete routing-unification plan (Waves 1-6 + F1-F3)")
 **Generated:** 2026-04-21
+**Closed:** 2026-04-22 (retroactive — plan header was not updated at completion)
 
 ---
 
-## 0. Wave 1 Blocker (UNRESOLVED)
+## 0. Wave 1 Blocker (RESOLVED)
 
 **H6 — Which Qwen model is physically loaded on `localhost:8000`?**
 
-Three conflicting references in-tree:
-- Topology doc says 7B: `@c:\Git\Agentic-Workflow\docs\architecture\qwen-vllm-topology.md:60`
-- `QwenInferenceGateway` default is 14B-AWQ: `@c:\Git\Agentic-Workflow\agentic_core\L3_orchestration\inference\qwen_vllm\reasoning\qwen_inference_gateway.py:70`
-- `_ssot_routing.py` WSL subprocess path references 14B-AWQ
+**RESOLVED → `Qwen/Qwen2.5-14B-Instruct-AWQ`**
 
-Wave 1 CANNOT start until user confirms the actual deployed model. User will check vLLM server loadout.
+Canonical source of truth: `@c:/Git/Agentic-Workflow/agentic_core/L0_routing/config/model_registry.py:47-50` — `QWEN_LOCAL_MODEL_ID`, env-overridable via `VLLM_MODEL_NAME`. The topology doc (line 60) and `QwenInferenceGateway` default already agree. `_ssot_routing.py` has been deleted as planned.
 
 ---
 

@@ -1,7 +1,7 @@
 """
 InstructionalInjectionMixin — Canonical location.
 
-Relocated from agentic_core/config/core/injection_layer_config.py to satisfy
+Relocated from agentic_core/config/injection_layer_config.py to satisfy
 the mixin location invariant (all *Mixin classes under agentic_core/mixins/).
 
 Original file re-exports this class for backward compatibility.
