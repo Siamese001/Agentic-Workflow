@@ -88,6 +88,12 @@ wirings:
     required_env_flags:
       - SEMANTIC_CACHE_D2_ENABLED
       - SEMANTIC_CACHE_PROMOTE_ENABLED
+    signature_contract:
+      # promote_to_long_term(payload_key, namespace, promote_payload, feedback)
+      # Dropping the feedback arg silently disables qualification checks and
+      # promotes everything — a cache-pollution class of bug.
+      min_args: 4
+      max_args: 4
     proof_test: tests/integration/cache/test_l0_d2_semantic_cache_live.py
     probe_command: python tools/diag/probe_semantic_cache.py
     plan_id: semcache-make-live-7a2d4b
@@ -119,6 +125,12 @@ wirings:
     entry_symbol: EmbeddingSovereignAgent
     required_call: create_embedding_client
     required_env_flags: []
+    signature_contract:
+      # create_embedding_client(provider, model) — both positional, no kwargs.
+      # A silent drop of the model arg would fall back to a default embedding
+      # model and silently change retrieval semantics.
+      min_args: 2
+      max_args: 2
     proof_test: tests/integration/retrieval_layers/test_bge_embedding_e2e.py
     plan_id: lazy-import-arch-defect-review
 
@@ -187,6 +199,11 @@ wirings:
     entry_symbol: InjectionDetector
     required_call: evaluate_against_baseline
     required_env_flags: []
+    signature_contract:
+      # evaluate_against_baseline(current_metrics, baseline_metrics, gate_thresholds)
+      # All three args are required for a real regression assessment.
+      min_args: 3
+      max_args: 3
     proof_test: tests/unit/prompt_governance/test_injection_detector.py
     plan_id: lazy-import-arch-defect-review
 
