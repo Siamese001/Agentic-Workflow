@@ -30,7 +30,7 @@ def _ensure_module(name: str) -> types.ModuleType:
     # case we synthesize a stub for shim attachment.
     try:
         return importlib.import_module(name)
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow -- ImportError is the expected sentinel: module absent on disk, fall through to types.ModuleType stub synthesis below
         pass
 
     module = types.ModuleType(name)
