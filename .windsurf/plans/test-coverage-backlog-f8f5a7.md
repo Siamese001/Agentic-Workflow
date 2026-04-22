@@ -1,0 +1,101 @@
+# Test Coverage Backlog — Post Wave-C Remaining Scope
+
+**Status**: Ready (backlog) — Last updated 2026-04-22
+**Source of truth**: `artifacts/test_gaps/risk_weighted_04222026_1359.md`
+**Method**: ADG fan-in × layer multiplier (constitutional §22, adg-canonical-invariants §6)
+
+Documents the residual test-coverage gap across the repo **after** Waves A/B/C landed 825 behavioral tests (commits `506cf0e5f9` → `1af5f73d58`). Top-30 of the risk-weighted report is fully closed. This plan covers the tail.
+
+---
+
+## Wave Structure
+
+| Wave | Phase IDs | Focus | Modules in scope | Est. Tokens | Assumptions | Status |
+|---|---|---|---|---|---|---|
+| Wave D1 | D1.1–D1.3 | L0 + L5 tail (×2.0 multiplier) — next 30 rows after top-30 | ~60 untested, fan-in ≥ 2 | 30000 🟢 | ADG snapshot regenerated before start | Ready |
+| Wave D2 | D2.1–D2.2 | L3 + L4 tail (×1.75) | ~50 untested, fan-in ≥ 2 | 22000 🟢 | After D1 | Ready |
+| Wave D3 | D3.1 | L1 + L2 tail (×1.0) | ~40 untested, fan-in ≥ 2 | 16000 🟢 | After D2 | Ready |
+| Wave D4 | D4.1 | L_RUNTIME + L_SHARED + L_PG + L_INFRA hotspots | ~30 high-fan-in | 12000 🟢 | After D3 | Ready |
+| Wave D5 | D5.1 | L6 observability tail (×0.75) | ~20 targeted | 8000 🟢 | After D4 | Ready |
+| Wave E1 | E1.1–E1.4 | apps_* coverage (see test-coverage-improvement-a1b2c3.md) | 78 files across apps_eval/exec/research/rfp | 56000 🟡 | Supersedes the older plan | Ready |
+| Wave E2 | E2.1 | L_TOOLS + L_OPS + L_SL hotspots | 25 scripts with ≥3 callers | 10000 🟢 | After E1 | Ready |
+| Descope | — | L_UNKNOWN (96% untested — likely dead code) | 80 modules | 0 | ADG triage first; delete candidates | Descoped |
+
+**Grand total** (if fully executed): ~154,000 tokens. Most waves are independently shippable; no hard dependency chain across waves.
+
+---
+
+## Layer Gap Snapshot (from risk_weighted_04222026_1359.md)
+
+| Layer | Modules | Untested | % | Layer ×mult | Priority |
+|---|---:|---:|---:|:---:|:---:|
+| L5 | 391 | 362 | 92.58% | 2.0 | **D1** |
+| L0 | 89 | 64 | 71.91% | 2.0 | **D1** |
+| L3 | 168 | 130 | 77.38% | 1.75 | **D2** |
+| L4 | 142 | 129 | 90.85% | 1.75 | **D2** |
+| L1 | 152 | 144 | 94.74% | 1.0 | **D3** |
+| L2 | 195 | 163 | 83.59% | 1.0 | **D3** |
+| L_RUNTIME | 66 | 55 | 83.33% | 1.0 | **D4** |
+| L_SHARED | 322 | 279 | 86.65% | 1.0 | **D4** |
+| L_PG | 125 | 102 | 81.60% | 1.0 | **D4** |
+| L_INFRA | 17 | 12 | 70.59% | 1.0 | **D4** |
+| L6 | 92 | 65 | 70.65% | 0.75 | **D5** |
+| L_APP | 796 | 670 | 84.17% | 1.0 | **E1** |
+| L_TOOLS | 625 | 539 | 86.24% | 1.0 | **E2** |
+| L_OPS | 436 | 416 | 95.41% | 1.0 | **E2** |
+| L_SL | 241 | 224 | 92.95% | 1.0 | **E2** |
+| L_UNKNOWN | 83 | 80 | 96.39% | 1.0 | **Descope** |
+
+Total: **3434 untested modules** across 3940 scored. Wave D1–D5 targets ~200 highest-impact nodes (fan-in-weighted). Waves E* cover the long tail.
+
+---
+
+## Phase-Level Summary
+
+| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
+|---|---|---|---|---:|:---:|
+| D1.1 | L5 reasoning tail (rows 31–60 of gap report) | ~30 L5 files, fan-in 2–3 | Large agent files, mock-heavy | 12000 | Ready |
+| D1.2 | L5 enforcement gates | ~15 L5 enforcement files | Gate fixtures | 8000 | Ready |
+| D1.3 | L0 routing tail | ~15 L0 files | Routing-contract fixtures | 10000 | Ready |
+| D2.1 | L3 orchestration hotspots | ~25 L3 files | Orchestrator chain mocking | 12000 | Ready |
+| D2.2 | L4 state/memory hotspots | ~20 L4 files | Store fixtures | 10000 | Ready |
+| D3.1 | L1 cognition + L2 execution | ~40 files | Execution mode coverage | 16000 | Ready |
+| D4.1 | Cross-cutting runtime/shared/pg/infra | ~30 files | Adapter mocking | 12000 | Ready |
+| D5.1 | L6 observability | ~20 files | OTEL span fixtures | 8000 | Ready |
+| E1.1 | apps_eval (21 files) | services/reasoning/outputs | See test-coverage-improvement-a1b2c3 | 15000 | Ready |
+| E1.2 | apps_exec (18 files) | services/reasoning/outputs | See test-coverage-improvement-a1b2c3 | 13000 | Ready |
+| E1.3 | apps_research (20 files) | services/reasoning/outputs | See test-coverage-improvement-a1b2c3 | 14000 | Ready |
+| E1.4 | apps_rfp (19 files) | services/reasoning/outputs | See test-coverage-improvement-a1b2c3 | 14000 | Ready |
+| E2.1 | L_TOOLS + L_OPS + L_SL hotspots | 25 scripts, fan-in ≥ 3 | Script testing patterns | 10000 | Ready |
+
+---
+
+## Gap Register
+
+**GAP-1: ADG snapshot is stale**
+The gap report was generated from `adg_indexed_04222026_0441.sqlite` (04:41 AM). Wave A/B/C commits from today are not reflected — regenerate via `python tools/generate_full_adg.py` before Wave D starts, else the top of the backlog will list modules already covered.
+
+**GAP-2: Top-30 tests may need re-run after ADG refresh**
+Expect 18 of the 30 covered modules to drop out of the risk report once L_TEST imports are re-indexed. Remaining 12 were mechanically closed in Wave C1–C8.
+
+**GAP-3: MRO fix in FileClassificationAgent (commit `7531ee74d9`)**
+Wave C1 fixed a real import-time bug (`BASE_CLASSES = (AtomicExecutionMixin, SovereignBaseAgent)` → `(SovereignBaseAgent,)`). Monitor downstream agents for similar patterns where an explicit mixin duplicates an existing base.
+
+**GAP-4: apps_* plan (`test-coverage-improvement-a1b2c3.md`) predates this backlog**
+Wave E1 absorbs its scope. Do not run the old plan standalone — it lacks the gap-report prioritization.
+
+**GAP-5: L_UNKNOWN descope**
+83 modules with 96% gap rate. Likely dead code from `archives/` drift. Triage first (`adg_edge_fanin` + `git log --name-only`) — delete candidates rather than test.
+
+---
+
+## Acceptance
+
+For each wave D1–E2: per-wave microwave commits with behavioral tests (constitutional §1, no skips, no xfail without strict=True). Each microwave ≤ ~50 tests, scoped to one file family, ends in `git add + commit + push`. Pattern matches Waves A/B/C.
+
+## Execution Notes
+
+- **Do NOT start Wave D without regenerating ADG first.** The gap report is stale by ~8 hours; Wave A/B/C coverage is invisible.
+- **Author-Gate triggers**: any module hitting the 4 deadly antipattern edges (broad_exception_catch, log_and_swallow, silent_exception_swallow, return_none_swallow) — apply anti-pattern-author-gate rule.
+- **MRO audits**: while writing agent tests, grep for `BASE_CLASSES = (...)` patterns that duplicate mixins already in `SovereignBaseAgent.__mro__`. Fix upstream, don't work around.
+- **Backlog is non-blocking.** Waves D–E are independently shippable; no hard sequence beyond "regenerate ADG first."
