@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Literal, TypedDict
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L0_routing.utils.layer_emission_seam import (
@@ -389,16 +389,152 @@ HEALER_PIPE_ORDER: tuple[str, ...] = (
 
 
 # =============================================================================
+# v9 L0 Route Decision Switch — Execution-Class Taxonomy (W0 / audit-1f9180)
+#
+# Authoritative doc: docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v9.md
+#
+# NOTE: This enum is COMPLEMENTARY to ``RoutePath`` above, not a replacement.
+#   - ``RoutePath`` classifies by *risk band* (low_risk_bypass, standard,
+#     human_escalation, policy_challenge_loop, route_recovery_budget_overflow).
+#   - ``L0Route`` classifies by *execution class* per the v9 dispatcher contract
+#     (R1A exact cache, R1B semantic cache, R3 grounded, R4 action, R5 fallback).
+#
+# Mapping to legacy ``Path`` enum in
+# ``agentic_core/L0_routing/reasoning/path_router.py``
+# (Path.A/B/C/D are payload-shape heuristics, NOT v9 execution classes; retained
+# pending W2 of audit plan `.windsurf/plans/l0-routing-best-practice-audit-1f9180.md`):
+#
+#   | path_router.Path | v9 L0Route (approx) | rationale                         |
+#   |------------------|---------------------|-----------------------------------|
+#   | Path.A           | R3 or R5            | empty check_ids → no grounding    |
+#   | Path.B           | R3                  | sanitized → proceed with grounding|
+#   | Path.C           | R3                  | single check → single-pass read   |
+#   | Path.D           | R3/R4 managed       | multi-check → workflow            |
+#   | R5_ROUTE (str)   | R5                  | abstain/fallback — already aligned|
+#
+# No call sites reference ``L0Route`` or ``L0RouteContract`` yet; they are
+# introduced here in W0 so downstream waves (W1 gates, W2 enum retirement,
+# W3 dispatcher unification, W4 invariant tests) can import from a stable
+# module without circular dependencies.
+# =============================================================================
+
+
+class L0Route(str, Enum):
+    """v9 §ROUTE DECISION SWITCH — one of six execution classes.
+
+    The L0 dispatcher selects exactly one ``L0Route`` per request based on
+    the scored route contract. Downstream semantics (per v9:40-113):
+
+    * ``R1A``: exact cache hit — terminal, no C0, no L3, no L2 step.
+    * ``R1B``: semantic cache hit — terminal, no C0, no L3, no L2 step.
+    * ``R5``: safe fallback / abstain / clarify — terminal, no C0, no L3.
+    * ``R3``: simple grounded read — C0 → PROMPT ASSEMBLY → exactly 1 L2 step.
+    * ``R4``: single action — exactly 1 L2 step, no C0, no L3.
+    * ``R3R4_MANAGED``: multi-hop RAG or workflow action — enters L3
+      orchestration with ≥1 L2 steps. Covers both ``R3`` and ``R4`` when
+      the execution shape requires managed orchestration.
+    """
+
+    R1A = "R1A"
+    R1B = "R1B"
+    R3 = "R3"
+    R4 = "R4"
+    R5 = "R5"
+    R3R4_MANAGED = "R3R4_MANAGED"
+
+
+# Terminal-class hints consumed by W4 invariant tests. Not authoritative —
+# the dispatcher is the authority — but useful as documentation and as a
+# defensive check inside conformance tests.
+L0_TERMINAL_ROUTES: frozenset[L0Route] = frozenset(
+    {L0Route.R1A, L0Route.R1B, L0Route.R5},
+)
+"""Routes that return directly to the caller with NO L2, NO C0, NO L3."""
+
+L0_SINGLE_STEP_ROUTES: frozenset[L0Route] = frozenset(
+    {L0Route.R3, L0Route.R4},
+)
+"""Routes that dispatch exactly ONE L2 step and bypass L3. R3 uses C0; R4 does not."""
+
+L0_ORCHESTRATED_ROUTES: frozenset[L0Route] = frozenset({L0Route.R3R4_MANAGED})
+"""Routes that enter L3 orchestration with ≥1 L2 steps."""
+
+
+FreshnessClass = Literal["fresh", "bounded", "stale_ok", "volatile"]
+"""v9 L0 ingress bullet ``Enforce expiry / freshness requirements``."""
+
+CachePolicy = Literal["exact_only", "semantic_ok", "no_cache", "bypass"]
+"""v9 L0 ingress bullet ``Score: cacheable / ...``."""
+
+ExecutionForm = Literal[
+    "terminal_return",
+    "single_grounded_step",
+    "single_action",
+    "managed_workflow",
+]
+"""v9 execution-shape classifier. Maps 1:1 to ``L0Route`` arms."""
+
+
+class L0RouteContract(TypedDict):
+    """v9 ``L0 ROUTE DECISION SWITCH`` output contract.
+
+    Per v9:12-13: *"L0 emits a deterministic route contract: selected route,
+    confidence, reason codes, freshness class, cache policy, and execution
+    form."* This TypedDict is the in-code realization of that contract.
+
+    W0 deposit only — no producer or consumer yet. W3 (dispatcher unification)
+    will retire parallel contract shapes (``RoutingResult``, ``RoutingDecision``,
+    ``RoutingArtifact``) in favor of this one.
+
+    Fields:
+        selected_route: One of the six v9 L0 arms.
+        confidence: [0.0, 1.0] score from L0 scorer. Below
+            :data:`DEFAULT_ABSTAIN_THRESHOLD` → must select R5.
+        reason_codes: Finite-set labels explaining the selection. See
+            :class:`RoutingRationale` for the legacy risk-band enum; v9 may
+            extend this vocabulary in W1.
+        freshness_class: v9 ingress pre-filter output.
+        cache_policy: v9 ingress pre-filter output.
+        execution_form: Execution-shape classifier that MUST agree with
+            ``selected_route`` per the mapping:
+
+            * terminal_return       ↔ R1A / R1B / R5
+            * single_grounded_step  ↔ R3
+            * single_action         ↔ R4
+            * managed_workflow      ↔ R3R4_MANAGED
+        policy_hash: Policy config hash at routing time (replay parity).
+        trace_id: Trace identifier for telemetry correlation.
+    """
+
+    selected_route: L0Route
+    confidence: float
+    reason_codes: tuple[str, ...]
+    freshness_class: FreshnessClass
+    cache_policy: CachePolicy
+    execution_form: ExecutionForm
+    policy_hash: str
+    trace_id: str
+
+
+# =============================================================================
 # Exports
 # =============================================================================
 
 __all__ = [
     "AggregateArtifact",
+    "CachePolicy",
     "CapabilityDepletionTracker",
     "EvacuationProtocol",
+    "ExecutionForm",
+    "FreshnessClass",
     "HEALER_PIPE_ORDER",
     "HealingPlan",
     "IncidentArtifact",
+    "L0_ORCHESTRATED_ROUTES",
+    "L0_SINGLE_STEP_ROUTES",
+    "L0_TERMINAL_ROUTES",
+    "L0Route",
+    "L0RouteContract",
     "PermsArtifact",
     "PolicyConfigSnapshot",
     "ResultArtifact",

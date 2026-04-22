@@ -172,7 +172,31 @@ Called after `_check_p1_defects()`. Does **not** call `sys.exit(1)` — P2 is tr
 
 | Wave | Files | Focus | Est. Tokens | Status |
 |---|---|---|---|---|
-| W1 | `multi_writer.py`, `ArtifactPaths.py` | Severity SQL (identical in both) | ~200 | Pending |
-| W2 | `RepairRoute.py` | Wire 4 antipattern edge_kinds | ~100 | Pending |
-| W3 | `generate_full_adg.py` | violation_edges filter + table fix + p2 check | ~400 | Pending |
+| W1 | `multi_writer.py`, `ArtifactPaths.py` | Severity SQL (identical in both) | ~200 | **Done** (2026-04-22) |
+| W2 | `RepairRoute.py` | Wire 4 antipattern edge_kinds | ~100 | **Done** (2026-04-22) |
+| W3 | `generate_full_adg.py` | violation_edges filter + table fix + p2 check | ~400 | **Done** (2026-04-22) |
 | W4 | 2 test files | Regression coverage | ~300 | Pending |
+
+---
+
+## W1-W3 Completion Evidence (2026-04-22)
+
+Stale-source sniff-test on 2026-04-22 confirms W1, W2, W3 are already live on disk (the plan header was stale). Evidence:
+
+### W1 — Severity SQL
+
+Both `agentic_core/adg/artifact/multi_writer.py` and `agentic_core/adg/artifact/ArtifactPaths.py` contain a richer `edge_kind IN (...)` CASE than the plan proposal. Production-layer HIGH tier covers: `broad_exception_catch`, `silent_exception_swallow`, `log_and_swallow`, `return_none_swallow`, `unreachable_after_raise`, `exception_type_erasure`, `blocking_call_in_async`, `bare_except`. Plus CRITICAL tier for `missing_hitl_on_irreversible` and `chokepoint_bypass`, and global HIGH for `hardcoded_secret`. The legacy `symbol LIKE 'except:Exception%'` filter no longer exists.
+
+### W2 — RepairRoute wiring
+
+`agentic_core/adg/analysis/RepairRoute.py::_RELATION_TO_ROUTE` contains all 4 antipattern edge_kinds (`broad_exception_catch`, `silent_exception_swallow`, `log_and_swallow`, `return_none_swallow`) at lines 121-141, each routed to `("ManualReview", "governance", "high", <description>)`. `route_violations()` falls back to `edge_kind` lookup at line 160 when `relation_type` doesn't match.
+
+### W3 — violation_edges filter + defect table
+
+`tools/generate/generate_full_adg.py` at line 539 builds `violation_edges` including antipattern edges whose `edge_kind in _high_antipattern_kinds` AND whose `source_file` matches `_critical_layer_prefixes`. `_print_defect_table` is invoked with `sqlite_path=paths.sqlite` at line 1006; the function was M.4-extracted to `tools/generate/reporting/reports.py` and now reads counts from the violations table.
+
+The plan's `_check_p2_defects` (non-blocking) was subsumed by the **blocking** `_check_p2_ratchet()` gate in `tools/generate/validation/gates.py::207`, wired into `generate_full_adg.py::576`. Blocking is a stronger guarantee than the plan's non-blocking proposal.
+
+### W4 — Tests (still Pending)
+
+`test_multi_writer.py` and `test_repair_route.py` under `tests/` are **not present** as of 2026-04-22. W4 is genuinely incomplete and requires authoring regression tests. Tracked separately as Priority 5 in the Wave/Phase Convergence DB.
