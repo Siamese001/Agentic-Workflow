@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-19T12:19:02.107300
+# Last generated: 2026-04-22T09:37:13.436833
 
 
 # Build & Cache
@@ -9,11 +9,11 @@
 .pytest_cache/
 .ruff_cache/
 .tox/
-/__pycache__/
-/_build/
-/build/
-/dist/
-/node_modules/
+__pycache__/
+_build/
+build/
+dist/
+node_modules/
 
 # Version Control
 .git/
@@ -23,33 +23,27 @@
 # Virtual Environments
 .env/
 .venv/
-
-# Secrets — ignore all .env files except the committed template
-.env
-.env.local
-.env.*.local
-!.env.example
-/Lib/
-/env/
-/site-packages/
-/venv/
-/venv_stable/
+Lib/
+env/
+site-packages/
+venv/
+venv_stable/
 
 # Coverage & Test Output
 .coverage/
 .test_artifacts/
-/coverage_html/
-/htmlcov/
-/test_artifacts/
+coverage_html/
+htmlcov/
+test_artifacts/
 
 # Archives & Backups
 .backup/
 .gravity_state/
 .healing_backups/
 .sovereign_healing_backup/
-/archive/
-/archives/
-/artifacts/
+archive/
+archives/
+artifacts/
 
 # IDE & Editor
 .DS_Store/
@@ -57,39 +51,39 @@
 .vscode/
 
 # Vendor Packages
-/dist-info/
-/gapic/
-/google/
-/licenses/
-/pip/
-/src/
+dist-info/
+gapic/
+google/
+licenses/
+pip/
+src/
 
 # Data & Logs
-/logs/
-/raw/
-/shared/
+logs/
+raw/
+shared/
 
 # Other
 .hypothesis/
-/_compat/
-/artifacts/_legacy_adg_archives/
-/artifacts/adg_clean/
-/artifacts/reports/test_enforcement/
-/data/cache/
-/data/corpus/
-/data/external/
-/data/manifests/
-/data/memory/
-/data/monitoring/
-/data/processed/
-/data/prompt_governance/
-/data/rag_seeds/
-/data/snapshots/
-/data/ssot_artifacts/
-/data/store/
-/docs/reference/_archive/
-/docs/windsurf/
-/tools/archive/
+_compat/
+artifacts/_legacy_adg_archives/
+artifacts/adg_clean/
+artifacts/reports/test_enforcement/
+data/cache/
+data/corpus/
+data/external/
+data/manifests/
+data/memory/
+data/monitoring/
+data/processed/
+data/prompt_governance/
+data/rag_seeds/
+data/snapshots/
+data/ssot_artifacts/
+data/store/
+docs/reference/_archive/
+docs/windsurf/
+tools/archive/
 
 # File Patterns
 *.db
@@ -100,7 +94,7 @@
 *.log
 *.pb
 *.pkl
-*.pyc
+*.pyc*
 *.pyd
 *.pyo
 *.so
@@ -109,6 +103,6 @@
 *.zip
 *_test/
 .coverage.*/
-/Thumbs.db/
-/repo_root.txt/
-/runtime_adg//
+Thumbs.db/
+repo_root.txt/
+runtime_adg//

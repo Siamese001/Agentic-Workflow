@@ -175,7 +175,9 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
         for entry in entries:
             # Add trailing slash for directories (no dot prefix needed for gitignore)
             if not entry.startswith(".") and not entry.startswith("*"):
-                lines.append(f"/{entry}/")
+                # No leading slash — match directory name at any depth
+                # (bare `__pycache__/` matches nested pycache dirs, not just repo root).
+                lines.append(f"{entry}/")
             elif entry.startswith("."):
                 lines.append(f"{entry}/")
             else:

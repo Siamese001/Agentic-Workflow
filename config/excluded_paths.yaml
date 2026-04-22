@@ -217,7 +217,7 @@ discovery_excluded_territories:
 
 # File patterns to exclude (glob-style)
 file_patterns:
-  - "*.pyc"
+  - "*.pyc*"  # Matches *.pyc and pytest-cache variants like foo.pyc.12345
   - "*.pyo"
   - "*.pyd"
   - "*.so"
