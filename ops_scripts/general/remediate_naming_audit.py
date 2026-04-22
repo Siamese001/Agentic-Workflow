@@ -191,6 +191,7 @@ def main(argv: list[str] | None = None) -> int:
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=30,
             )
             if result.returncode != 0:
                 print(f"  [ERROR] Git mv failed for {old_path.name}: {result.stderr.strip()}")

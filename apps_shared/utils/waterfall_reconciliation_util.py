@@ -21,6 +21,7 @@ def get_agents_at_commit(commit_hash):
         capture_output=True,
         text=True,
         cwd=str(_REPO_ROOT),
+        timeout=30,
     )
     if result.returncode == 0:
         data = json.loads(result.stdout)

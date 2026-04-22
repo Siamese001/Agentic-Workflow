@@ -209,6 +209,7 @@ def demo_cli_functionality() -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=30,
         )
         if result.stdout:
             print(result.stdout)

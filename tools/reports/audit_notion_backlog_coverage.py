@@ -15,6 +15,7 @@ Usage:
 
 Requires: NOTION_TOKEN in env or .env.
 """
+
 from __future__ import annotations
 
 import json
@@ -197,8 +198,12 @@ def audit() -> int:
     for p in sorted(plans_with_rows):
         rs = by_plan[p]
         counts = {
-            "Todo": 0, "Ready": 0, "In Progress": 0,
-            "Done": 0, "Blocked": 0, "Descoped": 0,
+            "Todo": 0,
+            "Ready": 0,
+            "In Progress": 0,
+            "Done": 0,
+            "Blocked": 0,
+            "Descoped": 0,
         }
         enriched_count = sum(1 for r in rs if _is_enriched(r))
         for r in rs:

@@ -527,6 +527,7 @@ def execute_renames(
             cwd=str(repo_root),
             capture_output=True,
             text=True,
+            timeout=30,
         )
         if result.returncode != 0:
             print(

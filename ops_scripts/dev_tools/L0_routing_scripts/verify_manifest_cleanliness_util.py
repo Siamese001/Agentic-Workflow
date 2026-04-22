@@ -201,6 +201,7 @@ def main() -> int:
         capture_output=True,
         text=True,
         check=False,
+        timeout=120,
     )
     print(f"[*] Discovery script exit code: {result.returncode}")
     if result.stderr.strip():

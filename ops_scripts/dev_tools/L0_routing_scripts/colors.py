@@ -200,6 +200,7 @@ def _configure_console_encoding() -> None:
             stderr=subprocess.DEVNULL,
             check=False,
             shell=False,
+            timeout=5,
         )
         if hasattr(sys.stdout, "reconfigure"):
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")

@@ -66,6 +66,7 @@ def main() -> int:
         capture_output=True,
         text=True,
         check=False,
+        timeout=120,
     )
     if result.stdout:
         print(result.stdout)

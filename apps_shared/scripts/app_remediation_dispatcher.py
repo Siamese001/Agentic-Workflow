@@ -218,6 +218,7 @@ def _check_dead_imports(spec: AppGuardianSpec) -> AppHealResult:
         ],
         capture_output=True,
         text=True,
+        timeout=120,
     )
     violations = json.loads(result.stdout) if result.stdout.strip().startswith("[") else []
     if not violations:

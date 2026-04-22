@@ -30,6 +30,7 @@ def get_agent_count_at_commit(commit_hash):
             text=True,
             cwd=str(REPO_ROOT),
             check=False,
+            timeout=30,
         )
         if result.returncode == 0:
             data = json.loads(result.stdout)
@@ -47,6 +48,7 @@ def get_commit_history():
         text=True,
         cwd=str(REPO_ROOT),
         check=False,
+        timeout=30,
     )
     commits = []
     for line in result.stdout.strip().split("\n"):

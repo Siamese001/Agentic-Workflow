@@ -208,6 +208,7 @@ def get_staged_files() -> list[str]:
             capture_output=True,
             text=True,
             check=True,
+            timeout=30,
         )
         return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
     except FileNotFoundError:
