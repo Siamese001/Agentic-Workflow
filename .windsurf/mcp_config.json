@@ -22,8 +22,7 @@
       "env": {
         "ADG_DIR": "${env:AGENTIC_REPO_ROOT}/artifacts/adg",
         "ADG_REDIS_URL": "redis://localhost:6379/0",
-        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
-        "PYTHONUNBUFFERED": "1"
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}"
       }
     },
     "deepwiki": {
@@ -85,7 +84,6 @@
         "VECTOR_DB_LOG_LEVEL": "INFO",
         "VECTOR_DB_MODEL_LOAD_TIMEOUT": "120",
         "TOKENIZERS_PARALLELISM": "false",
-        "PYTHONUNBUFFERED": "1",
         "VECTOR_DB_ENCODE_TIMEOUT": "20",
         "VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT": "90",
         "VECTOR_DB_QUERY_COLLECTION_TIMEOUT": "40",
