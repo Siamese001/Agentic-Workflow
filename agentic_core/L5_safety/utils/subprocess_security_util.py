@@ -384,7 +384,7 @@ def safe_popen(
     cmd_str = " ".join(args)
     Logger.info(f"[Security] Starting Popen process: {cmd_str}")
     try:
-        proc = subprocess.Popen(args, cwd=cwd, stdout=stdout, stderr=stderr, text=text, env=env, shell=False)
+        proc = subprocess.Popen(args, cwd=cwd, stdout=stdout, stderr=stderr, text=text, env=env, shell=False)  # guardian: allow-popen-leak -- safe_popen wrapper: caller owns process lifecycle after security validation
         Logger.info(f"[Security] Popen process started: PID {proc.pid}")
         return proc
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller

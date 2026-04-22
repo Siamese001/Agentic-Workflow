@@ -379,6 +379,7 @@ class TestRigorEnforcer:
                 text=True,
                 encoding="utf-8",
                 errors="replace",
+                timeout=180,
             )
 
             # Parse output for collected count
@@ -412,6 +413,7 @@ class TestRigorEnforcer:
                 text=True,
                 encoding="utf-8",
                 errors="replace",
+                timeout=600,
             )
 
             # Parse output for test counts

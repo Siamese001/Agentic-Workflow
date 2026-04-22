@@ -95,6 +95,7 @@ class CodeFormatter:
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=60,
             )
 
             if result.returncode == 0 and "reformatted" in result.stderr:
@@ -115,6 +116,7 @@ class CodeFormatter:
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=60,
             )
 
             if result.returncode == 0:
@@ -157,6 +159,7 @@ class CodeFormatter:
                     [tool, "--version"],
                     capture_output=True,
                     check=False,
+                    timeout=10,
                 )
                 tools[tool] = True
             except FileNotFoundError:

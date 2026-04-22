@@ -281,6 +281,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
             capture_output=True,
             text=True,
             cwd=self.project_root,
+            timeout=60,
         )
         return [] if result.returncode == 0 else self.required_methods
 

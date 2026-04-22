@@ -398,6 +398,7 @@ def get_repo_root() -> Path:
             capture_output=True,
             text=True,
             check=True,
+            timeout=10,
         )
         return Path(result.stdout.strip())
     except (

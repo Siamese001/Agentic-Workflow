@@ -745,6 +745,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             capture_output=True,
             text=True,
             cwd=self.project_root,
+            timeout=60,
         )
         if result.returncode == 0:
             return (True, "Architecture governance validated")

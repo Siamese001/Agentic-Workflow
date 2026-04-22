@@ -218,6 +218,7 @@ def has_tracked_files(dir_path: Path, root_path: Path) -> bool:
             capture_output=True,
             text=True,
             cwd=str(root_path),
+            timeout=10,
         )
         return bool(result.stdout.strip())
     except (subprocess.SubprocessError, ValueError):

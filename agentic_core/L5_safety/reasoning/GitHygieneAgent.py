@@ -98,7 +98,7 @@ except ModuleNotFoundError:
 
     def safe_git_execute(cmd, **kwargs):
         """Stub safe_git_execute when security_util is not available."""
-        return subprocess.run(cmd, capture_output=True, text=True, **kwargs)
+        return subprocess.run(cmd, capture_output=True, text=True, **kwargs)  # guardian: allow-unbounded-subprocess -- fallback stub: caller supplies timeout via **kwargs matching the canonical safe_git_execute signature
 
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
