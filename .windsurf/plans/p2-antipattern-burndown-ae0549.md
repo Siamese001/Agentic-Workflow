@@ -23,7 +23,7 @@ Wave-based plan to classify and reduce 3,924 HIGH-severity antipattern locations
 | Wave | Focus | Est. Locations | Status |
 |------|-------|---------------|--------|
 | **W0** | ADG query: get per-category counts and file distribution | 0 code changes | DONE — 4,553 rows |
-| **W1** | Establish ratchet baseline + P2 classify rule | Infrastructure | In Progress |
+| **W1** | Establish ratchet baseline + P2 classify rule | Infrastructure | **Done** (2026-04-22) |
 | **W2** | Burn `return_none_swallow` — safest, mechanical pattern | **303** | Pending |
 | **W3** | Burn `log_and_swallow` — log-only exception bodies | **739** | Pending |
 | **W4** | Burn `silent_exception_swallow` — add re-raise/metadata | **530** | Pending |
@@ -64,6 +64,27 @@ Wave-based plan to classify and reduce 3,924 HIGH-severity antipattern locations
 4. **Tests** — `test_p2_rule_always_block_fix()` + `test_sqlite_analyzer_p2_antipatterns()`
 
 **Acceptance:** `python tools/adg/adg_repair.py --latest --dry-run` prints P2 count >= 1.
+
+### W1 Completion Evidence (2026-04-22)
+
+All W1 infrastructure is live on disk and wired:
+
+- `artifacts/adg/p2_ratchet.json` — schema is `{"exception_swallow_ceiling": N}`; current ceiling=0.
+- `tools/adg/repair/rules/fix_p2_antipatterns.py` — `FixP2AntipatternsRule` registered in `tools/adg/repair/rules/__init__.py`; `can_fix()` always returns `(False, "P2 antipatterns require human classification and review")`.
+- `tools/adg/repair/sqlite_analyzer.py::get_p2_antipatterns()` — HIGH-severity query present; feeds deficiencies into repair orchestrator.
+- `tools/generate/validation/gates.py::_check_p2_ratchet()` — wired into `tools/generate/generate_full_adg.py` at line 576; counts `violations WHERE severity='MEDIUM' AND category='antipattern'`; fails ADG generation on regression above ceiling; auto-lowers ceiling when count drops.
+
+**Taxonomy correction (IMPORTANT for W2-W5):** The plan's wave counts (530/739/2981/303) were drafted against ADG snapshot `04062026_2106` with an older antipattern classification. Current snapshot `04222026_1218` uses a new taxonomy where severity is `P0`/`P1`/`P2`/`P3`/`LOW`/`CRITICAL` and category codes are `AP-NN`/`SC-NN`. The raw `edges` table still exposes legacy `edge_kind` labels; counts from that source are:
+
+| edge_kind (legacy) | 2026-04-22 count |
+|--------------------|-----------------:|
+| log_and_swallow | 701 |
+| broad_exception_catch | 648 |
+| silent_exception_swallow | 339 |
+| return_none_swallow | 297 |
+| **HIGH-severity subtotal** | **1,985** |
+
+W2-W5 should be replanned against the new taxonomy before execution. Tracking row in Wave/Phase Convergence DB will be re-scored after W2 plan is drafted.
 
 ---
 
