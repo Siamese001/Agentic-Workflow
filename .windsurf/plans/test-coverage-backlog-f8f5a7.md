@@ -88,6 +88,9 @@ Wave E1 absorbs its scope. Do not run the old plan standalone — it lacks the g
 **GAP-5: L_UNKNOWN descope**
 83 modules with 96% gap rate. Likely dead code from `archives/` drift. Triage first (`adg_edge_fanin` + `git log --name-only`) — delete candidates rather than test.
 
+**GAP-6: Stashed pre-existing UTC→ET autofixer diffs — PARKED (2026-04-22 F3)**
+`stash@{0}: On main: pre-existing-autofixer-diffs-2026-04-22-preWaveC-close` contains ~30 production files where an earlier autofixer substituted UTC timestamps with America/New_York local time. User stashed pre-Wave-C to avoid shipping semantic regressions. Disposition: **keep parked** pending a dedicated review wave. NOT dropped, NOT applied. To review later: `git stash show -p stash@{0}` then decide file-by-file. Do not discard without explicit user decision — contains legitimate work mixed with regressions.
+
 ---
 
 ## Acceptance
