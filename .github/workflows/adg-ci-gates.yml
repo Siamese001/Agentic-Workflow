@@ -70,6 +70,14 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: Lifecycle-Pair Gate (resource open/close symmetry)
+        # Enforces that every declared opener (sqlite3.connect, open, redis.Redis)
+        # has a matching closer in the enclosing function (with-stmt, .close(),
+        # or self.<attr> assignment). Baseline ratchet — NEW leaks fail the build.
+        run: python ops_scripts/ci/check_lifecycle_pairs.py
+        env:
+          PYTHONPATH: .
+
       - name: Install MCP test dependencies
         run: pip install fakeredis --quiet 2>/dev/null || true
 

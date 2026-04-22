@@ -1,0 +1,64 @@
+# config/lifecycle_pairs.yaml
+# ---------------------------
+# Declared resource-lifecycle pairs that the lifecycle-pair gate must
+# enforce. For each row:
+#
+#   name       — short slug
+#   opener     — dotted name matched against the call's trailing attribute or
+#                bare function name (e.g. "sqlite3.connect" matches any
+#                `sqlite3.connect(...)` call; "open" matches bare `open(...)`)
+#   closer     — one of:
+#                  with_stmt             (opener must be inside a `with`)
+#                  ".<method>()"         (enclosing function contains call
+#                                         to that method on any name)
+#                  attr:self.<name>      (opener result is assigned to
+#                                         self.<name> — long-lived resource
+#                                         managed by the owning object)
+#   severity   — error | warn
+#   scope      — glob patterns of files to scan (if omitted, scans all)
+#
+# Semantics: for each opener call site, the gate passes if ANY of the
+# declared closers is satisfied in the enclosing function body (or, for
+# attr:self.*, anywhere in the enclosing class).
+
+pairs:
+
+  - name: sqlite3_connect
+    opener: sqlite3.connect
+    closers:
+      - with_stmt
+      - .close()
+      - attr:self._conn
+      - attr:self.conn
+      - attr:self._connection
+    severity: error
+    description: >-
+      sqlite3.connect returns a Connection that MUST be closed or held by the
+      owning object. An un-closed connection leaks a file handle on the ADG
+      sqlite file and can block subsequent WAL checkpoints.
+
+  - name: redis_client
+    opener: redis.Redis
+    closers:
+      - with_stmt
+      - .close()
+      - attr:self._redis
+      - attr:self.redis
+      - attr:self._client
+    severity: warn
+    description: >-
+      redis.Redis() (and redis.from_url) opens a connection pool. A bare call
+      site with no close / no self binding is a leak; warn only because the
+      pool is reused across calls in most adapters.
+
+  - name: open_file
+    opener: open
+    closers:
+      - with_stmt
+      - .close()
+      - attr:self._fh
+      - attr:self.file
+    severity: error
+    description: >-
+      Bare open() without a `with` statement or explicit .close() leaks a
+      file descriptor. On Windows this can prevent overwrite/delete.

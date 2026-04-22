@@ -1139,6 +1139,15 @@ def main() -> None:
             "undeclared flags."
         ),
     )
+    parser.add_argument(
+        "--no-lifecycle-check",
+        action="store_true",
+        help=(
+            "Skip the lifecycle-pair gate (sqlite3.connect / open / redis.Redis "
+            "must have a matching closer). Default: gate runs with baseline "
+            "ratchet — fails only on NEW leaks with severity=error."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1198,6 +1207,18 @@ def main() -> None:
                 "config/config_references_allowlist.yaml, OR (debt row) "
                 "regenerate baseline: python ops_scripts/ci/check_config_references.py "
                 "--regenerate-baseline."
+            ),
+            timeout_s=60,
+        )
+    if not args.no_lifecycle_check:
+        _run_post_adg_gate(
+            label="lifecycle",
+            script_rel="ops_scripts/ci/check_lifecycle_pairs.py",
+            args_list=[],
+            fail_hint=(
+                "Use a `with` statement, assign the opener to self.<attr>, or "
+                "call .close() explicitly. OR (debt row) regenerate baseline: "
+                "python ops_scripts/ci/check_lifecycle_pairs.py --regenerate-baseline."
             ),
             timeout_s=60,
         )
