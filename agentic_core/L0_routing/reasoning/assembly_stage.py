@@ -277,13 +277,18 @@ class AirlockAssembler:
         emit_determinism_digest(_trace_id, f"path:{bom.path}")
 
         # 1. Load S0 — caller override wins, otherwise pull from TemplateRegistry
+        from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
+
+        registry = get_template_registry()
         if s0_override is not None:
             s0_content = s0_override
         else:
-            from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
-
-            registry = get_template_registry()
             s0_content = registry.get_s0(bom.system_version_hash)
+
+        # 1b. Pull registry-sourced D0 fences when caller did not supply any.
+        #     Keeps a single SSOT for injection defense (P2.1 — gap G3).
+        if not d0_fences:
+            d0_fences = registry.get_d0_fences(bom.system_version_hash)
 
         # 2. Load I0 mixins
         i0_parts = []

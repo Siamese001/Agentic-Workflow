@@ -72,7 +72,7 @@ pairs:
       - attr:self._client
       - attr:self._chroma_client
       - attr:self._chroma
-    severity: warn
+    severity: error  # Wave D: promoted — baseline captured, ratchet blocks new leaks
     description: >-
       chromadb.PersistentClient opens DuckDB + Parquet file handles. Every
       call site must bind to self.<attr> or be passed into an owning object
@@ -87,7 +87,7 @@ pairs:
       - attr:self.client
       - attr:self._client
       - attr:self._chroma_client
-    severity: warn
+    severity: error  # Wave D: promoted — baseline captured, ratchet blocks new leaks
     description: >-
       chromadb.Client (in-memory) still holds SQLite-backed state. Same
       ownership contract as PersistentClient — bind to self.<attr>.

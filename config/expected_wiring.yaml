@@ -261,3 +261,52 @@ wirings:
     required_env_flags: []
     proof_test: tests/unit/agentic_core/L5_safety/reasoning/test_LocationHealerAgent.py
     plan_id: lazy-import-arch-defect-review
+
+  # --------------------------------------------------------------------
+  # P2.3 rollout from l0-context-prompt-retrieval-review-b7c4a2 — 2026-04-22
+  # L0 prompt assembly / C0 retrieval — closes the bypass class of gap
+  # that let assemble_from_bom and load_context_jit go dormant in
+  # production while still passing every existing ADG CI gate.
+  # --------------------------------------------------------------------
+
+  - id: l0-adapter-calls-assemble-from-bom
+    description: >-
+      GovernedPromptAdapter._assemble_artifact MUST delegate to the canonical
+      AirlockAssembler.assemble_from_bom pipeline. A hand-built artifact in
+      the adapter bypasses the AssemblyInjectionNeutralizer, slot-order
+      validator, and JIT C0 context load — all of which are governance
+      controls. This row fails-closed the moment a future edit re-introduces
+      the bypass seen in l0-context-prompt-retrieval-review-b7c4a2.
+    entry_module: apps_shared/utils/governed_prompt_adapter.py
+    entry_symbol: GovernedPromptAdapter._assemble_artifact
+    required_call: assemble_from_bom
+    required_env_flags: []
+    proof_test: tests/integration/apps_exec/test_prompt_lifecycle_pipeline.py
+    plan_id: l0-context-prompt-retrieval-review-b7c4a2
+
+  - id: l0-assembly-stage-jit-context
+    description: >-
+      AirlockAssembler.assemble_from_bom MUST invoke load_context_jit to
+      populate the C0 slot with live RAG + BM25 + AST + boundary-ref
+      retrieval. Without this call C0 is only whatever the caller hand-fed
+      via bom.raw_c0, which silently disables the entire elevator-shaft
+      retrieval seam.
+    entry_module: agentic_core/L0_routing/reasoning/assembly_stage.py
+    entry_symbol: AirlockAssembler.assemble_from_bom
+    required_call: load_context_jit
+    required_env_flags: []
+    proof_test: tests/unit/agentic_core/L0_routing/utils/test_elevator_shaft_seam.py
+    plan_id: l0-context-prompt-retrieval-review-b7c4a2
+
+  - id: l0-assembly-injection-neutralizer
+    description: >-
+      AirlockAssembler.assemble_from_bom MUST instantiate
+      AssemblyInjectionNeutralizer to run U0 prompt-injection defense before
+      the artifact is signed. Dropping this call lets a user prompt smuggle
+      role-override tokens past the governance boundary.
+    entry_module: agentic_core/L0_routing/reasoning/assembly_stage.py
+    entry_symbol: AirlockAssembler.assemble_from_bom
+    required_call: AssemblyInjectionNeutralizer
+    required_env_flags: []
+    proof_test: tests/integration/apps_exec/test_prompt_lifecycle_pipeline.py
+    plan_id: l0-context-prompt-retrieval-review-b7c4a2

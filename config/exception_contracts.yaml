@@ -43,7 +43,7 @@ contracts:
     exception_class: RuntimeError
     parent_classes: [Exception]
     require_n_handlers: 1
-    severity: warn
+    severity: error  # Wave D: promoted — 3/6 callers covered, regression-safe
     plan_id: semcache-make-live-7a2d4b
 
   - id: create-embedding-client-disabled-error
@@ -58,7 +58,7 @@ contracts:
     exception_class: EmbeddingDisabledError
     parent_classes: [RuntimeError, Exception]
     require_n_handlers: 1
-    severity: warn
+    severity: error  # Wave D: promoted — 2/3 callers covered, regression-safe
     plan_id: lazy-import-arch-defect-review
 
   - id: register-embedding-client-value-error
