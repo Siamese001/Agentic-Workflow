@@ -14,29 +14,24 @@ All real retrieval/runtime behavior lives in tools.retrieval.vector_service.
 from __future__ import annotations
 
 import logging
-import os
 import threading
 import time
-from dataclasses import dataclass
 from typing import Any
 
 from tools.mcp.mcp_bootstrap import REPO_ROOT, create_mcp_server, guard_single_instance, run_server
 from tools.retrieval.vector_config import (
-    ALLOW_MODEL_DOWNLOAD,
     BACKGROUND_PREWARM_ENABLED,
-    CHROMA_PATH,
-    DEFAULT_EMBEDDING_MODEL,
-    MAX_EMBEDDING_BATCH_SIZE,
-    MAX_RESULTS,
-    MAX_SEARCH_RESULTS,
     validate_startup_config as _validate_startup_config,
 )
-from tools.retrieval.vector_errors import (
-    VectorConflictError,
-    VectorNotFoundError,
-    VectorServiceError,
-    VectorUnavailableError,
-    VectorValidationError,
+# MCP-6 (2026-04-22): async facade moved to tools/retrieval/vector_db_async_facade.
+# Re-exported here with the original name for callers still using the old path.
+from tools.retrieval.vector_db_async_facade import (
+    ToolResultEnvelope,
+    VectorDBMCPServer,
+    _TextContent,
+    _error,
+    _ok,
+    _translate_error,
 )
 from tools.retrieval.vector_service import get_vector_service
 from tools.retrieval.vector_store import check_embedding_alignment as _check_embedding_alignment
@@ -51,160 +46,11 @@ mcp = create_mcp_server(
 )
 
 
-@dataclass
-class _TextContent:
-    text: str
-
-
-@dataclass
-class ToolResultEnvelope:
-    isError: bool
-    content: list[_TextContent]
-
-
-def _ok(text: str) -> ToolResultEnvelope:
-    return ToolResultEnvelope(isError=False, content=[_TextContent(text=text)])
-
-
-def _error(text: str) -> ToolResultEnvelope:
-    return ToolResultEnvelope(isError=True, content=[_TextContent(text=text)])
-
-
-def _translate_error(exc: BaseException) -> str:
-    if isinstance(exc, VectorValidationError):
-        return str(exc)
-    if isinstance(exc, VectorConflictError):
-        return str(exc)
-    if isinstance(exc, VectorNotFoundError):
-        return str(exc)
-    if isinstance(exc, VectorUnavailableError):
-        return str(exc)
-    if isinstance(exc, VectorServiceError):
-        return str(exc)
-    return f"{exc.__class__.__name__}: {exc}"
-
-
-class VectorDBMCPServer:
-    """Backward-compatible async façade used by tests and non-MCP call sites."""
-
-    def __init__(self, *, service: Any | None = None) -> None:
-        self.service = service or get_vector_service()
-
-    @property
-    def chroma_client(self) -> Any | None:
-        return self.service.chroma_client
-
-    @chroma_client.setter
-    def chroma_client(self, value: Any | None) -> None:
-        self.service.chroma_client = value
-
-    @property
-    def embedding_model(self) -> Any | None:
-        return self.service.embedding_model
-
-    @embedding_model.setter
-    def embedding_model(self, value: Any | None) -> None:
-        self.service.embedding_model = value
-
-    async def _ensure_embedding_model(self) -> bool:
-        return self.service.ensure_embedding_model()
-
-    async def _create_collection(self, args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(
-                self.service.format_create_collection(
-                    args["name"],
-                    args.get("metadata"),
-                )
-            )
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _list_collections(self, _args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(self.service.format_list_collections())
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _delete_collection(self, args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(self.service.format_delete_collection(args["name"]))
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _add_documents(self, args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(
-                self.service.format_add_documents(
-                    args["collection_name"],
-                    args["documents"],
-                    args.get("metadatas"),
-                    args.get("ids"),
-                )
-            )
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _query_collection(self, args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(
-                self.service.format_query_collection(
-                    args["collection_name"],
-                    args["query_text"],
-                    n_results=args.get("n_results", 10),
-                    where=args.get("where"),
-                    include=args.get("include"),
-                )
-            )
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _get_collection_info(self, args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(self.service.format_get_collection_info(args["name"]))
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _embed_text(self, args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(
-                self.service.format_embed_text(
-                    args["texts"],
-                    batch_size=args.get("batch_size", 32),
-                    return_vectors=bool(args.get("return_vectors", False)),
-                )
-            )
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _semantic_search(self, args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(
-                self.service.format_semantic_search(
-                    args["query"],
-                    collections=args.get("collections"),
-                    n_results=args.get("n_results", 5),
-                )
-            )
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _vector_stats(self, _args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(self.service.format_vector_stats())
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-    async def _readiness(self, _args: dict[str, Any]) -> ToolResultEnvelope:
-        try:
-            return _ok(self.service.format_readiness())
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
-            return _error(_translate_error(exc))
-
-
-# Re-exported module-level helpers for tests and diagnostics
-_validate_startup_config = _validate_startup_config
-_check_embedding_alignment = _check_embedding_alignment
+# Re-exported module-level helpers for tests and diagnostics.
+# (VectorDBMCPServer, ToolResultEnvelope, _TextContent, _ok, _error,
+# _translate_error are now imported from tools.retrieval.vector_db_async_facade
+# above and re-exported at module level for wire-compatibility with the
+# pre-2026-04-22 import path `tools.mcp.vector_db_server.VectorDBMCPServer`.)
 
 
 @mcp.tool()
