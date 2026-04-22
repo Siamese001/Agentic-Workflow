@@ -107,7 +107,13 @@ class NativePersistentCacheClient:
             )
             _ef = None
 
-        # Migration guard: drop any collection with incompatible stored dimension
+        # Migration guard: drop any collection with incompatible stored dimension.
+        # NotFoundError on first run is expected — collection is created below.
+        try:
+            _chroma_errors = __import__("chromadb.errors", fromlist=["NotFoundError"])
+            _NotFoundError: type[BaseException] = getattr(_chroma_errors, "NotFoundError", RuntimeError)
+        except ImportError:
+            _NotFoundError = RuntimeError
         try:
             existing = self._chroma_client.get_collection(col_name)
             sample = existing.get(limit=1, include=["embeddings"])
@@ -121,6 +127,8 @@ class NativePersistentCacheClient:
                     _expected_dim,
                 )
                 self._chroma_client.delete_collection(col_name)
+        except _NotFoundError:
+            pass  # First-run path: collection does not yet exist, created below.
         except (  # guardian: allow-silent-swallow -- cache cleanup: non-fatal, collection deletion failures ignored on shutdown
             AttributeError,
             KeyError,
@@ -129,7 +137,7 @@ class NativePersistentCacheClient:
             RuntimeError,
             OSError,
         ):
-            pass  # Collection does not yet exist — will be created below
+            pass  # Migration probe failed — fall through to get_or_create below
 
         kwargs: dict[str, Any] = {"name": col_name, "metadata": {"hnsw:space": "cosine"}}
         if _ef is not None:

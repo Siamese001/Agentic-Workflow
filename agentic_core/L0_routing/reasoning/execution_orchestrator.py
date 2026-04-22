@@ -45,6 +45,12 @@ def _semantic_cache_enabled() -> bool:
     return _os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
 
 
+def _semantic_cache_promote_enabled() -> bool:
+    import os as _os  # noqa: PLC0415
+
+    return _os.environ.get("SEMANTIC_CACHE_PROMOTE_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+
+
 def _get_routing_gateway():
     from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
         get_routing_gateway,  # noqa: PLC0415
@@ -214,16 +220,18 @@ class ExecutionOrchestrator:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "blocked"}
         # D2 semantic cache gate — at Path D only, before D3 retrieval starts.
         # Gated by SEMANTIC_CACHE_D2_ENABLED=1 (default off — fail-closed in production).
+        _tenant_id = intent_input.get("tenant_id", "")
+        _flow_class = intent_input.get("flow_class", None)
+        _replay_mode = bool(intent_input.get("replay_mode", False))
+        _namespace = intent_input.get("namespace", "default")
+        _d2_payload_key: str | None = None
         if path.value == "D" and _semantic_cache_enabled():
-            _tenant_id = intent_input.get("tenant_id", "")
-            _flow_class = intent_input.get("flow_class", None)
-            _replay_mode = bool(intent_input.get("replay_mode", False))
-            _namespace = intent_input.get("namespace", "default")
+            _d2_payload_key = repr(payload)
             try:
                 from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager  # noqa: PLC0415
 
                 _d2_hit = SemanticCacheManager.get_instance().recall(
-                    repr(payload),
+                    _d2_payload_key,
                     _namespace,
                     tenant_id=_tenant_id,
                     flow_class=_flow_class,
@@ -243,8 +251,82 @@ class ExecutionOrchestrator:
             ) as _e:  # guardian: allow-log-and-swallow -- D2 semantic cache check: optional, debug logged
                 Logger.debug("[L0-ORCH] D2 semantic cache check skipped: %s", _e)
         if path.value in self._L3_PATHS:
-            return self._delegate_to_l3(path, payload, cycle, risk)
+            _l3_result = self._delegate_to_l3(path, payload, cycle, risk)
+            # D2 write path — populate L1 (and optionally promote to L2) on Path-D success.
+            # Triggers only when: Path D + flag on + not replay + L3 reported completed success.
+            if (
+                path.value == "D"
+                and _d2_payload_key is not None
+                and not _replay_mode
+                and _l3_result.get("state") == "success"
+                and isinstance(_l3_result.get("orchestration"), dict)
+                and _l3_result["orchestration"].get("completed") is True
+            ):
+                self._populate_d2_cache(
+                    _d2_payload_key,
+                    _namespace,
+                    _tenant_id,
+                    _l3_result,
+                )
+            return _l3_result
         return {"path": path, "risk": risk, "cycle": cycle, "state": "success"}
+
+    def _populate_d2_cache(
+        self,
+        payload_key: str,
+        namespace: str,
+        tenant_id: str,
+        l3_result: dict[str, Any],
+    ) -> None:
+        """Write L3-success result into the semantic cache (L1 always; L2 when gated feedback qualifies).
+
+        Called only after a successful Path-D execution with ``completed=True`` orchestration.
+        All failures are caught and debug-logged — caching is an optimization, never a hard dep.
+        """
+        try:
+            from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
+                SemanticCacheManager,
+            )
+
+            _mgr = SemanticCacheManager.get_instance()
+            _orch = l3_result["orchestration"]
+            _meta = _orch.get("metadata", {}) if isinstance(_orch.get("metadata"), dict) else {}
+            _path_obj = l3_result.get("path")
+            _path_val = _path_obj.value if _path_obj is not None and hasattr(_path_obj, "value") else "D"
+            _learn_payload = {
+                "path": _path_val,
+                "state": l3_result.get("state"),
+                "orchestration": _orch,
+                "embedding_model_id": "bge-m3-v1",
+            }
+            _mgr.learn(payload_key, namespace, _learn_payload, tenant_id=tenant_id)
+        except (ImportError, RuntimeError, ValueError, TypeError, AttributeError) as _e:
+            Logger.debug("[L0-ORCH] D2 semantic cache learn skipped: %s", _e)
+            return
+        # Optional L2 promotion — gated and quality-checked.
+        if not _semantic_cache_promote_enabled():
+            return
+        _evidence = _meta.get("evidence_ids") if isinstance(_meta, dict) else None
+        _grounded = bool(_meta.get("grounding_complete", False)) if isinstance(_meta, dict) else False
+        try:
+            _feedback = float(_meta.get("feedback_score", 0.0) or 0.0) if isinstance(_meta, dict) else 0.0
+        except (TypeError, ValueError):
+            _feedback = 0.0
+        if not (_evidence and _grounded and _feedback >= _mgr.promotion_threshold):
+            return
+        try:
+            import asyncio as _asyncio  # noqa: PLC0415
+
+            _promote_payload = {
+                **_learn_payload,
+                "evidence_ids": list(_evidence),
+                "grounding_complete": True,
+            }
+            _asyncio.run(
+                _mgr.promote_to_long_term(payload_key, namespace, _promote_payload, _feedback),
+            )
+        except (RuntimeError, ValueError, TypeError) as _pe:
+            Logger.debug("[L0-ORCH] D2 semantic cache promote skipped: %s", _pe)
 
     def plan_execution_with_impact_analysis(self, changed_files: list[str]) -> dict[str, Any]:
         """R6: Plan execution order based on ADG blast radius.

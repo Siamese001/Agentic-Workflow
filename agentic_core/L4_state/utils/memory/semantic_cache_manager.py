@@ -401,6 +401,66 @@ class SemanticCacheManager:
         Logger.info(
             f"[HiveMind] Config: strict_mode={self.strict_mode}, sampling_rate={self.trace_sampling_rate}, promotion_threshold={self.promotion_threshold}",
         )
+        # Bounded L2→L1 warmup: on singleton init, read the top-N most-recently-accessed
+        # persistent L2 rows and hydrate them into Redis so cold-start recall is fast.
+        # Disabled when either layer is unavailable, or when SEMANTIC_CACHE_L1_WARMUP_LIMIT=0.
+        try:
+            _warmup_limit = int(os.environ.get("SEMANTIC_CACHE_L1_WARMUP_LIMIT", "256"))
+        except (TypeError, ValueError):
+            _warmup_limit = 256
+        if self.redis_enabled and self.gptcache_enabled and _warmup_limit > 0:
+            try:
+                warmed = self._warm_l1_from_l2(limit=_warmup_limit)
+                Logger.info("[HiveMind] L1 warmup from L2 completed: %d keys hydrated", warmed)
+            except _PROMOTION_EXCEPTIONS as _warm_err:  # guardian: allow-log-and-swallow -- warmup is best-effort; missing rows just mean cold L1
+                Logger.warning("[HiveMind] L1 warmup skipped: %s", _warm_err)
+
+    def _warm_l1_from_l2(self, *, limit: int = 256) -> int:
+        """Hydrate Redis L1 with the most recently accessed L2 rows.
+
+        Reads ``query`` + ``response`` pairs from ``artifacts/gptcache/l2_cache.db``,
+        recomputes the L1 key (``memory:<ctx_hash>``) using the namespace stored in
+        each row's response ``_metadata``, and writes the JSON payload at the L1
+        TTL. Returns number of keys written.
+        """
+        if not (self.redis_enabled and self.gptcache_enabled and self._gptcache is not None):
+            return 0
+        _conn = getattr(self._gptcache, "_sqlite_conn", None)
+        if _conn is None:
+            return 0
+        try:
+            cursor = _conn.cursor()
+            cursor.execute(
+                "SELECT query, response FROM l2_cache "
+                "WHERE (expires_at IS NULL OR expires_at > ?) "
+                "ORDER BY last_access_at DESC LIMIT ?",
+                (time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()), int(limit)),
+            )
+            rows = cursor.fetchall()
+        except (
+            _GPTCACHE_READ_EXCEPTIONS
+        ) as _read_err:  # guardian: allow-log-and-swallow -- warmup read: L2 unavailable, return 0 warm keys
+            Logger.debug("[HiveMind] Warmup read failed: %s", _read_err)
+            return 0
+        hydrated = 0
+        from tqdm import tqdm as _tqdm  # noqa: PLC0415 -- §16 progress bar
+
+        for query_text, response_json in _tqdm(rows, desc="L1 warmup", unit="row"):
+            try:
+                payload = json.loads(response_json)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            meta = payload.get("_metadata", {}) if isinstance(payload, dict) else {}
+            ns = meta.get("namespace") if isinstance(meta, dict) else None
+            if not ns:
+                continue
+            ctx_hash = self._compute_hash(query_text, ns)
+            try:
+                self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_WORKING_MEMORY_TTL, response_json)
+                hydrated += 1
+            except _REDIS_RECOVERABLE_EXCEPTIONS as _set_err:  # guardian: allow-log-and-swallow -- warmup write: per-row failure non-fatal, continue
+                Logger.debug("[HiveMind] Warmup write failed for %s: %s", ctx_hash[:8], _set_err)
+        return hydrated
 
     def _init_gptcache(self) -> Exception | None:
         """Initialize Native L2 cache client for persistent Layer 2 storage.
@@ -563,7 +623,9 @@ class SemanticCacheManager:
                     )  # [Phase A]
                     _record_semantic_cache_prom_event("hit", namespace)
                     return json.loads(cached)
-            except _REDIS_READ_EXCEPTIONS as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                _REDIS_READ_EXCEPTIONS
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.debug(f"[HiveMind] Redis recall failed: {e}")
         # Reaching here means L1 was not hit (Redis disabled, miss, or error)
         _emit_emits_metric_event("semantic_cache_manager", "p4obs", f"l1_miss:{namespace}")  # [Phase A]
@@ -585,8 +647,26 @@ class SemanticCacheManager:
                             "semantic_cache_manager", "p4obs", f"l2_hit:{namespace}"
                         )  # [Phase A]
                         _record_semantic_cache_prom_event("hit", namespace)
+                        # L2 → L1 write-back: hot-promote into Redis so subsequent
+                        # recalls stay O(1) without another Chroma round-trip.
+                        if self.redis_enabled:
+                            try:
+                                self.redis_client.setex(
+                                    f"memory:{ctx_hash}",
+                                    self.DEFAULT_WORKING_MEMORY_TTL,
+                                    result,
+                                )
+                                _emit_writes_observability_log(
+                                    "semantic_cache_manager",
+                                    "p4obs",
+                                    f"l2_to_l1_writeback:{namespace}:{ctx_hash[:8]}",
+                                )
+                            except _REDIS_RECOVERABLE_EXCEPTIONS as _wb_err:  # guardian: allow-log-and-swallow -- writeback is best-effort; L2 hit already returned
+                                Logger.debug("[HiveMind] L2→L1 writeback failed: %s", _wb_err)
                         return cached_result
-            except _GPTCACHE_READ_EXCEPTIONS as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                _GPTCACHE_READ_EXCEPTIONS
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.debug(f"[HiveMind] Native L2 recall failed: {e}")
         with self._lock:
             self.stats["cache_misses"] += 1
@@ -788,7 +868,9 @@ class SemanticCacheManager:
             if self.redis_enabled:
                 try:
                     self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_LONG_TERM_TTL, payload_json)
-                except _REDIS_RECOVERABLE_EXCEPTIONS as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    _REDIS_RECOVERABLE_EXCEPTIONS
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.warning(f"[HiveMind] Redis TTL extension failed: {e}")
             with self._lock:
                 self.stats["promotions"] += 1
@@ -881,7 +963,12 @@ class SemanticCacheManager:
                         loop.run_until_complete(
                             self.promote_to_long_term(context, namespace, clean_result, feedback_score),
                         )
-                except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    AttributeError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.warning(f"[HiveMind] Auto-promote failed: {e}")
             return True
         except _REDIS_READ_EXCEPTIONS + (KeyError,) as e:  # guardian: allow-silent-swallow

@@ -1,7 +1,27 @@
 # D2 Semantic Cache — Production Rollout Package
 
-> Status: **GO READY** for non-production. Production rollout requires this package.
-> Last validation: post-B1/B2/B3 acceptance (AT-1 through AT-10 pass).
+> Status: **LIVE** — plan `semcache-make-live-7a2d4b` executed 2026-04-22.
+> Operational proof: `tests/integration/cache/test_l0_d2_semantic_cache_live.py` — 2/2 PASS.
+> Live probe: `python tools/diag/probe_semantic_cache.py` reports `operational=True`.
+
+## Operational Flags (as of `semcache-make-live-7a2d4b`)
+
+| Flag | Purpose | Enables |
+|---|---|---|
+| `SEMANTIC_CACHE_D2_ENABLED=1` | Master on/off | L2 ChromaDB+SQLite init, L0 read+learn path |
+| `SEMANTIC_CACHE_PROMOTE_ENABLED=1` | L2 promotion gate | L0 calls `promote_to_long_term` on feedback≥0.8 + evidence + grounding |
+| `SEMANTIC_CACHE_L1_WARMUP_LIMIT=256` | Redis warmup bound | Top-N recent L2 rows hydrated into Redis on singleton init |
+
+## Live Path (wired in this plan)
+
+1. **Read**: `ExecutionOrchestrator.execute()` on Path D calls `SemanticCacheManager.recall(repr(payload), namespace, tenant_id=...)`. Redis L1 `memory:<hash>` is checked first (O(1)); on miss, L2 Chroma+SQLite is queried (cosine ≥0.95); on L2 hit, L1 is warm-written.
+2. **Learn**: On Path-D success with `orchestration.completed=True` and not `replay_mode`, `_populate_d2_cache()` calls `SemanticCacheManager.learn()` → Redis L1 write at 24h TTL.
+3. **Promote**: When `SEMANTIC_CACHE_PROMOTE_ENABLED=1` and metadata has `evidence_ids`, `grounding_complete=True`, `feedback_score ≥ promotion_threshold`, `promote_to_long_term()` persists query+response to `artifacts/gptcache/l2_cache.db` + ChromaDB vector at 7d TTL.
+4. **Warmup**: On first `SemanticCacheManager.get_instance()` per process, top-256 L2 rows (by `last_access_at`) are hydrated into Redis `memory:<hash>` keys for fast cold-start recall.
+
+---
+
+> Legacy validation: post-B1/B2/B3 acceptance (AT-1 through AT-10 pass).
 
 ---
 
