@@ -175,7 +175,7 @@ Called after `_check_p1_defects()`. Does **not** call `sys.exit(1)` — P2 is tr
 | W1 | `multi_writer.py`, `ArtifactPaths.py` | Severity SQL (identical in both) | ~200 | **Done** (2026-04-22) |
 | W2 | `RepairRoute.py` | Wire 4 antipattern edge_kinds | ~100 | **Done** (2026-04-22) |
 | W3 | `generate_full_adg.py` | violation_edges filter + table fix + p2 check | ~400 | **Done** (2026-04-22) |
-| W4 | 2 test files | Regression coverage | ~300 | Pending |
+| W4 | 2 test files | Regression coverage | ~300 | **Done** (2026-04-22) |
 
 ---
 
@@ -197,6 +197,11 @@ Both `agentic_core/adg/artifact/multi_writer.py` and `agentic_core/adg/artifact/
 
 The plan's `_check_p2_defects` (non-blocking) was subsumed by the **blocking** `_check_p2_ratchet()` gate in `tools/generate/validation/gates.py::207`, wired into `generate_full_adg.py::576`. Blocking is a stronger guarantee than the plan's non-blocking proposal.
 
-### W4 — Tests (still Pending)
+### W4 — Tests (Done)
 
-`test_multi_writer.py` and `test_repair_route.py` under `tests/` are **not present** as of 2026-04-22. W4 is genuinely incomplete and requires authoring regression tests. Tracked separately as Priority 5 in the Wave/Phase Convergence DB.
+Regression tests landed 2026-04-22:
+
+- `tests/unit/agentic_core/adg/analysis/test_repair_route_antipatterns.py` — 7 tests covering `_RELATION_TO_ROUTE` registration (4 edge_kinds parametrized), route shape (ManualReview/governance/high), `route_violations()` edge_kind fallback, and skip-on-unknown behavior.
+- `tests/unit/agentic_core/adg/artifact/test_multi_writer_severity.py` — 59 tests extracting the CASE expression from `multi_writer.py` at test time (keeps test in lockstep with production) and running it against an in-memory SQLite. Covers Tier-1 agent-safety (CRITICAL), HIGH-class in production (HIGH), HIGH-class in downgrade paths (LOW), HIGH-class outside production (MEDIUM), always-MEDIUM kinds, unknown kinds (LOW fallthrough), and violates relation (ELSE branch → MEDIUM).
+
+Total: **66 passed, 0 failed, 0 skipped** (`pytest tests/unit/agentic_core/adg/ -q` on 2026-04-22). No guardian exemptions added; no production code touched.
