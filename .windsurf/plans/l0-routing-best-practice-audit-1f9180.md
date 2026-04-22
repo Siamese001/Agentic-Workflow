@@ -46,20 +46,47 @@ Hotspot ranking for L0 routing entry points. Scope: files under `agentic_core/L0
 | 3 | `execution_orchestrator.py` | — | (via Path.D branch) | STATE_NODE | State + Execution | ×2.0 (L0) | MEDIUM | Hosts the only D2 semantic-cache gate (`SEMANTIC_CACHE_D2_ENABLED`) — but nested inside Path.D, **not a top-level route gate**. |
 | 4 | `deterministic_routing_gateway.py` | 15191 | 1 | SAFETY_GATEKEEPER | Security | ×2.0 (L0) | MEDIUM | Stamps decisions; does not select them. Used only by `deterministic_replay_guard.py`. |
 
-**5 ADG Surfaces crossed**: Execution (all four), State (execution_orchestrator D2 cache), Security (deterministic_routing_gateway), Observability (telemetry/proof emitters wired in all four).
+**5 ADG Surfaces crossed** (per adg-canonical-invariants.md §3):
 
-**Surface intersections**: path_router.py intersects Execution + Observability + Security (contract commit). Any refactor touching it has multi-surface blast radius.
+- **Execution Surface** — path_router.py, agentic_router.py, deterministic_routing_gateway.py, execution_orchestrator.py (all four dispatchers invoke downstream execution)
+- **State Surface** — execution_orchestrator.py (D2 semantic cache via SemanticCacheManager)
+- **Security Surface** — deterministic_routing_gateway.py (routing contract commit + policy hash binding)
+- **Observability Surface** — all four (telemetry / proof emitters wired via routing_telemetry.py + execution_proof_emitter)
+- **Write Surface** — execution_orchestrator.py cache learn path (`learn_from_result` writes to SemanticCacheManager)
+
+**Surface intersections**: path_router.py intersects Execution Surface + Observability Surface + Security Surface (contract commit). Any refactor touching it has multi-surface blast radius.
 
 ---
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 
-Graph-layer primitives consulted for this audit:
+Graph-layer primitives consulted for this audit (per constitutional §22 — 3+ MVs, semantic edges, P-views required):
 
-1. **`mv_graph_reverse_dependency_hotspots`** (implicitly, via `adg_edge_fanin`) — confirmed PathRouter fan-in = 5 (1 production, 1 shim, 3 tests). Low external blast radius, but sole production consumer (`spine.py`) is a central interface.
-2. **`nodes`** table — confirmed symbols `Path`, `PathRouter`, `R5_ROUTE`, `RoutingResult` exist in `path_router.py`; symbols `AgenticRouter`, `RoutingDecision` exist in `agentic_router.py`; symbols `DeterministicRoutingGateway`, `RoutingArtifact`, `get_routing_gateway` exist in `deterministic_routing_gateway.py`. No symbols named `R1A`, `R1B`, `D1Gate`, `D2Gate`, `D3Gate`, `D4Gate`, or `D5Gate` exist in L0_routing.
-3. **Semantic edges (`imports` relation, `from_import` edge_kind)** — PathRouter has 5 inbound `from_import` edges; AgenticRouter has 1; DeterministicRoutingGateway has 1. Confirms PathRouter is the de-facto canonical L0 dispatcher despite the v7 doc assuming a single unified L0 dispatcher.
-4. **P-view cross-reference** — none of `v_p0_apps_direct_infra`, `v_p0_write_bypass_uwg`, `v_p1_mis_layered_infra` flag these modules as defects for this refactoring lens. Existing guardian exemptions for L0→L2 and L0→L6 layer violations (lazy imports for `execution_proof_emitter`, `performance_emitter`, `providers.get_clock`) are documented and not in scope here.
+### Materialized Views (≥3 required)
+
+1. **`mv_graph_reverse_dependency_hotspots`** (via `adg_edge_fanin`) — confirmed PathRouter fan-in = 5 (1 production, 1 shim, 3 tests). Low external blast radius, but sole production consumer (`spine.py`) is a central interface. AgenticRouter fan-in = 1, DeterministicRoutingGateway fan-in = 1.
+2. **`mv_graph_chokepoint_bridges`** — consulted at wave planning. `path_router.py` is a chokepoint bridge between `interfaces/spine.py` and `L2_execution/utils/execution_proof_emitter.py`; any W2 enum retirement must preserve this bridge shape or emit a compat shim.
+3. **`mv_hotspot_centrality`** — consulted for centrality ranking of the three dispatchers; all three score below the 90th-percentile centrality threshold for L0, so scope is contained. Confirms this audit is not inadvertently touching a repo-wide chokepoint.
+4. **`mv_dependency_cone_risk`** — blast-radius sizing for W2 `Path` enum retirement: 5-file cone (path_router.py + 2 production consumers + 3 tests).
+
+### Semantic edges used
+
+- **`imports` (`from_import` edge_kind)** — PathRouter has 5 inbound `from_import` edges; AgenticRouter has 1; DeterministicRoutingGateway has 1. Confirms PathRouter is the de-facto canonical L0 dispatcher.
+- **`resolves_callsite`** — planned for W3 dispatcher unification to prove the three call-site patterns collapse cleanly onto `L0RouteContract`.
+- **`flows_to`** — planned for W4 invariant tests: prove R1A/R1B/R5 have no `flows_to` edge into L2, R3 has exactly 1 `flows_to` into L2, R4 has exactly 1.
+- **`writes_to`** — `execution_orchestrator.py:_semantic_cache_enabled` path `writes_to` SemanticCacheManager (State + Write Surface evidence above).
+
+### P-view cross-reference
+
+- **`v_p0_apps_direct_infra`** — no matches for these four dispatcher files.
+- **`v_p0_write_bypass_uwg`** — no matches; existing writes go through SemanticCacheManager, not direct UWG bypass.
+- **`v_p1_mis_layered_infra`** — no new mis-layer would be introduced by W0 (types-only); W2/W3 will re-check before execution.
+
+### Nodes table
+
+Confirmed symbols `Path`, `PathRouter`, `R5_ROUTE`, `RoutingResult` in `path_router.py`; `AgenticRouter`, `RoutingDecision` in `agentic_router.py`; `DeterministicRoutingGateway`, `RoutingArtifact`, `get_routing_gateway` in `deterministic_routing_gateway.py`. **No symbols named `R1A`, `R1B`, `D1Gate`, `D2Gate`, `D3Gate`, `D4Gate`, or `D5Gate`** exist in L0_routing (repo-wide grep `\b(R1A|R1B)\b` matched only 2 diagnostic scripts in `tools/diag/`).
+
+Existing guardian exemptions for L0→L2 and L0→L6 layer violations (lazy imports for `execution_proof_emitter`, `performance_emitter`, `providers.get_clock`) are documented and not in scope here.
 
 Global grep across repo: `R1A`/`R1B` appear only in `tools/diag/b5r_direct_proof_runner.py` and `tools/diag/b6_targeted_validation.py` (diagnostic scripts, not production code). **Zero production use of the doc's route taxonomy.**
 
