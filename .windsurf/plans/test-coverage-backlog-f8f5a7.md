@@ -10,10 +10,28 @@ Documents the residual test-coverage gap across the repo **after** Waves A/B/C l
 
 ## Wave Structure
 
+### Priority revision 2026-04-22 (F5)
+
+**Original scheme**: ADG fan-in × layer multiplier (L0/L5 ×2.0 first).
+
+**Revised scheme**: Coverage-starvation × reachability. The post-F4 report
+(`risk_weighted_04222026_1734.md`) shows:
+- **L1 — 4.61% covered** (7/152) — most starved
+- **L_OPS — 4.77% covered** (21/440) — biggest absolute gap
+- **L5 — 12.28% covered** (48/391) — big but less starved
+- **L0 — 42.70% covered** (38/89) — best-covered layer already
+
+Strict layer-multiplier ranking under-weights starvation. Revised ordering
+keeps L0/L5 ×2.0 for the **highest fan-in** rows but promotes L1/L_OPS
+microwaves into D-tier when fan-in ≥ 3 regardless of multiplier. This
+maximizes movement of the headline coverage % while still prioritizing
+blast-radius.
+
 | Wave | Phase IDs | Focus | Modules in scope | Est. Tokens | Assumptions | Status |
 |---|---|---|---|---|---|---|
-| Wave D0 | D0.1 | **BLOCKER** — fix gap-report Symbol-import detection before any other wave | 1 script (`report_risk_weighted_test_gaps.py`) | 4000 🟢 | ADG snapshot regenerated (done 2026-04-22 12:18) | Ready |
-| Wave D1 | D1.1–D1.3 | L0 + L5 tail (×2.0 multiplier) — next 30 rows after top-30 | ~60 untested, fan-in ≥ 2 | 30000 🟢 | D0 done; re-run gap report; prune already-covered from queue | Ready |
+| Wave D0 | D0.1 | BLOCKER — fix gap-report Symbol-import detection | 1 script (`report_risk_weighted_test_gaps.py`) | 4000 🟢 | — | **Done** (commit `0da037a484`) |
+| Wave D1 | D1.1–D1.3 | L0 + L5 tail (×2.0 multiplier), next 30 rows after top-30 | ~60 untested, fan-in ≥ 2 | 30000 🟢 | D0 done | Ready |
+| Wave D1b | D1b.1 | **NEW (F5)** — L1 + L_OPS starvation microwaves, fan-in ≥ 3 | ~25 high-fan-in in L1/L_OPS | 12000 🟢 | After D0; promoted from E2 | Ready |
 | Wave D2 | D2.1–D2.2 | L3 + L4 tail (×1.75) | ~50 untested, fan-in ≥ 2 | 22000 🟢 | After D1 | Ready |
 | Wave D3 | D3.1 | L1 + L2 tail (×1.0) | ~40 untested, fan-in ≥ 2 | 16000 🟢 | After D2 | Ready |
 | Wave D4 | D4.1 | L_RUNTIME + L_SHARED + L_PG + L_INFRA hotspots | ~30 high-fan-in | 12000 🟢 | After D3 | Ready |
