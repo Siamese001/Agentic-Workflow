@@ -3,7 +3,7 @@
 **Tier**: T3 (cross-layer: tools/ingestion + agentic_core L3/L4 retrieval)
 **ADG Snapshot**: 04222026_2022 (73,705 nodes, 546,404 edges) — healthy
 **Parent Assessment**: `.windsurf/plans/adg-chromadb-retrieval-assessment-8a3f2b.md`
-**Status**: In Progress
+**Status**: Done (µW0–µW7 landed; three scope items deferred via DEFERRED_SCOPE markers)
 **Execution Mode**: Micro-waves, one commit + push per µW
 
 ## Goal
@@ -21,13 +21,20 @@ materialized views (`mv_hotspot_centrality`, `mv_gateway_bypass_paths`,
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | µW0 | E.0 | Plan file (this file) | 1k | — | Done | File exists at SSOT path |
-| µW1 | E.1 | Card types + projector skeleton (`tools/ingestion/adg_cards/__init__.py`, `types.py`) | 2k | ADG SQLite readable | Todo | Module imports clean; `SymbolCard`, `PathCard`, `ViolationCard`, `HotspotCard` dataclasses exist |
-| µW2 | E.2 | Symbol + Hotspot emitters (`symbol_emitter.py`, `hotspot_emitter.py`) | 5k | `mv_hotspot_centrality` populated | Todo | Emitters return non-empty iterables against live snapshot |
-| µW3 | E.3 | Violation + Path emitters (`violation_emitter.py`, `path_emitter.py`) | 5k | `violations`, `mv_gateway_bypass_paths`, `mv_graph_chokepoint_bridges` populated | Todo | Emitters return non-empty iterables against live snapshot |
-| µW4 | E.4 | CLI entrypoint `tools/ingestion/project_adg_cards.py` + deprecation banner on `ingest_adg.py` | 3k | Card emitters stable | Todo | CLI runs dry-run; prints counts per card kind |
-| µW5 | E.5 | Unit tests for card shape + metadata invariants | 3k | pytest working | Todo | ≥1 test per card kind passes |
-| µW6 | E.6 | Stamp `adg_node_id` on code-chunk metadata in `ingest_code.py` | 2k | ADG resolved_path index available | Todo | New metadata field present in emitted chunks |
-| µW7 | E.7 | Writeback (memory entity + Notion ADR row if warranted) | 1k | — | Todo | Memory + Notion receipts present |
+| µW1 | E.1 | Card types + projector skeleton (`tools/ingestion/adg_cards/__init__.py`, `types.py`) | 2k | ADG SQLite readable | Done | Module imports clean; `SymbolCard`, `PathCard`, `ViolationCard`, `HotspotCard` dataclasses exist |
+| µW2 | E.2 | Symbol + Hotspot emitters (`symbol_emitter.py`, `hotspot_emitter.py`) | 5k | `mv_hotspot_centrality` populated | Done | Emitters return non-empty iterables against live snapshot |
+| µW3 | E.3 | Violation + Path emitters (`violation_emitter.py`, `path_emitter.py`) | 5k | `violations`, `mv_gateway_bypass_paths`, `mv_graph_chokepoint_bridges` populated | Done | Emitters return non-empty iterables against live snapshot |
+| µW4 | E.4 | CLI entrypoint `tools/ingestion/project_adg_cards.py` + deprecation banner on `ingest_adg.py` | 3k | Card emitters stable | Done | CLI runs dry-run; prints counts per card kind |
+| µW5 | E.5 | Unit tests for card shape + metadata invariants | 3k | pytest working | Done | 12/12 card tests pass |
+| µW6 | E.6 | Stamp `adg_node_id` on code-chunk metadata in `ingest_code.py` | 2k | ADG resolved_path index available | Done | 10/10 chunks in live smoke resolve; 5/5 resolver tests pass |
+| µW7 | E.7 | Writeback (memory entity + Notion row) | 1k | — | Done | Memory + Notion receipts present |
+
+## Writeback Receipts
+
+WRITEBACK: memory entities=`ProceduralPattern:ADGSemanticCardProjection`, `Project:WaveE-ADG-Card-Projection`
+WRITEBACK: notion page=`https://www.notion.so/P3-Wave-E-E-0-E-7-ADG-semantic-card-projection-complete-34b27693f55c8167b376f83bbc0f5626` (Wave/Phase Convergence, Status=Done)
+
+DECISION_CAPTURED: type=architecture_choice, repo_area=tools/ingestion/adg_cards, selected=Hybrid Graph+Vector via curated semantic cards, outcome=executed
 
 **Total est tokens**: ~22k (well below single-session budget)
 
