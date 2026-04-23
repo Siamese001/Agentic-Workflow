@@ -12,6 +12,9 @@ from typing import TYPE_CHECKING
 from agentic_core.L2_execution.enforcement._adapter_anthropic import (
     AnthropicMessageAdapter,
 )
+from agentic_core.L2_execution.enforcement._adapter_gemini import (
+    GeminiMessageAdapter,
+)
 from agentic_core.L2_execution.enforcement._adapter_openai import (
     OpenAIMessageAdapter,
 )
@@ -29,8 +32,9 @@ _REGISTRY: dict[str, "ProviderMessageAdapter"] = {
     "OPENAI": OpenAIMessageAdapter(),
     "ANTHROPIC": AnthropicMessageAdapter(),
     "AZURE_OPENAI": OpenAIMessageAdapter(),  # Azure uses OpenAI-compatible wire format
-    # VERTEX_AI, LOCAL_VLLM → fall back to OpenAI-style until dedicated adapters ship in W8.
-    "VERTEX_AI": OpenAIMessageAdapter(),
+    # W8: dedicated Gemini adapter for Vertex AI (was OpenAI fallback pre-W8).
+    "VERTEX_AI": GeminiMessageAdapter(),
+    # LOCAL_VLLM defaults to OpenAI-style until a dedicated adapter is warranted.
     "LOCAL_VLLM": OpenAIMessageAdapter(),
 }
 

@@ -148,7 +148,7 @@ class TestAdapterRegistry:
             (ProviderType.ANTHROPIC, "anthropic"),
             (ProviderType.OPENAI, "openai"),
             (ProviderType.AZURE_OPENAI, "openai"),
-            (ProviderType.VERTEX_AI, "openai"),  # W8 will add dedicated Gemini.
+            (ProviderType.VERTEX_AI, "gemini"),  # W8: dedicated Gemini adapter.
             (ProviderType.LOCAL_VLLM, "openai"),
         ],
     )
