@@ -10,6 +10,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from agentic_core.L2_execution.enforcement.synthesis_bridge import (
+    SynthesisProvenance,
+    wrap_synthesis_output,
+)
+from agentic_core.L2_execution.reasoning.compiled_artifact import AuthoritySlot
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
@@ -116,6 +121,52 @@ class SynthesisEngineService:
     def get_synthesized_findings(self) -> list[dict[str, Any]]:
         """Get all synthesized findings."""
         return self._synthesized_findings.copy()
+
+    def build_governed_slot(
+        self,
+        synthesis: dict[str, Any],
+        source_trace_ids: tuple[str, ...] = (),
+        model: str = "",
+    ) -> AuthoritySlot:
+        """Wrap a synthesis result as a governed C0 AuthoritySlot.
+
+        Phase RH6B.2 adoption of
+        :func:`agentic_core.L2_execution.enforcement.synthesis_bridge.wrap_synthesis_output`.
+        Opt-in: existing callers of :meth:`synthesize_findings` are unaffected.
+
+        Renders the synthesis dict to a human-readable text block (mode +
+        theme count + per-finding summaries), attaches
+        ``synthesis_producer`` provenance, and returns a C0
+        (``AuthorityLevel.INFO``) slot suitable for
+        ``SlotAssemblyEngine.add_slot``.
+        """
+        lines = [
+            f"# Synthesis ({synthesis.get('mode', 'thematic')})",
+            f"Insights: {synthesis.get('insight_count', 0)} | "
+            f"Themes: {synthesis.get('theme_count', 0)}",
+            "",
+        ]
+        for finding in synthesis.get("findings", []):
+            lines.append(f"## {finding.get('theme', 'general')}")
+            lines.append(finding.get("summary", ""))
+            key_points = finding.get("key_points", []) or []
+            for kp in key_points:
+                if kp:
+                    lines.append(f"- {kp}")
+            lines.append("")
+        text = "\n".join(lines).strip()
+
+        provenance = SynthesisProvenance(
+            producer="apps_research.services.synthesis_engine_service",
+            source_trace_ids=source_trace_ids,
+            model=model,
+            synthesis_kind="knowledge",
+        )
+        return wrap_synthesis_output(
+            text=text,
+            provenance=provenance,
+            source_layer="L2",
+        )
 
     def compare_syntheses(
         self,

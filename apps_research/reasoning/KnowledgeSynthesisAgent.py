@@ -22,6 +22,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from agentic_core.L2_execution.reasoning.compiled_artifact import AuthoritySlot
 from apps_research.services.synthesis_engine_service import SynthesisEngineService
 
 _log = logging.getLogger(__name__)
@@ -80,6 +81,30 @@ class KnowledgeSynthesisAgent:
             "trace_id": _trace_id,
             "synthesis": synthesis,
         }
+
+    def build_governed_slot(
+        self,
+        synthesize_result: dict[str, Any],
+        model: str = "",
+    ) -> AuthoritySlot:
+        """Wrap a :meth:`synthesize` result as a governed C0 slot.
+
+        Phase RH6B.1 adoption of synthesis_bridge.wrap_synthesis_output via
+        the underlying ``SynthesisEngineService.build_governed_slot`` helper.
+        Delegates so provenance stays producer-accurate and the wrapping
+        logic is not duplicated.
+
+        Opt-in: callers wanting a governed C0 slot that can feed
+        ``SlotAssemblyEngine`` pass the dict returned by :meth:`synthesize`.
+        """
+        synthesis = synthesize_result.get("synthesis") or synthesize_result
+        source_trace_id = synthesize_result.get("trace_id")
+        source_trace_ids = (source_trace_id,) if source_trace_id else ()
+        return self._synthesis_service.build_governed_slot(
+            synthesis,
+            source_trace_ids=source_trace_ids,
+            model=model,
+        )
 
     @staticmethod
     def _make_trace_id(insight_count: int) -> str:
