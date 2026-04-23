@@ -1,7 +1,7 @@
 # Plan — Eval Harness + Meta-Learning Bus + OTel/Tracing Gap Review
 
 **Slug**: `eval-meta-otel-gap-review-ef4a20`
-**Status**: DRAFT (gap analysis complete, awaiting approval)
+**Status**: Done (all waves shipped in commits `9468dcb3ec` + `5c99fa635d`; deferred scope closed under `eval-meta-otel-deferred-completion-d6b4e0`, review at `docs/reports/plans/eval-meta-otel-deferred-completion.md`, ADR-028 records authority-boundary decision)
 **Tier**: T3 (cross-layer, >5 files, affects L_APP / L_SL / L6)
 **ADG snapshot**: `adg_indexed_04222026_1939.sqlite` (nodes=73,395, edges=544,861, healthy sqlite+redis)
 **ADG provenance**: `backend=sqlite, snapshot=adg_indexed_04222026_1939.sqlite`
