@@ -36,6 +36,8 @@ except ImportError:
 import sys
 from pathlib import Path
 
+from tqdm import tqdm  # noqa: E402  (§16 progress-bar compliance for pipeline loops)
+
 
 def _discover_repo_root(start: Path) -> Path:
     """Best-effort repository root discovery for direct script and package execution."""
@@ -157,7 +159,7 @@ def _build_graphdb_network_projection(
 
         commit_sha = metadata.commit_sha or "unknown"
         staged: list[Path] = []
-        for src, dest in (
+        _graphdb_copies = (
             (
                 work_dir / "projections" / commit_sha / "graph.json",
                 adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
@@ -167,6 +169,9 @@ def _build_graphdb_network_projection(
                 adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
             ),
             (work_dir / "index.json", adg_artifacts_dir / f"adg_graphdb_index_{ts}.json"),
+        )
+        for src, dest in tqdm(
+            _graphdb_copies, desc="P6b graphdb stage", unit="file", total=len(_graphdb_copies)
         ):
             if src.exists():
                 _shutil.copy2(src, dest)
@@ -297,7 +302,7 @@ def _build_graphdb_queries_report(
     analyst = AnalystQueries(graph)
 
     structural_payload: dict[str, object] = {}
-    for name, fn in (
+    _structural_queries = (
         ("gravity_import_violations", structural.gravity_import_violations),
         ("illegal_layer_reach", structural.illegal_layer_reach),
         ("l2_lifecycle_conformance", structural.l2_lifecycle_conformance),
@@ -310,6 +315,9 @@ def _build_graphdb_queries_report(
         ("l0_l1_l6_role_purity", structural.l0_l1_l6_role_purity),
         ("grounding_contract_separation", structural.grounding_contract_separation),
         ("trace_replay_eval_coverage", structural.trace_replay_eval_coverage),
+    )
+    for name, fn in tqdm(
+        _structural_queries, desc="P7 structural queries", unit="query", total=len(_structural_queries)
     ):
         try:
             structural_payload[name] = fn()
@@ -369,7 +377,7 @@ def _build_runtime_spine_report(
     semantic_failures = _rs_check_semantic_satisfaction(views)
 
     handoff_payload = []
-    for v in views:
+    for v in tqdm(views, desc="P7 runtime spine views", unit="view"):
         handoff_payload.append(
             {
                 "name": v.name,
@@ -714,7 +722,7 @@ def generate_full_adg(
     #   adg_graphdb_queries_<ts>.json       — GraphDB query families over P6b graph
     #   adg_runtime_spine_<ts>.json         — handoff + cross-cutting witness tiers
     p7_staged: list[Path] = []
-    for _p7_name, _p7_fn in (
+    _p7_stages = (
         ("structural-outputs", lambda: _build_structural_outputs_report(paths.sqlite, adg_artifacts_dir, ts)),
         (
             "refactor-accelerator",
@@ -722,7 +730,8 @@ def generate_full_adg(
         ),
         ("graphdb-queries", lambda: _build_graphdb_queries_report(graphdb_nx_graph, adg_artifacts_dir, ts)),
         ("runtime-spine", lambda: _build_runtime_spine_report(paths.sqlite, adg_artifacts_dir, ts)),
-    ):
+    )
+    for _p7_name, _p7_fn in tqdm(_p7_stages, desc="P7 analyst reports", unit="report", total=len(_p7_stages)):
         try:
             p7_staged.append(_p7_fn())
         except (ImportError, OSError, RuntimeError, TypeError, ValueError, KeyError, AttributeError) as e:
