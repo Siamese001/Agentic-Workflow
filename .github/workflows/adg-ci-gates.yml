@@ -53,6 +53,15 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: Snapshot Graph-Layer Completeness Gate (§22 artifact side)
+        # Symmetric enforcement for check_graph_layer_evidence.py (plan side):
+        # asserts the latest adg_indexed_*.sqlite ships with mv_* + v_p* +
+        # infra-wiring views, per plan adg-pipeline-e2e-5287a1 W2.
+        # Prevents silent regression of the W1 enrichment-before-gates ordering.
+        run: python ops_scripts/ci/check_snapshot_has_mvs.py
+        env:
+          PYTHONPATH: .
+
       - name: Expected-Wiring Gate (declared call-site assertions)
         # Runs immediately after ADG ingest so wiring regressions surface at the
         # ADG step, not at pre-commit. Reads config/expected_wiring.yaml + asserts

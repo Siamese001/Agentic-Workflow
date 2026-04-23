@@ -158,6 +158,20 @@ def main():
         sys.exit(1)
     print("✅ Graph-layer evidence gate passed")
 
+    # Gate: ADG snapshot graph-layer completeness (Constitutional §22 — artifact side)
+    # Symmetric to check_graph_layer_evidence.py (plan side). Protects the
+    # adg-pipeline-e2e-5287a1 W1 ordering fix from silent regression.
+    print("🔍 Running snapshot graph-layer completeness gate (artifact side)...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_snapshot_has_mvs.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Snapshot graph-layer completeness gate passed")
+
     # Gate: Severity<->Band SSOT (Constitutional §22/§23 — no hardcoded mappings)
     print("🔍 Running severity<->band SSOT gate...")
     returncode, stdout, stderr = run_cmd(

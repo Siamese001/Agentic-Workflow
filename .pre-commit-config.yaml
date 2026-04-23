@@ -342,6 +342,23 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7j: Snapshot Graph-Layer Completeness (Constitutional §22 — artifact side) --
+      # Symmetric enforcement for T7g. T7g enforces that PLANS cite mv_*/v_p*
+      # primitives; T7j enforces that ADG SNAPSHOTS actually ship them. Fails
+      # if the latest artifacts/adg/adg_indexed_*.sqlite has <30 mv_* tables,
+      # <3 v_p* views, or <1 infra wiring view. Gate triggers on pipeline edits
+      # or on any new adg_indexed_*.sqlite appearing in a staged set.
+      # Prevents silent regression of plan adg-pipeline-e2e-5287a1 W1 fix
+      # (commit 9fb93f698c — enrichment-before-gates ordering).
+      - id: snapshot-has-mvs
+        name: "T7j: Snapshot MV Completeness (§22 artifact side)"
+        entry: py ops_scripts/ci/check_snapshot_has_mvs.py
+        language: system
+        pass_filenames: false
+        files: ^(tools/generate/generate_full_adg\.py|tools/generate/materialized_views/.*\.py|tools/generate/infra_wiring_views\.py|ops_scripts/ci/check_snapshot_has_mvs\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T7i: Deferred Scope Markers ----------------------------------------------
       # Enforces the deferred-scope-capture rule (.windsurf/rules/deferred-scope-capture.md).
       # Blocks commits that add prose deferred-scope language to .windsurf/plans/*.md
