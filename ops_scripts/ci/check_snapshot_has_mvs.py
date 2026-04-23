@@ -24,6 +24,14 @@ Thresholds
     MIN_PVIEWS       = 3    (v_p0_* + v_p1_* + v_p2_* + v_p3_*; 15 today)
     MIN_INFRA_VIEWS  = 1    (v_infra_violations_summary + p-views)
 
+Projection freshness (W3b)
+--------------------------
+The most-recent adg_graph_*.sqlite projection MUST have
+`proj_meta.source_artifact_digest` equal to the canonical snapshot's
+`meta.artifact_digest`. This closes the stale-projection hole that existed
+when the P6 specific-tuple catch in generate_full_adg.py silently swallowed
+projection build failures.
+
 Run modes
 ---------
     $ python ops_scripts/ci/check_snapshot_has_mvs.py
@@ -33,7 +41,9 @@ Run modes
         Check a specific snapshot file.
 
     Env flags:
-        ADG_SNAPSHOT_MV_GATE_WARN=1 — warn instead of fail (soft mode)
+        ADG_SNAPSHOT_MV_GATE_WARN=1         — warn instead of fail (whole gate)
+        ADG_SNAPSHOT_PROJECTION_CHECK=warn  — warn on projection only
+        ADG_SNAPSHOT_PROJECTION_CHECK=off   — skip projection check entirely
 
 Exit codes
 ----------
@@ -66,6 +76,24 @@ LOG_FILE = LOG_DIR / "snapshot_mv_violations.jsonl"
 MIN_MV_TABLES = 30
 MIN_PVIEWS = 3
 MIN_INFRA_VIEWS = 1
+
+# Projection freshness (W3b): strict by default. The derived graph projection
+# (adg_graph_<ts>.sqlite) MUST have proj_meta.source_artifact_digest equal to
+# the canonical snapshot's meta.artifact_digest. Pre-W3, a broad specific-tuple
+# catch in tools/generate/generate_full_adg.py silently swallowed projection
+# failures, so stale projections (e.g., adg_graph_04222026_1218.sqlite)
+# survived past newer canonical snapshots.
+#
+# Soft mode: ADG_SNAPSHOT_PROJECTION_CHECK=warn (warn but don't fail) or
+# `=off` (skip entirely). Default (unset / "strict") blocks.
+PROJECTION_CHECK_MODE = (
+    os.environ.get(
+        "ADG_SNAPSHOT_PROJECTION_CHECK",
+        "strict",
+    )
+    .strip()
+    .lower()
+)
 
 
 def _resolve_snapshot(argv_path: str | None) -> Path:
@@ -105,6 +133,56 @@ def _classify_objects(snapshot: Path) -> dict[str, list[str]]:
     known = set(mv) | set(pview) | set(infra)
     base = sorted(n for n in names if n not in known)
     return {"mv": mv, "pview": pview, "infra": infra, "base": base}
+
+
+def _canonical_artifact_digest(snapshot: Path) -> str:
+    """Read `meta.artifact_digest` from the canonical snapshot."""
+    with sqlite3.connect(str(snapshot)) as conn:
+        row = conn.execute(
+            "SELECT value FROM meta WHERE key = 'artifact_digest'",
+        ).fetchone()
+    return row[0] if row else ""
+
+
+def _check_projection_freshness(snapshot: Path) -> tuple[str, dict[str, str]]:
+    """Verify the latest graph projection matches the canonical snapshot.
+
+    Returns a tuple of (status, info) where status is one of:
+        "pass"     — freshest projection's source_artifact_digest matches canonical
+        "stale"    — projection exists but digest mismatch
+        "missing"  — no adg_graph_*.sqlite projection found
+        "unreadable" — projection present but could not be read
+
+    `info` contains diagnostic key/values (digests, paths) for logging.
+    """
+    info: dict[str, str] = {}
+    try:
+        canonical_digest = _canonical_artifact_digest(snapshot)
+    except sqlite3.Error as exc:
+        info["canonical_read_error"] = str(exc)
+        return ("unreadable", info)
+    info["canonical_digest"] = canonical_digest or "<empty>"
+    info["canonical_snapshot"] = snapshot.name
+
+    pattern = str(snapshot.parent / "adg_graph_*.sqlite")
+    projections = sorted(glob.glob(pattern), key=os.path.getmtime)
+    if not projections:
+        return ("missing", info)
+    latest = Path(projections[-1])
+    info["projection"] = latest.name
+    try:
+        with sqlite3.connect(str(latest)) as conn:
+            row = conn.execute(
+                "SELECT value FROM proj_meta WHERE key = 'source_artifact_digest'",
+            ).fetchone()
+    except sqlite3.Error as exc:
+        info["projection_read_error"] = str(exc)
+        return ("unreadable", info)
+    proj_digest = row[0] if row else ""
+    info["projection_digest"] = proj_digest or "<empty>"
+    if not canonical_digest or not proj_digest:
+        return ("stale", info)
+    return (("pass" if canonical_digest == proj_digest else "stale"), info)
 
 
 def _log_violation(snapshot: Path, counts: dict[str, int], reasons: list[str]) -> None:
@@ -156,16 +234,41 @@ def main(argv: list[str]) -> int:
             f"infra view count {counts['infra']} < MIN_INFRA_VIEWS={MIN_INFRA_VIEWS}",
         )
 
+    # --- W3b: derived graph projection freshness ---
+    proj_status, proj_info = ("off", {"mode": "off"})
+    if PROJECTION_CHECK_MODE != "off":
+        proj_status, proj_info = _check_projection_freshness(snapshot)
+        if proj_status != "pass":
+            msg = (
+                f"graph projection {proj_status}: "
+                f"canonical={proj_info.get('canonical_digest', '?')[:12]} "
+                f"projection={proj_info.get('projection', '<none>')} "
+                f"projection_digest={proj_info.get('projection_digest', '?')[:12]}"
+            )
+            if PROJECTION_CHECK_MODE == "warn":
+                proj_info["warn_only"] = "true"
+            else:
+                reasons.append(msg)
+
     header = "=" * 72
     print(header)
     print("ADG SNAPSHOT GRAPH-LAYER COMPLETENESS — Constitutional §22")
     print(header)
-    print(f"snapshot: {snapshot.name}")
-    print(f"mv_*    : {counts['mv']:>4} (min {MIN_MV_TABLES})")
-    print(f"v_p*    : {counts['pview']:>4} (min {MIN_PVIEWS})")
-    print(f"infra   : {counts['infra']:>4} (min {MIN_INFRA_VIEWS})")
-    print(f"base    : {counts['base']:>4}")
+    print(f"snapshot   : {snapshot.name}")
+    print(f"mv_*       : {counts['mv']:>4} (min {MIN_MV_TABLES})")
+    print(f"v_p*       : {counts['pview']:>4} (min {MIN_PVIEWS})")
+    print(f"infra      : {counts['infra']:>4} (min {MIN_INFRA_VIEWS})")
+    print(f"base       : {counts['base']:>4}")
+    print(f"projection : {proj_status} (mode={PROJECTION_CHECK_MODE})")
+    if proj_info.get("projection"):
+        print(f"             {proj_info['projection']}")
     print(header)
+
+    if PROJECTION_CHECK_MODE == "warn" and proj_status not in ("pass", "off"):
+        print(
+            f"[WARN] graph projection {proj_status} — "
+            "ADG_SNAPSHOT_PROJECTION_CHECK=warn; continuing without fail",
+        )
 
     if not reasons:
         print("[PASS] snapshot contains full graph-layer overlay")
