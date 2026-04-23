@@ -17,9 +17,15 @@ from typing import Any, Protocol
 
 from tqdm import tqdm
 
+from agentic_core.L2_execution.enforcement._adapter_registry import (
+    get_adapter as _get_provider_adapter,
+)
 from agentic_core.L2_execution.enforcement._reception_audit import (
     build_evidence as _build_reception_evidence,
     emit as _emit_reception_evidence,
+)
+from agentic_core.L2_execution.enforcement.provider_adapter import (
+    adapter_v2_enabled as _adapter_v2_enabled,
 )
 from agentic_core.L2_execution.reasoning import CompiledPromptArtifact
 
@@ -573,11 +579,14 @@ class SovereignLLMGateway:
                 ),
             )
 
+            # W2 RH2.5: provider-adapter v2 dispatch (feature-flagged via PROMPT_ADAPTER_V2 env).
+            system_arg, user_arg, tools_arg = self._resolve_provider_payload(artifact, provider_type)
+
             response = self._circuit_breaker.call(
                 provider_impl.generate,
-                artifact.final_system_string,
-                artifact.final_user_string,
-                artifact.allowed_tools_schema,
+                system_arg,
+                user_arg,
+                tools_arg,
                 **reasoning_kwargs,
             )
             success = True
@@ -681,11 +690,14 @@ class SovereignLLMGateway:
                 ),
             )
 
+            # W2 RH2.5: provider-adapter v2 dispatch (feature-flagged via PROMPT_ADAPTER_V2 env).
+            system_arg, user_arg, tools_arg = self._resolve_provider_payload(artifact, provider_type)
+
             response = self._circuit_breaker.call(
                 provider_impl.generate,
-                artifact.final_system_string,
-                artifact.final_user_string,
-                artifact.allowed_tools_schema,
+                system_arg,
+                user_arg,
+                tools_arg,
                 **kwargs,
             )
             success = True
@@ -721,6 +733,35 @@ class SovereignLLMGateway:
                 },
             )
             self._ledger.record(record)
+
+    def _resolve_provider_payload(
+        self,
+        artifact: CompiledPromptArtifact,
+        provider_type: ProviderType,
+    ) -> tuple[str, str, Any]:
+        """Resolve (system, user, tools) args for provider_impl.generate().
+
+        When ``PROMPT_ADAPTER_V2=1`` is set, routes through the provider-
+        aware adapter registry (W2 RH2.5). Otherwise returns the legacy
+        flat-string triple, preserving byte-for-byte compatibility with
+        all pre-W2 behavior.
+        """
+        if not _adapter_v2_enabled():
+            return (
+                artifact.final_system_string,
+                artifact.final_user_string,
+                artifact.allowed_tools_schema,
+            )
+
+        adapter = _get_provider_adapter(provider_type)
+        payload = adapter.render(
+            final_system_string=artifact.final_system_string,
+            final_user_string=artifact.final_user_string,
+            tools_schema=artifact.allowed_tools_schema,
+            slots_used=getattr(artifact, "slots_used", None),
+            slots_map=None,  # W3 will wire a structured slot map here.
+        )
+        return payload.system_prompt, payload.user_prompt, payload.tools_schema
 
     def get_telemetry_stats(self) -> dict[str, Any]:
         """Get aggregated telemetry statistics."""
