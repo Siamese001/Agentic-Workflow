@@ -129,25 +129,17 @@ def _append_log(record: dict[str, Any]) -> None:
         print(f"[writeback_audit] log write failed: {exc}", file=sys.stderr)
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _post_cascade_payload import extract_response_text  # noqa: E402
+
+
 def _read_stdin_response() -> str:
     try:
         payload = sys.stdin.read()
     except (OSError, UnicodeDecodeError):
         return ""
-    if not payload:
-        return ""
-    # Windsurf delivers tool_info JSON on stdin; response body may be nested.
-    try:
-        obj = json.loads(payload)
-    except (json.JSONDecodeError, ValueError):
-        return payload  # treat raw text as response
-    if isinstance(obj, dict):
-        for key in ("response", "content", "text", "message"):
-            value = obj.get(key)
-            if isinstance(value, str) and value:
-                return value
-        return json.dumps(obj)
-    return payload
+    # Delegate to shared extractor — handles tool_info.response nesting.
+    return extract_response_text(payload)
 
 
 def _detect_signals(response: str) -> list[dict[str, str]]:

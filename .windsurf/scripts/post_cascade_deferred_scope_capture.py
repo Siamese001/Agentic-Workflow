@@ -68,8 +68,9 @@ BAND_TO_PRIORITY: dict[str, int] = {
     "P5": 50,
 }
 
-# Ensure repo root on path so scorer import works
+# Ensure repo root on path so scorer import works, and scripts dir for sibling helpers.
 sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 try:
     from tools.priority.deferred_scope_scorer import score_deferred_scope  # type: ignore
 except ImportError:  # fail-open if scorer missing
@@ -137,19 +138,10 @@ def _read_stdin_response() -> str:
         payload = sys.stdin.read()
     except (OSError, UnicodeDecodeError):
         return ""
-    if not payload:
-        return ""
-    try:
-        obj = json.loads(payload)
-    except (json.JSONDecodeError, ValueError):
-        return payload
-    if isinstance(obj, dict):
-        for key in ("response", "content", "text", "message"):
-            value = obj.get(key)
-            if isinstance(value, str) and value:
-                return value
-        return json.dumps(obj)
-    return payload
+    # Delegate to shared extractor — handles tool_info.response nesting
+    # (documented Windsurf post_cascade_response shape).
+    from _post_cascade_payload import extract_response_text  # noqa: PLC0415
+    return extract_response_text(payload)
 
 
 def _parse_marker(body: str) -> dict[str, str]:
