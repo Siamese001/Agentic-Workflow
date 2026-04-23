@@ -318,6 +318,10 @@ def main():
         ("S3 exception swallow ratchet", "ops_scripts/ci/check_exception_swallow_ratchet.py"),
         ("S4 unused imports ratchet", "ops_scripts/ci/check_unused_imports_ratchet.py"),
         ("W5 waiver expiry", "ops_scripts/ci/check_waiver_expiry.py"),
+        (
+            "§26 Windsurf config schema purity",
+            "ops_scripts/ci/check_windsurf_config_schema.py",
+        ),
     ]
     for label, script in wiring_gates:
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)
