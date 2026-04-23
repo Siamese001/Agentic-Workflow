@@ -29,6 +29,8 @@ import logging
 from dataclasses import dataclass
 from typing import Sequence
 
+from system_learning._tracing import sl_span
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -337,6 +339,17 @@ class PromptDriftDetector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptDriftDetector.detect")
+
+        # W-D2: OTel entry marker; rest of method body preserved.
+        with sl_span(
+            "system_learning.v1.prompt_drift_detector.detect",
+            {
+                "sl.baseline_count": len(baseline_records),
+                "sl.current_count": len(current_records),
+                "sl.structural_drift": structural_drift_detected,
+            },
+        ):
+            pass
 
         if not current_records:
             return []

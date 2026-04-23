@@ -11,6 +11,8 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Any
 
+from system_learning._tracing import sl_span
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -265,11 +267,15 @@ class MetaLearningBus:
         Returns:
             (package, result) tuple or None if queue empty
         """
-        pkg = self.dequeue()
-        if pkg is None:
-            return None
-        result = apply_fn(pkg)
-        return (pkg, result)
+        with sl_span("system_learning.v1.meta_learning_bus.apply_next") as span:
+            pkg = self.dequeue()
+            if pkg is None:
+                span.set_attribute("sl.queue_empty", True)
+                return None
+            span.set_attribute("sl.package_kind", pkg.kind)
+            span.set_attribute("sl.trace_id", pkg.trace_id)
+            result = apply_fn(pkg)
+            return (pkg, result)
 
 
 _PROCESS_BUS: MetaLearningBus = MetaLearningBus()

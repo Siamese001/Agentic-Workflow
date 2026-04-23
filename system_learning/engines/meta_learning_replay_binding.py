@@ -28,6 +28,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+
+from system_learning._tracing import sl_span
 from dataclasses import dataclass
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -232,7 +234,11 @@ class MetaLearningReplayBinding:
 
     def emit(self) -> None:
         """Print the canonical REPLAY-BINDING line to stdout exactly once."""
-        print(self.to_line())
+        with sl_span(
+            "system_learning.v1.meta_learning_replay_binding.emit",
+            {"sl.embedding_model": self.embedding_model_version},
+        ):
+            print(self.to_line())
 
     @classmethod
     def from_line(cls, line: str) -> MetaLearningReplayBinding:

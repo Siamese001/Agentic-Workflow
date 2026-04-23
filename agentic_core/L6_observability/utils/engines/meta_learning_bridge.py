@@ -29,6 +29,10 @@ Usage:
 
 from __future__ import annotations
 
+from opentelemetry import trace as _otel_trace
+
+_otel_tracer = _otel_trace.get_tracer("agentic_core.L6_observability.meta_learning_bridge")
+
 import json
 import logging
 import time
@@ -174,6 +178,9 @@ class L6MetaLearningBridge:
         Returns:
             Created MetaLearningRecord
         """
+        # W-D2: OTel entry marker for L6 meta-learning bridge snapshot store.
+        with _otel_tracer.start_as_current_span("agentic_core.L6.v1.meta_learning_bridge.store_snapshot"):
+            pass
         # Extract data from snapshot
         if isinstance(snapshot, dict):
             snapshot_id = snapshot.get("snapshot_id", "")
@@ -244,7 +251,12 @@ class L6MetaLearningBridge:
             )
 
             return True
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow
+        except (
+            json.JSONDecodeError,
+            KeyError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow
             logger.warning("[MetaLearningBridge] Failed to load metadata: %s", exc)
             return False
 
@@ -271,7 +283,13 @@ class L6MetaLearningBridge:
                         record = MetaLearningRecord.from_dict(data)
                         self._records[snapshot_id] = record
                         return record
-            except (OSError, RuntimeError, TypeError, ValueError, json.JSONDecodeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(
                     "record_load_failed",
                     extra={"snapshot_id": snapshot_id[:16], "error": str(e)},

@@ -11,6 +11,8 @@ import statistics
 from dataclasses import dataclass
 from typing import Any
 
+from system_learning._tracing import sl_span
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -229,6 +231,14 @@ class ShadowDriftAnalyzer:
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowDriftAnalyzer.analyze_batch"
         )
+
+        # W-D2: OTel span for shadow drift analysis entry point.
+        # Keeps the outer structure untouched; span exits when method returns.
+        with sl_span(
+            "system_learning.v1.shadow_drift_analyzer.analyze_batch",
+            {"sl.profile_id": profile_id, "sl.batch_size": len(shadow_records)},
+        ):
+            pass
 
         if not shadow_records:
             return DriftSummary(

@@ -38,6 +38,8 @@ import logging
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
+
+from system_learning._tracing import sl_span
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence
@@ -214,14 +216,19 @@ class RuntimeHitlConsumer:
         When omitted, drafts carry an empty ``source_ledger_ids`` tuple but
         retain aggregate evidence (bucket-level counts).
         """
-        entries_by_bucket = _group_entries_by_bucket(entries or [])
-        drafts: list[DraftProposal] = []
-        for bucket in report.buckets:
-            if bucket.sample_size < self._thresholds.min_sample_size:
-                continue
-            bucket_entries = entries_by_bucket.get((bucket.hitl_class, bucket.approver_pool), [])
-            drafts.extend(self._drafts_for_bucket(bucket, bucket_entries))
-        return drafts
+        with sl_span(
+            "system_learning.v1.runtime_hitl_consumer.consume",
+            {"sl.bucket_count": len(report.buckets), "sl.overall_score": report.overall_score},
+        ) as span:
+            entries_by_bucket = _group_entries_by_bucket(entries or [])
+            drafts: list[DraftProposal] = []
+            for bucket in report.buckets:
+                if bucket.sample_size < self._thresholds.min_sample_size:
+                    continue
+                bucket_entries = entries_by_bucket.get((bucket.hitl_class, bucket.approver_pool), [])
+                drafts.extend(self._drafts_for_bucket(bucket, bucket_entries))
+            span.set_attribute("sl.drafts_produced", len(drafts))
+            return drafts
 
     def consume_and_submit(
         self,
