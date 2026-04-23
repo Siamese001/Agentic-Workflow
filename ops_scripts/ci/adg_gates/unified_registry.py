@@ -361,6 +361,37 @@ WIRING_GATES: list[GateSpec] = [
         notes="Governance gate — blocks on any expired wiring-CI waiver",
         gate_class="WaiverExpiryGate",
     ),
+    # -- W3 residuals shipped 2026-04-23 -------------------------------------
+    GateSpec(
+        "B2_layer_skip_ratchet",
+        Band.P1,
+        Enforcement.RATCHET,
+        Source.SQL,
+        "wiring_ci",
+        "ops_scripts/ci/check_layer_skip.py",
+        notes="W3.1 — imports edges on L0..L6 that skip >1 layer ordinal. Complements SC-1 (direction) with a distance signal.",
+        gate_class="LayerSkipGate",
+    ),
+    GateSpec(
+        "D2_role_duplication_warn",
+        Band.P2,
+        Enforcement.WARN,
+        Source.SQL,
+        "wiring_ci",
+        "ops_scripts/ci/check_role_dedup.py",
+        notes="W3.4 — role-suffix clusters (_reranker, _retriever, _planner, ...) where any member has fan_in=0. Signature of shadow SSOT reconstruction.",
+        gate_class="RoleDedupGate",
+    ),
+    GateSpec(
+        "Q2_cyclomatic_complexity_ratchet",
+        Band.P3,
+        Enforcement.RATCHET,
+        Source.DISK,
+        "wiring_ci",
+        "ops_scripts/ci/check_cyclomatic_ceiling.py",
+        notes="W3.6 — McCabe cyclomatic complexity per function > 15.",
+        gate_class="CyclomaticCeilingGate",
+    ),
     # -- Graph-native gates (added in H2, 2026-04-23) -----------------------
     GateSpec(
         "G_REACH_l0_reachability",

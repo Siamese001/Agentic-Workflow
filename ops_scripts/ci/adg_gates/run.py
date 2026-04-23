@@ -402,6 +402,9 @@ def _load_baseline(gate_id: str) -> int | None:
         "G_REACH_l0_reachability": "wiring_graph_reach_ratchet.json",
         "G_ISLAND_connected_components": "wiring_graph_island_ratchet.json",
         "G_WATCHLIST_DELTA_hotspot_regressions": "wiring_graph_watchlist_delta_ratchet.json",
+        # W3 residuals (2026-04-23)
+        "B2_layer_skip_ratchet": "wiring_layer_skip_ratchet.json",
+        "Q2_cyclomatic_complexity_ratchet": "wiring_cyclomatic_complexity_ratchet.json",
     }
     filename = name_map.get(gate_id)
     if not filename:
