@@ -87,12 +87,13 @@ Route publications through `enhanced_http` or a queue. Rejected because it intro
 
 ### 4.2 Negative
 
-- The `authority_boundary` / `capability_egress` / `write_sovereignty` ADG gates continue to flag these two imports. They will appear in every P0 remediation wave until the gates are taught about the ADR-028 exemption.
 - Future maintainers must read this ADR when they see the guardian comment. Mitigation: guardian comment points at ADR-028 and the plan slug.
+- (Originally believed: "ADG gates will flag these imports and they will appear in P0 waves until gates are taught the exemption." Verified 2026-04-22 that this is NOT the case — see §4.3 resolution. Leaving note for provenance.)
 
 ### 4.3 Follow-up work
 
-- **[deferred]** Teach `check_authority_boundary.py` (and peers) to honor ADR-028: recognize the guardian comment pattern `allow-cross-layer-import` when the importing module is `apps_eval/integrations/meta_bus_publisher.py` and the target module is `system_learning.meta_learning.meta_learning_bus`.
+- **[resolved 2026-04-22]** Teach ADG gates about ADR-028. *Outcome: no change needed.* Verified via `mv_authority_boundary_breaches` on `adg_indexed_04222026_2055.sqlite`: the MV only flags `L_APP → L0/L1/L2` (class `L_APP_core_bypass`) and `L6 → L0/L2` (class `L6_downstream_mutation`). `L_APP → L_SL` is not a flagged pair. `apps_eval/integrations/meta_bus_publisher.py → system_learning/**` edges return zero rows from `mv_authority_boundary_breaches`, zero rows from `mv_capability_and_egress_gaps` (capability gates the provider surface, not module imports), and zero rows from `mv_write_sovereignty_paths` (writer paths are UWG-based, not import-based). The guardian comments on the two lazy imports therefore serve as documentation for reviewers, not as gate suppressors. No `check_*.py` modification required.
+- **[resolved 2026-04-22]** Replace the `apps_eval._telemetry` no-op shim. *Outcome: shim now lazily delegates to `agentic_core.runtime.contracts.lifecycle_trace_contract` (SSOT) with fail-open fallback to the original no-op when standalone. `LayerSegment` values are locally defined and match SSOT exactly. Tests: `tests/unit/apps_eval/test_telemetry_shim.py` (5 cases covering delegation, fallback, and attribute contract).
 - **[deferred]** Extend the pattern to any future publisher adapters (e.g., `apps_exec`, `apps_research`) under the same module prefix `apps_*/integrations/*`.
 
 ---
