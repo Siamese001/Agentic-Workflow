@@ -12,8 +12,10 @@ silently drifted (no guardian filter applied, causing false-positive P0s for
 benchmark lazy imports with valid guardian comments).
 
 Rules:
-  * The exemption comment MUST appear on the violation line OR the line
-    immediately preceding it (2-line lookback; handles continuation lines).
+  * The exemption comment MUST appear within a window that covers the
+    violation line plus 1 line before and up to 4 lines after (handles both
+    continuation lines and multi-line `from X import (...)` blocks where
+    the guardian comment lives on the closing `)`).
   * Path is repo-relative from ROOT.
   * File-read failures are non-fatal — the violation is NOT exempted (fail-closed:
     assume a violation when we cannot prove exemption).
@@ -69,9 +71,11 @@ def is_layer_violation_exempted(
     if not lines:
         return False
     # 1-indexed line_no → 0-indexed list: line at idx (line_no - 1).
-    # Lookback window of 2 lines covers single-line and continuation-line imports.
+    # Window: 1 line before to 4 lines after (inclusive). Covers single-line
+    # imports, continuation-line imports, and multi-line `from X import (...)`
+    # blocks where the guardian comment lives on the closing `)`.
     start = max(0, line_no - 2)
-    end = min(len(lines), line_no)
+    end = min(len(lines), line_no + 4)
     window = lines[start:end]
     return any(_GUARDIAN_MARKER in ln for ln in window)
 

@@ -16,14 +16,14 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import (
+from agentic_core.L0_routing.config.model_registry import (  # guardian: allow-layer-violation -- L2 healer reads model-ID constants from L0 SSOT
     DETERMINISTIC_MODEL_SENTINEL,
     GEMINI_FLASH_MODEL_ID,
     GEMINI_PRO_MODEL_ID,
     QWEN_LOCAL_MODEL_ID,
 )
 
-from agentic_core.L6_observability.heal_router_otel import (
+from agentic_core.L6_observability.heal_router_otel import (  # guardian: allow-layer-violation -- L2 healer emits observability span through L6 OTel emitter
     get_default_emitter as _get_default_heal_router_emitter,
 )
 

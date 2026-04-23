@@ -228,7 +228,7 @@ class ConfidenceScorer:
         HITL-10C-003: Model assignments should be reviewed.
         Model IDs sourced from L0 model_registry SSOT (env-var overridable).
         """
-        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415  # guardian: allow-layer-violation -- L2 healer reads model-ID constants from L0 SSOT
             DETERMINISTIC_MODEL_SENTINEL,
             GEMINI_PRO_MODEL_ID,
             QWEN_LOCAL_MODEL_ID,

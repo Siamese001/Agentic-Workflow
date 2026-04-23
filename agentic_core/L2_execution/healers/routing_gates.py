@@ -37,7 +37,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from agentic_core.L0_routing.config.model_registry import QWEN_DISALLOWED_FAILURE_TYPES
+from agentic_core.L0_routing.config.model_registry import QWEN_DISALLOWED_FAILURE_TYPES  # guardian: allow-layer-violation -- L2 healer reads failure-type constants from L0 SSOT
 
 from .confidence_scorer import HealTier
 
