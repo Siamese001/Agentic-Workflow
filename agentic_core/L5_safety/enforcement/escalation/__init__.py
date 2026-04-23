@@ -80,7 +80,6 @@ from .escalation_orchestrator import (
     escalates_to_human,
     escalation_blocked,
     execute_override,
-    get_human_escalation_registry,
     override_executed,
     query_human_escalation,
     record_reviewer_outcome,
