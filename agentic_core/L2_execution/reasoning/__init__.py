@@ -36,6 +36,7 @@ from agentic_core.L2_execution.reasoning.execution_adaptation import (
     ExecutionAdaptationError,
     ExecutionAdaptationRecord,
 )
+from agentic_core.L2_execution.reasoning.prompt_messages import PromptMessages
 from agentic_core.L2_execution.reasoning.slot_assembly_engine import (
     AssemblyError,
     SlotAssemblyEngine,
@@ -116,6 +117,7 @@ __all__ = [
     "CompiledPromptArtifact",
     "InjectionScanResult",
     "PromptBOM",
+    "PromptMessages",
     "RoutingDecision",
     "TemplateManifest",
     # Slot Assembly Engine

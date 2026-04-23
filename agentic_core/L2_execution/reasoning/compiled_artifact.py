@@ -11,7 +11,10 @@ import json
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from enum import Enum, auto
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from agentic_core.L2_execution.reasoning.prompt_messages import PromptMessages
 
 
 class AuthorityLevel(Enum):
@@ -142,6 +145,38 @@ class CompiledPromptArtifact:
         # Remove computed fields
         clean_data = {k: v for k, v in data.items() if k in cls.__dataclass_fields__}
         return cls(**clean_data)
+
+    def to_prompt_messages(
+        self,
+        slots: "dict[str, AuthoritySlot] | None" = None,
+        provider_hint: str | None = None,
+    ) -> "PromptMessages":
+        """Project this artifact to the ``PromptMessages`` IR.
+
+        Phase RH2B.3 of plan ``prompt-reception-followups-a7b3c4``. Non-breaking
+        — the artifact still carries flat ``final_system_string`` /
+        ``final_user_string`` for legacy passthrough. Adapters that upgrade
+        consume ``PromptMessages`` directly via this method.
+
+        Parameters
+        ----------
+        slots
+            Optional per-slot-code -> ``AuthoritySlot`` map. Enables multi-slot
+            rendering (S0/I0/D0/C0/E0/M0/H0/U0). When omitted, the IR falls
+            back to a two-entry (``SYSTEM``/``USER``) map.
+        provider_hint
+            Optional provider identifier consumed by adapters.
+        """
+        # Local import to avoid circularity at module load.
+        from agentic_core.L2_execution.reasoning.prompt_messages import (
+            PromptMessages,
+        )
+
+        return PromptMessages.from_artifact(
+            artifact=self,
+            slots=slots,
+            provider_hint=provider_hint,
+        )
 
 
 @dataclass
