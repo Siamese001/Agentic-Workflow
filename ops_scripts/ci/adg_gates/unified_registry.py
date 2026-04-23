@@ -70,6 +70,12 @@ class GateSpec:
 # -----------------------------------------------------------------------------
 # Canonical ADGGateBase gates (plane 1) — already P0-P3 native
 # -----------------------------------------------------------------------------
+#
+# H5 note: for `owner="adg_gates"`, ``handler`` is the dotted module path
+# (importable via ``importlib.import_module``) and ``gate_class`` is the
+# ADGGateBase subclass within it. The dispatcher's ADGGateBase adapter
+# instantiates ``handler.gate_class(sqlite_path=<snapshot>)`` and calls
+# ``.run(emit_artifacts=False)`` to avoid file-system side effects in CI.
 CANONICAL_GATES: list[GateSpec] = [
     GateSpec(
         "1_critical_path_integrity",
@@ -77,10 +83,17 @@ CANONICAL_GATES: list[GateSpec] = [
         Enforcement.BLOCK,
         Source.SQL,
         "adg_gates",
-        "CriticalPathIntegrityGate",
+        "ops_scripts.ci.adg_gates.gate_p0_critical_path",
+        gate_class="CriticalPathIntegrityGate",
     ),
     GateSpec(
-        "2_authority_boundary", Band.P0, Enforcement.BLOCK, Source.SQL, "adg_gates", "AuthorityBoundaryGate"
+        "2_authority_boundary",
+        Band.P0,
+        Enforcement.BLOCK,
+        Source.SQL,
+        "adg_gates",
+        "ops_scripts.ci.adg_gates.gate_p0_authority",
+        gate_class="AuthorityBoundaryGate",
     ),
     GateSpec(
         "3_write_sovereignty",
@@ -88,26 +101,54 @@ CANONICAL_GATES: list[GateSpec] = [
         Enforcement.BLOCK,
         Source.SQL,
         "adg_gates",
-        "WriteSovereigntyGate",
+        "ops_scripts.ci.adg_gates.gate_p0_write_sovereignty",
         notes="Covers UWG bypass — S2_uwg_bypass_ratchet is a RATCHET overlay on the same edges",
+        gate_class="WriteSovereigntyGate",
     ),
     GateSpec(
-        "4_capability_egress", Band.P0, Enforcement.BLOCK, Source.SQL, "adg_gates", "CapabilityEgressGate"
+        "4_capability_egress",
+        Band.P0,
+        Enforcement.BLOCK,
+        Source.SQL,
+        "adg_gates",
+        "ops_scripts.ci.adg_gates.gate_p0_capability_egress",
+        gate_class="CapabilityEgressGate",
     ),
-    GateSpec("5_text_to_action", Band.P0, Enforcement.BLOCK, Source.SQL, "adg_gates", "TextToActionGate"),
+    GateSpec(
+        "5_text_to_action",
+        Band.P0,
+        Enforcement.BLOCK,
+        Source.SQL,
+        "adg_gates",
+        "ops_scripts.ci.adg_gates.gate_p0_text_to_action",
+        gate_class="TextToActionGate",
+    ),
     GateSpec(
         "6_determinism_provenance",
         Band.P0,
         Enforcement.BLOCK,
         Source.SQL,
         "adg_gates",
-        "DeterminismProvenanceGate",
+        "ops_scripts.ci.adg_gates.gate_p0_determinism",
+        gate_class="DeterminismProvenanceGate",
     ),
     GateSpec(
-        "7_lifecycle_coverage", Band.P1, Enforcement.RATCHET, Source.SQL, "adg_gates", "LifecycleCoverageGate"
+        "7_lifecycle_coverage",
+        Band.P1,
+        Enforcement.RATCHET,
+        Source.SQL,
+        "adg_gates",
+        "ops_scripts.ci.adg_gates.gate_p1_lifecycle",
+        gate_class="LifecycleCoverageGate",
     ),
     GateSpec(
-        "8_trace_replay_eval", Band.P1, Enforcement.RATCHET, Source.SQL, "adg_gates", "TraceReplayEvalGate"
+        "8_trace_replay_eval",
+        Band.P1,
+        Enforcement.RATCHET,
+        Source.SQL,
+        "adg_gates",
+        "ops_scripts.ci.adg_gates.gate_p1_trace_replay",
+        gate_class="TraceReplayEvalGate",
     ),
     GateSpec(
         "9_executor_theater",
@@ -115,17 +156,27 @@ CANONICAL_GATES: list[GateSpec] = [
         Enforcement.BLOCK,
         Source.HYBRID,
         "adg_gates",
-        "ExecutorTheaterGate",
+        "ops_scripts.ci.adg_gates.gate_executor_theater",
         notes="Covers trace-theater — E1_trace_stub_module is a RATCHET overlay",
+        gate_class="ExecutorTheaterGate",
     ),
-    GateSpec("10_infra_wiring", Band.P0, Enforcement.BLOCK, Source.SQL, "adg_gates", "InfraWiringGate"),
+    GateSpec(
+        "10_infra_wiring",
+        Band.P0,
+        Enforcement.BLOCK,
+        Source.SQL,
+        "adg_gates",
+        "ops_scripts.ci.adg_gates.gate_infra_wiring",
+        gate_class="InfraWiringGate",
+    ),
     GateSpec(
         "11_architecture_witness",
         Band.P1,
         Enforcement.BLOCK,
         Source.SQL,
         "adg_gates",
-        "ArchitectureWitnessGate",
+        "ops_scripts.ci.adg_gates.gate_p1_architecture_witness",
+        gate_class="ArchitectureWitnessGate",
     ),
     GateSpec(
         "12_prompt_assembly_wiring",
@@ -133,8 +184,9 @@ CANONICAL_GATES: list[GateSpec] = [
         Enforcement.BLOCK,
         Source.SQL,
         "adg_gates",
-        "PromptAssemblyWiringGate",
+        "ops_scripts.ci.adg_gates.gate_p1_prompt_wiring",
         notes="Covers specific prompt-assembly paths — J1_canonical_pipeline_wiring generalizes this to any pipeline declared in canonical_pipelines.yaml",
+        gate_class="PromptAssemblyWiringGate",
     ),
 ]
 

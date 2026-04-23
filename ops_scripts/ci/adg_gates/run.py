@@ -32,6 +32,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib
 import importlib.util
 import json
 import subprocess
@@ -47,6 +48,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 
 from ops_scripts.ci.adg_gates.unified_registry import (  # noqa: E402
+    CANONICAL_GATES,
     WIRING_GATES,
     GateSpec,
     Enforcement,
@@ -295,11 +297,96 @@ def _run_gate_subprocess(spec: GateSpec) -> dict[str, Any]:
     }
 
 
+def _load_canonical_gate_class(spec: GateSpec) -> type | None:
+    """Import a CANONICAL (ADGGateBase) gate class by dotted module path.
+
+    For ``owner="adg_gates"`` rows, ``spec.handler`` is a dotted module path
+    (e.g. ``ops_scripts.ci.adg_gates.gate_p0_critical_path``) and
+    ``spec.gate_class`` is the ADGGateBase subclass.
+    """
+    if not spec.gate_class:
+        return None
+    try:
+        mod = importlib.import_module(spec.handler)
+    except (ImportError, SyntaxError, AttributeError):
+        return None
+    return getattr(mod, spec.gate_class, None)
+
+
+def _run_canonical_gate_in_process(spec: GateSpec, snapshot: Path) -> dict[str, Any]:
+    """Execute an ADGGateBase gate in-process; map status to the dispatcher row shape.
+
+    ADGGateBase.status is ``"blocked" | "passed" | "warn"``; map:
+        blocked -> exit_code=1, status="fail"
+        passed  -> exit_code=0, status="pass"
+        warn    -> exit_code=0, status="warn"
+    """
+    cls = _load_canonical_gate_class(spec)
+    if cls is None:
+        return _canonical_error_row(spec, "class_load_failed", [])
+
+    stderr_tail: list[str] = []
+    try:
+        # ``emit_artifacts=False`` avoids CI_ARTIFACTS_DIR writes during a
+        # fleet run — the dispatcher captures the gate JSON itself.
+        gate = cls(sqlite_path=snapshot)
+        result = gate.run(emit_artifacts=False)
+        count = len(result.violations)
+        raw_status = result.status
+        if raw_status == "blocked":
+            status, exit_code = "fail", 1
+        elif raw_status == "warn":
+            status, exit_code = "warn", 0
+        else:
+            status, exit_code = "pass", 0
+    except Exception as exc:  # guardian: allow-in-process-dispatcher -- isolate canonical gate failures
+        count = -1
+        status = "error"
+        exit_code = -1
+        stderr_tail = traceback.format_exception(type(exc), exc, exc.__traceback__)[-5:]
+
+    return {
+        "gate_id": spec.gate_id,
+        "band": spec.band.value,
+        "enforcement": spec.enforcement.value,
+        "source": spec.source.value,
+        "owner": spec.owner,
+        "handler": spec.handler,
+        "gate_class": spec.gate_class,
+        "dispatch": "in-process",
+        "exit_code": exit_code,
+        "violation_count": count,
+        "status": status,
+        "stderr_tail": [line.rstrip() for line in stderr_tail] if stderr_tail else [],
+    }
+
+
+def _canonical_error_row(spec: GateSpec, reason: str, stderr_tail: list[str]) -> dict[str, Any]:
+    """Return a canonical-gate row representing a dispatcher-level failure."""
+    return {
+        "gate_id": spec.gate_id,
+        "band": spec.band.value,
+        "enforcement": spec.enforcement.value,
+        "source": spec.source.value,
+        "owner": spec.owner,
+        "handler": spec.handler,
+        "gate_class": spec.gate_class,
+        "dispatch": "in-process",
+        "exit_code": -1,
+        "violation_count": -1,
+        "status": "error",
+        "error_reason": reason,
+        "stderr_tail": stderr_tail,
+    }
+
+
 def _run_gate(spec: GateSpec, snapshot: Path | None = None) -> dict[str, Any]:
     """Dispatch one gate in-process if possible, else via subprocess fallback."""
-    if spec.gate_class and snapshot is not None:
-        return _run_gate_in_process(spec, snapshot)
-    return _run_gate_subprocess(spec)
+    if snapshot is None or not spec.gate_class:
+        return _run_gate_subprocess(spec)
+    if spec.owner == "adg_gates":
+        return _run_canonical_gate_in_process(spec, snapshot)
+    return _run_gate_in_process(spec, snapshot)
 
 
 def _load_baseline(gate_id: str) -> int | None:
@@ -329,9 +416,26 @@ def _load_baseline(gate_id: str) -> int | None:
 
 
 def _classify(row: dict[str, Any]) -> str:
-    """Derive human-friendly status using (enforcement, baseline, count)."""
+    """Derive human-friendly status using (enforcement, baseline, count).
+
+    H5: canonical gates (owner='adg_gates') carry their own internal ratchet
+    (``ADGGateBase._compute_ratchet`` mutates the baseline json on disk), so
+    the gate's exit_code is authoritative — no external baseline file lookup.
+    Wiring gates (owner='wiring_ci') still need external baseline comparison.
+    """
     enf = row["enforcement"]
     count = row["violation_count"]
+    if row.get("owner") == "adg_gates":
+        row["baseline_count"] = None  # baseline is internal to ADGGateBase
+        if enf == "block":
+            if row["exit_code"] == 0:
+                return "pass"
+            return "blocked"
+        if enf == "ratchet":
+            if row["exit_code"] == 0:
+                return "pass"
+            return "regressed"
+        return "pass"  # warn
     baseline = _load_baseline(row["gate_id"])
     row["baseline_count"] = baseline
     if enf == "block":
@@ -393,9 +497,14 @@ def main(argv: list[str] | None = None) -> int:
     except (FileNotFoundError, ImportError, OSError):
         snapshot = None
 
+    # H5: fleet now covers CANONICAL_GATES (12, ADGGateBase) + WIRING_GATES (13, WiringGate).
+    # VALIDATION_GATES remain pipeline-phase gates inside generate_full_adg.py
+    # and are not dispatched here.
+    fleet: list[GateSpec] = [*CANONICAL_GATES, *WIRING_GATES]
+
     rows: list[dict[str, Any]] = []
     overall_exit = 0
-    for spec in tqdm(WIRING_GATES, desc="ADG gates", unit="gate"):
+    for spec in tqdm(fleet, desc="ADG gates", unit="gate"):
         row = _run_gate(spec, snapshot=snapshot)
         classification = _classify(row)
         row["classification"] = classification
