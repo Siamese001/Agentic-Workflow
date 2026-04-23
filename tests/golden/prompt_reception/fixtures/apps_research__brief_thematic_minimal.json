@@ -1,0 +1,42 @@
+{
+  "app": "apps_research",
+  "expected": {
+    "ordered_slots": [
+      "S0",
+      "I0",
+      "U0"
+    ],
+    "replay_key_digest_length": 64,
+    "replay_key_prefix": "rkslot-v1-",
+    "slot_map": {
+      "I0": "Use the source_register schema when citing.",
+      "S0": "You are a research assistant. Follow strict sourcing rules.",
+      "U0": "Summarize recent advances in agentic evaluation."
+    },
+    "slots_used": [
+      "S0",
+      "I0",
+      "U0"
+    ]
+  },
+  "fixture_schema_version": 1,
+  "inputs": {
+    "adapter_version": "v2",
+    "exemplar_task_class": null,
+    "slots": [
+      [
+        "S0",
+        "You are a research assistant. Follow strict sourcing rules."
+      ],
+      [
+        "I0",
+        "Use the source_register schema when citing."
+      ],
+      [
+        "U0",
+        "Summarize recent advances in agentic evaluation."
+      ]
+    ]
+  },
+  "scenario": "brief_thematic_minimal"
+}
