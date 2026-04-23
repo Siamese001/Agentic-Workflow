@@ -73,15 +73,37 @@ EXPLICIT_MARKER_RE = re.compile(
 )
 
 # Subject-line prefix — supports multi-phase like RH6B.1/2 and bare waves like LJH
+# Alt form: `wave C.3:` / `phase H5:` — prefix words `wave`/`phase` + ID
 SUBJECT_PREFIX_RE = re.compile(
-    r"^(?P<prefix>(?:" + PHASE_ID_WITH_SUB_RE + r")(?:/\d+(?:\.\d+)?)*|"
+    r"^(?:(?:wave|phase)\s+)?"
+    r"(?P<prefix>(?:" + PHASE_ID_WITH_SUB_RE + r")(?:/\d+(?:\.\d+)?)*|"
     + WAVE_ID_RE + r")(?:-closure)?:\s+(?P<subject_rest>.*)$",
-    re.MULTILINE,
+    re.IGNORECASE | re.MULTILINE,
 )
 
+# Expanded completion verb list. Includes phase-closure idioms used in this repo:
+# archive (dead code), wire/wired/wiring (adoption), fold/folded (consolidation),
+# seed/seeded (fixture/dataset), adopt/adopted/adoption (rollout),
+# merge/merged (SSOT merge), migrate/migrated/migration, promote/promoted/promotion,
+# consolidate/consolidated, harden/hardened/hardening (security), flip/flipped (mode change).
+# Deliberately EXCLUDED — too generic, cause false positives: add, update, implement, fix.
 COMPLETION_RE = re.compile(
-    r"\b(?:complete(?:d|s)?|closure|closed|land(?:ed|s)?|ship(?:ped|s)?|full|done|"
-    r"finalis[ez]ed?|finish(?:ed|es)?)\b",
+    r"\b(?:"
+    r"complete(?:d|s)?|closure|closed|land(?:ed|s)?|ship(?:ped|s)?|full|done|"
+    r"finalis[ez]ed?|finish(?:ed|es)?|"
+    r"archiv(?:e|ed|es|ing)|"
+    r"wir(?:e|ed|es|ing)|"
+    r"fold(?:ed|ing)?|"
+    r"seed(?:ed|ing)?|"
+    r"adopt(?:ed|ing|ion)?|"
+    r"merg(?:e|ed|es|ing)|"
+    r"migrat(?:e|ed|es|ing|ion)|"
+    r"promot(?:e|ed|es|ing|ion)|"
+    r"consolidat(?:e|ed|es|ing|ion)|"
+    r"harden(?:ed|ing)?|"
+    r"flip(?:ped|s|ping)?|"
+    r"remediat(?:e|ed|ion)"
+    r")\b",
     re.IGNORECASE,
 )
 
@@ -141,9 +163,15 @@ def extract_completion_targets(commit_msg: str) -> dict[str, list[str]]:
         elif re.match(PHASE_ID_WITH_SUB_RE + r"$", prefix):
             phases.add(prefix)
         else:
-            # Bare wave ID (no dot) — skip if it looks like a generic word
-            # Require either has-digits OR ≥3 uppercase letters (e.g. LJH, PRF)
-            if re.search(r"\d", prefix) or re.match(r"^[A-Z]{2,}$", prefix):
+            # Bare wave ID (no dot) — gated to prevent over-fanout via starts_with:
+            # 1. Must be ≥4 chars (e.g. LJH1, RH6B, PRF1) OR ≥3 uppercase letters (LJH, PRF)
+            #    → rejects W1, W2, E1, P2 which fan out to unrelated W10+, E10+ etc.
+            # 2. Pure-alpha IDs with no digits need ≥3 uppercase letters (e.g. LJH, PRF)
+            #    → rejects short hyphenated forms
+            has_digit = bool(re.search(r"\d", prefix))
+            is_long_alpha = bool(re.match(r"^[A-Z]{3,}$", prefix))
+            is_long_with_digit = has_digit and len(prefix) >= 4
+            if is_long_alpha or is_long_with_digit:
                 waves.add(prefix)
 
     return {"phases": sorted(phases), "waves": sorted(waves)}
