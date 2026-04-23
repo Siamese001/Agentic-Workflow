@@ -50,6 +50,11 @@ from agentic_core.L3_orchestration.exit_control.runtime_hitl_ledger import (
     RuntimeHitlLedger,
 )
 from agentic_core.L5_safety.exit_control.hitl_classes import HitlClass
+from apps_eval.integrations.meta_bus_publisher import (
+    KIND_HITL_QUALITY,
+    publish_eval_outcome,
+)
+from apps_eval.integrations.tracing import eval_span
 
 _log = logging.getLogger(__name__)
 
@@ -191,7 +196,7 @@ class HitlDecisionQualityEngine:
         policy_snapshots = {e.policy_snapshot for e in materialized if e.policy_snapshot}
         snapshot = next(iter(policy_snapshots)) if len(policy_snapshots) == 1 else ""
 
-        return HitlQualityReport(
+        report = HitlQualityReport(
             buckets=tuple(bucket_rows),
             overall_score=_clip_unit(overall),
             total_entries=len(materialized),
@@ -199,6 +204,32 @@ class HitlDecisionQualityEngine:
             pending_entries=pending_total,
             policy_snapshot=snapshot,
         )
+
+        # Publish to canonical meta-learning bus (plan W2 wiring).
+        with eval_span(
+            "apps_eval.v1.hitl_decision_quality.score_entries",
+            attributes={
+                "eval.total_entries": report.total_entries,
+                "eval.resolved_entries": report.resolved_entries,
+                "eval.pending_entries": report.pending_entries,
+                "eval.overall_score": report.overall_score,
+                "eval.bucket_count": len(report.buckets),
+            },
+        ):
+            publish_eval_outcome(
+                kind=KIND_HITL_QUALITY,
+                payload={
+                    "engine": self.AGENT_ID,
+                    "overall_score": report.overall_score,
+                    "total_entries": report.total_entries,
+                    "resolved_entries": report.resolved_entries,
+                    "pending_entries": report.pending_entries,
+                    "bucket_count": len(report.buckets),
+                    "policy_snapshot": report.policy_snapshot,
+                },
+            )
+
+        return report
 
     # ------------------------------------------------------------------
     # Per-bucket scoring

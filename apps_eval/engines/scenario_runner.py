@@ -11,6 +11,11 @@ Model-driven:  none — this is a pure evaluation harness.
 
 from __future__ import annotations
 
+from apps_eval.integrations.meta_bus_publisher import (
+    KIND_SUITE,
+    publish_eval_outcome,
+)
+from apps_eval.integrations.tracing import eval_span
 from apps_eval._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -891,36 +896,73 @@ class ScenarioRunner:
         """
         import uuid  # noqa: PLC0415
 
+        _trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ScenarioRunner.run_suite:{suite_id}"
+            _trace_id, LayerSegment.L3_ORCHESTRATION, f"ScenarioRunner.run_suite:{suite_id}"
         )
-        results: list[ScenarioResult] = []
 
-        for scenario_id in scenario_ids:
-            result = self._run_scenario(scenario_id, suite_id, timeout_sec)
-            results.append(result)
+        with eval_span(
+            "apps_eval.v1.scenario_runner.run_suite",
+            attributes={
+                "eval.trace_id": _trace_id,
+                "eval.suite_id": suite_id,
+                "eval.scenario_count": len(scenario_ids),
+                "eval.timeout_sec": timeout_sec,
+            },
+        ) as _span:
+            results: list[ScenarioResult] = []
 
-        if not results:
-            pass_rate = 0.0
-            mean_latency = 0.0
-        else:
-            passed = [r for r in results if r.outcome in (" PASS ", " SKIP ")]
-            pass_rate = len(passed) / len(results)
-            mean_latency = sum(r.latency_ms for r in results) / len(results)
+            for scenario_id in scenario_ids:
+                result = self._run_scenario(scenario_id, suite_id, timeout_sec)
+                results.append(result)
 
-        _log.info(
-            "[ScenarioRunner] suite=%s pass_rate=%.0f%% scenarios=%d",
-            suite_id,
-            pass_rate * 100,
-            len(results),
-        )
-        return SuiteResult(
-            suite_id=suite_id,
-            display_name=display_name,
-            scenarios=tuple(results),
-            pass_rate=pass_rate,
-            mean_latency_ms=mean_latency,
-        )
+            if not results:
+                pass_rate = 0.0
+                mean_latency = 0.0
+            else:
+                passed = [r for r in results if r.outcome in (" PASS ", " SKIP ")]
+                pass_rate = len(passed) / len(results)
+                mean_latency = sum(r.latency_ms for r in results) / len(results)
+
+            _log.info(
+                "[ScenarioRunner] suite=%s pass_rate=%.0f%% scenarios=%d",
+                suite_id,
+                pass_rate * 100,
+                len(results),
+            )
+
+            suite_result = SuiteResult(
+                suite_id=suite_id,
+                display_name=display_name,
+                scenarios=tuple(results),
+                pass_rate=pass_rate,
+                mean_latency_ms=mean_latency,
+            )
+
+            # Publish per-suite outcome; the scorecard_engine will later
+            # publish the aggregate across suites.
+            receipt = publish_eval_outcome(
+                kind=KIND_SUITE,
+                trace_id=_trace_id,
+                payload={
+                    "engine": "EVAL_SCENARIO_RUNNER",
+                    "suite_id": suite_id,
+                    "display_name": display_name,
+                    "scenario_count": len(results),
+                    "pass_rate": pass_rate,
+                    "mean_latency_ms": mean_latency,
+                },
+            )
+            try:
+                _span.set_attribute("eval.pass_rate", pass_rate)
+                _span.set_attribute("eval.bus_publish_ok", bool(receipt.ok))
+            except (
+                AttributeError,
+                TypeError,
+            ):  # guardian: allow-log-and-swallow -- span attr is best-effort telemetry
+                pass
+
+            return suite_result
 
     def _run_scenario(self, scenario_id: str, suite_id: str, timeout_sec: int) -> ScenarioResult:
         """Run a single scenario and return its result."""

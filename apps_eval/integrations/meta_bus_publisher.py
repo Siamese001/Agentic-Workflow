@@ -81,6 +81,9 @@ def _try_get_process_bus() -> Any | None:
     `system_learning` tree may not be importable.
     """
     try:
+        # guardian: allow-cross-layer-import -- apps_eval -> system_learning is the
+        # documented publisher boundary (plan eval-meta-otel-gap-review-ef4a20 W2).
+        # Kept lazy + fail-open so eval never hard-depends on system_learning.
         from system_learning.meta_learning.meta_learning_bus import get_process_bus
 
         return get_process_bus()
@@ -92,6 +95,7 @@ def _try_get_process_bus() -> Any | None:
 def _try_build_package(trace_id: str, kind: str, payload: dict[str, Any]) -> Any | None:
     """Construct a MetaLearningChangePackage. Returns None on import error."""
     try:
+        # guardian: allow-cross-layer-import -- see _try_get_process_bus rationale
         from system_learning.meta_learning.meta_learning_bus import (
             MetaLearningChangePackage,
         )
