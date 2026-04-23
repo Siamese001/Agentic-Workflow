@@ -47,4 +47,12 @@ register_standard_health(mcp, "pytest_mcp", extra=_pytest_health_extra)
 
 # ── Entry point ──────────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    # Guard against Windsurf double-spawn: two pytest MCP processes racing
+    # on the same test collection / coverage artifacts produce flaky,
+    # duplicated results. Added 2026-04-23 after RCA of orphan MCP fleet.
+    from tools.mcp.mcp_bootstrap import guard_single_instance
+    guard_single_instance(
+        "pytest_server.py",
+        skip_env="PYTEST_MCP_SKIP_ZOMBIE_KILL",
+    )
     run_server(mcp)

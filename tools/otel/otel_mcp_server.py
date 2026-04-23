@@ -67,6 +67,14 @@ def _prewarm() -> None:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stderr)
+    # Guard against Windsurf double-spawn: two otel MCP processes would both
+    # try to bind the same OTel collector port/ingest lock. Added 2026-04-23
+    # after RCA of orphan MCP session fleet.
+    from tools.mcp.mcp_bootstrap import guard_single_instance
+    guard_single_instance(
+        ("tools/otel/otel_mcp_server.py", "tools.otel.otel_mcp_server"),
+        skip_env="OTEL_MCP_SKIP_ZOMBIE_KILL",
+    )
     logger.info("Starting OpenTelemetry MCP Server")
     _prewarm()
     mcp.run(transport=config.tool_transport)

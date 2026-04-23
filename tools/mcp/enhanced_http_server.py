@@ -33,4 +33,12 @@ register_standard_health(mcp, "enhanced_http", extra=_http_health_extra)
 
 
 if __name__ == "__main__":
+    # Guard against Windsurf double-spawn: two HTTP MCP processes wastes
+    # aiohttp session pools and doubles outbound connection count. Added
+    # 2026-04-23 after RCA of orphan MCP session fleet.
+    from tools.mcp.mcp_bootstrap import guard_single_instance
+    guard_single_instance(
+        "enhanced_http_server.py",
+        skip_env="ENHANCED_HTTP_SKIP_ZOMBIE_KILL",
+    )
     run_server(mcp)
