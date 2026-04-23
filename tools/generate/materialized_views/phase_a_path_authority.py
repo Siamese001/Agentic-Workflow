@@ -302,6 +302,12 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
         JOIN nodes dst ON dst.id = e.dst_id
         WHERE {forbidden_pairs_clause}
           AND e.relation_type IN ('imports', 'calls', 'violates', 'writes_to', 'writes_through')
+          -- Primitive-provider exemption (Author-Gate 2026-04-23):
+          -- config/* and types/* subdirectories expose pure constants/Enums/dataclasses
+          -- that are legitimately shared across layers. Functional cross-layer calls
+          -- (enforcement/*, reasoning/*, orchestration/*) remain flagged.
+          AND dst.resolved_path NOT LIKE '%/config/%'
+          AND dst.resolved_path NOT LIKE '%/types/%'
         ORDER BY breach_class, src.layer, dst.layer
     """)
 
