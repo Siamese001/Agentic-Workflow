@@ -1,0 +1,6 @@
+{
+  "gate_id": "A3B_dead_methods_in_live_classes_ratchet",
+  "count": 613,
+  "seeded_at": "2026-04-23T17:12:36.478719+00:00",
+  "snapshot": "adg_indexed_04232026_0925.sqlite"
+}
