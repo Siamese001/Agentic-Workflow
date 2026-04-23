@@ -1,5 +1,6 @@
 # Wiring-CI gate waivers
 # Consumed by: ops_scripts/ci/_adg_wiring_gate_base.py
+# Validated by: ops_scripts/ci/check_waiver_provenance.py (W6, BLOCKING)
 #
 # Each entry waives a specific (gate, scope) tuple until expires_on.
 # Required fields:
@@ -8,6 +9,18 @@
 #   reason:     short human justification
 #   owner:      email or handle
 #   expires_on: YYYY-MM-DD (hard cap — gate re-fires automatically after)
+#
+# Provenance (W6 requirement — MUST provide at least ONE of):
+#   adr:   docs/architecture/adr/ADR-NNN-*.md filename (must exist)
+#   plan:  .windsurf/plans/<slug>-<6hex>.md filename (must exist)
+#
+# Example:
+#   - gate: G_REACH_l0_reachability
+#     scope: agentic_core/L_CONTRACTS/
+#     reason: "Contract namespace imported via dynamic registry"
+#     owner: amit@workflow.local
+#     expires_on: 2026-07-31
+#     plan: c0-context-engine-wiring-fix-9e42a1.md
 #
 # Waivers are read, not written, by CI. Add manually via PR review.
 
