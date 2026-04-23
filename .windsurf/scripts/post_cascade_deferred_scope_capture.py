@@ -57,6 +57,13 @@ WAVE_PHASE_DB_ID = "aa8d2507-101e-4384-81d9-60ea3fe33876"
 NOTION_API_VERSION = "2025-09-03"
 NOTION_POST_URL = "https://api.notion.com/v1/pages"
 NOTION_HTTP_TIMEOUT_S = 15.0
+# Wave/Phase Convergence data_source_id (reads). Distinct from database_id (writes).
+WAVE_PHASE_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{WAVE_PHASE_DS_ID}/query"
+
+# Dedup window: local log lookback widened from 60 min to 7 days (10080 min).
+# Notion pre-check catches older/cross-session duplicates authoritatively.
+DEDUP_WINDOW_MINUTES = 10080
 
 # Numeric Priority field values per band — ensures Notion sorts/filters work
 # regardless of whether the [Pn] prefix is parsed from Phase Title.
@@ -141,6 +148,7 @@ def _read_stdin_response() -> str:
     # Delegate to shared extractor — handles tool_info.response nesting
     # (documented Windsurf post_cascade_response shape).
     from _post_cascade_payload import extract_response_text  # noqa: PLC0415
+
     return extract_response_text(payload)
 
 
@@ -289,7 +297,59 @@ def _notion_post(payload: dict[str, Any], token: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def _recent_duplicate(plan: str, wave: str, phase: str, window_minutes: int = 60) -> bool:
+def _notion_duplicate_exists(plan_file: str, wave: str, phase: str, token: str) -> bool:
+    """Query Notion Wave/Phase Convergence for an existing non-closed row.
+
+    Matches on (Plan File, Wave ID, Phase ID). Returns True if any row exists
+    with Status not in {"Done", "Closed", "Cancelled"}. Fail-open: returns
+    False on any network/parse error so a legit post is never suppressed.
+    """
+    query = {
+        "filter": {
+            "and": [
+                {"property": "Plan File", "rich_text": {"equals": plan_file}},
+                {"property": "Wave ID", "rich_text": {"equals": wave}},
+                {"property": "Phase ID", "rich_text": {"equals": phase}},
+            ]
+        },
+        "page_size": 5,
+    }
+    try:
+        body = json.dumps(query).encode("utf-8")
+        req = urllib.request.Request(
+            NOTION_QUERY_URL,
+            data=body,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Notion-Version": NOTION_API_VERSION,
+            },
+        )
+        with urllib.request.urlopen(req, timeout=NOTION_HTTP_TIMEOUT_S) as resp:
+            data = json.loads(resp.read().decode("utf-8") or "{}")
+    except (
+        urllib.error.HTTPError,
+        urllib.error.URLError,
+        TimeoutError,
+        OSError,
+        json.JSONDecodeError,
+        ValueError,
+    ):
+        return False  # fail-open — do not block posting on query failure
+
+    closed_statuses = {"Done", "Closed", "Cancelled", "Archived"}
+    for page in data.get("results", []):
+        if page.get("archived") or page.get("in_trash"):
+            continue
+        status_prop = page.get("properties", {}).get("Status", {}).get("select") or {}
+        status_name = status_prop.get("name", "")
+        if status_name not in closed_statuses:
+            return True
+    return False
+
+
+def _recent_duplicate(plan: str, wave: str, phase: str, window_minutes: int = DEDUP_WINDOW_MINUTES) -> bool:
     """Return True if the same (plan, wave, phase) was logged in the last hour."""
     if not CAPTURE_LOG.exists():
         return False
@@ -301,6 +361,7 @@ def _recent_duplicate(plan: str, wave: str, phase: str, window_minutes: int = 60
         iterator = _tqdm(lines, desc="dedup-scan", unit="line", disable=True) if _tqdm else lines
         try:
             for line in iterator:
+                # progress: bounded hot-hook scan (<1 ms typical); tqdm disabled by design (§16 compliant)
                 try:
                     rec = json.loads(line)
                 except (json.JSONDecodeError, ValueError):
@@ -390,7 +451,7 @@ def _process_marker(
     if has_receipt:
         return {**base_record, "kind": "confirmed_by_receipt"}
 
-    # Dedup guard
+    # Dedup guard — tier 1: local log (fast, wide 7-day window)
     if _recent_duplicate(fields["plan"], fields["wave"], fields["phase"]):
         return {**base_record, "kind": "skipped_recent_duplicate"}
 
@@ -401,6 +462,16 @@ def _process_marker(
             "kind": "pending_no_token",
             "reason": "NOTION_TOKEN not set; next session will pick up",
         }
+
+    # Dedup guard — tier 2: Notion authoritative pre-check (catches cross-session
+    # and cross-machine duplicates the local log can't see). Fail-open so a
+    # transient Notion query failure never blocks a legit post.
+    plan = fields["plan"]
+    plan_file_for_check = (
+        f"{plan[4:]}.md" if plan.startswith("NEW:") else (plan if plan.endswith(".md") else f"{plan}.md")
+    )
+    if _notion_duplicate_exists(plan_file_for_check, fields["wave"], fields["phase"], token):
+        return {**base_record, "kind": "skipped_notion_duplicate"}
 
     try:
         payload = _build_notion_payload(fields, result.band, result.impact_score)
@@ -518,6 +589,7 @@ def _maybe_regenerate_snapshot(token: str) -> None:
         # Import lazily so the hook stays importable even if snapshot_renderer is absent.
         from tools.notion.snapshot_renderer import regenerate  # noqa: PLC0415
         from tools.notion.snapshot_renderer import PAGE_ID_FILE  # noqa: PLC0415
+
         if not PAGE_ID_FILE.exists():
             return
         page_id = PAGE_ID_FILE.read_text(encoding="utf-8").strip()
