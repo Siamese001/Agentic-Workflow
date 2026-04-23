@@ -1,3 +1,17 @@
 """Shim — re-exports from agentic_core.utils.workflow_engines.interfaces for backward compatibility."""
 
-# TODO: Unused star import from agentic_core.utils.workflow_engines.interfaces
+from agentic_core.utils.workflow_engines.interfaces import (  # noqa: F401
+    Document,
+    ICandidateFusion,
+    IReranker,
+    IRetrieverLexical,
+    IRetrieverVector,
+)
+
+__all__ = [
+    "Document",
+    "ICandidateFusion",
+    "IReranker",
+    "IRetrieverLexical",
+    "IRetrieverVector",
+]
