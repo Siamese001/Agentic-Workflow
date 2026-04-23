@@ -62,6 +62,24 @@ def test_rg_spec_inherits_reception_fields() -> None:
     assert specs.exemplar_task_class is None
 
 
+def test_lic_spec_inherits_reception_fields() -> None:
+    """apps_lic minimal-scaffolding root added as delta fix for RH5B.1."""
+    from apps_lic.config.agent_spec_config import LicAgentSpecs
+
+    specs = LicAgentSpecs()
+    assert specs.adapter_version == "v2"
+    assert specs.exemplar_task_class is None
+
+
+def test_underwriting_spec_inherits_reception_fields() -> None:
+    """apps_underwriting_ai minimal-scaffolding root added as delta fix for RH5B.1."""
+    from apps_underwriting_ai.config.agent_spec_config import UnderwritingAgentSpecs
+
+    specs = UnderwritingAgentSpecs()
+    assert specs.adapter_version == "v2"
+    assert specs.exemplar_task_class is None
+
+
 def test_adapter_version_rejects_invalid_value() -> None:
     """Literal['v1','v2'] is enforced by Pydantic at validation time."""
     import pytest

@@ -32,32 +32,24 @@ Downstream AgentSpec root models inherit from this mixin in addition to
 The mixin itself does NOT inherit ``BaseModel`` so it is compatible with
 models that already have competing MRO paths.
 
-Apps currently wired
---------------------
+Apps currently wired (all 7)
+----------------------------
 
 - ``apps_research.config.agent_spec_config.ResearchAgentSpecs``
 - ``apps_eval.config.agent_spec_config.EvalAgentSpecs``
 - ``apps_exec.config.agent_spec_config.ExecAgentSpecs``
 - ``apps_rfp.config.agent_spec_config.RfpAgentSpecs``
 - ``apps_rg.config.agent_spec_config.RGAgentSpecs``
+- ``apps_lic.config.agent_spec_config.LicAgentSpecs`` (minimal scaffolding)
+- ``apps_underwriting_ai.config.agent_spec_config.UnderwritingAgentSpecs``
+  (minimal scaffolding)
 
-Apps NOT wired (and why)
-------------------------
-
-- ``apps_lic`` — ships per-component configs
-  (``archetype_indicator_config.py``, ``loader_config.py``, etc.) but has
-  no single AgentSpec root Pydantic model. Wiring the mixin requires
-  first introducing such a root model; that work belongs in a dedicated
-  ``apps_lic`` config consolidation plan, not in this reception plan.
-- ``apps_underwriting_ai`` — configuration lives entirely in YAML
-  (``covenant_templates.yaml``, ``industry_risk_weights.yaml``,
-  ``policy_exception_rules.yaml``) with no Pydantic root model. Same
-  reasoning: introducing a Pydantic AgentSpec class is a separate
-  architectural decision.
-
-These two apps will adopt the mixin when their respective AgentSpec root
-models are introduced. Captured as deferred scope in
-``.windsurf/plans/prompt-reception-followups-a7b3c4.md``.
+For ``apps_lic`` and ``apps_underwriting_ai``, the AgentSpec root is
+intentionally minimal — it carries only the reception-pipeline fields.
+Domain configuration for those apps continues to live in their existing
+per-component Pydantic modules / YAML files. Consolidating that domain
+config into the new root is explicitly out of scope for the reception
+plan.
 """
 
 from __future__ import annotations
