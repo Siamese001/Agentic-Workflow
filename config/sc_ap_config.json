@@ -9,5 +9,33 @@
     "baseline_snapshot": "adg_indexed_04222026_2106.sqlite",
     "baseline_date": "2026-04-23",
     "notes": "P2 W5 flip (2026-04-23): audit_mode=false. Any new SC-1 gravity violation causes generate_full_adg.py to exit non-zero. See ADR-032."
+  },
+  "SC-5": {
+    "enabled": true,
+    "audit_mode": false,
+    "promoted_date": "2026-04-23",
+    "enforce_date": "2026-04-23",
+    "label": "Agentic spine completeness",
+    "baseline_snapshot": "adg_indexed_04232026_0925.sqlite",
+    "baseline_date": "2026-04-23",
+    "notes": "H2 promotion (2026-04-23): audit\u2192block. Spine completeness (L1\u2192L0\u2192L2 path) now CI-blocking. Previously audit-only since 2026-04-14. Would have caught C0 class of regressions if it had been blocking. See plan adg-wiring-ci-hardening-7a5d84.md H2 and Notion Wave/Phase Convergence row 34b27693-f55c-81c2-9a77-cc7c311deef5."
+  },
+  "SC-7": {
+    "enabled": true,
+    "audit_mode": true,
+    "promoted_date": "2026-04-23",
+    "label": "Grounding contract / C0-PA separation",
+    "baseline_snapshot": "adg_indexed_04232026_0925.sqlite",
+    "baseline_date": "2026-04-23",
+    "notes": "H2 promotion (2026-04-23): disabled\u2192enabled+audit (ratchet). consumes_prompt+invokes_provider without pulls_context now surfaces violations. Starts in audit_mode to seed a baseline; flip to audit=false after 1-week calibration window."
+  },
+  "AP-14": {
+    "enabled": true,
+    "audit_mode": true,
+    "promoted_date": "2026-04-23",
+    "label": "Retrieval without evidence contract",
+    "baseline_snapshot": "adg_indexed_04232026_0925.sqlite",
+    "baseline_date": "2026-04-23",
+    "notes": "H2 promotion (2026-04-23): disabled\u2192enabled+audit (ratchet). pulls_context without guardrail now surfaces violations. Starts in audit_mode to seed a baseline; flip to audit=false after 1-week calibration window. C0.5 evidence gap would have been caught by this gate."
   }
 }

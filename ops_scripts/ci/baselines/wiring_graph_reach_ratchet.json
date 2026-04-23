@@ -1,0 +1,7 @@
+{
+  "gate_id": "G_REACH_l0_reachability",
+  "count": 1993,
+  "seeded_at": "2026-04-23T15:00:00+00:00",
+  "snapshot": "adg_indexed_04232026_0925.sqlite",
+  "notes": "H2 baseline. 1993 production modules not L0-reachable via 'imports' edges. Many are legit (utility libs, plugins, indirect dispatch targets). Ratchet: new orphans fail. After C0 wiring fix lands, planned W6 follow-up to flip tier R->B and prune baseline."
+}

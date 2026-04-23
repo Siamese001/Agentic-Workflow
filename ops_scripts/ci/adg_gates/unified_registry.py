@@ -177,7 +177,7 @@ VALIDATION_GATES: list[GateSpec] = [
         Source.SQL,
         "validation",
         "validation.gates._check_structural_conformance",
-        notes="SC-1 covers layer gravity + cycles; SC-5 spine completeness; SC-7 grounding contract",
+        notes="SC-1 layer gravity+cycles (BLOCK 2026-04-23); SC-5 spine completeness (promoted audit->BLOCK in H2 2026-04-23, 0 current violations); SC-7 grounding contract (promoted disabled->enabled+audit RATCHET in H2 2026-04-23, 0 current violations)",
     ),
     GateSpec(
         "v_agentic_antipatterns",
@@ -186,7 +186,7 @@ VALIDATION_GATES: list[GateSpec] = [
         Source.SQL,
         "validation",
         "validation.gates._check_agentic_antipatterns",
-        notes="AP-18 prompt-assembly disconnect (enabled); AP-14 retrieval without evidence contract (disabled; queued for H2)",
+        notes="AP-18 prompt-assembly disconnect (BLOCK); AP-14 retrieval without evidence contract (promoted disabled->enabled+audit RATCHET in H2 2026-04-23, 2 current violations surfacing)",
     ),
     GateSpec(
         "v_witness_tier_gates",
@@ -285,15 +285,19 @@ WIRING_GATES: list[GateSpec] = [
         "wiring_ci",
         "ops_scripts/ci/check_unused_imports_ratchet.py",
     ),
-    GateSpec(
-        "W5_waiver_expiry",
-        Band.P0,
-        Enforcement.BLOCK,
-        Source.DISK,
-        "wiring_ci",
-        "ops_scripts/ci/check_waiver_expiry.py",
-        notes="Governance gate — blocks on any expired wiring-CI waiver",
-    ),
+    GateSpec("W5_waiver_expiry", Band.P0, Enforcement.BLOCK, Source.DISK,
+             "wiring_ci", "ops_scripts/ci/check_waiver_expiry.py",
+             notes="Governance gate — blocks on any expired wiring-CI waiver"),
+    # -- Graph-native gates (added in H2, 2026-04-23) -----------------------
+    GateSpec("G_REACH_l0_reachability", Band.P0, Enforcement.RATCHET, Source.GRAPH,
+             "wiring_ci", "ops_scripts/ci/check_graph_reach.py",
+             notes="H2 graph-native. NetworkX descendants-from-L0 over 'imports' edges. 2nd independent signal for C0-class wiring gaps. Baseline 1993 seeded 2026-04-23; flip to BLOCK after C0 wiring fix."),
+    GateSpec("G_ISLAND_connected_components", Band.P1, Enforcement.RATCHET, Source.GRAPH,
+             "wiring_ci", "ops_scripts/ci/check_graph_island.py",
+             notes="H2 graph-native. Non-giant connected components via nx.connected_components on undirected 'imports' projection. Baseline 0 seeded 2026-04-23."),
+    GateSpec("G_WATCHLIST_DELTA_hotspot_regressions", Band.P1, Enforcement.RATCHET, Source.GRAPH,
+             "wiring_ci", "ops_scripts/ci/check_graph_watchlist_delta.py",
+             notes="H2 graph-native. Wraps ADGGraphWatchlistBuilder regression classification; promotes previously-passive intelligence to exit-code gate. Baseline 0 seeded 2026-04-23."),
 ]
 
 # -----------------------------------------------------------------------------

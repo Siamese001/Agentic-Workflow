@@ -1,0 +1,7 @@
+{
+  "gate_id": "G_ISLAND_connected_components",
+  "count": 0,
+  "seeded_at": "2026-04-23T15:00:00+00:00",
+  "snapshot": "adg_indexed_04232026_0925.sqlite",
+  "notes": "H2 baseline. Graph is one giant component under undirected imports projection. Ratchet: any new non-giant component with >=2 modules fails."
+}

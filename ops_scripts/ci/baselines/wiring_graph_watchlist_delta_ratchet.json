@@ -1,0 +1,7 @@
+{
+  "gate_id": "G_WATCHLIST_DELTA_hotspot_regressions",
+  "count": 0,
+  "seeded_at": "2026-04-23T15:00:00+00:00",
+  "snapshot": "adg_indexed_04232026_0925.sqlite",
+  "notes": "H2 baseline. Wraps existing ADGGraphWatchlistBuilder regression classification. Ratchet: any net-new hotspot regression (NEW_HOTSPOT or WORSENED) fails."
+}
