@@ -17,6 +17,10 @@ from typing import Any, Protocol
 
 from tqdm import tqdm
 
+from agentic_core.L2_execution.enforcement._reception_audit import (
+    build_evidence as _build_reception_evidence,
+    emit as _emit_reception_evidence,
+)
 from agentic_core.L2_execution.reasoning import CompiledPromptArtifact
 
 _LOGGER = logging.getLogger(__name__)
@@ -556,6 +560,19 @@ class SovereignLLMGateway:
             # Merge with user-provided kwargs (user values take precedence)
             reasoning_kwargs.update(kwargs)
 
+            # W1 RH1.1: reception-audit log before provider call (log-only, no behavior change).
+            _emit_reception_evidence(
+                _build_reception_evidence(
+                    trace_id=artifact.trace_id,
+                    provider_name=provider_type.name,
+                    final_system_string=artifact.final_system_string,
+                    final_user_string=artifact.final_user_string,
+                    tools_schema=artifact.allowed_tools_schema,
+                    token_estimate=getattr(artifact, "tokens", getattr(artifact, "token_estimate", 0)),
+                    signature=artifact.signature,
+                ),
+            )
+
             response = self._circuit_breaker.call(
                 provider_impl.generate,
                 artifact.final_system_string,
@@ -651,6 +668,19 @@ class SovereignLLMGateway:
         tokens_out = 0
 
         try:
+            # W1 RH1.1: reception-audit log before provider call (log-only, no behavior change).
+            _emit_reception_evidence(
+                _build_reception_evidence(
+                    trace_id=artifact.trace_id,
+                    provider_name=provider_type.name,
+                    final_system_string=artifact.final_system_string,
+                    final_user_string=artifact.final_user_string,
+                    tools_schema=artifact.allowed_tools_schema,
+                    token_estimate=getattr(artifact, "tokens", getattr(artifact, "token_estimate", 0)),
+                    signature=artifact.signature,
+                ),
+            )
+
             response = self._circuit_breaker.call(
                 provider_impl.generate,
                 artifact.final_system_string,

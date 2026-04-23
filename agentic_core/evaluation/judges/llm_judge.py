@@ -500,7 +500,11 @@ class GeminiJudge:
         return cast(str, response.text)
 
     def _score_dimension(
-        self, dimension: str, query: str, context: str, answer: str,
+        self,
+        dimension: str,
+        query: str,
+        context: str,
+        answer: str,
     ) -> tuple[float, str | None, str]:
         """Score one dimension. Returns (score, unknown_reason, reasoning)."""
         rubric = DIMENSION_RUBRICS[dimension]
@@ -528,9 +532,7 @@ class GeminiJudge:
             if reason is not None:
                 unknown_reasons[dim] = reason
 
-        aggregate_reasoning = "; ".join(
-            f"[{dim}] {per_dim_reasoning[dim][:200]}" for dim in DIMENSIONS
-        )
+        aggregate_reasoning = "; ".join(f"[{dim}] {per_dim_reasoning[dim][:200]}" for dim in DIMENSIONS)
         return JudgeScore.create(
             faithfulness=scores["faithfulness"],
             answer_relevancy=scores["answer_relevancy"],

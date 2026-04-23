@@ -46,9 +46,7 @@ def cohens_kappa(rater_a: Iterable[Any], rater_b: Iterable[Any]) -> float:
     are fewer than 2 comparable items.
     """
     pairs = [
-        (a, b)
-        for a, b in zip(rater_a, rater_b, strict=False)
-        if not _is_missing(a) and not _is_missing(b)
+        (a, b) for a, b in zip(rater_a, rater_b, strict=False) if not _is_missing(a) and not _is_missing(b)
     ]
     n = len(pairs)
     if n < 2:
@@ -59,9 +57,7 @@ def cohens_kappa(rater_a: Iterable[Any], rater_b: Iterable[Any]) -> float:
     counts_a = Counter(a for a, _ in pairs)
     counts_b = Counter(b for _, b in pairs)
     labels = set(counts_a) | set(counts_b)
-    expected = sum(
-        (counts_a.get(label, 0) / n) * (counts_b.get(label, 0) / n) for label in labels
-    )
+    expected = sum((counts_a.get(label, 0) / n) * (counts_b.get(label, 0) / n) for label in labels)
     if expected >= 1.0:
         return 1.0 if observed >= 1.0 else float("nan")
     return (observed - expected) / (1.0 - expected)
@@ -182,11 +178,15 @@ def summarize_judge_vs_human(
     if not shared_ids:
         return JudgeCalibrationReport(n_items=0)
 
-    dims = tuple(dimensions) if dimensions is not None else (
-        "faithfulness",
-        "answer_relevancy",
-        "context_precision",
-        "groundedness",
+    dims = (
+        tuple(dimensions)
+        if dimensions is not None
+        else (
+            "faithfulness",
+            "answer_relevancy",
+            "context_precision",
+            "groundedness",
+        )
     )
 
     report = JudgeCalibrationReport(n_items=len(shared_ids))
@@ -205,12 +205,11 @@ def summarize_judge_vs_human(
                 unknown_n += 1
         report.dimension_kappa[dim] = round(cohens_kappa(humans, machines), 4)
         ratings_matrix = [
-            [h, m]
-            for h, m in zip(humans, machines, strict=False)
-            if not (_is_missing(h) and _is_missing(m))
+            [h, m] for h, m in zip(humans, machines, strict=False) if not (_is_missing(h) and _is_missing(m))
         ]
         report.dimension_alpha[dim] = round(
-            krippendorffs_alpha(ratings_matrix), 4,
+            krippendorffs_alpha(ratings_matrix),
+            4,
         )
         report.unknown_rate_by_dim[dim] = round(unknown_n / len(shared_ids), 4)
 

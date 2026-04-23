@@ -105,12 +105,7 @@ class ClaudeJudge:
         answer: str,
     ) -> tuple[float, str | None, str]:
         rubric = DIMENSION_RUBRICS[dimension]
-        prompt = (
-            f"{rubric}\n\n"
-            f"Query:\n{query}\n\n"
-            f"Context:\n{context}\n\n"
-            f"Answer:\n{answer}"
-        )
+        prompt = f"{rubric}\n\nQuery:\n{query}\n\nContext:\n{context}\n\nAnswer:\n{answer}"
         try:
             raw = self._generate(prompt)
         except (RuntimeError, ValueError, OSError) as exc:
@@ -135,9 +130,7 @@ class ClaudeJudge:
             if reason is not None:
                 unknown_reasons[dim] = reason
 
-        aggregate_reasoning = "; ".join(
-            f"[{dim}] {per_dim_reasoning[dim][:200]}" for dim in DIMENSIONS
-        )
+        aggregate_reasoning = "; ".join(f"[{dim}] {per_dim_reasoning[dim][:200]}" for dim in DIMENSIONS)
         return JudgeScore.create(
             faithfulness=scores["faithfulness"],
             answer_relevancy=scores["answer_relevancy"],

@@ -69,7 +69,7 @@ def pass_hat_k(n: int, c: int, k: int) -> float:
     """
     _validate_common(n, c, k)
     p = c / n if n > 0 else 0.0
-    return p ** k
+    return p**k
 
 
 @dataclass(frozen=True)
@@ -92,10 +92,7 @@ class StabilityReport:
         n = len(results)
         c = sum(1 for r in results if r)
         pass_rate = c / n if n > 0 else 0.0
-        pak = tuple(
-            (k, pass_at_k(n, c, k) if k <= n else float("nan"))
-            for k in k_values
-        )
+        pak = tuple((k, pass_at_k(n, c, k) if k <= n else float("nan")) for k in k_values)
         phk = tuple((k, pass_hat_k(n, c, k)) for k in k_values)
         return cls(
             n=n,

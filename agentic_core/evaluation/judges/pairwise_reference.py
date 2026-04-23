@@ -227,7 +227,10 @@ class PairwiseJudge:
         answer_b: str,
     ) -> PairwiseVerdict:
         winner, conf, reasoning, reason = self._one_pass(
-            query, context, answer_a, answer_b,
+            query,
+            context,
+            answer_a,
+            answer_b,
         )
 
         if not self._swap or winner in {"TIE", "Unknown"}:
@@ -245,7 +248,10 @@ class PairwiseJudge:
         # winner should FLIP ("A" -> "B" or vice versa). If it doesn't,
         # the judge exhibited position bias on this pair.
         swap_winner, swap_conf, swap_reasoning, swap_reason = self._one_pass(
-            query, context, answer_b, answer_a,
+            query,
+            context,
+            answer_b,
+            answer_a,
         )
         expected_flip = {"A": "B", "B": "A"}.get(winner, winner)
         agreed = swap_winner == expected_flip

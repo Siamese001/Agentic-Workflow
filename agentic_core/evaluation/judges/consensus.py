@@ -121,21 +121,12 @@ class ConsensusJudge:
                 flagged.append(dim)
             if _is_nan(aggregated[dim]):
                 # Collect merged Unknown reasons across judges.
-                reasons = [
-                    reason
-                    for js in per_judge
-                    for key, reason in js.unknown_reasons
-                    if key == dim
-                ]
-                unknown_reasons[dim] = (
-                    "; ".join(reasons) if reasons else "all judges abstained"
-                )
+                reasons = [reason for js in per_judge for key, reason in js.unknown_reasons if key == dim]
+                unknown_reasons[dim] = "; ".join(reasons) if reasons else "all judges abstained"
 
         # Consensus reasoning = concatenation of each judge's free text,
         # labelled by model id.
-        aggregate_reasoning = " || ".join(
-            f"[{js.judge_model}] {js.reasoning[:200]}" for js in per_judge
-        )
+        aggregate_reasoning = " || ".join(f"[{js.judge_model}] {js.reasoning[:200]}" for js in per_judge)
         judge_model_label = f"consensus({','.join(sorted({js.judge_model for js in per_judge}))})"
 
         consensus_score = JudgeScore.create(

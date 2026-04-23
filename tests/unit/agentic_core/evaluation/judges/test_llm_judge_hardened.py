@@ -72,10 +72,7 @@ def _dim_response(score: int | str, reasoning: str = "stub") -> str:
             f"<reasoning>{reasoning}</reasoning>\n"
             f'{{"score": "{score}", "unknown_reason": "insufficient context"}}'
         )
-    return (
-        f"<reasoning>{reasoning}</reasoning>\n"
-        f'{{"score": {score}, "unknown_reason": null}}'
-    )
+    return f'<reasoning>{reasoning}</reasoning>\n{{"score": {score}, "unknown_reason": null}}'
 
 
 # ---------------------------------------------------------------------------
@@ -218,7 +215,11 @@ class _FixedJudge:
 
 
 def _score(
-    f: float, r: float, p: float, g: float, model: str = "stub",
+    f: float,
+    r: float,
+    p: float,
+    g: float,
+    model: str = "stub",
     unknown_reasons: dict[str, str] | None = None,
 ) -> JudgeScore:
     return JudgeScore.create(
@@ -267,14 +268,8 @@ def test_consensus_flags_disagreement() -> None:
 def test_consensus_returns_unknown_when_all_judges_abstain() -> None:
     consensus = ConsensusJudge(
         [
-            _FixedJudge(
-                _score(float("nan"), 4, 4, 4, "a",
-                       unknown_reasons={"faithfulness": "no ctx"})
-            ),
-            _FixedJudge(
-                _score(float("nan"), 4, 4, 4, "b",
-                       unknown_reasons={"faithfulness": "parse_error"})
-            ),
+            _FixedJudge(_score(float("nan"), 4, 4, 4, "a", unknown_reasons={"faithfulness": "no ctx"})),
+            _FixedJudge(_score(float("nan"), 4, 4, 4, "b", unknown_reasons={"faithfulness": "parse_error"})),
         ],
     )
     result = consensus.grade("q", "c", "a")

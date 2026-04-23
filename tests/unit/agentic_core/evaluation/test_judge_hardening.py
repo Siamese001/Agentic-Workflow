@@ -23,9 +23,11 @@ from agentic_core.evaluation.judges.schema import (
     JudgeResponseError,
     validate_dim_response,
 )
+
 # Import directly from the stability module (metrics/__init__.py has
 # unrelated pre-existing import errors that would shadow this).
 import importlib
+
 _stability = importlib.import_module("agentic_core.evaluation.metrics.stability")
 StabilityReport = _stability.StabilityReport
 pass_at_k = _stability.pass_at_k
@@ -120,7 +122,7 @@ def test_pass_at_k_partial() -> None:
 
 def test_pass_hat_k_falls_with_k() -> None:
     # 75% per-trial success -> pass^3 = 0.75**3 ~ 0.422
-    assert math.isclose(pass_hat_k(n=4, c=3, k=3), 0.75 ** 3, rel_tol=1e-9)
+    assert math.isclose(pass_hat_k(n=4, c=3, k=3), 0.75**3, rel_tol=1e-9)
     # pass^k is monotonically non-increasing in k
     assert pass_hat_k(n=4, c=3, k=1) >= pass_hat_k(n=4, c=3, k=5)
 

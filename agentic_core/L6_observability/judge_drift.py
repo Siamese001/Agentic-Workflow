@@ -43,14 +43,14 @@ DEFAULT_FLOORS: dict[str, float] = {
 class DriftEvent:
     """One drift signal surfaced by the monitor."""
 
-    kind: str            # 'kappa_below_floor' | 'alpha_below_floor' |
-                         # 'unknown_over_budget' | 'kappa_regression' |
-                         # 'alpha_regression'
+    kind: str  # 'kappa_below_floor' | 'alpha_below_floor' |
+    # 'unknown_over_budget' | 'kappa_regression' |
+    # 'alpha_regression'
     dimension: str
     current: float
     previous: float | None
     threshold: float
-    severity: str        # 'HIGH' | 'MEDIUM' | 'LOW'
+    severity: str  # 'HIGH' | 'MEDIUM' | 'LOW'
     detail: str
 
     def to_dict(self) -> dict[str, Any]:

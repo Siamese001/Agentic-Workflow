@@ -76,7 +76,11 @@ class OpenAIJudge:
         return completion.choices[0].message.content or ""
 
     def _score_dimension(
-        self, dimension: str, query: str, context: str, answer: str,
+        self,
+        dimension: str,
+        query: str,
+        context: str,
+        answer: str,
     ) -> tuple[float, str | None, str]:
         rubric = DIMENSION_RUBRICS[dimension]
         prompt = f"{rubric}\n\nQuery: {query}\n\nContext:\n{context}\n\nAnswer:\n{answer}"
@@ -103,9 +107,7 @@ class OpenAIJudge:
             if reason is not None:
                 unknown_reasons[dim] = reason
 
-        aggregate_reasoning = "; ".join(
-            f"[{dim}] {per_dim_reasoning[dim][:200]}" for dim in DIMENSIONS
-        )
+        aggregate_reasoning = "; ".join(f"[{dim}] {per_dim_reasoning[dim][:200]}" for dim in DIMENSIONS)
         return JudgeScore.create(
             faithfulness=scores["faithfulness"],
             answer_relevancy=scores["answer_relevancy"],
