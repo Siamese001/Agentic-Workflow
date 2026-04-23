@@ -23,7 +23,16 @@ from openai import OpenAI
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
+try:
+    from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
+except ImportError:
+    # memory_store_config is untracked infra; fall back to a minimal shim
+    # that exposes only the attribute we actually consume (VECTOR_METRIC).
+    class MemoryStoreConfig:  # type: ignore[no-redef]
+        VECTOR_METRIC = "cosine"
+
+
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -242,7 +251,7 @@ class VectorDBIngestor:
             self.client = chromadb.PersistentClient(path=persist_directory)
         else:
             # Default to artifacts/chromadb for persistence
-            persist_dir = Path("artifacts/chromadb")
+            persist_dir = Path(canonical_persist_dir_str())
             persist_dir.mkdir(parents=True, exist_ok=True)
             self.client = chromadb.PersistentClient(path=str(persist_dir))
 
@@ -263,14 +272,21 @@ class VectorDBIngestor:
         documents = []
         metadatas = []
 
-        for i, chunk in enumerate(chunks):
-            # Generate unique ID
-            trace_id = chunk["metadata"].get("trace_id", f"trace_{i}")
-            content_hash = hashlib.sha256(chunk["content"].encode()).hexdigest()[:16]
-            chunk_id = f"{trace_id}_{content_hash}"
+        # W2.2b: coerce every chunk's metadata to ChunkMetadataV1, and use
+        # the canonical_digest as the chunk id so re-ingest is idempotent.
+        from agentic_core.L4_state.utils.chunk_metadata import coerce_to_v1
 
-            ids.append(chunk_id)
-            documents.append(chunk["content"])
+        for i, chunk in enumerate(chunks):
+            trace_id = chunk["metadata"].get("trace_id", f"trace_{i}")
+            content = chunk["content"]
+            coerce_to_v1(
+                chunk["metadata"],
+                artifact_type="trace_chunk",
+                anchor=f"{trace_id}:{i}",
+                source_bytes=content.encode("utf-8") if isinstance(content, str) else None,
+            )
+            ids.append(chunk["metadata"]["canonical_digest"])
+            documents.append(content)
             metadatas.append(chunk["metadata"])
 
         # Add to ChromaDB in batches to handle size limits
