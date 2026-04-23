@@ -99,6 +99,11 @@ def check_command(command_line: str) -> int:
 
 
 def main() -> int:
+    # Standalone-invocation guard: avoid indefinite hang when invoked via
+    # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
+    # pipes stdin, which is never a TTY, so hook behavior is unaffected.
+    if sys.stdin.isatty():
+        return 0
     raw = sys.stdin.read()
     if not raw.strip():
         if fail_policy == "closed":

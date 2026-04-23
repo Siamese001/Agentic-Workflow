@@ -170,6 +170,11 @@ def _extract_response_text(payload: object) -> str:
 
 
 def main() -> int:
+    # Standalone-invocation guard: avoid indefinite hang when invoked via
+    # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
+    # pipes stdin, which is never a TTY, so hook behavior is unaffected.
+    if sys.stdin.isatty():
+        return 0
     try:
         raw = sys.stdin.read()
     except OSError:

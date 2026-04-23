@@ -271,6 +271,11 @@ def check_mcp_config(file_path: str, edits: list[dict]) -> tuple[bool, list[str]
 
 
 def main() -> int:
+    # Standalone-invocation guard: avoid indefinite hang when invoked via
+    # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
+    # pipes stdin, which is never a TTY, so hook behavior is unaffected.
+    if sys.stdin.isatty():
+        return 0
     # Fast path: if Windsurf passes file path as argv[1], check it before reading stdin.
     # This prevents fail-closed stdin logic from blocking non-.py/.json writes.
     if len(sys.argv) > 1:

@@ -423,6 +423,18 @@ def main() -> int:
         )
         return 0
 
+    # Standalone-invocation guard: if stdin is a TTY, no hook payload will
+    # ever arrive and sys.stdin.read() would block forever. Exit cleanly so
+    # this script is safe to invoke manually via `run_command` / pwsh.
+    if sys.stdin.isatty():
+        print(
+            "[deferred_scope_capture] no stdin payload (TTY detected) — "
+            "exiting 0. This script is a post_cascade_response hook and "
+            "expects Cascade's response JSON on stdin.",
+            file=sys.stderr,
+        )
+        return 0
+
     response = _read_stdin_response()
     if not response or "DEFERRED_SCOPE:" not in response:
         return 0

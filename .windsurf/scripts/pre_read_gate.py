@@ -129,6 +129,11 @@ def _exit_block(reason: str, detail: dict) -> int:
 
 
 def main() -> int:
+    # Standalone-invocation guard: avoid indefinite hang when invoked via
+    # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
+    # pipes stdin, which is never a TTY, so hook behavior is unaffected.
+    if sys.stdin.isatty():
+        return 0
     # NOTE: we do NOT log every allowed read (too noisy). Only blocks are logged.
     raw = sys.stdin.read()
     if not raw.strip():

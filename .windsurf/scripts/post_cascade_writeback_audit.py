@@ -239,6 +239,11 @@ def _classify_violation(
 
 
 def main() -> int:
+    # Standalone-invocation guard: avoid indefinite hang when invoked via
+    # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
+    # pipes stdin, which is never a TTY, so hook behavior is unaffected.
+    if sys.stdin.isatty():
+        return 0
     # Bypass hatch
     if os.environ.get("WRITEBACK_AUDIT_BYPASS") == "1":
         _append_log(

@@ -232,6 +232,11 @@ def _sync_notion_mcp_registry(servers: dict[str, Any], token: str, db_id: str) -
 
 
 def main() -> int:
+    # Standalone-invocation guard: avoid indefinite hang when invoked via
+    # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
+    # pipes stdin, which is never a TTY, so hook behavior is unaffected.
+    if sys.stdin.isatty():
+        return 0
     if not _is_target_mcp_config_from_invocation():
         return 0
     if not _was_recent_write(SSOT):

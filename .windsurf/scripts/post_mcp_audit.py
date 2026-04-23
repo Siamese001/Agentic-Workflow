@@ -382,6 +382,11 @@ def _check_mcp_config_drift() -> None:
 
 
 def main() -> int:
+    # Standalone-invocation guard: avoid indefinite hang when invoked via
+    # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
+    # pipes stdin, which is never a TTY, so hook behavior is unaffected.
+    if sys.stdin.isatty():
+        return 0
     # Run supply-chain drift check first — cheap (hashes a small JSON file) and
     # writes to a separate JSONL so it doesn't interfere with telemetry.
     _check_mcp_config_drift()
