@@ -632,21 +632,30 @@ def generate_full_adg(
     _check_structural_conformance(sqlite_path=prod_sqlite_path)
     _check_agentic_antipatterns(sqlite_path=prod_sqlite_path)
 
-    # --- P6: Derived graph projection (non-blocking, adg_graph_<ts>.sqlite) ---
+    # --- P6: Derived graph projection (adg_graph_<ts>.sqlite) ---
+    # Plan adg-pipeline-e2e-5287a1 W3: catch narrowed to ImportError only.
+    # graph_projection.build_graph_projection()'s documented failure contract
+    # (see tools/generate/graph_projection.py:26) is that it raises ImportError
+    # when networkx is absent AND propagates all other failures unchanged.
+    # The prior broad (OSError, RuntimeError, TypeError, ValueError) catch
+    # silently swallowed real projection defects — producing stale projections
+    # (e.g., adg_graph_04222026_1218.sqlite lingering past canonical
+    # adg_indexed_04222026_2022.sqlite). Only ImportError is an acceptable skip.
     try:
         from tools.generate.graph_projection import build_graph_projection
 
         _graph_proj_path = build_graph_projection(paths.sqlite, adg_artifacts_dir, ts)
         print(f"[ADG] P6 graph projection: {_graph_proj_path.name}")
-    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
-        print(f"[ADG] P6 graph projection skipped: {e}")
+    except ImportError as e:
+        print(f"[ADG] P6 graph projection skipped (networkx missing): {e}")
 
-    # --- P6b: GraphDB NetworkX projection (non-blocking, tools/graphdb) ---
-    # Produces three run-scoped artifacts under adg_artifacts_dir:
+    # --- P6b: GraphDB NetworkX projection (tools/graphdb) ---
+    # W3: same narrowing as P6 — ImportError is the only acceptable skip.
+    # Projection helpers raise on genuine errors; suppressing them masked
+    # staleness. Produces three run-scoped artifacts under adg_artifacts_dir:
     #   adg_graphdb_projection_<ts>.json  (NetworkX node-link JSON)
     #   adg_graphdb_metadata_<ts>.json    (SnapshotMetadata)
     #   adg_graphdb_index_<ts>.json       (SnapshotManager index)
-    # Caller owns the non-blocking policy (specific-tuple catch mirrors P6 above).
     graphdb_staged: list[Path] = []
     graphdb_nx_graph: object | None = None
     try:
@@ -655,8 +664,8 @@ def generate_full_adg(
             adg_artifacts_dir,
             ts,
         )
-    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
-        print(f"[ADG] P6b GraphDB NetworkX projection skipped: {e}")
+    except ImportError as e:
+        print(f"[ADG] P6b GraphDB NetworkX projection skipped (networkx missing): {e}")
 
     # --- P7: Analyst-grade report artifacts (non-blocking) ---
     # Helpers raise on failure; this caller loop enforces the non-blocking policy
