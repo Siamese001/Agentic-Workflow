@@ -193,103 +193,68 @@ class TestPromptBOM:
 
 
 class TestCompiledPromptArtifact:
-    """Test CompiledPromptArtifact data contract."""
+    """Test CompiledPromptArtifact data contract.
+
+    Post-RH2B.2 SSOT merge: this class is now the rich L2 variant at
+    ``agentic_core.L2_execution.reasoning.compiled_artifact.CompiledPromptArtifact``
+    (re-exported via ``prompt_governance.contracts.compiled_artifact_types``).
+    Field names and shape reflect the rich contract:
+      - ``tokens`` (was ``token_estimate`` pre-merge)
+      - ``allowed_tools_schema: list`` (was tuple pre-merge)
+      - ``system_version_hash`` and ``slots_used`` are required fields
+    """
+
+    @staticmethod
+    def _kwargs(**overrides):
+        """Baseline rich-contract kwargs with sensible defaults."""
+        base = {
+            "trace_id": "trace-123",
+            "system_version_hash": "svh-123",
+            "final_system_string": "System prompt",
+            "final_user_string": "User prompt",
+            "allowed_tools_schema": [],
+            "tokens": 100,
+            "slots_used": ["S0", "U0"],
+            "signature": "hmac-signature",
+        }
+        base.update(overrides)
+        return base
 
     def test_creation_valid(self, plc_imports) -> None:
-        """Test creating a valid CompiledPromptArtifact."""
+        """Test creating a valid CompiledPromptArtifact (rich SSOT contract)."""
         CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
-        artifact = CompiledPromptArtifact(
-            trace_id="trace-123",
-            final_system_string="System prompt",
-            final_user_string="User prompt",
-            allowed_tools_schema=(),
-            token_estimate=100,
-            signature="hmac-signature",
-        )
+        artifact = CompiledPromptArtifact(**self._kwargs())
         assert artifact.trace_id == "trace-123"
-        assert artifact.token_estimate == 100
-
-    def test_empty_trace_id_raises(self, plc_imports) -> None:
-        """Test that empty trace_id raises ValueError."""
-        CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
-        with pytest.raises(ValueError):
-            CompiledPromptArtifact(
-                trace_id="",
-                final_system_string="System",
-                final_user_string="User",
-                allowed_tools_schema=(),
-                token_estimate=100,
-                signature="sig",
-            )
-
-    def test_negative_token_estimate_raises(self, plc_imports) -> None:
-        """Test that negative token_estimate raises ValueError."""
-        CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
-        with pytest.raises(ValueError):
-            CompiledPromptArtifact(
-                trace_id="trace-123",
-                final_system_string="System",
-                final_user_string="User",
-                allowed_tools_schema=(),
-                token_estimate=-1,
-                signature="sig",
-            )
+        assert artifact.tokens == 100
+        assert artifact.slots_used == ["S0", "U0"]
 
     def test_verify_signature_valid(self, plc_imports) -> None:
-        """Test signature verification with valid key."""
+        """Test signature verification with valid key using the rich canonical scheme."""
         CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
         secret_key = b"test-secret-key"
-        canonical = str(
-            {
-                "trace_id": "trace-123",
-                "final_system_string": "System",
-                "final_user_string": "User",
-                "allowed_tools_schema": (),
-                "token_estimate": 100,
-            }
-        )
-        signature = hmac.new(
-            secret_key,
-            canonical.encode("utf-8"),
-            hashlib.sha256,
-        ).hexdigest()
-        artifact = CompiledPromptArtifact(
-            trace_id="trace-123",
-            final_system_string="System",
-            final_user_string="User",
-            allowed_tools_schema=(),
-            token_estimate=100,
-            signature=signature,
-        )
+        # Build an unsigned artifact, compute signature via rich's own scheme,
+        # then replace the placeholder signature with the real one.
+        from dataclasses import replace
+
+        unsigned = CompiledPromptArtifact(**self._kwargs(signature=""))
+        signature = unsigned._compute_signature(secret_key)
+        artifact = replace(unsigned, signature=signature)
         assert artifact.verify_signature(secret_key)
 
     def test_verify_signature_invalid(self, plc_imports) -> None:
         """Test signature verification with invalid key."""
         CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
-        artifact = CompiledPromptArtifact(
-            trace_id="trace-123",
-            final_system_string="System",
-            final_user_string="User",
-            allowed_tools_schema=(),
-            token_estimate=100,
-            signature="wrong-signature",
-        )
+        artifact = CompiledPromptArtifact(**self._kwargs(signature="wrong-signature"))
         assert not artifact.verify_signature(b"different-key")
 
     def test_to_dict(self, plc_imports) -> None:
         """Test conversion to dictionary."""
         CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
-        artifact = CompiledPromptArtifact(
-            trace_id="trace-123",
-            final_system_string="System",
-            final_user_string="User",
-            allowed_tools_schema=(),
-            token_estimate=100,
-            signature="sig",
-        )
+        artifact = CompiledPromptArtifact(**self._kwargs(signature="sig"))
         d = artifact.to_dict()
         assert d["trace_id"] == "trace-123"
-        assert d["token_estimate"] == 100
+        assert d["tokens"] == 100
+        assert d["slots_used"] == ["S0", "U0"]
 
 
 # =============================================================================

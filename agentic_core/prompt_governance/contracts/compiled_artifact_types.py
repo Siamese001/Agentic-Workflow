@@ -1,46 +1,48 @@
-"""CompiledPromptArtifact (narrow variant) — Assembly Stage → LLM Gateway handoff.
+"""CompiledPromptArtifact — thin SSOT re-export alias (phase RH2B.2 merge).
 
-DEPRECATION NOTICE (plan prompt-reception-followups-a7b3c4, phase RH2B.2)
-=========================================================================
+Plan: prompt-reception-followups-a7b3c4.
 
-This module defines the **narrow** 6-field ``CompiledPromptArtifact`` used by
-``agentic_core.L0_routing.reasoning.assembly_stage``. The **canonical** rich
-variant now lives at::
+History
+-------
+Pre-RH2B.2 this module defined a **narrow** 6-field dataclass variant of
+``CompiledPromptArtifact`` distinct from the rich L2 variant. The two
+parallel dataclasses created SSOT drift. RH2B.2 collapses the split.
 
-    agentic_core.L2_execution.reasoning.compiled_artifact.CompiledPromptArtifact
+Post-RH2B.2 (this file)
+-----------------------
+``CompiledPromptArtifact`` here is an **alias** for
+``agentic_core.L2_execution.reasoning.compiled_artifact.CompiledPromptArtifact``
+(the canonical rich variant). All legacy import paths keep working:
 
-The rich variant carries additional metadata the prompt-reception pipeline
-depends on — ``slots_used``, ``prompt_bom``, ``template_manifest``,
-``injection_scan_result``, ``routing_decision``, ``system_version_hash`` — and
-exposes ``to_prompt_messages()`` (phase RH2B.3) for provider-aware adapters.
+    from agentic_core.prompt_governance.contracts.compiled_artifact_types import (
+        CompiledPromptArtifact,
+    )
 
-New code MUST import from ``agentic_core.L2_execution.reasoning``.
-Consumers of this module should migrate via :func:`to_rich_artifact`. The
-narrow dataclass remains for backward compatibility with
-``assembly_stage.GovernedPayload`` construction and existing lifecycle
-contract tests, but it is frozen — no new fields, no new consumers, no new
-imports outside the Assembly Stage boundary.
+now resolves to the rich class. The narrow field names are gone:
 
-Field-map when migrating narrow -> rich:
-  - ``token_estimate`` (narrow)          -> ``tokens`` (rich)
-  - ``allowed_tools_schema`` tuple       -> ``allowed_tools_schema`` list
-  - ``final_system_string`` / ``final_user_string`` map 1:1
-  - ``signature`` maps 1:1 (HMAC scheme differs; recompute on upgrade)
-  - ``trace_id`` maps 1:1
+- ``token_estimate`` (narrow)    -> ``tokens`` (rich, required)
+- ``allowed_tools_schema: tuple`` -> ``allowed_tools_schema: list`` (rich)
+- ``system_version_hash``         -> REQUIRED (was absent on narrow)
+- ``slots_used``                  -> REQUIRED (was absent on narrow)
 
-Follow-up: when ``assembly_stage`` is refactored (deferred scope item on
-``prompt-reception-followups-a7b3c4``), this module becomes a thin
-re-export alias of the rich variant and can be removed one release later.
+The bridge ``to_rich_artifact`` is retained as an **identity wrapper** for
+back-compat with callers that already invoke it; it now accepts the rich
+class and returns it unchanged (after filling in defaults when callers
+pass ``system_version_hash`` / ``slots_used`` explicitly — the legacy
+signature is preserved).
+
+Governance emissions at module-load are preserved from the pre-merge file
+so any lifecycle-trace consumers see the same P0..P4 signal density.
 """
 
 from __future__ import annotations
 
-import hashlib
-import hmac
-import json
-from dataclasses import dataclass
+from dataclasses import replace
 from typing import Any
 
+from agentic_core.L2_execution.reasoning.compiled_artifact import (
+    CompiledPromptArtifact as _RichCompiledPromptArtifact,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
@@ -79,7 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
 )
 
-# Self-bootstrap governance wiring
+# Self-bootstrap governance wiring (preserved from pre-merge file)
 _emit_authorize_and_execute("p2", "CompiledPromptArtifact", "execution_auth")
 _emit_validates_capability("p2", "CompiledPromptArtifact", "capability_check")
 _emit_routes_to_capability("p2", "CompiledPromptArtifact", "capability_route")
@@ -118,121 +120,36 @@ _emit_applies_guardrail("p0", "CompiledPromptArtifact", "p0_governance")
 _emit_snapshots_state("p0", "CompiledPromptArtifact", "state_snapshot")
 
 
-@dataclass(frozen=True)
-class CompiledPromptArtifact:
-    """Fully assembled, signed prompt artifact for LLM Gateway.
-
-    Immutable contract between Assembly Stage and SovereignLLMGateway.
-    HMAC-SHA256 signature ensures integrity.
-
-    Attributes
-    ----------
-    trace_id : str
-        Execution trace identifier.
-    final_system_string : str
-        Complete S0+D0+I0+C0 system prompt.
-    final_user_string : str
-        Complete U0 user prompt (wrapped).
-    allowed_tools_schema : tuple[dict[str, Any], ...]
-        Sorted tuple of tool schemas allowed.
-    token_estimate : int
-        Estimated token count for budget validation.
-    signature : str
-        HMAC-SHA256 over canonical content.
-    """
-
-    trace_id: str
-    final_system_string: str
-    final_user_string: str
-    allowed_tools_schema: tuple[dict[str, Any], ...]
-    token_estimate: int
-    signature: str
-
-    def __post_init__(self) -> None:
-        if not self.trace_id:
-            raise ValueError("trace_id must not be empty")
-        if self.token_estimate < 0:
-            raise ValueError(f"token_estimate must be >= 0, got {self.token_estimate}")
-
-    def _canonical_content(self) -> str:
-        """Produce canonical string for signature verification."""
-        return json.dumps(
-            {
-                "trace_id": self.trace_id,
-                "final_system_string": self.final_system_string,
-                "final_user_string": self.final_user_string,
-                "allowed_tools_schema": sorted(
-                    (json.dumps(t, sort_keys=True, ensure_ascii=False) for t in self.allowed_tools_schema),
-                ),
-                "token_estimate": self.token_estimate,
-            },
-            sort_keys=True,
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
-
-    def verify_signature(self, secret_key: bytes) -> bool:
-        """Verify HMAC-SHA256 signature.
-
-        Args:
-            secret_key: HMAC secret key bytes.
-
-        Returns:
-            True if signature is valid.
-        """
-        expected = hmac.new(
-            secret_key,
-            self._canonical_content().encode("utf-8"),
-            hashlib.sha256,
-        ).hexdigest()
-        return hmac.compare_digest(expected, self.signature)
-
-    def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for serialization."""
-        return {
-            "trace_id": self.trace_id,
-            "final_system_string": self.final_system_string,
-            "final_user_string": self.final_user_string,
-            "allowed_tools_schema": tuple(self.allowed_tools_schema),
-            "token_estimate": self.token_estimate,
-            "signature": self.signature,
-        }
+# ---------------------------------------------------------------------------
+# SSOT alias — CompiledPromptArtifact is now the rich L2 dataclass.
+# ---------------------------------------------------------------------------
+CompiledPromptArtifact = _RichCompiledPromptArtifact
 
 
 def to_rich_artifact(
-    narrow: CompiledPromptArtifact,
-    system_version_hash: str = "",
+    artifact: _RichCompiledPromptArtifact,
+    system_version_hash: str | None = None,
     slots_used: list[str] | None = None,
-) -> Any:
-    """Upgrade a narrow governance ``CompiledPromptArtifact`` to the rich L2 form.
+) -> _RichCompiledPromptArtifact:
+    """Identity/fill-in helper retained for back-compat with RH2B.2 bridge callers.
 
-    Phase RH2B.2 bridge. Field mapping:
+    Prior to the SSOT merge, this function converted a narrow
+    ``CompiledPromptArtifact`` to the rich L2 form. Post-merge both are the
+    same class, so ``to_rich_artifact`` is now effectively an identity.
 
-    - ``token_estimate`` (narrow) -> ``tokens`` (rich)
-    - ``allowed_tools_schema`` tuple -> list
-    - ``signature`` is copied verbatim; the rich variant uses a different HMAC
-      scheme, so callers who rely on ``verify_signature`` should recompute via
-      ``SlotAssemblyEngine`` rather than trust the carried signature.
-    - ``system_version_hash`` and ``slots_used`` must be supplied by the
-      caller because the narrow variant does not carry them.
-
-    Returns the rich ``agentic_core.L2_execution.reasoning.CompiledPromptArtifact``.
+    The optional ``system_version_hash`` and ``slots_used`` arguments are
+    retained for callers that used the bridge to fill in these fields when
+    upgrading from the narrow variant. When provided (and non-empty), they
+    overwrite the corresponding fields on a copy of the input artifact.
     """
-    # Lazy import to avoid cross-layer static coupling at module load.
-    from agentic_core.L2_execution.reasoning.compiled_artifact import (
-        CompiledPromptArtifact as RichCompiledPromptArtifact,
-    )
-
-    return RichCompiledPromptArtifact(
-        trace_id=narrow.trace_id,
-        system_version_hash=system_version_hash,
-        final_system_string=narrow.final_system_string,
-        final_user_string=narrow.final_user_string,
-        allowed_tools_schema=list(narrow.allowed_tools_schema),
-        tokens=narrow.token_estimate,
-        slots_used=list(slots_used or []),
-        signature=narrow.signature,
-    )
+    overrides: dict[str, Any] = {}
+    if system_version_hash is not None:
+        overrides["system_version_hash"] = system_version_hash
+    if slots_used is not None:
+        overrides["slots_used"] = list(slots_used)
+    if not overrides:
+        return artifact
+    return replace(artifact, **overrides)
 
 
 __all__ = ["CompiledPromptArtifact", "to_rich_artifact"]

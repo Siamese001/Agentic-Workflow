@@ -32,6 +32,9 @@ def _get_prompt_bom():
 
 
 def _get_compiled_artifact():
+    # Post-RH2B.2 merge: the narrow governance variant is now an alias for the
+    # rich L2 CompiledPromptArtifact. The import path is preserved for
+    # back-compat; it resolves to the canonical class.
     from agentic_core.prompt_governance.contracts.compiled_artifact_types import CompiledPromptArtifact
 
     return CompiledPromptArtifact
@@ -348,30 +351,25 @@ class AirlockAssembler:
         # 9. Estimate tokens (rough approximation: 4 chars ≈ 1 token)
         token_estimate = (len(final_system) + len(final_user)) // 4
 
-        # 10. Build artifact and sign
-        artifact = CompiledPromptArtifact(
+        # 10. Build artifact and sign (post-RH2B.2: rich SSOT variant)
+        slots_used = [code for code in ("S0", "D0", "I0", "C0", "U0") if slots.get(code)]
+        unsigned_artifact = CompiledPromptArtifact(
             trace_id=bom.trace_id,
+            system_version_hash=bom.system_version_hash,
             final_system_string=final_system,
             final_user_string=final_user,
-            allowed_tools_schema=allowed_tools,  # Caller-supplied; empty tuple = gateway-level control
-            token_estimate=token_estimate,
-            signature="",  # Placeholder, computed below
+            allowed_tools_schema=list(allowed_tools),  # Caller-supplied; list per rich contract.
+            tokens=token_estimate,
+            slots_used=slots_used,
+            signature="",  # Placeholder, computed below via rich's built-in scheme.
         )
 
-        # Compute HMAC-SHA256 signature
-        canonical = json.dumps(artifact.to_dict(), sort_keys=True, separators=(",", ":"))
-        signature = hmac.new(
-            secret_key,
-            canonical.encode("utf-8"),
-            hashlib.sha256,
-        ).hexdigest()
+        # Compute HMAC-SHA256 via the rich variant's canonical scheme.
+        # Note: this differs from the pre-merge narrow scheme; no downstream
+        # consumer relies on the pre-merge scheme operationally.
+        signature = unsigned_artifact._compute_signature(secret_key)
 
-        # Return signed artifact
-        return CompiledPromptArtifact(
-            trace_id=artifact.trace_id,
-            final_system_string=artifact.final_system_string,
-            final_user_string=artifact.final_user_string,
-            allowed_tools_schema=artifact.allowed_tools_schema,
-            token_estimate=artifact.token_estimate,
-            signature=signature,
-        )
+        # Return signed artifact (dataclass replace keeps all other fields identical).
+        from dataclasses import replace as _replace
+
+        return _replace(unsigned_artifact, signature=signature)
