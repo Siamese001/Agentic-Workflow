@@ -456,43 +456,42 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- Wiring-CI Full Fleet (manual, on-demand) ----------------------------------
-      # Runs all 15 wiring-CI gates in sequence via run_contract_gates.py dispatch.
-      # Uses the latest artifacts/adg/adg_indexed_*.sqlite snapshot.
+      # -- ADG Gate Fleet (manual, on-demand) ----------------------------------------
+      # H3 (2026-04-23): single dispatcher replaces the 15-gate fan-out in
+      # run_contract_gates.py and the retired wiring_ci_report.py.
+      # Runs the full wiring-CI fleet via the unified SSOT registry and
+      # emits a single artifacts/adg/adg_gate_results_<ts>.json.
       # Invoke:
-      #     pre-commit run wiring-ci-full --hook-stage manual --all-files
-      # Canonical home of the full plane is ops_scripts/ci/run_contract_gates.py
-      # [WIRING-CI GATE PLANE]; this manual hook is for devs who want to check
-      # the plane locally before pushing.
-      - id: wiring-ci-full
-        name: "CI: Wiring-CI Full Fleet (15 gates)"
-        entry: py ops_scripts/ci/run_contract_gates.py
+      #     pre-commit run adg-gates-full --hook-stage manual --all-files
+      #     python -m ops_scripts.ci.adg_gates.run                  (direct)
+      #     python tools/adg/query.py regressions                   (trend query)
+      - id: adg-gates-full
+        name: "CI: ADG Gate Fleet (unified dispatcher)"
+        entry: py -m ops_scripts.ci.adg_gates.run
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
         stages: [manual]
 
-      # -- Wiring-CI Trend Report (manual, on-demand) --------------------------------
-      # Generates the daily/weekly trend markdown from the JSONL sink.
-      # Invoke: pre-commit run wiring-ci-trend --hook-stage manual
-      - id: wiring-ci-trend
-        name: "CI: Wiring-CI Trend Report"
-        entry: py tools/reports/wiring_ci_trend.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
+      # -- ADG Gate Query CLI (manual, on-demand) ------------------------------------
+      # H3 (2026-04-23): replaces the retired wiring_ci_trend.py markdown report.
+      # Ad-hoc queries over the JSONL trend sink.
+      # Invoke:
+      #     python tools/adg/query.py summary               (latest run)
+      #     python tools/adg/query.py trend --days 7        (window trend)
+      #     python tools/adg/query.py regressions           (current failures)
+      #     python tools/adg/query.py history GATE_ID       (per-gate history)
 
-      # -- Wiring-CI Regression Markers (manual, on-demand) --------------------------
-      # For every ratchet gate above baseline, emit a DEFERRED_SCOPE: marker that
+      # -- ADG Gate Regression Markers (manual, on-demand) ---------------------------
+      # H3: markers now emitted by the dispatcher itself via --markers flag.
+      # For every ratchet gate above baseline, emits DEFERRED_SCOPE: line that
       # the Cascade post-hook auto-posts to the Wave/Phase Convergence DB per
-      # Constitutional §24. Safe to run any time; no markers emitted when clean.
-      # Invoke: pre-commit run wiring-ci-regression-markers --hook-stage manual
-      - id: wiring-ci-regression-markers
-        name: "CI: Wiring-CI Regression DEFERRED_SCOPE markers"
-        entry: py tools/reports/wiring_ci_regression_markers.py
+      # Constitutional §24.
+      # Invoke: python -m ops_scripts.ci.adg_gates.run --markers
+      - id: adg-gates-markers
+        name: "CI: ADG Gate DEFERRED_SCOPE markers"
+        entry: py -m ops_scripts.ci.adg_gates.run --markers
         language: system
         pass_filenames: false
         always_run: true

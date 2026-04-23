@@ -697,27 +697,29 @@ def generate_full_adg(
 
     p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
-    # --- Wiring-CI consolidated report (plan adg-wiring-ci-hardening-7a5d84) ---
-    # Runs all 15 wiring-CI gates against the fresh snapshot and writes a
-    # single markdown + JSON to artifacts/adg/issues/. Emitted BEFORE the P0
-    # two-pass runner so the report lands even if P0 halts the pipeline.
-    # Non-blocking: wraps the caller in try/except to protect ADG generation.
+    # --- ADG gate dispatcher (plan adg-wiring-ci-hardening-7a5d84, H3) ---
+    # Runs the full wiring-CI fleet via the unified dispatcher. Emits a single
+    # JSON artifact at artifacts/adg/adg_gate_results_<ts>.json + appends to
+    # the trend sink. Emitted BEFORE the P0 two-pass runner so the results
+    # land even if P0 halts the pipeline. Non-blocking wrt ADG generation.
     try:
-        from tools.generate.wiring_ci_report import emit_wiring_ci_report
+        import subprocess as _sp
 
-        _wiring_ci = emit_wiring_ci_report(adg_artifacts_dir, ts, snapshot_name=Path(prod_sqlite_path).name)
-        if _wiring_ci.get("markdown_path"):
-            _summary = _wiring_ci.get("summary", {})
-            print(
-                f"[ADG] Wiring-CI report: {Path(_wiring_ci['markdown_path']).name} "
-                f"(blocking_red={_summary.get('blocking_red', 0)}, "
-                f"regressions={_summary.get('ratchet_regressions', 0)}, "
-                f"at_baseline={_summary.get('ratchet_at_baseline', 0)})"
-            )
-        elif _wiring_ci.get("error"):
-            print(f"[ADG] Wiring-CI report ERROR: {_wiring_ci['error']}")
-    except (ImportError, OSError, RuntimeError) as _e:
-        _record_pipeline_skip(adg_artifacts_dir, ts, layer="wiring-ci", name="report", exc=_e)
+        _disp = _sp.run(
+            [sys.executable, "-m", "ops_scripts.ci.adg_gates.run", "--json-only"],
+            capture_output=True,
+            text=True,
+            cwd=str(ROOT),
+            timeout=600,
+            check=False,
+        )
+        _json_path = _disp.stdout.strip().splitlines()[-1] if _disp.stdout else ""
+        print(
+            f"[ADG] Gate dispatcher exit={_disp.returncode} results={_json_path or '?'} "
+            f"(use `python tools/adg/query.py regressions` for details)"
+        )
+    except (OSError, _sp.TimeoutExpired) as _e:
+        _record_pipeline_skip(adg_artifacts_dir, ts, layer="adg-gates", name="dispatcher", exc=_e)
 
     _run_p0_two_pass_runner(
         sqlite_path=prod_sqlite_path,
