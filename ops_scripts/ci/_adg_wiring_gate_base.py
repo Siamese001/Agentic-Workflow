@@ -112,26 +112,26 @@ def _load_waivers() -> dict[str, Any]:
     return data
 
 
+def _entry_active_for(entry: Any, gate_id: str, subject: str, today: Any) -> bool:
+    if not isinstance(entry, dict):
+        return False
+    if entry.get("gate") != gate_id:
+        return False
+    scope = entry.get("scope", "")
+    if not (scope == subject or scope == "*" or subject.endswith(scope)):
+        return False
+    try:
+        exp_date = datetime.strptime(entry.get("expires_on", ""), "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return False
+    return bool(exp_date >= today)
+
+
 def _waiver_matches(waivers: dict[str, Any], gate_id: str, subject: str) -> bool:
     """Return True if an active waiver covers this (gate_id, subject) tuple."""
     today = datetime.now(timezone.utc).date()
     entries = waivers.get("waivers", []) if isinstance(waivers, dict) else []
-    for entry in entries:
-        if not isinstance(entry, dict):
-            continue
-        if entry.get("gate") != gate_id:
-            continue
-        scope = entry.get("scope", "")
-        if not (scope == subject or scope == "*" or subject.endswith(scope)):
-            continue
-        expires = entry.get("expires_on", "")
-        try:
-            exp_date = datetime.strptime(expires, "%Y-%m-%d").date()
-        except (TypeError, ValueError):
-            continue
-        if exp_date >= today:
-            return True
-    return False
+    return any(_entry_active_for(e, gate_id, subject, today) for e in entries)
 
 
 # ---------------------------------------------------------------------------
@@ -161,6 +161,25 @@ class WiringGate(ABC):
         self.snapshot = snapshot or latest_snapshot()
         self.waivers = _load_waivers()
 
+    def _effective_tier(self) -> Tier:
+        """Return runtime tier, honouring auto_promoted_tier from baseline JSON.
+
+        Lets a ratchet that previously crossed the zero-run streak threshold
+        start blocking on the next run without requiring the source class to
+        be edited.
+        """
+        if self.tier != "R":
+            return self.tier
+        rec = self._load_baseline_record()
+        promoted = rec.get("auto_promoted_tier")
+        if promoted == "B":
+            return "B"
+        if promoted == "W":
+            return "W"
+        if promoted == "K":
+            return "K"
+        return self.tier
+
     # ---- overridable -----------------------------------------------------
     @abstractmethod
     def run(self, conn: sqlite3.Connection) -> list[Violation]:
@@ -181,25 +200,44 @@ class WiringGate(ABC):
 
         baseline_count: int | None = None
         status: Literal["pass", "fail", "warn", "bypass"]
-        if self.tier == "B":
+        summary: dict[str, Any] = {"raw_count": len(raw), "active_count": len(active)}
+        effective_tier = self._effective_tier()
+        if effective_tier != self.tier:
+            summary["effective_tier"] = effective_tier
+            summary["declared_tier"] = self.tier
+        if effective_tier == "B":
             status = "fail" if active else "pass"
-        elif self.tier == "R":
+        elif effective_tier == "R":
             baseline_count = self._baseline_count()
             status = "fail" if len(active) > (baseline_count or 0) else "pass"
-        elif self.tier == "W":
+            if status == "pass":
+                # W1.1 monotone auto-tighten: shrink baseline on green run
+                tightened = self._maybe_tighten_baseline(
+                    active_count=len(active),
+                    baseline_count=baseline_count or 0,
+                )
+                if tightened is not None:
+                    summary["baseline_tightened_from"] = baseline_count
+                    summary["baseline_tightened_to"] = tightened
+                    baseline_count = tightened
+                # W1.2 R->B auto-promotion after N consecutive zero runs
+                promoted = self._maybe_auto_promote_to_block(len(active))
+                if promoted:
+                    summary["auto_promoted_to_tier"] = "B"
+        elif effective_tier == "W":
             status = "warn" if active else "pass"
         else:  # K
             status = "pass"
 
         result = GateResult(
             gate_id=self.gate_id,
-            tier=self.tier,
+            tier=effective_tier,
             snapshot=self.snapshot.name,
             timestamp=datetime.now(timezone.utc).isoformat(),
             status=status,
             violations=active,
             baseline_count=baseline_count,
-            summary={"raw_count": len(raw), "active_count": len(active)},
+            summary=summary,
         )
         self._sink(result)
         return result
@@ -233,6 +271,111 @@ class WiringGate(ABC):
             ),
             encoding="utf-8",
         )
+
+    # ---- W1.1 monotone ratchet tightening ---------------------------------
+    # Default: opt-in per gate via class attr or JSON field. Keep default True
+    # so the harness-wide behaviour is "cleanup sticks".
+    auto_tighten_baseline: bool = True
+    # Default consecutive-zero streak required before promoting R->B.
+    auto_promote_to_block_after_zero_runs: int = 3
+
+    def _load_baseline_record(self) -> dict[str, Any]:
+        if not self.baseline_filename:
+            return {}
+        path = BASELINE_DIR / self.baseline_filename
+        if not path.exists():
+            return {}
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            return data if isinstance(data, dict) else {}
+        except (json.JSONDecodeError, ValueError, OSError):
+            return {}
+
+    def _write_baseline_record(self, rec: dict[str, Any]) -> None:
+        if not self.baseline_filename:
+            return
+        BASELINE_DIR.mkdir(parents=True, exist_ok=True)
+        path = BASELINE_DIR / self.baseline_filename
+        path.write_text(json.dumps(rec, indent=2), encoding="utf-8")
+
+    def _maybe_tighten_baseline(self, *, active_count: int, baseline_count: int) -> int | None:
+        """Rewrite baseline JSON if count shrank below previous baseline.
+
+        Returns the new baseline value on tighten, or None if no change.
+        Respects ``auto_tighten_baseline`` class attribute and the JSON
+        field ``auto_tighten`` (bool, default True) for per-gate opt-out.
+        """
+        if not self.baseline_filename:
+            return None
+        if active_count >= baseline_count:
+            return None
+        rec = self._load_baseline_record()
+        if rec.get("auto_tighten") is False:
+            return None
+        if not self.auto_tighten_baseline:
+            return None
+        previous = rec.get("count")
+        rec["count"] = active_count
+        rec["gate_id"] = rec.get("gate_id", self.gate_id)
+        rec["snapshot"] = self.snapshot.name
+        rec["tightened_at"] = datetime.now(timezone.utc).isoformat()
+        rec.setdefault("seeded_at", datetime.now(timezone.utc).isoformat())
+        history = rec.get("tighten_history") or []
+        if not isinstance(history, list):
+            history = []
+        history.append(
+            {
+                "at": rec["tightened_at"],
+                "snapshot": self.snapshot.name,
+                "from": previous,
+                "to": active_count,
+            }
+        )
+        # Cap history to last 20 entries to keep JSON small.
+        rec["tighten_history"] = history[-20:]
+        self._write_baseline_record(rec)
+        return active_count
+
+    def _maybe_auto_promote_to_block(self, active_count: int) -> bool:
+        """Flip ratchet to blocking after N consecutive zero-count runs.
+
+        Increments a zero_run_streak counter on each count=0 pass, resets on
+        any non-zero. When the streak hits the threshold, rewrites the JSON
+        with ``auto_promoted_tier`` = "B" and emits an event entry.
+        Promotion is NOT reflected in ``self.tier`` at runtime (that would
+        require reloading the class); subsequent runs read the JSON and
+        the harness should honour it. Integration with per-gate tier
+        resolution happens in the dashboard + a follow-up tier-resolver.
+        """
+        if not self.baseline_filename:
+            return False
+        rec = self._load_baseline_record()
+        # Already promoted — nothing to do.
+        if rec.get("auto_promoted_tier") == "B":
+            return False
+        threshold = int(
+            rec.get(
+                "auto_promote_to_block_after_zero_runs",
+                self.auto_promote_to_block_after_zero_runs,
+            )
+        )
+        if threshold <= 0:
+            return False
+        if active_count == 0:
+            streak = int(rec.get("zero_run_streak", 0)) + 1
+        else:
+            streak = 0
+        rec["zero_run_streak"] = streak
+        rec["last_run_at"] = datetime.now(timezone.utc).isoformat()
+        rec["last_run_snapshot"] = self.snapshot.name
+        promoted = False
+        if active_count == 0 and streak >= threshold:
+            rec["auto_promoted_tier"] = "B"
+            rec["auto_promoted_at"] = rec["last_run_at"]
+            rec["auto_promoted_after_streak"] = streak
+            promoted = True
+        self._write_baseline_record(rec)
+        return promoted
 
     def _sink(self, result: GateResult) -> None:
         LOG_DIR.mkdir(parents=True, exist_ok=True)
