@@ -11,6 +11,18 @@ Public surface:
 from __future__ import annotations
 
 from agentic_core.L4_state.exemplars.bank import ExemplarBank, ExemplarRecord
+from agentic_core.L4_state.exemplars.embedding_retriever import (
+    EmbeddingProvider,
+    select_top_k_by_embedding,
+    select_with_fallback,
+)
 from agentic_core.L4_state.exemplars.retriever import select_top_k
 
-__all__ = ["ExemplarBank", "ExemplarRecord", "select_top_k"]
+__all__ = [
+    "EmbeddingProvider",
+    "ExemplarBank",
+    "ExemplarRecord",
+    "select_top_k",
+    "select_top_k_by_embedding",
+    "select_with_fallback",
+]
