@@ -10,10 +10,10 @@
                                                      │ [ logs / traces / state ]
                                                      ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 📖 L6 READ SURFACES (Tape Reviewer)                                                                                        │
-│ - Sealed Execution Trace: The literal record of every tool/model interaction and state change                              │
-│ - Exit Dispositions: The final check-out status (Allow / Deny / Escalate)                                                  │
-│ - L4 Telemetry Shelf: Historical baseline metrics and prior run logs                                                       │
+│ 📖 L6 READ SURFACES (Tape Reviewer)                                                                                           │
+│ - Sealed Execution Trace: every tool/model interaction and state change                                                        │
+│ - Exit Dispositions: Allow / Deny / Escalate / Commit outcome                                                                  │
+│ - L4 Telemetry Shelf: historical baselines, prior run logs, and promotion receipts                                            │
 └────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────┘
                                                          │
                                                          │ [ inspection request ]
@@ -30,7 +30,7 @@
 ┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐
 │ 1. TIME AUDIT       │ │ 2. ISOLATION CHECK  │ │ 3. DRIFT DETECTION  │ │ 4. PACKET SEAL      │
 │ - Verify stamps     │ │ - Verify seeds      │ │ - Budget usage      │ │ - Normalize metrics │
-│ - Order & latency   │ │ - Check isolation   │ │ - Thrash / Spikes   │ │ - Seal exec env     │
+│ - Order & latency   │ │ - Check isolation   │ │ - Thrash / spikes   │ │ - Seal exec env     │
 │ - Clock drift detect│ │ - Replay strictness │ │ - Unusual patterns  │ │ - Final provenance  │
 └──────────┬──────────┘ └──────────┬──────────┘ └──────────┬──────────┘ └──────────┬──────────┘
            │                       │                       │                       │
@@ -41,21 +41,21 @@
                                               │
                     ┌─────────────────────────┴─────────────────────────┐
                     ▼                                                   ▼
-┌────────────────────────────────────────┐            ┌────────────────────────────────────────┐
-│ 🔔 BUS D / BUS E (Live Control)        │            │ 🚌 BUS T (Trace & Telemetry)           │
-│ - Real-time signal: Deny / Re-enter    │            │ - Async data: Metrics / Timing / Drift │
-│ - Escalation triggers for HITL         │            │ - Performance & Grounding telemetry    │
-└───────────────────┬────────────────────┘            └───────────────────┬────────────────────┘
+┌────────────────────────────────────────┐            ┌──────────────────────────────────────────────────┐
+│ 🔔 BUS D / BUS E (Live Control)        │            │ 🚌 BUS T (Trace & Telemetry)                     │
+│ - Real-time signal: Deny / Re-enter    │            │ - Async data: metrics / timing / drift          │
+│ - Escalation triggers for HITL         │            │ - Performance, groundedness, and support rates  │
+└───────────────────┬────────────────────┘            └───────────────────┬──────────────────────────────┘
                     │                                                     │
                     │ [ live signal ]                                     │ [ async payload ]
                     ▼                                                     ▼
-             [ 🚪 EXIT GATE ]                         ┌────────────────────────────────────────┐
-                                                      │ L6EvidenceBundle                       │
-                                                      │ - replay_key & determinism_status      │
-                                                      │ - anomaly_flags & audit_traces         │
-                                                      │ - normalized_metrics: Recall@K / MRR   │
-                                                      │ - citation_precision / support_rate    │
-                                                      └───────────────────┬────────────────────┘
+             [ 🚪 EXIT GATE ]                         ┌──────────────────────────────────────────────────┐
+                                                      │ L6EvidenceBundle                                 │
+                                                      │ - replay_key and determinism_status              │
+                                                      │ - anomaly_flags and audit_traces                 │
+                                                      │ - normalized_metrics: Recall@K / MRR / latency   │
+                                                      │ - citation_precision / support_rate / abstain fit│
+                                                      └───────────────────┬──────────────────────────────┘
                                                                           │
                                                                           │ [ evidence for RCA ]
                                                                           ▼

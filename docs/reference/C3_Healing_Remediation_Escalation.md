@@ -11,7 +11,7 @@
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 🚨 FAILURE SIGNAL                                                                                                          │
 │ - Build from context only: no external "hallucinated" state allowed                                                        │
-│ - Metadata: check_id / retry_count / specific error_code / lineage_hash                                                    │
+│ - Metadata: check_id / retry_count / specific error_code / lineage_hash / policy_hash                                                    │
 └────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────┘
                                                          │
                                                          │ [ hands report ]
@@ -32,7 +32,7 @@
 ==============================================================================================================================
 
       ALLOWLIST GATE:
-      Detects: drift_detection | import_boundary | layer_inversion | ssot_drift
+      Detects: drift_detection | import_boundary | layer_inversion | ssot_drift | capability_mismatch
                  │
                  │ [ classified failure ]
                  ▼

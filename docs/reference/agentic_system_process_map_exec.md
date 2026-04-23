@@ -18,6 +18,7 @@
 ██ ◄───────────────────────────────────── R U N T I M E   B E G I N S ─────────────────────────────────────────► ██
 ███████████████████████████████████████████████████████████████████████████████████████████████████████████████████
         │
+        |  [validated request]
         ▼
 ┌───────────────┐                                                                      ┌─────────────┐
 │2. L1 INTERPRET│◄─────────────────────────────[reads]─────────────────────────────────┤ L4 ARCHIVE  │
@@ -25,32 +26,51 @@
 │ • Draft Plan  │                                                                      │ Read-only   │
 │ • Validate    │                                                                      └──────┬──────┘
 └───────┬───────┘                                                                             │
-        │                                                                                     │
-        │ [plan]                                                                              │
+        │ [plan contract]                                                                     │
         ▼                                                                                     │
 ┌─────────────────────────────────┐                 ┌────────────────────────┐                │
-│ 3. L0 ROUTING                   │──[R2 Retrieve]─►│ C0 CONTEXT ENGINEERING │                │
+│ 3. L0 ROUTING (Dispatcher)      │──[R2 Retrieve]─►│ C0 CONTEXT ENGINEERING │                │
 │ Outputs:                        │                 │    / GROUNDING         │                │
-│ • R1 Cache                      │                 │ • Retrieve/Grnd        │                │
-│ • R2 Retrieve via C0            │                 └───────────┬────────────┘                │
-│ • R3 Action / workflow          │                             │                             │
-│ • R4 Direct model answer        │                             │ [evidence]                  │
-│ • R5 Deny / escalate / fallback │                             ▼                             │
-└───────┬─────────────────────────┘                 ┌───────────┴────────────┐                │
-        │                                           │ PROMPT ASSEMBLY        │◄───[state load]┘
-        │                                           │ (Sys•Ctx•Task)         │
-        │                                           └───────────┬────────────┘
-        │                                                       │
-        │                                                       │ [dispatch]
-        │                                                       │
-        ├◄──────────────────────────────────────────────────────┘
+│ • R1 Cache ─────[RET]───────────┼──┐              │ • Retrieve/Grnd 🟠     │                │
+│ • R5 Fallback ──[RET]───────────┼──┤              └───────────┬────────────┘                │
+│ • R2 Grounded Read (Single)     │  │                          │                             │
+│ • R3/R4 Action/Workflow (Multi) │  │                          │ [evidence] 🟠               │
+└───────┬─────────────────────────┘  │                          ▼                             │
+        │                            │              ┌───────────┴────────────┐                │
+        │ [route contract]           │              │ PROMPT ASSEMBLY        │◄───[state load]┘
+        │                            │              │ (Sys•Ctx•Task)         │
+        │                            │              └───────────┬────────────┘
+        │                            │                          │
+        │                            │                          │ [dispatch]
+        │                            │                          │
+        ├◄───────────────────────────┼──────────────────────────┘
+        ▼                            │
+┌───────┴────────────────────────┐   │          [!] R1/R5 skip L3/L2 and go straight to Exit Desk
+│ L3 ORCHESTRATE (Manager)       │   │
+│ • Step expansion/sequencing    │   │
+│ • Multi-step dependency math   │   │
+│ • Plan evolution (bounded)     │   │
+└───────┬────────────────────────┘   │
+        │                            │
+        ▼                            ▼
+┌───────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 4. L2 EXECUTE (Assistant) ◄── (handles current single step execution)                                           │
+│ * BOUNDED AUTONOMY: tool feedback each step | exit conditions | max turns                                       │
+│  ┌────────┐   ┌─────────┐   ┌─────────┐   ┌────────┐   ┌────────┐                                               │
+│  │E1: Prep│──►│E2: Valid│──►│E3: Exec │──►│E4: Heal│──►│E5: Seal│                                               │
+│  └────────┘   └─────────┘   └─▲───────┘   └─┬──────┘   └────────┘                                               │
+│                               │ [retry]     │                                                                   │
+│                               └─────────────┘                                                                   │
+└───────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        │
+        │ [sealed artifacts]
+        │
+        ├◄────────────────────────────────────────────────────────────────────────────────────────────────────────┘
         ▼
-┌───────┴──────────┐
-│ L3 ORCHESTRATE   │
-│ • Manage Steps   │
-│ • Coordinate Agt │
-│ • Plan Evolution │
-└───────┬──────────┘
+┌──────────────────────────────────┐
+│ 5. EXIT EVAL & CONTROL           │ ◄── [ Receiving [RET] Short-Circuits and [Sealed Artifacts] ]
+│ - Final policy & safety review   │
+└──────────────────────────────────┘
         │
         ▼
 ┌───────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────┐

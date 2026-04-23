@@ -44,7 +44,8 @@
                                                          ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 🎟️ G4: BUILD ACCESS TICKET                                                                                                 │
-│ - Generates capability_token and sandbox_envelope for the specific runtime                                       │
+│ - Generates capability_token and sandbox_envelope for the specific runtime
+│ - Binds bounded scope, expiration metadata, and strict timeout parameters                                       │
 │ - Binds bounded scope, expiration metadata, and strict timeout parameters                                                  │
 └────────────────────────────────────────────────────────┬─────────────► [ Dependency: Auth & Sandbox State ]
                                                          │
@@ -78,7 +79,7 @@
                                                          ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 🧾 G7: INVOCATION RECORD                                                                                                   │
-│ - Records usage: who used what, provider, tool, and compute cost                                                │
+│ - Records usage: who used what, provider, tool, compute cost, and execution lane                                                │
 │ - Appends to audit log and seals the replay envelope for L6 verification                                                   │
 └────────────────────────────────────────────────────────┬─────────────► [ Dependency: Execution Telemetry ]
                                                          │

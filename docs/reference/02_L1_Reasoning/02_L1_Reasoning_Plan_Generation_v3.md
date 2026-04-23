@@ -8,11 +8,12 @@
   routes with authority, never executes tools, and never mutates durable state.
 - Inside L1 only, the model's transformer layers perform contextual refinement on the visible request/prompt so
   the planner can interpret the goal precisely before writing the notepad plan.
+- Exec-summary semantic ladder preserved here: PARSE INTENT -> DRAFT PLAN -> VALIDATE.
 
                                                           │ [ goal ]
                                                           ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ READING THE PATRON'S SLIP                                                                                       │
+│ READING THE PATRON'S SLIP [ PARSE INTENT ]                                                                     │
 │ ┌────────────────────────┐┌────────────────────────┐┌──────────────────────────┐┌─────────────────────────────┐ │
 │ │ I1 WHAT DO THEY WANT?  ││ I2 WHAT ARE THEIR RULES││ I3 SPECIFIC DETAILS      ││ I4 WHAT KIND OF JOB IS THIS?│ │
 │ │ - primary objective    ││ - hard constraints     ││ - entities / actors      ││ - summarize / compare       │ │
@@ -28,7 +29,7 @@
                                                            │ [ context ]
                                                            ▼
 ┌──────────────────────────────────────────────────────────┴────────────────────────────────┐┌────────────────────┐
-│ GATHERING RULES, EXAMPLES, AND PRIORS                                                     ││ L4 ARCHIVE         │
+│ GATHERING RULES, EXAMPLES, AND PRIORS [ PARSE INTENT SUPPORT ]                           ││ L4 ARCHIVE         │
 │ ┌──────────────────────┐┌───────────────────────┐┌──────────────────┐┌───────────────────┐││ Read-only source   │
 │ │ M1 STANDARD CHECKLIST││ M2 SAFETY / POLICY    ││ M3 PAST EXAMPLES ││ M4 PRE-APPROV TEMP│││ - Guardrails       │
 │ │ - task schemas       ││ - compliance bounds   ││ - prior good ans ││ - bound plan arche│││ - standard ops     │
@@ -59,17 +60,17 @@
 │                     └─────────────────────────────────────┼─────────────────────────────────┘                   │
 │                                                           ▼                                                     │
 │ ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ │
-│ │ T4 WHAT THE MODEL IS DOING INTERNALLY                                                                       │ │
+│ │ T4 WHAT THE MODEL IS DOING INTERNALLY [ PARSE INTENT INTERNALS ]                                           │ │
 │ │ - affinity scores: s_i,j = q_i • k_j^T                                                                      │ │
 │ │ - attention weights: w_i,j = exp(s_i,j) / Σ exp(s_i,k)                                                      │ │
 │ │ - context mix: z_i = Σ (w_i,j * v_j)                                                                        │ │
 │ │ - result: the planner's token states become more contextualized before decomposition begins                 │ │
-│ │ - invariant: this is internal model interpretation, not retrieval, not route commitment, not execution      │ │
+│ │ - invariant: this is internal model interpretation, not retrieval, not route commitment, not execution     │ │
 │ └─────────────────────────────────────────────────────────┬───────────────────────────────────────────────────┘ │
 │                                                           │ [ interpret ]                                       │
 │                                                           ▼                                                     │
 │ ┌───────────────────────────┐┌───────────────────────────┐┌───────────────────────────────────────────────────┐ │
-│ │ P1 BREAK INTO BABY STEPS  ││ P2 PUT IN ORDER           ││ P3 PICK THE AISLES                                │ │
+│ │ P1 BREAK INTO BABY STEPS  ││ P2 PUT IN ORDER           ││ P3 PICK THE AISLES [ DRAFT PLAN ]                │ │
 │ │ - atomic work units       ││ - sequential vs parallel  ││ - proposed routes only                            │ │
 │ │ - sub-goal boundaries     ││ - what unlocks what       ││ - R1 cache path if policy allows                  │ │
 │ │ - missing-info markers    ││ - dependency graph        ││ - R3 grounded context path if needed              │ │
@@ -79,14 +80,14 @@
 │               └────────────────────────────┼──────────────┴─────────────────────────┬─────────────────────────┘ │
 │                                            ▼                                      [map]                         │
 │ ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ │
-│ │ P4 WRITE THE DRAFT PLAN                                                                                     │ │
-│ │ - proposed_route: R1 / R3 / R4 / R5 | - query_spec | - task_spec | - route_risk / confidence                │ │
-│ │ - grounding_required | - missing info / clarify markers | - answer support expectation                      │ │
+│ │ P4 WRITE THE DRAFT PLAN [ DRAFT PLAN OUTPUT ]                                                              │ │
+│ │ - proposed_route: R1 / R3 / R4 / R5 | - query_spec | - task_spec | - route_risk / confidence               │ │
+│ │ - grounding_required | - missing info / clarify markers | - answer support expectation                     │ │
 │ └─────────────────────────────────────────────────────────┬───────────────────────────────────────────────────┘ │
 │                                                           │ [ inspect ]                                         │
 │                                                           ▼                                                     │
 │ ┌─────────────────────────────┐┌──────────────────────────────┐┌──────────────────────────────────────────────┐ │
-│ │ V1 DID WE LISTEN?           ││ V2 IS IT SAFE?               ││ V3 DOES IT MAKE SENSE?                       │ │
+│ │ V1 DID WE LISTEN?           ││ V2 IS IT SAFE?               ││ V3 DOES IT MAKE SENSE? [ VALIDATE ]          │ │
 │ │ - answers the actual goal   ││ - within policy bounds       ││ - dependencies resolve                       │ │
 │ │ - respects all constraints  ││ - escalation if needed       ││ - coherent sub-task order                    │ │
 │ │ - right deliverable / format││ - no forbidden action propose││ - admits what is unknown                     │ │

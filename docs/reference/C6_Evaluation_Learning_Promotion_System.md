@@ -101,7 +101,7 @@
                                                          ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 9 🖋️ MASTER LEDGER COMMIT                                                                                                  │
-│ - Sole ink gate: executes edition rollout and ledger update                                                            │
+│ - Sole ink gate: executes edition rollout, ledger update, and release receipts                                                            │
 └────────────────────────────────────────────────────────┬─────────────► [ Rule: Clerk Gate Only ]
                                                          │
                                                          │ [ commit complete ]
