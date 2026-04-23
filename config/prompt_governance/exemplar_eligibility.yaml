@@ -1,0 +1,31 @@
+# Exemplar eligibility registry - W5 RH5.2 SSOT.
+#
+# Single source of truth for which prompt task_classes require a
+# minimum of 3 few-shot examples (E0 slot) per the plan
+# prompt-assembly-reception-hardening-9c4e2b.md.
+#
+# Consumed by:
+#   - agentic_core/prompt_governance/validation/check_exemplar_coverage.py
+#     (runtime gate invoked during prompt assembly)
+#   - ops_scripts/ci/check_exemplar_coverage.py
+#     (pre-commit / CI gate that validates this file against the exemplar bank)
+#
+# Structure:
+#   eligible_task_classes:
+#     - task_class: <free-form string>
+#       reason: <why this task needs exemplars>
+#       owner: <team / module owner>
+#       minimum_examples: 3   # defaults to MINIMUM_EXAMPLES if omitted
+#
+# Do NOT add entries here until an exemplar bank has been seeded with
+# at least 3 examples for the class. The CI gate will fail otherwise.
+
+schema_version: 1
+
+eligible_task_classes: []
+  # Example entry (commented until a real task_class has examples seeded):
+  #
+  # - task_class: rfp_section_draft
+  #   reason: Section structure + tone are highly stylized; few-shot reduces hallucination.
+  #   owner: apps_rfp
+  #   minimum_examples: 3
