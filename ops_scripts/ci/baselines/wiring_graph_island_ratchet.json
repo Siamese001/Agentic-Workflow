@@ -3,5 +3,8 @@
   "count": 0,
   "seeded_at": "2026-04-23T15:00:00+00:00",
   "snapshot": "adg_indexed_04232026_0925.sqlite",
-  "notes": "H2 baseline. Graph is one giant component under undirected imports projection. Ratchet: any new non-giant component with >=2 modules fails."
+  "notes": "H2 baseline. Graph is one giant component under undirected imports projection. Ratchet: any new non-giant component with >=2 modules fails.",
+  "zero_run_streak": 2,
+  "last_run_at": "2026-04-23T18:44:10.909888+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
 }

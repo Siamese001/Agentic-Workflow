@@ -1,7 +1,25 @@
 {
   "gate_id": "G_REACH_l0_reachability",
-  "count": 1993,
+  "count": 1861,
   "seeded_at": "2026-04-23T15:00:00+00:00",
-  "snapshot": "adg_indexed_04232026_0925.sqlite",
-  "notes": "H2 baseline. 1993 production modules not L0-reachable via 'imports' edges. Many are legit (utility libs, plugins, indirect dispatch targets). Ratchet: new orphans fail. After C0 wiring fix lands, planned W6 follow-up to flip tier R->B and prune baseline."
+  "snapshot": "adg_indexed_04232026_1442.sqlite",
+  "notes": "H2 baseline. 1993 production modules not L0-reachable via 'imports' edges. Many are legit (utility libs, plugins, indirect dispatch targets). Ratchet: new orphans fail. After C0 wiring fix lands, planned W6 follow-up to flip tier R->B and prune baseline.",
+  "tightened_at": "2026-04-23T18:44:10.751423+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-04-23T18:19:33.362026+00:00",
+      "snapshot": "adg_indexed_04232026_1418.sqlite",
+      "from": 1993,
+      "to": 1909
+    },
+    {
+      "at": "2026-04-23T18:44:10.751423+00:00",
+      "snapshot": "adg_indexed_04232026_1442.sqlite",
+      "from": 1909,
+      "to": 1861
+    }
+  ],
+  "zero_run_streak": 0,
+  "last_run_at": "2026-04-23T18:44:10.751946+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
 }

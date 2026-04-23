@@ -88,23 +88,35 @@
 
 ---
 
-## §4. Wave/Phase Convergence (plan status update)
+## §4. Backlog Items (plan status update)
 
-**Database ID**: `aa8d2507-101e-4384-81d9-60ea3fe33876`
+**Database ID**: `aa8d2507-101e-4384-81d9-60ea3fe33876` (renamed 2026-04-23 from `Wave/Phase Convergence`)
 **Trigger**: Created or status-changed `.windsurf/plans/<name>-<6hex>.md`
 
-Title property is **`Phase Title`** (not `Name`). Status select options: `Todo | Ready | In Progress | Done | Blocked | Descoped`.
+Title property is **`Phase Title`** (not `Name`). Status select options: `Todo | In Progress | Done | Blocked | Descoped | Complete`.
+
+**Typed fields** (live as of 2026-04-23 W6): `P-Band`, `Impact Score`, `Fan-In`, `Coverage Gap %`, `Layer`, `Surface`, `Last Scored`, `Plan` (relation → Plans DB).
+
+ALWAYS populate the typed fields when writing a row. The legacy `Priority` number property was **removed** in W6 — writing to it will 400.
 
 ```json
 {
   "parent": {"type": "database_id", "database_id": "aa8d2507-101e-4384-81d9-60ea3fe33876"},
   "properties": {
-    "Phase Title": {"title": [{"text": {"content": "<plan-slug> — W<N> P<M>: <phase-name>"}}]},
+    "Phase Title": {"title": [{"text": {"content": "[P<band>] W<N> P<M> — <phase-name>"}}]},
     "Plan File": {"rich_text": [{"text": {"content": "<name>-<6hex>.md"}}]},
+    "Plan": {"relation": [{"id": "<plans-page-id-for-this-slug>"}]},
     "Wave ID": {"rich_text": [{"text": {"content": "W<N>"}}]},
     "Phase ID": {"rich_text": [{"text": {"content": "P<M>"}}]},
-    "Status": {"select": {"name": "<Todo|Ready|In Progress|Done|Blocked|Descoped>"}},
-    "Blocking Items": {"rich_text": [{"text": {"content": "<free-text describing blocker>"}}]},
+    "Status": {"select": {"name": "<Todo|In Progress|Done|Blocked|Descoped|Complete>"}},
+    "P-Band": {"select": {"name": "<P0|P1|P2|P3|P4|P5|UNSCORED>"}},
+    "Impact Score": {"number": 220.87},
+    "Fan-In": {"number": 4},
+    "Coverage Gap %": {"number": 1.0},
+    "Layer": {"select": {"name": "<L0|L1|L2|L3|L4|L5|L6|L_APP|L_OPS|L_TOOLS|L_SHARED>"}},
+    "Surface": {"select": {"name": "<Security|Write|Execution|State|Observability|None>"}},
+    "Last Scored": {"date": {"start": "<YYYY-MM-DD>"}},
+    "Blocking Items": {"rich_text": [{"text": {"content": "<free-text describing blocker; NO scalar data>"}}]},
     "Blocking ADR": {"rich_text": [{"text": {"content": "ADR-<NNN>"}}]},
     "Est Tokens": {"number": 50000},
     "Actual Tokens": {"number": null},
@@ -113,7 +125,13 @@ Title property is **`Phase Title`** (not `Name`). Status select options: `Todo |
 }
 ```
 
-**Known live schema** (verified 2026-04-22): title=`Phase Title`, file=`Plan File` (basename only, no directory prefix).
+**Scorer SSOT**: `tools/priority/deferred_scope_scorer.py` produces `P-Band` and `Impact Score` from `(Layer, Fan-In, Surface, Coverage Gap %)`. Do not hand-assign bands — call the scorer.
+
+**Related Plans DB**: `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` (data_source `ac53d31b-3068-4039-9ebe-856c12caab32`). Every new `Backlog Items` row must set its `Plan` relation to the corresponding Plans page (one per unique plan slug).
+
+**Backlog Snapshot page**: `34b27693-f55c-81b4-93ba-efec5755a20e` — read with `API-get-block-children` for dashboards; do NOT paginate Wave/Phase for top-N queries.
+
+**Known live schema** (verified 2026-04-23): title=`Phase Title`, file=`Plan File` (basename only), relation=`Plan`, typed bands via `P-Band`/`Impact Score`.
 
 ---
 

@@ -3,5 +3,8 @@
   "count": 0,
   "seeded_at": "2026-04-23T15:00:00+00:00",
   "snapshot": "adg_indexed_04232026_0925.sqlite",
-  "notes": "H2 baseline. Wraps existing ADGGraphWatchlistBuilder regression classification. Ratchet: any net-new hotspot regression (NEW_HOTSPOT or WORSENED) fails."
+  "notes": "H2 baseline. Wraps existing ADGGraphWatchlistBuilder regression classification. Ratchet: any net-new hotspot regression (NEW_HOTSPOT or WORSENED) fails.",
+  "zero_run_streak": 2,
+  "last_run_at": "2026-04-23T18:44:10.919374+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
 }

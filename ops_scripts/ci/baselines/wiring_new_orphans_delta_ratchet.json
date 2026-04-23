@@ -2,5 +2,8 @@
   "gate_id": "H1_new_orphans_delta_ratchet",
   "count": 0,
   "seeded_at": "2026-04-23T16:16:04.450649+00:00",
-  "snapshot": "initial"
+  "snapshot": "initial",
+  "zero_run_streak": 1,
+  "last_run_at": "2026-04-23T18:44:02.700013+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
 }

@@ -55,7 +55,8 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 
 | Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |
 |----------|-----------------------|----------------------|--------------|----------------------------|
-| Wave/Phase Convergence | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" | On wave/phase completion or status change |
+| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_cascade_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
+| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.windsurf/plans/<slug>-<6hex>.md`. Create Plans row with Status=Active, Exists On Disk=true, Plan File Path set. |
 | SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | `0a3b8072-eabd-4516-9473-3c321bb011ff` | "SC/AP violations", "check severity", "promotion status" | When `generate_full_adg` emits new SC/AP rows |
 | HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | `18bb9145-1320-4191-8b14-6c309776bcf5` | "HITL decisions", "past decisions", "decision history" | Immediately after any scored `ask_user_question` resolution |
 | Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | `1c1379bc-32ca-4216-898a-3672f0316f69` | "constitutional rules", "rule status" | On rule addition/modification |
@@ -68,6 +69,17 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 **Write pattern (creates)**: `API-post-page` with `parent: {type: "database_id", database_id: <column 3>}`. Using data_source_id for writes returns 404.
 
 <!-- NOTION-MAP:END -->
+
+### Backlog Snapshot — preferred read path (added 2026-04-23)
+
+For any **dashboard / top-N / "what's the current state of the backlog"** question, prefer **one** `API-get-block-children` call on the Backlog Snapshot page over paginating Wave/Phase Convergence:
+
+- **Page ID**: `34b27693-f55c-81b4-93ba-efec5755a20e`
+- **Content**: top-25 open P1+P2 by Impact Score, band distribution, stale flags — pre-rendered markdown
+- **Size**: ~5 KB vs. ~170 KB for full paginated query
+- **Regenerate**: `python tools/notion/snapshot_renderer.py --regenerate` (~4 s, uses only the typed fields backfilled in W1/W2)
+
+Use `API-query-data-source` on Wave/Phase Convergence only when you need a specific filter/sort not in the snapshot (e.g., all rows linked to a specific `Plan` relation).
 
 ### Auto-Routing Rules (proactive — do NOT wait for a prompt)
 

@@ -2,5 +2,8 @@
   "gate_id": "N_guardrail_separation_ratchet",
   "count": 508,
   "seeded_at": "2026-04-23T16:07:25.886178+00:00",
-  "snapshot": "adg_indexed_04232026_0925.sqlite"
+  "snapshot": "adg_indexed_04232026_0925.sqlite",
+  "zero_run_streak": 0,
+  "last_run_at": "2026-04-23T18:44:02.569411+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
 }

@@ -215,7 +215,17 @@ def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> d
         f"post_cascade_deferred_scope_capture hook."
     )
 
-    properties = {
+    # Coverage gap stored as percent (0..1 for Notion's percent format).
+    try:
+        gap_fraction = float(gap) / 100.0
+    except (ValueError, TypeError):
+        gap_fraction = None
+    try:
+        fan_in_int = int(fan_in)
+    except (ValueError, TypeError):
+        fan_in_int = None
+
+    properties: dict[str, Any] = {
         "Phase Title": {"title": [{"text": {"content": phase_title}}]},
         "Phase ID": {"rich_text": [{"text": {"content": phase}}]},
         "Wave ID": {"rich_text": [{"text": {"content": wave}}]},
@@ -236,8 +246,19 @@ def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> d
         "Status": {"select": {"name": "Todo"}},
         "Est Tokens": {"number": est_tokens},
         "Blocking Items": {"rich_text": [{"text": {"content": blocking_items}}]},
-        "Priority": {"number": BAND_TO_PRIORITY.get(band, 30)},
+        # W1 typed fields (added 2026-04-23 per notion-backlog-schema-refactor-7c3d9e).
+        # Legacy `Priority` also populated until the W6 deprecation bake completes.
+        "P-Band": {"select": {"name": band}},
+        "Impact Score": {"number": round(float(impact), 2)},
+        "Layer": {"select": {"name": layer}},
+        "Surface": {"select": {"name": surface}},
+        "Last Scored": {"date": {"start": _utc_today_iso()}},
+        # Legacy `Priority` number field removed 2026-04-23 W6 — P-Band is SSOT now.
     }
+    if fan_in_int is not None:
+        properties["Fan-In"] = {"number": fan_in_int}
+    if gap_fraction is not None:
+        properties["Coverage Gap %"] = {"number": gap_fraction}
 
     return {
         "parent": {"database_id": WAVE_PHASE_DB_ID},
@@ -461,7 +482,58 @@ def main() -> int:
             f"-> log: {CAPTURE_LOG.relative_to(REPO_ROOT)}",
             file=sys.stderr,
         )
+
+    # W4.3: tail-call snapshot regeneration (throttled, fail-open).
+    # Only fire when we actually posted something new — avoids regen on
+    # pure confirm_by_receipt / duplicate-skip passes.
+    if summary_counts.get("auto_posted", 0) > 0 and token:
+        _maybe_regenerate_snapshot(token)
+
     return 0
+
+
+# ---------------------------------------------------------------------------
+# W4.3: Snapshot regeneration (throttled, fail-open)
+# ---------------------------------------------------------------------------
+
+SNAPSHOT_THROTTLE_S = 30
+SNAPSHOT_LOCKFILE = REPO_ROOT / "artifacts" / "windsurf" / ".snapshot_last_run"
+
+
+def _maybe_regenerate_snapshot(token: str) -> None:
+    """Call snapshot_renderer.regenerate() if last run was >30s ago.
+
+    Fail-open: any exception is swallowed to keep the hook advisory.
+    The in-process import avoids spawning a subprocess (no shared-shell risk).
+    """
+    try:
+        now = datetime.now(timezone.utc).timestamp()
+        if SNAPSHOT_LOCKFILE.exists():
+            try:
+                last = float(SNAPSHOT_LOCKFILE.read_text(encoding="utf-8").strip())
+                if now - last < SNAPSHOT_THROTTLE_S:
+                    return
+            except (ValueError, OSError):
+                pass  # corrupt lockfile -> regenerate anyway
+        # Import lazily so the hook stays importable even if snapshot_renderer is absent.
+        from tools.notion.snapshot_renderer import regenerate  # noqa: PLC0415
+        from tools.notion.snapshot_renderer import PAGE_ID_FILE  # noqa: PLC0415
+        if not PAGE_ID_FILE.exists():
+            return
+        page_id = PAGE_ID_FILE.read_text(encoding="utf-8").strip()
+        result = regenerate(token, page_id)
+        SNAPSHOT_LOCKFILE.parent.mkdir(parents=True, exist_ok=True)
+        SNAPSHOT_LOCKFILE.write_text(str(now), encoding="utf-8")
+        print(
+            f"[deferred_scope_capture] snapshot regenerated "
+            f"(rows={result.get('rows')}, {result.get('elapsed_s')}s)",
+            file=sys.stderr,
+        )
+    except (ImportError, OSError, RuntimeError, ValueError) as exc:  # fail-open
+        print(
+            f"[deferred_scope_capture] snapshot regen skipped: {exc}",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":

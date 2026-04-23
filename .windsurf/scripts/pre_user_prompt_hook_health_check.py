@@ -139,7 +139,13 @@ def main() -> int:
             "post_cascade_response hook chain in the previous session —\n"
             "audit writebacks, author-gate captures, and deferred-scope\n"
             "captures may be missing. Review artifacts/windsurf/*.jsonl\n"
-            "for gaps before relying on hook-captured state."
+            "for gaps before relying on hook-captured state.\n"
+            "\n"
+            "WORKAROUND (Windsurf 2.0.67 bug): Cascade should invoke\n"
+            ".windsurf/scripts/defer.py directly in the same response\n"
+            "that emits DEFERRED_SCOPE markers, and use\n"
+            "manual_post_cascade_replay.py --file/--clipboard for the\n"
+            "full post_cascade chain. See docs in those scripts."
         )
     return 0
 

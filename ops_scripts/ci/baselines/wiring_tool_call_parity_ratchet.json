@@ -1,6 +1,24 @@
 {
   "gate_id": "O_tool_call_parity_ratchet",
-  "count": 137,
+  "count": 135,
   "seeded_at": "2026-04-23T16:07:25.686234+00:00",
-  "snapshot": "adg_indexed_04232026_0925.sqlite"
+  "snapshot": "adg_indexed_04232026_1442.sqlite",
+  "tightened_at": "2026-04-23T18:44:02.430696+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-04-23T18:19:25.888376+00:00",
+      "snapshot": "adg_indexed_04232026_1418.sqlite",
+      "from": 137,
+      "to": 136
+    },
+    {
+      "at": "2026-04-23T18:44:02.430696+00:00",
+      "snapshot": "adg_indexed_04232026_1442.sqlite",
+      "from": 136,
+      "to": 135
+    }
+  ],
+  "zero_run_streak": 0,
+  "last_run_at": "2026-04-23T18:44:02.431204+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
 }

@@ -101,6 +101,17 @@ SIGNALS: list[tuple[str, re.Pattern[str], str]] = [
         ),
         "notion:SC/AP Violation Backlog",
     ),
+    (
+        "phase_wave_completed",
+        re.compile(
+            r"PHASE_CLOSED:\s*plan=|"
+            r"\b(?:wave|phase)\s+(?:[A-Z]+\d+(?:\.\d+)?|[A-Z]+\d+[A-Z]?\.\d+)\s+"
+            r"(?:complete|closed|closure|shipped|landed)\b|"
+            r"^[A-Z]+\d+(?:\.\d+)?(?:-closure)?:\s+.*?\b(?:complete|closure|land(?:ed)?|ship(?:ped)?|full)\b",
+            re.IGNORECASE | re.MULTILINE,
+        ),
+        "notion:Wave/Phase Convergence Status=Done",
+    ),
 ]
 
 # Receipt pattern emitted by the skill's writeback template

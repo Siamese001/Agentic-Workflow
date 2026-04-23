@@ -2,5 +2,8 @@
   "gate_id": "C5_unresolved_callsites_ratchet",
   "count": 0,
   "seeded_at": "2026-04-23T16:07:25.376602+00:00",
-  "snapshot": "adg_indexed_04232026_0925.sqlite"
+  "snapshot": "adg_indexed_04232026_0925.sqlite",
+  "zero_run_streak": 2,
+  "last_run_at": "2026-04-23T18:44:02.411613+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
 }
