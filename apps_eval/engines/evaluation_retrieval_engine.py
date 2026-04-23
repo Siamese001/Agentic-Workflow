@@ -22,6 +22,11 @@ from apps_eval._telemetry import (
     _emit_records_execution_trace,
     _emit_stores_embedding,
 )
+from apps_eval.integrations.meta_bus_publisher import (
+    KIND_RETRIEVAL,
+    publish_eval_outcome,
+)
+from apps_eval.integrations.tracing import eval_span
 
 _log = logging.getLogger(__name__)
 
@@ -238,6 +243,35 @@ class EvaluationRetrievalEngine:
         window_size: int = 10,
     ) -> TrendAnalysis | None:
         """Analyze score trends for a dimension."""
+        with eval_span(
+            "apps_eval.v1.retrieval.analyze_trends",
+            attributes={
+                "eval.dimension_id": dimension_id,
+                "eval.window_size": window_size,
+            },
+        ):
+            result = self._analyze_trends_impl(dimension_id, window_size)
+            if result is not None:
+                publish_eval_outcome(
+                    kind=KIND_RETRIEVAL,
+                    payload={
+                        "engine": "EvaluationRetrievalEngine",
+                        "op": "trend_analysis",
+                        "dimension_id": result.dimension_id,
+                        "trend_direction": result.trend_direction,
+                        "slope": result.slope,
+                        "volatility": result.volatility,
+                        "prediction_next": result.prediction_next,
+                        "value_count": len(result.values),
+                    },
+                )
+            return result
+
+    def _analyze_trends_impl(
+        self,
+        dimension_id: str,
+        window_size: int,
+    ) -> TrendAnalysis | None:
         # Get recent evaluations
         all_evals: list[RetrievedEvaluation] = []
         for ev_data in tqdm(self.store._evaluations.values(), desc="Processing", unit="item"):
@@ -302,6 +336,30 @@ class EvaluationRetrievalEngine:
         baseline_result: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Generate comparison against baseline or historical average."""
+        with eval_span(
+            "apps_eval.v1.retrieval.generate_baseline_comparison",
+            attributes={
+                "eval.has_explicit_baseline": baseline_result is not None,
+            },
+        ):
+            comparison = self._generate_baseline_comparison_impl(current_result, baseline_result)
+            publish_eval_outcome(
+                kind=KIND_RETRIEVAL,
+                payload={
+                    "engine": "EvaluationRetrievalEngine",
+                    "op": "baseline_comparison",
+                    "comparison_type": comparison.get("comparison_type", ""),
+                    "overall_delta": comparison.get("overall_delta", 0.0),
+                    "historical_count": comparison.get("historical_count", 0),
+                },
+            )
+            return comparison
+
+    def _generate_baseline_comparison_impl(
+        self,
+        current_result: dict[str, Any],
+        baseline_result: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         if baseline_result:
             # Compare against specific baseline
             return {
@@ -336,6 +394,30 @@ class EvaluationRetrievalEngine:
         threshold: float = 0.05,
     ) -> list[dict[str, Any]]:
         """Detect potential regression signals."""
+        with eval_span(
+            "apps_eval.v1.retrieval.detect_regression_signals",
+            attributes={
+                "eval.threshold": threshold,
+            },
+        ):
+            signals = self._detect_regression_signals_impl(current_result, threshold)
+            publish_eval_outcome(
+                kind=KIND_RETRIEVAL,
+                payload={
+                    "engine": "EvaluationRetrievalEngine",
+                    "op": "regression_signals",
+                    "signal_count": len(signals),
+                    "high_severity_count": sum(1 for s in signals if s.get("severity") == "high"),
+                    "threshold": threshold,
+                },
+            )
+            return signals
+
+    def _detect_regression_signals_impl(
+        self,
+        current_result: dict[str, Any],
+        threshold: float = 0.05,
+    ) -> list[dict[str, Any]]:
         signals: list[dict[str, Any]] = []
 
         # Find similar past evaluations

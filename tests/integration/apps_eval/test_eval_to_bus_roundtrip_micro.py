@@ -13,6 +13,7 @@ import pytest
 
 from apps_eval.integrations.meta_bus_publisher import (
     KIND_HITL_QUALITY,
+    KIND_RETRIEVAL,
     KIND_SUITE,
 )
 from system_learning.meta_learning.meta_learning_bus import (
@@ -144,3 +145,96 @@ class TestScenarioRunnerSpanWrap:
     def test_kind_suite_constant_is_stable(self) -> None:
         """Wire-format stability check for downstream consumers."""
         assert KIND_SUITE == "eval.suite"
+
+
+class TestEvaluationRetrievalRoundtrip:
+    """W-D1 tests — evaluation_retrieval_engine span + publish wiring."""
+
+    def _seed_store(self, engine: "EvaluationRetrievalEngine", n: int = 5) -> None:
+        """Seed the in-memory store with n evaluations spanning a dimension."""
+        for i in range(n):
+            engine.index_evaluation(
+                result={
+                    "overall_score": 0.5 + i * 0.05,
+                    "dimension_scores": {"accuracy": 0.6 + i * 0.04},
+                    "suite_results": {"suite_a": 0.7},
+                },
+                suite_ids=["suite_a"],
+                trace_id=f"tr-{i:02d}",
+            )
+
+    def test_analyze_trends_publishes_when_result_nonnull(self) -> None:
+        from apps_eval.engines.evaluation_retrieval_engine import (
+            EvaluationRetrievalEngine,
+        )
+
+        engine = EvaluationRetrievalEngine()
+        self._seed_store(engine, n=5)
+        bus = get_process_bus()
+        _drain_bus()  # drop the seed-phase noise
+        assert bus.size() == 0
+
+        trend = engine.analyze_trends(dimension_id="accuracy", window_size=5)
+        assert trend is not None
+        assert bus.size() == 1
+
+        pkg = bus.dequeue()
+        assert pkg is not None
+        assert pkg.kind == KIND_RETRIEVAL
+        assert pkg.payload["op"] == "trend_analysis"
+        assert pkg.payload["dimension_id"] == "accuracy"
+        assert pkg.payload["trend_direction"] in ("improving", "stable", "declining")
+
+    def test_analyze_trends_does_not_publish_when_insufficient_data(self) -> None:
+        from apps_eval.engines.evaluation_retrieval_engine import (
+            EvaluationRetrievalEngine,
+        )
+
+        engine = EvaluationRetrievalEngine()
+        # only 2 evals — below the len<3 threshold → analyze_trends returns None
+        self._seed_store(engine, n=2)
+        _drain_bus()
+        bus = get_process_bus()
+
+        trend = engine.analyze_trends(dimension_id="accuracy", window_size=5)
+        assert trend is None
+        # Nothing to learn from → no publish
+        assert bus.size() == 0
+
+    def test_baseline_comparison_and_regression_signals_publish(self) -> None:
+        from apps_eval.engines.evaluation_retrieval_engine import (
+            EvaluationRetrievalEngine,
+        )
+
+        engine = EvaluationRetrievalEngine()
+        self._seed_store(engine, n=5)
+        _drain_bus()
+        bus = get_process_bus()
+
+        current = {
+            "overall_score": 0.55,
+            "dimension_scores": {"accuracy": 0.50},
+            "suite_results": {"suite_a": 0.55},
+        }
+        baseline = {
+            "overall_score": 0.80,
+            "dimension_scores": {"accuracy": 0.78},
+        }
+
+        comparison = engine.generate_baseline_comparison(current, baseline_result=baseline)
+        assert comparison["comparison_type"] == "baseline"
+        signals = engine.detect_regression_signals(current, threshold=0.05)
+        # 2 publishes total
+        assert bus.size() == 2
+
+        kinds = [bus.dequeue(), bus.dequeue()]
+        ops = {pkg.payload["op"] for pkg in kinds if pkg is not None}
+        assert ops == {"baseline_comparison", "regression_signals"}
+        assert all(pkg.kind == KIND_RETRIEVAL for pkg in kinds if pkg is not None)
+        # signal_count may be 0 or positive; just assert the field is present
+        for pkg in kinds:
+            if pkg is not None and pkg.payload["op"] == "regression_signals":
+                assert "signal_count" in pkg.payload
+                assert pkg.payload["threshold"] == 0.05
+        # consume `signals` so the name is used regardless of branch
+        assert isinstance(signals, list)

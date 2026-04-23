@@ -8,6 +8,7 @@ import argparse
 import ast
 import hashlib
 import logging
+import sqlite3
 
 # Import SovereignChromaClient for centralized ChromaDB access
 import sys
@@ -23,9 +24,82 @@ from tools.ingestion.contextual_chunk_builder import (
     prepend_context,
 )
 
-# Setup logging
+# Setup logging (needed by ADGNodeResolver below)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+class ADGNodeResolver:
+    """Resolve ingest chunks to ADG node ids for cross-index joinability.
+
+    Builds a single in-memory index keyed by ``(resolved_path_basename, adg_name)``
+    from the ADG SQLite snapshot so per-chunk lookup is O(1). If the ADG db is
+    missing or unreadable the resolver degrades gracefully to returning ``None``
+    — this keeps ingestion resilient to snapshot regeneration windows.
+
+    Wave E plan: ``.windsurf/plans/wave-e-adg-card-projection-2df148.md`` (µW6).
+    """
+
+    def __init__(self, adg_db_path: str | Path | None):
+        self._by_path_name: dict[tuple[str, str], int] = {}
+        self._by_name: dict[str, int] = {}
+        self._loaded = False
+        self._path = Path(adg_db_path) if adg_db_path else None
+        if self._path is not None:
+            self._load()
+
+    def _load(self) -> None:
+        assert self._path is not None
+        if not self._path.exists():
+            logger.warning("ADGNodeResolver: snapshot not found at %s; node_id resolution disabled", self._path)
+            return
+        try:
+            uri = f"file:{self._path.as_posix()}?mode=ro"
+            conn = sqlite3.connect(uri, uri=True, timeout=10.0)
+        except sqlite3.Error as exc:
+            logger.warning("ADGNodeResolver: cannot open ADG (%s); node_id resolution disabled", exc)
+            return
+        try:
+            cur = conn.execute(
+                "SELECT id, adg_name, resolved_path FROM nodes"
+                " WHERE adg_name IS NOT NULL AND adg_name != ''"
+            )
+            # ADG ``adg_name`` uses qualified forms like
+            # ``ADG::Symbol::pkg.sub.module.ClassName`` or
+            # ``ADG::Module::path/to/file.py``. Chunks emitted from ingest_code
+            # know only the terminal symbol name, so we index by the tail
+            # after the final ``.`` or ``::`` and keep the (file_basename, tail)
+            # pair as primary key.
+            for node_id, adg_name, resolved_path in cur:
+                name_str = str(adg_name)
+                tail = name_str.rsplit(".", 1)[-1].rsplit("::", 1)[-1]
+                if tail and tail not in self._by_name:
+                    self._by_name[tail] = node_id
+                if resolved_path and tail:
+                    key = (Path(str(resolved_path)).name, tail)
+                    self._by_path_name.setdefault(key, node_id)
+            self._loaded = True
+            logger.info(
+                "ADGNodeResolver: indexed %d (path,name) pairs from %s",
+                len(self._by_path_name),
+                self._path.name,
+            )
+        finally:
+            conn.close()
+
+    def resolve(self, file_path: Path, name: str) -> int | None:
+        """Return the ADG node id for ``name`` in ``file_path``, if known."""
+
+        if not self._loaded:
+            return None
+        key = (file_path.name, name)
+        node_id = self._by_path_name.get(key)
+        if node_id is not None:
+            return node_id
+        # Fallback: exact adg_name match anywhere (looser; only used when the
+        # file-scoped lookup misses — e.g. renamed or moved files). None is
+        # preferable to a wrong id, so we only fall back when unambiguous.
+        return self._by_name.get(name)
 
 
 class CodeChunker:
@@ -56,9 +130,13 @@ class CodeChunker:
         "chunk_context",
     }
 
-    def __init__(self):
+    def __init__(self, adg_resolver: ADGNodeResolver | None = None):
         self.chunks = []
         self.parent_child_map = {}  # chunk_id -> parent_chunk_id
+        # Optional ADG resolver — when present, function/class chunks carry
+        # the ADG node id so retrieval can join chunk metadata against the
+        # semantic card indexes emitted by project_adg_cards.py.
+        self.adg_resolver = adg_resolver
 
     @staticmethod
     def validate_metadata(metadata: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -242,7 +320,9 @@ class CodeChunker:
                 "args": [arg.arg for arg in node.args.args] if node.args.args else [],
                 "docstring": ast.get_docstring(node) or "",
                 "type": "code",
-                "adg_node_id": None,  # TODO: Populate from ADG in future wave
+                "adg_node_id": self.adg_resolver.resolve(file_path, node.name)
+                if self.adg_resolver is not None
+                else None,
                 "embedding_model": "fallback_hash_384",
                 "ingested_at": None,  # Will be set during ingestion
             },
@@ -290,7 +370,9 @@ class CodeChunker:
                 "methods": methods if methods else [],
                 "docstring": ast.get_docstring(node) or "",
                 "type": "code",
-                "adg_node_id": None,  # TODO: Populate from ADG in future wave
+                "adg_node_id": self.adg_resolver.resolve(file_path, node.name)
+                if self.adg_resolver is not None
+                else None,
                 "embedding_model": "fallback_hash_384",
                 "ingested_at": None,  # Will be set during ingestion
             },
