@@ -1,0 +1,31 @@
+name: Subprocess Timeout Gate
+
+# Mirrors the T7h pre-commit hook server-side to close the --no-verify
+# bypass loophole. Enforces Constitutional §11 (terminal process lifecycle)
+# and §14 (subprocess timeout required) on every PR and push to main.
+#
+# The local T7h hook runs in --staged mode (only new changes). This workflow
+# runs in full-repo mode on PRs so any --no-verify'd commit is caught before
+# merge.
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  subprocess-timeout:
+    name: "§11 + §14 — terminal cleanup / subprocess timeout"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Full-repo subprocess+terminal scan
+        run: |
+          python ops_scripts/ci/check_terminal_cleanup.py --verbose

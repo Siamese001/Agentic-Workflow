@@ -113,8 +113,16 @@ Add required sections to evidence files:
 Run validation checks:
 
 ```bash
+# Full-repo (CI / before PR)
 python ops_scripts/ci/validate_timeout_progress.py
+
+# Staged-only (pre-commit-equivalent)
+python ops_scripts/ci/validate_timeout_progress.py --staged
 ```
+
+The validator delegates to `check_terminal_cleanup.py` (§14) and
+`check_query_progress_bar.py` (§16). Both gates run sequentially; exit
+code 1 if either fails.
 
 Check for violations:
 - [ ] All queries have explicit timeout parameters

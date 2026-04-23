@@ -330,9 +330,12 @@ repos:
       #   - subprocess.Popen without .wait/.terminate/.kill/communicate or `with`
       #   - subprocess.run without timeout= kwarg
       #   - os.system / os.popen (banned outright)
-      # --staged mode: blocks NEW violations only. 30 pre-existing violations across
-      # 25 files on 2026-04-22 baseline — tracked for separate burndown plan, not
-      # blocked here to avoid breaking existing repo state.
+      # --staged mode: blocks NEW violations only. Full-repo scan as of
+      # 2026-04-23 shows 0 violations (verified: `python
+      # ops_scripts/ci/check_terminal_cleanup.py --verbose` → "scanned 3966
+      # files, no violations"). The server-side mirror
+      # `.github/workflows/subprocess-timeout-gate.yml` runs the full-repo
+      # scan on every PR to close the `--no-verify` bypass.
       - id: terminal-cleanup
         name: "T7h: Terminal/Subprocess Cleanup (§11 + §14)"
         entry: py ops_scripts/ci/check_terminal_cleanup.py --staged

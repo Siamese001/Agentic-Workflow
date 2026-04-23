@@ -111,6 +111,10 @@
         "working_directory": "C:\\Git\\Agentic-Workflow"
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_long_command_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow"
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_heartbeat.py",
         "working_directory": "C:\\Git\\Agentic-Workflow"
       }
