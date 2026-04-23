@@ -1,57 +1,45 @@
-"""Gemini-based LLM judge for confidence scoring."""
+"""Gemini judge shim for ``system_learning.confidence`` (LJH1.2).
+
+Previously returned hardcoded 0.85 regardless of input. Now delegates to
+the canonical ``agentic_core.evaluation.judges.llm_judge.GeminiJudge``
+which fires one LLM call per dimension (LJH2.1) and honors the Unknown
+escape hatch (LJH2.2).
+"""
+
+from __future__ import annotations
 
 from typing import Any
 
+from system_learning.confidence.llm_judge import LLMJudge as _ConfidenceJudge
+
+__all__ = ["GeminiJudge", "GeminiE2EJudge", "score_with_gemini", "evaluate_e2e"]
+
 
 class GeminiJudge:
-    """Gemini-based judge for scoring outputs."""
+    """Wrapper delegating to the canonical per-dim Gemini judge."""
 
-    def __init__(self, model: str = "gemini-pro"):
+    def __init__(self, model: str = "gemini-2.5-flash") -> None:
         self.model = model
+        self._judge = _ConfidenceJudge(model=model)
 
     def score(self, output: str, criteria: dict[str, Any] | None = None) -> float:
-        """Score an output based on criteria."""
-        return 0.85  # Default score
+        return self._judge.score(output, criteria)
 
 
 class GeminiE2EJudge:
-    """Gemini-based end-to-end judge."""
+    """End-to-end Gemini judge (input/output pair)."""
 
-    def __init__(self, model: str = "gemini-pro"):
+    def __init__(self, model: str = "gemini-2.5-flash") -> None:
         self.model = model
+        self._judge = _ConfidenceJudge(model=model)
 
     def evaluate(self, input_text: str, output_text: str) -> dict[str, Any]:
-        """Evaluate input/output pair."""
-        return {
-            "score": 0.85,
-            "passed": True,
-            "feedback": "E2E evaluation passed",
-        }
+        return self._judge.evaluate(input_text, output_text)
 
 
 def score_with_gemini(output: str, criteria: dict[str, Any] | None = None) -> float:
-    """Score output using Gemini.
-
-    Args:
-        output: Text to score
-        criteria: Scoring criteria
-
-    Returns:
-        Score between 0.0 and 1.0
-    """
-    judge = GeminiJudge()
-    return judge.score(output, criteria)
+    return GeminiJudge().score(output, criteria)
 
 
 def evaluate_e2e(input_text: str, output_text: str) -> dict[str, Any]:
-    """Evaluate end-to-end.
-
-    Args:
-        input_text: Input text
-        output_text: Output text
-
-    Returns:
-        Evaluation results dict
-    """
-    judge = GeminiE2EJudge()
-    return judge.evaluate(input_text, output_text)
+    return GeminiE2EJudge().evaluate(input_text, output_text)

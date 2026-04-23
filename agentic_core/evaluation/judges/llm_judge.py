@@ -166,12 +166,144 @@ _emit_stores_embedding("p4", "llm_judge", "embedding_store")
 _emit_updates_meta_learning_state("p4", "llm_judge", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "llm_judge", "exec_snapshot_link")
 
+# ---------------------------------------------------------------------------
+# Legacy combined rubric (DEPRECATED — retained for backward compat only).
+# New callsites should use per-dimension isolated rubrics via DIMENSION_RUBRICS
+# below, per Anthropic best practice (engineering.anthropic.com/
+# demystifying-evals-for-ai-agents — "grade each dimension with an isolated
+# LLM-as-judge rather than using one to grade all dimensions").
+# ---------------------------------------------------------------------------
 _RUBRIC = '\nYou are an expert evaluator for RAG (Retrieval-Augmented Generation) systems.\nScore the following on a scale of 1-5 (integers only):\n\n- faithfulness: Is every claim in the answer supported by the provided context?\n  1=completely unsupported, 5=every claim fully grounded.\n- answer_relevancy: Does the answer directly and completely address the query?\n  1=off-topic, 5=directly addresses every part.\n- context_precision: Is the retrieved context relevant to answering the query?\n  1=irrelevant, 5=all context highly relevant.\n- groundedness: Are the factual claims in the answer grounded in the context?\n  1=hallucinated, 5=fully grounded.\n\nProvide a short reasoning (≤2 sentences).\n\nRespond ONLY with valid JSON:\n{"faithfulness": <1-5>, "answer_relevancy": <1-5>,\n "context_precision": <1-5>, "groundedness": <1-5>,\n "reasoning": "<text>"}\n'
+
+# ---------------------------------------------------------------------------
+# Per-dimension CoT-first rubrics (Anthropic-aligned).
+# Each rubric:
+#   1) asks the model to reason FIRST, then produce a score
+#   2) gives explicit Unknown escape hatch ("return Unknown when insufficient")
+#   3) provides scoring anchors at 1, 3, 5 so grading is reproducible
+# ---------------------------------------------------------------------------
+
+_DIM_FAITHFULNESS = """\
+You are an expert evaluator grading ONE dimension of a RAG answer: FAITHFULNESS.
+
+Definition: Is every claim in the answer supported by the provided context?
+Scoring anchors (integer 1-5):
+  1 = most claims fabricated or contradicted by context.
+  3 = core claims supported but several unsupported or weakly supported claims.
+  5 = every claim in the answer is directly and fully supported by the context.
+
+INSTRUCTIONS:
+  1. Think step by step inside a <reasoning>...</reasoning> block.
+     Cite the specific claims in the answer and which context span supports each.
+  2. If the context is missing, irrelevant, or if you cannot confidently grade
+     this dimension from the given evidence, respond with "Unknown" instead of
+     a numeric score. Do not guess. Do not fabricate support.
+  3. After the reasoning, output exactly one JSON object on the final line:
+     {"score": <1|2|3|4|5|"Unknown">, "unknown_reason": "<string-or-null>"}
+
+Respond with ONLY the reasoning block followed by the JSON line.
+"""
+
+_DIM_ANSWER_RELEVANCY = """\
+You are an expert evaluator grading ONE dimension of a RAG answer: ANSWER_RELEVANCY.
+
+Definition: Does the answer directly and completely address the query?
+Scoring anchors (integer 1-5):
+  1 = off-topic or answers a different question.
+  3 = partially addresses the query; misses key sub-parts.
+  5 = directly and completely addresses every part of the query.
+
+INSTRUCTIONS:
+  1. Think step by step inside a <reasoning>...</reasoning> block.
+     List the sub-parts of the query and check each against the answer.
+  2. If the query is ambiguous or you cannot confidently grade, respond
+     "Unknown" instead of a numeric score. Do not guess.
+  3. After the reasoning, output exactly one JSON object on the final line:
+     {"score": <1|2|3|4|5|"Unknown">, "unknown_reason": "<string-or-null>"}
+
+Respond with ONLY the reasoning block followed by the JSON line.
+"""
+
+_DIM_CONTEXT_PRECISION = """\
+You are an expert evaluator grading ONE dimension of a RAG answer: CONTEXT_PRECISION.
+
+Definition: Is the retrieved context relevant to answering the query?
+Scoring anchors (integer 1-5):
+  1 = context is irrelevant or unrelated to the query.
+  3 = context is partially relevant; contains off-topic noise alongside useful
+      material.
+  5 = all retrieved context is directly relevant to the query.
+
+INSTRUCTIONS:
+  1. Think step by step inside a <reasoning>...</reasoning> block.
+     Identify relevant vs irrelevant spans in the context.
+  2. If context is empty or you cannot confidently grade, respond "Unknown".
+  3. After the reasoning, output exactly one JSON object on the final line:
+     {"score": <1|2|3|4|5|"Unknown">, "unknown_reason": "<string-or-null>"}
+
+Respond with ONLY the reasoning block followed by the JSON line.
+"""
+
+_DIM_GROUNDEDNESS = """\
+You are an expert evaluator grading ONE dimension of a RAG answer: GROUNDEDNESS.
+
+Definition: Are the factual claims in the answer grounded in the provided
+context (as opposed to parametric model knowledge)?
+Scoring anchors (integer 1-5):
+  1 = answer is based on model's prior knowledge with no grounding in context.
+  3 = mixed: some claims grounded in context, others rely on model knowledge.
+  5 = every factual claim is traceable to a span in the provided context.
+
+INSTRUCTIONS:
+  1. Think step by step inside a <reasoning>...</reasoning> block.
+     For each factual claim in the answer, mark "grounded" or "ungrounded".
+  2. If insufficient evidence to grade, respond "Unknown" instead of a number.
+  3. After the reasoning, output exactly one JSON object on the final line:
+     {"score": <1|2|3|4|5|"Unknown">, "unknown_reason": "<string-or-null>"}
+
+Respond with ONLY the reasoning block followed by the JSON line.
+"""
+
+DIMENSION_RUBRICS: dict[str, str] = {
+    "faithfulness": _DIM_FAITHFULNESS,
+    "answer_relevancy": _DIM_ANSWER_RELEVANCY,
+    "context_precision": _DIM_CONTEXT_PRECISION,
+    "groundedness": _DIM_GROUNDEDNESS,
+}
+
+DIMENSIONS: tuple[str, ...] = (
+    "faithfulness",
+    "answer_relevancy",
+    "context_precision",
+    "groundedness",
+)
+
+
+# ---------------------------------------------------------------------------
+# Unknown sentinel. Stored in JudgeScore as float('nan') with a reason in
+# ``unknown_reasons``. Call sites should use ``JudgeScore.is_unknown(dim)``
+# to check abstention rather than comparing NaN directly.
+# ---------------------------------------------------------------------------
+UNKNOWN: float = float("nan")
+
+
+def _is_nan(value: float) -> bool:
+    return value != value  # NaN is the only float that is not equal to itself
 
 
 @dataclass(frozen=True)
 class JudgeScore:
-    """Immutable score from an LLM judge."""
+    """Immutable score from an LLM judge.
+
+    Fields ``faithfulness``, ``answer_relevancy``, ``context_precision``,
+    ``groundedness`` may be ``float('nan')`` to indicate the judge
+    abstained (Unknown) on that dimension. The matching entry in
+    ``unknown_reasons`` carries the free-text reason.
+
+    ``per_dim_reasoning`` stores the discarded CoT reasoning per
+    dimension (Anthropic best practice: reason first, discard from
+    score math, keep for audit).
+    """
 
     faithfulness: float
     answer_relevancy: float
@@ -180,6 +312,8 @@ class JudgeScore:
     reasoning: str
     judge_model: str
     deterministic_digest: str
+    unknown_reasons: tuple[tuple[str, str], ...] = ()
+    per_dim_reasoning: tuple[tuple[str, str], ...] = ()
 
     @classmethod
     def create(
@@ -190,14 +324,19 @@ class JudgeScore:
         groundedness: float,
         reasoning: str,
         judge_model: str,
+        unknown_reasons: dict[str, str] | None = None,
+        per_dim_reasoning: dict[str, str] | None = None,
     ) -> JudgeScore:
+        unk = tuple(sorted((unknown_reasons or {}).items()))
+        per_dim = tuple(sorted((per_dim_reasoning or {}).items()))
         canonical = json.dumps(
             {
-                "faithfulness": faithfulness,
-                "answer_relevancy": answer_relevancy,
-                "context_precision": context_precision,
-                "groundedness": groundedness,
+                "faithfulness": "NaN" if _is_nan(faithfulness) else faithfulness,
+                "answer_relevancy": "NaN" if _is_nan(answer_relevancy) else answer_relevancy,
+                "context_precision": "NaN" if _is_nan(context_precision) else context_precision,
+                "groundedness": "NaN" if _is_nan(groundedness) else groundedness,
                 "judge_model": judge_model,
+                "unknown_reasons": list(unk),
             },
             sort_keys=True,
             separators=(",", ":"),
@@ -211,7 +350,22 @@ class JudgeScore:
             reasoning=reasoning,
             judge_model=judge_model,
             deterministic_digest=digest,
+            unknown_reasons=unk,
+            per_dim_reasoning=per_dim,
         )
+
+    def is_unknown(self, dimension: str) -> bool:
+        """Return True if the judge abstained on ``dimension``."""
+        value = getattr(self, dimension, None)
+        return isinstance(value, float) and _is_nan(value)
+
+    def known_dimensions(self) -> dict[str, float]:
+        """Dimensions that were actually scored (exclude Unknown)."""
+        return {d: getattr(self, d) for d in DIMENSIONS if not self.is_unknown(d)}
+
+    def unknown_rate(self) -> float:
+        """Fraction of dimensions the judge abstained on in [0.0, 1.0]."""
+        return 1.0 - (len(self.known_dimensions()) / len(DIMENSIONS))
 
 
 @runtime_checkable
@@ -240,18 +394,85 @@ class NullJudge:
         )
 
 
-class GeminiJudge:
-    """Production judge via Gemini with structured rubric.
+# ---------------------------------------------------------------------------
+# Parsing helpers for CoT-first per-dimension response shape.
+# Shape (per dimension call):
+#     <reasoning>...</reasoning>
+#     {"score": <1-5|"Unknown">, "unknown_reason": "<...>"}
+# ---------------------------------------------------------------------------
 
-    Uses ``google.generativeai`` directly with ``GEMINI_API_KEY`` or
-    ``GOOGLE_API_KEY``. Supports model override via ``GEMINI_MODEL``
-    env var. Temperature is forced to 0.0 for maximum determinism.
-    Parse failures retry once after stripping markdown fences.
+_REASONING_RE = re.compile(r"<reasoning>(.*?)</reasoning>", re.DOTALL | re.IGNORECASE)
+_JSON_TAIL_RE = re.compile(r"\{[^{}]*\"score\"[^{}]*\}")
+
+
+def _clean_raw(raw: str) -> str:
+    return re.sub(r"```(?:json)?|```", "", raw).strip()
+
+
+def _extract_reasoning(raw: str) -> str:
+    match = _REASONING_RE.search(raw)
+    if match:
+        return match.group(1).strip()
+    # Fallback: everything before the trailing JSON object is reasoning.
+    json_match = _JSON_TAIL_RE.search(raw)
+    if json_match:
+        return raw[: json_match.start()].strip()
+    return raw.strip()
+
+
+def _extract_dim_payload(raw: str) -> dict[str, Any]:
+    """Extract the final ``{"score": ..., "unknown_reason": ...}`` payload.
+
+    Returns a dict with keys ``score`` (float or "Unknown") and
+    ``unknown_reason`` (str or None). Falls back to a strict JSON parse
+    of the whole body if no tail object is found.
+    """
+    candidates = list(_JSON_TAIL_RE.finditer(raw))
+    if candidates:
+        try:
+            return cast(dict[str, Any], json.loads(candidates[-1].group(0)))
+        except json.JSONDecodeError:
+            pass
+    cleaned = _clean_raw(raw)
+    try:
+        return cast(dict[str, Any], json.loads(cleaned))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Judge response missing score JSON: {raw!r}") from exc
+
+
+def _coerce_dim_score(payload: dict[str, Any]) -> tuple[float, str | None]:
+    """Return ``(score, unknown_reason)`` from a dimension payload.
+
+    ``score`` is ``UNKNOWN`` (NaN) when the judge abstained, otherwise a
+    float in ``[1.0, 5.0]``. ``unknown_reason`` is the free-text reason
+    when the judge abstained, else ``None``.
+    """
+    raw_score = payload.get("score")
+    unknown_reason = payload.get("unknown_reason")
+    if isinstance(raw_score, str) and raw_score.strip().lower() == "unknown":
+        return UNKNOWN, str(unknown_reason) if unknown_reason else "judge returned Unknown"
+    if raw_score is None:
+        return UNKNOWN, "judge response missing score"
+    try:
+        score = float(raw_score)
+    except (TypeError, ValueError):
+        return UNKNOWN, f"non-numeric score: {raw_score!r}"
+    if not (1.0 <= score <= 5.0):
+        return UNKNOWN, f"score out of range [1,5]: {score}"
+    return score, None
+
+
+class GeminiJudge:
+    """Production judge via Gemini, one LLM call per dimension (LJH2.1).
+
+    Uses ``infrastructure.sdks_mcps.create_gemini_model`` (with
+    ``GEMINI_API_KEY``/``GOOGLE_API_KEY``). Temperature is forced to 0.0
+    for determinism. Parse failures surface as Unknown on that dimension.
     """
 
     DEFAULT_MODEL = "gemini-2.5-flash"
 
-    def __init__(self, gemini_client=None, model: str | None = None) -> None:
+    def __init__(self, gemini_client: Any = None, model: str | None = None) -> None:
         self._client = gemini_client
         env_model = os.getenv("GEMINI_MODEL")
         self._model = model or env_model or self.DEFAULT_MODEL
@@ -261,48 +482,73 @@ class GeminiJudge:
     def model_id(self) -> str:
         return self._model
 
-    def _get_client(self):
+    def _get_client(self) -> Any:
         if self._client is not None:
             return self._client
-
         try:
             client = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(self._model)
         except (ImportError, ValueError) as exc:
             raise RuntimeError(
                 "GeminiJudge: google-genai package not installed or GOOGLE_API_KEY missing.",
             ) from exc
-
         self._configured = True
         return client
 
-    @staticmethod
-    def _clean(raw: str) -> str:
-        return re.sub("```(?:json)?|```", "", raw).strip()
+    def _generate(self, prompt: str) -> str:
+        client = self._get_client()
+        response = client.generate_content(prompt, generation_config={"temperature": 0.0})
+        return cast(str, response.text)
 
-    @staticmethod
-    def _parse(raw: str) -> dict[str, Any]:
+    def _score_dimension(
+        self, dimension: str, query: str, context: str, answer: str,
+    ) -> tuple[float, str | None, str]:
+        """Score one dimension. Returns (score, unknown_reason, reasoning)."""
+        rubric = DIMENSION_RUBRICS[dimension]
+        prompt = f"{rubric}\n\nQuery: {query}\n\nContext:\n{context}\n\nAnswer:\n{answer}"
         try:
-            return cast(dict[str, Any], json.loads(raw))
-        except json.JSONDecodeError:
-            return cast(dict[str, Any], json.loads(GeminiJudge._clean(raw)))
+            raw = self._generate(prompt)
+        except (RuntimeError, ValueError) as exc:
+            return UNKNOWN, f"provider_error: {exc}", ""
+        reasoning = _extract_reasoning(raw)
+        try:
+            payload = _extract_dim_payload(raw)
+            score, reason = _coerce_dim_score(payload)
+        except ValueError as exc:
+            return UNKNOWN, f"parse_error: {exc}", reasoning
+        return score, reason, reasoning
 
     def score(self, query: str, context: str, answer: str) -> JudgeScore:
-        prompt = f"{_RUBRIC}\n\nQuery: {query}\n\nContext:\n{context}\n\nAnswer:\n{answer}"
-        client = self._get_client()
-        response = client.generate_content(
-            prompt,
-            generation_config={"temperature": 0.0},
+        unknown_reasons: dict[str, str] = {}
+        per_dim_reasoning: dict[str, str] = {}
+        scores: dict[str, float] = {}
+        for dim in DIMENSIONS:
+            value, reason, reasoning = self._score_dimension(dim, query, context, answer)
+            scores[dim] = value
+            per_dim_reasoning[dim] = reasoning
+            if reason is not None:
+                unknown_reasons[dim] = reason
+
+        aggregate_reasoning = "; ".join(
+            f"[{dim}] {per_dim_reasoning[dim][:200]}" for dim in DIMENSIONS
         )
-        raw = response.text
-        data = self._parse(raw)
         return JudgeScore.create(
-            faithfulness=float(data.get("faithfulness", 1)),
-            answer_relevancy=float(data.get("answer_relevancy", 1)),
-            context_precision=float(data.get("context_precision", 1)),
-            groundedness=float(data.get("groundedness", 1)),
-            reasoning=str(data.get("reasoning", "")),
+            faithfulness=scores["faithfulness"],
+            answer_relevancy=scores["answer_relevancy"],
+            context_precision=scores["context_precision"],
+            groundedness=scores["groundedness"],
+            reasoning=aggregate_reasoning,
             judge_model=self._model,
+            unknown_reasons=unknown_reasons,
+            per_dim_reasoning=per_dim_reasoning,
         )
 
 
-__all__ = ["JudgeScore", "LLMJudge", "NullJudge", "GeminiJudge"]
+__all__ = [
+    "DIMENSIONS",
+    "DIMENSION_RUBRICS",
+    "GeminiJudge",
+    "JudgeScore",
+    "LLMJudge",
+    "NullJudge",
+    "UNKNOWN",
+]

@@ -1,0 +1,139 @@
+# SSOT rubric bank for LLM-as-Judge (hardening plan ENH5.2).
+#
+# Each rubric is consumed by the per-dimension isolated judges in
+# agentic_core/evaluation/judges/llm_judge.py. The canonical prompt
+# strings live in the module (DIMENSION_RUBRICS) so the wire-level
+# content is deterministic; this yaml captures the intent, scale
+# anchors, default weights, and gating thresholds used by the
+# consensus aggregator and scorecard.
+#
+# Scoring conventions:
+#   scale            : integer 1-5 per dimension (higher is better)
+#   unknown          : judges may return "Unknown" instead of a score
+#                      when evidence is insufficient (Anthropic best
+#                      practice — "give the LLM a way out").
+#   pass_threshold   : score >= this → PASS
+#   warn_threshold   : score >= this but < pass_threshold → WARN
+#   unknown_budget   : max fraction of a judge's dimensions that may be
+#                      Unknown before the judge itself is flagged for
+#                      re-calibration. Tracked per-run by scorecard.
+
+version: 1
+schema: agentic_core.evaluation.judges.rubric_schema_v1
+reference_doc: https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
+
+dimensions:
+  faithfulness:
+    display_name: Faithfulness
+    description: >
+      Every claim in the answer is supported by the provided context.
+      No fabrication, no claims that contradict the context.
+    scale_min: 1
+    scale_max: 5
+    anchors:
+      1: most claims fabricated or contradicted by context
+      3: core claims supported; several unsupported or weakly supported claims
+      5: every claim directly and fully supported by the context
+    weight: 1.5
+    pass_threshold: 4.0
+    warn_threshold: 3.0
+    unknown_budget: 0.20
+
+  answer_relevancy:
+    display_name: Answer Relevancy
+    description: >
+      The answer directly and completely addresses the query, including
+      all sub-parts.
+    scale_min: 1
+    scale_max: 5
+    anchors:
+      1: off-topic or answers a different question
+      3: partially addresses; misses key sub-parts
+      5: directly and completely addresses every part of the query
+    weight: 1.0
+    pass_threshold: 4.0
+    warn_threshold: 3.0
+    unknown_budget: 0.20
+
+  context_precision:
+    display_name: Context Precision
+    description: >
+      Retrieved context is relevant to the query (no irrelevant noise).
+    scale_min: 1
+    scale_max: 5
+    anchors:
+      1: context is irrelevant or unrelated to the query
+      3: context partially relevant; contains off-topic noise
+      5: all retrieved context directly relevant to the query
+    weight: 1.0
+    pass_threshold: 3.5
+    warn_threshold: 2.5
+    unknown_budget: 0.30
+
+  groundedness:
+    display_name: Groundedness
+    description: >
+      Factual claims in the answer trace to spans in the provided
+      context, not parametric model knowledge.
+    scale_min: 1
+    scale_max: 5
+    anchors:
+      1: based on parametric model knowledge with no grounding in context
+      3: mixed — some claims grounded, others rely on model knowledge
+      5: every factual claim traceable to a span in the provided context
+    weight: 2.0
+    pass_threshold: 4.0
+    warn_threshold: 3.0
+    unknown_budget: 0.15
+
+# Reference-based rubric (pairs with pairwise_reference.ReferenceJudge).
+reference_dimensions:
+  factual_equivalence:
+    display_name: Factual Equivalence
+    scale_min: 1
+    scale_max: 5
+    weight: 2.0
+    pass_threshold: 4.0
+    warn_threshold: 3.0
+  coverage:
+    display_name: Coverage
+    scale_min: 1
+    scale_max: 5
+    weight: 1.0
+    pass_threshold: 3.5
+    warn_threshold: 2.5
+  no_extraneous_claims:
+    display_name: No Extraneous Claims
+    scale_min: 1
+    scale_max: 5
+    weight: 1.5
+    pass_threshold: 4.0
+    warn_threshold: 3.0
+
+# Pairwise rubric (pairs with pairwise_reference.PairwiseJudge).
+pairwise:
+  description: >
+    Compare two candidate answers A and B for the same query and context;
+    choose the better one or call TIE. Position-swap bias check required
+    (ConsensusJudge flags on disagreement between the original and
+    swapped pass).
+  swap_on_disagreement_default: true
+  tie_confidence_cap: 0.6
+
+# Consensus aggregator policy (pairs with consensus.ConsensusJudge).
+consensus:
+  aggregation: trimmed_mean
+  disagreement_threshold: 1.5  # range (max-min) on 1-5 scale that flags a dim
+  escalation_route: runtime_hitl  # cross-ref ADR-023
+  require_min_judges: 2
+
+# Capability vs regression taxonomy (ENH5.6 W6).
+eval_taxonomy:
+  capability:
+    description: Hill-climb; expected pass rate is low at first, climbs over time.
+    min_pass_rate_target: 0.50
+    max_pass_rate_target: 0.80
+  regression:
+    description: Fleet-protecting; expected pass rate near 1.00; any decline is a defect.
+    min_pass_rate_target: 0.98
+    max_pass_rate_target: 1.00

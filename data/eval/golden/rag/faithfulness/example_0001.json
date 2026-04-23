@@ -1,0 +1,14 @@
+{
+  "item_id": "rag-faithfulness-0001",
+  "rubric_id": "faithfulness",
+  "query": "What year did the Apollo 11 mission land on the Moon?",
+  "context": "Apollo 11 was an American spaceflight that first landed humans on the Moon on July 20, 1969.",
+  "answer": "Apollo 11 landed on the Moon in 1969.",
+  "human_labels": [
+    {"rater_id": "seed", "score": 5, "notes": "directly supported by context"}
+  ],
+  "gold_score": 5,
+  "gold_outcome": "scored",
+  "created_at": "2026-04-23T00:00:00Z",
+  "license": "seed example (public domain facts)"
+}

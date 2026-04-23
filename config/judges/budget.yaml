@@ -1,0 +1,35 @@
+# Per-judge inference budget for LLM-as-Judge (hardening plan ENH5.2).
+#
+# Each judge tracks its own spend per eval run. The consensus
+# aggregator multiplies by the number of backends involved. Circuit
+# breaker at hard_limit_usd aborts further judge calls for that run
+# and marks remaining dimensions Unknown with reason="budget_exhausted".
+
+version: 1
+
+global:
+  per_run_soft_limit_usd: 0.25
+  per_run_hard_limit_usd: 1.00
+  per_day_hard_limit_usd: 50.00
+  unknown_on_budget_exhaustion: true
+
+judges:
+  gemini:
+    model: gemini-2.5-flash
+    est_cost_per_eval_usd: 0.002
+    max_calls_per_eval: 8  # 4 dims * 2 (retry headroom)
+
+  claude:
+    model: claude-sonnet-4-5
+    est_cost_per_eval_usd: 0.020
+    max_calls_per_eval: 8
+
+  null:
+    model: null
+    est_cost_per_eval_usd: 0.000
+    max_calls_per_eval: 0  # deterministic; no network calls
+
+# Consensus mode multiplies the above per-judge budgets.
+consensus:
+  max_judges: 3
+  per_eval_hard_limit_usd: 0.10

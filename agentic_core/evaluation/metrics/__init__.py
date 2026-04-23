@@ -4,11 +4,11 @@ from .base import ClassificationMetric, EvaluationMetric, GenerationMetric, Retr
 
 try:
     from .answer_correctness import AnswerCorrectness
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     AnswerCorrectness = None
 try:
     from .classification import BinaryClassificationMetric, ConfusionMatrix, MultiClassF1Metric
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     BinaryClassificationMetric = None
     ConfusionMatrix = None
     MultiClassF1Metric = None
@@ -21,7 +21,7 @@ try:
         EvaluationReport,
         RetrievalExperimentReport,
     )
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     ChunkStrategyReport = None
     CompletenessExperimentReport = None
     EvaluationDeltaReport = None
@@ -30,27 +30,27 @@ except ModuleNotFoundError:
     RetrievalExperimentReport = None
 try:
     from .groundedness import Groundedness
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     Groundedness = None
 try:
     from .mrr import MeanReciprocalRank
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     MeanReciprocalRank = None
 try:
     from .f1_score import F1Score
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     F1Score = None
 try:
     from .ndcg import NDCG
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     NDCG = None
 try:
     from .precision_at_k import PrecisionAtK
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     PrecisionAtK = None
 try:
     from .recall_at_k import RecallAtK
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     RecallAtK = None
 __all__ = [
     "EvaluationMetric",
