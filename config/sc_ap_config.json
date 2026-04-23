@@ -1,0 +1,12 @@
+{
+  "SC-1": {
+    "enabled": true,
+    "audit_mode": true,
+    "promoted_date": "2026-04-17",
+    "label": "Gravity import / illegal layer reach",
+    "baseline_violations": 0,
+    "baseline_snapshot": "adg_indexed_04222026_2106.sqlite",
+    "baseline_date": "2026-04-23",
+    "notes": "P2 W1-W3 drove SC-1 from 63 to 0. Regression test locked in tests/unit/tools/generate/test_sc1_zero_baseline.py. Flip audit_mode=false in W5 to enforce."
+  }
+}

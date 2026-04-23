@@ -323,7 +323,7 @@ def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
 # SC/AP configuration + audit-mode gate infrastructure (Wave 1)
 # ---------------------------------------------------------------------------
 
-_DEFAULT_SC_AP_CONFIG_PATH = ROOT / "artifacts" / "adg" / "sc_ap_config.json"
+_DEFAULT_SC_AP_CONFIG_PATH = ROOT / "config" / "sc_ap_config.json"
 
 _DEFAULT_SC_AP_CONFIG: dict[str, dict[str, Any]] = {
     "SC-1": {
