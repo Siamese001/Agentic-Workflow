@@ -204,6 +204,24 @@ def test_violation_contains_dead_file_list(
     assert "archive the whole folder" in v.detail.lower()
 
 
+# ---- CI wiring regression --------------------------------------
+
+
+def test_gate_wired_into_run_contract_gates() -> None:
+    """The gate MUST be registered in the wiring-CI gate plane so
+    ``ops_scripts/ci/run_contract_gates.py`` executes it on every run."""
+    from pathlib import Path as _Path
+
+    repo_root = _Path(__file__).resolve().parents[4]
+    src = (repo_root / "ops_scripts" / "ci" / "run_contract_gates.py").read_text(
+        encoding="utf-8"
+    )
+    assert "check_dead_folder_detector.py" in src, (
+        "D_dead_folder_detector must remain wired into "
+        "run_contract_gates.py::wiring_gates"
+    )
+
+
 # ---- live smoke against the real snapshot (if present) -----------
 
 
