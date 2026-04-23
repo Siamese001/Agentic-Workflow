@@ -152,14 +152,11 @@ from agentic_core.adg.runtime.safety_observer import (
     RuntimeSafetyReport,
     SafetyViolation,
 )
-from agentic_core.adg.runtime.sandbox_airlock import (
-    AirlockPhase,
-    AirlockSession,
-    CapabilityToken,
-    SandboxAirlockRecorder,
-    SandboxEnvelope,
-    WorkContract,
-)
+# sandbox_airlock archived to archives/adg_dead_code/2026-04-23/ (wave D, 2026-04-23).
+# Zero external consumers of AirlockPhase / AirlockSession / CapabilityToken /
+# SandboxAirlockRecorder / SandboxEnvelope / WorkContract from this module.
+# (SandboxEnvelope consumers import from
+#  agentic_core.L2_execution.types.sandbox_envelope_types — a different class.)
 from agentic_core.adg.runtime.secret_access import (
     SecretAccessEvent,
     SecretAccessOutcome,
@@ -197,13 +194,7 @@ __all__ = [
     "SafetyViolation",
     "RuntimeSafetyReport",
     "RuntimeSafetyObserver",
-    # G7 (gap): Sandbox airlock / work-contract
-    "AirlockPhase",
-    "AirlockSession",
-    "CapabilityToken",
-    "SandboxAirlockRecorder",
-    "SandboxEnvelope",
-    "WorkContract",
+    # G7 (gap): Sandbox airlock / work-contract — module archived wave D 2026-04-23
     # G8 (gap): Capability-token / tool-budget
     "BudgetEvent",
     "BudgetExceededError",
