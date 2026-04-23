@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
+from typing import Any
 
 from apps_eval._telemetry import (
     LayerSegment,
@@ -77,6 +78,11 @@ _emit_captures_evaluation_metric("p4", "scorecard_engine", "eval_metric")
 _emit_stores_embedding("p4", "scorecard_engine", "embedding_store")
 _emit_updates_meta_learning_state("p4", "scorecard_engine", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "scorecard_engine", "exec_snapshot_link")
+from apps_eval.integrations.meta_bus_publisher import (
+    KIND_SCORECARD,
+    publish_eval_outcome,
+)
+from apps_eval.integrations.tracing import eval_span
 from apps_eval.types.eval_types import ScorecardRow, SuiteResult
 
 _emit_applies_guardrail("p0", "scorecard_engine", "p0_governance")
@@ -203,12 +209,37 @@ class ScorecardEngine:
 
         Returns:
             ScorecardResult with rows and overall weighted score.
+
+        Emits:
+            - OTel span ``apps_eval.v1.scorecard.compute`` with attributes
+              ``eval.suite_count`` and ``eval.overall_score``.
+            - Publishes a ``eval.scorecard`` MetaLearningChangePackage onto
+              the canonical process-level FIFO bus so downstream
+              system_learning consumers can drain it.
         """
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScorecardEngine.compute")
 
+        with eval_span(
+            "apps_eval.v1.scorecard.compute",
+            attributes={
+                "eval.trace_id": _trace_id,
+                "eval.suite_count": len(suite_results),
+            },
+        ) as _span:
+            result = self._compute_inner(suite_results, _trace_id, _span)
+            return result
+
+    def _compute_inner(
+        self,
+        suite_results: list[SuiteResult],
+        _trace_id: str,
+        _span: Any,
+    ) -> ScorecardResult:
+        """Deterministic scoring loop — separated so the tracing wrapper in
+        :meth:`compute` is the only span boundary."""
         suite_scores: dict[str, float] = {sr.suite_id: sr.pass_rate for sr in suite_results}
 
         dim_scores: dict[str, list[float]] = {}
@@ -265,8 +296,34 @@ class ScorecardEngine:
         rows_sorted = sorted(rows, key=lambda r: -r.weight)
 
         _log.info("[ScorecardEngine] overall_score=%.3f dimensions=%d", overall, len(rows))
-        return ScorecardResult(
+        result = ScorecardResult(
             rows=rows_sorted,
             overall_score=round(overall, 4),
             total_weight=total_weight,
         )
+
+        # Publish outcome to canonical meta-learning bus (plan W2 wiring).
+        # Fail-open: a degraded publish never breaks eval runs.
+        receipt = publish_eval_outcome(
+            kind=KIND_SCORECARD,
+            trace_id=_trace_id,
+            payload={
+                "engine": self.AGENT_ID,
+                "overall_score": result.overall_score,
+                "total_weight": result.total_weight,
+                "dimension_count": len(result.rows),
+                "rows": [r.model_dump() for r in result.rows],
+            },
+        )
+        try:
+            _span.set_attribute("eval.overall_score", result.overall_score)
+            _span.set_attribute("eval.bus_publish_ok", bool(receipt.ok))
+            if receipt.package_hash:
+                _span.set_attribute("eval.bus_package_hash", receipt.package_hash)
+        except (
+            AttributeError,
+            TypeError,
+        ):  # guardian: allow-log-and-swallow -- span attr is best-effort telemetry; never break eval
+            pass
+
+        return result

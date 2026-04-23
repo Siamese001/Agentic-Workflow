@@ -81,11 +81,10 @@ _emit_captures_evaluation_metric("p4", "regression_detector", "eval_metric")
 _emit_stores_embedding("p4", "regression_detector", "embedding_store")
 _emit_updates_meta_learning_state("p4", "regression_detector", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "regression_detector", "exec_snapshot_link")
-from apps_eval.types.eval_types import RegressionRecord, RegressionVerdict, ScorecardRow
-
 _emit_applies_guardrail("p0", "regression_detector", "p0_governance")
 _emit_reads_policy_state("p0", "regression_detector", "policy_binding")
 _emit_snapshots_state("p0", "regression_detector", "state_snapshot")
+
 from apps_eval._telemetry import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -109,6 +108,16 @@ from apps_eval._telemetry import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+)
+from apps_eval.integrations.meta_bus_publisher import (
+    KIND_REGRESSION,
+    publish_eval_outcome,
+)
+from apps_eval.integrations.tracing import eval_span
+from apps_eval.types.eval_types import (
+    RegressionRecord,
+    RegressionVerdict,
+    ScorecardRow,
 )
 from tqdm import tqdm
 
@@ -262,6 +271,29 @@ class RegressionDetector:
 
         # Emit regression results to system learning for drift detection
         self._emit_regression_results(result, trace_id)
+
+        # Publish to canonical meta-learning bus (plan W2 wiring) so
+        # downstream drainers see regression signals alongside scorecards.
+        with eval_span(
+            "apps_eval.v1.regression.detect",
+            attributes={
+                "eval.trace_id": _trace_id,
+                "eval.row_count": len(result.records),
+                "eval.regression_count": result.regression_count,
+                "eval.baseline_loaded": result.baseline_loaded,
+            },
+        ):
+            publish_eval_outcome(
+                kind=KIND_REGRESSION,
+                trace_id=_trace_id,
+                payload={
+                    "engine": self.AGENT_ID,
+                    "regression_count": result.regression_count,
+                    "baseline_loaded": result.baseline_loaded,
+                    "record_count": len(result.records),
+                    "records": [r.model_dump() for r in result.records],
+                },
+            )
 
         return result
 

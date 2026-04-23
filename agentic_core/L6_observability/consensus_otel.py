@@ -118,7 +118,16 @@ class ConsensusTelemetryEmitter:
 
         self._lock = threading.Lock()
         self._ring: list[ConsensusJudgeRecord] = []
-        self._otel_tracer: Any = None  # populated when SDK wired
+        # M2 wiring (plan eval-meta-otel-gap-review-ef4a20 Wave W4): populate
+        # the OTel tracer from the API. A NoOpTracer is returned when no SDK
+        # provider is registered; a real tracer is returned when the host
+        # process has installed one.
+        try:
+            from opentelemetry import trace  # noqa: PLC0415
+
+            self._otel_tracer: Any = trace.get_tracer("agentic_core.L6_observability.consensus")
+        except ImportError:  # pragma: no cover - OTel API absent
+            self._otel_tracer = None
 
     def emit_judge_span(
         self,

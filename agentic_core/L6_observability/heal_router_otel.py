@@ -161,7 +161,17 @@ class HealRouterTelemetryEmitter:
 
         self._lock = threading.Lock()
         self._ring: list[RoutingSpanRecord] = []
-        self._otel_tracer: Any = None  # populated in M2+ when SDK wired
+        # M2 wiring (plan eval-meta-otel-gap-review-ef4a20 Wave W4): populate
+        # the tracer from the OTel API. When no SDK TracerProvider is set, the
+        # API returns a NoOpTracer whose context manager still works — so the
+        # forwarding path below executes harmlessly in minimal environments
+        # and emits real spans when a backend is configured.
+        try:
+            from opentelemetry import trace  # noqa: PLC0415
+
+            self._otel_tracer: Any = trace.get_tracer("agentic_core.L6_observability.heal_router")
+        except ImportError:  # pragma: no cover - OTel API absent
+            self._otel_tracer = None
 
     def emit_route_span(
         self,
@@ -226,7 +236,11 @@ class HealRouterTelemetryEmitter:
                 attrs = record.to_span_attributes()
                 with self._otel_tracer.start_as_current_span(SPAN_NAME_ROUTE, attributes=attrs):
                     pass
-            except (AttributeError, TypeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- OTEL span forwarding is best-effort telemetry; must never break the heal-router hot path
+            except (
+                AttributeError,
+                TypeError,
+                RuntimeError,
+            ) as exc:  # guardian: allow-log-and-swallow -- OTEL span forwarding is best-effort telemetry; must never break the heal-router hot path
                 # OTEL errors must never break the hot path
                 logger.debug("heal_router_otel forwarding failed: %s", exc)
 
