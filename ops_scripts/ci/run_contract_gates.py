@@ -304,6 +304,7 @@ def main():
         ("J1 canonical pipeline wiring", "ops_scripts/ci/check_canonical_pipeline_wiring.py"),
         ("A1 orphan module ratchet", "ops_scripts/ci/check_orphan_module_ratchet.py"),
         ("A3 dead-symbol ratchet", "ops_scripts/ci/check_dead_symbols_ratchet.py"),
+        ("G4 graph-reach archival ratchet", "ops_scripts/ci/check_graph_reach_archival.py"),
         ("D7 dead-folder detector ratchet", "ops_scripts/ci/check_dead_folder_detector.py"),
         ("A6 import cycle", "ops_scripts/ci/check_import_cycles.py"),
         ("E1 trace-stub ratchet", "ops_scripts/ci/check_trace_stub_modules.py"),
