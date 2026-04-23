@@ -421,6 +421,41 @@ def _build_runtime_spine_report(
     return dest
 
 
+def _record_pipeline_skip(
+    adg_artifacts_dir: Path,
+    ts: str,
+    *,
+    layer: str,
+    name: str,
+    exc: BaseException,
+) -> None:
+    """Append a non-blocking pipeline skip to `adg_pipeline_skips_<ts>.jsonl`.
+
+    Plan adg-pipeline-e2e-5287a1 W4: the five P4/P5/P7 sites that legitimately
+    may skip (non-blocking intelligence layer artifacts) previously only
+    emitted a print("[ADG] ... skipped: {e}") with no forensic trail. That
+    made it impossible to distinguish a healthy skip (e.g., networkx missing)
+    from a latent defect (e.g., schema drift in a helper).
+
+    This helper writes a JSONL ledger entry so `check_pipeline_skips.py` can
+    fail CI when the newest ledger is non-empty on a supposedly clean run,
+    and so the user-sanctioned skips (ImportError due to optional deps) are
+    auditable and reviewable.
+    """
+    ledger = adg_artifacts_dir / f"adg_pipeline_skips_{ts}.jsonl"
+    record = {
+        "ts": ts,
+        "layer": layer,
+        "name": name,
+        "exc_type": type(exc).__name__,
+        "exc_message": str(exc),
+    }
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    with ledger.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record) + "\n")
+    print(f"[ADG] {layer} {name} skipped ({type(exc).__name__}): {exc}")
+
+
 def _resolve_post_commit_sqlite(paths: object, adg_artifacts_dir: Path, ts: str) -> Path:
     """Resolve and validate the canonical post-commit SQLite for Tier-2 gates."""
     sqlite_candidate: Path | None = None
@@ -634,7 +669,7 @@ def generate_full_adg(
         _graph_proj_path = build_graph_projection(paths.sqlite, adg_artifacts_dir, ts)
         print(f"[ADG] P6 graph projection: {_graph_proj_path.name}")
     except ImportError as e:
-        print(f"[ADG] P6 graph projection skipped (networkx missing): {e}")
+        _record_pipeline_skip(adg_artifacts_dir, ts, layer="P6", name="graph-projection", exc=e)
 
     # --- P6b: GraphDB NetworkX projection (tools/graphdb) ---
     # W3: same narrowing and ordering contract as P6.
@@ -650,7 +685,7 @@ def generate_full_adg(
             ts,
         )
     except ImportError as e:
-        print(f"[ADG] P6b GraphDB NetworkX projection skipped (networkx missing): {e}")
+        _record_pipeline_skip(adg_artifacts_dir, ts, layer="P6b", name="graphdb-networkx", exc=e)
 
     p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
@@ -691,7 +726,7 @@ def generate_full_adg(
         try:
             p7_staged.append(_p7_fn())
         except (ImportError, OSError, RuntimeError, TypeError, ValueError, KeyError, AttributeError) as e:
-            print(f"[ADG] P7 {_p7_name} skipped: {e}")
+            _record_pipeline_skip(adg_artifacts_dir, ts, layer="P7", name=_p7_name, exc=e)
 
     # --- Architecture witness-tier gates: Class A positive / Class B absence ---
     _check_witness_tier_gates(sqlite_path=prod_sqlite_path)
@@ -705,7 +740,7 @@ def generate_full_adg(
         )
         print(f"[ADG] P4 watchlist artifact: {watchlist_path.name}")
     except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
-        print(f"[ADG] P4 watchlist skipped: {e}")
+        _record_pipeline_skip(adg_artifacts_dir, ts, layer="P4", name="watchlist", exc=e)
 
     # --- P5: Graph-native intelligence watchlist (non-blocking graph layer) ---
     graph_watchlist_items: list = []
@@ -718,7 +753,7 @@ def generate_full_adg(
             print(builder.emit_terminal_summary(graph_watchlist_items, top_n=10))
         print(f"[ADG] P5 graph watchlist artifact: {graph_watchlist_path.name}")
     except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:
-        print(f"[ADG] P5 graph watchlist skipped: {e}")
+        _record_pipeline_skip(adg_artifacts_dir, ts, layer="P5", name="graph-watchlist", exc=e)
 
     # --- Repair orchestrator: classify + fix remaining issues ---
     print("[ADG] Running repair orchestrator on committed artifacts...")
