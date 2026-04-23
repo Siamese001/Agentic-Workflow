@@ -1,0 +1,42 @@
+{
+  "app": "apps_exec",
+  "expected": {
+    "ordered_slots": [
+      "S0",
+      "I0",
+      "U0"
+    ],
+    "replay_key_digest_length": 64,
+    "replay_key_prefix": "rkslot-v1-",
+    "slot_map": {
+      "I0": "Follow the section template strictly.",
+      "S0": "You are an executive brief writer.",
+      "U0": "Draft a one-page brief for a VP Eng audience."
+    },
+    "slots_used": [
+      "S0",
+      "I0",
+      "U0"
+    ]
+  },
+  "fixture_schema_version": 1,
+  "inputs": {
+    "adapter_version": "v2",
+    "exemplar_task_class": null,
+    "slots": [
+      [
+        "S0",
+        "You are an executive brief writer."
+      ],
+      [
+        "I0",
+        "Follow the section template strictly."
+      ],
+      [
+        "U0",
+        "Draft a one-page brief for a VP Eng audience."
+      ]
+    ]
+  },
+  "scenario": "brief_recruiter_minimal"
+}

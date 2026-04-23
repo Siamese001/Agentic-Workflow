@@ -25,9 +25,26 @@ representation of the slot map — slot codes sorted, content trimmed — with
 an explicit scheme version prefix so future migrations are identifiable in
 stored keys.
 
-Dual-read migration path
-------------------------
-Call sites that cache-by-key should transitionally:
+Adoption status (2026-04-23)
+----------------------------
+This module is **additive scaffolding**. No production call site currently
+caches ``CompiledPromptArtifact`` envelopes by a flat-string replay key:
+
+- ``agentic_core.L4_state.cache.gptcache_client.NativePersistentCacheClient``
+  is a *semantic* cache keyed by arbitrary query strings (BGE-M3 embedding
+  similarity) — not a prompt-envelope replay cache. Its ``_get_id`` does
+  ``sha256(query_string)`` on free-form queries, so there is nothing to
+  dual-read here.
+- ``agentic_core.L6_observability.utils.engines.replay_key_computer`` is a
+  broader telemetry-side replay-key computer covering many components
+  (timestamps, layer context, C0 hash). Not prompt-envelope specific.
+
+When a future call site DOES cache ``CompiledPromptArtifact`` by
+envelope, it should follow the dual-read pattern below — which is why the
+utility ships now, ahead of the call site.
+
+Dual-read migration pattern (for future call sites)
+---------------------------------------------------
 
 1. Compute the new ``slot_digest_key`` from ``PromptMessages``.
 2. On cache miss, fall back to the legacy ``flat_string_key`` built from

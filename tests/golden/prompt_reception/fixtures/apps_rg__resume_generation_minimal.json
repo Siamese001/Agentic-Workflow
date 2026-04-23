@@ -1,0 +1,42 @@
+{
+  "app": "apps_rg",
+  "expected": {
+    "ordered_slots": [
+      "S0",
+      "I0",
+      "U0"
+    ],
+    "replay_key_digest_length": 64,
+    "replay_key_prefix": "rkslot-v1-",
+    "slot_map": {
+      "I0": "Use the master_resume JSON as ground truth.",
+      "S0": "You are a resume-generation agent.",
+      "U0": "Generate a tailored resume for the attached job description."
+    },
+    "slots_used": [
+      "S0",
+      "I0",
+      "U0"
+    ]
+  },
+  "fixture_schema_version": 1,
+  "inputs": {
+    "adapter_version": "v2",
+    "exemplar_task_class": null,
+    "slots": [
+      [
+        "S0",
+        "You are a resume-generation agent."
+      ],
+      [
+        "I0",
+        "Use the master_resume JSON as ground truth."
+      ],
+      [
+        "U0",
+        "Generate a tailored resume for the attached job description."
+      ]
+    ]
+  },
+  "scenario": "resume_generation_minimal"
+}

@@ -31,6 +31,33 @@ Downstream AgentSpec root models inherit from this mixin in addition to
 
 The mixin itself does NOT inherit ``BaseModel`` so it is compatible with
 models that already have competing MRO paths.
+
+Apps currently wired
+--------------------
+
+- ``apps_research.config.agent_spec_config.ResearchAgentSpecs``
+- ``apps_eval.config.agent_spec_config.EvalAgentSpecs``
+- ``apps_exec.config.agent_spec_config.ExecAgentSpecs``
+- ``apps_rfp.config.agent_spec_config.RfpAgentSpecs``
+- ``apps_rg.config.agent_spec_config.RGAgentSpecs``
+
+Apps NOT wired (and why)
+------------------------
+
+- ``apps_lic`` — ships per-component configs
+  (``archetype_indicator_config.py``, ``loader_config.py``, etc.) but has
+  no single AgentSpec root Pydantic model. Wiring the mixin requires
+  first introducing such a root model; that work belongs in a dedicated
+  ``apps_lic`` config consolidation plan, not in this reception plan.
+- ``apps_underwriting_ai`` — configuration lives entirely in YAML
+  (``covenant_templates.yaml``, ``industry_risk_weights.yaml``,
+  ``policy_exception_rules.yaml``) with no Pydantic root model. Same
+  reasoning: introducing a Pydantic AgentSpec class is a separate
+  architectural decision.
+
+These two apps will adopt the mixin when their respective AgentSpec root
+models are introduced. Captured as deferred scope in
+``.windsurf/plans/prompt-reception-followups-a7b3c4.md``.
 """
 
 from __future__ import annotations

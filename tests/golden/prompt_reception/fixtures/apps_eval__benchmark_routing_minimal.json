@@ -1,0 +1,42 @@
+{
+  "app": "apps_eval",
+  "expected": {
+    "ordered_slots": [
+      "S0",
+      "D0",
+      "U0"
+    ],
+    "replay_key_digest_length": 64,
+    "replay_key_prefix": "rkslot-v1-",
+    "slot_map": {
+      "D0": "Never generate text outside the rubric schema.",
+      "S0": "You are an evaluation harness. Produce deterministic scores.",
+      "U0": "Score the L0 routing benchmark run #42."
+    },
+    "slots_used": [
+      "S0",
+      "D0",
+      "U0"
+    ]
+  },
+  "fixture_schema_version": 1,
+  "inputs": {
+    "adapter_version": "v2",
+    "exemplar_task_class": null,
+    "slots": [
+      [
+        "S0",
+        "You are an evaluation harness. Produce deterministic scores."
+      ],
+      [
+        "D0",
+        "Never generate text outside the rubric schema."
+      ],
+      [
+        "U0",
+        "Score the L0 routing benchmark run #42."
+      ]
+    ]
+  },
+  "scenario": "benchmark_routing_minimal"
+}

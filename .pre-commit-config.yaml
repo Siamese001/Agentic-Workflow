@@ -424,6 +424,22 @@ repos:
         always_run: false
         require_serial: true
 
+      # ---- Prompt-Reception Golden-Replay Fixtures ---------------------------------
+      # Plan: prompt-reception-followups-a7b3c4 (phase RH5B.2).
+      # Runs the golden-replay harness ONLY when a fixture, the fixture recorder,
+      # the PromptMessages IR, CompiledPromptArtifact, or the slot-digest replay-key
+      # module is staged. Ensures any change to the reception contract lands as a
+      # test failure rather than silent drift. Commit-lane scoped; full suite runs
+      # in CI via pytest.
+      - id: prompt-reception-golden-replay
+        name: "T7n: Prompt-Reception Golden-Replay Harness"
+        entry: py -m pytest tests/golden/prompt_reception/ -q --no-header
+        language: system
+        pass_filenames: false
+        files: ^(tests/golden/prompt_reception/.*|agentic_core/L2_execution/reasoning/(compiled_artifact|prompt_messages|slot_assembly_engine)\.py|agentic_core/L4_state/cache/replay_key\.py)$
+        always_run: false
+        require_serial: true
+
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # Run manually: pre-commit run <id> --hook-stage manual
       - id: adg-stale-guard
