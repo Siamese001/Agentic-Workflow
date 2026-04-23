@@ -13,6 +13,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
+from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
+
 from apps_rfp._compat.lifecycle_trace import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -228,7 +230,7 @@ class ProposalGateConfig(BaseModel):
     min_quality_score: float = Field(default=0.75, ge=0.0, le=1.0)
 
 
-class RfpAgentSpecs(BaseModel):
+class RfpAgentSpecs(PromptReceptionSpec, BaseModel):
     """Root configuration for all apps_rfp agent specifications."""
 
     version: str = "1.0.0"

@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field, model_validator
 
+from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -392,7 +394,7 @@ class OrchestratorConfig(BaseModel):
     trace_persistence: bool = Field(default=True)
 
 
-class RGAgentSpecs(BaseModel):
+class RGAgentSpecs(PromptReceptionSpec, BaseModel):
     """Root configuration object for all RG Agent Specifications."""
 
     clerk_extraction: ClerkExtractionConfig = Field(default_factory=ClerkExtractionConfig)

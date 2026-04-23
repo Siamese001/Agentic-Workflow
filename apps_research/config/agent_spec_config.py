@@ -14,6 +14,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
+from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -225,7 +227,7 @@ class ResearchOutputConfig(BaseModel):
     dry_run: bool = False
 
 
-class ResearchAgentSpecs(BaseModel):
+class ResearchAgentSpecs(PromptReceptionSpec, BaseModel):
     """Root configuration for all apps_research agent specifications."""
 
     version: str = "1.0.0"

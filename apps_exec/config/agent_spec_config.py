@@ -13,6 +13,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
+from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -230,7 +232,7 @@ class StyleGateConfig(BaseModel):
     min_quality_score: float = Field(default=0.70, ge=0.0, le=1.0)
 
 
-class ExecAgentSpecs(BaseModel):
+class ExecAgentSpecs(PromptReceptionSpec, BaseModel):
     """Root configuration object for all apps_exec agent specifications."""
 
     version: str = Field(default="1.0.0")

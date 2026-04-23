@@ -13,6 +13,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
+from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
+
 from apps_eval._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -227,7 +229,7 @@ class EvalQwenPilotConfig(BaseModel):
     temperature: float = Field(default=0.05, ge=0.0, le=2.0)
 
 
-class EvalAgentSpecs(BaseModel):
+class EvalAgentSpecs(PromptReceptionSpec, BaseModel):
     """Root configuration for all apps_eval agent specifications."""
 
     version: str = "1.0.0"
