@@ -4,7 +4,7 @@ slug: adg-pipeline-e2e-5287a1
 author: Cascade
 created: 2026-04-22
 tier: T3
-status: Draft — awaiting SR_APPROVAL
+status: Done — W1..W5 complete, W6 verification rolled into W5
 ---
 
 # ADG Pipeline End-to-End Review & Streamlining
