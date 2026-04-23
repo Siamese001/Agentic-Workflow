@@ -1,0 +1,10 @@
+{
+  "gate_id": "D_dead_folder_detector",
+  "count": 11,
+  "seeded_at": "2026-04-23T14:40:00+00:00",
+  "snapshot": "adg_indexed_04232026_1418.sqlite",
+  "note": "W7 initial seed \u2014 11 dead production folders detected on snapshot 04232026_1418. Archive waves (W7.2+) will drive this count to zero; R->B auto-promotion fires after 3 consecutive zero runs.",
+  "zero_run_streak": 0,
+  "last_run_at": "2026-04-23T18:35:30.804657+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1418.sqlite"
+}
