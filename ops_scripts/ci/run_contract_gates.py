@@ -172,6 +172,19 @@ def main():
         sys.exit(1)
     print("✅ Snapshot graph-layer completeness gate passed")
 
+    # Gate: ADG pipeline skip ledger (Constitutional §22 — observability)
+    # Symmetric to the snapshot gate. Plan adg-pipeline-e2e-5287a1 W4.
+    print("🔍 Running pipeline skip ledger gate (observability)...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_pipeline_skips.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Pipeline skip ledger gate passed")
+
     # Gate: Severity<->Band SSOT (Constitutional §22/§23 — no hardcoded mappings)
     print("🔍 Running severity<->band SSOT gate...")
     returncode, stdout, stderr = run_cmd(

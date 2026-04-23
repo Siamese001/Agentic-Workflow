@@ -359,6 +359,23 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7k: ADG Pipeline Skip Ledger (Constitutional §22 — observability) --------
+      # Symmetric to T7j (snapshot artifact side) but for the non-blocking
+      # intelligence-layer artifacts (P4/P5/P6/P6b/P7). Fails when the most-recent
+      # adg_pipeline_skips_<ts>.jsonl has any non-allow-listed entry (non-ImportError
+      # by default). Captures schema drift, helper bugs, missing optional data in
+      # stages that were previously silent.
+      # Ledger emitted by tools/generate/generate_full_adg.py::_record_pipeline_skip
+      # per plan adg-pipeline-e2e-5287a1 W4a.
+      - id: pipeline-skips
+        name: "T7k: Pipeline Skip Ledger (§22 observability)"
+        entry: py ops_scripts/ci/check_pipeline_skips.py
+        language: system
+        pass_filenames: false
+        files: ^(tools/generate/generate_full_adg\.py|ops_scripts/ci/check_pipeline_skips\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T7i: Deferred Scope Markers ----------------------------------------------
       # Enforces the deferred-scope-capture rule (.windsurf/rules/deferred-scope-capture.md).
       # Blocks commits that add prose deferred-scope language to .windsurf/plans/*.md
