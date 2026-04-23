@@ -209,6 +209,28 @@ def main():
         sys.exit(1)
     print("✅ Structure policy gate passed")
 
+    # Gate: LLM-as-Judge calibration (LJH4.3) — non-blocking while gold set
+    # is bootstrapping. Gate exits 2 when gold set is too small to enforce
+    # kappa and we treat that as a warning so plain-main CI stays green.
+    print("\n[LLM-AS-JUDGE CALIBRATION]")
+    returncode, stdout, stderr = run_cmd(
+        [
+            sys.executable,
+            str(_script("ops_scripts/ci/check_judge_calibration.py")),
+            "--allow-empty",
+            "--allow-missing-judge-outputs",
+        ],
+        cwd=ROOT,
+    )
+    if returncode == 1:
+        print("❌ Judge calibration gate failed (kappa < threshold)")
+        print(stdout or stderr)
+        sys.exit(1)
+    if returncode == 2:
+        print("⚠️  Judge calibration gate SKIPPED (gold set below min_items)")
+    else:
+        print("✅ Judge calibration gate passed")
+
     # Gate: Author-gate (harness HITL) — ledger schema + outcome coverage (W2)
     print("\n[AUTHOR-GATE HARNESS HITL]")
     returncode, stdout, stderr = run_cmd(
