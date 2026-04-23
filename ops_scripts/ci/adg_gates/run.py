@@ -405,6 +405,14 @@ def _load_baseline(gate_id: str) -> int | None:
         # W3 residuals (2026-04-23)
         "B2_layer_skip_ratchet": "wiring_layer_skip_ratchet.json",
         "Q2_cyclomatic_complexity_ratchet": "wiring_cyclomatic_complexity_ratchet.json",
+        # W4 semantic-edge ratchets (2026-04-23)
+        "C3_silent_writes_ratchet": "wiring_silent_writes_ratchet.json",
+        "C4_policy_without_audit_ratchet": "wiring_policy_without_audit_ratchet.json",
+        "C5_unresolved_callsites_ratchet": "wiring_unresolved_callsites_ratchet.json",
+        "I1_exit_disposition_ratchet": "wiring_exit_disposition_ratchet.json",
+        "I2_replay_surface_gaps_ratchet": "wiring_replay_surface_gaps_ratchet.json",
+        "O_tool_call_parity_ratchet": "wiring_tool_call_parity_ratchet.json",
+        "N_guardrail_separation_ratchet": "wiring_guardrail_separation_ratchet.json",
     }
     filename = name_map.get(gate_id)
     if not filename:
