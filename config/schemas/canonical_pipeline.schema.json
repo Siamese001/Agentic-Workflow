@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "canonical_pipeline.schema.json",
+  "title": "Canonical Pipeline Manifest",
+  "description": "Declares architectural pipelines (e.g., C0 Context Engine, PA Prompt Assembly) with per-stage module bindings and minimum fan-in requirements. Consumed by ops_scripts/ci/check_canonical_pipeline_wiring.py (gate J1).",
+  "type": "object",
+  "required": ["version", "pipelines"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "pipelines": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/pipeline" }
+    }
+  },
+  "definitions": {
+    "pipeline": {
+      "type": "object",
+      "required": ["id", "doc", "ingress_layer", "stages"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9_]+$" },
+        "doc": { "type": "string", "description": "Repo-relative path to the architectural doc describing this pipeline" },
+        "ingress_layer": { "$ref": "#/definitions/layer" },
+        "description": { "type": "string" },
+        "stages": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/stage" }
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "required": ["id", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Z][0-9]+(\\.[0-9]+)?_[a-z][a-z0-9_]*$" },
+        "description": { "type": "string" },
+        "module": {
+          "type": ["string", "null"],
+          "description": "Repo-relative POSIX path to the implementing module. Null only when status is 'unimplemented' or 'deferred'."
+        },
+        "min_fanin_from_layers": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/layer" },
+          "minItems": 1,
+          "description": "At least one caller from one of these layers must import the module via ADG 'imports' edge. Required when status='active'."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "unimplemented", "deferred"]
+        },
+        "defer_ref": {
+          "type": "string",
+          "description": "Free-text reference when status != 'active' (e.g., DEFERRED_SCOPE Notion row, ADR id)."
+        }
+      }
+    },
+    "layer": {
+      "type": "string",
+      "enum": ["L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_PG", "L_APP", "L_OPS", "L_TOOLS", "L_SHARED"]
+    }
+  }
+}

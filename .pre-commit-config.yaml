@@ -398,6 +398,32 @@ repos:
       # chromadb, sqlite3 direct imports) need remediation first. Wired at
       # `stages: [manual]` below for on-demand audit.
 
+      # -- T7l: Wiring-CI Waiver Expiry (fast, file-scoped) ---------------------------
+      # Runs the W5 waiver-expiry gate only when the waiver file, the gate itself,
+      # or the harness changes. Fast — no ADG read. Blocks the commit that
+      # introduces/renews a waiver with a stale or malformed expires_on.
+      - id: wiring-waiver-expiry
+        name: "T7l: Wiring-CI Waiver Expiry"
+        entry: py ops_scripts/ci/check_waiver_expiry.py
+        language: system
+        pass_filenames: false
+        files: ^(config/wiring_gate_waivers\.yaml|ops_scripts/ci/check_waiver_expiry\.py|ops_scripts/ci/_adg_wiring_gate_base\.py)$
+        always_run: false
+        require_serial: true
+
+      # -- T7m: Canonical Pipeline Schema (J1 gate on manifest edits) ----------------
+      # Runs J1 only when the canonical pipelines manifest, its schema, or the
+      # gate script changes. ADG read required, but scoped trigger keeps the
+      # commit lane fast. Full fleet still runs in CI via run_contract_gates.py.
+      - id: wiring-canonical-pipelines
+        name: "T7m: Canonical Pipeline Wiring (manifest edits)"
+        entry: py ops_scripts/ci/check_canonical_pipeline_wiring.py
+        language: system
+        pass_filenames: false
+        files: ^(config/canonical_pipelines\.yaml|config/schemas/canonical_pipeline\.schema\.json|ops_scripts/ci/check_canonical_pipeline_wiring\.py|ops_scripts/ci/_adg_wiring_gate_base\.py)$
+        always_run: false
+        require_serial: true
+
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # Run manually: pre-commit run <id> --hook-stage manual
       - id: adg-stale-guard
@@ -424,6 +450,49 @@ repos:
       - id: infra-wiring
         name: "CI: Infrastructure Wiring Scan"
         entry: py ops_scripts/ci/infra_wiring_scan.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # -- Wiring-CI Full Fleet (manual, on-demand) ----------------------------------
+      # Runs all 15 wiring-CI gates in sequence via run_contract_gates.py dispatch.
+      # Uses the latest artifacts/adg/adg_indexed_*.sqlite snapshot.
+      # Invoke:
+      #     pre-commit run wiring-ci-full --hook-stage manual --all-files
+      # Canonical home of the full plane is ops_scripts/ci/run_contract_gates.py
+      # [WIRING-CI GATE PLANE]; this manual hook is for devs who want to check
+      # the plane locally before pushing.
+      - id: wiring-ci-full
+        name: "CI: Wiring-CI Full Fleet (15 gates)"
+        entry: py ops_scripts/ci/run_contract_gates.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # -- Wiring-CI Trend Report (manual, on-demand) --------------------------------
+      # Generates the daily/weekly trend markdown from the JSONL sink.
+      # Invoke: pre-commit run wiring-ci-trend --hook-stage manual
+      - id: wiring-ci-trend
+        name: "CI: Wiring-CI Trend Report"
+        entry: py tools/reports/wiring_ci_trend.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # -- Wiring-CI Regression Markers (manual, on-demand) --------------------------
+      # For every ratchet gate above baseline, emit a DEFERRED_SCOPE: marker that
+      # the Cascade post-hook auto-posts to the Wave/Phase Convergence DB per
+      # Constitutional §24. Safe to run any time; no markers emitted when clean.
+      # Invoke: pre-commit run wiring-ci-regression-markers --hook-stage manual
+      - id: wiring-ci-regression-markers
+        name: "CI: Wiring-CI Regression DEFERRED_SCOPE markers"
+        entry: py tools/reports/wiring_ci_regression_markers.py
         language: system
         pass_filenames: false
         always_run: true

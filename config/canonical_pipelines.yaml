@@ -1,0 +1,61 @@
+# Canonical Pipeline Manifest
+# Schema: config/schemas/canonical_pipeline.schema.json
+# Consumed by: ops_scripts/ci/check_canonical_pipeline_wiring.py (gate J1)
+#
+# This manifest declares the architectural pipelines the codebase promises
+# to implement. Every 'active' stage must have at least one caller from an
+# allowed ingress layer; otherwise gate J1 fails CI.
+#
+# See plan: .windsurf/plans/adg-wiring-ci-hardening-7a5d84.md
+# See plan: .windsurf/plans/c0-context-engine-wiring-fix-9e42a1.md
+
+version: 1
+
+pipelines:
+  - id: C0_context_engine
+    doc: docs/reference/03_L0_Routing/C0 - Retrieval/C0 Context Engine.md
+    ingress_layer: L0
+    description: >
+      Context Engine (Ref Desk) — ingests L1_Plan + query_vec, produces an
+      Evidence Contract payload for dispatch to PA (Prompt Assembly).
+      Five stages: Plan (C0.1), Fetch (C0.2), Graph (C0.3), Shape (C0.4),
+      Contract (C0.5). C0.3 is currently deferred (no entity KG implementation).
+    stages:
+      - id: C01_plan
+        description: "Plan: scope/policy/freshness/tenant-ACL."
+        module: agentic_core/knowledge/retrieval/retrieval_plan.py
+        min_fanin_from_layers: [L0]
+        status: active
+
+      - id: C01_acl_gate
+        description: "Plan: pre-retrieval gate (ACL, tenant, freshness)."
+        module: agentic_core/knowledge/gates/preretrieval_gate.py
+        min_fanin_from_layers: [L0]
+        status: active
+
+      - id: C02_recall
+        description: "Fetch: hybrid recall (dense + sparse + raw chunks)."
+        module: agentic_core/knowledge/retrieval/hybrid_recall_stage.py
+        min_fanin_from_layers: [L0]
+        status: active
+
+      - id: C03_graph
+        description: "Graph: entity traversal (n-hop knowledge graph)."
+        module: null
+        status: deferred
+        defer_ref: >
+          DEFERRED_SCOPE 2026-04-23 — C0.3 entity KG unimplemented. See
+          Wave/Phase Convergence Notion row (Sub-Wave C0-W4-P2-AUTO).
+          Plan: c0-context-engine-wiring-fix-9e42a1.md
+
+      - id: C04_rerank
+        description: "Shape: rerank + dedup + consolidation."
+        module: agentic_core/knowledge/retrieval/senior_librarian_reranker.py
+        min_fanin_from_layers: [L0]
+        status: active
+
+      - id: C05_evidence
+        description: "Contract: evidence binding + citation slip."
+        module: agentic_core/knowledge/retrieval/evidence_contract_builder.py
+        min_fanin_from_layers: [L0]
+        status: active
