@@ -60,6 +60,17 @@ _PHASE_A_TABLES: tuple[str, ...] = (
 
 _SPINE_LAYERS = ("L0", "L1", "L2", "L3", "L4", "L5", "L6")
 
+# Layers whose imports count as evidence of spine-connectivity when auditing
+# spine-layer modules. L_APP/L_SHARED sit above the runtime spine but actively
+# consume its exports — their imports prove a module is reachable.
+_SPINE_CONNECTION_SOURCE_LAYERS = (
+    "L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED",
+)
+
+
+def _spine_connection_sources_in() -> str:
+    return "(" + ", ".join(f"'{l}'" for l in _SPINE_CONNECTION_SOURCE_LAYERS) + ")"
+
 _FORBIDDEN_LAYER_PAIRS = (
     ("L6", "L2"),
     ("L6", "L0"),
@@ -180,7 +191,7 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
                     WHERE dst2.resolved_path = n.resolved_path
                       AND src2.resolved_path != n.resolved_path
                       AND e2.relation_type IN ('imports', 'calls')
-                      AND src2.layer IN {_spine_layers_in()}
+                      AND src2.layer IN {_spine_connection_sources_in()}
                 ) THEN 1
             END)                  AS connected_count,
             COUNT(n.id) - COUNT(CASE
@@ -191,7 +202,7 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
                     WHERE dst2.resolved_path = n.resolved_path
                       AND src2.resolved_path != n.resolved_path
                       AND e2.relation_type IN ('imports', 'calls')
-                      AND src2.layer IN {_spine_layers_in()}
+                      AND src2.layer IN {_spine_connection_sources_in()}
                 ) THEN 1
             END)                  AS gap_count,
             ROUND(
@@ -204,7 +215,7 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
                             WHERE dst2.resolved_path = n.resolved_path
                               AND src2.resolved_path != n.resolved_path
                               AND e2.relation_type IN ('imports', 'calls')
-                              AND src2.layer IN {_spine_layers_in()}
+                              AND src2.layer IN {_spine_connection_sources_in()}
                         ) THEN 1
                     END)
                 AS REAL) / NULLIF(COUNT(n.id), 0) * 100,
