@@ -1,3 +1,0 @@
-"""Shim — re-exports from agentic_core.utils.workflow_engines.precision_at_k."""
-
-# TODO: Unused star import from agentic_core.utils.workflow_engines.precision_at_k
