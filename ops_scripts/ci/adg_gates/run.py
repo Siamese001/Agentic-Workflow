@@ -32,9 +32,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import subprocess
 import sys
+import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -165,8 +167,80 @@ _MARKER_META: dict[str, tuple[str, str, str, str, int, str, float, int, str]] = 
 }
 
 
-def _run_gate(spec: GateSpec) -> dict[str, Any]:
-    """Subprocess one gate and parse its summary line."""
+# ---------------------------------------------------------------------------
+# H4: in-process gate loader + dispatcher
+# ---------------------------------------------------------------------------
+_MODULE_CACHE: dict[str, Any] = {}
+
+
+def _load_gate_class(spec: GateSpec) -> type | None:
+    """Load the WiringGate subclass from ``spec.handler`` by spec.gate_class.
+
+    Caches imported modules so consecutive gates from the same file share one
+    module object. Returns ``None`` if the class or script is unavailable; the
+    caller falls back to subprocess execution in that case.
+    """
+    if not spec.gate_class:
+        return None
+    script_path = REPO_ROOT / spec.handler
+    if not script_path.exists():
+        return None
+    mod = _MODULE_CACHE.get(spec.handler)
+    if mod is None:
+        mod_name = f"_adg_gate_{script_path.stem}"
+        module_spec = importlib.util.spec_from_file_location(mod_name, script_path)
+        if module_spec is None or module_spec.loader is None:
+            return None
+        mod = importlib.util.module_from_spec(module_spec)
+        sys.modules[mod_name] = mod
+        try:
+            module_spec.loader.exec_module(mod)
+        except (ImportError, SyntaxError, AttributeError):
+            return None
+        _MODULE_CACHE[spec.handler] = mod
+    return getattr(mod, spec.gate_class, None)
+
+
+def _run_gate_in_process(spec: GateSpec, snapshot: Path) -> dict[str, Any]:
+    """Execute a gate in-process via WiringGate.execute(); return the row shape."""
+    cls = _load_gate_class(spec)
+    if cls is None:
+        return _run_gate_subprocess(spec)  # defensive fallback
+
+    stderr_tail: list[str] = []
+    try:
+        gate = cls(snapshot=snapshot)
+        result = gate.execute()
+        count = len(result.violations)
+        status = result.status
+        # Exit-code parity with ``cli_exit()``: fail -> 1; pass/warn/bypass -> 0.
+        exit_code = 1 if status == "fail" else 0
+    except (
+        Exception
+    ) as exc:  # guardian: allow-in-process-dispatcher -- isolate gate failures, don't crash fleet
+        count = -1
+        status = "error"
+        exit_code = -1
+        stderr_tail = traceback.format_exception(type(exc), exc, exc.__traceback__)[-5:]
+
+    return {
+        "gate_id": spec.gate_id,
+        "band": spec.band.value,
+        "enforcement": spec.enforcement.value,
+        "source": spec.source.value,
+        "owner": spec.owner,
+        "handler": spec.handler,
+        "gate_class": spec.gate_class,
+        "dispatch": "in-process",
+        "exit_code": exit_code,
+        "violation_count": count,
+        "status": status,
+        "stderr_tail": [line.rstrip() for line in stderr_tail] if stderr_tail else [],
+    }
+
+
+def _run_gate_subprocess(spec: GateSpec) -> dict[str, Any]:
+    """Legacy fallback: subprocess one gate and parse its summary line."""
     script_path = REPO_ROOT / spec.handler
     try:
         proc = subprocess.run(
@@ -193,7 +267,6 @@ def _run_gate(spec: GateSpec) -> dict[str, Any]:
         ),
         "",
     )
-    # Count from header ``violations=N``.
     count = -1
     if "violations=" in header:
         try:
@@ -213,11 +286,20 @@ def _run_gate(spec: GateSpec) -> dict[str, Any]:
         "source": spec.source.value,
         "owner": spec.owner,
         "handler": spec.handler,
+        "gate_class": None,
+        "dispatch": "subprocess",
         "exit_code": exit_code,
         "violation_count": count,
         "status": status,
         "stderr_tail": stderr.strip().splitlines()[-5:] if stderr.strip() else [],
     }
+
+
+def _run_gate(spec: GateSpec, snapshot: Path | None = None) -> dict[str, Any]:
+    """Dispatch one gate in-process if possible, else via subprocess fallback."""
+    if spec.gate_class and snapshot is not None:
+        return _run_gate_in_process(spec, snapshot)
+    return _run_gate_subprocess(spec)
 
 
 def _load_baseline(gate_id: str) -> int | None:
@@ -299,10 +381,22 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    # H4: resolve the snapshot ONCE for the whole fleet. In-process gates
+    # accept a pre-resolved ``snapshot`` so the dispatcher doesn't pay the
+    # glob/mtime scan cost 13 times. Falls back to per-gate resolution inside
+    # ``latest_snapshot()`` if this fails.
+    snapshot: Path | None = None
+    try:
+        from ops_scripts.ci._adg_wiring_gate_base import latest_snapshot  # noqa: E402
+
+        snapshot = latest_snapshot()
+    except (FileNotFoundError, ImportError, OSError):
+        snapshot = None
+
     rows: list[dict[str, Any]] = []
     overall_exit = 0
     for spec in tqdm(WIRING_GATES, desc="ADG gates", unit="gate"):
-        row = _run_gate(spec)
+        row = _run_gate(spec, snapshot=snapshot)
         classification = _classify(row)
         row["classification"] = classification
         rows.append(row)

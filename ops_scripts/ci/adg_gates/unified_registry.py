@@ -60,6 +60,11 @@ class GateSpec:
     owner: str  # "adg_gates" | "validation" | "wiring_ci"
     handler: str  # import path or script path
     notes: str = ""
+    # H4: in-process class name (WiringGate subclass) inside ``handler`` script.
+    # When populated, dispatcher instantiates the class and calls ``.execute()``
+    # directly instead of ``subprocess.run(script)``. ``None`` preserves the
+    # subprocess fallback for gates not yet migrated.
+    gate_class: str | None = None
 
 
 # -----------------------------------------------------------------------------
@@ -217,6 +222,7 @@ WIRING_GATES: list[GateSpec] = [
         "wiring_ci",
         "ops_scripts/ci/check_canonical_pipeline_wiring.py",
         notes="Generalizes gate 12 to any pipeline declared in canonical_pipelines.yaml",
+        gate_class="CanonicalPipelineWiringGate",
     ),
     GateSpec(
         "G2_seam_test_export_coherence",
@@ -225,6 +231,7 @@ WIRING_GATES: list[GateSpec] = [
         Source.DISK,
         "wiring_ci",
         "ops_scripts/ci/check_seam_test_export_coherence.py",
+        gate_class="SeamTestExportCoherenceGate",
     ),
     GateSpec(
         "E1_trace_stub_module",
@@ -234,6 +241,7 @@ WIRING_GATES: list[GateSpec] = [
         "wiring_ci",
         "ops_scripts/ci/check_trace_stub_modules.py",
         notes="Ratchet overlay on gate 9 ExecutorTheaterGate — finer-grained import-ratio signal",
+        gate_class="TraceStubModuleGate",
     ),
     GateSpec(
         "A3_dead_public_symbol_ratchet",
@@ -242,6 +250,7 @@ WIRING_GATES: list[GateSpec] = [
         Source.SQL,
         "wiring_ci",
         "ops_scripts/ci/check_dead_symbols_ratchet.py",
+        gate_class="DeadSymbolRatchetGate",
     ),
     GateSpec(
         "L2_lpg_drift_ratchet",
@@ -251,6 +260,7 @@ WIRING_GATES: list[GateSpec] = [
         "wiring_ci",
         "ops_scripts/ci/check_lpg_drift_ratchet.py",
         notes="Finer-grained than SC-1 — specific to L_PG boundary",
+        gate_class="LpgDriftRatchetGate",
     ),
     GateSpec(
         "M1_module_loc_ratchet",
@@ -259,6 +269,7 @@ WIRING_GATES: list[GateSpec] = [
         Source.DISK,
         "wiring_ci",
         "ops_scripts/ci/check_module_loc_ratchet.py",
+        gate_class="ModuleLocRatchetGate",
     ),
     GateSpec(
         "D1_layer_doc_binding",
@@ -267,6 +278,7 @@ WIRING_GATES: list[GateSpec] = [
         Source.DISK,
         "wiring_ci",
         "ops_scripts/ci/check_layer_doc_binding.py",
+        gate_class="LayerDocBindingGate",
     ),
     GateSpec(
         "S2_uwg_bypass_ratchet",
@@ -276,6 +288,7 @@ WIRING_GATES: list[GateSpec] = [
         "wiring_ci",
         "ops_scripts/ci/check_uwg_bypass_ratchet.py",
         notes="Ratchet overlay on gate 3 WriteSovereigntyGate with named allowlist contract",
+        gate_class="UwgBypassRatchetGate",
     ),
     GateSpec(
         "S4_unused_imports_ratchet",
@@ -284,20 +297,49 @@ WIRING_GATES: list[GateSpec] = [
         Source.SQL,
         "wiring_ci",
         "ops_scripts/ci/check_unused_imports_ratchet.py",
+        gate_class="UnusedImportsRatchetGate",
     ),
-    GateSpec("W5_waiver_expiry", Band.P0, Enforcement.BLOCK, Source.DISK,
-             "wiring_ci", "ops_scripts/ci/check_waiver_expiry.py",
-             notes="Governance gate — blocks on any expired wiring-CI waiver"),
+    GateSpec(
+        "W5_waiver_expiry",
+        Band.P0,
+        Enforcement.BLOCK,
+        Source.DISK,
+        "wiring_ci",
+        "ops_scripts/ci/check_waiver_expiry.py",
+        notes="Governance gate — blocks on any expired wiring-CI waiver",
+        gate_class="WaiverExpiryGate",
+    ),
     # -- Graph-native gates (added in H2, 2026-04-23) -----------------------
-    GateSpec("G_REACH_l0_reachability", Band.P0, Enforcement.RATCHET, Source.GRAPH,
-             "wiring_ci", "ops_scripts/ci/check_graph_reach.py",
-             notes="H2 graph-native. NetworkX descendants-from-L0 over 'imports' edges. 2nd independent signal for C0-class wiring gaps. Baseline 1993 seeded 2026-04-23; flip to BLOCK after C0 wiring fix."),
-    GateSpec("G_ISLAND_connected_components", Band.P1, Enforcement.RATCHET, Source.GRAPH,
-             "wiring_ci", "ops_scripts/ci/check_graph_island.py",
-             notes="H2 graph-native. Non-giant connected components via nx.connected_components on undirected 'imports' projection. Baseline 0 seeded 2026-04-23."),
-    GateSpec("G_WATCHLIST_DELTA_hotspot_regressions", Band.P1, Enforcement.RATCHET, Source.GRAPH,
-             "wiring_ci", "ops_scripts/ci/check_graph_watchlist_delta.py",
-             notes="H2 graph-native. Wraps ADGGraphWatchlistBuilder regression classification; promotes previously-passive intelligence to exit-code gate. Baseline 0 seeded 2026-04-23."),
+    GateSpec(
+        "G_REACH_l0_reachability",
+        Band.P0,
+        Enforcement.RATCHET,
+        Source.GRAPH,
+        "wiring_ci",
+        "ops_scripts/ci/check_graph_reach.py",
+        notes="H2 graph-native. NetworkX descendants-from-L0 over 'imports' edges. 2nd independent signal for C0-class wiring gaps. Baseline 1993 seeded 2026-04-23; flip to BLOCK after C0 wiring fix.",
+        gate_class="GraphReachGate",
+    ),
+    GateSpec(
+        "G_ISLAND_connected_components",
+        Band.P1,
+        Enforcement.RATCHET,
+        Source.GRAPH,
+        "wiring_ci",
+        "ops_scripts/ci/check_graph_island.py",
+        notes="H2 graph-native. Non-giant connected components via nx.connected_components on undirected 'imports' projection. Baseline 0 seeded 2026-04-23.",
+        gate_class="GraphIslandGate",
+    ),
+    GateSpec(
+        "G_WATCHLIST_DELTA_hotspot_regressions",
+        Band.P1,
+        Enforcement.RATCHET,
+        Source.GRAPH,
+        "wiring_ci",
+        "ops_scripts/ci/check_graph_watchlist_delta.py",
+        notes="H2 graph-native. Wraps ADGGraphWatchlistBuilder regression classification; promotes previously-passive intelligence to exit-code gate. Baseline 0 seeded 2026-04-23.",
+        gate_class="GraphWatchlistDeltaGate",
+    ),
 ]
 
 # -----------------------------------------------------------------------------
