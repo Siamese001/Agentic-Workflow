@@ -4,14 +4,37 @@ ADG Graph Ingestion for ChromaDB Semantic Memory Layer
 Wave 2 Implementation: Structural & Test Intelligence
 
 Ingests ADG graph relationships and structural patterns into ChromaDB.
+
+DEPRECATED (Wave E, 2026-04-22)
+--------------------------------
+This script bulk-embeds raw edge rows (~624k documents) into the
+``repo_adg_graph`` collection. Assessment
+``.windsurf/plans/adg-chromadb-retrieval-assessment-8a3f2b.md`` documents
+this as the anti-pattern: edge rows are low-semantic-value and dilute
+retrieval. Use the semantic-card projector instead:
+
+    python tools/ingestion/project_adg_cards.py --adg-db <snapshot> --dry-run
+
+which emits curated ``adg_symbol_cards``, ``adg_hotspot_cards``,
+``adg_violation_cards``, ``adg_path_cards`` collections. Removal of the
+``repo_adg_graph`` collection is tracked as a deferred scope item under the
+Wave E plan (``.windsurf/plans/wave-e-adg-card-projection-2df148.md``).
 """
 
 import hashlib
 import logging
 import sqlite3
 import sys
+import warnings
 from pathlib import Path
 from typing import Any
+
+warnings.warn(
+    "tools.ingestion.ingest_adg is deprecated; use tools.ingestion.project_adg_cards"
+    " (Wave E plan wave-e-adg-card-projection-2df148).",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
