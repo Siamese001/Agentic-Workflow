@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+import re
 import sqlite3
 from typing import Any, Iterable
 
@@ -777,6 +778,207 @@ class HybridSearchEngine:
         fused.sort(key=lambda r: (-r.combined_score, r.chunk_id))
         return fused
 
+    # ------------------------------------------------------------------
+    # Wave F — ADG-seed + ADG-rerank (L3 deferred scope from Wave E)
+    # ------------------------------------------------------------------
+
+    ADG_LAYER_MULTIPLIERS: dict[str, float] = {
+        "L0": 2.0,
+        "L5": 2.0,
+        "L3": 1.75,
+        "L4": 1.75,
+        "L1": 1.0,
+        "L2": 1.0,
+        "L6": 0.75,
+    }
+    """Layer criticality multipliers per constitutional §23 (ADG canonical
+    invariants). Unknown layers fall back to 1.0 — the same neutral weight
+    used for L1/L2 cognition/execution so rerank degrades gracefully when
+    a chunk's ``metadata["layer"]`` is missing or non-canonical.
+    """
+
+    ADG_SEED_SYMBOL_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]{2,}")
+    """Token extractor for :meth:`adg_seed`. Matches identifier-shaped
+    substrings of length ≥3 so noise tokens like ``a``, ``is``, ``to`` are
+    ignored. Deliberately conservative — seeding is a hint, not an
+    authority.
+    """
+
+    def _adg_rerank(
+        self,
+        results: list["HybridSearchResult"],
+        rerank_weight: float = 0.15,
+    ) -> list["HybridSearchResult"]:
+        """Rerank by ADG structural centrality and layer criticality.
+
+        For every result whose ``metadata["adg_node_id"]`` resolves to a
+        row in ``mv_hotspot_centrality``, boost ``combined_score`` by::
+
+            bonus = rerank_weight * layer_multiplier * clip(degree_centrality, 0.0, 1.0)
+
+        Results missing ``adg_node_id``, carrying an un-parseable id, or
+        whose node is absent from the MV pass through unchanged. Layer
+        multiplier comes from ``metadata["layer"]`` first, falling back to
+        the MV's ``layer`` column, then to ``1.0``. This keeps the rerank
+        a **pure** additive pass — never reordering by itself; callers
+        sort the output.
+        """
+
+        if not results:
+            return list(results)
+        conn = self._ensure_adg_connection()
+        if conn is None:
+            return list(results)
+
+        # Collect parseable node ids to bound the SQL IN-clause.
+        node_ids: list[int] = []
+        id_to_indices: dict[int, list[int]] = {}
+        for idx, r in enumerate(results):
+            raw = (r.metadata or {}).get("adg_node_id")
+            if raw is None:
+                continue
+            try:
+                nid = int(raw)
+            except (TypeError, ValueError):
+                continue
+            if nid not in id_to_indices:
+                node_ids.append(nid)
+                id_to_indices[nid] = []
+            id_to_indices[nid].append(idx)
+
+        if not node_ids:
+            return list(results)
+
+        placeholders = ",".join("?" * len(node_ids))
+        try:
+            cur = conn.execute(
+                f"SELECT node_id, layer, degree_centrality FROM mv_hotspot_centrality"
+                f" WHERE node_id IN ({placeholders})",
+                tuple(node_ids),
+            )
+            rows = {
+                int(row[0]): (row[1], float(row[2]) if row[2] is not None else 0.0)
+                for row in cur.fetchall()
+            }
+        except sqlite3.Error:
+            return list(results)
+
+        reranked: list[HybridSearchResult] = []
+        for idx, r in enumerate(results):
+            meta = r.metadata or {}
+            raw = meta.get("adg_node_id")
+            nid_opt: int | None
+            try:
+                nid_opt = int(raw) if raw is not None else None
+            except (TypeError, ValueError):
+                nid_opt = None
+            mv_row = rows.get(nid_opt) if nid_opt is not None else None
+            if mv_row is None:
+                reranked.append(r)
+                continue
+            mv_layer, centrality = mv_row
+            layer_key = str(meta.get("layer") or mv_layer or "")
+            multiplier = self.ADG_LAYER_MULTIPLIERS.get(layer_key, 1.0)
+            # Clip centrality into [0,1] defensively — the MV normally stays
+            # in range but defensive clipping guards against future MV
+            # recomputation anomalies without changing behavior today.
+            clipped = max(0.0, min(1.0, centrality))
+            bonus = rerank_weight * multiplier * clipped
+            reranked.append(
+                HybridSearchResult(
+                    chunk_id=r.chunk_id,
+                    content=r.content,
+                    metadata=r.metadata,
+                    combined_score=r.combined_score + bonus,
+                    source=r.source,
+                    vector_score=r.vector_score,
+                    lexical_score=r.lexical_score,
+                )
+            )
+        return reranked
+
+    def adg_seed(
+        self,
+        query: str,
+        limit: int = 5,
+        layer_filter: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Convert a natural-language query to ADG node seeds.
+
+        Extracts identifier-shaped tokens from *query* (length ≥3), matches
+        them against ``nodes.adg_name`` with a fan-out LIKE query, then
+        re-ranks the hits by ``mv_hotspot_centrality.degree_centrality``.
+        Returns up to *limit* seed rows, each a dict with
+        ``node_id``, ``adg_name``, ``layer``, ``resolved_path``,
+        ``degree_centrality``.
+
+        Uses the engine's existing :meth:`_ensure_adg_connection` — no
+        new DB handle. Bounded SQL with explicit placeholders; degrades
+        to an empty list if the ADG is unavailable or the query yields
+        no tokens. Named ``adg_seed`` (not ``_adg_seed``) because callers
+        may want to inspect the seed set for debugging / governance.
+        """
+
+        normalized = self._normalize_query(query)
+        if not normalized or limit <= 0:
+            return []
+        conn = self._ensure_adg_connection()
+        if conn is None:
+            return []
+
+        tokens = [
+            tok for tok in self.ADG_SEED_SYMBOL_RE.findall(normalized) if len(tok) >= 3
+        ]
+        if not tokens:
+            return []
+        # Dedup while preserving insertion order.
+        seen: set[str] = set()
+        unique_tokens: list[str] = []
+        for tok in tokens:
+            if tok not in seen:
+                seen.add(tok)
+                unique_tokens.append(tok)
+
+        where_parts: list[str] = []
+        params: list[Any] = []
+        for tok in unique_tokens:
+            # Match the tail of adg_name (last path segment) — matches
+            # ``ADG::Symbol::pkg.sub.mod.Token`` and ``ADG::Module::.../Token.py``.
+            where_parts.append("(n.adg_name LIKE ? OR n.adg_name LIKE ?)")
+            params.extend([f"%.{tok}", f"%/{tok}.py"])
+        if layer_filter:
+            where_parts.append("n.layer = ?")
+            params.append(layer_filter)
+        where_sql = " OR ".join(where_parts[:-1]) if layer_filter else " OR ".join(where_parts)
+        if layer_filter:
+            where_sql = f"({where_sql}) AND n.layer = ?"
+
+        sql = (
+            "SELECT n.id, n.adg_name, n.layer, n.resolved_path,"
+            " COALESCE(m.degree_centrality, 0.0) AS centrality"
+            " FROM nodes n"
+            " LEFT JOIN mv_hotspot_centrality m ON m.node_id = n.id"
+            f" WHERE {where_sql}"
+            " ORDER BY centrality DESC, n.id ASC"
+            " LIMIT ?"
+        )
+        params.append(int(limit))
+
+        try:
+            cur = conn.execute(sql, tuple(params))
+            return [
+                {
+                    "node_id": int(row[0]),
+                    "adg_name": row[1],
+                    "layer": row[2],
+                    "resolved_path": row[3],
+                    "degree_centrality": float(row[4]) if row[4] is not None else 0.0,
+                }
+                for row in cur.fetchall()
+            ]
+        except sqlite3.Error:
+            return []
+
     def search(
         self,
         query: str,
@@ -787,6 +989,8 @@ class HybridSearchEngine:
         authority_rerank: bool = False,
         collapse_group_dedup_max: int | None = None,
         enable_lexical: bool = False,
+        adg_rerank: bool = False,
+        adg_rerank_weight: float = 0.15,
     ) -> list[HybridSearchResult]:
         """Hybrid search entry point.
 
@@ -843,6 +1047,10 @@ class HybridSearchEngine:
 
         if authority_rerank:
             deduped = self._apply_authority_rerank(deduped)
+        if adg_rerank:
+            # Wave F (L3 deferred scope): structural centrality + layer-criticality
+            # boost. Opt-in so existing callers remain byte-identical.
+            deduped = self._adg_rerank(deduped, rerank_weight=adg_rerank_weight)
         results = sorted(
             deduped,
             key=lambda result: (result.combined_score, result.vector_score, result.lexical_score),
