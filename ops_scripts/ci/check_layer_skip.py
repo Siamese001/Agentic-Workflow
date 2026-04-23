@@ -26,6 +26,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from tqdm import tqdm
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -69,7 +71,8 @@ class LayerSkipGate(WiringGate):
               AND dst.resolved_path IS NOT NULL
         """
         violations: list[Violation] = []
-        for src_path, src_layer, dst_path, dst_layer in conn.execute(query):
+        rows = list(conn.execute(query))
+        for src_path, src_layer, dst_path, dst_layer in tqdm(rows, desc="B2_layer_skip", unit="edge"):
             a = _ordinal(src_layer)
             b = _ordinal(dst_layer)
             if a is None or b is None:

@@ -21,6 +21,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from tqdm import tqdm
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -84,14 +86,14 @@ class RoleDedupGate(WiringGate):
         ).fetchall()
 
         clusters: dict[str, list[tuple[str, str, int]]] = {}
-        for resolved_path, layer, fan_in in rows:
+        for resolved_path, layer, fan_in in tqdm(rows, desc="D2_role_dedup_scan", unit="mod"):
             role = _role_for(resolved_path)
             if not role:
                 continue
             clusters.setdefault(role, []).append((resolved_path, layer, fan_in))
 
         violations: list[Violation] = []
-        for role, members in clusters.items():
+        for role, members in tqdm(list(clusters.items()), desc="D2_role_dedup_cluster", unit="role"):
             if len(members) < 2:
                 continue
             orphans = [m for m in members if m[2] == 0]
@@ -99,7 +101,7 @@ class RoleDedupGate(WiringGate):
                 continue
             # Emit one violation row per orphaned member — downstream
             # reporting will group by the ``role_cluster`` in ``extra``.
-            for path, layer, fan_in in orphans:
+            for path, layer, fan_in in tqdm(orphans, desc=f"D2_orphans[{role}]", unit="mod", leave=False):
                 violations.append(
                     Violation(
                         gate_id=self.gate_id,

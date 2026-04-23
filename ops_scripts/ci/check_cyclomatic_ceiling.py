@@ -22,6 +22,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from tqdm import tqdm
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -139,7 +141,8 @@ class CyclomaticCeilingGate(WiringGate):
         }
 
         violations: list[Violation] = []
-        for py in _REPO_ROOT.rglob("*.py"):
+        files = list(_REPO_ROOT.rglob("*.py"))
+        for py in tqdm(files, desc="Q2_cyclo_files", unit="file"):
             rel = py.relative_to(_REPO_ROOT).as_posix()
             if not rel.startswith(PRODUCTION_ROOTS):
                 continue
@@ -151,7 +154,7 @@ class CyclomaticCeilingGate(WiringGate):
             except (OSError, SyntaxError):
                 continue
 
-            for func in _iter_functions(tree):
+            for func in tqdm(list(_iter_functions(tree)), desc="Q2_cyclo_funcs", unit="func", leave=False):
                 score = _complexity_of(func)
                 if score <= CEILING:
                     continue
