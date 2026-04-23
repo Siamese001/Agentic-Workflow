@@ -16,6 +16,7 @@ import logging
 import os
 import sys
 from pathlib import Path
+from collections.abc import Sequence
 from typing import Any, Callable
 
 REPO_ROOT: Path = Path(__file__).resolve().parents[2]
@@ -173,7 +174,11 @@ def register_standard_health(
     mcp.tool()(_health)
 
 
-def guard_single_instance(script_marker: str, *, skip_env: str | None = None) -> None:
+def guard_single_instance(
+    script_marker: "str | Sequence[str]",
+    *,
+    skip_env: str | None = None,
+) -> None:
     """Terminate any other process whose cmdline contains ``script_marker``.
 
     Purpose (MCP fleet standardization, 2026-04-22):
@@ -193,14 +198,31 @@ def guard_single_instance(script_marker: str, *, skip_env: str | None = None) ->
         - Never raises; logs and returns
 
     Args:
-        script_marker: Substring uniquely identifying this server's script in
-            ``proc.cmdline`` (e.g. ``"vector_db_server.py"``, ``"adg/mcp/server"``).
+        script_marker: Substring (or sequence of substrings) uniquely
+            identifying this server's script in ``proc.cmdline``. When a
+            sequence is provided, a process is matched if ANY marker is a
+            substring of ANY cmdline part. Use a sequence when the server
+            can be invoked in multiple forms, e.g. both ``python -m
+            tools.adg.mcp.server`` (dot-separated) and ``python
+            tools/adg/mcp/server.py`` (slash-separated).
         skip_env: Optional env var name. When set to ``"1"``, the guard is
             skipped. Use for test harnesses that legitimately spawn siblings.
     """
+    # Normalize marker to a tuple for uniform matching logic downstream.
+    if isinstance(script_marker, str):
+        markers: tuple[str, ...] = (script_marker,)
+    else:
+        markers = tuple(str(m) for m in script_marker if m)
+    if not markers:
+        logging.getLogger("mcp_bootstrap").warning(
+            "GUARD_NOOP: empty marker list, guard disabled"
+        )
+        return
+    marker_display = markers[0] if len(markers) == 1 else list(markers)
+
     if skip_env and os.environ.get(skip_env) == "1":
         logging.getLogger("mcp_bootstrap").info(
-            "GUARD_SKIPPED: %s=1 (script_marker=%s)", skip_env, script_marker
+            "GUARD_SKIPPED: %s=1 (script_marker=%s)", skip_env, marker_display
         )
         return
 
@@ -210,7 +232,7 @@ def guard_single_instance(script_marker: str, *, skip_env: str | None = None) ->
         logging.getLogger("mcp_bootstrap").warning(
             "GUARD_UNAVAILABLE: psutil not installed; concurrent-process "
             "deadlock guard disabled for marker=%s",
-            script_marker,
+            marker_display,
         )
         return
 
@@ -223,13 +245,24 @@ def guard_single_instance(script_marker: str, *, skip_env: str | None = None) ->
             if proc.info["pid"] == my_pid:
                 continue
             cmdline = proc.info.get("cmdline") or []
-            if not any(script_marker in str(part) for part in cmdline):
+            matched_marker: str | None = None
+            for part in cmdline:
+                part_s = str(part)
+                for m in markers:
+                    if m in part_s:
+                        matched_marker = m
+                        break
+                if matched_marker is not None:
+                    break
+            if matched_marker is None:
                 continue
             logger.warning(
-                "GUARD_DETECTED: pid=%d cmdline=%s -- terminating (marker=%s)",
+                "GUARD_DETECTED: pid=%d cmdline=%s -- terminating "
+                "(matched=%s marker=%s)",
                 proc.info["pid"],
                 " ".join(str(c) for c in cmdline)[:200],
-                script_marker,
+                matched_marker,
+                marker_display,
             )
             proc.terminate()
             try:
@@ -242,9 +275,12 @@ def guard_single_instance(script_marker: str, *, skip_env: str | None = None) ->
             logger.debug("GUARD_SKIP: pid=%s reason=%s", proc.info.get("pid"), exc)
 
     if killed:
-        logger.info("GUARD_COMPLETE: terminated pids=%s (marker=%s)", killed, script_marker)
+        logger.info(
+            "GUARD_COMPLETE: terminated pids=%s (marker=%s)",
+            killed, marker_display,
+        )
     else:
-        logger.info("GUARD_CLEAN: no sibling processes (marker=%s)", script_marker)
+        logger.info("GUARD_CLEAN: no sibling processes (marker=%s)", marker_display)
 
 
 _prewarm_registry: list[tuple[str, Callable[[], None]]] = []

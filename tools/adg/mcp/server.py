@@ -158,6 +158,13 @@ if __name__ == "__main__":
     # Guard against Windsurf double-spawn: two adg_sqlite processes would
     # both hold SQLite read locks on the ADG snapshot and can deadlock when
     # one tries to rotate snapshots. Added 2026-04-22 MCP standardization.
+    # Bugfix 2026-04-23: pass BOTH dot-separated and slash-separated markers.
+    # This server is invoked via `python -u -m tools.adg.mcp.server` (dots)
+    # so the original slash-only marker never matched any cmdline and the
+    # guard silently no-oped, letting stale siblings survive window reloads.
     from tools.mcp.mcp_bootstrap import guard_single_instance
-    guard_single_instance("tools/adg/mcp/server", skip_env="ADG_SKIP_ZOMBIE_KILL")
+    guard_single_instance(
+        ("tools.adg.mcp.server", "tools/adg/mcp/server"),
+        skip_env="ADG_SKIP_ZOMBIE_KILL",
+    )
     mcp.run(transport="stdio")
