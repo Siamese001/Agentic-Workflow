@@ -20,15 +20,22 @@ class AuthorityValidator:
     - C0/U0 slots cannot carry routing/safety/execution fields
     """
 
-    # Canonical slot order
-    SLOT_ORDER = ["S0", "I0", "D0", "C0", "U0"]
+    # Canonical slot order (W3: E0/M0/H0 inserted between C0 and U0).
+    # Rationale: exemplars/meta-cognitive/healing slots are informational
+    # (lower authority than D0 binding constraints, higher than raw U0 intent)
+    # and per Anthropic/OpenAI best practice appear AFTER grounding context
+    # but BEFORE the actual user turn.
+    SLOT_ORDER = ["S0", "I0", "D0", "C0", "E0", "M0", "H0", "U0"]
 
-    # Authority level mapping for comparison
+    # Authority level mapping for comparison.
     AUTHORITY_RANK = {
-        AuthorityLevel.ABSOLUTE: 5,  # S0
-        AuthorityLevel.GOVERNED: 4,  # I0
-        AuthorityLevel.BINDING: 3,  # D0
-        AuthorityLevel.INFO: 2,  # C0
+        AuthorityLevel.ABSOLUTE: 8,  # S0
+        AuthorityLevel.GOVERNED: 7,  # I0
+        AuthorityLevel.BINDING: 6,  # D0
+        AuthorityLevel.INFO: 5,  # C0
+        AuthorityLevel.EXEMPLAR: 4,  # E0
+        AuthorityLevel.META_COGNITIVE: 3,  # M0
+        AuthorityLevel.HEALING: 2,  # H0
         AuthorityLevel.ZERO: 1,  # U0
     }
 
@@ -83,8 +90,8 @@ class AuthorityValidator:
 
     def _validate_slot_invariants(self, slot: AuthoritySlot) -> None:
         """Validate security invariants for individual slots."""
-        # C0/U0 cannot carry routing/safety/execution/auth fields
-        if slot.slot_type in ("C0", "U0"):
+        # Informational slots (C0/U0/E0/M0/H0) cannot carry routing/safety/execution/auth fields.
+        if slot.slot_type in ("C0", "U0", "E0", "M0", "H0"):
             forbidden = ["route_mode", "safety_threshold", "execution_tier", "auth_token"]
             for key in forbidden:
                 if key in slot.metadata:

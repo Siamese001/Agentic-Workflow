@@ -125,6 +125,24 @@ class SlotAssemblyEngine:
         if "C0" in self._slots:
             user_parts.append(f"[CONTEXT]\n{self._slots['C0'].content}")
 
+        # W3: E0 / M0 / H0 informational slots.
+        # Rendered into the system message between grounding and the raw user turn.
+        # Semantic tags are adapter-neutral here (plain delimited headings); the
+        # provider adapter in agentic_core/L2_execution/enforcement/_adapter_*
+        # re-renders them as Anthropic XML or OpenAI markdown when W4 wires slots_map.
+
+        # E0: Exemplars (few-shot examples) - goes to system as labeled examples
+        if "E0" in self._slots:
+            system_parts.append(f"[EXAMPLES]\n{self._slots['E0'].content}")
+
+        # M0: Meta-Cognitive (thinking-approach guidance) - goes to system
+        if "M0" in self._slots:
+            system_parts.append(f"[THINKING_APPROACH]\n{self._slots['M0'].content}")
+
+        # H0: Healing re-entry context (after failure/retry) - goes to system
+        if "H0" in self._slots:
+            system_parts.append(f"[RECOVERY_CONTEXT]\n{self._slots['H0'].content}")
+
         # U0: Zero (Raw Intent) - goes to user message
         if "U0" in self._slots:
             user_parts.append(self._slots["U0"].content)

@@ -15,22 +15,37 @@ from typing import Any
 
 
 class AuthorityLevel(Enum):
-    """Authority gradient from ABSOLUTE (highest) to ZERO (lowest)."""
+    """Authority gradient from ABSOLUTE (highest) to ZERO (lowest).
+
+    Extended in W3 with three informational slots between grounding (C0) and
+    raw intent (U0):
+      EXEMPLAR       E0 — few-shot examples (Anthropic/OpenAI best practice)
+      META_COGNITIVE M0 — thinking-approach guidance (chain-of-thought, o1-style)
+      HEALING        H0 — recovery / re-entry context after failure
+    All three carry INFO-equivalent authority — lower than BINDING (D0) but
+    higher than raw user intent (U0).
+    """
 
     ABSOLUTE = auto()  # S0 - Constitutions/Invariants (e.g., "Layer gravity")
     GOVERNED = auto()  # I0 - Identity/Mixins (e.g., HealMixin, ValidateMixin)
     BINDING = auto()  # D0 - Semantic Fences (e.g., "Max file: 10KB")
     INFO = auto()  # C0 - Grounding/RAG (e.g., AST snapshots)
+    EXEMPLAR = auto()  # E0 - Few-shot examples
+    META_COGNITIVE = auto()  # M0 - Thinking-approach / CoT guidance
+    HEALING = auto()  # H0 - Recovery / re-entry context
     ZERO = auto()  # U0 - Raw Intent (e.g., "Fix module X")
 
     @classmethod
     def from_slot_code(cls, code: str) -> "AuthorityLevel":
-        """Map slot code (S0, I0, D0, C0, U0) to AuthorityLevel."""
+        """Map slot code (S0, I0, D0, C0, E0, M0, H0, U0) to AuthorityLevel."""
         mapping = {
             "S0": cls.ABSOLUTE,
             "I0": cls.GOVERNED,
             "D0": cls.BINDING,
             "C0": cls.INFO,
+            "E0": cls.EXEMPLAR,
+            "M0": cls.META_COGNITIVE,
+            "H0": cls.HEALING,
             "U0": cls.ZERO,
         }
         return mapping.get(code.upper(), cls.ZERO)
@@ -58,8 +73,8 @@ class AuthoritySlot:
             raise ValueError(
                 f"Slot type {self.slot_type} does not match authority level {self.authority_level}",
             )
-        # Security invariant: no routing/safety fields in C0/U0
-        if self.slot_type in ("C0", "U0"):
+        # Security invariant: no routing/safety fields in C0/U0/E0/M0/H0 (all informational).
+        if self.slot_type in ("C0", "U0", "E0", "M0", "H0"):
             forbidden = ["route_mode", "safety_threshold", "execution_tier", "auth_token"]
             for key in forbidden:
                 if key in self.metadata:
