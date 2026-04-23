@@ -84,7 +84,7 @@ The scorer rewards operationally severe items even when structural fan-in is low
 ### Negative / Trade-offs
 
 - The scorer now has **9 inputs** vs 4. More to validate per call, more to document.
-- Operational signals must be **sourced from OTel** to be accurate; until that wiring exists, callers pass neutral defaults and rankings stay v1-equivalent. ADR-031 **does not** itself wire OTel → scorer — that's a follow-up.
+- Operational signals must be **sourced from OTel** to be accurate. ADR-031 wires **layer A** (marker grammar + hook passthrough) so any `DEFERRED_SCOPE:` marker can carry v2 fields and the hook forwards them to the scorer. ADR-031 **does not** wire **layer B** (automatic OTel → marker enrichment); that is a genuine follow-up because it requires a plan-slug → agent-class resolver and a query fabric against `otel_mcp`.
 - Band thresholds remain calibrated for v1 magnitudes. Heavy operational signals can push items from P3 → P1 in a single hop (see SC-1 heavy case). Monitor for over-promotion on real data; re-calibrate thresholds in a future ADR if the P1 cohort balloons.
 - Complexity penalty (`adds_complexity=True` → 0.8×) is advisory — `adds_complexity` is self-reported by the marker author. Enforcement gate could be added later (e.g. auto-set to True when the plan introduces a new MCP or tool registration).
 
@@ -93,8 +93,13 @@ The scorer rewards operationally severe items even when structural fan-in is low
 - Automatic sourcing of `prod_invocations` from `otel_mcp.spans_by_agent`.
 - Automatic sourcing of `trajectory_defect_rate` from `otel_mcp.anomalies`.
 - Automatic inference of `reversibility` from ADG semantic edges.
-- Marker-format extension for optional v2 fields in `DEFERRED_SCOPE: …` syntax.
 - Reconciliation of the `[Pn]` prefix in Notion Phase Title when a row is rescored post-hoc.
+
+### Completed in this ADR (layer A)
+
+- Marker grammar (`.windsurf/rules/deferred-scope-capture.md`) documents the 5 optional v2 fields.
+- Hook parser (`.windsurf/scripts/post_cascade_deferred_scope_capture.py`) parses optional keys and forwards them to `score_deferred_scope`.
+- Test: `tests/unit/windsurf/scripts/test_deferred_scope_capture_v2_passthrough.py` proves passthrough + fail-open on unknown values.
 
 Each of these is a single-file follow-up tracked as its own DEFERRED_SCOPE item in the next execution wave.
 
@@ -104,6 +109,9 @@ Each of these is a single-file follow-up tracked as its own DEFERRED_SCOPE item 
 |---|---|
 | `tools/priority/deferred_scope_scorer.py` | Added 5 optional kwargs + 5 ScoreResult fields + 5 CLI flags; formula extended; v1 parity preserved |
 | `tests/unit/tools/priority/test_deferred_scope_scorer_v2.py` | New — 26 tests across 7 classes |
+| `.windsurf/rules/deferred-scope-capture.md` | Marker grammar extended with 5 optional v2 fields table |
+| `.windsurf/scripts/post_cascade_deferred_scope_capture.py` | Hook parses optional v2 keys and forwards to scorer |
+| `tests/unit/windsurf/scripts/test_deferred_scope_capture_v2_passthrough.py` | New — 5 tests proving end-to-end passthrough |
 
 ## Verification
 

@@ -340,11 +340,23 @@ def _process_marker(
         }
 
     try:
+        v2_kwargs: dict[str, Any] = {}
+        if "prod_invocations" in fields:
+            v2_kwargs["prod_invocations"] = int(fields["prod_invocations"])
+        if "trajectory_defect_rate" in fields:
+            v2_kwargs["trajectory_defect_rate"] = float(fields["trajectory_defect_rate"])
+        if "reversibility" in fields:
+            v2_kwargs["reversibility"] = fields["reversibility"]
+        if "item_class" in fields:
+            v2_kwargs["item_class"] = fields["item_class"]
+        if "adds_complexity" in fields:
+            v2_kwargs["adds_complexity"] = fields["adds_complexity"].lower() in {"1", "true", "yes"}
         result = score_deferred_scope(
             layer=fields["layer"],
             fan_in=int(fields["fan_in"]),
             surface=fields["surface"],
             coverage_gap_pct=float(fields["coverage_gap_pct"]),
+            **v2_kwargs,
         )
     except (ValueError, TypeError) as exc:
         return {

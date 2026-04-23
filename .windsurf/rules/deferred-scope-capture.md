@@ -47,6 +47,18 @@ DEFERRED_SCOPE: plan=<plan-slug> wave=<wave_id> phase=<phase_id> layer=<L0..L6|L
 | `est_tokens` | token estimate | `12000` |
 | `reason` | 5-10 word summary | `L5 enforcement gates coverage` |
 
+**Optional v2 operational signals** (ADR-031 — omit to keep v1-equivalent scoring):
+
+| Field | Values | Example | Source |
+|---|---|---|---|
+| `prod_invocations` | int ≥ 0 (log-scaled) | `5000` | `otel_mcp.spans_by_agent` 30-day rolling count |
+| `trajectory_defect_rate` | float in [0,1] | `0.05` | `otel_mcp.anomalies` / healing-chain failure rate |
+| `reversibility` | `write` / `action` / `read` | `write` | inferred from ADG semantic edges (`writes_to`, `emits_side_effect`) |
+| `item_class` | `regression` / `capability` | `regression` | SC/AP Violation Backlog membership |
+| `adds_complexity` | `true` / `false` | `true` | plan metadata — true if item adds new tool/orchestrator/exemption |
+
+Omitting an optional field = neutral multiplier (1.0) = identical to v1 for that factor.
+
 ## The Priority Formula (auto-computed — no human argument)
 
 The post-hook computes priority band P1..P5 deterministically:
