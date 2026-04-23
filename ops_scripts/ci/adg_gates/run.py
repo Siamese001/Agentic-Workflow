@@ -418,6 +418,10 @@ def _load_baseline(gate_id: str) -> int | None:
         "P_structured_output_ratchet": "wiring_structured_output_ratchet.json",
         "F1_untyped_seam_ratchet": "wiring_untyped_seam_ratchet.json",
         "F2_broken_contract_ratchet": "wiring_broken_contract_ratchet.json",
+        # W6 temporal ratchets (2026-04-23)
+        "H1_new_orphans_delta_ratchet": "wiring_new_orphans_delta_ratchet.json",
+        "H2_fanin_collapse_ratchet": "wiring_fanin_collapse_ratchet.json",
+        "H4_mv_staleness_ratchet": "wiring_mv_staleness_ratchet.json",
     }
     filename = name_map.get(gate_id)
     if not filename:
