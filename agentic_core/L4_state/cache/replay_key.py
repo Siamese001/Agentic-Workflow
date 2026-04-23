@@ -60,7 +60,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.reasoning.prompt_messages import PromptMessages
@@ -90,9 +91,7 @@ def compute_slot_digest_key(prompt_messages: PromptMessages) -> str:
       that exemplars live inside E0 slot content already, and metadata is
       provenance rather than request shape.
     """
-    canonical = {
-        code.upper(): content.rstrip() for code, content in prompt_messages.slot_map.items()
-    }
+    canonical = {code.upper(): content.rstrip() for code, content in prompt_messages.slot_map.items()}
     payload = json.dumps(canonical, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
     return f"{SLOT_DIGEST_PREFIX}{digest}"
@@ -120,12 +119,128 @@ def is_legacy_flat_key(key: str) -> bool:
     return isinstance(key, str) and key.startswith(LEGACY_FLAT_PREFIX)
 
 
+@dataclass(frozen=True)
+class DualReadResult:
+    """Outcome of a dual-read cache lookup across replay-key schemes.
+
+    Attributes:
+        value: The cached value, or ``None`` on a cache miss under both schemes.
+        hit_scheme: Which scheme produced the hit — ``"slot_digest"``,
+            ``"legacy_flat"``, or ``None`` on miss.
+        slot_key: The slot-digest key used for lookup and for write-through
+            on a legacy hit.
+        legacy_key: The legacy flat key used for fallback lookup.
+    """
+
+    value: Optional[Any]
+    hit_scheme: Optional[str]
+    slot_key: str
+    legacy_key: str
+
+    @property
+    def is_hit(self) -> bool:
+        return self.hit_scheme is not None
+
+    @property
+    def needs_rekey(self) -> bool:
+        """True iff the hit came from the legacy scheme and should be rewritten."""
+        return self.hit_scheme == "legacy_flat"
+
+
+def dual_read_replay_key(
+    prompt_messages: "PromptMessages",
+    legacy_system_string: str,
+    legacy_user_string: str,
+    cache_lookup: Callable[[str], Optional[Any]],
+) -> DualReadResult:
+    """Look up a cached entry under the new slot-digest key, falling back to legacy.
+
+    This is the canonical consumer-side helper for the RH2B.1 migration: call
+    it from any cache client that needs to verify pre-merge artifacts whose
+    original keying scheme may have been either the pre-RH2B.1 flat hash or
+    the new slot-digest.
+
+    The ``cache_lookup`` callable receives a fully-prefixed key string and
+    must return the cached value, or ``None`` on miss. It MUST NOT raise on
+    miss — a raising lookup is a programmer error at the consumer, not a
+    migration concern.
+
+    Args:
+        prompt_messages: The structured IR used to compute the slot-digest key.
+        legacy_system_string: ``CompiledPromptArtifact.final_system_string``
+            at the time of the original cache write. Required for the legacy
+            fallback only.
+        legacy_user_string: ``CompiledPromptArtifact.final_user_string`` at
+            the time of the original cache write.
+        cache_lookup: Callable that returns the cached value for a key, or
+            ``None`` on miss.
+
+    Returns:
+        A :class:`DualReadResult` describing the hit (if any) and carrying
+        both candidate keys for a subsequent ``rekey_legacy_to_slot`` call.
+    """
+    slot_key = compute_slot_digest_key(prompt_messages)
+    legacy_key = legacy_flat_key(legacy_system_string, legacy_user_string)
+
+    slot_hit = cache_lookup(slot_key)
+    if slot_hit is not None:
+        return DualReadResult(
+            value=slot_hit,
+            hit_scheme="slot_digest",
+            slot_key=slot_key,
+            legacy_key=legacy_key,
+        )
+
+    legacy_hit = cache_lookup(legacy_key)
+    if legacy_hit is not None:
+        return DualReadResult(
+            value=legacy_hit,
+            hit_scheme="legacy_flat",
+            slot_key=slot_key,
+            legacy_key=legacy_key,
+        )
+
+    return DualReadResult(
+        value=None,
+        hit_scheme=None,
+        slot_key=slot_key,
+        legacy_key=legacy_key,
+    )
+
+
+def rekey_legacy_to_slot(
+    dual_read: DualReadResult,
+    cache_write: Callable[[str, Any], None],
+) -> bool:
+    """Rewrite a legacy-scheme cache hit under the new slot-digest key.
+
+    Call this after a :func:`dual_read_replay_key` result whose
+    ``needs_rekey`` is ``True``. The function is a no-op on a fresh miss or a
+    slot-digest hit, so consumers can call it unconditionally after every
+    dual-read.
+
+    The ``cache_write`` callable takes ``(key, value)`` and stores it. It is
+    NOT responsible for invalidating the legacy entry; callers that want to
+    evict legacy keys should do so explicitly once the warm window closes.
+
+    Returns:
+        ``True`` if a rewrite was performed, ``False`` otherwise.
+    """
+    if not dual_read.needs_rekey or dual_read.value is None:
+        return False
+    cache_write(dual_read.slot_key, dual_read.value)
+    return True
+
+
 __all__ = [
     "LEGACY_FLAT_PREFIX",
     "SLOT_DIGEST_PREFIX",
     "SLOT_DIGEST_SCHEME_VERSION",
+    "DualReadResult",
     "compute_slot_digest_key",
+    "dual_read_replay_key",
     "is_legacy_flat_key",
     "is_slot_digest_key",
     "legacy_flat_key",
+    "rekey_legacy_to_slot",
 ]
