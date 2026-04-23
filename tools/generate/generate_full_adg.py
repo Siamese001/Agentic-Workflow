@@ -598,6 +598,21 @@ def generate_full_adg(
     # --- Tier-2: Code quality gates (run on current-run PRODUCTION SQLite, never temp) ---
     # Orchestrator runs inline here. No SQLite contention with temp directory.
     prod_sqlite_path = _resolve_post_commit_sqlite(paths, adg_artifacts_dir, ts)
+
+    # --- ADG Pipeline Ordering Contract (plan adg-pipeline-e2e-5287a1 W1) ---
+    # Enrichment (infra wiring views + Phase A..E materialized views) MUST run
+    # BEFORE any Tier-2 gate that may sys.exit(1), because:
+    #   1. Downstream gates (P0 runner, witness-tier gate) QUERY mv_*/v_p* tables.
+    #      Un-enriched SQLite causes silent fail-open (empty result = pass) OR
+    #      fail-closed (empty-table error = gate crash), both wrong.
+    #   2. Any sys.exit(1) in P0/P1/dead-import gates would otherwise strand the
+    #      committed snapshot without MVs, breaking constitutional §22 for every
+    #      consumer on that snapshot (plans, refactor analysis, hotspot reports).
+    # MV materialization is a pure derivation over nodes/edges/violations — no
+    # coupling to gate outcomes — so moving it ahead of gates is always safe.
+    _enrich_infra_views(paths.sqlite)
+    _materialize_adg_views(paths.sqlite)
+
     p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
     _run_p0_two_pass_runner(
@@ -616,12 +631,6 @@ def generate_full_adg(
     # --- Tier-2b: Structural conformance & agentic anti-pattern gates ---
     _check_structural_conformance(sqlite_path=prod_sqlite_path)
     _check_agentic_antipatterns(sqlite_path=prod_sqlite_path)
-
-    # --- Infrastructure wiring enrichment: materialize violation views ---
-    _enrich_infra_views(paths.sqlite)
-
-    # --- ADG materialized views: structural/authority/trace/snapshot visibility ---
-    _materialize_adg_views(paths.sqlite)
 
     # --- P6: Derived graph projection (non-blocking, adg_graph_<ts>.sqlite) ---
     try:
