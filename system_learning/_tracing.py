@@ -16,11 +16,15 @@ Wave W-D2 (L_SL / L6 tracer wiring).
 
 from __future__ import annotations
 
+import logging
+import time
+import uuid
 from contextlib import contextmanager
 from typing import Any, Iterator, Mapping
 
 from opentelemetry import trace
 
+logger = logging.getLogger(__name__)
 _tracer = trace.get_tracer("system_learning")
 
 
@@ -51,4 +55,96 @@ def sl_span(name: str, attributes: Mapping[str, Any] | None = None) -> Iterator[
         yield span
 
 
-__all__ = ["sl_span"]
+@contextmanager
+def sl_span_with_ingest(
+    name: str,
+    attributes: Mapping[str, Any] | None = None,
+    *,
+    trace_id: str | None = None,
+    layer: str = "L_SL",
+    kind: str = "reasoning",
+) -> Iterator[Any]:
+    """sl_span variant that also mirrors the span into the runtime ADG store.
+
+    W7.1 / P2.3 — this is the in-process ingest path for system_learning
+    producers. Mirroring is best-effort; runtime-ADG failures never break
+    the wrapped hot path.
+
+    Parameters
+    ----------
+    name
+        Span name.
+    attributes
+        Optional OTel-style attribute dict.
+    trace_id
+        Optional explicit trace id. Defaults to a fresh uuid4.
+    layer
+        Architecture layer tag for the runtime ADG node (default ``L_SL``).
+    kind
+        Span kind tag for the runtime ADG node (default ``reasoning``).
+    """
+    resolved_trace_id = trace_id or str(uuid.uuid4())
+    started_at = time.time()
+    with _tracer.start_as_current_span(name) as span:
+        if attributes:
+            for key, value in attributes.items():
+                try:
+                    span.set_attribute(key, value)
+                except (
+                    AttributeError,
+                    TypeError,
+                ):  # guardian: allow-log-and-swallow -- span attr is best-effort telemetry
+                    pass
+        try:
+            yield span
+        finally:
+            _forward_to_runtime_adg(
+                name=name,
+                trace_id=resolved_trace_id,
+                started_at=started_at,
+                attributes=dict(attributes) if attributes else {},
+                layer=layer,
+                kind=kind,
+            )
+
+
+def _forward_to_runtime_adg(
+    *,
+    name: str,
+    trace_id: str,
+    started_at: float,
+    attributes: dict[str, Any],
+    layer: str,
+    kind: str,
+) -> None:
+    """Best-effort mirror of a system_learning span into the runtime ADG store."""
+    try:
+        from agentic_core.L6_observability.otel_runtime_ingest import (  # noqa: PLC0415
+            emit_span_to_runtime_adg,
+        )
+
+        span = {
+            "span_id": trace_id,
+            "trace_id": trace_id,
+            "parent_span_id": "",
+            "name": name,
+            "kind": kind,
+            "layer": layer,
+            "component": "system_learning",
+            "service_name": "system_learning",
+            "ts_utc": int(started_at * 1000),
+            "duration_ms": max(0.0, (time.time() - started_at) * 1000.0),
+            "status": "ok",
+            "attributes": attributes,
+        }
+        emit_span_to_runtime_adg(span, mission=f"sl.{name}", trace_id=trace_id)
+    except (
+        ImportError,
+        AttributeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- runtime-ADG mirror is best-effort; must never break system_learning hot path
+        logger.debug("sl_span runtime-ADG forward failed: %s", exc)
+
+
+__all__ = ["sl_span", "sl_span_with_ingest"]

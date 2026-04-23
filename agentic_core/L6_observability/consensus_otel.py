@@ -104,6 +104,44 @@ class ConsensusJudgeRecord:
 # ============================================================================
 
 
+def _forward_to_runtime_adg(record: ConsensusJudgeRecord, span_name: str) -> None:
+    """Mirror a ConsensusJudgeRecord into the in-process runtime ADG store.
+
+    Best-effort: any failure must not break the consensus voting hot path.
+    """
+    try:
+        from agentic_core.L6_observability.otel_runtime_ingest import (  # noqa: PLC0415
+            emit_span_to_runtime_adg,
+        )
+
+        span = {
+            "span_id": record.consensus_trace_id,
+            "trace_id": record.consensus_trace_id,
+            "parent_span_id": "",
+            "name": span_name,
+            "kind": "cognitive",
+            "layer": "L1",
+            "component": "consensus_engine",
+            "service_name": "consensus_engine",
+            "ts_utc": int(record.timestamp * 1000),
+            "duration_ms": 0.0,
+            "status": "ok",
+            "attributes": record.to_span_attributes(),
+        }
+        emit_span_to_runtime_adg(
+            span,
+            mission="consensus.judge",
+            trace_id=record.consensus_trace_id,
+        )
+    except (
+        ImportError,
+        AttributeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- runtime-ADG mirror is best-effort; must never break consensus voting hot path
+        logger.debug("consensus_otel runtime-ADG forward failed: %s", exc)
+
+
 class ConsensusTelemetryEmitter:
     """Wave C3 emitter for consensus.v1 OTEL spans.
 
@@ -168,6 +206,9 @@ class ConsensusTelemetryEmitter:
                 RuntimeError,
             ) as exc:  # guardian: allow-log-and-swallow -- OTEL span forwarding is best-effort telemetry; must never break the consensus voting hot path
                 logger.debug("consensus_otel forwarding failed: %s", exc)
+
+        # W7.1 P2.2 — forward to in-process runtime ADG store.
+        _forward_to_runtime_adg(record, SPAN_NAME_JUDGE)
 
         return record
 

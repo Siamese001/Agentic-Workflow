@@ -142,6 +142,45 @@ class RoutingSpanRecord:
 # ============================================================================
 
 
+def _forward_to_runtime_adg(record: RoutingSpanRecord, span_name: str) -> None:
+    """Mirror a RoutingSpanRecord into the in-process runtime ADG store.
+
+    Best-effort: any failure here must not disturb the heal-router hot path,
+    so exceptions are caught and logged at DEBUG.
+    """
+    try:
+        from agentic_core.L6_observability.otel_runtime_ingest import (  # noqa: PLC0415
+            emit_span_to_runtime_adg,
+        )
+
+        span = {
+            "span_id": record.routing_trace_id,
+            "trace_id": record.routing_trace_id,
+            "parent_span_id": "",
+            "name": span_name,
+            "kind": "router",
+            "layer": "L0",
+            "component": "heal_router",
+            "service_name": record.app_name,
+            "ts_utc": int(record.timestamp * 1000),
+            "duration_ms": float(record.latency_ms or 0),
+            "status": "error" if record.error_code else "ok",
+            "attributes": record.to_span_attributes(),
+        }
+        emit_span_to_runtime_adg(
+            span,
+            mission=f"heal_router.{record.app_name}",
+            trace_id=record.routing_trace_id,
+        )
+    except (
+        ImportError,
+        AttributeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- runtime-ADG mirror is best-effort; must never break heal-router hot path
+        logger.debug("heal_router runtime-ADG forward failed: %s", exc)
+
+
 class HealRouterTelemetryEmitter:
     """Phase M1 emitter — in-memory capture with optional OTEL forwarding.
 
@@ -243,6 +282,10 @@ class HealRouterTelemetryEmitter:
             ) as exc:  # guardian: allow-log-and-swallow -- OTEL span forwarding is best-effort telemetry; must never break the heal-router hot path
                 # OTEL errors must never break the hot path
                 logger.debug("heal_router_otel forwarding failed: %s", exc)
+
+        # W7.1 P2.1 — forward to in-process runtime ADG store so the span is
+        # queryable via otel_mcp::otel_trace without an external OTel backend.
+        _forward_to_runtime_adg(record, SPAN_NAME_ROUTE)
 
         return record
 
