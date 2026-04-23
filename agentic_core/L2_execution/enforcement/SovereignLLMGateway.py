@@ -706,6 +706,119 @@ class SovereignLLMGateway:
             return True
         return artifact.verify_signature(self._secret_key)
 
+    async def route_generation(self, request: Any) -> Any:
+        """Async adapter from GenerationRequest to the sync ``generate`` seam.
+
+        Satisfies the contract expected by apps_* callers (healing_router,
+        GeminiLLMClient, providers_anthropic_client_util, etc.) without
+        requiring them to construct a CompiledPromptArtifact manually.
+
+        Steps:
+          1. Resolve provider from ``request.provider`` (str) to ProviderType.
+          2. Auto-register a placeholder provider if none is registered, so
+             standalone adapter callers don't crash with GatewayError.
+          3. Build a minimal, signed CompiledPromptArtifact from the request.
+          4. Call the sync ``generate`` method.
+          5. Adapt the response dict to a GenerationResponse.
+
+        Args:
+            request: ``GenerationRequest`` dataclass from
+                agentic_core.L2_execution.types.gateway_types.
+
+        Returns:
+            ``GenerationResponse`` with content, tokens, provider, model,
+            and replay_envelope filled from the underlying provider response.
+
+        Raises:
+            GatewayError: on unsupported provider string or provider failure.
+        """
+        # Import locally to avoid any L2/types cyclic import risk at module load.
+        from agentic_core.L2_execution.types.gateway_types import (  # noqa: PLC0415
+            GenerationResponse,
+        )
+
+        provider_name = (getattr(request, "provider", None) or "openai").lower()
+        provider_type = _PROVIDER_NAME_TO_TYPE.get(provider_name)
+        if provider_type is None:
+            raise GatewayError(
+                f"unsupported provider {provider_name!r}; expected one of {sorted(_PROVIDER_NAME_TO_TYPE)}"
+            )
+
+        if provider_type not in self._providers:
+            self.register_provider(
+                provider_type,
+                ProviderConfig(
+                    provider_type=provider_type,
+                    model=getattr(request, "model", "") or "",
+                ),
+            )
+
+        artifact = self._artifact_from_request(request)
+        response_dict = self.generate(artifact, provider=provider_type)
+
+        return GenerationResponse(
+            content=response_dict.get("content"),
+            tokens=int(response_dict.get("tokens_used", 0) or 0),
+            provider=provider_name,  # type: ignore[arg-type]
+            model=str(response_dict.get("model") or getattr(request, "model", "") or ""),
+            replay_envelope=artifact.trace_id,
+        )
+
+    def _artifact_from_request(self, request: Any) -> CompiledPromptArtifact:
+        """Build a minimal, signed CompiledPromptArtifact from a GenerationRequest."""
+        import hashlib as _hashlib  # noqa: PLC0415
+        import hmac as _hmac  # noqa: PLC0415
+        import json as _json  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
+        from datetime import UTC as _UTC, datetime as _dt  # noqa: PLC0415
+
+        prompt = getattr(request, "prompt", "") or ""
+        trace_id = f"route-gen-{_uuid.uuid4().hex[:12]}"
+        timestamp = _dt.now(_UTC).isoformat()
+        slots_used = ["U0"]
+
+        payload = {
+            "trace_id": trace_id,
+            "system_version_hash": "",
+            "final_system_string": "",
+            "final_user_string": prompt,
+            "allowed_tools_schema": [],
+            "tokens": 0,
+            "slots_used": slots_used,
+            "timestamp": timestamp,
+        }
+        payload_bytes = _json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
+        signature = _hmac.new(self._secret_key, payload_bytes, _hashlib.sha256).hexdigest()
+
+        return CompiledPromptArtifact(
+            trace_id=trace_id,
+            system_version_hash="",
+            final_system_string="",
+            final_user_string=prompt,
+            allowed_tools_schema=[],
+            tokens=0,
+            slots_used=slots_used,
+            signature=signature,
+            timestamp=timestamp,
+            metadata={
+                "agent_id": getattr(request, "agent_id", ""),
+                "temperature": getattr(request, "temperature", None),
+                "max_tokens": getattr(request, "max_tokens", None),
+            },
+        )
+
+
+# Mapping used by SovereignLLMGateway.route_generation for the GenerationRequest
+# provider-name field (which uses str literals, not ProviderType enum values).
+_PROVIDER_NAME_TO_TYPE: dict[str, ProviderType] = {
+    "openai": ProviderType.OPENAI,
+    "anthropic": ProviderType.ANTHROPIC,
+    "google": ProviderType.VERTEX_AI,
+    "vertex": ProviderType.VERTEX_AI,
+    "azure": ProviderType.AZURE_OPENAI,
+    "local": ProviderType.LOCAL_VLLM,
+}
+
 
 class _PlaceholderProvider:
     """Placeholder provider for testing."""
