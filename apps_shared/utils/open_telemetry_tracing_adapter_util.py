@@ -319,7 +319,25 @@ class OpenTelemetryTracingAdapter:
         self._span_stack: list[tuple[str, str]] = []
         self._active_spans: dict[str, Any] = {}
         if OTEL_AVAILABLE:
-            resource = Resource.create({"service.name": service_name})
+            import os as _os
+
+            # Anthropic-alignment: standard resource attributes (service.name / version /
+            # deployment.environment). See docs/architecture/adr/ADR-024-otel-anthropic-alignment.md.
+            resource_attrs = {
+                "service.name": _os.environ.get("OTEL_SERVICE_NAME", service_name),
+                "service.version": _os.environ.get("OTEL_SERVICE_VERSION", "unknown"),
+                "deployment.environment": _os.environ.get("OTEL_DEPLOYMENT_ENVIRONMENT", "unknown"),
+                "rpc.system": "mcp",
+            }
+            extra_res = _os.environ.get("OTEL_RESOURCE_ATTRIBUTES", "")
+            for pair in extra_res.split(","):
+                if "=" in pair:
+                    k, v = pair.split("=", 1)
+                    k = k.strip()
+                    v = v.strip()
+                    if k and v:
+                        resource_attrs[k] = v
+            resource = Resource.create(resource_attrs)
             provider = TracerProvider(resource=resource)
 
             # Console exporter (for debugging)
@@ -510,6 +528,114 @@ class OpenTelemetryTracingAdapter:
             attributes=attributes,
         )
         with self._create_span(name=f"tool.{tool_name}", metadata=span_metadata) as span:
+            yield span
+
+    # ------------------------------------------------------------------
+    # Anthropic Agent SDK taxonomy (ADR-024)
+    # ------------------------------------------------------------------
+    @contextmanager
+    def trace_interaction(
+        self,
+        prompt_summary: str = "",
+        session_id: str = "",
+        metadata: dict[str, Any] | None = None,
+    ):
+        """Wrap a single agent turn (prompt -> response).
+
+        Emits span ``claude_code.interaction`` per Anthropic Agent SDK
+        observability guidance. Root span for an agent loop turn.
+        """
+        attributes = {
+            "claude_code.prompt_summary": str(prompt_summary)[:256],
+            "session.id": str(session_id)[:64],
+            **(metadata or {}),
+        }
+        span_metadata = SpanMetadata(
+            span_type=SpanType.ORCHESTRATOR,
+            component="AgentInteraction",
+            layer="L3_Orchestration",
+            attributes=attributes,
+        )
+        with self._create_span(name="claude_code.interaction", metadata=span_metadata) as span:
+            yield span
+
+    @contextmanager
+    def trace_llm_request(
+        self,
+        model: str,
+        cost_metrics: CostMetrics | None = None,
+        metadata: dict[str, Any] | None = None,
+    ):
+        """Wrap a single LLM call. Emits span ``claude_code.llm_request``."""
+        attributes = {"llm.model": model, **(metadata or {})}
+        if cost_metrics:
+            attributes.update(cost_metrics.to_dict())
+        span_metadata = SpanMetadata(
+            span_type=SpanType.COGNITIVE,
+            component="LLMRequest",
+            layer="L1_Cognition",
+            attributes=attributes,
+        )
+        with self._create_span(name="claude_code.llm_request", metadata=span_metadata) as span:
+            yield span
+
+    @contextmanager
+    def trace_claude_tool(
+        self,
+        tool_name: str,
+        parameters: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ):
+        """Wrap a tool invocation with Anthropic taxonomy.
+
+        Emits parent ``claude_code.tool`` with child ``claude_code.tool.execution``.
+        Permission-wait children can be opened via ``trace_tool_blocked_on_user``.
+        """
+        attributes = {
+            "claude_code.tool.name": tool_name,
+            "tool.parameters": str(parameters or {})[:1024],
+            **(metadata or {}),
+        }
+        outer_meta = SpanMetadata(
+            span_type=SpanType.TOOL,
+            component=f"Tool.{tool_name}",
+            layer="L2_Execution",
+            attributes=attributes,
+        )
+        with self._create_span(name="claude_code.tool", metadata=outer_meta):
+            inner_meta = SpanMetadata(
+                span_type=SpanType.TOOL,
+                component=f"Tool.{tool_name}",
+                layer="L2_Execution",
+                attributes={"claude_code.tool.name": tool_name},
+            )
+            with self._create_span(
+                name="claude_code.tool.execution", metadata=inner_meta
+            ) as span:
+                yield span
+
+    @contextmanager
+    def trace_tool_blocked_on_user(
+        self,
+        tool_name: str,
+        reason: str = "permission_wait",
+        metadata: dict[str, Any] | None = None,
+    ):
+        """Wrap a HITL / permission wait. Emits ``claude_code.tool.blocked_on_user``."""
+        attributes = {
+            "claude_code.tool.name": tool_name,
+            "claude_code.block_reason": reason,
+            **(metadata or {}),
+        }
+        span_metadata = SpanMetadata(
+            span_type=SpanType.TOOL,
+            component=f"Tool.{tool_name}",
+            layer="L5_Safety",
+            attributes=attributes,
+        )
+        with self._create_span(
+            name="claude_code.tool.blocked_on_user", metadata=span_metadata
+        ) as span:
             yield span
 
     @contextmanager
@@ -796,6 +922,17 @@ def get_tracer(
     """
     global _global_tracer
     if _global_tracer is None:
+        # Anthropic-alignment: honor OTEL_TRACES_EXPORTER=otlp + OTEL_EXPORTER_OTLP_PROTOCOL
+        # without requiring callers to pass flags. See ADR-024.
+        import os as _os
+
+        traces_exporter = _os.environ.get("OTEL_TRACES_EXPORTER", "").lower()
+        protocol = _os.environ.get("OTEL_EXPORTER_OTLP_PROTOCOL", "").lower()
+        if traces_exporter == "otlp":
+            if protocol in ("http", "http/protobuf", "http/json"):
+                enable_otlp_http = True
+            else:
+                enable_otlp_grpc = True
         _global_tracer = OpenTelemetryTracingAdapter(
             service_name=service_name,
             enable_console_export=enable_console_export,

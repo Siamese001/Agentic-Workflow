@@ -414,6 +414,16 @@ class SemanticCacheManager:
                 Logger.info("[HiveMind] L1 warmup from L2 completed: %d keys hydrated", warmed)
             except _PROMOTION_EXCEPTIONS as _warm_err:  # guardian: allow-log-and-swallow -- warmup is best-effort; missing rows just mean cold L1
                 Logger.warning("[HiveMind] L1 warmup skipped: %s", _warm_err)
+        # L2 TTL sweep at init — removes expired rows so they do not pollute
+        # Chroma similarity search. Bounded: _gptcache.cleanup_expired walks
+        # only rows whose expires_at is past and is idempotent / safe to skip.
+        if self.gptcache_enabled and self._gptcache is not None:
+            try:
+                _expired = self._gptcache.cleanup_expired()
+                if _expired > 0:
+                    Logger.info("[HiveMind] L2 cleanup_expired removed %d stale rows", _expired)
+            except _PROMOTION_EXCEPTIONS as _cleanup_err:  # guardian: allow-log-and-swallow -- cleanup is opportunistic; lazy eviction still happens on get()
+                Logger.warning("[HiveMind] L2 cleanup_expired skipped: %s", _cleanup_err)
 
     def _warm_l1_from_l2(self, *, limit: int = 256) -> int:
         """Hydrate Redis L1 with the most recently accessed L2 rows.
@@ -566,6 +576,8 @@ class SemanticCacheManager:
         tenant_id: str = "",
         replay_mode: bool = False,
         flow_class: str | None = None,
+        corpus_version: str = "",
+        policy_version: str = "",
     ) -> dict[str, Any] | None:
         """
         Recall a result based on exact or semantic match.
@@ -611,18 +623,52 @@ class SemanticCacheManager:
             _record_semantic_cache_prom_event("bypass", namespace)
             return None
         ctx_hash = self._compute_hash(context, namespace)
+        active_model = _get_model_id()
         if self.redis_enabled:
             try:
                 cached = self.redis_client.get(f"memory:{ctx_hash}")
                 if cached:
-                    Logger.debug(f"[HiveMind] Redis HIT for {namespace}")
-                    with self._lock:
-                        self.stats["redis_hits"] += 1
-                    _emit_emits_metric_event(
-                        "semantic_cache_manager", "p4obs", f"l1_hit:{namespace}"
-                    )  # [Phase A]
-                    _record_semantic_cache_prom_event("hit", namespace)
-                    return json.loads(cached)
+                    cached_payload = json.loads(cached)
+                    # v11 R1B scope re-verification on the fast path.
+                    # SQLite enforces tenant/model/expiry at get-time; Redis
+                    # must do the same or it can silently serve stale-scope
+                    # entries (constitutional §19 — no bypass at L1).
+                    _meta = cached_payload.get("_metadata", {}) if isinstance(cached_payload, dict) else {}
+                    _row_tenant = _meta.get("tenant_id", "") or ""
+                    _row_model = _meta.get("embedding_model_id", "") or ""
+                    _row_corpus = _meta.get("corpus_version", "") or ""
+                    _row_policy = _meta.get("policy_version", "") or ""
+                    _mismatch: str | None = None
+                    if tenant_id and _row_tenant and _row_tenant != tenant_id:
+                        _mismatch = "tenant"
+                    elif _row_model and _row_model != active_model:
+                        _mismatch = "embedding_model"
+                    elif corpus_version and _row_corpus and _row_corpus != corpus_version:
+                        _mismatch = "corpus_version"
+                    elif policy_version and _row_policy and _row_policy != policy_version:
+                        _mismatch = "policy_version"
+                    if _mismatch is not None:
+                        Logger.debug(
+                            "[HiveMind] Redis scope-mismatch suppressed: reason=%s namespace=%s",
+                            _mismatch,
+                            namespace,
+                        )
+                        _emit_emits_metric_event(
+                            "semantic_cache_manager",
+                            "p4obs",
+                            f"l1_scope_mismatch:{_mismatch}:{namespace}",
+                        )
+                        _record_semantic_cache_prom_event("scope_mismatch", namespace)
+                        # Treat as a miss — fall through to L2 / final miss.
+                    else:
+                        Logger.debug(f"[HiveMind] Redis HIT for {namespace}")
+                        with self._lock:
+                            self.stats["redis_hits"] += 1
+                        _emit_emits_metric_event(
+                            "semantic_cache_manager", "p4obs", f"l1_hit:{namespace}"
+                        )  # [Phase A]
+                        _record_semantic_cache_prom_event("hit", namespace)
+                        return cached_payload
             except (
                 _REDIS_READ_EXCEPTIONS
             ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
@@ -639,7 +685,29 @@ class SemanticCacheManager:
                     # Result is already a JSON string from previous storage
                     cached_result = json.loads(result)
                     # Verify namespace match (Native L2 doesn't support metadata filtering)
-                    if cached_result.get("_metadata", {}).get("namespace") == namespace:
+                    _l2_meta = cached_result.get("_metadata", {}) if isinstance(cached_result, dict) else {}
+                    # v11 R1B scope re-verification on the L2 path — same shape
+                    # as the L1 path above. Required because _gptcache.get does
+                    # not yet plumb corpus_version / policy_version filters.
+                    _l2_row_corpus = _l2_meta.get("corpus_version", "") or ""
+                    _l2_row_policy = _l2_meta.get("policy_version", "") or ""
+                    _l2_mismatch: str | None = None
+                    if corpus_version and _l2_row_corpus and _l2_row_corpus != corpus_version:
+                        _l2_mismatch = "corpus_version"
+                    elif policy_version and _l2_row_policy and _l2_row_policy != policy_version:
+                        _l2_mismatch = "policy_version"
+                    if _l2_mismatch is not None:
+                        Logger.debug(
+                            "[HiveMind] L2 scope-mismatch suppressed: reason=%s namespace=%s",
+                            _l2_mismatch, namespace,
+                        )
+                        _emit_emits_metric_event(
+                            "semantic_cache_manager", "p4obs",
+                            f"l2_scope_mismatch:{_l2_mismatch}:{namespace}",
+                        )
+                        _record_semantic_cache_prom_event("scope_mismatch", namespace)
+                        # Fall through to final miss — do not writeback, do not return.
+                    elif _l2_meta.get("namespace") == namespace:
                         Logger.info(f"[HiveMind] Native L2 HIT for {namespace}")
                         with self._lock:
                             self.stats["gptcache_hits"] += 1
@@ -703,6 +771,8 @@ class SemanticCacheManager:
         feedback_score: float | None = None,
         *,
         tenant_id: str = "",
+        corpus_version: str = "",
+        policy_version: str = "",
     ) -> None:
         """
         Teach the Hive Mind a new result (Working Memory).
@@ -743,6 +813,13 @@ class SemanticCacheManager:
                 "timestamp": time.time(),
                 "feedback_score": feedback_score,
                 "promoted": False,
+                # v11 R1B isolation mirror: Redis hot-path must carry the same
+                # scope identity as the SQLite l2_cache row so a Redis hit can
+                # re-verify tenant/model/corpus/policy without a round-trip.
+                "tenant_id": tenant_id,
+                "embedding_model_id": active_model,
+                "corpus_version": corpus_version,
+                "policy_version": policy_version,
             },
         }
         payload_json = json.dumps(enriched_result)
@@ -763,12 +840,17 @@ class SemanticCacheManager:
         namespace: str,
         result: dict[str, Any],
         feedback_score: float | None = None,
+        *,
+        tenant_id: str = "",
+        corpus_version: str = "",
+        policy_version: str = "",
     ) -> None:
         """
         [PHASE 25] Async version of learn for fire-and-forget pattern.
         """
         if self.stateless_mode:
             return
+        active_model = _get_model_id()
         sanitized_context = self.sanitizer.sanitize(context)
         ctx_hash = self._compute_hash(sanitized_context, namespace)
         if not self._should_sample_trace(ctx_hash):
@@ -784,6 +866,10 @@ class SemanticCacheManager:
                 "timestamp": time.time(),
                 "feedback_score": feedback_score,
                 "promoted": False,
+                "tenant_id": tenant_id,
+                "embedding_model_id": active_model,
+                "corpus_version": corpus_version,
+                "policy_version": policy_version,
             },
         }
         payload_json = json.dumps(enriched_result)
@@ -798,6 +884,10 @@ class SemanticCacheManager:
         namespace: str,
         result: dict[str, Any],
         feedback_score: float,
+        *,
+        tenant_id: str = "",
+        corpus_version: str = "",
+        policy_version: str = "",
     ) -> bool:
         """
         Promote a memory to Long-Term DNA storage (Native L2 persistent backend).
@@ -845,6 +935,7 @@ class SemanticCacheManager:
             return False
         sanitized_context = self.sanitizer.sanitize(context)
         ctx_hash = self._compute_hash(sanitized_context, namespace)
+        active_model = _get_model_id()
         enriched_result = {
             **result,
             "_metadata": {
@@ -853,6 +944,11 @@ class SemanticCacheManager:
                 "feedback_score": feedback_score,
                 "promoted": True,
                 "promotion_time": time.time(),
+                # v11 R1B isolation mirror — same fields `learn()` writes.
+                "tenant_id": tenant_id,
+                "embedding_model_id": active_model,
+                "corpus_version": corpus_version,
+                "policy_version": policy_version,
             },
         }
         payload_json = json.dumps(enriched_result)
@@ -862,6 +958,10 @@ class SemanticCacheManager:
             self._gptcache.set(
                 sanitized_context,
                 payload_json,
+                tenant_id=tenant_id,
+                embedding_model_id=active_model,
+                corpus_version=corpus_version,
+                policy_version=policy_version,
                 evidence_ids=result.get("evidence_ids", []),
                 grounding_complete=bool(result.get("grounding_complete", False)),
             )

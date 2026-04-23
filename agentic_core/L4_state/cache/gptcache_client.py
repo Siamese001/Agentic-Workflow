@@ -268,6 +268,18 @@ class NativePersistentCacheClient:
 
         _t0 = time.monotonic()
         try:
+            # Empty-collection guard — ChromaDB raises InternalError
+            # ("Error creating hnsw segment reader: Nothing found on disk")
+            # when .query() runs against a collection with zero entries.
+            # Skip the query entirely in that case; miss is the correct result.
+            try:
+                _coll_count = self._chroma_collection.count()
+            except (AttributeError, RuntimeError):  # guardian: allow-log-and-swallow -- count() unavailable treated as "unknown, try query"
+                _coll_count = -1
+            if _coll_count == 0:
+                self._miss_count += 1
+                Logger.debug("[L2Cache] l2_get_miss empty_collection query_prefix=%r", query[:40])
+                return None
             # Search ChromaDB for similar entries (ChromaDB handles embeddings automatically)
             results = self._chroma_collection.query(
                 query_texts=[query],

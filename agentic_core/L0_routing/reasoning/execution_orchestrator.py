@@ -51,6 +51,13 @@ def _semantic_cache_promote_enabled() -> bool:
     return _os.environ.get("SEMANTIC_CACHE_PROMOTE_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
 
 
+def _exact_cache_d1_enabled() -> bool:
+    """R1A exact-cache writeback gate. Matches EXACT_CACHE_D1_ENABLED in route_gates."""
+    import os as _os  # noqa: PLC0415
+
+    return _os.environ.get("EXACT_CACHE_D1_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+
+
 def _get_routing_gateway():
     from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
         get_routing_gateway,  # noqa: PLC0415
@@ -186,6 +193,53 @@ class ExecutionOrchestrator:
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
+        # v11 R1A/R1B short-circuit — run BEFORE path selection so an exact or
+        # semantic cache hit returns immediately without running the router,
+        # D0, risk gate, or L3. Uses the same canonical keys as check_route_gates
+        # so writeback (below) and this read match byte-for-byte.
+        _tenant_id = intent_input.get("tenant_id", "")
+        _flow_class = intent_input.get("flow_class", None)
+        _replay_mode = bool(intent_input.get("replay_mode", False))
+        _namespace = intent_input.get("namespace", "default")
+        _corpus_version = intent_input.get("corpus_version", "") or ""
+        _policy_version = (
+            intent_input.get("policy_version", "")
+            or getattr(_active, "policy_hash", "")
+            or ""
+        )
+        try:
+            from agentic_core.L0_routing.reasoning.route_gates import (  # noqa: PLC0415
+                check_route_gates as _check_route_gates,
+            )
+
+            _gate_result = _check_route_gates(
+                intent_input,
+                namespace=_namespace,
+                tenant_id=_tenant_id,
+                replay_mode=_replay_mode,
+                flow_class=_flow_class,
+                policy_hash=getattr(_active, "policy_hash", "") or "no-policy",
+                trace_id=_trace_id,
+                corpus_version=_corpus_version,
+                policy_version=_policy_version,
+            )
+        except (ImportError, RuntimeError, ValueError) as _ge:  # guardian: allow-log-and-swallow -- cache gate is opportunistic; miss is safe
+            Logger.debug("[L0-ORCH] route_gates check skipped: %s", _ge)
+            _gate_result = None
+        if _gate_result is not None:
+            _contract, _cached_payload = _gate_result
+            _route_label = _contract["selected_route"].value  # "R1A" or "R1B"
+            Logger.info(
+                "[L0-ORCH] cache short-circuit route=%s namespace=%s", _route_label, _namespace
+            )
+            return {
+                "path": None,
+                "state": "cache_hit",
+                "selected_route": _route_label,
+                "result": _cached_payload,
+                "contract": _contract,
+            }
+
         payload = self.assembler.assemble(intent_input)
         path = self.path_router.select_path(payload)
         _get_routing_gateway().stamp_decision(path.value)
@@ -218,56 +272,39 @@ class ExecutionOrchestrator:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "retry"}
             else:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "blocked"}
-        # D2 semantic cache gate — at Path D only, before D3 retrieval starts.
-        # Gated by SEMANTIC_CACHE_D2_ENABLED=1 (default off — fail-closed in production).
-        _tenant_id = intent_input.get("tenant_id", "")
-        _flow_class = intent_input.get("flow_class", None)
-        _replay_mode = bool(intent_input.get("replay_mode", False))
-        _namespace = intent_input.get("namespace", "default")
-        _d2_payload_key: str | None = None
-        if path.value == "D" and _semantic_cache_enabled():
-            _d2_payload_key = repr(payload)
-            try:
-                from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager  # noqa: PLC0415
-
-                _d2_hit = SemanticCacheManager.get_instance().recall(
-                    _d2_payload_key,
-                    _namespace,
-                    tenant_id=_tenant_id,
-                    flow_class=_flow_class,
-                    replay_mode=_replay_mode,
-                )
-                if _d2_hit is not None:
-                    return {
-                        "path": path,
-                        "risk": risk,
-                        "cycle": cycle,
-                        "state": "d2_cache_hit",
-                        "result": _d2_hit,
-                    }
-            except (
-                ImportError,
-                RuntimeError,
-            ) as _e:  # guardian: allow-log-and-swallow -- D2 semantic cache check: optional, debug logged
-                Logger.debug("[L0-ORCH] D2 semantic cache check skipped: %s", _e)
         if path.value in self._L3_PATHS:
             _l3_result = self._delegate_to_l3(path, payload, cycle, risk)
-            # D2 write path — populate L1 (and optionally promote to L2) on Path-D success.
-            # Triggers only when: Path D + flag on + not replay + L3 reported completed success.
+            # R1A + R1B writeback on Path-D success. Keys are the canonical
+            # forms used by check_route_gates so a subsequent identical call
+            # hits the gate above and short-circuits before select_path.
             if (
                 path.value == "D"
-                and _d2_payload_key is not None
                 and not _replay_mode
                 and _l3_result.get("state") == "success"
                 and isinstance(_l3_result.get("orchestration"), dict)
                 and _l3_result["orchestration"].get("completed") is True
             ):
-                self._populate_d2_cache(
-                    _d2_payload_key,
-                    _namespace,
-                    _tenant_id,
-                    _l3_result,
+                from agentic_core.L0_routing.reasoning.route_gates import (  # noqa: PLC0415
+                    canonical_request_hash as _canonical_request_hash,
                 )
+
+                # D2 key: canonical JSON string of the request (matches check_d2)
+                _d2_context = json.dumps(
+                    intent_input, sort_keys=True, separators=(",", ":"), default=str
+                )
+                # D1 key: SHA-256 hash of canonical JSON (matches check_d1)
+                _d1_key = _canonical_request_hash(intent_input)
+                if _semantic_cache_enabled():
+                    self._populate_d2_cache(
+                        _d2_context,
+                        _namespace,
+                        _tenant_id,
+                        _l3_result,
+                        corpus_version=_corpus_version,
+                        policy_version=_policy_version,
+                    )
+                # R1A — O(1) SHA-256 lookup, fires first on next call.
+                self._populate_d1_cache(_d1_key, _l3_result)
             return _l3_result
         return {"path": path, "risk": risk, "cycle": cycle, "state": "success"}
 
@@ -277,6 +314,9 @@ class ExecutionOrchestrator:
         namespace: str,
         tenant_id: str,
         l3_result: dict[str, Any],
+        *,
+        corpus_version: str = "",
+        policy_version: str = "",
     ) -> None:
         """Write L3-success result into the semantic cache (L1 always; L2 when gated feedback qualifies).
 
@@ -299,7 +339,14 @@ class ExecutionOrchestrator:
                 "orchestration": _orch,
                 "embedding_model_id": "bge-m3-v1",
             }
-            _mgr.learn(payload_key, namespace, _learn_payload, tenant_id=tenant_id)
+            _mgr.learn(
+                payload_key,
+                namespace,
+                _learn_payload,
+                tenant_id=tenant_id,
+                corpus_version=corpus_version,
+                policy_version=policy_version,
+            )
         except (ImportError, RuntimeError, ValueError, TypeError, AttributeError) as _e:  # guardian: allow-log-and-swallow -- D2 semantic cache learn is opportunistic: orchestration already succeeded; cache learn failure must not fail the request
             Logger.debug("[L0-ORCH] D2 semantic cache learn skipped: %s", _e)
             return
@@ -323,10 +370,52 @@ class ExecutionOrchestrator:
                 "grounding_complete": True,
             }
             _asyncio.run(
-                _mgr.promote_to_long_term(payload_key, namespace, _promote_payload, _feedback),
+                _mgr.promote_to_long_term(
+                    payload_key,
+                    namespace,
+                    _promote_payload,
+                    _feedback,
+                    tenant_id=tenant_id,
+                    corpus_version=corpus_version,
+                    policy_version=policy_version,
+                ),
             )
         except (RuntimeError, ValueError, TypeError) as _pe:  # guardian: allow-log-and-swallow -- L2 promotion is a background quality optimization; promotion failure is non-fatal to the current request
             Logger.debug("[L0-ORCH] D2 semantic cache promote skipped: %s", _pe)
+
+    def _populate_d1_cache(self, payload_key: str, l3_result: dict[str, Any]) -> None:
+        """R1A writeback — deposit the successful deterministic answer into
+        L1ExactCache so future identical requests short-circuit at D1.
+
+        Gated by EXACT_CACHE_D1_ENABLED (default off). Always opportunistic:
+        all failures are debug-logged and never propagate. Mirrors the D1
+        key derivation used by ``check_d1_exact_cache`` (SHA-256 of the
+        canonical request string).
+        """
+        if not _exact_cache_d1_enabled():
+            return
+        try:
+            from agentic_core.L4_state.utils.memory.l1_exact_cache import (  # noqa: PLC0415
+                get_global_l1_cache,
+            )
+
+            cache = get_global_l1_cache()
+            # L1ExactCache.set stores a plain string. Serialize the L3 result
+            # deterministically so retrieval is byte-for-byte identical.
+            _orch = l3_result.get("orchestration") or {}
+            _path_obj = l3_result.get("path")
+            _path_val = _path_obj.value if _path_obj is not None and hasattr(_path_obj, "value") else None
+            _serializable = {
+                "path": _path_val,
+                "state": l3_result.get("state"),
+                "orchestration": _orch,
+            }
+            cache.set(
+                payload_key,
+                json.dumps(_serializable, sort_keys=True, default=str, separators=(",", ":")),
+            )
+        except (ImportError, AttributeError, RuntimeError, TypeError, ValueError) as _e:  # guardian: allow-log-and-swallow -- D1 exact cache writeback is opportunistic; failure must not fail the request
+            Logger.debug("[L0-ORCH] D1 exact cache writeback skipped: %s", _e)
 
     def plan_execution_with_impact_analysis(self, changed_files: list[str]) -> dict[str, Any]:
         """R6: Plan execution order based on ADG blast radius.

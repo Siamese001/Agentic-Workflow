@@ -182,6 +182,8 @@ def check_d2_semantic_cache(
     tenant_id: str = "",
     replay_mode: bool = False,
     flow_class: str | None = None,
+    corpus_version: str = "",
+    policy_version: str = "",
 ) -> dict[str, Any] | None:
     """Return the cached response for ``request`` if a D2 semantic hit exists.
 
@@ -217,6 +219,8 @@ def check_d2_semantic_cache(
             tenant_id=tenant_id,
             replay_mode=replay_mode,
             flow_class=flow_class,
+            corpus_version=corpus_version,
+            policy_version=policy_version,
         )
     except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- cache recall: non-fatal, miss is safe default
         Logger.debug("route_gates: D2 recall failed: %s", exc)
@@ -238,6 +242,8 @@ def check_route_gates(
     policy_hash: str = "no-policy",
     trace_id: str = "no-trace",
     confidence: float = 1.0,
+    corpus_version: str = "",
+    policy_version: str = "",
 ) -> tuple[L0RouteContract, dict[str, Any]] | None:
     """Run D1 → D2 in order; return the first hit as a populated contract.
 
@@ -296,6 +302,8 @@ def check_route_gates(
         tenant_id=tenant_id,
         replay_mode=replay_mode,
         flow_class=flow_class,
+        corpus_version=corpus_version,
+        policy_version=policy_version,
     )
     if d2_hit is not None:
         Logger.info(

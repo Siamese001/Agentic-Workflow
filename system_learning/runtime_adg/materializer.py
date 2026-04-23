@@ -20,6 +20,7 @@ Validation:
 from __future__ import annotations
 
 import json
+import os
 from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -39,6 +40,67 @@ emit_determinism_digest("runtime_adg_materializer", "runtime_adg_materializer_di
 record_execution_trace("runtime_adg_materializer", "runtime_adg_materializer_trace")
 
 _ROOT_SENTINEL = "__root__"
+
+# Anthropic-alignment: privacy redaction for tool I/O in snapshots.
+# See docs/architecture/adr/ADR-027-otel-anthropic-alignment.md.
+_TOOL_CONTENT_KEYS = frozenset(
+    {
+        "tool_input",
+        "tool_output",
+        "tool_parameters",
+        "tool.parameters",
+        "input",
+        "output",
+        "content",
+        "prompt",
+        "response",
+        "result",
+        "message",
+        "body",
+    }
+)
+_REDACTED_MARKER = "[REDACTED]"
+_TRUNCATED_SUFFIX = "...[truncated]"
+
+
+def _privacy_policy() -> tuple[bool, int]:
+    """Return (log_tool_content, span_attr_max_bytes) from env.
+
+    Mirrors OTelServerConfig; read here so the materializer stays usable
+    outside the MCP server too.
+    """
+    log_tool_content = os.environ.get("OTEL_MCP_LOG_TOOL_CONTENT", "0") == "1"
+    try:
+        max_bytes = max(1024, int(os.environ.get("OTEL_MCP_SPAN_ATTR_MAX_BYTES", "60000")))
+    except (TypeError, ValueError):
+        max_bytes = 60_000
+    return log_tool_content, max_bytes
+
+
+def _redact_tool_content(attrs: dict[str, Any]) -> dict[str, Any]:
+    """Drop or stringify tool-I/O content keys per Anthropic privacy defaults.
+
+    When OTEL_MCP_LOG_TOOL_CONTENT=1, content is kept; otherwise replaced with
+    ``[REDACTED]``. Non-content attributes are preserved verbatim.
+    """
+    if not isinstance(attrs, dict):
+        return {}
+    redacted: dict[str, Any] = {}
+    for key, value in attrs.items():
+        if isinstance(key, str) and key.lower() in _TOOL_CONTENT_KEYS:
+            redacted[key] = _REDACTED_MARKER
+        else:
+            redacted[key] = value
+    return redacted
+
+
+def _cap_attributes_json(attributes_json: str, max_bytes: int) -> str:
+    """Truncate attributes_json to max_bytes, appending a marker."""
+    if len(attributes_json.encode("utf-8")) <= max_bytes:
+        return attributes_json
+    # Best-effort: truncate in UTF-8 safe manner, then append marker
+    encoded = attributes_json.encode("utf-8")[: max_bytes - len(_TRUNCATED_SUFFIX)]
+    return encoded.decode("utf-8", errors="ignore") + _TRUNCATED_SUFFIX
 
 
 def _extract_node(span: dict[str, Any]) -> RuntimeADGNode | None:
@@ -77,6 +139,16 @@ def _extract_node(span: dict[str, Any]) -> RuntimeADGNode | None:
     if status not in ("ok", "error"):
         status = "ok"
 
+    # Anthropic privacy defaults: redact tool I/O unless explicitly opted in,
+    # then cap the serialised attributes per span. ADR-027.
+    log_tool_content, span_attr_max_bytes = _privacy_policy()
+    safe_attrs = raw_attrs if isinstance(raw_attrs, dict) else {}
+    if not log_tool_content:
+        safe_attrs = _redact_tool_content(safe_attrs)
+    attributes_json = _cap_attributes_json(
+        attributes_to_json(safe_attrs), span_attr_max_bytes
+    )
+
     return RuntimeADGNode(
         node_id=span_id,
         name=str(span.get("name", ""))[:256],  # Limit name length
@@ -86,7 +158,7 @@ def _extract_node(span: dict[str, Any]) -> RuntimeADGNode | None:
         started_at_utc=ts_utc,
         duration_ms=duration_ms,
         status=status,
-        attributes_json=attributes_to_json(raw_attrs if isinstance(raw_attrs, dict) else {}),
+        attributes_json=attributes_json,
     )
 
 

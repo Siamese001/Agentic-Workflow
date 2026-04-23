@@ -15,6 +15,33 @@ from tools.otel.otel_state import RuntimeMetrics, TraceCache
 logger = logging.getLogger(__name__)
 
 
+def _attach_trace_context(result: dict[str, Any], snapshot: dict[str, Any]) -> None:
+    """Lift W3C trace-context (traceparent/tracestate) from root span attributes.
+
+    ADR-027 Anthropic-alignment: traceparent is stamped onto the root span's
+    attributes at ingest time; surface it verbatim on every trace read so
+    callers can stitch with upstream spans.
+    """
+    nodes = snapshot.get("nodes", [])
+    if not nodes:
+        return
+    root_node = nodes[0]
+    raw_attrs = root_node.get("attributes_json") or root_node.get("attributes") or ""
+    if isinstance(raw_attrs, str):
+        try:
+            raw_attrs = json.loads(raw_attrs) if raw_attrs else {}
+        except (ValueError, TypeError):
+            return
+    if not isinstance(raw_attrs, dict):
+        return
+    traceparent = raw_attrs.get("traceparent")
+    tracestate = raw_attrs.get("tracestate")
+    if traceparent:
+        result["traceparent"] = str(traceparent)
+    if tracestate:
+        result["tracestate"] = str(tracestate)
+
+
 class OTelQueryService:
     """Trace fetch and cache-backed analytical query surface."""
 
@@ -60,6 +87,7 @@ class OTelQueryService:
                             "adg_edges": adg_edges,
                             "source": "file_backed_runtime_adg_store",
                         }
+                        _attach_trace_context(result, snapshot)
                         self._trace_cache.put(trace_id, result)
                         logger.info("otel_trace_loaded_from_store", extra={"trace_id": trace_id})
                         return result
@@ -86,6 +114,7 @@ class OTelQueryService:
                     "adg_edges": adg_edges,
                     "source": "runtime_adg_snapshot",
                 }
+                _attach_trace_context(result, snapshot)
                 self._trace_cache.put(trace_id, result)
                 logger.info(
                     "otel_trace_loaded",

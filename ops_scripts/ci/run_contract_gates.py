@@ -295,6 +295,37 @@ def main():
     except ImportError as exc:
         print(f"⚠️  P3 runner import failed — {exc} (non-blocking)")
 
+    # ==================================================================
+    # Wiring-CI gate plane (plan adg-wiring-ci-hardening-7a5d84)
+    # Exit 1 on any failure. Ratchet gates pass when count <= baseline.
+    # ==================================================================
+    print("\n[WIRING-CI GATE PLANE]")
+    wiring_gates = [
+        ("J1 canonical pipeline wiring", "ops_scripts/ci/check_canonical_pipeline_wiring.py"),
+        ("A1 orphan module ratchet", "ops_scripts/ci/check_orphan_module_ratchet.py"),
+        ("A3 dead-symbol ratchet", "ops_scripts/ci/check_dead_symbols_ratchet.py"),
+        ("A6 import cycle", "ops_scripts/ci/check_import_cycles.py"),
+        ("E1 trace-stub ratchet", "ops_scripts/ci/check_trace_stub_modules.py"),
+        ("G2 seam-test export coherence", "ops_scripts/ci/check_seam_test_export_coherence.py"),
+        ("L1 layer gravity ratchet", "ops_scripts/ci/check_layer_gravity.py"),
+        ("L2 L_PG drift ratchet", "ops_scripts/ci/check_lpg_drift_ratchet.py"),
+        ("M1 module LOC ratchet", "ops_scripts/ci/check_module_loc_ratchet.py"),
+        ("D1 layer doc binding (warn)", "ops_scripts/ci/check_layer_doc_binding.py"),
+        ("S1 global state mutation ratchet", "ops_scripts/ci/check_global_state_mutation_ratchet.py"),
+        ("S2 UWG bypass ratchet", "ops_scripts/ci/check_uwg_bypass_ratchet.py"),
+        ("S3 exception swallow ratchet", "ops_scripts/ci/check_exception_swallow_ratchet.py"),
+        ("S4 unused imports ratchet", "ops_scripts/ci/check_unused_imports_ratchet.py"),
+        ("W5 waiver expiry", "ops_scripts/ci/check_waiver_expiry.py"),
+    ]
+    for label, script in wiring_gates:
+        returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)
+        if returncode != 0:
+            print(f"❌ {label} failed")
+            print(stdout)
+            print(stderr)
+            sys.exit(1)
+        print(f"✅ {label} passed")
+
     # Continue with existing logic...
     return 0
 

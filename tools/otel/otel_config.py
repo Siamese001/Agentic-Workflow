@@ -24,6 +24,12 @@ class OTelServerConfig:
     mcp_server_name: str = "otel-mcp"
     tool_transport: str = "stdio"
     metrics_initial_last_updated: int = field(default_factory=lambda: int(time.time()))
+    # Anthropic-alignment knobs (ADR-027)
+    log_tool_content: bool = False
+    span_attr_max_bytes: int = 60_000
+    service_name: str = "otel-mcp"
+    service_version: str = "unknown"
+    deployment_environment: str = "unknown"
 
 
 def build_config(source_file: str) -> OTelServerConfig:
@@ -39,4 +45,9 @@ def build_config(source_file: str) -> OTelServerConfig:
         server_pid=os.getpid(),
         server_start_time=time.time(),
         server_source_mtime=source_path.stat().st_mtime,
+        log_tool_content=os.environ.get("OTEL_MCP_LOG_TOOL_CONTENT", "0") == "1",
+        span_attr_max_bytes=max(1024, int(os.environ.get("OTEL_MCP_SPAN_ATTR_MAX_BYTES", "60000"))),
+        service_name=os.environ.get("OTEL_SERVICE_NAME", "otel-mcp"),
+        service_version=os.environ.get("OTEL_SERVICE_VERSION", "unknown"),
+        deployment_environment=os.environ.get("OTEL_DEPLOYMENT_ENVIRONMENT", "unknown"),
     )

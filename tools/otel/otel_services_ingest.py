@@ -42,6 +42,24 @@ class OTelIngestService:
             from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
 
             mission = trace_data.get("mission") or trace_data.get("trace_id") or f"trace_{int(time.time())}"
+
+            # Anthropic-alignment (ADR-027): accept W3C trace-context headers on
+            # ingest and stamp them onto the root span's attributes so the
+            # snapshot carries the context without a schema change.
+            traceparent = trace_data.get("traceparent")
+            tracestate = trace_data.get("tracestate")
+            if traceparent and spans:
+                root_span = next(
+                    (s for s in spans if not s.get("parent_span_id")),
+                    spans[0],
+                )
+                attrs = root_span.get("attributes") or {}
+                if isinstance(attrs, dict):
+                    attrs.setdefault("traceparent", str(traceparent)[:128])
+                    if tracestate:
+                        attrs.setdefault("tracestate", str(tracestate)[:256])
+                    root_span["attributes"] = attrs
+
             materializer = RuntimeADGMaterializer()
             snapshot = materializer.materialize(spans, mission=mission)
             version_id = self._write_gateway.persist_snapshot(snapshot)
@@ -55,6 +73,10 @@ class OTelIngestService:
                 "spans_ingested": len(spans),
                 "timestamp": int(time.time()),
             }
+            if traceparent:
+                result["traceparent"] = str(traceparent)
+            if tracestate:
+                result["tracestate"] = str(tracestate)
             logger.info("otel_ingest_success", extra=result)
             return result
         except Exception as exc:
