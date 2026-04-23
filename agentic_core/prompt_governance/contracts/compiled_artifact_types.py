@@ -1,6 +1,36 @@
-"""CompiledPromptArtifact data contract — Assembly Stage → LLM Gateway handoff.
+"""CompiledPromptArtifact (narrow variant) — Assembly Stage → LLM Gateway handoff.
 
-Defines the immutable compiled prompt artifact with HMAC-SHA256 signature.
+DEPRECATION NOTICE (plan prompt-reception-followups-a7b3c4, phase RH2B.2)
+=========================================================================
+
+This module defines the **narrow** 6-field ``CompiledPromptArtifact`` used by
+``agentic_core.L0_routing.reasoning.assembly_stage``. The **canonical** rich
+variant now lives at::
+
+    agentic_core.L2_execution.reasoning.compiled_artifact.CompiledPromptArtifact
+
+The rich variant carries additional metadata the prompt-reception pipeline
+depends on — ``slots_used``, ``prompt_bom``, ``template_manifest``,
+``injection_scan_result``, ``routing_decision``, ``system_version_hash`` — and
+exposes ``to_prompt_messages()`` (phase RH2B.3) for provider-aware adapters.
+
+New code MUST import from ``agentic_core.L2_execution.reasoning``.
+Consumers of this module should migrate via :func:`to_rich_artifact`. The
+narrow dataclass remains for backward compatibility with
+``assembly_stage.GovernedPayload`` construction and existing lifecycle
+contract tests, but it is frozen — no new fields, no new consumers, no new
+imports outside the Assembly Stage boundary.
+
+Field-map when migrating narrow -> rich:
+  - ``token_estimate`` (narrow)          -> ``tokens`` (rich)
+  - ``allowed_tools_schema`` tuple       -> ``allowed_tools_schema`` list
+  - ``final_system_string`` / ``final_user_string`` map 1:1
+  - ``signature`` maps 1:1 (HMAC scheme differs; recompute on upgrade)
+  - ``trace_id`` maps 1:1
+
+Follow-up: when ``assembly_stage`` is refactored (deferred scope item on
+``prompt-reception-followups-a7b3c4``), this module becomes a thin
+re-export alias of the rich variant and can be removed one release later.
 """
 
 from __future__ import annotations
@@ -169,4 +199,40 @@ class CompiledPromptArtifact:
         }
 
 
-__all__ = ["CompiledPromptArtifact"]
+def to_rich_artifact(
+    narrow: CompiledPromptArtifact,
+    system_version_hash: str = "",
+    slots_used: list[str] | None = None,
+) -> Any:
+    """Upgrade a narrow governance ``CompiledPromptArtifact`` to the rich L2 form.
+
+    Phase RH2B.2 bridge. Field mapping:
+
+    - ``token_estimate`` (narrow) -> ``tokens`` (rich)
+    - ``allowed_tools_schema`` tuple -> list
+    - ``signature`` is copied verbatim; the rich variant uses a different HMAC
+      scheme, so callers who rely on ``verify_signature`` should recompute via
+      ``SlotAssemblyEngine`` rather than trust the carried signature.
+    - ``system_version_hash`` and ``slots_used`` must be supplied by the
+      caller because the narrow variant does not carry them.
+
+    Returns the rich ``agentic_core.L2_execution.reasoning.CompiledPromptArtifact``.
+    """
+    # Lazy import to avoid cross-layer static coupling at module load.
+    from agentic_core.L2_execution.reasoning.compiled_artifact import (
+        CompiledPromptArtifact as RichCompiledPromptArtifact,
+    )
+
+    return RichCompiledPromptArtifact(
+        trace_id=narrow.trace_id,
+        system_version_hash=system_version_hash,
+        final_system_string=narrow.final_system_string,
+        final_user_string=narrow.final_user_string,
+        allowed_tools_schema=list(narrow.allowed_tools_schema),
+        tokens=narrow.token_estimate,
+        slots_used=list(slots_used or []),
+        signature=narrow.signature,
+    )
+
+
+__all__ = ["CompiledPromptArtifact", "to_rich_artifact"]
