@@ -17,9 +17,14 @@ def _extract_timestamp(filename: str) -> str | None:
     """Extract timestamp from ADG artifact filename.
 
     Supports formats:
-        Current: adg_indexed_03122026_0512.sqlite    -> 03122026_0512  (MMDDYYYY_HHMM)
-        Legacy1: adg_indexed_03122026.sqlite         -> 03122026       (MMDDYYYY)
-        Legacy2: adg_indexed_20260312T093508Z.sqlite -> 20260312T093508Z  (ISO)
+        Current:  adg_indexed_03122026_0512.sqlite        -> 03122026_0512     (MMDDYYYY_HHMM)
+        ISO-like: adg_graph_watchlist_20260423_155151.json -> 20260423_155151  (YYYYMMDD_HHMMSS)
+        Legacy1:  adg_indexed_03122026.sqlite             -> 03122026          (MMDDYYYY)
+        Legacy2:  adg_indexed_20260312T093508Z.sqlite     -> 20260312T093508Z  (ISO compact)
+
+    The YYYYMMDD_HHMMSS variant is emitted by sub-builders (anomaly watchlist,
+    graph watchlist, gate results). Without this branch, ~200 files per week
+    accumulate without ever being recognized by the archiver.
     """
     # Strip all extensions (handles .sqlite, .sqlite-shm, .sqlite-wal, .json, .zip)
     bare = filename.split(".")[0]
@@ -27,14 +32,19 @@ def _extract_timestamp(filename: str) -> str | None:
     if len(parts) < 3:
         return None
 
-    # Check if last two parts form timestamp (MMDDYYYY_HHMM)
+    # Check if last two parts form a dated timestamp
     if len(parts) >= 3:
         ts_date = parts[-2]
         ts_time = parts[-1]
 
-        # Current format: MMDDYYYY_HHMM
-        if len(ts_date) == 8 and ts_date.isdigit() and len(ts_time) == 4 and ts_time.isdigit():
-            return f"{ts_date}_{ts_time}"
+        if len(ts_date) == 8 and ts_date.isdigit() and ts_time.isdigit():
+            # MMDDYYYY_HHMM (4-digit time) — main generator format
+            if len(ts_time) == 4:
+                return f"{ts_date}_{ts_time}"
+            # YYYYMMDD_HHMMSS (6-digit time) — sub-builder format
+            # Disambiguate by year-leading prefix (20xx/21xx)
+            if len(ts_time) == 6 and ts_date.startswith(("202", "203", "204", "205", "206")):
+                return f"{ts_date}_{ts_time}"
 
     # Last part is timestamp (legacy formats)
     ts = parts[-1]
@@ -52,14 +62,29 @@ def _parse_timestamp(ts: str) -> datetime:
     """Parse timestamp string to datetime.
 
     Args:
-        ts: Timestamp string — "03122026_0512" (MMDDYYYY_HHMM), "03122026" (MMDDYYYY),
-            "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
+        ts: Timestamp string in one of:
+            - "03122026_0512"      (MMDDYYYY_HHMM   — main generator)
+            - "20260312_093508"    (YYYYMMDD_HHMMSS — sub-builders)
+            - "03122026"           (MMDDYYYY        — legacy)
+            - "20260310"           (YYYYMMDD        — legacy)
+            - "20260311T160257Z"   (ISO compact     — legacy)
 
     Returns:
         datetime object
     """
-    # Current format: MMDDYYYY_HHMM
+    # Dated formats with underscore separator
     if "_" in ts:
+        date_part, time_part = ts.split("_", 1)
+        # YYYYMMDD_HHMMSS: year-leading date + 6-digit time
+        if (
+            len(date_part) == 8
+            and date_part.isdigit()
+            and date_part.startswith(("202", "203", "204", "205", "206"))
+            and len(time_part) == 6
+            and time_part.isdigit()
+        ):
+            return datetime.strptime(ts, "%Y%m%d_%H%M%S")
+        # MMDDYYYY_HHMM: 8+4 digits, month-leading
         return datetime.strptime(ts, "%m%d%Y_%H%M")
 
     if len(ts) == 8 and ts.isdigit():
