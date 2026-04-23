@@ -43,6 +43,7 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 22. **ADG graph layer is primary for refactoring.** Materialized views (`mv_*`), semantic edges (`flows_to`, `emits_side_effect`, `resolves_callsite`, `controls_flow`, `reads_from`, `writes_to`), and pre-built P-views (`v_p0_*`, `v_p1_*`, `v_p2_*`, `v_p3_*`) MUST drive T2/T3 refactoring plans — not just raw `edges`/`violations` tables. Plans missing the `## ADG_GRAPH_LAYER_EVIDENCE` section are invalid. Gate: `check_graph_layer_evidence.py`. See `adg-graph-layer-enforcement.md`.
 23. **ADG canonical invariants (doctrinal floor).** (a) Source-of-truth hierarchy: **SQLite=truth, Redis=hot projection, MCP=read-only gateway** — no divergence allowed. (b) **ADG wins conflicts**: if graph facts disagree with text search / intuition, the graph is authoritative. (c) Hotspot reports MUST classify every row with one of 4 archetypes (`CENTRAL_DEPENDENCY`, `ORCHESTRATOR`, `STATE_NODE`, `SAFETY_GATEKEEPER`), cross-reference the 5 ADG Surfaces (Execution/Write/Security/State/Observability), and trace the full Zero-Loss Propagation Pipeline. (d) Layer criticality: L0/L5 ×2.0, L3/L4 ×1.75, L1/L2 ×1.0, L6 ×0.75. (e) Static ADG (`adg_sqlite`) and Runtime ADG (`otel_mcp`) are distinct — do not conflate. (f) Prefer ADG node/edge queries over hardcoded path/layer strings. See `adg-canonical-invariants.md`.
 24. **Deferred-scope capture mandatory.** Every deferred scope item MUST be captured with a `DEFERRED_SCOPE:` marker line in the Cascade response that introduces it (plain text, before any Notion `API-post-page`). Post-hook `post_cascade_deferred_scope_capture.py` auto-scores priority (P1..P5) and auto-posts to Wave/Phase Convergence DB. Priority is deterministic — never hand-assign `[Pn]`. Pre-session hook surfaces unresolved pendings; recovery script retries failed posts. Pre-commit gate `check_deferred_scope_markers.py` blocks plan-file commits with prose deferred-scope language without matching markers. See `deferred-scope-capture.md`.
+25. **MCP serialization mandatory.** MCP tool calls (`mcp*_` prefix) MUST be issued one per response, with no sibling tool calls of any kind in the same `<function_calls>` block. Concurrent MCP dispatches hit a known upstream race in the Anthropic MCP client transport (`anthropics/claude-agent-sdk-typescript#41`) that causes the user-visible hang/cancel pattern. Prefer direct on-disk reads (SQLite, filesystem) over MCP round-trips when equivalent data is local. Advisory layer: `mcp-serialization.md`. Deterministic layer: `post_cascade_mcp_serialization_audit.py` → `artifacts/windsurf/mcp_serialization_violations.jsonl`. Auto-retires when upstream race is fixed.
 
 ## Quick Non-Negotiables
 
@@ -54,6 +55,7 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 - No new anti-pattern without approval.
 - No long opaque work without progress.
 - No deferred scope without a `DEFERRED_SCOPE:` marker.
+- No MCP tool call batched with any other tool call in the same response.
 
 ## Tier Classification
 
