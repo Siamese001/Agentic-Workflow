@@ -94,7 +94,11 @@ Route publications through `enhanced_http` or a queue. Rejected because it intro
 
 - **[resolved 2026-04-22]** Teach ADG gates about ADR-028. *Outcome: no change needed.* Verified via `mv_authority_boundary_breaches` on `adg_indexed_04222026_2055.sqlite`: the MV only flags `L_APP → L0/L1/L2` (class `L_APP_core_bypass`) and `L6 → L0/L2` (class `L6_downstream_mutation`). `L_APP → L_SL` is not a flagged pair. `apps_eval/integrations/meta_bus_publisher.py → system_learning/**` edges return zero rows from `mv_authority_boundary_breaches`, zero rows from `mv_capability_and_egress_gaps` (capability gates the provider surface, not module imports), and zero rows from `mv_write_sovereignty_paths` (writer paths are UWG-based, not import-based). The guardian comments on the two lazy imports therefore serve as documentation for reviewers, not as gate suppressors. No `check_*.py` modification required.
 - **[resolved 2026-04-22]** Replace the `apps_eval._telemetry` no-op shim. *Outcome: shim now lazily delegates to `agentic_core.runtime.contracts.lifecycle_trace_contract` (SSOT) with fail-open fallback to the original no-op when standalone. `LayerSegment` values are locally defined and match SSOT exactly. Tests: `tests/unit/apps_eval/test_telemetry_shim.py` (5 cases covering delegation, fallback, and attribute contract).
-- **[deferred]** Extend the pattern to any future publisher adapters (e.g., `apps_exec`, `apps_research`) under the same module prefix `apps_*/integrations/*`.
+- **[informational 2026-04-22]** Extend the pattern to future publisher adapters (e.g., `apps_exec`, `apps_research`) under `apps_*/integrations/*`. *Outcome: no work available now — no such adapters exist in the current tree.* `grep_search` over `apps_exec/**` and `apps_research/**` returned zero cross-layer imports from `system_learning/**`. The pattern (lazy import inside `try/except ImportError` + guardian comment referencing ADR-028 + fail-open publish) stands as documentation for whenever a new eval-style publisher is introduced. If/when that happens, the implementer should:
+  1. Place the adapter at `apps_<name>/integrations/<bus>_publisher.py`.
+  2. Use the same `_try_get_process_bus()` lazy-import wrapper.
+  3. Add a guardian comment: `# guardian: allow-cross-layer-import -- apps_<name> -> system_learning is the documented publisher boundary (ADR-028).`
+  4. Add integration tests modeled on `@c:/Git/Agentic-Workflow/tests/integration/apps_eval/test_eval_to_bus_roundtrip.py`.
 
 ---
 
