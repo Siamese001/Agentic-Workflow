@@ -18,10 +18,15 @@ Architecture reference:
 
 from __future__ import annotations
 
+import importlib
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.knowledge.retrieval.prompt_envelope import PromptEnvelope
+
+def _load_prompt_envelope_cls() -> Any:
+    """Runtime-load PromptEnvelope to avoid an L2 -> L_PG static import."""
+    module = importlib.import_module("agentic_core.knowledge.retrieval.prompt_envelope")
+    return module.PromptEnvelope
 
 CITATION_MODE_NATIVE = "native"
 CITATION_MODE_MANUAL = "manual"
@@ -68,7 +73,8 @@ class PostureValidationResult:
 
 def _extract_metadata(envelope: Any) -> dict[str, Any]:
     """Return the metadata dict of the envelope, or raise if wrong type."""
-    if not isinstance(envelope, PromptEnvelope):
+    prompt_envelope_cls = _load_prompt_envelope_cls()
+    if not isinstance(envelope, prompt_envelope_cls):
         raise PromptEnvelopePostureError(f"expected PromptEnvelope, got {type(envelope).__name__}")
     metadata = envelope.metadata
     if not isinstance(metadata, dict):

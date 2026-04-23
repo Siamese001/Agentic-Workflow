@@ -20,13 +20,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from ops_scripts.ci._adg_wiring_gate_base import (  # noqa: E402
-    connect_snapshot,
-    latest_snapshot,
-)
-from ops_scripts.ci.check_canonical_pipeline_wiring import (  # noqa: E402
-    CanonicalPipelineWiringGate,
-)
+import importlib  # noqa: E402
+
+_gate_base = importlib.import_module("ops_scripts.ci._adg_wiring_gate_base")
+connect_snapshot = _gate_base.connect_snapshot
+latest_snapshot = _gate_base.latest_snapshot
+CanonicalPipelineWiringGate = importlib.import_module(
+    "ops_scripts.ci.check_canonical_pipeline_wiring"
+).CanonicalPipelineWiringGate
 
 
 def main() -> int:

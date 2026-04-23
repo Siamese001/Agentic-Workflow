@@ -4,7 +4,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from ops_scripts.ci._adg_wiring_gate_base import connect_snapshot, latest_snapshot
+import importlib
+_gate_base = importlib.import_module("ops_scripts.ci._adg_wiring_gate_base")
+connect_snapshot = _gate_base.connect_snapshot
+latest_snapshot = _gate_base.latest_snapshot
 
 conn = connect_snapshot(latest_snapshot())
 

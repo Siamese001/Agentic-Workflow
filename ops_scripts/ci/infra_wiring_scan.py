@@ -99,6 +99,9 @@ SANCTIONED_ADAPTER_FILES = {
     "prometheus_metrics.py",  # Prometheus — de-facto L6 approved adapter (defines AGENTIC_REGISTRY)
     "metrics_server.py",  # Prometheus — L6 metrics HTTP server (lazy import guard in place)
     "optimized_vllm_client.py",  # HTTP/aiohttp — APPROVED 2026-04-11; sanctioned L3 vLLM HTTP adapter (vllm_http_decision_packet.md §E Path A)
+    # Anthropic adapters — APPROVED 2026-04-23
+    "claude_judge.py",  # Anthropic SDK — canonical Claude judge adapter in agentic_core/evaluation/judges/
+    "HardenedanthropicexecutorStrategy.py",  # Anthropic SDK — sanctioned executor strategy wrapper in apps_rg/enforcement/
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling

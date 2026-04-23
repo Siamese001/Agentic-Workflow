@@ -58,7 +58,7 @@ _PHASE_A_TABLES: tuple[str, ...] = (
     "mv_observability_interference_breaches",
 )
 
-_SPINE_LAYERS = ("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED")
+_SPINE_LAYERS = ("L0", "L1", "L2", "L3", "L4", "L5", "L6")
 
 _FORBIDDEN_LAYER_PAIRS = (
     ("L6", "L2"),
@@ -175,8 +175,10 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
             COUNT(CASE
                 WHEN EXISTS (
                     SELECT 1 FROM edges e2
+                    JOIN nodes dst2 ON dst2.id = e2.dst_id
                     JOIN nodes src2 ON src2.id = e2.src_id
-                    WHERE e2.dst_id = n.id
+                    WHERE dst2.resolved_path = n.resolved_path
+                      AND src2.resolved_path != n.resolved_path
                       AND e2.relation_type IN ('imports', 'calls')
                       AND src2.layer IN {_spine_layers_in()}
                 ) THEN 1
@@ -184,8 +186,10 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
             COUNT(n.id) - COUNT(CASE
                 WHEN EXISTS (
                     SELECT 1 FROM edges e2
+                    JOIN nodes dst2 ON dst2.id = e2.dst_id
                     JOIN nodes src2 ON src2.id = e2.src_id
-                    WHERE e2.dst_id = n.id
+                    WHERE dst2.resolved_path = n.resolved_path
+                      AND src2.resolved_path != n.resolved_path
                       AND e2.relation_type IN ('imports', 'calls')
                       AND src2.layer IN {_spine_layers_in()}
                 ) THEN 1
@@ -195,8 +199,10 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
                     COUNT(n.id) - COUNT(CASE
                         WHEN EXISTS (
                             SELECT 1 FROM edges e2
+                            JOIN nodes dst2 ON dst2.id = e2.dst_id
                             JOIN nodes src2 ON src2.id = e2.src_id
-                            WHERE e2.dst_id = n.id
+                            WHERE dst2.resolved_path = n.resolved_path
+                              AND src2.resolved_path != n.resolved_path
                               AND e2.relation_type IN ('imports', 'calls')
                               AND src2.layer IN {_spine_layers_in()}
                         ) THEN 1

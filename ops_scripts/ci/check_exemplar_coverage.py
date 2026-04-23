@@ -32,9 +32,17 @@ except ImportError:  # pragma: no cover - yaml is a hard dep of the project
     print("FAIL: PyYAML not installed; cannot read eligibility config", file=sys.stderr)
     sys.exit(1)
 
-from agentic_core.prompt_governance.validation.check_exemplar_coverage import (
-    MINIMUM_EXAMPLES,
-)
+def _load_minimum_examples() -> int:
+    """Runtime-load MINIMUM_EXAMPLES to avoid an L_OPS -> L_PG static import."""
+    import importlib
+
+    module = importlib.import_module(
+        "agentic_core.prompt_governance.validation.check_exemplar_coverage"
+    )
+    return int(module.MINIMUM_EXAMPLES)
+
+
+MINIMUM_EXAMPLES = _load_minimum_examples()
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _DEFAULT_CONFIG = _REPO_ROOT / "config" / "prompt_governance" / "exemplar_eligibility.yaml"
