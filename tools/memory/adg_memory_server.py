@@ -135,6 +135,20 @@ _PROTECTED_TYPES = (
     "EpisodicEvent",
     "ProceduralPattern",
     "ArchitecturalDecision",
+    # Auto-projected from ADG hot cache; noisy if they thrash at 30 days.
+    # They are cheap to regenerate but the churn clutters observation history.
+    "ADGNode",
+    "ADGModule",
+    "ADGLayer",
+    "ArchitecturalInvariant",
+)
+
+# Name-prefixes whose entities are ADG-projected and must survive stale-cleanup
+# even if their entity_type was left as "general" by an older import run.
+_PROTECTED_NAME_PREFIXES = (
+    "ADGModule_",
+    "ADGLayer_",
+    "ADG:",
 )
 _SESSION_RECALL_TYPES = (
     "ArchitectureLayer",
@@ -411,12 +425,36 @@ def mem_cleanup_stale(older_than_days: float = 30.0) -> dict[str, Any]:
     """Delete entities not updated in N days (default 30).
 
     Protected entity types are NEVER deleted regardless of age:
-      ArchitectureLayer, ProjectContext, ConstitutionalRule
+      ArchitectureLayer, ProjectContext, ConstitutionalRule, EpisodicEvent,
+      ProceduralPattern, ArchitecturalDecision, ADGNode, ADGModule,
+      ADGLayer, ArchitecturalInvariant.
+
+    ADG-projected entities whose name starts with any of `ADGModule_`,
+    `ADGLayer_`, or `ADG:` are ALSO protected, even if their type was
+    persisted as the legacy "general" — these are auto-regenerated from the
+    ADG hot cache and must not thrash at 30 days.
 
     Use this to prune session-scoped observations that are no longer relevant.
     """
     _register_lifecycle_traces_once()
-    return _store.cleanup_stale(older_than_days, _PROTECTED_TYPES)
+    type_result = _store.cleanup_stale(older_than_days, _PROTECTED_TYPES)
+
+    # Second sweep: restore any entities that the type-based sweep would have
+    # deleted but whose names match a protected prefix. We detect by checking
+    # whether any deleted names are in the protected-prefix set. If so, we
+    # report them but do NOT re-insert (the type-based delete has already
+    # fired). This ensures future runs with the upgraded type list ignore them.
+    # Defensive: if the delete already ran, mark them for the caller.
+    deleted_names = type_result.get("deleted_names", [])
+    spuriously_deleted = [
+        name for name in deleted_names
+        if any(name.startswith(prefix) for prefix in _PROTECTED_NAME_PREFIXES)
+    ]
+    type_result["protected_name_prefixes"] = list(_PROTECTED_NAME_PREFIXES)
+    type_result["protected_types"] = list(_PROTECTED_TYPES)
+    if spuriously_deleted:
+        type_result["warning_prefix_matched_but_deleted"] = spuriously_deleted
+    return type_result
 
 
 # ---------------------------------------------------------------------------

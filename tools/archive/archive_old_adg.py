@@ -182,24 +182,51 @@ def discover_runs() -> dict[str, list[Path]]:
     return dict(runs)
 
 
+def _has_sqlite(files: list[Path]) -> bool:
+    """A run is 'real' only if it includes at least one adg_indexed_*.sqlite file.
+
+    This constraint prevents a JSON-only or repair-only timestamp from being
+    treated as a canonical run. Without it, a stray `adg_snapshot_<ts>.json`
+    left over from a failed indexing step could be promoted into the keep-N
+    set and push a REAL sqlite-backed run into the archive queue.
+
+    Regression precedent: 2026-04-23 cleanup run auto-archived a live
+    adg_indexed_*.sqlite because a JSON-only timestamp outranked it.
+    """
+    return any(
+        p.name.startswith("adg_indexed_") and p.suffix == ".sqlite"
+        for p in files
+    )
+
+
 def identify_runs_to_archive(runs: dict[str, list[Path]], keep_runs: int) -> list[str]:
     """Identify which runs should be archived based on retention policy.
 
+    A run is considered canonical ONLY when it includes at least one
+    `adg_indexed_*.sqlite` file (see `_has_sqlite`). Runs without a sqlite
+    backing (e.g. stranded JSON / repair artifacts from a crashed generator)
+    are ALWAYS eligible for archive regardless of keep-N \u2014 they are not
+    counted toward the keep quota.
+
     Args:
         runs: Dict mapping timestamp -> list of artifact paths
-        keep_runs: Number of recent runs to keep
+        keep_runs: Number of recent SQLite-backed runs to keep
 
     Returns:
         List of timestamps to archive (oldest first)
     """
-    if len(runs) <= keep_runs:
-        return []
+    # Partition: canonical (has sqlite) vs stranded (no sqlite).
+    canonical_ts = [ts for ts, files in runs.items() if _has_sqlite(files)]
+    stranded_ts = [ts for ts, files in runs.items() if not _has_sqlite(files)]
 
-    # Sort timestamps by actual datetime (newest first)
-    sorted_timestamps = sorted(runs.keys(), key=_parse_timestamp, reverse=True)
+    # Keep the newest N CANONICAL runs only. Stranded runs go straight to
+    # the archive queue regardless of age.
+    canonical_sorted_newest_first = sorted(
+        canonical_ts, key=_parse_timestamp, reverse=True
+    )
+    canonical_to_archive = canonical_sorted_newest_first[keep_runs:]
 
-    # Keep the newest N runs, archive the rest
-    to_archive = sorted_timestamps[keep_runs:]
+    to_archive = canonical_to_archive + stranded_ts
 
     # Return oldest first (for archive processing order)
     return sorted(to_archive, key=_parse_timestamp)
