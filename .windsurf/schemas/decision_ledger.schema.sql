@@ -51,6 +51,10 @@ CREATE TABLE IF NOT EXISTS decisions (
     override_vs_recommendation INTEGER DEFAULT 0,             -- 1 iff user picked non-top option
     selection_latency_ms  INTEGER,                            -- surface → selection wall time
 
+    -- Precedent injection telemetry (meta-learning W1, plan c8f4a2)
+    precedent_verdict     TEXT,                               -- strong | suggestive | none | NULL (pre-W1 rows)
+    precedent_match_count INTEGER,                            -- # of matched precedent rows at surface time
+
     -- Context binding (W2)
     policy_snapshot       TEXT,                               -- e.g., "hitl-enforcement.md@<sha>"
     context_fingerprint_json TEXT,                            -- adg_snapshot, git_sha, files_in_scope, blast_radius
@@ -140,3 +144,6 @@ CREATE TABLE IF NOT EXISTS schema_version (
 INSERT OR IGNORE INTO schema_version(version, applied_at, description)
 VALUES (2, strftime('%Y-%m-%dT%H:%M:%SZ','now'),
         'W2: outcome binding, scoring telemetry, didactic fields, hash chain placeholders');
+INSERT OR IGNORE INTO schema_version(version, applied_at, description)
+VALUES (3, strftime('%Y-%m-%dT%H:%M:%SZ','now'),
+        'meta-learning W1 (plan c8f4a2): precedent_verdict, precedent_match_count');

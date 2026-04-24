@@ -107,6 +107,7 @@ _v2_gap_re = re.compile(r"gap\s*=\s*(?P<v>[01](?:\.\d+)?)")
 _v2_override_re = re.compile(r"override\s*=\s*(?P<v>true|false)", re.IGNORECASE)
 _v2_latency_re = re.compile(r"latency_ms\s*=\s*(?P<v>\d+)")
 _v2_principle_re = re.compile(r"principle\s*=\s*(?P<v>[^,\n]{1,80})")
+_v2_precedent_re = re.compile(r"precedent\s*=\s*(?P<v>strong|suggestive|none)", re.IGNORECASE)
 
 
 def _parse_v2_tail(tail: str) -> dict[str, object]:
@@ -139,6 +140,9 @@ def _parse_v2_tail(tail: str) -> dict[str, object]:
     m = _v2_principle_re.search(tail)
     if m:
         out["principle_at_stake"] = m.group("v").strip()[:80]
+    m = _v2_precedent_re.search(tail)
+    if m:
+        out["precedent_verdict"] = m.group("v").strip().lower()
     return out
 
 
@@ -162,6 +166,59 @@ def _infer_layer(repo_area: str) -> str:
     if p.startswith(".windsurf/") or p.startswith("ops_scripts/"):
         return "harness"
     return ""
+
+
+# Sidecar precedent file written by emit_packet.py / precedent_injector.py.
+# When a DECISION_CAPTURED marker arrives without an explicit precedent= field
+# (back-compat for older rule versions), the capture hook falls back to this
+# file IF it is fresh (default 60 min) AND its files_in_scope overlap the
+# decision's repo_area. Marker takes priority — sidecar is auxiliary signal.
+_PRECEDENT_SIDECAR_PATH = repo_root / "artifacts" / "windsurf" / "author_gate_precedent.json"
+_PRECEDENT_FRESH_WINDOW_S = 3600
+
+
+def _read_precedent_sidecar() -> dict | None:
+    """Return the sidecar payload if it exists and is fresh (<60 min), else None.
+
+    Fail-soft: any read/parse error returns None so capture continues.
+    """
+    if not _PRECEDENT_SIDECAR_PATH.exists():
+        return None
+    try:
+        raw = _PRECEDENT_SIDECAR_PATH.read_text(encoding="utf-8")
+        data = json.loads(raw)
+    except (OSError, json.JSONDecodeError):
+        return None
+    ts_raw = data.get("generated_at") if isinstance(data, dict) else None
+    if not isinstance(ts_raw, str):
+        return None
+    try:
+        ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    age = (datetime.now(timezone.utc) - ts).total_seconds()
+    if age > _PRECEDENT_FRESH_WINDOW_S:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _derive_precedent_from_sidecar(sidecar: dict) -> tuple[str | None, int | None]:
+    """Derive (verdict, match_count) from sidecar matches list.
+
+    Verdict precedence: any 'strong' → 'strong'; else any 'suggestive' → 'suggestive';
+    else 'none'. Match count is len(matches).
+    """
+    matches = sidecar.get("matches") if isinstance(sidecar, dict) else None
+    if not isinstance(matches, list):
+        return None, None
+    strengths = {str(m.get("strength", "")).lower() for m in matches if isinstance(m, dict)}
+    if "strong" in strengths:
+        verdict = "strong"
+    elif "suggestive" in strengths:
+        verdict = "suggestive"
+    else:
+        verdict = "none"
+    return verdict, len(matches)
 
 
 # W3.2 — pytest signal location. The conftest plugin writes {exit_code, passed,
@@ -343,7 +400,10 @@ CREATE TABLE IF NOT EXISTS decisions (
     confidence_dominance_gap   REAL,
     override_vs_recommendation INTEGER,
     selection_latency_ms       INTEGER,
-    principle_at_stake         TEXT
+    principle_at_stake         TEXT,
+    -- meta-learning W1 (plan c8f4a2): precedent injection telemetry
+    precedent_verdict          TEXT,
+    precedent_match_count      INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS decision_scope (
@@ -398,6 +458,11 @@ def _init_db() -> Optional[sqlite3.Connection]:
             cols = {r[1] for r in conn.execute("PRAGMA table_info(decisions)").fetchall()}
             if "exit_criteria_json" not in cols:
                 conn.execute("ALTER TABLE decisions ADD COLUMN exit_criteria_json TEXT")
+            # meta-learning W1: precedent telemetry columns (additive)
+            if "precedent_verdict" not in cols:
+                conn.execute("ALTER TABLE decisions ADD COLUMN precedent_verdict TEXT")
+            if "precedent_match_count" not in cols:
+                conn.execute("ALTER TABLE decisions ADD COLUMN precedent_match_count INTEGER")
         except sqlite3.Error:
             # guardian: allow-silent-swallow -- additive migration: non-fatal
             pass
@@ -521,6 +586,17 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
     tail = m.groupdict().get("tail") or ""
     v2 = _parse_v2_tail(tail)
 
+    # Precedent telemetry: marker takes priority; sidecar is fallback when
+    # the marker did not carry an explicit precedent= field (legacy clients).
+    if "precedent_verdict" not in v2:
+        sidecar = _read_precedent_sidecar()
+        if sidecar is not None:
+            verdict, match_count = _derive_precedent_from_sidecar(sidecar)
+            if verdict is not None:
+                v2["precedent_verdict"] = verdict
+            if match_count is not None:
+                v2["precedent_match_count"] = match_count
+
     ts = datetime.now(timezone.utc).isoformat()
     decision_id = _make_decision_id(f"marker:{area}:{selected}", ts)
 
@@ -539,13 +615,15 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
              request_summary, normalized_intent, recommended_option_id,
              selected_option_id, options_json, status,
              confidence_top, confidence_dominance_gap, override_vs_recommendation,
-             selection_latency_ms, principle_at_stake)
+             selection_latency_ms, principle_at_stake,
+             precedent_verdict, precedent_match_count)
         VALUES
             (:decision_id, :created_at, :branch, :commit_sha, :decision_type,
              :request_summary, :normalized_intent, :recommended_option_id,
              :selected_option_id, :options_json, :status,
              :confidence_top, :confidence_dominance_gap, :override_vs_recommendation,
-             :selection_latency_ms, :principle_at_stake)
+             :selection_latency_ms, :principle_at_stake,
+             :precedent_verdict, :precedent_match_count)
         """,
         {
             "decision_id": decision_id,
@@ -564,6 +642,8 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
             "override_vs_recommendation": v2.get("override_vs_recommendation"),
             "selection_latency_ms": v2.get("selection_latency_ms"),
             "principle_at_stake": v2.get("principle_at_stake"),
+            "precedent_verdict": v2.get("precedent_verdict"),
+            "precedent_match_count": v2.get("precedent_match_count"),
         },
     )
     conn.execute(
