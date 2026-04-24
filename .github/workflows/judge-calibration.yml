@@ -1,0 +1,141 @@
+name: Judge Calibration
+
+# Wires `tools/exit_eval/run_judge_calibration.py` into a scheduled CI lane.
+#
+# Goals:
+# - Weekly cron run with the `fake` judge ensures the harness, gold set,
+#   and IAA computation stay green even when no API keys are present.
+# - Manual `workflow_dispatch` trigger lets operators run a calibration
+#   against a real judge (anthropic / openai) by passing the secret env
+#   into the runner; the kappa floor is enforced via `--min-kappa`.
+# - Reports and judge outputs are uploaded as artifacts so reviewers
+#   can audit drift without inspecting raw logs.
+#
+# Failure modes:
+# - Harness failure (FileNotFoundError / ValueError)         → exit 1
+# - Adapter import / construction failure                    → exit 2
+# - Any dimension's κ < `min_kappa`                          → exit 3
+#
+# This workflow MUST stay free of repo-secret leakage by default — only
+# the manual lane is allowed to read secrets, and only when the operator
+# explicitly opts in.
+
+on:
+  schedule:
+    # Every Monday at 08:00 UTC. Pre-week sweep keeps the gold set fresh.
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+    inputs:
+      judge:
+        description: "Which judge adapter to run"
+        type: choice
+        required: true
+        default: fake
+        options:
+          - fake
+          - anthropic
+          - openai
+      min_kappa:
+        description: "Minimum κ (per dimension) — fail the run below this"
+        type: string
+        required: false
+        default: "0.6"
+      gold_path:
+        description: "Override gold set path (default: data/judge_calibration/gold_set.jsonl)"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  fake-smoke:
+    # Always runs on schedule and on dispatches that do not pick a real judge.
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.judge == 'fake' || github.event.inputs.judge == '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          # Harness has no third-party deps; the calibration math is stdlib.
+          # We install the project in editable mode only so package paths resolve.
+          python -m pip install -e .[dev] || python -m pip install -e .
+      - name: Run fake-judge calibration
+        env:
+          PYTHONUTF8: "1"
+        run: |
+          GOLD_PATH="${{ github.event.inputs.gold_path }}"
+          if [ -z "$GOLD_PATH" ]; then
+            GOLD_PATH="data/judge_calibration/gold_set.jsonl"
+          fi
+          MIN_KAPPA="${{ github.event.inputs.min_kappa }}"
+          if [ -z "$MIN_KAPPA" ]; then
+            MIN_KAPPA="0.6"
+          fi
+          python -m tools.exit_eval.run_judge_calibration \
+            --judge fake \
+            --judge-id "fake-ci-$(date -u +%Y%m%dT%H%M%SZ)" \
+            --gold "$GOLD_PATH" \
+            --min-kappa "$MIN_KAPPA"
+      - name: Upload calibration artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: judge-calibration-fake-${{ github.run_id }}
+          path: |
+            data/judge_calibration/judge_runs/
+            data/judge_calibration/reports/
+          if-no-files-found: warn
+          retention-days: 30
+
+  real-judge:
+    if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.judge == 'anthropic' || github.event.inputs.judge == 'openai') }}
+    runs-on: ubuntu-latest
+    # Real-judge runs require manual dispatch from a maintainer because
+    # they spend API credit and exercise live network paths.
+    environment: judge-calibration
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[dev] || python -m pip install -e .
+      - name: Run real-judge calibration
+        env:
+          PYTHONUTF8: "1"
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          GOLD_PATH="${{ github.event.inputs.gold_path }}"
+          if [ -z "$GOLD_PATH" ]; then
+            GOLD_PATH="data/judge_calibration/gold_set.jsonl"
+          fi
+          MIN_KAPPA="${{ github.event.inputs.min_kappa }}"
+          if [ -z "$MIN_KAPPA" ]; then
+            MIN_KAPPA="0.6"
+          fi
+          python -m tools.exit_eval.run_judge_calibration \
+            --judge "${{ github.event.inputs.judge }}" \
+            --judge-id "${{ github.event.inputs.judge }}-ci-$(date -u +%Y%m%dT%H%M%SZ)" \
+            --gold "$GOLD_PATH" \
+            --min-kappa "$MIN_KAPPA"
+      - name: Upload calibration artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: judge-calibration-${{ github.event.inputs.judge }}-${{ github.run_id }}
+          path: |
+            data/judge_calibration/judge_runs/
+            data/judge_calibration/reports/
+          if-no-files-found: error
+          retention-days: 90

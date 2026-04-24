@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "description": "Recorded OpenAI Chat Completions response for UNKNOWN abstain.",
+    "recorded_at": "2026-04-24T22:00:11Z",
+    "endpoint": "https://api.openai.com/v1/chat/completions",
+    "model": "gpt-4o-mini"
+  },
+  "response_status": 200,
+  "response_body": {
+    "id": "chatcmpl-replay-unknown-001",
+    "object": "chat.completion",
+    "created": 1745524801,
+    "model": "gpt-4o-mini",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"verdict\": \"UNKNOWN\", \"reasoning\": \"Insufficient context to score faithfulness.\"}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {"prompt_tokens": 95, "completion_tokens": 22, "total_tokens": 117}
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "description": "Recorded Anthropic Messages API response for UNKNOWN abstain.",
+    "recorded_at": "2026-04-24T22:00:02Z",
+    "endpoint": "https://api.anthropic.com/v1/messages",
+    "model": "claude-3-5-sonnet-latest"
+  },
+  "response_status": 200,
+  "response_body": {
+    "id": "msg_replay_unknown_001",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-3-5-sonnet-latest",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"verdict\": \"UNKNOWN\", \"reasoning\": \"Context is too sparse to evaluate faithfulness.\"}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "usage": {"input_tokens": 88, "output_tokens": 24}
+  }
+}

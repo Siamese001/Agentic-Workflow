@@ -1,0 +1,81 @@
+# Redis resilience lane for RedisPassKStore integration tests.
+#
+# fakeredis covers the happy-path semantics; this compose file provides
+# the real Redis surface needed to exercise:
+#   - genuine TCP timeouts (vs in-memory exception)
+#   - connection drops during multi-step writes (RPUSH+LTRIM atomicity)
+#   - sentinel failover (master switch mid-operation)
+#
+# Usage:
+#
+#   docker compose -f docker-compose.redis.yml up -d redis
+#   REDIS_URL=redis://localhost:6390/0 \
+#     python -m pytest tests/agentic_core/L3_orchestration/exit_eval/test_consistency_redis_integration.py
+#   docker compose -f docker-compose.redis.yml down
+#
+# Or with sentinel:
+#
+#   docker compose -f docker-compose.redis.yml --profile sentinel up -d
+#   REDIS_URL=redis://localhost:6390/0 \
+#     REDIS_SENTINEL_HOST=localhost REDIS_SENTINEL_PORT=26390 \
+#     python -m pytest tests/.../test_consistency_redis_integration.py -k sentinel
+#
+# Ports are non-standard (6390 / 26390) to avoid clashing with a local
+# dev Redis a developer might already be running on 6379/26379.
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: exit_eval_redis
+    command: ["redis-server", "--appendonly", "yes", "--port", "6390"]
+    ports:
+      - "6390:6390"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6390", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
+  # Sentinel + replica are profile-gated: most resilience tests only need
+  # the bare master, so the default `up` does not pay the sentinel cost.
+  redis-replica:
+    profiles: ["sentinel"]
+    image: redis:7-alpine
+    container_name: exit_eval_redis_replica
+    command:
+      - "redis-server"
+      - "--appendonly"
+      - "yes"
+      - "--port"
+      - "6391"
+      - "--replicaof"
+      - "redis"
+      - "6390"
+    ports:
+      - "6391:6391"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis-sentinel:
+    profiles: ["sentinel"]
+    image: redis:7-alpine
+    container_name: exit_eval_redis_sentinel
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        cat <<-EOF >/etc/sentinel.conf
+        port 26390
+        sentinel monitor mymaster redis 6390 1
+        sentinel down-after-milliseconds mymaster 1000
+        sentinel failover-timeout mymaster 5000
+        sentinel parallel-syncs mymaster 1
+        EOF
+        redis-sentinel /etc/sentinel.conf
+    ports:
+      - "26390:26390"
+    depends_on:
+      redis:
+        condition: service_healthy
+      redis-replica:
+        condition: service_started

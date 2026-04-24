@@ -1,0 +1,15 @@
+{
+  "_meta": {
+    "description": "Recorded OpenAI 429 rate-limit error. Adapter should raise GraderError.",
+    "recorded_at": "2026-04-24T22:00:12Z",
+    "endpoint": "https://api.openai.com/v1/chat/completions",
+    "model": "gpt-4o-mini"
+  },
+  "response_status": 429,
+  "response_body": {
+    "error": {
+      "type": "rate_limit_exceeded",
+      "message": "Rate limit reached for gpt-4o-mini in organization on tokens per min."
+    }
+  }
+}

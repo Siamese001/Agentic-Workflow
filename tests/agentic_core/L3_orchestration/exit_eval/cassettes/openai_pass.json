@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "description": "Recorded OpenAI Chat Completions response for a PASS verdict.",
+    "recorded_at": "2026-04-24T22:00:10Z",
+    "endpoint": "https://api.openai.com/v1/chat/completions",
+    "model": "gpt-4o-mini"
+  },
+  "expected_request": {
+    "method": "POST",
+    "headers_required": ["authorization", "content-type"]
+  },
+  "response_status": 200,
+  "response_body": {
+    "id": "chatcmpl-replay-pass-001",
+    "object": "chat.completion",
+    "created": 1745524800,
+    "model": "gpt-4o-mini",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"verdict\": \"PASS\", \"score\": 0.92, \"reasoning\": \"Answer is consistent with the supplied context.\"}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {"prompt_tokens": 280, "completion_tokens": 36, "total_tokens": 316}
+  }
+}

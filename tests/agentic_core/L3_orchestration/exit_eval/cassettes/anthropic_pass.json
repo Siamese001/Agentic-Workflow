@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "description": "Recorded Anthropic Messages API response for a PASS verdict on faithfulness. Stripped of all PII; system+user prompts captured for replay assertion.",
+    "recorded_at": "2026-04-24T22:00:00Z",
+    "endpoint": "https://api.anthropic.com/v1/messages",
+    "model": "claude-3-5-sonnet-latest"
+  },
+  "expected_request": {
+    "method": "POST",
+    "headers_required": ["x-api-key", "anthropic-version", "content-type"]
+  },
+  "response_status": 200,
+  "response_body": {
+    "id": "msg_replay_pass_001",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-3-5-sonnet-latest",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"verdict\": \"PASS\", \"score\": 0.95, \"reasoning\": \"The answer is fully supported by the provided context with no hallucinations.\"}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "usage": {"input_tokens": 312, "output_tokens": 42}
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "description": "Recorded Anthropic Messages API response for a FAIL verdict.",
+    "recorded_at": "2026-04-24T22:00:01Z",
+    "endpoint": "https://api.anthropic.com/v1/messages",
+    "model": "claude-3-5-sonnet-latest"
+  },
+  "response_status": 200,
+  "response_body": {
+    "id": "msg_replay_fail_001",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-3-5-sonnet-latest",
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"verdict\": \"FAIL\", \"score\": 0.15, \"reasoning\": \"The answer contradicts the provided context on the population figure.\"}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "usage": {"input_tokens": 305, "output_tokens": 38}
+  }
+}
