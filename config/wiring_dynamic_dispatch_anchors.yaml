@@ -77,3 +77,28 @@ anchors:
   - pattern: "**/conftest.py"
     reason: "pytest autoload; not statically imported."
     issued: 2026-04-23
+
+  # ---------- W7.4: dynamic-dispatch subsystems (plan d7-anchor-tuning) ----------
+  # G_REACH_ARCHIVAL over-flagged these in the 2026-04-24 snapshot because
+  # static-import reachability misses ``_importlib.import_module(mod_name)``
+  # call sites. Each anchor below has a traceable dispatcher — the anchor is
+  # ONLY valid when that dispatcher exists. Remove the anchor if the
+  # dispatcher is deleted.
+  - pattern: "agentic_core/L3_orchestration/reasoning/engines/*.py"
+    reason: "Dispatched by AgentFactory via importlib.import_module at L339 of AgentFactory.py — module_path is resolved from agent_specs.json registry."
+    issued: 2026-04-24
+  - pattern: "agentic_core/L1_cognition/reasoning/ml_decision_support/**/*.py"
+    reason: "ML feature extractors loaded via config/model_registry.py + feature_schemas.py dispatch (registry pattern, not direct import)."
+    issued: 2026-04-24
+  - pattern: "agentic_core/L5_safety/enforcement/security/*.py"
+    reason: "Security enforcers loaded via signature_verifier / import_guard dynamic dispatch."
+    issued: 2026-04-24
+  - pattern: "agentic_core/L5_safety/enforcement/hitl/*.py"
+    reason: "HITL adapters loaded via registry per ADR-023 runtime exit-control plane."
+    issued: 2026-04-24
+  - pattern: "agentic_core/L5_safety/utils/runners/*.py"
+    reason: "Runner pattern — invoked as subprocess entry points, not imported."
+    issued: 2026-04-24
+  - pattern: "agentic_core/prompt_governance/security/detectors/*.py"
+    reason: "Injection-scan detector plugins loaded via detector registry."
+    issued: 2026-04-24

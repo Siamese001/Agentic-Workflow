@@ -1,0 +1,18 @@
+{
+  "path": "C0",
+  "description": "Evidence-coverage scores from C0 context engine. score = fraction of claim-slots with backing evidence (0=none, 1=full). label=true means human rater agrees coverage is sufficient to proceed to Prompt Assembly without re-fetching / broadening.",
+  "signal": "evidence_coverage",
+  "records": [
+    {"score": 0.98, "label": true,  "notes": "all claims supported by high-quality evidence"},
+    {"score": 0.90, "label": true,  "notes": "nearly full coverage"},
+    {"score": 0.80, "label": true,  "notes": "strong coverage"},
+    {"score": 0.70, "label": true,  "notes": "acceptable"},
+    {"score": 0.62, "label": true,  "notes": "at suggested 0.6 floor"},
+    {"score": 0.55, "label": false, "notes": "below floor — should rewrite/broaden"},
+    {"score": 0.45, "label": false, "notes": "weak coverage"},
+    {"score": 0.35, "label": false, "notes": "insufficient — fewer than half of claims backed"},
+    {"score": 0.25, "label": false, "notes": "very weak — decompose query"},
+    {"score": 0.15, "label": false, "notes": "no meaningful support"},
+    {"score": 0.05, "label": false, "notes": "empty evidence pool"}
+  ]
+}

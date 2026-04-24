@@ -1,0 +1,91 @@
+# Runtime Budget Policy — ADR-038 §2.2
+#
+# Defines the per-request budget envelope resolution for every §5 EXIT EVAL.
+# Resolution order (first match wins, clamped by tenant ceiling):
+#   1. caller-supplied envelope (U2 API entry only)
+#   2. tenant default
+#   3. route-class default (L0 R1A..R5)
+#   4. global fallback
+#
+# All fields are nullable. Null == unbounded for that axis;
+# budget_fit for that axis is trivially true.
+
+version: 1
+schema: agentic_core.L5_safety.eval_spine.budget_envelope_policy_v1
+
+# Global fallback used when no other source applies. Generous defaults per
+# ADR-038 §2.5 recommendation.
+global_fallback:
+  tokens_max:      8000
+  latency_ms_max:  30000
+  tool_calls_max:  16
+  cost_usd_max:    0.50
+
+# Route-class defaults (L0 routing classes).
+route_class_defaults:
+  R1A:
+    # Exact cache reuse — ~zero inference work.
+    tokens_max:     256
+    latency_ms_max: 2000
+    tool_calls_max: 0
+    cost_usd_max:   0.001
+  R1B:
+    # Semantic cache — still cheap.
+    tokens_max:     512
+    latency_ms_max: 3000
+    tool_calls_max: 0
+    cost_usd_max:   0.005
+  R2:
+    # Grounded single step (C0 retrieval).
+    tokens_max:     4000
+    latency_ms_max: 15000
+    tool_calls_max: 4
+    cost_usd_max:   0.10
+  R3:
+    # Managed workflow (L3 orchestration).
+    tokens_max:     16000
+    latency_ms_max: 60000
+    tool_calls_max: 32
+    cost_usd_max:   1.00
+  R4:
+    # Single action execution.
+    tokens_max:     2000
+    latency_ms_max: 10000
+    tool_calls_max: 2
+    cost_usd_max:   0.05
+  R5:
+    # Fallback / abstain.
+    tokens_max:     256
+    latency_ms_max: 2000
+    tool_calls_max: 0
+    cost_usd_max:   0.001
+
+# Tenant defaults + ceilings. Entries keyed by tenant id. `_default` applies
+# when no tenant-specific entry matches. `ceiling` clamps caller-supplied
+# envelopes.
+tenants:
+  _default:
+    defaults:
+      tokens_max:     8000
+      latency_ms_max: 30000
+      tool_calls_max: 16
+      cost_usd_max:   0.50
+    ceiling:
+      tokens_max:     32000
+      latency_ms_max: 300000
+      tool_calls_max: 128
+      cost_usd_max:   5.00
+
+# Hard-cap multiplier: ADR-038 §2.5 — kill-switch fires preemptively at
+# hard_cap_multiplier * envelope on any axis.
+hard_cap_multiplier: 2.0
+
+# Severity mapping for budget breaches. Maps how far consumed exceeded
+# envelope on any single axis to ExitDecision.safety.severity_band.
+severity_bands:
+  # overrun_ratio = consumed / envelope
+  # applied per-axis; worst axis wins.
+  warn_threshold:     1.00    # any overrun at all
+  medium_threshold:   1.20
+  high_threshold:     1.50
+  critical_threshold: 2.00    # hard-cap fire threshold

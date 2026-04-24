@@ -11,7 +11,38 @@ from typing import Any
 
 import chromadb
 
+from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM
+from agentic_core.L4_state.utils.chunk_metadata import (
+    CHUNK_METADATA_VERSION,
+    coerce_to_v1,
+)
+
 logger = logging.getLogger(__name__)
+
+# Collection → artifact_type. Used at add_documents time to retrofit legacy
+# metadata dicts into ChunkMetadataV1 shape without touching every ingester
+# individually (W2.2b).
+_COLLECTION_ARTIFACT_TYPE: dict[str, str] = {
+    "repo_code_chunks": "code_chunk",
+    "code_chunks": "code_chunk",
+    "docs": "doc_chunk",
+    "repo_tests_guardrails": "test_chunk",
+    "tests_guardrails": "test_chunk",
+    "traces": "trace_chunk",
+    "repo_adg_graph": "adg_chunk",
+    "repo_runtime_evidence": "runtime_evidence",
+    "runtime_evidence": "runtime_evidence",
+    "repo_incidents_rca": "incident_rca",
+    "incidents_rca": "incident_rca",
+    "repo_git_history": "incident_rca",
+    "agentic_best_practices": "ext_knowledge",
+    "symbols": "symbol",
+    "arch_docs": "arch_doc",
+    "process_docs": "process_doc",
+    "ext_authority": "ext_knowledge",
+    "ext_raw": "ext_knowledge",
+    "repo_evidence": "runtime_evidence",
+}
 
 
 class SovereignChromaClient:
@@ -51,9 +82,17 @@ class SovereignChromaClient:
             ChromaDB collection object
         """
         if name not in self._collections:
+            # Stamp embedding provenance into collection metadata so the
+            # validator (`tools/generate/ingestion/validate_collection.py`) can
+            # assert dim/model consistency at inspection time.
             self._collections[name] = self.client.get_or_create_collection(
                 name=name,
-                metadata={"hnsw:space": "cosine", "description": f"Semantic collection for {name}"},
+                metadata={
+                    "hnsw:space": "cosine",
+                    "embedding_model": BGE_MODEL,
+                    "embedding_dim": BGE_QUERY_DIM,
+                    "description": f"Semantic collection for {name}",
+                },
             )
         return self._collections[name]
 
@@ -135,15 +174,46 @@ class SovereignChromaClient:
         # Get collection
         collection = self.get_collection(collection_name)
 
+        # Auto-coerce any legacy metadata dict to ChunkMetadataV1 (W2.2b).
+        # Skip chunks that already declare the current contract version to
+        # avoid clobbering retrofitted ingesters (ingest_code, ingest_docs).
+        artifact_type = _COLLECTION_ARTIFACT_TYPE.get(collection_name, "code_chunk")
+        coerced: list[dict[str, Any]] = []
+        for i, (meta, doc) in enumerate(zip(metadatas, documents)):
+            m = dict(meta or {})
+            if m.get("metadata_version") != CHUNK_METADATA_VERSION:
+                anchor = (
+                    m.get("canonical_digest")
+                    or (ids[i] if ids else None)
+                    or f"{collection_name}:{i}"
+                )
+                coerce_to_v1(
+                    m,
+                    artifact_type=artifact_type,
+                    anchor=str(anchor),
+                    source_bytes=doc.encode("utf-8") if isinstance(doc, str) else None,
+                    embedding_model=BGE_MODEL,
+                    embedding_dim=BGE_QUERY_DIM,
+                )
+            coerced.append(m)
+
+        # Prefer canonical_digest as the chunk ID when the caller didn't
+        # supply one — delivers idempotent upsert for free.
+        if not ids:
+            ids = [
+                str(m.get("canonical_digest") or f"doc_{i}")
+                for i, m in enumerate(coerced)
+            ]
+
         # Sanitize metadata for ChromaDB v2 (scalar values only)
-        sanitized_metadatas = [self._sanitize_metadata(m) for m in metadatas]
+        sanitized_metadatas = [self._sanitize_metadata(m) for m in coerced]
 
         # Add documents
         collection.add(
             documents=documents,
             metadatas=sanitized_metadatas,
             embeddings=embeddings,
-            ids=ids or [f"doc_{i}" for i in range(len(documents))],
+            ids=ids,
         )
 
         logger.info(f"Added {len(documents)} documents to collection '{collection_name}'")

@@ -1,18 +1,30 @@
 {
   "gate_id": "F1_untyped_seam_ratchet",
-  "count": 902,
+  "count": 818,
   "seeded_at": "2026-04-23T16:11:24.077384+00:00",
-  "snapshot": "adg_indexed_04232026_1418.sqlite",
-  "tightened_at": "2026-04-23T18:19:26.042283+00:00",
+  "snapshot": "adg_indexed_04232026_1828.sqlite",
+  "tightened_at": "2026-04-23T22:30:14.799626+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T18:19:26.042283+00:00",
       "snapshot": "adg_indexed_04232026_1418.sqlite",
       "from": 907,
       "to": 902
+    },
+    {
+      "at": "2026-04-23T22:04:03.859845+00:00",
+      "snapshot": "adg_indexed_04232026_1802.sqlite",
+      "from": 902,
+      "to": 896
+    },
+    {
+      "at": "2026-04-23T22:30:14.799626+00:00",
+      "snapshot": "adg_indexed_04232026_1828.sqlite",
+      "from": 896,
+      "to": 818
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-23T18:44:02.633338+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
+  "last_run_at": "2026-04-24T02:54:04.512697+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_2249.sqlite"
 }

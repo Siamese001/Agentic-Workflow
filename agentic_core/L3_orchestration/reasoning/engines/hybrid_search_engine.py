@@ -2,9 +2,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+import logging
 import re
 import sqlite3
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
+
+# W4.2: pluggable reranker hook.
+# Callable takes the deduped+fused result list and the original query text,
+# returns a re-ordered list of :class:`HybridSearchResult`. Implementations
+# may be cross-encoder models, Cohere rerank, LLM-based rerankers, etc.
+# Must be side-effect free and tolerate an empty input list.
+RerankerFn = Callable[[list["HybridSearchResult"], str], list["HybridSearchResult"]]
+
+_RERANKER_LOG = logging.getLogger(__name__)
 
 
 @dataclass
@@ -991,6 +1001,7 @@ class HybridSearchEngine:
         enable_lexical: bool = False,
         adg_rerank: bool = False,
         adg_rerank_weight: float = 0.15,
+        reranker: RerankerFn | None = None,
     ) -> list[HybridSearchResult]:
         """Hybrid search entry point.
 
@@ -1051,6 +1062,18 @@ class HybridSearchEngine:
             # Wave F (L3 deferred scope): structural centrality + layer-criticality
             # boost. Opt-in so existing callers remain byte-identical.
             deduped = self._adg_rerank(deduped, rerank_weight=adg_rerank_weight)
+        # W4.2: pluggable reranker hook — runs after all built-in reranks,
+        # before the final score-based sort. A reranker that returns an
+        # empty list degrades to the pre-rerank ordering so a failure mode
+        # cannot silently wipe out the result set.
+        if reranker is not None and deduped:
+            try:
+                reranked = reranker(list(deduped), query)
+            except Exception as exc:  # guardian: allow-broad-exception -- user plugin boundary, must not crash retrieval
+                _RERANKER_LOG.warning("Reranker raised %s: %s; keeping pre-rerank order", type(exc).__name__, exc)
+                reranked = None
+            if reranked:
+                deduped = reranked
         results = sorted(
             deduped,
             key=lambda result: (result.combined_score, result.vector_score, result.lexical_score),

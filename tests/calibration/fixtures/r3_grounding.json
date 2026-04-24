@@ -1,0 +1,19 @@
+{
+  "path": "R3",
+  "description": "Grounding-need prediction scores (Vertex dynamic-retrieval analog). score = probability the prompt BENEFITS from grounded retrieval. label=true means human rater agrees retrieval was required (factual / policy / recent-fact claim).",
+  "signal": "grounding_need_prediction",
+  "records": [
+    {"score": 0.95, "label": true,  "work_class": "factual",   "notes": "asks for current policy — requires grounding"},
+    {"score": 0.90, "label": true,  "work_class": "factual",   "notes": "recent news / pricing"},
+    {"score": 0.85, "label": true,  "work_class": "compare",   "notes": "compare two real products"},
+    {"score": 0.80, "label": true,  "work_class": "analyze",   "notes": "analyze customer data"},
+    {"score": 0.72, "label": true,  "work_class": "factual",   "notes": "at default Vertex threshold"},
+    {"score": 0.65, "label": false, "work_class": "summarize", "notes": "summarize user-supplied text — no retrieval needed"},
+    {"score": 0.55, "label": false, "work_class": "summarize", "notes": "rewriting / formatting"},
+    {"score": 0.45, "label": false, "work_class": "generate",  "notes": "creative generation"},
+    {"score": 0.35, "label": false, "work_class": "generate",  "notes": "boilerplate email draft"},
+    {"score": 0.25, "label": false, "work_class": "generate",  "notes": "fiction"},
+    {"score": 0.15, "label": false, "work_class": "generate",  "notes": "pure creative"},
+    {"score": 0.05, "label": false, "work_class": "summarize", "notes": "trivial reformat"}
+  ]
+}

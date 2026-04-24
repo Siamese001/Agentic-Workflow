@@ -1,0 +1,19 @@
+{
+  "path": "R1A",
+  "description": "Exact-cache reuse decisions. score = age_ttl_ratio (1.0 = fresh, 0.0 = at-TTL). label=true means the cached response SHOULD be reused (fresh enough + matching tenant + namespace).",
+  "signal": "freshness_ratio",
+  "records": [
+    {"score": 0.98, "label": true,  "namespace": "rg",         "notes": "just-written, same tenant"},
+    {"score": 0.95, "label": true,  "namespace": "rg",         "notes": "fresh within 1/20th of TTL"},
+    {"score": 0.90, "label": true,  "namespace": "rfp",        "notes": "fresh"},
+    {"score": 0.85, "label": true,  "namespace": "research",   "notes": "well within bounded freshness"},
+    {"score": 0.75, "label": true,  "namespace": "eval",       "notes": "bounded reuse still valid"},
+    {"score": 0.65, "label": true,  "namespace": "exec",       "notes": "aging but acceptable for stale_ok class"},
+    {"score": 0.55, "label": false, "namespace": "rg",         "notes": "past half-TTL, freshness=fresh required"},
+    {"score": 0.45, "label": false, "namespace": "rfp",        "notes": "too stale for bounded"},
+    {"score": 0.35, "label": false, "namespace": "research",   "notes": "stale"},
+    {"score": 0.20, "label": false, "namespace": "eval",       "notes": "near-expiry"},
+    {"score": 0.10, "label": false, "namespace": "exec",       "notes": "effectively expired"},
+    {"score": 0.05, "label": false, "namespace": "rg",         "notes": "expired, must miss"}
+  ]
+}

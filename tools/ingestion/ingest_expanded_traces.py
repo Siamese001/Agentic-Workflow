@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 import chromadb
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -60,7 +61,7 @@ def ingest_jsonl_traces():
     ]
 
     # Initialize ChromaDB
-    client = chromadb.PersistentClient("artifacts/chromadb")
+    client = chromadb.PersistentClient(canonical_persist_dir_str())
     collection = client.get_collection("traces")
 
     # Process each JSONL file
@@ -163,7 +164,7 @@ def ingest_log_traces():
         },
     ]
 
-    client = chromadb.PersistentClient("artifacts/chromadb")
+    client = chromadb.PersistentClient(canonical_persist_dir_str())
     collection = client.get_collection("traces")
 
     total_chunks = 0
@@ -249,7 +250,7 @@ def main():
     total_new_chunks = jsonl_chunks + log_chunks
 
     # Get final collection stats
-    client = chromadb.PersistentClient("artifacts/chromadb")
+    client = chromadb.PersistentClient(canonical_persist_dir_str())
     collection = client.get_collection("traces")
     final_count = collection.count()
 

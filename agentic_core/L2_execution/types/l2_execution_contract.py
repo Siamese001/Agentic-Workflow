@@ -253,6 +253,15 @@ class L2ExecutionAgent(ABC):
         if not init_result.success:
             return self._build_final_result(context, interrupted_at=L2ExecutionPhase.INIT)
 
+        # E2: validate-before-execute short-circuit (W1-P1.3, gap plan b7c4e2 G8).
+        # Opt-in: only engaged when ``inputs["tool_contract"]`` is a ToolContract.
+        # Raises ConfirmBeforeExecute / E2RejectedBeforeExecute for high-consequence
+        # or irreversible-non-read tools without an attached HITL approval ticket.
+        e2_short_circuit = self._maybe_gate_e2(context)
+        if e2_short_circuit is not None:
+            context.record_phase_result(e2_short_circuit)
+            return self._build_final_result(context, interrupted_at=L2ExecutionPhase.INIT)
+
         # L2.2: EXECUTE
         execute_result = self.l2_execute(context)
         context.record_phase_result(execute_result)
@@ -341,6 +350,70 @@ class L2ExecutionAgent(ABC):
     def _generate_trace_id(self) -> str:
         """Generate a unique trace ID for this execution."""
         return f"{self.agent_id}-{uuid.uuid4().hex[:8]}"
+
+    def _maybe_gate_e2(
+        self,
+        context: "L2ExecutionContext",
+    ) -> "L2PhaseResult | None":
+        """W1-P1.3: run the E2 validate-before-execute gate if a ToolContract is
+        attached to ``context.inputs["tool_contract"]``. Returns a non-None
+        ``L2PhaseResult`` to short-circuit; returns None to continue to E3.
+
+        The gate is entirely opt-in — the default L2 code path is unchanged
+        when no ``tool_contract`` is attached. Imports are local to avoid
+        creating a hot dependency on the W1 safety modules for agents that
+        don't use the gate yet.
+        """
+        tool_contract = context.inputs.get("tool_contract")
+        if tool_contract is None:
+            return None
+
+        # Local import: keeps the base class loadable even when the W1
+        # safety modules are not present (e.g. legacy subset imports).
+        try:
+            from agentic_core.L2_execution.enforcement.e2_validate_before_execute import (  # noqa: PLC0415
+                ConfirmBeforeExecute,
+                E2RejectedBeforeExecute,
+                evaluate_work_order,
+            )
+            from agentic_core.L2_execution.types.execution_tool_contract import (  # noqa: PLC0415
+                ToolContract,
+            )
+        except ImportError:  # guardian: allow-return-none-swallow -- safety modules not importable; fail open to preserve legacy behavior, audited via absence of gate metadata on returned L2PhaseResult
+            return None
+
+        if not isinstance(tool_contract, ToolContract):
+            return None
+
+        try:
+            verdict = evaluate_work_order(tool_contract)
+        except ConfirmBeforeExecute as exc:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=False,
+                output=None,
+                metadata={
+                    "e2_gate": "confirm_required",
+                    "verdict": exc.verdict.to_dict(),
+                    "needs_hitl_confirmation": True,
+                },
+            )
+        except E2RejectedBeforeExecute as exc:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=False,
+                output=None,
+                metadata={
+                    "e2_gate": "rejected",
+                    "verdict": exc.verdict.to_dict(),
+                    "needs_hitl_confirmation": False,
+                },
+            )
+
+        # Approved — record in phase metadata so downstream observers see
+        # the gate ran, then continue to E3.
+        context.metadata.setdefault("e2_verdicts", []).append(verdict.to_dict())
+        return None
 
     def _build_final_result(
         self,

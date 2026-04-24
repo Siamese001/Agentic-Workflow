@@ -47,10 +47,10 @@ def sl_span(name: str, attributes: Mapping[str, Any] | None = None) -> Iterator[
             for key, value in attributes.items():
                 try:
                     span.set_attribute(key, value)
-                except (
+                except (  # guardian: allow-silent-swallow -- span attr is best-effort telemetry; missing/invalid attr must not break the wrapped hot path
                     AttributeError,
                     TypeError,
-                ):  # guardian: allow-log-and-swallow -- span attr is best-effort telemetry
+                ):
                     pass
         yield span
 
@@ -90,10 +90,10 @@ def sl_span_with_ingest(
             for key, value in attributes.items():
                 try:
                     span.set_attribute(key, value)
-                except (
+                except (  # guardian: allow-silent-swallow -- span attr is best-effort telemetry; missing/invalid attr must not break the wrapped hot path
                     AttributeError,
                     TypeError,
-                ):  # guardian: allow-log-and-swallow -- span attr is best-effort telemetry
+                ):
                     pass
         try:
             yield span

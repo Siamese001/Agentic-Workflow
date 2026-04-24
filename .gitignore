@@ -106,3 +106,6 @@ tools/archive/
 Thumbs.db/
 repo_root.txt/
 runtime_adg//
+
+# .env file (added 2026-04-23 after secret push-block incident)
+.env

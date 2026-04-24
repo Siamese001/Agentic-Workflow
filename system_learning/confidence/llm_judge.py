@@ -52,7 +52,7 @@ class LLMJudge:
     @staticmethod
     def _aggregate(score: JudgeScore) -> tuple[float, dict[str, Any]]:
         """Reduce a per-dimension ``JudgeScore`` to a [0,1] confidence value."""
-        known = {d: getattr(score, d) for d in DIMENSIONS if not _is_nan(getattr(score, d))}
+        known = {d: getattr(score, d) for d in DIMENSIONS if not _is_nan(getattr(score, d))}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads JudgeScore attr by name
         if not known:
             return 0.0, {
                 "passed": False,

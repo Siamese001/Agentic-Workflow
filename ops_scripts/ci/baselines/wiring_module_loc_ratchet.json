@@ -1,18 +1,30 @@
 {
   "gate_id": "M1_module_loc_ratchet",
-  "count": 304,
+  "count": 292,
   "seeded_at": "2026-04-23T13:08:31.769310+00:00",
-  "snapshot": "adg_indexed_04232026_1418.sqlite",
-  "tightened_at": "2026-04-23T18:19:19.918750+00:00",
+  "snapshot": "adg_indexed_04232026_1820.sqlite",
+  "tightened_at": "2026-04-23T22:21:52.107076+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T18:19:19.918750+00:00",
       "snapshot": "adg_indexed_04232026_1418.sqlite",
       "from": 323,
       "to": 304
+    },
+    {
+      "at": "2026-04-23T22:03:57.717769+00:00",
+      "snapshot": "adg_indexed_04232026_1802.sqlite",
+      "from": 304,
+      "to": 303
+    },
+    {
+      "at": "2026-04-23T22:21:52.107076+00:00",
+      "snapshot": "adg_indexed_04232026_1820.sqlite",
+      "from": 303,
+      "to": 292
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-23T18:43:54.840858+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
+  "last_run_at": "2026-04-24T02:34:41.667572+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_2225.sqlite"
 }

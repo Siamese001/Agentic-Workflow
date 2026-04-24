@@ -76,8 +76,11 @@ EXPLICIT_MARKER_RE = re.compile(
 # Alt form: `wave C.3:` / `phase H5:` — prefix words `wave`/`phase` + ID
 SUBJECT_PREFIX_RE = re.compile(
     r"^(?:(?:wave|phase)\s+)?"
-    r"(?P<prefix>(?:" + PHASE_ID_WITH_SUB_RE + r")(?:/\d+(?:\.\d+)?)*|"
-    + WAVE_ID_RE + r")(?:-closure)?:\s+(?P<subject_rest>.*)$",
+    r"(?P<prefix>(?:"
+    + PHASE_ID_WITH_SUB_RE
+    + r")(?:/\d+(?:\.\d+)?)*|"
+    + WAVE_ID_RE
+    + r")(?:-closure)?:\s+(?P<subject_rest>.*)$",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -254,7 +257,15 @@ def _notion_request(method: str, path: str, token: str, body: dict | None = None
             parsed: Any = json.loads(resp.read().decode("utf-8"))
             return parsed if isinstance(parsed, dict) else None
     except urllib.error.HTTPError as exc:
-        _log({"event": "notion_http_error", "method": method, "path": path, "status": exc.code, "body": exc.read().decode("utf-8", errors="replace")[:500]})
+        _log(
+            {
+                "event": "notion_http_error",
+                "method": method,
+                "path": path,
+                "status": exc.code,
+                "body": exc.read().decode("utf-8", errors="replace")[:500],
+            }
+        )
         return None
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         _log({"event": "notion_net_error", "method": method, "path": path, "error": str(exc)})
@@ -300,7 +311,9 @@ def _get_impact(row: dict) -> float:
 
 
 def patch_row_done(page_id: str, commit_sha: str, token: str, existing_blocking: str = "") -> bool:
-    evidence_line = f"\n[AUTO-CLOSE {datetime.now(timezone.utc).strftime('%Y-%m-%d')}] commit={commit_sha[:12]}"
+    evidence_line = (
+        f"\n[AUTO-CLOSE {datetime.now(timezone.utc).strftime('%Y-%m-%d')}] commit={commit_sha[:12]}"
+    )
     new_blocking = (existing_blocking + evidence_line).strip()[:2000]
     body = {
         "properties": {
@@ -341,7 +354,9 @@ def _close_rows_for_target(
         phase_id_rt = target.get("properties", {}).get("Phase ID", {}).get("rich_text") or []
         actual_phase = "".join(t.get("plain_text", "") for t in phase_id_rt) or target_label
         if dry_run:
-            result["patched"].append({"phase_id": actual_phase, "page_id": page_id, "via": target_label, "dry_run": True})
+            result["patched"].append(
+                {"phase_id": actual_phase, "page_id": page_id, "via": target_label, "dry_run": True}
+            )
             continue
         existing_blocking = ""
         rt = target.get("properties", {}).get("Blocking Items", {}).get("rich_text") or []
@@ -395,9 +410,13 @@ def process_commit(sha: str, msg: str, token: str, dry_run: bool = False) -> dic
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--backfill", type=int, default=None, help="Process last N commits")
-    parser.add_argument("--backfill-from", type=str, default=None, help="Process commits since SHA (exclusive)")
+    parser.add_argument(
+        "--backfill-from", type=str, default=None, help="Process commits since SHA (exclusive)"
+    )
     parser.add_argument("--dry-run", action="store_true", help="Detect only, no Notion writes")
     args = parser.parse_args()
 

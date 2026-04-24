@@ -21,6 +21,7 @@ from bs4 import BeautifulSoup
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -73,7 +74,7 @@ class WebRAGIngestionPipeline:
     def __init__(
         self,
         urls_file: str = "data/rag_seeds/agentic_best_practices_urls.txt",
-        chroma_path: str = "artifacts/chromadb",
+        chroma_path: str = canonical_persist_dir_str(),
         collection_name: str = "agentic_best_practices",
         model_name: str = "BAAI/bge-m3",
         debug_chunks: bool = False,

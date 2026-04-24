@@ -1,6 +1,18 @@
 {
   "gate_id": "A3B_dead_methods_in_live_classes_ratchet",
-  "count": 613,
+  "count": 606,
   "seeded_at": "2026-04-23T17:12:36.478719+00:00",
-  "snapshot": "adg_indexed_04232026_0925.sqlite"
+  "snapshot": "adg_indexed_04232026_2225.sqlite",
+  "tightened_at": "2026-04-24T02:32:20.533778+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-04-24T02:32:20.533778+00:00",
+      "snapshot": "adg_indexed_04232026_2225.sqlite",
+      "from": 613,
+      "to": 606
+    }
+  ],
+  "zero_run_streak": 0,
+  "last_run_at": "2026-04-24T02:34:39.153260+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_2225.sqlite"
 }

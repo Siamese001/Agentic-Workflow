@@ -28,6 +28,7 @@ def _load_prompt_envelope_cls() -> Any:
     module = importlib.import_module("agentic_core.knowledge.retrieval.prompt_envelope")
     return module.PromptEnvelope
 
+
 CITATION_MODE_NATIVE = "native"
 CITATION_MODE_MANUAL = "manual"
 _VALID_CITATION_MODES = frozenset({CITATION_MODE_NATIVE, CITATION_MODE_MANUAL})

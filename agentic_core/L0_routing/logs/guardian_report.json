@@ -1,15 +1,15 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-04-23T10:43:15.850498+00:00",
+  "timestamp": "2026-04-24T02:53:17.200062+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 29,
-    "passed_tests": 2,
-    "failed_tests": 25,
-    "skipped_tests": 2,
-    "exit_status": 1,
+    "total_tests": 11,
+    "passed_tests": 0,
+    "failed_tests": 11,
+    "skipped_tests": 0,
+    "exit_status": 2,
     "failed_by_category": {
       "mro_integrity": [],
       "import_safety": [],
@@ -19,7 +19,6 @@
       "other": [
         "tests/ci/test_check_ast_collection_compliance.py",
         "tests/integration/apps_exec/test_apps_exec_integration.py",
-        "tests/integration/retrieval_layers/test_golden_dataset_e2e.py",
         "tests/ops_scripts/ci/test_check_mcp_npx_windows.py",
         "tests/ops_scripts/ci/test_exclusion_sync_gate.py",
         "tests/ops_scripts/ci/test_graphdb_gates.py",
@@ -28,20 +27,7 @@
         "tests/ops_scripts/ci/test_pre_commit_issue_schema.py",
         "tests/ops_scripts/ci/test_pre_commit_summary_reporter.py",
         "tests/ops_scripts/pre_commit/test_pre_commit_issue_schema.py",
-        "tests/unit/agentic_core/L1_cognition/reasoning/test_react_determinism.py",
-        "tests/unit/agentic_core/L1_cognition/reasoning/test_react_policy_boundary.py",
-        "tests/unit/agentic_core/L1_cognition/reasoning/test_react_prompt_provenance.py",
-        "tests/unit/agentic_core/L1_cognition/reasoning/test_thought_engine_agent.py",
-        "tests/unit/agentic_core/L1_cognition/types/test_action_request_types.py",
-        "tests/unit/agentic_core/L1_cognition/types/test_cache_types.py",
-        "tests/unit/agentic_core/L1_cognition/types/test_client_types.py",
-        "tests/unit/agentic_core/L1_cognition/utils/test_guardrails_util.py",
-        "tests/unit/agentic_core/config/test_token_budget_loader.py",
-        "tests/unit/agentic_core/evaluation/judges/test_llm_judge_hardened.py",
-        "tests/unit/ops_scripts/ci/test_check_mcp_gate_sync.py",
-        "tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py",
-        "tests/unit/tools/mcp/test_pytest_server.py",
-        "tests/unit/tools/mcp/test_vector_db_adapter.py"
+        "tests/unit"
       ]
     }
   }

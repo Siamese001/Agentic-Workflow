@@ -67,6 +67,9 @@ EXECUTOR_ALLOWLIST = [
     "agentic_core/knowledge/lifecycle/reindex_coordinator.py",
     "ops_scripts/dev_tools/L0_routing_scripts/_ssot_phases.py",
     "ops_scripts/dev_tools/l0_scripts/query_runtime_util.py",
+    # MCP server entry points — run as their own subprocess per .windsurf/mcp_config.json.
+    # Zero production import callers is EXPECTED and CORRECT: they bootstrap out-of-process.
+    "tools/adg/mcp/runtime.py",
 ]
 
 # generate_full_adg.py — forbidden parallel params and strings

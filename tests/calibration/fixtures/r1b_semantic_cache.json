@@ -1,0 +1,23 @@
+{
+  "path": "R1B",
+  "description": "Semantic-cache reuse decisions. score = cosine similarity in [0,1] between new query and matched cached query. label=true means a human rater accepted reusing the cached response (no material semantic drift).",
+  "signal": "cosine_similarity",
+  "records": [
+    {"score": 0.995, "label": true,  "namespace": "rg",       "notes": "paraphrase, same intent"},
+    {"score": 0.988, "label": true,  "namespace": "rg",       "notes": "whitespace / case variation"},
+    {"score": 0.975, "label": true,  "namespace": "research", "notes": "near-duplicate factual Q"},
+    {"score": 0.965, "label": true,  "namespace": "research", "notes": "minor synonym swap, same answer"},
+    {"score": 0.950, "label": true,  "namespace": "eval",     "notes": "boilerplate response class"},
+    {"score": 0.935, "label": true,  "namespace": "eval",     "notes": "boilerplate response class"},
+    {"score": 0.920, "label": false, "namespace": "rg",       "notes": "same topic, different sub-question"},
+    {"score": 0.905, "label": false, "namespace": "rfp",      "notes": "adjacent question, answer would differ"},
+    {"score": 0.890, "label": true,  "namespace": "eval",     "notes": "recall-optimized namespace still accepts"},
+    {"score": 0.870, "label": false, "namespace": "rg",       "notes": "same entity, different attribute requested"},
+    {"score": 0.850, "label": false, "namespace": "rfp",      "notes": "structurally similar but asks for a different deliverable"},
+    {"score": 0.820, "label": false, "namespace": "research", "notes": "overlapping keywords, different intent"},
+    {"score": 0.780, "label": false, "namespace": "rg",       "notes": "shared terminology only"},
+    {"score": 0.700, "label": false, "namespace": "rfp",      "notes": "loosely related"},
+    {"score": 0.600, "label": false, "namespace": "research", "notes": "weak semantic match"},
+    {"score": 0.400, "label": false, "namespace": "eval",     "notes": "unrelated"}
+  ]
+}

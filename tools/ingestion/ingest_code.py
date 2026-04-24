@@ -16,7 +16,17 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+from agentic_core.L4_state.utils.chunk_metadata import (
+    build_canonical_digest,
+    build_required,
+    compute_source_sha,
+    infer_layer,
+    now_utc_iso,
+    validate as validate_chunk_metadata,
+)
+from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM
 from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
 from tools.ingestion.contextual_chunk_builder import (
     ContextualChunkBuilder,
@@ -27,6 +37,24 @@ from tools.ingestion.contextual_chunk_builder import (
 # Setup logging (needed by ADGNodeResolver below)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Repo root = 3 levels up from this file (tools/ingestion/ingest_code.py)
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _repo_relative(file_path: Path) -> str:
+    """Return a POSIX-style repo-relative path for metadata stamping.
+
+    Falls back to the basename when ``file_path`` sits outside the repo
+    (e.g. synthetic fixtures in tests). Keeps ``infer_layer`` startswith
+    checks working for L_APPS / L_TOOLS / L_OPS classifications.
+    """
+    fp = Path(file_path).resolve()
+    try:
+        rel = fp.relative_to(_REPO_ROOT)
+    except ValueError:
+        return fp.name
+    return rel.as_posix()
 
 
 class ADGNodeResolver:
@@ -122,12 +150,21 @@ class CodeChunker:
         "methods",
         "adg_node_id",
         "embedding_model",
+        "embedding_dim",
         "ingested_at",
         "parent_id",
         # Anthropic Contextual Retrieval: narrative context prepended to the
         # chunk content. Populated by _apply_contextualization when --contextualize
         # is passed to the ingest CLI.
         "chunk_context",
+        # ChunkMetadataV1 contract fields (W2). Accepted alongside legacy keys
+        # during the migration window; the authoritative validator is
+        # ``agentic_core.L4_state.utils.chunk_metadata.validate``.
+        "artifact_type",
+        "source_path",
+        "source_sha",
+        "canonical_digest",
+        "metadata_version",
     }
 
     def __init__(self, adg_resolver: ADGNodeResolver | None = None):
@@ -163,16 +200,12 @@ class CodeChunker:
             errors.append("line_start must be int")
         if "line_end" in metadata and not isinstance(metadata["line_end"], int):
             errors.append("line_end must be int")
-        if "layer" in metadata and metadata["layer"] not in [
-            "L0",
-            "L1",
-            "L2",
-            "L3",
-            "L4",
-            "L5",
-            "L6",
-            "Unknown",
-        ]:
+        # W5.1-fix: accept the full canonical LAYER_TOKENS set from
+        # chunk_metadata (L0-L6 plus L_APPS / L_TOOLS / L_OPS / L_SHARED /
+        # L_SYSTEM_LEARNING / L_INFRASTRUCTURE / L_CONFIG / L_DOCS / L_TESTS /
+        # L_UNKNOWN). Legacy ``Unknown`` (capital U) retained for back-compat.
+        from agentic_core.L4_state.utils.chunk_metadata import LAYER_TOKENS
+        if "layer" in metadata and metadata["layer"] not in (LAYER_TOKENS | {"Unknown"}):
             errors.append(f"Invalid layer: {metadata['layer']}")
         if "entity_type" in metadata and metadata["entity_type"] not in [
             "function",
@@ -204,30 +237,23 @@ class CodeChunker:
             # Track class chunks for parent-child relationships
             class_chunks = {}  # class_name -> (chunk_id, methods_set)
 
-            # Walk through AST nodes
+            # Walk through AST nodes. W3.2: no longer skip zero-arg functions,
+            # argless async, or methodless classes — they still carry docstrings
+            # and are addressable by ADG node id, so coverage > filter.
             for node in ast.walk(tree):
                 chunk = None
 
                 if isinstance(node, ast.FunctionDef):
-                    # Skip functions with no args
-                    if not node.args.args:
-                        continue
                     chunk = self._create_function_chunk(node, content, file_path, module_name, layer)
                 elif isinstance(node, ast.ClassDef):
-                    # Extract methods first
-                    methods = []
-                    for item in node.body:
-                        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                            methods.append(item.name)
-                    # Skip classes with no methods
-                    if not methods:
-                        continue
+                    methods = [
+                        item.name
+                        for item in node.body
+                        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    ]
                     chunk = self._create_class_chunk(node, content, file_path, module_name, layer)
                     class_chunks[node.name] = (chunk["id"], set(methods))
                 elif isinstance(node, ast.AsyncFunctionDef):
-                    # Skip async functions with no args
-                    if not node.args.args:
-                        continue
                     chunk = self._create_function_chunk(
                         node,
                         content,
@@ -301,31 +327,57 @@ class CodeChunker:
         func_lines = lines[start_line - 1 : end_line]
         func_code = "\n".join(func_lines)
 
-        # Create chunk ID
-        chunk_id = hashlib.sha256(
-            f"{file_path}:{module_name}:{node.name}:{start_line}:{func_code}".encode(),
-        ).hexdigest()
+        # Stamp ChunkMetadataV1 contract: stable source_path / canonical_digest
+        # drives idempotent upsert; legacy file_path + type preserved for
+        # pre-W2 retrieval consumers during migration.
+        entity_type = "async_function" if is_async else "function"
+        # W5.1-fix: source_path MUST be repo-relative so ``infer_layer``
+        # startswith-checks resolve to L_APPS / L_TOOLS / L_OPS etc. instead
+        # of falling through to L_UNKNOWN on absolute Windows paths.
+        source_path = _repo_relative(file_path)
+        try:
+            source_sha = compute_source_sha(file_path)
+        except OSError:
+            source_sha = compute_source_sha(content.encode("utf-8"))
+        canonical_digest = build_canonical_digest(
+            artifact_type="code_chunk",
+            source_path=source_path,
+            anchor=f"{entity_type}:{node.name}:{start_line}",
+        )
 
-        return {
-            "id": chunk_id,
-            "content": func_code,
-            "metadata": {
-                "file_path": str(file_path),
-                "module": module_name,
-                "layer": layer,
-                "entity_type": "async_function" if is_async else "function",
+        contract = build_required(
+            artifact_type="code_chunk",
+            source_path=source_path,
+            source_sha=source_sha,
+            canonical_digest=canonical_digest,
+            # W5.1-fix: ``_detect_layer`` is a naïve substring matcher that
+            # mis-labels ``apps_shared/types/state_*.py`` as L4 etc. Trust
+            # ``infer_layer`` (path-prefix) as the single canonical source.
+            layer=infer_layer(source_path),
+            embedding_model=BGE_MODEL,
+            embedding_dim=BGE_QUERY_DIM,
+        )
+        contract.update(
+            {
+                "entity_type": entity_type,
                 "name": node.name,
                 "line_start": start_line,
                 "line_end": end_line,
                 "args": [arg.arg for arg in node.args.args] if node.args.args else [],
                 "docstring": ast.get_docstring(node) or "",
-                "type": "code",
+                "module": module_name,
                 "adg_node_id": self.adg_resolver.resolve(file_path, node.name)
                 if self.adg_resolver is not None
                 else None,
-                "embedding_model": "fallback_hash_384",
-                "ingested_at": None,  # Will be set during ingestion
-            },
+                # Legacy aliases for pre-W2 consumers; drop in W5 cleanup.
+                "file_path": source_path,
+                "type": "code",
+            }
+        )
+        return {
+            "id": canonical_digest,
+            "content": func_code,
+            "metadata": contract,
         }
 
     def _create_class_chunk(
@@ -345,37 +397,57 @@ class CodeChunker:
         class_lines = lines[start_line - 1 : end_line]
         class_code = "\n".join(class_lines)
 
-        # Create chunk ID
-        chunk_id = hashlib.sha256(
-            f"{file_path}:{module_name}:{node.name}:{start_line}:{class_code}".encode(),
-        ).hexdigest()
-
         # Extract methods
         methods = []
         for item in node.body:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 methods.append(item.name)
 
-        return {
-            "id": chunk_id,
-            "content": class_code,
-            "metadata": {
-                "file_path": str(file_path),
-                "module": module_name,
-                "layer": layer,
+        # Stamp ChunkMetadataV1 contract (see _create_function_chunk).
+        source_path = _repo_relative(file_path)
+        try:
+            source_sha = compute_source_sha(file_path)
+        except OSError:
+            source_sha = compute_source_sha(content.encode("utf-8"))
+        canonical_digest = build_canonical_digest(
+            artifact_type="code_chunk",
+            source_path=source_path,
+            anchor=f"class:{node.name}:{start_line}",
+        )
+
+        contract = build_required(
+            artifact_type="code_chunk",
+            source_path=source_path,
+            source_sha=source_sha,
+            canonical_digest=canonical_digest,
+            # W5.1-fix: ``_detect_layer`` is a naïve substring matcher that
+            # mis-labels ``apps_shared/types/state_*.py`` as L4 etc. Trust
+            # ``infer_layer`` (path-prefix) as the single canonical source.
+            layer=infer_layer(source_path),
+            embedding_model=BGE_MODEL,
+            embedding_dim=BGE_QUERY_DIM,
+        )
+        contract.update(
+            {
                 "entity_type": "class",
                 "name": node.name,
                 "line_start": start_line,
                 "line_end": end_line,
                 "methods": methods if methods else [],
                 "docstring": ast.get_docstring(node) or "",
-                "type": "code",
+                "module": module_name,
                 "adg_node_id": self.adg_resolver.resolve(file_path, node.name)
                 if self.adg_resolver is not None
                 else None,
-                "embedding_model": "fallback_hash_384",
-                "ingested_at": None,  # Will be set during ingestion
-            },
+                # Legacy aliases for pre-W2 consumers; drop in W5 cleanup.
+                "file_path": source_path,
+                "type": "code",
+            }
+        )
+        return {
+            "id": canonical_digest,
+            "content": class_code,
+            "metadata": contract,
         }
 
 
@@ -445,18 +517,23 @@ def ingest_code(
     import sqlite3
     from datetime import datetime
 
-    # Initialize SovereignChromaClient
-    chroma_client = SovereignChromaClient(persist_dir="artifacts/chromadb")
+    # Initialize SovereignChromaClient against the canonical persist_dir SSOT.
+    chroma_client = SovereignChromaClient(persist_dir=canonical_persist_dir_str())
 
     logger.info(f"Using collection: {collection_name}")
 
-    # Query ADG for node IDs (future wave - placeholder)
-    # TODO: Query ADG SQLite to get node_id for each file
-    adg_db_path = "artifacts/adg/adg_indexed_04062026_1246.sqlite"
-    adg_node_map = {}
-    if Path(adg_db_path).exists():
+    # Query ADG for node IDs. The snapshot path is resolved at runtime from
+    # `artifacts/adg/adg_indexed_*.sqlite` (newest by mtime) so the ChromaDB
+    # corpus never binds to a stale ADG snapshot. Override via env var
+    # `ADG_SNAPSHOT_PATH`. See tools/ingestion/_adg_snapshot.py (W1.4).
+    from tools.ingestion._adg_snapshot import latest_adg_snapshot
+
+    adg_db_path_obj = latest_adg_snapshot()
+    adg_node_map: dict[str, int] = {}
+    if adg_db_path_obj is not None and adg_db_path_obj.exists():
+        logger.info("Using ADG snapshot: %s", adg_db_path_obj)
         try:
-            conn = sqlite3.connect(adg_db_path)
+            conn = sqlite3.connect(str(adg_db_path_obj))
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
             cur.execute(
@@ -466,12 +543,28 @@ def ingest_code(
             for row in cur.fetchall():
                 adg_node_map[row["resolved_path"]] = row["id"]
             conn.close()
-            logger.info(f"Loaded {len(adg_node_map)} ADG node mappings")
-        except Exception as e:
-            logger.warning(f"Could not load ADG node mappings: {e}")
+            logger.info("Loaded %d ADG node mappings", len(adg_node_map))
+        except sqlite3.Error as exc:
+            logger.warning("Could not load ADG node mappings: %s", exc)
+    else:
+        logger.warning(
+            "No ADG snapshot found under artifacts/adg/adg_indexed_*.sqlite; "
+            "adg_node_id will be null for all chunks. Run: python tools/generate_full_adg.py"
+        )
 
-    # Find Python files
+    # Build ADGNodeResolver so per-chunk adg_node_id resolution works (W2.4).
+    # Previously CodeChunker() was constructed without an ADG resolver, so
+    # every chunk got adg_node_id=None regardless of ADG health.
+    adg_resolver = ADGNodeResolver(adg_db_path_obj) if adg_db_path_obj else None
+
+    # Find Python files.
+    # W5.1-fix: ``--source-dir`` may be relative (e.g. ``apps_rg``) when the
+    # pipeline dispatches multi-root stages. Resolve against CWD so every
+    # downstream ``file_path.relative_to(REPO_ROOT)`` call sees an absolute
+    # path under the repo, rather than erroring with "not in the subpath".
     source_path = Path(source_dir)
+    if not source_path.is_absolute():
+        source_path = (Path.cwd() / source_path).resolve()
     python_files = []
 
     for py_file in source_path.rglob("*.py"):
@@ -488,7 +581,7 @@ def ingest_code(
     logger.info(f"Found {len(python_files)} Python files")
 
     # Chunk files
-    chunker = CodeChunker()
+    chunker = CodeChunker(adg_resolver=adg_resolver)
     all_chunks = []
 
     for py_file in python_files:
@@ -499,13 +592,30 @@ def ingest_code(
         adg_node_id = adg_node_map.get(file_path_str)
         valid_chunks = []
         for chunk in chunks:
-            chunk["metadata"]["adg_node_id"] = adg_node_id
-            chunk["metadata"]["ingested_at"] = datetime.now().isoformat()
-            # Validate metadata
+            # Fill adg_node_id only if the per-file map has it and the chunk
+            # did not already resolve one via ADGNodeResolver.
+            if adg_node_id is not None and chunk["metadata"].get("adg_node_id") is None:
+                chunk["metadata"]["adg_node_id"] = adg_node_id
+            # Refresh ingested_at to the actual ingestion timestamp (UTC ISO).
+            chunk["metadata"]["ingested_at"] = now_utc_iso()
+
+            # Legacy per-chunker validator (kept for the required_fields check).
             is_valid, errors = CodeChunker.validate_metadata(chunk["metadata"])
             if not is_valid:
-                logger.warning(f"Metadata validation failed for {chunk['id']}: {errors}")
+                logger.warning("Legacy metadata validation failed for %s: %s", chunk["id"], errors)
                 continue
+
+            # ChunkMetadataV1 contract validator — promote to warning-for-now so
+            # a single drift doesn't lose the whole batch. Upgrade to hard-fail
+            # in W2.3 once the full pipeline re-run is green.
+            contract_errors = validate_chunk_metadata(chunk["metadata"])
+            if contract_errors:
+                logger.warning(
+                    "ChunkMetadataV1 drift for %s: %s",
+                    chunk["id"],
+                    contract_errors,
+                )
+
             valid_chunks.append(chunk)
         all_chunks.extend(valid_chunks)
 
@@ -564,7 +674,8 @@ def ingest_code(
     # Get collection stats
     stats = chroma_client.get_collection_stats(collection_name)
     stats["total_chunks"] = len(all_chunks)
-    stats["vector_dimensions"] = 384  # SovereignChromaClient uses 384-dim fallback
+    stats["embedding_model"] = BGE_MODEL
+    stats["vector_dimensions"] = BGE_QUERY_DIM
 
     logger.info(f"Ingestion complete: {len(all_chunks)} chunks ingested")
     logger.info(f"Collection stats: {stats}")

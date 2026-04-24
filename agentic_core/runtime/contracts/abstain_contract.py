@@ -28,10 +28,23 @@ value by passing an explicit ``threshold`` kwarg to :func:`plan_abstain`.
 # (coverage consumer). Treat as a closed enum for the Wave D backlog.
 ACTION_EMIT_R5: Literal["emit_r5_candidate"] = "emit_r5_candidate"
 ACTION_CONTINUE: Literal["continue"] = "continue"
+# Clarify action (ADR-043 §T3 exit branches) — the exit gate surfaces
+# the clarification request to the user and does NOT dispatch to L0.
+ACTION_REQUEST_CLARIFICATION: Literal["request_clarification"] = "request_clarification"
 
 # Stable decision strings. Treat as a closed enum.
 DECISION_ABSTAIN: Literal["abstain"] = "abstain"
 DECISION_PROCEED: Literal["proceed"] = "proceed"
+# Clarify decision (ADR-043 §T3 exit branches) — distinct from abstain:
+# abstain returns a safe-default, clarify blocks on human input.
+DECISION_CLARIFY: Literal["clarify"] = "clarify"
+
+DEFAULT_AMBIGUITY_THRESHOLD: float = 0.60
+"""Default ambiguity floor used by :func:`plan_clarify`.
+
+``ambiguity_score >= threshold`` triggers a clarify decision, provided
+confidence is also not catastrophically low (in which case abstain wins).
+"""
 
 
 class AbstainDecision(TypedDict):
@@ -57,6 +70,31 @@ class AbstainDecision(TypedDict):
     confidence: float
     threshold: float
     action: Literal["emit_r5_candidate", "continue"]
+
+
+class ClarifyDecision(TypedDict):
+    """Serializable shape emitted by :func:`plan_clarify` (ADR-043).
+
+    Distinct from :class:`AbstainDecision`: abstain returns a safe-default
+    answer with no user prompt; clarify blocks on explicit user input.
+
+    Fields:
+        decision: ``"clarify"`` or ``"proceed"``.
+        reason: Human-readable justification for telemetry.
+        confidence: The input confidence value, echoed for downstream logging.
+        ambiguity_score: Scalar in ``[0.0, 1.0]``.  Higher means more
+            ambiguous / more need for clarification.
+        ambiguity_threshold: The ambiguity floor used for the comparison.
+        action: Downstream dispatch hint.  ``"request_clarification"`` when
+            ``decision == "clarify"``; ``"continue"`` when proceed.
+    """
+
+    decision: Literal["clarify", "proceed"]
+    reason: str
+    confidence: float
+    ambiguity_score: float
+    ambiguity_threshold: float
+    action: Literal["request_clarification", "continue"]
 
 
 def plan_abstain(
@@ -109,12 +147,83 @@ def plan_abstain(
     )
 
 
+def plan_clarify(
+    confidence: float,
+    ambiguity_score: float,
+    threshold: float = DEFAULT_AMBIGUITY_THRESHOLD,
+    *,
+    reason_hint: str | None = None,
+) -> ClarifyDecision:
+    """Compute a clarify-vs-proceed decision from confidence + ambiguity.
+
+    Clarify semantics (ADR-043 §T3 exit branches):
+    - High ambiguity (``ambiguity_score >= threshold``) AND confidence not
+      catastrophically low → clarify (request user input).
+    - High ambiguity AND very low confidence (< 0.20) → proceed=False but
+      caller should abstain, not clarify — this function still returns
+      ``clarify`` but the reason surfaces the catastrophic-confidence hint
+      so the caller can escalate.
+
+    Args:
+        confidence: Confidence score in ``[0.0, 1.0]``.
+        ambiguity_score: Ambiguity score in ``[0.0, 1.0]``.  Higher means
+            the planner is more uncertain about user intent.
+        threshold: Ambiguity floor.  ``ambiguity_score >= threshold``
+            triggers clarify.  Defaults to
+            :data:`DEFAULT_AMBIGUITY_THRESHOLD`.
+        reason_hint: Optional caller-provided string embedded in the
+            decision's ``reason`` field.
+
+    Returns:
+        A :class:`ClarifyDecision` dict with all six required fields.
+
+    Raises:
+        ValueError: If any numeric input falls outside ``[0.0, 1.0]``.
+    """
+    if not 0.0 <= confidence <= 1.0:
+        raise ValueError(f"confidence must be in [0.0, 1.0], got {confidence!r}")
+    if not 0.0 <= ambiguity_score <= 1.0:
+        raise ValueError(f"ambiguity_score must be in [0.0, 1.0], got {ambiguity_score!r}")
+    if not 0.0 <= threshold <= 1.0:
+        raise ValueError(f"threshold must be in [0.0, 1.0], got {threshold!r}")
+
+    if ambiguity_score >= threshold:
+        reason = reason_hint or (
+            f"ambiguity {ambiguity_score:.4f} at/above clarify floor {threshold:.4f}"
+        )
+        return ClarifyDecision(
+            decision=DECISION_CLARIFY,
+            reason=reason,
+            confidence=float(confidence),
+            ambiguity_score=float(ambiguity_score),
+            ambiguity_threshold=float(threshold),
+            action=ACTION_REQUEST_CLARIFICATION,
+        )
+
+    reason = reason_hint or (
+        f"ambiguity {ambiguity_score:.4f} below clarify floor {threshold:.4f}"
+    )
+    return ClarifyDecision(
+        decision=DECISION_PROCEED,
+        reason=reason,
+        confidence=float(confidence),
+        ambiguity_score=float(ambiguity_score),
+        ambiguity_threshold=float(threshold),
+        action=ACTION_CONTINUE,
+    )
+
+
 __all__ = [
     "ACTION_CONTINUE",
     "ACTION_EMIT_R5",
+    "ACTION_REQUEST_CLARIFICATION",
     "AbstainDecision",
+    "ClarifyDecision",
     "DECISION_ABSTAIN",
+    "DECISION_CLARIFY",
     "DECISION_PROCEED",
     "DEFAULT_ABSTAIN_THRESHOLD",
+    "DEFAULT_AMBIGUITY_THRESHOLD",
     "plan_abstain",
+    "plan_clarify",
 ]

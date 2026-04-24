@@ -1,0 +1,14 @@
+{
+  "answer": null,
+  "context": "Anchor guidance for score 1: most claims fabricated or contradicted by context. This is a seed template; a human rater must supply the real query, context, and answer before calibration.",
+  "created_at": "2026-04-23T00:00:00Z",
+  "generator": "seed_golden_items",
+  "gold_outcome": "pending",
+  "gold_score": null,
+  "human_labels": [],
+  "item_id": "seed-faithfulness-96c9575a2fb2",
+  "notes": "pending human authorship; do not count toward \u03ba-gate population",
+  "query": "[seed 6] probe faithfulness targeting anchor 1",
+  "rubric_id": "faithfulness",
+  "target_anchor": 1
+}

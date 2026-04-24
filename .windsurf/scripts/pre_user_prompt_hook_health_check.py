@@ -9,12 +9,20 @@ Detection logic:
   * No heartbeat file          -> first-run or corruption; emit banner.
   * Heartbeat older than the
     stale threshold (default
-    6 hours)                   -> previous session's hooks likely
+    30 minutes)                -> previous session's hooks likely
                                   skipped; emit banner.
   * Heartbeat within threshold -> silent.
 
 Fail-soft: any inspection error is logged to stderr and exits 0 so we
 never block session start on observability plumbing.
+
+Known limitation (W10.1, RCA 2026-04-23): this check itself runs via
+the ``pre_user_prompt`` hook. When Windsurf's hook dispatcher is dead
+(HOOK_OUTAGE), this watchdog never fires either. A truly independent
+fallback (cron / systemd timer / OS-level scheduler) is deferred —
+tracked under plan ``post-cascade-watchdog-hardening.md``. Threshold
+was tightened from 6h to 30min 2026-04-24 so that when the hook chain
+IS alive, even sub-hour gaps surface the drift window.
 """
 
 from __future__ import annotations
@@ -28,9 +36,12 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[2]
 _HEARTBEAT_PATH = _ROOT / "artifacts" / "windsurf" / "post_cascade_heartbeat.jsonl"
 
-# Default stale threshold: 6 hours. Override with
+# Default stale threshold: 30 minutes. Override with
 # POST_CASCADE_HEARTBEAT_STALE_SECONDS env var.
-_DEFAULT_STALE_SECONDS = 6 * 60 * 60
+# W10.1 (RCA 2026-04-23): tightened from 6h → 30min so that the 1h34m
+# hook-silence window that triggered the HOOK_OUTAGE RCA would have
+# surfaced the banner instead of hiding behind a stale 6h threshold.
+_DEFAULT_STALE_SECONDS = 30 * 60
 
 
 def _stale_threshold() -> int:

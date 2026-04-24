@@ -31,8 +31,8 @@ When facing an author-gate decision point, run this pipeline — no exceptions.
 7. **Surface 1–N options** via `ask_user_question` — ALL analysis INSIDE description field, never in chat prose
 8. **Wait** for explicit user selection
 9. **Execute** only the chosen option — if the decision is refactor-class (§HITL-1: `architecture_choice`, `refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`, `test_strategy`, `error_handling`), emit the capture marker **as the first plain-text line of this response, before any tool calls**:
-   `DECISION_CAPTURED: type=<type>, repo_area=<area>, selected=<chosen_label>, outcome=executed`
-   `repo_area` = most specific module/file path for the current task. `selected` = exact chosen option label (no commas). **Placement rules**: plain text only (no backticks, no code fence), own line, at the top of the response — never at the tail of a long tool-heavy response. Non-refactor Author-Gate decisions do not emit this marker.
+   `DECISION_CAPTURED: type=<type>, repo_area=<area>, selected=<chosen_label>, outcome=executed[, confidence=0.NN, gap=0.NN, override=true|false, latency_ms=N, principle=<short>]`
+   Required fields: `type`, `repo_area`, `selected`, `outcome`. Optional v2 calibration fields (meta-learning): `confidence` (top option's score 0.00–1.00), `gap` (dominance gap to next option), `override` (true if user picked non-recommended), `latency_ms` (time to user selection), `principle` (short architectural principle at stake, ≤40 chars, no commas). Omit any optional field whose value is unknown — the capture hook tolerates missing fields and maintains back-compat with v1 markers. `repo_area` = most specific module/file path for the current task. `selected` = exact chosen option label (no commas). **Placement rules**: plain text only (no backticks, no code fence), own line, at the top of the response — never at the tail of a long tool-heavy response. Non-refactor Author-Gate decisions do not emit this marker.
 
 If no candidate clears 0.72: emit `LOW_CONFIDENCE_AMBIGUITY`. Route to clarify/replan/abstain. Do not fabricate options.
 

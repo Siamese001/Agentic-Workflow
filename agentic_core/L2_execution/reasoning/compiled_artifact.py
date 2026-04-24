@@ -114,6 +114,21 @@ class CompiledPromptArtifact:
     injection_scan_result: dict[str, Any] | None = None
     routing_decision: dict[str, Any] | None = None
 
+    def __post_init__(self) -> None:
+        """Validate artifact invariants on construction.
+
+        Restored in PRF1.A1 (plan ``prompt-reception-followups-a7b3c4``)
+        after the RH2B.2 narrow→rich SSOT merge (commit ``09a47e9ea7``)
+        dropped the pre-merge validators. These two checks protect
+        downstream consumers (``SovereignLLMGateway``, telemetry sinks,
+        replay-key derivers) that treat ``trace_id`` as non-empty and
+        ``tokens`` as non-negative.
+        """
+        if not self.trace_id:
+            raise ValueError("trace_id must not be empty")
+        if self.tokens < 0:
+            raise ValueError(f"tokens must be >= 0, got {self.tokens}")
+
     def verify_signature(self, secret_key: bytes) -> bool:
         """Verify the HMAC-SHA256 signature of this artifact."""
         computed = self._compute_signature(secret_key)

@@ -169,7 +169,7 @@ def _extract_json_from_text(text: str) -> dict[str, Any] | None:
         parsed = json.loads(stripped)
         if isinstance(parsed, dict):
             return parsed
-    except json.JSONDecodeError:
+    except json.JSONDecodeError:  # guardian: allow-silent-swallow -- direct-parse best-effort; falls through to fenced and brace-span strategies below
         pass
 
     fenced = _FENCED_JSON_RE.search(text)
@@ -178,7 +178,7 @@ def _extract_json_from_text(text: str) -> dict[str, Any] | None:
             parsed = json.loads(fenced.group(1))
             if isinstance(parsed, dict):
                 return parsed
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- fenced-code parse best-effort; falls through to brace-span strategy below
             pass
 
     # Outermost brace span: find first '{' and last '}'
@@ -189,7 +189,7 @@ def _extract_json_from_text(text: str) -> dict[str, Any] | None:
             parsed = json.loads(text[first : last + 1])
             if isinstance(parsed, dict):
                 return parsed
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-return-none-swallow -- final brace-span parse exhausted; None signals unparseable payload to caller
             return None
 
     return None

@@ -167,6 +167,50 @@ def test_health_disable_env_var_silences(
     assert "HOOK-CHAIN HEALTH CHECK" not in err
 
 
+def test_default_threshold_is_thirty_minutes(health_mod) -> None:
+    """W10.1 (RCA 2026-04-23): default stale threshold MUST be 30 minutes.
+
+    Guards against regression to the pre-RCA 6h default that hid the
+    1h34m HOOK_OUTAGE silence window. Env override still permitted.
+    """
+    mod, _ = health_mod
+    assert mod._DEFAULT_STALE_SECONDS == 30 * 60
+
+
+def test_health_flags_stale_after_thirty_minutes(health_mod) -> None:
+    """W10.1: a 31-minute-old heartbeat MUST be classified ``stale``
+    under the default threshold, matching the tightened window."""
+    mod, hb_path = health_mod
+    now = 1_000_000.0
+    # 31 minutes (1860s) — just past the new default (1800s).
+    hb_path.write_text(
+        json.dumps({"timestamp_unix": now - 1860.0, "hook": "post_cascade_heartbeat"}) + "\n",
+        encoding="utf-8",
+    )
+    result = mod.check_heartbeat_health(path=hb_path, now=now)
+    assert result["status"] == "stale"
+    assert result["threshold"] == 30 * 60
+
+
+def test_health_env_override_still_honored(
+    health_mod, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """W10.1: POST_CASCADE_HEARTBEAT_STALE_SECONDS env override still works
+    after the default tightening, so operators can relax the threshold
+    when justified (e.g. long-running batch sessions)."""
+    mod, hb_path = health_mod
+    monkeypatch.setenv("POST_CASCADE_HEARTBEAT_STALE_SECONDS", "7200")  # 2h
+    now = 1_000_000.0
+    hb_path.write_text(
+        json.dumps({"timestamp_unix": now - 3600.0, "hook": "post_cascade_heartbeat"}) + "\n",
+        encoding="utf-8",
+    )
+    # Age 1h is >30min default but <2h override → ok.
+    result = mod.check_heartbeat_health(path=hb_path, now=now)
+    assert result["status"] == "ok"
+    assert result["threshold"] == 7200
+
+
 def test_health_writer_reader_roundtrip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     hb_path = tmp_path / "hb.jsonl"
     writer = _load("hb_writer_rt", "post_cascade_heartbeat.py")

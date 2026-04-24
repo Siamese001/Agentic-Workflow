@@ -228,6 +228,29 @@ class TestCompiledPromptArtifact:
         assert artifact.tokens == 100
         assert artifact.slots_used == ["S0", "U0"]
 
+    def test_empty_trace_id_raises(self, plc_imports) -> None:
+        """PRF1.A1: empty trace_id must raise ValueError.
+
+        Restored in plan ``prompt-reception-followups-a7b3c4`` after the
+        RH2B.2 narrow→rich SSOT merge (commit 09a47e9ea7) dropped the
+        pre-merge validator coverage. Downstream consumers (gateway,
+        telemetry, replay-key derivers) rely on non-empty trace_id.
+        """
+        CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
+        with pytest.raises(ValueError, match="trace_id must not be empty"):
+            CompiledPromptArtifact(**self._kwargs(trace_id=""))
+
+    def test_negative_tokens_raises(self, plc_imports) -> None:
+        """PRF1.A1: negative ``tokens`` must raise ValueError.
+
+        Field renamed from pre-merge ``token_estimate`` to ``tokens`` per
+        RH2B.2 field-map. Validator restored on the rich class's
+        ``__post_init__``.
+        """
+        CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
+        with pytest.raises(ValueError, match="tokens must be >= 0"):
+            CompiledPromptArtifact(**self._kwargs(tokens=-1))
+
     def test_verify_signature_valid(self, plc_imports) -> None:
         """Test signature verification with valid key using the rich canonical scheme."""
         CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]

@@ -20,6 +20,7 @@ import chromadb
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +36,7 @@ class HistoryIngestion:
     - repo_incidents_rca: Incident reports and root cause analysis
     """
 
-    def __init__(self, repo_root: str, chroma_persist_dir: str = "artifacts/chromadb"):
+    def __init__(self, repo_root: str, chroma_persist_dir: str = canonical_persist_dir_str()):
         """
         Initialize history ingestion.
 
@@ -629,7 +630,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Wave 3: History Ingestion")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
-    parser.add_argument("--chroma-dir", default="artifacts/chromadb", help="ChromaDB persistence directory")
+    parser.add_argument("--chroma-dir", default=canonical_persist_dir_str(), help="ChromaDB persistence directory")
     parser.add_argument(
         "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
     )

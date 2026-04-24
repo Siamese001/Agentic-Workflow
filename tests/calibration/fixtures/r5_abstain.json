@@ -1,0 +1,21 @@
+{
+  "path": "R5",
+  "description": "Abstain decisions. score = aggregate confidence (lower score = MORE likely to need R5). label=true means human rater agrees an R5 abstain/fallback was the correct disposition. Note score semantics are inverted vs other paths (low score = positive class here).",
+  "signal": "aggregate_confidence",
+  "invert_score": true,
+  "records": [
+    {"score": 0.05, "label": true,  "reason": "ood_query",            "notes": "out-of-distribution; embedding far from training set"},
+    {"score": 0.12, "label": true,  "reason": "toxicity_flag",        "notes": "L5 guardrail flagged"},
+    {"score": 0.18, "label": true,  "reason": "budget_exceeded",      "notes": "TokenCap DENY"},
+    {"score": 0.25, "label": true,  "reason": "circuit_breaker_open", "notes": "downstream dependency failing"},
+    {"score": 0.30, "label": true,  "reason": "clarification_needed", "notes": "L1 flagged ambiguity"},
+    {"score": 0.38, "label": true,  "reason": "coverage_too_low",     "notes": "C0 evidence coverage below floor"},
+    {"score": 0.45, "label": true,  "reason": "low_confidence",       "notes": "general low confidence"},
+    {"score": 0.50, "label": false, "reason": "borderline",           "notes": "at threshold, borderline proceed"},
+    {"score": 0.55, "label": false, "reason": "borderline",           "notes": "just above threshold"},
+    {"score": 0.62, "label": false, "reason": "proceed_ok",           "notes": "adequate confidence"},
+    {"score": 0.72, "label": false, "reason": "proceed_ok",           "notes": "strong signal"},
+    {"score": 0.85, "label": false, "reason": "proceed_ok",           "notes": "high confidence"},
+    {"score": 0.95, "label": false, "reason": "proceed_ok",           "notes": "very high confidence"}
+  ]
+}

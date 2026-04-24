@@ -283,13 +283,13 @@ class L6MetaLearningBridge:
                         record = MetaLearningRecord.from_dict(data)
                         self._records[snapshot_id] = record
                         return record
-            except (
+            except (  # guardian: allow-log-and-swallow -- meta-learning record read is best-effort; failure falls through to fresh build
                 OSError,
                 RuntimeError,
                 TypeError,
                 ValueError,
                 json.JSONDecodeError,
-            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            ) as e:
                 logger.warning(
                     "record_load_failed",
                     extra={"snapshot_id": snapshot_id[:16], "error": str(e)},

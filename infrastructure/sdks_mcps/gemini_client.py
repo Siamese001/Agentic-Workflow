@@ -30,6 +30,7 @@ function so there is a single source of truth for credential resolution.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -49,6 +50,31 @@ _SYSTEM_INSTRUCTION_CODES: tuple[str, ...] = (
     "M0",
     "H0",
 )
+
+
+@dataclass(frozen=True)
+class GeminiStreamChunk:
+    """One delta yielded by a streaming Gemini call.
+
+    PRF2.B3 — plan ``prompt-reception-followups-a7b3c4``. Wraps the raw
+    SDK stream chunk so consumers get a stable shape regardless of how
+    ``google.generativeai`` evolves its streaming payload.
+
+    Attributes
+    ----------
+    text : str
+        Incremental text delta for this chunk (may be empty for pure
+        tool-call or safety chunks).
+    finish_reason : str | None
+        Only populated on the terminal chunk (``STOP`` / ``MAX_TOKENS``).
+    raw : Any
+        Underlying SDK chunk for callers that need tool-call blocks or
+        safety ratings.
+    """
+
+    text: str
+    finish_reason: str | None = None
+    raw: Any = None
 
 
 @dataclass(frozen=True)
@@ -123,7 +149,10 @@ class GeminiClient:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def project(prompt_messages: PromptMessages) -> dict[str, Any]:
+    def project(
+        prompt_messages: PromptMessages,
+        allowed_tools_schema: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """Project a ``PromptMessages`` onto Gemini's native request shape.
 
         Returns a dict with:
@@ -132,6 +161,9 @@ class GeminiClient:
         - ``contents``: list of ``{"role": "user"/"model", "parts": [text]}``.
           E0 exemplars (when parsed) become leading user/model turn pairs
           before the final ``user`` U0 turn.
+        - ``tools``: present only when ``allowed_tools_schema`` is supplied;
+          projected onto Gemini's ``[{"function_declarations": [...]}]``
+          shape (PRF2.B3).
         """
         sys_parts = [
             prompt_messages.slot_map[c]
@@ -155,10 +187,71 @@ class GeminiClient:
         if user_turn:
             contents.append({"role": "user", "parts": [user_turn]})
 
-        return {
+        projected: dict[str, Any] = {
             "system_instruction": system_instruction,
             "contents": contents,
         }
+        if allowed_tools_schema:
+            projected["tools"] = GeminiClient.project_tools(allowed_tools_schema)
+        return projected
+
+    # ------------------------------------------------------------------
+    # Tool-use schema projection (PRF2.B3)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def project_tools(
+        allowed_tools_schema: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """Project a ``CompiledPromptArtifact.allowed_tools_schema`` list onto
+        Gemini's native ``tools`` shape.
+
+        PRF2.B3 — plan ``prompt-reception-followups-a7b3c4``. Cascade's
+        canonical tool-schema shape (per ``CompiledPromptArtifact``) is a
+        list of dicts with keys ``name``, ``description``,
+        ``parameters`` (JSON-schema). Gemini expects::
+
+            [{"function_declarations": [{
+                "name": ...,
+                "description": ...,
+                "parameters": {json-schema},
+             }, ...]}]
+
+        This helper groups all incoming tools under a single
+        ``function_declarations`` block (matches Google's documented
+        pattern of one block per toolbox). Tools missing ``name`` are
+        silently dropped — calling Gemini with unnamed declarations is
+        an SDK error.
+
+        Parameters
+        ----------
+        allowed_tools_schema
+            List of Cascade tool-schema dicts.
+
+        Returns
+        -------
+        list[dict[str, Any]]
+            A one-element list suitable for the Gemini ``tools`` kwarg.
+            Empty list when every input was dropped as malformed.
+        """
+        declarations: list[dict[str, Any]] = []
+        for tool in allowed_tools_schema or []:
+            if not isinstance(tool, dict):
+                continue
+            name = tool.get("name")
+            if not isinstance(name, str) or not name:
+                continue
+            decl: dict[str, Any] = {"name": name}
+            description = tool.get("description")
+            if isinstance(description, str) and description:
+                decl["description"] = description
+            params = tool.get("parameters") or tool.get("input_schema")
+            if isinstance(params, dict):
+                decl["parameters"] = params
+            declarations.append(decl)
+        if not declarations:
+            return []
+        return [{"function_declarations": declarations}]
 
     # ------------------------------------------------------------------
     # Send
@@ -167,6 +260,7 @@ class GeminiClient:
     def send(
         self,
         prompt_messages: PromptMessages,
+        allowed_tools_schema: list[dict[str, Any]] | None = None,
         **generation_config: Any,
     ) -> GeminiResponse:
         """Send a ``PromptMessages`` request and return a typed response.
@@ -175,20 +269,80 @@ class GeminiClient:
         ----------
         prompt_messages
             Structured slot envelope from the assembly stage.
+        allowed_tools_schema
+            Optional Cascade tool-schema list; projected onto Gemini's
+            ``tools`` kwarg via :meth:`project_tools` (PRF2.B3).
         **generation_config
             Forwarded to the underlying SDK's ``generate_content`` call
             (``temperature``, ``max_output_tokens``, ``top_p`` ...).
         """
         model = self._resolve_model()
-        request = self.project(prompt_messages)
+        request = self.project(prompt_messages, allowed_tools_schema)
 
-        raw = model.generate_content(
-            contents=request["contents"],
-            system_instruction=request["system_instruction"] or None,
-            generation_config=generation_config or None,
-        )
+        kwargs: dict[str, Any] = {
+            "contents": request["contents"],
+            "system_instruction": request["system_instruction"] or None,
+            "generation_config": generation_config or None,
+        }
+        if request.get("tools"):
+            kwargs["tools"] = request["tools"]
+        raw = model.generate_content(**kwargs)
 
         return self._parse_response(raw, prompt_messages)
+
+    def send_stream(
+        self,
+        prompt_messages: PromptMessages,
+        allowed_tools_schema: list[dict[str, Any]] | None = None,
+        **generation_config: Any,
+    ) -> Iterator[GeminiStreamChunk]:
+        """Stream a ``PromptMessages`` request, yielding typed chunks.
+
+        PRF2.B3 — plan ``prompt-reception-followups-a7b3c4``. Wraps the
+        SDK's ``generate_content(..., stream=True)`` iterator into a
+        generator of :class:`GeminiStreamChunk` so callers get a stable
+        shape and can layer backpressure / progress reporting on top.
+
+        Parameters
+        ----------
+        prompt_messages
+            Structured slot envelope from the assembly stage.
+        allowed_tools_schema
+            Optional Cascade tool-schema list; projected onto Gemini's
+            ``tools`` kwarg via :meth:`project_tools`.
+        **generation_config
+            Forwarded to the underlying SDK's ``generate_content`` call.
+
+        Yields
+        ------
+        GeminiStreamChunk
+            One chunk per SDK delta. ``finish_reason`` is populated only
+            on the terminal chunk.
+        """
+        model = self._resolve_model()
+        request = self.project(prompt_messages, allowed_tools_schema)
+
+        kwargs: dict[str, Any] = {
+            "contents": request["contents"],
+            "system_instruction": request["system_instruction"] or None,
+            "generation_config": generation_config or None,
+            "stream": True,
+        }
+        if request.get("tools"):
+            kwargs["tools"] = request["tools"]
+
+        for raw_chunk in model.generate_content(**kwargs):
+            text = getattr(raw_chunk, "text", "") or ""
+            finish_reason: str | None = None
+            candidates = getattr(raw_chunk, "candidates", None) or []
+            if candidates:
+                fr = getattr(candidates[0], "finish_reason", None)
+                if fr is not None:
+                    finish_reason = (
+                        fr if isinstance(fr, str)
+                        else getattr(fr, "name", str(fr))
+                    )
+            yield GeminiStreamChunk(text=text, finish_reason=finish_reason, raw=raw_chunk)
 
     # ------------------------------------------------------------------
     # Internals
@@ -239,4 +393,5 @@ __all__ = [
     "DEFAULT_GEMINI_MODEL",
     "GeminiClient",
     "GeminiResponse",
+    "GeminiStreamChunk",
 ]

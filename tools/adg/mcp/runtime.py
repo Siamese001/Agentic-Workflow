@@ -19,12 +19,46 @@ from tools.adg.mcp.health import HealthDiagnostics
 LOG_FILE = os.path.expanduser("~/adg_mcp_server.log")
 LOGGER_NAME = "adg_mcp"
 
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format="[%(asctime)s] %(levelname)s: %(message)s",
-)
-LOG = logging.getLogger(LOGGER_NAME)
+
+def _configure_adg_logger() -> logging.Logger:
+    """Attach a FileHandler directly to the named logger.
+
+    W1.1 F1 (plan ``adg-mcp-reopen-hardening``): ``logging.basicConfig``
+    is a no-op when the root logger already has handlers, and FastMCP's
+    stdio transport registers stderr handlers before our module imports.
+    The silent-log regression (2026-04-22: log dead 13:39 → 20:33+
+    despite active server PID 55784) traced to that override.
+
+    This helper configures the ``adg_mcp`` logger explicitly:
+
+    * Attach a single ``FileHandler`` with the canonical format.
+    * Guard against duplicate handler registration on re-import (tests,
+      hot-reload, subprocess relaunch).
+    * Set ``propagate=False`` so our file output is not duplicated into
+      FastMCP's stderr sinks.
+    """
+    logger = logging.getLogger(LOGGER_NAME)
+    logger.setLevel(logging.INFO)
+    # Avoid duplicate handlers on module re-import.
+    existing = {
+        getattr(h, "baseFilename", None)
+        for h in logger.handlers
+        if isinstance(h, logging.FileHandler)
+    }
+    target = os.path.abspath(LOG_FILE)
+    if target not in existing:
+        handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
+        handler.setFormatter(
+            logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
+        )
+        logger.addHandler(handler)
+    # Keep log lines scoped to the file handler; FastMCP stderr sinks pick
+    # up warnings via their own root config if they need to.
+    logger.propagate = False
+    return logger
+
+
+LOG = _configure_adg_logger()
 
 
 class ADGServerRuntime:
@@ -125,14 +159,81 @@ class ADGServerRuntime:
             },
         }
 
-    def reopen_connections(self) -> dict[str, Any]:
-        """Reopen ADG backend connections after an explicit close."""
+    def reopen_connections(self, timeout_s: float = 15.0) -> dict[str, Any]:
+        """Reopen ADG backend connections after an explicit close.
+
+        W2.2 (idempotency, F4) + W1.2 (bounded timeout, F2) remediation —
+        plan ``adg-mcp-reopen-hardening``.
+
+        Fast-path (F4 idempotency): when a live ``ADGService`` already points
+        at the latest on-disk SQLite snapshot with an unchanged mtime, skip
+        teardown/reconnect entirely and return ``noop=True``. The previous
+        implementation forced 3+ SQLite opens plus a Redis ping on every call
+        regardless of state change.
+
+        Slow-path (F2 timeout): the actual ``service.reopen()`` call is
+        executed inside a ``ThreadPoolExecutor`` with a bounded wait
+        (``timeout_s`` seconds, default 15). Under backend contention a bare
+        ``reopen()`` could queue indefinitely and hang the MCP client; this
+        wrapper surfaces a structured error instead of blocking forever.
+        """
+        # F4 — idempotency: short-circuit if snapshot+mtime unchanged.
+        if self._service is not None:
+            sqlite_backend = getattr(self._service, "_sqlite", None)
+            if sqlite_backend is not None:
+                try:
+                    from tools.adg.shared_modules.path_resolver import latest_sqlite
+                    current_path = getattr(sqlite_backend, "_sqlite_path", None)
+                    current_mtime = getattr(sqlite_backend, "_last_mtime", 0.0)
+                    latest_path = latest_sqlite()
+                    if (
+                        latest_path is not None
+                        and current_path is not None
+                        and Path(current_path) == Path(latest_path)
+                        and current_mtime == latest_path.stat().st_mtime
+                    ):
+                        LOG.info("reopen_connections noop: snapshot unchanged (%s)", current_path)
+                        return {
+                            "status": "ok",
+                            "data": {
+                                "reopened": True,
+                                "noop": True,
+                                "sqlite_path": str(current_path),
+                                "message": "ADG connections unchanged; skipped reopen.",
+                            },
+                        }
+                except (OSError, AttributeError) as exc:
+                    # Idempotency check is best-effort; fall through to full reopen
+                    # on any inspection error rather than block the caller.
+                    LOG.debug("reopen idempotency check failed, proceeding: %s", exc)
+
+        # F2 — bounded timeout: cap service.reopen() wait to ``timeout_s`` seconds.
+        import concurrent.futures as _cf
+
         service = self.service
-        service.reopen()
+        try:
+            with _cf.ThreadPoolExecutor(max_workers=1, thread_name_prefix="adg-reopen") as ex:
+                future = ex.submit(service.reopen)
+                future.result(timeout=timeout_s)
+        except _cf.TimeoutError:
+            LOG.error("reopen_connections timed out after %.1fs", timeout_s)
+            return {
+                "status": "error",
+                "data": {
+                    "reopened": False,
+                    "reason": "timeout",
+                    "timeout_s": timeout_s,
+                    "detail": (
+                        f"service.reopen() did not return within {timeout_s:.1f}s; "
+                        "backend contention likely — retry after snapshot stabilises."
+                    ),
+                },
+            }
         return {
             "status": "ok",
             "data": {
                 "reopened": True,
+                "noop": False,
                 "message": "ADG connections reopened.",
             },
         }

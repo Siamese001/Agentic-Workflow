@@ -361,7 +361,7 @@ class JudgeScore:
 
     def known_dimensions(self) -> dict[str, float]:
         """Dimensions that were actually scored (exclude Unknown)."""
-        return {d: getattr(self, d) for d in DIMENSIONS if not self.is_unknown(d)}
+        return {d: getattr(self, d) for d in DIMENSIONS if not self.is_unknown(d)}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads dimension attr by name
 
     def unknown_rate(self) -> float:
         """Fraction of dimensions the judge abstained on in [0.0, 1.0]."""
@@ -431,7 +431,7 @@ def _extract_dim_payload(raw: str) -> dict[str, Any]:
     if candidates:
         try:
             return cast(dict[str, Any], json.loads(candidates[-1].group(0)))
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- JSON tail parse is a best-effort first pass; falls through to cleaned-raw parse below
             pass
     cleaned = _clean_raw(raw)
     try:

@@ -60,17 +60,32 @@ class Stage:
 # stage via --only and shell-quote their own flags, but these are the sensible
 # batch defaults for running the full pipeline.
 CORE_STAGES: tuple[Stage, ...] = (
-    Stage(
-        name="code",
-        script="ingest_code.py",
-        args=("--source-dir", "agentic_core"),
-    ),
+    # W3.1: expand code ingest to cover every Python root, not just
+    # agentic_core. Each root adds to the same collection — repo_code_chunks
+    # — via idempotent canonical_digest upsert, so running the stages in
+    # series is safe. The stage names use `code_<root>` so the pipeline can
+    # report per-root timing; all write to the same target collection.
+    Stage(name="code", script="ingest_code.py", args=("--source-dir", "agentic_core")),
+    Stage(name="code_apps_rg", script="ingest_code.py", args=("--source-dir", "apps_rg")),
+    Stage(name="code_apps_lic", script="ingest_code.py", args=("--source-dir", "apps_lic")),
+    Stage(name="code_apps_eval", script="ingest_code.py", args=("--source-dir", "apps_eval")),
+    Stage(name="code_apps_exec", script="ingest_code.py", args=("--source-dir", "apps_exec")),
+    Stage(name="code_apps_research", script="ingest_code.py", args=("--source-dir", "apps_research")),
+    Stage(name="code_apps_rfp", script="ingest_code.py", args=("--source-dir", "apps_rfp")),
+    Stage(name="code_apps_shared", script="ingest_code.py", args=("--source-dir", "apps_shared")),
+    Stage(name="code_apps_uw", script="ingest_code.py", args=("--source-dir", "apps_underwriting_ai")),
+    Stage(name="code_system_learning", script="ingest_code.py", args=("--source-dir", "system_learning")),
+    Stage(name="code_infrastructure", script="ingest_code.py", args=("--source-dir", "infrastructure")),
+    Stage(name="code_tools", script="ingest_code.py", args=("--source-dir", "tools")),
+    Stage(name="code_ops_scripts", script="ingest_code.py", args=("--source-dir", "ops_scripts")),
     Stage(
         name="docs",
         script="ingest_docs.py",
         args=("--source-dir", "docs", "--embedding-provider", "bge-m3"),
     ),
-    Stage(name="adg", script="ingest_adg.py"),
+    # ``adg`` stage removed W5.2: repo_adg_graph is redundant with the
+    # ``symbols`` collection + live adg_sqlite MCP. See
+    # tools/retrieval/drop_repo_adg_graph.py for rationale and teardown.
     Stage(name="tests", script="ingest_tests.py"),
     Stage(
         name="traces",
@@ -94,7 +109,28 @@ WEB_STAGES: tuple[Stage, ...] = (
     ),
 )
 
-ALL_STAGES = {s.name: s for s in (*CORE_STAGES, *WEB_STAGES)}
+# W5.1 unified orchestrator — tools/generate/ingestion/ stages under the
+# single pipeline. Opt-in via --with-generate so existing callers that only
+# want the core ingest set stay byte-compatible. Every generate stage writes
+# into the canonical ChromaDB store and is auto-coerced to ChunkMetadataV1
+# at the SovereignChromaClient.add_documents boundary (W2.2b), so outputs
+# are contract-compliant without touching each script.
+GENERATE_STAGES: tuple[Stage, ...] = (
+    Stage(name="gen_symbols", script="../generate/ingestion/ingest_symbols.py"),
+    Stage(name="gen_code_chunks", script="../generate/ingestion/ingest_code_chunks.py"),
+    Stage(name="gen_arch_docs", script="../generate/ingestion/ingest_arch_docs.py"),
+    Stage(name="gen_process_docs", script="../generate/ingestion/ingest_process_docs.py"),
+    Stage(name="gen_tests_guardrails", script="../generate/ingestion/ingest_tests_guardrails.py"),
+    Stage(name="gen_runtime_evidence", script="../generate/ingestion/ingest_runtime_evidence.py"),
+    Stage(name="gen_incidents_rca", script="../generate/ingestion/ingest_incidents_rca.py"),
+    Stage(name="gen_repo_evidence", script="../generate/ingestion/ingest_repo_evidence.py"),
+    Stage(name="gen_ext_knowledge", script="../generate/ingestion/ingest_ext_knowledge.py"),
+    Stage(name="gen_ext_authority", script="../generate/ingestion/ingest_ext_authority.py"),
+    Stage(name="gen_curated_agent_docs", script="../generate/ingestion/ingest_curated_agent_docs.py"),
+    Stage(name="gen_agent_framework_docs", script="../generate/ingestion/ingest_agent_framework_docs.py"),
+)
+
+ALL_STAGES = {s.name: s for s in (*CORE_STAGES, *WEB_STAGES, *GENERATE_STAGES)}
 
 
 # ANSI colors — constitutional rule 16 (progress bar + color)
@@ -124,6 +160,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Include web ingestion stages (web_to_chroma, web_to_chroma_enhanced).",
     )
     parser.add_argument(
+        "--with-generate",
+        action="store_true",
+        help="Include tools/generate/ingestion/* stages (unified orchestrator, W5.1).",
+    )
+    parser.add_argument(
         "--only",
         choices=list(ALL_STAGES.keys()),
         help="Run a single stage instead of the full pipeline.",
@@ -151,9 +192,12 @@ def build_parser() -> argparse.ArgumentParser:
 def select_stages(args: argparse.Namespace) -> list[Stage]:
     if args.only:
         return [ALL_STAGES[args.only]]
+    stages: list[Stage] = list(CORE_STAGES)
     if args.with_web:
-        return list(CORE_STAGES) + list(WEB_STAGES)
-    return list(CORE_STAGES)
+        stages += list(WEB_STAGES)
+    if args.with_generate:
+        stages += list(GENERATE_STAGES)
+    return stages
 
 
 def preflight_seed_lines(path: Path) -> int:
@@ -184,7 +228,9 @@ def run_stage(
     """
     pct = int(idx * 100 / total)
     log_file = LOG_DIR / f"{stage.name}.log"
-    script_path = REPO_ROOT / "tools" / "ingestion" / stage.script
+    # W5.1: scripts may live in sibling dirs (tools/generate/ingestion/) via
+    # a ``../`` relative path — resolve both cases against the pipeline dir.
+    script_path = (REPO_ROOT / "tools" / "ingestion" / stage.script).resolve()
 
     header = (
         f"{BLUE}[{idx}/{total}  {pct:3d}%]{RESET} "
@@ -234,6 +280,22 @@ def run_stage(
                 f"         {GREEN}OK{RESET}   elapsed={elapsed:.1f}s  log={log_file}",
                 flush=True,
             )
+            # Post-stage ChunkMetadataV1 validation (W2.3). Non-fatal: a
+            # failure marks the stage FAIL for the summary but does not
+            # stop the pipeline unless --fail-fast is set.
+            try:
+                from tools.ingestion._validate_stage import validate_stage
+
+                validator_rc = validate_stage(stage.name)
+            except ImportError as exc:
+                print(f"         {YELLOW}VALIDATE-SKIP{RESET} {exc}", flush=True)
+                validator_rc = 0
+            if validator_rc != 0:
+                print(
+                    f"         {RED}VALIDATE-FAIL{RESET} stage={stage.name}",
+                    flush=True,
+                )
+                return "fail", elapsed
             return "ok", elapsed
         print(
             f"         {RED}FAIL{RESET} rc={result.returncode} "
@@ -261,6 +323,14 @@ def main() -> int:
     env = os.environ.copy()
     for key, value in SUBPROCESS_ENV_DEFAULTS.items():
         env.setdefault(key, value)
+    # Ensure repo root is importable for ``from tools.ingestion...`` modules
+    # when the script is invoked as a file path (not via ``-m``).
+    repo_str = str(REPO_ROOT)
+    existing_pp = env.get("PYTHONPATH", "")
+    if repo_str not in existing_pp.split(os.pathsep):
+        env["PYTHONPATH"] = (
+            repo_str + (os.pathsep + existing_pp if existing_pp else "")
+        )
 
     print(f"Pipeline: {len(stages)} stages, logs -> {LOG_DIR}", flush=True)
 

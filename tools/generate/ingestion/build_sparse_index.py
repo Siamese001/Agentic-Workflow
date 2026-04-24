@@ -51,6 +51,7 @@ CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
 SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse"
 
 TARGET_COLLECTIONS = [
+    # Original tools/generate/ingestion/ targets (legacy)
     "code_chunks",
     "symbols",
     "arch_docs",
@@ -59,6 +60,15 @@ TARGET_COLLECTIONS = [
     "process_docs",
     "ext_knowledge",
     "incidents_rca",
+    # tools/ingestion/ pipeline collection names (W4.1)
+    "repo_code_chunks",
+    "docs",
+    "repo_tests_guardrails",
+    "repo_runtime_evidence",
+    "repo_incidents_rca",
+    "traces",
+    "repo_adg_graph",
+    "agentic_best_practices",
 ]
 
 BATCH_SIZE = 500

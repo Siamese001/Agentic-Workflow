@@ -1,0 +1,14 @@
+{
+  "answer": null,
+  "context": "Anchor guidance for score 3: context partially relevant; contains off-topic noise. This is a seed template; a human rater must supply the real query, context, and answer before calibration.",
+  "created_at": "2026-04-23T00:00:00Z",
+  "generator": "seed_golden_items",
+  "gold_outcome": "pending",
+  "gold_score": null,
+  "human_labels": [],
+  "item_id": "seed-context_precision-792f9ef33ff5",
+  "notes": "pending human authorship; do not count toward \u03ba-gate population",
+  "query": "[seed 7] probe context_precision targeting anchor 3",
+  "rubric_id": "context_precision",
+  "target_anchor": 3
+}

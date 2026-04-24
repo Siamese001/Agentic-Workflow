@@ -1,0 +1,14 @@
+{
+  "answer": null,
+  "context": "Anchor guidance for score 5: directly and completely addresses every part of the query. This is a seed template; a human rater must supply the real query, context, and answer before calibration.",
+  "created_at": "2026-04-23T00:00:00Z",
+  "generator": "seed_golden_items",
+  "gold_outcome": "pending",
+  "gold_score": null,
+  "human_labels": [],
+  "item_id": "seed-answer_relevancy-9ef36e20f07a",
+  "notes": "pending human authorship; do not count toward \u03ba-gate population",
+  "query": "[seed 5] probe answer_relevancy targeting anchor 5",
+  "rubric_id": "answer_relevancy",
+  "target_anchor": 5
+}

@@ -18,6 +18,7 @@ from typing import Any
 
 from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.L4_state.utils.circuit_breaker_util import CircuitBreakerOpenError
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

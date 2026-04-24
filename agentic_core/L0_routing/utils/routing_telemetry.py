@@ -42,6 +42,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.contracts.routing_features import RoutingFeatureVector
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -272,6 +273,9 @@ class RoutingTelemetry:
     target_load_snapshot: Any
     routing_outcome_status: str
     routing_failure_reason: str
+    # W1.P3 additive: optional routing feature vector (None = caller did
+    # not populate). Independent of the 15 required spec fields above.
+    feature_vector: RoutingFeatureVector | None = None
 
     @classmethod
     def create(
@@ -289,6 +293,7 @@ class RoutingTelemetry:
         queue_depth_snapshot: Any = None,
         target_load_snapshot: Any = None,
         routing_failure_reason: str = "",
+        feature_vector: RoutingFeatureVector | None = None,
     ) -> RoutingTelemetry:
         telemetry_id = f"rt-{uuid.uuid4().hex[:12]}"
         chosen_route_hash = hashlib.sha256(chosen_route.encode()).hexdigest()[:16]
@@ -322,6 +327,7 @@ class RoutingTelemetry:
             target_load_snapshot=load_snap,
             routing_outcome_status=routing_outcome_status.value,
             routing_failure_reason=routing_failure_reason,
+            feature_vector=feature_vector,
         )
 
 
@@ -353,6 +359,9 @@ class RoutingTelemetryContext:
     target_load_snapshot: Any = None
     failure_reason: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
+    # W1.P3 additive: optional routing feature vector. Back-compat
+    # default None — no existing caller is required to populate it.
+    feature_vector: RoutingFeatureVector | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -427,7 +436,25 @@ def record_routing_telemetry(
         queue_depth_snapshot=routing_context.queue_depth_snapshot,
         target_load_snapshot=routing_context.target_load_snapshot,
         routing_failure_reason=routing_context.failure_reason,
+        feature_vector=routing_context.feature_vector,
     )
+
+    # --- W1.P3: emit a dedicated debug line when a feature vector is present
+    #     so downstream log scrapers (and W4 OTEL exporters) can attribute
+    #     routing decisions to features without parsing the whole blob.
+    if routing_context.feature_vector is not None:
+        fv = routing_context.feature_vector
+        logger.debug(
+            "ROUTING_FEATURE_VECTOR telemetry=%s work_class=%s freshness=%s "
+            "grounding=%.4f ood=%.4f budget=%.4f manifest=%s",
+            telemetry.routing_telemetry_id,
+            fv.work_class.value,
+            fv.freshness_class,
+            fv.grounding_need_score,
+            fv.ood_score,
+            fv.budget_headroom_ratio,
+            fv.manifest_hash[:16],
+        )
 
     # --- Step 5: Persist ---
     _TELEMETRY_LOG.debug(

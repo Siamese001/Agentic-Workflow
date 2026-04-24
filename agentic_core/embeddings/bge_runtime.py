@@ -175,3 +175,123 @@ def reset_model_for_testing() -> None:
     global _bge_model
     with _model_lock:
         _bge_model = None
+
+
+# ── W5.3: opt-in multi-vector path (dense + sparse + ColBERT) ──────────────
+#
+# BGE-M3 is a true multi-vector model. Beyond the 1024-dim dense vector
+# every ``bge_embed_query`` / ``bge_embed_batch`` call already returns, the
+# same forward pass yields:
+#
+#   - lexical_weights: dict[token_id, weight]  — BM25-like sparse vector
+#   - colbert_vecs: list[list[float]]          — per-token fine-grained vec
+#
+# These are accessible only via ``FlagEmbedding.BGEM3FlagModel``, NOT via
+# the generic ``SentenceTransformer`` wrapper used above. So the multi-vec
+# path carries its own optional singleton and fails loudly if the dependency
+# is not installed. Default pipeline behaviour (dense only) is unchanged;
+# opt-in callers flip on via ``BGE_MULTIVEC_ENABLED=true`` and consume the
+# returned dict.
+
+_multivec_lock = threading.Lock()
+_multivec_model: object | None = None
+
+
+class BGEMultiVecUnavailable(RuntimeError):
+    """FlagEmbedding is not installed or BGE-M3 multi-vec is disabled."""
+
+
+def _get_multivec_model() -> object:
+    """Return the FlagEmbedding BGEM3FlagModel singleton.
+
+    Loaded lazily on first call. Respects the same ``BGE_ALLOW_MODEL_DOWNLOAD``
+    switch as the dense singleton.
+    """
+    global _multivec_model
+    if _multivec_model is None:
+        with _multivec_lock:
+            if _multivec_model is None:
+                try:
+                    from FlagEmbedding import BGEM3FlagModel  # type: ignore[import-not-found]
+                except ImportError as exc:
+                    raise BGEMultiVecUnavailable(
+                        "FlagEmbedding is not installed. "
+                        "Run: pip install -U FlagEmbedding"
+                    ) from exc
+                device = _resolve_device()
+                use_fp16 = device == "cuda"
+                logger.info(
+                    "Loading BGE-M3 multi-vec model: %s (device=%s, fp16=%s)",
+                    BGE_MODEL,
+                    device,
+                    use_fp16,
+                )
+                _multivec_model = BGEM3FlagModel(
+                    BGE_MODEL,
+                    use_fp16=use_fp16,
+                )
+    return _multivec_model
+
+
+def bge_embed_multi(
+    texts: list[str],
+    *,
+    batch_size: int = 32,
+    return_dense: bool = True,
+    return_sparse: bool = True,
+    return_colbert: bool = True,
+) -> dict[str, object]:
+    """Embed ``texts`` and return any subset of dense / sparse / ColBERT vectors.
+
+    Args:
+        texts: Non-empty list of non-empty strings.
+        batch_size: Forwarded to the FlagEmbedding encoder.
+        return_dense: Include the 1024-dim dense vectors.
+        return_sparse: Include the sparse lexical_weights dict per text.
+        return_colbert: Include the ColBERT per-token vectors.
+
+    Returns:
+        Dict with whichever of ``{"dense": list[list[float]],
+        "sparse": list[dict[int, float]], "colbert": list[list[list[float]]]}``
+        were requested.
+
+    Raises:
+        BGEMultiVecUnavailable: FlagEmbedding not installed.
+        ValueError: Inputs empty or malformed.
+    """
+    if not texts:
+        return {}
+    sanitized = [_sanitize_text(t) for t in texts]
+    model = _get_multivec_model()
+    result = model.encode(  # type: ignore[attr-defined]
+        sanitized,
+        batch_size=batch_size,
+        return_dense=return_dense,
+        return_sparse=return_sparse,
+        return_colbert_vecs=return_colbert,
+    )
+
+    out: dict[str, object] = {}
+    if return_dense:
+        dense = result.get("dense_vecs")
+        if dense is None:
+            raise RuntimeError("BGE_MULTIVEC_FAILED: dense_vecs missing from FlagEmbedding output")
+        out["dense"] = dense.tolist() if hasattr(dense, "tolist") else list(dense)
+    if return_sparse:
+        sparse = result.get("lexical_weights")
+        if sparse is None:
+            raise RuntimeError("BGE_MULTIVEC_FAILED: lexical_weights missing")
+        # Convert numpy keys/values to plain python ints/floats for JSON safety
+        out["sparse"] = [
+            {int(k): float(v) for k, v in weights.items()}
+            for weights in sparse
+        ]
+    if return_colbert:
+        colbert = result.get("colbert_vecs")
+        if colbert is None:
+            raise RuntimeError("BGE_MULTIVEC_FAILED: colbert_vecs missing")
+        out["colbert"] = [
+            vec.tolist() if hasattr(vec, "tolist") else list(vec)
+            for vec in colbert
+        ]
+    return out

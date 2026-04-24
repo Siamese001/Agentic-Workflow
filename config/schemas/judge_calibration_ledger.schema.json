@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow/config/schemas/judge_calibration_ledger.schema.json",
+  "title": "JudgeCalibrationLedgerRow",
+  "description": "Per-window calibration record written under data/judge_calibration/<judge_id>/<YYYY-Www>.json. Consumed by the judge-calibration-cadence rule watchdog.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "judge_id",
+    "rubric_version",
+    "model",
+    "window_start",
+    "window_end",
+    "sample_size",
+    "human_agreement_rate",
+    "per_dim_agreement",
+    "unknown_fraction_observed",
+    "operator",
+    "calibration_snapshot"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "judge_id":        { "type": "string", "minLength": 1 },
+    "rubric_version":  { "type": "string", "minLength": 1 },
+    "model":           { "type": "string", "minLength": 1 },
+    "window_start":    { "type": "string", "format": "date-time" },
+    "window_end":      { "type": "string", "format": "date-time" },
+    "sample_size":     { "type": "integer", "minimum": 1 },
+    "human_agreement_rate": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+    "per_dim_agreement": {
+      "type": "object",
+      "description": "Keys are rubric dimension names; values are agreement rates [0,1].",
+      "additionalProperties": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+    },
+    "unknown_fraction_observed": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+    "operator": { "type": "string", "minLength": 1, "description": "Human calibrator identity." },
+    "calibration_snapshot": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque sha that subsequent ExitDecision rows carry as judge_calibration_snapshot."
+    },
+    "notes": { "type": ["string", "null"] }
+  }
+}

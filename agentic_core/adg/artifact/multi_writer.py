@@ -513,6 +513,10 @@ _CANONICAL_GUARDIAN_TOKENS = frozenset(
         "allow-hardcoded-secret",
         "allow-hallucinated-tool-name",
         "allow-chokepoint-bypass",
+        # Layer-violation marker used by the layer-gravity filter path.
+        # Without this entry, `_extract_guardian_tokens` silently drops the token
+        # and `_has_guardian_comment` can never match layer-violation markers.
+        "allow-layer-violation",
     }
 )
 
@@ -654,12 +658,26 @@ def _has_guardian_comment(
     line_no: int,
     guardian_strings: tuple[str, ...],
 ) -> bool:
-    """Check if source line (±2 lines) contains a matching guardian comment."""
+    """Check if source line (±1 line) contains a matching guardian comment.
+
+    Used by the layer-violation filter path. These are `import` (or `calls`)
+    edges — NOT exception handlers — so the except-header anchor resolver
+    never matches. The inline resolver (line_no itself + line above) is the
+    correct window, consistent with the multi-line-import marker window used
+    by ``tools.adg.core.guardian_filter.is_layer_violation_exempted``.
+    Also supports the common pattern where the marker is on the closing ``)``
+    of a multi-line ``from X import (...)`` block up to 4 lines after line_no.
+    """
     lines = _read_lines_cached(source_file)
     if not lines or line_no < 1:
         return False
     valid_tokens = {g.split("guardian:", 1)[1].strip() for g in guardian_strings if "guardian:" in g}
-    for anchor_line in _resolve_except_anchor_lines(lines, line_no):
+    # Window: line_no - 1 .. line_no + 4 (inclusive), clamped to file bounds.
+    # Covers: (1) single-line import, (2) line-above marker, (3) closing ")" of
+    # a multi-line from-import block.
+    start = max(1, line_no - 1)
+    end = min(len(lines), line_no + 4)
+    for anchor_line in range(start, end + 1):
         tokens = _extract_guardian_tokens(lines[anchor_line - 1])
         if any(token in valid_tokens for token in tokens):
             return True

@@ -44,7 +44,9 @@ def _notion_request(method: str, path: str, token: str, body: dict | None = None
     url = f"{NOTION_BASE}{path}"
     data = json.dumps(body).encode("utf-8") if body is not None else None
     req = urllib.request.Request(
-        url, data=data, method=method,
+        url,
+        data=data,
+        method=method,
         headers={
             "Authorization": f"Bearer {token}",
             "Notion-Version": NOTION_API_VERSION,
@@ -56,7 +58,10 @@ def _notion_request(method: str, path: str, token: str, body: dict | None = None
             parsed: Any = json.loads(resp.read().decode("utf-8"))
             return parsed if isinstance(parsed, dict) else None
     except urllib.error.HTTPError as exc:
-        print(f"  HTTP {exc.code} on {path}: {exc.read().decode('utf-8', errors='replace')[:300]}", file=sys.stderr)
+        print(
+            f"  HTTP {exc.code} on {path}: {exc.read().decode('utf-8', errors='replace')[:300]}",
+            file=sys.stderr,
+        )
         return None
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         print(f"  NET err on {path}: {exc}", file=sys.stderr)
@@ -76,12 +81,14 @@ def find_bad_patches() -> list[dict[str, Any]]:
             continue
         for p in patched:
             if isinstance(p, dict) and p.get("via") in OVER_BROAD_VIAS and "page_id" in p:
-                bad.append({
-                    "page_id": p["page_id"],
-                    "phase_id": p.get("phase_id", "?"),
-                    "via": p.get("via"),
-                    "sha": entry.get("sha", "?"),
-                })
+                bad.append(
+                    {
+                        "page_id": p["page_id"],
+                        "phase_id": p.get("phase_id", "?"),
+                        "via": p.get("via"),
+                        "sha": entry.get("sha", "?"),
+                    }
+                )
     return bad
 
 

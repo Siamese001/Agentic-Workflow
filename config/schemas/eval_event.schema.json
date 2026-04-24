@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow/config/schemas/eval_event.schema.json",
+  "title": "EvalEvent",
+  "description": "Async runtime data-exhaust record emitted after §5 completes. Ingested by L6 Shadow Evaluation (6A INGEST). Captures the canonical tuple: Traces, Artifacts, Outcomes, reason codes, commit status, plus replication + cost metadata needed for non-determinism reporting (Anthropic) and flywheel curation (OpenAI).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_id",
+    "emitted_at_utc",
+    "request_id",
+    "trace_id",
+    "runtime_boundary_crossed",
+    "exit_decision",
+    "artifacts",
+    "outcomes",
+    "commit_status",
+    "cost",
+    "replication"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "event_id": { "type": "string", "minLength": 1 },
+    "emitted_at_utc": { "type": "string", "format": "date-time" },
+
+    "request_id": { "type": "string", "minLength": 1 },
+    "trace_id":   { "type": "string", "minLength": 1 },
+    "session_id": { "type": ["string", "null"] },
+    "tenant":     { "type": ["string", "null"] },
+    "agent_class":{ "type": ["string", "null"] },
+    "agent_version": { "type": ["string", "null"] },
+
+    "runtime_boundary_crossed": {
+      "type": "boolean",
+      "description": "Must be true — L6 only consumes records emitted AFTER the runtime boundary. Shadow lane invariant (v33 §6)."
+    },
+
+    "exit_decision": {
+      "type": "object",
+      "description": "Inline copy of the ExitDecision produced at §5. Full schema at exit_decision.schema.json.",
+      "required": ["disposition", "reason_code", "quality", "safety", "budget", "trajectory", "final_response"],
+      "additionalProperties": true
+    },
+
+    "artifacts": {
+      "type": "array",
+      "description": "Sealed L2 artifacts and any [RET] short-circuit payloads attached to the runtime trace.",
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref"],
+        "additionalProperties": false,
+        "properties": {
+          "kind":   { "type": "string", "enum": ["answer", "tool_result", "plan", "retrieval_bundle", "schema_output", "other"] },
+          "ref":    { "type": "string" },
+          "bytes":  { "type": ["integer", "null"], "minimum": 0 },
+          "sha256": { "type": ["string", "null"] }
+        }
+      }
+    },
+
+    "outcomes": {
+      "type": "object",
+      "description": "Graded outcomes emitted by runtime trace-grader (ADR-036) and cross-linked from §6B evaluator.",
+      "required": ["terminal_class"],
+      "additionalProperties": false,
+      "properties": {
+        "terminal_class": { "type": "string", "enum": ["SUCCESS", "FAILURE", "NEEDS_HELP", "REJECTED", "TIMEOUT", "ERROR"] },
+        "runtime_grader_scores": {
+          "type": ["object", "null"],
+          "description": "Per-dimension runtime trace-grader scores (trace_rubric.yaml). Keys match dimensions there."
+        },
+        "guardrail_outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["rule", "result"],
+            "additionalProperties": false,
+            "properties": {
+              "rule":   { "type": "string" },
+              "result": { "type": "string", "enum": ["pass", "warn", "fail", "skipped"] },
+              "detail": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+
+    "reason_codes": {
+      "type": "array",
+      "description": "All reason codes surfaced along the run (ingress, routing, execution, heal, exit). Ordered chronologically.",
+      "items": { "type": "string" }
+    },
+
+    "commit_status": {
+      "type": "object",
+      "description": "UWG commit outcome (if disposition==commit_request).",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status":     { "type": "string", "enum": ["none", "committed", "rejected", "deferred"] },
+        "uwg_ref":    { "type": ["string", "null"] },
+        "mutation_record_id": { "type": ["string", "null"] },
+        "committed_at_utc":   { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+
+    "cost": {
+      "type": "object",
+      "description": "Always-on cost metrics (Anthropic + Google default-metric guidance).",
+      "required": ["tokens_total", "latency_ms_total"],
+      "additionalProperties": false,
+      "properties": {
+        "tokens_total":      { "type": "integer", "minimum": 0 },
+        "tokens_prompt":     { "type": ["integer", "null"], "minimum": 0 },
+        "tokens_completion": { "type": ["integer", "null"], "minimum": 0 },
+        "latency_ms_total":  { "type": "integer", "minimum": 0 },
+        "tool_calls":        { "type": ["integer", "null"], "minimum": 0 },
+        "cost_usd":          { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+
+    "replication": {
+      "type": "object",
+      "description": "Non-determinism reporting (Anthropic). If this event is part of a replication cluster, link siblings and pass-rate.",
+      "required": ["is_replicate"],
+      "additionalProperties": false,
+      "properties": {
+        "is_replicate":  { "type": "boolean" },
+        "replicate_of":  { "type": ["string", "null"] },
+        "replicate_n":   { "type": ["integer", "null"], "minimum": 1 },
+        "pass_rate_0_1": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 },
+        "variance":      { "type": ["number", "null"], "minimum": 0.0 }
+      }
+    },
+
+    "flywheel": {
+      "type": ["object", "null"],
+      "description": "Flywheel curation hints (ADR-040). When populated, L6 trace→dataset promoter will consider this event.",
+      "additionalProperties": false,
+      "properties": {
+        "promote_candidate": { "type": "boolean" },
+        "candidate_reason":  { "type": "string" },
+        "target_dataset":    { "type": ["string", "null"] }
+      }
+    },
+
+    "policy_snapshot":             { "type": ["string", "null"] },
+    "rubric_version":              { "type": ["string", "null"] },
+    "judge_calibration_snapshot":  { "type": ["string", "null"] }
+  }
+}

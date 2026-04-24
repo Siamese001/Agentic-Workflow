@@ -33,6 +33,7 @@ from tools.ingestion.adg_cards.path_emitter import emit_path_cards
 from tools.ingestion.adg_cards.symbol_emitter import emit_symbol_cards
 from tools.ingestion.adg_cards.types import CardKind, SemanticCard
 from tools.ingestion.adg_cards.violation_emitter import emit_violation_cards
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -104,7 +105,7 @@ def _report(grouped: dict[CardKind, list[SemanticCard]]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--adg-db", type=Path, required=True, help="Path to ADG SQLite snapshot.")
-    parser.add_argument("--chroma-dir", type=Path, default=Path("artifacts/chromadb"))
+    parser.add_argument("--chroma-dir", type=Path, default=Path(canonical_persist_dir_str()))
     parser.add_argument("--limit", type=int, default=None, help="Per-emitter row cap (for smoke runs).")
     parser.add_argument("--batch-size", type=int, default=500)
     parser.add_argument("--dry-run", action="store_true", help="Emit and count only; do not touch Chroma.")

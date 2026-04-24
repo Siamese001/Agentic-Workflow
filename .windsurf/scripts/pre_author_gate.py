@@ -8,8 +8,8 @@ When a trigger fires AND no active author-gate decision matches the current
 context fingerprint, emits HITL_REQUIRED and blocks the write.
 
 Deny-and-continue semantics (Anthropic Auto Mode):
-    - Exit 2 with structured HITL_REQUIRED marker
-    - Increments consecutive + total denial counters in hitl_session_state.json
+    - Exit 2 with structured HITL_REQUIRED marker (legacy name; payload is an Author-Gate denial)
+    - Increments consecutive + total denial counters in author_gate_session_state.json
     - After N consecutive (default 3) or M cumulative (default 20) denials,
       escalates to a hard halt and writes a severity=critical violation row
 
@@ -60,8 +60,24 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 TRIGGERS_PATH = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_triggers.yaml"
 LEDGER_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
-SESSION_STATE_PATH = STATE_DIR / "hitl_session_state.json"
-VIOLATIONS_PATH = STATE_DIR / "hitl_violations.jsonl"
+SESSION_STATE_PATH = STATE_DIR / "author_gate_session_state.json"
+VIOLATIONS_PATH = STATE_DIR / "author_gate_violations.jsonl"
+
+# Back-compat: legacy paths from pre-rename era (2026-04-21 harness-enforcement-rename).
+# One-shot migration runs on first touch; removed 2026-07-21 when deprecation window closes.
+_LEGACY_SESSION_STATE_PATH = STATE_DIR / "hitl_session_state.json"
+_LEGACY_VIOLATIONS_PATH = STATE_DIR / "hitl_violations.jsonl"
+
+
+def _migrate_legacy_state(legacy: Path, current: Path) -> None:
+    """One-shot rename legacy path -> current. Fail-open on any OSError."""
+    try:
+        if legacy.exists() and not current.exists():
+            current.parent.mkdir(parents=True, exist_ok=True)
+            legacy.rename(current)
+    except OSError:
+        # guardian: allow-silent-swallow -- one-shot migration: non-fatal, fail-open
+        pass
 
 GIT_TIMEOUT_S = 10
 MAX_SCAN_FILES = 500
@@ -155,6 +171,7 @@ def load_triggers() -> dict[str, Any]:
 
 def load_session_state() -> dict[str, Any]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
+    _migrate_legacy_state(_LEGACY_SESSION_STATE_PATH, SESSION_STATE_PATH)
     if not SESSION_STATE_PATH.exists():
         return {
             "session_started_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -209,6 +226,7 @@ def has_active_decision(fingerprint: str) -> bool:
 
 def append_violation(payload: dict[str, Any]) -> None:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
+    _migrate_legacy_state(_LEGACY_VIOLATIONS_PATH, VIOLATIONS_PATH)
     with VIOLATIONS_PATH.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(payload) + "\n")
 

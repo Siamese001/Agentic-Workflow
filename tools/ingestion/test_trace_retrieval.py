@@ -10,13 +10,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import chromadb
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 
 
 def test_trace_retrieval():
     """Test basic trace retrieval from the populated ChromaDB collection."""
 
     # Initialize ChromaDB with persistent storage
-    persist_dir = Path("artifacts/chromadb")
+    persist_dir = Path(canonical_persist_dir_str())
     client = chromadb.PersistentClient(path=str(persist_dir))
     collection = client.get_or_create_collection(name="traces")
 
@@ -68,7 +69,7 @@ def test_trace_type_filtering():
     """Test filtering traces by type."""
 
     # Initialize ChromaDB
-    persist_dir = Path("artifacts/chromadb")
+    persist_dir = Path(canonical_persist_dir_str())
     client = chromadb.PersistentClient(path=str(persist_dir))
     collection = client.get_or_create_collection(name="traces")
 

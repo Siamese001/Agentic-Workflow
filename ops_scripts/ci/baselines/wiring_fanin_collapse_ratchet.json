@@ -3,7 +3,10 @@
   "count": 0,
   "seeded_at": "2026-04-23T16:16:04.452221+00:00",
   "snapshot": "initial",
-  "zero_run_streak": 2,
-  "last_run_at": "2026-04-23T18:44:02.709074+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
+  "zero_run_streak": 3,
+  "last_run_at": "2026-04-23T22:04:03.930174+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_1802.sqlite",
+  "auto_promoted_tier": "B",
+  "auto_promoted_at": "2026-04-23T22:04:03.930174+00:00",
+  "auto_promoted_after_streak": 3
 }

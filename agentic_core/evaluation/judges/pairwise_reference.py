@@ -124,7 +124,7 @@ def _parse_final_json(raw: str) -> dict[str, Any]:
     if candidate is not None:
         try:
             return cast(dict[str, Any], json.loads(candidate))
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- balanced-JSON parse is a best-effort first pass; falls through to raw-cleaned parse below
             pass
     try:
         return cast(dict[str, Any], json.loads(cleaned))

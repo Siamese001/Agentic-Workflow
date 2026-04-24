@@ -15,6 +15,7 @@ GraphMemoryBridge can use it as a drop-in replacement for mcp11 calls.
 
 from __future__ import annotations
 
+import math
 import os
 import sqlite3
 import time
@@ -29,6 +30,14 @@ except ImportError:
     def tqdm(iterable, **_kwargs):
         return iterable
 
+
+from tools.memory.memory_decay import (
+    confidence_threshold,
+    effective_confidence,
+    jaccard_similarity,
+    jaccard_threshold,
+    reinforced_confidence,
+)
 
 _DEFAULT_DB = Path(__file__).resolve().parents[2] / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
@@ -74,6 +83,19 @@ CREATE INDEX IF NOT EXISTS idx_rel_to     ON relations (to_entity);
 CREATE INDEX IF NOT EXISTS idx_ent_type   ON entities (entity_type);
 """
 
+# Additive columns added by _migrate_decay_columns() — old DBs upgrade in place,
+# new DBs get them via the same path. Existing rows default to confidence=1.0
+# and last_reinforced=updated_at, preserving behavior for anyone reading without
+# applying decay.
+_DECAY_MIGRATION_COLUMNS: tuple[tuple[str, str, str], ...] = (
+    ("entities", "confidence", "REAL NOT NULL DEFAULT 1.0"),
+    ("entities", "last_reinforced", "REAL"),
+    ("entities", "access_count", "INTEGER NOT NULL DEFAULT 0"),
+    ("observations", "confidence", "REAL NOT NULL DEFAULT 1.0"),
+    ("observations", "last_reinforced", "REAL"),
+    ("observations", "access_count", "INTEGER NOT NULL DEFAULT 0"),
+)
+
 
 class SqliteMemoryStore:
     """SQLite-backed memory store — shared between MCP server and CLI fallback.
@@ -112,30 +134,144 @@ class SqliteMemoryStore:
     def _ensure_schema(self) -> None:
         with self.connection() as conn:
             conn.executescript(_SCHEMA)
+            self._migrate_decay_columns(conn)
+
+    @staticmethod
+    def _migrate_decay_columns(conn: sqlite3.Connection) -> None:
+        """Idempotent additive migration for confidence + last_reinforced columns.
+
+        SQLite ADD COLUMN is cheap: O(1), no table rewrite. Safe to run every
+        open. Existing rows get the column default (1.0 for confidence) and
+        NULL for last_reinforced which is back-filled to updated_at.
+        """
+        for table, col, decl in _DECAY_MIGRATION_COLUMNS:
+            existing = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
+            if col in existing:
+                continue
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {decl}")
+        # Back-fill last_reinforced once, using updated_at/created_at as a proxy.
+        conn.execute(
+            "UPDATE entities SET last_reinforced = updated_at "
+            "WHERE last_reinforced IS NULL"
+        )
+        conn.execute(
+            "UPDATE observations SET last_reinforced = created_at "
+            "WHERE last_reinforced IS NULL"
+        )
+        # Index used by threshold-filtered reads.
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_ent_confidence "
+            "ON entities (confidence, last_reinforced)"
+        )
 
     def _upsert_entity(self, conn: sqlite3.Connection, name: str, etype: str, now: float) -> None:
+        """Insert or reinforce. On conflict: bump confidence (reinforcement) and
+        touch last_reinforced. Stored confidence is decayed-then-bumped so it
+        cannot grow without bound.
+        """
+        row = conn.execute(
+            "SELECT confidence, last_reinforced, entity_type FROM entities WHERE name = ?",
+            (name,),
+        ).fetchone()
+        if row is None:
+            conn.execute(
+                "INSERT INTO entities (name, entity_type, created_at, updated_at, "
+                "confidence, last_reinforced) VALUES (?, ?, ?, ?, 1.0, ?)",
+                (name, etype, now, now, now),
+            )
+            return
+        new_conf = reinforced_confidence(
+            float(row["confidence"]),
+            float(row["last_reinforced"] or now),
+            str(row["entity_type"]),
+            now=now,
+        )
         conn.execute(
-            """
-            INSERT INTO entities (name, entity_type, created_at, updated_at)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(name) DO UPDATE SET updated_at = excluded.updated_at
-            """,
-            (name, etype, now, now),
+            "UPDATE entities SET updated_at = ?, confidence = ?, "
+            "last_reinforced = ? WHERE name = ?",
+            (now, new_conf, now, name),
         )
 
     def _add_obs(self, conn: sqlite3.Connection, name: str, content: str, now: float) -> bool:
-        """Insert observation; return True if inserted, False if duplicate."""
+        """Insert observation OR reinforce near-duplicate.
+
+        Two-stage dedup:
+          1. Exact UNIQUE constraint on (entity_name, content) — fast SQL check.
+          2. Jaccard similarity against existing observations on the same entity.
+             If any existing row has Jaccard overlap >= jaccard_threshold()
+             (default 0.60), REINFORCE that row instead of inserting.
+
+        Returns True if a new row was inserted; False if an existing duplicate
+        or near-duplicate was reinforced. Either path is a useful write —
+        the caller should NOT treat False as a no-op.
+        """
         content = content.strip()
         if not content:
             return False
+
+        etype_row = conn.execute(
+            "SELECT entity_type FROM entities WHERE name = ?",
+            (name,),
+        ).fetchone()
+        etype = str(etype_row["entity_type"]) if etype_row else "general"
+
+        # Stage 1: exact-match fast path (UNIQUE constraint).
+        existing_exact = conn.execute(
+            "SELECT id, confidence, last_reinforced FROM observations "
+            "WHERE entity_name = ? AND content = ?",
+            (name, content),
+        ).fetchone()
+        if existing_exact is not None:
+            self._reinforce_observation(conn, existing_exact, etype, now)
+            return False
+
+        # Stage 2: Jaccard near-duplicate check against siblings.
+        threshold = jaccard_threshold()
+        sibling_rows = conn.execute(
+            "SELECT id, content, confidence, last_reinforced FROM observations "
+            "WHERE entity_name = ?",
+            (name,),
+        ).fetchall()
+        best_sim = 0.0
+        best_row = None
+        for sib in sibling_rows:
+            sim = jaccard_similarity(content, str(sib["content"]))
+            if sim > best_sim:
+                best_sim = sim
+                best_row = sib
+        if best_row is not None and best_sim >= threshold:
+            self._reinforce_observation(conn, best_row, etype, now)
+            return False
+
+        # Stage 3: genuinely new observation — insert.
         try:
             conn.execute(
-                "INSERT INTO observations (entity_name, content, created_at) VALUES (?, ?, ?)",
-                (name, content, now),
+                "INSERT INTO observations (entity_name, content, created_at, "
+                "confidence, last_reinforced) VALUES (?, ?, ?, 1.0, ?)",
+                (name, content, now, now),
             )
             return True
         except sqlite3.IntegrityError:
+            # Race: a concurrent writer inserted the same content between stages.
             return False
+
+    @staticmethod
+    def _reinforce_observation(
+        conn: sqlite3.Connection, row: sqlite3.Row, etype: str, now: float
+    ) -> None:
+        """Apply reinforcement to an observation row — bumps confidence and
+        touches last_reinforced. Shared by exact-match and Jaccard paths."""
+        new_conf = reinforced_confidence(
+            float(row["confidence"]),
+            float(row["last_reinforced"] or now),
+            etype,
+            now=now,
+        )
+        conn.execute(
+            "UPDATE observations SET confidence = ?, last_reinforced = ? "
+            "WHERE id = ?",
+            (new_conf, now, row["id"]),
+        )
 
     # ------------------------------------------------------------------
     # Core API — mirrors mcp11 / @modelcontextprotocol/server-memory signatures
@@ -245,8 +381,13 @@ class SqliteMemoryStore:
                 not_found.append(name)
         return {"entities": entities, "not_found": not_found}
 
-    def search_nodes(self, query: str) -> list[dict[str, Any]]:
-        """Full-text search across entity names, types, and observations."""
+    def search_nodes(self, query: str, include_low_confidence: bool = False) -> list[dict[str, Any]]:
+        """Full-text search across entity names, types, and observations.
+
+        By default, entities whose effective confidence is below the read-time
+        threshold are hidden. Pass include_low_confidence=True for admin views
+        or the consolidation pass.
+        """
         query = (query or "").strip()
         if not query:
             return []
@@ -267,29 +408,63 @@ class SqliteMemoryStore:
                 ).fetchall()
             }
             all_names = direct | via_obs
-        return [e for n in sorted(all_names) if (e := self.load_entity(n))]
+        loaded = [e for n in sorted(all_names) if (e := self.load_entity(n, include_low_confidence=include_low_confidence))]
+        return loaded
 
-    def read_graph(self) -> dict[str, Any]:
-        """Read the complete graph — all entities, observations, and relations."""
+    def read_graph(self, include_low_confidence: bool = False) -> dict[str, Any]:
+        """Read the complete graph — all entities, observations, and relations.
+
+        Entities below the effective-confidence threshold are hidden unless
+        include_low_confidence=True.
+        """
+        threshold = 0.0 if include_low_confidence else confidence_threshold()
+        now = time.time()
         with self.connection() as conn:
             ent_rows = conn.execute(
-                "SELECT name, entity_type FROM entities ORDER BY entity_type, name",
+                "SELECT name, entity_type, confidence, last_reinforced "
+                "FROM entities ORDER BY entity_type, name",
             ).fetchall()
             entities = []
+            hidden_names: set[str] = set()
             for row in ent_rows:
+                eff = effective_confidence(
+                    float(row["confidence"]),
+                    float(row["last_reinforced"] or now),
+                    str(row["entity_type"]),
+                    now=now,
+                )
+                if eff < threshold:
+                    hidden_names.add(row["name"])
+                    continue
+                obs_rows = conn.execute(
+                    "SELECT content, confidence, last_reinforced FROM observations "
+                    "WHERE entity_name = ? ORDER BY created_at",
+                    (row["name"],),
+                ).fetchall()
                 obs = [
                     r["content"]
-                    for r in conn.execute(
-                        "SELECT content FROM observations WHERE entity_name = ? ORDER BY created_at",
-                        (row["name"],),
-                    ).fetchall()
+                    for r in obs_rows
+                    if effective_confidence(
+                        float(r["confidence"]),
+                        float(r["last_reinforced"] or now),
+                        str(row["entity_type"]),
+                        now=now,
+                    ) >= threshold
                 ]
-                entities.append({"name": row["name"], "entityType": row["entity_type"], "observations": obs})
+                entities.append(
+                    {
+                        "name": row["name"],
+                        "entityType": row["entity_type"],
+                        "observations": obs,
+                        "effectiveConfidence": round(eff, 4),
+                    }
+                )
             rels = [
                 {"from": r["from_entity"], "relationType": r["relation_type"], "to": r["to_entity"]}
                 for r in conn.execute(
                     "SELECT from_entity, relation_type, to_entity FROM relations ORDER BY from_entity",
                 ).fetchall()
+                if r["from_entity"] not in hidden_names and r["to_entity"] not in hidden_names
             ]
         return {"entities": entities, "relations": rels}
 
@@ -336,21 +511,48 @@ class SqliteMemoryStore:
     # Enhanced API — used by adg_memory_server.py and ADGMemoryAdapter
     # ------------------------------------------------------------------
 
-    def load_entity(self, name: str) -> dict[str, Any] | None:
-        """Load a single entity with all observations and relations."""
+    def load_entity(self, name: str, include_low_confidence: bool = False) -> dict[str, Any] | None:
+        """Load a single entity with observations and relations.
+
+        Applies read-time decay. Returns None if the entity is below threshold
+        (and include_low_confidence=False). Observations below threshold are
+        filtered out but the entity is still returned as long as IT is above.
+        """
+        threshold = 0.0 if include_low_confidence else confidence_threshold()
+        now = time.time()
         with self.connection() as conn:
             row = conn.execute(
-                "SELECT name, entity_type, created_at, updated_at FROM entities WHERE name = ?",
+                "SELECT name, entity_type, created_at, updated_at, "
+                "confidence, last_reinforced FROM entities WHERE name = ?",
                 (name,),
             ).fetchone()
             if row is None:
                 return None
+            etype = str(row["entity_type"])
+            eff = effective_confidence(
+                float(row["confidence"]),
+                float(row["last_reinforced"] or now),
+                etype,
+                now=now,
+            )
+            if eff < threshold:
+                return None
+            # Advisory: bump access counter on a successful above-threshold read.
+            self._bump_access(conn, name)
+            obs_rows = conn.execute(
+                "SELECT content, confidence, last_reinforced FROM observations "
+                "WHERE entity_name = ? ORDER BY created_at",
+                (name,),
+            ).fetchall()
             obs = [
                 r["content"]
-                for r in conn.execute(
-                    "SELECT content FROM observations WHERE entity_name = ? ORDER BY created_at",
-                    (name,),
-                ).fetchall()
+                for r in obs_rows
+                if effective_confidence(
+                    float(r["confidence"]),
+                    float(r["last_reinforced"] or now),
+                    etype,
+                    now=now,
+                ) >= threshold
             ]
             rels = [
                 {"from": r["from_entity"], "relationType": r["relation_type"], "to": r["to_entity"]}
@@ -362,15 +564,21 @@ class SqliteMemoryStore:
             ]
         return {
             "name": row["name"],
-            "entityType": row["entity_type"],
+            "entityType": etype,
             "observations": obs,
             "relations": rels,
             "createdAt": row["created_at"],
             "updatedAt": row["updated_at"],
+            "effectiveConfidence": round(eff, 4),
         }
 
-    def get_entities_by_type(self, types: tuple[str, ...]) -> list[dict[str, Any]]:
-        """Return all entities whose type is in the given tuple, fully loaded."""
+    def get_entities_by_type(
+        self, types: tuple[str, ...], include_low_confidence: bool = False
+    ) -> list[dict[str, Any]]:
+        """Return all entities whose type is in the given tuple, fully loaded.
+
+        Applies read-time decay. Pass include_low_confidence=True to bypass.
+        """
         if not types:
             return []
         placeholders = ",".join("?" * len(types))
@@ -380,7 +588,7 @@ class SqliteMemoryStore:
                 types,
             ).fetchall()
             names = [row["name"] for row in rows]
-        return [e for n in names if (e := self.load_entity(n))]
+        return [e for n in names if (e := self.load_entity(n, include_low_confidence=include_low_confidence))]
 
     def upsert_entity(self, name: str, etype: str, observations: list[str] | None = None) -> None:
         """Single-entity upsert with optional observation list. Idempotent."""
@@ -392,13 +600,109 @@ class SqliteMemoryStore:
                     self._add_obs(conn, name, obs, now)
 
     def add_observation(self, entity_name: str, content: str) -> bool:
-        """Add a single observation to an entity. Returns True if inserted."""
+        """Add a single observation to an entity. Returns True if inserted,
+        False if the observation already existed (and was reinforced)."""
         if not entity_name or not entity_name.strip():
             return False
         now = time.time()
         with self.connection() as conn:
             self._upsert_entity(conn, entity_name, "general", now)
             return self._add_obs(conn, entity_name, content, now)
+
+    def _bump_access(self, conn: sqlite3.Connection, name: str) -> None:
+        """Increment access_count on a successful read. Best-effort — never
+        raises. Used to power Ebbinghaus-style frequency reinforcement:
+        frequently-accessed memories rank higher in top_entities()."""
+        try:
+            conn.execute(
+                "UPDATE entities SET access_count = access_count + 1 WHERE name = ?",
+                (name,),
+            )
+        except sqlite3.Error:
+            # guardian: allow-broad-exception -- access tracking is advisory; never block reads
+            pass
+
+    def top_entities(
+        self,
+        limit: int = 25,
+        entity_types: tuple[str, ...] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Return Tier-1 ranking: entities ranked by effective_confidence *
+        log(1 + access_count). This is the "CLAUDE.md briefing" list from
+        yuvalsuede/memory-mcp — most-useful memories first.
+        """
+        now = time.time()
+        where = ""
+        params: tuple[Any, ...] = ()
+        if entity_types:
+            placeholders = ",".join("?" * len(entity_types))
+            where = f"WHERE entity_type IN ({placeholders})"
+            params = entity_types
+        with self.connection() as conn:
+            rows = conn.execute(
+                f"SELECT name, entity_type, confidence, last_reinforced, access_count "
+                f"FROM entities {where}",
+                params,
+            ).fetchall()
+        threshold = confidence_threshold()
+        scored: list[tuple[float, dict[str, Any]]] = []
+        for r in rows:
+            eff = effective_confidence(
+                float(r["confidence"]),
+                float(r["last_reinforced"] or now),
+                str(r["entity_type"]),
+                now=now,
+            )
+            if eff < threshold:
+                continue
+            ac = int(r["access_count"] or 0)
+            score = eff * math.log1p(ac)
+            # Give all visible entities a floor score so fresh-but-unused
+            # memories aren't completely suppressed by never-accessed rank.
+            score = max(score, eff * 0.1)
+            scored.append(
+                (
+                    score,
+                    {
+                        "name": r["name"],
+                        "entityType": r["entity_type"],
+                        "effectiveConfidence": round(eff, 4),
+                        "accessCount": ac,
+                        "score": round(score, 4),
+                    },
+                )
+            )
+        scored.sort(key=lambda pair: pair[0], reverse=True)
+        return [item for _, item in scored[:limit]]
+
+    def reinforce(self, name: str) -> bool:
+        """Explicitly reinforce an entity without changing its observations.
+
+        Use this when a read-site (e.g., search_nodes hit, open_nodes lookup)
+        wants to register use of a memory — future work: call this from the
+        MCP server on successful reads to emulate Ebbinghaus frequency effects.
+        """
+        now = time.time()
+        with self.connection() as conn:
+            row = conn.execute(
+                "SELECT confidence, last_reinforced, entity_type "
+                "FROM entities WHERE name = ?",
+                (name,),
+            ).fetchone()
+            if row is None:
+                return False
+            new_conf = reinforced_confidence(
+                float(row["confidence"]),
+                float(row["last_reinforced"] or now),
+                str(row["entity_type"]),
+                now=now,
+            )
+            conn.execute(
+                "UPDATE entities SET confidence = ?, last_reinforced = ? "
+                "WHERE name = ?",
+                (new_conf, now, name),
+            )
+        return True
 
     def insert_relation(self, from_e: str, rel_type: str, to_e: str) -> bool:
         """Insert a single relation. Returns True if inserted, False if duplicate."""

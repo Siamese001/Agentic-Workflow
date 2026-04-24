@@ -26,7 +26,23 @@ from openai import OpenAI
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
+try:
+    from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
+except ImportError:
+    # memory_store_config is untracked infra; fall back to a minimal shim
+    # that exposes only the attribute we actually consume (VECTOR_METRIC).
+    class MemoryStoreConfig:  # type: ignore[no-redef]
+        VECTOR_METRIC = "cosine"
+
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
+from agentic_core.L4_state.utils.chunk_metadata import (
+    build_canonical_digest,
+    build_required,
+    compute_source_sha,
+    infer_layer,
+    now_utc_iso,
+    validate as validate_chunk_metadata,
+)
 
 # Import embedding factory for BGE-M3 support via the sovereignty-allowlisted
 # bridge. Running as __main__ cannot call the factory directly — see
@@ -52,115 +68,140 @@ class DocumentChunker:
         self.max_chunk_size = max_chunk_size
         self.header_pattern = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
 
-    def chunk_document(self, file_path: Path) -> list[dict]:
-        """Split a markdown document into chunks with metadata."""
+    def chunk_document(
+        self,
+        file_path: Path,
+        *,
+        embedding_model: str | None = None,
+        embedding_dim: int | None = None,
+    ) -> list[dict]:
+        """Split a markdown document into ChunkMetadataV1-compliant chunks."""
         try:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
-        except Exception as e:
-            Logger.error(f"Failed to read {file_path}: {e}")
+        except OSError as exc:
+            Logger.error("Failed to read %s: %s", file_path, exc)
             return []
 
-        # Extract document metadata
-        metadata = self._extract_metadata(file_path, content)
-
-        # Split by headers
+        base_metadata = self._extract_metadata(
+            file_path,
+            content,
+            embedding_model=embedding_model,
+            embedding_dim=embedding_dim,
+        )
+        source_path = base_metadata["source_path"]
         sections = self._split_by_headers(content)
 
-        chunks = []
-        current_chunk = ""
+        chunks: list[dict] = []
         current_section = "Introduction"
+
+        def _emit(chunk_content: str, section: str, subsection: str, sub_ix: int) -> None:
+            anchor = f"{section}/{subsection}:{sub_ix}"
+            chunk_meta = base_metadata.copy()
+            chunk_meta.update(
+                {
+                    "section": section,
+                    "subsection": subsection,
+                    "chunk_type": "section",
+                    "canonical_digest": build_canonical_digest(
+                        artifact_type="doc_chunk",
+                        source_path=source_path,
+                        anchor=anchor,
+                    ),
+                }
+            )
+            chunks.append({"content": chunk_content, "metadata": chunk_meta})
 
         for section_title, section_content in sections:
             if not section_content.strip():
                 continue
-
-            # If section is too large, split it further
             if len(section_content) > self.max_chunk_size:
-                sub_chunks = self._split_large_section(section_content, current_section)
-                for sub_chunk in sub_chunks:
-                    chunk_metadata = metadata.copy()
-                    chunk_metadata.update(
-                        {"section": current_section, "subsection": section_title, "chunk_type": "section"},
-                    )
-                    chunks.append({"content": sub_chunk, "metadata": chunk_metadata})
+                for sub_ix, sub_chunk in enumerate(
+                    self._split_large_section(section_content, current_section)
+                ):
+                    _emit(sub_chunk, current_section, section_title, sub_ix)
             else:
-                chunk_metadata = metadata.copy()
-                chunk_metadata.update(
-                    {"section": current_section, "subsection": section_title, "chunk_type": "section"},
-                )
-                chunks.append({"content": section_content, "metadata": chunk_metadata})
-
+                _emit(section_content, current_section, section_title, 0)
             current_section = section_title
 
         return chunks
 
-    def _extract_metadata(self, file_path: Path, content: str) -> dict:
-        """Extract metadata from file path and content."""
-        # Determine document type from path
-        # Use the source directory as base for relative paths
+    def _extract_metadata(
+        self,
+        file_path: Path,
+        content: str,
+        *,
+        embedding_model: str | None = None,
+        embedding_dim: int | None = None,
+    ) -> dict:
+        """Build a ChunkMetadataV1-compliant base metadata dict for a doc.
+
+        The returned dict carries every REQUIRED contract field plus the
+        doc-specific OPTIONAL keys (doc_id / doc_type / category). Per-chunk
+        section / subsection / canonical_digest fields are layered on top by
+        :meth:`chunk_document`.
+        """
         base_path = Path.cwd().resolve()
-
         try:
-            relative_path = file_path.relative_to(base_path)
+            relative_path = str(file_path.relative_to(base_path)).replace("\\", "/")
         except ValueError:
-            # If file is not relative to cwd, use the filename only
             relative_path = file_path.name
-        doc_type = "unknown"
 
-        if "architecture" in str(relative_path):
+        # Doc-type inference (unchanged from legacy behaviour).
+        doc_type = "unknown"
+        if "architecture" in relative_path:
             doc_type = "architecture"
-        elif "reports" in str(relative_path):
+        elif "reports" in relative_path:
             doc_type = "report"
-        elif "specs" in str(relative_path):
+        elif "specs" in relative_path:
             doc_type = "specification"
-        elif "policies" in str(relative_path):
+        elif "policies" in relative_path:
             doc_type = "policy"
-        elif "contracts" in str(relative_path):
+        elif "contracts" in relative_path:
             doc_type = "contract"
-        elif "runbooks" in str(relative_path):
+        elif "runbooks" in relative_path:
             doc_type = "runbook"
-        elif relative_path.name == "README.md":
+        elif Path(relative_path).name == "README.md":
             doc_type = "readme"
 
-        # Extract layer information if present
-        layer = "unknown"
-        if "P0" in str(relative_path):
-            layer = "P0"
-        elif "P1" in str(relative_path):
-            layer = "P1"
-        elif "P2" in str(relative_path):
-            layer = "P2"
-        elif "P3" in str(relative_path):
-            layer = "P3"
-        elif "P4" in str(relative_path):
-            layer = "P4"
-        elif "L0" in str(relative_path):
-            layer = "L0"
-        elif "L1" in str(relative_path):
-            layer = "L1"
-        elif "L2" in str(relative_path):
-            layer = "L2"
-        elif "L3" in str(relative_path):
-            layer = "L3"
-        elif "L4" in str(relative_path):
-            layer = "L4"
-        elif "L5" in str(relative_path):
-            layer = "L5"
-        elif "L6" in str(relative_path):
-            layer = "L6"
+        # Layer: prefer the SSOT path-based inferrer. Only override with an
+        # embedded L<N> marker when inference returned L_UNKNOWN / L_DOCS and
+        # the path literally contains a layer tag.
+        layer = infer_layer(relative_path)
+        if layer in {"L_DOCS", "L_UNKNOWN"}:
+            for tag in ("L0", "L1", "L2", "L3", "L4", "L5", "L6"):
+                if tag in relative_path:
+                    layer = tag
+                    break
 
-        # Get file modification time
-        mtime = file_path.stat().st_mtime
+        try:
+            source_sha = compute_source_sha(file_path)
+        except OSError:
+            source_sha = compute_source_sha(content.encode("utf-8"))
 
-        return {
-            "doc_id": str(relative_path),
-            "doc_type": doc_type,
-            "layer": layer,
-            "file_path": str(relative_path),
-            "created_date": mtime,
-            "category": self._determine_category(doc_type, layer),
-        }
+        # canonical_digest and canonical chunk_id are filled per-chunk later
+        # (each chunk needs its own anchor). Stamp a placeholder here that
+        # ``chunk_document`` overwrites.
+        contract = build_required(
+            artifact_type="doc_chunk",
+            source_path=relative_path,
+            source_sha=source_sha,
+            canonical_digest="pending",
+            layer=layer,
+            embedding_model=embedding_model or "BAAI/bge-m3",
+            embedding_dim=embedding_dim or 1024,
+        )
+        contract.update(
+            {
+                "doc_id": relative_path,
+                "doc_type": doc_type,
+                "category": self._determine_category(doc_type, layer),
+                # Legacy aliases.
+                "file_path": relative_path,
+                "created_date": now_utc_iso(),
+            }
+        )
+        return contract
 
     def _determine_category(self, doc_type: str, layer: str) -> str:
         """Determine document category."""
@@ -278,30 +319,30 @@ class EmbeddingGenerator:
 
         Logger.info(f"Generating {len(texts)} BGE-M3 embeddings")
 
-        # Use the underlying model directly for batch encoding
-        try:
-            # Access the sentence-transformers model directly
-            model = self.embedding_client.model
-            embeddings = model.encode(
-                texts,
-                convert_to_numpy=True,
-                normalize_embeddings=True,
-                batch_size=32,
-                show_progress_bar=False,
-            ).tolist()
-
-            # Stable float32 casting
-            embeddings = [[float(x) for x in emb] for emb in embeddings]
-
-            Logger.info(f"Successfully generated {len(embeddings)} BGE-M3 embeddings")
-            return embeddings
-        except Exception as e:
-            Logger.error(f"BGE-M3 embedding generation failed: {e}")
-            Logger.warning(
-                f"Falling back to zero embeddings - {len(texts)} chunks will have invalid embeddings"
+        # Use the underlying model directly for batch encoding.
+        # NO silent fallback: a failure here must raise — zero vectors corrupt
+        # cosine similarity and silently poison every downstream retrieval.
+        model = self.embedding_client.model
+        encoded = model.encode(
+            texts,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+            batch_size=32,
+            show_progress_bar=False,
+        )
+        if encoded is None or len(encoded) != len(texts):
+            raise RuntimeError(
+                f"BGE_EMBED_FAILED: expected {len(texts)} rows, "
+                f"got {0 if encoded is None else len(encoded)}"
             )
-            # Fallback to zero embeddings
-            return [[0.0] * self.vector_dimensions for _ in texts]
+        if encoded.shape[1] != self.vector_dimensions:
+            raise RuntimeError(
+                f"BGE_DIM_MISMATCH: expected {self.vector_dimensions}, "
+                f"got {encoded.shape[1]}"
+            )
+        embeddings = [[float(x) for x in emb] for emb in encoded.tolist()]
+        Logger.info(f"Successfully generated {len(embeddings)} BGE-M3 embeddings")
+        return embeddings
 
     def _generate_openai_embeddings(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings using OpenAI API."""
@@ -309,14 +350,11 @@ class EmbeddingGenerator:
         batch_size = 100
         for i in range(0, len(texts), batch_size):
             batch = texts[i : i + batch_size]
-            try:
-                response = self.client.embeddings.create(model=self.model, input=batch)
-                batch_embeddings = [item.embedding for item in response.data]
-                embeddings.extend(batch_embeddings)
-                Logger.info(f"Generated embeddings for batch {i // batch_size + 1}")
-            except Exception as e:
-                Logger.error(f"Failed to generate embeddings for batch {i // batch_size + 1}: {e}")
-                embeddings.extend([[0.0] * 1536] * len(batch))
+            # NO silent fallback: zero vectors silently corrupt cosine similarity.
+            response = self.client.embeddings.create(model=self.model, input=batch)
+            batch_embeddings = [item.embedding for item in response.data]
+            embeddings.extend(batch_embeddings)
+            Logger.info(f"Generated embeddings for batch {i // batch_size + 1}")
         return embeddings
 
 
@@ -337,8 +375,8 @@ class VectorDBIngestor:
         if persist_directory:
             self.client = chromadb.PersistentClient(path=persist_directory)
         else:
-            # Default to artifacts/chromadb for persistence
-            persist_dir = Path("artifacts/chromadb")
+            # Default to the canonical ChromaDB persist dir (data/cache/chromadb).
+            persist_dir = Path(canonical_persist_dir_str())
             persist_dir.mkdir(parents=True, exist_ok=True)
             self.client = chromadb.PersistentClient(path=str(persist_dir))
 
@@ -359,19 +397,24 @@ class VectorDBIngestor:
         documents = []
         metadatas = []
 
-        for i, chunk in enumerate(chunks):
-            # Generate unique ID with more entropy
-            content_hash = hashlib.sha256(chunk["content"].encode()).hexdigest()[:16]
-            chunk_index = hashlib.md5(
-                f"{chunk['metadata']['doc_id']}_{i}_{content_hash}".encode(),
-            ).hexdigest()[:8]
-            # Fix escape sequences for Python 3.10 compatibility
-            doc_id_clean = chunk["metadata"]["doc_id"].replace("/", "_").replace("\\", "_")
-            chunk_id = f"{doc_id_clean}_{content_hash}_{chunk_index}"
-
-            ids.append(chunk_id)
+        # Idempotent chunk IDs: use canonical_digest so re-ingest of the same
+        # doc at the same revision upserts cleanly (W2 / G7 fix). Previously
+        # the loop index leaked into the ID, causing duplicate chunks on
+        # every re-run.
+        for chunk in chunks:
+            meta = chunk["metadata"]
+            # Stamp ingestion timestamp + run V1 contract validator.
+            meta["ingested_at"] = now_utc_iso()
+            errors = validate_chunk_metadata(meta)
+            if errors:
+                Logger.warning(
+                    "ChunkMetadataV1 drift for %s: %s",
+                    meta.get("canonical_digest", "<no-digest>"),
+                    errors,
+                )
+            ids.append(meta["canonical_digest"])
             documents.append(chunk["content"])
-            metadatas.append(chunk["metadata"])
+            metadatas.append(meta)
 
         # Add to ChromaDB in batches to handle size limits
         batch_size = 5000  # ChromaDB default limit

@@ -20,6 +20,7 @@ from infrastructure.sdks_mcps.gemini_client import (
     DEFAULT_GEMINI_MODEL,
     GeminiClient,
     GeminiResponse,
+    GeminiStreamChunk,
 )
 
 
@@ -256,3 +257,179 @@ def test_from_env_uses_create_gemini_model(monkeypatch: pytest.MonkeyPatch) -> N
     # Trigger lazy model resolution.
     client.send(_artifact().to_prompt_messages())
     assert mock_model.calls
+
+
+# ---------------------------------------------------------------------------
+# PRF2.B3 — tool-use schema projection
+# ---------------------------------------------------------------------------
+
+
+def test_project_tools_groups_declarations_under_single_block() -> None:
+    """PRF2.B3: Cascade tool-schema list projects to Gemini's single
+    ``function_declarations`` block shape."""
+    cascade_tools = [
+        {
+            "name": "search_web",
+            "description": "Search the web.",
+            "parameters": {"type": "object", "properties": {"q": {"type": "string"}}},
+        },
+        {
+            "name": "read_file",
+            "description": "Read a file.",
+            "parameters": {"type": "object", "properties": {"path": {"type": "string"}}},
+        },
+    ]
+    projected = GeminiClient.project_tools(cascade_tools)
+    assert len(projected) == 1
+    assert "function_declarations" in projected[0]
+    decls = projected[0]["function_declarations"]
+    assert [d["name"] for d in decls] == ["search_web", "read_file"]
+    assert decls[0]["parameters"]["properties"]["q"]["type"] == "string"
+
+
+def test_project_tools_drops_unnamed_and_non_dict_entries() -> None:
+    """PRF2.B3: malformed tool entries (missing name, wrong type) are dropped."""
+    projected = GeminiClient.project_tools(
+        [
+            {"name": "ok", "description": "fine"},
+            {"description": "no name"},  # dropped
+            "not a dict",  # dropped
+            {"name": "", "description": "empty name"},  # dropped
+        ],
+    )
+    assert len(projected) == 1
+    decls = projected[0]["function_declarations"]
+    assert [d["name"] for d in decls] == ["ok"]
+
+
+def test_project_tools_accepts_input_schema_alias() -> None:
+    """PRF2.B3: anthropic-style ``input_schema`` field is accepted as
+    a fallback for ``parameters`` so adapters can share a schema shape."""
+    projected = GeminiClient.project_tools(
+        [{"name": "t", "input_schema": {"type": "object"}}],
+    )
+    decls = projected[0]["function_declarations"]
+    assert decls[0]["parameters"] == {"type": "object"}
+
+
+def test_project_tools_returns_empty_when_all_invalid() -> None:
+    """PRF2.B3: empty input or all-dropped returns empty list (no empty
+    ``function_declarations`` block sent to Gemini)."""
+    assert GeminiClient.project_tools([]) == []
+    assert GeminiClient.project_tools([{"bogus": 1}]) == []
+
+
+def test_send_includes_tools_when_schema_provided() -> None:
+    """PRF2.B3: ``send(allowed_tools_schema=...)`` forwards projected
+    tools on the SDK call."""
+    mock_model = _MockModel(_mock_response())
+    client = GeminiClient(model_factory=lambda name: mock_model)
+    ir = _artifact().to_prompt_messages()
+
+    client.send(
+        ir,
+        allowed_tools_schema=[{"name": "foo", "description": "bar"}],
+    )
+    call = mock_model.calls[0]
+    assert "tools" in call
+    assert call["tools"][0]["function_declarations"][0]["name"] == "foo"
+
+
+def test_send_omits_tools_when_no_schema_provided() -> None:
+    """PRF2.B3: absent tool schema must NOT set ``tools`` kwarg
+    (unnecessary arg would alter SDK semantics)."""
+    mock_model = _MockModel(_mock_response())
+    client = GeminiClient(model_factory=lambda name: mock_model)
+    ir = _artifact().to_prompt_messages()
+
+    client.send(ir)
+    assert "tools" not in mock_model.calls[0]
+
+
+# ---------------------------------------------------------------------------
+# PRF2.B3 — streaming
+# ---------------------------------------------------------------------------
+
+
+class _MockStreamingModel:
+    """Mock that returns a list/iterator of chunk objects."""
+
+    def __init__(self, chunks: list[Any]) -> None:
+        self.chunks = chunks
+        self.calls: list[dict[str, Any]] = []
+
+    def generate_content(self, **kwargs: Any) -> Any:
+        self.calls.append(kwargs)
+        return iter(self.chunks)
+
+
+def _chunk(text: str, finish_reason: Any = None) -> SimpleNamespace:
+    candidates = (
+        [SimpleNamespace(finish_reason=finish_reason)] if finish_reason else []
+    )
+    return SimpleNamespace(text=text, candidates=candidates)
+
+
+def test_send_stream_yields_typed_chunks_in_order() -> None:
+    """PRF2.B3: streaming yields ``GeminiStreamChunk`` per SDK delta,
+    preserving order and surfacing finish_reason on terminal chunk."""
+    mock_model = _MockStreamingModel([
+        _chunk("The "),
+        _chunk("answer "),
+        _chunk("is 42.", finish_reason="STOP"),
+    ])
+    client = GeminiClient(model_factory=lambda name: mock_model)
+    ir = _artifact().to_prompt_messages()
+
+    chunks = list(client.send_stream(ir, temperature=0.5))
+
+    assert len(chunks) == 3
+    assert all(isinstance(c, GeminiStreamChunk) for c in chunks)
+    assert [c.text for c in chunks] == ["The ", "answer ", "is 42."]
+    # finish_reason only on the terminal chunk.
+    assert chunks[0].finish_reason is None
+    assert chunks[1].finish_reason is None
+    assert chunks[2].finish_reason == "STOP"
+
+
+def test_send_stream_passes_stream_true_and_generation_config() -> None:
+    """PRF2.B3: ``stream=True`` forwarded to SDK; generation_config honored."""
+    mock_model = _MockStreamingModel([_chunk("done", finish_reason="STOP")])
+    client = GeminiClient(model_factory=lambda name: mock_model)
+    ir = _artifact().to_prompt_messages()
+
+    list(client.send_stream(ir, temperature=0.1))
+
+    call = mock_model.calls[0]
+    assert call["stream"] is True
+    assert call["generation_config"] == {"temperature": 0.1}
+
+
+def test_send_stream_stringifies_enum_finish_reason() -> None:
+    """PRF2.B3: SDK enum finish_reason is normalized to its ``.name``
+    the same way ``send()`` does."""
+    class _FinishEnum:
+        name = "MAX_TOKENS"
+
+    mock_model = _MockStreamingModel([_chunk("x", finish_reason=_FinishEnum())])
+    client = GeminiClient(model_factory=lambda name: mock_model)
+    ir = _artifact().to_prompt_messages()
+
+    chunks = list(client.send_stream(ir))
+    assert chunks[0].finish_reason == "MAX_TOKENS"
+
+
+def test_send_stream_forwards_tools_schema() -> None:
+    """PRF2.B3: tool schema is projected+forwarded during streaming too."""
+    mock_model = _MockStreamingModel([_chunk("hi", finish_reason="STOP")])
+    client = GeminiClient(model_factory=lambda name: mock_model)
+    ir = _artifact().to_prompt_messages()
+
+    list(
+        client.send_stream(
+            ir,
+            allowed_tools_schema=[{"name": "tool_x"}],
+        ),
+    )
+    call = mock_model.calls[0]
+    assert call["tools"][0]["function_declarations"][0]["name"] == "tool_x"

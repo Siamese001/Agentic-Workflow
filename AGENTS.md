@@ -58,7 +58,7 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_cascade_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
 | Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.windsurf/plans/<slug>-<6hex>.md`. Create Plans row with Status=Active, Exists On Disk=true, Plan File Path set. |
 | SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | `0a3b8072-eabd-4516-9473-3c321bb011ff` | "SC/AP violations", "check severity", "promotion status" | When `generate_full_adg` emits new SC/AP rows |
-| HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | `18bb9145-1320-4191-8b14-6c309776bcf5` | "HITL decisions", "past decisions", "decision history" | Immediately after any scored `ask_user_question` resolution |
+| Author-Gate Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | `18bb9145-1320-4191-8b14-6c309776bcf5` | "author-gate decisions", "past decisions", "decision history", legacy "HITL decisions" query alias | Immediately after any scored `ask_user_question` resolution. Distinct from runtime HITL (ADR-023) — this DB holds developer-loop / harness-side Author-Gate decisions. |
 | Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | `1c1379bc-32ca-4216-898a-3672f0316f69` | "constitutional rules", "rule status" | On rule addition/modification |
 | MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | `59693bbc-71b1-4c63-bc9f-b31eb8b08a0e` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
 | SVP Engineering Reviews | `814e26d3-d665-4472-9b92-c7e0f89241d0` | `6660be70-638e-4698-826a-aa7e8c17d7fd` | "SVP review", "module certification", "test pass rate" | On SVP review completion |
@@ -90,7 +90,7 @@ Cascade MUST route these events to Notion without being asked. Filesystem remain
 | Create `docs/architecture/adr/ADR-NNN-*.md` | ADR markdown | `API-post-page` into ADR Registry with ADR ID, Status, Decision Date, Impact Layers, Summary, Filename, Deciders |
 | Modify `.windsurf/mcp_config.json` (add/remove/reconfigure server) | JSON edit | `API-patch-page` (or post new) into MCP Registry with Notes + updated Last Validated; link ADR if applicable |
 | Change gate behavior in `.windsurf/scripts/pre_mcp_gate.py` | Python edit | `API-patch-page` affected MCP Registry entries with Notes (behavior description) + Linked ADR |
-| Resolve a scored HITL decision via `ask_user_question` | — | `API-post-page` into HITL Decision Ledger with decision type, options, selection, rationale |
+| Resolve a scored `ask_user_question` (Author-Gate decision) | — | `API-post-page` into Author-Gate Decision Ledger with decision type, options, selection, rationale |
 | Run `generate_full_adg.py` and produce SC/AP defects | `artifacts/adg/*.sqlite`, violation JSON | `API-post-page` per NEW violation into SC/AP Violation Backlog |
 | Write RCA in `docs/reports/plans/*.md` | Markdown | Link from relevant registry row (no new database — RCA detail lives on disk) |
 

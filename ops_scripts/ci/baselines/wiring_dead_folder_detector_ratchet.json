@@ -1,10 +1,25 @@
 {
   "gate_id": "D_dead_folder_detector",
-  "count": 11,
+  "count": 0,
   "seeded_at": "2026-04-23T14:40:00+00:00",
-  "snapshot": "adg_indexed_04232026_1418.sqlite",
+  "snapshot": "adg_indexed_04232026_2225.sqlite",
   "note": "W7 initial seed \u2014 11 dead production folders detected on snapshot 04232026_1418. Archive waves (W7.2+) will drive this count to zero; R->B auto-promotion fires after 3 consecutive zero runs.",
-  "zero_run_streak": 0,
-  "last_run_at": "2026-04-23T18:35:30.804657+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1418.sqlite"
+  "zero_run_streak": 2,
+  "last_run_at": "2026-04-24T02:34:40.136649+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_2225.sqlite",
+  "tightened_at": "2026-04-24T02:32:21.534650+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-04-23T22:05:10.969530+00:00",
+      "snapshot": "adg_indexed_04232026_1802.sqlite",
+      "from": 11,
+      "to": 6
+    },
+    {
+      "at": "2026-04-24T02:32:21.534650+00:00",
+      "snapshot": "adg_indexed_04232026_2225.sqlite",
+      "from": 6,
+      "to": 0
+    }
+  ]
 }

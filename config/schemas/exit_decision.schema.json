@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow/config/schemas/exit_decision.schema.json",
+  "title": "ExitDecision",
+  "description": "Typed output of v33 Process Map §5 EXIT EVAL & CONTROL. Emitted for every sealed L2 artifact or terminal [RET] short-circuit from L0 before RESPONSE / UWG commit / HITL escalation.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "request_id",
+    "trace_id",
+    "disposition",
+    "reason_code",
+    "emitted_at_utc",
+    "final_response",
+    "trajectory",
+    "safety",
+    "budget",
+    "quality",
+    "output_contract"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "request_id": { "type": "string", "minLength": 1 },
+    "trace_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": ["string", "null"] },
+    "tenant": { "type": ["string", "null"] },
+    "emitted_at_utc": { "type": "string", "format": "date-time" },
+    "agent_class": { "type": ["string", "null"] },
+    "agent_version": { "type": ["string", "null"] },
+
+    "disposition": {
+      "type": "string",
+      "enum": ["allow_finish", "deny_reroute", "escalate_hitl", "commit_request"],
+      "description": "Terminal disposition from §5. Exactly one."
+    },
+    "reason_code": {
+      "type": "string",
+      "description": "Machine-parsable reason. See reason_code registry in ADR-036 §6."
+    },
+    "reason_detail": { "type": ["string", "null"] },
+
+    "final_response": {
+      "type": "object",
+      "description": "Final-response metrics (Google Vertex + Anthropic rubric spine).",
+      "required": ["groundedness", "answer_relevancy", "faithfulness", "completeness", "hallucination"],
+      "additionalProperties": false,
+      "properties": {
+        "groundedness":    { "$ref": "#/$defs/score_or_unknown" },
+        "answer_relevancy":{ "$ref": "#/$defs/score_or_unknown" },
+        "faithfulness":    { "$ref": "#/$defs/score_or_unknown" },
+        "context_precision":{ "$ref": "#/$defs/score_or_unknown" },
+        "completeness":    { "$ref": "#/$defs/score_or_unknown" },
+        "hallucination": {
+          "type": "object",
+          "description": "Vertex-style hallucination: grounded to agent config + tool usage, distinct from LLM-rubric groundedness.",
+          "required": ["score_0_1", "unsupported_claim_count"],
+          "additionalProperties": false,
+          "properties": {
+            "score_0_1": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "unsupported_claim_count": { "type": "integer", "minimum": 0 },
+            "tool_grounded": { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "trajectory": {
+      "type": "object",
+      "description": "Trajectory metrics (Google Vertex). Reference trajectory optional — when absent, only latency/failure/tool_call_count are populated.",
+      "required": ["failure", "latency_ms", "tool_call_count"],
+      "additionalProperties": false,
+      "properties": {
+        "failure":            { "type": "boolean" },
+        "latency_ms":         { "type": "integer", "minimum": 0 },
+        "tool_call_count":    { "type": "integer", "minimum": 0 },
+        "retry_count":        { "type": "integer", "minimum": 0 },
+        "exact_match":        { "$ref": "#/$defs/binary_or_null" },
+        "in_order_match":     { "$ref": "#/$defs/binary_or_null" },
+        "any_order_match":    { "$ref": "#/$defs/binary_or_null" },
+        "precision":          { "$ref": "#/$defs/ratio_or_null" },
+        "recall":             { "$ref": "#/$defs/ratio_or_null" },
+        "single_tool_use":    {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "tool_name": { "type": "string" },
+            "present":   { "type": "boolean" }
+          },
+          "required": ["tool_name", "present"]
+        }
+      }
+    },
+
+    "safety": {
+      "type": "object",
+      "description": "Industry guardrail + OpenAI trace-grade safety flags. All booleans default false when not evaluated.",
+      "required": ["policy_violation", "instruction_violation", "policy_halt"],
+      "additionalProperties": false,
+      "properties": {
+        "policy_violation":      { "type": "boolean" },
+        "instruction_violation": { "type": "boolean" },
+        "policy_halt":           { "type": "boolean", "description": "True when L5 exit_kill_switch fired for this run — see ADR-042." },
+        "violated_rules":        { "type": "array", "items": { "type": "string" } },
+        "severity_band":         {
+          "type": ["string", "null"],
+          "enum": [null, "info", "low", "medium", "high", "critical"]
+        }
+      }
+    },
+
+    "budget": {
+      "type": "object",
+      "description": "Per-request budget envelope check (ADR-038). Envelope stamped at ingress E3; consumed values compared here.",
+      "required": ["budget_fit"],
+      "additionalProperties": false,
+      "properties": {
+        "budget_fit": { "type": "boolean" },
+        "tokens_envelope":  { "type": ["integer", "null"], "minimum": 0 },
+        "tokens_consumed":  { "type": ["integer", "null"], "minimum": 0 },
+        "latency_envelope_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "latency_consumed_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "tool_calls_envelope": { "type": ["integer", "null"], "minimum": 0 },
+        "tool_calls_consumed": { "type": ["integer", "null"], "minimum": 0 },
+        "cost_usd_envelope":   { "type": ["number", "null"], "minimum": 0 },
+        "cost_usd_consumed":   { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+
+    "quality": {
+      "type": "object",
+      "description": "Aggregate quality verdict (pass/warn/fail) derived from final_response + trajectory + safety + budget via scorecard policy.",
+      "required": ["verdict"],
+      "additionalProperties": false,
+      "properties": {
+        "verdict": { "type": "string", "enum": ["pass", "warn", "fail", "unknown"] },
+        "weighted_score_0_1": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 },
+        "confidence_0_1":     { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 },
+        "unknown_fraction":   { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 }
+      }
+    },
+
+    "output_contract": {
+      "type": "object",
+      "description": "ADR-039 output-contract validator result. Verifies final artifact matches the output contract declared at ingress.",
+      "required": ["required_form_satisfied"],
+      "additionalProperties": false,
+      "properties": {
+        "required_form_satisfied": { "type": "boolean" },
+        "contract_ref":            { "type": ["string", "null"] },
+        "violations":              { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "escalation_packet_ref": {
+      "type": ["string", "null"],
+      "description": "If disposition==escalate_hitl, id of the EscalationPacket emitted to L5 HITL queue."
+    },
+    "uwg_commit_ref": {
+      "type": ["string", "null"],
+      "description": "If disposition==commit_request, id of the UWG MutationRecord candidate forwarded to the write gate."
+    },
+    "policy_snapshot": {
+      "type": ["string", "null"],
+      "description": "Opaque identifier (git sha + mtime) of L5 policy bundle that produced this decision. Audit binding per ADR-023 §3.6."
+    },
+    "rubric_version": { "type": ["string", "null"] },
+    "judge_calibration_snapshot": { "type": ["string", "null"] }
+  },
+
+  "$defs": {
+    "score_or_unknown": {
+      "oneOf": [
+        { "type": "number", "minimum": 1, "maximum": 5 },
+        { "type": "string", "const": "Unknown" }
+      ]
+    },
+    "binary_or_null": {
+      "oneOf": [
+        { "type": "integer", "enum": [0, 1] },
+        { "type": "null" }
+      ]
+    },
+    "ratio_or_null": {
+      "oneOf": [
+        { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        { "type": "null" }
+      ]
+    }
+  }
+}

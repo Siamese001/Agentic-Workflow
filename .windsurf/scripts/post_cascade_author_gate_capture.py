@@ -42,15 +42,26 @@ except ImportError:  # pragma: no cover — integrity lib optional, capture must
 fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[2]
-db_dir = repo_root / ".windsurf" / "state" / "refactor_decisions"
-db_path = db_dir / "refactor_decision_ledger.sqlite"
-_log_path = db_dir / "hitl_capture.log"
+DB_DIR = repo_root / ".windsurf" / "state" / "refactor_decisions"
+DB_PATH = DB_DIR / "refactor_decision_ledger.sqlite"
+_log_path = DB_DIR / "author_gate_capture.log"
+# Lowercase aliases preserved for back-compat with any external importer.
+db_dir = DB_DIR
+db_path = DB_PATH
+# Back-compat: legacy name pre-2026-04-21 rename. One-shot migration on first write.
+_legacy_log_path = DB_DIR / "hitl_capture.log"
+try:
+    if _legacy_log_path.exists() and not _log_path.exists():
+        _legacy_log_path.rename(_log_path)
+except OSError:
+    # guardian: allow-silent-swallow -- one-shot log migration: non-fatal, fail-open
+    pass
 
 
 def _debug_log(msg: str) -> None:
     """Append a timestamped line to the capture log (diagnostic only)."""
     try:
-        db_dir.mkdir(parents=True, exist_ok=True)
+        DB_DIR.mkdir(parents=True, exist_ok=True)
         ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
         with _log_path.open("a", encoding="utf-8") as f:
             f.write(f"{ts}  {msg}\n")
@@ -69,15 +80,96 @@ _packet_header_re = re.compile(
     re.DOTALL | re.MULTILINE,
 )
 
-# Structured capture marker emitted by Cascade post-HITL:
-# DECISION_CAPTURED: type=<type>, repo_area=<path>, selected=<label>, outcome=<status>
+# Structured capture marker emitted by Cascade post-Author-Gate:
+# v1: DECISION_CAPTURED: type=<type>, repo_area=<path>, selected=<label>, outcome=<status>
+# v2: ...[, confidence=0.NN, gap=0.NN, override=true|false, latency_ms=N, principle=<short>]
+# v2 optional fields are parsed via a second pass against the tail of the marker line.
 _capture_marker_re = re.compile(
     r"DECISION_CAPTURED:\s*type=(?P<dtype>[\w_]+),\s*"
     r"repo_area=(?P<area>[^,]+),\s*"
     r"selected=(?P<selected>[^,]+),\s*"
-    r"outcome=(?P<outcome>\w+)",
+    r"outcome=(?P<outcome>\w+)"
+    r"(?P<tail>[^\n]*)",
     re.MULTILINE,
 )
+
+# Individual field patterns for the optional v2 tail. Each is independent and
+# fail-soft — missing fields leave the corresponding column NULL.
+_v2_confidence_re = re.compile(r"confidence\s*=\s*(?P<v>[01](?:\.\d+)?)")
+_v2_gap_re = re.compile(r"gap\s*=\s*(?P<v>[01](?:\.\d+)?)")
+_v2_override_re = re.compile(r"override\s*=\s*(?P<v>true|false)", re.IGNORECASE)
+_v2_latency_re = re.compile(r"latency_ms\s*=\s*(?P<v>\d+)")
+_v2_principle_re = re.compile(r"principle\s*=\s*(?P<v>[^,\n]{1,80})")
+
+
+def _parse_v2_tail(tail: str) -> dict[str, object]:
+    """Extract optional v2 calibration fields from the marker tail.
+
+    Returns a dict with only the fields that were present and parseable.
+    """
+    out: dict[str, object] = {}
+    m = _v2_confidence_re.search(tail)
+    if m:
+        try:
+            out["confidence_top"] = float(m.group("v"))
+        except ValueError:
+            pass
+    m = _v2_gap_re.search(tail)
+    if m:
+        try:
+            out["confidence_dominance_gap"] = float(m.group("v"))
+        except ValueError:
+            pass
+    m = _v2_override_re.search(tail)
+    if m:
+        out["override_vs_recommendation"] = 1 if m.group("v").lower() == "true" else 0
+    m = _v2_latency_re.search(tail)
+    if m:
+        try:
+            out["selection_latency_ms"] = int(m.group("v"))
+        except ValueError:
+            pass
+    m = _v2_principle_re.search(tail)
+    if m:
+        out["principle_at_stake"] = m.group("v").strip()[:80]
+    return out
+
+
+def _infer_layer(repo_area: str) -> str:
+    """Infer architectural layer from a repo-area path prefix. Returns '' if unknown."""
+    p = repo_area.replace("\\", "/").strip()
+    if p.startswith("./"):
+        p = p[2:]
+    if p.startswith("agentic_core/L"):
+        seg = p.split("/", 2)[1]
+        if len(seg) >= 2 and seg[0] == "L" and seg[1].isdigit():
+            return seg[:2]
+    if p.startswith("apps_"):
+        return "apps"
+    if p.startswith("system_learning/"):
+        return "system_learning"
+    if p.startswith("infrastructure/"):
+        return "infra"
+    if p.startswith("tools/"):
+        return "tools"
+    if p.startswith(".windsurf/") or p.startswith("ops_scripts/"):
+        return "harness"
+    return ""
+
+
+def _insert_scope_row(conn: sqlite3.Connection, decision_id: str, repo_area: str) -> None:
+    """Write a decision_scope row so the outcome binder can match commits to this decision."""
+    layer = _infer_layer(repo_area)
+    file_path = repo_area if "/" in repo_area or "\\" in repo_area else None
+    try:
+        conn.execute(
+            """INSERT INTO decision_scope (decision_id, file_path, layer, repo_area)
+               VALUES (?, ?, ?, ?)""",
+            (decision_id, file_path, layer or None, repo_area[:200]),
+        )
+    except sqlite3.Error:
+        # guardian: allow-silent-swallow -- scope insert: non-fatal, capture already succeeded
+        pass
 
 _DECISION_TYPE_KEYWORDS: list[tuple[str, str]] = [
     ("architecture", "architecture_choice"),
@@ -118,7 +210,13 @@ CREATE TABLE IF NOT EXISTS decisions (
     recommended_option_id TEXT,
     selected_option_id    TEXT,
     selection_rationale   TEXT,
-    status                TEXT NOT NULL DEFAULT 'surfaced'
+    status                TEXT NOT NULL DEFAULT 'surfaced',
+    -- v2 calibration fields (optional; populated from DECISION_CAPTURED: marker tail)
+    confidence_top             REAL,
+    confidence_dominance_gap   REAL,
+    override_vs_recommendation INTEGER,
+    selection_latency_ms       INTEGER,
+    principle_at_stake         TEXT
 );
 
 CREATE TABLE IF NOT EXISTS decision_scope (
@@ -163,8 +261,9 @@ CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
 
 def _init_db() -> Optional[sqlite3.Connection]:
     try:
-        db_dir.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(str(db_path), timeout=10)
+        DB_DIR.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(str(DB_PATH), timeout=10)
+        conn.row_factory = sqlite3.Row  # required for column-name access in ensure_row_hash
         conn.executescript(_ddl)
         conn.commit()
         return conn
@@ -273,11 +372,18 @@ def _make_decision_id(text: str, _ts: str) -> str:  # _ts kept for call-site com
 
 
 def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) -> bool:
-    """Capture a decision from a DECISION_CAPTURED structured marker."""
+    """Capture a decision from a DECISION_CAPTURED structured marker.
+
+    Parses v1 required fields (type, repo_area, selected, outcome) and any v2
+    calibration fields present in the tail (confidence, gap, override, latency_ms,
+    principle). v2 fields populate otherwise-NULL columns for meta-learning.
+    """
     dtype = m.group("dtype")
     area = m.group("area").strip()
     selected = m.group("selected").strip()[:200]
     outcome = m.group("outcome").strip()
+    tail = m.groupdict().get("tail") or ""
+    v2 = _parse_v2_tail(tail)
 
     ts = datetime.now(timezone.utc).isoformat()
     decision_id = _make_decision_id(f"marker:{area}:{selected}", ts)
@@ -295,11 +401,15 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
         INSERT OR IGNORE INTO decisions
             (decision_id, created_at, branch, commit_sha, decision_type,
              request_summary, normalized_intent, recommended_option_id,
-             selected_option_id, options_json, status)
+             selected_option_id, options_json, status,
+             confidence_top, confidence_dominance_gap, override_vs_recommendation,
+             selection_latency_ms, principle_at_stake)
         VALUES
             (:decision_id, :created_at, :branch, :commit_sha, :decision_type,
              :request_summary, :normalized_intent, :recommended_option_id,
-             :selected_option_id, :options_json, :status)
+             :selected_option_id, :options_json, :status,
+             :confidence_top, :confidence_dominance_gap, :override_vs_recommendation,
+             :selection_latency_ms, :principle_at_stake)
         """,
         {
             "decision_id": decision_id,
@@ -313,6 +423,11 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
             "selected_option_id": selected,
             "options_json": json.dumps([selected]),
             "status": status,
+            "confidence_top": v2.get("confidence_top"),
+            "confidence_dominance_gap": v2.get("confidence_dominance_gap"),
+            "override_vs_recommendation": v2.get("override_vs_recommendation"),
+            "selection_latency_ms": v2.get("selection_latency_ms"),
+            "principle_at_stake": v2.get("principle_at_stake"),
         },
     )
     conn.execute(
@@ -321,13 +436,12 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
            VALUES (?, ?, ?, '', '')""",
         (decision_id, area[:200], context_window[:500]),
     )
+    _insert_scope_row(conn, decision_id, area)
     conn.commit()
     if _ensure_row_hash is not None:
         try:
             _ensure_row_hash(conn, decision_id)
-        except (
-            sqlite3.Error
-        ):  # guardian: allow-specific-sqlite -- integrity seal: fail-open (capture succeeded)
+        except (sqlite3.Error, TypeError):  # guardian: allow-specific-multi -- integrity seal: fail-open (capture succeeded); TypeError covers in-memory conns without row_factory
             pass
     return True
 
@@ -398,14 +512,13 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
         """,
         (decision_id, normalized_intent, request_summary),
     )
-
+    # normalized_intent is the best repo-area proxy available in the v1 packet-header path
+    _insert_scope_row(conn, decision_id, normalized_intent)
     conn.commit()
     if _ensure_row_hash is not None:
         try:
             _ensure_row_hash(conn, decision_id)
-        except (
-            sqlite3.Error
-        ):  # guardian: allow-specific-sqlite -- integrity seal: fail-open (capture succeeded)
+        except (sqlite3.Error, TypeError):  # guardian: allow-specific-multi -- integrity seal: fail-open (capture succeeded); TypeError covers in-memory conns without row_factory
             pass
     return True
 

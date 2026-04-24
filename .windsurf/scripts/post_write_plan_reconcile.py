@@ -82,13 +82,15 @@ def main() -> int:
             timeout=60,
             check=False,
         )
-        _log({
-            "event": "reconcile_done",
-            "plan": plan_filename,
-            "returncode": result.returncode,
-            "stdout_tail": (result.stdout or "").splitlines()[-3:],
-            "stderr_tail": (result.stderr or "").splitlines()[-3:],
-        })
+        _log(
+            {
+                "event": "reconcile_done",
+                "plan": plan_filename,
+                "returncode": result.returncode,
+                "stdout_tail": (result.stdout or "").splitlines()[-3:],
+                "stderr_tail": (result.stderr or "").splitlines()[-3:],
+            }
+        )
     except (subprocess.TimeoutExpired, OSError) as exc:
         _log({"event": "reconcile_error", "plan": plan_filename, "error": str(exc)})
 

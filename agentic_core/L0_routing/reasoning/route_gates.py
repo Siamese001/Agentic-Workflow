@@ -114,14 +114,14 @@ def check_d1_exact_cache(request: dict[str, Any]) -> dict[str, Any] | None:
         from agentic_core.L4_state.utils.memory.l1_exact_cache import (  # noqa: PLC0415
             get_global_l1_cache,
         )
-    except ImportError as exc:  # guardian: allow-log-and-swallow -- optional L4 dependency: missing import means D1 unavailable, miss is safe
+    except ImportError as exc:  # guardian: allow-return-none-swallow -- optional L4 dependency: missing import means D1 unavailable, None is the miss-safe default
         Logger.debug("route_gates: L1ExactCache import failed: %s", exc)
         return None
     try:
         cache = get_global_l1_cache()
         request_hash = canonical_request_hash(request)
         hit = cache.get(request_hash)
-    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- cache recall: non-fatal, miss is safe default
+    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None is the miss-safe default
         Logger.debug("route_gates: D1 recall failed: %s", exc)
         return None
     if hit is None:
@@ -204,7 +204,7 @@ def check_d2_semantic_cache(
         from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
             SemanticCacheManager,
         )
-    except ImportError as exc:  # guardian: allow-log-and-swallow -- optional L4 dependency: missing import means D2 unavailable, miss is safe
+    except ImportError as exc:  # guardian: allow-return-none-swallow -- optional L4 dependency: missing import means D2 unavailable, None is the miss-safe default
         Logger.debug("route_gates: SemanticCacheManager import failed: %s", exc)
         return None
     # SemanticCacheManager.recall expects a string context; use canonical JSON
@@ -222,7 +222,7 @@ def check_d2_semantic_cache(
             corpus_version=corpus_version,
             policy_version=policy_version,
         )
-    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- cache recall: non-fatal, miss is safe default
+    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None is the miss-safe default
         Logger.debug("route_gates: D2 recall failed: %s", exc)
         return None
 

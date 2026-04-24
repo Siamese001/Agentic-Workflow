@@ -183,7 +183,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
                     if otel_trace_id and otel_trace_id != staging_trace_id:
                         back_patch_trace_id(self, staging_trace_id, otel_trace_id)
                         unified_trace_id = otel_trace_id
-                except (AttributeError, IndexError):
+                except (AttributeError, IndexError):  # guardian: allow-silent-swallow -- trace-id reconciliation is best-effort; staging trace ID is the safe default when OTel span lacks get_span_context
                     pass
 
                 try:

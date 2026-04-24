@@ -139,3 +139,410 @@ class L1PlanContract:
             "confidence_score": self.confidence_score,
             "steps": list(self.steps),
         }
+
+
+# ============================================================================
+# L1PlanContract v2 — ADR-043 (Proposed)
+# ----------------------------------------------------------------------------
+# Adds typed fields required by the revised v33 §2 doctrine:
+#   proposed_route, query_spec, task_spec (typed), route_risk,
+#   declared_assumptions, unresolved_gaps, published_rationale,
+#   planner_telemetry.
+#
+# v1 (L1PlanContract) is retained as a 90-day back-compat shim.  Callers opt
+# into v2 on their own schedule; the CI gate
+# ``ops_scripts/ci/check_l1_plan_contract_fields.py`` tracks migration.
+#
+# Redaction invariant:  private_scratchpad does NOT exist on this contract.
+# Only published_rationale crosses L1 → L0.  The adapter from ReasoningPlan /
+# engine state to L1PlanContractV2 is responsible for stripping scratchpad.
+# ============================================================================
+
+
+class ProposedRoute(str, Enum):
+    """L0 route intent declared by the L1 planner.
+
+    Mirrors the route labels in ``agentic_process_mapping_v33.md`` §3.
+    CLARIFY is a distinct route that does NOT reach L0 dispatch — the exit
+    gate at [5] must surface the clarification request to the user.
+    """
+
+    R1A = "R1A"
+    R1B = "R1B"
+    R3 = "R3"
+    R4 = "R4"
+    R5 = "R5"
+    CLARIFY = "CLARIFY"
+
+
+class AssumptionGrade(str, Enum):
+    """Fact-grading label applied to each declared_assumption (const. §20)."""
+
+    DIRECTLY_OBSERVED = "DIRECTLY_OBSERVED"
+    DERIVED = "DERIVED"
+    UNRESOLVED = "UNRESOLVED"
+
+
+class RiskBand(str, Enum):
+    """Coarse risk banding used by route_risk to keep L0/L5 policy simple."""
+
+    LOW = "LOW"
+    MED = "MED"
+    HIGH = "HIGH"
+
+
+class Reversibility(str, Enum):
+    """Irreversibility signature for route_risk.
+
+    READ   — pure retrieval, fully reversible
+    ACTION — external side-effect but bounded/rollback-able
+    WRITE  — durable state mutation (requires UWG)
+    """
+
+    READ = "READ"
+    ACTION = "ACTION"
+    WRITE = "WRITE"
+
+
+@dataclass(frozen=True)
+class Assumption:
+    """A single declared assumption with its fact-grade."""
+
+    statement: str
+    grade: AssumptionGrade
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"statement": self.statement, "grade": self.grade.value}
+
+
+@dataclass(frozen=True)
+class RouteRisk:
+    """Cost / latency / safety / reversibility signature of the proposed plan."""
+
+    cost_band: RiskBand
+    latency_band: RiskBand
+    safety_band: RiskBand
+    reversibility: Reversibility
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "cost_band": self.cost_band.value,
+            "latency_band": self.latency_band.value,
+            "safety_band": self.safety_band.value,
+            "reversibility": self.reversibility.value,
+        }
+
+
+@dataclass(frozen=True)
+class ExpectedGroundTruth:
+    """The evidence signal a plan step is expected to produce.
+
+    Satisfies BP-A4 (ground-truth feedback each step) — the exit gate can
+    compare observed evidence against this declaration to decide REPLAN.
+    """
+
+    signal_kind: str          # e.g. "document_set", "tool_result", "metric"
+    shape_hint: str           # informal shape / schema hint
+    success_predicate: str    # natural-language predicate describing success
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "signal_kind": self.signal_kind,
+            "shape_hint": self.shape_hint,
+            "success_predicate": self.success_predicate,
+        }
+
+
+@dataclass(frozen=True)
+class PlanTaskStep:
+    """A single step on the L1 plan's task_spec.
+
+    Distinct from ``reasoning_plan.PlanStep`` (which is a hash-based audit
+    trail artifact).  PlanTaskStep is the semantic step carried across the
+    L1 → L0 contract boundary.
+    """
+
+    step_id: str
+    description: str
+    expected_ground_truth: ExpectedGroundTruth
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "step_id": self.step_id,
+            "description": self.description,
+            "expected_ground_truth": self.expected_ground_truth.to_dict(),
+        }
+
+
+@dataclass(frozen=True)
+class QuerySpec:
+    """Retrieval ask for C0 when grounding_required=True.
+
+    ``query_text`` is the search string / intent; ``freshness_window_s`` caps
+    how stale cached evidence may be; ``max_results`` bounds retrieval fanout.
+    """
+
+    query_text: str
+    freshness_window_s: int
+    max_results: int
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "query_text": self.query_text,
+            "freshness_window_s": self.freshness_window_s,
+            "max_results": self.max_results,
+        }
+
+
+@dataclass(frozen=True)
+class PlannerTelemetry:
+    """Observability payload for planner-on vs planner-off overhead analysis.
+
+    Emitted alongside the contract so L6 can compare planner cost against the
+    quality lift it produces (Google ADK BP-G5).
+    """
+
+    refinements_used: int
+    wall_clock_ms: int
+    token_usage: int
+    critic_iterations: int
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "refinements_used": self.refinements_used,
+            "wall_clock_ms": self.wall_clock_ms,
+            "token_usage": self.token_usage,
+            "critic_iterations": self.critic_iterations,
+        }
+
+
+@dataclass(frozen=True)
+class L1PlanContractV2:
+    """ADR-043 L1PlanContract v2 — typed planner output for L1 → L0 handoff.
+
+    All fields are required unless typed as ``Optional``.  query_spec is
+    required iff grounding_required=True.  published_rationale MUST have
+    been run through the redaction adapter — private scratchpad must not
+    appear here.
+    """
+
+    plan_id: str
+    request_id: str
+    policy_hash: str
+    proposed_route: ProposedRoute
+    reasoning_mode: ReasoningMode
+    query_spec: Optional[QuerySpec]
+    task_spec: tuple
+    route_risk: RouteRisk
+    confidence_score: float
+    grounding_required: bool
+    declared_assumptions: tuple
+    unresolved_gaps: tuple
+    published_rationale: str
+    planner_telemetry: PlannerTelemetry
+
+    _REQUIRED_FIELDS: tuple = field(
+        default=(
+            "plan_id",
+            "request_id",
+            "policy_hash",
+            "proposed_route",
+            "reasoning_mode",
+            "task_spec",
+            "route_risk",
+            "confidence_score",
+            "grounding_required",
+            "declared_assumptions",
+            "unresolved_gaps",
+            "published_rationale",
+            "planner_telemetry",
+        ),
+        init=False,
+        repr=False,
+        compare=False,
+    )
+
+    def validate(self) -> None:
+        """Raise PlanContractViolation if any mandatory field is missing or invalid."""
+        missing = []
+        for f in self._REQUIRED_FIELDS:
+            val = getattr(self, f, None)
+            if val is None:
+                missing.append(f)
+        if missing:
+            raise PlanContractViolation(
+                f"L1PlanContractV2 is missing mandatory fields: {missing}."
+            )
+        if not isinstance(self.proposed_route, ProposedRoute):
+            raise PlanContractViolation(
+                f"proposed_route must be ProposedRoute enum, got {type(self.proposed_route)}"
+            )
+        if not isinstance(self.reasoning_mode, ReasoningMode):
+            raise PlanContractViolation(
+                f"reasoning_mode must be ReasoningMode enum, got {type(self.reasoning_mode)}"
+            )
+        if not isinstance(self.route_risk, RouteRisk):
+            raise PlanContractViolation(
+                f"route_risk must be RouteRisk, got {type(self.route_risk)}"
+            )
+        if not isinstance(self.planner_telemetry, PlannerTelemetry):
+            raise PlanContractViolation(
+                f"planner_telemetry must be PlannerTelemetry, got {type(self.planner_telemetry)}"
+            )
+        if not (0.0 <= self.confidence_score <= 1.0):
+            raise PlanContractViolation(
+                f"confidence_score must be in [0.0, 1.0], got {self.confidence_score}"
+            )
+        # task_spec shape
+        if isinstance(self.task_spec, str) or not hasattr(self.task_spec, "__iter__"):
+            raise PlanContractViolation(
+                "task_spec must be a tuple of PlanTaskStep, not a bare string or non-sequence."
+            )
+        if not self.task_spec:
+            raise PlanContractViolation(
+                "task_spec must be non-empty — L1 must produce at least one step."
+            )
+        for idx, step in enumerate(self.task_spec):
+            if not isinstance(step, PlanTaskStep):
+                raise PlanContractViolation(
+                    f"task_spec[{idx}] must be PlanTaskStep, got {type(step)}"
+                )
+        # declared_assumptions shape
+        if isinstance(self.declared_assumptions, str) or not hasattr(self.declared_assumptions, "__iter__"):
+            raise PlanContractViolation("declared_assumptions must be a tuple of Assumption.")
+        for idx, a in enumerate(self.declared_assumptions):
+            if not isinstance(a, Assumption):
+                raise PlanContractViolation(
+                    f"declared_assumptions[{idx}] must be Assumption, got {type(a)}"
+                )
+        # unresolved_gaps shape
+        if isinstance(self.unresolved_gaps, str) or not hasattr(self.unresolved_gaps, "__iter__"):
+            raise PlanContractViolation("unresolved_gaps must be a tuple of str.")
+        for idx, g in enumerate(self.unresolved_gaps):
+            if not isinstance(g, str):
+                raise PlanContractViolation(
+                    f"unresolved_gaps[{idx}] must be str, got {type(g)}"
+                )
+        # grounding_required ⇒ query_spec required
+        if self.grounding_required and self.query_spec is None:
+            raise PlanContractViolation(
+                "grounding_required=True requires a non-None query_spec."
+            )
+        if self.query_spec is not None and not isinstance(self.query_spec, QuerySpec):
+            raise PlanContractViolation(
+                f"query_spec must be QuerySpec or None, got {type(self.query_spec)}"
+            )
+        # non-empty string invariants
+        for fname in ("plan_id", "request_id", "policy_hash", "published_rationale"):
+            val = getattr(self, fname)
+            if not val or not val.strip():
+                raise PlanContractViolation(f"{fname} must be a non-empty string.")
+        # CLARIFY route carries its own contract — cannot be dispatched
+        # to L0 as a normal plan.  Exit gate surfaces it to the user.
+        if self.proposed_route == ProposedRoute.CLARIFY and self.grounding_required:
+            raise PlanContractViolation(
+                "proposed_route=CLARIFY is incompatible with grounding_required=True."
+            )
+        # Scratchpad redaction canary — if caller accidentally left the
+        # private scratchpad tag in the published rationale, fail closed.
+        if "<<<PRIVATE_SCRATCHPAD" in self.published_rationale:
+            raise PlanContractViolation(
+                "published_rationale contains unredacted private scratchpad; "
+                "adapter must strip scratchpad before crossing L1 → L0."
+            )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "plan_id": self.plan_id,
+            "request_id": self.request_id,
+            "policy_hash": self.policy_hash,
+            "proposed_route": self.proposed_route.value,
+            "reasoning_mode": self.reasoning_mode.value,
+            "query_spec": self.query_spec.to_dict() if self.query_spec else None,
+            "task_spec": [s.to_dict() for s in self.task_spec],
+            "route_risk": self.route_risk.to_dict(),
+            "confidence_score": self.confidence_score,
+            "grounding_required": self.grounding_required,
+            "declared_assumptions": [a.to_dict() for a in self.declared_assumptions],
+            "unresolved_gaps": list(self.unresolved_gaps),
+            "published_rationale": self.published_rationale,
+            "planner_telemetry": self.planner_telemetry.to_dict(),
+        }
+
+    def to_v1(self) -> L1PlanContract:
+        """Back-compat projection to v1 shape for legacy L0 consumers.
+
+        Drops v2-only fields.  Used by the shim during the 90-day migration
+        window while downstream callers migrate to v2.
+        """
+        return L1PlanContract(
+            plan_id=self.plan_id,
+            request_id=self.request_id,
+            policy_hash=self.policy_hash,
+            reasoning_mode=self.reasoning_mode,
+            grounding_required=self.grounding_required,
+            confidence_score=self.confidence_score,
+            steps=tuple(s.to_dict() for s in self.task_spec),
+        )
+
+    @classmethod
+    def from_v1(
+        cls,
+        v1: L1PlanContract,
+        *,
+        proposed_route: ProposedRoute,
+        route_risk: RouteRisk,
+        task_spec: tuple,
+        declared_assumptions: tuple = (),
+        unresolved_gaps: tuple = (),
+        published_rationale: str = "",
+        planner_telemetry: Optional[PlannerTelemetry] = None,
+        query_spec: Optional[QuerySpec] = None,
+    ) -> "L1PlanContractV2":
+        """Forward-migrate a v1 contract by supplying the v2-only fields.
+
+        Used by callers that still produce v1 today but want to emit v2 with
+        defaulted enrichments.  The supplied task_spec replaces v1.steps.
+        """
+        telemetry = planner_telemetry or PlannerTelemetry(
+            refinements_used=0,
+            wall_clock_ms=0,
+            token_usage=0,
+            critic_iterations=0,
+        )
+        return cls(
+            plan_id=v1.plan_id,
+            request_id=v1.request_id,
+            policy_hash=v1.policy_hash,
+            proposed_route=proposed_route,
+            reasoning_mode=v1.reasoning_mode,
+            query_spec=query_spec,
+            task_spec=task_spec,
+            route_risk=route_risk,
+            confidence_score=v1.confidence_score,
+            grounding_required=v1.grounding_required,
+            declared_assumptions=declared_assumptions,
+            unresolved_gaps=unresolved_gaps,
+            published_rationale=published_rationale or (
+                f"Auto-migrated from L1PlanContract v1 for plan_id={v1.plan_id}"
+            ),
+            planner_telemetry=telemetry,
+        )
+
+
+__all__ = [
+    "Assumption",
+    "AssumptionGrade",
+    "ExpectedGroundTruth",
+    "L1PlanContract",
+    "L1PlanContractV2",
+    "PlanContractViolation",
+    "PlanTaskStep",
+    "PlannerTelemetry",
+    "ProposedRoute",
+    "QuerySpec",
+    "ReasoningMode",
+    "Reversibility",
+    "RiskBand",
+    "RouteRisk",
+]

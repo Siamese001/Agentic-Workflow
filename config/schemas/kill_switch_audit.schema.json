@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow/config/schemas/kill_switch_audit.schema.json",
+  "title": "KillSwitchAuditRow",
+  "description": "L5 audit-ledger row emitted for every kill-switch activate / hit / release. Non-negotiable per ADR-042 §2.4.",
+  "type": "object",
+  "required": ["schema_version", "event", "scope", "reason", "operator", "activated_at"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "event":       { "type": "string", "enum": ["activate", "hit", "release"] },
+    "scope":       { "type": "string", "minLength": 1 },
+    "reason":      { "type": "string", "minLength": 1 },
+    "operator":    { "type": "string", "minLength": 1, "description": "Identity string. Auto-trigger format: 'auto:<trigger_name>'." },
+    "ttl_seconds": { "type": ["integer", "null"], "minimum": 0 },
+    "activated_at":{ "type": "string", "format": "date-time" },
+    "released_at": { "type": ["string", "null"], "format": "date-time" },
+    "hit_request_id": { "type": ["string", "null"] },
+    "hit_trace_id":   { "type": ["string", "null"] },
+    "policy_snapshot":{ "type": ["string", "null"] },
+    "activation_ref": { "type": ["string", "null"], "description": "On 'hit' or 'release' events, points to the originating 'activate' row." }
+  }
+}

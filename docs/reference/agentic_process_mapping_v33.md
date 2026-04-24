@@ -71,7 +71,9 @@
 [2] L1 REASONING + PLAN GENERATION
 ===========================================================================================================
 - The senior reference librarian reads the stamped request slip, understands the actual goal, loads governing rules and priors, and writes the bounded plan that later routing may act on.
-- L1 may think, decompose, compare options, and self-correct, but it never retrieves evidence directly, never routes with authority, never executes tools, and never mutates durable state.
+- L1 may think, decompose, compare options, critique its own draft, and self-correct, but it never retrieves evidence directly, never routes with authority, never executes tools, and never mutates durable state.
+- **Planner / Doer split (OpenAI)**: L1 is the *planner* role. Whether backed by a reasoning-class model or a fast model is a per-work-class calibration; L2 is the *doer*. L1 prompts stay simple and direct — no "think step by step" injection for reasoning models (§prompt envelope below).
+- **Workflow vs agent discipline (Anthropic)**: Prefer predictable workflows (R1A / R1B / R3 / R4). Reserve multi-hop R3/R4 managed workflow for open-ended problems the plan cannot predetermine. Lowest viable agency always wins.
 
                                                           │ [ goal ]
                                                           ▼
@@ -81,12 +83,21 @@
 │ │ I1 GOAL + SUCCESS CONDITION│ │ I2 CONSTRAINTS + RULES     │ │ I3 DETAILS + WORK CLASS                     │ │
 │ │ - primary objective        │ │ - hard / soft constraints  │ │ - entities, numbers, deliverable, format    │ │
 │ │ - requested end-state      │ │ - must / should / avoid    │ │ - summarize / compare / analyze / act       │ │
-│ │ - answer / plan / artifact │ │ - scope / exclusions       │ │ - work class drives later plan shape        │ │
+│ │ - answer / plan / artifact │ │ - scope / exclusions       │ │ - work class drives planner mode + budget   │ │
 │ └──────────────┬─────────────┘ └──────────────┬─────────────┘ └──────────────────────┬───────────────────────┘ │
 │             [parse]                        [bound]                                 [frame]                      │
 │                └─────────────────────────────┴─────────────────────────────────────────┘                         │
 │                                                          ▼                                                      │
-│         [ clear intent frame = goal + constraints + details + output target + work class + success condition ]  │
+│         [ clear intent frame = goal + constraints + details + output target + work class + success condition ] │
+└──────────────────────────────────────────────────────────┬──────────────────────────────────────────────────────┘
+                                                           │ [ triage ]
+                                                           ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ PLAN-SKIP TRIAGE (match planner to complexity — Google ADK BP)                                                  │
+│ rule: do not plan what does not need planning. A trivial, unambiguous, cache-eligible ask skips the thinking    │
+│ desk and is handed directly to L0 as a DIRECT-mode plan stub (still a valid L1PlanContract, just minimal).      │
+│ escape: any of {ambiguous intent, multi-step decomposition, policy-sensitive, grounding_required}               │
+│         → proceed into the full thinking desk below.                                                            │
 └──────────────────────────────────────────────────────────┬──────────────────────────────────────────────────────┘
                                                            │ [ context ]
                                                            ▼
@@ -97,44 +108,85 @@
 │ │ - task schemas           ││ - compliance bounds     ││ - prior good answers           │ ││ - standard ops     │
 │ │ - output contracts       ││ - escalation thresholds ││ - SOPs / exemplars             │ ││ - prior examples   │
 │ │ - route heuristics       ││ - disallowed actions    ││ - stopping rules / priors      │ ││ - approved plans   │
+│ │ - delimiter/XML schema   ││ - HITL thresholds       ││ - zero-shot first, few-shot if │ ││                    │
+│ │   for L1→L0 handoff      ││                         ││   examples clearly align       │ ││                    │
 │ └────────────┬─────────────┘└────────────┬─────────────┘└───────────────┬───────────────┘ │└────────────────────┘
 │           [load]                      [bound]                        [bundle]              │
 │              └──────────────────────────┴──────────────────────────────┘                    │
 │                                                          ▼                                 │
-│                 [ plan bundle = schemas + policy + examples + priors + approved patterns + limits ]           │
+│                 [ plan bundle = schemas + policy + examples + priors + approved patterns + limits ]            │
+└──────────────────────────────────────────────────────────┬──────────────────────────────────────────────────────┘
+                                                           │ [ envelope ]
+                                                           ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ PROMPT ENVELOPE (developer-message vs system-message separation — OpenAI BP)                                    │
+│ - SYSTEM / DEVELOPER msg = L5 policy + M1 schemas + M2 safety + M3 few-shot exemplars (when used)              │
+│ - USER msg               = validated_request intent frame (I1 + I2 + I3)                                        │
+│ - Delimiters (markdown / XML) separate sections. Reasoning models: keep prompts simple, DO NOT prepend          │
+│   "think step by step" — their reasoning is internal. Non-reasoning models: explicit scaffolding allowed.       │
+│ - include_thoughts (Google ADK BP): private scratchpad NEVER crosses L1 → L0; only the sanitized                │
+│   published_rationale appears in the output contract.                                                           │
 └──────────────────────────────────────────────────────────┬──────────────────────────────────────────────────────┘
                                                            │ [ reason ]
                                                            ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ THE THINKING DESK (L1 REASONING LOOP)                                                                           │
-│ invariant: internal non-linearity stays here only. L1 can draft, inspect, refine, simplify, clarify, or       │
-│ abstain, but cannot execute.                                                                                     │
+│ THE THINKING DESK (L1 REASONING LOOP — planner mode + evaluator-optimizer)                                      │
+│ invariant: internal non-linearity stays here only. L1 can draft, inspect, refine, simplify, clarify,          │
+│ re-draft, or abstain, but cannot execute.                                                                        │
+│ planner mode ∈ { DIRECT, CHAIN_OF_THOUGHT, REACT, DECOMPOSED } — chosen from I3 work class and plan budget.     │
+│ iteration budget: max_refinements, wall_clock_ms, token_cap. Hitting any cap forces an exit branch below.       │
 ├─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 │ ┌────────────────────────────────┐ ┌────────────────────────────────┐ ┌──────────────────────────────────────┐ │
-│ │ T1 INTERPRET THE REQUEST       │ │ T2 DRAFT THE PLAN             │ │ T3 VALIDATE / SIMPLIFY / CLARIFY    │ │
-│ │ - contextual refinement of the │ │ - break goal into work units  │ │ - does it answer the real goal?     │ │
-│ │   visible request before plan  │ │ - order dependencies          │ │ - is it safe and coherent?          │ │
-│ │ - identify explicit unknowns   │ │ - propose route options only  │ │ - lowest viable agency?             │ │
-│ │ - sharpen what matters most    │ │ - mark grounding / support    │ │ - clarify or abstain if needed      │ │
+│ │ T1 INTERPRET THE REQUEST       │ │ T2 DRAFT THE PLAN             │ │ T3 EVALUATE + SELF-CRITIQUE          │ │
+│ │ - contextual refinement of the │ │ - break goal into work units  │ │ - does it answer the real goal?      │ │
+│ │   visible request before plan  │ │ - order dependencies          │ │ - is it safe and coherent?           │ │
+│ │ - identify explicit unknowns   │ │ - propose route options only  │ │ - lowest viable agency?              │ │
+│ │ - sharpen what matters most    │ │ - mark grounding / support    │ │ - per-step expected_ground_truth?    │ │
+│ │ - fact-grade intent as         │ │ - declare expected evidence   │ │ - critic persona scores plan;        │ │
+│ │   DIRECTLY_OBSERVED / DERIVED  │ │   each step will return       │ │   emits accept / refine / escalate   │ │
+│ │   / UNRESOLVED                 │ │ - declare assumptions + gaps  │ │ - loop T2↔T3 up to budget cap        │ │
 │ └──────────────┬─────────────────┘ └──────────────┬─────────────────┘ └──────────────────────┬───────────────┘ │
-│             [interpret]                       [draft]                                     [check]               │
-│                └────────────────────────────────┴─────────────────────────────────────────────┘                  │
+│             [interpret]                       [draft]                                     [evaluate]            │
+│                └────────────────────────────────┴─────────────────────────────────────────────┘                │
 │                                                          ▼                                                      │
-│            [ pass -> approve plan | fail -> refine / simplify / clarify / abstain within L1 only ]             │
+│    T3 exit branches (mutually exclusive):                                                                       │
+│       (a) ACCEPT      → plan approved, emit L1PlanContract                                                      │
+│       (b) REFINE      → return to T2 (if refinements_used < max_refinements)                                   │
+│       (c) CLARIFY     → request user clarification (distinct from abstain — blocks on human input)              │
+│       (d) BEST-EFFORT → budget exhausted but safe partial plan possible → emit with limitations, route R5       │
+│       (e) ABSTAIN     → unsafe or under-specified → emit R5 safe-default, no user prompt                        │
 └──────────────────────────────────────────────────────────┬──────────────────────────────────────────────────────┘
                                                            │ [ output ]
                                                            ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ L1 PLAN OUTPUT CONTRACT                                                                                         │
-│ - proposed_route: R1 / R3 / R4 / R5                                                                            │
-│ - query_spec / task_spec / route_risk / confidence                                                              │
-│ - grounding_required / declared assumptions / unresolved gaps                                                   │
+│ L1 PLAN OUTPUT CONTRACT (published, crosses L1 → L0)                                                            │
+│ structured handoff (OpenAI BP / Google ADK BP); internal scratchpad is NOT included                             │
+│ - proposed_route         : R1A | R1B | R3 | R4 | R5 | CLARIFY                                                   │
+│ - reasoning_mode         : DIRECT | CHAIN_OF_THOUGHT | REACT | DECOMPOSED                                       │
+│ - query_spec             : retrieval ask for C0 if grounding_required                                           │
+│ - task_spec              : per-step work units with expected_ground_truth                                       │
+│ - route_risk             : cost / latency / safety / reversibility signature                                    │
+│ - confidence_score       : ∈ [0.0, 1.0] — rubric-anchored; below HITL threshold ⇒ gate at [5] EXIT              │
+│ - grounding_required     : bool — forces C0 retrieval path                                                      │
+│ - declared_assumptions   : fact-graded (DIRECTLY_OBSERVED | DERIVED | UNRESOLVED)                               │
+│ - unresolved_gaps        : explicit list of what L1 could not resolve                                           │
+│ - published_rationale    : sanitized, human-readable rationale (redacted of private scratchpad)                 │
+│ - planner_telemetry      : refinements_used, wall_clock_ms, token_usage, critic_iterations                      │
+│                             (emitted so planner-on vs planner-off overhead can be measured)                     │
 │ invariant: L1 produces the notepad plan only. It does not retrieve evidence, route with authority, or perform   │
-│ the work.                                                                                                       │
+│ the work. Private scratchpad stays in L1; only the fields above cross the boundary.                             │
 └───────────────────────────────────────────────────────┬─────────────────────────────────────────────────────────┘
                                                         │ [ handoff ]
                                                         ▼
                                          [ Send to Hallway Director [3] ]
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ REPLAN RE-ENTRY (from [5] EXIT EVAL & CONTROL)                                                                  │
+│ When L2/C0/L3 return evidence that invalidates a declared_assumption, the exit gate MAY route back to L1 with   │
+│ a replan_request carrying: original plan_id, failed_assumption, observed_evidence, residual_budget.             │
+│ L1 re-enters at T2 (draft) with the reduced budget and emits a successor L1PlanContract linked by plan_id.      │
+│ Replan count is bounded; exceeding the cap escalates to BEST-EFFORT or ABSTAIN, not another replan.             │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ===========================================================================================================
 [3] ROUTE DECISION + SWITCHING
@@ -392,11 +444,30 @@
 │ - Receives only sealed runtime outputs or terminal short-circuits                                                                    │
 │ - Produces explicit disposition only: allow/finish, deny/reroute, escalate, or commit request                                       │
 │                                                                                                                                    │
-│ CURRENT-RUN EVALUATION                                                                                                               │
-│ - Policy / baseline fit                                                                                                              │
-│ - Answered the request in the required form                                                                                          │
-│ - Safe to leave: integrity, isolation, mutation authorization                                                                        │
-│ - Answer quality: groundedness, citation/support, completeness                                                                       │
+│ CURRENT-RUN EVALUATION — canonical metric spine (emitted as ExitDecision; schema: config/schemas/exit_decision.schema.json)          │
+│                                                                                                                                      │
+│ 1. FINAL-RESPONSE METRICS (Anthropic rubric spine + Vertex hallucination)                                                            │
+│    - groundedness, answer_relevancy, faithfulness, context_precision, completeness  (1–5 or "Unknown"; rubrics.yaml)                 │
+│    - hallucination (0.0–1.0, tool-grounded, distinct from LLM-rubric groundedness — see ADR-041)                                     │
+│                                                                                                                                      │
+│ 2. TRAJECTORY METRICS (Google Vertex — see ADR-037)                                                                                  │
+│    - DEFAULT ALWAYS-ON: latency_ms, failure(bool), tool_call_count                                                                   │
+│    - WHEN REFERENCE TRAJECTORY PRESENT: trajectory_exact_match, in_order_match, any_order_match, precision, recall, single_tool_use  │
+│                                                                                                                                      │
+│ 3. SAFETY FLAGS (OpenAI trace-grade + industry guardrail)                                                                            │
+│    - policy_violation, instruction_violation, policy_halt (kill-switch fired — ADR-042), violated_rules[], severity_band             │
+│                                                                                                                                      │
+│ 4. BUDGET FIT (ADR-038 — envelope stamped at ingress E3, checked here)                                                               │
+│    - tokens, latency, tool_calls, cost_usd  — consumed vs envelope  →  budget_fit(bool)                                              │
+│                                                                                                                                      │
+│ 5. OUTPUT-CONTRACT SATISFACTION (ADR-039)                                                                                            │
+│    - required_form_satisfied(bool), contract_ref, violations[]                                                                       │
+│                                                                                                                                      │
+│ 6. AGGREGATE QUALITY VERDICT                                                                                                         │
+│    - verdict ∈ {pass, warn, fail, unknown} · weighted_score · confidence · unknown_fraction                                          │
+│                                                                                                                                      │
+│ Regression signal also consumed here (not only in §6B): exact_match / schema / API / guardrails — see ADR-036.                       │
+│ Human calibration tunes graders, never runtime.                                                                                      │
 └───────┬─┬─┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
         │ │ │
         │ │ └─[deny/reroute] ──► ┌────────────────────────────────┐
@@ -472,6 +543,28 @@
                                                                                                                ▼
          [ FUTURE RUNTIME SURFACES UPDATED: BUS U pushes Prompts, Policies, Baselines, Rubrics, and Approved Reason Priors ]
          [ INVARIANT: learning signals inform next-run behavior only. They do not mutate or rescue the completed run. ]
+
+ ------------------------------------------------------------------------------------------------------------------------------
+ §6 ADDENDUM (2026-04-23, plan shadow-learning-bestpractice-gap-7b3e4c) — external best practice closure map:
+ ------------------------------------------------------------------------------------------------------------------------------
+ Capability vs Regression taxonomy        → config/judges/rubrics.yaml::eval_taxonomy (Anthropic)
+ Partial-credit composite scoring         → config/judges/rubrics.yaml::partial_credit (Anthropic)
+ Governance + Security rubric families    → config/judges/rubrics.yaml::governance_dimensions, security_dimensions
+ Golden dataset + ≥2-rater κ≥0.6 gate     → data/eval/golden/** (rag/gov/sec) (Anthropic + Google)
+ Adversarial / red-team suite             → data/eval/adversarial/**, tools/eval/adversarial_generator.py (Google pillar 4)
+ Prod→golden virtuous loop                → system_learning/adapters/golden_curation_adapter.py (Google)
+ Dueling-LLM synthetic dataset            → tools/eval/dueling_llm_synth.py (Google)
+ Transcript sampling + regrade queue      → tools/eval/transcript_sampler.py (Anthropic step 6)
+ Trace-grade review surface               → tools/eval/trace_grade_view.py + otel_mcp (OpenAI)
+ Eval-in-CI quality gate                  → .github/workflows/eval-harness.yml (OpenAI + Google)
+ Eval trial isolation contract            → ADR-038 + tests/eval/conftest.py (Anthropic step 4)
+ Saturation detector + promotion proposal → tools/eval/saturation_detector.py (Anthropic step 7)
+ Prompt optimizer prototype               → system_learning/engines/prompt_optimizer_engine.py (OpenAI)
+ Bus U — rubric channel                   → system_learning/adapters/rubric_publication_adapter.py
+ Bus U — reason-prior channel             → system_learning/adapters/reason_prior_adapter.py
+ ------------------------------------------------------------------------------------------------------------------------------
+ Every channel above is proposal-only and flows through the approval gauntlet + UWG. No current-run mutation is introduced.
+ ------------------------------------------------------------------------------------------------------------------------------
 
 ==============================================================================================================================
 [4.1] L2 MODULE BREAKOUT — EXECUTION COMPONENT MAP

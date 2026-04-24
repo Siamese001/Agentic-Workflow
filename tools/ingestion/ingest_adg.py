@@ -40,6 +40,7 @@ warnings.warn(
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,7 +55,7 @@ class ADGGraphIngestion:
     - repo_adg_graph: Graph relationships and structural patterns
     """
 
-    def __init__(self, repo_root: str, adg_db_path: str, chroma_persist_dir: str = "artifacts/chromadb"):
+    def __init__(self, repo_root: str, adg_db_path: str, chroma_persist_dir: str = canonical_persist_dir_str()):
         """
         Initialize ADG graph ingestion.
 
@@ -453,17 +454,20 @@ def main():
     parser = argparse.ArgumentParser(description="Wave 2: ADG Graph Ingestion")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--adg-db", help="Path to ADG SQLite database")
-    parser.add_argument("--chroma-dir", default="artifacts/chromadb", help="ChromaDB persistence directory")
+    parser.add_argument("--chroma-dir", default=canonical_persist_dir_str(), help="ChromaDB persistence directory")
     parser.add_argument(
         "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
     )
     args = parser.parse_args()
 
-    # Find ADG database if not specified
+    # Find ADG database if not specified. Use the shared helper so selection
+    # is deterministic (newest by mtime) and honours ADG_SNAPSHOT_PATH.
     if not args.adg_db:
-        adg_pattern = list(Path(args.repo_root).glob("artifacts/adg/adg_indexed_*.sqlite"))
-        if adg_pattern:
-            args.adg_db = str(adg_pattern[-1])  # Use most recent
+        from tools.ingestion._adg_snapshot import latest_adg_snapshot
+
+        newest = latest_adg_snapshot()
+        if newest is not None:
+            args.adg_db = str(newest)
         else:
             logger.error("No ADG database found")
             sys.exit(1)

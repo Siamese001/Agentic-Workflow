@@ -1,18 +1,24 @@
 {
   "gate_id": "I1_exit_disposition_ratchet",
-  "count": 517,
+  "count": 496,
   "seeded_at": "2026-04-23T16:07:25.486009+00:00",
-  "snapshot": "adg_indexed_04232026_1442.sqlite",
-  "tightened_at": "2026-04-23T18:44:02.415731+00:00",
+  "snapshot": "adg_indexed_04232026_1828.sqlite",
+  "tightened_at": "2026-04-23T22:30:14.645374+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T18:44:02.415731+00:00",
       "snapshot": "adg_indexed_04232026_1442.sqlite",
       "from": 518,
       "to": 517
+    },
+    {
+      "at": "2026-04-23T22:30:14.645374+00:00",
+      "snapshot": "adg_indexed_04232026_1828.sqlite",
+      "from": 517,
+      "to": 496
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-23T18:44:02.416243+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
+  "last_run_at": "2026-04-24T02:28:48.158347+00:00",
+  "last_run_snapshot": "adg_indexed_04232026_2225.sqlite"
 }

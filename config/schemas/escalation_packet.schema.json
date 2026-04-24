@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow/config/schemas/escalation_packet.schema.json",
+  "title": "EscalationPacket",
+  "description": "Bounded packet emitted by v33 Process Map §5 when disposition==escalate_hitl. Consumed by L5 HITL queue and resolved by an approver drawn from the pool defined in ADR-023 / config/runtime_hitl_policy.yaml.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "packet_id",
+    "request_id",
+    "trace_ref",
+    "hitl_class",
+    "severity_band",
+    "reason_code",
+    "reason_detail",
+    "evidence_refs",
+    "options_ledger",
+    "approver_pool",
+    "deadline_utc",
+    "emitted_at_utc",
+    "exit_decision_ref",
+    "policy_snapshot"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "packet_id": { "type": "string", "minLength": 1 },
+    "request_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": ["string", "null"] },
+    "tenant": { "type": ["string", "null"] },
+
+    "trace_ref": {
+      "type": "string",
+      "description": "Pointer to full runtime trace (L6 exhaust store). Must be resolvable by approver tooling."
+    },
+    "exit_decision_ref": {
+      "type": "string",
+      "description": "Pointer to the ExitDecision instance that triggered escalation."
+    },
+    "emitted_at_utc": { "type": "string", "format": "date-time" },
+    "deadline_utc":   { "type": "string", "format": "date-time" },
+
+    "hitl_class": {
+      "type": "string",
+      "description": "Escalation class per ADR-023 §3.1. SSOT: agentic_core/L5_safety/exit_control/hitl_classes.py (HitlClass enum). Any additions/renames must update both.",
+      "enum": [
+        "financial",
+        "safety",
+        "regulated",
+        "novel_context",
+        "low_confidence",
+        "policy_override"
+      ]
+    },
+    "severity_band": {
+      "type": "string",
+      "enum": ["info", "low", "medium", "high", "critical"]
+    },
+    "confidence_0_1": {
+      "type": ["number", "null"],
+      "minimum": 0.0, "maximum": 1.0
+    },
+    "novelty_0_1": {
+      "type": ["number", "null"],
+      "minimum": 0.0, "maximum": 1.0
+    },
+    "blast_radius": {
+      "type": "object",
+      "required": ["scope"],
+      "additionalProperties": false,
+      "properties": {
+        "scope":         { "type": "string", "enum": ["self", "session", "tenant", "fleet"] },
+        "affected_count":{ "type": ["integer", "null"], "minimum": 0 },
+        "write_surfaces":{ "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "reason_code":   { "type": "string", "minLength": 1 },
+    "reason_detail": { "type": "string", "minLength": 1 },
+
+    "evidence_refs": {
+      "type": "array",
+      "description": "Pointers to artifacts (tool outputs, transcripts, rubric reports, policy diffs) the approver must review.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["trace_span", "artifact", "rubric_report", "policy_diff", "tool_output", "trajectory", "exit_decision", "other"]
+          },
+          "ref":  { "type": "string", "minLength": 1 },
+          "summary": { "type": ["string", "null"] }
+        }
+      }
+    },
+
+    "options_ledger": {
+      "type": "array",
+      "description": "Candidate approver actions with scored recommendation (Author-Gate style — harness-side) so the approver is never asked a blank-check question. Minimum 1, maximum 6.",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["label", "description", "recommendation", "confidence_0_1"],
+        "additionalProperties": false,
+        "properties": {
+          "label":          { "type": "string", "minLength": 1 },
+          "description":    { "type": "string", "minLength": 1 },
+          "recommendation": { "type": "string", "enum": ["recommended", "alternative", "fallback"] },
+          "confidence_0_1": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+          "reversibility":  { "type": ["string", "null"], "enum": [null, "read", "action", "write"] },
+          "side_effects":   { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "approver_pool": {
+      "type": "string",
+      "description": "Pool name resolved from config/runtime_hitl_policy.yaml via resolve_approver_pool(hitl_class, tenant, time_of_day, policy)."
+    },
+    "approver_scope": {
+      "type": ["string", "null"],
+      "description": "Optional narrower scope (e.g. 'tenant_owner', 'safety_officer_oncall')."
+    },
+
+    "fallback_directive": {
+      "type": "string",
+      "enum": ["abstain", "clarify", "safe_default", "deny", "hold"],
+      "description": "What §5 does if the deadline expires without approver action. Must mirror ADR-023 per-class fallback."
+    },
+
+    "policy_snapshot": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque id (git sha + mtime) of L5 policy bundle in effect when this packet was minted. Audit binding per ADR-023 §3.6."
+    },
+
+    "resumption_contract": {
+      "type": ["object", "null"],
+      "description": "Bound contract describing how an approved/modified outcome re-enters the governed flow. Required for resume path.",
+      "additionalProperties": false,
+      "properties": {
+        "reentry_layer":   { "type": "string", "enum": ["L0", "L1", "L2", "L3", "L5_exit"] },
+        "must_revalidate": { "type": "boolean" },
+        "binds_budget":    { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -4,7 +4,7 @@ generate_calibration_report.py — Weekly Author-Gate calibration report.
 
 Reads:
     - .windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite
-    - artifacts/windsurf/hitl_violations.jsonl
+    - artifacts/windsurf/author_gate_violations.jsonl (falls back to legacy hitl_violations.jsonl)
 
 Writes:
     - docs/reports/author-gate/<YYYY-Www>.md (canonical)
@@ -12,7 +12,7 @@ Writes:
 
 METRICS
 -------
-From hitl_violations.jsonl:
+From author_gate_violations.jsonl:
     - total_events
     - events_by_severity (block / shadow_warn / critical)
     - firing_rate_per_day
@@ -58,7 +58,11 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "windsurf" / "hitl_violations.jsonl"
+VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_violations.jsonl"
+# Back-compat: legacy name pre-2026-04-21 rename. Read-fallback if canonical missing.
+_LEGACY_VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "windsurf" / "hitl_violations.jsonl"
+if not VIOLATIONS_PATH.exists() and _LEGACY_VIOLATIONS_PATH.exists():
+    VIOLATIONS_PATH = _LEGACY_VIOLATIONS_PATH
 REPORTS_DIR = REPO_ROOT / "docs" / "reports" / "author-gate"
 
 MAX_JSONL_LINES = 10_000

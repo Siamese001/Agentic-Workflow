@@ -48,12 +48,29 @@ NOTION_BASE = "https://api.notion.com/v1"
 
 # Status vocabulary — case-insensitive substring match
 DONE_STATUSES = {
-    "done", "complete", "completed", "shipped", "closed", "landed",
-    "✅", "ship", "merged", "all phases complete",
+    "done",
+    "complete",
+    "completed",
+    "shipped",
+    "closed",
+    "landed",
+    "✅",
+    "ship",
+    "merged",
+    "all phases complete",
 }
 OPEN_STATUSES = {
-    "todo", "to do", "in progress", "wip", "pending", "blocked",
-    "deferred", "ready", "planned", "not started", "on hold",
+    "todo",
+    "to do",
+    "in progress",
+    "wip",
+    "pending",
+    "blocked",
+    "deferred",
+    "ready",
+    "planned",
+    "not started",
+    "on hold",
 }
 
 
@@ -62,7 +79,7 @@ class PlanStatus:
     plan_slug: str
     plan_file: str
     header_status: str | None = None  # top-level "Status:" line
-    wave_status: dict[str, str] = field(default_factory=dict)   # wave_id → status
+    wave_status: dict[str, str] = field(default_factory=dict)  # wave_id → status
     phase_status: dict[str, str] = field(default_factory=dict)  # phase_id → status
 
 
@@ -76,9 +93,13 @@ def _normalize_status(raw: str) -> str:
     s = raw.strip().lower().strip("*`_ ")
     if not s:
         return "unknown"
-    if s in DONE_STATUSES or any(d in s for d in ("✅", "complete", "done", "shipped", "closed", "landed", "merged")):
+    if s in DONE_STATUSES or any(
+        d in s for d in ("✅", "complete", "done", "shipped", "closed", "landed", "merged")
+    ):
         return "done"
-    if s in OPEN_STATUSES or any(o in s for o in ("todo", "in progress", "wip", "pending", "blocked", "deferred", "planned", "on hold")):
+    if s in OPEN_STATUSES or any(
+        o in s for o in ("todo", "in progress", "wip", "pending", "blocked", "deferred", "planned", "on hold")
+    ):
         return "open"
     return "unknown"
 
@@ -114,6 +135,7 @@ def parse_plan_file(path: Path) -> PlanStatus:
             i += 1
             continue
         headers = [h.strip().lower().strip("*") for h in line.strip().strip("|").split("|")]
+
         # Map column indices
         def find_col(*names: str) -> int:
             for idx, h in enumerate(headers):
@@ -190,7 +212,9 @@ def _notion_request(method: str, path: str, token: str, body: dict | None = None
     url = f"{NOTION_BASE}{path}"
     data = json.dumps(body).encode("utf-8") if body is not None else None
     req = urllib.request.Request(
-        url, data=data, method=method,
+        url,
+        data=data,
+        method=method,
         headers={
             "Authorization": f"Bearer {token}",
             "Notion-Version": NOTION_API_VERSION,
@@ -202,7 +226,15 @@ def _notion_request(method: str, path: str, token: str, body: dict | None = None
             parsed: Any = json.loads(resp.read().decode("utf-8"))
             return parsed if isinstance(parsed, dict) else None
     except urllib.error.HTTPError as exc:
-        _log({"event": "notion_http_error", "method": method, "path": path, "status": exc.code, "body": exc.read().decode("utf-8", errors="replace")[:500]})
+        _log(
+            {
+                "event": "notion_http_error",
+                "method": method,
+                "path": path,
+                "status": exc.code,
+                "body": exc.read().decode("utf-8", errors="replace")[:500],
+            }
+        )
         return None
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         _log({"event": "notion_net_error", "method": method, "path": path, "error": str(exc)})
@@ -323,33 +355,39 @@ def reconcile(
             if hs == "done":
                 if has_open_rows or has_open_waves:
                     # Three-way drift: header says done, tables say open
-                    warnings.append({
-                        "kind": "plan_header_table_drift",
-                        "plan_file": plan_file,
-                        "header": plan.header_status,
-                        "open_phases": [k for k, v in plan.phase_status.items() if v == "open"],
-                        "open_waves": [k for k, v in plan.wave_status.items() if v == "open"],
-                    })
+                    warnings.append(
+                        {
+                            "kind": "plan_header_table_drift",
+                            "plan_file": plan_file,
+                            "header": plan.header_status,
+                            "open_phases": [k for k, v in plan.phase_status.items() if v == "open"],
+                            "open_waves": [k for k, v in plan.wave_status.items() if v == "open"],
+                        }
+                    )
                 else:
                     verdict = "close"
                     source = "header_complete"
                     plan_status_cell = plan.header_status or ""
 
         if verdict == "close":
-            candidates.append(Candidate(
-                page_id=page_id,
-                notion_phase_id=notion_phase,
-                notion_wave_id=notion_wave,
-                plan_file=plan_file,
-                source=source,
-                plan_status=plan_status_cell,
-            ))
+            candidates.append(
+                Candidate(
+                    page_id=page_id,
+                    notion_phase_id=notion_phase,
+                    notion_wave_id=notion_wave,
+                    plan_file=plan_file,
+                    source=source,
+                    plan_status=plan_status_cell,
+                )
+            )
 
     return candidates, warnings
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--execute", action="store_true", help="Actually patch (default: dry-run)")
     parser.add_argument("--show-drift", action="store_true", help="Show plan-header-vs-table drift warnings")
     parser.add_argument("--plan", type=str, default=None, help="Only process this plan file name")
@@ -374,7 +412,10 @@ def main() -> int:
 
     total_phase_entries = sum(len(p.phase_status) for p in plans.values())
     total_wave_entries = sum(len(p.wave_status) for p in plans.values())
-    print(f"  Parsed {len(plans)} plans — {total_phase_entries} phase rows, {total_wave_entries} wave rows", file=sys.stderr)
+    print(
+        f"  Parsed {len(plans)} plans — {total_phase_entries} phase rows, {total_wave_entries} wave rows",
+        file=sys.stderr,
+    )
 
     print("Fetching open Notion rows…", file=sys.stderr)
     open_rows = fetch_all_open_rows(token)
@@ -398,17 +439,21 @@ def main() -> int:
     if candidates:
         print(f"\nFirst 20 close candidates:")
         for c in candidates[:20]:
-            print(f"  {c.plan_file} {c.notion_phase_id or c.notion_wave_id} via={c.source} plan_says={c.plan_status!r}")
+            print(
+                f"  {c.plan_file} {c.notion_phase_id or c.notion_wave_id} via={c.source} plan_says={c.plan_status!r}"
+            )
 
     if not args.execute:
         print(f"\nDRY RUN — use --execute to apply.")
-        _log({
-            "event": "dry_run_summary",
-            "plans_parsed": len(plans),
-            "open_rows": len(open_rows),
-            "close_candidates": len(candidates),
-            "drift_warnings": len(warnings),
-        })
+        _log(
+            {
+                "event": "dry_run_summary",
+                "plans_parsed": len(plans),
+                "open_rows": len(open_rows),
+                "close_candidates": len(candidates),
+                "drift_warnings": len(warnings),
+            }
+        )
         return 0
 
     # Execute
@@ -427,7 +472,14 @@ def main() -> int:
             _log({"event": "plan_driven_close", "ok": False, **c.__dict__})
 
     print(f"\nPatched: {ok}/{len(candidates)}")
-    _log({"event": "execute_summary", "patched": ok, "total_candidates": len(candidates), "drift_warnings": len(warnings)})
+    _log(
+        {
+            "event": "execute_summary",
+            "patched": ok,
+            "total_candidates": len(candidates),
+            "drift_warnings": len(warnings),
+        }
+    )
     return 0
 
 
