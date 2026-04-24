@@ -269,22 +269,27 @@ class HealingRouter:
         app_name: str,
         decision: RoutingDecision,
     ) -> dict[str, Any]:
-        """Call AppsQwenGateway.infer synchronously.
+        """Call QwenInferenceGateway.infer synchronously via the singleton.
 
-        Uses `asyncio.run()` which owns the loop lifecycle and guarantees
-        cleanup of background tasks spawned by `OptimizedVLLMClient`
-        (notably `_batch_processor`). Closing the gateway in the same loop
-        prevents orphaned coroutines and "Event loop is closed" warnings.
+        Wave B Phase B3 (qwen-adoption-waves-a7f3c2): switched from per-call
+        ``AppsQwenGateway()`` instantiation to the process singleton
+        ``get_qwen_inference_gateway()``. Per-call instantiation lost the
+        connection pool and response cache on every heal; the singleton keeps
+        them warm across the MEDIUM-tier heal queue.
+
+        Uses ``asyncio.run()`` which owns the loop lifecycle. The singleton
+        deliberately does NOT close on each call — it stays warm until
+        ``close_qwen_inference_gateway()`` is invoked at process shutdown.
         """
         try:
             import asyncio  # noqa: PLC0415
 
-            from agentic_core.L3_orchestration.inference.qwen_vllm import (  # noqa: PLC0415
-                AppsQwenGateway,
-                AppsQwenRequest,
+            from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning.qwen_inference_gateway import (  # noqa: PLC0415
+                QwenInferenceRequest,
+                get_qwen_inference_gateway,
             )
 
-            request = AppsQwenRequest(
+            request = QwenInferenceRequest(
                 app_name=app_name,
                 prompt=prompt,
                 max_tokens=decision.max_tokens,
@@ -292,11 +297,8 @@ class HealingRouter:
             )
 
             async def _run() -> Any:
-                gw = AppsQwenGateway()
-                try:
-                    return await gw.infer(request)
-                finally:
-                    await gw.close()
+                gw = await get_qwen_inference_gateway()
+                return await gw.infer(request)
 
             response = asyncio.run(_run())
 

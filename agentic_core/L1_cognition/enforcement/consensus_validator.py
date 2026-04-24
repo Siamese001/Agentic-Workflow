@@ -11,6 +11,7 @@ from agentic_core.L0_routing.config.model_registry import (
     CONSENSUS_JURORS,
     GEMINI_PRO_MODEL_ID,
     OPENAI_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -207,6 +208,15 @@ class ConsensusEngine:
         GEMINI_PRO_MODEL_ID: {
             "keywords": ["contradiction", "hallucination"],
             "reason": "GEMINI_PRO_MODEL Deep Think: Found contradiction with known context or library definitions.",
+        },
+        # Wave B Phase B2 (qwen-adoption-waves-a7f3c2): optional 4th juror.
+        # Qwen participates when USE_QWEN_CONSENSUS_JUROR=1 adds it to
+        # CONSENSUS_JURORS. Distinct keyword set focuses on logic/policy
+        # violations that a vendor-independent local model is well-placed
+        # to catch.
+        QWEN_LOCAL_MODEL_ID: {
+            "keywords": ["policy violation", "unauthorized", "privilege escalation"],
+            "reason": "QWEN_LOCAL Analysis: Detected policy or authorization violation independent of cloud vendor reasoning.",
         },
     }
 

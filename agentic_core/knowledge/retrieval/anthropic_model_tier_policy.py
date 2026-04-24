@@ -38,8 +38,16 @@ References:
 from __future__ import annotations
 
 import logging
+import os
 from dataclasses import dataclass
 from typing import Literal, Mapping
+
+# Wave B (qwen-adoption-waves-a7f3c2) Phase B1: local-Qwen tier integration.
+# Importing the L0 SSOT keeps this module in sync with the Qwen vLLM model
+# identifier without duplicating env-var logic.
+from agentic_core.L0_routing.config.model_registry import (
+    QWEN_LOCAL_MODEL_ID,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -52,9 +60,18 @@ SONNET_4_5 = "claude-sonnet-4-5"
 SONNET_4_6 = "claude-sonnet-4-6"
 OPUS_4_5 = "claude-opus-4-5"
 
+# Wave B Phase B1: local Qwen identifier, sourced from L0 model_registry SSOT.
+# Exported alongside Anthropic ids so callers can reference a single constant
+# regardless of which tier a task lands in.
+QWEN_LOCAL = QWEN_LOCAL_MODEL_ID
+
 # Tier labels (ordered cheapest -> most capable).
 # Typed as Literal so mypy accepts them as keys/values in the Mapping[TierName, ...] below.
-TierName = Literal["haiku", "sonnet", "opus"]
+# ``qwen`` precedes ``haiku`` because local-GPU Qwen is zero-marginal-cost
+# and is preferred over Haiku for cost-critical tasks when the local vLLM
+# server is available.
+TierName = Literal["qwen", "haiku", "sonnet", "opus"]
+TIER_QWEN: TierName = "qwen"
 TIER_HAIKU: TierName = "haiku"
 TIER_SONNET: TierName = "sonnet"
 TIER_OPUS: TierName = "opus"
@@ -62,6 +79,7 @@ TIER_OPUS: TierName = "opus"
 # Tier -> canonical model id. Updating one place updates every task-type
 # mapping below that references the tier indirectly.
 TIER_MODELS: Mapping[TierName, str] = {
+    TIER_QWEN: QWEN_LOCAL,
     TIER_HAIKU: HAIKU_4_5,
     TIER_SONNET: SONNET_4_6,
     TIER_OPUS: OPUS_4_5,
@@ -182,6 +200,58 @@ def select_model(
     return ModelSelection(model=model, tier=tier, task_type=task_type, reason=reason)
 
 
+# ---------------------------------------------------------------------------
+# Wave B Phase B1: Qwen-preferred policy overlay
+# ---------------------------------------------------------------------------
+#
+# Cost-critical tasks (contextualization, reranking, JSON shaping, quick
+# classification) are well within Qwen-2.5-14B-Instruct-AWQ's capability for
+# zero marginal cost. The overlay below substitutes ``TIER_QWEN`` for
+# ``TIER_HAIKU`` on exactly those tasks while leaving synthesis / reasoning
+# tasks pointed at Anthropic Sonnet / Opus.
+#
+# Synthesis and deep-reasoning stay on Anthropic because Qwen's long-context
+# citation fidelity and reasoning depth still lag Sonnet/Opus for production
+# RAG answers. This policy is the conservative first step — per-task A/B
+# comparisons can lift more tasks into TIER_QWEN later without changing
+# any caller code.
+
+QWEN_COST_CRITICAL_TASK_TIER_POLICY: Mapping[str, TierName] = {
+    TASK_CHUNK_CONTEXTUALIZATION: TIER_QWEN,
+    TASK_RERANKING: TIER_QWEN,
+    TASK_JSON_SHAPING: TIER_QWEN,
+    TASK_QUICK_CLASSIFICATION: TIER_QWEN,
+    TASK_SYNTHESIS: TIER_SONNET,
+    TASK_GROUNDED_ANSWER: TIER_SONNET,
+    TASK_DEEP_REASONING: TIER_OPUS,
+    TASK_MULTI_AGENT_ORCHESTRATION: TIER_OPUS,
+}
+
+
+def get_active_policy() -> Mapping[str, TierName]:
+    """Return the task -> tier policy for the current environment.
+
+    Selects ``QWEN_COST_CRITICAL_TASK_TIER_POLICY`` when either:
+      * ``USE_QWEN_COST_CRITICAL=1`` is explicitly set, OR
+      * ``VLLM_BASE_URL`` is set (local vLLM intent signal) AND
+        ``USE_QWEN_COST_CRITICAL`` is not explicitly set to ``0``.
+
+    Otherwise returns the Anthropic-only ``DEFAULT_TASK_TIER_POLICY``.
+
+    This helper lets call-sites opt into Qwen without hardcoding env-var
+    checks at every callsite.
+    """
+    flag = (os.getenv("USE_QWEN_COST_CRITICAL") or "").strip().lower()
+    if flag in ("1", "true", "yes", "on"):
+        return QWEN_COST_CRITICAL_TASK_TIER_POLICY
+    if flag in ("0", "false", "no", "off"):
+        return DEFAULT_TASK_TIER_POLICY
+    # Unset -> infer from VLLM_BASE_URL presence.
+    if os.getenv("VLLM_BASE_URL"):
+        return QWEN_COST_CRITICAL_TASK_TIER_POLICY
+    return DEFAULT_TASK_TIER_POLICY
+
+
 def compose_two_pass_models(
     *,
     policy: Mapping[str, TierName] | None = None,
@@ -212,7 +282,9 @@ __all__ = [
     "SONNET_4_5",
     "SONNET_4_6",
     "OPUS_4_5",
+    "QWEN_LOCAL",
     # Tier labels
+    "TIER_QWEN",
     "TIER_HAIKU",
     "TIER_SONNET",
     "TIER_OPUS",
@@ -228,7 +300,9 @@ __all__ = [
     # Policy & lookup
     "TIER_MODELS",
     "DEFAULT_TASK_TIER_POLICY",
+    "QWEN_COST_CRITICAL_TASK_TIER_POLICY",
     "ModelSelection",
     "select_model",
     "compose_two_pass_models",
+    "get_active_policy",
 ]

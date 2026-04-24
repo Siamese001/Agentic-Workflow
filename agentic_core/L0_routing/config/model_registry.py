@@ -100,10 +100,24 @@ ANTHROPIC_MODEL_ID: Final[str] = os.getenv(
 # without redeploy. Empty override → fallback to default.
 def _resolve_consensus_jurors() -> tuple[str, ...]:
     raw = os.getenv("CONSENSUS_JURORS", "").strip()
-    if not raw:
-        return (OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID)
-    jurors = tuple(token.strip() for token in raw.split(",") if token.strip())
-    return jurors or (OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID)
+    if raw:
+        jurors = tuple(token.strip() for token in raw.split(",") if token.strip())
+        if jurors:
+            return jurors
+
+    # Default 3-juror set.
+    default = (OPENAI_MODEL_ID, ANTHROPIC_MODEL_ID, GEMINI_PRO_MODEL_ID)
+
+    # Wave B (qwen-adoption-waves-a7f3c2) Phase B2: opt-in 4th local juror.
+    # When USE_QWEN_CONSENSUS_JUROR=1, append local-vLLM Qwen to the jury.
+    # Strict-majority threshold auto-raises 2/3 -> 3/4 via
+    # consensus_majority_threshold(len(providers)), so this strengthens
+    # safety without any caller changes. Qwen is rate-limit-free and
+    # vendor-independent, so it acts as a deadman-switch on guardrail votes.
+    qwen_flag = (os.getenv("USE_QWEN_CONSENSUS_JUROR") or "").strip().lower()
+    if qwen_flag in ("1", "true", "yes", "on"):
+        return default + (QWEN_LOCAL_MODEL_ID,)
+    return default
 
 
 CONSENSUS_JURORS: Final[tuple[str, ...]] = _resolve_consensus_jurors()
