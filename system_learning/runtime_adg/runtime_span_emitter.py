@@ -27,6 +27,7 @@ Design rules
 
 from __future__ import annotations
 
+import contextvars
 import hashlib
 import logging
 import time
@@ -35,6 +36,58 @@ from contextlib import contextmanager
 from typing import Any, Iterator, Sequence
 
 logger = logging.getLogger(__name__)
+
+# Context-var that carries the currently-active tracing adapter. Any code
+# running inside an orchestrator context can resolve the adapter without
+# having it plumbed through every call frame. Tier 3 uses this so agents
+# (e.g. HOPPipelineExecutor._process) can call seal_step() without knowing
+# about the adapter wiring.
+_current_adapter_var: contextvars.ContextVar[Any] = contextvars.ContextVar(
+    "runtime_adg_current_adapter", default=None
+)
+
+
+def set_current_adapter(adapter: Any) -> contextvars.Token:
+    """Install `adapter` as the ambient adapter for this context.
+
+    Returns a token that MUST be passed to `reset_current_adapter` to restore
+    the previous value (typically from a `finally` in the same frame).
+    """
+    return _current_adapter_var.set(adapter)
+
+
+def reset_current_adapter(token: contextvars.Token) -> None:
+    """Restore the adapter saved at the matching `set_current_adapter` call."""
+    _current_adapter_var.reset(token)
+
+
+def get_current_adapter() -> Any:
+    """Return the ambient adapter, or None if no orchestrator is active."""
+    return _current_adapter_var.get()
+
+
+def back_patch_trace_id(adapter: Any, old_trace_id: str, new_trace_id: str) -> int:
+    """Rewrite `trace_id` on previously-emitted spans that used `old_trace_id`.
+
+    Tier 2 harden: `emit_trace_root` stamps a uuid before `super().trace_orchestrator`
+    creates the OTel trace, so by the time children know the real trace_id, the
+    root span already carries a stale one. After super() yields, callers invoke
+    this helper with (stale uuid, real OTel trace_id) to unify the buffer.
+
+    Returns the count of patched spans. Fail-open.
+    """
+    spans_list = getattr(adapter, "_completed_spans", None)
+    if spans_list is None or not isinstance(spans_list, list) or not old_trace_id:
+        return 0
+    patched = 0
+    for record in spans_list:
+        if record.get("trace_id") == old_trace_id:
+            record["trace_id"] = new_trace_id
+            attrs = record.get("attributes")
+            if isinstance(attrs, dict) and attrs.get("trace_id") == old_trace_id:
+                attrs["trace_id"] = new_trace_id
+            patched += 1
+    return patched
 
 # Span name constants — MUST match patterns in `span_contracts.py`.
 SPAN_TRACE_ROOT = "runtime.trace_root"
@@ -273,4 +326,8 @@ __all__ = [
     "emit_trace_root",
     "seal_step",
     "emit_exit_disposition",
+    "set_current_adapter",
+    "reset_current_adapter",
+    "get_current_adapter",
+    "back_patch_trace_id",
 ]

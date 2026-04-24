@@ -138,42 +138,73 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
         """
         # Import lazily to keep module-load side-effects minimal.
         from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+            back_patch_trace_id,
             emit_exit_disposition,
             emit_trace_root,
+            reset_current_adapter,
+            set_current_adapter,
         )
 
         start_time = time.time()
 
         # Tier 2: emit runtime.trace_root BEFORE super().trace_orchestrator so
-        # the root span is first in the drained buffer. Use a synthetic trace_id;
-        # the real OTel trace_id will supersede for child spans via the normal
-        # tracing machinery.
+        # the root span is first in the drained buffer. We use a synthetic
+        # staging trace_id here; after super() yields, we read back the real
+        # OTel trace_id from the span stack and back-patch so root + children
+        # share the same correlation id.
+        staging_trace_id = ""
         try:
-            trace_id = emit_trace_root(
+            staging_trace_id = emit_trace_root(
                 self,
                 mission=mission,
                 input_envelope=metadata,
                 metadata={"service": self.service_name},
             )
         except (OSError, ValueError, TypeError, RuntimeError) as exc:
-            trace_id = ""
             if self.enable_logging:
                 logger.debug("tier2_trace_root_emit_failed", extra={"error": str(exc)})
 
+        # Tier 3: install the adapter as context-local so any nested code
+        # (agents, engines, handlers) can call seal_step() without needing the
+        # adapter plumbed through every call frame.
+        adapter_token = set_current_adapter(self)
+
         disposition = "allow"  # default unless the inner block raises
+        unified_trace_id = staging_trace_id
         try:
             with super().trace_orchestrator(mission, metadata) as span:
+                # Tier 2 harden: once the OTel span stack is populated, unify
+                # the trace_id on our pre-emitted trace_root span with the
+                # real OTel trace_id so downstream consumers can correlate.
+                try:
+                    otel_trace_id = (
+                        self._span_stack[-1][0] if self._span_stack else ""
+                    )
+                    if otel_trace_id and otel_trace_id != staging_trace_id:
+                        back_patch_trace_id(self, staging_trace_id, otel_trace_id)
+                        unified_trace_id = otel_trace_id
+                except (AttributeError, IndexError):
+                    pass
+
                 try:
                     yield span
                 except (OSError, ValueError, TypeError, RuntimeError):
                     disposition = "deny"
                     raise
         finally:
-            # Tier 2: emit Exit.disposition at the close of the run.
+            # Restore the previous adapter (usually None).
+            try:
+                reset_current_adapter(adapter_token)
+            except (ValueError, LookupError) as exc:
+                if self.enable_logging:
+                    logger.debug("tier3_adapter_reset_failed", extra={"error": str(exc)})
+
+            # Tier 2: emit Exit.disposition at the close of the run, using the
+            # unified trace_id so it correlates with trace_root + children.
             try:
                 emit_exit_disposition(
                     self,
-                    trace_id=trace_id,
+                    trace_id=unified_trace_id,
                     disposition=disposition,
                     policy_hash="auto_persistence_v1",
                     reason_codes=(
@@ -183,7 +214,10 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
                 )
             except (OSError, ValueError, TypeError, RuntimeError) as exc:
                 if self.enable_logging:
-                    logger.debug("tier2_exit_disposition_emit_failed", extra={"error": str(exc)})
+                    logger.debug(
+                        "tier2_exit_disposition_emit_failed",
+                        extra={"error": str(exc)},
+                    )
 
         # Auto-persist runtime ADG after trace completion
         if self._auto_persistence_enabled:

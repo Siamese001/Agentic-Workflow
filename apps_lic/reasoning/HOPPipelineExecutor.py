@@ -239,12 +239,26 @@ class HOPPipelineExecutor(HOPStageCapability, LICAgentBase):
         if handler is None:
             return {"stage": self.stage_id, "error": f"No handler for stage {self.stage_id}"}
 
-        # Pass complexity_tier and profile to stage handler for dynamic reasoning
-        return handler(
-            self,
-            context or {},
-            reasoning_profile=self.reasoning_profile,
-            complexity_tier=complexity_tier,
-            profile_hash=profile_hash,
-            **kwargs,
+        # Tier 3: emit L2.step.seal per HOP stage via the ambient runtime-ADG
+        # adapter installed by AutoPersistenceTracingAdapter.trace_orchestrator.
+        # If no adapter is active (e.g. unit test without tracing), seal_step
+        # fails open and the handler runs untouched.
+        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+            get_current_adapter,
+            seal_step,
         )
+
+        adapter = get_current_adapter()
+        step_id = f"hop_stage_{self.stage_id}_{self.stage_name}"
+        with seal_step(adapter, step_id=step_id, trace_id="", component="HOPPipelineExecutor") as _seal_bag:
+            # Pass complexity_tier and profile to stage handler for dynamic reasoning
+            result = handler(
+                self,
+                context or {},
+                reasoning_profile=self.reasoning_profile,
+                complexity_tier=complexity_tier,
+                profile_hash=profile_hash,
+                **kwargs,
+            )
+            _seal_bag["output"] = result
+        return result
