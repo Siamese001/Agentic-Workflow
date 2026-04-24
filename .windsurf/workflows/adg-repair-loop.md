@@ -122,3 +122,43 @@ This is the ONLY allowed `pytest tests/unit` invocation. Run exactly once after 
 - Editing files not in blast radius of current cluster
 - Fixing call sites instead of definition nodes
 - Grep-based triage without ADG artifact backing
+
+---
+
+## P0 remediation — fail-closed by design (no auto-fix)
+
+When `python tools/generate_full_adg.py` halts with `P0 two-pass runner BLOCKED`,
+the pipeline emits `artifacts/adg/issues/p0_remediation_wave_plan_<ts>.md`.
+
+**The plan is the remediation path. There is no auto-burndown script.**
+
+Rationale (RCA 2026-04-24, see `tools/archive/phase3_orphan_w6/README.md`):
+
+- Every P0 class (`infra_wiring`, `write_sovereignty`, `capability_egress`,
+  `critical_path_integrity`, `authority_boundary`, `dynamic_exec`) requires a
+  design decision a mechanical rewriter cannot make.
+- Historical false-positive rate on mechanical burndown of swallow-class
+  defects: ~87% against doctrinally-valid best-effort patterns
+  (`docs/reports/plans/p1-guardian-burndown-final-04202026.md`).
+- Auto-fix would violate constitutional §6 (Author-Gate), §8 (guardian
+  exemptions), §23 (ADG canonical invariants — "fix the graph, not your
+  analysis").
+
+### P0 remediation loop
+
+1. Read the wave plan. P0 is fail-closed, so there is exactly one file.
+2. For the top-ranked item: consult ADG (`adg_edge_fanin`, `adg_nodes_by_file`,
+   `mv_*` views) to understand the design constraint being violated.
+3. Apply the targeted fix — adapter routing, layer relocation, chokepoint
+   alignment, or (rare) guardian exemption with Author-Gate justification.
+4. Rerun `python tools/generate_full_adg.py`. The regen either confirms the
+   fix or surfaces the next P0.
+5. Repeat. P0 budget is always 0 — no ratchet, no ceiling.
+
+### Do NOT
+
+- Wire the archived `phase3_auto_remediation.py` back in. It is permanently
+  retired.
+- Hand-assign P-bands on deferred items. Use `DEFERRED_SCOPE:` markers and let
+  `tools/priority/deferred_scope_scorer.py` compute P1..P5.
+- Demote a P0 gate to reporting-only without Author-Gate approval.
