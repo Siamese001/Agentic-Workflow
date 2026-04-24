@@ -26,10 +26,11 @@ import json
 import logging
 import os
 import random
+import sqlite3
 import threading
 import time
 import uuid
-from typing import Any
+from typing import Any, Callable
 
 # GPTCacheClient import for persistent Layer 2 backend
 try:
@@ -55,6 +56,97 @@ except ImportError:
     def _get_model_id() -> str:  # type: ignore[misc]
         """Fallback when embedding factory is unavailable."""
         return os.environ.get("EMBEDDING_MODEL_ID", "bge-m3-v1")
+
+
+# G1 hybrid fusion (Author-Gate 2026-04-23 Option A): per-row sparse features.
+import re as _re  # noqa: E402
+from agentic_core.L4_state.utils.memory.sparse_feature_extractor import (  # noqa: E402
+    extract_features as _extract_sparse_features,
+    fused_score as _fused_reuse_score,
+    jaccard_overlap as _jaccard_overlap,
+)
+from agentic_core.L4_state.utils.memory import doc_to_cache_index as _doc_idx  # noqa: E402
+from agentic_core.L4_state.utils.memory.cache_lock_client import (  # noqa: E402
+    acquire_single_flight as _acquire_single_flight,
+    jittered_ttl as _jittered_ttl,
+)
+
+
+def _hybrid_enabled() -> bool:
+    """G1 hybrid fusion active. Default on."""
+    return os.environ.get("SEMANTIC_CACHE_HYBRID_ENABLED", "1") != "0"
+
+
+_HYBRID_FUSED_THRESHOLD: float = float(
+    os.environ.get("SEMANTIC_CACHE_HYBRID_THRESHOLD", "0.88")
+)
+_HYBRID_DENSE_WEIGHT: float = float(os.environ.get("SEMANTIC_CACHE_DENSE_WEIGHT", "0.7"))
+_HYBRID_SPARSE_WEIGHT: float = float(os.environ.get("SEMANTIC_CACHE_SPARSE_WEIGHT", "0.3"))
+
+
+# G2 support-manifest reuse validator (Author-Gate 2026-04-23 Option A: fail-closed).
+def _default_evidence_resolver(evidence_id: str) -> bool:
+    """Default: treat every evidence_id as resolvable. Back-compat shim."""
+    del evidence_id
+    return True
+
+
+_EVIDENCE_RESOLVER: Callable[[str], bool] = _default_evidence_resolver
+
+
+def set_evidence_resolver(resolver: Callable[[str], bool]) -> None:
+    """Install a process-wide resolver for G2 support-manifest validation."""
+    global _EVIDENCE_RESOLVER  # noqa: PLW0603
+    _EVIDENCE_RESOLVER = resolver
+
+
+def _support_manifest_enabled() -> bool:
+    """G2 validation active. Default on."""
+    return os.environ.get("SEMANTIC_CACHE_SUPPORT_MANIFEST_VALIDATION", "1") != "0"
+
+
+# G3 content-signal bypass: query-content signals that trip hard rejection.
+_LIVE_SIGNAL_RE = _re.compile(
+    r"\b(?:"
+    r"latest|current|currently|now|today|tonight|this\s+(?:week|month|quarter|year)"
+    r"|right\s+now|at\s+the\s+moment|as\s+of\s+(?:today|now)"
+    r"|delete|remove|update|modify|create|add|insert|patch|upsert|overwrite"
+    r"|approve|reject|cancel"
+    r"|issue\s+(?:a\s+)?refund|process\s+(?:a\s+)?refund|grant\s+(?:a\s+)?refund"
+    r"|charge\s+(?:the|their|my)|bill\s+(?:the|their|my)"
+    r"|status\s+of|state\s+of|is\s+.{0,20}\s+(?:up|down|available|online|offline)"
+    r")\b",
+    _re.IGNORECASE,
+)
+
+
+def _live_signal_bypass_enabled() -> bool:
+    """G3 live-signal bypass active. Default on."""
+    return os.environ.get("SEMANTIC_CACHE_LIVE_SIGNAL_BYPASS", "1") != "0"
+
+
+def _query_has_live_signal(context: str) -> str | None:
+    """Return a short reason code if *context* trips a live/mutation signal."""
+    if not context or len(context) < 3:
+        return None
+    match = _LIVE_SIGNAL_RE.search(context)
+    if match is None:
+        return None
+    return match.group(0).lower()[:32]
+
+
+# G5 CDC + G8 single-flight / TTL-jitter feature flags.
+def _cdc_enabled() -> bool:
+    """G5 doc-to-cache inverse index active. Default on."""
+    return os.environ.get("SEMANTIC_CACHE_CDC_ENABLED", "1") != "0"
+
+
+def _single_flight_enabled() -> bool:
+    """G8 single-flight lock active. Default on."""
+    return os.environ.get("SEMANTIC_CACHE_SINGLE_FLIGHT", "1") != "0"
+
+
+_TTL_JITTER_PCT: float = float(os.environ.get("SEMANTIC_CACHE_TTL_JITTER_PCT", "0.1"))
 
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -622,6 +714,24 @@ class SemanticCacheManager:
             )
             _record_semantic_cache_prom_event("bypass", namespace)
             return None
+        # G3 content-signal bypass: reject reuse when the query itself carries
+        # live-fact / mutation / status-lookup markers (R1B HARD REJECTION CASES).
+        if _live_signal_bypass_enabled():
+            _live_reason = _query_has_live_signal(context)
+            if _live_reason is not None:
+                Logger.debug(
+                    "[HiveMind] semantic_cache_bypass: bypass_reason=live_signal "
+                    "signal=%s namespace=%s",
+                    _live_reason,
+                    namespace,
+                )
+                _emit_emits_metric_event(
+                    "semantic_cache_manager",
+                    "p4obs",
+                    f"semantic_cache_bypass:live_signal:{namespace}",
+                )
+                _record_semantic_cache_prom_event("bypass", namespace)
+                return None
         ctx_hash = self._compute_hash(context, namespace)
         active_model = _get_model_id()
         if self.redis_enabled:
@@ -708,6 +818,71 @@ class SemanticCacheManager:
                         _record_semantic_cache_prom_event("scope_mismatch", namespace)
                         # Fall through to final miss — do not writeback, do not return.
                     elif _l2_meta.get("namespace") == namespace:
+                        # G1 hybrid fusion gate: require Jaccard overlap on sparse
+                        # features to clear the fused-score bar. Rows without
+                        # sparse_features (pre-G1) fall through to pure dense.
+                        if _hybrid_enabled():
+                            _cached_features = _l2_meta.get("sparse_features") or []
+                            if _cached_features:
+                                _incoming_features = _extract_sparse_features(context)
+                                _jaccard = _jaccard_overlap(_incoming_features, _cached_features)
+                                _dense_floor = float(
+                                    getattr(self._gptcache, "similarity_threshold", 0.95)
+                                )
+                                _fused = _fused_reuse_score(
+                                    _dense_floor,
+                                    _jaccard,
+                                    dense_weight=_HYBRID_DENSE_WEIGHT,
+                                    sparse_weight=_HYBRID_SPARSE_WEIGHT,
+                                )
+                                if _fused < _HYBRID_FUSED_THRESHOLD:
+                                    Logger.debug(
+                                        "[HiveMind] L2 hybrid-reject: namespace=%s "
+                                        "jaccard=%.3f fused=%.3f threshold=%.3f",
+                                        namespace, _jaccard, _fused,
+                                        _HYBRID_FUSED_THRESHOLD,
+                                    )
+                                    _emit_emits_metric_event(
+                                        "semantic_cache_manager", "p4obs",
+                                        f"l2_hybrid_reject:{namespace}",
+                                    )
+                                    _record_semantic_cache_prom_event("hybrid_reject", namespace)
+                                    with self._lock:
+                                        self.stats["cache_misses"] += 1
+                                    _record_semantic_cache_prom_event("miss", namespace)
+                                    return None
+                        # G2 support-manifest validator (fail-closed).
+                        if _support_manifest_enabled():
+                            _evidence_ids = _l2_meta.get("evidence_ids") or []
+                            if _evidence_ids:
+                                _unresolved: list[str] = []
+                                for _eid in _evidence_ids:
+                                    try:
+                                        if not _EVIDENCE_RESOLVER(str(_eid)):
+                                            _unresolved.append(str(_eid))
+                                    except (LookupError, ValueError, RuntimeError) as _res_err:
+                                        Logger.debug(
+                                            "[HiveMind] evidence resolver raised: id=%s err=%s",
+                                            _eid, _res_err,
+                                        )
+                                        _unresolved.append(str(_eid))
+                                if _unresolved:
+                                    Logger.debug(
+                                        "[HiveMind] L2 support-manifest reject: "
+                                        "namespace=%s unresolved=%d/%d",
+                                        namespace, len(_unresolved), len(_evidence_ids),
+                                    )
+                                    _emit_emits_metric_event(
+                                        "semantic_cache_manager", "p4obs",
+                                        f"l2_support_manifest_reject:{namespace}",
+                                    )
+                                    _record_semantic_cache_prom_event(
+                                        "support_manifest_reject", namespace
+                                    )
+                                    with self._lock:
+                                        self.stats["cache_misses"] += 1
+                                    _record_semantic_cache_prom_event("miss", namespace)
+                                    return None
                         Logger.info(f"[HiveMind] Native L2 HIT for {namespace}")
                         with self._lock:
                             self.stats["gptcache_hits"] += 1
@@ -806,6 +981,7 @@ class SemanticCacheManager:
             return
         with self._lock:
             self.stats["traces_sampled"] += 1
+        _sparse_features = _extract_sparse_features(sanitized_context)
         enriched_result = {
             **result,
             "_metadata": {
@@ -813,18 +989,38 @@ class SemanticCacheManager:
                 "timestamp": time.time(),
                 "feedback_score": feedback_score,
                 "promoted": False,
-                # v11 R1B isolation mirror: Redis hot-path must carry the same
-                # scope identity as the SQLite l2_cache row so a Redis hit can
-                # re-verify tenant/model/corpus/policy without a round-trip.
                 "tenant_id": tenant_id,
                 "embedding_model_id": active_model,
                 "corpus_version": corpus_version,
                 "policy_version": policy_version,
+                # G1: per-row sparse features for hybrid reuse.
+                "sparse_features": _sparse_features,
+                # G6: learn() writes land in dynamic tier.
+                "cache_tier": "dynamic",
             },
         }
         payload_json = json.dumps(enriched_result)
+        # G8 jittered TTL smears simultaneous-expiry of embedding-adjacent rows.
+        _l1_ttl = _jittered_ttl(self.DEFAULT_WORKING_MEMORY_TTL, _TTL_JITTER_PCT)
         if self.redis_enabled:
-            self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_WORKING_MEMORY_TTL, payload_json)
+            if _single_flight_enabled():
+                with _acquire_single_flight(
+                    self.redis_client, f"learn:{ctx_hash}", ttl_seconds=5
+                ) as _won:
+                    if _won:
+                        self.redis_client.setex(f"memory:{ctx_hash}", _l1_ttl, payload_json)
+                    else:
+                        _emit_emits_metric_event(
+                            "semantic_cache_manager", "p4obs",
+                            f"l1_single_flight_skip:{namespace}",
+                        )
+            else:
+                self.redis_client.setex(f"memory:{ctx_hash}", _l1_ttl, payload_json)
+        # G5 CDC inverse-index registration.
+        if _cdc_enabled():
+            _ev_ids = result.get("evidence_ids") or []
+            if _ev_ids:
+                _doc_idx.register_cache_row(ctx_hash, [str(x) for x in _ev_ids])
         if (
             self.redis_enabled
         ):  # [Phase A] fires only after successful Redis write (raise re-propagates on failure)
@@ -936,6 +1132,7 @@ class SemanticCacheManager:
         sanitized_context = self.sanitizer.sanitize(context)
         ctx_hash = self._compute_hash(sanitized_context, namespace)
         active_model = _get_model_id()
+        _sparse_features = _extract_sparse_features(sanitized_context)
         enriched_result = {
             **result,
             "_metadata": {
@@ -944,11 +1141,14 @@ class SemanticCacheManager:
                 "feedback_score": feedback_score,
                 "promoted": True,
                 "promotion_time": time.time(),
-                # v11 R1B isolation mirror — same fields `learn()` writes.
                 "tenant_id": tenant_id,
                 "embedding_model_id": active_model,
                 "corpus_version": corpus_version,
                 "policy_version": policy_version,
+                # G1: per-row sparse features for hybrid reuse.
+                "sparse_features": _sparse_features,
+                # G6: promotion implies vetted content — static tier.
+                "cache_tier": "static",
             },
         }
         payload_json = json.dumps(enriched_result)
@@ -967,11 +1167,17 @@ class SemanticCacheManager:
             )
             if self.redis_enabled:
                 try:
-                    self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_LONG_TERM_TTL, payload_json)
+                    _lt_ttl = _jittered_ttl(self.DEFAULT_LONG_TERM_TTL, _TTL_JITTER_PCT)
+                    self.redis_client.setex(f"memory:{ctx_hash}", _lt_ttl, payload_json)
                 except (
                     _REDIS_RECOVERABLE_EXCEPTIONS
                 ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.warning(f"[HiveMind] Redis TTL extension failed: {e}")
+            # G5 CDC: register promoted row’s evidence in the inverse index.
+            if _cdc_enabled():
+                _ev_ids = result.get("evidence_ids") or []
+                if _ev_ids:
+                    _doc_idx.register_cache_row(ctx_hash, [str(x) for x in _ev_ids])
             with self._lock:
                 self.stats["promotions"] += 1
             Logger.info(
@@ -987,6 +1193,93 @@ class SemanticCacheManager:
                 "semantic_cache_manager", "p4obs", f"l2_promote_failed:{namespace}"
             )  # [Phase A]
             return False
+
+    def invalidate_by_document(self, doc_id: str) -> int:
+        """G5: scope-invalidate every cached row that cited *doc_id*.
+
+        O(queries that touched the document), not O(cache size). Returns
+        the number of rows evicted.
+        """
+        if not doc_id or not _cdc_enabled():
+            return 0
+        cache_ids = _doc_idx.cache_ids_for_document(doc_id)
+        if not cache_ids:
+            return 0
+        evicted = 0
+        for cid in cache_ids:
+            if self.redis_enabled:
+                try:
+                    self.redis_client.delete(f"memory:{cid}")
+                except _REDIS_RECOVERABLE_EXCEPTIONS as _exc:  # guardian: allow-log-and-swallow -- per-key delete non-fatal
+                    Logger.debug("[HiveMind] CDC Redis evict failed: %s", _exc)
+            if self.gptcache_enabled and self._gptcache is not None:
+                try:
+                    cur = self._gptcache._sqlite_conn.cursor()  # noqa: SLF001
+                    cur.execute("DELETE FROM l2_cache WHERE id = ?", (cid,))
+                    self._gptcache._sqlite_conn.commit()  # noqa: SLF001
+                    try:
+                        self._gptcache._chroma_collection.delete(ids=[cid])  # noqa: SLF001
+                    except (AttributeError, RuntimeError) as _cerr:
+                        Logger.debug("[HiveMind] CDC Chroma evict failed: %s", _cerr)
+                except (AttributeError, sqlite3.Error, RuntimeError) as _serr:
+                    Logger.debug("[HiveMind] CDC L2 evict failed: %s", _serr)
+            _doc_idx.forget_cache_row(cid)
+            evicted += 1
+        _emit_emits_metric_event(
+            "semantic_cache_manager", "p4obs", f"cdc_evict:{doc_id}:{evicted}"
+        )
+        _record_semantic_cache_prom_event("cdc_evict", doc_id)
+        return evicted
+
+    def invalidate_neighborhood(self, query: str, *, top_k: int = 5) -> int:
+        """G7: invalidate the semantic neighborhood of *query* in L2.
+
+        Called on negative-feedback to prevent hallucination amplification.
+        Returns rows evicted.
+        """
+        if not query or top_k < 1:
+            return 0
+        if not self.gptcache_enabled or self._gptcache is None:
+            return 0
+        try:
+            results = self._gptcache._chroma_collection.query(  # noqa: SLF001
+                query_texts=[query], n_results=top_k
+            )
+        except (AttributeError, RuntimeError) as exc:
+            Logger.debug("[HiveMind] Neighborhood query failed: %s", exc)
+            return 0
+        ids = (results.get("ids") or [[]])[0]
+        if not ids:
+            return 0
+        evicted = 0
+        try:
+            cursor = self._gptcache._sqlite_conn.cursor()  # noqa: SLF001
+            placeholders = ",".join("?" * len(ids))
+            cursor.execute(
+                f"DELETE FROM l2_cache WHERE id IN ({placeholders})",
+                ids,
+            )
+            self._gptcache._sqlite_conn.commit()  # noqa: SLF001
+            try:
+                self._gptcache._chroma_collection.delete(ids=ids)  # noqa: SLF001
+            except (AttributeError, RuntimeError) as _cerr:
+                Logger.debug("[HiveMind] Neighborhood Chroma delete failed: %s", _cerr)
+            evicted = len(ids)
+            if self.redis_enabled:
+                for cid in ids:
+                    try:
+                        self.redis_client.delete(f"memory:{cid}")
+                    except _REDIS_RECOVERABLE_EXCEPTIONS as _exc:  # guardian: allow-log-and-swallow -- per-key delete non-fatal
+                        Logger.debug("[HiveMind] Neighborhood Redis evict failed: %s", _exc)
+                    _doc_idx.forget_cache_row(cid)
+        except (AttributeError, RuntimeError) as exc:
+            Logger.warning("[HiveMind] Neighborhood invalidation failed: %s", exc)
+            return 0
+        _emit_emits_metric_event(
+            "semantic_cache_manager", "p4obs", f"neighborhood_evict:{evicted}"
+        )
+        _record_semantic_cache_prom_event("neighborhood_evict", "")
+        return evicted
 
     def invalidate_cache(
         self,
