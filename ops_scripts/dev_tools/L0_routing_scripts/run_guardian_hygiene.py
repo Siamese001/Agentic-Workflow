@@ -284,7 +284,7 @@ def scan_empty_folders(repo_root: Path, allowed_roots: frozenset[str]) -> list[s
                 children = [x for x in current.iterdir() if x.name not in IGNORE_NAMES]
                 if not children:
                     hits.append(normalize_repo_path(current.relative_to(repo_root)))
-            except PermissionError:  # guardian: allow-silent-swallow - acceptable exception handling
+            except PermissionError:  # guardian: allow-silent-swallow -- acceptable exception handling
                 pass
     return sorted(hits)
 
@@ -314,7 +314,7 @@ def scan_init_only_folders(repo_root: Path, allowed_roots: frozenset[str]) -> li
                     x for x in children if x.name not in IGNORE_NAMES and not x.name.startswith(".")
                 ]
                 if len(meaningful) == 1 and meaningful[0].is_file() and meaningful[0].name == "__init__.py":
-                    # guardian: allow-silent-swallow - acceptable exception handling
+                    # guardian: allow-silent-swallow -- acceptable exception handling
                     hits.append(normalize_repo_path(current.relative_to(repo_root)))
             except PermissionError:
                 pass

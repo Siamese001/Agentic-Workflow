@@ -365,7 +365,7 @@ class LocationHealerAgent(SovereignBaseAgent):
     def naming_agent(self):
         """Lazy NamingAgent - created on first access to avoid circular init."""
         if self._naming_agent is None:
-            # guardian: allow-silent-degradation - Optional naming agent
+            # guardian: allow-silent-degradation -- Optional naming agent
             try:
                 from agentic_core.L5_safety.reasoning.NamingAgent import (
                     get_naming_agent,
@@ -382,7 +382,7 @@ class LocationHealerAgent(SovereignBaseAgent):
     def import_agent(self):
         """Lazy import healer - created on first access to avoid circular init."""
         if self._import_agent is None:
-            # guardian: allow-silent-degradation - Optional import healer
+            # guardian: allow-silent-degradation -- Optional import healer
             try:
                 from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
                     create_legacy_import_healer,
@@ -807,7 +807,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Collision handling: if destination already exists, skip or report conflict.
             # Never generate _N suffix duplicates — that is the root cause of _init__1.py etc.
             final_dst = dst_path
-            # guardian: allow-silent-degradation - Optional gatekeeper move
+            # guardian: allow-silent-degradation -- Optional gatekeeper move
             if final_dst.exists():
                 src_bytes = src_path.read_bytes()
                 dst_bytes = final_dst.read_bytes()
@@ -884,7 +884,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             # Use ArchivalGatekeeper for safe deletion (archives instead of hard delete)
-            # guardian: allow-silent-degradation - Optional gatekeeper delete
+            # guardian: allow-silent-degradation -- Optional gatekeeper delete
             gk_result = self.gatekeeper.safe_delete(file_path, self.agent_name, "Location violation removal")
 
             if gk_result.success:
@@ -936,7 +936,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             # Case 1: Delete — confirm absence
-            # guardian: allow-silent-degradation - Optional post-heal validation
+            # guardian: allow-silent-degradation -- Optional post-heal validation
             if new_path is None:
                 if not original_path.exists():
                     report["post_heal_status"] = "SUCCESS"

@@ -1,4 +1,4 @@
-# guardian: allow-silent_swallower - ADG violation exemption
+# guardian: allow-silent_swallower -- ADG violation exemption
 
 from __future__ import annotations
 

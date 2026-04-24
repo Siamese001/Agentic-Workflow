@@ -317,7 +317,7 @@ def scan_subfolder_compliance(repo_root: Path) -> list[dict]:
                 and p.name not in SOVEREIGN_EXCLUDED_FOLDERS
                 and p.name != "__pycache__"
             }
-        except PermissionError:  # guardian: allow-silent-swallow - acceptable exception handling
+        except PermissionError:  # guardian: allow-silent-swallow -- acceptable exception handling
             continue
 
         non_approved = actual_l3 - approved_l3

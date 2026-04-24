@@ -256,7 +256,7 @@ try:
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._mixin_init()
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
 
     class MCPHardenedMixin:
         def __init__(self, *args, **kwargs):

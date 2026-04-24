@@ -237,7 +237,7 @@ def scan_forbidden_root_folders(repo_root: Path) -> list[str]:
         for item in tqdm(repo_root.iterdir(), desc="Processing", unit="item"):
             if item.is_dir() and item.name in FORBIDDEN_ROOT_FOLDERS:
                 hits.append(item.name)
-    except PermissionError:  # guardian: allow-silent-swallow - acceptable exception handling
+    except PermissionError:  # guardian: allow-silent-swallow -- acceptable exception handling
         pass
     return sorted(hits)
 
@@ -251,7 +251,7 @@ def scan_archived_files_at_root(repo_root: Path) -> list[str]:
                 for pattern in ARCHIVE_PATTERNS:
                     if pattern in item.name:
                         hits.append(normalize_repo_path(item.relative_to(repo_root)))
-                        # guardian: allow-silent-swallow - acceptable exception handling
+                        # guardian: allow-silent-swallow -- acceptable exception handling
                         break
     except PermissionError:
         pass

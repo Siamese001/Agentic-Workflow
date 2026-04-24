@@ -27,8 +27,8 @@ Phase 3 Enhancement (Jan 31, 2026):
 - Converted to facade shell delegating to UnifiedAgent
 - Preserves 100% legacy signature compatibility
 """
-# guardian: allow-silent_swallower - ADG violation exemption
-# guardian: allow-silent-degradation - Orchestration requires exception handling
+# guardian: allow-silent_swallower -- ADG violation exemption
+# guardian: allow-silent-degradation -- Orchestration requires exception handling
 
 from __future__ import annotations
 
@@ -222,14 +222,14 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determi
 from tqdm import tqdm
 
 # Runtime ADG imports
-# guardian: allow-silent-degradation - Optional runtime ADG
+# guardian: allow-silent-degradation -- Optional runtime ADG
 try:
     from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
     from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
     from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
 
     RUNTIME_ADG_AVAILABLE = True
-except ImportError:  # guardian: allow-silent-swallow - Optional runtime ADG
+except ImportError:  # guardian: allow-silent-swallow -- Optional runtime ADG
     RUNTIME_ADG_AVAILABLE = False
 
 emit_determinism_digest("trace_orchestrator_engine", "orchestrator_engine_dispatch_entry")
@@ -561,7 +561,7 @@ class Orchestrator(SovereignBaseAgent):
                 from agentic_core.L3_orchestration.reasoning.SafetyStrategy import SafetyStrategy
 
                 self._strategies = {"safety": SafetyStrategy(), "rl": RLStrategy()}
-            except ImportError as e:  # guardian: allow-silent-swallow - Optional strategies
+            except ImportError as e:  # guardian: allow-silent-swallow -- Optional strategies
                 self.logger.warning(f"Could not load strategies: {e}")
                 self._strategies = {}
         return self._strategies
@@ -790,7 +790,7 @@ class Orchestrator(SovereignBaseAgent):
                     "recommendations": credential_results.get("recommendations", []),
                 },
             )
-        except ImportError:  # guardian: allow-silent-swallow - Optional credential scanner
+        except ImportError:  # guardian: allow-silent-swallow -- Optional credential scanner
             self.logger.warning("[COMPLIANCE] CredentialScannerAgent not available")
             return AgentResult(
                 agent_name=agent_name,

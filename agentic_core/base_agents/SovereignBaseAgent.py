@@ -544,7 +544,7 @@ class SovereignBaseAgent(
 
             # git_hash: SHA-256 of .git/HEAD content
             _git_head = self.project_root / ".git" / "HEAD"  # guardian: Add error context logging
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             try:
                 _git_bytes = _git_head.read_bytes()
             except OSError as exc:

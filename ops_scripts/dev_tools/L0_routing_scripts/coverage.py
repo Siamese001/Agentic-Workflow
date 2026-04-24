@@ -274,7 +274,7 @@ def main() -> int:
     try:
         result = asyncio.run(run_autonomous_remediation())
         return 0 if result else 1
-    except KeyboardInterrupt:  # guardian: allow-silent-swallow - acceptable exception handling
+    except KeyboardInterrupt:  # guardian: allow-silent-swallow -- acceptable exception handling
         print("\n\n⚠️  Remediation interrupted by user")
         return 1
     except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow

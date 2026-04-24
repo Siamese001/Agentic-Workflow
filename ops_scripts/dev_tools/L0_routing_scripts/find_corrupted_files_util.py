@@ -197,7 +197,7 @@ def is_valid_python(content: str) -> bool:
     try:
         ast.parse(content)
         return True
-    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
+    except SyntaxError:  # guardian: allow-silent-swallow -- acceptable exception handling
         return False
 
 

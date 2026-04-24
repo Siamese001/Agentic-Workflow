@@ -1,4 +1,4 @@
-# guardian: allow-silent-degradation - Code detection requires exception handling
+# guardian: allow-silent-degradation -- Code detection requires exception handling
 from pathlib import Path
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
@@ -190,7 +190,7 @@ _emit_proposal_commits_routing("p1", "DuplicateCodeDetectorAgent", "routing_comm
 
 try:
     TREE_SITTER_AVAILABLE = True
-# guardian: allow-silent-degradation - Optional tree-sitter
+# guardian: allow-silent-degradation -- Optional tree-sitter
 except ImportError:  # guardian: allow-silent-swallow
     TREE_SITTER_AVAILABLE = False
     Parser = None
@@ -212,7 +212,7 @@ class DuplicateFile:
 
 try:
     from agentic_core.utils.timeout_util import timeout
-except ImportError:  # guardian: allow-silent-swallow - Optional timeout utility
+except ImportError:  # guardian: allow-silent-swallow -- Optional timeout utility
 
     def timeout(seconds=30):
         def decorator(func):
@@ -223,7 +223,7 @@ except ImportError:  # guardian: allow-silent-swallow - Optional timeout utility
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-except ImportError:  # guardian: allow-silent-swallow - Optional testing mixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional testing mixin
 
     class SubatomicTestingMixin:  # type: ignore[no-redef]
         pass
@@ -231,7 +231,7 @@ except ImportError:  # guardian: allow-silent-swallow - Optional testing mixin
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-except ImportError:  # guardian: allow-silent-swallow - Optional healer mixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional healer mixin
 
     class HealerMixin:  # type: ignore[no-redef]
         pass
@@ -239,7 +239,7 @@ except ImportError:  # guardian: allow-silent-swallow - Optional healer mixin
 
 try:
     from agentic_core.interfaces.mixins import MCPHardenedMixin
-except (ImportError, NameError):  # guardian: allow-silent-swallow - Optional MCP hardened mixin
+except (ImportError, NameError):  # guardian: allow-silent-swallow -- Optional MCP hardened mixin
 
     class MCPHardenedMixin:  # type: ignore[no-redef]
         pass

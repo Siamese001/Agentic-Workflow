@@ -317,7 +317,7 @@ def analyze_file(file_path: Path) -> FileAnalysis | None:
     try:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
-    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
+    except SyntaxError:  # guardian: allow-silent-swallow -- acceptable exception handling
         return None
     except OSError:
         return None

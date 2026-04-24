@@ -1326,10 +1326,10 @@ def _scan_file(
     visitors_to_run = _get_visitors_for_mode(scan_mode, rel)
 
     try:
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow -- acceptable exception handling
         source = filepath.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source, filename=str(filepath))
-    except SyntaxError as exc:  # guardian: allow-silent-swallow - acceptable exception handling
+    except SyntaxError as exc:  # guardian: allow-silent-swallow -- acceptable exception handling
         line_info = f"line {exc.lineno}" if exc.lineno else "unknown line"
         logger.error("SyntaxError in %s at %s: %s", filepath, line_info, exc)
         return [], True, {}, {}  # A4: parse failures tracked
@@ -2101,7 +2101,7 @@ class ConcreteAgent(BaseClass):
 
     def run(self):
         import importlib
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow -- acceptable exception handling
         mod = importlib.import_module("some.mod")
 """
     try:

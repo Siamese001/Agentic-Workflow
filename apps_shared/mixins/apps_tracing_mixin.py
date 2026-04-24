@@ -18,7 +18,7 @@ USAGE:
                 result = self._process(request)
                 return result
 """
-# guardian: allow-silent-degradation - Tracing requires exception handling
+# guardian: allow-silent-degradation -- Tracing requires exception handling
 
 from __future__ import annotations
 

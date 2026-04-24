@@ -86,7 +86,7 @@ try:
     import pandas as pd
 
     HAS_PANDAS = True
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     HAS_PANDAS = False
     pd = None
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

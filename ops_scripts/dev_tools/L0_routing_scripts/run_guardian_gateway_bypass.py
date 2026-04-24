@@ -276,7 +276,7 @@ def scan_provider_sdk_imports(
             continue
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
-        except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
+        except SyntaxError:  # guardian: allow-silent-swallow -- acceptable exception handling
             continue
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Import):
@@ -317,7 +317,7 @@ def scan_direct_model_calls(
         if rel in ALLOWED_SDK_FILES:
             continue
         try:
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
         except SyntaxError:
             continue

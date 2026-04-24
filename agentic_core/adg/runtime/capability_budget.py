@@ -226,7 +226,7 @@ class ResourceGovernor:
             self._active_budget.consume(resource, amount)
             self.report.events.append(ev)
             return True
-        except BudgetExceededError as exc:  # guardian: allow-silent-swallow - acceptable exception handling
+        except BudgetExceededError as exc:  # guardian: allow-silent-swallow -- acceptable exception handling
             ev.exceeded = True
             ev.error_message = str(exc)
             self.report.events.append(ev)

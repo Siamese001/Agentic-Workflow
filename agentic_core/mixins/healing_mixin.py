@@ -10,7 +10,7 @@ try:
         HealingSovereignOrchestrator,
         get_healing_orchestrator,
     )
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     # Stub for healing resilience when orchestrator module is missing
     class HealingSovereignOrchestrator:
         """Stub orchestrator when real module is unavailable."""

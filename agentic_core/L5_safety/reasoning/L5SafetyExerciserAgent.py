@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-# guardian: allow-silent-degradation - Safety testing requires exception handling
+# guardian: allow-silent-degradation -- Safety testing requires exception handling
 import tempfile
 import uuid
 from dataclasses import dataclass
@@ -9,7 +9,7 @@ from typing import Any
 
 try:
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
-# guardian: allow-silent-degradation - Optional layer decorator
+# guardian: allow-silent-degradation -- Optional layer decorator
 except ImportError:  # guardian: allow-silent-swallow
 
     def layer_entry(*args, **kwargs):  # type: ignore[misc]
@@ -273,7 +273,7 @@ def log_event(event_type: str, payload: dict) -> Any:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
 
         _log_event(event_type, payload)
-    except (ImportError, AttributeError) as e:  # guardian: allow-silent-swallow - Optional runtime logging
+    except (ImportError, AttributeError) as e:  # guardian: allow-silent-swallow -- Optional runtime logging
         print(f"[L5SafetyExerciserAgent] Event logging unavailable ({type(e).__name__}): {event_type}")
 
 
@@ -331,7 +331,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
         """Dry-run hierarchy validation (in-memory)."""
         HierarchyAgent = _get_hierarchy_agent()
         if HierarchyAgent is None:
-            # guardian: allow-silent-degradation - Skip when agent unavailable
+            # guardian: allow-silent-degradation -- Skip when agent unavailable
             return "Hierarchy probe: Skipped (agent not available)"
         try:
             hierarchy_agent = HierarchyAgent(self.project_root)
@@ -345,7 +345,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
         """Probe gravity on synthetic import code."""
         healer_factory = _get_import_agent()
         if healer_factory is None:
-            # guardian: allow-silent-degradation - Skip when agent unavailable
+            # guardian: allow-silent-degradation -- Skip when agent unavailable
             return "Gravity probe: Skipped (agent not available)"
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_file = Path(tmpdir) / "synthetic_gravity_test.py"
@@ -361,7 +361,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
         """Trigger healer on dummy violation."""
         HealerAgent = _get_healer_agent()
         if HealerAgent is None:
-            # guardian: allow-silent-degradation - Skip when agent unavailable
+            # guardian: allow-silent-degradation -- Skip when agent unavailable
             return "Healing probe: Skipped (agent not available)"
         try:
             healer = HealerAgent()
@@ -375,7 +375,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
         """Light red team fuzz (prompt injection simulation)."""
         RedTeamAgent = _get_RedTeamAgent()
         if RedTeamAgent is None:
-            # guardian: allow-silent-degradation - Skip when agent unavailable
+            # guardian: allow-silent-degradation -- Skip when agent unavailable
             return "Red team probe: Skipped (agent not available)"
         try:
             red_team = RedTeamAgent()

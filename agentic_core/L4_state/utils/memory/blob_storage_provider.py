@@ -314,7 +314,7 @@ class S3Adapter:
             self.s3 = boto3.client("s3", region_name=region)
             self.bucket = bucket_name
             LOGGER.info(f"S3 adapter initialized (bucket={bucket_name}, region={region})")
-        except ImportError:  # guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency
             raise ImportError("boto3 not installed. Run: pip install boto3")
 
     async def write_blob(self: Any, key: str, data: bytes, metadata: dict[str, str] | None) -> str:

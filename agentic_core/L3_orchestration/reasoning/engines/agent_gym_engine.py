@@ -3,7 +3,7 @@ agentic_core/L3_orchestration/reasoning/AgentGymAgent.py
 ---------------------------------------------------------------
 FIX: Implements Functional Naming for imports.
 """
-# guardian: allow-silent_swallower - ADG violation exemption
+# guardian: allow-silent_swallower -- ADG violation exemption
 
 from __future__ import annotations
 

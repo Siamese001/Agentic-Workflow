@@ -267,7 +267,7 @@ def compute_file_hash(file_path: Path) -> str:
             for chunk in iter(lambda: f.read(8192), b""):
                 sha256.update(chunk)
         return sha256.hexdigest()[:16]
-    except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
+    except OSError:  # guardian: allow-silent-swallow -- acceptable exception handling
         return "ERROR"
 
 
@@ -275,7 +275,7 @@ def count_lines(file_path: Path) -> int:
     """Count lines in a text file."""
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as f:
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             return sum(1 for _ in f)
     except OSError:
         return 0
@@ -285,7 +285,7 @@ def get_snippet(file_path: Path, chars: int = 200) -> str:
     """Get first N characters of a file."""
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as f:
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             content = f.read(chars)
             return content.replace("\n", " ").strip()
     except (OSError, UnicodeDecodeError):
@@ -356,7 +356,7 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
             # Top-level functions
             elif isinstance(node, ast.FunctionDef) and hasattr(node, "col_offset") and node.col_offset == 0:
                 functions.append(node.name)
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow -- acceptable exception handling
 
         return classes, imports, functions, module_docstring
 

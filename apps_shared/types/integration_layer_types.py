@@ -291,7 +291,7 @@ class ConfigurationLoader:
 
                     with open(config_path) as f:
                         config_data = yaml.safe_load(f) or {}
-                except ImportError:  # guardian: allow-silent-swallow - optional dependency
+                except ImportError:  # guardian: allow-silent-swallow -- optional dependency
                     logger.warning("PyYAML not installed, cannot load YAML configs")
                     config_data = {}
             else:

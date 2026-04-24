@@ -305,7 +305,7 @@ try:
     else:
         logging.warning("⚠️ GEMINI_API_KEY not found in environment. API calls will fail.")
         GEMINI_AVAILABLE = False
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     GEMINI_AVAILABLE = False
     logging.warning("Warning: google-generativeai package not installed. API calls will fail.")
 ROOT_DIR = Path(__file__).parent.resolve()

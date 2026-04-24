@@ -8,7 +8,7 @@ This module provides advanced intelligence capabilities:
 - OmniContext: Global context management and semantic retrieval
 - Orchestrator: Multi-phase execution with convergence
 """
-# guardian: allow-silent-degradation - Security configuration requires exception handling
+# guardian: allow-silent-degradation -- Security configuration requires exception handling
 
 from __future__ import annotations
 
@@ -183,7 +183,7 @@ try:
     from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
         L3SubatomicTestingMixin,
     )
-# guardian: allow-silent-degradation - Optional subatomic testing mixin
+# guardian: allow-silent-degradation -- Optional subatomic testing mixin
 except ImportError:  # guardian: allow-silent-swallow
 
     class L3SubatomicTestingMixin:
@@ -923,7 +923,7 @@ class MCPHardenedMixin:
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-except ImportError:  # guardian: allow-silent-swallow - Optional healer mixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional healer mixin
 
     class HealerMixin:  # type: ignore[no-redef]
         pass

@@ -197,7 +197,7 @@ def add_dataclass_to_file(file_path: Path) -> bool:
         # Parse to find the agent class
         try:
             tree = ast.parse(source)
-        except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
+        except SyntaxError:  # guardian: allow-silent-swallow -- acceptable exception handling
             return False
 
         # Find the main agent class (ends with 'Agent')
@@ -230,7 +230,7 @@ def add_dataclass_to_file(file_path: Path) -> bool:
         # Need to re-parse after potential import addition
         source = "\n".join(lines)
         try:
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             tree = ast.parse(source)
         except SyntaxError:
             return False

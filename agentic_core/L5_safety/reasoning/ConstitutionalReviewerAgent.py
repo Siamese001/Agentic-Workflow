@@ -7,7 +7,7 @@ try:
 except ImportError as e:
     raise ImportError(
         f"Required dependency missing: {e}"
-    )  # guardian: allow-silent-degradation - Optional L5 safety base
+    )  # guardian: allow-silent-degradation -- Optional L5 safety base
 
 
 

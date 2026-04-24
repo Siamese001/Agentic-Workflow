@@ -198,7 +198,7 @@ class TimeTools:
             from datetime import datetime
 
             import pytz
-        except ImportError:  # guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency
             return "Error: 'pytz' module not installed for timezone operations. Please install it (`pip install pytz`)."
         except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Error during fallback import for time tools: {e}"

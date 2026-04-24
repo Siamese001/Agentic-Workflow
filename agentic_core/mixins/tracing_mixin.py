@@ -26,7 +26,7 @@ THUNDERING HERD PROTECTION:
 - Default: 10% for INFO, 100% for ERROR
 - Priority sampling ensures critical traces are never dropped
 """
-# guardian: allow-silent-degradation - Tracing requires exception handling
+# guardian: allow-silent-degradation -- Tracing requires exception handling
 
 import hashlib
 import logging
@@ -358,7 +358,7 @@ class TracingMixin:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TracingMixin.start_span")
 
-        # guardian: allow-silent-degradation - Skip when tracing disabled
+        # guardian: allow-silent-degradation -- Skip when tracing disabled
         if not self._trace_enabled:
             yield SpanContext(operation_name=operation_name)
             return

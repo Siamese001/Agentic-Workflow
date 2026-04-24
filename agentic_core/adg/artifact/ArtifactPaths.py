@@ -850,7 +850,7 @@ def _create_latest_symlinks(
         except (
             OSError,
             NotImplementedError,
-        ):  # guardian: allow-silent-swallow - acceptable exception handling
+        ):  # guardian: allow-silent-swallow -- acceptable exception handling
             # Windows without admin rights or filesystem doesn't support symlinks
             shutil.copy2(target_path, link_path)
 

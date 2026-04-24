@@ -10,7 +10,7 @@ Design invariants:
 - L1 must not import from L0 or L5. This module imports only from L4 state stores and
   system_learning engines — layer boundaries enforced at import time.
 """
-# guardian: allow-silent_swallower - ADG violation exemption
+# guardian: allow-silent_swallower -- ADG violation exemption
 
 from __future__ import annotations
 

@@ -164,8 +164,8 @@ def _atomic_write_json(
         os.write(fd, content.encode("utf-8"))
         os.close(fd)  # guardian: BaseException should be handled with specific context
         os.replace(tmp, str(path))
-    # guardian: allow-silent-swallow - acceptable exception handling
-    # guardian: allow-silent-swallow - acceptable exception handling
+    # guardian: allow-silent-swallow -- acceptable exception handling
+    # guardian: allow-silent-swallow -- acceptable exception handling
     except BaseException:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         try:
             os.close(fd)
@@ -194,7 +194,7 @@ def load_current(
         return {}  # guardian: Encoding errors should specify fallback encoding strategy
     try:
         text = path.read_text(encoding="utf-8")
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow -- acceptable exception handling
         data = json.loads(text)
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise ValueError(f"INVALID_JSON: {path}: {exc}") from exc
@@ -367,7 +367,7 @@ def read_version_payload(
     if not path.exists():  # guardian: Encoding errors should specify fallback encoding strategy
         raise ValueError(f"VERSION_NOT_FOUND: {app_id}/{component}@v{version}")
 
-    # guardian: allow-silent-swallow - acceptable exception handling
+    # guardian: allow-silent-swallow -- acceptable exception handling
     try:
         text = path.read_text(encoding="utf-8")
         data = json.loads(text)

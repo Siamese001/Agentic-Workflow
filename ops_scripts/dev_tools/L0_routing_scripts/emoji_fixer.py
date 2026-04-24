@@ -193,7 +193,7 @@ try:
     AGENTIC_CORE_DIR = Path(_acquired_core_dir)
     APPS_SHARED_DIR = Path(_acquired_shared_dir)
     get_python_files = _acquired_get_files
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     pass
 
 

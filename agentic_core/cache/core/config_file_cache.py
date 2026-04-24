@@ -220,7 +220,7 @@ class ConfigFileCache:
                 if cached is not None:
                     logger.debug(f"[Config cache] HIT for {config_path.name}")
                     return cached
-            except FileNotFoundError:  # guardian: allow-silent-swallow - optional file resource
+            except FileNotFoundError:  # guardian: allow-silent-swallow -- optional file resource
                 raise
             except (OSError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(f"[Config cache] Cache read failed: {e}")
@@ -232,7 +232,7 @@ class ConfigFileCache:
             try:
                 content_hash = self._compute_file_hash(config_path)
                 cache_key = f"config:{config_path.name}:{content_hash}"
-                # guardian: allow-silent-swallow - optional file resource
+                # guardian: allow-silent-swallow -- optional file resource
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:  # guardian: allow-silent-swallow -- file deleted after fetch
                 pass

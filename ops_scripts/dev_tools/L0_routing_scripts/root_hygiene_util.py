@@ -275,7 +275,7 @@ def enforce_root_hygiene(*, dry_run: bool = True, force: bool = False):
             else:
                 root_scripts.rmdir()
                 print("[SUCCESS] Illegal 'scripts/' directory eliminated.")
-        except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
+        except OSError:  # guardian: allow-silent-swallow -- acceptable exception handling
             print("[WARNING] 'scripts/' not empty, manual check required.")
     else:
         print("[CHECK] Root 'scripts/' is clean.")

@@ -55,7 +55,7 @@ def get_project_root_safe(start_path: Path | None = None) -> Path:
     """
     try:
         return get_project_root(start_path)
-    except RuntimeError:  # guardian: allow-silent-swallow - acceptable exception handling
+    except RuntimeError:  # guardian: allow-silent-swallow -- acceptable exception handling
         current = (start_path or Path(__file__).resolve()).expanduser().resolve()
         if current.is_file():
             current = current.parent

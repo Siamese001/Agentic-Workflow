@@ -225,7 +225,7 @@ class GitTools:
             if "Error" in commit_result:
                 return f"Commit Error (Commit): {commit_result}"
             return f"[OK] Committed: {message}"
-        except ImportError:  # guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency
             return "Commit Error: 'mcp0_git_add_or_commit' client not available. Git operations require this client."
         except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Commit Error (Unexpected): {e}"

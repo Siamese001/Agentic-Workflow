@@ -25,14 +25,14 @@ try:
     from agentic_core.adg.client.InMemoryStore import ADGMCPClient as _MCPFallbackClient
 
     _FALLBACK_AVAILABLE = True
-except ImportError:  # guardian: allow-silent-swallow - Optional ADG MCP client
+except ImportError:  # guardian: allow-silent-swallow -- Optional ADG MCP client
     _FALLBACK_AVAILABLE = False
-# guardian: allow-silent-swallow - optional dependency
+# guardian: allow-silent-swallow -- optional dependency
 try:
     from tools.memory.sqlite_memory_store import SqliteMemoryStore as _SqliteMemoryStore
 
     _SQLITE_STORE_AVAILABLE = True
-except ImportError:  # guardian: allow-silent-swallow - Optional SQLite memory store
+except ImportError:  # guardian: allow-silent-swallow -- Optional SQLite memory store
     _SqliteMemoryStore = None  # type: ignore[assignment,misc]
     _SQLITE_STORE_AVAILABLE = False
 
@@ -200,12 +200,12 @@ class GraphMemoryBridge:
         try:
             import importlib
 
-            # guardian: allow-silent-degradation - Optional MCP module import
+            # guardian: allow-silent-degradation -- Optional MCP module import
             _mod = importlib.import_module("mcp11")
             self._mcp_module = _mod
             self._mcp_available = True
             Logger.info("[GraphMemoryBridge] Initialized (live mcp11 MCP mode)")
-        except ImportError:  # guardian: allow-silent-swallow - Optional MCP module
+        except ImportError:  # guardian: allow-silent-swallow -- Optional MCP module
             self._mcp_module = None
             # mcp11 unavailable (CLI context) — wire SQLite store as persistent fallback
             if _SQLITE_STORE_AVAILABLE:
@@ -320,7 +320,7 @@ class GraphMemoryBridge:
         Returns:
             Result of the operation or None if failed/unavailable
         """
-        # guardian: allow-silent-degradation - Skip when MCP unavailable
+        # guardian: allow-silent-degradation -- Skip when MCP unavailable
         if not self._mcp_available:
             Logger.debug(f"[GraphMemoryBridge] Skipping {operation}: MCP unavailable")
             with self._lock:
@@ -360,7 +360,7 @@ class GraphMemoryBridge:
         Returns:
             True if created (or already exists), False if failed
         """
-        # guardian: allow-silent-degradation - Silent success when entity already exists
+        # guardian: allow-silent-degradation -- Silent success when entity already exists
         if agent_name in self._registered_entities:
             Logger.debug(f"[GraphMemoryBridge] Entity already registered: {agent_name}")
             return True
@@ -372,13 +372,13 @@ class GraphMemoryBridge:
             },
         ]
         result = self._call_mcp_create_entities(entities)
-        # guardian: allow-silent-degradation - Silent success when MCP unavailable
+        # guardian: allow-silent-degradation -- Silent success when MCP unavailable
         if result is not None or (self._create_entities_fn is None and self._mcp_module is None):
             self._registered_entities.add(agent_name)
             with self._lock:
                 self.stats["entities_created"] += 1
             Logger.debug(f"[GraphMemoryBridge] Entity created: {agent_name}")
-            # guardian: allow-silent-degradation - Silent success on entity creation
+            # guardian: allow-silent-degradation -- Silent success on entity creation
             return True
         return False
 
@@ -418,14 +418,14 @@ class GraphMemoryBridge:
             {"from": agent_name, "to": task_entity_name, "relationType": self.RELATION_MASTERED_TASK},
         ]
         result = self._call_mcp_create_relations(relations)
-        # guardian: allow-silent-degradation - Silent success when MCP unavailable
+        # guardian: allow-silent-degradation -- Silent success when MCP unavailable
         if result is not None or (self._create_relations_fn is None and self._mcp_module is None):
             with self._lock:
                 self.stats["relations_created"] += 1
             Logger.info(
                 f"[GraphMemoryBridge] MASTERED_TASK relation created: {agent_name} -> {task_entity_name}",
             )
-            # guardian: allow-silent-degradation - Silent success on relation creation
+            # guardian: allow-silent-degradation -- Silent success on relation creation
             return True
         return False
 
@@ -443,11 +443,11 @@ class GraphMemoryBridge:
         """
         relations = [{"from": from_entity, "to": to_entity, "relationType": relation_type}]
         result = self._call_mcp_create_relations(relations)
-        # guardian: allow-silent-degradation - Silent success when MCP unavailable
+        # guardian: allow-silent-degradation -- Silent success when MCP unavailable
         if result is not None or (self._create_relations_fn is None and self._mcp_module is None):
             with self._lock:
                 self.stats["relations_created"] += 1
-            # guardian: allow-silent-degradation - Silent success on relation creation
+            # guardian: allow-silent-degradation -- Silent success on relation creation
             return True
         return False
 
@@ -468,11 +468,11 @@ class GraphMemoryBridge:
             observation = observation[:4093] + "..."
         observations = [{"entityName": entity_name, "contents": [observation]}]
         result = self._call_mcp_add_observations(observations)
-        # guardian: allow-silent-degradation - Silent success when MCP unavailable
+        # guardian: allow-silent-degradation -- Silent success when MCP unavailable
         if result is not None or (self._add_observations_fn is None and self._mcp_module is None):
             with self._lock:
                 self.stats["observations_added"] += 1
-            # guardian: allow-silent-degradation - Silent success on observation addition
+            # guardian: allow-silent-degradation -- Silent success on observation addition
             return True
         return False
 

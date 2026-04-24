@@ -301,7 +301,7 @@ def scan_import_compliance(
         try:
             content = fpath.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content, filename=str(fpath))
-        except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallow - acceptable exception handling
+        except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallow -- acceptable exception handling
             continue
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

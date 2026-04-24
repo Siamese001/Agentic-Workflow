@@ -484,7 +484,7 @@ class AgentExecutor:
         """
         try:
             from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
-        except ImportError:  # guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency
             return None
         prompt_parts = []
         _system = None

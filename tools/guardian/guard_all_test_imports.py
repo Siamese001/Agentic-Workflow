@@ -199,7 +199,7 @@ def rewrite_test_file(fp):
 
     try:
         ast.parse(new_src)
-    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
+    except SyntaxError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
         print(f"  SYNTAX ERR in rewrite of {os.path.relpath(fp, ROOT)}: {e}")
         # Fallback: just add _AVAILABLE = False at top if not present
         if "_AVAILABLE = False" not in src.split("try:")[0] if "try:" in src else src:
@@ -208,7 +208,7 @@ def rewrite_test_file(fp):
                 ast.parse(fallback)
                 open(fp, "w", encoding="utf-8").write(fallback)
                 print(f"  FALLBACK: added _AVAILABLE=False to {os.path.relpath(fp, ROOT)}")
-                # guardian: allow-silent-swallow - acceptable exception handling
+                # guardian: allow-silent-swallow -- acceptable exception handling
                 return True
             except SyntaxError:
                 pass

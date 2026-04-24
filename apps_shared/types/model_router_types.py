@@ -83,7 +83,7 @@ _emit_links_execution_to_snapshot("p4", "model_router_types", "exec_snapshot_lin
 
 try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     _MCPManager = None
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

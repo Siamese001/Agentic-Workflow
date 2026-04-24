@@ -13,7 +13,7 @@ create_reasoning_plan() — 6 mandatory steps (in order):
 
 No multi-step reasoning may execute without plan creation once planning is required.
 """
-# guardian: allow-magic-config - Planning policy requires configurable limits
+# guardian: allow-magic-config -- Planning policy requires configurable limits
 
 from __future__ import annotations
 

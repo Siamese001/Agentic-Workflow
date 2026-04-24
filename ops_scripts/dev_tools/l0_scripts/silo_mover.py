@@ -16,7 +16,7 @@ try:
         SCRIPTS_DIR,
         TESTS_DIR,
     )
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
     SCRIPTS_DIR = OPS_SCRIPTS_DIR
     TESTS_DIR = TESTS_DIR

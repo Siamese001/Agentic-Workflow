@@ -863,7 +863,7 @@ class UnifiedAgent(SovereignBaseAgent):
             from apps_shared.config.config_loader_config import load_agent_config
 
             return load_agent_config(self._config_name)
-        except ImportError:  # guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency
             logger.warning("config_loader module could not be imported; using empty config")
             return {}
         # guardian: allow-silent-swallow -- config load failure is non-fatal; re-raised after logging

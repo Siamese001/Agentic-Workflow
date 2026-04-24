@@ -77,7 +77,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 try:
     from agentic_core.base_agents.l0_delegation_testing_mixin import L0DelegationTestingMixin
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
 
     class L0DelegationTestingMixin:
         """Stub mixin for L0 delegation testing - original archived."""

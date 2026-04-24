@@ -180,7 +180,7 @@ def enforce_protected_root(
     # Resolve path without requiring existence
     try:
         resolved = target_path.resolve(strict=False)
-    except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
+    except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
         raise RuntimeError(f"Failed to resolve protected root path: {target_path}") from e
 
     # Check if path is under any immutable root

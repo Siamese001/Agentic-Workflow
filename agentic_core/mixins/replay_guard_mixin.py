@@ -247,7 +247,7 @@ class ReplayGuardMixin:
             from agentic_core.L4_state.config.versioned_configs import get_active_configs
 
             return get_active_configs().policy.config_hash
-        except ImportError:  # guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency
             _logger.warning("[ReplayGuard] L4 versioned_configs unavailable; using fallback policy hash.")
             return "fallback-no-l4"
 

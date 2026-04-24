@@ -285,8 +285,8 @@ def scan_repository(root_path: str = ".") -> int:
                 checker = DriftDetector(full_path)
                 checker.visit(tree)
                 all_violations.extend(checker.violations)
-            except UnicodeDecodeError:  # guardian: allow-silent-swallow - acceptable exception handling
-                # guardian: allow-silent-swallow - acceptable exception handling
+            except UnicodeDecodeError:  # guardian: allow-silent-swallow -- acceptable exception handling
+                # guardian: allow-silent-swallow -- acceptable exception handling
                 parse_errors.append(f"{full_path} [ENCODING ERROR]")
             except SyntaxError as e:
                 parse_errors.append(f"{full_path} [SYNTAX ERROR: line {e.lineno}]")

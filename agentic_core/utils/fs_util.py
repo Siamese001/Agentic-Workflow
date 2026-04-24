@@ -67,7 +67,7 @@ def calculate_file_hash(file_path: Path, algorithm: str = "sha256") -> str:
             for chunk in iter(lambda: f.read(8192), b""):
                 hash_obj.update(chunk)
         return hash_obj.hexdigest()
-    except OSError:  # guardian: allow-silent-swallow - acceptable exception handling
+    except OSError:  # guardian: allow-silent-swallow -- acceptable exception handling
         return ""
 
 

@@ -372,7 +372,7 @@ class ReflectionEngine:
                 )
                 self.stats["llm_critiques"] += 1
 
-        except CircuitOpenError:  # guardian: allow-silent-swallow - acceptable exception handling
+        except CircuitOpenError:  # guardian: allow-silent-swallow -- acceptable exception handling
             # GAP-02 FIX: fail-closed for required criteria, fail-open only for optional
             has_required = any(getattr(c, "is_required", True) for c in normalized_criteria)
             logger.warning(

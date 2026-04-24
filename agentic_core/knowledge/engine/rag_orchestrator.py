@@ -84,7 +84,7 @@ try:
     from agentic_core.knowledge.research_cache.cache_store_util import ResearchCache
     from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy_types import ALL_SKILLS, SKILL_TAXONOMY
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     ACTION_VERBS, STRONG_VERBS = ({}, [])
     SKILL_TAXONOMY, ALL_SKILLS = ({}, [])
     TextDocumentLoader = None

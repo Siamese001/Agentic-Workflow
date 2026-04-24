@@ -120,7 +120,7 @@ try:
 except ImportError as e:
     raise ImportError(
         f"Required dependency missing: {e}"
-    )  # guardian: allow-silent-degradation - Optional MCP hardened mixin
+    )  # guardian: allow-silent-degradation -- Optional MCP hardened mixin
 
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
@@ -520,7 +520,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 ROOT_PROTECTED_FILES,
                 SOVEREIGN_REGISTRY,
             )
-        except ImportError as e:  # guardian: allow-silent-swallow - Optional structure blueprint
+        except ImportError as e:  # guardian: allow-silent-swallow -- Optional structure blueprint
             raise ImportError(f"Required dependency missing: {e}")
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES
         self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
@@ -687,7 +687,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 if result.success:
                     return f"MOVED to scripts/{target.name}"
                 elif result.approval_status == "DENIED":
-                    # guardian: allow-silent-degradation - User declined move
+                    # guardian: allow-silent-degradation -- User declined move
                     return "SKIPPED: User declined move"
                 else:
                     LOGGER.error(f"Failed to move {file_path}: {result.error}")

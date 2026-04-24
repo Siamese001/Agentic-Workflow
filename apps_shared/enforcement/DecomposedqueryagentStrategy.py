@@ -220,7 +220,7 @@ class QueryDecomposer(SimpleAgentBase):
         self.max_sub_queries = max_sub_queries
         try:
             self.gate = AdaptiveRetrievalGate()
-        except ImportError:  # guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow -- optional dependency
             logger.warning("AdaptiveRetrievalGate not available, skipping heuristic check")
             self.gate = None
         self.complexity_indicators = {

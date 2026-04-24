@@ -253,7 +253,7 @@ class FlatteningPattern:
 
         try:
             tree = ast.parse(method_code)
-        except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
+        except SyntaxError:  # guardian: allow-silent-swallow -- acceptable exception handling
             return ComplexityMetrics(0, 0, 0, 0), []
 
         # Calculate metrics

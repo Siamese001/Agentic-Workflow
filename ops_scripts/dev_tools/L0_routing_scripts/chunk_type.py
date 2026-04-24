@@ -195,7 +195,7 @@ async def load_text_file(file_path: Path) -> str:
     try:
         try:
             return file_path.read_text(encoding="utf-8")
-        except UnicodeDecodeError:  # guardian: allow-silent-swallow - acceptable exception handling
+        except UnicodeDecodeError:  # guardian: allow-silent-swallow -- acceptable exception handling
             return file_path.read_text(encoding="latin-1")
     except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         print(f" [!] Failed to read {file_path}: {e}")
@@ -248,7 +248,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
     lines = text.splitlines()
     try:
         tree = ast.parse(text)  # guardian: Syntax errors should be caught at parser level, not runtime
-    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
+    except SyntaxError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
         print(f" [!] AST parse failed for {file_path}: {e}. Falling back to line-based.")
         return chunk_text_fallback(text, file_path)
     module_doc = _extract_docstring(tree)

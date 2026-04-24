@@ -113,7 +113,7 @@ try:
         OTEL_HTTP_EXPORTER_AVAILABLE = False
 
     OTEL_AVAILABLE = True
-except ImportError:  # guardian: allow-silent-swallow - optional dependency
+except ImportError:  # guardian: allow-silent-swallow -- optional dependency
     OTEL_AVAILABLE = False
     OTEL_GRPC_EXPORTER_AVAILABLE = False
     OTEL_HTTP_EXPORTER_AVAILABLE = False

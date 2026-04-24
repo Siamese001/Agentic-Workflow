@@ -1,4 +1,4 @@
-# guardian: allow-silent_degradation - ADG violation exemption
+# guardian: allow-silent_degradation -- ADG violation exemption
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Any
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-except ImportError:  # guardian: allow-silent-degradation - Optional healer mixin
+except ImportError:  # guardian: allow-silent-degradation -- Optional healer mixin
 
     class HealerMixin:  # type: ignore[no-redef]
         """Stub."""
@@ -18,7 +18,7 @@ except ImportError:  # guardian: allow-silent-degradation - Optional healer mixi
 
 try:
     from agentic_core.interfaces.mixins import MCPHardenedMixin
-except (ImportError, NameError, ModuleNotFoundError):  # guardian: allow-silent-swallow - Optional MCP hardened mixin
+except (ImportError, NameError, ModuleNotFoundError):  # guardian: allow-silent-swallow -- Optional MCP hardened mixin
 
     class MCPHardenedMixin:  # type: ignore[no-redef]
         """Stub."""
@@ -199,7 +199,7 @@ _emit_proposal_commits_routing("p1", "dag_manager", "routing_commit")
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import L3SubatomicTestingMixin
-except (ImportError, AttributeError):  # guardian: allow-silent-swallow - Optional subatomic testing mixin
+except (ImportError, AttributeError):  # guardian: allow-silent-swallow -- Optional subatomic testing mixin
 
     class L3SubatomicTestingMixin:  # type: ignore[no-redef]
         pass

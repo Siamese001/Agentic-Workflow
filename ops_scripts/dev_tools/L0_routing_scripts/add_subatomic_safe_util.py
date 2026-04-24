@@ -205,7 +205,7 @@ def main() -> int:
                     continue
                 try:
                     ast.parse(content)
-                except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
+                except SyntaxError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                     errors.append(f"{class_name}: Pre-existing syntax error at line {e.lineno}")
                     print(f"  ❌ {class_name}: Pre-existing syntax error")
                     continue
@@ -243,7 +243,7 @@ def main() -> int:
                         )
                         new_content = "\n".join(lines)
                 try:
-                    # guardian: allow-silent-swallow - acceptable exception handling
+                    # guardian: allow-silent-swallow -- acceptable exception handling
                     ast.parse(new_content)
                 except SyntaxError as e:
                     errors.append(f"{class_name}: New syntax error at line {e.lineno}")

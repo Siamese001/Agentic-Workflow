@@ -373,7 +373,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
     # Remove all MANIFEST files (low value)    # guardian: Add error context logging
     for manifest_file in adg_dir.glob("MANIFEST_*.txt"):
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow -- acceptable exception handling
         if _safe_unlink(manifest_file):
             cleaned_count += 1
 
@@ -386,7 +386,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
             print(f"[ADG] Cleanup: removed legacy report {report_file.name}")
 
     # Remove non-timestamped test_surface_coverage files (legacy cleanup)
-    # guardian: allow-silent-swallow - acceptable exception handling
+    # guardian: allow-silent-swallow -- acceptable exception handling
     for test_file in adg_dir.glob("test_surface_coverage.json"):
         if _safe_unlink(test_file):
             cleaned_count += 1
@@ -400,7 +400,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
     for pattern in tqdm(validation_patterns, desc="Processing", unit="item"):
         for val_file in adg_dir.glob(pattern):
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             # Extract timestamp from validation package filename
             # e.g., chatgpt_validation_package_03132026_0427.zip
             if current_ts not in val_file.name:

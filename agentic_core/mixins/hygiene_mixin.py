@@ -226,11 +226,11 @@ class HygieneMixin:
 
                         content = py_file.read_text(encoding="utf-8")
                         ast.parse(content)
-                    except SyntaxError as e:  # guardian: allow-silent-swallow - acceptable exception handling
+                    except SyntaxError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                         results["syntax_errors"].append(
                             {"file": str(rel_path), "error": str(e)}
                         )  # guardian: File operations with encoding need error-specific handling
-                except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
+                except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                     self.logger.debug(f"Failed to scan {rel_path}: {e}")
                     continue
         except (OSError, ValueError, RuntimeError) as e:
@@ -249,7 +249,7 @@ class HygieneMixin:
                 if file_path.exists():
                     file_path.unlink()  # guardian: Add error context logging
                     fixed += 1
-            except OSError as e:  # guardian: allow-silent-swallow - acceptable exception handling
+            except OSError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                 self.logger.debug(f"Failed to remove {file_path.name}: {e}")
                 continue
         for item in violations.get("duplicate_files", []):
@@ -257,7 +257,7 @@ class HygieneMixin:
                 duplicate_path = self.project_root / item["file"]
                 if duplicate_path.exists():  # guardian: Add error context logging
                     duplicate_path.unlink()
-                    # guardian: allow-silent-swallow - acceptable exception handling
+                    # guardian: allow-silent-swallow -- acceptable exception handling
                     fixed += 1
             except OSError as e:
                 self.logger.debug(f"Failed to remove {duplicate_path.name}: {e}")
@@ -344,7 +344,7 @@ class HygieneMixin:
             try:
                 import ast  # guardian: Syntax errors should be caught at parser level, not runtime
 
-                # guardian: allow-silent-swallow - acceptable exception handling
+                # guardian: allow-silent-swallow -- acceptable exception handling
                 content = file_path.read_text(encoding="utf-8")
                 ast.parse(content)
             except SyntaxError as e:

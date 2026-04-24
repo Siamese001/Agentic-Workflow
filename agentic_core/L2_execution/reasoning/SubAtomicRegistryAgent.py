@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-# guardian: allow-silent-degradation - Registry operations require exception handling
+# guardian: allow-silent-degradation -- Registry operations require exception handling
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -569,7 +569,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             if cached:
                 print(f"   [CACHE HIT] Method search for '{Task[:30]}...'")
                 return json.loads(cached)
-        except (ImportError, AttributeError) as e:  # guardian: allow-silent-swallow - Optional Redis cache
+        except (ImportError, AttributeError) as e:  # guardian: allow-silent-swallow -- Optional Redis cache
             print(f"Gemini embedding failed: {e}")
         task_lower = Task.lower()
         results = [
@@ -583,7 +583,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         try:
             if results:
                 self.redis.set(cache_key, json.dumps(results), ex=3600)
-        except (ImportError, AttributeError, ValueError) as e:  # guardian: allow-silent-swallow - Optional Redis cache
+        except (ImportError, AttributeError, ValueError) as e:  # guardian: allow-silent-swallow -- Optional Redis cache
             print(f"Gemini reranking failed: {e}")
         return results
 
@@ -714,6 +714,6 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
             query_engine = get_runtime_query_engine()
             return query_engine.find_agents_by_base_class(base_class)
-        except (ImportError, AttributeError) as exc:  # guardian: allow-silent-swallow - Optional ADG discovery
+        except (ImportError, AttributeError) as exc:  # guardian: allow-silent-swallow -- Optional ADG discovery
             Logger.warning("[SubAtomicRegistry] ADG discovery unavailable: %s", exc)
             return []

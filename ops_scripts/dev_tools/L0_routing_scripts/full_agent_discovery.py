@@ -394,7 +394,7 @@ def main() -> bool:
         Logger.info("[DISCOVERY] Agent discovery and verification completed successfully")
         return True
 
-    except DiscoveryError as e:  # guardian: allow-silent-swallow - acceptable exception handling
+    except DiscoveryError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
         Logger.error(f"[DISCOVERY] Discovery operation failed: {e}")
         return False
     except (ValueError, TypeError) as e:
@@ -454,7 +454,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         content = file_path.read_text(encoding="utf-8", errors="replace")
 
         try:
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             tree = ast.parse(content)
         except SyntaxError as e:
             report.parse_error = f"SyntaxError: {e}"

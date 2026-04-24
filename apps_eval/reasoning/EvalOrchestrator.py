@@ -11,7 +11,7 @@ Orchestrates the complete Evaluation Lab pipeline:
 
 Mirrors apps_rg RgResumeOrchestrator pattern.
 """
-# guardian: allow-silent-degradation - Evaluation orchestration requires exception handling
+# guardian: allow-silent-degradation -- Evaluation orchestration requires exception handling
 
 from __future__ import annotations
 
@@ -234,7 +234,7 @@ class EvalOrchestrator:
                 fail_on_regression=self._specs.gate.fail_on_regression,
                 max_timeout_violations=self._specs.gate.max_timeout_violations,
             )
-        except ImportError:  # guardian: allow-silent-swallow - Optional eval specs
+        except ImportError:  # guardian: allow-silent-swallow -- Optional eval specs
             self._specs = None
 
         self._qwen_gateway = None
@@ -275,7 +275,7 @@ class EvalOrchestrator:
             _profile = _idx.profile_for(Path(__file__).resolve()) if _idx else None
             self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
             self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
-        except (ImportError, AttributeError, OSError):  # guardian: allow-silent-swallow - Optional ADG behavioral index
+        except (ImportError, AttributeError, OSError):  # guardian: allow-silent-swallow -- Optional ADG behavioral index
             self.adg_behavioral_score = 0.5
             self.adg_antipattern_signals = []
 

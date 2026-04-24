@@ -201,7 +201,7 @@ class V15ExecutionGateway:
                 max_heal_attempts=max_heal_attempts,
                 **kwargs,
             )
-        except V15SoftFailAbort as sfa:  # guardian: allow-silent-swallow - acceptable exception handling
+        except V15SoftFailAbort as sfa:  # guardian: allow-silent-swallow -- acceptable exception handling
             Logger.warning("[V15-GW] SOFT_FAIL abort: %s", sfa)
             return GatewayResult(
                 success=False,
@@ -405,7 +405,7 @@ class V15ExecutionGateway:
                 semantic_clock=self._clock,
             )
             try:
-                # guardian: allow-silent-swallow - acceptable exception handling
+                # guardian: allow-silent-swallow -- acceptable exception handling
                 self._clock.tick(manifest.target_layer, state_commit_valid=True)
             except StateCommitInvalid as sci:
                 error = str(sci)

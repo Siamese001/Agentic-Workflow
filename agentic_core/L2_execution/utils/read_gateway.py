@@ -7,7 +7,7 @@ with graceful fallback to direct Python I/O when the MCP server is unavailable.
 
 Tool ID Prefix: ACT-020
 """
-# guardian: allow-silent_swallower - ADG violation exemption
+# guardian: allow-silent_swallower -- ADG violation exemption
 
 from __future__ import annotations
 

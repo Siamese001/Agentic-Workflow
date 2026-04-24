@@ -3,7 +3,7 @@ Base Eval Engine — Foundation for all apps_eval engines.
 
 Mirrors apps_exec BaseExecEngine pattern with eval-specific contracts.
 """
-# guardian: allow-silent-degradation - Evaluation engine requires exception handling
+# guardian: allow-silent-degradation -- Evaluation engine requires exception handling
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from typing import Any
 
 try:
     from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-except ImportError:  # guardian: allow-silent-swallow - Optional semantic cache mixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional semantic cache mixin
 
     class SemanticCacheMixin:  # type: ignore[no-redef]
         pass
@@ -21,7 +21,7 @@ except ImportError:  # guardian: allow-silent-swallow - Optional semantic cache 
 
 try:
     from agentic_core.mixins.embedding_mixin import EmbeddingMixin
-except ImportError:  # guardian: allow-silent-swallow - Optional embedding mixin
+except ImportError:  # guardian: allow-silent-swallow -- Optional embedding mixin
 
     class EmbeddingMixin:  # type: ignore[no-redef]
         pass
@@ -33,7 +33,7 @@ try:
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-except ImportError:  # guardian: allow-silent-swallow - Optional Qwen integration
+except ImportError:  # guardian: allow-silent-swallow -- Optional Qwen integration
     # Fallback for environments without Qwen integration
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
@@ -74,7 +74,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             from apps_eval.config.agent_spec_config import load_eval_specs
 
             self.specs = load_eval_specs()
-        except ImportError:  # guardian: allow-silent-swallow - Optional eval specs
+        except ImportError:  # guardian: allow-silent-swallow -- Optional eval specs
             self.specs = None
             self.logger.warning("[%s] eval specs not available", self.name)
 
@@ -82,7 +82,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             from apps_eval.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
             self.toggles = DEFAULT_TOGGLES
-        except ImportError:  # guardian: allow-silent-swallow - Optional reasoning toggles
+        except ImportError:  # guardian: allow-silent-swallow -- Optional reasoning toggles
             self.toggles = None
 
     @abstractmethod

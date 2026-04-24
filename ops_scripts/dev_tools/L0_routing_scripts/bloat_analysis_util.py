@@ -257,7 +257,7 @@ def find_empty_or_stub_files():
                             "total_lines": len(content.splitlines()),
                         },
                     )
-            except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
+            except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                 print(f"Failed to scan {f.name}: {e}")
     return stubs
 
@@ -278,7 +278,7 @@ def find_deprecated_markers():
                 for marker in markers:
                     if marker.lower() in content.lower():
                         deprecated.append({"path": str(f.relative_to(ROOT)), "marker": marker})
-                        # guardian: allow-silent-swallow - acceptable exception handling
+                        # guardian: allow-silent-swallow -- acceptable exception handling
                         break
             except (OSError, UnicodeDecodeError) as e:
                 print(f"Failed to scan {f.name}: {e}")
@@ -340,7 +340,7 @@ def find_unused_imports():
                             "path": str(f.relative_to(ROOT)),
                             "unused_count": len(unused),
                             "examples": unused[:5],
-                            # guardian: allow-silent-swallow - acceptable exception handling
+                            # guardian: allow-silent-swallow -- acceptable exception handling
                         },
                     )
             except (OSError, UnicodeDecodeError, SyntaxError) as e:
@@ -384,7 +384,7 @@ def find_script_candidates():
                         "signals": signals,  # guardian: File operations with encoding need error-specific handling
                     },
                 )
-        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow - acceptable exception handling
+        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
             print(f"Failed to scan {f.name}: {e}")
     return candidates
 

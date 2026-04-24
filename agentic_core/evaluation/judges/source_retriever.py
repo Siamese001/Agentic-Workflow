@@ -122,7 +122,7 @@ class SourceRetriever:
 
         source = "\n".join(lines)
         try:
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow -- acceptable exception handling
             tree = ast.parse(source, filename=str(path))
         except SyntaxError:  # guardian: allow-return-none-swallow allow-log-and-swallow -- AST parse: non-fatal, caller handles None as missing function
             _log.warning("[SourceRetriever] Syntax error parsing %s", path)
@@ -170,7 +170,7 @@ class SourceRetriever:
             return None
 
         source = "\n".join(lines)
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow -- acceptable exception handling
         try:
             tree = ast.parse(source, filename=str(path))
         except SyntaxError:  # guardian: allow-return-none-swallow allow-log-and-swallow -- AST parse: non-fatal, caller handles None as missing class

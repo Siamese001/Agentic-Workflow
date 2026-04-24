@@ -310,7 +310,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
     try:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
-    except SyntaxError:  # guardian: allow-silent-swallow - acceptable exception handling
+    except SyntaxError:  # guardian: allow-silent-swallow -- acceptable exception handling
         return FileAnalysis(path=str(file_path), archive_folder=archive_folder, has_syntax_error=True, loc=0)
     except OSError:
         return None

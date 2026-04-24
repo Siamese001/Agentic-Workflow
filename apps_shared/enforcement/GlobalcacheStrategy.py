@@ -465,7 +465,7 @@ class SimpleEmbedder:
 
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")
-            except ImportError:  # guardian: allow-silent-swallow - optional dependency
+            except ImportError:  # guardian: allow-silent-swallow -- optional dependency
                 logger.warning("sentence_transformers not available, using dummy embeddings")
                 self._model = "dummy"
 
