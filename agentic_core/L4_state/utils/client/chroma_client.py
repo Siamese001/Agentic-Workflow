@@ -152,6 +152,7 @@ class SovereignChromaClient:
         documents: list[str],
         metadatas: list[dict[str, Any]],
         ids: list[str] | None = None,
+        embeddings: list[list[float]] | None = None,
     ):
         """
         Add documents to a ChromaDB collection.
@@ -161,6 +162,12 @@ class SovereignChromaClient:
             documents: List of document texts
             metadatas: List of metadata dictionaries
             ids: Optional list of document IDs
+            embeddings: Optional pre-computed embeddings. When supplied, the
+                client skips the default per-text ``embed_texts`` call and
+                uses these vectors directly. This enables alternate embedding
+                paths (e.g. Late Chunking per ADR-045 alt-5) without forking
+                the ingestion pipeline. Must be the same length as documents
+                when provided.
         """
         if len(documents) != len(metadatas):
             raise ValueError("Documents and metadatas must have same length")
@@ -168,8 +175,15 @@ class SovereignChromaClient:
         if ids and len(ids) != len(documents):
             raise ValueError("IDs must match documents length")
 
-        # Generate embeddings
-        embeddings = self.embed_texts(documents)
+        if embeddings is not None:
+            if len(embeddings) != len(documents):
+                raise ValueError(
+                    f"embeddings length ({len(embeddings)}) must match "
+                    f"documents length ({len(documents)})"
+                )
+        else:
+            # Default path: generate embeddings from the document texts.
+            embeddings = self.embed_texts(documents)
 
         # Get collection
         collection = self.get_collection(collection_name)

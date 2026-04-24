@@ -34,6 +34,10 @@ from tools.ingestion.contextual_chunk_builder import (
     ContextualizationRequest,
     prepend_context,
 )
+from tools.ingestion.late_chunking_helper import (
+    apply_late_chunking,
+    is_enabled_from_env_or_flag as late_chunking_enabled,
+)
 
 # Contextualization gateway selection (plan c0-context-assembly-best-practices-b7c3a1).
 # Preference order (first non-None wins):
@@ -554,6 +558,7 @@ def ingest_code(
     collection_name: str = "repo_code_chunks",
     dry_run: bool = False,
     contextualize: bool = False,
+    late_chunking: bool = False,
 ):
     """Ingest Python code into ChromaDB using SovereignChromaClient.
 
@@ -561,6 +566,10 @@ def ingest_code(
         source_dir: Source directory with Python files
         collection_name: ChromaDB collection name (default: repo_code_chunks)
         dry_run: If True, don't actually ingest (for testing)
+        contextualize: Prepend LLM-generated chunk context (ADR-045 main path).
+        late_chunking: Use Jina Late Chunking embedder (ADR-045 Alternative 5)
+            instead of the default per-chunk BGE embedding. Stacks with
+            contextualize. Can also be enabled via ``LATE_CHUNKING=1`` env.
     """
     import sqlite3
     from datetime import datetime
@@ -708,6 +717,31 @@ def ingest_code(
             logger.info(f"Metadata sample: {all_chunks[0]['metadata']}")
         return
 
+    # Optional: Jina Late Chunking (ADR-045 Alt-5). Computes per-chunk
+    # embeddings up front from single full-doc encoder passes. When enabled,
+    # we pass the pre-computed vectors to SovereignChromaClient so it
+    # doesn't re-embed the (possibly contextualized) chunk text. Returns
+    # None on unavailability -> default path takes over.
+    late_enabled = late_chunking_enabled(late_chunking)
+    precomputed_embeddings: list[list[float]] | None = None
+    if late_enabled:
+        logger.info(
+            "Late chunking ENABLED \u2014 embedding %d chunks via single-pass encoder per file",
+            len(all_chunks),
+        )
+        precomputed_embeddings = apply_late_chunking(all_chunks)
+        if precomputed_embeddings is None:
+            logger.warning(
+                "Late chunking returned None (deps unavailable); falling back to default embedder"
+            )
+        elif len(precomputed_embeddings) != len(all_chunks):
+            logger.error(
+                "Late chunking output length (%d) != chunks (%d); falling back",
+                len(precomputed_embeddings),
+                len(all_chunks),
+            )
+            precomputed_embeddings = None
+
     # Ingest into ChromaDB using SovereignChromaClient
     logger.info("Ingesting into ChromaDB...")
 
@@ -718,12 +752,18 @@ def ingest_code(
         ids = [chunk["id"] for chunk in batch]
         documents = [chunk["content"] for chunk in batch]
         metadatas = [chunk["metadata"] for chunk in batch]
+        batch_embeddings = (
+            precomputed_embeddings[i : i + batch_size]
+            if precomputed_embeddings is not None
+            else None
+        )
 
         chroma_client.add_documents(
             collection_name=collection_name,
             documents=documents,
             metadatas=metadatas,
             ids=ids,
+            embeddings=batch_embeddings,
         )
 
         logger.info(f"Successfully ingested batch {i // batch_size + 1}: {len(batch)} chunks")
@@ -765,6 +805,16 @@ def main():
             "is wired; live Claude calls when a gateway is injected."
         ),
     )
+    parser.add_argument(
+        "--late-chunking",
+        action="store_true",
+        help=(
+            "Use Jina Late Chunking (ADR-045 Alt-5) to embed each chunk from "
+            "a single full-doc encoder pass, giving each chunk cross-chunk "
+            "context at no LLM cost. Stacks with --contextualize. Can also "
+            "be enabled via LATE_CHUNKING=1 env var."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -773,6 +823,7 @@ def main():
         collection_name=args.collection_name,
         dry_run=args.dry_run,
         contextualize=args.contextualize,
+        late_chunking=args.late_chunking,
     )
 
 

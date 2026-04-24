@@ -26,6 +26,29 @@ from openai import OpenAI
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+# W6.2 (plan anthropic-rag-gaps-7f3c2a): imports at module scope so the
+# ``--contextualize`` branch below can reference them without conditional
+# scoping. Placed AFTER the ``sys.path`` insertion above because this
+# module depends on the ``tools`` package being resolvable when
+# ingest_docs.py is invoked as a script (not just via ``-m``).
+from tools.ingestion.contextual_chunk_builder import (  # noqa: E402 — see comment above
+    ContextualChunkBuilder,
+    ContextualizationRequest,
+    prepend_context,
+)
+
+# G1-residual (plan c0-context-assembly-best-practices-b7c3a1): gateway
+# adapter so the existing Claude-generated contextual-retrieval path becomes
+# reachable. build_from_env() returns None when ANTHROPIC_API_KEY is absent,
+# which preserves the heuristic-only baseline for offline / CI runs.
+from tools.ingestion.anthropic_context_gateway import (  # noqa: E402 — see above
+    build_from_env as build_anthropic_context_gateway,
+)
+from tools.ingestion.late_chunking_helper import (  # noqa: E402 — see above
+    apply_late_chunking,
+    is_enabled_from_env_or_flag as late_chunking_enabled,
+)
+
 try:
     from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
 except ImportError:
@@ -504,6 +527,25 @@ def main():
         help="Glob pattern to exclude (can be used multiple times)",
     )
     parser.add_argument("--limit", type=int, help="Limit number of files to process (for testing)")
+    parser.add_argument(
+        "--contextualize",
+        action="store_true",
+        help=(
+            "Rewrite each chunk with an Anthropic Contextual Retrieval prefix "
+            "(50-100 tokens of document-level context) before embedding. "
+            "Mirrors the --contextualize path on ingest_code.py. See plan "
+            "anthropic-rag-gaps-7f3c2a phase W6.2."
+        ),
+    )
+    parser.add_argument(
+        "--late-chunking",
+        action="store_true",
+        help=(
+            "Use Jina Late Chunking (ADR-045 Alt-5): embed each chunk from a "
+            "single full-doc encoder pass instead of in isolation. Stacks "
+            "with --contextualize. Can also be enabled via LATE_CHUNKING=1."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -527,13 +569,57 @@ def main():
     )
     ingestor = VectorDBIngestor(args.collection_name, vector_dimensions=embedding_generator.vector_dimensions)
 
-    # Process documents
+    # Process documents.
+    # W6.2 (plan anthropic-rag-gaps-7f3c2a): when --contextualize is set,
+    # lazily construct one ContextualChunkBuilder and feed each (document,
+    # chunk) pair through it. Contextualization happens PER FILE (while the
+    # file has already been read into memory for chunking) to avoid a second
+    # file-system pass. Failures are logged and skipped — contextualization
+    # is best-effort enrichment, never fatal to ingestion.
     all_chunks = []
     total_files = 0
+    context_builder = None
+    enriched_count = 0
+    if args.contextualize:
+        # G1-residual: inject the Anthropic gateway adapter when
+        # ANTHROPIC_API_KEY is set. When absent, build_from_env returns None
+        # and ContextualChunkBuilder falls back to the heuristic path —
+        # matching the prior unreachable-Claude-path behaviour, but now with
+        # a clear log line so operators know which mode is active.
+        gateway = build_anthropic_context_gateway()
+        context_builder = ContextualChunkBuilder(gateway=gateway)
+        mode = "GATEWAY (Claude-generated)" if gateway is not None else "HEURISTIC (metadata-only)"
+        Logger.info(
+            "Contextualization ENABLED — mode=%s — each chunk will be prefixed with document-level context.",
+            mode,
+        )
 
     for file_path in markdown_files:
         Logger.info(f"Processing: {file_path}")
         chunks = chunker.chunk_document(file_path)
+
+        if context_builder is not None and chunks:
+            try:
+                document_text = Path(file_path).read_text(encoding="utf-8", errors="replace")
+            except OSError as exc:
+                Logger.warning("Skip contextualization for %s: %s", file_path, exc)
+                document_text = ""
+            if document_text:
+                for chunk in chunks:
+                    metadata = chunk.get("metadata", {}) or {}
+                    request = ContextualizationRequest(
+                        document=document_text,
+                        chunk=chunk.get("content", ""),
+                        metadata=metadata,
+                    )
+                    result = context_builder.build(request)
+                    if not result.context:
+                        continue
+                    metadata["chunk_context"] = result.context
+                    chunk["content"] = prepend_context(chunk.get("content", ""), result.context)
+                    chunk["metadata"] = metadata
+                    enriched_count += 1
+
         all_chunks.extend(chunks)
         total_files += 1
 
@@ -541,6 +627,10 @@ def main():
             Logger.warning(f"No chunks generated from {file_path}")
 
     Logger.info(f"Generated {len(all_chunks)} chunks from {total_files} files")
+    if args.contextualize:
+        Logger.info(
+            f"Contextualization complete: {enriched_count}/{len(all_chunks)} chunks enriched."
+        )
 
     if args.dry_run:
         Logger.info("DRY RUN - Not ingesting into ChromaDB")
@@ -548,10 +638,31 @@ def main():
             Logger.info(f"Preview chunk: {chunk['metadata']['doc_id']}")
         return 0
 
-    # Generate embeddings
-    Logger.info("Generating embeddings...")
-    texts = [chunk["content"] for chunk in all_chunks]
-    embeddings = embedding_generator.generate_embeddings(texts)
+    # Generate embeddings. Jina Late Chunking (ADR-045 Alt-5) replaces the
+    # default per-chunk embedder with a single full-doc encoder pass when
+    # --late-chunking (or LATE_CHUNKING=1) is active. Falls back to the
+    # default path on any failure (returns None).
+    late_enabled = late_chunking_enabled(args.late_chunking)
+    embeddings = None
+    if late_enabled:
+        Logger.info(
+            "Late chunking ENABLED \u2014 embedding %d chunks via single-pass encoder per file",
+            len(all_chunks),
+        )
+        embeddings = apply_late_chunking(all_chunks)
+        if embeddings is None:
+            Logger.warning("Late chunking returned None; falling back to default embedder")
+        elif len(embeddings) != len(all_chunks):
+            Logger.error(
+                "Late chunking length mismatch (%d vs %d); falling back",
+                len(embeddings),
+                len(all_chunks),
+            )
+            embeddings = None
+    if embeddings is None:
+        Logger.info("Generating embeddings...")
+        texts = [chunk["content"] for chunk in all_chunks]
+        embeddings = embedding_generator.generate_embeddings(texts)
 
     # Ingest into ChromaDB
     Logger.info("Ingesting into ChromaDB...")
