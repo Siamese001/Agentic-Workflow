@@ -1,0 +1,248 @@
+================================================================================
+[typehint_only] SubAtomicAgent -> agentic_core.L3_orchestration.utils.subatomic_agent_util
+  consumer: agentic_core/L5_safety/reasoning/DocumentationAgent.py
+       100: 
+  >>>  101: from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
+       102: from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+
+       179: @dataclass
+  >>>  180: class DocumentationAgent(SubAtomicAgent):
+       181:     """
+
+================================================================================
+[class_reference_only] SubAtomicAgent -> agentic_core.L3_orchestration.utils.subatomic_agent_util
+  consumer: agentic_core/L5_safety/reasoning/TypeMechanicAgent.py
+        94: 
+  >>>   95: "\nTypeMechanicAgent - Extracted from SubAtomicAgent.py\nPart of the SubAtomic agent family for code quality enforcement.\n"
+        96: import ast
+
+        98: 
+  >>>   99: from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
+       100: from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+
+       177: @dataclass
+  >>>  178: class TypeMechanicAgent(SubAtomicAgent):
+       179:     """
+
+================================================================================
+[class_reference_only] SubAtomicAgent -> agentic_core.L3_orchestration.utils.subatomic_agent_util
+  consumer: agentic_core/L5_safety/utils/extract_pattern_util.py
+        88: 
+  >>>   89: "\nExtract PatternEnforcerAgent from canon_agents_pattern.py.\nAlso removes SubAtomicAgent stub and adds proper import.\n"
+        90: import ast
+
+       219: def update_source_file(source_file: Path):
+  >>>  220:     """Remove PatternEnforcerAgent and SubAtomicAgent stub, add proper import."""
+       221:     with open(source_file, encoding="utf-8") as f:
+
+       224:     tree = ast.parse(content)
+  >>>  225:     classes_to_remove = ["PatternEnforcerAgent", "SubAtomicAgent"]
+       226:     ranges_to_remove = []
+
+       247:             lines.insert(start + 1, "")
+  >>>  248:     import_line = "from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent"
+       249:     insert_idx = 0
+
+       275:     print("  - Removing PatternEnforcerAgent")
+  >>>  276:     print("  - Removing SubAtomicAgent stub")
+       277:     print("  - Adding SubAtomicAgent import")
+
+       276:     print("  - Removing SubAtomicAgent stub")
+  >>>  277:     print("  - Adding SubAtomicAgent import")
+       278:     update_source_file(SOURCE_FILE)
+
+================================================================================
+[class_reference_only] CodeJanitorAgent -> agentic_core.L5_safety.utils.code_janitor_util
+  consumer: agentic_core/L5_safety/validators/CodeJanitorAgent.py
+         1: """
+  >>>    2: validators/CodeJanitorAgent.py ΓÇö backward-compat re-export shim.
+         3: 
+
+         4: Canonical implementation has moved to:
+  >>>    5:     agentic_core.L5_safety.reasoning.CodeJanitorAgent
+         6: 
+
+         8: All filesystem writes (_write_file_content, _smart_fix, heal_repository) are in
+  >>>    9: reasoning/CodeJanitorAgent.py (L5 healer territory).
+        10: 
+
+        10: 
+  >>>   11: ADG fix: A-04 (CodeJanitorAgent split ΓÇö healer logic moved to reasoning/).
+        12: 
+
+        16: Consumers at authorization: 0 (verified via live-code grep of
+  >>>   17: `L5_safety.validators.CodeJanitorAgent` \u2014 4 previously-reported consumers
+        18: in tools/archive/orphan_hooks_w5.3/import_dep_baseline.txt have all been
+
+        19: refactored away; current grep returns zero hits).
+  >>>   20: Unique logic: none (pure re-export of agentic_core.L5_safety.reasoning.CodeJanitorAgent).
+        21: Target archive path on or after eligibility date:
+
+        28: 
+  >>>   29: from agentic_core.L5_safety.reasoning.CodeJanitorAgent import (
+        30:     CodeJanitorAgent,
+
+        29: from agentic_core.L5_safety.reasoning.CodeJanitorAgent import (
+  >>>   30:     CodeJanitorAgent,
+        31:     JanitorViolation,
+
+        97: 
+  >>>   98: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_1")
+        99: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_2")
+
+        98: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_1")
+  >>>   99: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_2")
+       100: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_3")
+
+        99: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_2")
+  >>>  100: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_3")
+       101: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_4")
+
+================================================================================
+[typehint_only] CodeEnforcerAgent -> agentic_core.L5_safety.utils.code_enforcer_util
+  consumer: agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py
+       237:     from agentic_core.L4_state.reasoning.CheckpointManagerAgent import CheckpointManagerAgent
+  >>>  238:     from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
+       239:     from agentic_core.L5_safety.reasoning.StructureValidatorAgent import StructureValidatorAgent
+
+       259:         "AutonomousCheckpointManagerAgent": CheckpointManagerAgent,
+  >>>  260:         "BaseClassEnforcer": CodeEnforcerAgent,
+       261:         "BaseClassEnforcerAgent": CodeEnforcerAgent,
+
+       260:         "BaseClassEnforcer": CodeEnforcerAgent,
+  >>>  261:         "BaseClassEnforcerAgent": CodeEnforcerAgent,
+       262:         "PatternEnforcer": CodeEnforcerAgent,
+
+       261:         "BaseClassEnforcerAgent": CodeEnforcerAgent,
+  >>>  262:         "PatternEnforcer": CodeEnforcerAgent,
+       263:         "PatternEnforcerAgent": CodeEnforcerAgent,
+
+       262:         "PatternEnforcer": CodeEnforcerAgent,
+  >>>  263:         "PatternEnforcerAgent": CodeEnforcerAgent,
+       264:         "TypeHintEnforcement": CodeEnforcerAgent,
+
+       263:         "PatternEnforcerAgent": CodeEnforcerAgent,
+  >>>  264:         "TypeHintEnforcement": CodeEnforcerAgent,
+       265:         "TypeHintEnforcementAgent": CodeEnforcerAgent,
+
+       264:         "TypeHintEnforcement": CodeEnforcerAgent,
+  >>>  265:         "TypeHintEnforcementAgent": CodeEnforcerAgent,
+       266:         "ManifestManager": StateManagementAgent,
+
+       286:     """
+  >>>  287:     from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
+       288:     from agentic_core.L5_safety.reasoning.ResourceManagerAgent import ResourceManagerAgent
+
+       298:         "SecureConfigManagerAgent": SecurityManagerAgent,
+  >>>  299:         "CodeSSOTEnforcerAgent": CodeEnforcerAgent,
+       300:         "CodeEnforcerAgent": CodeEnforcerAgent,
+
+       299:         "CodeSSOTEnforcerAgent": CodeEnforcerAgent,
+  >>>  300:         "CodeEnforcerAgent": CodeEnforcerAgent,
+       301:         "PatternEnforcerAgent": CodeEnforcerAgent,
+
+       300:         "CodeEnforcerAgent": CodeEnforcerAgent,
+  >>>  301:         "PatternEnforcerAgent": CodeEnforcerAgent,
+       302:         "TypeEnforcerAgent": CodeEnforcerAgent,
+
+       301:         "PatternEnforcerAgent": CodeEnforcerAgent,
+  >>>  302:         "TypeEnforcerAgent": CodeEnforcerAgent,
+       303:         "PythonFileSovereigntyEnforcerAgent": CodeEnforcerAgent,
+
+================================================================================
+[typehint_only] CodeEnforcerAgent -> agentic_core.L5_safety.utils.code_enforcer_util
+  consumer: ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py
+       166:     "CodeDetectorAgent.py": "CodeDetectorAgent.py",
+  >>>  167:     "CodeEnforcerAgent.py": "CodeEnforcerAgent.py",
+       168:     "CodeHealerAgent.py": "CodeHealerAgent.py",
+
+       178:     "CodeDetectorAgent": "CodeDetectorAgent",
+  >>>  179:     "CodeEnforcerAgent": "CodeEnforcerAgent",
+       180:     "CodeHealerAgent": "CodeHealerAgent",
+
+       264:     init_file = UNIFIED_DIR / "__init__.py"
+  >>>  265:     new_init = '"""\nUnified L5 Safety/Validation Agents\n\n[PHASE 33c UPGRADE 2026-01-21]: Removed "Unified" prefix from agent names.\nBackward compatibility aliases maintained fo
+       266:     init_file.write_text(new_init, encoding="utf-8")
+
+================================================================================
+[class_reference_only] CostGovernorAgent -> agentic_core.L5_safety.utils.cost_governor_util
+  consumer: agentic_core/_compat/core/l5_safety_aliases.py
+        13: )
+  >>>   14: from agentic_core.L5_safety.reasoning.CostGovernorAgent import CostGovernorAgent  # noqa: F401
+        15: from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent  # noqa: F401
+
+        44:     "ConstitutionalReviewerAgent",
+  >>>   45:     "CostGovernorAgent",
+        46:     "DDDAlignmentAgent",
+
+================================================================================
+[typehint_only] CodeDetectorAgent -> agentic_core.L5_safety.utils.code_detector_util
+  consumer: agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py
+       326:     from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import ModelRouterAgent
+  >>>  327:     from agentic_core.L5_safety.reasoning.CodeDetectorAgent import CodeDetectorAgent
+       328:     from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+
+       333:     return {
+  >>>  334:         "DeadCodeDetectorAgent": CodeDetectorAgent,
+       335:         "DeadlockDetectorAgent": CodeDetectorAgent,
+
+       334:         "DeadCodeDetectorAgent": CodeDetectorAgent,
+  >>>  335:         "DeadlockDetectorAgent": CodeDetectorAgent,
+       336:         "DriftDetectorAgent": CodeDetectorAgent,
+
+       335:         "DeadlockDetectorAgent": CodeDetectorAgent,
+  >>>  336:         "DriftDetectorAgent": CodeDetectorAgent,
+       337:         "MethodChangeDetectorAgent": CodeDetectorAgent,
+
+       336:         "DriftDetectorAgent": CodeDetectorAgent,
+  >>>  337:         "MethodChangeDetectorAgent": CodeDetectorAgent,
+       338:         "MemoryLeakDetectorAgent": CodeDetectorAgent,
+
+       337:         "MethodChangeDetectorAgent": CodeDetectorAgent,
+  >>>  338:         "MemoryLeakDetectorAgent": CodeDetectorAgent,
+       339:         "BiasDetectorAgent": SafetyDetectorAgent,
+
+================================================================================
+[typehint_only] CodeDetectorAgent -> agentic_core.L5_safety.utils.code_detector_util
+  consumer: ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py
+       165: RENAMES = {
+  >>>  166:     "CodeDetectorAgent.py": "CodeDetectorAgent.py",
+       167:     "CodeEnforcerAgent.py": "CodeEnforcerAgent.py",
+
+       177: CLASS_RENAMES = {
+  >>>  178:     "CodeDetectorAgent": "CodeDetectorAgent",
+       179:     "CodeEnforcerAgent": "CodeEnforcerAgent",
+
+       264:     init_file = UNIFIED_DIR / "__init__.py"
+  >>>  265:     new_init = '"""\nUnified L5 Safety/Validation Agents\n\n[PHASE 33c UPGRADE 2026-01-21]: Removed "Unified" prefix from agent names.\nBackward compatibility aliases maintained fo
+       266:     init_file.write_text(new_init, encoding="utf-8")
+
+================================================================================
+[class_reference_only] GravityStateAgent -> agentic_core.L3_orchestration.utils.gravity_state_util
+  consumer: agentic_core/interfaces/state_agents.py
+        15:     from agentic_core.interfaces.state_agents import (
+  >>>   16:         GravityStateAgent,
+        17:         CachedStateLedger,
+
+        23: 
+  >>>   24: from agentic_core.L3_orchestration.reasoning.GravityStateAgent import GravityStateAgent
+        25: from agentic_core.L4_state.reasoning.CachedStateLedger import CachedStateLedger
+
+        27: 
+  >>>   28: __all__ = ["GravityStateAgent", "CachedStateLedger", "CheckpointManager"]
+
+================================================================================
+[typehint_only] CodeValidatorAgent -> agentic_core.L5_safety.utils.code_validator_util
+  consumer: ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py
+       168:     "CodeHealerAgent.py": "CodeHealerAgent.py",
+  >>>  169:     "CodeValidatorAgent.py": "CodeValidatorAgent.py",
+       170:     "ResourceManagerAgent.py": "ResourceManagerAgent.py",
+
+       180:     "CodeHealerAgent": "CodeHealerAgent",
+  >>>  181:     "CodeValidatorAgent": "CodeValidatorAgent",
+       182:     "ResourceManagerAgent": "ResourceManagerAgent",
+
+       264:     init_file = UNIFIED_DIR / "__init__.py"
+  >>>  265:     new_init = '"""\nUnified L5 Safety/Validation Agents\n\n[PHASE 33c UPGRADE 2026-01-21]: Removed "Unified" prefix from agent names.\nBackward compatibility aliases maintained fo
+       266:     init_file.write_text(new_init, encoding="utf-8")
+
