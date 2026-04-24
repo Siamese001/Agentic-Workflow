@@ -1,7 +1,7 @@
 # Runtime ADG Acceleration — T3 Execution Plan
 
 > Slug: `runtime-adg-acceleration-b4f2a1`
-> Status: **Waves 1,2,3,4,6,7 Complete — W5 Deferred (see DEFERRED_SCOPE marker)**
+> Status: **All Waves Complete (W5 phase-1: incremental single-file reindexer delivered; watcher daemon deferred to own ADR)**
 > Tier: **T3** (cross-layer: tools/, agentic_core/L0, L5, L6; touches runtime hot path)
 > ADG Snapshot: `artifacts/adg/adg_indexed_04242026_0721.sqlite` (healthy; 150k imports, 109k reads_from, 68k flows_to, 57k resolves_callsite edges)
 > Origin: User request 2026-04-24 11:20 UTC — "map into prioritized plan and implement each wave"
