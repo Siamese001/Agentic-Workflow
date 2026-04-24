@@ -204,7 +204,8 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
     def _get_agent(self):
         """Lazy load the underlying agent."""
         if self._agent is None:
-            from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+            # MW-9 (2026-04-24): Class body relocated to utils module.
+            from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
 
             self._agent = LocationHealerAgent(project_root=self.project_root)
         return self._agent

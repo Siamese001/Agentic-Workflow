@@ -22,7 +22,8 @@ try:
         APPS_SHARED_DIR,
     )
     from agentic_core.L5_safety.config.structure_blueprint import get_all_territories
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+    # MW-9 (2026-04-24): Class body relocated to utils module.
+    from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
     from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
     from agentic_core.runtime.contracts.lifecycle_trace_contract import (
         _emit_applies_guardrail,

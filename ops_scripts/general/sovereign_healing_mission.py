@@ -41,7 +41,8 @@ def run_mission(repo_root: Path, dry_run: bool = True) -> int:
 
     from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
     from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+    # MW-9 (2026-04-24): Class body relocated to utils module.
+    from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
 
     logger.info("Initializing Sovereign Healing Mission...")
 

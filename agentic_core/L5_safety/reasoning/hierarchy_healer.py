@@ -374,7 +374,9 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 # LocationHealerAgent is the SSOT for all file mutation operations
                 if self.healing_enabled:
                     try:
-                        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                        # MW-9 (2026-04-24): Class body relocated to utils module;
+                        # agent path is now a deprecation re-export shim.
+                        from agentic_core.L5_safety.utils.location_healer_util import (
                             LocationHealerAgent,
                         )
 

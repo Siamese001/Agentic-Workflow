@@ -171,7 +171,8 @@ _emit_invokes_eval("p1", "location_path_util", "eval_call")
 _emit_proposal_commits_routing("p1", "location_path_util", "routing_commit")
 
 if TYPE_CHECKING:
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+    # MW-9 (2026-04-24): Class body relocated to utils module; agent path is now a re-export shim.
+    from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
 
 
 def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -> bool:
@@ -264,7 +265,8 @@ def get_location_agent(project_root: Path) -> LocationHealerAgent:
     """
     global _healer_instance
     if _healer_instance is None:
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+        # MW-9 (2026-04-24): Class body relocated to utils module; agent path is now a re-export shim.
+        from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
 
         _healer_instance = LocationHealerAgent(project_root=project_root)
     return _healer_instance
