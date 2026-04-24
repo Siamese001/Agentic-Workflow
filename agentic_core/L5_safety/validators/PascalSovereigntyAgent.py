@@ -9,6 +9,19 @@ All filesystem mutations (rename, delete, import rewrite) are in
 reasoning/PascalSovereigntyAgent.py (L5 healer territory).
 
 ADG fix: A-02 (healer misplaced in validators/) + A-01 (validators/ mutation boundary).
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W2 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling per constitutional \u00a73)
+Consumers at authorization: 0 (verified via live-code grep of
+`L5_safety.validators.PascalSovereigntyAgent` \u2014 prior consumer at
+ops_scripts/general/run_sovereignty_agents.py has been refactored away;
+current grep returns zero hits).
+Unique logic: none (pure re-export of agentic_core.L5_safety.reasoning.PascalSovereigntyAgent).
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/L5_safety__validators__PascalSovereigntyAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/validators__PascalSovereigntyAgent.json
+ADG violation resolved on archive: v_p2_duplicated_adapters (3 of 3 in W2).
 """
 
 from __future__ import annotations

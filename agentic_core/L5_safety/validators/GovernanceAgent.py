@@ -9,6 +9,20 @@ All writes_to / healing operations are in reasoning/GovernanceAgent.py
 (L5 healer territory, which correctly uses write_gateway).
 
 ADG fix: A-07 (dedup) + A-01 (validators/ mutation boundary).
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W2 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling per constitutional \u00a73)
+Consumers at authorization: 0 (verified via live-code grep of
+`L5_safety.validators.GovernanceAgent` \u2014 prior consumers in
+agentic_core/L3_orchestration/enforcement/mission_runner.py and
+agentic_core/seams/contracts/safety_agents.py have been refactored away;
+current grep returns zero hits).
+Unique logic: none (pure re-export of agentic_core.L5_safety.reasoning.GovernanceAgent).
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/L5_safety__validators__GovernanceAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/validators__GovernanceAgent.json
+ADG violation resolved on archive: v_p2_duplicated_adapters (2 of 3 in W2).
 """
 
 from __future__ import annotations
