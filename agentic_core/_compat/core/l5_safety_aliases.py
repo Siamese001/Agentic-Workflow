@@ -11,7 +11,6 @@ from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import Cognitive
 from agentic_core.L5_safety.reasoning.ConstitutionalReviewerAgent import (
     ConstitutionalReviewerAgent,  # noqa: F401
 )
-from agentic_core.L5_safety.reasoning.CostGovernorAgent import CostGovernorAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.DocumentationAgent import DocumentationAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.DynamicSealAgent import DynamicSealAgent  # noqa: F401
@@ -42,7 +41,6 @@ __all__ = [
     "AutonomyGuardianAgent",
     "CognitiveDispositionAgent",
     "ConstitutionalReviewerAgent",
-    "CostGovernorAgent",
     "DDDAlignmentAgent",
     "DocumentationAgent",
     "DynamicSealAgent",

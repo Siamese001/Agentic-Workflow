@@ -5,6 +5,15 @@ Use agentic_core.L5_safety.utils.cost_governor_util instead.
 
 This module maintains backward compatibility by delegating to the utility.
 Will be removed in a future release.
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W3.2 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling per constitutional \u00a73)
+Consumers at authorization: 0 (Only consumer was agentic_core/_compat/core/l5_safety_aliases.py (dead compat shim with zero importers). W3.2 edit removed the CostGovernorAgent entry from that shim. Remaining live consumer count: 0.)
+Unique logic: none (pure delegation to agentic_core.L5_safety.utils.cost_governor_util per DEPRECATED docstring above).
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/agentic_core__L5_safety__reasoning__CostGovernorAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/w3_CostGovernorAgent.json
 """
 
 from __future__ import annotations
