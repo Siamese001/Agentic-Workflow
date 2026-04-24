@@ -1,0 +1,116 @@
+{
+  "queries": [
+    {
+      "query": "How does Late Chunking pool token embeddings into chunk vectors?",
+      "relevant_doc_ids": [
+        "33a98c437621804c",
+        "4b325aa20b3a463f",
+        "b46cf1d3f747de24",
+        "38c7861726ff56db",
+        "b0407e0a96f1f2f9",
+        "a1229acc87a6fb42",
+        "5c2e3a917eddbfaf",
+        "55fce68781d1cec9",
+        "ab991e8b0918ab43",
+        "55d6dff7ee936027",
+        "92756e432e645e69",
+        "f8237ab1445c2121",
+        "fea14e833e72961c",
+        "69ba123c7cb8d9bd"
+      ],
+      "category": "semantic"
+    },
+    {
+      "query": "bge_reranker_adapter cross encoder wrapper",
+      "relevant_doc_ids": [
+        "397a1e666b71fd67",
+        "6af28d7ae53f54ad",
+        "cc296e58362f8c33",
+        "8533c4fb81027801",
+        "df5c079727676a1a",
+        "bbeb92c134ce8c75",
+        "af7cc820e01160e8"
+      ],
+      "category": "exact"
+    },
+    {
+      "query": "Two-stage reranker with heuristic pre-filter",
+      "relevant_doc_ids": [
+        "ac4a626aeaf7f20a",
+        "629e7d8935681c57",
+        "617f6162a6def6c2",
+        "fbe63b7085f3de39"
+      ],
+      "category": "semantic"
+    },
+    {
+      "query": "reranker factory env driven selection",
+      "relevant_doc_ids": [
+        "4739fe1019f2c087",
+        "e6f27a27c4179be6",
+        "0e4fbfc65f990bb3",
+        "395de7685089033a",
+        "ff8e85bf04089bd5"
+      ],
+      "category": "semantic"
+    },
+    {
+      "query": "SeniorLibrarianReranker relevance coverage authority",
+      "relevant_doc_ids": [
+        "b2e07148eeda5d52",
+        "46398f34f9979f3f",
+        "6702104fe27d6284",
+        "b4e8821872528433",
+        "e3edaf4dd7d030fb",
+        "90630501b5ec2ef2",
+        "11334e52b5fe8bd2",
+        "fa8b1348a9f1e4a4"
+      ],
+      "category": "exact"
+    },
+    {
+      "query": "anthropic prompt cache control marker",
+      "relevant_doc_ids": [
+        "92c25483c7da1eb0",
+        "6705736bdb884dcc",
+        "3181b6f65b38b53b",
+        "0a15cf68c6b939b1",
+        "33f30ca1059c26b7",
+        "9ec21faf9cadb9cc"
+      ],
+      "category": "exact"
+    },
+    {
+      "query": "hybrid recall stage",
+      "relevant_doc_ids": [
+        "4994b6c1452c604e",
+        "9ba93c1da52f01b7",
+        "ba5541efccf7c1e5",
+        "b26a17c9cf0e0556",
+        "f81b702f21e0c448",
+        "d1a25595b6b894f5",
+        "53ac1c2684a60730",
+        "dcf7b551c9d400c5",
+        "760c52124a452f8e",
+        "00b105d41779942c",
+        "119f6197239cd49d",
+        "e05c8258d7410bae"
+      ],
+      "category": "exact"
+    },
+    {
+      "query": "parent child chunk hydration",
+      "relevant_doc_ids": [
+        "1718bdf8ec2abb64",
+        "461c06c4c3df4ce1",
+        "a4675ed3ed79ef35",
+        "0bc7e7f6defc00de",
+        "a3597b06330270e5",
+        "4d1c4c93e524e7bc",
+        "ba95ffff8456d65a",
+        "f59eee136aee3399"
+      ],
+      "category": "semantic"
+    }
+  ]
+}
