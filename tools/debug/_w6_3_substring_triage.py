@@ -1,11 +1,20 @@
-"""W6.3 P0 triage: sub-classify the 48 C_SUBSTRING SSOT sites.
+"""W6.3 P0 triage: sub-classify C_SUBSTRING SSOT sites.
 
 For each site, climb the AST parent chain to determine:
   LOG_MESSAGE       -- literal embedded in logger.* / logging.* / print() call
   TEMPLATE          -- inside f-string (JoinedStr) or .format() template
+  ARGPARSE_HELP     -- inside argparse add_argument(help=...) / description= / epilog=
+  RAISE_ARG         -- first arg of raise <Exc>(...) statement
+  REGEX_PATTERN     -- first positional arg of re.compile(...) / re.match(...) / etc.
+  PROSE_OUTPUT      -- appended to a prose-typed list (lines, out, doc, body, messages)
   ACCIDENTAL_CONCAT -- everything else (path construction, dict/list literals,
                        return values) -- candidates for f-string conversion
   EXEMPT_DOC        -- inside a docstring (skipped by W5 probe but recheck)
+
+The 4 new categories (ARGPARSE_HELP, RAISE_ARG, REGEX_PATTERN, PROSE_OUTPUT)
+were added 2026-04-24 per W7-P1 context-review finding that most previously
+"ACCIDENTAL_CONCAT" sites were actually intentional documentation / error
+text / regex / prose-output literals that should not be migrated.
 
 Outputs:
   - Console summary table
@@ -69,6 +78,27 @@ LOGGER_CALL_PATTERN = re.compile(
 )
 LOGGER_METHODS = {"debug", "info", "warning", "warn", "error", "critical", "exception"}
 
+# Kwarg names used in argparse.ArgumentParser / add_argument for user-facing
+# documentation. Literal contents are user-visible; migrate-to-f-string would
+# change what users see in --help output.
+ARGPARSE_DOC_KWARGS = {"help", "description", "epilog", "metavar", "prog", "usage"}
+
+# Function names (attribute tail) whose first positional arg is a regex
+# pattern — migrating the literal would corrupt the regex.
+RE_COMPILE_METHODS = {
+    "compile", "match", "search", "fullmatch", "findall", "finditer",
+    "split", "sub", "subn",
+}
+
+# List / collection names that, by convention, accumulate prose output
+# (markdown, report lines, human-readable messages). A literal appended to
+# one of these is documentation text, not a computed path.
+PROSE_LIST_NAMES = {
+    "lines", "lines_out", "out", "output", "doc", "docs", "body",
+    "messages", "report", "report_lines", "rows", "md", "markdown",
+    "text", "text_lines",
+}
+
 
 def _is_logger_call(call: ast.Call) -> bool:
     """True if call is logger.<level>(...) or logging.<level>(...) or print(...)."""
@@ -95,8 +125,89 @@ def _is_format_call(call: ast.Call) -> bool:
     return isinstance(func, ast.Attribute) and func.attr == "format"
 
 
+def _is_argparse_doc_kwarg(
+    node: ast.Constant, parents: dict[int, ast.AST]
+) -> bool:
+    """True if this constant is the value of an argparse help/description/... kwarg."""
+    kw = parents.get(id(node))
+    if not isinstance(kw, ast.keyword) or kw.arg not in ARGPARSE_DOC_KWARGS:
+        return False
+    return isinstance(parents.get(id(kw)), ast.Call)
+
+
+def _is_raise_arg(node: ast.Constant, parents: dict[int, ast.AST]) -> bool:
+    """True if node sits under a raise <ExcCls>(...) first positional arg."""
+    # Walk up: Constant -> Call (exc instantiation) -> Raise
+    cur: ast.AST | None = parents.get(id(node))
+    depth = 0
+    while cur is not None and depth < 5:
+        if isinstance(cur, ast.Raise):
+            return True
+        cur = parents.get(id(cur))
+        depth += 1
+    return False
+
+
+def _is_regex_pattern(
+    node: ast.Constant, parents: dict[int, ast.AST]
+) -> bool:
+    """True if node is the first positional arg of an re.<method>(...) call."""
+    call = parents.get(id(node))
+    if not isinstance(call, ast.Call):
+        return False
+    func = call.func
+    if not isinstance(func, ast.Attribute):
+        return False
+    if func.attr not in RE_COMPILE_METHODS:
+        return False
+    # func.value should reference the re module
+    val = func.value
+    if isinstance(val, ast.Name) and val.id == "re":
+        # Check the constant is in positional args (not a kwarg)
+        return any(arg is node for arg in call.args)
+    return False
+
+
+def _is_prose_append(
+    node: ast.Constant, parents: dict[int, ast.AST]
+) -> bool:
+    """True if node is an arg to <prose_list>.append(...) / extend(...)."""
+    call = parents.get(id(node))
+    if not isinstance(call, ast.Call):
+        return False
+    func = call.func
+    if not isinstance(func, ast.Attribute):
+        return False
+    if func.attr not in {"append", "extend", "insert"}:
+        return False
+    # func.value is the list being appended to; check its name
+    val = func.value
+    if isinstance(val, ast.Name) and val.id in PROSE_LIST_NAMES:
+        return any(arg is node for arg in call.args)
+    if isinstance(val, ast.Attribute) and val.attr in PROSE_LIST_NAMES:
+        return any(arg is node for arg in call.args)
+    return False
+
+
 def _classify_site(node: ast.Constant, parents: dict[int, ast.AST]) -> str:
-    """Walk parent chain to assign a category."""
+    """Walk parent chain to assign a category.
+
+    Order of checks matters: the first matching category wins. Documentation-
+    class categories (ARGPARSE_HELP, RAISE_ARG, REGEX_PATTERN, PROSE_OUTPUT)
+    are checked before ACCIDENTAL_CONCAT so genuine refactoring targets are
+    not over-counted.
+    """
+    # Immediate-parent context checks (cheap, no walk)
+    if _is_argparse_doc_kwarg(node, parents):
+        return "ARGPARSE_HELP"
+    if _is_regex_pattern(node, parents):
+        return "REGEX_PATTERN"
+    if _is_prose_append(node, parents):
+        return "PROSE_OUTPUT"
+    if _is_raise_arg(node, parents):
+        return "RAISE_ARG"
+
+    # Multi-level walk for nested contexts
     cur: ast.AST | None = parents.get(id(node))
     depth = 0
     inside_joinedstr = False
@@ -227,6 +338,10 @@ def main() -> int:
         "TEMPLATE": "Convert to f-string with constant interpolation",
         "ACCIDENTAL_CONCAT": "Convert to f-string with constant interpolation",
         "EXEMPT_DOC": "Already exempt (docstring) — no action",
+        "ARGPARSE_HELP": "Documentation (argparse help/description) — no migration",
+        "RAISE_ARG": "Exception diagnostic text — no migration",
+        "REGEX_PATTERN": "Regex pattern literal — migration would corrupt",
+        "PROSE_OUTPUT": "Prose output (lines/body/markdown) — no migration",
     }
     for cat, n in sorted(by_cat.items(), key=lambda t: -t[1]):
         lines_out.append(f"| {cat} | {n} | {dispo.get(cat, '?')} |")
