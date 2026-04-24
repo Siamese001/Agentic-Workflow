@@ -1,11 +1,34 @@
 # ADR-045 — Contextual Retrieval Gateway Wiring
 
-**Status**: Proposed (rescoped 2026-04-23 after discovery of prior work)
-**Date**: 2026-04-23
+**Status**: Proposed (rescoped 2026-04-23; amended 2026-04-24 for local-LLM default)
+**Date**: 2026-04-23 (amended 2026-04-24)
 **Deciders**: Agentic-Workflow maintainers
-**Impact Layers**: `tools/ingestion/contextual_chunk_builder.py` (existing), `tools/ingestion/ingest_docs.py`, `tools/ingestion/ingest_code.py`, `agentic_core/knowledge/canonical/chunk_manifest.py`, new gateway adapter module.
+**Impact Layers**: `tools/ingestion/contextual_chunk_builder.py` (existing), `tools/ingestion/qwen_context_gateway.py` (new default), `tools/ingestion/anthropic_context_gateway.py` (opt-in), `tools/ingestion/ingest_code.py`, `tools/ingestion/ingest_docs.py`, `agentic_core/knowledge/canonical/chunk_manifest.py`.
 **Plan**: `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md` §2a (G1 residual)
 **Supersedes / Relates-to**: `.windsurf/plans/anthropic-rag-gaps-7f3c2a.md` P1.1 (preprocessor landed; gateway wiring owned here)
+
+---
+
+## Amendment (2026-04-24) — local-LLM gateway promoted to default
+
+Commit `7ccfc32b67` retires **paid Anthropic API calls as a default requirement** for ADR-045 contextualization. Rationale:
+
+- Claude-Haiku-4-5 per-chunk cost scales linearly with corpus size. Back-of-envelope for a full repo ingest: 5k–50k chunks × (parent-doc input tokens + ~100 output tokens) = **$5–$50 per re-index**, and that cost recurs every time the corpus is rebuilt. The cache-control optimization discussed below mitigates but does not eliminate it.
+- The repo already operates a sanctioned Qwen 2.5 vLLM serving path at L3 (`agentic_core/L3_orchestration/inference/qwen_vllm/reasoning/qwen_inference_gateway.py`). The operator runs `Qwen/Qwen2.5-14B-Instruct-AWQ` on 32 GB of local VRAM, which is sized for this class of workload.
+- Qwen2.5-14B is well above the quality floor for 50-100 token situated-context generation. The technique does not require frontier-model reasoning — it requires faithful paraphrase of the parent doc conditioned on the chunk. A strong mid-size open model is sufficient.
+
+The **technique** (Anthropic-style chunk-prefix contextualization) is unchanged. Only the **default backend** changes from paid Claude to local Qwen vLLM. Anthropic remains available as an opt-in backend via `CONTEXT_GATEWAY=anthropic` for operators who want to reproduce Anthropic's published numbers verbatim.
+
+**Backend selection matrix** (honored by `tools/ingestion/ingest_code.py::_build_context_gateway`):
+
+| `CONTEXT_GATEWAY` value | Backend chain |
+|---|---|
+| unset / `auto` (default) | Qwen vLLM → Anthropic (if `ANTHROPIC_API_KEY`) → heuristic |
+| `qwen` | Qwen vLLM only — returns None if unreachable (no paid fallback, $0 guarantee) |
+| `anthropic` | Anthropic only — returns None if `ANTHROPIC_API_KEY` absent |
+| `heuristic` / `off` / `none` | Skip all LLM gateways; force heuristic-only |
+
+This amendment updates §Decision item 1, §Consequences (cost narrative), and §Alternatives Considered. All other normative requirements (additive `situated_context` field on `ChunkManifest`, replayability, A/B acceptance gate) remain intact.
 
 ---
 
@@ -52,8 +75,10 @@ augmentation for all text corpora served by C0.
 
 Normative requirements:
 
-1. A new adapter module (e.g. `agentic_core/knowledge/retrieval/anthropic_context_gateway.py`) implements the `_GatewayProtocol` declared in `tools/ingestion/contextual_chunk_builder.py` — a single method `generate(prompt, *, model, max_tokens, temperature, timeout_s) -> str` — and routes through the existing `apps_rg/enforcement/HardenedanthropicexecutorStrategy.py` entry path with `cache_control=ephemeral` applied to the `<document>` prefix.
-2. Both call sites (`ingest_docs.py:563` and `ingest_code.py:472`) inject this adapter: `ContextualChunkBuilder(gateway=AnthropicContextGateway(...))` when `ANTHROPIC_API_KEY` is set; pass nothing (heuristic fallback preserved) when it is not.
+1. Two adapter modules in `tools/ingestion/` both implement the `_GatewayProtocol` declared in `tools/ingestion/contextual_chunk_builder.py` — a single method `generate(prompt, *, model, max_tokens, temperature, timeout_s) -> str`:
+   - **`qwen_context_gateway.py`** (default): routes through the sanctioned `QwenInferenceGateway` at `agentic_core/L3_orchestration/inference/qwen_vllm/reasoning/qwen_inference_gateway.py`. Resolves model id and base URL from the L0 SSOT (`QWEN_LOCAL_MODEL_ID`, `VLLM_BASE_URL` — see `agentic_core/L0_routing/config/model_registry.py`). Module-level singleton gateway amortizes init cost. `build_from_env()` probes `${VLLM_BASE_URL}/models` with a 2s timeout and returns `None` on unreachable server.
+   - **`anthropic_context_gateway.py`** (opt-in): routes through `apps_rg.utils.providers_anthropic_client_util.run_llm_anthropic`. `build_from_env()` returns `None` when `ANTHROPIC_API_KEY` is absent. Still supports `cache_control=ephemeral` on the `<document>` prefix once the `GenerationRequest` shape is extended (G11-residual, deferred).
+2. Both ingest call sites go through `_build_context_gateway()` which honors the `CONTEXT_GATEWAY` env knob per the backend-selection matrix above. `ContextualChunkBuilder(gateway=...)` is constructed with whatever that function returns; `None` yields the heuristic-only path.
 3. `ChunkManifest` gains a `situated_context: str` field (non-breaking additive). The metadata key `chunk_context` already in use in the ingest scripts is promoted to the canonical manifest schema with a one-session migration window.
 4. Indexes are rebuilt under a new schema version bind (`retrieval_plan.py` already honors version pinning); old and new indexes coexist during rollout.
 5. The contextualizer pass MUST be replayable: inputs (parent doc hash, chunk id, model tier, prompt template version) fully determine output. Failures are logged and fall back to the heuristic path — never silently swallowed.
@@ -80,10 +105,10 @@ Normative requirements:
 
 **Negative / costs**
 
-- One-time re-index cost per corpus. Mitigated by Haiku-tier pricing and
-  prompt caching on the parent doc.
-- `ChunkManifest` schema migration. Handled by additive field + version bind.
-- Slight ingest-time latency increase. Does not affect C0 query-time path.
+- One-time re-index cost per corpus. **Default path is $0** (local Qwen vLLM — GPU time only). Anthropic opt-in path pays $5-$50 per re-index depending on corpus size, mitigated by Haiku-tier pricing and (once G11-residual lands) `cache_control=ephemeral` prompt caching on the parent doc.
+- `ChunkManifest` schema migration. Handled by additive `situated_context` field (schema 1.1, shipped 2026-04-24) with 1.0-era payloads reading cleanly as empty string.
+- Slight ingest-time latency increase. Does not affect C0 query-time path. Local Qwen path adds ~200-500ms per chunk on a 32GB GPU; Anthropic path adds ~300-800ms per chunk network round-trip.
+- New dependency on the local vLLM server being running for the default path. Graceful fallback: `build_from_env()` probes the server and returns `None` on unreachable, which surfaces as the heuristic path. No hangs, no exceptions leak.
 
 **Risks**
 
@@ -103,6 +128,21 @@ Normative requirements:
 3. **Query-side rewriting instead of chunk-side situating.** Higher latency
    (every query pays) and harder to cache. Anthropic explicitly prefers
    ingest-side.
+4. **Paid Anthropic API as the default backend (original 2026-04-23 draft).**
+   Rejected 2026-04-24. Per-chunk $ cost scales linearly with corpus size,
+   making repeat re-indexes economically unattractive. The local Qwen vLLM
+   path produces equivalent-quality situated contexts at $0 marginal cost
+   once the GPU is powered on. Anthropic retained as opt-in backend for
+   operators who want to reproduce Anthropic's published Recall@20 numbers
+   verbatim or who don't have local GPU capacity.
+5. **Late Chunking (Jina-style full-doc pooling).** Strong free alternative
+   that achieves the same goal via a different mechanism: embed the full
+   document, then pool token embeddings into chunk vectors (each chunk
+   inherits cross-chunk context from the full-doc attention pass). Not a
+   replacement for this ADR — complementary. Tracked as a separate backlog
+   item against BGE-M3's long-context mode. If the local Qwen path shows
+   insufficient lift on A/B, Late Chunking is the next thing to add (or
+   combine).
 
 ## References
 
