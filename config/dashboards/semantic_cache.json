@@ -1,0 +1,140 @@
+{
+  "annotations": {"list": []},
+  "description": "R1B Semantic Cache observability — wraps the metrics emitted by agentic_core.L4_state.utils.memory.semantic_cache_manager via _record_semantic_cache_prom_event() and _emit_structured_cache_event().",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "row",
+      "title": "L1 / L2 Hit & Miss",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Cache hits per second (by tier)",
+      "id": 2,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 1},
+      "targets": [
+        {"expr": "sum by (tier) (rate(semantic_cache_events_total{event=\"hit\"}[5m]))", "legendFormat": "{{tier}}"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "ops"}}
+    },
+    {
+      "type": "timeseries",
+      "title": "Cache misses per second",
+      "id": 3,
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 1},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"miss\"}[5m]))", "legendFormat": "miss"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "ops"}}
+    },
+    {
+      "type": "row",
+      "title": "Reject Reasons (G1/G2 Gates)",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 9},
+      "id": 4,
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Hybrid-fusion rejects (G1)",
+      "id": 5,
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 10},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"hybrid_reject\"}[5m]))", "legendFormat": "hybrid_reject"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Support-manifest rejects (G2)",
+      "id": 6,
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 10},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"support_manifest_reject\"}[5m]))", "legendFormat": "support_manifest_reject"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Scope mismatches (corpus / policy)",
+      "id": 7,
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 10},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"scope_mismatch\"}[5m]))", "legendFormat": "scope_mismatch"}
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Bypass / Eviction",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 18},
+      "id": 8,
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Bypasses (replay / flow / live signal)",
+      "id": 9,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 19},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"bypass\"}[5m]))", "legendFormat": "bypass"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "CDC + neighborhood evictions",
+      "id": 10,
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 19},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"cdc_evict\"}[5m]))", "legendFormat": "cdc_evict"},
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"neighborhood_evict\"}[5m]))", "legendFormat": "neighborhood_evict"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Hit ratio (5m)",
+      "id": 11,
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 27},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"hit\"}[5m])) / clamp_min(sum(rate(semantic_cache_events_total{event=~\"hit|miss\"}[5m])), 0.001)"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "yellow", "value": 0.30}, {"color": "green", "value": 0.50}]}}}
+    },
+    {
+      "type": "stat",
+      "title": "FP gate firing rate (5m)",
+      "id": 12,
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 27},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=~\"hybrid_reject|support_manifest_reject\"}[5m])) / clamp_min(sum(rate(semantic_cache_events_total{event=\"hit\"}[5m])), 0.001)"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "percentunit"}}
+    },
+    {
+      "type": "stat",
+      "title": "Single-flight skip rate",
+      "id": 13,
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 27},
+      "targets": [
+        {"expr": "sum(rate(semantic_cache_events_total{event=\"l1_single_flight_skip\"}[5m]))"}
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["semantic-cache", "r1b", "l4-state"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {},
+  "timezone": "",
+  "title": "R1B Semantic Cache",
+  "uid": "r1b-semantic-cache",
+  "version": 1,
+  "weekStart": ""
+}

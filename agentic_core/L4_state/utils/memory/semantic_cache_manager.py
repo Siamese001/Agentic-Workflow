@@ -154,6 +154,66 @@ def _structured_emit_enabled() -> bool:
     return os.environ.get("SEMANTIC_CACHE_STRUCTURED_EMIT", "1") != "0"
 
 
+# G11 per-tier similarity thresholds (R1B follow-on #3).
+# Default values mirror the historical single-threshold behavior: static (L1
+# exact) is conceptually 1.0 (exact match) but reported here for telemetry
+# parity; dynamic (L2 semantic) defaults to 0.95 matching GPTCacheClient.
+_TIER_THRESHOLD_DEFAULTS: dict[str, float] = {"static": 1.0, "dynamic": 0.95}
+
+
+def tier_similarity_threshold(tier: str) -> float:
+    """Resolve the similarity threshold for ``tier`` (``static`` | ``dynamic``).
+
+    Reads ``SEMANTIC_CACHE_THRESHOLD_STATIC`` / ``SEMANTIC_CACHE_THRESHOLD_DYNAMIC``
+    env vars when set; otherwise returns the historical default. Unknown tiers
+    return ``1.0`` (most conservative — never serves below exact).
+    """
+    tier_norm = (tier or "").strip().lower()
+    env_var = f"SEMANTIC_CACHE_THRESHOLD_{tier_norm.upper()}"
+    raw = os.environ.get(env_var)
+    if raw is not None:
+        try:
+            value = float(raw)
+            if 0.0 <= value <= 1.0:
+                return value
+        except ValueError:
+            pass  # fall through to default
+    return _TIER_THRESHOLD_DEFAULTS.get(tier_norm, 1.0)
+
+
+def _l1_key_hardening_enabled() -> bool:
+    """G12 L1 cache-key normalization (R1B follow-on #4). Default on."""
+    return os.environ.get("SEMANTIC_CACHE_L1_KEY_HARDENING", "1") != "0"
+
+
+_WS_RE = None  # lazy compile in _normalize_l1_context
+
+
+def _normalize_l1_context(context: str) -> str:
+    """Normalize a context string before L1 hash derivation.
+
+    Hardening applied:
+      * strip leading/trailing whitespace
+      * collapse internal whitespace runs to single space
+      * NFKC unicode normalization (compose width / compatibility variants)
+
+    Case is preserved — semantic distinctions like ``"Apple"`` vs ``"apple"``
+    matter for some routing flows. Operators who want case-insensitive L1
+    can wrap their callers; we will not silently lose information here.
+
+    Off when ``SEMANTIC_CACHE_L1_KEY_HARDENING=0``.
+    """
+    if not _l1_key_hardening_enabled():
+        return context
+    import unicodedata  # noqa: PLC0415
+    global _WS_RE  # noqa: PLW0603
+    if _WS_RE is None:
+        import re as _re  # noqa: PLC0415
+        _WS_RE = _re.compile(r"\s+")
+    normalized = unicodedata.normalize("NFKC", context).strip()
+    return _WS_RE.sub(" ", normalized)
+
+
 def _emit_structured_cache_event(
     *,
     namespace: str,
@@ -730,7 +790,11 @@ class SemanticCacheManager:
                 )
             except ValueError:  # guardian: allow-silent-swallow -- cache key construction: optional active model context, fallback key built below
                 pass  # active_model_context may not have required attrs and fallback
-        key = "|".join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, context])
+        # G12 L1 key hardening: normalize the legacy L1 path so trivial
+        # whitespace / unicode-form variants do not produce different keys.
+        # D2 path above is unaffected (its query_hash is computed before).
+        normalized_context = _normalize_l1_context(context)
+        key = "|".join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, normalized_context])
         return hashlib.sha256(key.encode()).hexdigest()
 
     def recall(
@@ -855,6 +919,7 @@ class SemanticCacheManager:
                             tenant_id=tenant_id or "",
                             cache_lineage="L1",
                             reason_code="exact_hit",
+                            dense_score=tier_similarity_threshold("static"),
                             ttl_seconds=int(self.DEFAULT_WORKING_MEMORY_TTL),
                             embedding_model_id=self._EMBEDDING_MODEL_VERSION,
                             cache_tier="static",
@@ -976,7 +1041,7 @@ class SemanticCacheManager:
                             tenant_id=tenant_id or "",
                             cache_lineage="L2_to_L1_writeback" if self.redis_enabled else "L2",
                             reason_code="hybrid_hit" if _hybrid_enabled() else "exact_hit",
-                            dense_score=float(getattr(self._gptcache, "similarity_threshold", 0.95)),
+                            dense_score=tier_similarity_threshold("dynamic"),
                             evidence_ids=tuple(str(_e) for _e in (_l2_meta.get("evidence_ids") or [])),
                             ttl_seconds=int(self.DEFAULT_WORKING_MEMORY_TTL),
                             embedding_model_id=active_model,
