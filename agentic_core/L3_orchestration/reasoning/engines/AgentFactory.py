@@ -208,10 +208,12 @@ def _get_CodeEnforcerAgent():
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_get_CodeEnforcerAgent")
     try:
-        from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
+        # MW-6 (2026-04-24): CodeEnforcerAgent was a delegating shim; swapped to
+        # canonical util class CodeEnforcer. Agent archive-eligible 2026-07-23.
+        from agentic_core.L5_safety.utils.code_enforcer_util import CodeEnforcer
 
-        return CodeEnforcerAgent
-    except ImportError:  # guardian: allow-return-none-swallow -- CodeEnforcerAgent import: optional agent, caller checks for None
+        return CodeEnforcer
+    except ImportError:  # guardian: allow-return-none-swallow -- CodeEnforcer import: optional util, caller checks for None
         return None
 
 

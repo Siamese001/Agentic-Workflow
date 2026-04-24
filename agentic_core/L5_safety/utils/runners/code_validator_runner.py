@@ -196,6 +196,9 @@ def validate_repository(project_root: Path) -> dict:
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "validate_repository")
+    # MW-5b (2026-04-24): CodeValidator util lacks validate_repository()
+    # + project_root init kwarg. CodeValidatorAgent archive BLOCKED at W6 until
+    # util API widens or this runner is refactored to use validate_directory.
     from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
 
     agent = CodeValidatorAgent(project_root=project_root)
@@ -216,6 +219,7 @@ def validate_repository(project_root: Path) -> dict:
 
 def validate_directory(project_root: Path, directory: str) -> dict:
     """Validate specific directory with CodeValidatorAgent."""
+    # MW-5b (2026-04-24): see note above — util API gap blocks this swap.
     from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
 
     agent = CodeValidatorAgent(project_root=project_root)

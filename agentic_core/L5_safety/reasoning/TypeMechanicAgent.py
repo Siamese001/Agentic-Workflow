@@ -96,7 +96,9 @@ _emit_links_execution_to_snapshot("p4", "TypeMechanicAgent", "exec_snapshot_link
 import ast
 from typing import Any
 
-from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
+# MW-8 (2026-04-24): Base class SubAtomicAgent promoted into canonical util;
+# swapped import so reasoning/SubAtomicAgent.py can be archived W6 2026-07-23.
+from agentic_core.L3_orchestration.utils.subatomic_agent_util import SubAtomicAgent
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

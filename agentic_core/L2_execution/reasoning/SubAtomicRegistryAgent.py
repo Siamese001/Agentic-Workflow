@@ -235,7 +235,9 @@ def _get_UnifiedAgent_mapping() -> dict[str, type]:
     )  # guardian: allow-layer-violation -- L2 module uses L1 cognition type; intentional cross-layer dependency in execution layer
     from agentic_core.L3_orchestration.reasoning.StateManagementAgent import StateManagementAgent
     from agentic_core.L4_state.reasoning.CheckpointManagerAgent import CheckpointManagerAgent
-    from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
+    # MW-7 (2026-04-24): CodeEnforcerAgent was a delegating shim; swapped to
+    # canonical util class CodeEnforcer (aliased for dict compatibility).
+    from agentic_core.L5_safety.utils.code_enforcer_util import CodeEnforcer as CodeEnforcerAgent
     from agentic_core.L5_safety.reasoning.StructureValidatorAgent import StructureValidatorAgent
 
     return {
@@ -284,7 +286,9 @@ def _get_phase3_manager_enforcer_mapping() -> dict[str, type]:
         Dictionary mapping legacy manager/enforcer names to unified classes.
 
     """
-    from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
+    # MW-7 (2026-04-24): CodeEnforcerAgent was a delegating shim; swapped to
+    # canonical util class CodeEnforcer (aliased for dict compatibility).
+    from agentic_core.L5_safety.utils.code_enforcer_util import CodeEnforcer as CodeEnforcerAgent
     from agentic_core.L5_safety.reasoning.ResourceManagerAgent import ResourceManagerAgent
     from agentic_core.L5_safety.reasoning.SecurityManagerAgent import SecurityManagerAgent
     from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
@@ -324,7 +328,9 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
 
     """
     from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import ModelRouterAgent
-    from agentic_core.L5_safety.reasoning.CodeDetectorAgent import CodeDetectorAgent
+    # MW-7 (2026-04-24): CodeDetectorAgent was a delegating shim; swapped to
+    # canonical util class CodeDetector (aliased for dict compatibility).
+    from agentic_core.L5_safety.utils.code_detector_util import CodeDetector as CodeDetectorAgent
     from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
     from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import SafetyDetectorAgent
     from agentic_core.L5_safety.reasoning.SafetyExecutorAgent import SafetyExecutorAgent

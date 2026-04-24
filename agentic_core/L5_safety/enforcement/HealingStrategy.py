@@ -319,6 +319,11 @@ class HealingStrategy:
         """
         try:
             if agent_name == "CodeValidatorAgent":
+                # MW-5 (2026-04-24): CodeValidator util lacks heal_repository method
+                # that this caller requires via execute_agent(). Cannot swap cleanly
+                # without rewriting util API surface. CodeValidatorAgent archive is
+                # BLOCKED at W6 (2026-07-23) until util gains heal_repository() or
+                # HealingStrategy/execute_agent is refactored to use validate_directory.
                 from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
 
                 return CodeValidatorAgent()
@@ -339,9 +344,11 @@ class HealingStrategy:
 
                 return LocationAgent(project_root=self.project_root)
             elif agent_name == "CodeEnforcerAgent":
-                from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
+                # MW-5 (2026-04-24): CodeEnforcerAgent was a delegating shim; swapped
+                # to canonical util class CodeEnforcer. Agent archive-eligible 2026-07-23.
+                from agentic_core.L5_safety.utils.code_enforcer_util import CodeEnforcer
 
-                return CodeEnforcerAgent()
+                return CodeEnforcer()
             elif agent_name == "StructuralHealerAgent":
                 from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent
 
@@ -377,9 +384,11 @@ class HealingStrategy:
 
                 return AutonomyGuardianAgent(project_root=self.project_root)
             elif agent_name == "CodeJanitorAgent":
-                from agentic_core.L5_safety.reasoning.CodeJanitorAgent import CodeJanitorAgent
+                # MW-5 (2026-04-24): CodeJanitorAgent was a delegating shim; swapped
+                # to canonical util class CodeJanitor. Agent archive-eligible 2026-07-23.
+                from agentic_core.L5_safety.utils.code_janitor_util import CodeJanitor
 
-                return CodeJanitorAgent()
+                return CodeJanitor()
             else:
                 Logger.warning(f"[HealingStrategy] Unknown agent: {agent_name}")
                 return None

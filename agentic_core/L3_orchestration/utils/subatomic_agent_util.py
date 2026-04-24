@@ -119,3 +119,50 @@ def create_subatomic_impl(ctx: Any, name: str) -> SubAtomicImpl:
         SubAtomicImpl instance
     """
     return SubAtomicImpl(ctx, name)
+
+
+# ============================================================================
+# MW-8 (2026-04-24): SubAtomicAgent class promoted from reasoning/ shim
+# ----------------------------------------------------------------------------
+# DocumentationAgent and TypeMechanicAgent subclass SubAtomicAgent and call
+# super().heal_repository(...) / super().heal(...). To unblock
+# reasoning/SubAtomicAgent.py archive, the class body is hosted here in the
+# canonical util. The reasoning/SubAtomicAgent.py file is retained only as a
+# deprecation re-export shim until W6 archives it 2026-07-23.
+# ============================================================================
+
+from agentic_core.base_agents.SovereignBaseAgent import (  # noqa: E402
+    SovereignBaseAgent,
+)
+
+
+class SubAtomicAgent(SovereignBaseAgent):
+    """SubAtomic Agent base class - delegates to module-level util functions.
+
+    Hosted here as canonical source so subclasses (DocumentationAgent,
+    TypeMechanicAgent) can import from the util directly and reasoning/
+    SubAtomicAgent.py can be archived in W6 2026-07-23.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(name="SubAtomicAgent", layer="L3")
+
+    def heal(self, violation: dict[str, Any]) -> SubAtomicResult:
+        """Heal violations in subatomic agent logic."""
+        return heal_violation(violation)
+
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path: set | None = None,
+        **kwargs: Any,
+    ) -> dict[str, int | bool]:
+        """L1 cognition - operational only."""
+        return heal_repository(dry_run, execute, depth, max_depth, _call_path)
+
+    def create_impl(self, ctx: Any, name: str) -> SubAtomicImpl:
+        """Create SubAtomic implementation."""
+        return create_subatomic_impl(ctx, name)
