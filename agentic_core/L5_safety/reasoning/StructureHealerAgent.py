@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 StructureHealerAgent - Facade Shell for Zero-Loss Consolidation.
 
@@ -21,6 +20,15 @@ Features:
 - Naming convention enforcement
 - Territory/location healing
 - Blueprint compliance healing
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W4.1 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling per constitutional \u00a73)
+Consumers at authorization: 0 (Zero live consumers verified via regex grep of live code (self+archives excluded). File is a Facade Shell delegating to UnifiedAgent.)
+Canonical replacement / next step: UnifiedAgent with StructuralHealerStrategy (facade pattern per file header)
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/agentic_core__L5_safety__reasoning__StructureHealerAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/w4_StructureHealerAgent.json
 """
 
 from __future__ import annotations

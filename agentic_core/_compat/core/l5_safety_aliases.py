@@ -6,7 +6,6 @@ were consolidated into agentic_core.L5_safety.reasoning.*.
 Remove this shim after next major version.
 """
 
-from agentic_core.L5_safety.reasoning.AutonomyGuardianAgent import AutonomyGuardianAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.ConstitutionalReviewerAgent import (
     ConstitutionalReviewerAgent,  # noqa: F401
@@ -24,7 +23,6 @@ from agentic_core.L5_safety.reasoning.PreCommitSovereignAgent import PreCommitSo
 from agentic_core.L5_safety.reasoning.PredictiveCostAuditorAgent import (
     PredictiveCostAuditorAgent,  # noqa: F401
 )
-from agentic_core.L5_safety.reasoning.RedSentinelAgent import RedSentinelAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.RegressionOracleAgent import RegressionOracleAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.ReportLocationAgent import ReportLocationAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import SovereignActionPlaneAgent  # noqa: F401
@@ -38,7 +36,6 @@ from agentic_core.L5_safety.reasoning.TypeHintFixerAgent import TypeHintFixerAge
 from agentic_core.L5_safety.reasoning.TypeMechanicAgent import TypeMechanicAgent  # noqa: F401
 
 __all__ = [
-    "AutonomyGuardianAgent",
     "CognitiveDispositionAgent",
     "ConstitutionalReviewerAgent",
     "DDDAlignmentAgent",
@@ -50,7 +47,6 @@ __all__ = [
     "PolicyNeuralAutoImmuneAgent",
     "PreCommitSovereignAgent",
     "PredictiveCostAuditorAgent",
-    "RedSentinelAgent",
     "RegressionOracleAgent",
     "ReportLocationAgent",
     "SovereignActionPlaneAgent",

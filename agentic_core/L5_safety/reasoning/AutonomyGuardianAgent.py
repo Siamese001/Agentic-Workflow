@@ -1,3 +1,19 @@
+"""L5 Safety agent for autonomy guardrail enforcement.
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W4.1 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling per constitutional \u00a73)
+Consumers at authorization: 0 (only live consumer was
+agentic_core/_compat/core/l5_safety_aliases.py, a dead compat re-export with
+zero external importers; W4.1 edit removed the AutonomyGuardianAgent entry
+from that shim).
+Canonical replacement / next step: agentic_core.L5_safety.reasoning (keep the
+agent module itself; this authorization addresses only the shim re-export).
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/agentic_core__L5_safety__reasoning__AutonomyGuardianAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/w4_AutonomyGuardianAgent.json
+"""
+
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
