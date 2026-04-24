@@ -4,7 +4,20 @@ Plan ID: `qwen-adoption-waves-a7f3c2`
 Tier: T3 (architectural, cross-layer, multi-file)
 ADG snapshot: `artifacts/adg/adg_indexed_04242026_0625.sqlite`
 Owner: Cascade (auto-execution approved)
-Status: **In progress**
+Status: **Complete** (2026-04-24)
+
+## Completion Receipt
+
+| Wave | Commit SHA | Files | Status |
+|------|-----------|-------|--------|
+| A — Bootstrap | `ede34c389c` | 5 (plan + 4 src) | ✅ pushed to origin/main |
+| B — Policy layer | `299e4cbcb3` | 4 src | ✅ pushed to origin/main |
+| C — Retrieval factories | `4da45c1867` | 2 (1 new, 1 docstring) | ✅ pushed to origin/main |
+| D — Cognition (semantic_enricher) | `b4c9565ae9` | 1 src | ✅ pushed to origin/main |
+
+Verification: `py_compile` + import-smoke passed after every wave. All changes additive; no breaking behavior change for existing cloud-provider callers.
+
+Deferred scope auto-captured to Notion Backlog DB via `.windsurf/scripts/defer.py` — 5 rows, scorer-assigned priority bands (F1/F2=P2, F3/F4/P1=P3).
 
 ## Problem
 
