@@ -286,14 +286,39 @@ class ResumeAssemblyAgent:
             raise ResumeTemplateError(f'Missing template variable {e} in {template_path}') from e
 
     # guardian: allow-type-erasure
-    def heal(self, *args, **kwargs) -> dict:
-        """heal() not implemented for ResumeAssemblyAgent."""
-        raise NotImplementedError("heal() not implemented for ResumeAssemblyAgent")
+    def heal(self, *args, **kwargs) -> dict:  # noqa: ARG002
+        """heal: return HealResult(NEEDS_HELP) shape per L2 Execute v2 §E4.
+
+        W3 plan c8e4f1: replaces NotImplementedError (hard-fail) with a valid
+        HealResult.to_dict() so callers can seal and escalate without crashing.
+        """
+        from agentic_core.L5_safety.types.heal_request_types import (  # noqa: PLC0415
+            HealResult,
+        )
+
+        violation = args[0] if args and isinstance(args[0], dict) else {}
+        return HealResult.needs_help(
+            parent_packet_id=str(violation.get("parent_packet_id", "")) or "unknown",
+            policy_hash=str(violation.get("policy_hash", "")) or "unknown",
+            blueprint_hash=str(violation.get("blueprint_hash", "")) or "unknown",
+            reason_code="heal_not_implemented",
+            message="ResumeAssemblyAgent has no heal logic; escalate to HITL.",
+        ).to_dict()
 
     # guardian: allow-type-erasure
-    def heal_repository(self, *args, **kwargs) -> dict:
-        """heal_repository() not implemented for ResumeAssemblyAgent."""
-        raise NotImplementedError("heal_repository() not implemented for ResumeAssemblyAgent")
+    def heal_repository(self, *args, **kwargs) -> dict:  # noqa: ARG002
+        """heal_repository: return HealResult(NEEDS_HELP) shape per L2 Execute v2 §E4."""
+        from agentic_core.L5_safety.types.heal_request_types import (  # noqa: PLC0415
+            HealResult,
+        )
+
+        return HealResult.needs_help(
+            parent_packet_id="unknown",
+            policy_hash="unknown",
+            blueprint_hash="unknown",
+            reason_code="heal_repository_not_implemented",
+            message="ResumeAssemblyAgent.heal_repository is intentionally unimplemented; escalate.",
+        ).to_dict()
 
 
 def get_resume_skills_section(payload: dict[str, Any]) -> str:

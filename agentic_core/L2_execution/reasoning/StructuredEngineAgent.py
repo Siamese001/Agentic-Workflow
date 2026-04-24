@@ -184,8 +184,22 @@ class AgentPlan:
         self.reasoning = reasoning
         self.tool_calls = tool_calls
 
-    def heal(self, violation, **kwargs):
-        return {"status": "skipped", "reason": "data_structure", "handler": "AgentPlan"}
+    def heal(self, violation, **kwargs):  # noqa: ARG002
+        # W3 plan c8e4f1: return valid HealResult shape (not stub dict) per
+        # L2 Execute v2 §E4. AgentPlan is a data structure with no heal logic;
+        # declare NEEDS_HELP with explicit reason_code so callers can route.
+        from agentic_core.L5_safety.types.heal_request_types import (  # noqa: PLC0415
+            HealResult,
+        )
+
+        violation = violation or {}
+        return HealResult.needs_help(
+            parent_packet_id=str(violation.get("parent_packet_id", "")) or "unknown",
+            policy_hash=str(violation.get("policy_hash", "")) or "unknown",
+            blueprint_hash=str(violation.get("blueprint_hash", "")) or "unknown",
+            reason_code="data_structure_not_healable",
+            message="AgentPlan is a data structure without heal logic; escalate to orchestrator.",
+        ).to_dict()
 
 
 class StructuredEngineAgent(SovereignBaseAgent):
@@ -229,9 +243,24 @@ class StructuredEngineAgent(SovereignBaseAgent):
         return super().heal(violation, **kwargs)
 
     # guardian: allow-type-erasure
-    def heal_repository(self, *args, **kwargs) -> dict:
-        """heal_repository() not implemented for StructuredEngineAgent."""
-        raise NotImplementedError("heal_repository() not implemented for StructuredEngineAgent")
+    def heal_repository(self, *args, **kwargs) -> dict:  # noqa: ARG002
+        """heal_repository not implemented — return HealResult(NEEDS_HELP) shape.
+
+        W3 plan c8e4f1: replaces NotImplementedError (hard-fail) with a valid
+        HealResult.to_dict() declaring NEEDS_HELP, per L2 Execute v2 §E4+§E5.
+        Callers can seal and route to HITL without being crashed.
+        """
+        from agentic_core.L5_safety.types.heal_request_types import (  # noqa: PLC0415
+            HealResult,
+        )
+
+        return HealResult.needs_help(
+            parent_packet_id="unknown",
+            policy_hash="unknown",
+            blueprint_hash="unknown",
+            reason_code="heal_repository_not_implemented",
+            message=f"{type(self).__name__}.heal_repository is intentionally unimplemented; escalate.",
+        ).to_dict()
 
 
 __all__ = ["StructuredEngineAgent", "AgentPlan"]

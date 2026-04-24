@@ -212,11 +212,22 @@ class BaseReflectionAgent(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """Heal violations — not yet implemented at base level."""
-        violation_type = violation.get("type", "unknown")
-        return {
-            "status": "skipped",
-            "details": f"{self.__class__.__name__} heal() not yet implemented for {violation_type}",
-            "artifacts": [],
-            "errors": [],
-        }
+        """Heal: return HealResult(NEEDS_HELP) shape per L2 Execute v2 §E4.
+
+        W3 plan c8e4f1: replaced stub `{"status": "skipped"}` with a valid
+        HealResult.to_dict() that subclasses can extend. Subclasses SHOULD
+        override with a real repair and return HealResult.from_request(...).to_dict().
+        """
+        from agentic_core.L5_safety.types.heal_request_types import (  # noqa: PLC0415
+            HealResult,
+        )
+
+        violation = violation or {}
+        violation_type = str(violation.get("type", "unknown"))
+        return HealResult.needs_help(
+            parent_packet_id=str(violation.get("parent_packet_id", "")) or "unknown",
+            policy_hash=str(violation.get("policy_hash", "")) or "unknown",
+            blueprint_hash=str(violation.get("blueprint_hash", "")) or "unknown",
+            reason_code="base_heal_not_overridden",
+            message=f"{self.__class__.__name__} heal() has no override for {violation_type}; escalate.",
+        ).to_dict()
