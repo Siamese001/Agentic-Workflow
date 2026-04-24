@@ -40,6 +40,8 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence, TypeVar
 
+from agentic_core.L2_execution.utils.write_gateway import ensure_dir
+
 _log = logging.getLogger(__name__)
 
 _T = TypeVar("_T")
@@ -219,7 +221,7 @@ class AuditChain:
         now: Callable[[], float] | None = None,
     ) -> None:
         self._path = Path(path)
-        self._path.parent.mkdir(parents=True, exist_ok=True)
+        ensure_dir(self._path.parent)
         self._signing_key = signing_key
         self._now = now or time.time
         self._conn = sqlite3.connect(str(self._path), isolation_level=None)

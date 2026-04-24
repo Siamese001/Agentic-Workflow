@@ -29,6 +29,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
+from agentic_core.L2_execution.utils.write_gateway import ensure_dir
 from agentic_core.L3_orchestration.exit_control.ledger_integrity import (
     AuditChain,
     AuditEventType,
@@ -119,7 +120,7 @@ class RuntimeHitlLedger:
         audit_chain: AuditChain | None = None,
     ) -> None:
         self._path = Path(path) if path is not None else DEFAULT_LEDGER_PATH
-        self._path.parent.mkdir(parents=True, exist_ok=True)
+        ensure_dir(self._path.parent)
         self._now = now or time.time
         self._conn = sqlite3.connect(str(self._path), isolation_level=None)
         self._conn.row_factory = sqlite3.Row
