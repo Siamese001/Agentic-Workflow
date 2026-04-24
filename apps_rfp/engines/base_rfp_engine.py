@@ -72,6 +72,15 @@ class BaseRfpEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             self.knowledge = None
             self.logger.warning("[%s] knowledge base not available", self.name)
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        # Tier 3 runtime-ADG: auto-wrap concrete execute() with seal_step.
+        from apps_shared.utils.engine_seal_step_mixin import (  # noqa: PLC0415
+            install_seal_step_autowrap,
+        )
+
+        install_seal_step_autowrap(cls)
+
     @abstractmethod
     def execute(self, input_data: Any) -> Any:
         """Main execution method — must be implemented by subclasses."""

@@ -37,9 +37,18 @@ class BaseResearchEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
     - Specs and toggle loading
     - Provenance metadata injection
     - Dry-run protocol
+    - Tier 3 runtime-ADG: every concrete `execute()` emits `L2.step.seal`.
     """
 
     AGENT_ID: str = ""
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        from apps_shared.utils.engine_seal_step_mixin import (  # noqa: PLC0415
+            install_seal_step_autowrap,
+        )
+
+        install_seal_step_autowrap(cls)
 
     def __init__(self, config: Any = None, **kwargs: Any) -> None:
         self.config = config

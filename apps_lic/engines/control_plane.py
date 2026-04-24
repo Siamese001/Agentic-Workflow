@@ -257,34 +257,66 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
 
         OpenTelemetry:
             Emits 'ControlPlane.evaluate_input' span with PII detection metadata.
+
+        Tier 3 runtime-ADG: emits L2.step.seal with step_id='ControlPlane.evaluate_input'
+        when an ambient adapter is active; fails open otherwise.
         """
         if not isinstance(content, str):
             raise TypeError("content must be a string")
-        if APPS_TRACING_AVAILABLE:
-            with self.start_validation_span(
-                "input",
-                {"content_length": len(content), "context_keys": list(context.keys()) if context else []},
-            ):
-                return self._evaluate(content, context, is_input=True)
-        else:
-            return self._evaluate(content, context, is_input=True)
+        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+            get_current_adapter,
+            seal_step,
+        )
+
+        with seal_step(
+            get_current_adapter(),
+            step_id="ControlPlane.evaluate_input",
+            trace_id="",
+            component="ControlPlane",
+        ) as bag:
+            if APPS_TRACING_AVAILABLE:
+                with self.start_validation_span(
+                    "input",
+                    {"content_length": len(content), "context_keys": list(context.keys()) if context else []},
+                ):
+                    result = self._evaluate(content, context, is_input=True)
+            else:
+                result = self._evaluate(content, context, is_input=True)
+            bag["output"] = result
+        return result
 
     def evaluate_output(self, content: str, context: dict[str, Any] | None = None) -> PolicyDecision:
         """Evaluate output content before delivery.
 
         OpenTelemetry:
             Emits 'ControlPlane.evaluate_output' span with PII detection metadata.
+
+        Tier 3 runtime-ADG: emits L2.step.seal with step_id='ControlPlane.evaluate_output'
+        when an ambient adapter is active; fails open otherwise.
         """
         if not isinstance(content, str):
             raise TypeError("content must be a string")
-        if APPS_TRACING_AVAILABLE:
-            with self.start_validation_span(
-                "output",
-                {"content_length": len(content), "context_keys": list(context.keys()) if context else []},
-            ):
-                return self._evaluate(content, context, is_input=False)
-        else:
-            return self._evaluate(content, context, is_input=False)
+        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+            get_current_adapter,
+            seal_step,
+        )
+
+        with seal_step(
+            get_current_adapter(),
+            step_id="ControlPlane.evaluate_output",
+            trace_id="",
+            component="ControlPlane",
+        ) as bag:
+            if APPS_TRACING_AVAILABLE:
+                with self.start_validation_span(
+                    "output",
+                    {"content_length": len(content), "context_keys": list(context.keys()) if context else []},
+                ):
+                    result = self._evaluate(content, context, is_input=False)
+            else:
+                result = self._evaluate(content, context, is_input=False)
+            bag["output"] = result
+        return result
 
     def _evaluate(self, content: str, context: Mapping[str, Any] | None, is_input: bool) -> PolicyDecision:
         """Core evaluation: delegates to GovernanceShieldAgent, then PII check."""

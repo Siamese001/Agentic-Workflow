@@ -261,6 +261,15 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
         if hasattr(self.ctx, "trace") and self.ctx is not None:
             self.ctx.trace.add_trace(f"{self.name}_PASS", {"message": message, **(data or {})})
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        # Tier 3 runtime-ADG: auto-wrap concrete execute() with seal_step.
+        from apps_shared.utils.engine_seal_step_mixin import (  # noqa: PLC0415
+            install_seal_step_autowrap,
+        )
+
+        install_seal_step_autowrap(cls)
+
     @abstractmethod
     def execute(self, input_data: BaseModel) -> BaseModel:
         """
