@@ -238,7 +238,23 @@ def guard_single_instance(
 
     my_pid = os.getpid()
     killed: list[int] = []
+    deferred: list[int] = []
     logger = logging.getLogger("mcp_bootstrap")
+
+    # Heartbeat-aware sibling check (2026-04-23 RCA hardening; F5.1 strict
+    # authority: liveness verified against process table, not just file mtime).
+    # `MCP_GUARD_FORCE_KILL=1` bypasses and restores the pre-hardening
+    # "kill every sibling" behavior for debugging or emergency use.
+    force_kill = os.environ.get("MCP_GUARD_FORCE_KILL") == "1"
+    heartbeat_fresh = False
+    if not force_kill:
+        try:
+            from tools.mcp.mcp_heartbeat import is_heartbeat_authoritative  # noqa: PLC0415
+            # Authoritative: heartbeat file fresh AND owning PID alive + non-zombie.
+            # A wedged or terminating sibling no longer earns a deferral.
+            heartbeat_fresh = any(is_heartbeat_authoritative(m) for m in markers)
+        except ImportError:
+            heartbeat_fresh = False
 
     for proc in psutil.process_iter(attrs=("pid", "name", "cmdline")):
         try:
@@ -256,13 +272,32 @@ def guard_single_instance(
                     break
             if matched_marker is None:
                 continue
+
+            # If a fresh heartbeat is present AND force_kill is not set, defer
+            # the kill: the sibling is active and likely serving a live
+            # Windsurf client. Clobbering it would produce the split-brain
+            # failure mode documented in the RCA.
+            if heartbeat_fresh and not force_kill:
+                logger.warning(
+                    "GUARD_DEFERRED: pid=%d has fresh heartbeat; skipping "
+                    "termination to avoid split-brain "
+                    "(matched=%s marker=%s). Set MCP_GUARD_FORCE_KILL=1 to override.",
+                    proc.info["pid"],
+                    matched_marker,
+                    marker_display,
+                )
+                deferred.append(proc.info["pid"])
+                continue
+
             logger.warning(
                 "GUARD_DETECTED: pid=%d cmdline=%s -- terminating "
-                "(matched=%s marker=%s)",
+                "(matched=%s marker=%s heartbeat_fresh=%s force_kill=%s)",
                 proc.info["pid"],
                 " ".join(str(c) for c in cmdline)[:200],
                 matched_marker,
                 marker_display,
+                heartbeat_fresh,
+                force_kill,
             )
             proc.terminate()
             try:
@@ -276,11 +311,36 @@ def guard_single_instance(
 
     if killed:
         logger.info(
-            "GUARD_COMPLETE: terminated pids=%s (marker=%s)",
-            killed, marker_display,
+            "GUARD_COMPLETE: terminated pids=%s deferred=%s (marker=%s)",
+            killed, deferred, marker_display,
+        )
+    elif deferred:
+        logger.info(
+            "GUARD_DEFERRED_ALL: no terminations; %d fresh sibling(s) "
+            "preserved (marker=%s)",
+            len(deferred), marker_display,
         )
     else:
         logger.info("GUARD_CLEAN: no sibling processes (marker=%s)", marker_display)
+
+    # Start a daemon heartbeat writer for this server. Subsequent bootstraps
+    # will see our heartbeat as fresh and skip terminating us. Safe to call
+    # even if heartbeat_fresh was True (we are THE fresh sibling from here on).
+    # Opt out via `MCP_HEARTBEAT_DISABLE=1`.
+    if os.environ.get("MCP_HEARTBEAT_DISABLE") != "1":
+        try:
+            from tools.mcp.mcp_heartbeat import start_heartbeat_writer  # noqa: PLC0415
+            # Register a heartbeat per marker so multi-form markers all show up.
+            for marker in markers:
+                start_heartbeat_writer(marker)
+            logger.info(
+                "HEARTBEAT_STARTED: markers=%s interval=10s stale_after=30s",
+                list(markers),
+            )
+        except ImportError:
+            logger.debug("HEARTBEAT_UNAVAILABLE: mcp_heartbeat module missing")
+        except (OSError, RuntimeError) as exc:
+            logger.warning("HEARTBEAT_START_FAILED: %s", exc)
 
 
 _prewarm_registry: list[tuple[str, Callable[[], None]]] = []
