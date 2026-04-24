@@ -76,6 +76,33 @@ Materialized views + semantic edges + P-views driving prioritization (constituti
 
 **Total**: ~37,500 tokens across 6 waves. Multi-session; W1 lands this session.
 
+### 4.1 Wire-In Waves (Post-Contract Adoption Chain)
+
+Additive wire-in waves E→Q landed across subsequent sessions to give call sites a single adoption surface. Contract waves above define **what** the v4 governance plane is; wire-in waves define **how** callers migrate.
+
+| Wave | Focus | Status | Commit |
+|---|---|---|---|
+| **E** | Lane-agnostic principal-aware write adapter (`write_adapter.py`) | Done ✅ | `2298d87f5c` |
+| **F** | Guardrail bank chokepoint adapter (`guardrail_adapter.py`) | Done ✅ | (W3-era) |
+| **G+H** | Base runtime lane composition (`runtime_entry.py`) | Done ✅ | (W4-era) |
+| **I** | Registry loader singleton (`registry_loader.py`) | Done ✅ | — |
+| **J** | Data authority loader singleton (`data_authority_loader.py`) | Done ✅ | `3b4af0c0af` |
+| **K** | Unified pre-L5 sweep (`pre_l5_sweep.py`) | Done ✅ | `16395cd804` |
+| **L** | Runtime entry + sweep (`runtime_entry_sweep.py`) | Done ✅ | `0c4ccbe63b` |
+| **M** | Lane audit binding (`audit_binding_lane.py`) | Done ✅ | `7e47e4039a` |
+| **N** | Lane-gated write (`write_adapter_gated.py`) | Done ✅ | `5c87fe9ca0` |
+| **O** | Lane-gated egress (`egress_adapter_gated.py`) | Done ✅ | `cb2e4d467d` |
+| **P** | Composed full action pipeline (`action_pipeline.py` → `run_v4_action`) | Done ✅ | `a8d9d5f62b` |
+| **Q** | Package surface export (`__init__.py`) | Done ✅ | `7ce846c8ac` |
+
+**Canonical adoption entry**: `from agentic_core.L5_safety.identity import run_v4_action`.
+
+**Wire-in chain invariants**:
+- Every adapter is additive — no v3 call site broken.
+- `run_v4_action` composes lane decision + gated write + gated egresses + audit record in ONE call.
+- Audit record emitted on every invocation (including denials) for forensic replay coverage.
+- All wire-in smoke invariants PASS (25+ composed across Waves L–P).
+
 ---
 
 ## 5. Phase-Level Summary
