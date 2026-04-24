@@ -124,7 +124,7 @@ class ProgrammaticToolRunner:
                 value = step.transform(raw) if step.transform is not None else raw
             except SubContextToolError:
                 raise
-            except BaseException as exc:  # guardian: allow-broad-to-wrap -- sub-context isolation
+            except BaseException as exc:  # guardian: allow-broad-exception -- sub-context tool isolation: wrap-and-rethrow as SubContextToolError preserves original; never swallows
                 raise SubContextToolError(idx, step.tool_name, exc) from exc
             outputs.append(value)
             step_names.append(step.tool_name)

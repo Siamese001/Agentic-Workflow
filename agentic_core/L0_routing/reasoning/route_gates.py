@@ -48,7 +48,9 @@ from typing import Any
 from agentic_core.L0_routing.types.routing_artifact_types import (
     L0Route,
     L0RouteContract,
+    RouteReasonCode,
 )
+from agentic_core.runtime.config.routing_thresholds import get_threshold
 
 Logger = logging.getLogger(__name__)
 
@@ -184,6 +186,7 @@ def check_d2_semantic_cache(
     flow_class: str | None = None,
     corpus_version: str = "",
     policy_version: str = "",
+    similarity_threshold_override: float | None = None,
 ) -> dict[str, Any] | None:
     """Return the cached response for ``request`` if a D2 semantic hit exists.
 
@@ -196,15 +199,43 @@ def check_d2_semantic_cache(
     classes always miss, regardless of cache state. Callers should pass
     ``flow_class`` when known so that bypass is explicit rather than implicit.
 
+    W3.P3: per-namespace threshold lookup. The effective threshold is
+    resolved (in order): ``similarity_threshold_override`` kwarg >
+    ``ROUTING_THRESHOLD__R1B_SEMANTIC_SIMILARITY`` env var >
+    ``namespaces.<namespace>.r1b_semantic_similarity`` in
+    ``config/routing_thresholds.yaml`` >
+    ``defaults.r1b_semantic_similarity`` >
+    hardcoded literal ``0.98``. The resolved threshold is **logged but not
+    yet enforced** in this entry point — the underlying
+    :class:`SemanticCacheManager` applies its own hardcoded similarity
+    check, and retrofitting that is deferred to a follow-on wave with
+    broader blast radius. Plans consuming this function for post-hit
+    re-validation can read the effective threshold themselves.
+
     Returns ``None`` on miss, gate disabled, or any infrastructure error.
     """
     if not _d2_enabled():
         return None
+
+    # W3.P3: resolve the per-namespace threshold up front so telemetry +
+    # post-hit validation can act on it even if the underlying cache
+    # manager uses its own internal literal.
+    effective_threshold = (
+        similarity_threshold_override
+        if similarity_threshold_override is not None
+        else get_threshold("r1b_semantic_similarity", namespace=namespace)
+    )
+    Logger.debug(
+        "route_gates: D2 namespace=%s effective_threshold=%.4f",
+        namespace,
+        effective_threshold,
+    )
+
     try:
         from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
             SemanticCacheManager,
         )
-    except ImportError as exc:  # guardian: allow-return-none-swallow -- optional L4 dependency: missing import means D2 unavailable, None is the miss-safe default
+    except ImportError as exc:  # guardian: allow-return-none-swallow -- optional L4 dependency: missing import means D2 unavailable, None signals miss to caller
         Logger.debug("route_gates: SemanticCacheManager import failed: %s", exc)
         return None
     # SemanticCacheManager.recall expects a string context; use canonical JSON
@@ -213,7 +244,7 @@ def check_d2_semantic_cache(
     context = json.dumps(request, sort_keys=True, separators=(",", ":"), default=str)
     try:
         cache = SemanticCacheManager.get_instance()
-        return cache.recall(
+        hit = cache.recall(
             context,
             namespace,
             tenant_id=tenant_id,
@@ -222,9 +253,26 @@ def check_d2_semantic_cache(
             corpus_version=corpus_version,
             policy_version=policy_version,
         )
-    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None is the miss-safe default
+    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None signals cache miss as the safe default
         Logger.debug("route_gates: D2 recall failed: %s", exc)
         return None
+
+    # W3.P3: post-hit per-namespace threshold enforcement. If the hit
+    # carries a similarity score and it's below the namespace-scoped
+    # threshold, reject the hit — the underlying manager may have used
+    # a more permissive global threshold.
+    if hit is not None and isinstance(hit, dict):
+        hit_similarity = hit.get("similarity") or hit.get("similarity_score")
+        if isinstance(hit_similarity, (int, float)) and hit_similarity < effective_threshold:
+            Logger.info(
+                "route_gates: D2 hit rejected by namespace threshold "
+                "namespace=%s similarity=%.4f < threshold=%.4f",
+                namespace,
+                hit_similarity,
+                effective_threshold,
+            )
+            return None
+    return hit
 
 
 # =============================================================================
@@ -287,7 +335,10 @@ def check_route_gates(
         contract: L0RouteContract = {
             "selected_route": L0Route.R1A,
             "confidence": confidence,
-            "reason_codes": ("d1_exact_hit",),
+            # W1b.P1: draw reason code string from the closed RouteReasonCode
+            # vocabulary. The enum's ``.value`` IS the literal "d1_exact_hit"
+            # so existing string-equality tests remain green.
+            "reason_codes": (RouteReasonCode.D1_EXACT_HIT.value,),
             "freshness_class": "bounded",
             "cache_policy": "exact_only",
             "execution_form": "terminal_return",
@@ -314,7 +365,9 @@ def check_route_gates(
         contract = {
             "selected_route": L0Route.R1B,
             "confidence": confidence,
-            "reason_codes": ("d2_semantic_hit",),
+            # W1b.P1: draw reason code string from the closed RouteReasonCode
+            # vocabulary (same literal "d2_semantic_hit").
+            "reason_codes": (RouteReasonCode.D2_SEMANTIC_HIT.value,),
             "freshness_class": "bounded",
             "cache_policy": "semantic_ok",
             "execution_form": "terminal_return",
@@ -325,9 +378,98 @@ def check_route_gates(
     return None
 
 
+# =============================================================================
+# W3.P1 — R3 grounded-read gate (grounding-need prediction score)
+# =============================================================================
+
+
+def check_r3_grounding_gate(
+    grounding_need_score: float,
+    *,
+    namespace: str = "",
+    coverage_score: float | None = None,
+    coverage_floor_override: float | None = None,
+    threshold_override: float | None = None,
+) -> tuple[bool, str]:
+    """Decide whether to select R3 (grounded read) based on L1 features.
+
+    Plan: §W3.P1. Implements the Vertex AI dynamic-retrieval pattern on top
+    of the feature vector emitted by
+    :mod:`agentic_core.L1_cognition.reasoning.ml_decision_support.features.grounding_need_features`.
+
+    Decision rule (evaluated in order):
+
+    1. If ``grounding_need_score`` is :data:`NO_SIGNAL` (caller could not
+       compute it), return ``(False, "no_grounding_signal")`` — the
+       dispatcher falls back to its payload-shape heuristic.
+    2. If ``grounding_need_score < threshold``, return
+       ``(False, "below_grounding_threshold")`` — query does not benefit
+       from retrieval, pick a non-R3 arm.
+    3. If ``coverage_score`` is provided AND below the coverage floor,
+       return ``(True, "d3_coverage_below_floor")`` — the caller should
+       either broaden retrieval (v11 §C0.6) or route to R5.
+    4. Otherwise, return ``(True, "d3_grounding_required")`` — proceed
+       to R3 single-step grounded read.
+
+    Args:
+        grounding_need_score: Score in ``[0, 1]`` or
+            :data:`agentic_core.runtime.contracts.routing_features.NO_SIGNAL`.
+        namespace: Cache / agent namespace for threshold lookup.
+        coverage_score: Optional post-C0 coverage score in ``[0, 1]``.
+            When present, the gate also checks the coverage floor and
+            may return the ``below_floor`` reason code.
+        coverage_floor_override: Bypass the YAML-configured
+            ``c0_coverage_floor`` for testing or per-request overrides.
+        threshold_override: Bypass the YAML-configured
+            ``r3_grounding_need`` threshold.
+
+    Returns:
+        ``(should_ground, reason_code)`` — ``reason_code`` is one of
+        ``"no_grounding_signal"``, ``"below_grounding_threshold"``,
+        ``"d3_grounding_required"``, ``"d3_coverage_below_floor"``. Values
+        match the bare-string vocabulary consumed by
+        :attr:`L0RouteContract.reason_codes`.
+    """
+    # Import the sentinel lazily so the module load order tolerates either
+    # agentic_core.runtime.contracts.routing_features being absent (W1
+    # not deployed) or absent-by-design.
+    from agentic_core.runtime.contracts.routing_features import NO_SIGNAL  # noqa: PLC0415
+
+    if grounding_need_score == NO_SIGNAL:
+        return False, "no_grounding_signal"
+    if not 0.0 <= grounding_need_score <= 1.0:
+        Logger.warning(
+            "check_r3_grounding_gate: grounding_need_score=%r outside [0,1]; "
+            "treating as no-signal",
+            grounding_need_score,
+        )
+        return False, "no_grounding_signal"
+
+    threshold = (
+        threshold_override
+        if threshold_override is not None
+        else get_threshold("r3_grounding_need", namespace=namespace)
+    )
+
+    if grounding_need_score < threshold:
+        return False, "below_grounding_threshold"
+
+    if coverage_score is not None:
+        floor = (
+            coverage_floor_override
+            if coverage_floor_override is not None
+            else get_threshold("c0_coverage_floor", namespace=namespace)
+        )
+        if coverage_score < floor:
+            return True, "d3_coverage_below_floor"
+
+    return True, "d3_grounding_required"
+
+
 __all__ = [
     "canonical_request_hash",
     "check_d1_exact_cache",
     "check_d2_semantic_cache",
+    "check_r3_grounding_gate",
     "check_route_gates",
 ]

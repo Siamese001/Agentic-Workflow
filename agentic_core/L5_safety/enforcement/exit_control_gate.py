@@ -287,6 +287,71 @@ class ExitControlGate:
             disposition.value,
         )
 
+        # Shadow eval_spine observer — gated by EVAL_SPINE_SHADOW=1. Never
+        # raises, never mutates decision. See Author-Gate 2026-04-23
+        # (confidence=0.86, principle=observer-first-enforcer-later) and
+        # .windsurf/plans/exit-eval-spine-shadow-wiring-a9c124.md.
+        try:
+            from agentic_core.L5_safety.eval_spine.shadow_observer import (
+                emit_shadow_exit_decision,
+            )
+
+            emit_shadow_exit_decision(
+                artifact,
+                policy_snapshot=self._policy_hash or "shadow-unknown",
+            )
+        except ImportError:  # guardian: allow-silent-swallow -- shadow is opt-in; missing subpackage must not break the live exit path (pass-through to enforcement or legacy disposition)
+            pass
+
+        # Active §5 enforcement — gated by EVAL_SPINE_ENFORCE=1. Upgrade-only
+        # semantics: eval_spine can make disposition stricter, never looser.
+        # See plan .windsurf/plans/exit-eval-spine-deferred-closeout-d5e8b3.md §Q4.
+        try:
+            from agentic_core.L5_safety.eval_spine.enforcement_bridge import (
+                is_enforce_enabled,
+                merge_disposition,
+            )
+
+            if is_enforce_enabled():
+                from agentic_core.L5_safety.eval_spine.budget_envelope import (
+                    BudgetEnvelope,
+                )
+                from agentic_core.L5_safety.eval_spine.exit_eval import (
+                    ExitEvalPolicy,
+                    SealedArtifact,
+                    evaluate_exit,
+                )
+                from agentic_core.L5_safety.eval_spine.shadow_observer import (
+                    sealed_l2_to_eval_spine,
+                )
+
+                sealed = sealed_l2_to_eval_spine(artifact)
+                env = BudgetEnvelope(origin="enforce_default")
+                pol = ExitEvalPolicy(
+                    policy_snapshot=self._policy_hash or "enforce-unknown"
+                )
+                result = evaluate_exit(sealed, env, pol)
+                upgraded, upgrade_reason = merge_disposition(
+                    disposition, result.exit_decision
+                )
+                if upgrade_reason is not None:
+                    logger.warning(
+                        "[ExitControlGate.evaluate_sealed] eval_spine upgraded "
+                        "disposition %s -> %s: %s",
+                        disposition.value,
+                        upgraded.value,
+                        upgrade_reason,
+                    )
+                    disposition = upgraded
+                    reason = f"{reason} | {upgrade_reason}"
+        except ImportError:  # guardian: allow-silent-swallow -- enforcement is opt-in; missing subpackage must not break the live exit path (falls through to legacy disposition)
+            pass
+        except (AttributeError, TypeError, ValueError) as enforce_exc:  # guardian: allow-log-and-swallow -- enforcement merge bugs must never fail the live exit path; logs warning and falls back to legacy disposition
+            logger.warning(
+                "[ExitControlGate.evaluate_sealed] eval_spine enforce failed: %s",
+                enforce_exc,
+            )
+
         return CurrentRunEvaluationResult(
             eval_id=eval_id,
             artifact_id=artifact.artifact_id,
