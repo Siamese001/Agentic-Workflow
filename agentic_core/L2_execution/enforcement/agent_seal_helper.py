@@ -38,6 +38,7 @@ __all__ = [
     "build_seal_from_validator",
     "heal_outcome_to_terminal",
     "requires_sealed_return",
+    "sealed_exempt",
 ]
 
 
@@ -174,6 +175,21 @@ def build_seal_from_validator(
 
 
 _T = TypeVar("_T", bound=type)
+
+
+def sealed_exempt(method: Any) -> Any:
+    """Method decorator exempting a method from the sealed-return CI gate.
+
+    Use on inherited contract methods (``validate()``, ``heal()``) whose
+    return type is fixed by the base class (ValidationVerdict dict or
+    HealResult) and is NOT expected to be a SealedL2Artifact. The public
+    sealer method on the class (e.g. ``evaluate()``, ``repair()``) is
+    the one that returns SealedL2Artifact and IS inspected.
+
+    The decorator is a no-op at runtime; it only marks the method for the
+    AST-based gate in ``ops_scripts/ci/check_agent_sealed_return.py``.
+    """
+    return method
 
 
 def requires_sealed_return(cls: _T) -> _T:
