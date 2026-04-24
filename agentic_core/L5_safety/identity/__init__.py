@@ -7,6 +7,7 @@ Resolution) before any capability_token is issued.
 Reference: docs/contracts/identity_propagation.md
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 from agentic_core.L5_safety.identity.front_door_resolver import (

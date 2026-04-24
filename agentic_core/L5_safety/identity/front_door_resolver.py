@@ -13,6 +13,7 @@ downstream consumer of PrincipalChain.
 Reference: docs/contracts/identity_propagation.md §3.1
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 import os
@@ -125,23 +126,12 @@ def resolve_front_door_principal(*, refresh: bool = False) -> PrincipalChain:
 
         is_automation = _is_automation_context()
         invoking_user = _resolve_invoking_user(is_automation)
-        user_kind = (
-            InvokingUserKind.AUTOMATION
-            if is_automation
-            else InvokingUserKind.HUMAN
-        )
+        user_kind = InvokingUserKind.AUTOMATION if is_automation else InvokingUserKind.HUMAN
         # Explicit sentinel: no USER/USERNAME AND no CI markers ⇒ SYSTEM
-        if (
-            not is_automation
-            and invoking_user == UNKNOWN_OPERATOR_SENTINEL
-        ):
+        if not is_automation and invoking_user == UNKNOWN_OPERATOR_SENTINEL:
             user_kind = InvokingUserKind.SYSTEM
 
-        auth_method = (
-            "env:automation"
-            if is_automation
-            else "env:local_operator"
-        )
+        auth_method = "env:automation" if is_automation else "env:local_operator"
 
         chain = PrincipalChain(
             invoking_user=invoking_user,

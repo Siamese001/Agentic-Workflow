@@ -30,6 +30,7 @@ Reference:
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 ADR: ADR-049 §7 (§7.3 ratified: full principal_chain from day one)
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -177,8 +178,7 @@ class CapabilityTokenV4Artifact:
             )
         if self.ttl_seconds <= 0:
             raise ValueError(
-                f"CapabilityTokenV4Artifact: ttl_seconds must be > 0, "
-                f"got {self.ttl_seconds}",
+                f"CapabilityTokenV4Artifact: ttl_seconds must be > 0, got {self.ttl_seconds}",
             )
 
         # Band-derived TTL cap enforcement
@@ -190,14 +190,9 @@ class CapabilityTokenV4Artifact:
             )
 
         # HIGH band requires single_use unless an explicit persistent grant
-        if (
-            self.risk_tier_band == "HIGH"
-            and not self.single_use
-            and self.grant_mode != "permanent"
-        ):
+        if self.risk_tier_band == "HIGH" and not self.single_use and self.grant_mode != "permanent":
             raise ValueError(
-                "CapabilityTokenV4Artifact: HIGH band requires single_use=True "
-                "unless grant_mode='permanent'",
+                "CapabilityTokenV4Artifact: HIGH band requires single_use=True unless grant_mode='permanent'",
             )
 
         # external rung requires single_use OR permanent grant

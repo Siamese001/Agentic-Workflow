@@ -14,6 +14,7 @@ Reference: docs/contracts/identity_propagation.md
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 ADR: ADR-049 (§7.3 ratified: full principal_chain from day one, env-seeded)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -125,13 +126,11 @@ class PrincipalChain:
         has_parent = self.parent_agent_id is not None
         if handoffs_len == 0 and has_parent:
             raise ValueError(
-                "PrincipalChain: parent_agent_id must be None when "
-                "handoff_history is empty",
+                "PrincipalChain: parent_agent_id must be None when handoff_history is empty",
             )
         if handoffs_len > 0 and not has_parent:
             raise ValueError(
-                "PrincipalChain: parent_agent_id required when "
-                "handoff_history is non-empty",
+                "PrincipalChain: parent_agent_id required when handoff_history is non-empty",
             )
 
         # Enforce sorted scopes invariant (deterministic serialization)
