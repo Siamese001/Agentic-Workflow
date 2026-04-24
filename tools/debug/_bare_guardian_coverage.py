@@ -23,7 +23,7 @@ ROOTS = (
     "tools", "ops_scripts", "system_learning", "infrastructure",
 )
 
-GUARDIAN_RE = re.compile(r"#\s*guardian\s*:\s*allow-\S+.*--", re.IGNORECASE)
+GUARDIAN_RE = re.compile(r"guardian\s*:\s*allow-\S+", re.IGNORECASE)
 
 
 def layer_of(path: str) -> str:

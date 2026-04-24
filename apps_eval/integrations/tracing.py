@@ -156,7 +156,7 @@ def eval_span(
     with tracer.start_as_current_span(name, attributes=attributes or {}) as span:
         try:
             yield span
-        except BaseException as exc:  # re-raise after recording
+        except BaseException as exc:  # guardian: allow-broad-exception -- OTel span exception recorder; catches ALL (incl KeyboardInterrupt/SystemExit) to call span.record_exception then re-raises unchanged on line 168; re-raise preserves original control flow
             try:
                 span.record_exception(exc)
             except (
