@@ -117,7 +117,15 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
         """Trace orchestrator execution with automatic runtime ADG persistence.
 
         Extends the base orchestrator tracing to automatically persist runtime ADG
-        snapshots when the trace completes.
+        snapshots when the trace completes. Tier 2 additions (per plan
+        `runtime-adg-tier2-emit-sites-b3e9a7`):
+
+          * At entry: emit `runtime.trace_root` with `trace_id` / `run_id` /
+            `input_envelope_hash` so every run has a correlation root span.
+          * At exit: emit `Exit.disposition` with `exit_disposition` so every
+            run has an allow/deny/escalate authority record.
+
+        Both are additive and observability-only \u2014 never crash the host.
 
         Parameters
         ----------
@@ -128,10 +136,54 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
         ------
         Span context
         """
+        # Import lazily to keep module-load side-effects minimal.
+        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+            emit_exit_disposition,
+            emit_trace_root,
+        )
+
         start_time = time.time()
 
-        with super().trace_orchestrator(mission, metadata) as span:
-            yield span
+        # Tier 2: emit runtime.trace_root BEFORE super().trace_orchestrator so
+        # the root span is first in the drained buffer. Use a synthetic trace_id;
+        # the real OTel trace_id will supersede for child spans via the normal
+        # tracing machinery.
+        try:
+            trace_id = emit_trace_root(
+                self,
+                mission=mission,
+                input_envelope=metadata,
+                metadata={"service": self.service_name},
+            )
+        except (OSError, ValueError, TypeError, RuntimeError) as exc:
+            trace_id = ""
+            if self.enable_logging:
+                logger.debug("tier2_trace_root_emit_failed", extra={"error": str(exc)})
+
+        disposition = "allow"  # default unless the inner block raises
+        try:
+            with super().trace_orchestrator(mission, metadata) as span:
+                try:
+                    yield span
+                except (OSError, ValueError, TypeError, RuntimeError):
+                    disposition = "deny"
+                    raise
+        finally:
+            # Tier 2: emit Exit.disposition at the close of the run.
+            try:
+                emit_exit_disposition(
+                    self,
+                    trace_id=trace_id,
+                    disposition=disposition,
+                    policy_hash="auto_persistence_v1",
+                    reason_codes=(
+                        ("auto_persist_ok",) if disposition == "allow" else ("auto_persist_error",)
+                    ),
+                    metadata={"mission": mission},
+                )
+            except (OSError, ValueError, TypeError, RuntimeError) as exc:
+                if self.enable_logging:
+                    logger.debug("tier2_exit_disposition_emit_failed", extra={"error": str(exc)})
 
         # Auto-persist runtime ADG after trace completion
         if self._auto_persistence_enabled:

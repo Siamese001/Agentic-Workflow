@@ -122,10 +122,27 @@ class FileBackedRuntimeADGStore:
     def _load_trace_index(self) -> dict[str, str]:
         if self._trace_index_path.exists():
             try:
-                return json.loads(self._trace_index_path.read_text(encoding="utf-8"))
+                raw_any = json.loads(self._trace_index_path.read_text(encoding="utf-8"))
+                if not isinstance(raw_any, dict):
+                    return {}
+                raw: dict[str, str] = {str(k): str(v) for k, v in raw_any.items()}
             except (json.JSONDecodeError, OSError) as exc:
-                logger.warning("Failed to load runtime ADG trace index %s: %s", self._trace_index_path, exc)
+                logger.warning(
+                    "Failed to load runtime ADG trace index %s: %s",
+                    self._trace_index_path,
+                    exc,
+                )
                 return {}
+            # Drop stale empty-string keys/values (residue of the pre-Tier-1
+            # first-write-wins bug that locked out 88/89 snapshots).
+            cleaned = {k: v for k, v in raw.items() if k and v}
+            if len(cleaned) != len(raw):
+                logger.warning(
+                    "runtime_adg_trace_index_cleaned removed=%d remaining=%d",
+                    len(raw) - len(cleaned),
+                    len(cleaned),
+                )
+            return cleaned
         return {}
 
     def _save_trace_index(self) -> None:
@@ -142,12 +159,53 @@ class FileBackedRuntimeADGStore:
             tmp_name = handle.name
         Path(tmp_name).replace(self._trace_index_path)
 
-    def persist(self, snapshot: RuntimeADGSnapshot) -> str:
-        """Persist snapshot idempotently. Returns version_id."""
+    def persist(
+        self,
+        snapshot: RuntimeADGSnapshot,
+        allow_unbound: bool = False,
+        allow_empty_payload: bool = False,
+    ) -> str:
+        """Persist snapshot idempotently. Returns version_id.
+
+        Tier 1 guardrail (per `.windsurf/plans/runtime-adg-tier1-trace-binding-c9b84d.md`):
+
+          1. Empty `trace_id` is REJECTED by default. Use `allow_unbound=True`
+             ONLY in back-fill/migration tooling that knows what it's doing.
+             Previously, an empty trace_id caused first-write-wins lockout
+             that silently skipped the trace-index for 88 of 89 snapshots.
+          2. Empty payload (0 nodes AND 0 edges) is REJECTED unconditionally
+             unless `allow_empty_payload=True`. Writing skeletal snapshots
+             pollutes the L4 archive and makes coverage audits lie.
+          3. Trace-index update is now UNCONDITIONAL. The previous
+             `if trace_id not in index` check caused the lockout bug. Last
+             write wins per trace_id; idempotent per snapshot_id because the
+             version_id is deterministic from content.
+        """
+        if not snapshot.trace_id and not allow_unbound:
+            raise ValueError(
+                "Runtime ADG snapshot has empty trace_id; refusing to persist. "
+                "Pass allow_unbound=True only from migration/back-fill tooling."
+            )
+        if not snapshot.nodes and not snapshot.edges and not allow_empty_payload:
+            raise ValueError(
+                "Runtime ADG snapshot has empty payload (0 nodes, 0 edges); "
+                "refusing to persist skeletal snapshot."
+            )
+
         version_id = self._version_store.commit_change_package(snapshot)
-        if snapshot.trace_id not in self._trace_index:
-            self._trace_index[snapshot.trace_id] = version_id
-            self._trace_index[snapshot.snapshot_id] = version_id
+
+        # Unconditional index update. Only skip genuinely-empty keys to avoid
+        # reintroducing the stale-""-key pathology this guardrail was built to kill.
+        dirty = False
+        if snapshot.trace_id:
+            if self._trace_index.get(snapshot.trace_id) != version_id:
+                self._trace_index[snapshot.trace_id] = version_id
+                dirty = True
+        if snapshot.snapshot_id:
+            if self._trace_index.get(snapshot.snapshot_id) != version_id:
+                self._trace_index[snapshot.snapshot_id] = version_id
+                dirty = True
+        if dirty:
             self._save_trace_index()
         return version_id
 
@@ -164,7 +222,11 @@ class FileBackedRuntimeADGStore:
             return None
         try:
             return _deserialise_snapshot(payload)
-        except (KeyError, ValueError, TypeError):  # guardian: allow-return-none-swallow -- deserialization: non-fatal, caller skips None
+        except (
+            KeyError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-return-none-swallow -- deserialization: non-fatal, caller skips None
             return None
 
     def list_snapshots(self) -> list[str]:
