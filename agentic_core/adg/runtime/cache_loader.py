@@ -11,7 +11,10 @@ import logging
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.L0_routing.config.path_constants import (
+    ADG_ARTIFACTS_DIR,
+    DEFAULT_TIMEOUT,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -162,7 +165,7 @@ _emit_links_execution_to_snapshot("p4", "cache_loader", "exec_snapshot_link")
 # Configuration constants required by tests
 
 logger = logging.getLogger(__name__)
-_CACHE_PATH = Path("artifacts/adg/scan_result_cache.json")
+_CACHE_PATH = Path(f"{ADG_ARTIFACTS_DIR}/scan_result_cache.json")
 
 
 def _get_commit_sha() -> str:

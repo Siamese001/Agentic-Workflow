@@ -36,6 +36,7 @@ import sqlite3
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 
 # ── Data structures (same external interface as before) ───────────────────────
@@ -400,7 +401,7 @@ def main() -> int:
     if len(sys.argv) > 1:
         db_path = Path(sys.argv[1])
     else:
-        snapshots = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"))
+        snapshots = sorted(glob.glob(f"{ADG_ARTIFACTS_DIR}/adg_indexed_*.sqlite"))
         if not snapshots:
             print("[ERROR] No ADG SQLite found. Run: python tools/generate_full_adg.py")
             return 1

@@ -4,8 +4,9 @@
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
-ADG_PATH = Path("artifacts/adg/adg_indexed_04052026_1936.sqlite")
+ADG_PATH = Path(f"{ADG_ARTIFACTS_DIR}/adg_indexed_04052026_1936.sqlite")
 
 conn = sqlite3.connect(ADG_PATH)
 cur = conn.cursor()

@@ -1,7 +1,8 @@
 import sqlite3
 import glob
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
-db = sorted(glob.glob("artifacts/adg/*.sqlite"))[-1]
+db = sorted(glob.glob(f"{ADG_ARTIFACTS_DIR}/*.sqlite"))[-1]
 print("DB:", db)
 con = sqlite3.connect(db)
 cur = con.cursor()

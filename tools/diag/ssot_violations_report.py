@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
-DEFAULT = Path("artifacts/adg/adg_indexed_04212026_0433.sqlite")
+DEFAULT = Path(f"{ADG_ARTIFACTS_DIR}/adg_indexed_04212026_0433.sqlite")
 
 HARDCODED_LITERALS = [
     "D:\\",

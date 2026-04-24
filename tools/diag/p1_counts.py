@@ -1,8 +1,9 @@
 import sqlite3
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 for db in (
-    "artifacts/adg/adg_indexed_04172026_0422.sqlite",
-    "artifacts/adg/adg_indexed_04162026_2217.sqlite",
+    f"{ADG_ARTIFACTS_DIR}/adg_indexed_04172026_0422.sqlite",
+    f"{ADG_ARTIFACTS_DIR}/adg_indexed_04162026_2217.sqlite",
 ):
     c = sqlite3.connect(db)
     cur = c.cursor()

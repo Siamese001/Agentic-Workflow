@@ -6,11 +6,12 @@ import sqlite3
 
 import sys
 import tempfile
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 if len(sys.argv) > 1:
     db = sys.argv[1]
 else:
-    candidates = glob.glob("artifacts/adg/adg_indexed_*.sqlite") + glob.glob(
+    candidates = glob.glob(f"{ADG_ARTIFACTS_DIR}/adg_indexed_*.sqlite") + glob.glob(
         os.path.join(tempfile.gettempdir(), "adg_temp_*", "adg", "adg_indexed_*.sqlite")
     )
     candidates = [c for c in candidates if "smoketest" not in c]

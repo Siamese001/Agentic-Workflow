@@ -11,11 +11,12 @@ import logging
 from pathlib import Path
 
 from agentic_core.L4_state.utils.memory.graph_knowledge_store import SQLiteGraphStore
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 logger = logging.getLogger(__name__)
 
 # Default ADG SQLite database path (relative to repository root)
-_DEFAULT_ADG_DB_PATH = "artifacts/adg/adg_indexed.sqlite"
+_DEFAULT_ADG_DB_PATH = f"{ADG_ARTIFACTS_DIR}/adg_indexed.sqlite"
 
 
 def get_default_adg_db_path() -> Path | None:
