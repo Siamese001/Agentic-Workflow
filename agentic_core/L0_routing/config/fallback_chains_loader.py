@@ -29,6 +29,10 @@ from agentic_core.L0_routing.types.route_contract_v12_extensions import (
     V12RouteContractError,
 )
 
+# Hard cap — matches _MAX_FALLBACK_CHAIN_DEPTH in the types module but
+# duplicated here to avoid a private-name import. Keep in sync.
+_MAX_CHAIN_DEPTH = 8
+
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _YAML_PATH = _REPO_ROOT / "config" / "routing" / "fallback_chains.yaml"
 
@@ -155,25 +159,80 @@ def get_fallback_chain(route_id: RouteId | str) -> tuple[FallbackEntry, ...]:
     """Return the default fallback chain for ``route_id``.
 
     Terminal routes (R1A, R5_FALLBACK) always return an empty tuple.
+
+    Validates:
+    - chain depth does not exceed ``_MAX_CHAIN_DEPTH``
+    - no entry points back at the primary ``route_id`` with the same tier
+      (self-reference = infinite escalation loop)
+    - no duplicate (route_id, cost_tier) pairs within the chain
+    - R5_FALLBACK, if present, is the final entry
     """
+    if not isinstance(route_id, (RouteId, str)):
+        raise V12RouteContractError(
+            f"route_id must be RouteId or str, got {type(route_id).__name__}"
+        )
     key = route_id.value if isinstance(route_id, RouteId) else str(route_id)
     if key in {"R1A", "R5_FALLBACK"}:
         return ()
     raw = _chains_raw().get(key)
     if not raw:
         return ()
+    if not isinstance(raw, list):
+        raise V12RouteContractError(
+            f"fallback chain for {key} must be a list, got {type(raw).__name__}"
+        )
+    if len(raw) > _MAX_CHAIN_DEPTH:
+        raise V12RouteContractError(
+            f"fallback chain for {key} exceeds max depth {_MAX_CHAIN_DEPTH} "
+            f"(got {len(raw)})"
+        )
     entries: list[FallbackEntry] = []
-    for row in raw:
-        try:
-            entries.append(
-                FallbackEntry(
-                    route_id=RouteId(row["route_id"]),
-                    cost_tier=CostTier(row["cost_tier"]),
-                    provider=row.get("provider"),
-                )
+    seen_pairs: set[tuple[str, str]] = set()
+    primary_tier_keys: set[tuple[str, str]] = set()
+    for idx, row in enumerate(raw):
+        if not isinstance(row, dict):
+            raise V12RouteContractError(
+                f"fallback chain[{idx}] for {key} must be a dict, got {type(row).__name__}"
             )
-        except (KeyError, ValueError) as exc:
-            raise V12RouteContractError(f"invalid fallback_chain entry for {key}: {row!r}") from exc
+        try:
+            entry = FallbackEntry(
+                route_id=RouteId(row["route_id"]),
+                cost_tier=CostTier(row["cost_tier"]),
+                provider=row.get("provider"),
+            )
+        except (KeyError, ValueError, V12RouteContractError) as exc:
+            raise V12RouteContractError(
+                f"invalid fallback_chain entry for {key}[{idx}]: {row!r}"
+            ) from exc
+        pair = (entry.route_id.value, entry.cost_tier.value)
+        if pair in seen_pairs:
+            raise V12RouteContractError(
+                f"duplicate fallback entry for {key}: {pair}"
+            )
+        seen_pairs.add(pair)
+        # Detect chain entries that loop back to the primary route at the
+        # same (or unspecified) tier. Because this loader doesn't know the
+        # primary's tier, we defer the full self-reference check to
+        # V12RouteAnnex construction; here we only reject entries whose
+        # route_id equals the primary key AND whose tier matches a "likely"
+        # primary tier (any single-tier route_id).
+        if entry.route_id.value == key:
+            primary_tier_keys.add(pair)
+        entries.append(entry)
+    # Same-route cycle is always a misconfiguration regardless of tier.
+    if primary_tier_keys:
+        raise V12RouteContractError(
+            f"fallback chain for {key} contains entries pointing back at the "
+            f"primary route ({sorted(primary_tier_keys)}); this is a cycle"
+        )
+    # R5 must be last if present.
+    r5_positions = [
+        i for i, e in enumerate(entries) if e.route_id == RouteId.R5_FALLBACK
+    ]
+    if r5_positions and r5_positions[-1] != len(entries) - 1:
+        raise V12RouteContractError(
+            f"R5_FALLBACK must be the last entry in fallback chain for {key}"
+        )
     return tuple(entries)
 
 

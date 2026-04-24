@@ -209,9 +209,26 @@ class TestV12RouteAnnexValidity:
             load_secret_key_from_env()
 
     def test_load_secret_key_from_env_present(self) -> None:
-        os.environ["AGENTIC_V12_ROUTE_HMAC_KEY"] = "abc123"
+        # 24 bytes — above the 16-byte minimum entropy floor.
+        os.environ["AGENTIC_V12_ROUTE_HMAC_KEY"] = "a" * 24
         try:
-            assert load_secret_key_from_env() == b"abc123"
+            assert load_secret_key_from_env() == b"a" * 24
+        finally:
+            os.environ.pop("AGENTIC_V12_ROUTE_HMAC_KEY", None)
+
+    def test_load_secret_key_rejects_short_key(self) -> None:
+        os.environ["AGENTIC_V12_ROUTE_HMAC_KEY"] = "short"
+        try:
+            with pytest.raises(V12RouteContractError, match="too short"):
+                load_secret_key_from_env()
+        finally:
+            os.environ.pop("AGENTIC_V12_ROUTE_HMAC_KEY", None)
+
+    def test_load_secret_key_strips_trailing_newline(self) -> None:
+        os.environ["AGENTIC_V12_ROUTE_HMAC_KEY"] = ("z" * 20) + "\n  "
+        try:
+            key = load_secret_key_from_env()
+            assert key == b"z" * 20
         finally:
             os.environ.pop("AGENTIC_V12_ROUTE_HMAC_KEY", None)
 
@@ -539,3 +556,547 @@ class TestRouteSelectorDecisionOrder:
             key = (entry.route_id.value, entry.cost_tier.value)
             assert key not in seen, f"duplicate entry: {key}"
             seen.add(key)
+
+
+# ---------------------------------------------------------------------------
+# Hardening / edge-case coverage
+# ---------------------------------------------------------------------------
+
+
+class TestHardeningV12RouteAnnex:
+    """Pathological input rejection at annex construction time."""
+
+    def test_nan_confidence_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        import math
+
+        with pytest.raises(V12RouteContractError, match="finite"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id=RouteId.R1A,
+                confidence=math.nan,
+                reason_codes=(),
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_infinity_confidence_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        import math
+
+        with pytest.raises(V12RouteContractError, match="finite"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id=RouteId.R1A,
+                confidence=math.inf,
+                reason_codes=(),
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_empty_base_contract_id_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="base_contract_id"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="",
+                route_id=RouteId.R1A,
+                confidence=0.9,
+                reason_codes=(),
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_empty_contract_version_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="contract_version"):
+            V12RouteAnnex(
+                contract_version="",
+                base_contract_id="c1",
+                route_id=RouteId.R1A,
+                confidence=0.9,
+                reason_codes=(),
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_reason_codes_reject_empty_string(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="reason_codes"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id=RouteId.R1A,
+                confidence=0.9,
+                reason_codes=("valid", ""),
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_reason_codes_reject_non_string(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="reason_codes"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id=RouteId.R1A,
+                confidence=0.9,
+                reason_codes=("valid", 42),  # type: ignore[arg-type]
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_reason_codes_reject_over_limit(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="max length"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id=RouteId.R1A,
+                confidence=0.9,
+                reason_codes=tuple(f"r{i}" for i in range(100)),
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_self_referential_chain_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="self-referential"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id=RouteId.R3_GROUNDED,
+                confidence=0.9,
+                reason_codes=(),
+                freshness_class=FreshnessClass.STABLE,
+                cache_policy=CachePolicy.CASCADE_CACHE_FIRST,
+                execution_form=ExecutionForm.SINGLE_STEP,
+                cost_tier=CostTier.TIER_M,
+                fallback_chain=(
+                    FallbackEntry(RouteId.R3_GROUNDED, CostTier.TIER_M),
+                    FallbackEntry(RouteId.R5_FALLBACK, CostTier.TIER_S),
+                ),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_same_route_different_tier_allowed(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        # Primary is R3_GROUNDED TIER_M; chain has R3_GROUNDED TIER_L — OK.
+        annex = V12RouteAnnex(
+            contract_version="1.0.0",
+            base_contract_id="c1",
+            route_id=RouteId.R3_GROUNDED,
+            confidence=0.9,
+            reason_codes=(),
+            freshness_class=FreshnessClass.STABLE,
+            cache_policy=CachePolicy.CASCADE_CACHE_FIRST,
+            execution_form=ExecutionForm.SINGLE_STEP,
+            cost_tier=CostTier.TIER_M,
+            fallback_chain=(
+                FallbackEntry(RouteId.R3_GROUNDED, CostTier.TIER_L),
+                FallbackEntry(RouteId.R5_FALLBACK, CostTier.TIER_S),
+            ),
+            slo=minimal_slo,
+            telemetry_keys=(),
+            tenant_scope=tenant,
+        )
+        assert len(annex.fallback_chain) == 2
+
+    def test_chain_depth_cap(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="max depth"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id=RouteId.R3_GROUNDED,
+                confidence=0.9,
+                reason_codes=(),
+                freshness_class=FreshnessClass.STABLE,
+                cache_policy=CachePolicy.CASCADE_CACHE_FIRST,
+                execution_form=ExecutionForm.SINGLE_STEP,
+                cost_tier=CostTier.TIER_M,
+                # 9 entries — over _MAX_FALLBACK_CHAIN_DEPTH = 8
+                fallback_chain=(
+                    FallbackEntry(RouteId.R1B, CostTier.TIER_S),
+                    FallbackEntry(RouteId.R3R4_WORKFLOW, CostTier.TIER_L),
+                    FallbackEntry(RouteId.R_CASC, CostTier.TIER_S),
+                    FallbackEntry(RouteId.R_PAR, CostTier.TIER_M),
+                    FallbackEntry(RouteId.R_LOOP, CostTier.TIER_M),
+                    FallbackEntry(RouteId.R4_ACTION, CostTier.TIER_M),
+                    FallbackEntry(RouteId.R_HITL, CostTier.TIER_M),
+                    FallbackEntry(RouteId.R1A, CostTier.TIER_S),
+                    FallbackEntry(RouteId.R5_FALLBACK, CostTier.TIER_S),
+                ),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_wrong_enum_type_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        with pytest.raises(V12RouteContractError, match="RouteId"):
+            V12RouteAnnex(
+                contract_version="1.0.0",
+                base_contract_id="c1",
+                route_id="R1A",  # type: ignore[arg-type]
+                confidence=0.9,
+                reason_codes=(),
+                freshness_class=FreshnessClass.FRESH,
+                cache_policy=CachePolicy.EXACT_ONLY,
+                execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+                cost_tier=CostTier.TIER_S,
+                fallback_chain=(),
+                slo=minimal_slo,
+                telemetry_keys=(),
+                tenant_scope=tenant,
+            )
+
+    def test_empty_hmac_key_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        annex = V12RouteAnnex(
+            contract_version="1.0.0",
+            base_contract_id="c1",
+            route_id=RouteId.R1A,
+            confidence=0.9,
+            reason_codes=(),
+            freshness_class=FreshnessClass.FRESH,
+            cache_policy=CachePolicy.EXACT_ONLY,
+            execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+            cost_tier=CostTier.TIER_S,
+            fallback_chain=(),
+            slo=minimal_slo,
+            telemetry_keys=(),
+            tenant_scope=tenant,
+        )
+        with pytest.raises(V12RouteContractError, match="non-empty"):
+            annex.sign(b"")
+
+    def test_non_bytes_hmac_key_rejected(
+        self, tenant: TenantScope, minimal_slo: RouteSLO
+    ) -> None:
+        annex = V12RouteAnnex(
+            contract_version="1.0.0",
+            base_contract_id="c1",
+            route_id=RouteId.R1A,
+            confidence=0.9,
+            reason_codes=(),
+            freshness_class=FreshnessClass.FRESH,
+            cache_policy=CachePolicy.EXACT_ONLY,
+            execution_form=ExecutionForm.TERMINAL_SHORTCIRCUIT,
+            cost_tier=CostTier.TIER_S,
+            fallback_chain=(),
+            slo=minimal_slo,
+            telemetry_keys=(),
+            tenant_scope=tenant,
+        )
+        with pytest.raises(V12RouteContractError, match="must be bytes"):
+            annex.sign("string-key")  # type: ignore[arg-type]
+
+
+class TestHardeningRouteSLO:
+    def test_negative_latency_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="latency_budget_ms"):
+            RouteSLO(
+                latency_budget_ms=-1,
+                token_budget_in=0,
+                token_budget_out=0,
+                cost_cap_usd=0.0,
+            )
+
+    def test_latency_over_ceiling_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="ceiling"):
+            RouteSLO(
+                latency_budget_ms=10_000_000,
+                token_budget_in=0,
+                token_budget_out=0,
+                cost_cap_usd=0.0,
+            )
+
+    def test_nan_cost_rejected(self) -> None:
+        import math
+
+        with pytest.raises(V12RouteContractError, match="finite"):
+            RouteSLO(
+                latency_budget_ms=100,
+                token_budget_in=0,
+                token_budget_out=0,
+                cost_cap_usd=math.nan,
+            )
+
+    def test_negative_cost_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="cost_cap_usd"):
+            RouteSLO(
+                latency_budget_ms=100,
+                token_budget_in=0,
+                token_budget_out=0,
+                cost_cap_usd=-0.01,
+            )
+
+    def test_bool_not_accepted_as_int(self) -> None:
+        # bool is subclass of int — our validator must reject it explicitly.
+        with pytest.raises(V12RouteContractError, match="latency_budget_ms"):
+            RouteSLO(
+                latency_budget_ms=True,  # type: ignore[arg-type]
+                token_budget_in=0,
+                token_budget_out=0,
+                cost_cap_usd=0.0,
+            )
+
+
+class TestHardeningTenantScope:
+    def test_empty_tenant_id_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="tenant_id"):
+            TenantScope(tenant_id="", region="us", acl_bounds=())
+
+    def test_empty_region_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="region"):
+            TenantScope(tenant_id="t1", region="", acl_bounds=())
+
+    def test_acl_bounds_over_limit_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="acl_bounds"):
+            TenantScope(
+                tenant_id="t1",
+                region="us",
+                acl_bounds=tuple(f"acl{i}" for i in range(200)),
+            )
+
+    def test_acl_bounds_non_string_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="acl_bounds"):
+            TenantScope(
+                tenant_id="t1",
+                region="us",
+                acl_bounds=("read", 42),  # type: ignore[arg-type]
+            )
+
+
+class TestHardeningFallbackEntry:
+    def test_wrong_route_id_type_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="route_id"):
+            FallbackEntry(route_id="R1A", cost_tier=CostTier.TIER_S)  # type: ignore[arg-type]
+
+    def test_empty_provider_rejected(self) -> None:
+        with pytest.raises(V12RouteContractError, match="provider"):
+            FallbackEntry(
+                route_id=RouteId.R1A,
+                cost_tier=CostTier.TIER_S,
+                provider="",
+            )
+
+    def test_none_provider_ok(self) -> None:
+        e = FallbackEntry(RouteId.R1A, CostTier.TIER_S, provider=None)
+        assert e.provider is None
+
+
+class TestHardeningColdStart:
+    def test_nan_confidence_rejected(self) -> None:
+        import math
+
+        with pytest.raises(ValueError, match="finite"):
+            maybe_override_for_cold_start(
+                top_pick=RouteId.R3_GROUNDED,
+                top_pick_tier=CostTier.TIER_S,
+                classifier_confidence=math.nan,
+                cold_start_threshold=0.5,
+            )
+
+    def test_threshold_out_of_range(self) -> None:
+        with pytest.raises(ValueError, match="cold_start_threshold"):
+            maybe_override_for_cold_start(
+                top_pick=RouteId.R3_GROUNDED,
+                top_pick_tier=CostTier.TIER_S,
+                classifier_confidence=0.4,
+                cold_start_threshold=1.5,
+            )
+
+    def test_terminal_conservative_rejected(self) -> None:
+        with pytest.raises(ValueError, match="conservative_route"):
+            maybe_override_for_cold_start(
+                top_pick=RouteId.R3_GROUNDED,
+                top_pick_tier=CostTier.TIER_S,
+                classifier_confidence=0.3,
+                cold_start_threshold=0.5,
+                conservative_route=RouteId.R5_FALLBACK,
+            )
+
+    def test_wrong_route_type_rejected(self) -> None:
+        with pytest.raises(TypeError, match="top_pick must be RouteId"):
+            maybe_override_for_cold_start(
+                top_pick="R3_GROUNDED",  # type: ignore[arg-type]
+                top_pick_tier=CostTier.TIER_S,
+                classifier_confidence=0.9,
+                cold_start_threshold=0.5,
+            )
+
+
+class TestHardeningLoopGuard:
+    def test_threshold_out_of_range(self) -> None:
+        with pytest.raises(ValueError, match="efficiency_threshold"):
+            evaluate_loop_guard(["a"], set(), efficiency_threshold=1.5, min_spans=1)
+
+    def test_nan_threshold(self) -> None:
+        import math
+
+        with pytest.raises(ValueError, match="finite"):
+            evaluate_loop_guard(
+                ["a"], set(), efficiency_threshold=math.nan, min_spans=1
+            )
+
+    def test_zero_min_spans_rejected(self) -> None:
+        with pytest.raises(ValueError, match="min_spans"):
+            evaluate_loop_guard(["a"], set(), efficiency_threshold=0.4, min_spans=0)
+
+    def test_negative_min_spans_rejected(self) -> None:
+        with pytest.raises(ValueError, match="min_spans"):
+            evaluate_loop_guard(
+                ["a"], set(), efficiency_threshold=0.4, min_spans=-5
+            )
+
+    def test_non_list_span_ids(self) -> None:
+        with pytest.raises(TypeError, match="span_ids must be list"):
+            evaluate_loop_guard(
+                ("a", "b"),  # type: ignore[arg-type]
+                {"a"},
+                efficiency_threshold=0.4,
+                min_spans=1,
+            )
+
+    def test_non_string_span_id(self) -> None:
+        with pytest.raises(ValueError, match="span_ids"):
+            evaluate_loop_guard(
+                ["a", 42, "b"],  # type: ignore[list-item]
+                {"a"},
+                efficiency_threshold=0.4,
+                min_spans=1,
+            )
+
+    def test_empty_string_span_id(self) -> None:
+        with pytest.raises(ValueError, match="span_ids"):
+            evaluate_loop_guard(
+                ["a", ""],
+                {"a"},
+                efficiency_threshold=0.4,
+                min_spans=1,
+            )
+
+
+class TestHardeningCalibration:
+    def setup_method(self) -> None:
+        routing_calibration.reset_cache()
+        for var in [
+            "AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD",
+            "AGENTIC_V12_R_CASC_MAX_DEPTH",
+        ]:
+            os.environ.pop(var, None)
+
+    def test_env_with_whitespace(self) -> None:
+        os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "  0.77  "
+        try:
+            v = routing_calibration.get_v12_threshold(
+                "classifier_surface_threshold"
+            )
+            assert v == pytest.approx(0.77)
+        finally:
+            os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)
+
+    def test_env_scientific_notation(self) -> None:
+        os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "5e-1"
+        try:
+            v = routing_calibration.get_v12_threshold(
+                "classifier_surface_threshold"
+            )
+            assert v == pytest.approx(0.5)
+        finally:
+            os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)
+
+    def test_env_out_of_range_falls_back(self) -> None:
+        os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "1.5"
+        try:
+            # Out-of-range env value is ignored; fallback 0.72 is used.
+            v = routing_calibration.get_v12_threshold(
+                "classifier_surface_threshold"
+            )
+            assert v == pytest.approx(0.72)
+        finally:
+            os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)
+
+    def test_env_nan_falls_back(self) -> None:
+        os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "nan"
+        try:
+            v = routing_calibration.get_v12_threshold(
+                "classifier_surface_threshold"
+            )
+            assert v == pytest.approx(0.72)
+        finally:
+            os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)
+
+    def test_int_env_fractional_falls_back(self) -> None:
+        os.environ["AGENTIC_V12_R_CASC_MAX_DEPTH"] = "3.5"
+        try:
+            assert routing_calibration.get_v12_int("r_casc_max_depth") == 3
+        finally:
+            os.environ.pop("AGENTIC_V12_R_CASC_MAX_DEPTH", None)
+
+    def test_int_env_zero_falls_back(self) -> None:
+        os.environ["AGENTIC_V12_R_CASC_MAX_DEPTH"] = "0"
+        try:
+            assert routing_calibration.get_v12_int("r_casc_max_depth") == 3
+        finally:
+            os.environ.pop("AGENTIC_V12_R_CASC_MAX_DEPTH", None)

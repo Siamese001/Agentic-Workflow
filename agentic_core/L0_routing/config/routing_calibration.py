@@ -64,15 +64,31 @@ def reset_cache() -> None:
 
 
 def _coerce_threshold(raw: Any, fallback: float) -> float:
-    """Parse a threshold value; ignore malformed entries (return fallback)."""
+    """Parse a threshold value; ignore malformed entries (return fallback).
+
+    Accepts int, float, or str (with optional surrounding whitespace; also
+    handles scientific notation like ``"1e-2"``). Rejects bool, NaN, inf,
+    and any value outside the documented closed [0, 1] interval.
+    """
+    import math as _math
+
+    # bool is a subclass of int in Python — reject it explicitly so that
+    # True/False don't silently coerce to 1.0/0.0.
+    if isinstance(raw, bool):
+        return fallback
     if isinstance(raw, (int, float)):
         value = float(raw)
     elif isinstance(raw, str):
+        stripped = raw.strip()
+        if not stripped:
+            return fallback
         try:
-            value = float(raw.strip())
+            value = float(stripped)
         except ValueError:
             return fallback
     else:
+        return fallback
+    if not _math.isfinite(value):
         return fallback
     # Clamp into the documented closed interval; anything outside is a
     # config bug, not a runtime recovery path.
@@ -150,10 +166,28 @@ _V12_INT_FALLBACKS: dict[str, int] = {
 
 
 def _coerce_positive_int(raw: Any, fallback: int) -> int:
-    """Parse a positive integer; fall back on malformed or non-positive input."""
-    try:
+    """Parse a positive integer; fall back on malformed or non-positive input.
+
+    Rejects bool (subtype of int), floats with fractional parts, and strings
+    containing anything other than a base-10 integer (with optional whitespace).
+    """
+    if isinstance(raw, bool):
+        return fallback
+    if isinstance(raw, int):
+        value = raw
+    elif isinstance(raw, float):
+        if not raw.is_integer():
+            return fallback
         value = int(raw)
-    except (TypeError, ValueError):
+    elif isinstance(raw, str):
+        stripped = raw.strip()
+        if not stripped:
+            return fallback
+        try:
+            value = int(stripped)
+        except ValueError:
+            return fallback
+    else:
         return fallback
     if value < 1:
         return fallback

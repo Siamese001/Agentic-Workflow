@@ -232,13 +232,23 @@ def _assemble(
     reason_codes: tuple[str, ...],
     chain_prefix: tuple[FallbackEntry, ...],
 ) -> V12RouteAnnex:
-    default_chain = get_fallback_chain(route_id)
+    try:
+        default_chain = get_fallback_chain(route_id)
+    except V12RouteContractError:
+        # Malformed YAML chain for this route — degrade gracefully to an
+        # R5-only chain so the dispatcher can still return a valid contract.
+        default_chain = (FallbackEntry(RouteId.R5_FALLBACK, CostTier.TIER_S),)
     full_chain = chain_prefix + default_chain
     # Merge dedup — keep first occurrence order, strip duplicate (route_id, cost_tier).
+    # Also drop any entry that matches the primary (route_id, cost_tier) — that
+    # would trip V12RouteAnnex's self-reference guard.
+    primary_key = (route_id.value, cost_tier.value)
     seen: set[tuple[str, str]] = set()
     deduped: list[FallbackEntry] = []
     for entry in full_chain:
         key = (entry.route_id.value, entry.cost_tier.value)
+        if key == primary_key:
+            continue
         if key in seen:
             continue
         seen.add(key)
@@ -248,6 +258,18 @@ def _assemble(
         non_r5 = [e for e in deduped if e.route_id != RouteId.R5_FALLBACK]
         r5_entry = next(e for e in deduped if e.route_id == RouteId.R5_FALLBACK)
         deduped = [*non_r5, r5_entry]
+    # Enforce hard depth cap at assembly time.
+    _ASSEMBLY_MAX = 8
+    if len(deduped) > _ASSEMBLY_MAX:
+        deduped = deduped[:_ASSEMBLY_MAX]
+        # If truncation removed R5, re-append it (truncation should never
+        # leave a non-terminal chain without its safety net).
+        if not any(e.route_id == RouteId.R5_FALLBACK for e in deduped):
+            deduped[-1] = FallbackEntry(RouteId.R5_FALLBACK, CostTier.TIER_S)
+    # Non-terminal routes require non-empty chain.
+    _terminal = {RouteId.R1A, RouteId.R1B, RouteId.R5_FALLBACK}
+    if route_id not in _terminal and not deduped:
+        deduped = [FallbackEntry(RouteId.R5_FALLBACK, CostTier.TIER_S)]
 
     try:
         slo = get_slo_default(route_id, cost_tier)
