@@ -77,6 +77,7 @@ This repo uses a **two-tier model**:
 | `graph-analysis` | Structural dependency analysis, blast radius, ADG-first routing | Pure literal text search or non-code lookup |
 | `operational-gates` | Preflight, rollback, gate evidence, recovery | Feature design without execution risk |
 | `refactor-decision-memory` | Pull precedent before refactor-class Author-Gate | Routine edits with no meaningful design choice |
+| `ledger-consulter` (base) + 10 per-ledger variants | Precedent lookup for tool-routing, refactor-outcome, prompt-classifier, mcp-invocation, hotspot-defect, deferred-scope, guardian-exemption, progress-eta, memory-recall, test-selection | Decisions outside the ten tracked classes |
 | `structured-reasoning` | T2/T3 task framing, decomposition, failure packets, verification | T0/T1 trivial work |
 | `testing-framework` | Scoped validation strategy, skip discipline, collection integrity | Work that does not touch code or tests |
 

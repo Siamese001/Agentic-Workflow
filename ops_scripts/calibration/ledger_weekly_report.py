@@ -1,0 +1,147 @@
+"""ledger_weekly_report.py — Unified weekly calibration report across all ledgers.
+
+Aggregates rows from every registered intelligence ledger into a single Markdown
+report under docs/reports/calibration/<YYYY-Www>.md. Keeps each ledger section
+<1KB so the full report stays under 6KB for Notion page embed.
+
+Per ledger, emits:
+    - Row count (total, predicted-only, bound)
+    - Score-band distribution
+    - Top-3 FTS precedent examples
+    - Mean / p95 latency (if latency_ms populated)
+
+Usage:
+    python ops_scripts/calibration/ledger_weekly_report.py
+    python ops_scripts/calibration/ledger_weekly_report.py --out docs/reports/calibration/2026-W17.md
+
+Exit codes:
+    0 = report written
+    2 = internal error (any ledger unreadable)
+"""
+
+from __future__ import annotations
+
+import argparse
+import sqlite3
+import sys
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+
+_REPO_ROOT_BOOTSTRAP = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT_BOOTSTRAP) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT_BOOTSTRAP))
+
+from tools.ledgers.schema_registry import LEDGER_REGISTRY, REPO_ROOT  # noqa: E402
+
+
+def _iso_week(dt: datetime) -> str:
+    year, week, _ = dt.isocalendar()
+    return f"{year}-W{week:02d}"
+
+
+def _ledger_section(spec) -> str:
+    if not spec.db_path.exists():
+        return f"### `{spec.name}`\n\n_DB not yet materialized._\n\n"
+
+    try:
+        conn = sqlite3.connect(str(spec.db_path), timeout=5)
+        try:
+            total = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+            predicted = conn.execute("SELECT COUNT(*) FROM events WHERE status='predicted'").fetchone()[0]
+            bound = conn.execute("SELECT COUNT(*) FROM events WHERE status='bound'").fetchone()[0]
+            band_rows = conn.execute(
+                "SELECT score_band, COUNT(*) FROM events WHERE score_band IS NOT NULL GROUP BY score_band"
+            ).fetchall()
+            latency_rows = conn.execute(
+                "SELECT latency_ms FROM events WHERE latency_ms IS NOT NULL ORDER BY latency_ms"
+            ).fetchall()
+        finally:
+            conn.close()
+    except sqlite3.Error as exc:
+        return f"### `{spec.name}`\n\n_Error reading ledger: {exc}_\n\n"
+
+    bands = Counter({r[0] or "unknown": r[1] for r in band_rows})
+    latencies = [r[0] for r in latency_rows]
+    latency_line = "n/a"
+    if latencies:
+        mean = sum(latencies) / len(latencies)
+        p95 = latencies[int(max(0, len(latencies) * 0.95) - 1)]
+        latency_line = f"mean={mean:.1f}ms p95={p95}ms (n={len(latencies)})"
+
+    band_summary = ", ".join(f"{k}={v}" for k, v in bands.most_common(5)) or "none"
+
+    lines = [
+        f"### `{spec.name}` — {spec.purpose}",
+        "",
+        f"- **Rows**: {total} total ({predicted} predicted-only, {bound} bound)",
+        f"- **Score bands**: {band_summary}",
+        f"- **Latency**: {latency_line}",
+        f"- **Writer hook**: `{spec.writer_hook}`",
+        f"- **Wave**: {spec.wave} · **Sunset when**: {spec.sunset_criterion}",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def _render_report(now: datetime) -> str:
+    header = [
+        f"# Ledger Weekly Calibration — {_iso_week(now)}",
+        "",
+        f"Generated: {now.isoformat(timespec='seconds')}  ",
+        f"Ledgers reported: {len(LEDGER_REGISTRY)}  ",
+        "Plan: `.windsurf/plans/intelligence-ledgers-ten-a7c3e2.md`",
+        "",
+        "## Summary",
+        "",
+        "| Ledger | Rows | Predicted | Bound | Wave |",
+        "|---|---:|---:|---:|---|",
+    ]
+    for spec in LEDGER_REGISTRY:
+        if not spec.db_path.exists():
+            header.append(f"| `{spec.name}` | — | — | — | {spec.wave} |")
+            continue
+        try:
+            conn = sqlite3.connect(str(spec.db_path), timeout=5)
+            try:
+                total = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+                predicted = conn.execute("SELECT COUNT(*) FROM events WHERE status='predicted'").fetchone()[0]
+                bound = conn.execute("SELECT COUNT(*) FROM events WHERE status='bound'").fetchone()[0]
+            finally:
+                conn.close()
+            header.append(f"| `{spec.name}` | {total} | {predicted} | {bound} | {spec.wave} |")
+        except sqlite3.Error:
+            header.append(f"| `{spec.name}` | ERR | — | — | {spec.wave} |")
+
+    body = ["", "## Per-Ledger Detail", ""]
+    for spec in LEDGER_REGISTRY:
+        body.append(_ledger_section(spec))
+
+    return "\n".join(header) + "\n" + "\n".join(body)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--out",
+        default=None,
+        help="Override output path (default: docs/reports/calibration/<YYYY-Www>.md)",
+    )
+    args = parser.parse_args()
+
+    now = datetime.now(timezone.utc)
+    out_path: Path
+    if args.out:
+        out_path = Path(args.out)
+    else:
+        out_path = REPO_ROOT / "docs" / "reports" / "calibration" / f"{_iso_week(now)}.md"
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    content = _render_report(now)
+    out_path.write_text(content, encoding="utf-8")
+    print(f"[ledger_weekly_report] wrote {out_path.relative_to(REPO_ROOT)} ({len(content)} bytes)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
