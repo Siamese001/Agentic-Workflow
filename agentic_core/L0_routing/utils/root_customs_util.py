@@ -298,7 +298,11 @@ def determine_routing(
             return ast_routing
 
     # Check against ARTIFACT_ROUTING_MAP (original logic)
-    from agentic_core.L0_routing.reasoning.RootCustomsAgent import ARTIFACT_ROUTING_MAP
+    # NOTE (2026-04-24 MW-3): ARTIFACT_ROUTING_MAP was never defined in the codebase;
+    # the former import from RootCustomsAgent would ImportError at runtime. Replaced
+    # with empty dict so the downstream 'best_score > 0' guard cleanly returns 'no
+    # routing match found' for callers.
+    ARTIFACT_ROUTING_MAP: dict[str, Any] = {}
 
     best_match = None
     best_score = 0
@@ -339,7 +343,9 @@ def _determine_test_routing(file_path: Path, ast_matches: dict[str, Any]) -> Rou
     best_match = None
     best_score = 0
 
-    from agentic_core.L0_routing.reasoning.RootCustomsAgent import TEST_TYPE_SIGNALS
+    # NOTE (2026-04-24 MW-3): TEST_TYPE_SIGNALS was never defined in the codebase;
+    # the former import from RootCustomsAgent would ImportError at runtime.
+    TEST_TYPE_SIGNALS: dict[str, Any] = {}
 
     for destination, config in tqdm(TEST_TYPE_SIGNALS.items(), desc="Processing", unit="item"):
         score = 0
@@ -393,7 +399,10 @@ def _determine_legacy_routing(
     class_names = ast_matches.get("class_names", [])
     function_calls = ast_matches.get("function_calls", [])
 
-    from agentic_core.L0_routing.reasoning.RootCustomsAgent import LEGACY_AST_SIGNALS
+    # NOTE (2026-04-24 MW-3): LEGACY_AST_SIGNALS was never defined in the codebase;
+    # the former import from RootCustomsAgent would ImportError at runtime. Return
+    # None so the caller treats this file as having no legacy routing signal.
+    LEGACY_AST_SIGNALS: dict[str, Any] = {"archives/legacy_code": {}}
 
     config = LEGACY_AST_SIGNALS["archives/legacy_code"]
     score = 0
