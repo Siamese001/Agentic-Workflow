@@ -34,6 +34,14 @@ from tools.ingestion.contextual_chunk_builder import (
     prepend_context,
 )
 
+# G1-residual (plan c0-context-assembly-best-practices-b7c3a1): gateway
+# adapter so the existing Claude-generated contextual-retrieval path becomes
+# reachable. build_from_env() returns None when ANTHROPIC_API_KEY is absent,
+# preserving the heuristic-only fallback for offline / CI runs.
+from tools.ingestion.anthropic_context_gateway import (
+    build_from_env as build_anthropic_context_gateway,
+)
+
 # Setup logging (needed by ADGNodeResolver below)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -79,7 +87,9 @@ class ADGNodeResolver:
     def _load(self) -> None:
         assert self._path is not None
         if not self._path.exists():
-            logger.warning("ADGNodeResolver: snapshot not found at %s; node_id resolution disabled", self._path)
+            logger.warning(
+                "ADGNodeResolver: snapshot not found at %s; node_id resolution disabled", self._path
+            )
             return
         try:
             uri = f"file:{self._path.as_posix()}?mode=ro"
@@ -89,8 +99,7 @@ class ADGNodeResolver:
             return
         try:
             cur = conn.execute(
-                "SELECT id, adg_name, resolved_path FROM nodes"
-                " WHERE adg_name IS NOT NULL AND adg_name != ''"
+                "SELECT id, adg_name, resolved_path FROM nodes WHERE adg_name IS NOT NULL AND adg_name != ''"
             )
             # ADG ``adg_name`` uses qualified forms like
             # ``ADG::Symbol::pkg.sub.module.ClassName`` or
@@ -205,6 +214,7 @@ class CodeChunker:
         # L_SYSTEM_LEARNING / L_INFRASTRUCTURE / L_CONFIG / L_DOCS / L_TESTS /
         # L_UNKNOWN). Legacy ``Unknown`` (capital U) retained for back-compat.
         from agentic_core.L4_state.utils.chunk_metadata import LAYER_TOKENS
+
         if "layer" in metadata and metadata["layer"] not in (LAYER_TOKENS | {"Unknown"}):
             errors.append(f"Invalid layer: {metadata['layer']}")
         if "entity_type" in metadata and metadata["entity_type"] not in [
@@ -469,7 +479,10 @@ def _apply_contextualization(
 
     Returns the number of chunks enriched with a non-empty context.
     """
-    builder = builder or ContextualChunkBuilder()
+    if builder is None:
+        # G1-residual: inject the Anthropic gateway when ANTHROPIC_API_KEY is
+        # set; otherwise ContextualChunkBuilder falls back to heuristic.
+        builder = ContextualChunkBuilder(gateway=build_anthropic_context_gateway())
     file_cache: dict[str, str] = {}
     enriched = 0
     for chunk in all_chunks:
@@ -626,8 +639,13 @@ def ingest_code(
     # prepends it to the chunk content + records it in metadata.chunk_context.
     # Uses heuristic fallback when no Anthropic gateway is wired (offline-safe).
     if contextualize:
-        logger.info("Contextualizing chunks (Anthropic-style narrative context)...")
-        enriched = _apply_contextualization(all_chunks)
+        # G1-residual: announce which mode is actually active so operators
+        # can tell heuristic-only runs from gateway-backed runs at a glance.
+        gateway = build_anthropic_context_gateway()
+        mode = "GATEWAY (Claude-generated)" if gateway is not None else "HEURISTIC (metadata-only)"
+        logger.info("Contextualizing chunks — mode=%s", mode)
+        builder = ContextualChunkBuilder(gateway=gateway)
+        enriched = _apply_contextualization(all_chunks, builder=builder)
         logger.info(f"Contextualized {enriched}/{len(all_chunks)} chunks")
 
     # Log parent-child relationship statistics

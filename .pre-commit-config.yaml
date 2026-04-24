@@ -324,6 +324,21 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- W4.1: Author-Gate ledger coverage (meta-learning hardening) --------------
+      # Fails commit if outcome_bind_rate < 50% OR scope_file_path_rate < 70%
+      # OR v2_field_rate < 70% OR hash_chain_rate < 95% OR capture_violations_24h
+      # > 20. Floors are deliberately permissive (WARN-band on audit_ledger_coverage)
+      # so the gate alarms on rot but doesn't block routine work.
+      # Bypass: LEDGER_COVERAGE_BYPASS=1 (logged to artifacts/windsurf/).
+      # Audit script SSOT: .windsurf/scripts/audit_ledger_coverage.py
+      - id: author-gate-ledger-coverage
+        name: "T7e: Author-Gate Ledger Coverage (W4.1)"
+        entry: py ops_scripts/ci/check_ledger_coverage.py
+        language: system
+        pass_filenames: false
+        always_run: false
+        files: ^(\.windsurf/scripts/(post_cascade_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.windsurf/skills/refactor-decision-memory/.*\.py|\.windsurf/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
+
       # -- T7h: Terminal/Subprocess Cleanup (§11 + §14) ---------------------------------
       # Enforces Constitutional §11 (terminal process lifecycle) and §14 (subprocess
       # timeout required) by catching static patterns that leak processes:
