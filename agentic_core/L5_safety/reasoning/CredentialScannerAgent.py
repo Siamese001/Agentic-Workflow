@@ -5,6 +5,17 @@ Use agentic_core.L5_safety.utils.credential_scanner_util instead.
 
 This module maintains backward compatibility by delegating to the utility.
 Will be removed in a future release.
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W3.1 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling per constitutional \u00a73)
+Consumers at authorization: 0 (verified via w3_verify_zero_consumers.py grep of
+`from agentic_core.L5_safety.reasoning.CredentialScannerAgent import` and `import agentic_core.L5_safety.reasoning.CredentialScannerAgent` across live code,
+excluding self and archives/ paths — zero hits).
+Unique logic: none (pure delegation to agentic_core.L5_safety.utils.credential_scanner_util per DEPRECATED docstring above).
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/agentic_core__L5_safety__reasoning__CredentialScannerAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/w3_CredentialScannerAgent.json
 """
 
 from __future__ import annotations
