@@ -22,6 +22,7 @@ from tempfile import NamedTemporaryFile
 from typing import Any
 
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 
 def _validate_sqlite_path(sqlite_path: Path) -> Path:
@@ -383,7 +384,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     sqlite_path = Path(sys.argv[1])
-    output_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("artifacts/adg")
+    output_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(ADG_ARTIFACTS_DIR)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     artifact = build_and_emit_watchlist(sqlite_path, output_dir)

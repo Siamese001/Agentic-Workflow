@@ -44,6 +44,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 # Deferred imports for graceful degradation
 try:
@@ -132,7 +133,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
         # Wave 3: Auto-persistence configuration
         self.auto_persist = auto_persist and MATERIALIZER_AVAILABLE
         self.uwg_endpoint = uwg_endpoint
-        self.adg_storage_path = adg_storage_path or "artifacts/adg"
+        self.adg_storage_path = adg_storage_path or ADG_ARTIFACTS_DIR
         self._materializer = RuntimeADGMaterializer() if MATERIALIZER_AVAILABLE else None
         self._persisted_snapshots: list[str] = []
         self._current_snapshot_id: str | None = None

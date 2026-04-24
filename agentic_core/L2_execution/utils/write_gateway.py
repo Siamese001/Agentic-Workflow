@@ -156,6 +156,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 _emit_emits_metric_event("write_gateway", "p4obs", "metric_1")
 _emit_emits_metric_event("write_gateway", "p4obs", "metric_2")
@@ -328,7 +329,7 @@ _SOURCE_ROOTS_RELATIVE: frozenset[str] = frozenset(
 )
 _SAFE_OUTPUT_PREFIXES: tuple[str, ...] = (
     "docs/evidence",
-    "docs/reports",
+    DOCS_REPORTS_DIR,
     "archives/healing_backups",
     "runtime_state.json",
     ".backup",

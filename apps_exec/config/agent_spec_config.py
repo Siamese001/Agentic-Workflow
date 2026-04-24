@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 _emit_emits_metric_event("agent_spec_config", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_spec_config", "p4obs", "metric_2")
@@ -187,7 +188,7 @@ class IngestionConfig(BaseModel):
     """Controls how source materials are ingested."""
 
     source_dirs: list[str] = Field(
-        default_factory=lambda: ["docs/architecture", "docs/reports"],
+        default_factory=lambda: ["docs/architecture", DOCS_REPORTS_DIR],
         description="Directories to ingest as source material",
     )
     file_extensions: list[str] = Field(default_factory=lambda: [".md", ".txt", ".json"])

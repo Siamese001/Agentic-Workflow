@@ -41,6 +41,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Iterable
+from agentic_core.L0_routing.config.path_constants import WINDSURF_SCRIPTS_DIR
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BASELINE_PATH = REPO_ROOT / "ops_scripts" / "ci" / "baselines" / "hardcoded_exclusions_baseline.json"
@@ -151,7 +152,7 @@ DEFAULT_SCAN_ROOTS: tuple[str, ...] = (
     "apps_",  # Prefix match via glob
     "ops_scripts",
     "tools",
-    ".windsurf/scripts",
+    WINDSURF_SCRIPTS_DIR,
 )
 
 

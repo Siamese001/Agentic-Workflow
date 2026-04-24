@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import PurePosixPath
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 
 @dataclass(frozen=True, slots=True)
@@ -18,7 +19,7 @@ TERRITORY_RULES: tuple[TerritoryRule, ...] = (
     TerritoryRule("apps_lic/", "app"),
     TerritoryRule("apps_rg/", "app"),
     TerritoryRule("apps_shared/", "shared"),
-    TerritoryRule("docs/reports/", "reports"),
+    TerritoryRule(DOCS_REPORTS_DIR + "/", "reports"),
     TerritoryRule("tests/", "tests"),
     TerritoryRule("ops_scripts/", "ops"),
 )

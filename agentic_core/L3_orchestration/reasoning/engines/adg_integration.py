@@ -33,6 +33,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
 )
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ Logger = logging.getLogger(__name__)
 # client construction via _discover_adg_path(). Historically a hardcoded
 # dated filename lived here (e.g. adg_indexed_03292026_1406.sqlite), which
 # silently rotted as new snapshots landed. See MCP RCA 2026-04-22.
-DEFAULT_ADG_DIR = Path("artifacts/adg")
+DEFAULT_ADG_DIR = Path(ADG_ARTIFACTS_DIR)
 
 
 @dataclass(frozen=True)

@@ -12,6 +12,7 @@ from __future__ import annotations
 import sqlite3
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 DEFAULT = Path("artifacts/adg/adg_indexed_04212026_0433.sqlite")
 
@@ -39,7 +40,7 @@ HARDCODED_LITERALS = [
     "SSOT",
     "agentic_core/",
     "apps_shared/",
-    "artifacts/adg/",
+    ADG_ARTIFACTS_DIR + "/",
 ]
 
 

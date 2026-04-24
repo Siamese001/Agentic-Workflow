@@ -48,6 +48,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -543,7 +544,7 @@ def main():
     parser.add_argument(
         "--adg-dir",
         type=Path,
-        default=Path("artifacts/adg"),
+        default=Path(ADG_ARTIFACTS_DIR),
         help="Path to ADG artifacts directory",
     )
     parser.add_argument(

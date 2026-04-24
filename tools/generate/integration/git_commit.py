@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 
 def _discover_repo_root(start: Path) -> Path:
@@ -100,7 +101,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
         # Stage deletions of old artifacts (moved to _archive/)
         # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
         subprocess.run(
-            ["git", "add", "-u", "artifacts/adg/"],
+            ["git", "add", "-u", ADG_ARTIFACTS_DIR + "/"],
             cwd=str(ROOT),
             capture_output=True,
             text=True,
