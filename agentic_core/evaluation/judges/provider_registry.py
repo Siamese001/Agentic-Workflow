@@ -121,7 +121,12 @@ class GeminiJudgeProvider:
                 generation_config={"temperature": 0.0},
             )
             raw = response.text
-        except (AttributeError, RuntimeError, TypeError, ValueError):  # guardian: allow-double-logging -- Gemini API error logged before re-raise for provider-judge diagnostics
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ):  # guardian: allow-double-logging -- Gemini API error logged before re-raise for provider-judge diagnostics
             raise
 
         try:
@@ -225,24 +230,72 @@ class JudgeProviderRegistry:
 
 
 def create_default_registry() -> JudgeProviderRegistry:
-    """Create a registry with NullJudgeProvider and optional GeminiJudgeProvider.
+    """Create a registry with NullJudgeProvider and optional cloud/local judges.
 
-    NullJudgeProvider is always registered as the default fallback.
-    GeminiJudgeProvider is registered and set as default when
-    ``GEMINI_API_KEY`` or ``GOOGLE_API_KEY`` is present.
+    Registration order (each is only default when the prior slot is empty):
+      1. ``NullJudgeProvider`` — always present as safe fallback.
+      2. ``QwenJudgeProvider`` — registered when ``JUDGE_PROVIDER=qwen`` or
+         when ``VLLM_BASE_URL`` is explicitly set AND ``JUDGE_PROVIDER`` is
+         not explicitly set to another backend. Zero marginal cost — preferred
+         default when available. Wave A (qwen-adoption-waves-a7f3c2).
+      3. ``GeminiJudgeProvider`` — registered when ``GEMINI_API_KEY`` /
+         ``GOOGLE_API_KEY`` is present. Becomes default if Qwen did not.
+
+    An explicit ``JUDGE_PROVIDER`` env var (``null`` / ``qwen`` / ``gemini``)
+    forces that provider as default if registered.
     """
     registry = JudgeProviderRegistry()
     registry.register(NullJudgeProvider(), default=True)
 
+    judge_provider_override = (os.getenv("JUDGE_PROVIDER") or "").strip().lower()
+
+    # Wave A: Qwen registration. Opt-in via JUDGE_PROVIDER=qwen OR by setting
+    # VLLM_BASE_URL explicitly (local vLLM is intended to be used).
+    qwen_should_register = judge_provider_override == "qwen" or (
+        os.getenv("VLLM_BASE_URL")
+        and judge_provider_override != "gemini"
+        and judge_provider_override != "null"
+    )
+    if qwen_should_register:
+        try:
+            from agentic_core.evaluation.judges.qwen_judge_provider import (  # noqa: PLC0415
+                QwenJudgeProvider,
+            )
+
+            qwen = QwenJudgeProvider()
+            registry.register(qwen, default=(judge_provider_override == "qwen"))
+            _log.info("[create_default_registry] Qwen judge provider auto-registered")
+        except (
+            RuntimeError,
+            ValueError,
+            OSError,
+            ImportError,
+        ) as exc:  # guardian: allow-log-and-swallow -- optional backend; registry must still return
+            _log.warning("[create_default_registry] Qwen registration failed: %s", exc)
+
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         try:
             default_model = os.getenv("GEMINI_MODEL", GeminiJudgeProvider.DEFAULT_MODEL)
-            gemini_model = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(default_model)
+            gemini_model = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(
+                default_model
+            )
             gemini = GeminiJudgeProvider(gemini_client=gemini_model)
-            registry.register(gemini, default=True)
+            # Only claim default for Gemini if user did not explicitly pick Qwen.
+            gemini_default = judge_provider_override in ("", "gemini")
+            registry.register(gemini, default=gemini_default)
             _log.info("[create_default_registry] Gemini provider auto-registered (API key found)")
-        except (RuntimeError, ValueError, OSError, ImportError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            RuntimeError,
+            ValueError,
+            OSError,
+            ImportError,
+        ) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             _log.warning("[create_default_registry] Gemini registration failed: %s", exc)
+
+    # Final explicit override: if JUDGE_PROVIDER was set and the provider is
+    # registered, force it as default regardless of registration order.
+    if judge_provider_override and judge_provider_override in registry.provider_ids:
+        registry.set_default(judge_provider_override)
 
     return registry
 

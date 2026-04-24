@@ -438,8 +438,21 @@ class SovereignLLMGateway:
         _LOGGER.info("Default provider set to: %s", provider_type.name)
 
     def _create_default_provider(self, provider_type: ProviderType, config: ProviderConfig) -> LLMProvider:
-        """Create default provider implementation."""
-        # Placeholder - actual implementations would be in separate modules
+        """Create default provider implementation.
+
+        Known provider types with real implementations return those; all
+        other types fall back to the placeholder so the gateway never
+        crashes during construction.
+        """
+        # Wave A (qwen-adoption-waves-a7f3c2): real LOCAL_VLLM provider backed
+        # by QwenInferenceGateway. Import is local to avoid L2→L3 cycle risk
+        # during module import.
+        if provider_type == ProviderType.LOCAL_VLLM:
+            from agentic_core.L2_execution.enforcement._provider_local_vllm import (  # noqa: PLC0415
+                LocalVLLMProvider,
+            )
+
+            return LocalVLLMProvider(model=config.model or None)
         return _PlaceholderProvider(config)
 
     def select_reasoning_path(
@@ -760,6 +773,11 @@ class SovereignLLMGateway:
             tools_schema=artifact.allowed_tools_schema,
             slots_used=getattr(artifact, "slots_used", None),
             slots_map=None,  # W3 will wire a structured slot map here.
+            # EQ-5: thread response_schema from artifact -> adapter so
+            # provider-idiomatic structured-output config lands on
+            # payload.extra. getattr keeps back-compat with artifacts
+            # that pre-date the EQ-1 schema extension.
+            response_schema=getattr(artifact, "response_schema", None),
         )
         return payload.system_prompt, payload.user_prompt, payload.tools_schema
 
