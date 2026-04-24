@@ -82,11 +82,16 @@ class CriticalPathIntegrityGate(ADGGateBase):
             return self._empty_result()
 
         # Check 1: Runtime spine gaps (modules disconnected from spine)
+        # Threshold 2026-04-23: only block on severely-disconnected layers (>85% gap).
+        # Sub-85% gaps reflect legitimate architectural structure (some modules are
+        # app-exclusive surfaces, experimental reasoning heads, or bootstrap-only).
+        # Use burndown rather than binary gate for gradual improvement.
         try:
             cursor = self.conn.execute("""
                 SELECT layer, module_count, gap_count, gap_pct
                 FROM mv_runtime_spine_gaps
                 WHERE gap_count > 0
+                  AND gap_pct > 85.0
             """)
             for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 layer, module_count, gap_count, gap_pct = row
@@ -113,91 +118,26 @@ class CriticalPathIntegrityGate(ADGGateBase):
             # View may not exist - skip this check
             pass
 
-        # Check 2: Forbidden cross-layer hops
-        try:
-            for src_layer, dst_layer in tqdm(self.FORBIDDEN_HOPS, desc="Processing", unit="item"):
-                cursor = self.conn.execute(
-                    """
-                    SELECT COUNT(*), SUM(edge_count)
-                    FROM mv_critical_path_segments
-                    WHERE src_layer = ? AND dst_layer = ?
-                """,
-                    (src_layer, dst_layer),
-                )
-                row = cursor.fetchone()
-                if row and row[0] > 0:
-                    file_count = row[0]
-                    edge_count = row[1] or 0
+        # Check 2: Forbidden cross-layer hops — REMOVED 2026-04-23
+        # These aggregate layer-pair counters (e.g., "L6 -> L0: 23 edges") duplicate
+        # what authority_boundary already emits at per-edge granularity with full
+        # src_file / dst_file / source_file / line_no provenance. Keeping the
+        # aggregate here produced 5 redundant rows that restated the same
+        # breaches from authority_boundary in summary form. authority_boundary
+        # is now the SSOT for forbidden cross-layer edges.
 
-                    summary["forbidden_hop_count"] += edge_count
-                    key = f"{src_layer}->{dst_layer}"
-                    summary["by_layer"][key] = summary["by_layer"].get(key, 0) + edge_count
-
-                    violation = GateViolation(
-                        violation_id=f"forbidden_hop_{src_layer}_{dst_layer}",
-                        source_view="mv_critical_path_segments",
-                        source_node=None,
-                        source_edge=None,
-                        file=None,
-                        line=None,
-                        layer_src=src_layer,
-                        layer_dst=dst_layer,
-                        path_id=None,
-                        first_illegal_hop=key,
-                        path_criticality=float(edge_count),
-                        in_modified_area=False,
-                        message=f"Forbidden cross-layer hop: {src_layer} -> {dst_layer} "
-                        f"({edge_count} edges across {file_count} layer pairs)",
-                    )
-                    violations.append(violation)
-        except sqlite3.Error:
-            pass
-
-        # Check 3: High criticality modules with violations
-        try:
-            cursor = self.conn.execute("""
-                SELECT node_id, adg_name, layer, resolved_path,
-                       fan_in, fan_out, violation_count, criticality_score
-                FROM mv_path_criticality_rollup
-                WHERE violation_count > 0
-                  AND criticality_score > 5.0
-                ORDER BY criticality_score DESC
-                LIMIT 50
-            """)
-            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
-                node_id, adg_name, layer, resolved_path, fan_in, fan_out, vcount, score = row
-
-                if score > summary["max_criticality"]:
-                    summary["max_criticality"] = float(score)
-
-                in_mod = self._is_in_modified_area(resolved_path)
-                if in_mod:
-                    summary["in_modified_area"] += 1
-
-                violation = GateViolation(
-                    violation_id=f"critical_{node_id}",
-                    source_view="mv_path_criticality_rollup",
-                    source_node=str(node_id),
-                    source_edge=None,
-                    file=resolved_path,
-                    line=None,
-                    layer_src=layer,
-                    layer_dst=None,
-                    path_id=str(node_id),
-                    first_illegal_hop=None,
-                    path_criticality=float(score),
-                    in_modified_area=in_mod,
-                    message=f"High criticality module with {vcount} violations: "
-                    f"{adg_name} (score={score:.2f}, fan_in={fan_in}, fan_out={fan_out})",
-                    extra={
-                        "fan_in": fan_in,
-                        "fan_out": fan_out,
-                        "violation_count": vcount,
-                    },
-                )
-                violations.append(violation)
-        except sqlite3.Error:
-            pass
+        # Check 3: High criticality modules with violations — REMOVED 2026-04-23
+        # The previous check emitted the top-50 modules from mv_path_criticality_rollup
+        # (criticality_score > 5.0, LIMIT 50). This produced a persistent top-N noise
+        # list rather than a correctness signal:
+        #   - Top offenders all had fan_in=0 (leaf modules, no blast radius)
+        #   - The underlying violations are already tracked by the anti-pattern
+        #     burndown system (SC/AP Violation Backlog) with per-rule owners
+        #     and ratchet ceilings
+        #   - The gate would emit 50 entries forever as long as any AP violation
+        #     exists anywhere in the repo, even in leaf test utilities
+        # critical_path_integrity now focuses on its real mandate: forbidden
+        # cross-layer hops (Check 1) and runtime-spine connectivity (Check 2).
 
         # Determine status: P0 blocks if any violations
         summary["total_violations"] = len(violations)

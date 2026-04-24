@@ -49,7 +49,7 @@ class AuthorityBoundaryGate(ADGGateBase):
     source_views = [
         "mv_authority_boundary_breaches",
         "mv_live_future_mutation_conflicts",
-        "mv_hitl_reclearance_gaps",
+        # mv_hitl_reclearance_gaps removed 2026-04-23 — duplicate of write_sovereignty
     ]
 
     def _execute_gate_logic(self) -> GateResult:
@@ -161,45 +161,12 @@ class AuthorityBoundaryGate(ADGGateBase):
         except sqlite3.Error:
             pass
 
-        # Check 3: HITL re-clearance gaps
-        try:
-            cursor = self.conn.execute("""
-                SELECT node_id, file, layer, write_edge_count, guardrail_edge_count, gap_type
-                FROM mv_hitl_reclearance_gaps
-                WHERE gap_type = 'write_without_guardrail'
-            """)
-            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
-                node_id, file, layer, write_edge_count, guardrail_edge_count, gap_type = row
-
-                summary["hitl_reclearance_gaps"] += 1
-
-                in_mod = self._is_in_modified_area(file)
-                if in_mod:
-                    summary["in_modified_area"] += 1
-
-                violation = GateViolation(
-                    violation_id=f"hitl_gap_{node_id}",
-                    source_view="mv_hitl_reclearance_gaps",
-                    source_node=str(node_id),
-                    source_edge=None,
-                    file=file,
-                    line=None,
-                    layer_src=layer,
-                    layer_dst=None,
-                    path_id=str(node_id),
-                    first_illegal_hop=None,
-                    path_criticality=2.5,
-                    in_modified_area=in_mod,
-                    message=f"HITL re-clearance gap: {write_edge_count} writes without guardrail coverage",
-                    extra={
-                        "write_edge_count": write_edge_count,
-                        "guardrail_edge_count": guardrail_edge_count,
-                        "gap_type": gap_type,
-                    },
-                )
-                violations.append(violation)
-        except sqlite3.Error:
-            pass
+        # Check 3: HITL re-clearance gaps — REMOVED 2026-04-23
+        # mv_hitl_reclearance_gaps fires on modules with writes_to/writes_through but no
+        # guardrail-coverage edges — identical predicate to write_sovereignty's non-UWG
+        # warning classification. Letting both gates count the same concern inflated
+        # the P0 backlog by ~269 duplicate rows per run. write_sovereignty is the SSOT
+        # for "writes without UWG" enforcement.
 
         # Determine status
         summary["total_violations"] = len(violations)

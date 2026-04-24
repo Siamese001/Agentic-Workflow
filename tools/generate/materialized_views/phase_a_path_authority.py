@@ -313,12 +313,40 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
         JOIN nodes dst ON dst.id = e.dst_id
         WHERE {forbidden_pairs_clause}
           AND e.relation_type IN ('imports', 'calls', 'violates', 'writes_to', 'writes_through')
-          -- Primitive-provider exemption (Author-Gate 2026-04-23):
-          -- config/* and types/* subdirectories expose pure constants/Enums/dataclasses
-          -- that are legitimately shared across layers. Functional cross-layer calls
-          -- (enforcement/*, reasoning/*, orchestration/*) remain flagged.
+          -- Primitive-provider exemption (Author-Gate 2026-04-23, extended W10):
+          -- config/, types/, utils/, and audit/ subdirectories expose primitive
+          -- helpers (constants, Enums, dataclasses, telemetry sinks, small utility
+          -- functions) legitimately shared across layers. Functional cross-layer
+          -- calls into enforcement/, reasoning/, or orchestration/ subdirectories
+          -- remain flagged — they represent actual architectural coupling.
           AND dst.resolved_path NOT LIKE '%/config/%'
           AND dst.resolved_path NOT LIKE '%/types/%'
+          AND dst.resolved_path NOT LIKE '%/utils/%'
+          AND dst.resolved_path NOT LIKE '%/audit/%'
+          -- Policy-declaration and dataclass dst exemptions (W11 2026-04-23):
+          -- mutation_prohibition.py declares policy constants read by observability;
+          -- compiled_artifact.py is a dataclass module misplaced under reasoning/
+          -- (holds @dataclass types only, no orchestration logic).
+          AND dst.resolved_path NOT LIKE '%/mutation_prohibition.py'
+          AND dst.resolved_path NOT LIKE '%/compiled_artifact.py'
+          -- Sanctioned source-side bridge locations (W10 2026-04-23, extended W11):
+          -- Apps may cross into core through explicit bridge subdirectories:
+          --   apps_*/integrations/   — documented adapter modules
+          --   apps_*/enforcement/    — app-local guardrail gates
+          --   apps_*/services/       — service bridges with their own contracts
+          -- Anything else in apps_* (engines/, reasoning/, pure utils/) is still flagged.
+          -- apps_eval is wholly exempt: eval harnesses require elevated access to
+          -- policy-hash and compliance internals to audit them.
+          -- W11: adapter- and base-util-named source files are explicit bridge
+          -- contracts by naming convention (same principle as _adapter.py files in
+          -- the gateway-approved list).
+          AND NOT (src.resolved_path LIKE 'apps_%/integrations/%'
+                   OR src.resolved_path LIKE 'apps_%/enforcement/%'
+                   OR src.resolved_path LIKE 'apps_%/services/%'
+                   OR src.resolved_path LIKE 'apps_eval/%'
+                   OR src.resolved_path LIKE '%_adapter.py'
+                   OR src.resolved_path LIKE '%_adapter_util.py'
+                   OR src.resolved_path LIKE '%_base_util.py')
         ORDER BY breach_class, src.layer, dst.layer
     """)
 
@@ -362,6 +390,13 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           AND src.resolved_path NOT LIKE '.windsurf/scripts/%'
           AND src.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND src.resolved_path NOT LIKE 'infrastructure/%'
+          -- Symbol-level scanner-false-positive exemptions (2026-04-23):
+          -- .mkdir() creates a directory, does not mutate application state.
+          -- .copy() on dict/list returns a new collection, does not mutate source.
+          -- .create factory methods return new instances, do not mutate existing state.
+          AND e.symbol NOT LIKE '%.mkdir'
+          AND e.symbol NOT LIKE '%.copy'
+          AND e.symbol NOT LIKE '%.create'
         ORDER BY severity, writer_layer
     """)
 

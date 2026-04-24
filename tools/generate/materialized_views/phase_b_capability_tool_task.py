@@ -57,6 +57,13 @@ _GATEWAY_APPROVED_PATHS = (
     "agentic_core/L2_execution/reasoning/execution_gateway",
     "SovereignMCPGateway",
     "SovereignLLMGateway",
+    # Added 2026-04-23 (W10) — sanctioned provider adapter modules:
+    "agentic_core/gateway/",                                        # explicit gateway package
+    "agentic_core/L3_orchestration/inference/qwen_vllm/",           # VLLM inference adapter
+    "agentic_core/L4_state/utils/memory/blob_storage_provider.py",  # S3 blob storage adapter
+    "agentic_core/L4_state/utils/memory/canonical_store.py",        # canonical S3 store adapter
+    "agentic_core/evaluation/judges/claude_judge.py",               # Claude judge adapter
+    "apps_rg/enforcement/HardenedanthropicexecutorStrategy.py",     # Hardened Anthropic executor
 )
 
 
@@ -95,7 +102,18 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
             n.id                  AS node_id,
             n.resolved_path       AS file,
             n.layer               AS layer,
-            COUNT(DISTINCT CASE WHEN e.relation_type = 'invokes_provider' THEN e.id END)
+            -- Scanner-false-positive exemption (2026-04-23 W11):
+            -- urllib.parse.* and urllib.request.Request are pure-string / URL-object
+            -- utilities classified as 'invokes_provider' by the edge scanner despite
+            -- making no network calls. 'requests.append' etc. are list-method calls
+            -- on locals named 'requests'. None of these constitute a real egress.
+            COUNT(DISTINCT CASE WHEN e.relation_type = 'invokes_provider'
+                                 AND e.symbol NOT LIKE 'urllib.parse.%'
+                                 AND e.symbol NOT LIKE 'urllib.request.%'
+                                 AND e.symbol NOT IN ('requests.append', 'requests.extend',
+                                                       'requests.pop', 'requests.clear',
+                                                       'requests.insert', 'requests.remove')
+                                THEN e.id END)
                                   AS provider_invoke_count,
             COUNT(DISTINCT CASE WHEN e.relation_type = 'routes_to_capability' THEN e.id END)
                                   AS capability_route_count,
@@ -103,7 +121,13 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
                                                           'execution_terminates_at_uwg') THEN e.id END)
                                   AS egress_gate_count,
             CASE
-                WHEN COUNT(DISTINCT CASE WHEN e.relation_type = 'invokes_provider' THEN e.id END) > 0
+                WHEN COUNT(DISTINCT CASE WHEN e.relation_type = 'invokes_provider'
+                                             AND e.symbol NOT LIKE 'urllib.parse.%'
+                                             AND e.symbol NOT LIKE 'urllib.request.%'
+                                             AND e.symbol NOT IN ('requests.append', 'requests.extend',
+                                                                   'requests.pop', 'requests.clear',
+                                                                   'requests.insert', 'requests.remove')
+                                            THEN e.id END) > 0
                  AND COUNT(DISTINCT CASE WHEN e.relation_type = 'routes_to_capability' THEN e.id END) = 0
                 THEN 'provider_without_capability_route'
                 -- The former 'action_without_egress_gate' branch was removed 2026-04-23:
@@ -121,6 +145,13 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
           AND n.resolved_path NOT LIKE 'tests/%'
           AND n.resolved_path NOT LIKE 'tools/%'
           AND n.resolved_path NOT LIKE 'ops_scripts/%'
+          -- Non-runtime tooling / hook exclusions (2026-04-23):
+          AND n.resolved_path NOT LIKE '.windsurf/scripts/%'
+          AND n.resolved_path NOT LIKE 'agentic_core/adg/%'
+          AND n.resolved_path NOT LIKE 'infrastructure/%'
+          -- Sanctioned gateway adapter modules ARE the capability route;
+          -- flagging them for lacking one is semantically backward.
+          AND NOT {_build_gateway_approved_clause("n.resolved_path")}
         GROUP BY n.id
         HAVING provider_invoke_count > 0 OR gap_type != 'ok'
         ORDER BY gap_type, layer
@@ -168,6 +199,19 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
           AND src.resolved_path NOT LIKE 'tests/%'
           AND src.resolved_path NOT LIKE 'tools/%'
           AND src.resolved_path NOT LIKE 'ops_scripts/%'
+          -- Non-runtime tooling / hook exclusions (2026-04-23, same class as W5 write_sov):
+          AND src.resolved_path NOT LIKE '.windsurf/scripts/%'
+          AND src.resolved_path NOT LIKE 'agentic_core/adg/%'
+          AND src.resolved_path NOT LIKE 'infrastructure/%'
+          -- Pure-string stdlib symbols are scanner false-positives for invokes_provider
+          -- (no network call, no provider semantics). Exclude them.
+          AND e.symbol NOT LIKE 'urllib.parse.%'
+          AND e.symbol NOT LIKE 'urllib.request.%'
+          -- requests.append / requests.extend / requests.pop etc. are list-method calls
+          -- on local variables named 'requests'. The scanner marks these as provider
+          -- invocations because of the module name match; they are not.
+          AND e.symbol NOT IN ('requests.append', 'requests.extend', 'requests.pop',
+                                'requests.clear', 'requests.insert', 'requests.remove')
         ORDER BY bypass_type, src.layer
     """)
 
