@@ -64,6 +64,7 @@ This repo uses a **two-tier model**:
 | `mcp-pytest-enforcement.md` | MCP tests, `conftest.py`, or pytest execution discipline |
 | `memory-management.md` | Memory graph hygiene, purges, sync, write thresholds |
 | `refactor-decision-memory.md` | Refactor-class Author-Gate requires historical precedent check |
+| `intelligence-ledger-family.md` | Extending any writer hook, calibration job, or consulting skill in the ten-ledger family (ADR-050) |
 | `security-hardening.md` | Secrets, auth, external service credentials, env handling |
 | `sequential-thinking-enforcement.md` | T2/T3 work needs structured reasoning packet |
 | `windsurf-config-lookup.md` | Question is about Windsurf config, docs, hooks, rules, skills, workflows |

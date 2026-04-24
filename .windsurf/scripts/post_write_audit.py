@@ -128,6 +128,37 @@ def main() -> int:
     for finding in findings:
         print(f"[post_write_audit] {finding}", file=sys.stderr)
 
+    # W4.1 — guardian_exemption ledger: scan edits for new '# guardian: allow-*'
+    # comments and record them so the RCA-linker can later bind outcomes.
+    try:
+        from tools.ledgers.hook_helpers import emit_ledger_event
+        guardian_pat = re.compile(r"#\s*guardian:\s*allow-([a-z0-9-]+)\b(.*)$", re.IGNORECASE)
+        for edit in edits or []:
+            if not isinstance(edit, dict):
+                continue
+            new_text = edit.get("new_string") or edit.get("new", "") or ""
+            if not isinstance(new_text, str):
+                continue
+            for line_no, line in enumerate(new_text.splitlines(), 1):
+                m = guardian_pat.search(line)
+                if not m:
+                    continue
+                emit_ledger_event(
+                    ledger="guardian_exemption",
+                    event_kind="exemption_created",
+                    prediction={
+                        "exemption_type": f"allow-{m.group(1)}",
+                        "file_path": file_path,
+                        "line_in_edit": line_no,
+                        "justification": m.group(2).strip(" -:;"),
+                    },
+                    score_band="clean",  # starts clean; RCA linker may later reband
+                    repo_area=file_path,
+                )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- hook fail-soft contract
+        pass
+
     return 0
 
 

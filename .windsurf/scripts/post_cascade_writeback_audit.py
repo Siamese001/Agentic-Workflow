@@ -76,7 +76,7 @@ SIGNALS: list[tuple[str, re.Pattern[str], str]] = [
     (
         "hitl_decision_resolved",
         re.compile(r"DECISION_CAPTURED:\s*type=", re.IGNORECASE),
-        "notion:HITL Decision Ledger",
+        "notion:Author-Gate Decision Ledger",
     ),
     (
         "plan_created_or_modified",
@@ -297,6 +297,32 @@ def main() -> int:
         f"-> log: {VIOLATIONS_LOG.relative_to(REPO_ROOT)}"
     )
     print(summary, file=sys.stderr)
+
+    # W4.3 — memory_recall ledger: emit one row summarizing whether writeback
+    # signals were corroborated by a recent memory update. A corroborated
+    # signal scores "hit"; a missed writeback scores "miss".
+    try:
+        from tools.ledgers.hook_helpers import emit_ledger_event
+        emit_ledger_event(
+            ledger="memory_recall",
+            event_kind="recall_hit_rate",
+            prediction={
+                "signals_detected": len(signals),
+                "receipts_observed": len(receipts),
+                "recent_memory_updates_10min": recent_memory_count,
+            },
+            outcome={
+                "violations": len(violations),
+                "violation_signals": [v["signal"] for v in violations],
+            },
+            score_band="miss" if violations else "hit",
+            score_numeric=float(len(violations)),
+            repo_area=".windsurf/scripts/post_cascade_writeback_audit.py",
+        )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- hook fail-soft contract
+        pass
+
     return 0
 
 

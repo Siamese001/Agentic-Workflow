@@ -45,10 +45,35 @@ class ProgressReporter:
         ncols: int = 72,
         file: object = None,
     ) -> None:
+        import time as _time
         self._total = total
         self._label = label
         self._count = 0
         self._done_flag = False
+        self._start_monotonic = _time.monotonic()
+        self._ledger_event_id = ""
+
+        # W4.2 — progress_eta ledger: emit prediction row with total and caller
+        try:
+            from tools.ledgers.hook_helpers import emit_ledger_event
+            # Resolve caller location (file:line) best-effort using already-imported sys
+            frame = sys._getframe(1) if hasattr(sys, "_getframe") else None  # noqa: SLF001
+            caller = ""
+            if frame is not None:
+                caller = f"{frame.f_code.co_filename}:{frame.f_lineno}"
+            self._ledger_event_id = emit_ledger_event(
+                ledger="progress_eta",
+                event_kind="eta_predicted",
+                prediction={
+                    "operation_name": label,
+                    "predicted_total": total,
+                    "caller_location": caller,
+                },
+                repo_area="tools/progress_display.py",
+            )
+        except Exception:  # noqa: BLE001
+            # guardian: allow-broad-except -- ledger emit fail-soft
+            self._ledger_event_id = ""
 
         if _TQDM_AVAILABLE:
             self._bar: Optional[_tqdm] = _tqdm(  # type: ignore[type-arg]
@@ -85,6 +110,7 @@ class ProgressReporter:
             self._bar.close()
         else:
             print(f"[progress] {self._label} complete ({self._total}/{self._total})", file=sys.stderr)
+        self._bind_ledger_outcome(failed=False)
 
     def fail(self, message: str) -> None:
         """Mark the operation as failed with a message and close the bar."""
@@ -94,6 +120,42 @@ class ProgressReporter:
             self._bar.close()
         else:
             print(f"[progress] FAILED: {message}", file=sys.stderr)
+        self._bind_ledger_outcome(failed=True, message=message)
+
+    def _bind_ledger_outcome(self, failed: bool, message: str = "") -> None:
+        """W4.2 — bind progress_eta outcome row on done() or fail()."""
+        if not getattr(self, "_ledger_event_id", ""):
+            return
+        try:
+            import time as _time
+            from tools.ledgers.hook_helpers import bind_ledger_outcome
+            duration_s = _time.monotonic() - self._start_monotonic
+            overrun_ratio = duration_s / max(self._total, 1) if self._total else None
+            if overrun_ratio is None:
+                band = "unknown"
+            elif 0.8 <= overrun_ratio <= 1.2:
+                band = "accurate"
+            elif overrun_ratio > 1.2:
+                band = "slow"
+            else:
+                band = "fast"
+            bind_ledger_outcome(
+                ledger="progress_eta",
+                event_id=self._ledger_event_id,
+                outcome={
+                    "actual_duration_s": duration_s,
+                    "actual_items_processed": self._count,
+                    "overrun_ratio": overrun_ratio,
+                    "failed": failed,
+                    "message": message,
+                },
+                score_band=band if not failed else "fast",
+                score_numeric=duration_s,
+                latency_ms=int(duration_s * 1000),
+            )
+        except Exception:  # noqa: BLE001
+            # guardian: allow-broad-except -- ledger bind fail-soft
+            pass
 
     def __enter__(self) -> "ProgressReporter":
         return self

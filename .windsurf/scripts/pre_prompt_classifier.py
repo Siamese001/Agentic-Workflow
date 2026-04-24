@@ -653,6 +653,27 @@ def main() -> int:
     tier = classify_tier(prompt)
     print(f"[pre_prompt_classifier] Tier: {tier}", file=sys.stderr)
 
+    # W2.1 — prompt_classifier ledger: capture every tier prediction.
+    # Actual tier outcome (files_edited, lines_changed, layers_touched) is bound
+    # later by the post_commit/post_cascade pipeline via bind_outcome().
+    try:
+        from tools.ledgers.hook_helpers import emit_ledger_event
+        import hashlib as _hashlib
+        prompt_hash = _hashlib.sha256(prompt.encode("utf-8", errors="ignore")).hexdigest()[:16]
+        emit_ledger_event(
+            ledger="prompt_classifier",
+            event_kind="tier_prediction",
+            prediction={
+                "predicted_tier": tier,
+                "prompt_hash": f"sha256:{prompt_hash}",
+                "prompt_length": len(prompt),
+            },
+            repo_area=".windsurf/scripts/pre_prompt_classifier.py",
+        )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- hook fail-soft contract
+        pass
+
     # vector_db routing trace: emitted for every prompt so selection vs non-selection is observable.
     if _detect_semantic_retrieval(prompt):
         print(

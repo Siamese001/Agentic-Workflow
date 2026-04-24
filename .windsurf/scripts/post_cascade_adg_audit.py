@@ -309,6 +309,32 @@ def main() -> int:
                 file=sys.stderr,
             )
 
+        # W1.1 — tool_routing ledger: emit one row per detected violation
+        # AND one aggregated row per response so the ledger captures both
+        # positive (no violations) and negative (grep-for-deps) outcomes.
+        try:
+            from tools.ledgers.hook_helpers import emit_ledger_event
+            emit_ledger_event(
+                ledger="tool_routing",
+                event_kind="routing_violation" if violations else "retrieval_scan_clean",
+                prediction={
+                    "chosen_tool": "grep_search" if violations else "unknown",
+                    "violation_count": len(violations),
+                    "violation_types": sorted({v.get("pattern", "") for v in violations}) if violations else [],
+                },
+                outcome={
+                    "backend_used": "degraded_grep" if violations else "unknown",
+                    "result_count": len(violations),
+                    "fallback_triggered": bool(violations),
+                },
+                score_band="miss" if violations else "correct",
+                score_numeric=float(len(violations)),
+                repo_area=".windsurf/scripts/post_cascade_adg_audit.py",
+            )
+        except Exception:  # noqa: BLE001
+            # guardian: allow-broad-except -- hook fail-soft contract
+            pass
+
     except (OSError, ValueError):  # guardian: allow-silent-swallow -- audit log flush: non-fatal, fail-open
         pass
 

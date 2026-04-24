@@ -467,6 +467,39 @@ def main() -> int:
         }
         _append_gitkraken_write_audit(write_record)
 
+    # W2.2 — mcp_invocation ledger: per-call latency + retry telemetry
+    try:
+        from tools.ledgers.hook_helpers import emit_ledger_event
+        # Band by duration_ms: <500ms fast, <2000ms slow, >=2000ms hang-candidate
+        if duration_ms is None:
+            band = "unknown"
+        elif duration_ms < 500:
+            band = "fast"
+        elif duration_ms < 2000:
+            band = "slow"
+        else:
+            band = "hang"
+        emit_ledger_event(
+            ledger="mcp_invocation",
+            event_kind="mcp_call",
+            prediction={
+                "server_id": server_name or "",
+                "tool_name": tool_name or "",
+            },
+            outcome={
+                "actual_latency_ms": duration_ms,
+                "retries": 0,
+                "hang_bypass_triggered": False,
+            },
+            score_band=band,
+            score_numeric=float(duration_ms) if duration_ms is not None else None,
+            latency_ms=int(duration_ms) if duration_ms is not None else None,
+            repo_area=".windsurf/scripts/post_mcp_audit.py",
+        )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- hook fail-soft contract
+        pass
+
     return 0
 
 

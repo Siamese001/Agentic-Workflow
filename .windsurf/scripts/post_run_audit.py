@@ -97,6 +97,34 @@ def main() -> int:
     }
     _append_log(record)
 
+    # W4.4 — test_selection ledger: when the command is a pytest invocation,
+    # capture the selected tests as a triage-selection event. Actual outcome
+    # binding (pass/fail counts) happens later via post-commit or CI parsing.
+    try:
+        lower_cmd = (command_line or "").lower()
+        if "pytest" in lower_cmd:
+            from tools.ledgers.hook_helpers import emit_ledger_event
+            # Extract -k keyword expression or explicit test paths (best effort)
+            import shlex as _shlex
+            try:
+                tokens = _shlex.split(command_line)
+            except ValueError:
+                tokens = command_line.split()
+            selected_paths = [t for t in tokens if t.endswith(".py") or "::" in t]
+            emit_ledger_event(
+                ledger="test_selection",
+                event_kind="triage_selection",
+                prediction={
+                    "command": command_line,
+                    "selected_paths": selected_paths,
+                    "selection_rationale": "cli_explicit" if selected_paths else "full_suite",
+                },
+                repo_area=cwd or "",
+            )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- hook fail-soft contract
+        pass
+
     return 0
 
 

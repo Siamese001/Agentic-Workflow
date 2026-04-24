@@ -2,8 +2,9 @@
 """
 post_commit_outcome_binder.py — Bind executed decisions to their commit outcomes.
 
-Closes the harness HITL learning loop by writing decision_outcomes rows for any
-surfaced decision whose files_in_scope overlap a recent commit's touched files.
+Closes the Author-Gate (developer-loop) learning loop by writing decision_outcomes
+rows for any surfaced decision whose files_in_scope overlap a recent commit's
+touched files. Distinct from runtime HITL (ADR-023, agentic_core/L5_safety/).
 
 INVOCATION MODES
 ----------------
@@ -149,19 +150,48 @@ def open_db() -> sqlite3.Connection | None:
 
 
 def unbound_decisions(conn: sqlite3.Connection) -> list[sqlite3.Row]:
-    """Decisions with status='surfaced' and no existing outcome row."""
+    """Decisions with status in ('surfaced','executed') and no existing outcome row.
+
+    The v2 capture hook writes status='executed' directly when the DECISION_CAPTURED
+    marker carries outcome=executed. Prior to this fix the binder only looked at
+    status='surfaced', which meant every v2-captured decision was orphaned (no
+    decision_outcomes row) — breaking the meta-learning loop. The outcome write is
+    idempotent, so accepting both states is safe.
+    """
     cur = conn.execute(
         """
-        SELECT d.decision_id, d.created_at, d.decision_type, d.normalized_intent
+        SELECT d.decision_id, d.created_at, d.decision_type, d.normalized_intent,
+               d.commit_sha
           FROM decisions d
           LEFT JOIN decision_outcomes o ON o.decision_id = d.decision_id
-         WHERE d.status = 'surfaced'
+         WHERE d.status IN ('surfaced', 'executed')
            AND o.outcome_id IS NULL
          ORDER BY d.created_at DESC
          LIMIT 500
         """
     )
     return cur.fetchall()
+
+
+def _commit_subject(sha: str) -> str:
+    """Return the commit subject for a SHA, or '' on any failure."""
+    if not sha:
+        return ""
+    try:
+        r = subprocess.run(
+            ["git", "show", "-s", "--format=%s", sha],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=False,
+            timeout=GIT_TIMEOUT_S,
+            check=False,
+        )
+    except (subprocess.TimeoutExpired, OSError):
+        return ""
+    return r.stdout.strip() if r.returncode == 0 else ""
 
 
 def decision_files(conn: sqlite3.Connection, decision_id: str) -> set[str]:
@@ -201,7 +231,9 @@ def classify_outcome(subject: str) -> tuple[str, dict[str, int]]:
     if any(tok in lower for tok in ("revert ", "rollback", "hotfix revert")):
         flags["rollback_required"] = 1
         return "rollback", flags
-    if any(tok in lower for tok in ("regression", "bug:", "fix regression")):
+    # "regression tests" / "regression suite" are feature additions, not rework.
+    # Only flag when the subject signals an actual regression fix.
+    if any(tok in lower for tok in ("fix regression", "regression fix", "bug:", "bugfix:")):
         flags["regression_found"] = 1
         return "rework", flags
     if any(tok in lower for tok in ("fix ", "bugfix")):
@@ -231,19 +263,34 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
         decision_id = dec["decision_id"]
         created_at = dec["created_at"]
         scope_files = decision_files(conn, decision_id)
-        if not scope_files:
-            continue
 
-        # Find the first commit AFTER decision.created_at that touches a scope file
+        # Direct-bind path: the v2 capture hook pre-populates decisions.commit_sha
+        # from the DECISION_CAPTURED marker's commit context, so file-intersection
+        # is unnecessary — the SHA is already correct. Prefer this when present.
+        direct_sha = dec["commit_sha"] if "commit_sha" in dec.keys() else None
         best = None
-        for c in commits:
-            if c["ts"] <= created_at:
-                continue
-            if _overlap(scope_files, c["files"]):
-                best = c
-                break
+        if direct_sha:
+            subject = _commit_subject(direct_sha)
+            if subject:
+                best = {
+                    "sha": direct_sha,
+                    "subject": subject,
+                    "files": [],  # unknown without full walk; empty is fine for overlap JSON
+                    "ts": created_at,
+                }
+
         if best is None:
-            continue
+            if not scope_files:
+                continue
+            # Fallback: find the first commit AFTER decision.created_at that touches a scope file
+            for c in commits:
+                if c["ts"] <= created_at:
+                    continue
+                if _overlap(scope_files, c["files"]):
+                    best = c
+                    break
+            if best is None:
+                continue
 
         label, flags = classify_outcome(best["subject"])
         try:
@@ -301,6 +348,33 @@ def bind(conn: sqlite3.Connection, commits: list[dict], dry_run: bool) -> int:
             )
             conn.commit()
             bound_count += 1
+
+            # W1.2 — refactor_outcome ledger: emit a bound row when a
+            # refactor-class Author-Gate decision is tied to a commit.
+            try:
+                from tools.ledgers.hook_helpers import emit_ledger_event
+                dec_type = dec["decision_type"] if "decision_type" in dec.keys() else "unknown"
+                emit_ledger_event(
+                    ledger="refactor_outcome",
+                    event_kind="wave_outcome",
+                    prediction={
+                        "decision_id": decision_id,
+                        "decision_type": dec_type,
+                    },
+                    outcome={
+                        "commit_sha": best["sha"],
+                        "commit_subject": best["subject"][:200],
+                        "outcome_label": label,
+                        "latency_to_outcome_s": latency_s,
+                    },
+                    score_band=label if label in ("success", "rework", "rollback") else "partial",
+                    commit_sha=best["sha"],
+                    latency_ms=int(latency_s) * 1000 if latency_s else None,
+                    repo_area=".windsurf/scripts/post_commit_outcome_binder.py",
+                )
+            except Exception:  # noqa: BLE001
+                # guardian: allow-broad-except -- ledger emit fail-soft
+                pass
         except sqlite3.Error as exc:
             _LOG.error("Failed to bind %s: %s", decision_id, exc)
             conn.rollback()
