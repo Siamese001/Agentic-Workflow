@@ -118,7 +118,8 @@ class SeniorLibrarianReranker:
         pruned = [r for r in reranked if r.rerank_score >= self.prune_threshold]
 
         _emit_records_telemetry_event(
-            "rerank",
+            trace_id,
+            "SeniorLibrarianReranker",
             f"candidates_{len(candidates)}_pruned_{len(pruned)}",
         )
 
