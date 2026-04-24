@@ -642,6 +642,37 @@ def generate_full_adg(
     # Orchestrator runs inline here. No SQLite contention with temp directory.
     prod_sqlite_path = _resolve_post_commit_sqlite(paths, adg_artifacts_dir, ts)
 
+    # --- W5.2 (plan repo-tech-debt-wave1-b3c8d1): Phase-2 auto-disposition ---
+    # Close the two-pipeline divergence between `agentic_core.adg.client.cli`
+    # (which already ran phase2) and this generator (which did not). Every
+    # regen now auto-approves guardian-annotated antipattern violations BEFORE
+    # MV enrichment, so mv_debt_concentration_hotspots / P-views reflect the
+    # true ratchet-eligible count instead of a noise floor of 4500+ false
+    # `untriaged` rows that silently mask real regressions.
+    #
+    # Positioning: after sqlite commit, before `_enrich_infra_views` and
+    # `_materialize_adg_views` (which query `violations.disposition`).
+    # Fail-open semantics: any phase2 error is logged and the pipeline
+    # continues — phase2 is an enrichment, not a correctness gate.
+    try:
+        import sqlite3 as _phase2_sqlite3  # noqa: PLC0415 -- local import to avoid adding a module-level dep purely for this fallback catch
+        from agentic_core.adg.processing.phase2_disposition_processor import (  # noqa: PLC0415
+            run_phase2_disposition_processing,
+        )
+        try:
+            _phase2_result = run_phase2_disposition_processing(prod_sqlite_path)
+            print(
+                f"[ADG] Phase-2 auto-disposition: approved={_phase2_result.get('approved', 0)} "
+                f"tested={_phase2_result.get('tested', 0)} remaining={_phase2_result.get('remaining', 0)}"
+            )
+        except (_phase2_sqlite3.Error, RuntimeError, OSError) as _phase2_exc:  # guardian: allow-log-and-swallow -- phase2 is enrichment, not a gate; log and continue so one bad disposition cycle does not block a full regen
+            print(
+                f"[ADG] Phase-2 auto-disposition failed: "
+                f"{type(_phase2_exc).__name__}: {_phase2_exc}"
+            )
+    except ImportError as _phase2_imp_exc:  # guardian: allow-log-and-swallow -- phase2 module optional in reduced-install environments; enrichment skipped cleanly
+        print(f"[ADG] Phase-2 auto-disposition unavailable: {_phase2_imp_exc}")
+
     # --- ADG Pipeline Ordering Contract (plan adg-pipeline-e2e-5287a1 W1) ---
     # Enrichment (infra wiring views + Phase A..E materialized views) MUST run
     # BEFORE any Tier-2 gate that may sys.exit(1), because:
