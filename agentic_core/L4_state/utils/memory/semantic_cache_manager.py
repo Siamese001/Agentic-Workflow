@@ -149,6 +149,79 @@ def _single_flight_enabled() -> bool:
 _TTL_JITTER_PCT: float = float(os.environ.get("SEMANTIC_CACHE_TTL_JITTER_PCT", "0.1"))
 
 
+def _structured_emit_enabled() -> bool:
+    """G10 structured payload emit active. Default on; off reverts to string-only."""
+    return os.environ.get("SEMANTIC_CACHE_STRUCTURED_EMIT", "1") != "0"
+
+
+def _emit_structured_cache_event(
+    *,
+    namespace: str,
+    tenant_id: str,
+    cache_lineage: str,
+    reason_code: str,
+    dense_score: float = 0.0,
+    sparse_score: float = 0.0,
+    fused_score: float = 0.0,
+    evidence_ids: tuple[str, ...] = (),
+    written_at: float = 0.0,
+    ttl_seconds: int = 0,
+    policy_hash: str = "",
+    embedding_model_id: str = "",
+    cache_tier: str = "dynamic",
+) -> None:
+    """G10 R1B.5 structured emit. Builds a :class:`SemanticCachePayload`
+    and forwards a single JSON-shaped event to ``_emit_emits_metric_event``.
+
+    Additive to existing string emits — both fire so legacy consumers keep
+    working while structured consumers gain a contract-shaped payload.
+    Failures are swallowed: telemetry must never break the cache hot path.
+    """
+    if not _structured_emit_enabled():
+        return
+    try:
+        from agentic_core.L4_state.utils.memory.cache_payload_contract import (  # noqa: PLC0415
+            SemanticCachePayload,
+            compute_cache_id,
+            freshness_class_for_age,
+            new_hit_id,
+        )
+    except ImportError as _exc:
+        Logger.debug("structured emit: payload contract import failed: %s", _exc)
+        return
+    try:
+        _age = max(0.0, time.time() - written_at) if written_at else 0.0
+        payload = SemanticCachePayload(
+            prior_answer=None,
+            dense_score=float(dense_score),
+            sparse_score=float(sparse_score),
+            fused_score=float(fused_score),
+            hit_id=new_hit_id(),
+            cache_id=compute_cache_id(namespace, tenant_id),
+            cache_lineage=cache_lineage,
+            cache_tier=cache_tier,
+            reason_codes=(reason_code,),
+            policy_hash=policy_hash,
+            embedding_model_id=embedding_model_id,
+            namespace=namespace,
+            tenant_id=tenant_id,
+            written_at=float(written_at),
+            ttl_seconds=int(ttl_seconds),
+            freshness_class=freshness_class_for_age(_age),
+            evidence_ids=tuple(str(_e) for _e in evidence_ids),
+        )
+        _payload_json = json.dumps(payload.to_dict(), separators=(",", ":"))
+        _emit_emits_metric_event(
+            "semantic_cache_manager",
+            "p4obs",
+            f"structured:{reason_code}:{_payload_json}",
+        )
+    except (ValueError, TypeError, RuntimeError) as _exc:
+        # guardian: allow-log-and-swallow -- structured emit is observability-only;
+        # never break the cache hot path on a payload validation glitch.
+        Logger.debug("structured emit: payload build failed: %s", _exc)
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -777,6 +850,15 @@ class SemanticCacheManager:
                         _emit_emits_metric_event(
                             "semantic_cache_manager", "p4obs", f"l1_hit:{namespace}"
                         )  # [Phase A]
+                        _emit_structured_cache_event(
+                            namespace=namespace,
+                            tenant_id=tenant_id or "",
+                            cache_lineage="L1",
+                            reason_code="exact_hit",
+                            ttl_seconds=int(self.DEFAULT_WORKING_MEMORY_TTL),
+                            embedding_model_id=self._EMBEDDING_MODEL_VERSION,
+                            cache_tier="static",
+                        )
                         _record_semantic_cache_prom_event("hit", namespace)
                         return cached_payload
             except (
@@ -889,6 +971,17 @@ class SemanticCacheManager:
                         _emit_emits_metric_event(
                             "semantic_cache_manager", "p4obs", f"l2_hit:{namespace}"
                         )  # [Phase A]
+                        _emit_structured_cache_event(
+                            namespace=namespace,
+                            tenant_id=tenant_id or "",
+                            cache_lineage="L2_to_L1_writeback" if self.redis_enabled else "L2",
+                            reason_code="hybrid_hit" if _hybrid_enabled() else "exact_hit",
+                            dense_score=float(getattr(self._gptcache, "similarity_threshold", 0.95)),
+                            evidence_ids=tuple(str(_e) for _e in (_l2_meta.get("evidence_ids") or [])),
+                            ttl_seconds=int(self.DEFAULT_WORKING_MEMORY_TTL),
+                            embedding_model_id=active_model,
+                            cache_tier="dynamic",
+                        )
                         _record_semantic_cache_prom_event("hit", namespace)
                         # L2 → L1 write-back: hot-promote into Redis so subsequent
                         # recalls stay O(1) without another Chroma round-trip.

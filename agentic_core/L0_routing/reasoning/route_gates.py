@@ -52,6 +52,39 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
 )
 from agentic_core.runtime.config.routing_thresholds import get_threshold
 
+# Side-effect import: wires the L4 semantic-cache evidence resolver to the
+# L0 composition root (fail-closed default; apps register real source via
+# ``register_evidence_source``). Importing route_gates anywhere in the L0
+# boot path is sufficient to install the wiring exactly once.
+from agentic_core.L0_routing import composition_root as _composition_root  # noqa: F401
+
+# W5.P5: fail-soft metric emission. Import lazily so any breakage in the
+# observability path cannot break the routing hot path.
+try:
+    from agentic_core.L6_observability.routing_calibration_metrics import (
+        record_r1_exact_hit,
+        record_r1_semantic_hit,
+        record_r3_coverage_below_floor,
+        record_r3_grounded,
+    )
+
+    _METRICS_AVAILABLE = True
+except ImportError:  # guardian: allow-log-and-swallow -- observability import is optional; routing decisions must not depend on it
+
+    def record_r1_exact_hit(namespace: str = "default", *, increment: int = 1) -> None:  # type: ignore[misc]
+        return None
+
+    def record_r1_semantic_hit(namespace: str = "default", *, increment: int = 1) -> None:  # type: ignore[misc]
+        return None
+
+    def record_r3_coverage_below_floor(namespace: str = "default", *, increment: int = 1) -> None:  # type: ignore[misc]
+        return None
+
+    def record_r3_grounded(namespace: str = "default", *, increment: int = 1) -> None:  # type: ignore[misc]
+        return None
+
+    _METRICS_AVAILABLE = False
+
 Logger = logging.getLogger(__name__)
 
 
@@ -332,6 +365,8 @@ def check_route_gates(
             namespace,
             trace_id,
         )
+        # W5.P5: emit calibration metric for cache-hit rate rollups.
+        record_r1_exact_hit(namespace or "default")
         contract: L0RouteContract = {
             "selected_route": L0Route.R1A,
             "confidence": confidence,
@@ -362,6 +397,8 @@ def check_route_gates(
             namespace,
             trace_id,
         )
+        # W5.P5: emit calibration metric for cache-hit rate rollups.
+        record_r1_semantic_hit(namespace or "default")
         contract = {
             "selected_route": L0Route.R1B,
             "confidence": confidence,
@@ -461,8 +498,13 @@ def check_r3_grounding_gate(
             else get_threshold("c0_coverage_floor", namespace=namespace)
         )
         if coverage_score < floor:
+            # W5.P5: emit coverage-below-floor metric for the §C0.6
+            # broaden-loop observability surface.
+            record_r3_coverage_below_floor(namespace or "default")
             return True, "d3_coverage_below_floor"
 
+    # W5.P5: successful grounded-read dispatch.
+    record_r3_grounded(namespace or "default")
     return True, "d3_grounding_required"
 
 

@@ -117,7 +117,7 @@ For each top-5 hotspot file, we queried edge counts by relation_type:
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W1-01 | Mechanical burn (3 auto-fixable kinds) | ~140 files across all layers | Re-use `burn_wave2.py`-style AST rewrite + bare-except narrowing | 🟢 2k | pending |
+| W1-01 | Mechanical burn (3 auto-fixable kinds) | ~140 files across all layers | Manual per-site narrowing only — no `burn_wave2.py` exists (never built). Auto-fix rejected 2026-04-24 per RCA: P0/P1 have ~87% false-positive rate against doctrinally-valid best-effort patterns. See `tools/archive/phase3_orphan_w6/README.md`. | 🟢 2k | pending |
 | W2-01 | `system_learning_memory_bridge.py` (38 V) | 1 file, L_SL | Largest single-file target; use resolves_callsite to understand consumers before narrowing | 🟡 3k | pending |
 | W2-02 | `apps_rg/engines/base_rg_engine.py` (5 V) | 1 file, L_APP | High fan-in 44 | 🟢 1k | pending |
 | W2-03 | `L2_execution/utils/write_gateway.py` (3 V) | 1 file, L2 | Critical write path — 25 writes_to + 20 side-effects | 🟡 2k | pending |
