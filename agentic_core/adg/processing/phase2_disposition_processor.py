@@ -117,9 +117,9 @@ class ViolationDispositionProcessor:
         cursor = conn.execute("PRAGMA table_info(violations)")
         columns = {row[1] for row in cursor.fetchall()}
 
-        evidence_col = "evidence" if "evidence" in columns else "''"
-        line_no_col = "line_no" if "line_no" in columns else "0"
-        order_by = "file_path, line_no" if "line_no" in columns else "file_path"
+        evidence_col = "v.evidence" if "evidence" in columns else "''"
+        line_no_col = "v.line_no" if "line_no" in columns else "0"
+        order_by = "v.file_path, v.line_no" if "line_no" in columns else "v.file_path"
 
         base_select = (
             f"SELECT v.id, v.file_path, {line_no_col}, "
@@ -127,7 +127,7 @@ class ViolationDispositionProcessor:
             f"{evidence_col}, {{severity_expr}}, {{disposition_expr}} "
             "FROM violations v "
             "LEFT JOIN edges e ON v.edge_id = e.id "
-            "WHERE v.category = 'antipattern' {{disposition_filter}} "
+            "WHERE v.category = 'antipattern' {disposition_filter} "
             f"ORDER BY {order_by}"
         )
 
