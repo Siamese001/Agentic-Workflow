@@ -519,7 +519,7 @@ def main():
 
     except (
         L4NormalizationError
-    ) as e:  # guardian: L4NormalizationError should be handled with specific context
+    ) as e:  # review: L4NormalizationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:

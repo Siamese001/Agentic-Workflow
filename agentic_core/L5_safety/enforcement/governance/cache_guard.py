@@ -194,7 +194,7 @@ def estimate_directory_size(dir_path: Path) -> int:
                     total_size += file_path.stat().st_size
                     if total_size > max_scan_bytes:
                         return total_size
-                except (  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+                except (  # review: Multiple exceptions (OSError, PermissionError) need specific handling
                     OSError,
                     PermissionError,
                 ):

@@ -33,13 +33,13 @@ These require explicit user selection via `ask_user_question` before proceeding:
 
 | Action | Constitutional Basis | Workflow |
 |--------|----------------------|----------|
-| New `# guardian: allow-*` comment | Section 8 | `/antipattern-hitl-gate` |
+| New `# guardian: allow-*` comment | Section 8 | `/antipattern-author-gate` |
 | Agent (`*Agent.py`) deletion | Section 1.6 / Section 3 | `/agent-deletion-gate` |
-| New external PyPI/npm dependency | Section HITL-1.5 | `/hitl-decision-gate` |
-| Architectural approach selection (>=2 valid paths) | Section 6 / Section HITL-1.1 | `/hitl-decision-gate` |
-| Production file deletion | Section HITL-1.6 | `/hitl-decision-gate` |
-| Cross-layer refactor scope | Section HITL-1.2 | `/hitl-decision-gate` |
-| Governance/policy config change | Section HITL-1.7 | `/hitl-decision-gate` |
+| New external PyPI/npm dependency | Section AG-1.5 | `/author-gate-decision-gate` |
+| Architectural approach selection (>=2 valid paths) | Section 6 / Section AG-1.1 | `/author-gate-decision-gate` |
+| Production file deletion | Section AG-1.6 | `/author-gate-decision-gate` |
+| Cross-layer refactor scope | Section AG-1.2 | `/author-gate-decision-gate` |
+| Governance/policy config change | Section AG-1.7 | `/author-gate-decision-gate` |
 
 **Format**: Must use `ask_user_question` tool - plain text approval is NOT accepted.
 
@@ -83,8 +83,11 @@ When `pre_write_gate.py` blocks a `except Exception` or bare `except:`:
    - Why: specific technical justification (not "needed" or "temporary")
    - Alternatives: at least 2 alternatives considered and why rejected
 3. Wait for explicit user approval
-4. After approval: add guardian comment with specific justification
-   Format: # guardian: allow-broad-exception -- <specific reason>
+4. After approval: add guardian comment with exemption token. Two canonical forms accepted (W17.b-tail, 2026-04-24):
+   - **Long form (preferred for NEW exemptions)**: `# guardian: allow-broad-exception -- <specific reason>`
+   - **Short form (accepted, grandfathered)**: `# guardian: allow-broad-exception`
+   Both forms satisfy the scanner (`post_write_audit.py` regex is `#\s*guardian:\s*allow-([a-z0-9-]+)\b(.*)$`; `pre_write_gate.py` regex is `#\s*guardian:\s*allow-`). Long form is preferred because the justification text survives git-blame churn. Short form exists because ~1757 pre-existing sites use it and retroactive per-site justification invention would be audit noise without information gain.
+   Comments that begin with `# guardian:` but do NOT start with `allow-` are **review-notes**, not exemption directives, and MUST use the `# review:` prefix instead (mechanically renamed in W17.b-tail 2026-04-24).
 5. Commit with Author-Gate-APPROVED prefix in message
 ```
 

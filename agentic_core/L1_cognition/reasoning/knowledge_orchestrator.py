@@ -326,7 +326,7 @@ def capture_reasoning_pattern(
             actor_id="knowledge_orchestrator",
             run_id=reasoning_context.run_id if hasattr(reasoning_context, "run_id") else "",
         )
-    except PolicyEnforcementError:  # guardian: PolicyEnforcementError should be handled with specific context
+    except PolicyEnforcementError:  # review: PolicyEnforcementError should be handled with specific context
         raise
 
     # --- Step 1: identify reusable reasoning patterns ---

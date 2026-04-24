@@ -39,7 +39,7 @@ def parse_file(py_file):
         src = py_file.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(src, filename=str(py_file))
         return (src, tree)
-    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
         print(f"SYNTAX_ERR: {py_file.relative_to(ROOT).as_posix()}: {e}")
         return (None, None)
 

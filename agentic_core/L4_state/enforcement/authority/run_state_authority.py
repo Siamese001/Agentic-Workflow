@@ -428,7 +428,7 @@ class RunStateAuthority(WriteGovernorMixin):
             StateNamespaceError,
             StateVersionMissingError,
             StateConflictError,
-        ) as exc:  # guardian: Multiple exceptions (StateNamespaceError, StateVersionMissingError) need specific handling
+        ) as exc:  # review: Multiple exceptions (StateNamespaceError, StateVersionMissingError) need specific handling
             logger.error(
                 "RUN_STATE_AUTHORITY commit_versioned_state_transition failed: %s (namespace=%s key=%s)",
                 exc,

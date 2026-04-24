@@ -44,7 +44,7 @@ try:
     from ops_scripts.ci.adg_gates.gate_policy import TrendResult
 
     _IMPORTS_OK = True
-except Exception as _exc:  # guardian: runner must record import-side-effect failures instead of crashing
+except Exception as _exc:  # review: runner must record import-side-effect failures instead of crashing
     _IMPORT_ERROR = f"{type(_exc).__name__}: {_exc}"
 
 

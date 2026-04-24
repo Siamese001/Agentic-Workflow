@@ -361,7 +361,7 @@ class ASTAnalyzer:
         except (
             SyntaxError,
             UnicodeDecodeError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):  # review: Parsing and encoding errors need separate handling strategies
             return None
 
     def extract_class_info(self, tree: ast.AST, file_path: str) -> list[dict[str, Any]]:

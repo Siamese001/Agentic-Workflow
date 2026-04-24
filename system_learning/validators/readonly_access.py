@@ -57,7 +57,7 @@ def check_file_readonly(file_path: Path) -> list[str]:
     """Return list of write-pattern violations for a single file."""
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
-    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # review: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError: {exc}"]
     visitor = _ReadOnlyVisitor()
     visitor.visit(tree)

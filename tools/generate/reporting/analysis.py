@@ -210,7 +210,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         src_name,
         relation_type,
         dst_name,
-    ) in rows:  # guardian: Add error context logging
+    ) in rows:  # review: Add error context logging
         if relation_type == "imports" and src_name.startswith("ADG::Module::"):
             for prefix in _key_prefixes(_symbol_to_module_key(dst_name)):
                 importers_of[prefix].add(src_name)
@@ -228,7 +228,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             for importer in importers_of.get(
                 violating_key,
                 set(),
-            )  # guardian: Add error context logging
+            )  # review: Add error context logging
             if importer not in violating_modules and importer not in visited
         }
         visited |= frontier
@@ -239,7 +239,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             for node in frontier:
                 node_key = _module_to_key(
                     node,
-                )  # guardian: Add error context logging
+                )  # review: Add error context logging
                 for importer in importers_of.get(node_key, set()):
                     if importer not in visited:
                         visited.add(importer)
@@ -256,7 +256,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol",
         ).fetchall(),
     )
-    return {  # guardian: Add error context logging
+    return {  # review: Add error context logging
         "eligible_edge_count": eligible_edge_count,
         "eligible_target_module_count": len(eligible_module_targets),
         "actual_edge_count": actual_edge_count,
@@ -333,7 +333,7 @@ def _artifact_determinism_probe(
                 "scanner_digest_match",
                 "artifact_digest_match",
                 "node_row_digest_match",
-                "edge_row_digest_match",  # guardian: Add error context logging
+                "edge_row_digest_match",  # review: Add error context logging
             )
         )
         else "partial"
@@ -362,7 +362,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
     Removes all MANIFEST files (low value).
     Removes non-timestamped report files (legacy cleanup).
 
-    Args:    # guardian: Add error context logging
+    Args:    # review: Add error context logging
         adg_dir: ADG artifacts directory
         current_ts: Current timestamp (MMDDYYYY_HHMM format)
     """
@@ -371,7 +371,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
     cleaned_count = 0
 
-    # Remove all MANIFEST files (low value)    # guardian: Add error context logging
+    # Remove all MANIFEST files (low value)    # review: Add error context logging
     for manifest_file in adg_dir.glob("MANIFEST_*.txt"):
         # guardian: allow-silent-swallow -- acceptable exception handling
         if _safe_unlink(manifest_file):
@@ -407,5 +407,5 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
                 if _safe_unlink(val_file):
                     cleaned_count += 1
 
-    if cleaned_count > 0:  # guardian: Add error context logging
+    if cleaned_count > 0:  # review: Add error context logging
         print(f"[ADG] Cleanup: removed {cleaned_count} old validation/manifest files")

@@ -268,7 +268,7 @@ def run_hardened_query(
         except (
             concurrent.futures.TimeoutError,
             TimeoutError,
-        ):  # guardian: TimeoutError should be handled with specific context
+        ):  # review: TimeoutError should be handled with specific context
             # Ensure non-blocking shutdown is called even if TimeoutError is raised
             executor.shutdown(wait=False, cancel_futures=True)
             progress.update(task_id, description="[bold red]TIMEOUT[/bold red]")

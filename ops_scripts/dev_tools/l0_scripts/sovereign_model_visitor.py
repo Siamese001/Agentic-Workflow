@@ -49,7 +49,7 @@ def check_file(filepath: Any) -> Any:
             print("=" * 80)
             return False
         return True
-    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
         return True
     except Exception as e:  # guardian: allow-silent-swallow
         print(f"⚠️  Warning: Could not parse {filepath}: {e}")

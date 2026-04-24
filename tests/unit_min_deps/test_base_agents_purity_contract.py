@@ -26,4 +26,4 @@ class TestBaseAgentsPurityContract:
 
     def test_placeholder_3(self):
         """Placeholder test 3."""
-        assert True  # guardian: Parsing and encoding errors need separate handling strategies
+        assert True  # review: Parsing and encoding errors need separate handling strategies

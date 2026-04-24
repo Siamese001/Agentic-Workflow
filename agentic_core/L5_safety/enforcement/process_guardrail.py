@@ -328,7 +328,7 @@ class ProcessGuard:
             os.kill(pid, term_signal)
         except ProcessLookupError:  # guardian: allow-silent-swallow -- process already dead, non-fatal
             pass
-        except PermissionError:  # guardian: Permission errors should validate access before operation
+        except PermissionError:  # review: Permission errors should validate access before operation
             logger.warning(f"ProcessGuard: Permission denied killing PID {pid}")
             raise
 

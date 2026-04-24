@@ -173,7 +173,7 @@ def _inject_import(text: str, tree: ast.Module, module: str, symbol: str) -> str
 
     if existing_node is not None:
         # Merge symbol into the existing ImportFrom — but only if the
-        # existing block has no inline comments (e.g. `# guardian: ...`
+        # existing block has no inline comments (e.g. `# review: ...`
         # or `# type: ignore`). Rebuilding would silently strip them, which
         # is a constitutional violation for guardian annotations and loses
         # type-checker hints for the rest. If any comment is present, fall

@@ -323,7 +323,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
 
     def _check_gravity(
         self, file_path: Path, content: str
-    ) -> list[StructureViolation]:  # guardian: Syntax errors should be caught at parser level, not runtime
+    ) -> list[StructureViolation]:  # review: Syntax errors should be caught at parser level, not runtime
         violations = []
         source_layer = self._extract_layer(file_path)
         if not source_layer:
@@ -331,7 +331,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
         try:
             tree = ast.parse(content)
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in tqdm(tree.body, desc="Processing", unit="item"):
             if isinstance(node, ast.ImportFrom) and node.module:
@@ -366,7 +366,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                     ):
                         violations.append(
                             StructureViolation(
-                                file_path=file_path,  # guardian: Syntax errors should be caught at parser level, not runtime
+                                file_path=file_path,  # review: Syntax errors should be caught at parser level, not runtime
                                 line_number=node.lineno,
                                 violation_type=StructureViolationType.NAMING,
                                 message=f"Class '{node.name}' in agent file must end with '{self.config.agent_suffix}'",

@@ -26,7 +26,7 @@ class SSOTConsolidationAnalyzer:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             try:
                 tree = ast.parse(content)
-            except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
                 return {"error": "Syntax error - cannot analyze"}
             features = {
                 "has_immutable_staging_buffer": "ImmutableStagingBuffer" in content,

@@ -300,7 +300,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 "details": "Exception during healing",
                 "artifacts": [],
                 "errors": [str(e)],
-            }  # guardian: File operations with encoding need error-specific handling
+            }  # review: File operations with encoding need error-specific handling
 
     def _is_empty_file(self, file_path: Path) -> bool:
         """Check if file is empty or contains only whitespace."""
@@ -310,7 +310,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         except (
             OSError,
             UnicodeDecodeError,
-        ):  # guardian: File operations with encoding need error-specific handling
+        ):  # review: File operations with encoding need error-specific handling
             return False
 
     def _is_orphaned_init(self, file_path: Path) -> bool:
@@ -332,7 +332,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             for i, line in enumerate(lines, 1):
                 stripped = (
                     line.strip()
-                )  # guardian: Parsing and encoding errors need separate handling strategies
+                )  # review: Parsing and encoding errors need separate handling strategies
                 if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
                     continue
                 if self.DEBUG_PRINT_PATTERN.search(line):
@@ -343,7 +343,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             OSError,
             UnicodeDecodeError,
             SyntaxError,
-        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+        ) as e:  # review: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to scan for debug statements in {file_path.name}: {e}")
             return []
 
@@ -353,7 +353,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
 
         Returns:
             (has_commented_code, num_lines)
-        """  # guardian: Parsing and encoding errors need separate handling strategies
+        """  # review: Parsing and encoding errors need separate handling strategies
         try:
             content = file_path.read_text(encoding="utf-8")
             matches = self.COMMENTED_CODE_PATTERN.findall(content)
@@ -364,7 +364,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             OSError,
             UnicodeDecodeError,
             SyntaxError,
-        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+        ) as e:  # review: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to scan for commented code in {file_path.name}: {e}")
             return (False, 0)
 

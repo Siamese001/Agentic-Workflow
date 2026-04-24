@@ -276,7 +276,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         )
         violations = []
         for file_path in tqdm(self.ctx.python_files, desc="Processing", unit="item"):
-            try:  # guardian: File operations with encoding need error-specific handling
+            try:  # review: File operations with encoding need error-specific handling
                 with open(file_path, encoding="utf-8") as f:
                     content = f.read(500)
                 if not content.strip().startswith('"""'):
@@ -286,7 +286,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             except (
                 OSError,
                 UnicodeDecodeError,
-            ):  # guardian: File operations with encoding need error-specific handling
+            ):  # review: File operations with encoding need error-specific handling
                 continue
         return violations
 
@@ -457,7 +457,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                     tree = ast.parse(p.read_text(encoding="utf-8"))
                     for node in ast.walk(
                         tree
-                    ):  # guardian: Parsing and encoding errors need separate handling strategies
+                    ):  # review: Parsing and encoding errors need separate handling strategies
                         if isinstance(node, ast.Import):
                             for alias in node.names:
                                 dependency_graph[mod].add(alias.name)
@@ -610,7 +610,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         max_lines: Any = int(os.getenv("MAX_FILE_LINES", "1000"))
         for file_path in tqdm(
             self.ctx.python_files, desc="Processing", unit="item"
-        ):  # guardian: File operations with encoding need error-specific handling
+        ):  # review: File operations with encoding need error-specific handling
             try:
                 resolved_path: Any = Path(file_path).resolve()
                 with open(resolved_path, encoding="utf-8") as f:
@@ -620,7 +620,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             except (
                 OSError,
                 UnicodeDecodeError,
-            ):  # guardian: File operations with encoding need error-specific handling
+            ):  # review: File operations with encoding need error-specific handling
                 continue
         return (len(violations) == 0, violations)
 
@@ -666,7 +666,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         """
         Sovereign Header & Strategy Repair.
         Injects specialized Test Protocols and high-signal headers.
-        """  # guardian: File operations with encoding need error-specific handling
+        """  # review: File operations with encoding need error-specific handling
         from pathlib import Path
 
         try:

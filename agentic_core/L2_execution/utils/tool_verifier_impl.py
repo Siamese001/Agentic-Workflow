@@ -411,7 +411,7 @@ class ToolVerifier:
                                     suggestion="Consider safer alternatives",
                                 ),
                             )
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             issues.append(
                 VerificationIssue(
                     Severity="error",

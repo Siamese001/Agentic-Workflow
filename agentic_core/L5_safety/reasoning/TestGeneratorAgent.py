@@ -241,14 +241,14 @@ class TestGeneratorAgent(SovereignBaseAgent):
             return {
                 "success": False,
                 "error": f"File not found: {agent_path}",
-            }  # guardian: Syntax errors should be caught at parser level, not runtime
+            }  # review: Syntax errors should be caught at parser level, not runtime
         if not path.suffix == ".py":
             return {"success": False, "error": "Not a Python file"}
         log.info(f"[L0 TESTING] Generating tests for: {agent_path}")
         try:
             source = path.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             return {"success": False, "error": f"Syntax error: {e}"}
         except (ValueError, TypeError) as e:
             return {"success": False, "error": str(e)}

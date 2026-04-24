@@ -23,7 +23,7 @@ def fix_single_test_file(test_file: Path) -> bool | None:
     except (
         UnicodeDecodeError,
         OSError,
-    ) as e:  # guardian: File operations with encoding need error-specific handling
+    ) as e:  # review: File operations with encoding need error-specific handling
         print(f"Error fixing {test_file}: {e}")
         return None
 

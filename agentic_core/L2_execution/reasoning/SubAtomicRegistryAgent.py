@@ -523,14 +523,14 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         for py_file in tqdm(get_python_files(self.root), desc="Processing", unit="item"):
             if ARCHIVES_DIR in str(py_file):
                 continue
-            try:  # guardian: Parsing and encoding errors need separate handling strategies
+            try:  # review: Parsing and encoding errors need separate handling strategies
                 tree = ast.parse(py_file.read_text())
                 for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                     if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         doc = ast.get_docstring(node) or "No docstring provided."
                         source_lines = ast.get_source_segment(open(py_file).read(), node) or ""
                         methods.append(
-                            {  # guardian: Parsing and encoding errors need separate handling strategies
+                            {  # review: Parsing and encoding errors need separate handling strategies
                                 "id": f"{py_file.stem}_{node.name}",
                                 "path": str(py_file),
                                 "method": node.name,
@@ -539,14 +539,14 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
                                 "line_number": node.lineno,
                                 "is_async": isinstance(node, ast.AsyncFunctionDef),
                             },
-                        )  # guardian: File operations with encoding need error-specific handling
+                        )  # review: File operations with encoding need error-specific handling
             except (OSError, UnicodeDecodeError, SyntaxError) as e:
                 print(f"Failed to index {py_file.name}: {e}")
                 continue
         return methods
 
     # guardian: allow-type-erasure
-    def rebuild_registry(self) -> Any:  # guardian: File operations with encoding need error-specific handling
+    def rebuild_registry(self) -> Any:  # review: File operations with encoding need error-specific handling
         """Rebuild — full method index + Redis cache warm"""
         print("   [REBUILD] SubAtomicRegistry: Indexing all methods...")
         methods = self.extract_methods()

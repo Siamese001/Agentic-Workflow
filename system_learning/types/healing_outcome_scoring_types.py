@@ -175,7 +175,7 @@ def _validate_ascii_only(value: str, name: str) -> None:
     """Validate string is ASCII-only."""
     try:
         value.encode("ascii")
-    except UnicodeEncodeError:  # guardian: UnicodeEncodeError should be handled with specific context
+    except UnicodeEncodeError:  # review: UnicodeEncodeError should be handled with specific context
         raise ValueError(f'{name} must be ASCII-only, contains non-ASCII characters') from None
 
 

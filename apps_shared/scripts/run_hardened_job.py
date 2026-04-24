@@ -174,7 +174,7 @@ async def main() -> None:
 def run_sync() -> None:
     """Entry point for synchronous execution."""
     try:
-        return asyncio.run(main())  # guardian: KeyboardInterrupt should be handled with specific context
+        return asyncio.run(main())  # review: KeyboardInterrupt should be handled with specific context
     except KeyboardInterrupt:
         logger.info("\n⚠️ Workflow interrupted by user")
         return 130

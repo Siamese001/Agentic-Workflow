@@ -300,7 +300,7 @@ def is_text_file(file_path: Path) -> bool:
             with open(file_path, encoding="utf-8") as f:
                 f.read(
                     1024
-                )  # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
+                )  # review: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
             return True
         except (UnicodeDecodeError, PermissionError):
             return False
@@ -313,7 +313,7 @@ def scan_file(file_path: Path) -> list[dict[str, Any]]:
     try:
         with open(
             file_path, encoding="utf-8"
-        ) as f:  # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
+        ) as f:  # review: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
             content = f.read()
     except (UnicodeDecodeError, PermissionError):
         return violations

@@ -427,7 +427,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         try:
             approved = self._request_user_approval(
                 proposals
-            )  # guardian: KeyboardInterrupt should be handled with specific context
+            )  # review: KeyboardInterrupt should be handled with specific context
             if not approved:
                 Logger.info("User rejected proposed changes")
                 return (False, self._create_rejected_result(proposals, "Changes rejected by user"))
@@ -436,7 +436,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         except KeyboardInterrupt:
             Logger.warning(
                 "User aborted reconciliation"
-            )  # guardian: KeyboardInterrupt should be handled with specific context
+            )  # review: KeyboardInterrupt should be handled with specific context
             return (False, self._create_rejected_result(proposals, "Reconciliation aborted by user"))
 
     # guardian: allow-type-erasure
@@ -1020,7 +1020,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 elif response in ("quit", "q", "exit"):
                     print("\n[ABORT] Blueprint reconciliation aborted by user")
                     Logger.warning("User aborted reconciliation")
-                    raise KeyboardInterrupt  # guardian: EOFError should be handled with specific context
+                    raise KeyboardInterrupt  # review: EOFError should be handled with specific context
                 else:
                     print("Invalid response. Please answer 'yes', 'no', or 'quit'")
             except EOFError:
@@ -1028,7 +1028,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 print("\n[ERROR] Cannot request approval in non-interactive environment")
                 return False
 
-    # guardian: EOFError should be handled with specific context
+    # review: EOFError should be handled with specific context
     def _validate_blueprint_syntax(self) -> bool:
         """
         Ensure blueprint is still valid Python after modifications.
@@ -1040,7 +1040,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             content = self.blueprint_file.read_text(encoding="utf-8")
             compile(
                 content, str(self.blueprint_file), "exec"
-            )  # guardian: Syntax errors should be caught at parser level, not runtime
+            )  # review: Syntax errors should be caught at parser level, not runtime
             Logger.info("Blueprint syntax validation passed")
             return True
         except SyntaxError as e:
@@ -1049,7 +1049,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
 
     def _rollback_to_backup(
         self, backup_path: Path
-    ) -> None:  # guardian: Syntax errors should be caught at parser level, not runtime
+    ) -> None:  # review: Syntax errors should be caught at parser level, not runtime
         """
         Restore blueprint from backup (Phase 3 safety mechanism).
 

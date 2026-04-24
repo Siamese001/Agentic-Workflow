@@ -89,7 +89,7 @@ class TwoPhaseCoordinator:
             return {"success": True, "resource_result": r, "ledger_result": l}
         except (
             MutationCommitFailure
-        ) as exc:  # guardian: MutationCommitFailure should be handled with specific context
+        ) as exc:  # review: MutationCommitFailure should be handled with specific context
             logger.error("2PC commit failed: %s", exc)
             return {"success": False, "error": str(exc)}
 

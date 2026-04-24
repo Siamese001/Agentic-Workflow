@@ -1356,7 +1356,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # Then check if this directory is now empty
         remaining = [
             p
-            for p in path.iterdir()  # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+            for p in path.iterdir()  # review: Multiple exceptions (OSError, RuntimeError) need specific handling
             if p.name not in {"__pycache__", "__init__.py", ".gitkeep"} and not p.name.startswith(".")
         ]
 
@@ -1365,16 +1365,16 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             init_file = path / "__init__.py"
             if (
                 init_file.exists()
-            ):  # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+            ):  # review: Multiple exceptions (OSError, RuntimeError) need specific handling
                 self.gatekeeper.safe_delete(init_file, self.agent_name, "Empty folder cleanup - __init__.py")
-            # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+            # review: Multiple exceptions (OSError, RuntimeError) need specific handling
             pycache = path / "__pycache__"
             if pycache.exists():
                 try:
                     _wg.remove_tree(pycache)  # Keep shutil for __pycache__ (not tracked)
                 except (OSError, RuntimeError) as e:
                     raise RuntimeError(f"Failed to remove __pycache__ under {path}") from e
-            # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+            # review: Multiple exceptions (OSError, RuntimeError) need specific handling
             gitkeep = path / ".gitkeep"
             if gitkeep.exists():
                 self.gatekeeper.safe_delete(gitkeep, self.agent_name, "Empty folder cleanup - .gitkeep")
@@ -1516,14 +1516,14 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             insert_idx = 0
             for i, line in enumerate(
                 lines
-            ):  # guardian: File operations with encoding need error-specific handling
+            ):  # review: File operations with encoding need error-specific handling
                 stripped = line.strip()
                 if stripped and not stripped.startswith("#"):
                     insert_idx = i
                     break
                 if i > 50:
                     break
-            # guardian: File operations with encoding need error-specific handling
+            # review: File operations with encoding need error-specific handling
             new_lines = (
                 lines[:insert_idx]
                 + ["", marker_comment, dated_comment, purge_pattern, ""]

@@ -376,11 +376,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
                                     f"SEMANTIC VIOLATION: Root script imports '{alias.name}'. Files importing '{prefix}' belong in agentic_core/L0_routing/scripts/",
                                 )
                 elif isinstance(node, ast.ImportFrom):
-                    if node.module:  # guardian: Syntax errors should be caught at parser level, not runtime
+                    if node.module:  # review: Syntax errors should be caught at parser level, not runtime
                         for prefix in forbidden_prefixes:
                             if node.module.startswith(
                                 prefix
-                            ):  # guardian: File operations with encoding need error-specific handling
+                            ):  # review: File operations with encoding need error-specific handling
                                 return (
                                     False,
                                     f"SEMANTIC VIOLATION: Root script imports from '{node.module}'. Files importing '{prefix}' belong in agentic_core/L0_routing/scripts/",
@@ -468,7 +468,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             return (
                 False,
                 "BROKEN BACKUP FILE: Remove stale backup file",
-            )  # guardian: File operations with encoding need error-specific handling
+            )  # review: File operations with encoding need error-specific handling
         try:
             content = None
             if file_path.exists() and file_path.is_file():
@@ -516,7 +516,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                     None,
                     None,
                     None,
-                )  # guardian: Parsing and encoding errors need separate handling strategies
+                )  # review: Parsing and encoding errors need separate handling strategies
             result = self._check_forbidden_imports(tree, current_l1, rel_path)
             if not result[0]:
                 return result

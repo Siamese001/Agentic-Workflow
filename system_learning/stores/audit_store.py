@@ -218,7 +218,7 @@ class FileBackedAuditStore:
                     matched.append(data)
                 elif ts == 0:
                     matched.append(data)
-            except (json.JSONDecodeError, OSError) as exc:  # guardian: Add error context logging
+            except (json.JSONDecodeError, OSError) as exc:  # review: Add error context logging
                 unreadable_reports += 1
                 logger.debug("Skipping unreadable report %s: %s", report_path.name, exc)
                 continue

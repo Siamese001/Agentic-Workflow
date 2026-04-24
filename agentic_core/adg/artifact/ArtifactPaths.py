@@ -825,7 +825,7 @@ def _create_latest_symlinks(
     """
     import shutil
 
-    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling
+    # review: Multiple exceptions (OSError, NotImplementedError) need specific handling
     symlink_map = {
         "adg_LATEST.sqlite": sqlite_path,
         "adg_LATEST_snapshot.json": snap_path,

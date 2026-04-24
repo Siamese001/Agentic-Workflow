@@ -234,7 +234,7 @@ class TypeMechanicAgent(SubAtomicAgent):
         self, fp: str
     ) -> tuple[
         ast.AST | None, str | None
-    ]:  # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
+    ]:  # review: Multiple exceptions (OSError, SyntaxError) need specific handling
         """
         Reads a file and parses it into an AST, handling errors.
         Returns (tree, error_message).
@@ -246,7 +246,7 @@ class TypeMechanicAgent(SubAtomicAgent):
         except (
             OSError,
             SyntaxError,
-        ) as e:  # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
+        ) as e:  # review: Multiple exceptions (OSError, SyntaxError) need specific handling
             return (None, f"Error parsing {fp}: {e}")
 
     def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> list[str]:
@@ -352,7 +352,7 @@ class TypeMechanicAgent(SubAtomicAgent):
 
     def _process_file_for_unused_variables(
         self, fp: str
-    ) -> list[str]:  # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
+    ) -> list[str]:  # review: Multiple exceptions (OSError, SyntaxError) need specific handling
         """
         Opens and parses a single file, then delegates to find unused variables.
         Handles file I/O and parsing errors.
@@ -364,7 +364,7 @@ class TypeMechanicAgent(SubAtomicAgent):
         except (
             OSError,
             SyntaxError,
-        ) as e:  # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
+        ) as e:  # review: Multiple exceptions (OSError, SyntaxError) need specific handling
             self.ctx.log_error(f"Error parsing {fp} for unused variables: {e}")
             return []
 

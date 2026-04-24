@@ -290,7 +290,7 @@ class SystemValidator:
         """Check if code has MCPHardenedMixin."""
         return (
             "MCPHardenedMixin" in code or "mcp_hardened_mixin" in code
-        )  # guardian: Syntax errors should be caught at parser level, not runtime
+        )  # review: Syntax errors should be caught at parser level, not runtime
 
     def validate_syntax(self, file_path: Path) -> str | None:
         """Check file for syntax errors."""
@@ -299,7 +299,7 @@ class SystemValidator:
                 code = f.read()
             ast.parse(code)
             return None
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             return f"SyntaxError line {e.lineno}: {e.msg}"
         except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             return str(e)

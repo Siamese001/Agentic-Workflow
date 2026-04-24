@@ -190,7 +190,7 @@ class ZombieVaccinator:
                     elif isinstance(node.func, ast.Name):
                         called_methods.add(node.func.id)
             return [m for m in candidate_methods if m not in called_methods]
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             Logger.error(f"Syntax Error in {class_name}: {e}")
             return []
         except Exception as e:  # guardian: allow-silent-swallow
@@ -241,7 +241,7 @@ class ZombieVaccinator:
             new_source = "\n".join(new_lines)
             try:
                 ast.parse(new_source)
-            except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
                 Logger.error(f"    Vaccination would create syntax error: {e}")
                 return False
             path.write_text(new_source, encoding="utf-8")

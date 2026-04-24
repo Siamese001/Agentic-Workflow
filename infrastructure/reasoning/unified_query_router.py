@@ -351,7 +351,7 @@ class UnifiedQueryRouter:
                 self.contract_guard.enforce_l4_rate_limit(user_id)
         except (
             FourLayerContractError
-        ) as e:  # guardian: FourLayerContractError should be handled with specific context
+        ) as e:  # review: FourLayerContractError should be handled with specific context
             fail_layer = target_layers[0] if target_layers else LayerType.REDIS_EXACT_MATCH
             return [
                 LayerResponse(

@@ -537,7 +537,7 @@ class NervousSystemAgent(SovereignBaseAgent):
             stage=resume_phase or "execute",
         )
         _exec_breaker.call(lambda: None)
-        try:  # guardian: PolicyEnforcementError should be handled with specific context
+        try:  # review: PolicyEnforcementError should be handled with specific context
             enforce_policy_before_action(
                 action_name="NervousSystemAgent.execute",
                 action_class=ActionClass.REASONING,

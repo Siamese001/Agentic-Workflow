@@ -454,7 +454,7 @@ def scan_repository(project_root: Path) -> ScanResult:
                 except (
                     SyntaxError,
                     OSError,
-                ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+                ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
                     continue
 
                 result.files_scanned += 1

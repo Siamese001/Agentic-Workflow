@@ -251,7 +251,7 @@ def repo_rg_handler(args: dict[str, Any]) -> str:
         except (
             UnicodeDecodeError,
             PermissionError,
-        ):  # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
+        ):  # review: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
             continue
     results.sort(key=lambda r: (r["file"], r["line"]))
     import json
@@ -311,7 +311,7 @@ def expr_eval_handler(args: dict[str, Any]) -> str:
         ast.parse(expr, mode="eval")
         result = _evaluate_expression(expr)
         return str(result)
-    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
         raise ValueError(f'Invalid syntax: {e}') from e
     except Exception as e:  # guardian: allow-broad-exception  -- ADG-burn: broad_exception_catch
         raise ValueError(str(e)) from e

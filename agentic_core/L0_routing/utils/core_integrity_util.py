@@ -248,7 +248,7 @@ class CoreIntegrityVerifier:
                     import shutil
 
                     shutil.rmtree(pycache)
-                except OSError:  # guardian: Add error context logging
+                except OSError:  # review: Add error context logging
                     continue  # pycache removal is best-effort; skip on permission/lock errors
 
         if unsafe_files:

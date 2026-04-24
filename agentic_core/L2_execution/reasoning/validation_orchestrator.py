@@ -300,7 +300,7 @@ class ValidationOrchestrator(SovereignBaseAgent):
         try:
             with open(file_path, "rb") as f:
                 return hashlib.sha256(f.read()).hexdigest()
-        except OSError as e:  # guardian: Add error context logging
+        except OSError as e:  # review: Add error context logging
             Logger.warning(f"Could not read file {file_path} for hashing: {e}")
             return ""
 

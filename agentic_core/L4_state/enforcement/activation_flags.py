@@ -360,7 +360,7 @@ def is_meta_learning_allowed() -> bool:
     """Exported function to check if meta-learning is allowed."""
     try:
         return _activation_gate.check_meta_learning_allowed()
-    except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError:  # review: Runtime errors should be prevented with proper validation
         return False
 
 

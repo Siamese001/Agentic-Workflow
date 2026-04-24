@@ -24,7 +24,7 @@ def purge_legacy_artifacts() -> None:
         try:
             shutil.rmtree(legacy_dir)
             print(f"SUCCESS: Deleted {legacy_dir} and all contained artifacts.")
-        except OSError as exc:  # guardian: Add error context logging
+        except OSError as exc:  # review: Add error context logging
             print(f"ERROR: Failed to delete archive: {exc}")
             sys.exit(1)
     else:

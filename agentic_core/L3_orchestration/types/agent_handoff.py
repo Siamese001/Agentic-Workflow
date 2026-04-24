@@ -271,7 +271,7 @@ class HandoffDispatcher:
         except (
             CapabilityNotFoundError,
             CapabilityPermissionError,
-        ) as exc:  # guardian: Multiple exceptions (CapabilityNotFoundError, CapabilityPermissionError) need specific handling
+        ) as exc:  # review: Multiple exceptions (CapabilityNotFoundError, CapabilityPermissionError) need specific handling
             record.mark_failed(f"REGISTRY_REJECTED:{exc}")
             logger.error(
                 "HANDOFF_REGISTRY_REJECTED src=%s dst=%s cap=%s error=%s",
@@ -292,7 +292,7 @@ class HandoffDispatcher:
         # P3/L3: Record workflow visualization for owner transition
         trace_context = None
         try:
-            from agentic_core.L6_observability.utils.visualization.visualization_updater import (
+            from agentic_core.L6_observability.utils.visualization.visualization_updater import (  # guardian: allow-layer-violation -- P3/L3 workflow visualization: L6 visualization_updater is the canonical sink for workflow transition events; L3 is the boundary-inversion producer, call wrapped in try/except so viz failures cannot break handoff
                 TraceContext,
                 WorkflowStatus,
                 record_owner_transition,
@@ -335,7 +335,7 @@ class HandoffDispatcher:
             # P3/L3: Record workflow completion
             if trace_context:
                 try:
-                    from agentic_core.L6_observability.utils.visualization.visualization_updater import (
+                    from agentic_core.L6_observability.utils.visualization.visualization_updater import (  # guardian: allow-layer-violation -- P3/L3 workflow completion viz; L6 is the canonical sink, wrapped in try/except so visualization failures are non-fatal to the handoff return path
                         WorkflowStatus,
                         record_workflow_completion,
                     )
@@ -366,7 +366,7 @@ class HandoffDispatcher:
             # P3/L3: Record workflow failure
             if trace_context:
                 try:
-                    from agentic_core.L6_observability.utils.visualization.visualization_updater import (
+                    from agentic_core.L6_observability.utils.visualization.visualization_updater import (  # guardian: allow-layer-violation -- P3/L3 workflow failure viz; L6 canonical sink, wrapped in try/except so visualization failures cannot mask the original exception being re-raised
                         WorkflowStatus,
                         record_workflow_completion,
                     )

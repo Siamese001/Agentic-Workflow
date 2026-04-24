@@ -387,7 +387,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
             record.selection_reason = "Stub sentinel detected in file header"
             return record
         try:
-            tree = ast.parse(content)  # guardian: Syntax errors should be caught at parser level, not runtime
+            tree = ast.parse(content)  # review: Syntax errors should be caught at parser level, not runtime
         except SyntaxError as e:  # guardian: allow-silent-swallow
             record.status = "SYNTAX_ERROR"
             record.parse_error = f"SyntaxError: {e}"

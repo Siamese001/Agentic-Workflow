@@ -864,7 +864,7 @@ def orchestrate_observability_planning(input_data: dict[str, object]) -> dict[st
     L5 Main function - orchestrate observability planning operations
 
     Args:
-        input_data: Input data to process    # guardian: SecurityError should be handled with specific context
+        input_data: Input data to process    # review: SecurityError should be handled with specific context
 
     Returns:
         Dict: Processed result
@@ -882,7 +882,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = orchestrate_observability_planning(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # review: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

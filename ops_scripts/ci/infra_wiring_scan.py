@@ -78,6 +78,7 @@ SANCTIONED_ADAPTER_FILES = {
     "verdict_store.py",
     "evidence_assembler.py",
     "bm25_store.py",  # L4 BM25 SparseIndex (SQLite FTS5 + term_freq sidecar); peer of above adapters
+    "doc_to_cache_index.py",  # L4 G5 CDC inverse index (SQLite); owns artifacts/gptcache/doc_to_cache.db; peer of gptcache_client / semantic_cache_manager
     # L3 exit-control audit ledger adapters (ADR-023 §5 — canonical hash-chain / HITL persistence)
     "ledger_integrity.py",
     "runtime_hitl_ledger.py",
@@ -243,7 +244,7 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         return module.materialize_infra_views(db_path)
-    except Exception as exc:  # guardian: structural scan should fall back to raw SQL instead of crashing
+    except Exception as exc:  # review: structural scan should fall back to raw SQL instead of crashing
         _log.warning(
             "Could not materialize infra views for %s: %s — falling back to raw view query", db_path, exc
         )

@@ -119,7 +119,7 @@ def analyze_file(file_path: Path, existing_classes: set[str], existing_functions
     try:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
-    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
         return {"valid": False, "error": "syntax"}
     except Exception as e:
         return {"valid": False, "error": str(e)}

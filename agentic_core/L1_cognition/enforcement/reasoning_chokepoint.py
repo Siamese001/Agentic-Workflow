@@ -244,11 +244,11 @@ def reason_and_record(
         )
 
         reasoning_plan = create_reasoning_plan(
-            reasoning_context=plan_context,  # guardian: ReasoningPlanError should be handled with specific context
+            reasoning_context=plan_context,  # review: ReasoningPlanError should be handled with specific context
             goal_payload=str(prompt_payload)[:200],  # Truncate for goal
             evidence_bundle=retrieved_context,
             planning_policy=planning_policy,
-        )  # guardian: ReasoningPlanError should be handled with specific context
+        )  # review: ReasoningPlanError should be handled with specific context
 
         logger.debug(
             "REASONING_PLAN_CREATED plan_id=%s run_id=%s trace_id=%s",
@@ -257,7 +257,7 @@ def reason_and_record(
             reasoning_context.trace_id,
         )
 
-    except ReasoningPlanError as _rpe:  # guardian: ReasoningPlanError should be handled with specific context
+    except ReasoningPlanError as _rpe:  # review: ReasoningPlanError should be handled with specific context
         logger.warning(
             "REASONING_PLAN_FAILED: %s, continuing without plan",
             _rpe,
@@ -379,11 +379,11 @@ def reason_and_record(
 
     # 10. P2/L1: Evaluate reasoning step — bind evaluation to completed trace
     try:
-        _rubric = ReasoningEvaluationRubric(  # guardian: OrphanReasoningEvaluationError should be handled with specific context
+        _rubric = ReasoningEvaluationRubric(  # review: OrphanReasoningEvaluationError should be handled with specific context
             relevance=1.0,
             consistency=1.0,
             policy_compliance=1.0 if reasoning_context.policy_hash else 0.0,
-            coherence=1.0,  # guardian: OrphanReasoningEvaluationError should be handled with specific context
+            coherence=1.0,  # review: OrphanReasoningEvaluationError should be handled with specific context
             actionability=1.0,
         )
         evaluate_reasoning_step_from_trace(
@@ -394,7 +394,7 @@ def reason_and_record(
         )
     except (
         OrphanReasoningEvaluationError
-    ) as _oee:  # guardian: OrphanReasoningEvaluationError should be handled with specific context
+    ) as _oee:  # review: OrphanReasoningEvaluationError should be handled with specific context
         logger.warning("reason_and_record: orphan evaluation guard triggered: %s", _oee)
         raise RuntimeError("ORPHAN_REASONING_EVALUATION_ERROR") from _oee
     except _REASONING_NON_FATAL_EXCEPTIONS as _ee:

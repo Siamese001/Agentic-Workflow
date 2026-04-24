@@ -348,7 +348,7 @@ class GoldenStateEvaluator:
             if self.enable_logging:
                 Logger.info(
                     "golden_cases_loaded", extra={"count": len(self.golden_cases)}
-                )  # guardian: File operations should check existence before access
+                )  # review: File operations should check existence before access
         except FileNotFoundError:
             if self.enable_logging:
                 Logger.warning("golden_dataset_not_found", extra={"path": str(self.dataset_path)})

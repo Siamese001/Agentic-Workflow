@@ -371,7 +371,7 @@ def test_provider_substitution_prohibition() -> bool:
             validate_provider_request(test_request, "openai", "gpt-4")
         except (
             ProviderSubstitutionViolation
-        ):  # guardian: ProviderSubstitutionViolation should be handled with specific context
+        ):  # review: ProviderSubstitutionViolation should be handled with specific context
             return False
         return True
     except (ValueError, TypeError, RuntimeError) as e:

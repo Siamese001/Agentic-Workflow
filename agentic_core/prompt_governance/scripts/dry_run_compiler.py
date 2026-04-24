@@ -42,7 +42,7 @@ def compile_template(env: Environment, template_path: Path, relative_to: Path) -
             "error": None,
         }
     except TemplateSyntaxError as e:
-        return {  # guardian: TemplateSyntaxError should be handled with specific context
+        return {  # review: TemplateSyntaxError should be handled with specific context
             "status": "FAIL",
             "template_path": relative_path,
             "full_path": str(template_path),
@@ -51,7 +51,7 @@ def compile_template(env: Environment, template_path: Path, relative_to: Path) -
             "error_type": "SYNTAX_ERROR",
         }
     except TemplateError as e:
-        return {  # guardian: TemplateError should be handled with specific context
+        return {  # review: TemplateError should be handled with specific context
             "status": "FAIL",
             "template_path": relative_path,
             "full_path": str(template_path),

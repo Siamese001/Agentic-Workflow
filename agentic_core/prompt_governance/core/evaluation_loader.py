@@ -243,7 +243,7 @@ class EvaluationLoader:
                     data = yaml.safe_load(fh)
             except yaml.YAMLError as exc:
                 raise EvalLoadError(f"Invalid YAML in {eval_file}: {exc}") from exc
-            except OSError as exc:  # guardian: Add error context logging
+            except OSError as exc:  # review: Add error context logging
                 raise EvalLoadError(f"Cannot read {eval_file}: {exc}") from exc
             if not isinstance(data, dict):
                 raise EvalSchemaError(

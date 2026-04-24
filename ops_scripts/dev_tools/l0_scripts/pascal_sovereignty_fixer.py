@@ -363,7 +363,7 @@ class PascalSovereigntyFixer:
                 # Resolve paths to handle case-insensitivity on Windows
                 if dest.resolve() != src.resolve():
                     is_collision = True
-            except OSError:  # guardian: Add error context logging
+            except OSError:  # review: Add error context logging
                 is_collision = True
 
         if is_collision:
@@ -401,7 +401,7 @@ class PascalSovereigntyFixer:
             src.rename(temp)
             temp.rename(dest)
             return True
-        except OSError as e:  # guardian: Add error context logging
+        except OSError as e:  # review: Add error context logging
             print(f"  [ERROR] Rename failed: {e}")
             return False
 

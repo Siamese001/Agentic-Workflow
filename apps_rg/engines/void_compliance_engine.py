@@ -229,7 +229,7 @@ class VoidComplianceEngine(BaseRGEngine):
         except (
             OSError,
             UnicodeDecodeError,
-        ) as e:  # guardian: File operations with encoding need error-specific handling
+        ) as e:  # review: File operations with encoding need error-specific handling
             # Expected file reading errors
             self.logger.warning(f"Could not read file {file_path}: {e}")
             return False

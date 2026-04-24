@@ -290,7 +290,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         except subprocess.CalledProcessError as e:
             print(f"Warning: Could not get staged files: {e}")
             return []
-        except FileNotFoundError:  # guardian: File operations should check existence before access
+        except FileNotFoundError:  # review: File operations should check existence before access
             print("Warning: Git not found. Skipping pre-commit validation.")
             return []
 

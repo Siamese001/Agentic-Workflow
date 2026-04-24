@@ -422,7 +422,7 @@ def find_class_end(content: str, class_name: str) -> tuple[int, int]:
     """Find the end position of a class definition."""
     try:
         tree = ast.parse(content)
-    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
         return (-1, -1)
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == class_name:

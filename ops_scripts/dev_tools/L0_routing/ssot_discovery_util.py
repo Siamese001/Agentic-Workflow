@@ -230,7 +230,7 @@ def load_agent_discovery(
             file_mtime = discovery_path.stat().st_mtime
             if file_mtime <= _cache_timestamp:
                 return _discovery_cache[cache_key]
-        except OSError:  # guardian: Add error context logging
+        except OSError:  # review: Add error context logging
             pass
 
     # Load from disk

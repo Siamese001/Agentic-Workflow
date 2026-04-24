@@ -81,7 +81,7 @@ class FileBackedRuntimeADGStore:
             project_root = get_validated_project_root()
             base_dir = (
                 project_root / "agentic_core" / "L4_state" / "memory" / "runtime_adg"
-            )  # guardian: Add error context logging
+            )  # review: Add error context logging
 
         self._base_dir = Path(base_dir)
         self._validate_l4_compliance()

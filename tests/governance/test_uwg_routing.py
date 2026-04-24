@@ -88,7 +88,7 @@ def _check_module_for_uwg_bypass(path: Path) -> list[str]:
     source = path.read_text(encoding="utf-8", errors="replace")
     try:
         tree = ast.parse(source)
-    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
         return []
 
     violations = []

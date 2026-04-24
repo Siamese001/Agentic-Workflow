@@ -447,7 +447,7 @@ class LayerSovereigntyEnforcer:
         except (
             SyntaxError,
             OSError,
-        ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
             return violations
 
         importer_module = self._path_to_module(file_path)
@@ -494,7 +494,7 @@ class LayerSovereigntyEnforcer:
                 except (
                     SyntaxError,
                     OSError,
-                ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+                ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
                     continue
                 mod = self._path_to_module(py_file)
                 import_map[mod] = set(self._collect_imports(tree))

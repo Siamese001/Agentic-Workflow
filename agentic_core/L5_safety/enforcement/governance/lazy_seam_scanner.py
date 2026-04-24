@@ -286,7 +286,7 @@ def collect_lazy_upward_imports(agentic_root: Path) -> list[LazyUpwardImport]:
             except ValueError:
                 continue
             parts = rel.parts
-            if not parts:  # guardian: Parsing and encoding errors need separate handling strategies
+            if not parts:  # review: Parsing and encoding errors need separate handling strategies
                 continue
             m = LAYER_PATTERN.match(parts[0])
             if not m:
@@ -298,7 +298,7 @@ def collect_lazy_upward_imports(agentic_root: Path) -> list[LazyUpwardImport]:
             except (
                 SyntaxError,
                 UnicodeDecodeError,
-            ):  # guardian: Parsing and encoding errors need separate handling strategies
+            ):  # review: Parsing and encoding errors need separate handling strategies
                 continue
             for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if not isinstance(node, (ast.Import, ast.ImportFrom)):

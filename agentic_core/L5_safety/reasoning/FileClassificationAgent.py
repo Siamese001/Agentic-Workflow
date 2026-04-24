@@ -817,7 +817,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         ftype = "UTILITY"
 
                 fake_config = self.check_fake_config(path, file_content)
-                if fake_config:  # guardian: File operations with encoding need error-specific handling
+                if fake_config:  # review: File operations with encoding need error-specific handling
                     self.logger.warning(f"[{fake_config['type']}] {path.name}: {fake_config['message']}")
                     # Count violation in statistics
                     violation_type = fake_config["type"]
@@ -1119,7 +1119,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 return "IGNORE"
             content = path.read_text(
                 encoding="utf-8"
-            )  # guardian: Parsing and encoding errors need separate handling strategies
+            )  # review: Parsing and encoding errors need separate handling strategies
 
             # [PRIORITY 1] STUB Detection: Explicit Marker Override
             # CRITICAL: Must check BEFORE AST parsing to prevent Stubs from being detected as Agents
@@ -1132,7 +1132,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             SyntaxError,
             UnicodeDecodeError,
             OSError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):  # review: Parsing and encoding errors need separate handling strategies
             return "IGNORE"
 
         # [PRIORITY 2.3] FILENAME DUAL-TAG CONFLICT DETECTION
@@ -2226,7 +2226,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         )
 
         if not path.name.endswith(".py") or path.name.startswith("__"):
-            return None  # guardian: Add error context logging
+            return None  # review: Add error context logging
 
         # Only validate files OUTSIDE apps_* directories
         parts = path.parts
@@ -2376,7 +2376,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         "file": str(path),
                         "violation": vtype,
                         "message": (
-                            f"'{path.name}' violates scripts/ purity. "  # guardian: Add error context logging
+                            f"'{path.name}' violates scripts/ purity. "  # review: Add error context logging
                             f"PascalCase classes and test_* files are forbidden in scripts/."
                         ),
                     }
@@ -2391,7 +2391,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         "violation": "L5_SUBPROCESS_NOT_ALLOWED",
                         "message": (
                             f"'{path.name}' imports subprocess in L5 but is NOT on the "
-                            f"L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add "  # guardian: Add error context logging
+                            f"L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add "  # review: Add error context logging
                             f"to allowlist with justification."
                         ),
                     }
@@ -2528,7 +2528,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         f"the '_config' suffix. Rename to '{stem}_config.py'."
                     ),
                 }
-        # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        # review: Multiple exceptions (SyntaxError, OSError) need specific handling
         # --- AGENT NAMING: snake_case file containing Agent class ---
         if "reasoning" in parts and "_" in path.stem and path.stem == path.stem.lower():
             try:
@@ -2540,7 +2540,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             except (
                 SyntaxError,
                 OSError,
-            ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+            ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
                 agent_classes = []
             if agent_classes:
                 return {
@@ -2569,7 +2569,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         using import/content signals instead of defaulting to a single folder.
 
         Rules:
-        - *Manager with cache/state/persist/store signals → L4_state    # guardian: Add error context logging
+        - *Manager with cache/state/persist/store signals → L4_state    # review: Add error context logging
         - *Manager with workflow/dag/pipeline/orchestrat signals → L3_orchestration
         - *Manager with tool/api/subprocess/request signals → L2_execution
         - Otherwise → None (use default classification)
@@ -2621,7 +2621,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         Returns None if the agent appears correctly placed, or a dict:
             {"current_layer", "suggested_layer", "confidence", "evidence"}
-        """  # guardian: Parsing and encoding errors need separate handling strategies
+        """  # review: Parsing and encoding errors need separate handling strategies
         # FileClassificationAgent itself contains signal keywords for ALL layers
         # in its classification dictionaries — always exclude from self-analysis.
         if path.name == "FileClassificationAgent.py":
@@ -3362,7 +3362,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 for _node in ast.walk(_tree):
                     if (
                         isinstance(_node, ast.ImportFrom) and _node.module
-                    ):  # guardian: Parsing and encoding errors need separate handling strategies
+                    ):  # review: Parsing and encoding errors need separate handling strategies
                         for _seg in _node.module.split("."):
                             _seen_modules.add(_seg)
                     elif isinstance(_node, ast.Import):
@@ -3375,7 +3375,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 SyntaxError,
                 OSError,
                 UnicodeDecodeError,
-            ):  # guardian: Parsing and encoding errors need separate handling strategies
+            ):  # review: Parsing and encoding errors need separate handling strategies
                 continue
 
         for directory, paths in tqdm(dir_index.items(), desc="Processing", unit="item"):
@@ -3393,7 +3393,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                             norm = node.name
                             if (
                                 norm.startswith("I") and len(norm) > 1 and norm[1].isupper()
-                            ):  # guardian: Parsing and encoding errors need separate handling strategies
+                            ):  # review: Parsing and encoding errors need separate handling strategies
                                 norm = norm[1:]
                             for suffix in ("Protocol", "Base"):
                                 if norm.endswith(suffix) and len(norm) > len(suffix):
@@ -3406,7 +3406,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     SyntaxError,
                     OSError,
                     UnicodeDecodeError,
-                ):  # guardian: Parsing and encoding errors need separate handling strategies
+                ):  # review: Parsing and encoding errors need separate handling strategies
                     continue
 
             # Flag groups with >1 file sharing the same normalised primary class
@@ -3454,7 +3454,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         Returns:
             Dict mapping layer names (L0-L6) to affinity scores (0.0-1.0).
         """
-        from agentic_core.L0_routing.config import (  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        from agentic_core.L0_routing.config import (  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
             LAYER_KEYWORD_AFFINITY,
         )
 
@@ -3466,7 +3466,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         except (
             SyntaxError,
             OSError,
-        ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
             return scores
 
         # Combine all text signals: module docstring + class names + method names + docstrings
@@ -3532,7 +3532,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         scores: dict[str, int] = {
             "TYPES": 0,
-            "CONFIG": 0,  # guardian: Parsing and encoding errors need separate handling strategies
+            "CONFIG": 0,  # review: Parsing and encoding errors need separate handling strategies
             "AGENT": 0,
             "UTILITY": 0,
             "VALIDATOR": 0,
@@ -3545,7 +3545,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             SyntaxError,
             UnicodeDecodeError,
             OSError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):  # review: Parsing and encoding errors need separate handling strategies
             return scores
 
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
@@ -3747,7 +3747,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             # Check docstrings separately
             for node in ast.walk(
                 tree
-            ):  # guardian: Syntax errors should be caught at parser level, not runtime
+            ):  # review: Syntax errors should be caught at parser level, not runtime
                 if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
                     if (
                         hasattr(node, "doc_string")
@@ -3756,7 +3756,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     ):
                         return True
 
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
             # Fallback to simple content check if AST parsing fails
             content_lower = content.lower()
             for pattern in patterns:
@@ -4251,7 +4251,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             print(f"[CLEANUP] Removed {count} redundant conflict files.")
 
     def update_file_header(self, path: Path, old_name: str, new_name: str):
-        """Updates the File: and Path: metadata in docstrings to match reality."""  # guardian: File operations with encoding need error-specific handling
+        """Updates the File: and Path: metadata in docstrings to match reality."""  # review: File operations with encoding need error-specific handling
         if self.dry_run:
             return
         try:
@@ -4307,7 +4307,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         for path in tqdm(config_files, desc="Processing", unit="item"):
             if not path.exists():
-                continue  # guardian: File operations with encoding need error-specific handling
+                continue  # review: File operations with encoding need error-specific handling
             try:
                 content = path.read_text(encoding="utf-8")
                 if old_name in content:
@@ -4319,7 +4319,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             except (
                 OSError,
                 UnicodeDecodeError,
-            ) as e:  # guardian: File operations with encoding need error-specific handling
+            ) as e:  # review: File operations with encoding need error-specific handling
                 self.logger.debug(f"Failed to update config file {path.name}: {e}")
                 continue
 
@@ -4417,7 +4417,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             except (
                 OSError,
                 UnicodeDecodeError,
-            ) as e:  # guardian: File operations with encoding need error-specific handling
+            ) as e:  # review: File operations with encoding need error-specific handling
                 self.logger.debug(f"Failed to refactor imports in {path.name}: {e}")
                 continue
         return count
@@ -4479,7 +4479,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if dest.exists():
             try:
                 # [HARDENED] Proper Windows case-insensitive path comparison
-                src_resolved = src.resolve()  # guardian: Add error context logging
+                src_resolved = src.resolve()  # review: Add error context logging
                 dest_resolved = dest.resolve()
 
                 # Check if they're the same file (case-insensitive on Windows)
@@ -4488,7 +4488,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     return False  # No action needed
                 else:
                     is_collision = True
-            except OSError as e:  # guardian: Add error context logging
+            except OSError as e:  # review: Add error context logging
                 print(f"  [WARNING] Could not resolve paths for comparison: {e}")
                 is_collision = True
 
@@ -4755,7 +4755,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     "type": "L0_ORCHESTRATION_LEAK",
                     "message": (
                         f"Orchestration signals {found_orchestration} detected in L0 file {path.name}. "
-                        f"Strategy/orchestration belongs in L3_orchestration."  # guardian: Syntax errors should be caught at parser level, not runtime
+                        f"Strategy/orchestration belongs in L3_orchestration."  # review: Syntax errors should be caught at parser level, not runtime
                     ),
                     "suggested_destination": "agentic_core/L3_orchestration/reasoning/",
                 }
@@ -5204,7 +5204,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         }
         if (
             path.name in immune_paths
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):  # review: Parsing and encoding errors need separate handling strategies
             self.logger.info(f"[IMMUNE] Skipping rename for SSOT file: {path.name}")
             return None
 
@@ -5217,7 +5217,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             OSError,
             UnicodeDecodeError,
             SyntaxError,
-        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+        ) as e:  # review: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to parse {path.name} for class name, using stem: {e}")
             target_name = path.stem
 

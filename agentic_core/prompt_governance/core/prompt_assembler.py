@@ -504,7 +504,7 @@ class PromptAssembler:
                 sanitized_schema = InputSanitizer.sanitize_json_content(output_schema)
         except (
             SecurityIntegrityError
-        ) as e:  # guardian: SecurityIntegrityError should be handled with specific context
+        ) as e:  # review: SecurityIntegrityError should be handled with specific context
             Logger.error(f"Security validation failed during prompt assembly: {e}")
             raise
         directives = self._format_directives(sanitized_injections)
@@ -550,14 +550,14 @@ class PromptAssembler:
             InputSanitizer.validate_template_integrity(prompt, expected_tags)
         except (
             SecurityIntegrityError
-        ) as e:  # guardian: SecurityIntegrityError should be handled with specific context
+        ) as e:  # review: SecurityIntegrityError should be handled with specific context
             Logger.error(f"Tag integrity check failed: {e}")
             raise SecurityIntegrityError(f"Prompt assembly failed integrity check: {e}")
         try:
             InputSanitizer.validate_xml_structure(prompt)
         except (
             SecurityIntegrityError
-        ) as e:  # guardian: SecurityIntegrityError should be handled with specific context
+        ) as e:  # review: SecurityIntegrityError should be handled with specific context
             Logger.error(f"XML validation failed: {e}")
             raise SecurityIntegrityError(f"Generated XML is malformed: {e}")
         validate_slot_order(prompt)

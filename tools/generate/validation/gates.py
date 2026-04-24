@@ -152,6 +152,27 @@ def _check_p0_violations(
             _fail_closed_gate("P0 Tier 1B dynamic execution query", exc)
 
 
+def _surface_override_ceiling_bump(base_ceiling: int) -> tuple[int, bool]:
+    """Return the P1 ceiling + whether the ADR-024 Part B bump is applied.
+
+    ADR-024 OQ#2 (resolved 2026-04-24): the ``P1_RATCHET_POLICY_V2`` env-flag
+    gates a +48 ceiling bump to accommodate ~48 items promoted P2/P3 → P1 by
+    :data:`agentic_core.adg.severity_bands.SURFACE_OVERRIDE`. When the flag is
+    OFF (default), returns ``base_ceiling`` unchanged. When ON, returns
+    ``base_ceiling + 48``.
+
+    Separating this from the in-line math keeps the ratchet's rollback story
+    trivial: flipping the env-flag OFF fully reverts the bump with no code
+    change.
+    """
+    import os as _os
+
+    flag = _os.environ.get("P1_RATCHET_POLICY_V2", "").strip().lower()
+    if flag in {"1", "true", "yes", "on"}:
+        return base_ceiling + 48, True
+    return base_ceiling, False
+
+
 def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None = None) -> None:
     """Block if HIGH-severity antipatterns INCREASED vs prior run (P1 non-regression ratchet).
 
@@ -180,24 +201,36 @@ def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
 
         if ratchet_file.exists():
             ratchet_data = _load_json_file(ratchet_file)
-            ceiling = ratchet_data.get(
+            base_ceiling = ratchet_data.get(
                 "high_severity_ceiling", ratchet_data.get("p2_antipattern_ceiling", current_count)
             )
         else:
-            ceiling = current_count
-            _atomic_json_write(ratchet_file, {"high_severity_ceiling": ceiling})
-            print(f"[INFO] Initialized P1 ratchet ceiling: {ceiling}")
+            base_ceiling = current_count
+            _atomic_json_write(ratchet_file, {"high_severity_ceiling": base_ceiling})
+            print(f"[INFO] Initialized P1 ratchet ceiling: {base_ceiling}")
+
+        # ADR-024 Part B: when P1_RATCHET_POLICY_V2 env-flag is ON, allow up to
+        # +48 above the stored ceiling to accommodate SURFACE_OVERRIDE promotions.
+        # When OFF (default), ceiling is the stored value (no behavior change).
+        ceiling, bump_applied = _surface_override_ceiling_bump(base_ceiling)
+        if bump_applied:
+            print(
+                f"[INFO] P1 ratchet: P1_RATCHET_POLICY_V2=ON, effective ceiling "
+                f"{ceiling} (= stored {base_ceiling} + 48 ADR-024 Part B bump)"
+            )
 
         if current_count > ceiling:
             print(f"\n[ERROR] P1 antipattern regression: {current_count} > ceiling {ceiling}")
             print("[ERROR] ADG generation failed - HIGH antipattern count increased")
             print(f"[ERROR] Fix new exception swallows or update ceiling: {ratchet_file}")
             sys.exit(1)
-        elif current_count < ceiling:
+        elif current_count < base_ceiling:
+            # Only ratchet DOWN against the stored base, not the bumped ceiling,
+            # so turning the flag off later doesn't create an artificial regression.
             _atomic_json_write(ratchet_file, {"high_severity_ceiling": current_count})
-            print(f"[INFO] P1 ratchet: Reduced ceiling from {ceiling} to {current_count}")
+            print(f"[INFO] P1 ratchet: Reduced ceiling from {base_ceiling} to {current_count}")
         else:
-            print(f"[INFO] P1 ratchet: Current count {current_count} at ceiling {ceiling}")
+            print(f"[INFO] P1 ratchet: Current count {current_count} within ceiling {ceiling}")
     except SystemExit:
         raise
     except (sqlite3.Error, OSError, json.JSONDecodeError, ValueError) as exc:

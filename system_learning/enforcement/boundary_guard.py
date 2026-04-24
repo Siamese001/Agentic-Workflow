@@ -59,7 +59,7 @@ def check_file_isolation(file_path: Path) -> list[str]:
     """Return list of violation strings for a single file (empty = clean)."""
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
-    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # review: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError: {exc}"]
     visitor = _BoundaryVisitor()
     visitor.visit(tree)

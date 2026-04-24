@@ -333,7 +333,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
         try:
             tree = ast.parse(content)
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ImportFrom) and node.module:
@@ -357,7 +357,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             return violations
         try:
             tree = ast.parse(content)
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
@@ -379,7 +379,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         violations = []
         try:
             tree = ast.parse(content)
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef | ast.FunctionDef):
@@ -413,7 +413,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
             try:
                 line.encode("ascii")
-            except UnicodeEncodeError:  # guardian: UnicodeEncodeError should be handled with specific context
+            except UnicodeEncodeError:  # review: UnicodeEncodeError should be handled with specific context
                 non_ascii = [c for c in line if ord(c) > 127]
                 violations.append(
                     StructureViolation(

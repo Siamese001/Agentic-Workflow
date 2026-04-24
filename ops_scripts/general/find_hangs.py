@@ -127,7 +127,7 @@ def has_top_level_execution(file_path: Path) -> list[str]:
         OSError,
         UnicodeDecodeError,
         SyntaxError,
-    ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+    ) as e:  # review: Parsing and encoding errors need separate handling strategies
         suspicious.append(f"Parse error: {e}")
 
     return suspicious

@@ -537,7 +537,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                         print(f"  Violation msg : {message[:80]}")
                         print(
                             "  Options  : [V] Use validator path  [H] Let healer decide  [S] Skip"
-                        )  # guardian: EOFError should be handled with specific context
+                        )  # review: EOFError should be handled with specific context
                         try:
                             _ssot_raw = __import__("builtins").input("  Choice [V/H/S]: ").strip().upper()
                         except EOFError:
@@ -1026,7 +1026,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             for py_file in tqdm(python_files, desc="Processing", unit="item"):
                 if py_file == new_path or py_file == old_path:
-                    continue  # Skip self    # guardian: File operations with encoding need error-specific handling
+                    continue  # Skip self    # review: File operations with encoding need error-specific handling
                 if any(part in {".git", "__pycache__", ARCHIVES_DIR} for part in py_file.parts):
                     continue
 
@@ -1436,7 +1436,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             print(f"  [2] CREATE   - Add '{unknown_subfolder}' as a new approved subfolder (updates SSOT)")
             print(
                 "  [3] ARCHIVE  - Archive to void_violations/ (last resort)"
-            )  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+            )  # review: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             print("  [4] SKIP     - Skip this file (no action)")
             print(f"{'=' * 70}")
 
@@ -1544,7 +1544,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         print(f"\nCreating new subfolder '{new_subfolder}' in '{root_folder}'...")
         print("This will update SOVEREIGN_REGISTRY in structure_blueprint.py")
-        # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        # review: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
         try:
             confirm = input("Confirm? [y/n]: ").strip().lower()
             if confirm != "y":
@@ -2207,7 +2207,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     ):
                         if (
                             "sovereign" not in content_lower
-                        ):  # guardian: Parsing and encoding errors need separate handling strategies
+                        ):  # review: Parsing and encoding errors need separate handling strategies
                             semantic_issues.append({"file": rel, "issue": "MISSING_SOVEREIGN_MARKER"})
                             heal_actions.append({"path": path, "rel": rel, "type": "SOVEREIGN_MARKER"})
                 except ValueError:  # guardian: allow-silent-swallow -- path not relative: naming check skipped, other checks continue

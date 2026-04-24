@@ -396,7 +396,7 @@ class DecoratorModifier(ast.NodeTransformer):
         self.generic_visit(node)
         return node
 
-    # guardian: Syntax errors should be caught at parser level, not runtime
+    # review: Syntax errors should be caught at parser level, not runtime
 
 
 def _parse_code(code: str) -> tuple[ast.AST | None, str | None]:
@@ -404,7 +404,7 @@ def _parse_code(code: str) -> tuple[ast.AST | None, str | None]:
     try:
         tree = ast.parse(code)
         return tree, None
-    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
         return None, f"Syntax error at line {e.lineno}: {e.msg}"
 
 

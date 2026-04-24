@@ -279,7 +279,7 @@ class ArchivalGatekeeper:
                 result.approval_status = "APPROVED"
                 Logger.info(
                     f"[ArchivalGatekeeper] User APPROVED: {result.operation.value} {result.source_path}",
-                )  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+                )  # review: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             else:
                 result.approval_status = "DENIED"
                 Logger.info(
@@ -289,7 +289,7 @@ class ArchivalGatekeeper:
         except (
             EOFError,
             KeyboardInterrupt,
-        ):  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        ):  # review: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             result.approval_status = "DENIED"
             Logger.warning(
                 f"[ArchivalGatekeeper] Non-interactive environment, DENIED: {result.operation.value}",

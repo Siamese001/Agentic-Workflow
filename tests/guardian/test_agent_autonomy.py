@@ -69,7 +69,7 @@ class AgentAutonomyValidator:
 
             result["compliant"] = len(result["violations"]) == 0
 
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             result["error"] = f"Syntax error in {agent_file}: {e}"
         except (OSError, UnicodeDecodeError, AttributeError) as e:
             result["error"] = f"Error processing {agent_file}: {e}"
@@ -100,7 +100,7 @@ class TestAgentAutonomy:
             try:
                 temp_path.unlink(missing_ok=True)
                 break
-            except PermissionError:  # guardian: Permission errors should validate access before operation
+            except PermissionError:  # review: Permission errors should validate access before operation
                 time.sleep(0.1)
 
     def test_agent_with_heal_repository(self, validator):

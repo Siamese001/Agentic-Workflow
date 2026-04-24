@@ -296,7 +296,7 @@ def collect_lazy_upward_imports(
             except (
                 SyntaxError,
                 UnicodeDecodeError,
-            ):  # guardian: Parsing and encoding errors need separate handling strategies
+            ):  # review: Parsing and encoding errors need separate handling strategies
                 continue
 
             for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

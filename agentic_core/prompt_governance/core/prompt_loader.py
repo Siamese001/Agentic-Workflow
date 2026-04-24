@@ -241,7 +241,7 @@ class PromptLoader:
                     data = yaml.safe_load(f)
             except yaml.YAMLError as e:
                 raise PromptLoadError(f"Invalid YAML in {prompt_file}: {e}")
-            except OSError as e:  # guardian: Add error context logging
+            except OSError as e:  # review: Add error context logging
                 raise PromptLoadError(f'Cannot read {prompt_file}: {e}') from e
             if not isinstance(data, dict):
                 raise PromptSchemaError(f"Prompt must be a dict: {prompt_file}")

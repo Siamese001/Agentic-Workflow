@@ -373,27 +373,27 @@ def secure_exception(
 
     Returns:
         Decorated function
-    """  # guardian: SecureError should be handled with specific context
+    """  # review: SecureError should be handled with specific context
 
     def decorator(func):
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
-            except SecureError:  # guardian: SecureError should be handled with specific context
+            except SecureError:  # review: SecureError should be handled with specific context
                 raise
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 context = _build_sanitized_context(func, args, kwargs, sanitize_args)
                 secure_error = ErrorSanitizer.create_secure_error(
                     error_type, e, ErrorCode, context
-                )  # guardian: SecureError should be handled with specific context
+                )  # review: SecureError should be handled with specific context
                 raise secure_error from e
 
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except SecureError:  # guardian: SecureError should be handled with specific context
+            except SecureError:  # review: SecureError should be handled with specific context
                 raise
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 context = _build_sanitized_context(func, args, kwargs, sanitize_args)

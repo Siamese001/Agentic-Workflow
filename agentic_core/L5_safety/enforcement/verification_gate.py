@@ -248,7 +248,7 @@ class VerificationGate(HallucinationDetectionMixin, SovereignBaseAgent):
             SyntaxError,
             UnicodeDecodeError,
             OSError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):  # review: Parsing and encoding errors need separate handling strategies
             # File cannot be parsed or read
             return False
 
@@ -372,7 +372,7 @@ class VerificationGate(HallucinationDetectionMixin, SovereignBaseAgent):
             SyntaxError,
             UnicodeDecodeError,
             OSError,
-        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+        ) as e:  # review: Parsing and encoding errors need separate handling strategies
             Logger.error(f"Failed to parse {context.file_path}: {e}")
             return False
 

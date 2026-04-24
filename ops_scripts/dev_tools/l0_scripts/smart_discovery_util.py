@@ -219,7 +219,7 @@ def get_json_mtime() -> datetime | None:
         return None
     try:
         return datetime.fromtimestamp(DISCOVERY_JSON.stat().st_mtime)
-    except OSError as e:  # guardian: Add error context logging
+    except OSError as e:  # review: Add error context logging
         log.error(f"Failed to read JSON mtime: {e}")
         return None
 
@@ -233,7 +233,7 @@ def get_latest_source_mtime() -> datetime:
             mtime = datetime.fromtimestamp(py_file.stat().st_mtime)
             if mtime > latest:
                 latest = mtime
-        except OSError:  # guardian: Add error context logging
+        except OSError:  # review: Add error context logging
             return datetime.now()  # Unreadable → assume changed
     return latest if latest != datetime.min else datetime.now()
 

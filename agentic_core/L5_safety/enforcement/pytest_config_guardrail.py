@@ -252,11 +252,11 @@ class PytestEnforcementGuard:
         required_markers = {"governance", "integration_full_deps", "constitutional", "guardian", "asyncio"}
         missing = (
             required_markers - markers
-        )  # guardian: Syntax errors should be caught at parser level, not runtime
+        )  # review: Syntax errors should be caught at parser level, not runtime
         if missing:
             self.errors.append(f"Missing required markers in pytest.ini: {missing}")
 
-    # guardian: Encoding errors should specify fallback encoding strategy
+    # review: Encoding errors should specify fallback encoding strategy
     def _validate_conftest(self, conftest: Path) -> None:
         """Validate conftest.py for hook transparency."""
         try:
@@ -344,7 +344,7 @@ class PytestEnforcementGuard:
         for test_file in tqdm(self.repo_root.rglob("test_*.py"), desc="Processing", unit="item"):
             if ".venv" in str(test_file) or "__pycache__" in str(test_file):
                 continue
-            try:  # guardian: File operations with encoding need error-specific handling
+            try:  # review: File operations with encoding need error-specific handling
                 content = test_file.read_text(encoding="utf-8")
                 import re
 
@@ -356,7 +356,7 @@ class PytestEnforcementGuard:
                 UnicodeDecodeError,
                 PermissionError,
                 OSError,
-            ) as e:  # guardian: File operations with encoding need error-specific handling
+            ) as e:  # review: File operations with encoding need error-specific handling
                 self.warnings.append(f"Error processing {test_file}: {e}")
                 continue
         return markers

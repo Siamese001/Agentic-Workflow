@@ -643,7 +643,7 @@ def main():
 
     except (
         RuntimeStructuralBalanceError
-    ) as e:  # guardian: RuntimeStructuralBalanceError should be handled with specific context
+    ) as e:  # review: RuntimeStructuralBalanceError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:

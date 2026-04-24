@@ -254,7 +254,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> "Path | Non
                 continue
             try:
                 t_data = json.loads(t_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):  # guardian: Add error context logging
+            except (OSError, json.JSONDecodeError):  # review: Add error context logging
                 continue
             meta = t_data.get("meta", {})
             metrics = t_data.get("metrics", {})

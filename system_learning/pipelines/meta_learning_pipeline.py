@@ -1203,10 +1203,10 @@ def run_pipeline(
             intake_record = None
     if (
         deps.healing_config_optimizer is not None
-        and intake_record is not None  # guardian: Runtime errors should be prevented with proper validation
+        and intake_record is not None  # review: Runtime errors should be prevented with proper validation
         and hasattr(
             intake_record, "snapshot"
-        )  # guardian: Runtime errors should be prevented with proper validation
+        )  # review: Runtime errors should be prevented with proper validation
     ):
         aggregate_snapshot = deps.healing_config_optimizer.create_snapshot_from_intake(
             intake_record,

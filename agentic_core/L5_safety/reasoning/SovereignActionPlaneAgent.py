@@ -594,14 +594,14 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                         if line.count("(") > line.count(")"):
                             line = (
                                 line.rstrip() + ")"
-                            )  # guardian: Syntax errors should be caught at parser level, not runtime
+                            )  # review: Syntax errors should be caught at parser level, not runtime
                     fixed_lines.append(line)
                 fixed_code = "\n".join(fixed_lines)
             _wg.open_write(tool_path, fixed_code)
             try:
                 compile(fixed_code, tool_path, "exec")
                 return {"success": True, "message": "Syntax error fixed"}
-            except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
                 LOGGER.error(f"Failed to fix syntax error: {e}")
                 return {"success": False, "error": str(e)}
         except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow

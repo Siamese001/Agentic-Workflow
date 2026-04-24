@@ -346,7 +346,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = format_observability_context(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # review: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

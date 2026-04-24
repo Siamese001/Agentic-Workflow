@@ -503,7 +503,7 @@ class CodeHealerAgent(
 
         try:
             tree = ast.parse(content)
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             Logger.error(f"Syntax error in {file_path}: {e}")
             return actions
 
@@ -558,7 +558,7 @@ class CodeHealerAgent(
 
         try:
             tree = ast.parse(content)
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             Logger.error(f"Failed to parse {file_path}: {e}")
             return actions
 
@@ -660,7 +660,7 @@ class CodeHealerAgent(
 
         try:
             tree = ast.parse(content)
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             Logger.error(f"Failed to parse {file_path}: {e}")
             return actions
 

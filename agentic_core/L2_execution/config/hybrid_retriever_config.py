@@ -155,7 +155,7 @@ class ASTAwareTokenizer:
                     )
                 elif isinstance(node, ast.Constant) and isinstance(node.value, str):
                     # Docstrings and string literals
-                    doc_tokens = [  # guardian: Syntax errors should be caught at parser level, not runtime
+                    doc_tokens = [  # review: Syntax errors should be caught at parser level, not runtime
                         t.lower()
                         for t in node.value.split()
                         if t.lower() not in cls.STOP_WORDS and len(t) > 2

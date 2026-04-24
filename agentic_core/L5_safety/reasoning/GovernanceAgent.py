@@ -864,7 +864,7 @@ class GovernanceAgent(SovereignBaseAgent):
                                 "message": f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}",
                             },
                         )
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
         except (OSError, ValueError, TypeError, RuntimeError):
             raise
@@ -1092,7 +1092,7 @@ class GovernanceAgent(SovereignBaseAgent):
         except PolicyEnforcementError as _pee:
             LOGGER.error("Policy blocked governance cleanup: %s", _pee)
             return {"status": "POLICY_BLOCKED", "error": str(_pee)}
-        if file_paths is None:  # guardian: PolicyEnforcementError should be handled with specific context
+        if file_paths is None:  # review: PolicyEnforcementError should be handled with specific context
             file_paths = [str(p) for p in get_python_files(self.root_dir)]
         cleanup_results = self.cleanup_violations(file_paths, dry_run=dry_run)
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}

@@ -52,7 +52,7 @@ def regenerate_headers(project_root: Path):
         except (
             UnicodeDecodeError,
             OSError,
-        ):  # guardian: File operations with encoding need error-specific handling
+        ):  # review: File operations with encoding need error-specific handling
             continue
     print(f"\nTotal files regenerated: {fixed_count}")
 

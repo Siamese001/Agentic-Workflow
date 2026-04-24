@@ -312,7 +312,7 @@ class AgentHealAuditScanner:
             SyntaxError,
             UnicodeDecodeError,
             OSError,
-        ):  # guardian: Parsing and encoding errors need separate handling strategies
+        ):  # review: Parsing and encoding errors need separate handling strategies
             # Skip files that can't be parsed
             return []
 

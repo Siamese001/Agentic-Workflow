@@ -423,7 +423,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         source = file_path.read_text(encoding="utf-8")
         try:
             tree = _ast.parse(source)
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
             return False
         import_node = None
         for node in tree.body:
@@ -504,7 +504,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         new_lines.insert(insert_idx, deferred_line)
         try:
             _ast.parse("".join(new_lines))
-        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
             return False
         file_path.write_text("".join(new_lines), encoding="utf-8")
         return True
@@ -584,7 +584,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                 except GravityRepairProhibitedError:
                     return self._emit_plan_only(
                         fix
-                    )  # guardian: GravityRepairProhibitedError should be handled with specific context
+                    )  # review: GravityRepairProhibitedError should be handled with specific context
                 except ImportError:  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                     pass
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
@@ -636,7 +636,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                 self.logger.info(f"[FIXED] {fix.file_path.name} (Backup: {backup_path.name})")
                 return {"status": "fixed", "fix_type": fix.fix_type}
             except PermissionError as perm_err:
-                err_str = str(perm_err)  # guardian: Permission errors should validate access before operation
+                err_str = str(perm_err)  # review: Permission errors should validate access before operation
                 if "MUTATION_PROHIBITED" in err_str:
                     op = "shutil.mutate"
                     self._check_prohibition_circuit_breaker(fix.file_path, op)
@@ -660,7 +660,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         except GravityRepairProhibitedError as prohibited:
             self.logger.warning(
                 str(prohibited)
-            )  # guardian: GravityRepairProhibitedError should be handled with specific context
+            )  # review: GravityRepairProhibitedError should be handled with specific context
             return self._emit_plan_only(fix)
         except (
             RuntimeError,

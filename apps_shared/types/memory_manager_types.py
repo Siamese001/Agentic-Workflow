@@ -467,7 +467,7 @@ class MemoryManager:
         except (
             psutil.NoSuchProcess,
             psutil.AccessDenied,
-        ):  # guardian:  should be handled with specific context
+        ):  # review:  should be handled with specific context
             pass
 
     def _monitor_loop(self, interval_seconds: float) -> None:

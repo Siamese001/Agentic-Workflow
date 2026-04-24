@@ -249,7 +249,7 @@ _emit_reads_through("l4", "hardened_gemini_executor_types", "urg_read_82")
 
 try:
     from .agent_executor import AgentExecutor, AgentMessage
-except ImportError:  # guardian: agent_executor module missing — provide stubs  # guardian: allow-silent-swallow -- optional dependency
+except ImportError:  # review: agent_executor module missing — provide stubs  # guardian: allow-silent-swallow -- optional dependency
 
     class AgentMessage:  # type: ignore[no-redef]
         """Stub: agent_executor not installed."""
@@ -260,7 +260,7 @@ except ImportError:  # guardian: agent_executor module missing — provide stubs
 
 try:
     from .multi_provider_clients import Provider
-except ImportError:  # guardian: multi_provider_clients module missing — provide stub
+except ImportError:  # review: multi_provider_clients module missing — provide stub
 
     class Provider:  # type: ignore[no-redef]
         """Stub: multi_provider_clients not installed."""

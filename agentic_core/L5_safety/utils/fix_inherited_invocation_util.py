@@ -195,14 +195,14 @@ def load_inherited_agents() -> list[dict]:
         agents = json.load(f)
     return [
         a for a in agents if a.get("invocation") == "Inherited"
-    ]  # guardian: Syntax errors should be caught at parser level, not runtime
+    ]  # review: Syntax errors should be caught at parser level, not runtime
 
 
 def find_class_end(source: str, class_name: str) -> tuple[int, int]:
     """Find the end of a class definition to insert method before it."""
     try:
         tree = ast.parse(source)
-    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
         return (-1, -1)
     for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef) and node.name == class_name:
@@ -219,14 +219,14 @@ def find_class_end(source: str, class_name: str) -> tuple[int, int]:
                 else:
                     indent = 4
                 return (end_line, indent)
-    return (-1, -1)  # guardian: Syntax errors should be caught at parser level, not runtime
+    return (-1, -1)  # review: Syntax errors should be caught at parser level, not runtime
 
 
 def has_heal_repository(source: str, class_name: str) -> bool:
     """Check if class already has heal_repository method."""
     try:
         tree = ast.parse(source)
-    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
         return True
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == class_name:

@@ -358,7 +358,7 @@ class DeterministicOrchestrator:
                 )
             except (
                 PolicyEnforcementError
-            ) as _pee:  # guardian: PolicyEnforcementError should be handled with specific context
+            ) as _pee:  # review: PolicyEnforcementError should be handled with specific context
                 raise ValueError(f"Policy blocked orchestration path {route_mode}: {_pee}") from _pee
             _rsa.observe_runtime_state(
                 "orchestrate_route_dispatch",

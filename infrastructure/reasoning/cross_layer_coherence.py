@@ -454,7 +454,7 @@ class CrossLayerCoherenceManager:
             self.contract_guard.validate_exact_lookup_key(key)
         except (
             FourLayerContractError
-        ) as e:  # guardian: FourLayerContractError should be handled with specific context
+        ) as e:  # review: FourLayerContractError should be handled with specific context
             raise ValueError(f"Invalid cache key: {e}") from e
 
         if ttl_seconds <= 0:
@@ -511,7 +511,7 @@ class CrossLayerCoherenceManager:
             self.contract_guard.validate_exact_lookup_key(key)
         except (
             FourLayerContractError
-        ) as e:  # guardian: FourLayerContractError should be handled with specific context
+        ) as e:  # review: FourLayerContractError should be handled with specific context
             raise ValueError(f"Invalid cache key: {e}") from e
 
         if ttl_seconds <= 0:
@@ -559,7 +559,7 @@ class CrossLayerCoherenceManager:
             self.contract_guard.validate_exact_lookup_key(key)
         except (
             FourLayerContractError
-        ) as e:  # guardian: FourLayerContractError should be handled with specific context
+        ) as e:  # review: FourLayerContractError should be handled with specific context
             raise ValueError(f"Invalid cache key: {e}") from e
 
         lock_acquired = await self.lock_manager.acquire_lock(key, f"invalidate_{layer_type.value}")
@@ -599,7 +599,7 @@ class CrossLayerCoherenceManager:
             self.contract_guard.validate_exact_lookup_key(key)
         except (
             FourLayerContractError
-        ):  # guardian: FourLayerContractError should be handled with specific context
+        ):  # review: FourLayerContractError should be handled with specific context
             return None
 
         entry = self.layer_caches[layer_type].get(key)

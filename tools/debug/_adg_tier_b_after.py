@@ -39,6 +39,6 @@ for r in rows:
         lines = p.read_text(encoding="utf-8", errors="replace").splitlines()
         if 1 <= ln <= len(lines):
             src_line = lines[ln - 1].strip()
-    has_guard = "# guardian:" in src_line
+    has_guard = "# review:" in src_line
     print(f"{fp}:{ln} kind={ek:<25} guard_inline={has_guard}")
     print(f"  src: {src_line[:110]}")

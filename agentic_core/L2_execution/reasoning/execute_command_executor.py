@@ -398,7 +398,7 @@ def execute_command(args: ExecuteCommandArgs) -> tuple[int, str, str]:
             result.stdout if result.stdout else "",
             result.stderr if result.stderr else "",
         )
-    except ExecutionTimeoutError:  # guardian: ExecutionTimeoutError should be handled with specific context
+    except ExecutionTimeoutError:  # review: ExecutionTimeoutError should be handled with specific context
         raise
     except (OSError, ValueError, ExecutionError) as e:
         raise ExecutionError(f"Command execution failed: {e}") from e
@@ -429,7 +429,7 @@ def check_tool_installed(tool_name: str) -> bool:
         except (
             subprocess.TimeoutExpired,
             FileNotFoundError,
-        ):  # guardian: File operations should check existence before access
+        ):  # review: File operations should check existence before access
             continue
     return False
 

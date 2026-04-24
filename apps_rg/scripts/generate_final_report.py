@@ -241,7 +241,7 @@ def generate_report():
         engine = VoidComplianceEngine(ctx_mock)
         result = asyncio.run(engine.execute(APPS_RG_DIR))
         print(f"✅ Architecture Clean: {result['status']}")
-    except RuntimeError as e:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as e:  # review: Runtime errors should be prevented with proper validation
         print(f"❌ Void Compliance Failed: {e}")
     except Exception as e:  # guardian: allow-silent-swallow
         print(f"⚠️ Scan completed with warnings: {e}")

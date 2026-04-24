@@ -344,7 +344,7 @@ def _check_duplicate_stubs(spec: AppGuardianSpec) -> AppHealResult:
         for py in sorted(Path(app).rglob("*.py")):
             try:
                 tree = ast.parse(py.read_text(encoding="utf-8"))
-            except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
                 continue
             class_names = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             dupes = {n for n in class_names if class_names.count(n) > 1}

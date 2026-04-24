@@ -193,7 +193,7 @@ def has_h1_heading(file_path: Path) -> bool:
     _emit_applies_guardrail(str(_uuid.uuid4()), "has_h1_heading", "p0_governance")
     import uuid as _uuid  # noqa: PLC0415
 
-    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
+    # review: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "has_h1_heading")
     try:
@@ -203,7 +203,7 @@ def has_h1_heading(file_path: Path) -> bool:
     except (
         UnicodeDecodeError,
         PermissionError,
-    ):  # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
+    ):  # review: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
         return False
 
 

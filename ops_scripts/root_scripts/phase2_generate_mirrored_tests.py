@@ -113,7 +113,7 @@ def test_{module_path.stem}_has_public_attributes():
     # Compile check before writing
     try:
         compile(test_content, str(expected_test_path), "exec")
-    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
         # Log failure
         failures_file = pathlib.Path("tests/_contracts/generated_test_failures.txt")
         failures_file.parent.mkdir(exist_ok=True)

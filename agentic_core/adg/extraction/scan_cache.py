@@ -413,7 +413,7 @@ def file_hash(filepath: Path) -> str:
     try:
         size = filepath.stat().st_size
         if size > 50 * 1024 * 1024:
-            # For very large files, hash size + mtime as proxy    # guardian: Add error context logging
+            # For very large files, hash size + mtime as proxy    # review: Add error context logging
             mtime = filepath.stat().st_mtime_ns
             return hashlib.sha256(f"{size}:{mtime}".encode()).hexdigest()
         if size > 1024 * 1024:

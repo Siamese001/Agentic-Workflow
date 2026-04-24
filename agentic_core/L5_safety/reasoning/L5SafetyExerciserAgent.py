@@ -387,14 +387,14 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
 
     def _exercise_guardrail_limits(self) -> str:
         """Cycle rate limit / mutation guard (in-memory counter)."""
-        return "Guardrail probe: Rate limit dry-check passed"  # guardian: AssertionError should be handled with specific context
+        return "Guardrail probe: Rate limit dry-check passed"  # review: AssertionError should be handled with specific context
 
     # guardian: allow-type-erasure
     def heal_repository(self, dry_run: bool = True, **kwargs) -> dict:
         """Repository healing with parent chain invocation."""
         try:
             result = super().heal_repository(dry_run=dry_run, **kwargs)
-        except AttributeError:  # guardian: AssertionError should be handled with specific context
+        except AttributeError:  # review: AssertionError should be handled with specific context
             result = {}
         return {"healed": 0, "skipped": 0, "parent": result}
 

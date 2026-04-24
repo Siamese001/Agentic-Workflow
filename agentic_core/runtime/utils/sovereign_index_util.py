@@ -449,7 +449,7 @@ class SovereignIndex:
         self._all_files.clear()
         self._cache.clear()
         try:
-            self._root_mtime = os.path.getmtime(self._project_root)  # guardian: Add error context logging
+            self._root_mtime = os.path.getmtime(self._project_root)  # review: Add error context logging
         except OSError:
             self._root_mtime = 0.0
         self._scan_directory(self._project_root)
@@ -478,9 +478,9 @@ class SovereignIndex:
                         elif entry.is_file(follow_symlinks=False):
                             self._all_files.append(
                                 Path(entry.path)
-                            )  # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
+                            )  # review: Multiple exceptions (PermissionError, OSError) need specific handling
                     except (PermissionError, OSError):
-                        continue  # guardian: Multiple exceptions (PermissionError, OSError) need specific handling
+                        continue  # review: Multiple exceptions (PermissionError, OSError) need specific handling
         except (PermissionError, OSError) as e:  # guardian: allow-log-and-swallow -- directory scan denied: non-fatal, continues with partial index
             Logger.debug(f"[INDEX] Cannot scan {directory}: {e}")
 

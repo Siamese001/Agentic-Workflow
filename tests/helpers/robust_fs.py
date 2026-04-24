@@ -58,7 +58,7 @@ def robust_rmtree(path: Path | str, *, retries: int = _MAX_RETRIES) -> None:
             PermissionError,
             FileNotFoundError,
             OSError,
-        ) as exc:  # guardian: Multiple exceptions (PermissionError, FileNotFoundError) need specific handling
+        ) as exc:  # review: Multiple exceptions (PermissionError, FileNotFoundError) need specific handling
             last_exc = exc
             winerr = getattr(exc, "winerror", None)
             if winerr is not None and winerr in _WIN_TRANSIENT_ERRNOS:
@@ -84,6 +84,6 @@ def robust_subprocess_run(
     for _ in range(_MAX_RETRIES):
         try:
             return subprocess.run(cmd, **kwargs)  # type: ignore[arg-type]
-        except FileNotFoundError as exc:  # guardian: File operations should check existence before access
+        except FileNotFoundError as exc:  # review: File operations should check existence before access
             last_exc = exc
     raise last_exc  # type: ignore[misc]

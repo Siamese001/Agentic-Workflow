@@ -359,7 +359,7 @@ class HitlGate:
         except (
             EOFError,
             KeyboardInterrupt,
-        ):  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        ):  # review: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             raw = "N"
 
         choice_map = {

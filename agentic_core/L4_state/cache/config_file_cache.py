@@ -231,7 +231,7 @@ class ConfigFileCache:
                 if cached is not None:
                     logger.debug(f"[Config cache] HIT for {config_path.name}")
                     return cached
-            except FileNotFoundError:  # guardian: File operations should check existence before access
+            except FileNotFoundError:  # review: File operations should check existence before access
                 raise
             except (OSError, ConnectionError) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to disk parse
                 logger.warning(f"[Config cache] Cache read failed: {e}")

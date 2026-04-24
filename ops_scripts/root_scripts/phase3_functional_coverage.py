@@ -8,7 +8,11 @@ import fnmatch
 import json
 import pathlib
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+from agentic_core.L0_routing.config.path_constants import (
+    DOCS_REPORTS_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -146,11 +150,11 @@ emit_determinism_digest("trace_phase3_functional_coverage", "phase3_functional_c
 _emit_validated_by_safety_plane("p1", "phase3_functional_coverage", "safety_validation")
 
 _ROOT = get_validated_project_root()
-
+f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json"
 
 def load_missing_modules() -> list[dict]:
     """Load list of modules that need tests created."""
-    with open("docs/reports/plans/phase0_discovery_report.json") as f:
+    with open(f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json") as f:
         report = json.load(f)
 
     missing_modules = [m for m in report["modules"] if m["status"] == "MISSING"]
@@ -216,7 +220,7 @@ def analyze_module_structure(module_path: pathlib.Path) -> dict:
     except (
         SyntaxError,
         UnicodeDecodeError,
-    ):  # guardian: Parsing and encoding errors need separate handling strategies
+    ):  # review: Parsing and encoding errors need separate handling strategies
         return {"classes": [], "functions": [], "constants": []}
 
 

@@ -270,7 +270,7 @@ def scan_module_for_wallclock(module_path: Path) -> list[str]:
     source = module_path.read_text(encoding="utf-8", errors="replace")
     try:
         tree = ast.parse(source, filename=str(module_path))
-    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # review: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError at line {exc.lineno}: {exc.msg}"]
     violations: list[str] = []
     for node in ast.walk(tree):

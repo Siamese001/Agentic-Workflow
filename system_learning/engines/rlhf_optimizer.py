@@ -235,7 +235,7 @@ class DefaultDeterministicRLHFOptimizer:
         except (
             json.JSONDecodeError,
             UnicodeDecodeError,
-        ):  # guardian: Encoding errors should specify fallback encoding strategy
+        ):  # review: Encoding errors should specify fallback encoding strategy
             return ChangePackage(
                 source="rlhf_optimizer",
                 target="threshold_config",
@@ -252,7 +252,7 @@ class DefaultDeterministicRLHFOptimizer:
         except (
             json.JSONDecodeError,
             UnicodeDecodeError,
-        ):  # guardian: Encoding errors should specify fallback encoding strategy
+        ):  # review: Encoding errors should specify fallback encoding strategy
             return ChangePackage(
                 source="rlhf_optimizer",
                 target="threshold_config",

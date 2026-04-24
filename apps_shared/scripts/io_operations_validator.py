@@ -379,7 +379,7 @@ class MonitoringOperations:
         except (
             FileNotFoundError,
             json.JSONDecodeError,
-        ) as e:  # guardian: File operations should check existence before access
+        ) as e:  # review: File operations should check existence before access
             logger.warning(f"Failed to read state file: {e}")
             return {"status": "unknown", "error": str(e)}
 

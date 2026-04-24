@@ -211,14 +211,14 @@ def flush_and_align() -> Any:
                 if dest_item.exists():
                     print(
                         f"      [!] Skipping {item.name} (already exists at destination)"
-                    )  # guardian: Add error context logging
+                    )  # review: Add error context logging
                     continue
                 assert_no_persistent_write("L0", "shutil.mutate")
                 shutil.move(str(item), str(dest_item))
             try:
                 src_path.rmdir()
                 print(f"  [>] Migrated Drift: {source} -> {target}")
-            except OSError:  # guardian: Add error context logging
+            except OSError:  # review: Add error context logging
                 print(f"  [!] Could not remove {source} (not empty)")
         else:
             print(f"  [-] Skipped: {source} (not found)")

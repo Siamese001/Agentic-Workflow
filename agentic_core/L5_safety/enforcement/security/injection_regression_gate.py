@@ -272,5 +272,5 @@ def check_regression_compliance(
         return True
     except (
         InjectionRegressionError
-    ):  # guardian: InjectionRegressionError should be handled with specific context
+    ):  # review: InjectionRegressionError should be handled with specific context
         return False

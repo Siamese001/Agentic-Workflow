@@ -357,7 +357,7 @@ class RegistryVerifier:
         try:
             with open(self.discovery_path, encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
+        except (json.JSONDecodeError, OSError):  # review: Add error context logging
             return []
 
     def verify_registry(self) -> VerificationResult:

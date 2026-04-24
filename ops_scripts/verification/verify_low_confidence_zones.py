@@ -707,7 +707,7 @@ def main():
 
     except (
         DeadCodeZoneControlError
-    ) as e:  # guardian: DeadCodeZoneControlError should be handled with specific context
+    ) as e:  # review: DeadCodeZoneControlError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:

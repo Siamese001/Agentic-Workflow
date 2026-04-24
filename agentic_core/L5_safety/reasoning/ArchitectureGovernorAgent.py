@@ -1090,7 +1090,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         _wg.remove_file(sentinel)
                 pycache = path / "__pycache__"
                 if pycache.exists():
-                    _wg.remove_tree(pycache, ignore_errors=True)  # guardian: Add error context logging
+                    _wg.remove_tree(pycache, ignore_errors=True)  # review: Add error context logging
                 _wg.remove_dir(path)
                 try:
                     rel_path = path.relative_to(self.project_root)

@@ -270,7 +270,7 @@ class AgenticRouter:
         # P3/L0: Apply capacity-aware routing if multiple candidates exist
         _capacity_chosen_route = target_name
         if len(_candidate_routes) > 1:
-            try:  # guardian: RoutingCapacityError should be handled with specific context
+            try:  # review: RoutingCapacityError should be handled with specific context
                 capacity_ctx = RoutingCapacityContext.create(
                     run_id=_rtid,
                     trace_id=_rtid,

@@ -258,7 +258,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                         else:
                             class_lines: Any = 0
                         if method_count > max_methods:
-                            violations.append(  # guardian: Parsing and encoding errors need separate handling strategies
+                            violations.append(  # review: Parsing and encoding errors need separate handling strategies
                                 f"{file_path}:{node.lineno}: Class '{node.name}' has {method_count} methods (max {max_methods})",
                             )
                         if class_lines > max_lines:
@@ -269,7 +269,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                 OSError,
                 UnicodeDecodeError,
                 SyntaxError,
-            ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+            ) as e:  # review: Parsing and encoding errors need separate handling strategies
                 self.logger.debug(f"Failed to check class size in {file_path}: {e}")
                 continue
         return (len(violations) == 0, violations)
@@ -294,7 +294,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                 for node in ast.walk(tree):
                     if isinstance(
                         node, ast.FunctionDef | ast.AsyncFunctionDef
-                    ):  # guardian: Parsing and encoding errors need separate handling strategies
+                    ):  # review: Parsing and encoding errors need separate handling strategies
                         if hasattr(node, "lineno") and hasattr(node, "end_lineno"):
                             func_lines: Any = node.end_lineno - node.lineno + 1
                             if func_lines > max_lines:
@@ -305,7 +305,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                 OSError,
                 UnicodeDecodeError,
                 SyntaxError,
-            ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+            ) as e:  # review: Parsing and encoding errors need separate handling strategies
                 self.logger.debug(f"Failed to check function size in {file_path}: {e}")
                 continue
         return (len(violations) == 0, violations)
@@ -326,7 +326,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                     tree: Any = ast.parse(f.read())
                 for node in ast.walk(
                     tree
-                ):  # guardian: Parsing and encoding errors need separate handling strategies
+                ):  # review: Parsing and encoding errors need separate handling strategies
                     if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         complexity: Any = self._calculate_complexity(node)
                         if complexity > max_complexity:
@@ -337,7 +337,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                 OSError,
                 UnicodeDecodeError,
                 SyntaxError,
-            ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+            ) as e:  # review: Parsing and encoding errors need separate handling strategies
                 self.logger.debug(f"Failed to check complexity in {file_path}: {e}")
                 continue
         return (len(violations) == 0, violations)

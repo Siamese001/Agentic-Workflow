@@ -284,7 +284,7 @@ def _hash_file(path: Path) -> tuple[str, str]:
     if path.suffix.lower() in _TEXT_EXTENSIONS:
         try:
             normalized = _normalize_text_bytes(raw)
-        except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError:  # review: Encoding errors should specify fallback encoding strategy
             return raw_hash, raw_hash
         return raw_hash, _sha256_hex(normalized)
     return raw_hash, raw_hash
@@ -408,7 +408,7 @@ def build_embedding_import_records(
             normalized = _normalize_text_bytes(raw)
         except (
             UnicodeDecodeError
-        ) as exc:  # guardian: Encoding errors should specify fallback encoding strategy
+        ) as exc:  # review: Encoding errors should specify fallback encoding strategy
             raise RuntimeError(
                 f"HARD FAIL: UTF-8 decode failed for accepted artifact {item.source_path}: {exc}"
             ) from exc

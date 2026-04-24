@@ -408,7 +408,7 @@ def _scenario_policy_hash_valid() -> tuple[ScenarioOutcome, float, str]:
             " PASS ",
             1.0,
             "PolicyHashEnforcer instantiated successfully",
-        )  # guardian: Test exceptions should use proper test assertions
+        )  # review: Test exceptions should use proper test assertions
     except ImportError:  # guardian: allow-silent-swallow -- optional dependency
         return " SKIP ", _SKIP_SCORE, "agentic_core not available in eval env"
     except _SCENARIO_EXCEPTIONS as exc:
@@ -422,7 +422,7 @@ def _scenario_policy_hash_invalid() -> tuple[ScenarioOutcome, float, str]:
         )
 
         enforcer = PolicyHashEnforcer(expected_hash="expected_hash_123", mode="LOG_ONLY")
-        # Provide mismatched hash    # guardian: PolicyHashViolation should be handled with specific context
+        # Provide mismatched hash    # review: PolicyHashViolation should be handled with specific context
         result = enforcer.validate(b"test_payload", b"mismatched_hash_456")
 
         if result.passed:
@@ -430,7 +430,7 @@ def _scenario_policy_hash_invalid() -> tuple[ScenarioOutcome, float, str]:
                 " FAIL ",
                 0.0,
                 "Mismatched hash should have been rejected",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " PASS ", 1.0, "Mismatched hash correctly rejected"
     except ImportError:
         return " SKIP ", _SKIP_SCORE, "agentic_core not available in eval env"
@@ -449,11 +449,11 @@ def _scenario_missing_hash() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 "Empty hash correctly rejected",
-            )  # guardian: PolicyHashViolation should be handled with specific context
+            )  # review: PolicyHashViolation should be handled with specific context
         return " FAIL ", 0.0, "Empty hash should be rejected"
     except ImportError:
         return " SKIP ", _SKIP_SCORE, "agentic_core not available"
-    except _SCENARIO_EXCEPTIONS as exc:  # guardian: Test exceptions should use proper test assertions
+    except _SCENARIO_EXCEPTIONS as exc:  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, str(exc)
 
 
@@ -468,14 +468,14 @@ def _scenario_nondeterministic_time_call() -> tuple[ScenarioOutcome, float, str]
         import tempfile
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
-            f.write(test_code)  # guardian: Test exceptions should use proper test assertions
+            f.write(test_code)  # review: Test exceptions should use proper test assertions
             tmp_path = f.name
         try:
             violations = scan_execution_scope_for_nondeterminism(tmp_path)
             if violations:
                 return " PASS ", 1.0, f"Detected {len(violations)} nondeterminism violation(s)"
             return " FAIL ", 0.0, "Expected nondeterminism violation not detected"
-        finally:  # guardian: Test exceptions should use proper test assertions
+        finally:  # review: Test exceptions should use proper test assertions
             os.unlink(tmp_path)
     except ImportError:
         return " SKIP ", _SKIP_SCORE, "agentic_core not available"
@@ -495,7 +495,7 @@ def _scenario_allowlisted_call() -> tuple[ScenarioOutcome, float, str]:
         import os
         import tempfile
 
-        # guardian: Test exceptions should use proper test assertions
+        # review: Test exceptions should use proper test assertions
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(test_code)
             tmp_path = f.name
@@ -506,7 +506,7 @@ def _scenario_allowlisted_call() -> tuple[ScenarioOutcome, float, str]:
                 1.0,
                 f"Allowlisted: {len(violations)} violation(s) (expected 0 or suppressed)",
             )
-        finally:  # guardian: Test exceptions should use proper test assertions
+        finally:  # review: Test exceptions should use proper test assertions
             os.unlink(tmp_path)
     except ImportError:
         return " SKIP ", _SKIP_SCORE, "agentic_core not available"
@@ -525,14 +525,14 @@ def _scenario_clean_module() -> tuple[ScenarioOutcome, float, str]:
         import tempfile
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
-            f.write(test_code)  # guardian: Test exceptions should use proper test assertions
+            f.write(test_code)  # review: Test exceptions should use proper test assertions
             tmp_path = f.name
         try:
             violations = scan_execution_scope_for_nondeterminism(tmp_path)
             if not violations:
                 return " PASS ", 1.0, "Clean module: no violations detected"
             return " FAIL ", 0.0, f"Unexpected violations: {violations}"
-        finally:  # guardian: Test exceptions should use proper test assertions
+        finally:  # review: Test exceptions should use proper test assertions
             os.unlink(tmp_path)
     except ImportError:
         return " SKIP ", _SKIP_SCORE, "agentic_core not available"
@@ -553,9 +553,9 @@ def _scenario_exec_recruiter_brief() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 f"Recruiter brief: status={result.status.value}",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"Unexpected status: {result.status.value}"
-    except ImportError as e:  # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:  # review: Test exceptions should use proper test assertions
         return " SKIP ", _SKIP_SCORE, f"apps_exec not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return " FAIL ", 0.0, str(exc)
@@ -574,9 +574,9 @@ def _scenario_exec_cto_brief() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 f"CTO brief: status={result.status.value}",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"Unexpected status: {result.status.value}"
-    except ImportError as e:  # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:  # review: Test exceptions should use proper test assertions
         return " SKIP ", _SKIP_SCORE, f"apps_exec not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return " FAIL ", 0.0, str(exc)
@@ -595,9 +595,9 @@ def _scenario_exec_dry_run() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 "Dry run: no artifacts emitted",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"status={result.status.value} artifacts={result.artifact_paths}"
-    except ImportError as e:  # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:  # review: Test exceptions should use proper test assertions
         return " SKIP ", _SKIP_SCORE, f"apps_exec not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return " FAIL ", 0.0, str(exc)
@@ -614,11 +614,11 @@ def _scenario_single_hop() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 "Single hop orchestration: success",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"Unexpected result: {result}"
     except ImportError as e:
         return " SKIP ", _SKIP_SCORE, f"apps_rg not available: {e}"
-    except _SCENARIO_EXCEPTIONS as exc:  # guardian: Test exceptions should use proper test assertions
+    except _SCENARIO_EXCEPTIONS as exc:  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, str(exc)
 
 
@@ -634,14 +634,14 @@ def _scenario_multi_hop_pass() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 f"Multi-hop: {len(checkpoints)} checkpoints",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.4, f"Expected >=2 checkpoints, got {len(checkpoints)}"
     except ImportError as e:
         return (
             " SKIP ",
             _SKIP_SCORE,
             f"apps_rg not available: {e}",
-        )  # guardian: Test exceptions should use proper test assertions
+        )  # review: Test exceptions should use proper test assertions
     except _SCENARIO_EXCEPTIONS as exc:
         return " FAIL ", 0.0, str(exc)
 
@@ -656,7 +656,7 @@ def _scenario_signed_output_valid() -> tuple[ScenarioOutcome, float, str]:
 
         from agentic_core.L2_execution.enforcement.key_source import get_current_secret
         from agentic_core.L2_execution.types.agent_output_contract_types import (
-            wrap_output,  # guardian: Test exceptions should use proper test assertions
+            wrap_output,  # review: Test exceptions should use proper test assertions
         )
 
         class _TestModel(BaseModel):
@@ -673,7 +673,7 @@ def _scenario_signed_output_valid() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 "AgentOutputContract signed successfully",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, "Contract missing signature"
     except ImportError as e:
         return " SKIP ", _SKIP_SCORE, f"agentic_core not available: {e}"
@@ -693,7 +693,7 @@ def _scenario_binary_precision_perfect() -> tuple[ScenarioOutcome, float, str]:
     try:
         from agentic_core.evaluation.metrics.classification import BinaryClassificationMetric
 
-        # guardian: Test exceptions should use proper test assertions
+        # review: Test exceptions should use proper test assertions
         metric = BinaryClassificationMetric(positive_label=1, metric="precision")
         preds = [1, 1, 1, 0, 0]
         truth = [1, 1, 1, 1, 0]
@@ -703,7 +703,7 @@ def _scenario_binary_precision_perfect() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 f"precision={score:.6f} (expected 1.0)",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"precision={score:.6f} (expected 1.0)"
     except ImportError as e:
         return " SKIP ", _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
@@ -724,9 +724,9 @@ def _scenario_binary_recall_perfect() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 f"recall={score:.6f} (expected 1.0)",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"recall={score:.6f} (expected 1.0)"
-    except ImportError as e:  # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:  # review: Test exceptions should use proper test assertions
         return " SKIP ", _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return " FAIL ", 0.0, str(exc)
@@ -743,7 +743,7 @@ def _scenario_binary_f1_harmonic_mean() -> tuple[ScenarioOutcome, float, str]:
         r_metric = BinaryClassificationMetric(positive_label=1, metric="recall")
         f1_metric = F1Score(positive_label=1)
         p = p_metric.compute(preds, truth)
-        r = r_metric.compute(preds, truth)  # guardian: Test exceptions should use proper test assertions
+        r = r_metric.compute(preds, truth)  # review: Test exceptions should use proper test assertions
         f1 = f1_metric.compute(preds, truth)
         expected_f1 = 2 * p * r / (p + r) if (p + r) > 0 else 0.0
         if abs(f1 - expected_f1) < 1e-5:
@@ -751,7 +751,7 @@ def _scenario_binary_f1_harmonic_mean() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 f"F1={f1:.6f} == 2*{p:.4f}*{r:.4f}/({p:.4f}+{r:.4f})",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"F1={f1:.6f} != harmonic mean {expected_f1:.6f}"
     except ImportError as e:
         return " SKIP ", _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
@@ -774,7 +774,7 @@ def _scenario_multiclass_macro_f1() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 1.0,
                 f"macro_f1={score:.6f} == mean of per-class F1",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"macro_f1={score:.6f} != {expected:.6f}"
     except ImportError as e:
         return " SKIP ", _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
@@ -795,7 +795,7 @@ def _scenario_multiclass_weighted_f1() -> tuple[ScenarioOutcome, float, str]:
         per_class = metric_w.per_class_scores(preds, truth)
         total_support = sum(
             v["support"] for v in per_class.values()
-        )  # guardian: Test exceptions should use proper test assertions
+        )  # review: Test exceptions should use proper test assertions
         expected_w = sum(v["f1"] * v["support"] for v in per_class.values()) / total_support
         if abs(w_score - expected_w) < 1e-5 and w_score != m_score:
             return (
@@ -808,7 +808,7 @@ def _scenario_multiclass_weighted_f1() -> tuple[ScenarioOutcome, float, str]:
                 " PASS ",
                 0.9,
                 f"weighted_f1={w_score:.6f} correct (equal to macro)",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         return " FAIL ", 0.0, f"weighted_f1={w_score:.6f} != {expected_w:.6f}"
     except ImportError as e:
         return " SKIP ", _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
@@ -831,13 +831,13 @@ def _scenario_confusion_matrix_invariants() -> tuple[ScenarioOutcome, float, str
                 " FAIL ",
                 0.0,
                 f"TP+FP+TN+FN={total} != {expected_total}",
-            )  # guardian: Test exceptions should use proper test assertions
+            )  # review: Test exceptions should use proper test assertions
         if cm.tp + cm.fp + cm.tn + cm.fn != total:
             return " FAIL ", 0.0, "ConfusionMatrix count invariant violated"
         return (
             " PASS ",
             1.0,
-            f"TP={cm.tp} FP={cm.fp} TN={cm.tn} FN={cm.fn} total={total}",  # guardian: Test exceptions should use proper test assertions
+            f"TP={cm.tp} FP={cm.fp} TN={cm.tn} FN={cm.fn} total={total}",  # review: Test exceptions should use proper test assertions
         )
     except ImportError as e:
         return " SKIP ", _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
@@ -856,7 +856,7 @@ _SCENARIO_FN_MAP: dict[str, Any] = {
     "cto_brief": _scenario_exec_cto_brief,
     "dry_run": _scenario_exec_dry_run,
     "single_hop": _scenario_single_hop,
-    "multi_hop_pass": _scenario_multi_hop_pass,  # guardian: Test exceptions should use proper test assertions
+    "multi_hop_pass": _scenario_multi_hop_pass,  # review: Test exceptions should use proper test assertions
     "multi_hop_gate_fail": _scenario_multi_hop_gate_fail,
     "signed_output_valid": _scenario_signed_output_valid,
     "tampered_signature": _scenario_tampered_signature,
@@ -995,7 +995,7 @@ class ScenarioRunner:
                 suite_id=suite_id,
                 outcome=outcome,
                 score=score,
-                latency_ms=latency_ms,  # guardian: Test exceptions should use proper test assertions
+                latency_ms=latency_ms,  # review: Test exceptions should use proper test assertions
                 message=message,
                 deterministic=defn.get("deterministic", True),
             )

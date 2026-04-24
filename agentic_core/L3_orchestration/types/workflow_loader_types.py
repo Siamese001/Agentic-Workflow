@@ -276,14 +276,14 @@ class WorkflowLoader:
         self._cached_reasoning_config: dict[str, Any] | None = None
         self._load_workflow()
 
-    # guardian: File operations should check existence before access
+    # review: File operations should check existence before access
     def _load_workflow(self) -> None:
         """Load the workflow JSON from disk."""
         try:
             with open(self.workflow_path, encoding="utf-8") as f:
                 self._workflow_data = json.load(f)
             LOGGER.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
-        except FileNotFoundError:  # guardian: File operations should check existence before access
+        except FileNotFoundError:  # review: File operations should check existence before access
             LOGGER.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except json.JSONDecodeError as e:

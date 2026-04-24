@@ -578,7 +578,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         conn = _open_adg(adg_dir)
-    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # review: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 

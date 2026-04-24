@@ -305,7 +305,7 @@ def test_runtime_mutation_guard() -> bool:
         try:
 
             class TestProtected:
-                __module__ = "agentic_core.test"  # guardian: RuntimeMutationViolation should be handled with specific context
+                __module__ = "agentic_core.test"  # review: RuntimeMutationViolation should be handled with specific context
                 pass
 
             guard_setattr(TestProtected, "__class__", object)

@@ -396,7 +396,7 @@ def _write_artifact_integrity_json(trace_id: str, output_dir: Path) -> None:
             artifacts[artifact_path.name] = {
                 "sha256": sha256_hash,
                 "size_bytes": len(content),
-            }  # guardian: File operations with encoding need error-specific handling
+            }  # review: File operations with encoding need error-specific handling
         except (OSError, UnicodeDecodeError) as e:
             logger.warning(f"[ARTIFACT-INTEGRITY] Failed to hash {artifact_path.name}: {e}")
     integrity = {

@@ -222,7 +222,7 @@ class ViolationDispositionProcessor:
                 lines = content.splitlines()
 
                 for line_no, line in enumerate(lines, 1):
-                    if "# guardian:" in line:
+                    if "# review:" in line:
                         comment = self._parse_guardian_comment(file_path, line_no, line)
                         if comment:
                             guardian_comments.append(comment)

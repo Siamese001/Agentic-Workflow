@@ -220,7 +220,7 @@ def _fix_line(line: str) -> tuple[str | None, str | None]:
     canonical_type = _normalize_type(raw_type)
     # Preserve original indentation; normalise to single space after #
     indent = re.match(r"^(\s*)", line).group(1)
-    fixed = f"{indent}# guardian: {canonical_type} -- {justification}"
+    fixed = f"{indent}# review: {canonical_type} -- {justification}"
 
     if fixed == line.rstrip():
         return None, None
@@ -404,7 +404,7 @@ def _cli() -> None:
     if use_diff:
         try:
             file_list.extend(_git_changed_files(staged=args.staged))
-        except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError as exc:  # review: Runtime errors should be prevented with proper validation
             print(f"ERROR: {exc}", file=sys.stderr)
             sys.exit(1)
 
@@ -419,7 +419,7 @@ def _cli() -> None:
             continue
         try:
             result = fixer.fix_file(p, check_only=check_only)
-        except OSError as exc:  # guardian: Add error context logging
+        except OSError as exc:  # review: Add error context logging
             print(f"ERROR reading {f}: {exc}", file=sys.stderr)
             continue
 

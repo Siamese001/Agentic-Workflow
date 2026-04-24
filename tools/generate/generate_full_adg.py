@@ -890,7 +890,7 @@ def generate_full_adg(
     if not seed_files:
         seed_files = list(
             result.modules[:5],
-        )  # guardian: Runtime errors should be prevented with proper validation
+        )  # review: Runtime errors should be prevented with proper validation
     impact_report = predict_impact(result, seed_files)
     imp_summary = impact_summary(impact_report)
 

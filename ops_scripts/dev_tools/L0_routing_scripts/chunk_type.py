@@ -188,7 +188,7 @@ async def load_text_file(file_path: Path) -> str:
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "load_text_file", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415    # guardian: Encoding errors should specify fallback encoding strategy
+    import uuid as _uuid  # noqa: PLC0415    # review: Encoding errors should specify fallback encoding strategy
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "load_text_file")
@@ -239,7 +239,7 @@ def _extract_docstring(node: ast.AST) -> str | None:
 def _get_source_segment(lines: list[str], start: int, end: int) -> str:
     """Extract line segment from source lines (1-indexed)."""
     return "\n".join(lines[start - 1 : end])
-    # guardian: Syntax errors should be caught at parser level, not runtime
+    # review: Syntax errors should be caught at parser level, not runtime
 
 
 def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
@@ -247,7 +247,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
     chunks = []
     lines = text.splitlines()
     try:
-        tree = ast.parse(text)  # guardian: Syntax errors should be caught at parser level, not runtime
+        tree = ast.parse(text)  # review: Syntax errors should be caught at parser level, not runtime
     except SyntaxError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
         print(f" [!] AST parse failed for {file_path}: {e}. Falling back to line-based.")
         return chunk_text_fallback(text, file_path)

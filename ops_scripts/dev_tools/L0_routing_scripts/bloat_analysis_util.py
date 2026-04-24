@@ -381,7 +381,7 @@ def find_script_candidates():
                     {
                         "path": str(f.relative_to(ROOT)),
                         "size_kb": round(stat.st_size / 1024, 1),
-                        "signals": signals,  # guardian: File operations with encoding need error-specific handling
+                        "signals": signals,  # review: File operations with encoding need error-specific handling
                     },
                 )
         except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling

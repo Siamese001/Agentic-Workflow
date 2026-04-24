@@ -632,7 +632,7 @@ def authorize_and_execute(
             action_class=execution_context.action_class.value,
         )
         logger.debug(
-            "EXECUTION_GUARDRAIL_AUDIT audit_id=%s req=%s target=%s outcome=%s",  # guardian: SafetyAuditMissingError should be handled with specific context
+            "EXECUTION_GUARDRAIL_AUDIT audit_id=%s req=%s target=%s outcome=%s",  # review: SafetyAuditMissingError should be handled with specific context
             safety_audit.safety_audit_id,
             execution_context.execution_request_id,
             _tgt,
@@ -640,7 +640,7 @@ def authorize_and_execute(
         )
     except (
         SafetyAuditMissingError
-    ) as audit_exc:  # guardian: SafetyAuditMissingError should be handled with specific context
+    ) as audit_exc:  # review: SafetyAuditMissingError should be handled with specific context
         logger.error(
             "EXECUTION_GUARDRAIL_AUDIT_FAILED: %s (req=%s target=%s)",
             audit_exc,
@@ -754,7 +754,7 @@ def authorize_and_execute(
             _effective_callable = target_callable
 
         _contract_result = invoke_typed_tool(
-            _tool_contract,  # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
+            _tool_contract,  # review: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
             _typed_input,
             registry=_registry,
             tool_callable=_effective_callable,
@@ -764,7 +764,7 @@ def authorize_and_execute(
         ToolInputSchemaViolation,
         ToolOutputSchemaViolation,
         UnregisteredToolError,
-    ) as exc:  # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
+    ) as exc:  # review: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
         # P3/L2: Record execution observability for tool errors
         try:
             obs_context = ExecutionObservabilityContext.create(

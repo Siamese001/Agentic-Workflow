@@ -292,14 +292,14 @@ class RegressionOracleAgent(SovereignBaseAgent):
             str(uuid.uuid4()),
             "RegressionOracleAgent._ast_safety_check",
             "L5_POLICY",
-        )  # guardian: Syntax errors should be caught at parser level, not runtime
+        )  # review: Syntax errors should be caught at parser level, not runtime
         import ast as _ast
 
         DANGEROUS_CALLS = {"os.system", "subprocess", "exec", "eval", "__import__", "compile"}
         violations: list[str] = []
         try:
             tree = _ast.parse(test_code)
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             return [f"SyntaxError in generated code: {e}"]
         for node in tqdm(_ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, _ast.Call):

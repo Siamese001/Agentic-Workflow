@@ -458,7 +458,7 @@ def main():
 
     except (
         ConsistencyVerificationError
-    ) as e:  # guardian: ConsistencyVerificationError should be handled with specific context
+    ) as e:  # review: ConsistencyVerificationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:

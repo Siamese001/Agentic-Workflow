@@ -207,7 +207,7 @@ class SafetyGuardrail:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SafetyGuardrail.verify_change")
-        import hashlib as _hashlib  # noqa: PLC0415    # guardian: Syntax errors should be caught at parser level, not runtime
+        import hashlib as _hashlib  # noqa: PLC0415    # review: Syntax errors should be caught at parser level, not runtime
 
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SafetyGuardrail.verify_change".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
@@ -216,7 +216,7 @@ class SafetyGuardrail:
             return (False, "Safety Block: Attempted to wipe file.")
         try:
             ast.parse(new_code)
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             return (False, f"Safety Block: Mutation introduced syntax error: {e.msg} at line {e.lineno}")
         orig_len: Any = len(original_code.splitlines())
         new_len: Any = len(new_code.splitlines())

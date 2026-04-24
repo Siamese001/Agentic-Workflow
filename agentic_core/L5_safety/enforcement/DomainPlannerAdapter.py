@@ -326,7 +326,7 @@ class DomainPlannerAdapter:
         logger.info(f"DomainPlannerAdapter: executing legacy agent for workflow {workflow_id}")
         try:
             loop = asyncio.get_event_loop()
-        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError:  # review: Runtime errors should be prevented with proper validation
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
         if loop.is_running():

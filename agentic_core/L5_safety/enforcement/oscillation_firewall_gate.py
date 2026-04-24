@@ -267,7 +267,7 @@ class OscillationFirewall:
             self._detector.record_change(self._ROUTING_PARAM, tier, cycle)
         except (
             ParameterFrozenError
-        ) as exc:  # guardian: ParameterFrozenError should be handled with specific context
+        ) as exc:  # review: ParameterFrozenError should be handled with specific context
             raise OscillationFirewallTripped(
                 f"OscillationFirewall: tier {tier!r} is oscillating at cycle {cycle}. Routing frozen.\nDetector: {exc}",
             ) from exc

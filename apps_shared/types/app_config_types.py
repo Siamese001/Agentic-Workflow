@@ -525,7 +525,7 @@ class RAGConfig:
             self.telemetry_log_dir.mkdir(parents=True, exist_ok=True)
             self.chroma_persist_dir.mkdir(
                 parents=True, exist_ok=True
-            )  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+            )  # review: Multiple exceptions (OSError, PermissionError) need specific handling
         except (OSError, PermissionError) as e:
             logging.warning(f"Could not create cache directories (read-only filesystem?): {e}")
             logging.warning("Caching features will be disabled")

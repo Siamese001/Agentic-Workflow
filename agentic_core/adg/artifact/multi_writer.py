@@ -507,6 +507,12 @@ _GUARDIAN_MAP: dict[str, tuple[str, ...]] = {
     # Deliberate bypass of a chokepoint (e.g. direct HTTP/LLM call) with a
     # documented downstream fallback. Requires per-site justification.
     "chokepoint_bypass": ("guardian: allow-chokepoint-bypass",),
+    # A3 — irreversible operation (unlink/rmtree/drop_table/etc.) without an
+    # enclosing HITL checkpoint. Exempt only for rollback paths, cleanup-of-
+    # cleanup, or documented reverse operations where HITL is structurally
+    # incorrect. Requires per-site `-- <justification>` noting why the action
+    # is reversal rather than a user-facing destructive primitive.
+    "missing_hitl_on_irreversible": ("guardian: allow-missing-hitl-on-irreversible",),
 }
 
 _LAYER_VIOLATION_GUARDIANS = ("guardian: allow-layer-violation",)
@@ -535,6 +541,7 @@ _CANONICAL_GUARDIAN_TOKENS = frozenset(
         "allow-hardcoded-secret",
         "allow-hallucinated-tool-name",
         "allow-chokepoint-bypass",
+        "allow-missing-hitl-on-irreversible",
         # Layer-violation marker used by the layer-gravity filter path.
         # Without this entry, `_extract_guardian_tokens` silently drops the token
         # and `_has_guardian_comment` can never match layer-violation markers.
@@ -554,6 +561,19 @@ _CANONICAL_GUARDIAN_TOKENS = frozenset(
         "allow-broad-catch",
         "allow-broad",
         "allow-in-process-dispatcher",
+        # W17.b (2026-04-24): Author-Gate promotion of 4 high-volume tokens
+        # (combined 1,076 organic call sites). Inventory baseline at
+        # artifacts/guardian_lint/baseline_2026-04-24.txt. These suppress
+        # non-exception-handling warnings (config/typing/mutation/path) and
+        # therefore do NOT map to any existing _GUARDIAN_MAP edge_kind —
+        # extending the edge_kind taxonomy is a separate ADG-scanner change
+        # deferred to a follow-up wave. Until then, these tokens are
+        # recognized as canonical (not flagged as non-canonical) but are not
+        # wired into has_guardian_for_violation for any specific edge_kind.
+        "allow-magic-config",          # 454 uses — hardcoded-literal-where-SSOT-expected
+        "allow-type-erasure",          # 356 uses — runtime cast discarded
+        "allow-global-mutation",       # 152 uses — intentional module-level mutation
+        "allow-path-string",           # 114 uses — str where Path expected (API-compat)
     }
 )
 
@@ -1158,7 +1178,7 @@ def _create_latest_symlinks(
     """
     import shutil
 
-    # guardian: Multiple exceptions (OSError, NotImplementedError) need specific handling
+    # review: Multiple exceptions (OSError, NotImplementedError) need specific handling
     symlink_map = {
         "adg_LATEST.sqlite": sqlite_path,
         "adg_LATEST_snapshot.json": snap_path,

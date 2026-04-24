@@ -311,7 +311,7 @@ def create_mcp_registry(specs: list[MCPClientSpec], fail_on_error: bool = False)
         Populated MCPClientRegistry
 
     Raises:
-        MCPClientInitializationError: If fail_on_error=True and init fails    # guardian: MCPClientInitializationError should be handled with specific context
+        MCPClientInitializationError: If fail_on_error=True and init fails    # review: MCPClientInitializationError should be handled with specific context
     """
     registry = MCPClientRegistry()
     for spec in tqdm(specs, desc="Processing", unit="item"):
@@ -320,7 +320,7 @@ def create_mcp_registry(specs: list[MCPClientSpec], fail_on_error: bool = False)
             registry.register(spec, client)
         except (
             MCPClientInitializationError
-        ) as exc:  # guardian: MCPClientInitializationError should be handled with specific context
+        ) as exc:  # review: MCPClientInitializationError should be handled with specific context
             if fail_on_error and (not spec.optional):
                 raise
             Logger.warning(f"Failed to initialize MCP client '{spec.name}', registering stub: {exc}")

@@ -112,7 +112,7 @@ class GuardianSweepFixer:
                         "evidence": evidence,
                         "disposition": disposition,
                         "disposition_source": disposition_source,
-                        "has_guardian": "# guardian:" in disposition_source if disposition_source else False,
+                        "has_guardian": "# review:" in disposition_source if disposition_source else False,
                     }
                 )
 
@@ -153,7 +153,7 @@ class GuardianSweepFixer:
                     original_line = lines[line_no - 1]
 
                     # Skip if already has guardian comment
-                    if "# guardian:" in original_line or has_guardian:
+                    if "# review:" in original_line or has_guardian:
                         self.skipped_guarded += 1
                         continue
 

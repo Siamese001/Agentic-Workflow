@@ -543,7 +543,7 @@ class SovereignBaseAgent(
             _fs_hash = _hl.sha256("\n".join(_fs_parts).encode()).hexdigest()
 
             # git_hash: SHA-256 of .git/HEAD content
-            _git_head = self.project_root / ".git" / "HEAD"  # guardian: Add error context logging
+            _git_head = self.project_root / ".git" / "HEAD"  # review: Add error context logging
             # guardian: allow-silent-swallow -- acceptable exception handling
             try:
                 _git_bytes = _git_head.read_bytes()

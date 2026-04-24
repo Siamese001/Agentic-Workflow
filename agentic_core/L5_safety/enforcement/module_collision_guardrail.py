@@ -404,7 +404,7 @@ def get_repo_root() -> Path:
     except (
         subprocess.CalledProcessError,
         FileNotFoundError,
-    ):  # guardian: File operations should check existence before access
+    ):  # review: File operations should check existence before access
         current = Path.cwd()
         while current != current.parent:
             if (current / ".git").exists():

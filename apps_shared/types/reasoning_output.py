@@ -82,7 +82,7 @@ def scan_for_violations(scan_dirs: list[Path] | None = None) -> list[tuple[str, 
             except (
                 SyntaxError,
                 OSError,
-            ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+            ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
                 continue
 
             for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

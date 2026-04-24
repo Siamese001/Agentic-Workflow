@@ -368,7 +368,7 @@ class ReflectionEngine:
                     self._llm_path_evaluate,
                     content,
                     normalized_criteria,
-                    context,  # guardian: CircuitOpenError should be handled with specific context
+                    context,  # review: CircuitOpenError should be handled with specific context
                 )
                 self.stats["llm_critiques"] += 1
 

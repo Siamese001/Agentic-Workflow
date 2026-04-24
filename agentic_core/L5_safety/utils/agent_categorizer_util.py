@@ -279,7 +279,7 @@ class AgentCategorizer:
             except (
                 SyntaxError,
                 UnicodeDecodeError,
-            ):  # guardian: Parsing and encoding errors need separate handling strategies
+            ):  # review: Parsing and encoding errors need separate handling strategies
                 continue
         return dict(self.categories)
 

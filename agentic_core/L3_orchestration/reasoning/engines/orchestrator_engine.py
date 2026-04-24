@@ -605,7 +605,7 @@ class Orchestrator(SovereignBaseAgent):
         self,
         agents: list[str],
         dry_run: bool = True,
-        execute: bool = False,  # guardian: PolicyEnforcementError should be handled with specific context
+        execute: bool = False,  # review: PolicyEnforcementError should be handled with specific context
         context: ExecutionContext | None = None,
     ) -> MissionResult:
         """

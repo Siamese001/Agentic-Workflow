@@ -278,7 +278,7 @@ class event_emission_mixin:
         try:
             loop = asyncio.get_running_loop()
             loop.create_task(_dispatch_async())
-        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError:  # review: Runtime errors should be prevented with proper validation
             try:
                 self.redis_client.xadd(
                     "sovereign_event_stream",

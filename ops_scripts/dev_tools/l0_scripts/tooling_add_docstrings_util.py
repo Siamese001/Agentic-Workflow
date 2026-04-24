@@ -107,7 +107,7 @@ def process_file(pyfile: Path) -> bool:
     except (
         SyntaxError,
         OSError,
-    ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+    ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
         return False
     needs_fix: Any = []
     for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):

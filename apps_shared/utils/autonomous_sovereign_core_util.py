@@ -307,7 +307,7 @@ class AutonomousSovereignCore:
             while self.running:
                 await asyncio.sleep(
                     DEFAULT_SLEEP
-                )  # guardian: KeyboardInterrupt should be handled with specific context
+                )  # review: KeyboardInterrupt should be handled with specific context
         except KeyboardInterrupt:
             print("\n[L3] Sovereign Core shutting down...")
             observer.stop()

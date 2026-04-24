@@ -393,7 +393,7 @@ def _cli() -> None:
             sys.exit(0)
         print(f"ERROR: Redis unavailable: {exc}", file=sys.stderr)
         sys.exit(1)
-    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # review: Runtime errors should be prevented with proper validation
         if _redis_down_is_ok:
             print(f"[adg-stale-guard] WARNING: {exc}", file=sys.stderr)
             sys.exit(0)
@@ -403,7 +403,7 @@ def _cli() -> None:
     checker = ADGStalenessChecker(client=adg)
     try:
         result = checker.check()
-    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # review: Runtime errors should be prevented with proper validation
         if _redis_down_is_ok:
             print(f"[adg-stale-guard] WARNING: {exc}", file=sys.stderr)
             sys.exit(0)

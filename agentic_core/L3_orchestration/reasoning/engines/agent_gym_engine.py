@@ -552,7 +552,7 @@ def _run_self_tests(self) -> dict:
         results["passed"] += 1
         results["tests"].append(
             {"name": "test_instantiation", "status": "passed"}
-        )  # guardian: AssertionError should be handled with specific context
+        )  # review: AssertionError should be handled with specific context
     except AssertionError as e:
         results["failed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})

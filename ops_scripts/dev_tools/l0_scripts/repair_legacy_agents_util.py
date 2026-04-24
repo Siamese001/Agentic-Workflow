@@ -53,7 +53,7 @@ def repair_file(file_path: Path):
     try:
         ast.parse(content)
         return True
-    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
         print(f"[-] Failed to repair {file_path.name}: {e}")
         return False
 

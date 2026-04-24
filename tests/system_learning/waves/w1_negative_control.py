@@ -166,7 +166,7 @@ def run_negative_control():
         return False
     except (
         EmbeddingIntegrityError
-    ) as e:  # guardian: EmbeddingIntegrityError should be handled with specific context
+    ) as e:  # review: EmbeddingIntegrityError should be handled with specific context
         print(f"PASS: EmbeddingIntegrityError caught: {e}")
         print("This proves integrity checks are essential")
         return True

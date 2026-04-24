@@ -487,7 +487,7 @@ class TokenBucketRateLimiter(RateLimiter):
 
         try:
             self._cleanup_task = asyncio.create_task(cleanup_loop())
-        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError:  # review: Runtime errors should be prevented with proper validation
             self._cleanup_task = None  # no event loop — cleanup deferred
 
     async def stop(self) -> None:

@@ -551,7 +551,7 @@ def main():
 
         return 0 if result["status"] == "PASS" else 1
 
-    except LayerAuthorityError as e:  # guardian: LayerAuthorityError should be handled with specific context
+    except LayerAuthorityError as e:  # review: LayerAuthorityError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:

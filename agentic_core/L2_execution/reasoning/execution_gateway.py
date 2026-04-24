@@ -300,7 +300,7 @@ class ExecutionGateway:
             envelope.verify(get_current_secret())
         except (
             SignatureVerificationError
-        ):  # guardian: SignatureVerificationError should be handled with specific context
+        ):  # review: SignatureVerificationError should be handled with specific context
             raise SignatureBoundaryError('Invalid SandboxEnvelope signature - execution blocked') from None
         builder = ExecutionTraceBuilder(
             trace_id=envelope.envelope_id,
@@ -325,13 +325,13 @@ class ExecutionGateway:
             builder.error = (
                 None if tool_result.exit_code == 0 else f"Tool exited with code {tool_result.exit_code}"
             )
-        except BudgetExceeded as e:  # guardian: BudgetExceeded should be handled with specific context
+        except BudgetExceeded as e:  # review: BudgetExceeded should be handled with specific context
             builder.validation_decision = "FAIL"
             builder.error = f"Budget exceeded: {e}"
             raise
         except (
             ToolContractViolation
-        ) as e:  # guardian: ToolContractViolation should be handled with specific context
+        ) as e:  # review: ToolContractViolation should be handled with specific context
             builder.validation_decision = "FAIL"
             builder.error = f"ToolContract violation: {e}"
             raise

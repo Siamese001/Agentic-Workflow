@@ -274,7 +274,7 @@ def _load_baseline() -> dict:
         return {}
     try:
         return _load_json_object(BASELINE_FILE.read_text(encoding="utf-8"), source=str(BASELINE_FILE))
-    except (OSError, json.JSONDecodeError) as exc:  # guardian: Add error context logging
+    except (OSError, json.JSONDecodeError) as exc:  # review: Add error context logging
         print(f"ERROR: baseline file corrupt: {exc}", file=sys.stderr)
         return {}
 
@@ -518,7 +518,7 @@ def cmd_init() -> int:
     print("Fetching live ADG snapshot from Redis...")
     try:
         gpc = _get_gpc()
-    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # review: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
@@ -588,7 +588,7 @@ def cmd_check() -> int:
     print("Fetching current ADG snapshot from Redis...")
     try:
         cur = _get_gpc()
-    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # review: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
@@ -632,7 +632,7 @@ def cmd_status() -> int:
 
     try:
         cur = _get_gpc()
-    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # review: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 

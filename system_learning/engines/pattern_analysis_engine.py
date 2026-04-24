@@ -357,7 +357,7 @@ class PatternAnalysisEngine:
             except (
                 _json.JSONDecodeError,
                 UnicodeDecodeError,
-            ) as exc:  # guardian: Encoding errors should specify fallback encoding strategy
+            ) as exc:  # review: Encoding errors should specify fallback encoding strategy
                 raise ValueError(f"Invalid healing_snapshot_bytes: {exc}") from exc
             healing_version = snap.get("version_id")
             aggregates = snap.get("aggregates", [])

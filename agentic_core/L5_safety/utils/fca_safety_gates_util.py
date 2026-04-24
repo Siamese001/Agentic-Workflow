@@ -327,7 +327,7 @@ def build_import_graph(python_files: list[Path], project_root: Path) -> dict[str
         except (
             SyntaxError,
             OSError,
-        ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
             continue
         for node in ast.walk(tree):
             mod = None
@@ -483,7 +483,7 @@ def detect_agent_lineage(path: Path) -> str:
     except (
         SyntaxError,
         OSError,
-    ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+    ):  # review: Multiple exceptions (SyntaxError, OSError) need specific handling
         return "NOT_AGENT"
     for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.ClassDef):

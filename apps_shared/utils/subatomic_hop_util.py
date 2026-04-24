@@ -777,7 +777,7 @@ class SubatomicHop:
 
                     # Apply injections
                     enhanced_prompt = loader.apply_injections(base_prompt, matches)
-                    # guardian: CircuitOpenError should be handled with specific context
+                    # review: CircuitOpenError should be handled with specific context
                     # Parse back (for stages that use structured prompts)
                     try:
                         # Extract just the prompt part (before injection metadata)
@@ -831,7 +831,7 @@ class SubatomicHop:
 
             return {"output": result}
 
-        except CircuitOpenError:  # guardian: CircuitOpenError should be handled with specific context
+        except CircuitOpenError:  # review: CircuitOpenError should be handled with specific context
             # Circuit is open - generation is failing
             logger.critical("Generation Circuit OPEN. Node failed.")
             # No fallback possible for generation - raise critical failure
@@ -1021,7 +1021,7 @@ class SubatomicHop:
         """Transition to a new stage and log the event."""
         from_stage = (
             self.current_stage
-        )  # guardian: CheckpointIntegrityError should be handled with specific context
+        )  # review: CheckpointIntegrityError should be handled with specific context
         self.current_stage = stage
 
         # Log structured event
@@ -1076,7 +1076,7 @@ class SubatomicHop:
                 )
         except (
             CheckpointIntegrityError
-        ) as e:  # guardian: CheckpointIntegrityError should be handled with specific context
+        ) as e:  # review: CheckpointIntegrityError should be handled with specific context
             logger.error(f"Checkpoint integrity validation failed: {e}")
             # Quarantine all checkpoints and start fresh
             self.checkpoint_manager.quarantine_all_checkpoints()

@@ -239,7 +239,7 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
                     if ctx == current_context:
                         continue
                     if ctx == "SharedContracts":
-                        continue  # guardian: Parsing and encoding errors need separate handling strategies
+                        continue  # review: Parsing and encoding errors need separate handling strategies
                     target_path: Any = info.get("path", "")
                     if target_path.replace("/", ".") in node.module:
                         if "contracts" not in node.module and "interfaces" not in node.module:

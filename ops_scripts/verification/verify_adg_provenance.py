@@ -390,7 +390,7 @@ def main():
 
     except (
         ProvenanceVerificationError
-    ) as e:  # guardian: ProvenanceVerificationError should be handled with specific context
+    ) as e:  # review: ProvenanceVerificationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:

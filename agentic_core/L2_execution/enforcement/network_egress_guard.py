@@ -345,7 +345,7 @@ def test_egress_guard() -> bool:
     try:
         simulate_direct_llm_request()
         return False
-    except NetworkEgressViolation:  # guardian: NetworkEgressViolation should be handled with specific context
+    except NetworkEgressViolation:  # review: NetworkEgressViolation should be handled with specific context
         return True
     except (ValueError, TypeError, RuntimeError) as e:
         return False

@@ -118,7 +118,7 @@ def main():
                     if not any(dir_path.iterdir()):
                         dir_path.rmdir()
                         print(f"Removed empty directory: {dir_path}")
-                except OSError:  # guardian: Add error context logging
+                except OSError:  # review: Add error context logging
                     pass
 
 

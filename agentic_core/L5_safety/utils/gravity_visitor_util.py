@@ -218,7 +218,7 @@ def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
     Args:
         file_path: Path to the Python file
 
-    Returns:    # guardian: Syntax errors should be caught at parser level, not runtime
+    Returns:    # review: Syntax errors should be caught at parser level, not runtime
         List of (module_name, line_number) tuples
     """
     try:
@@ -227,7 +227,7 @@ def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
         visitor = GravityVisitor("unknown", file_path)
         visitor.visit(tree)
         return visitor.imports
-    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
         Logger.debug(f"Syntax error in {file_path}: {e}")
         return []
     except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow

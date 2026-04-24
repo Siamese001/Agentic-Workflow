@@ -257,7 +257,7 @@ class IngestionEngine(BaseExecEngine):
                             source_dir=src,
                         ),
                     )
-                except OSError as exc:  # guardian: Add error context logging
+                except OSError as exc:  # review: Add error context logging
                     _log.warning("[IngestionEngine] Could not read %s: %s", file_path, exc)
                     result.skipped_paths.append(str(file_path))
 

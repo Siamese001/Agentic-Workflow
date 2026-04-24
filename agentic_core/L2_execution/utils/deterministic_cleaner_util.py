@@ -207,7 +207,7 @@ class DeterministicCleaner:
             self.enable_isort = False
         if self.enable_autopep8 and (
             not self.has_autopep8
-        ):  # guardian: File operations should check existence before access
+        ):  # review: File operations should check existence before access
             LOGGER.warning("autopep8 not available - PEP8 formatting disabled")
             self.enable_autopep8 = False
 
@@ -219,7 +219,7 @@ class DeterministicCleaner:
         except (
             subprocess.CalledProcessError,
             FileNotFoundError,
-        ):  # guardian: File operations should check existence before access
+        ):  # review: File operations should check existence before access
             return False
 
     def deterministic_clean(self, code: str, file_path: str | None = None) -> tuple[str, bool]:
@@ -389,7 +389,7 @@ class CompliantFileWriter:
         """Check if file complies with root hygiene."""
         if (
             file_path.parent != self.root_dir
-        ):  # guardian: Syntax errors should be caught at parser level, not runtime
+        ):  # review: Syntax errors should be caught at parser level, not runtime
             return True
         return file_path.name in ALLOWED_ROOT_FILES
 
@@ -398,7 +398,7 @@ class CompliantFileWriter:
         try:
             ast.parse(content)
             return True
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             LOGGER.error(f"Syntax error: {e}")
             return False
         except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow

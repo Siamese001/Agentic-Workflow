@@ -8,6 +8,7 @@ import pathlib
 import shutil
 
 from agentic_core.L0_routing.config.path_constants import (
+    DOCS_REPORTS_DIR,
     TESTS_DIR,
     get_validated_project_root,
 )
@@ -164,8 +165,8 @@ _ROOT = get_validated_project_root()
 
 def load_mislocated_tests() -> list[dict]:
     """Identify all mislocated tests that need to be moved."""
-    # Use the discovery from phase 0
-    with open("docs/reports/plans/phase0_discovery_report.json") as f:
+    # Use the f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json"
+    with open(f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json") as f:
         report = json.load(f)
 
     mislocated = []
@@ -240,7 +241,7 @@ def clean_empty_directories(root: pathlib.Path):
             try:
                 directory.rmdir()
                 print(f"Removed empty directory: {directory}")
-            except OSError:  # guardian: Add error context logging
+            except OSError:  # review: Add error context logging
                 # Directory not empty or can't be removed
                 pass
 
@@ -287,8 +288,8 @@ def create_missing_test_scaffolds():
     """Create minimal test scaffolds for missing tests (placeholder for now)."""
     print("\n=== CREATING MISSING TEST SCAFFOLDS ===\n")
 
-    # Load discovery report to get missing modules
-    with open("docs/reports/plans/phase0_discovery_report.json") as f:
+    # Load disf"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json"
+    with open(f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json") as f:
         report = json.load(f)
 
     missing_modules = [m for m in report["modules"] if m["status"] == "MISSING"]

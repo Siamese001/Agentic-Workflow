@@ -562,7 +562,7 @@ class SSOTRelocator:
         """
         if (
             not directory.exists() or not directory.is_dir()
-        ):  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+        ):  # review: Multiple exceptions (OSError, PermissionError) need specific handling
             return
         try:
             if not any(directory.iterdir()):

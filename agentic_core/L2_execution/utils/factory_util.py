@@ -315,7 +315,7 @@ def create_mcp_registry(specs: list[MCPClientSpec], fail_on_error: bool = False)
             registry.register(spec, client)
         except (
             MCPClientInitializationError
-        ) as exc:  # guardian: MCPClientInitializationError should be handled with specific context
+        ) as exc:  # review: MCPClientInitializationError should be handled with specific context
             if fail_on_error and (not spec.optional):
                 raise
             logger.warning(f"Failed to initialize MCP client '{spec.name}', registering stub: {exc}")

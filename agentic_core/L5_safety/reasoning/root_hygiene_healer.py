@@ -400,14 +400,14 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                 should_delete = True
                 reason = "cache/temp"
             elif name in DELETE_IF_OLD:
-                try:  # guardian: Add error context logging
+                try:  # review: Add error context logging
                     age_days = (time.time() - entry.stat().st_mtime) / 86400
                     if age_days > AGE_THRESHOLD_DAYS:
                         should_delete = True
                         reason = f"unused ({age_days:.0f} days old)"
                 except OSError:  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                     pass
-            # guardian: Add error context logging
+            # review: Add error context logging
             if should_delete:
                 print(f"[HYGIENE] Deleting {name}/ ({reason})")
                 if not self.dry_run:
@@ -473,7 +473,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
             # Cleanup empty dir
             if not self.dry_run:
                 try:
-                    _wg.remove_dir(root_scripts)  # guardian: Add error context logging
+                    _wg.remove_dir(root_scripts)  # review: Add error context logging
                     print("[SUCCESS] Illegal 'scripts/' directory eliminated.")
                     self.stats["illegal_dirs_removed"] += 1
                 except OSError:
@@ -481,7 +481,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         else:
             print("[CHECK] Root 'scripts/' is clean.")
 
-    # guardian: Add error context logging
+    # review: Add error context logging
     def _evacuate_coverage_html(self):
         """Evacuate coverage_html directory to reports/."""
         cov_html = self.project_root / "coverage_html"
@@ -662,14 +662,14 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                             "recommended_action": (
                                 f"Move '{name}' to its canonical SSOT location or add to approved list"
                             ),
-                            "confidence": 0.8,  # guardian: Add error context logging
+                            "confidence": 0.8,  # review: Add error context logging
                         },
                     )
         except OSError as exc:
             violations.append(
                 {
                     "type": "SCAN_ERROR",
-                    "file": str(self.project_root),  # guardian: Add error context logging
+                    "file": str(self.project_root),  # review: Add error context logging
                     "message": f"Root scan failed: {exc}",
                     "severity": "high",
                     "recommended_action": "Fix project root access permissions",
@@ -714,7 +714,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                                 age_days = (time.time() - target_path.stat().st_mtime) / 86400
                                 if age_days <= 7:
                                     return {
-                                        "status": "skipped",  # guardian: Add error context logging
+                                        "status": "skipped",  # review: Add error context logging
                                         "reason": f"{target_path.name} is recent ({age_days:.1f} days old), keeping",
                                     }
                             except OSError as e:  # guardian: allow-log-and-swallow -- mtime check: non-fatal, file access failure skips recent-check
@@ -723,7 +723,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                                 )
 
                         # Delete the cache/temp folder or file
-                        if target_path.is_dir():  # guardian: Add error context logging
+                        if target_path.is_dir():  # review: Add error context logging
                             _wg.remove_tree(target_path)
                         else:
                             _wg.remove_file(target_path)

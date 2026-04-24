@@ -255,7 +255,7 @@ def analyze_failures(
         audit_slice = "\n".join(str(item) for item in audit_slice).encode("utf-8")
     elif not isinstance(audit_slice, (bytes, bytearray)):
         audit_slice = b""
-    try:  # guardian: Encoding errors should specify fallback encoding strategy
+    try:  # review: Encoding errors should specify fallback encoding strategy
         audit_text = audit_slice.decode("utf-8")
     except UnicodeDecodeError as e:
         raise RCAAnalysisError(f"Failed to decode audit_slice as UTF-8: {e}") from e

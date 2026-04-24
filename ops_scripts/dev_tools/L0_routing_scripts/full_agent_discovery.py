@@ -387,7 +387,7 @@ def main() -> bool:
         # Validate compliance gate based on scan results
         if not check_compliance_gate(
             validation_stats
-        ):  # guardian: DiscoveryError should be handled with specific context
+        ):  # review: DiscoveryError should be handled with specific context
             Logger.error("[DISCOVERY] Compliance gate validation failed (Integrity violations detected)")
             return False
 
@@ -447,7 +447,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
             report.architectural_role = "STUB"
             return report
 
-        if file_type == "IGNORE":  # guardian: Syntax errors should be caught at parser level, not runtime
+        if file_type == "IGNORE":  # review: Syntax errors should be caught at parser level, not runtime
             report.rejection_reason = "File ignored by kernel (empty, critical, or unparseable)"
             return report
 
@@ -895,16 +895,16 @@ def cli_interface() -> None:
                 path = project_root / (agent.get("path", "") or agent.get("file", ""))
                 report = analyze_agent_integrity(
                     path
-                )  # guardian: KeyboardInterrupt should be handled with specific context
+                )  # review: KeyboardInterrupt should be handled with specific context
                 if not report.is_valid and not report.is_stub:
                     print(f"  - {agent.get('name', agent.get('class_name', '?'))}: {report.rejection_reason}")
-        # guardian: KeyboardInterrupt should be handled with specific context
+        # review: KeyboardInterrupt should be handled with specific context
         else:
             # Default: run full discovery
             success = main()
             sys.exit(
                 0 if success else 1
-            )  # guardian: KeyboardInterrupt should be handled with specific context
+            )  # review: KeyboardInterrupt should be handled with specific context
 
     except KeyboardInterrupt:
         Logger.info("[DISCOVERY] Operation cancelled by user")

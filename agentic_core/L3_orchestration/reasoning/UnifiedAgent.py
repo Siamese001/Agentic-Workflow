@@ -571,7 +571,7 @@ class HealingStrategy(BaseStrategy):
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(asyncio.run, self.execute(agent, dry_run=dry_run, **kwargs))
                 result = future.result()
-        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError:  # review: Runtime errors should be prevented with proper validation
             result = asyncio.run(self.execute(agent, dry_run=dry_run, **kwargs))
         return result.to_dict()
 
@@ -932,7 +932,7 @@ class UnifiedAgent(SovereignBaseAgent):
             else:
                 return loop.run_until_complete(
                     self.execute(**kwargs)
-                )  # guardian: Runtime errors should be prevented with proper validation
+                )  # review: Runtime errors should be prevented with proper validation
         except RuntimeError:
             return asyncio.run(self.execute(**kwargs))
 
