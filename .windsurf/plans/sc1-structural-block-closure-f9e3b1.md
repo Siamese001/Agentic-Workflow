@@ -7,17 +7,33 @@ plan_type: refactor
 - **Plan ID**: `sc1-structural-block-closure-f9e3b1`
 - **Parent**: Wave W7.1 (deferred-scope backlog)
 - **ADR**: `docs/architecture/adr/ADR-051-sc1-structural-block-remediation.md`
-- **Status**: P0 Todo (classification phase pending)
+- **Status**: AMENDED 2026-04-24 — P0 Done, P1 In Progress; P2/P3 obsolete per scope revision
 - **Owner**: Agentic-Workflow core
 - **Start date**: 2026-04-24
 - **Target completion**: 2026-05-22 (4 weeks, elapsed)
 
 ## Intent
 
-Close the **54 SC-1 structural-conformance violations** tracked by gate
-`v_structural_conformance` in the ADG (P0 BLOCK since 2026-04-23). Execute via
-four phased waves with Author-Gate checkpoints at each phase boundary. See
-ADR-051 for the architectural rationale and rejected alternatives.
+Close the SC-1 structural-conformance violations tracked by the ADG P-view
+`v_p0_write_bypass_uwg` (gate severity P0 BLOCK since 2026-04-23).
+
+**Amendment 2026-04-24**: W7.1-P0 classifier run (commit `c096c68439`)
+revealed only **3 actual violations**, not 54 as originally estimated. All 3
+are the identical pattern — SQLite-ledger `__init__` calling
+`self._path.parent.mkdir(...)`. Execution collapses from 5 waves to 2:
+
+| Wave | Status |
+|---|---|
+| W7.1-P0 | ✅ DONE — classifier + triage report authored |
+| W7.1-P1 | In Progress — replace mkdir with `ensure_dir` across 3 files |
+| W7.1-P2 | OBSOLETE — no boundary bypass sites remain |
+| W7.1-P3 | OBSOLETE — no exemptions needed (3 sites all have clean fix) |
+| W7.1-P4 | Todo — regenerate ADG, confirm 0 rows |
+
+The original 5-wave structure below is preserved for audit integrity but is
+OBSOLETE. See `docs/architecture/adr/ADR-051-sc1-structural-block-remediation.md`
+Amendment section. See `.windsurf/plans/w7-p1-adr-tooling-followup-b5c9e2.md`
+for the active P1 execution.
 
 ## Wave Structure
 

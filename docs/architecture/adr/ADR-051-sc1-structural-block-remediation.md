@@ -1,12 +1,49 @@
 # ADR-051: SC-1 Structural Block Remediation — Phased Closure Strategy
 
-- **Status**: Proposed
+- **Status**: Accepted (with Amendment 2026-04-24)
 - **Date**: 2026-04-24
+- **Amended**: 2026-04-24 (scope revised — see Amendment section)
 - **Deciders**: Agentic-Workflow core (harness + architecture)
-- **Impact Layers**: L0, L1, L2, L3, L4, L5 (broad — SC-1 touches layer gravity)
+- **Impact Layers**: L3, L_APP (narrowed — see Amendment)
 - **Supersedes**: —
 - **Superseded by**: —
 - **Related**: ADR-049 (L5 v4 governance plane), `.windsurf/rules/adg-canonical-invariants.md`
+
+## Amendment — 2026-04-24
+
+**Scope revised from 54 to 3 violations.** After W7.1-P0 classification
+(`tools/debug/_sc1_subtype_classifier.py` + `docs/reports/sc1_subtype_triage_20260424.md`),
+the actual SC-1 P0 set in the current ADG snapshot is:
+
+| # | Module | Layer | Subtype | Pattern |
+|---|---|:---:|:---:|---|
+| 1 | `agentic_core/L3_orchestration/exit_control/ledger_integrity.py:222` | L3 | 1 | `self._path.parent.mkdir(parents=True, exist_ok=True)` |
+| 2 | `agentic_core/L3_orchestration/exit_control/runtime_hitl_ledger.py:122` | L3 | 1 | same |
+| 3 | `apps_shared/integrations/runtime_hitl_integration.py:207` | L_APP | 1 | same |
+
+All three are **identical pattern** — SQLite-ledger `__init__` calling
+`self._path.parent.mkdir(...)` before `sqlite3.connect(...)`. The previous
+"54 violations" figure was drawn from a stale probe. The actual gate state
+(via P-view `v_p0_write_bypass_uwg`) has only 3 rows.
+
+**Revised Impact Layers**: L3 + L_APP only (not the original broad L0–L5).
+
+**Revised remediation** (supersedes the original 5-wave structure below):
+
+| Wave | Action | Effort |
+|---|---|---|
+| W7.1-P0 (DONE) | Classifier + triage report | ~2h |
+| W7.1-P1 | Replace mkdir with `agentic_core.L2_execution.utils.write_gateway.ensure_dir` across 3 files | ~1h |
+| W7.1-P2 (OBSOLETE) | Boundary-bypass fixes | — |
+| W7.1-P3 (OBSOLETE) | Exemption register | — |
+| W7.1-P4 | Regenerate ADG, confirm `v_p0_write_bypass_uwg` returns 0 rows | ~30min |
+
+**Total effort: ~3.5h** (vs. original 30–45h estimate).
+
+The original 5-wave structure below is preserved for ADR audit integrity but
+is OBSOLETE as of this amendment. See companion plan
+`.windsurf/plans/sc1-structural-block-closure-f9e3b1.md` for the collapsed
+execution path.
 
 ## Context
 
