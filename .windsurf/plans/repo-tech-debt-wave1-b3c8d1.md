@@ -118,9 +118,37 @@ Constitutional §26 schema purity already **PASSES**. Drift targets:
 | W1 | 1.1, 1.2, 1.3 | Tier-A HIGH + Tier-B critical-path exemptions | 22k | 3 HIGH + top-4 Tier-B files touched; no layer boundary crossings | Todo | HIGH count 3→0; top-4 Tier-B exemption count reduced by ≥15; tests green 🟡 |
 | W2 | 2.1, 2.2 | Tier-D SSOT hardcoding extraction (top 10) | 18k | `path_constants.py` covers all target literals | Todo | 10 hardcoded literals replaced with imports; fan_in on target SSOT node increases; no new violations 🟡 |
 | W3 | 3.1, 3.2 | Tier-E config drift (AGENTS.md ↔ mcp_config.json) | 6k | Existing gates are correct | Todo | `check_mcp_sync_integrity.py` and `check_agents_mcp_coverage.py` both pass 🟢 |
-| W4 | 4.1 | Regeneration + verification + writeback | 8k | Full ADG regen succeeds | Todo | New snapshot committed; HIGH=0; DEFERRED_SCOPE markers emitted for long tail 🟢 |
+| W4 | 4.1 | Regeneration + verification + writeback | 8k | Full ADG regen succeeds | **DONE** | Snapshot `adg_indexed_04232026_2313.sqlite` produced (halted on SC-1 pre-existing block); phase2 fix verified at full scale 🟢 |
+| W5 | 5.1–5.5 | **Deferred-item execution (2026-04-23 session 2)**: guardian vocab, pipeline wiring, scanner fix, Tier-B, SSOT hardcoding | 60k | Phase2 fix from 4b8cb87304 is stable | **IN PROGRESS** | All 5 DEFERRED_SCOPE items implemented or explicitly re-deferred with rationale 🟡 |
 
-**Total est. tokens**: ~58k (🟡 YELLOW — within bounded-wave budget)
+**Total est. tokens**: ~118k (🟡 YELLOW — extended scope via W5)
+
+---
+
+## Wave 5 — Deferred-Item Execution (added 2026-04-23)
+
+Execution of the six DEFERRED_SCOPE markers emitted at W4 exit. Ordered by leverage (highest first):
+
+| Phase ID | Title | Deferred-scope marker | Est. Tokens | Leverage rationale |
+|---|---|---|---|---|
+| 5.1 | Expand guardian canonical token vocabulary + GUARDIAN_MAP | `GUARDIAN-TOKEN-SSOT` | 14k | **Highest**. Recognizes 812 existing author annotations with zero source-file touches. Proven candidates: `allow-log-and-swallow`, `allow-broad-to-wrap`, `allow-import-fail`, `allow-rollback-failure`, `allow-broad-redis`. |
+| 5.2 | Wire phase2 into `tools/generate_full_adg.py` pipeline | `GEN-PIPELINE-DRIFT` | 10k | **High**. Ensures every regen auto-dispositions; current two-pipeline divergence silently resets dispositions each run. |
+| 5.3 | Fix scanner edge-kind misclassification | `SCANNER-EDGEKIND-MISCLASSIFY` | 12k | **Medium-risk / medium-leverage**. `except X: Logger.debug(...)` → `log_and_swallow` not `return_none_swallow`. Touches core scanner — keep narrow. |
+| 5.4 | SSOT hardcoding probe + top 10 literal migrations | `SSOT-HARDCODING-W2` | 16k | **Medium**. Requires ADG fan_in query on `path_constants` node, then targeted migration. |
+| 5.5 | Tier-B 4-file annotations (conditional on 5.1 outcome) | `TIER-B-ANNOTATIONS` | 8k | **Re-evaluate after 5.1**. Many Tier-B sites may auto-resolve once vocabulary expands. |
+| — | SC-1 structural block | `SC1-STRUCTURAL-BLOCK` | — | **Explicitly out of scope** per plan G5. Re-deferred; needs its own plan. |
+
+---
+
+## Phase-Level Summary (Wave 5 — addendum)
+
+| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
+|---|---|---|---|---|---|
+| 5.1 | Expand `_CANONICAL_GUARDIAN_TOKENS` and `_GUARDIAN_MAP` in `agentic_core/adg/artifact/multi_writer.py` | 1 file + test | Governance: what qualifies as canonical? Answer: any token currently used by ≥2 authored guardian comments in production source | 14k | In progress |
+| 5.2 | Add `run_phase2_disposition_processing` call to the generator after violation insertion, before gates | `tools/generate_full_adg.py` or `tools/generate/*` | Generator halts on SC-1; phase2 must run BEFORE gates to auto-approve guardian-matched rows | 10k | Todo |
+| 5.3 | Scanner: distinguish `except X: Logger.X(...)` (log_and_swallow) from `except X: pass` (silent) and `return None`-after-except (return_none_swallow) | `agentic_core/adg/extraction/static_scanner.py` | Core scanner — risk of false positives/negatives; add unit tests first | 12k | Conditional on 5.1 outcome |
+| 5.4 | Probe ADG fan_in on `path_constants` module; migrate top-10 hardcoded literal call-sites | `~10` files TBD | Some literals legitimate (log templates, regex); must disambiguate via AST inspection | 16k | Todo |
+| 5.5 | Targeted guardian annotations for any Tier-B sites not auto-resolved by 5.1 | ≤4 files | Low-leverage if 5.1 covers them | 8k | Todo — evaluate after 5.1 regen |
 
 ---
 

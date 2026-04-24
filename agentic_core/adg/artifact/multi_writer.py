@@ -439,15 +439,37 @@ LEFT JOIN precision_call_resolution cr ON cr.edge_id = e.id;
 _GUARDIAN_MAP: dict[str, tuple[str, ...]] = {
     "silent_exception_swallow": (
         "guardian: allow-silent-swallow",
+        # W5.1 (2026-04-23): recognize author-vernacular variants documented in
+        # tools/debug/_w5_token_inventory.py (≥2 occurrences, each with `--`
+        # justification form). Variants describe the same semantic action —
+        # silent swallow of a specific handler context:
+        "guardian: allow-silent-swallower",       # 32 authored uses
+        "guardian: allow-import-fail",            # 2 uses; ImportError-specific silent swallow
+        "guardian: allow-rollback-failure",       # 2 uses; sqlite3 rollback best-effort
+        "guardian: allow-specific",               # 19 uses; specific type but body still swallows
+        "guardian: allow-specific-multi",         # 2 uses; tuple-form specific-type silent swallow
         "guardian: allow-broad-exception",
     ),
-    "broad_exception_catch": ("guardian: allow-broad-exception",),
+    "broad_exception_catch": (
+        "guardian: allow-broad-exception",
+        # W5.1 (2026-04-23): short/variant forms for broad catches:
+        "guardian: allow-broad-except",           # 3 authored uses
+        "guardian: allow-broad-catch",            # 2 uses
+        "guardian: allow-broad",                  # 2 uses; deliberate short form
+        "guardian: allow-in-process-dispatcher",  # 2 uses; dispatcher-level broad isolation
+    ),
     "log_and_swallow": (
         "guardian: allow-log-and-swallow",
         "guardian: allow-broad-exception",
     ),
     "return_none_swallow": (
         "guardian: allow-return-none-swallow",
+        # W5.1 (2026-04-23): static scanner classifies
+        #   `except X: Logger.debug(...)` as return_none_swallow when the
+        # enclosing function returns None. Authors correctly annotate these as
+        # log-and-swallow. Accept that alias here to close the scanner↔author
+        # SSOT gap without touching the scanner itself (scheduled as W5.3).
+        "guardian: allow-log-and-swallow",
         "guardian: allow-broad-exception",
     ),
     # Pattern C — dead code after raise. Strictly scoped: no supersession,
@@ -517,6 +539,21 @@ _CANONICAL_GUARDIAN_TOKENS = frozenset(
         # Without this entry, `_extract_guardian_tokens` silently drops the token
         # and `_has_guardian_comment` can never match layer-violation markers.
         "allow-layer-violation",
+        # W5.1 (2026-04-23): author-vernacular exception-handling variants.
+        # Each token is also listed in the relevant _GUARDIAN_MAP entry above
+        # so `has_guardian_for_violation` will recognize them at the correct
+        # edge_kind. Addition criterion: ≥2 occurrences in production source
+        # with proper `-- <justification>` form (inventory at
+        # tools/debug/_w5_token_inventory.py).
+        "allow-silent-swallower",
+        "allow-import-fail",
+        "allow-rollback-failure",
+        "allow-specific",
+        "allow-specific-multi",
+        "allow-broad-except",
+        "allow-broad-catch",
+        "allow-broad",
+        "allow-in-process-dispatcher",
     }
 )
 
