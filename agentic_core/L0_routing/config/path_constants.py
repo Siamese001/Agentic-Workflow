@@ -142,6 +142,18 @@ APPS_SHARED_DIR: Final[str] = "apps_shared"
 #   - OPS_ARCHIVES_DIR      (ops-scripts historical archives)
 #   - apps_*/data/ or apps_*/archives/ (app-scoped data)
 ARCHIVES_DIR: Final[str] = "archives"
+# W5.4 (2026-04-23) — SSOT for top-churn hardcoded paths (123 sites across
+# ~100 files per tools/debug/_w5_ssot_hardcoding_probe.py). These constants
+# are the canonical migration targets for hardcoded literal paths used by:
+# ADG tooling (adg_indexed_*.sqlite lives here), Windsurf hooks & plans,
+# documentation reports, and ADR storage.
+ARTIFACTS_DIR: Final[str] = "artifacts"
+ADG_ARTIFACTS_DIR: Final[str] = "artifacts/adg"
+WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/windsurf"
+WINDSURF_PLANS_DIR: Final[str] = ".windsurf/plans"
+DOCS_DIR: Final[str] = "docs"
+DOCS_REPORTS_DIR: Final[str] = "docs/reports"
+ADR_DIR: Final[str] = "docs/architecture/adr"
 # Runtime artifact sink for L5 healer agents, gatekeeper, duplicate detector.
 HEALING_BACKUPS_DIR: Final[str] = "artifacts/healing_backups"
 # Ops-scripts historical archives (dev-tool snapshots, deprecation waves).
@@ -691,10 +703,17 @@ __all__ = [
     "APPS_RG_SUBFOLDER_MAP",
     "APPS_SHARED_DIR",
     "APPS_SHARED_SUBFOLDER_MAP",
+    "ADG_ARTIFACTS_DIR",
+    "ADR_DIR",
     "ARCHIVES_DIR",
+    "ARTIFACTS_DIR",
     "BATCH_SIZE",
+    "DOCS_DIR",
+    "DOCS_REPORTS_DIR",
     "HEALING_BACKUPS_DIR",
     "OPS_ARCHIVES_DIR",
+    "WINDSURF_ARTIFACTS_DIR",
+    "WINDSURF_PLANS_DIR",
     "BUFFER_SIZE",
     "CORE_SUBFOLDER_MAP",
     "DASHBOARD_DIR",
