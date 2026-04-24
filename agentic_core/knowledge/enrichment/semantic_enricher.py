@@ -133,7 +133,13 @@ class SemanticEnricher:
             self._init_default_client()
 
     def _init_default_client(self) -> None:
-        """Initialize default LLM client based on provider."""
+        """Initialize default LLM client based on provider.
+
+        Wave D (qwen-adoption-waves-a7f3c2) adds ``provider == "qwen"`` as a
+        supported backend. Qwen uses the local vLLM gateway (no api_key
+        required). For the legacy ``provider == "openai"`` path the behavior
+        is unchanged.
+        """
         if self.provider == "openai":
             try:
                 api_key = os.getenv("OPENAI_API_KEY")
@@ -143,6 +149,12 @@ class SemanticEnricher:
             except (ImportError, ValueError):
                 Logger.warning("OpenAI not configured, enrichment will use mock")
                 self.llm_client = None
+        elif self.provider == "qwen":
+            # Qwen path uses the shared L3 gateway singleton; client is
+            # resolved lazily inside enrich_chunk() via get_qwen_inference_gateway().
+            # Setting a sentinel so self.llm_client is truthy and the mock
+            # fallback is not triggered.
+            self.llm_client = object()
         else:
             Logger.warning(f"Provider {self.provider} not yet supported, using mock")
             self.llm_client = None
@@ -258,6 +270,79 @@ Respond with ONLY valid JSON."""
             enrichment_hash=content_hash,
         )
 
+    def _qwen_enrich_raw(self, prompt: str) -> dict[str, Any]:
+        """Wave D: run a single Qwen enrichment call, return parsed JSON dict.
+
+        The JSON parsing here mirrors the OpenAI branch: any parse failure
+        raises and is caught by the ``_llm_enrich`` try/except so the
+        ``_mock_enrich`` fallback runs.
+        """
+        import asyncio  # noqa: PLC0415
+        import threading  # noqa: PLC0415
+
+        from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning.qwen_inference_gateway import (  # noqa: PLC0415
+            QwenInferenceRequest,
+            get_qwen_inference_gateway,
+        )
+
+        system_preamble = (
+            "You are a semantic enrichment engine. Output ONLY a single valid "
+            "JSON object. Do not include markdown fences or commentary.\n\n"
+        )
+        composed = system_preamble + prompt
+
+        async def _run() -> Any:
+            gateway = await get_qwen_inference_gateway(model_id=self.model or None)
+            request = QwenInferenceRequest(
+                app_name="semantic_enricher",
+                prompt=composed,
+                temperature=0.1,
+                max_tokens=2048,
+                use_cache=True,
+            )
+            return await gateway.infer(request)
+
+        # Safe async->sync: same pattern as LocalVLLMProvider in Wave A.
+        try:
+            asyncio.get_running_loop()
+            result_container: dict[str, Any] = {}
+
+            def _worker() -> None:
+                loop = asyncio.new_event_loop()
+                try:
+                    result_container["value"] = loop.run_until_complete(_run())
+                except BaseException as exc:  # guardian: allow-broad-catch -- propagate to caller thread
+                    result_container["error"] = exc
+                finally:
+                    loop.close()
+
+            thread = threading.Thread(target=_worker, daemon=True)
+            thread.start()
+            thread.join()
+            if "error" in result_container:
+                raise result_container["error"]
+            response = result_container.get("value")
+        except RuntimeError:
+            response = asyncio.run(_run())
+
+        if not response.success:
+            raise RuntimeError(
+                f"Qwen enrichment inference failed: {response.error_message}",
+            )
+
+        text = response.response or ""
+        # Tolerate markdown-fenced output even though the preamble forbids it.
+        text = text.strip()
+        if text.startswith("```"):
+            # Strip first and last fence lines.
+            lines = text.splitlines()
+            if len(lines) >= 2:
+                lines = lines[1:]
+                if lines and lines[-1].strip().startswith("```"):
+                    lines = lines[:-1]
+                text = "\n".join(lines).strip()
+        return json.loads(text)
+
     def _llm_enrich(
         self,
         chunk_id: str,
@@ -293,6 +378,13 @@ Respond with ONLY valid JSON."""
                     response_format={"type": "json_object"},
                 )
                 result = json.loads(response.choices[0].message.content)
+            elif self.provider == "qwen":
+                # Wave D (qwen-adoption-waves-a7f3c2): local vLLM path.
+                # Enrichment is a structured JSON shaping task — Qwen 2.5
+                # handles this reliably at temp=0.1 with no API cost. Use
+                # the process-singleton gateway to share the connection
+                # pool and response cache across batch enrichment runs.
+                result = self._qwen_enrich_raw(prompt)
             else:
                 # Fallback to mock for unsupported providers
                 return self._mock_enrich(chunk_id, raw_text, source_metadata)
