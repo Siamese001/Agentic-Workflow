@@ -106,10 +106,10 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
                 WHEN COUNT(DISTINCT CASE WHEN e.relation_type = 'invokes_provider' THEN e.id END) > 0
                  AND COUNT(DISTINCT CASE WHEN e.relation_type = 'routes_to_capability' THEN e.id END) = 0
                 THEN 'provider_without_capability_route'
-                WHEN COUNT(DISTINCT CASE WHEN e.relation_type IN ('writes_to', 'writes_through') THEN e.id END) > 0
-                 AND COUNT(DISTINCT CASE WHEN e.relation_type IN ('writes_through', 'writes_via_uwg',
-                                                                   'execution_terminates_at_uwg') THEN e.id END) = 0
-                THEN 'action_without_egress_gate'
+                -- The former 'action_without_egress_gate' branch was removed 2026-04-23:
+                -- it duplicated write_sovereignty's "write without UWG" check (same edge
+                -- predicates, same files). capability_egress now covers only egress of
+                -- actual provider invocations; UWG enforcement lives in write_sovereignty.
                 ELSE 'ok'
             END AS gap_type
         FROM nodes n
