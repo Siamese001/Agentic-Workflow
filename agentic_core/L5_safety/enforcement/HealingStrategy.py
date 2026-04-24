@@ -319,14 +319,13 @@ class HealingStrategy:
         """
         try:
             if agent_name == "CodeValidatorAgent":
-                # MW-5 (2026-04-24): CodeValidator util lacks heal_repository method
-                # that this caller requires via execute_agent(). Cannot swap cleanly
-                # without rewriting util API surface. CodeValidatorAgent archive is
-                # BLOCKED at W6 (2026-07-23) until util gains heal_repository() or
-                # HealingStrategy/execute_agent is refactored to use validate_directory.
-                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
+                # MW-5 / MW-11 (2026-04-24): CodeValidatorAgent was a delegating shim.
+                # Util class CodeValidator gained a heal_repository() parity shim in
+                # MW-11 (validate-only, returns the validation report). Swapped here.
+                # Agent archive-eligible 2026-07-23.
+                from agentic_core.L5_safety.utils.code_validator_util import CodeValidator
 
-                return CodeValidatorAgent()
+                return CodeValidator()
             elif agent_name == "HygieneGuardianAgent":
                 from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
 

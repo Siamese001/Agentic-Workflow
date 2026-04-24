@@ -196,10 +196,10 @@ def validate_repository(project_root: Path) -> dict:
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "validate_repository")
-    # MW-5b (2026-04-24): CodeValidator util lacks validate_repository()
-    # + project_root init kwarg. CodeValidatorAgent archive BLOCKED at W6 until
-    # util API widens or this runner is refactored to use validate_directory.
-    from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
+    # MW-5b / MW-11 (2026-04-24): CodeValidator util gained validate_repository()
+    # + project_root kwarg in MW-11; swapped to canonical util class. Agent
+    # archive-eligible 2026-07-23.
+    from agentic_core.L5_safety.utils.code_validator_util import CodeValidator as CodeValidatorAgent
 
     agent = CodeValidatorAgent(project_root=project_root)
     result = agent.validate_repository()
@@ -219,8 +219,8 @@ def validate_repository(project_root: Path) -> dict:
 
 def validate_directory(project_root: Path, directory: str) -> dict:
     """Validate specific directory with CodeValidatorAgent."""
-    # MW-5b (2026-04-24): see note above — util API gap blocks this swap.
-    from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
+    # MW-5b / MW-11 (2026-04-24): see note above — util API gap closed in MW-11.
+    from agentic_core.L5_safety.utils.code_validator_util import CodeValidator as CodeValidatorAgent
 
     agent = CodeValidatorAgent(project_root=project_root)
     target_dir = project_root / directory

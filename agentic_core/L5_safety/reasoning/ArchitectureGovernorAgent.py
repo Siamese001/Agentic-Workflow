@@ -99,7 +99,13 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR, THRESHOLD
-from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
+# MW-12 (2026-04-24): SSOTFolderCleanupAgent was a delegating shim over
+# ops_scripts/dev_tools/L0_routing/ssot_folder_cleanup_util. Swapped this
+# module to import the util's cleanup_repository() function directly.
+# SSOTFolderCleanupAgent archive-eligible 2026-07-23.
+from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
+    cleanup_repository as _ssot_cleanup_repository,
+)
 from agentic_core.L0_routing.config.path_constants import CORE_SUBFOLDER_MAP, PROJECT_ROOT_WHITELIST
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
@@ -546,8 +552,11 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             if not dry_run:
                 try:
                     Logger.info(f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})...")
-                    janitor = SSOTFolderCleanupAgent(project_root=self.project_root, dry_run=dry_run)
-                    cleanup_stats = janitor.cleanup_repository()
+                    # MW-12 (2026-04-24): Direct util call replaces
+                    # SSOTFolderCleanupAgent instantiation. Same return shape.
+                    cleanup_stats = _ssot_cleanup_repository(
+                        project_root=self.project_root, dry_run=dry_run,
+                    )
                     ssot_moves = cleanup_stats.get("files_moved", 0)
                     ssot_imports_updated = cleanup_stats.get("imports_updated", 0)
                     violations_fixed += ssot_moves

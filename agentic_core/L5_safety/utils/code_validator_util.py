@@ -99,14 +99,76 @@ class ValidationReport:
 class CodeValidator:
     """Deterministic code validator."""
 
-    def __init__(self, ruleset: RuleSet | None = None) -> None:
+    def __init__(
+        self,
+        ruleset: RuleSet | None = None,
+        project_root: Path | str | None = None,
+    ) -> None:
         """Initialize validator.
 
         Args:
             ruleset: Validation rules configuration
+            project_root: Optional project root (MW-11 2026-04-24: accepted for
+                compatibility with CodeValidatorAgent callers that pass this
+                kwarg, notably agentic_core/L5_safety/utils/runners/
+                code_validator_runner.py; used by validate_repository()).
         """
         self.ruleset = ruleset or RuleSet()
         self._violations: list[Violation] = []
+        self.project_root: Path | None = (
+            Path(project_root) if project_root is not None else None
+        )
+
+    def validate_repository(
+        self, project_root: Path | str | None = None
+    ) -> dict[str, Any]:
+        """Validate the entire repository under project_root.
+
+        MW-11 (2026-04-24): API-parity shim for CodeValidatorAgent.validate_repository.
+        Walks project_root, applies validate_directory, returns a summary dict
+        compatible with the former agent method's return shape used by callers
+        in code_validator_runner.py.
+
+        Args:
+            project_root: Root directory to validate. Falls back to
+                self.project_root supplied at __init__ time, then to '.'.
+
+        Returns:
+            Dictionary with 'violations' list and 'total_violations' count.
+        """
+        root = Path(project_root) if project_root is not None else self.project_root
+        if root is None:
+            root = Path(".")
+        report = self.validate_directory(root)
+        return {
+            "violations": list(report.violations),
+            "total_violations": len(report.violations),
+            "files_validated": getattr(report, "files_validated", 0),
+        }
+
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Validate-only heal_repository parity shim for HealingStrategy callers.
+
+        MW-11 (2026-04-24): HealingStrategy.execute_agent() calls
+        agent.heal_repository(dry_run=..., execute=..., **kwargs). CodeValidator
+        is validate-only (no auto-fix); when execute=True callers receive the
+        validation report without any file mutation. Unknown kwargs are accepted
+        and ignored for forward compatibility with caller kwarg expansion.
+        """
+        _ = (dry_run, execute, kwargs)  # intentionally unused - validator is read-only
+        result = self.validate_repository()
+        return {
+            "status": "validated",
+            "violations_found": result["total_violations"],
+            "violations_fixed": 0,
+            "dry_run": True,
+            "violations": result["violations"],
+        }
 
     def validate_syntax(self, file_path: Path) -> list[Violation]:
         """Validate Python syntax for a file."""
