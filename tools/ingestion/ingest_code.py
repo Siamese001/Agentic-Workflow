@@ -8,6 +8,7 @@ import argparse
 import ast
 import hashlib
 import logging
+import os
 import sqlite3
 
 # Import SovereignChromaClient for centralized ChromaDB access
@@ -34,13 +35,47 @@ from tools.ingestion.contextual_chunk_builder import (
     prepend_context,
 )
 
-# G1-residual (plan c0-context-assembly-best-practices-b7c3a1): gateway
-# adapter so the existing Claude-generated contextual-retrieval path becomes
-# reachable. build_from_env() returns None when ANTHROPIC_API_KEY is absent,
-# preserving the heuristic-only fallback for offline / CI runs.
+# Contextualization gateway selection (plan c0-context-assembly-best-practices-b7c3a1).
+# Preference order (first non-None wins):
+#   1. Qwen local vLLM (free, GPU-backed) — default when vLLM server reachable
+#   2. Anthropic Claude (paid) — opt-in via CONTEXT_GATEWAY=anthropic env var
+#   3. Heuristic fallback (no LLM) — when both above are unavailable/disabled
+# See ``tools/ingestion/qwen_context_gateway.py`` and
+# ``tools/ingestion/anthropic_context_gateway.py`` for factory contracts.
 from tools.ingestion.anthropic_context_gateway import (
     build_from_env as build_anthropic_context_gateway,
 )
+from tools.ingestion.qwen_context_gateway import (
+    build_from_env as build_qwen_context_gateway,
+)
+
+
+def _build_context_gateway() -> Any:
+    """Resolve the preferred contextualization gateway per CONTEXT_GATEWAY env.
+
+    Returns None when no gateway is available; callers treat that as "heuristic
+    only" per the ``ContextualChunkBuilder`` contract.
+
+    Env knob ``CONTEXT_GATEWAY`` values:
+      * unset or "auto" (default) — try Qwen first, fall back to Anthropic if
+        ANTHROPIC_API_KEY is set, else None (heuristic).
+      * "qwen" — Qwen only; return None if vLLM unreachable (no Anthropic
+        fallback, preserves $0 guarantee).
+      * "anthropic" — Anthropic only; return None if key absent.
+      * "none" / "heuristic" — skip all LLM gateways; force heuristic path.
+    """
+    choice = os.environ.get("CONTEXT_GATEWAY", "auto").lower()
+    if choice in {"none", "heuristic", "off"}:
+        return None
+    if choice == "anthropic":
+        return build_anthropic_context_gateway()
+    if choice == "qwen":
+        return build_qwen_context_gateway()
+    # auto: prefer local/free path
+    gw = build_qwen_context_gateway()
+    if gw is not None:
+        return gw
+    return build_anthropic_context_gateway()
 
 # Setup logging (needed by ADGNodeResolver below)
 logging.basicConfig(level=logging.INFO)
@@ -480,9 +515,9 @@ def _apply_contextualization(
     Returns the number of chunks enriched with a non-empty context.
     """
     if builder is None:
-        # G1-residual: inject the Anthropic gateway when ANTHROPIC_API_KEY is
-        # set; otherwise ContextualChunkBuilder falls back to heuristic.
-        builder = ContextualChunkBuilder(gateway=build_anthropic_context_gateway())
+        # Resolve preferred gateway (Qwen local vLLM by default, Anthropic
+        # opt-in, heuristic when neither available). See _build_context_gateway.
+        builder = ContextualChunkBuilder(gateway=_build_context_gateway())
     file_cache: dict[str, str] = {}
     enriched = 0
     for chunk in all_chunks:
@@ -639,10 +674,14 @@ def ingest_code(
     # prepends it to the chunk content + records it in metadata.chunk_context.
     # Uses heuristic fallback when no Anthropic gateway is wired (offline-safe).
     if contextualize:
-        # G1-residual: announce which mode is actually active so operators
-        # can tell heuristic-only runs from gateway-backed runs at a glance.
-        gateway = build_anthropic_context_gateway()
-        mode = "GATEWAY (Claude-generated)" if gateway is not None else "HEURISTIC (metadata-only)"
+        # Announce which contextualization backend is active so operators can
+        # distinguish free local runs from paid API runs from heuristic-only.
+        gateway = _build_context_gateway()
+        if gateway is None:
+            mode = "HEURISTIC (metadata-only, no LLM)"
+        else:
+            gw_name = type(gateway).__name__
+            mode = f"GATEWAY ({gw_name})"
         logger.info("Contextualizing chunks — mode=%s", mode)
         builder = ContextualChunkBuilder(gateway=gateway)
         enriched = _apply_contextualization(all_chunks, builder=builder)
