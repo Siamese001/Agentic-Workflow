@@ -27,6 +27,8 @@ from .retrieval_plan import (
     RetrievalPrefilter,
 )
 from .senior_librarian_reranker import RerankResult, SeniorLibrarianReranker
+from .cross_encoder_reranker import CrossEncoderReranker
+from .reranker_factory import get_reranker
 
 __all__ = [
     # Recall stage
@@ -44,7 +46,9 @@ __all__ = [
     "HydrationResult",
     # Reranking
     "SeniorLibrarianReranker",
+    "CrossEncoderReranker",
     "RerankResult",
+    "get_reranker",
     # Evidence contract (C0.4)
     "EvidenceContractBuilder",
     "EvidenceContract",
