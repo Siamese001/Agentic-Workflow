@@ -94,8 +94,17 @@ Additive wire-in waves E→Q landed across subsequent sessions to give call site
 | **O** | Lane-gated egress (`egress_adapter_gated.py`) | Done ✅ | `cb2e4d467d` |
 | **P** | Composed full action pipeline (`action_pipeline.py` → `run_v4_action`) | Done ✅ | `a8d9d5f62b` |
 | **Q** | Package surface export (`__init__.py`) | Done ✅ | `7ce846c8ac` |
+| **R** | `GovernedLLMGateway` wrapper (closes SovereignLLMGateway deferred scope) | Done ✅ | (this session) |
+| **S** | `classify_sweep_as_hitl_class` bridge (closes hitl_policy deferred scope) | Done ✅ | (this session) |
 
 **Canonical adoption entry**: `from agentic_core.L5_safety.identity import run_v4_action`.
+
+**Deferred-scope closure notes**:
+- **SovereignLLMGateway** (L2 concrete): migration path is `GovernedLLMGateway(inner=SovereignLLMGateway(...), target_id="...")`. No modification of the 970-line original class.
+- **L2/L4 write_gateway concrete**: served by `run_v4_action` (Wave-P) — the v4 call site imports `run_v4_action` instead of calling UWG directly. UWG remains the v3 write authority unchanged.
+- **hitl_policy / hitl_classes**: served by `classify_sweep_as_hitl_class` — maps a `RuntimeLaneDecisionWithSweep` / `PreL5SweepResult` to the `HitlClass` that should handle the non-allow outcome. Existing HITL plane files untouched.
+
+**No deferred scope remaining for G-04.**
 
 **Wire-in chain invariants**:
 - Every adapter is additive — no v3 call site broken.

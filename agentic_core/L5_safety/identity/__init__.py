@@ -54,6 +54,14 @@ from agentic_core.L5_safety.identity.front_door_resolver import (
     clear_resolver_cache,
     resolve_front_door_principal,
 )
+from agentic_core.L5_safety.identity.hitl_sweep_bridge import (
+    classify_sweep_as_hitl_class,
+)
+from agentic_core.L5_safety.identity.llm_gateway_v4 import (
+    GovernedLLMGateway,
+    GovernedLLMResult,
+    LLMEgressRefused,
+)
 from agentic_core.L5_safety.identity.pre_l5_sweep import (
     PreL5SweepResult,
     run_pre_l5_sweep,
@@ -110,4 +118,10 @@ __all__ = [
     "EgressRequest",
     "V4ActionOutcome",
     "run_v4_action",
+    # Wave-R (LLM gateway wrapper — SovereignLLMGateway closure)
+    "GovernedLLMGateway",
+    "GovernedLLMResult",
+    "LLMEgressRefused",
+    # Wave-S (HITL sweep bridge — hitl_policy closure)
+    "classify_sweep_as_hitl_class",
 ]
