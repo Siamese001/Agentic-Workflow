@@ -281,3 +281,176 @@ class TestArtifactSerialization:
 
         assert artifact2.trace_id == artifact1.trace_id
         assert artifact2.signature == artifact1.signature
+
+
+# --------------------------------------------------------------------------
+# EQ-1 — idempotency nonce, manifest_hash, structured_slots, v1 shim.
+# Plan: .windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md
+# ADR: docs/architecture/adr/ADR-PROMPT-ASSEMBLY-002-uncovered-best-practice-gaps.md §9
+# --------------------------------------------------------------------------
+
+
+def _make_base_artifact(signature: str = "", **overrides):
+    """Construct a CompiledPromptArtifact with sensible defaults for EQ-1 tests."""
+    defaults = dict(
+        trace_id="trace-eq1",
+        system_version_hash="sysv-1",
+        final_system_string="sys",
+        final_user_string="usr",
+        allowed_tools_schema=[],
+        tokens=10,
+        slots_used=["S0", "U0"],
+        signature=signature,
+    )
+    defaults.update(overrides)
+    return CompiledPromptArtifact(**defaults)
+
+
+class TestIdempotencyNonce:
+    """EQ-1 — idempotency nonce is carried on every artifact and is unique per build."""
+
+    def test_nonce_default_factory_produces_uuid4_hex(self):
+        a = _make_base_artifact()
+        assert isinstance(a.idempotency_nonce, str)
+        assert len(a.idempotency_nonce) == 32  # UUID4 hex
+        # hex digits only
+        assert all(c in "0123456789abcdef" for c in a.idempotency_nonce)
+
+    def test_two_artifacts_with_identical_content_get_distinct_nonces(self):
+        a = _make_base_artifact()
+        b = _make_base_artifact()
+        assert a.idempotency_nonce != b.idempotency_nonce
+
+    def test_nonce_respects_explicit_override(self):
+        a = _make_base_artifact(idempotency_nonce="deadbeef" * 4)
+        assert a.idempotency_nonce == "deadbeef" * 4
+
+
+class TestManifestHashStability:
+    """EQ-1 — manifest_hash is deterministic and EXCLUDES idempotency_nonce."""
+
+    def test_identical_logical_content_yields_identical_manifest_hash(self):
+        a = _make_base_artifact(idempotency_nonce="a" * 32)
+        b = _make_base_artifact(idempotency_nonce="b" * 32)
+        # Different nonces, different timestamps, but same logical content.
+        assert a.manifest_hash == b.manifest_hash
+
+    def test_different_slots_used_yields_different_manifest_hash(self):
+        a = _make_base_artifact(slots_used=["S0", "U0"])
+        b = _make_base_artifact(slots_used=["S0", "I0", "U0"])
+        assert a.manifest_hash != b.manifest_hash
+
+    def test_schema_version_is_bound_into_manifest_hash(self):
+        a = _make_base_artifact(schema_version=2)
+        b = _make_base_artifact(schema_version=1)
+        # Same logical strings, different schema version => different hash.
+        assert a.manifest_hash != b.manifest_hash
+
+    def test_manifest_hash_is_sha256_hex(self):
+        a = _make_base_artifact()
+        assert len(a.manifest_hash) == 64
+        assert all(c in "0123456789abcdef" for c in a.manifest_hash)
+
+
+class TestStructuredSlotsHashing:
+    """EQ-1 — structured_slots drives manifest_hash when present."""
+
+    def test_structured_slots_hash_differs_from_flat_strings(self):
+        slots = {
+            "S0": AuthoritySlot("S0", "system", AuthorityLevel.ABSOLUTE, "L4"),
+            "U0": AuthoritySlot("U0", "user", AuthorityLevel.ZERO, "L1"),
+        }
+        a_flat = _make_base_artifact()
+        a_struct = _make_base_artifact(structured_slots=slots)
+        assert a_flat.manifest_hash != a_struct.manifest_hash
+
+    def test_structured_slots_dict_order_does_not_affect_hash(self):
+        # Canonicalizer sorts by slot code, so insertion order must not leak.
+        slots_forward = {
+            "S0": AuthoritySlot("S0", "system", AuthorityLevel.ABSOLUTE, "L4"),
+            "U0": AuthoritySlot("U0", "user", AuthorityLevel.ZERO, "L1"),
+        }
+        slots_reverse = {
+            "U0": AuthoritySlot("U0", "user", AuthorityLevel.ZERO, "L1"),
+            "S0": AuthoritySlot("S0", "system", AuthorityLevel.ABSOLUTE, "L4"),
+        }
+        a = _make_base_artifact(structured_slots=slots_forward)
+        b = _make_base_artifact(structured_slots=slots_reverse)
+        assert a.manifest_hash == b.manifest_hash
+
+    def test_structured_slots_content_change_affects_hash(self):
+        slots_a = {
+            "S0": AuthoritySlot("S0", "system v1", AuthorityLevel.ABSOLUTE, "L4"),
+        }
+        slots_b = {
+            "S0": AuthoritySlot("S0", "system v2", AuthorityLevel.ABSOLUTE, "L4"),
+        }
+        a = _make_base_artifact(structured_slots=slots_a)
+        b = _make_base_artifact(structured_slots=slots_b)
+        assert a.manifest_hash != b.manifest_hash
+
+
+class TestSignatureV2AndV1Shim:
+    """EQ-1 — verify_signature accepts v2 (nonce-bound) and v1 (legacy) during shim window."""
+
+    def test_v2_signature_verifies(self):
+        secret = secrets.token_bytes(32)
+        a_unsigned = _make_base_artifact()
+        sig = a_unsigned._compute_signature(secret)
+        a = _make_base_artifact(
+            idempotency_nonce=a_unsigned.idempotency_nonce,
+            signature=sig,
+            timestamp=a_unsigned.timestamp,
+        )
+        assert a.verify_signature(secret)
+
+    def test_v2_signature_rejects_wrong_secret(self):
+        secret = secrets.token_bytes(32)
+        wrong = secrets.token_bytes(32)
+        a_unsigned = _make_base_artifact()
+        sig = a_unsigned._compute_signature(secret)
+        a = _make_base_artifact(
+            idempotency_nonce=a_unsigned.idempotency_nonce,
+            signature=sig,
+            timestamp=a_unsigned.timestamp,
+        )
+        assert not a.verify_signature(wrong)
+
+    def test_v2_signature_rejects_when_nonce_tampered(self):
+        """Changing the nonce after signing must invalidate the signature."""
+        secret = secrets.token_bytes(32)
+        a_unsigned = _make_base_artifact()
+        sig = a_unsigned._compute_signature(secret)
+        tampered = _make_base_artifact(
+            idempotency_nonce="f" * 32,  # forged nonce
+            signature=sig,
+            timestamp=a_unsigned.timestamp,
+        )
+        assert not tampered.verify_signature(secret)
+
+    def test_v1_legacy_signature_verifies_during_shim(self):
+        """A hand-crafted v1 signature (pre-EQ1 scheme, no nonce) verifies under the shim."""
+        secret = secrets.token_bytes(32)
+        a_unsigned = _make_base_artifact()
+        v1_sig = a_unsigned._compute_signature_v1(secret)
+        # Legacy artifact: still carries (default) nonce + schema_version=2, but
+        # signature was minted under v1 scheme. Shim branch in verify_signature
+        # must accept this.
+        legacy = _make_base_artifact(
+            idempotency_nonce=a_unsigned.idempotency_nonce,
+            signature=v1_sig,
+            timestamp=a_unsigned.timestamp,
+        )
+        assert legacy.verify_signature(secret)
+
+    def test_v1_and_v2_signatures_are_distinct(self):
+        secret = secrets.token_bytes(32)
+        a = _make_base_artifact()
+        v2 = a._compute_signature(secret)
+        v1 = a._compute_signature_v1(secret)
+        assert v1 != v2
+
+    def test_garbage_signature_rejected_under_both_schemes(self):
+        secret = secrets.token_bytes(32)
+        a = _make_base_artifact(signature="deadbeef" * 8)
+        assert not a.verify_signature(secret)

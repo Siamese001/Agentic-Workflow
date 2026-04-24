@@ -38,7 +38,7 @@ def test_normal_enforcement():
         print(f"  - Total tokens: {estimate.total_projected_tokens:,}")
         print(f"  - Top contributors: {[c['type'] for c in estimate.top_contributors[:3]]}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Normal test failed: {e}")
     finally:
         if budget_file.exists():
@@ -83,7 +83,7 @@ def test_compression_trigger():
         elif estimate.status == "green":
             print("  - ℹ️  Content was within limits, no compression needed")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Compression test failed: {e}")
     finally:
         if budget_file.exists():
@@ -129,7 +129,7 @@ def test_budget_exceeded():
             print(f"  - Error: {str(e)}")
             print("  - Hard limit exceeded - execution blocked")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Budget exceeded test failed: {e}")
     finally:
         if budget_file.exists():
@@ -190,7 +190,7 @@ def test_decorator_enforcement():
         print(f"  - Average tokens: {summary['average_tokens_per_step']:.0f}")
         print(f"  - Status distribution: {summary['status_distribution']}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Decorator test failed: {e}")
     finally:
         if budget_file.exists():
@@ -264,7 +264,7 @@ def test_edge_cases():
         )
         print(f"✅ Unicode content: {estimate4.total_projected_tokens:,} tokens")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Edge case test failed: {e}")
     finally:
         if budget_file.exists():

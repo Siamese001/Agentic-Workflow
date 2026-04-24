@@ -3,7 +3,7 @@
 precedent_injector.py — Thin wrapper around lookup_refactor_decisions.py.
 
 Invoked by emit_packet.py and usable standalone. Given a decision_type + intent,
-returns a precedent verdict block suitable for embedding in a HITL_PACKET.
+returns a precedent verdict block suitable for embedding in an AUTHOR_GATE_PACKET.
 
 STDIN (JSON):
     {

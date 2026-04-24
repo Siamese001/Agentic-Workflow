@@ -126,7 +126,7 @@ class RepoHygieneClassifier:
             try:
                 classification = self.classify_file(file_path)
                 self.manifest.append(classification)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logging.warning(f"Failed to classify {file_path}: {e}")
 
         logging.info(f"Successfully classified {len(self.manifest)} files")

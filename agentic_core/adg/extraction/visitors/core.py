@@ -1508,7 +1508,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         from agentic_core.adg.contracts.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
-        for line_no, category, symbol in tqdm(self._antipatterns, desc="Processing", unit="item"):
+        for line_no, category, symbol in self._antipatterns:
             self.edges.append(
                 _Edge(
                     from_name=self._module_adg_name,

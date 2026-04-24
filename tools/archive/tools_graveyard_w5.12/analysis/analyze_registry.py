@@ -33,5 +33,5 @@ for f in files:
 
     except SyntaxError as e:
         print(f"Syntax error: {e}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error: {e}")

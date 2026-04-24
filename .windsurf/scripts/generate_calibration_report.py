@@ -16,7 +16,7 @@ From author_gate_violations.jsonl:
     - total_events
     - events_by_severity (block / shadow_warn / critical)
     - firing_rate_per_day
-    - top_triggers (HITL-1.x counts)
+    - top_triggers (AG-1.x counts)
     - false_positive_rate (estimated: shadow events that were dismissed / bypassed)
     - denial_ceiling_breaches (consecutive ≥3 or total ≥20)
 

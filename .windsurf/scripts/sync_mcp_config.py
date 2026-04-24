@@ -103,7 +103,7 @@ server_rows = [
         "notion",
         "Notion pages and project-management databases",
         "API-query-data-source, API-retrieve-a-page, API-patch-page",
-        "Use for ADRs, HITL ledgers, MCP registry, and plan/status data.",
+        "Use for ADRs, Author-Gate ledgers, MCP registry, and plan/status data.",
     ),
 ]
 

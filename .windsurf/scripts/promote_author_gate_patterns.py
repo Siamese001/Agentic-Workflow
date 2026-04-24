@@ -54,7 +54,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
-_FTS_SAFE_RE = re.compile(r"[^a-zA-Z0-9_\- ]")
+# Hyphens are intentionally excluded from the keep-set: FTS5 parses ``foo-bar``
+# as the column filter ``foo NOT bar`` which raises OperationalError unless
+# ``foo`` names an indexed column. Tokenizing hyphens as whitespace makes
+# hyphenated intents (meta-learning, anti-pattern, multi-file) match as
+# bag-of-words tokens. Mirrors the fix in
+# .windsurf/skills/refactor-decision-memory/lookup_refactor_decisions.py.
+_FTS_SAFE_RE = re.compile(r"[^a-zA-Z0-9_ ]")
 
 
 def _sanitize_fts(text: str) -> str:

@@ -31,7 +31,7 @@ def test_collections():
             else:
                 print(f"⚪ {col_name}: Empty collection")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ {col_name}: Error - {e}")
 
 
@@ -95,7 +95,7 @@ def main():
             print("✅ Git status: Working tree clean")
         else:
             print("⚠️  Git status: Uncommitted changes")
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print("⚠️  Could not check git status")
 
 

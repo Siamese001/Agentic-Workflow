@@ -203,7 +203,7 @@ def _runtime_smoke_one(fp_str: str) -> dict | None:
             "severity": "error",
             "detail": f"SyntaxError at line {e.lineno}: {e.msg}",
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "file": _rel(fp),
             "audit": "runtime_smoke",

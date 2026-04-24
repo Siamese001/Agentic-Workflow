@@ -63,7 +63,7 @@ class ComprehensiveArchitecturalValidator:
                 "violations": -1,
             }
             print("  ❌ Layer validation timed out")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.validation_results["layer_gravity"] = {
                 "exit_code": -1,
                 "errors": str(e),
@@ -113,7 +113,7 @@ class ComprehensiveArchitecturalValidator:
             print(f"     LOW: {swallower_results.get('low_severity', 'Unknown')}")
             print(f"     Compliant: {swallower_results.get('compliant', False)}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.validation_results["silent_swallowers"] = {
                 "total_violations": -1,
                 "compliant": False,
@@ -159,7 +159,7 @@ class ComprehensiveArchitecturalValidator:
             print(f"     MEDIUM: {test_results.get('medium_severity', 'Unknown')}")
             print(f"     Compliant: {test_results.get('compliant', False)}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.validation_results["test_enforcement"] = {
                 "total_violations": -1,
                 "compliant": False,
@@ -193,7 +193,7 @@ class ComprehensiveArchitecturalValidator:
             print(f"     Runtime ADG: {separation_results['runtime_files']} files")
             print(f"     Separation compliant: {separation_results['compliant']}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.validation_results["adg_separation"] = {
                 "clean_static_exists": False,
                 "runtime_exists": False,
@@ -226,7 +226,7 @@ class ComprehensiveArchitecturalValidator:
             print(f"     Contract file: {l_contracts_results['contract_exists']}")
             print(f"     L_CONTRACTS compliant: {l_contracts_results['compliant']}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.validation_results["l_contracts"] = {
                 "directory_exists": False,
                 "compliant": False,

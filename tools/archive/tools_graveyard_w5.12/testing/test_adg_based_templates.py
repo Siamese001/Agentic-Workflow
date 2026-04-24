@@ -164,7 +164,7 @@ def test_adg_template_system():
             sample = rendered[:150].replace("\n", " ")
             print(f"   Sample: {sample}...")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Failed to render {template_type.value}: {e}")
             results.append(
                 {

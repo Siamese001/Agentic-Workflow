@@ -700,3 +700,36 @@ Migration Path: Legacy agents → L2 Wrappers → Full L2ExecutionAgent inherita
  L5    │ Safety Officer           │ Cross-cutting policy plane; enforces guardrails across all runtime/exit points.           
  L6    │ Observer                 │ Shadow evaluation; monitors telemetry for future-run system learning and RCA.             
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+==============================================================================================================================
+[APPENDIX A] L2 BEST-PRACTICES HARDENING MODULES (2026-Q2)
+==============================================================================================================================
+Additive modules landed under plan .windsurf/plans/l2-execute-best-practices-gap-b7c4e2.md.
+None change the canonical E1-E5 flow; they provide opt-in primitives called by new consumers
+and (selectively) wired into run_l2_phases() and CallInterceptor.intercept().
+
+Gap   | Module path                                                                           | Phase
+------+----------------------------------------------------------------------------------------+--------
+G1    | agentic_core/L2_execution/enforcement/tool_guardrail_pipeline.py                      | E2/E3/E5
+G8    | agentic_core/L2_execution/enforcement/e2_validate_before_execute.py                   | E2
+G9    | agentic_core/L2_execution/types/l2_safety_contracts.py                                | E2
+G2    | agentic_core/L2_execution/enforcement/egress_proxy.py                                 | E1/E3
+G3    | agentic_core/L2_execution/capability/scoped_credential_mint.py                        | E1
+G16   | agentic_core/L2_execution/capability/step_scoped_identity.py                          | E1
+G4/G5/G10 | agentic_core/L2_execution/types/l2_tool_enrichment.py                             | E2/E3/E4
+G6    | agentic_core/L2_execution/reasoning/tool_search.py                                    | E1
+G7    | agentic_core/L2_execution/reasoning/programmatic_tool_runner.py                       | E3
+G12   | agentic_core/L2_execution/enforcement/kill_switch.py                                  | E3/E4
+G11   | agentic_core/L2_execution/enforcement/llm_call_audit.py                               | E2/E3
+G13   | agentic_core/L2_execution/enforcement/runtime_behavior_monitor.py                     | cross-cut
+G14   | agentic_core/L2_execution/enforcement/seal_schema_validator.py                        | E5
+G15   | agentic_core/L2_execution/types/trace_grading_hooks.py                                | E5 -> L6 6B
+
+Wired call sites (W1-P1.3):
+  * L2ExecutionAgent.run_l2_phases() gains _maybe_gate_e2() between L2.1 INIT and L2.2 EXECUTE.
+  * CallInterceptor.intercept() surfaces needs_hitl_confirmation + e2_verdict when context
+    carries a ToolContract whose SafetyProfile requires E2 confirmation.
+
+Opt-in by design. Legacy call sites without tool_contract in inputs see zero behavior change.
+
+Verification: python -m pytest tests/unit/agentic_core/L2_execution/test_l2_safety_w1.py tests/unit/agentic_core/L2_execution/test_l2_safety_w1_p3_wiring.py tests/unit/agentic_core/L2_execution/test_l2_safety_w2.py tests/unit/agentic_core/L2_execution/test_l2_safety_w3.py tests/unit/agentic_core/L2_execution/test_l2_safety_w4.py tests/unit/agentic_core/L2_execution/test_l2_safety_w5.py -> 102 passed.

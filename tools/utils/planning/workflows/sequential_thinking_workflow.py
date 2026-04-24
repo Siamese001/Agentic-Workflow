@@ -15,6 +15,7 @@ from typing import Any
 from tools.utils.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
 from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 # Import ADG-based templates and enforcement configuration
 try:
@@ -905,7 +906,7 @@ def example_sequential_thinking_workflow():
     )
 
     workflow = SequentialThinkingEnhancedWorkflow(
-        budget_file=Path("docs/reports/plans/seq_thinking_workflow_budget.json"),
+        budget_file=Path(f"{DOCS_REPORTS_DIR}/plans/seq_thinking_workflow_budget.json"),
         custom_budget=custom_budget,
         seq_thinking_enabled=True,
     )

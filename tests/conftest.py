@@ -289,3 +289,57 @@ def tmp_canonical_sqlite(tmp_path):
 
 
 _install_integration_compat_shims()
+
+
+# =====================================================================
+# W3.2 — Author-Gate meta-learning: pytest signal writer.
+# =====================================================================
+# Writes {ts, exit_code, passed, failed, errors, duration_s} to
+# artifacts/windsurf/last_test_signal.json at session end so the
+# post_cascade_author_gate_capture hook can populate decision_outcomes.tests_passed.
+
+def pytest_sessionstart(session):  # noqa: ARG001 — pytest hook signature
+    import time as _time
+    session.__author_gate_start_ts = _time.time()
+
+
+def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
+    import json as _json
+    import os as _os
+    import time as _time
+    from datetime import datetime as _dt, timezone as _tz
+
+    if _os.environ.get("AUTHOR_GATE_TEST_SIGNAL_BYPASS") == "1":
+        return
+
+    # xdist: run ONLY on the controller/master, not on every worker.
+    # Workers have `config.workerinput` set; master does not.
+    if hasattr(session.config, "workerinput"):
+        return
+
+    start_ts = getattr(session, "__author_gate_start_ts", None)
+    duration_s = round(_time.time() - start_ts, 2) if start_ts is not None else None
+
+    try:
+        reporter = session.config.pluginmanager.get_plugin("terminalreporter")
+        passed = len(reporter.stats.get("passed", [])) if reporter else 0
+        failed = len(reporter.stats.get("failed", [])) if reporter else 0
+        errors = len(reporter.stats.get("error", [])) if reporter else 0
+    except (AttributeError, KeyError):
+        passed = failed = errors = 0
+
+    out_path = Path(_REPO_ROOT) / "artifacts" / "windsurf" / "last_test_signal.json"
+    try:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "ts": _dt.now(_tz.utc).isoformat(timespec="seconds"),
+            "exit_code": int(exitstatus),
+            "passed": passed,
+            "failed": failed,
+            "errors": errors,
+            "duration_s": duration_s,
+        }
+        out_path.write_text(_json.dumps(payload, indent=2), encoding="utf-8")
+    except OSError:
+        # guardian: allow-silent-swallow -- signal write is non-critical meta-learning aid
+        pass

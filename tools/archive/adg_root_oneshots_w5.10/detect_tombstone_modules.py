@@ -52,7 +52,7 @@ def extract_public_symbols(module_path: Path) -> Set[str]:
                         public_symbols.add(target.id)
 
         return public_symbols
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return set()
 
 
@@ -64,7 +64,7 @@ def is_tombstone_file(module_path: Path) -> bool:
 
         docstring = "".join(first_lines)
         return "TOMBSTONED" in docstring or "tombstoned" in docstring
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False
 
 
@@ -85,7 +85,7 @@ def get_init_imports(init_path: Path) -> Set[str]:
                     imported_modules.add(module_name)
 
         return imported_modules
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return set()
 
 

@@ -121,7 +121,7 @@ def analyze_file(file_path: Path, existing_classes: set[str], existing_functions
         tree = ast.parse(content)
     except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
         return {"valid": False, "error": "syntax"}
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {"valid": False, "error": str(e)}
 
     unique_agents = []

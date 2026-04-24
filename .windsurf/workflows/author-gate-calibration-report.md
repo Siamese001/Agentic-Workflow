@@ -41,7 +41,7 @@ python .windsurf/scripts/generate_calibration_report.py --no-write
 
 ### 3. Inspect top triggers
 
-If one trigger (e.g. `HITL-1.2`) accounts for >80% of fires, it's either:
+If one trigger (e.g. `AG-1.2`) accounts for >80% of fires, it's either:
 - Genuinely the most valuable trigger (confirm with decision outcomes)
 - Too broad (consider raising `files_changed_min` or tightening globs)
 
@@ -60,9 +60,9 @@ git add docs/reports/author-gate/
 git commit -m "author-gate: calibration report for <week>"
 ```
 
-### 6. (Optional) Post summary to Notion HITL Decision Ledger
+### 6. (Optional) Post summary to Notion Author-Gate Decision Ledger
 
-Create a row in the HITL Decision Ledger DB (database_id
+Create a row in the Author-Gate Decision Ledger DB (database_id
 `18bb9145-1320-4191-8b14-6c309776bcf5`) via `API-post-page`. Include:
 
 - Title: `Calibration <YYYY-Www> — <GO|HOLD|INVESTIGATE>`
@@ -72,7 +72,7 @@ Create a row in the HITL Decision Ledger DB (database_id
 ## Data inputs
 
 - `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` — decisions + outcomes
-- `artifacts/windsurf/hitl_violations.jsonl` — gate events (shadow warnings and blocks)
+- `artifacts/windsurf/author_gate_violations.jsonl` — gate events (shadow warnings and blocks)
 
 ## Output
 
@@ -85,8 +85,8 @@ Create a row in the HITL Decision Ledger DB (database_id
 2. Read Flip Readiness → if **GO**, proceed; else stop and tune
 3. Edit `.windsurf/schemas/author_gate_triggers.yaml` → `enforcement: block`
 4. Run: `python .windsurf/scripts/pre_author_gate.py --self-test`
-5. Commit: `git commit -m "author-gate: flip to enforcement=block [hitl:bypass]"`
-6. Monitor `hitl_violations.jsonl` for the next 48h; roll back the single line if false blocks spike
+5. Commit: `git commit -m "author-gate: flip to enforcement=block [author-gate:bypass]"`
+6. Monitor `author_gate_violations.jsonl` for the next 48h; roll back the single line if false blocks spike
 
 ## Reference
 

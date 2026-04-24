@@ -22,7 +22,7 @@ def get_exports_from_file(filepath):
                 if not node.name.startswith("_"):  # Only export public functions
                     exports.append(node.name)
         return exports
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error parsing {filepath}: {e}")
         return []
 
@@ -61,7 +61,7 @@ def update_init_file(init_path, all_exports):
 
         print(f"Updated {init_path} with {len(export_lines)} exports")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error updating {init_path}: {e}")
         return False
 

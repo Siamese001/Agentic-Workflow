@@ -45,6 +45,23 @@ DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_d
 _DEFAULT_LIMIT = 5
 _MAX_LIMIT = 20
 
+# W5.2 — hash-chain verification on read. The integrity lib lives in
+# .windsurf/scripts; add to sys.path at import time so matches can be flagged
+# with a `hash_ok` boolean (runtime tamper detection).
+_SCRIPTS_DIR = REPO_ROOT / ".windsurf" / "scripts"
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+try:
+    from author_gate_ledger_integrity import (  # type: ignore[import-not-found]
+        GENESIS_PREV_HASH,
+        compute_row_hash,
+    )
+    _HASH_VERIFY_AVAILABLE = True
+except ImportError:
+    GENESIS_PREV_HASH = "0" * 64  # type: ignore[assignment]
+    compute_row_hash = None  # type: ignore[assignment]
+    _HASH_VERIFY_AVAILABLE = False
+
 
 # ---------------------------------------------------------------------------
 # DB helpers
@@ -62,10 +79,47 @@ def _open_db() -> sqlite3.Connection | None:
         return None
 
 
+def _verify_row_hash(conn: sqlite3.Connection,
+                     decision_id: str,
+                     stored_prev: str | None,
+                     stored_hash: str | None) -> bool | None:
+    """W5.2 — verify a single row's hash against the recomputed value.
+
+    Returns:
+        True  — stored row_hash matches recomputed
+        False — mismatch (tamper signal)
+        None  — cannot verify (lib unavailable, missing columns)
+
+    Fail-open on DB error so read path never breaks on integrity failure.
+    """
+    if compute_row_hash is None or not stored_hash:
+        return None
+    try:
+        cur = conn.execute("SELECT * FROM decisions WHERE decision_id = ?", (decision_id,))
+        row = cur.fetchone()
+    except sqlite3.Error:
+        return None
+    if row is None:
+        return None
+    prev = stored_prev if stored_prev else GENESIS_PREV_HASH
+    try:
+        expected = compute_row_hash(dict(row), prev)
+    except (ValueError, TypeError):
+        return None
+    return expected == stored_hash
+
+
 def _sanitize_fts_query(text: str) -> str:
-    """Strip FTS5 special characters from query text to prevent syntax errors."""
-    # Keep only alphanumeric, underscores, hyphens, spaces
-    safe = re.sub(r"[^a-zA-Z0-9_\- ]", " ", text)
+    """Strip FTS5 special characters from query text to prevent syntax errors.
+
+    Hyphens are intentionally replaced with spaces: FTS5 parses ``foo-bar`` as the
+    column-filter expression ``foo NOT bar`` which raises OperationalError unless
+    ``foo`` is an indexed column. Splitting on hyphen turns hyphenated intents
+    (meta-learning, anti-pattern, multi-file) into distinct bag-of-words tokens,
+    which is the behavior the precedent-lookup skill actually wants.
+    """
+    # Keep only alphanumeric, underscores, spaces. Hyphens -> space (see docstring).
+    safe = re.sub(r"[^a-zA-Z0-9_ ]", " ", text)
     # Collapse whitespace
     safe = " ".join(safe.split())
     return safe[:200]
@@ -131,7 +185,18 @@ def _run_query(
             "reason": "normalized_intent contains no searchable terms",
         }
 
-    fts_sql = """
+    # Check column presence for forward/back compatibility with older schemas
+    # (test DBs, pre-hash-chain ledgers). NULL placeholders keep SELECT shape stable.
+    try:
+        d_cols = {r[1] for r in conn.execute("PRAGMA table_info(decisions)").fetchall()}
+    except sqlite3.Error:
+        d_cols = set()
+    hash_cols_sql = (
+        "d.prev_hash, d.row_hash"
+        if {"prev_hash", "row_hash"} <= d_cols
+        else "NULL AS prev_hash, NULL AS row_hash"
+    )
+    fts_sql = f"""
         SELECT
             d.decision_id,
             d.decision_type,
@@ -143,6 +208,7 @@ def _run_query(
             d.selection_rationale,
             d.status,
             d.created_at,
+            {hash_cols_sql},
             s.repo_area,
             s.file_path,
             s.layer,
@@ -191,6 +257,12 @@ def _run_query(
         else:
             continue
 
+        # W5.2 — verify hash chain for this row. Fails closed: mismatch -> hash_ok=False
+        # but the match is still returned (so Cascade sees the warning) with a flag.
+        hash_ok: bool | None = None
+        if _HASH_VERIFY_AVAILABLE and d.get("row_hash") and compute_row_hash is not None:
+            hash_ok = _verify_row_hash(conn, did, d.get("prev_hash"), d.get("row_hash"))
+
         matches.append(
             {
                 "strength": strength,
@@ -206,6 +278,7 @@ def _run_query(
                 "tests_passed": bool(d.get("tests_passed")),
                 "promote_to_pattern": promoted,
                 "created_at": d.get("created_at"),
+                "hash_ok": hash_ok,  # None=not-verified, True=verified, False=TAMPERED
             }
         )
 

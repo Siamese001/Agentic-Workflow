@@ -69,7 +69,7 @@ def analyze_syntax_errors():
                                 "size": fp.stat().st_size,
                             }
                         )
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                         syntax_errors.append(
                             {
                                 "file": rel_path,

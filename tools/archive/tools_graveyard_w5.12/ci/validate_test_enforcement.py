@@ -71,7 +71,7 @@ class TestEnforcementValidator:
                         else:
                             marker_compliance["without_markers"] += 1
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error validating {file_path}: {e}")
 
@@ -144,7 +144,7 @@ class TestEnforcementValidator:
                                 }
                             )
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error validating structure in {file_path}: {e}")
 
@@ -224,7 +224,7 @@ class TestEnforcementValidator:
         except subprocess.TimeoutExpired:
             pytest_results["execution_errors"] = 1
             print("    Pytest execution timed out")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             pytest_results["execution_errors"] = 1
             print(f"    Error running pytest: {e}")
 

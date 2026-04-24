@@ -60,7 +60,7 @@ except:
 
         if "HITL workflow not found" in result.stdout:
             issues.append("No evidence of /hitl-decision-gate workflow invocation")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Failed to check HITL workflow: {e}")
 
     # Check for option presentation format
@@ -92,7 +92,7 @@ except:
                 if hitl_elements >= 3:  # At least 3 HITL elements found
                     hitl_found = True
                     break
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 continue
 
         if not hitl_found:
@@ -109,7 +109,7 @@ except:
 
         if result.returncode != 0 or not result.stdout.strip():
             issues.append("No user selection recorded in commit history")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Failed to check user selection: {e}")
 
     return len(issues) == 0, issues

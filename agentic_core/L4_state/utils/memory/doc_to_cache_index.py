@@ -49,7 +49,7 @@ def _get_conn(db_path: Path | None = None) -> sqlite3.Connection | None:
             conn.commit()
             _CONN = conn
             return conn
-        except (sqlite3.Error, OSError) as exc:
+        except (sqlite3.Error, OSError) as exc:  # guardian: allow-return-none-swallow -- G5 CDC inverse index is a best-effort optimization; None disables CDC invalidation and falls back to standard cache eviction
             _LOGGER.warning("doc_to_cache_index init failed: %s", exc)
             return None
 
@@ -123,7 +123,7 @@ def reset_for_tests() -> None:
         if _CONN is not None:
             try:
                 _CONN.close()
-            except sqlite3.Error:
+            except sqlite3.Error:  # guardian: allow-silent-swallow -- connection teardown is best-effort; process exit will reclaim resources regardless
                 pass
             _CONN = None
 

@@ -71,7 +71,7 @@ class SSOTConsolidationAnalyzer:
                 + (1 if features["has_standard_heal"] else 0) * 15
             )
             return features
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {"error": f"Error analyzing file: {e}"}
 
     def compare_file_versions(self, filename: str) -> dict:

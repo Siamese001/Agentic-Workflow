@@ -24,7 +24,7 @@ def run_npx_command(command_args):
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False, "", str(e)
 
 
@@ -61,7 +61,7 @@ def test_sequential_thinking_package():
     except subprocess.TimeoutExpired:
         print("✅ Sequential thinking package started (timeout expected for server)")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to access sequential thinking package: {e}")
         return False
 
@@ -148,7 +148,7 @@ def test_mcp_config():
             print("❌ Sequential thinking server not found in MCP config")
             return False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Error reading MCP config: {e}")
         return False
 

@@ -8,6 +8,7 @@ import pathlib
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
+    DOCS_REPORTS_DIR,
     TESTS_DIR,
     get_validated_project_root,
 )
@@ -289,8 +290,8 @@ def main():
         "modules": module_status,
     }
 
-    # Save report
-    report_path = pathlib.Path("docs/reports/plans/phase0_discovery_report.json")
+    # Save reportf"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json"
+    report_path = pathlib.Path(f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json")
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"\nReport saved to: {report_path}")

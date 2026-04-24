@@ -357,7 +357,7 @@ def main() -> bool:
         # Validate project root integrity (treat validator as raising, not bool-return)
         try:
             validate_path_within_project(project_root, project_root)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise DiscoveryError(f'Project root validation failed: {e}') from e
 
         # Run discovery inside a cache context so classifications are fresh

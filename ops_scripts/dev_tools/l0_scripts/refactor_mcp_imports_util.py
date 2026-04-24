@@ -190,7 +190,7 @@ def refactor_file(file_path: Path) -> bool:
         print(f"✅ Fixed: {file_path.relative_to(REPO)}")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Error processing {file_path}: {e}")
         return False
 

@@ -34,7 +34,7 @@ def test_startup_time(name, command, args, timeout=5):
 
     except subprocess.TimeoutExpired:
         return timeout, True, "Timeout (server started)"
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return -1, False, str(e)
 
 

@@ -14,7 +14,7 @@ This skill is the lookup engine — it does **not** replace `author-gate-enforce
 
 ## When to Invoke
 
-Invoke before opening Author-Gate for any of these decision classes (per `author-gate-enforcement.md` §HITL-1):
+Invoke before opening Author-Gate for any of these decision classes (per `author-gate-decision-points.md` §AG-1):
 
 - Architecture choice (§1.1)
 - Refactoring scope (§1.2)

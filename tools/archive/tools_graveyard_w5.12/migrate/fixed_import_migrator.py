@@ -66,7 +66,7 @@ class FixedImportMigrator:
             print(f"  ❌ Syntax error in {file_path.name}: {e}")
             self.failed_files.append((str(file_path), f"Syntax error: {e}"))
             return False
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  ❌ Failed to read {file_path}: {e}")
             self.failed_files.append((str(file_path), str(e)))
             return False
@@ -96,7 +96,7 @@ class FixedImportMigrator:
             self.migrated_files.append(str(file_path))
             self.stats["imports_moved"] += len(top_imports)
             return True
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  ❌ Failed to write {file_path}: {e}")
             self.failed_files.append((str(file_path), str(e)))
             return False

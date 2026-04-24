@@ -99,7 +99,7 @@ class CoreKnowledgeIngestion:
                     metadatas.append(metadata)
                     ids.append(f"code_{rel_path.replace('/', '_')}_{i}")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Failed to process {file_path}: {e}")
 
         # Add to ChromaDB in batches
@@ -194,7 +194,7 @@ class CoreKnowledgeIngestion:
             conn.close()
             return len(documents)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Failed to ingest symbols: {e}")
             return 0
 
@@ -241,7 +241,7 @@ class CoreKnowledgeIngestion:
                     metadatas.append(metadata)
                     ids.append(f"doc_{rel_path.replace('/', '_')}")
 
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     logger.warning(f"Failed to process {file_path}: {e}")
 
         # Add to ChromaDB in batches

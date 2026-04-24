@@ -18,11 +18,26 @@ slots.
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from agentic_core.L2_execution.enforcement.provider_adapter import (
     ProviderPayload,
 )
+
+
+# Long-context threshold (chars). C0 of this length or more triggers the
+# "# Final instructions" tail-repetition per ADR-PROMPT-ASSEMBLY-001 Q3.
+_LONG_CONTEXT_THRESHOLD_ENV = "OPENAI_LONG_CONTEXT_CHARS"
+_LONG_CONTEXT_THRESHOLD_DEFAULT = 8_000
+
+
+def _long_context_threshold() -> int:
+    """Resolve the long-context tail-reminder threshold in characters."""
+    raw = os.getenv(_LONG_CONTEXT_THRESHOLD_ENV)
+    if raw and raw.strip().isdigit():
+        return int(raw.strip())
+    return _LONG_CONTEXT_THRESHOLD_DEFAULT
 
 
 class OpenAIMessageAdapter:
@@ -41,24 +56,70 @@ class OpenAIMessageAdapter:
         tools_schema: Any,
         slots_used: list[str] | tuple[str, ...] | None = None,
         slots_map: dict[str, str] | None = None,
+        response_schema: dict[str, Any] | None = None,
     ) -> ProviderPayload:
         system = final_system_string or ""
+        long_context_tail_reminder = False
         if slots_map is not None:
-            system = self._compose_system_from_slots(slots_map) or system
+            composed = self._compose_system_from_slots(slots_map)
+            if composed:
+                system = composed
+            # EQ-2: append condensed I0 as `# Final instructions` when C0
+            # is heavy — OpenAI long-context guidance.
+            system, long_context_tail_reminder = (
+                self._apply_final_instructions_tail(system, slots_map)
+            )
+
+        extra: dict[str, Any] = {
+            "adapter": self.name,
+            "slots_used": list(slots_used) if slots_used else [],
+            # Hint for downstream clients that this system string uses
+            # OpenAI-style markdown rather than Anthropic XML. Clients
+            # that ship a messages[] array can place this as role=system.
+            "system_format": "markdown",
+            "long_context_tail_reminder": long_context_tail_reminder,
+        }
+        # EQ-5: translate response_schema into OpenAI's response_format API
+        # contract. The ``strict: True`` flag enables OpenAI's structured
+        # outputs guarantee (constrained decoding); the schema name is a
+        # required field on that path.
+        if response_schema:
+            extra["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "Response",
+                    "schema": response_schema,
+                    "strict": True,
+                },
+            }
 
         return ProviderPayload(
             system_prompt=system,
             user_prompt=final_user_string or "",
             tools_schema=tools_schema,
-            extra={
-                "adapter": self.name,
-                "slots_used": list(slots_used) if slots_used else [],
-                # Hint for downstream clients that this system string uses
-                # OpenAI-style markdown rather than Anthropic XML. Clients
-                # that ship a messages[] array can place this as role=system.
-                "system_format": "markdown",
-            },
+            extra=extra,
         )
+
+    def _apply_final_instructions_tail(
+        self, system: str, slots_map: dict[str, str]
+    ) -> tuple[str, bool]:
+        """Append a `# Final instructions` block when C0 is heavy.
+
+        OpenAI long-context guidance: placing instructions both before and
+        after the context (or at least echoing them at the tail) yields
+        better recall. Triggered only when C0 slot length >= threshold.
+        """
+        c0 = slots_map.get("C0", "") or ""
+        if len(c0) < _long_context_threshold():
+            return system, False
+        i0 = (slots_map.get("I0") or "").strip()
+        if not i0:
+            return system, False
+        # Condense to first line for the tail reminder — keeps token
+        # overhead low while preserving the task prompt.
+        reminder = i0.splitlines()[0]
+        tail = f"# Final instructions\n\n{reminder}"
+        return f"{system}\n\n{tail}", True
 
     def _compose_system_from_slots(self, slots_map: dict[str, str]) -> str:
         """Compose OpenAI-idiomatic system prompt from structured slots.

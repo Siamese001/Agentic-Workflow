@@ -60,7 +60,7 @@ class FilesystemMCPDebugger:
             print(f"   📊 Size: {stat.st_size:,} bytes")
             print(f"   📅 Modified: {time.ctime(stat.st_mtime)}")
             print(f"   📋 Permissions: {oct(stat.st_mode)[-3:]}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ Error getting package info: {e}")
 
         # Test package execution with detailed output
@@ -132,7 +132,7 @@ class FilesystemMCPDebugger:
 
         except subprocess.TimeoutExpired:
             return {"status": "timeout", "message": "Package execution timed out"}
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {"status": "error", "message": f"Execution error: {str(e)}"}
 
     def perform_root_cause_analysis(self, analysis):
@@ -224,7 +224,7 @@ class FilesystemMCPDebugger:
                 else:
                     fixes_applied.append("Package reinstallation failed")
                     print(f"   ❌ Reinstall failed: {result.stderr}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 fixes_applied.append(f"Package reinstallation error: {e}")
                 print(f"   ❌ Reinstall error: {e}")
 
@@ -253,7 +253,7 @@ class FilesystemMCPDebugger:
                 json.dump(config, f, indent=2)
             fixes_applied.append("Configuration optimized")
             print("   ✅ Configuration updated")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             fixes_applied.append(f"Configuration update failed: {e}")
             print(f"   ❌ Config update failed: {e}")
 
@@ -329,7 +329,7 @@ class FilesystemMCPDebugger:
                 "stderr_sample": result.stderr[:200] if result.stderr else "",
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "status": "error",
                 "message": f"Test error: {str(e)}",

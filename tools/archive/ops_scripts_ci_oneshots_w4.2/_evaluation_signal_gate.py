@@ -367,7 +367,7 @@ def main() -> int:
     for fn in runners:
         try:
             fn(conn)
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
             label = fn.__name__.replace("gate_", "").upper()
             GATE_RESULTS.append((label, False, f"EXCEPTION: {exc}"))
 

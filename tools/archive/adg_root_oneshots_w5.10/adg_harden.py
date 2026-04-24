@@ -118,7 +118,7 @@ def _check_module_has_symbol(module_path: Path, symbol: str) -> bool:
     try:
         content = module_path.read_text(encoding="utf-8")
         return symbol in content
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False
 
 
@@ -154,7 +154,7 @@ def _add_emitter_to_module(module_path: Path, symbol: str, apply: bool = False) 
             _logger.info(f"Would add {symbol} to {module_path} (dry-run)")
 
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         _logger.warning(f"Could not process {module_path}: {e}")
         return False
 

@@ -272,7 +272,7 @@ async def test_runtime_adg_e2e():
 
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"\n[E2E TEST] ❌ Validation failed: {e}")
         import traceback
 

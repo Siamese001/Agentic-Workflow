@@ -351,7 +351,7 @@ def main(argv: list[str] | None = None) -> int:
             Path(file_path).unlink()
             print(f"  ✓ Deleted: {Path(file_path).name}")
             deleted_count += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             LOGGER.warning("Failed to delete %s: %s", file_path, e)
             print(f"  ✗ Failed to delete {file_path}: {e}")
     if args.execute:

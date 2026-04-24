@@ -14,7 +14,7 @@ from tqdm import tqdm
 def _safe_unparse(node: ast.AST) -> str:
     try:
         return ast.unparse(node)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return ast.dump(node, annotate_fields=False)
 
 

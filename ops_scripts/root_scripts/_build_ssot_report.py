@@ -11,6 +11,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
 )
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write")
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write_2")
@@ -243,7 +244,7 @@ W(
     "4. **FilesystemSSOTReconcilerAgent.heal_repository** — Missing `target_territory` parameter support (TypeError on invocation)."
 )
 W("")
-report_path = "docs/reports/plans/ssot_dry_run_agentic_core.md"
+report_path = f"{DOCS_REPORTS_DIR}/plans/ssot_dry_run_agentic_core.md"
 with open(report_path, "w", encoding="utf-8", newline="\n") as f:
     f.write("\n".join(lines))
 print(f"Report written to {report_path}")

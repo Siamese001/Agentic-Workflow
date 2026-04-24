@@ -79,7 +79,7 @@ class OTelIngestService:
                 result["tracestate"] = str(tracestate)
             logger.info("otel_ingest_success", extra=result)
             return result
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(
                 "otel_ingest_error",
                 extra={"trace_id": trace_data.get("trace_id", "unknown"), "error": str(exc)},

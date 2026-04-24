@@ -329,7 +329,7 @@ def scan_file(filepath: pathlib.Path, rel_path: str) -> list[dict]:
     """Scan a single test file and return findings."""
     try:
         source = filepath.read_text(encoding="utf-8", errors="replace")
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return [{"file_path": rel_path, "error": "could not read file"}]
 
     try:

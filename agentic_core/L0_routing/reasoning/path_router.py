@@ -27,6 +27,7 @@ from agentic_core.runtime.contracts.abstain_contract import (
     DEFAULT_ABSTAIN_THRESHOLD,
     plan_abstain,
 )
+from agentic_core.runtime.contracts.routing_features import RoutingFeatureVector
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -122,6 +123,31 @@ Emitted by :meth:`PathRouter.route_with_gates` when
 returns a D2 hit. Terminal arm — caller returns the cached payload
 immediately without invoking ``select_path`` or any L2 step.
 """
+
+
+class RoutingFeatureDispatch(TypedDict):
+    """W5.P4 return shape from :meth:`PathRouter.route_with_features`.
+
+    Fields:
+        result: The :class:`RoutingResult` for the selected route.
+        gate_fired: Which stage of the feature-vector dispatch emitted
+            the result. One of ``"r5_multi_signal"`` / ``"r3_gate"`` /
+            ``"fallback"``.
+        r5_primary_reason: If ``gate_fired == "r5_multi_signal"``, the
+            primary reason code (see
+            :data:`~agentic_core.runtime.contracts.abstain_contract.R5_REASON_CODES`);
+            else ``"none"``.
+        r5_triggered_reasons: All R5 reason codes that fired (empty on
+            non-R5 paths).
+        r3_reason_code: If ``gate_fired == "r3_gate"``, the reason code
+            returned by :func:`check_r3_grounding_gate`; else ``""``.
+    """
+
+    result: "RoutingResult"
+    gate_fired: str
+    r5_primary_reason: str
+    r5_triggered_reasons: tuple[str, ...]
+    r3_reason_code: str
 
 
 class RoutingResult(TypedDict):
@@ -397,3 +423,156 @@ class PathRouter:
         # Gate miss (or replay) — delegate to existing confidence-aware selector.
         result = self.route_with_confidence(payload, confidence, threshold)
         return result, None
+
+    def route_with_features(
+        self,
+        payload: GovernedPayload,
+        features: "RoutingFeatureVector",
+        *,
+        confidence: float | None = None,
+        threshold: float = DEFAULT_ABSTAIN_THRESHOLD,
+        namespace: str = "",
+        coverage_score: float | None = None,
+        circuit_breaker_open: bool = False,
+        budget_exceeded: bool = False,
+        clarification_needed: bool = False,
+        toxicity_flagged: bool = False,
+    ) -> "RoutingFeatureDispatch":
+        """Feature-vector aware dispatch (W5.P4).
+
+        Consults the W3 gates in this order, returning as soon as one fires:
+
+        1. **Multi-signal R5** — :func:`plan_abstain_multi_signal` fed from
+           ``features`` + the scalar signal kwargs. Fires when any of the
+           6 enabled triggers is true per YAML config.
+        2. **R3 grounded-read gate** — :func:`check_r3_grounding_gate`
+           consumes ``features.grounding_need_score`` and optional
+           ``coverage_score``. Returns R3 with the gate's reason code.
+        3. **Fallback** — delegates to :meth:`route_with_confidence` with
+           the caller's scalar ``confidence`` (or ``features`` budget-
+           derived proxy) and abstain threshold. Preserves all existing
+           ``Path.A/B/C/D`` / R5 behavior when no feature-driven gate fires.
+
+        Args:
+            payload: Governed payload — consulted only if the fallback
+                ``select_path`` is reached.
+            features: Populated :class:`RoutingFeatureVector`. Must be
+                present; use :func:`build_routing_feature_vector`
+                (W5.P2) to construct it.
+            confidence: Optional scalar confidence for the R5 low-confidence
+                trigger. Defaults to ``1.0`` when ``features`` does not
+                carry one, preserving existing "no abstain" semantics.
+            threshold: Abstain floor, forwarded to
+                :meth:`route_with_confidence` on fallback.
+            namespace: Cache / agent namespace for per-namespace gate
+                thresholds (W2.P1 YAML).
+            coverage_score: Optional C0 aggregate coverage (W1b), enabling
+                the R3 "coverage below floor" short-circuit.
+            circuit_breaker_open: External signal — fires R5 unconditionally.
+            budget_exceeded: External signal (TokenCap DENY) — fires R5.
+            clarification_needed: External signal (L1 CLARIFY) — fires R5.
+            toxicity_flagged: External signal (L5 guardrail) — fires R5.
+
+        Returns:
+            :class:`RoutingFeatureDispatch` carrying the :class:`RoutingResult`
+            plus the gate that fired (``"r5_multi_signal"`` / ``"r3_gate"``
+            / ``"fallback"``) and, for observability, the R3 gate's reason
+            code when applicable.
+        """
+        from agentic_core.L0_routing.reasoning.route_gates import (  # noqa: PLC0415
+            check_r3_grounding_gate,
+        )
+        from agentic_core.runtime.contracts.abstain_contract import (  # noqa: PLC0415
+            R5Signals,
+            plan_abstain_multi_signal,
+        )
+
+        effective_confidence = (
+            float(confidence) if confidence is not None else 1.0
+        )
+
+        # --- Step 1: multi-signal R5 ------------------------------------
+        r5_signals: R5Signals = {
+            "confidence": effective_confidence,
+            "confidence_threshold": threshold,
+        }
+        if features.has_ood_signal():
+            r5_signals["ood_score"] = features.ood_score
+        if circuit_breaker_open:
+            r5_signals["circuit_breaker_open"] = True
+        if budget_exceeded:
+            r5_signals["budget_exceeded"] = True
+        if clarification_needed:
+            r5_signals["clarification_needed"] = True
+        if toxicity_flagged:
+            r5_signals["toxicity_flagged"] = True
+
+        r5_decision = plan_abstain_multi_signal(r5_signals)
+        if r5_decision["decision"] == DECISION_ABSTAIN:
+            _log.info(
+                "path_router: R5 multi-signal fired primary=%s",
+                r5_decision["primary_reason"],
+            )
+            # W5.P5: emit R5-fired metric labeled by primary reason code.
+            try:
+                from agentic_core.L6_observability.routing_calibration_metrics import (  # noqa: PLC0415  guardian: allow-layer-violation -- W5.P5 R5-fired metric emission; observability call-back from L0 routing hot path, wrapped in try/except so routing never hard-depends on L6
+                    record_r5_fired,
+                )
+
+                record_r5_fired(
+                    r5_decision["primary_reason"],
+                    namespace=namespace or "default",
+                )
+            except ImportError:  # guardian: allow-silent-swallow -- observability import optional; routing must not depend on it (pass-through)
+                pass
+            return RoutingFeatureDispatch(
+                result=RoutingResult(
+                    route=R5_ROUTE,
+                    reason=r5_decision["reason"],
+                    confidence=r5_decision["confidence"],
+                    threshold=r5_decision["threshold"],
+                    action=r5_decision["action"],
+                ),
+                gate_fired="r5_multi_signal",
+                r5_primary_reason=r5_decision["primary_reason"],
+                r5_triggered_reasons=r5_decision["triggered_reasons"],
+                r3_reason_code="",
+            )
+
+        # --- Step 2: R3 grounded-read gate ------------------------------
+        if features.has_grounding_signal():
+            should_ground, r3_reason = check_r3_grounding_gate(
+                features.grounding_need_score,
+                namespace=namespace,
+                coverage_score=coverage_score,
+            )
+            if should_ground:
+                _log.info(
+                    "path_router: R3 grounded-read selected reason=%s",
+                    r3_reason,
+                )
+                return RoutingFeatureDispatch(
+                    result=RoutingResult(
+                        route="R3",
+                        reason=r3_reason,
+                        confidence=effective_confidence,
+                        threshold=threshold,
+                        action="continue",
+                    ),
+                    gate_fired="r3_gate",
+                    r5_primary_reason="none",
+                    r5_triggered_reasons=(),
+                    r3_reason_code=r3_reason,
+                )
+
+        # --- Step 3: fallback to existing confidence-aware selector -----
+        fallback = self.route_with_confidence(
+            payload, effective_confidence, threshold,
+        )
+        return RoutingFeatureDispatch(
+            result=fallback,
+            gate_fired="fallback",
+            r5_primary_reason="none",
+            r5_triggered_reasons=(),
+            r3_reason_code="",
+        )

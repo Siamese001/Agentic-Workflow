@@ -31,7 +31,7 @@ def update_imports():
                 py_file.write_text(content, encoding="utf-8")
                 count += 1
                 print(f"Updated: {py_file}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"Error processing {py_file}: {e}", file=sys.stderr)
 
     print(f"\nTotal files updated: {count}")

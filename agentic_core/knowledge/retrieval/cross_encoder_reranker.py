@@ -163,17 +163,17 @@ class CrossEncoderReranker:
                 BgeRerankerAdapter,
                 CrossEncoderUnavailable,
             )
-        except ImportError as exc:
+        except ImportError as exc:  # guardian: allow-return-none-swallow -- optional BGE reranker adapter; import failure means cross-encoder feature is unavailable and the reranker falls back to caller-level handling (no-op rerank)
             logger.warning("BgeRerankerAdapter import failed: %s; falling back", exc)
             return None
 
         try:
             self._adapter = BgeRerankerAdapter(batch_size=self._batch_size)
             return self._adapter
-        except CrossEncoderUnavailable as exc:
+        except CrossEncoderUnavailable as exc:  # guardian: allow-return-none-swallow -- cross-encoder is an optional retrieval enrichment; unavailability falls back to the calling pipeline's no-rerank path
             logger.warning("Cross-encoder unavailable: %s; falling back", exc)
             return None
-        except (RuntimeError, OSError) as exc:
+        except (RuntimeError, OSError) as exc:  # guardian: allow-return-none-swallow -- cross-encoder init best-effort; init failure falls back to no-rerank path, upstream retrieval proceeds normally
             logger.warning("Cross-encoder init failed: %s; falling back", exc)
             return None
 

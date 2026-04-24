@@ -54,6 +54,112 @@ def _validate_slot_order(*args, **kwargs):
     return validate_slot_order(*args, **kwargs)
 
 
+# ---------------------------------------------------------------------------
+# EQ-3 — optional-slot helpers. Kept at module level so assemble_from_bom
+# (a @staticmethod) can reference them without circular indirection, and
+# so tests can stub the registry surface.
+# ---------------------------------------------------------------------------
+
+
+def _load_exemplars(registry: Any, exemplar_ids: tuple[str, ...]) -> str:
+    """Load E0 exemplar content from the template registry.
+
+    Uses ``registry.get_e0_exemplar(id)`` when present; otherwise falls back
+    to ``registry.get_i0_mixin(id)`` so existing mixin-backed exemplar
+    content still resolves during the EQ-3 shim window. Returns empty
+    string when no exemplars are requested.
+    """
+    if not exemplar_ids:
+        return ""
+    getter = getattr(registry, "get_e0_exemplar", None) or getattr(
+        registry, "get_i0_mixin", None
+    )
+    if getter is None:
+        return ""
+    parts: list[str] = []
+    for ex_id in sorted(exemplar_ids):
+        try:
+            content = getter(ex_id)
+        except KeyError:
+            # Missing exemplar is non-fatal — absent content means slot stays empty.
+            continue
+        if content:
+            parts.append(content)
+    return "\n\n".join(parts)
+
+
+def _load_meta_cognitive(registry: Any, mixin_id: str | None) -> str:
+    """Load M0 meta-cognitive mixin content by ID.
+
+    Routes through the same I0 mixin catalog (M0 is authored as a mixin
+    with the ``thinking`` tag convention). Returns empty string when the
+    BOM does not request one.
+    """
+    if not mixin_id:
+        return ""
+    getter = getattr(registry, "get_m0_mixin", None) or getattr(
+        registry, "get_i0_mixin", None
+    )
+    if getter is None:
+        return ""
+    try:
+        return getter(mixin_id) or ""
+    except KeyError:
+        return ""
+
+
+def _build_structured_slots(
+    slots: dict[str, str], u0_clean: str
+) -> dict[str, Any] | None:
+    """Construct ``CompiledPromptArtifact.structured_slots`` from flat content.
+
+    Produces one :class:`AuthoritySlot` per populated slot code. Empty slot
+    content is skipped entirely so the adapter surface only sees live data.
+    Returns ``None`` when no structured slots were populated, which tells
+    the artifact to fall back to the flat-string manifest-hash path (EQ-1).
+    """
+    from agentic_core.L2_execution.reasoning.compiled_artifact import (  # guardian: allow-layer-violation -- L0 assembly stage reads L2 compiled-artifact types to build structured AuthoritySlot records; the types are defined in L2 to keep them co-located with the artifact emitter, and L0 is the boundary-inversion caller
+        AuthorityLevel,
+        AuthoritySlot,
+    )
+
+    source_layer_by_slot = {
+        "S0": "L4",
+        "D0": "L5",
+        "I0": "L4",
+        "E0": "L4",
+        "C0": "L1",
+        "M0": "L4",
+        "U0": "L1",
+        "H0": "L2",
+    }
+    level_by_slot = {
+        "S0": AuthorityLevel.ABSOLUTE,
+        "D0": AuthorityLevel.BINDING,
+        "I0": AuthorityLevel.GOVERNED,
+        "E0": AuthorityLevel.EXEMPLAR,
+        "C0": AuthorityLevel.INFO,
+        "M0": AuthorityLevel.META_COGNITIVE,
+        "U0": AuthorityLevel.ZERO,
+        "H0": AuthorityLevel.HEALING,
+    }
+
+    structured: dict[str, Any] = {}
+    for code, content in slots.items():
+        # Normalize U0 to the post-neutralizer string so the structured
+        # surface matches what the adapter actually renders.
+        effective = u0_clean if code == "U0" else content
+        if not effective:
+            continue
+        structured[code] = AuthoritySlot(
+            slot_type=code,
+            content=effective,
+            authority_level=level_by_slot[code],
+            source_layer=source_layer_by_slot[code],
+        )
+    return structured or None
+
+
 # Rest of the existing file content continues...
 
 
@@ -319,15 +425,29 @@ class AirlockAssembler:
             d0_lines.append("</D0>")
             d0_content = "\n".join(d0_lines)
 
-        # 6. Validate slot order (S0→D0→I0→C0→U0)
+        # 5b. EQ-3 — Load E0 exemplars, M0 meta-cognitive mixin, H0 healing
+        # context when the BOM carries them. All three paths are additive:
+        # missing fields leave the corresponding slot empty, preserving the
+        # legacy 5-slot behavior for callers that have not opted in.
+        e0_content = _load_exemplars(registry, bom.exemplars_required)
+        m0_content = _load_meta_cognitive(
+            registry, getattr(bom, "meta_cognitive_mixin_id", None)
+        )
+        h0_content = getattr(bom, "healing_context", None) or ""
+
+        # 6. Validate slot order (S0→D0→I0→E0→C0→M0→U0→H0). E0/M0/H0 are
+        # optional — validator only checks present slots are in canonical
+        # position relative to each other.
         slots = {
             "S0": s0_content,
             "D0": d0_content,
             "I0": i0_content,
+            "E0": e0_content,
             "C0": c0_content,
+            "M0": m0_content,
             "U0": u0_content,
+            "H0": h0_content,
         }
-        # Validate slot order S0→D0→I0→C0→U0
         slot_order = [
             {"name": "S0", "order": 0},
             {"name": "D0", "order": 1},
@@ -343,16 +463,35 @@ class AirlockAssembler:
         neutralizer = AssemblyInjectionNeutralizer()
         u0_clean = neutralizer.neutralize(u0_content)
 
-        # 8. Assemble final strings
-        system_parts = [p for p in [s0_content, d0_content, i0_content, c0_content] if p]
+        # 8. Assemble final strings. Optional slots appear in canonical
+        # order between C0 and U0 for flat-string consumers. Structured
+        # consumers (provider adapters in EQ-2) should use
+        # CompiledPromptArtifact.structured_slots instead.
+        system_parts = [
+            p
+            for p in [s0_content, d0_content, i0_content, e0_content, c0_content, m0_content]
+            if p
+        ]
         final_system = "\n\n".join(system_parts)
         final_user = u0_clean
+        if h0_content:
+            # Healing context travels with the user turn so the re-entry
+            # path keeps it inside the untrusted-content plane rather than
+            # silently hoisting to system.
+            final_user = f"{final_user}\n\n<H0>\n{h0_content}\n</H0>"
 
         # 9. Estimate tokens (rough approximation: 4 chars ≈ 1 token)
         token_estimate = (len(final_system) + len(final_user)) // 4
 
-        # 10. Build artifact and sign (post-RH2B.2: rich SSOT variant)
-        slots_used = [code for code in ("S0", "D0", "I0", "C0", "U0") if slots.get(code)]
+        # 10. Build structured_slots for EQ-2 provider adapters.
+        structured = _build_structured_slots(slots, u0_clean)
+
+        # 11. Build artifact and sign (post-RH2B.2: rich SSOT variant)
+        slots_used = [
+            code
+            for code in ("S0", "D0", "I0", "E0", "C0", "M0", "U0", "H0")
+            if slots.get(code)
+        ]
         unsigned_artifact = CompiledPromptArtifact(
             trace_id=bom.trace_id,
             system_version_hash=bom.system_version_hash,
@@ -362,6 +501,7 @@ class AirlockAssembler:
             tokens=token_estimate,
             slots_used=slots_used,
             signature="",  # Placeholder, computed below via rich's built-in scheme.
+            structured_slots=structured,
         )
 
         # Compute HMAC-SHA256 via the rich variant's canonical scheme.

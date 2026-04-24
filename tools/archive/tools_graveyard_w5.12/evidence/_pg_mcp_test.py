@@ -56,7 +56,7 @@ try:
     else:
         print("MCP server started OK (no response within 3s - normal for stdio transport)")
     print("MCP postgres server RUNNING OK")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"Error communicating: {e}")
 finally:
     proc.terminate()

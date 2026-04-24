@@ -1,8 +1,9 @@
 from pathlib import Path
 import json
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
-proof = Path("docs/reports/wave_b_b5r_chromadb_direct_proof.md")
-qmap = Path("docs/reports/wave_b_b5r_family_query_map.md")
+proof = Path(f"{DOCS_REPORTS_DIR}/wave_b_b5r_chromadb_direct_proof.md")
+qmap = Path(f"{DOCS_REPORTS_DIR}/wave_b_b5r_family_query_map.md")
 raw = Path("artifacts/b5r_proof_raw.json")
 
 print(f"proof report : {proof.stat().st_size:,} bytes  exists={proof.exists()}")

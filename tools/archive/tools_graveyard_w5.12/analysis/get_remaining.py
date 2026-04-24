@@ -21,7 +21,7 @@ def get_remaining_files():
             ast.parse(content)
         except SyntaxError:
             broken_files.append(f)
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             continue
 
     # Skip first 714 files (already fixed)

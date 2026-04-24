@@ -174,7 +174,7 @@ def main():
                             print(f"   Sample: {line.strip()[:80]}...")
                             break
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Failed: {e}")
 
     print("\n📈 Template Statistics Summary:")

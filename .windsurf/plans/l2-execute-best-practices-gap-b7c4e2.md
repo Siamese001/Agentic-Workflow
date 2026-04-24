@@ -269,9 +269,64 @@ Pre-existing lint warnings in `l2_execution_contract.py` (ellipsis in Protocol a
 
 Pre-existing ADG-scaffolding test failures (220 in `tests/unit/agentic_core/L2_execution/**/test_*_adg.py`) all surface as `AttributeError: module 'agentic_core' has no attribute '...'` and are independent of this work — none touch `l2_execution_contract.py` or `call_interceptor.py`.
 
-### W2–W6 — DEFERRED to subsequent execution passes
+### W2 — DONE (2026-04-23) — sandbox hardening primitives
 
-To respect bounded-scope discipline, the remaining waves are captured as deferred scope so the Notion backlog auto-captures them (post-hook). Each line below is a separate capture:
+Three additive modules + 22 tests, no existing module edited.
+
+| Deliverable | Path | Gap |
+|---|---|---|
+| `EgressPolicy` + `EgressDenied` + `egress_scope` | `agentic_core/L2_execution/enforcement/egress_proxy.py` | G2 |
+| `ScopedCredential` + `CredentialMint` (HMAC-signed, nonce-revocable) | `agentic_core/L2_execution/capability/scoped_credential_mint.py` | G3 |
+| `StepIdentity` + `derive_step_identity` (subset-enforced) | `agentic_core/L2_execution/capability/step_scoped_identity.py` | G16 |
+| Tests (22) | `tests/unit/agentic_core/L2_execution/test_l2_safety_w2.py` | verification |
+
+### W3 — DONE (2026-04-23) — tool-contract enrichment
+
+Single additive module + 18 tests.
+
+| Deliverable | Path | Gap |
+|---|---|---|
+| `ThoughtSignature` + `make_thought_signature` registry | `agentic_core/L2_execution/types/l2_tool_enrichment.py` | G4 |
+| `ToolUseExample` 1..5 bounded registry | same file | G5 |
+| `ExecutionMarkers` (parallel_safe / idempotent / retry) | same file | G10 |
+| Tests (18) | `tests/unit/agentic_core/L2_execution/test_l2_safety_w3.py` | verification |
+
+### W4 — DONE (2026-04-23) — context + orchestration controls
+
+Three additive modules + 19 tests.
+
+| Deliverable | Path | Gap |
+|---|---|---|
+| `ToolSearchIndex` (TF-IDF, stdlib only, k-capped) | `agentic_core/L2_execution/reasoning/tool_search.py` | G6 |
+| `ProgrammaticToolRunner` + `SubContextResult` + `SubContextToolError` | `agentic_core/L2_execution/reasoning/programmatic_tool_runner.py` | G7 |
+| `KillSwitchRegistry` + `KillSwitchTripped` (lineage-scoped, idempotent) | `agentic_core/L2_execution/enforcement/kill_switch.py` | G12 |
+| Tests (19) | `tests/unit/agentic_core/L2_execution/test_l2_safety_w4.py` | verification |
+
+### W5 — DONE (2026-04-23) — observability + schema + seal
+
+Four additive modules + 19 tests.
+
+| Deliverable | Path | Gap |
+|---|---|---|
+| `LLMCallEnvelope` + `audit_llm_call` (non-blocking temp-0 audit) | `agentic_core/L2_execution/enforcement/llm_call_audit.py` | G11 |
+| `BehaviorMonitor` (tool-sequence / retry-storm / cost-drift) | `agentic_core/L2_execution/enforcement/runtime_behavior_monitor.py` | G13 |
+| `SealSchema` + `validate_sealed_artifact` + `SealValidationError` | `agentic_core/L2_execution/enforcement/seal_schema_validator.py` | G14 |
+| `GradingBundle` + `GradingSlot` + `GradingTarget` | `agentic_core/L2_execution/types/trace_grading_hooks.py` | G15 |
+| Tests (19) | `tests/unit/agentic_core/L2_execution/test_l2_safety_w5.py` | verification |
+
+### W6 — DONE (2026-04-23) — doctrine sync
+
+- v33 doctrine appended with `[APPENDIX A] L2 BEST-PRACTICES HARDENING MODULES (2026-Q2)` — lists every new module + gap + E-phase touched. Canonical E1-E5 flow untouched.
+- Notion Wave/Phase Convergence rows for W2–W6 set to **Status=Done** via `tools/debug/_l2_gap_notion_mark_done.py` (5 rows patched, 0 skipped).
+- Integration run: `python -m pytest tests/unit/agentic_core/L2_execution/test_l2_safety_w1.py … test_l2_safety_w5.py` → **102 passed**.
+
+### Final coverage of §5 Gap Register
+
+All 16 gaps closed by additive primitives. Runtime wiring is complete for G8 (via W1-P1.3); other gaps ship as load-bearing primitives that the next wave of targeted wiring plans can call. No existing consumers were broken, no existing tests regressed.
+
+### Legacy deferred markers (now superseded by completed waves)
+
+Preserved for audit of what was originally captured to the Notion backlog. Each line below was posted to Wave/Phase Convergence and is now Status=Done:
 
 `DEFERRED_SCOPE: plan=l2-execute-best-practices-gap-b7c4e2 wave=W1-P1.3 phase=P1.3 layer=L2 fan_in=14 surface=Execution coverage_gap_pct=100.0 est_tokens=7000 reason=Wire evaluate_work_order into l2_agent_wrappers run_l2_phases and call_interceptor`
 

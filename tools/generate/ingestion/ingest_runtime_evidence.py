@@ -29,6 +29,7 @@ import sys
 import time
 from pathlib import Path
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 
 def _discover_repo_root(start: Path) -> Path:
@@ -269,8 +270,8 @@ def collect_evidence_docs(repo_root: Path) -> list[dict]:
     """Load narrative evidence/RCA/runbook markdown docs."""
     docs = []
     md_sources = [
-        ("docs/reports/evidence", "evidence_report"),
-        ("docs/reports/rcas", "rca_report"),
+        (f"{DOCS_REPORTS_DIR}/evidence", "evidence_report"),
+        (f"{DOCS_REPORTS_DIR}/rcas", "rca_report"),
         ("docs/rca", "rca_report"),
         ("docs/runbooks", "runbook"),
     ]

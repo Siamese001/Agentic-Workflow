@@ -26,7 +26,7 @@ def test_redis_connection() -> bool:
         r = redis.from_url("redis://localhost:6379/0", decode_responses=True)
         r.ping()
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Redis connection failed: {e}")
         return False
 
@@ -53,7 +53,7 @@ def test_adg_mcp_server_direct() -> dict[str, Any]:
             result["tool_count"] = len(tools)
 
         return result
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "import_success": False,
             "server_created": False,
@@ -87,7 +87,7 @@ def test_adg_mcp_server_subprocess() -> dict[str, Any]:
             "error": "timeout",
             "returncode": -1,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "subprocess_success": False,
             "error": str(e),
@@ -117,7 +117,7 @@ def test_adg_status_with_redis_down() -> dict[str, Any]:
             "is_fresh": result.get("is_fresh", False),
             "result": result,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -148,7 +148,7 @@ def test_adg_cache_meta_with_redis_down() -> dict[str, Any]:
             "has_reason": "reason" in result,
             "result": result,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -194,7 +194,7 @@ def test_adg_sqlite_fallback() -> dict[str, Any]:
             "edge_count": edge_count,
             "file_size_mb": round(latest_sqlite.stat().st_size / (1024 * 1024), 2),
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -227,7 +227,7 @@ def test_ingest_script_fallback() -> dict[str, Any]:
             "stdout": result.stdout[:300],
             "stderr": result.stderr[:300],
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -263,7 +263,7 @@ def test_mcp_config_fallback() -> dict[str, Any]:
             "cwd": adg_redis_config.get("cwd", ""),
             "env_vars": list(adg_redis_config.get("env", {}).keys()),
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),

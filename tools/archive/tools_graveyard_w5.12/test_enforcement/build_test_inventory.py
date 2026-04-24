@@ -249,7 +249,7 @@ def scan_test_file(file_path: Path) -> list[TestInventory]:
     except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         print(f"Syntax error in {file_path}: {e}")
         return []
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error scanning {file_path}: {e}")
         return []
 

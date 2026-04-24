@@ -15,7 +15,7 @@ Signals (any one is a candidate; count must exceed threshold to flag):
 
 Anti-signals (presence of any = NOT a miss):
     - DECISION_CAPTURED: marker line
-    - AUTHOR_GATE_PACKET: or HITL_PACKET: block
+    - AUTHOR_GATE_PACKET: block (HITL_PACKET: legacy alias also accepted)
     - ask_user_question tool call
     - Trivial-tier markers ("T0", "T1", "trivial", "single-file")
     - Explicit user directive phrases ("user said", "as requested")

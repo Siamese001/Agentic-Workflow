@@ -12,7 +12,7 @@ def test_import(module_name, class_name):
     try:
         __import__(module_name, fromlist=[class_name])
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  Cannot import {class_name} from {module_name}: {e}")
         return False
 
@@ -141,7 +141,7 @@ def fix_init_file_minimal(init_path):
 
         print(f"Created minimal {init_path} with {len(working_imports)} working imports")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error fixing {init_path}: {e}")
         return False
 

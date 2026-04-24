@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from ..token_estimator import ContextWindowEstimator, TokenEstimate
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class PlanningPreflightHook:
 
     def __init__(self, estimator: ContextWindowEstimator | None = None, budget_file: Path | None = None):
         self.estimator = estimator or ContextWindowEstimator()
-        self.budget_file = budget_file or Path("docs/reports/plans/token_budget_log.json")
+        self.budget_file = budget_file or Path(f"{DOCS_REPORTS_DIR}/plans/token_budget_log.json")
         self.budget_history = []
         self._load_budget_history()
 
@@ -35,7 +36,7 @@ class PlanningPreflightHook:
             try:
                 with open(self.budget_file) as f:
                     self.budget_history = json.load(f)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Failed to load budget history: {e}")
                 self.budget_history = []
 
@@ -45,7 +46,7 @@ class PlanningPreflightHook:
             self.budget_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.budget_file, "w") as f:
                 json.dump(self.budget_history, f, indent=2)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Failed to save budget history: {e}")
 
     def preflight_check(

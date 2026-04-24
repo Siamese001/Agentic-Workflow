@@ -17,7 +17,7 @@ If solving a problem took more than **15 minutes** of real work, spend up to **3
 | Non-obvious bug fix / RCA with recurring pattern | ✅ `ProceduralPattern:*` | ⚠️ only if user-audit needed | — |
 | Architectural decision / ADR | ⚠️ short invariant entity | ✅ ADR Registry row | — |
 | Wave/phase status change on a plan | ✅ `Project:*` observation | ✅ Wave/Phase Convergence row | — |
-| HITL / Author-Gate decision resolved | — | ✅ HITL Decision Ledger row | — |
+| Author-Gate decision resolved | — | ✅ Author-Gate Decision Ledger row | — |
 | MCP config or gate behavior change | — | ✅ MCP Registry patch | — |
 | New SC/AP violations emitted by ADG | — | ✅ SC/AP Violation Backlog row(s) | — |
 | New anti-pattern suppression baseline | — | ✅ Anti-Pattern Burndown row | — |
@@ -56,7 +56,7 @@ Cascade MUST write back without waiting for a prompt when any of these happen in
 1. **New `docs/architecture/adr/ADR-*.md`** → Notion ADR Registry row (`API-post-page`)
 2. **Modified `.windsurf/mcp_config.json`** → Notion MCP Registry patch/post
 3. **Gate behavior changed in `.windsurf/scripts/*_gate.py`** → Notion MCP Registry Notes field update
-4. **Resolved scored `ask_user_question`** → Notion HITL Decision Ledger row
+4. **Resolved scored `ask_user_question`** → Notion Author-Gate Decision Ledger row
 5. **`generate_full_adg.py` produced NEW SC/AP defects** → Notion SC/AP Violation Backlog row per new violation
 6. **Created/modified `.windsurf/plans/*-<6hex>.md`** → Memory `Project:<plan-slug>` observation with current status + blocker
 7. **Diagnosed a recurring bug or anti-pattern** → Memory `ProceduralPattern:*` entity with diagnosis + fix recipe

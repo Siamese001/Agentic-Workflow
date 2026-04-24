@@ -47,7 +47,7 @@ def validate_schema_fields(file_path: str) -> tuple[bool, str, str]:
 
     except subprocess.TimeoutExpired:
         return False, "", "Schema validation timed out"
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False, "", f"Error running schema validation: {e}"
 
 

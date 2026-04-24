@@ -163,7 +163,7 @@ def main():
             print(f"{status}: {rel_path} ({len(violations)} violations, consts: {sorted(needed)})")
             if changed:
                 fixed += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise
             errors.append((rel_path, str(e)))
             print(f"ERROR: {rel_path}: {e}")

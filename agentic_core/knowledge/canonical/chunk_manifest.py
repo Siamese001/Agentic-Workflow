@@ -146,6 +146,13 @@ class ChunkManifest:
         Dense vector over the enriched contextual representation.
     custom_attributes : dict
         Arbitrary corpus-specific attributes.
+    situated_context : str
+        Anthropic-style narrative context (50–100 tokens) explaining where the
+        chunk sits in its source document, prepended to ``raw_text`` at index
+        time. Empty string when contextualization is disabled. Source of truth
+        for downstream rerankers, eval harnesses, and per-sentence grounding
+        checks. Added in schema 1.1; reads from older 1.0 manifests default to
+        the empty string so old/new indexes coexist during rollout (ADR-045).
     """
 
     chunk_id: str
@@ -156,13 +163,16 @@ class ChunkManifest:
     child_ids: list[str] = field(default_factory=list)
     acl: AclSidecar = field(default_factory=AclSidecar)
     freshness: FreshnessSidecar = field(default_factory=FreshnessSidecar)
-    schema_version: str = "1.0"
+    # Schema 1.1 (2026-04-24, ADR-045): adds situated_context. Old 1.0 manifests
+    # remain readable; from_dict defaults missing situated_context to "".
+    schema_version: str = "1.1"
     embedding_schema_version: str = "1.0"
     provenance: dict[str, Any] = field(default_factory=dict)
     modality: str = "text"
     raw_text_vector: list[float] | None = None
     contextual_text_vector: list[float] | None = None
     custom_attributes: dict[str, Any] = field(default_factory=dict)
+    situated_context: str = ""
 
     def __post_init__(self) -> None:
         if not self.content_hash and self.raw_text:
@@ -194,6 +204,7 @@ class ChunkManifest:
             "provenance": self.provenance,
             "modality": self.modality,
             "custom_attributes": self.custom_attributes,
+            "situated_context": self.situated_context,
         }
 
     @classmethod
@@ -225,11 +236,17 @@ class ChunkManifest:
             child_ids=data.get("child_ids", []),
             acl=acl,
             freshness=freshness,
+            # Default to "1.0" so a serialized payload that omits schema_version
+            # is treated as legacy. New writers stamp "1.1" via the dataclass
+            # default; readers see the actual stamped value here.
             schema_version=data.get("schema_version", "1.0"),
             embedding_schema_version=data.get("embedding_schema_version", "1.0"),
             provenance=data.get("provenance", {}),
             modality=data.get("modality", "text"),
             custom_attributes=data.get("custom_attributes", {}),
+            # situated_context: schema 1.1 field. Defaults to empty string
+            # for back-compat reads of 1.0 manifests (ADR-045).
+            situated_context=data.get("situated_context", ""),
         )
         return manifest
 

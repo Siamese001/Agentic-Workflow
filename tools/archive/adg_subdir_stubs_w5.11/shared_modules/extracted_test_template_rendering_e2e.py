@@ -417,7 +417,7 @@ class TestCatalogRendererIntegration:
             try:
                 result = renderer.render(entry.template_name, context=superset_ctx, validate=False)
                 assert len(result) > 10, f"Empty render for {entry.template_name}"
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 failures.append(f"{entry.template_name}: {e}")
         assert not failures, f"{len(failures)} INSTRUCTIONAL templates failed to render:\n" + "\n".join(
             failures,
@@ -449,7 +449,7 @@ class TestCatalogRendererIntegration:
                         validate=False,
                     )
                     assert len(result) > 10
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     pytest.fail(f"{agent} → {entry.template_name}: {e}")
 
 
@@ -483,7 +483,7 @@ class TestSchemaValidation:
             try:
                 schema = renderer.get_template_schema(jinja.name)
                 assert schema.description, f"No description for {jinja.name}"
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 failures.append(f"{jinja.name}: {e}")
         assert not failures, "Schema parse failures:\n" + "\n".join(failures)
 
@@ -888,7 +888,7 @@ class TestRendererPathCorrectness:
             try:
                 result = renderer.render(entry.template_name, context=superset_ctx, validate=False)
                 assert len(result) > 10, f"Empty render for {entry.template_name}"
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 failures.append(f"{entry.template_name}: {e}")
         assert not failures, f"{len(failures)} INSTRUCTIONAL templates failed to render:\n" + "\n".join(
             failures,
@@ -920,7 +920,7 @@ class TestRendererPathCorrectness:
                         validate=False,
                     )
                     assert len(result) > 10
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     pytest.fail(f"{agent} → {entry.template_name}: {e}")
 
     def test_schema_parse_for_code_healing(self, renderer: SovereignPromptRenderer):
@@ -950,7 +950,7 @@ class TestRendererPathCorrectness:
             try:
                 schema = renderer.get_template_schema(jinja.name)
                 assert schema.description, f"No description for {jinja.name}"
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 failures.append(f"{jinja.name}: {e}")
         assert not failures, "Schema parse failures:\n" + "\n".join(failures)
 

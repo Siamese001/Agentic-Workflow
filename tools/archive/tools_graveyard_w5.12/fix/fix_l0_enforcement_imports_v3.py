@@ -22,7 +22,7 @@ def get_module_exports(filepath):
                 if not node.name.startswith("_"):  # Only export public functions
                     exports.append(node.name)
         return exports
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error parsing {filepath}: {e}")
         return []
 
@@ -213,7 +213,7 @@ def fix_init_file(init_path):
         total_exports = sum(len(exports) for exports in all_exports.values())
         print(f"Fixed {init_path} with {total_exports} module-level exports")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error fixing {init_path}: {e}")
         return False
 

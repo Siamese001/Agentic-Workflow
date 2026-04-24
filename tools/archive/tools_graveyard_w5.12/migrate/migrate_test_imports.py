@@ -63,7 +63,7 @@ class TestImportMigrator:
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  ❌ Failed to parse {file_path}: {e}")
             self.failed_files.append((str(file_path), str(e)))
             return False

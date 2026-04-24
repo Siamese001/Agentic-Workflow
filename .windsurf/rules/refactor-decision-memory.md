@@ -13,7 +13,7 @@ description: Before opening a Author-Gate packet for any refactor-class decision
 
 ## Scope
 
-This rule fires **before** Author-Gate for these decision classes (defined in `author-gate-enforcement.md` §HITL-1):
+This rule fires **before** Author-Gate for these decision classes (defined in `author-gate-decision-points.md` §AG-1):
 
 - Architecture choice (§1.1)
 - Refactoring scope (§1.2)
@@ -74,6 +74,6 @@ same constraint class, validated by tests.
 All scoring, filtering, dominance, and option-shape rules live in:
 
 - `author-gate-enforcement.md` — core pipeline (always_on)
-- `author-gate-decision-points.md` — full doctrine (model_decision, §HITL-1 through §HITL-11)
+- `author-gate-decision-points.md` — full doctrine (model_decision, §AG-1 through §AG-11)
 
 This rule governs **only** the precedent lookup layer — not the decision policy itself.

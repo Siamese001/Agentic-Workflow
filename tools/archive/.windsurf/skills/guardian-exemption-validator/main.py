@@ -73,7 +73,7 @@ def validate_guardian_exemption(comment: str, file_path: str) -> tuple[bool, lis
 
             if result.returncode != 0 or not result.stdout.strip():
                 issues.append("Production code requires HITL approval for guardian exemptions")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             issues.append(f"Failed to check HITL approval: {e}")
 
         # Check exemption ceiling
@@ -87,7 +87,7 @@ def validate_guardian_exemption(comment: str, file_path: str) -> tuple[bool, lis
 
             if result.returncode != 0:
                 issues.append("Exceeds guardian exemption ceiling - commit will be blocked")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             issues.append(f"Failed to check exemption ceiling: {e}")
 
     # Validate exemption type is known

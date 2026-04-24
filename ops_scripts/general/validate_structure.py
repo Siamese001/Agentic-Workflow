@@ -25,7 +25,7 @@ try:
         TESTS_DIR as _TESTS_DIR,
         TOOLS_DIR as _TOOLS_DIR,
     )
-except Exception:
+except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
     _AGENTIC_CORE_DIR = "agentic_core"
     _APPS_LIC_DIR = "apps_lic"
     _APPS_RG_DIR = "apps_rg"
@@ -137,7 +137,7 @@ def _normalize_path(file_path: str | Path) -> str:
         root = _resolve_project_root()
         if path.is_absolute():
             path = path.resolve().relative_to(root)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         pass
     return path.as_posix()
 

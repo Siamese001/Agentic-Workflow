@@ -452,7 +452,7 @@ def main():
                 results["fixed"] += 1
             else:
                 results["skipped"] += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results["errors"].append({"file": fp, "error": str(e)})
 
     # Fix stub patterns
@@ -468,7 +468,7 @@ def main():
                 results["fixed"] += 1
             else:
                 results["skipped"] += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results["errors"].append({"file": fp, "error": str(e)})
 
     # Fix pass/flag patterns
@@ -484,7 +484,7 @@ def main():
                 results["fixed"] += 1
             else:
                 results["skipped"] += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results["errors"].append({"file": fp, "error": str(e)})
 
     print(f"\n{'=' * 60}")

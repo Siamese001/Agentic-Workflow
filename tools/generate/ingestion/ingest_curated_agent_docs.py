@@ -103,6 +103,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
+from agentic_core.L0_routing.config.path_constants import ADR_DIR
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -185,7 +186,7 @@ CURATED_SOURCES: list[dict] = [
     # ── Internal canonical ADRs ────────────────────────────────────────────
     {
         "source_type": "local",
-        "path": "docs/architecture/adr/adr-0043-structural-agentic-checks.md",
+        "path": f"{ADR_DIR}/adr-0043-structural-agentic-checks.md",
         "title": "ADR-0043: Structural Conformance & Agentic Anti-Pattern Checks",
         "doc_type": "markdown",
         "doc_family": "adr",
@@ -199,7 +200,7 @@ CURATED_SOURCES: list[dict] = [
     },
     {
         "source_type": "local",
-        "path": "docs/architecture/adr/adr-002-interface-protocol-first.md",
+        "path": f"{ADR_DIR}/adr-002-interface-protocol-first.md",
         "title": "ADR-002: Interface & Protocol-First Design",
         "doc_type": "markdown",
         "doc_family": "adr",
@@ -213,7 +214,7 @@ CURATED_SOURCES: list[dict] = [
     },
     {
         "source_type": "local",
-        "path": "docs/architecture/adr/adr-0042-skills-consolidation.md",
+        "path": f"{ADR_DIR}/adr-0042-skills-consolidation.md",
         "title": "ADR-0042: Skills Consolidation",
         "doc_type": "markdown",
         "doc_family": "adr",
@@ -227,7 +228,7 @@ CURATED_SOURCES: list[dict] = [
     },
     {
         "source_type": "local",
-        "path": "docs/architecture/adr/ADR-018-chromadb-as-canonical-vector-store.md",
+        "path": f"{ADR_DIR}/ADR-018-chromadb-as-canonical-vector-store.md",
         "title": "ADR-018: ChromaDB as Canonical Vector Store",
         "doc_type": "markdown",
         "doc_family": "adr",
@@ -241,7 +242,7 @@ CURATED_SOURCES: list[dict] = [
     },
     {
         "source_type": "local",
-        "path": "docs/architecture/adr/ADR-019-adg-materialized-views.md",
+        "path": f"{ADR_DIR}/ADR-019-adg-materialized-views.md",
         "title": "ADR-019: ADG Materialized Views",
         "doc_type": "markdown",
         "doc_family": "adr",

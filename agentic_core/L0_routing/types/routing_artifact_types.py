@@ -460,6 +460,109 @@ L0_ORCHESTRATED_ROUTES: frozenset[L0Route] = frozenset({L0Route.R3R4_MANAGED})
 """Routes that enter L3 orchestration with ≥1 L2 steps."""
 
 
+# =============================================================================
+# W1b.P1 — Closed vocabulary for L0RouteContract.reason_codes.
+#
+# Plan: .windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W1b.P1.
+#
+# BACK-COMPAT CONTRACT: L0RouteContract.reason_codes remains ``tuple[str, ...]``
+# (no shape change). Producers SHOULD use RouteReasonCode.<MEMBER>.value so the
+# emitted string is drawn from a closed, versioned vocabulary. Consumers that
+# want typed parsing can call RouteReasonCode(raw_string). Because str-enum
+# members serialize to their ``.value`` string verbatim, existing equality
+# tests like ``reason_codes == ("d1_exact_hit",)`` continue to pass.
+#
+# String values align with the bare-string codes already emitted by:
+#   - agentic_core.L0_routing.reasoning.route_gates (d1/d2 hits)
+#   - agentic_core.runtime.contracts.abstain_contract R5_REASON_* (W3.P2)
+# =============================================================================
+
+
+class RouteReasonCode(str, Enum):
+    """Finite vocabulary for :attr:`L0RouteContract.reason_codes` entries.
+
+    Grouping (by L0 arm — v11 §ROUTE DECISION SWITCH):
+
+    * R1A (exact cache)  : :attr:`D1_EXACT_HIT`
+    * R1B (semantic)     : :attr:`D2_SEMANTIC_HIT`
+    * R3 (grounded read) : :attr:`D3_GROUNDING_REQUIRED`, :attr:`D3_COVERAGE_BELOW_FLOOR`,
+      :attr:`D3_BELOW_GROUNDING_THRESHOLD`, :attr:`D3_NO_GROUNDING_SIGNAL`
+    * R4 (single action) : :attr:`D4_ACTION_REQUIRED`, :attr:`D4_WRITE_SCOPE`
+    * R5 (fallback)      : :attr:`R5_LOW_CONFIDENCE`, :attr:`R5_OOD_DETECTED`,
+      :attr:`R5_BUDGET_EXCEEDED`, :attr:`R5_CIRCUIT_BREAKER_OPEN`,
+      :attr:`R5_CLARIFICATION_NEEDED`, :attr:`R5_TOXICITY_FLAGGED`
+    * generic            : :attr:`GATE_HIT`, :attr:`PASS_THROUGH`
+
+    New codes are added only with an ADR or a wave-plan entry.
+    """
+
+    # --- R1A / R1B terminal cache hits (route_gates emits these) ---
+    D1_EXACT_HIT = "d1_exact_hit"
+    D2_SEMANTIC_HIT = "d2_semantic_hit"
+
+    # --- R3 grounded-read triggers (check_r3_grounding_gate — W3.P1) ---
+    D3_GROUNDING_REQUIRED = "d3_grounding_required"
+    D3_COVERAGE_BELOW_FLOOR = "d3_coverage_below_floor"
+    D3_BELOW_GROUNDING_THRESHOLD = "below_grounding_threshold"
+    D3_NO_GROUNDING_SIGNAL = "no_grounding_signal"
+
+    # --- R4 action triggers (reserved for future wiring) ---
+    D4_ACTION_REQUIRED = "d4_action_required"
+    D4_WRITE_SCOPE = "d4_write_scope"
+
+    # --- R5 abstain triggers (plan_abstain_multi_signal — W3.P2) ---
+    R5_LOW_CONFIDENCE = "r5_low_confidence"
+    R5_OOD_DETECTED = "r5_ood_detected"
+    R5_BUDGET_EXCEEDED = "r5_budget_exceeded"
+    R5_CIRCUIT_BREAKER_OPEN = "r5_circuit_breaker_open"
+    R5_CLARIFICATION_NEEDED = "r5_clarification_needed"
+    R5_TOXICITY_FLAGGED = "r5_toxicity_flagged"
+
+    # --- generic (PathRouter gate-hit pass-through) ---
+    GATE_HIT = "gate_hit"
+    PASS_THROUGH = "pass_through"
+
+
+def validate_reason_codes(
+    codes: tuple[str, ...] | tuple[RouteReasonCode, ...],
+    *,
+    strict: bool = False,
+) -> tuple[str, ...]:
+    """Normalize reason_codes to their string form and optionally validate.
+
+    Args:
+        codes: Mixed tuple of strings or :class:`RouteReasonCode` members.
+        strict: When True, every entry MUST resolve to a known
+            :class:`RouteReasonCode` value; unknown strings raise
+            :class:`ValueError`. When False (default, back-compat), unknown
+            strings pass through unchanged.
+
+    Returns:
+        Tuple of plain strings suitable for direct assignment to
+        :attr:`L0RouteContract.reason_codes`.
+
+    Raises:
+        ValueError: ``strict=True`` and any entry is not a known code.
+    """
+    normalized: list[str] = []
+    known = {code.value for code in RouteReasonCode}
+    for entry in codes:
+        if isinstance(entry, RouteReasonCode):
+            normalized.append(entry.value)
+            continue
+        if not isinstance(entry, str):
+            raise ValueError(
+                f"reason_codes entries must be str or RouteReasonCode, got {type(entry).__name__}",
+            )
+        if strict and entry not in known:
+            raise ValueError(
+                f"reason_code {entry!r} is not in the closed RouteReasonCode vocabulary; "
+                f"add it to RouteReasonCode (with an ADR) or pass strict=False.",
+            )
+        normalized.append(entry)
+    return tuple(normalized)
+
+
 FreshnessClass = Literal["fresh", "bounded", "stale_ok", "volatile"]
 """v9 L0 ingress bullet ``Enforce expiry / freshness requirements``."""
 
@@ -540,6 +643,7 @@ __all__ = [
     "ResultArtifact",
     "RoutePath",
     "RouteDecisionArtifact",
+    "RouteReasonCode",
     "RoutingRationale",
     "SelfHealingTrigger",
     "SeverityEnum",
@@ -548,4 +652,5 @@ __all__ = [
     "TokenControlArtifact",
     "TokenGateResult",
     "VigilanceTier",
+    "validate_reason_codes",
 ]

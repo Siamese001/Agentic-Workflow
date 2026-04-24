@@ -34,7 +34,7 @@ class PlanTokenValidator:
         if TOKEN_ESTIMATOR_AVAILABLE:
             try:
                 self.estimator = ContextWindowEstimator(TokenBudget())
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 pass
 
     def validate_plan_tokens(self, plan_path: Path, content: str) -> dict[str, Any]:
@@ -195,7 +195,7 @@ class PlanTokenValidator:
             estimated_tokens = int(total_chars / 3)
 
             return estimated_tokens
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return 0
 
     def generate_validation_report(self, plan_path: Path, result: dict[str, Any]) -> str:

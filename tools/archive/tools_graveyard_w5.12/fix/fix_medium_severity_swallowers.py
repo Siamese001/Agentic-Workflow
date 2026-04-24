@@ -76,7 +76,7 @@ class MediumSeveritySilentSwallowerFixer:
                         if self.fixes_applied % 20 == 0:
                             print(f"    Fixed {self.fixes_applied} broad exception violations...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
@@ -120,7 +120,7 @@ class MediumSeveritySilentSwallowerFixer:
                         if self.fixes_applied % 10 == 0:
                             print(f"    Fixed {self.fixes_applied} multiple exception violations...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
@@ -184,7 +184,7 @@ class MediumSeveritySilentSwallowerFixer:
                 else:
                     print(f"    ⚠️  Line {line_no} not found in {file_path}")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    ❌ Error fixing {file_path}: {e}")
 

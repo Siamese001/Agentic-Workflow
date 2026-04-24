@@ -57,7 +57,7 @@ def check_file(filepath: pathlib.Path, strict: bool = False) -> list[str]:
 
     try:
         source = filepath.read_text(encoding="utf-8", errors="replace")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return [f"{rel}: Cannot read file: {e}"]
 
     # Rule 4: No syntax errors

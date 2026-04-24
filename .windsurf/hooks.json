@@ -128,6 +128,11 @@
         "show_output": false
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_mcp_preflight_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_long_command_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false

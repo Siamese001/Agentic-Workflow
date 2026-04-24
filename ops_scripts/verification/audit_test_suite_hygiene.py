@@ -156,7 +156,7 @@ def _check_broken_assertions(
     for target in importorskip_targets:
         try:
             mod = importlib.import_module(target)
-        except Exception:  # noqa: BLE001 - defensive; target may be unavailable
+        except Exception:  # noqa: BLE001 - defensive; target may be unavailable  # guardian: allow-broad-exception -- offline tooling, reports failure
             continue
         found = [s for s in symbol_candidates if hasattr(mod, s)]
         if found:

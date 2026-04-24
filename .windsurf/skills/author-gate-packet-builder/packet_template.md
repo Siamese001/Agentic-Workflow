@@ -40,7 +40,7 @@ MUST be visually distinguished:
 - `ask_user_question` option **label**: prefix with `⭐ Recommended — ` then the title.
   - Example: `⭐ Recommended — Minimal scope (extract SovereignBaseAgent only)`
 - `ask_user_question` option **description**: first line is `[RECOMMENDED ⭐ confidence=0.88]`
-  followed by the HITL-10 fields on subsequent lines.
+  followed by the AG-10 fields on subsequent lines.
 - Non-recommended surfaced options: plain label, description starts with
   `[confidence=0.NN]` (no star).
 - Suppressed options (below threshold / dominance-fired / non-distinct) are NOT
@@ -50,7 +50,7 @@ Rationale: the star is a fast-parse visual affordance — users can pick the
 recommended path at a glance without re-reading the header. It also makes
 "did I override the recommendation?" a measurable event (`override_vs_recommendation`).
 
-## Per-Option Shape (HITL-10 fields)
+## Per-Option Shape (AG-10 fields)
 
 Every option MUST supply these 10 fields. `emit_packet.py` validates presence
 before writing the packet; missing fields → schema error.

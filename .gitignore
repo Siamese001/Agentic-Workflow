@@ -109,3 +109,7 @@ runtime_adg//
 
 # .env file (added 2026-04-23 after secret push-block incident)
 .env
+
+.env.local.backup
+.env.local
+.env.*.backup

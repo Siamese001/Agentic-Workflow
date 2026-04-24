@@ -20,6 +20,12 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     assert_no_persistent_write,
     safe_shutil_move,
 )
+from agentic_core.L2_execution.enforcement.synthesis_bridge import (
+    SynthesisBridgeError,
+    SynthesisProvenance,
+    wrap_synthesis_output,
+)
+from agentic_core.L2_execution.reasoning.compiled_artifact import AuthoritySlot
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -530,6 +536,61 @@ class CoreSynthesisExecutor:
 
         return "\n".join(report)
 
+    # ------------------------------------------------------------------
+    # RH6B.3 — governed-synthesis bridge adoption
+    # Plan: ``prompt-reception-followups-a7b3c4.md`` phase W6b RH6B.3.
+    # ------------------------------------------------------------------
+
+    def build_governed_slot(
+        self,
+        report_text: str,
+        *,
+        trace_ids: tuple[str, ...] = (),
+    ) -> AuthoritySlot | None:
+        """Wrap the synthesis report into a governed ``AuthoritySlot``.
+
+        Routes the free-text report through
+        :func:`agentic_core.L2_execution.enforcement.synthesis_bridge.wrap_synthesis_output`
+        so downstream prompt-assembly consumers receive a provenance-stamped
+        ``C0`` (INFO-authority) slot instead of raw prose. Adoption is
+        opt-in and non-breaking: callers that ignore the returned slot see
+        no behaviour change.
+
+        Parameters
+        ----------
+        report_text
+            The synthesis report text (typically the output of
+            :meth:`generate_synthesis_report`).
+        trace_ids
+            Upstream trace IDs the report summarizes, propagated into the
+            slot's ``SynthesisProvenance.source_trace_ids`` field.
+
+        Returns
+        -------
+        AuthoritySlot | None
+            The governed slot, or ``None`` when the bridge rejects the
+            input (empty text, non-positive budget, etc.). Callers should
+            log the None case but MUST NOT treat it as fatal — the CLI
+            report write still succeeds.
+        """
+        if not report_text or not report_text.strip():
+            return None
+        provenance = SynthesisProvenance(
+            producer="ops_scripts.dev_tools.L0_routing_scripts.core_synthesis_executor",
+            source_trace_ids=trace_ids,
+            model="",
+            synthesis_kind="plan",
+        )
+        try:
+            return wrap_synthesis_output(
+                text=report_text,
+                provenance=provenance,
+                source_layer="L3",
+            )
+        except SynthesisBridgeError as exc:
+            print(f"⚠️ synthesis_bridge rejected report: {exc}")
+            return None
+
 
 def main():
     """Execute the synthesis and restructure."""
@@ -546,6 +607,22 @@ def main():
             f.write(report)
 
         print("📄 Execution report saved: PHASE20_SYNTHESIS_EXECUTION_REPORT.md")
+
+        # RH6B.3: wrap the report into a governed C0 slot so downstream
+        # prompt-assembly consumers can feed synthesis through the
+        # governed pipeline instead of bypassing it with raw prose.
+        governed_slot = executor.build_governed_slot(report)
+        if governed_slot is not None:
+            meta = governed_slot.metadata
+            print(
+                "🛡️  Governed slot emitted: slot_type={slot} bytes={bytes} "
+                "truncated={trunc} producer={producer}".format(
+                    slot=governed_slot.slot_code,
+                    bytes=meta.get("synthesis_original_bytes"),
+                    trunc=meta.get("synthesis_truncated"),
+                    producer=meta.get("synthesis_producer"),
+                )
+            )
         print("🎯 Final Sovereign Engine established!")
 
     else:

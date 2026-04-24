@@ -85,7 +85,7 @@ def main():
     except KeyboardInterrupt:  # guardian: allow-broad-exception -- graceful shutdown on user interrupt
         print("\n\n✅ Server stopped")
         sys.exit(0)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"\n❌ Error starting server: {e}")
         sys.exit(1)
 

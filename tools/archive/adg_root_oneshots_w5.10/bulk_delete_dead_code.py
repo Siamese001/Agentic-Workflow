@@ -193,7 +193,7 @@ def cluster_dead_code_via_graph(limit: int = 1000) -> dict:
             "total_clusters": len(communities),
         }
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Graph-based clustering failed: {e}, falling back to SQL query")
         return {"clusters": [], "method": "fallback", "error": str(e)}
 

@@ -254,7 +254,7 @@ def analyze_template_quality():
             else:
                 print("   ✅ No issues found")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ ERROR: {e}")
             results.append(
                 {

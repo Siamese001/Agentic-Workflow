@@ -191,7 +191,7 @@ def test_sequential_thinking_prompts():
                     }
                 )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ Test failed: {e}")
             results.append(
                 {
@@ -411,7 +411,7 @@ def main():
         print(f"Sequential Thinking Usage: {seq_metrics['total_usage']}")
         print(f"Success Rate: {seq_metrics['success_rate']:.1%}")
         print(f"Total Tokens: {seq_metrics['total_tokens']:,}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Could not fetch final stats: {e}")
 
 

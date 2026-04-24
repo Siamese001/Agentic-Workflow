@@ -114,7 +114,7 @@ class CIPlanValidator:
             # Additional validations
             self._validate_plan_content(content, result)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["issues"].append(f"Error reading plan: {str(e)}")
             result["valid"] = False
 

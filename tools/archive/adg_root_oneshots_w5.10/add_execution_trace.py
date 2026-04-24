@@ -193,7 +193,7 @@ def instrument_file(filepath: Path, dry_run: bool = True) -> dict[str, Any]:
     try:
         source = filepath.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(filepath))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {"status": "parse_error", "error": str(e), "mutations": 0}
 
     instrumenter = ExecutionTraceInstrumenter()

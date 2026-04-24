@@ -55,7 +55,7 @@ def check_result(name, result, check_fn=None):
             print(f"  ⚠️  Unexpected type: {type(result)}")
             failed += 1
             return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  ❌ Exception: {e}")
         failed += 1
         return False
@@ -174,7 +174,7 @@ try:
             print("  ⚠️  No resolved_path in node")
     else:
         print("  ⚠️  No L0 nodes found")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 print("\n" + "=" * 70)

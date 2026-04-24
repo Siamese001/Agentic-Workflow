@@ -50,7 +50,7 @@ def fix_encoding(file_path: Path, dry_run: bool = True) -> tuple[bool, str]:
 
         return True, f"Fixed encoding (was {encoding_used}, now utf-8)"
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False, f"Error fixing encoding: {e}"
 
 

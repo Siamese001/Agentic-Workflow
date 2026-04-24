@@ -578,89 +578,114 @@ class TestSilentDegradedFallbackDetection:
 
 class TestCloseReopenLifecycle:
     """Validate B3/B4: close_connections releases the service; reopen_connections
-    creates a fresh one.  These prove the operator-clear semantics documented in
-    OPERATIONS.md (ADG generation lock-release workflow)."""
+    creates a fresh one. Proves the operator-clear semantics documented in
+    OPERATIONS.md (ADG generation lock-release workflow).
+
+    Wave-7 refresh (2026-04-24): the four tests below were rewritten after
+    the runtime-class refactor moved state from module-level
+    ``server._service`` / ``_init_service`` to ``ADGServerRuntime`` on
+    ``tool_handlers.runtime``. The prior tests ``AttributeError``-ed
+    because those module-level symbols no longer exist.
+    """
 
     def test_close_connections_when_service_active(self):
-        """adg_close_connections() must call service.close(), set _service=None,
-        and return closed=True."""
-        import tools.adg.mcp.server as server_module
+        """runtime.close_connections() must call service.close(), clear
+        ``_service``, and return closed=True."""
+        from tools.adg.mcp import tool_handlers
 
+        runtime = tool_handlers.runtime
         mock_svc = MagicMock()
-        original_service = server_module._service
-        original_health = server_module._health
+        original_service = runtime._service
+        original_health = runtime._health
         try:
-            server_module._service = mock_svc
-            server_module._health = MagicMock()
+            runtime._service = mock_svc
+            runtime._health = MagicMock()
 
-            result = server_module.adg_close_connections()
+            result = runtime.close_connections()
 
+            assert result["status"] == "ok"
+            assert result["data"]["closed"] is True
+            mock_svc.close.assert_called_once()
+            # Post-close: service is fully torn down.
+            assert runtime._service is None
+            assert runtime._health is None
         finally:
-            # Restore module-level globals so other tests are not affected
-            server_module._service = original_service
-            server_module._health = original_health
-
-        assert result["status"] == "ok"
-        assert result["data"]["closed"] is True
-        mock_svc.close.assert_called_once()
+            runtime._service = original_service
+            runtime._health = original_health
 
     def test_close_connections_when_no_service(self):
-        """adg_close_connections() when _service is already None must return
-        closed=False without raising."""
-        import tools.adg.mcp.server as server_module
+        """runtime.close_connections() when ``_service`` is already None
+        must return closed=False without raising."""
+        from tools.adg.mcp import tool_handlers
 
-        original_service = server_module._service
-        original_health = server_module._health
+        runtime = tool_handlers.runtime
+        original_service = runtime._service
+        original_health = runtime._health
         try:
-            server_module._service = None
-            server_module._health = None
+            runtime._service = None
+            runtime._health = None
 
-            result = server_module.adg_close_connections()
+            result = runtime.close_connections()
 
+            assert result["status"] == "ok"
+            assert result["data"]["closed"] is False
         finally:
-            server_module._service = original_service
-            server_module._health = original_health
+            runtime._service = original_service
+            runtime._health = original_health
 
-        assert result["status"] == "ok"
-        assert result["data"]["closed"] is False
+    def test_reopen_connections_calls_service_reopen(self):
+        """runtime.reopen_connections() must invoke service.reopen() and
+        return reopened=True. Also covers the F4 (W2.2) idempotency fast-path:
+        when the stubbed sqlite backend reports snapshot/mtime drift, the
+        slow path runs and ``reopen`` is called.
+        """
+        from tools.adg.mcp import tool_handlers
 
-    def test_reopen_connections_initializes_service(self):
-        """adg_reopen_connections() must call _init_service() and svc.reopen(),
-        and return reopened=True."""
-        import tools.adg.mcp.server as server_module
-
+        runtime = tool_handlers.runtime
         mock_svc = MagicMock()
-        with patch.object(server_module, "_init_service", return_value=mock_svc):
-            result = server_module.adg_reopen_connections()
+        # No _sqlite attr → idempotency check falls through to the slow path.
+        mock_svc._sqlite = None
+        original_service = runtime._service
+        original_health = runtime._health
+        try:
+            runtime._service = mock_svc
+            runtime._health = MagicMock()
 
-        assert result["status"] == "ok"
-        assert result["data"]["reopened"] is True
-        mock_svc.reopen.assert_called_once()
+            result = runtime.reopen_connections(timeout_s=5.0)
+
+            assert result["status"] == "ok"
+            assert result["data"]["reopened"] is True
+            assert result["data"]["noop"] is False
+            mock_svc.reopen.assert_called_once()
+        finally:
+            runtime._service = original_service
+            runtime._health = original_health
 
     def test_close_then_reopen_roundtrip(self):
-        """Full operator workflow: close releases service; reopen creates a new one."""
-        import tools.adg.mcp.server as server_module
+        """Full operator workflow: close releases service; reopen restores it."""
+        from tools.adg.mcp import tool_handlers
 
+        runtime = tool_handlers.runtime
         mock_svc = MagicMock()
-        original_service = server_module._service
-        original_health = server_module._health
+        original_service = runtime._service
+        original_health = runtime._health
         try:
-            server_module._service = mock_svc
-            server_module._health = MagicMock()
+            runtime._service = mock_svc
+            runtime._health = MagicMock()
 
-            close_result = server_module.adg_close_connections()
+            close_result = runtime.close_connections()
             assert close_result["data"]["closed"] is True
-            # Service must be torn down after close
-            assert server_module._service is None
+            # Post-close: service torn down.
+            assert runtime._service is None
 
-            # Now reopen
+            # Reopen: install a fresh stub, drive the reopen path.
             fresh_svc = MagicMock()
-            with patch.object(server_module, "_init_service", return_value=fresh_svc):
-                reopen_result = server_module.adg_reopen_connections()
+            fresh_svc._sqlite = None  # force slow path, skip idempotency
+            runtime._service = fresh_svc
 
+            reopen_result = runtime.reopen_connections(timeout_s=5.0)
             assert reopen_result["data"]["reopened"] is True
             fresh_svc.reopen.assert_called_once()
-
         finally:
-            server_module._service = original_service
-            server_module._health = original_health
+            runtime._service = original_service
+            runtime._health = original_health

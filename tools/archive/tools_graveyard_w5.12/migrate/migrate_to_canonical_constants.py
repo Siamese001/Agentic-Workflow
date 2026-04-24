@@ -155,7 +155,7 @@ def main():
             result = migrate_file(filepath, dry_run=dry_run)
             if result["changed"] or result["constants_found"] > 0:
                 results.append(result)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results.append({"file": str(filepath), "error": str(e)})
 
     # Summary

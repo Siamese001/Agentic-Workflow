@@ -206,7 +206,7 @@ class FixGuardianFormatRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,
@@ -231,7 +231,7 @@ class FixGuardianFormatRule(BaseRepairRule):
 
             return True
 
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return False
 
     def _is_canonical(self, line: str) -> bool:

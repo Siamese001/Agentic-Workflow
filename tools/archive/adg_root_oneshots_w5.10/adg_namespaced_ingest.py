@@ -421,7 +421,7 @@ def main() -> int:
                 return 1
 
         return 0
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error: {e}", file=sys.stderr)
         return 1
 

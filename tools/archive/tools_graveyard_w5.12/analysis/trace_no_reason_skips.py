@@ -87,7 +87,7 @@ for p in sorted(Path("tests").rglob("*.py")):
         visitor = SkipCallVisitor(str(p).replace("\\", "/"), source_lines)
         visitor.visit(tree)
         all_findings.extend(visitor.findings)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         pass
 
 # Separate no-reason vs with-reason

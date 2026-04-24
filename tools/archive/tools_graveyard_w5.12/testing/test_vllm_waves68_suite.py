@@ -101,7 +101,7 @@ class VLLMWaves68TestSuite:
                 },
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave6_research_integration",
@@ -163,7 +163,7 @@ class VLLMWaves68TestSuite:
                 },
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave6_rfp_integration",
@@ -223,7 +223,7 @@ class VLLMWaves68TestSuite:
                 },
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave6_exec_integration",
@@ -287,7 +287,7 @@ class VLLMWaves68TestSuite:
                     },
                 )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave7_shared_utilities",
@@ -356,7 +356,7 @@ class VLLMWaves68TestSuite:
                 },
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave7_prompt_templates",
@@ -422,7 +422,7 @@ class VLLMWaves68TestSuite:
                 },
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave8_batch_processing",
@@ -494,7 +494,7 @@ class VLLMWaves68TestSuite:
                 },
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave8_analytics",
@@ -553,7 +553,7 @@ class VLLMWaves68TestSuite:
                 },
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.test_results.append(
                 {
                     "test": "wave8_multimodel",

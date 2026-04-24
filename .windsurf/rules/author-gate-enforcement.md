@@ -14,9 +14,9 @@ trigger: always_on
 >
 > This rule governs **Author-Gate Decisions** (developer-loop / harness-side — Fowler's "humans in the loop" at the code-gen level). It applies whenever Cascade is about to write code and a decision has genuine ambiguity.
 >
-> This rule does **not** govern **Runtime Author-Gate** — that's v30 step [5] ESCALATE, implemented in `agentic_core/L5_safety/` per `ADR-023-runtime-hitl-exit-control.md`. Runtime Author-Gate has its own ledger, approvers, adapters, and policy plane. Keep the two separate in prose and code.
+> This rule does **not** govern **runtime HITL** — that's v30 step [5] ESCALATE, implemented in `agentic_core/L5_safety/` per `ADR-023-runtime-hitl-exit-control.md`. Runtime HITL has its own ledger, approvers, adapters, and policy plane. Keep the two separate in prose and code.
 >
-> Historical markers (`HITL_PACKET:`, `DECISION_CAPTURED:`) retain their names for back-compat; they refer to author-gate events, not runtime Author-Gate.
+> Historical markers (`HITL_PACKET:`, `DECISION_CAPTURED:`) retain their names for back-compat; they refer to Author-Gate events, not runtime HITL.
 
 When facing an author-gate decision point, run this pipeline — no exceptions.
 
@@ -30,7 +30,7 @@ When facing an author-gate decision point, run this pipeline — no exceptions.
 6. **Material-distinctness** — collapse cosmetic variants; surface only options that differ on execution path, risk, reversibility, outcome, dependencies, time/cost, or governance
 7. **Surface 1–N options** via `ask_user_question` — ALL analysis INSIDE description field, never in chat prose
 8. **Wait** for explicit user selection
-9. **Execute** only the chosen option — if the decision is refactor-class (§HITL-1: `architecture_choice`, `refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`, `test_strategy`, `error_handling`), emit the capture marker **as the first plain-text line of this response, before any tool calls**:
+9. **Execute** only the chosen option — if the decision is refactor-class (§AG-1: `architecture_choice`, `refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`, `test_strategy`, `error_handling`), emit the capture marker **as the first plain-text line of this response, before any tool calls**:
    `DECISION_CAPTURED: type=<type>, repo_area=<area>, selected=<chosen_label>, outcome=executed[, confidence=0.NN, gap=0.NN, override=true|false, latency_ms=N, principle=<short>]`
    Required fields: `type`, `repo_area`, `selected`, `outcome`. Optional v2 calibration fields (meta-learning): `confidence` (top option's score 0.00–1.00), `gap` (dominance gap to next option), `override` (true if user picked non-recommended), `latency_ms` (time to user selection), `principle` (short architectural principle at stake, ≤40 chars, no commas). Omit any optional field whose value is unknown — the capture hook tolerates missing fields and maintains back-compat with v1 markers. `repo_area` = most specific module/file path for the current task. `selected` = exact chosen option label (no commas). **Placement rules**: plain text only (no backticks, no code fence), own line, at the top of the response — never at the tail of a long tool-heavy response. Non-refactor Author-Gate decisions do not emit this marker.
 
@@ -55,6 +55,30 @@ question field MUST open with `AUTHOR-GATE DECISION — <decision_type>` and inc
     What is being traded off: <the precise cost of the winning path>
     Candidates evaluated: N | Surfaced: M | Suppressed (low confidence): X | Suppressed (non-distinct): Y
 
+### Precedent injection (MANDATORY — W2, 2026-04-24)
+
+Before constructing the `ask_user_question` packet, Cascade MUST check for the
+sidecar file `artifacts/windsurf/author_gate_precedent.json`. If present and
+`match_count > 0`, the packet header MUST include a **Precedent block** as the
+first line after the `⭐ Recommended:` line:
+
+```
+Precedent informing recommendation:
+  - [<strength>] <decision_id>: <selected_option_id> (<created_at>, promote=<bool>)
+  - [<strength>] <decision_id>: ...
+```
+
+Up to 3 matches, `strong` before `suggestive`. If the recommended option aligns
+with a `strong` precedent, note `(aligned with ledger)` at the end of the
+`Why it wins:` line. If the recommended option contradicts a `strong`
+precedent, the dominance rule is NOT allowed to suppress alternatives — ALL
+reasonable alternatives must be surfaced so the user can weigh precedent
+against the current ranking.
+
+If the sidecar is absent or `match_count == 0`, emit a single line under the
+header: `Precedent informing recommendation: none (ledger had no match)` —
+this is a positive signal, not a gap; it tells the user the decision is novel.
+
 ### Gold-star surface convention (MANDATORY)
 
 The highest-confidence surfaced option MUST be visually marked:
@@ -67,9 +91,9 @@ The highest-confidence surfaced option MUST be visually marked:
 
 The star is a fast-parse affordance. It also makes `override_vs_recommendation` a measurable telemetry datum.
 
-Each option description uses the HITL-10 shape. See author-gate-decision-points.md.
+Each option description uses the AG-10 shape. See author-gate-decision-points.md.
 
-FORBIDDEN: bare ask_user_question after analysis prose. FORBIDDEN: padding options to a minimum count. FORBIDDEN: generic pros/cons without architecture-specific justification. FORBIDDEN: labeling as "Author-Gate Decision" when the concern is author-gate (developer-loop) — that term is reserved for runtime Author-Gate per ADR-023.
+FORBIDDEN: bare ask_user_question after analysis prose. FORBIDDEN: padding options to a minimum count. FORBIDDEN: generic pros/cons without architecture-specific justification. FORBIDDEN: labeling a developer-loop decision as "runtime HITL" — "HITL" is reserved for the runtime exit-control system per ADR-023 (`agentic_core/L5_safety/`). Developer-loop decisions are Author-Gate.
 
 ## Bypass Conditions
 
@@ -87,5 +111,5 @@ Author-Gate skipped ONLY when: fixing typos/whitespace/formatting; single correc
 
 ## Extended Doctrine
 
-Full decision-point triggers, option shape contract (HITL-10), scoring guidance, and telemetry format:
+Full decision-point triggers, option shape contract (AG-10), scoring guidance, and telemetry format:
 - author-gate-decision-points.md (model_decision trigger)

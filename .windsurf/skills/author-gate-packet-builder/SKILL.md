@@ -1,9 +1,9 @@
 ---
 name: author-gate-packet-builder
-description: Emit a schema-valid Author-Gate Decision packet for harness author-gate (developer-loop) decisions. Use when an author-gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Not the same as runtime Author-Gate (v30 step [5] / ADR-023). This skill consults precedent, constructs the HITL-10 option shape with didactic fields + gold-star on the recommended option, and writes AUTHOR_GATE_PACKET (with HITL_PACKET legacy alias) that post_cascade_author_gate_capture consumes. Third person, deterministic, invoked before ask_user_question.
+description: Emit a schema-valid Author-Gate Decision packet for harness author-gate (developer-loop) decisions. Use when an author-gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Not the same as runtime HITL (v30 step [5] / ADR-023). This skill consults precedent, constructs the AG-10 option shape with didactic fields + gold-star on the recommended option, and writes AUTHOR_GATE_PACKET (with HITL_PACKET legacy alias) that post_cascade_author_gate_capture consumes. Third person, deterministic, invoked before ask_user_question.
 metadata:
   enforcement_layer: windsurf
-  enforcement_timing: before_hitl
+  enforcement_timing: before_author_gate
   enforcement_type: behavioural
 ---
 
@@ -21,7 +21,7 @@ Every packet emitted by this skill:
 
 ## When to Invoke
 
-Invoke BEFORE `ask_user_question` whenever the decision matches any §HITL-1 class:
+Invoke BEFORE `ask_user_question` whenever the decision matches any §AG-1 class:
 
 - architecture_choice — cross-layer structural choice
 - refactor_scope — scope of a refactor
@@ -35,8 +35,8 @@ Do NOT invoke for T0/T1 edits, pure lints, or formatting-only changes.
 
 ## Files
 
-- `packet_template.md` — fill-in template with HITL-10 fields + didactic slots
-- `emit_packet.py` — CLI that takes trigger metadata + candidates, emits `HITL_PACKET:` block
+- `packet_template.md` — fill-in template with AG-10 fields + didactic slots
+- `emit_packet.py` — CLI that takes trigger metadata + candidates, emits `AUTHOR_GATE_PACKET:` block (with `HITL_PACKET:` legacy alias)
 - `precedent_injector.py` — wrapper over `lookup_refactor_decisions.py`; adds verdict to packet
 
 ## Usage
@@ -68,7 +68,7 @@ echo '{
 }' | python .windsurf/skills/author-gate-packet-builder/emit_packet.py
 ```
 
-Output (stdout): a `HITL_PACKET:` block (JSON) that `post_cascade_author_gate_capture.py` scans for.
+Output (stdout): an `AUTHOR_GATE_PACKET:` block (JSON) that `post_cascade_author_gate_capture.py` scans for. The legacy `HITL_PACKET:` alias is emitted alongside for back-compat with older scanners.
 
 ### Precedent-only lookup (without packet emit)
 
@@ -77,12 +77,12 @@ echo '{"decision_type": "refactor_scope", "normalized_intent": "..."}' | \
   python .windsurf/skills/author-gate-packet-builder/precedent_injector.py
 ```
 
-## Output Shape (HITL_PACKET block)
+## Output Shape (AUTHOR_GATE_PACKET block)
 
 Emitted to stdout, fenced. Consumed by `post_cascade_author_gate_capture.py`:
 
 ```
-HITL_PACKET: {
+AUTHOR_GATE_PACKET: {
   "decision_id": "dec_<ulid>",
   "decision_type": "refactor_scope",
   "user_goal": "...",
@@ -133,6 +133,6 @@ writing. Invalid packets are rejected with a structured error to stderr and exit
 ## Progressive Disclosure
 
 - `SKILL.md` (this file): when to invoke, high-level shape
-- `packet_template.md`: full HITL-10 option shape with didactic field semantics (Cascade reads on demand)
+- `packet_template.md`: full AG-10 option shape with didactic field semantics (Cascade reads on demand)
 - `emit_packet.py`: deterministic emission + schema validation
 - `precedent_injector.py`: isolated precedent lookup used by emit_packet and standalone

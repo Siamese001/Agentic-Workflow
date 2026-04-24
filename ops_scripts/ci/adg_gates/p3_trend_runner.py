@@ -44,7 +44,7 @@ try:
     from ops_scripts.ci.adg_gates.gate_policy import TrendResult
 
     _IMPORTS_OK = True
-except Exception as _exc:  # review: runner must record import-side-effect failures instead of crashing
+except Exception as _exc:  # review: runner must record import-side-effect failures instead of crashing  # guardian: allow-broad-exception -- offline tooling, reports failure
     _IMPORT_ERROR = f"{type(_exc).__name__}: {_exc}"
 
 
@@ -106,7 +106,7 @@ def _run_fanin_trend(modified_files: list[str]) -> tuple[TrendResult, int, list[
         hotspots: list[str] = result.get("hotspot_modules", [])
         near_critical: bool = result.get("near_critical_path", False)
         return _load_trend("fanin_triage"), gross, hotspots, near_critical
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(
             f"[p3_trend_runner] WARNING: fanin triage unavailable: {type(exc).__name__}: {exc}",
             file=sys.stderr,

@@ -30,7 +30,7 @@ def activate_orphaned_modules() -> dict[str, bool]:
         )
         results["governance_hub"] = True
         logger.info("GovernanceHub activated")
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["governance_hub"] = False
         logger.warning(f"GovernanceHub activation failed: {exc}")
 
@@ -43,7 +43,7 @@ def activate_orphaned_modules() -> dict[str, bool]:
         )
         results["injection_detector"] = True
         logger.info("InjectionDetector activated")
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["injection_detector"] = False
         logger.warning(f"InjectionDetector activation failed: {exc}")
 
@@ -56,7 +56,7 @@ def activate_orphaned_modules() -> dict[str, bool]:
         )
         results["pattern_repository"] = True
         logger.info("PatternRepository activated")
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["pattern_repository"] = False
         logger.warning(f"PatternRepository activation failed: {exc}")
 
@@ -69,7 +69,7 @@ def activate_orphaned_modules() -> dict[str, bool]:
         )
         results["evaluation_loader"] = True
         logger.info("EvaluationLoader activated")
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["evaluation_loader"] = False
         logger.warning(f"EvaluationLoader activation failed: {exc}")
 
@@ -82,7 +82,7 @@ def activate_orphaned_modules() -> dict[str, bool]:
         )
         results["meta_prompt_renderer"] = True
         logger.info("MetaPromptRenderer activated")
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["meta_prompt_renderer"] = False
         logger.warning(f"MetaPromptRenderer activation failed: {exc}")
 

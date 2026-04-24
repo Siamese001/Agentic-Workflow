@@ -232,7 +232,7 @@ def walk_directory(
                     lines = fpath.read_text(encoding="utf-8", errors="replace").splitlines()
                     stats["total_lines"] = len(lines)
                     stats["code_lines"] = len([l for l in lines if l.strip()])
-                except Exception:
+                except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     stats["total_lines"] = 0
                     stats["code_lines"] = 0
                 stats["functions"] = []

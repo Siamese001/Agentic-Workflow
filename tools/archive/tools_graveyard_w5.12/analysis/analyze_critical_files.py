@@ -46,7 +46,7 @@ def analyze_critical_files():
                     critical_files["integration"].append(f)
                 elif "e2e" in str(f):
                     critical_files["e2e"].append(f)
-        except:
+        except:  # guardian: allow-broad-exception -- offline tooling, reports failure
             continue
 
     print("CRITICAL TEST FILE RECONSTRUCTION ANALYSIS")

@@ -69,7 +69,7 @@ except Exception as e:
         return {"ok": False, "error_type": "no_output", "msg": stderr}
     except subprocess.TimeoutExpired:
         return {"ok": False, "error_type": "TIMEOUT", "msg": f"Import hung for >{PER_MODULE_TIMEOUT}s"}
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {"ok": False, "error_type": "subprocess_error", "msg": str(e)[:120]}
 
 
@@ -105,7 +105,7 @@ def main():
 
         try:
             content = p.read_text("utf-8")
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             categories["unreadable"] += 1
             errors += 1
             continue

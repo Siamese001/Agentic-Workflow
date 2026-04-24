@@ -90,7 +90,7 @@ def fix_imports():
                 if fixed_count % 100 == 0:
                     print(f"  Fixed {fixed_count} files...")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  Error fixing {file_path}: {e}")
 
     print(f"✅ Fixed {fixed_count} import statements")

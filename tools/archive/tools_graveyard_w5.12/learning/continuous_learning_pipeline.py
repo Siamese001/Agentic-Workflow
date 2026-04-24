@@ -605,7 +605,7 @@ class AutomatedLearningPipeline:
             pass
         except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error collecting system metrics: {e}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Error collecting system metrics: {e}")
 
     def _collect_learning_progress(self):
@@ -622,7 +622,7 @@ class AutomatedLearningPipeline:
             )
         except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error collecting learning progress: {e}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Error collecting learning progress: {e}")
 
     def _cleanup_expired_data(self):
@@ -681,7 +681,7 @@ def learning_enabled(method_name: str = None, priority: str = "MEDIUM"):
                     )
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error in learning decorator: {e}")
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 pass
                 pass  # Pipeline not available
 

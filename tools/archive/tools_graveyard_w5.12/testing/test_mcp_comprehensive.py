@@ -77,7 +77,7 @@ class MCPTester:
                 "message": "Server started (timeout expected)",
                 "package_path": package_path,
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "status": "error",
                 "time": 0,
@@ -128,7 +128,7 @@ class MCPTester:
                 "time": 10.0,
                 "message": "Compilation timeout",
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "status": "error",
                 "time": 0,

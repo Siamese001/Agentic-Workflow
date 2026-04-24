@@ -57,7 +57,7 @@ def fix_duplicate_imports(filepath: Path) -> bool:
             filepath.write_text("\n".join(lines) + "\n", encoding="utf-8")
             return True
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         Logger.error("Error processing %s: %s", filepath, e)
         return False
 

@@ -11,7 +11,7 @@ description: Use this rule when a Author-Gate decision point is reached to apply
 
 # Author-Gate Decision Points — Full Doctrine
 
-## §HITL-1: Mandatory Decision Point Triggers
+## §AG-1: Mandatory Decision Point Triggers
 
 ### 1.1 Code Architecture Decisions
 TRIGGER: Multiple viable architectural approaches AND at least one clears surface_threshold = 0.72.
@@ -84,7 +84,7 @@ Scoring anchors:
 
 ---
 
-## §HITL-10: Option Shape Contract
+## §AG-10: Option Shape Contract
 
 Every surfaced option MUST include these fields. Generic pros/cons are FORBIDDEN.
 

@@ -87,7 +87,7 @@ def debug_template_rendering():
 
         return rendered
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Rendering failed: {e}")
         return None
 
@@ -197,7 +197,7 @@ def test_all_adg_templates():
             sample = rendered[:200].replace("\n", " ")
             print(f"   Sample: {sample}...")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Failed: {e}")
             results.append(
                 {

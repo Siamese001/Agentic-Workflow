@@ -92,7 +92,7 @@ question: Must include header packet:
   What you are optimizing for: <the actual goal this decision serves>
   What is being traded off: <the precise cost of the winning path>
   Candidates evaluated: N | Surfaced: M | Suppressed (low confidence): X | Suppressed (non-distinct): Y
-options: 2-4 items (HITL-10 shape, see author-gate-decision-points.md)
+options: 2-4 items (AG-10 shape, see author-gate-decision-points.md)
   label: Short name (≤6 words)
   description: Architecture-specific justification, not generic pros/cons
 allowMultiple: false

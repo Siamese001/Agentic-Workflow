@@ -122,6 +122,12 @@ class GraphProjectionBackend:
                 self._readonly_uri(self._proj_path),
                 timeout=_PROJ_QUERY_TIMEOUT,
                 uri=True,
+                # check_same_thread=False is safe here: opened mode=ro with
+                # PRAGMA query_only=ON below. Matches SQLiteBackend._connect
+                # (see that site for RCA) — without this, any reopen that
+                # instantiates this backend on a worker thread will poison
+                # every subsequent MCP query from the event-loop thread.
+                check_same_thread=False,
             )
             self._conn.row_factory = sqlite3.Row
             self._conn.execute(f"PRAGMA busy_timeout = {int(_PROJ_QUERY_TIMEOUT * 1000)}")

@@ -517,7 +517,7 @@ class GovernedAppRunner:
         engine = get_hybrid_search_engine(collection_name=self._collection, top_k=10)
         try:
             raw_chunks: list[Any] = engine.search(query, collection_name=self._collection)
-        except Exception as _search_exc:  # guardian: allow-except-exception -- collection-not-found (chromadb.errors.NotFoundError) and other backend errors are not importable without hard chromadb dep at the base layer; graceful degradation to empty results is the correct path
+        except Exception as _search_exc:  # guardian: allow-broad-exception -- collection-not-found (chromadb.errors.NotFoundError) and other backend errors are not importable without hard chromadb dep at the base layer; graceful degradation to empty results is the correct path
             _log.warning(
                 "[GovernedAppRunner._c0_retrieve] search degraded to empty results app=%s: %s",
                 self.APP_NAME,

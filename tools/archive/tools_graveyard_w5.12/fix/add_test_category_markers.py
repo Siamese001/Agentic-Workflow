@@ -64,7 +64,7 @@ class TestCategoryMarkerAdder:
                     if self.markers_added % 50 == 0:
                         print(f"    Added {self.markers_added} category markers...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error processing {file_path}: {e}")
 

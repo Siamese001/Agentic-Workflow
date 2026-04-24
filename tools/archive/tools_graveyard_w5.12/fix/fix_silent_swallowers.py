@@ -49,7 +49,7 @@ class SilentSwallowerFixer:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 lines = content.splitlines()
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return violations
 
         # Parse AST to find exception handlers

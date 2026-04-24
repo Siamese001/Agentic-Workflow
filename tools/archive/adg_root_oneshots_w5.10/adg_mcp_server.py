@@ -179,7 +179,7 @@ def _cache_meta() -> dict[str, Any]:
                 "is_fresh": is_fresh,
                 "digest": status.get("digest", ""),
             }
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- offline tooling, reports failure
         result = {"available": False, "reason": str(exc)}
 
     _meta_cache["data"] = result
@@ -714,7 +714,7 @@ def adg_source_context(edge_id: str) -> dict[str, Any]:
         return _ok(result, provenance="sqlite")
     except FileNotFoundError as exc:
         return _err(str(exc), provenance="sqlite")
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- offline tooling, reports failure
         return _err(f"SQLite error: {exc}", provenance="sqlite")
 
 

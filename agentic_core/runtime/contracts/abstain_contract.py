@@ -213,6 +213,222 @@ def plan_clarify(
     )
 
 
+# =============================================================================
+# W3.P2 — Multi-signal R5 trigger aggregation.
+#
+# Plan: .windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W3.P2.
+#
+# ``plan_abstain`` (above) fires R5 on a single scalar confidence check.
+# Real-world routing needs ≥5 independent triggers per Anthropic guidance
+# (ood, budget, circuit-breaker, clarification, toxicity, low-confidence).
+# ``plan_abstain_multi_signal`` aggregates those triggers into one
+# :class:`AbstainDecision` and records which trigger fired in
+# ``reason_hint`` so telemetry can attribute the abstain.
+#
+# Additive: ``plan_abstain`` is unchanged. Existing callers continue to
+# consume the scalar-confidence path.
+# =============================================================================
+
+
+# Closed vocabulary of multi-signal reason codes. Bare strings (no
+# enum) — matches the pre-W1b reason_codes style consumed by
+# agentic_core.L0_routing.reasoning.route_gates.
+R5_REASON_LOW_CONFIDENCE: Literal["r5_low_confidence"] = "r5_low_confidence"
+R5_REASON_OOD_DETECTED: Literal["r5_ood_detected"] = "r5_ood_detected"
+R5_REASON_BUDGET_EXCEEDED: Literal["r5_budget_exceeded"] = "r5_budget_exceeded"
+R5_REASON_CIRCUIT_BREAKER_OPEN: Literal["r5_circuit_breaker_open"] = "r5_circuit_breaker_open"
+R5_REASON_CLARIFICATION_NEEDED: Literal["r5_clarification_needed"] = "r5_clarification_needed"
+R5_REASON_TOXICITY_FLAGGED: Literal["r5_toxicity_flagged"] = "r5_toxicity_flagged"
+
+R5_REASON_CODES: frozenset[str] = frozenset(
+    {
+        R5_REASON_LOW_CONFIDENCE,
+        R5_REASON_OOD_DETECTED,
+        R5_REASON_BUDGET_EXCEEDED,
+        R5_REASON_CIRCUIT_BREAKER_OPEN,
+        R5_REASON_CLARIFICATION_NEEDED,
+        R5_REASON_TOXICITY_FLAGGED,
+    },
+)
+"""Closed set of R5 reason-code strings. Any new code requires an ADR."""
+
+
+class R5Signals(TypedDict, total=False):
+    """Optional per-signal evidence for :func:`plan_abstain_multi_signal`.
+
+    Every field is optional. A caller that can't compute a signal simply
+    omits it — the aggregator treats it as "not firing". This preserves
+    back-compat with single-signal callers that only know the confidence.
+
+    Fields:
+        confidence: Scalar confidence in ``[0, 1]``. Below
+            ``confidence_threshold`` fires :data:`R5_REASON_LOW_CONFIDENCE`.
+        confidence_threshold: Floor for the low-confidence trigger.
+            Defaults to :data:`DEFAULT_ABSTAIN_THRESHOLD`.
+        ood_score: OOD / novelty score in ``[0, 1]``. At or above
+            ``ood_threshold`` fires :data:`R5_REASON_OOD_DETECTED`.
+        ood_threshold: Floor for the OOD trigger. Defaults to ``0.70``.
+        budget_exceeded: Boolean — True fires :data:`R5_REASON_BUDGET_EXCEEDED`.
+        circuit_breaker_open: Boolean — True fires
+            :data:`R5_REASON_CIRCUIT_BREAKER_OPEN`.
+        clarification_needed: Boolean — True fires
+            :data:`R5_REASON_CLARIFICATION_NEEDED`.
+        toxicity_flagged: Boolean — True fires
+            :data:`R5_REASON_TOXICITY_FLAGGED`.
+    """
+
+    confidence: float
+    confidence_threshold: float
+    ood_score: float
+    ood_threshold: float
+    budget_exceeded: bool
+    circuit_breaker_open: bool
+    clarification_needed: bool
+    toxicity_flagged: bool
+
+
+class MultiSignalAbstainDecision(TypedDict):
+    """Enriched abstain decision emitted by :func:`plan_abstain_multi_signal`.
+
+    Extends :class:`AbstainDecision` with a ``triggered_reasons`` field
+    recording every trigger that fired (a single request may fire more
+    than one — e.g. low-confidence AND budget-exceeded). ``primary_reason``
+    is a single string (the highest-priority trigger) for telemetry.
+
+    Fields:
+        decision: ``"abstain"`` or ``"proceed"``.
+        reason: Human-readable justification.
+        action: ``"emit_r5_candidate"`` on abstain, else ``"continue"``.
+        triggered_reasons: Tuple of every fired reason code, in
+            priority order (toxicity > circuit > budget > OOD > clarify
+            > low-confidence). Empty tuple on proceed.
+        primary_reason: First element of :attr:`triggered_reasons` or
+            ``"none"`` on proceed.
+        confidence: Echoed from ``signals.confidence`` (or 1.0 default).
+        threshold: Echoed confidence threshold.
+    """
+
+    decision: Literal["abstain", "proceed"]
+    reason: str
+    action: Literal["emit_r5_candidate", "continue"]
+    triggered_reasons: tuple[str, ...]
+    primary_reason: str
+    confidence: float
+    threshold: float
+
+
+# Trigger priority (highest first). Toxicity and circuit-breaker are
+# safety-critical and suppress everything below them in the reason-code
+# list — if both fire, toxicity wins the primary_reason slot.
+_R5_TRIGGER_PRIORITY: tuple[str, ...] = (
+    R5_REASON_TOXICITY_FLAGGED,
+    R5_REASON_CIRCUIT_BREAKER_OPEN,
+    R5_REASON_BUDGET_EXCEEDED,
+    R5_REASON_OOD_DETECTED,
+    R5_REASON_CLARIFICATION_NEEDED,
+    R5_REASON_LOW_CONFIDENCE,
+)
+
+
+def plan_abstain_multi_signal(
+    signals: R5Signals | None = None,
+) -> MultiSignalAbstainDecision:
+    """Aggregate multiple R5 triggers into one decision.
+
+    Args:
+        signals: Per-signal evidence. ``None`` is treated as an empty
+            signal set — the result is ``proceed`` with no triggered
+            reasons. Callers should populate only the fields they can
+            evaluate.
+
+    Returns:
+        :class:`MultiSignalAbstainDecision` with ``decision=abstain`` if
+        any trigger fires, else ``decision=proceed``.
+
+    Raises:
+        ValueError: ``signals.confidence`` or ``signals.ood_score`` is
+            outside ``[0, 1]``.
+    """
+    s: R5Signals = signals or {}
+    triggered: list[str] = []
+
+    # 1. toxicity (safety-critical, suppresses all below)
+    if s.get("toxicity_flagged"):
+        triggered.append(R5_REASON_TOXICITY_FLAGGED)
+
+    # 2. circuit breaker
+    if s.get("circuit_breaker_open"):
+        triggered.append(R5_REASON_CIRCUIT_BREAKER_OPEN)
+
+    # 3. budget exceeded
+    if s.get("budget_exceeded"):
+        triggered.append(R5_REASON_BUDGET_EXCEEDED)
+
+    # 4. OOD detection
+    ood_score = s.get("ood_score")
+    if ood_score is not None:
+        if not 0.0 <= ood_score <= 1.0:
+            raise ValueError(
+                f"ood_score must be in [0, 1], got {ood_score!r}",
+            )
+        ood_threshold = s.get("ood_threshold", 0.70)
+        if not 0.0 <= ood_threshold <= 1.0:
+            raise ValueError(
+                f"ood_threshold must be in [0, 1], got {ood_threshold!r}",
+            )
+        if ood_score >= ood_threshold:
+            triggered.append(R5_REASON_OOD_DETECTED)
+
+    # 5. explicit clarification requested by L1
+    if s.get("clarification_needed"):
+        triggered.append(R5_REASON_CLARIFICATION_NEEDED)
+
+    # 6. low-confidence (same primitive as plan_abstain, kept last)
+    confidence = s.get("confidence", 1.0)
+    confidence_threshold = s.get("confidence_threshold", DEFAULT_ABSTAIN_THRESHOLD)
+    if not 0.0 <= confidence <= 1.0:
+        raise ValueError(
+            f"confidence must be in [0, 1], got {confidence!r}",
+        )
+    if not 0.0 <= confidence_threshold <= 1.0:
+        raise ValueError(
+            f"confidence_threshold must be in [0, 1], got {confidence_threshold!r}",
+        )
+    if confidence < confidence_threshold:
+        triggered.append(R5_REASON_LOW_CONFIDENCE)
+
+    # Sort by priority so primary_reason is stable across caller orderings.
+    priority_index = {code: idx for idx, code in enumerate(_R5_TRIGGER_PRIORITY)}
+    triggered.sort(key=lambda code: priority_index.get(code, 999))
+
+    if not triggered:
+        return MultiSignalAbstainDecision(
+            decision=DECISION_PROCEED,
+            reason="no R5 trigger fired",
+            action=ACTION_CONTINUE,
+            triggered_reasons=(),
+            primary_reason="none",
+            confidence=float(confidence),
+            threshold=float(confidence_threshold),
+        )
+
+    primary = triggered[0]
+    reason = (
+        f"R5 abstain: {primary} (additional triggers: {triggered[1:]})"
+        if len(triggered) > 1
+        else f"R5 abstain: {primary}"
+    )
+    return MultiSignalAbstainDecision(
+        decision=DECISION_ABSTAIN,
+        reason=reason,
+        action=ACTION_EMIT_R5,
+        triggered_reasons=tuple(triggered),
+        primary_reason=primary,
+        confidence=float(confidence),
+        threshold=float(confidence_threshold),
+    )
+
+
 __all__ = [
     "ACTION_CONTINUE",
     "ACTION_EMIT_R5",
@@ -224,6 +440,16 @@ __all__ = [
     "DECISION_PROCEED",
     "DEFAULT_ABSTAIN_THRESHOLD",
     "DEFAULT_AMBIGUITY_THRESHOLD",
+    "MultiSignalAbstainDecision",
+    "R5Signals",
+    "R5_REASON_BUDGET_EXCEEDED",
+    "R5_REASON_CIRCUIT_BREAKER_OPEN",
+    "R5_REASON_CLARIFICATION_NEEDED",
+    "R5_REASON_CODES",
+    "R5_REASON_LOW_CONFIDENCE",
+    "R5_REASON_OOD_DETECTED",
+    "R5_REASON_TOXICITY_FLAGGED",
     "plan_abstain",
+    "plan_abstain_multi_signal",
     "plan_clarify",
 ]

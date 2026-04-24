@@ -52,7 +52,7 @@ class AdvancedSyntaxFixer:
         """Fix syntax errors in a single file using advanced techniques."""
         try:
             original_content = file_path.read_text(encoding="utf-8")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
 

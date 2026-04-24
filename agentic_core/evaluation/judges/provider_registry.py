@@ -258,7 +258,7 @@ def create_default_registry() -> JudgeProviderRegistry:
     )
     if qwen_should_register:
         try:
-            from agentic_core.evaluation.judges.qwen_judge_provider import (  # noqa: PLC0415
+            from agentic_core.evaluation.judges.qwen_judge_provider import (  # noqa: PLC0415  guardian: allow-log-and-swallow -- optional Qwen backend: registration failure is non-fatal, registry still returns with other providers (Gemini/null)
                 QwenJudgeProvider,
             )
 

@@ -64,7 +64,7 @@ class TestValidator:
                     "suggested_fix": "Fix syntax error before validation",
                 }
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             violations.append(
                 {
                     "file_path": str(file_path),

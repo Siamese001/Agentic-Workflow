@@ -278,7 +278,7 @@ async def test_minimal_runtime_adg():
         print("[TEST] Minimal runtime ADG test completed successfully!")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[TEST] Minimal runtime ADG test failed: {e}")
         return False
 

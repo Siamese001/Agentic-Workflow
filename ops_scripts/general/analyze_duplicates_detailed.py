@@ -45,7 +45,7 @@ def _build_detector():
         from apps_lic.engines.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent  # type: ignore
 
         return DuplicateCodeDetectorAgent(project_root=project_root)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return LocalDuplicateCodeDetector(project_root=project_root)
 
 

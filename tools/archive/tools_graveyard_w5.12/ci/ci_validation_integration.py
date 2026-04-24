@@ -35,7 +35,7 @@ def run_validation():
 
         return result.returncode
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"::error::Validation runner error: {e}")
         return 1
 

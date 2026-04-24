@@ -59,7 +59,7 @@ class GuardianCommentAdder:
                     if self.comments_added % 25 == 0:
                         print(f"    Added {self.comments_added} guardian comments...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error adding comment to {file_path}: {e}")
 

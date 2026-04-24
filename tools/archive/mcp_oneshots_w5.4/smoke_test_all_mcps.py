@@ -72,7 +72,7 @@ class MCPSmokeTester:
                 server_name, server_path
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results["success"] = False
             results["errors"].append(str(e))
             logger.error(f"Error testing {server_name}: {e}")
@@ -117,7 +117,7 @@ class MCPSmokeTester:
                 if "mcp.server" in content:
                     result["details"].append("✅ Imports MCP server")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["success"] = False
             result["details"].append(f"Error reading file: {e}")
 
@@ -162,7 +162,7 @@ class MCPSmokeTester:
                     result["success"] = False
                     result["details"].append(f"❌ {imp}: {e}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["success"] = False
             result["details"].append(f"Error testing imports: {e}")
 
@@ -192,7 +192,7 @@ class MCPSmokeTester:
         except subprocess.TimeoutExpired:
             result["success"] = False
             result["details"].append("❌ Compilation timeout")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["success"] = False
             result["details"].append(f"❌ Error: {e}")
 
@@ -234,7 +234,7 @@ class MCPSmokeTester:
                 result["success"] = False
                 result["details"].append("❌ Subprocess execution failed")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["success"] = False
             result["details"].append(f"❌ Error: {e}")
 
@@ -259,7 +259,7 @@ class MCPSmokeTester:
                 result["success"] = False
                 result["details"].append("❌ Pytest not available")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["success"] = False
             result["details"].append(f"❌ Error: {e}")
 
@@ -286,7 +286,7 @@ class MCPSmokeTester:
                 else:
                     result["success"] = False
                     result["details"].append(f"❌ HTTP request failed: {response.status_code}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 result["details"].append(f"⚠️ HTTP test skipped (network): {e}")
 
         except ImportError as e:
@@ -313,7 +313,7 @@ class MCPSmokeTester:
                 model = SentenceTransformer("all-MiniLM-L6-v2")
                 embedding = model.encode("test text")
                 result["details"].append(f"✅ Embedding generation works (dim: {len(embedding)})")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 result["details"].append(f"⚠️ Embedding test skipped: {e}")
 
         except ImportError as e:
@@ -381,7 +381,7 @@ class MCPSmokeTester:
             with open(report_file, "w", encoding="utf-8") as f:
                 json.dump(report_data, f, indent=2, default=str)
             logger.info(f"📄 Detailed report saved: {report_file}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Failed to save report: {e}")
 
 
@@ -396,6 +396,6 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\nSmoke tests interrupted by user")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Smoke test error: {e}")
         sys.exit(1)

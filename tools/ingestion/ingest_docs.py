@@ -459,7 +459,7 @@ class VectorDBIngestor:
                 batch_count = len(batch_ids)
                 total_ingested += batch_count
                 Logger.info(f"Successfully ingested batch {i // batch_size + 1}: {batch_count} chunks")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 Logger.error(f"Failed to ingest batch {i // batch_size + 1}: {e}")
                 # Continue with next batch instead of failing completely
 
@@ -476,7 +476,7 @@ class VectorDBIngestor:
                 "vector_dimensions": self.vector_dimensions,
                 "vector_metric": self.config.VECTOR_METRIC,
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             Logger.error(f"Failed to get collection stats: {e}")
             return {}
 

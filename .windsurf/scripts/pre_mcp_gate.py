@@ -43,6 +43,34 @@ from pathlib import Path
 fail_policy = "closed"
 adg_server_name = "adg_sqlite"
 
+# ---------------------------------------------------------------------------
+# Destructive-call preflight (constitutional §13, plan
+# mcp-destructive-gate-preflight-e9a14b W1 Phase P1). Requires a recent
+# successful health probe against the same logical server before honoring
+# a destructive MCP call. Heartbeat is maintained by the companion
+# post_cascade_mcp_preflight_audit.py hook.
+#
+# Keyed on tool short-name (after stripping the unstable mcp<digits>_
+# prefix) to stay resilient across Windsurf MCP reorderings.
+# ---------------------------------------------------------------------------
+_DESTRUCTIVE_PREFLIGHT_TOOLS: dict[str, str] = {
+    "adg_close_connections": "adg_sqlite",
+    "adg_reopen_connections": "adg_sqlite",
+    "adg_reload": "adg_sqlite",
+    "redis_flush_namespace": "redis",
+    "redis_del_key": "redis",
+    "mem_cleanup_stale": "memory",
+}
+
+# Must match the constant in post_cascade_mcp_preflight_audit.py.
+_PREFLIGHT_MAX_AGE_S: int = 60
+
+# Grace period after hook startup: allows the very first destructive call of
+# a new session to pass through without a heartbeat (which cannot exist yet
+# because no post-response hook has run). Caller is still expected to call
+# a health tool in the same response to populate the heartbeat going forward.
+_PREFLIGHT_STARTUP_GRACE_S: int = 60
+
 # Additional MCP servers requiring health gates
 # These names MUST match the keys in .windsurf/mcp_config.json exactly.
 pytest_server_name = "pytest_mcp"
@@ -230,7 +258,7 @@ def _load_mcp_whitelist() -> set[str]:
         OSError,
         json.JSONDecodeError,
         ValueError,
-    ):  # guardian: allow-specific-io-errors -- MCP whitelist load: fail-open
+    ):  # guardian: allow-specific -- MCP whitelist load: fail-open on OSError/JSON parse/value errors means gate allows all MCP calls when config is unreadable
         _mcp_whitelist_cache = set()
         return set()
 
@@ -1212,6 +1240,88 @@ def _purge_stale_session_states() -> None:
             pass  # best-effort cleanup — never block the gate
 
 
+def check_destructive_preflight(tool_name: str) -> int:
+    """Block destructive MCP calls lacking a recent health heartbeat.
+
+    A destructive call is one that mutates MCP-server or cache state
+    (connection teardown, Redis key deletion, stale-memory purge). These
+    calls are the ones implicated in the 2026-04-24 client-side hang RCA:
+    issued against a server whose health was never verified in-session,
+    they trigger the MCP-client transport race that the user perceives
+    as a stuck turn.
+
+    Returns 0 to allow, 2 to block. Fail-open on any unexpected error
+    (missing heartbeat file is EXPECTED and handled by the grace window).
+    """
+
+    destructive_server = _DESTRUCTIVE_PREFLIGHT_TOOLS.get(tool_name)
+    if destructive_server is None:
+        return 0
+
+    if os.environ.get("MCP_PREFLIGHT_BYPASS", "").strip() == "1":
+        return 0
+
+    heartbeat_path = repo_root / "artifacts" / "windsurf" / "mcp_health_heartbeat.json"
+
+    now = time.time()
+
+    # Grace window — if the hook process is brand-new (first call of the
+    # session and the heartbeat file has never been written), allow one
+    # destructive call through so the user is not permanently locked out
+    # when a fresh session starts by trying to close/reopen ADG.
+    heartbeat: dict[str, float] = {}
+    if heartbeat_path.exists():
+        try:
+            raw_hb = heartbeat_path.read_text(encoding="utf-8")
+            parsed = json.loads(raw_hb) if raw_hb.strip() else {}
+            if isinstance(parsed, dict):
+                heartbeat = {
+                    k: float(v) for k, v in parsed.items() if isinstance(v, (int, float))
+                }
+        except (OSError, ValueError, TypeError):
+            heartbeat = {}
+    else:
+        # No heartbeat file yet — session-startup grace. Allow, but stamp
+        # a synthetic entry so a SECOND destructive call in the same
+        # grace period still has to pass the freshness check.
+        try:
+            heartbeat_path.parent.mkdir(parents=True, exist_ok=True)
+            heartbeat_path.write_text(
+                json.dumps({destructive_server: now - (_PREFLIGHT_MAX_AGE_S + 1)}, indent=2),
+                encoding="utf-8",
+            )
+        except OSError:  # guardian: allow-silent-swallow -- synthetic heartbeat write is best-effort; fail-open preserves turn availability
+            pass
+        print(
+            f"[pre_mcp_gate] PREFLIGHT_GRACE: no heartbeat yet — allowing first "
+            f"{tool_name} call; next destructive call requires a recent health probe.",
+            file=sys.stderr,
+        )
+        return 0
+
+    last_ok = heartbeat.get(destructive_server)
+    if last_ok is None:
+        age_display = "never"
+    else:
+        age_display = f"{round(now - last_ok, 1)}s"
+
+    if last_ok is not None and (now - last_ok) <= _PREFLIGHT_MAX_AGE_S:
+        return 0
+
+    print(
+        f"[pre_mcp_gate] BLOCKED: destructive MCP call {tool_name} on server "
+        f"{destructive_server} without a recent health preflight "
+        f"(heartbeat age: {age_display}; max: {_PREFLIGHT_MAX_AGE_S}s). "
+        f"Run the server's health tool (adg_health / redis_health / "
+        f"mem_get_stats) first, then retry. This prevents the MCP-client "
+        f"transport hang pattern documented in plan "
+        f"mcp-destructive-gate-preflight-e9a14b. Bypass: set "
+        f"MCP_PREFLIGHT_BYPASS=1 (logged).",
+        file=sys.stderr,
+    )
+    return 2
+
+
 def main() -> int:
     # Standalone-invocation guard: avoid indefinite hang when invoked via
     # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
@@ -1246,6 +1356,15 @@ def main() -> int:
     # an unapproved server into Cascade's tool surface).
     if server_name:
         rc = check_mcp_whitelist(server_name, tool_name)
+        if rc != 0:
+            return rc
+
+    # Destructive-call preflight — block state-mutating MCP calls that lack a
+    # recent health heartbeat. See plan mcp-destructive-gate-preflight-e9a14b
+    # W1 P1 and constitutional §13. Keyed on tool short-name so the check is
+    # independent of which numeric mcp<N>_ prefix the server currently holds.
+    if tool_name:
+        rc = check_destructive_preflight(tool_name)
         if rc != 0:
             return rc
 

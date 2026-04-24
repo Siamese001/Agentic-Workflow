@@ -17,7 +17,7 @@ def remove_function(file_path: str, func_name: str) -> bool:
     try:
         source = path.read_text(encoding="utf-8")
         lines = source.split("\n")
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False
 
     try:

@@ -19,5 +19,5 @@ for ln in lines[-20:]:
         print(f"  {ts} kind={kind:30s} band={band} impact={impact} plan={plan} phase={phase}")
         if notion_url != "-":
             print(f"      -> {notion_url}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print("  parse-err:", ln[:100])

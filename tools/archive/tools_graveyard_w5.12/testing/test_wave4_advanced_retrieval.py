@@ -106,7 +106,7 @@ async def test_multi_query_fusion():
                 else:
                     print("  ⚠️  No results found")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"  ❌ Fusion failed: {e}")
 
             print("-" * 50)
@@ -114,7 +114,7 @@ async def test_multi_query_fusion():
         print(f"\nMulti-Query Fusion Results: {fusion_success}/{len(test_queries)} successful")
         return fusion_success > 0
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Multi-query fusion test failed: {e}")
         return False
 
@@ -181,7 +181,7 @@ async def test_reranking_engine():
         print("\n✅ Reranking engine test successful")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Reranking engine test failed: {e}")
         return False
 
@@ -236,7 +236,7 @@ async def test_advanced_retrieval():
                 else:
                     print("  ⚠️  No results found")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"  ❌ Advanced retrieval failed: {e}")
 
             print("-" * 60)
@@ -244,7 +244,7 @@ async def test_advanced_retrieval():
         print(f"\nAdvanced Retrieval Results: {retrieval_success}/{len(test_queries)} successful")
         return retrieval_success > 0
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Advanced retrieval test failed: {e}")
         return False
 
@@ -283,7 +283,7 @@ async def test_fusion_strategies():
                 print(f"  Time: {response.execution_time_ms:.2f}ms")
                 print(f"  Collections: {len(response.fusion_result.collection_results)}")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"{strategy}: Failed - {e}")
                 strategy_results[strategy] = {"error": str(e)}
 
@@ -303,7 +303,7 @@ async def test_fusion_strategies():
             print("\n⚠️  No fusion strategies succeeded")
             return False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Fusion strategies test failed: {e}")
         return False
 
@@ -345,7 +345,7 @@ async def test_performance():
                     f"  {query}: {len(response.final_results)} results in {response.execution_time_ms:.2f}ms"
                 )
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"  {query}: Failed - {e}")
 
         total_time = time.time() - start_time
@@ -363,7 +363,7 @@ async def test_performance():
 
         return success_rate >= 0.8  # 80% success rate threshold
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Performance test failed: {e}")
         return False
 
@@ -420,7 +420,7 @@ async def main():
         print(f"  Fusion Strategies: {len(stats['fusion_engine']['fusion_strategies'])}")
         print(f"  Reranking Model: {'Loaded' if stats['reranking_engine']['model_loaded'] else 'Rule-based'}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  Could not retrieve stats: {e}")
 
 

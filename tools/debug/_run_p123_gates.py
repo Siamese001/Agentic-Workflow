@@ -48,7 +48,7 @@ for gate_id, modname, cls in GATE_CLASSES:
             "violations": gross, "summary": {k: v for k, v in summary.items()
                                               if isinstance(v, (int, float, str, bool))},
         })
-    except Exception as e:  # noqa: BLE001 -- diag script
+    except Exception as e:  # noqa: BLE001 -- diag script  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  ERROR: {type(e).__name__}: {e}")
         results.append({"gate_id": gate_id, "class": cls, "error": f"{type(e).__name__}: {e}"})
     print()

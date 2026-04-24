@@ -26,6 +26,7 @@ import sys
 import time
 from pathlib import Path
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 
 def _discover_repo_root(start: Path) -> Path:
@@ -62,10 +63,10 @@ CHUNK_OVERLAP = 200
 MIN_BODY_CHARS = 80
 
 SCAN_DIRS: list[tuple[str, str]] = [
-    ("docs/reports/rcas", "rca"),
+    (f"{DOCS_REPORTS_DIR}/rcas", "rca"),
     ("docs/rca", "rca"),
-    ("docs/reports/rca", "rca"),
-    ("docs/reports/evidence", "evidence"),
+    (f"{DOCS_REPORTS_DIR}/rca", "rca"),
+    (f"{DOCS_REPORTS_DIR}/evidence", "evidence"),
 ]
 
 EXCLUDE_DIRS = {"__pycache__", ".git", "node_modules", "archives"}

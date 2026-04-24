@@ -267,10 +267,14 @@ class TestModuleImportHygiene:
         assert "SemanticCacheManager" not in public
 
     def test_exports_are_stable(self) -> None:
+        # W3.P1 added `check_r3_grounding_gate` — additive extension of the
+        # pinned __all__. Any further additions require updating this test
+        # and an ADR per the enum-closure convention.
         assert set(route_gates.__all__) == {
             "canonical_request_hash",
             "check_d1_exact_cache",
             "check_d2_semantic_cache",
+            "check_r3_grounding_gate",
             "check_route_gates",
         }
 

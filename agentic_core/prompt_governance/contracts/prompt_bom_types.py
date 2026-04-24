@@ -122,6 +122,11 @@ class PromptBOM:
     template_args: dict[str, Any]
     path: Literal["A", "B", "C", "D"]
     exemplars_required: tuple[str, ...] = ()
+    # EQ-3 (ADR-PROMPT-ASSEMBLY-001 Q1): optional M0 and H0 carriers.
+    # Both default to absent; legacy callers that construct a 5-slot BOM
+    # continue to work unchanged.
+    meta_cognitive_mixin_id: str | None = None
+    healing_context: str | None = None
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -142,6 +147,8 @@ class PromptBOM:
             "raw_c0": dict(self.raw_c0),
             "template_args": dict(self.template_args),
             "path": self.path,
+            "meta_cognitive_mixin_id": self.meta_cognitive_mixin_id,
+            "healing_context": self.healing_context,
         }
 
     def stable_hash(self) -> str:

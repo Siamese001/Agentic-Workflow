@@ -2,8 +2,9 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import WINDSURF_ARTIFACTS_DIR
 
-LOG = Path("artifacts/windsurf/deferred_scope_capture.jsonl")
+LOG = Path(f"{WINDSURF_ARTIFACTS_DIR}/deferred_scope_capture.jsonl")
 
 # Plan slugs used by markers emitted during this chat session
 SESSION_SLUGS = [

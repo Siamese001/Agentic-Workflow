@@ -63,7 +63,7 @@ def get_bge_embedding_function():
 
         return MockEmbeddingFunction(), "mock"
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Error loading BGE model: {e}")
         logger.info("Falling back to mock embeddings")
 
@@ -156,7 +156,7 @@ def upgrade_collection_embeddings(collection_name):
 
         logger.info(f"Successfully upgraded {collection_name} to {ef_type} embeddings")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Error upgrading collection {collection_name}: {e}")
 
 

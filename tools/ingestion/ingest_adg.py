@@ -183,7 +183,7 @@ class ADGGraphIngestion:
             conn.close()
             return len(documents)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Failed to ingest ADG relationships: {e}")
             return 0
 
@@ -245,7 +245,7 @@ class ADGGraphIngestion:
             conn.close()
             return len(documents)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Failed to ingest structural patterns: {e}")
             return 0
 

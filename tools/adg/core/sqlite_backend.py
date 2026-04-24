@@ -9,6 +9,7 @@ all canonical query paths remain unaffected.
 
 import logging
 import sqlite3
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,16 @@ class SQLiteBackend:
     _sqlite_path: Path | None = None
     _last_mtime: float = 0.0
     _graph_store: Any = None  # Optional GraphProjectionBackend instance
+    # Serializes connection lifecycle (connect / close / reopen / self-heal) and
+    # any explicit multi-statement transaction. Per SQLite docs, an sqlite3
+    # connection compiled with THREADSAFE=1 (CPython default) is internally
+    # serialized for individual statements, so routine reads do NOT need this
+    # lock. We take the lock only on lifecycle events and on the self-heal
+    # retry path so a pathological reconnect cannot race with a concurrent
+    # query from another FastMCP worker thread.
+    # Ref: https://www.sqlite.org/threadsafe.html "Serialized" mode
+    # Ref: https://ricardoanderegg.com/posts/python-sqlite-thread-safety/
+    _lifecycle_lock: threading.RLock
 
     def __init__(self, use_graph_store: bool = True):
         self._connect()
@@ -97,6 +108,18 @@ class SQLiteBackend:
             self._readonly_uri(self._sqlite_path),
             timeout=SQLITE_QUERY_TIMEOUT,
             uri=True,
+            # check_same_thread=False is safe here because the connection is
+            # opened mode=ro with PRAGMA query_only=ON (set below). Required
+            # because adg_reopen_connections() currently creates the connection
+            # on a ThreadPoolExecutor worker (runtime.py reopen_connections W1.2
+            # bounded-timeout wrapper) while subsequent query handlers run on
+            # the FastMCP event-loop thread — without this flag, every query
+            # after a reopen() raises "SQLite objects created in a thread can
+            # only be used in that same thread" and the server goes dark until
+            # full restart. See RCA 2026-04-24 (plan
+            # mcp-destructive-gate-preflight-e9a14b deferred-scope item,
+            # Notion ADR + W1-P1 row).
+            check_same_thread=False,
         )
         self._conn.row_factory = sqlite3.Row
         self._conn.execute(f"PRAGMA busy_timeout = {int(SQLITE_QUERY_TIMEOUT * 1000)}")

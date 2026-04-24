@@ -80,7 +80,7 @@ class EagerImportLinter:
                 )
             )
             return violations
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             violations.append(
                 Violation(
                     file=str(file_path),
@@ -244,7 +244,7 @@ def load_risk_config(config_path: Path | None = None) -> dict:
                 "risky_roots": config.get("risky_roots", default_risky),
                 "safe_roots": config.get("safe_roots", default_safe),
             }
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             pass
 
     return {"risky_roots": default_risky, "safe_roots": default_safe}

@@ -53,7 +53,7 @@ class InvalidStubFixer:
         try:
             content = file_path.read_text(encoding="utf-8")
             lines = content.splitlines(keepends=True)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  ✗ Error reading file: {e}")
             self.error_count += 1
             return False
@@ -81,7 +81,7 @@ class InvalidStubFixer:
                     print(f"  ✗ Syntax error after fix: {e}")
                     self.error_count += 1
                     return False
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     print(f"  ✗ Error writing file: {e}")
                     self.error_count += 1
                     return False
@@ -175,7 +175,7 @@ class InvalidStubFixer:
             if file_path.is_file():
                 try:
                     self.fix_file(file_path)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     print(f"  ✗ Error processing {file_path}: {e}")
                     self.error_count += 1
 

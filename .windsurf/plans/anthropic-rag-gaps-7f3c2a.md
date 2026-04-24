@@ -1,7 +1,7 @@
 # Anthropic RAG Best Practices — Gap Analysis & Wave Queue
 
 **Plan ID:** `anthropic-rag-gaps-7f3c2a`
-**Status:** Draft v2 (analysis-only; no code edits) — revised 2026-04-22 after ChromaDB inspection
+**Status:** Partially shipped (code) — updated 2026-04-23 after cross-plan reconciliation with `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md`. Phases P1.1 (preprocessor), P1.2 (XML prompt), P2.1 (cache_control), P2.2 (citations adapter), P2.3 (dual-pass), P4.1 (corpus-size gate), P4.2 (Anthropic tier policy) have shipped code on disk. P1.1 residual (gateway adapter wiring) is owned by the c0-context-assembly plan. P3.1 (6-dim eval), P3.2 (anti-pattern audit), P4.3 (multi-agent breadth-first) remain Todo here.
 **Tier:** T3 (cross-layer, >5 files)
 **Source doc:** `docs/reference/03_L0_Routing/C0 - Retrieval/Anthropic RAG Best Practices.md`
 **ADG Provenance:** backend=sqlite, snapshot=`adg_indexed_04222026_1508.sqlite` (nodes=72,701, edges=541,914)

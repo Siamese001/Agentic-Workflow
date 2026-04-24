@@ -61,7 +61,7 @@ from agentic_core.L0_routing import composition_root as _composition_root  # noq
 # W5.P5: fail-soft metric emission. Import lazily so any breakage in the
 # observability path cannot break the routing hot path.
 try:
-    from agentic_core.L6_observability.routing_calibration_metrics import (
+    from agentic_core.L6_observability.routing_calibration_metrics import (  # guardian: allow-layer-violation -- W5.P5 routing metrics; observability call-back from L0 hot path, wrapped in try/except so routing never hard-depends on L6 and falls back to local no-op stubs
         record_r1_exact_hit,
         record_r1_semantic_hit,
         record_r3_coverage_below_floor,

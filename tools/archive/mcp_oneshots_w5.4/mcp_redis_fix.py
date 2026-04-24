@@ -37,7 +37,7 @@ class MCPRedisFix:
             # Test connection
             self.redis_client.ping()
             print("✅ Redis connected successfully")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Redis connection failed: {e}")
             self.redis_client = None
 
@@ -60,7 +60,7 @@ class MCPRedisFix:
             else:
                 print("Redis cache size is reasonable, not clearing")
                 return {"success": True, "cleared_keys": 0}
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {"success": False, "error": str(e)}
 
     def optimize_redis_config(self):
@@ -83,7 +83,7 @@ class MCPRedisFix:
 
             print("✅ Redis configuration optimized")
             return {"success": True}
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {"success": False, "error": str(e)}
 
     def run_adg_ingestion_optimized(self, force: bool = False) -> dict:
@@ -314,7 +314,7 @@ if __name__ == "__main__":
                 "timed_out": False,
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "success": False,
                 "stdout": "",
@@ -342,7 +342,7 @@ if __name__ == "__main__":
 
             return {"success": True, "db_size": db_size, "metadata": metadata}
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {"success": False, "error": str(e)}
 
 
@@ -475,7 +475,7 @@ def main():
     try:
         status_result = json.loads(result.stdout)
         print(f"✅ Wrapper status: {status_result['success']}")
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Wrapper status failed: {result.stdout}")
 
     print("\n=== Summary ===")

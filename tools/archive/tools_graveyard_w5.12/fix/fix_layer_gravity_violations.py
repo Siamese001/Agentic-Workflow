@@ -116,7 +116,7 @@ class LayerGravityFixer:
                 if self.violations_fixed % 100 == 0:
                     print(f"  Fixed {self.violations_fixed} files...")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.errors += 1
             print(f"  Error fixing {file_path}: {e}")
 

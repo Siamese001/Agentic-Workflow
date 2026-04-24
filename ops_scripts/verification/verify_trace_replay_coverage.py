@@ -69,7 +69,7 @@ class ADGTraceReplayCoverageVerifier:
                     ORDER BY adg_name
                 """)
                 return cursor.fetchall()
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise TraceReplayCoverageError(f'Failed to get first-party modules: {e}') from e
 
     def _get_module_edges(self, module_id: int, relation_types: list[str]) -> list[dict[str, Any]]:
@@ -101,7 +101,7 @@ class ADGTraceReplayCoverageVerifier:
                     )
 
                 return results
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise TraceReplayCoverageError(f'Failed to get module edges: {e}') from e
 
     def _analyze_execution_surface_coverage(self, module_id: int, module_name: str) -> dict[str, Any]:
@@ -308,7 +308,7 @@ class ADGTraceReplayCoverageVerifier:
                     "traces_without_policy_binding": traces_without_policy,
                 }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise TraceReplayCoverageError(f'Trace binding verification failed: {e}') from e
 
     def _verify_hard_fail_transcript_requirements(self) -> dict[str, Any]:
@@ -370,7 +370,7 @@ class ADGTraceReplayCoverageVerifier:
                     "hard_failure_details": hard_failures,
                 }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise TraceReplayCoverageError(f'Hard fail verification failed: {e}') from e
 
     def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
@@ -467,7 +467,7 @@ def main():
     ) as e:  # review: TraceReplayCoverageError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"💥 Unexpected error: {e}")
         return 1
 

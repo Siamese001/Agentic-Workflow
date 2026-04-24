@@ -181,7 +181,7 @@ class DramaticPlanRevisor:
                     results["critical_failures"] += 1
                     print(f"      ❌ CRITICAL EXECUTION BLOCKED: {str(e)[:60]}...")
 
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     results["issues"].append(
                         {
                             "step": step["step_name"],
@@ -369,7 +369,7 @@ class DramaticPlanRevisor:
                     )
                     print(f"      ❌ STILL CRITICAL: {str(e)[:60]}...")
 
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     results["issues"].append(
                         {
                             "step": step["step_name"],

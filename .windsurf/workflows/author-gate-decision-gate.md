@@ -16,7 +16,7 @@ Use this workflow BEFORE making any significant decision with multiple valid app
 - Adding new external dependencies
 - Deleting production files (especially *Agent.py)
 - Modifying governance/policy configuration
-- Introducing anti-patterns (see `/antipattern-hitl-gate`)
+- Introducing anti-patterns (see `/antipattern-author-gate`)
 - Test failures with multiple valid repair classes
 - Error handling strategy has trade-offs
 - Performance optimization involves complexity increase
@@ -70,7 +70,7 @@ Execute ONLY the chosen option.
 ### Step 6 — Record Decision
 
 ```markdown
-## HITL_DECISION_RECORD
+## AUTHOR_GATE_DECISION_RECORD
 **Decision Point**: <description>
 **Options Presented**: A, B, C
 **User Selection**: <A|B|C>
@@ -90,4 +90,4 @@ Execute ONLY the chosen option.
 ### Reference
 
 - Rule: `.windsurf/rules/author-gate-enforcement.md`
-- Related: `/antipattern-hitl-gate`, `/adg-repair-loop`
+- Related: `/antipattern-author-gate`, `/adg-repair-loop`

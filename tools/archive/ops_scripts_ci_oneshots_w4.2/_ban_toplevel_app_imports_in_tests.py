@@ -76,7 +76,7 @@ class ImportGateChecker:
             )
             self.stats["violations"] += 1
             return False
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.violations.append(
                 {
                     "file": str(file_path.relative_to(self.repo_root)),

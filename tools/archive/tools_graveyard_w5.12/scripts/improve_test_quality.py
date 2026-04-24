@@ -86,7 +86,7 @@ def enhance_test_assertions(test_path: Path) -> bool:
         logger.info(f"Enhanced test saved to: {enhanced_path}")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Failed to enhance test {test_path}: {e}")
         return False
 
@@ -164,7 +164,7 @@ def create_enhanced_test_template(source_path: Path, output_path: Path | None = 
         logger.info(f"Enhanced test template created: {output_path}")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Failed to create test template: {e}")
         return False
 

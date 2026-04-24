@@ -207,7 +207,7 @@ Timestamp: {Path(__file__).stat().st_mtime if Path(__file__).exists() else "N/A"
                 parts.append(content)
                 processed_count += 1
 
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:  # noqa: BLE001  # guardian: allow-broad-exception -- offline tooling, reports failure
                 all_undefined.append(f"{rule_file.name}: {str(e)}")
 
         consolidated = "".join(parts)

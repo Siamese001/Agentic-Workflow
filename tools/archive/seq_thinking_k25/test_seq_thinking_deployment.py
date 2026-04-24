@@ -59,7 +59,7 @@ def test_mcp_configuration():
         print("✅ MCP configuration valid")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ MCP configuration test failed: {e}")
         return False
 
@@ -186,7 +186,7 @@ def test_sequential_thinking_booster():
         print("✅ Sequential thinking booster working correctly")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Booster test failed: {e}")
         return False
     finally:
@@ -250,7 +250,7 @@ def test_usage_tracker():
         print("✅ MCP usage tracker working correctly")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Usage tracker test failed: {e}")
         return False
 
@@ -304,7 +304,7 @@ print(f'Template retrieved: {{len(template)}} characters')
         print("✅ Sequential thinking workflow working correctly")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Workflow test failed: {e}")
         return False
 
@@ -361,7 +361,7 @@ print(f'Templates for high complexity: {{len(templates)}}')
         print("✅ Prompt templates working correctly")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Templates test failed: {e}")
         return False
 
@@ -398,7 +398,7 @@ def run_integration_test():
             results[test_name] = success
             if success:
                 passed += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ {test_name} failed with exception: {e}")
             results[test_name] = False
 

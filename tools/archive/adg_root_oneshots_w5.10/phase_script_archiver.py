@@ -88,7 +88,7 @@ class PhaseScriptArchiver:
             logging.info(f"Archived: {file_info['path']} -> {archive_filename}")
             return True
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logging.error(f"Failed to archive {file_info['path']}: {e}")
             return False
 

@@ -22,7 +22,7 @@ def test_node_environment():
         )
         print(f"✅ Node.js version: {result.stdout.strip()}")
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Node.js not working: {e}")
         return False
 
@@ -98,7 +98,7 @@ def test_sequential_thinking_package():
     except FileNotFoundError:
         print("❌ npx.cmd not found")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Error invoking package: {e}")
         return False
 
@@ -128,7 +128,7 @@ def test_mcp_config():
             else:
                 print("❌ Sequential thinking server not found in config")
                 return False
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Error reading config: {e}")
             return False
     else:

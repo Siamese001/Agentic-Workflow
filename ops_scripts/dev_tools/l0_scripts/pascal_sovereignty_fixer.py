@@ -390,7 +390,7 @@ class PascalSovereigntyFixer:
                     print(f"  [ACTION] RENAME {src.name} -> {conflict_name}")
                     src.rename(conflict_path)
                     return True  # Violation resolved by moving aside
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"  [ERROR] Failed to resolve collision: {e}")
                 return False
 

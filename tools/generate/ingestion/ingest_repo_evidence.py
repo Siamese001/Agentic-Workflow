@@ -43,6 +43,7 @@ import re
 import sys
 import time
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import ADR_DIR
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -104,7 +105,7 @@ _VALID_AUTHORITY_TIERS: frozenset[str] = frozenset({"T4_repo_canonical", "T4_imp
 
 REPO_CANONICAL_SOURCES: list[dict] = [
     {
-        "path": "docs/architecture/adr/adr-0043-structural-agentic-checks.md",
+        "path": f"{ADR_DIR}/adr-0043-structural-agentic-checks.md",
         "title": "ADR-0043: Structural Conformance & Agentic Anti-Pattern Checks",
         "doc_family": "adr",
         "topic_bucket": "arch_standards",
@@ -112,7 +113,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": "docs/architecture/adr/adr-002-interface-protocol-first.md",
+        "path": f"{ADR_DIR}/adr-002-interface-protocol-first.md",
         "title": "ADR-002: Interface & Protocol-First Design",
         "doc_family": "adr",
         "topic_bucket": "arch_standards",
@@ -120,7 +121,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": "docs/architecture/adr/adr-0042-skills-consolidation.md",
+        "path": f"{ADR_DIR}/adr-0042-skills-consolidation.md",
         "title": "ADR-0042: Skills Consolidation",
         "doc_family": "adr",
         "topic_bucket": "arch_standards",
@@ -128,7 +129,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": "docs/architecture/adr/ADR-018-chromadb-as-canonical-vector-store.md",
+        "path": f"{ADR_DIR}/ADR-018-chromadb-as-canonical-vector-store.md",
         "title": "ADR-018: ChromaDB as Canonical Vector Store",
         "doc_family": "adr",
         "topic_bucket": "rag_retrieval",
@@ -136,7 +137,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": "docs/architecture/adr/ADR-019-adg-materialized-views.md",
+        "path": f"{ADR_DIR}/ADR-019-adg-materialized-views.md",
         "title": "ADR-019: ADG Materialized Views",
         "doc_family": "adr",
         "topic_bucket": "arch_standards",

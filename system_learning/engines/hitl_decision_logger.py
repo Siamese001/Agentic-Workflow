@@ -92,6 +92,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 _emit_emits_metric_event("hitl_decision_logger", "p4obs", "metric_1")
 _emit_emits_metric_event("hitl_decision_logger", "p4obs", "metric_2")
@@ -171,7 +172,7 @@ logger = logging.getLogger(__name__)
 
 _lock = threading.Lock()
 _decision_counter: int = 0
-_DEFAULT_EVIDENCE_PATH = Path("docs/reports/evidence/wave6_evidence.md")
+_DEFAULT_EVIDENCE_PATH = Path(f"{DOCS_REPORTS_DIR}/evidence/wave6_evidence.md")
 
 
 def _get_evidence_path() -> Path:

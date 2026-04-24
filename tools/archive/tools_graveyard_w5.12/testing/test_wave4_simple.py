@@ -120,7 +120,7 @@ def test_reranking_engine():
         print("\n✅ Reranking engine test successful")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Reranking engine test failed: {e}")
         return False
 
@@ -139,7 +139,7 @@ def test_wave4_components():
         print(f"   Query types: {len(stats['query_types'])}")
         print(f"   Pattern count: {stats['pattern_count']}")
         component_tests.append(True)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Query Router failed: {e}")
         component_tests.append(False)
 
@@ -151,7 +151,7 @@ def test_wave4_components():
         print(f"   Model loaded: {stats['model_loaded']}")
         print(f"   Feature count: {stats['feature_count']}")
         component_tests.append(True)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Reranking Engine failed: {e}")
         component_tests.append(False)
 
@@ -159,7 +159,7 @@ def test_wave4_components():
     try:
         print("✅ Multi-Query Fusion importable")
         component_tests.append(True)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Multi-Query Fusion failed: {e}")
         component_tests.append(False)
 
@@ -167,7 +167,7 @@ def test_wave4_components():
     try:
         print("✅ Advanced Semantic Retriever importable")
         component_tests.append(True)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Advanced Semantic Retriever failed: {e}")
         component_tests.append(False)
 
@@ -197,7 +197,7 @@ def test_fusion_strategies():
         print(f"\n✅ All {len(expected_strategies)} fusion strategies available")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Fusion strategies test failed: {e}")
         return False
 
@@ -231,7 +231,7 @@ def verify_wave4_artifacts():
         try:
             collections = list(chroma_dir.glob("*"))
             print(f"✅ ChromaDB collections: {len(collections)}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"⚠️  Could not list collections: {e}")
     else:
         print(f"❌ ChromaDB directory missing: {chroma_dir}")
@@ -299,7 +299,7 @@ def main():
         print(f"    Collection weights: {len(reranker_stats['collection_weights'])}")
         print(f"    Layer weights: {len(reranker_stats['layer_weights'])}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  Could not retrieve stats: {e}")
 
     print("\n" + "=" * 60)

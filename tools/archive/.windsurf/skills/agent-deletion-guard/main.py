@@ -36,7 +36,7 @@ def check_agent_deletion_authorization(file_path: str) -> tuple[bool, list[str]]
             issues.append("No AGENT-DELETION-AUTHORIZED marker found in recent commits")
         else:
             print("Found AGENT-DELETION-AUTHORIZED in commit history")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Failed to check authorization marker: {e}")
 
     # Check for justification in the same commit
@@ -50,7 +50,7 @@ def check_agent_deletion_authorization(file_path: str) -> tuple[bool, list[str]]
 
         if result.returncode != 0 or not result.stdout.strip():
             issues.append("No deletion justification found in commit message")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Failed to check justification: {e}")
 
     # Check for replacement specified
@@ -64,7 +64,7 @@ def check_agent_deletion_authorization(file_path: str) -> tuple[bool, list[str]]
 
         if result.returncode != 0 or not result.stdout.strip():
             issues.append("No replacement specification found in commit message")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Failed to check replacement specification: {e}")
 
     # Check for zero references (basic check - no imports)
@@ -81,7 +81,7 @@ def check_agent_deletion_authorization(file_path: str) -> tuple[bool, list[str]]
             references = [line for line in result.stdout.strip().split("\n") if file_path not in line]
             if len(references) > 0:
                 issues.append(f"Found {len(references)} active references to {agent_name}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Failed to check references: {e}")
 
     return len(issues) == 0, issues

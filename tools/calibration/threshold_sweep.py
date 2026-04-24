@@ -202,7 +202,7 @@ def sweep_thresholds(
                 reporter.update()
         if reporter is not None:
             reporter.done()
-    except BaseException:
+    except BaseException:  # guardian: allow-broad-exception -- offline tooling, reports failure
         if reporter is not None:
             reporter.fail("sweep interrupted")
         raise

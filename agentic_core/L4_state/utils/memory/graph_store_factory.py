@@ -15,7 +15,7 @@ from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
 
 logger = logging.getLogger(__name__)
 
-# Default ADG SQLite database path (relative to repository root)
+# Default ADG SQLite daf"{ADG_ARTIFACTS_DIR}/adg_indexed.sqlite"sqlite"y root)
 _DEFAULT_ADG_DB_PATH = f"{ADG_ARTIFACTS_DIR}/adg_indexed.sqlite"
 
 

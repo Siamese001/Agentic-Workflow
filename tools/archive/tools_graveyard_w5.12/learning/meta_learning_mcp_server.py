@@ -149,7 +149,7 @@ def _refresh_snapshot_cache():
                     "file_size": snapshot_file.stat().st_size,
                     "created_time": snapshot_file.stat().st_ctime,
                 }
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Failed to load snapshot {snapshot_file}: {e}")
 
     _last_cache_update = current_time
@@ -286,7 +286,7 @@ def runtime_adg_query(
             if len(matching_snapshots) >= limit:
                 break
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.warning(f"Failed to load snapshot {snapshot_id}: {e}")
             continue
 
@@ -344,7 +344,7 @@ def runtime_adg_compare(snapshot_id_1: str, snapshot_id_2: str) -> dict[str, Any
         try:
             with open(_snapshot_cache[snapshot_id]["file_path"]) as f:
                 snapshots[snapshot_id] = json.load(f)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "success": False,
                 "error": f"Failed to load snapshot {snapshot_id}: {e}",
@@ -641,7 +641,7 @@ def cross_repo_import(repo_url: str, import_type: str = "patterns") -> dict[str,
 
         return import_result
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(
             "cross_repo_import_error",
             extra={
@@ -712,7 +712,7 @@ def learning_state_management(action: str, state_id: str = None) -> dict[str, An
                 "backup_path": str(backup_path),
                 "snapshot_count": backup_data["snapshot_count"],
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "success": False,
                 "action": action,
@@ -734,7 +734,7 @@ def learning_state_management(action: str, state_id: str = None) -> dict[str, An
                 snapshot_file = Path(_snapshot_cache[snapshot_id]["file_path"])
                 snapshot_file.unlink()
                 cleaned_count += 1
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Failed to cleanup snapshot {snapshot_id}: {e}")
 
         # Refresh cache after cleanup

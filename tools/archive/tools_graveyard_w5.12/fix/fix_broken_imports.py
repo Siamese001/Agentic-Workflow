@@ -59,7 +59,7 @@ def fix_broken_imports():
                 if fixed_count % 100 == 0:
                     print(f"  Fixed {fixed_count} files...")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  Error fixing {py_file}: {e}")
 
     print(f"✅ Fixed {fixed_count} files with broken imports")

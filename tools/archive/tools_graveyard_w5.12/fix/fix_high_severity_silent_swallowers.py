@@ -71,7 +71,7 @@ class HighSeveritySilentSwallowerFixer:
                         if self.fixes_applied % 10 == 0:
                             print(f"    Fixed {self.fixes_applied} ImportError violations...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
@@ -114,7 +114,7 @@ class HighSeveritySilentSwallowerFixer:
                         if self.fixes_applied % 10 == 0:
                             print(f"    Fixed {self.fixes_applied} ValueError violations...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
@@ -157,7 +157,7 @@ class HighSeveritySilentSwallowerFixer:
                         if self.fixes_applied % 10 == 0:
                             print(f"    Fixed {self.fixes_applied} programming error violations...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error fixing {file_path}: {e}")
 
@@ -225,7 +225,7 @@ class HighSeveritySilentSwallowerFixer:
                 else:
                     print(f"    ⚠️  Line {line_no} not found in {file_path}")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    ❌ Error fixing {file_path}: {e}")
 

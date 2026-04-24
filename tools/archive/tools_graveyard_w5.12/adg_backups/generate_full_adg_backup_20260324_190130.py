@@ -248,7 +248,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     try:
         commit_sha = _subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         print(f"[ADG] Captured commit SHA: {commit_sha}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[ADG] Warning: Failed to capture commit SHA: {e}")
         commit_sha = ""
 
@@ -260,7 +260,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
             text=True,
         ).strip()
         print(f"[ADG] Captured repo state hash: {repo_state_hash}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[ADG] Warning: Failed to capture repo state hash: {e}")
         repo_state_hash = ""
 
@@ -1226,7 +1226,7 @@ def _infer_layer(path: str) -> str:
                         return layer
 
                 return default_layer
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"[ADG] Warning: Failed to load layer overrides: {e}")
             # Fall back to simple inference
 
@@ -1386,7 +1386,7 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
             if missing_artifacts:
                 print(f"[ADG] WARNING: Zip created with missing artifacts: {missing_artifacts}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[ADG] CRITICAL: Zip creation failed: {e}")
         if zip_path.exists():
             zip_path.unlink()

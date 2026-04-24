@@ -12,6 +12,7 @@ from typing import Any
 from tools.utils.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
 from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -386,7 +387,7 @@ def example_workflow():
     )
 
     workflow = TokenAwarePlanningWorkflow(
-        budget_file=Path("docs/reports/plans/example_workflow_budget.json"),
+        budget_file=Path(f"{DOCS_REPORTS_DIR}/plans/example_workflow_budget.json"),
         custom_budget=custom_budget,
     )
 

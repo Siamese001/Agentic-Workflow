@@ -45,7 +45,7 @@ class SequentialThinkingDeployer:
                 print(f"✅ Backed up workspace MCP config to: {backup_path}")
 
             return True
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Failed to backup configuration: {e}")
             return False
 
@@ -65,7 +65,7 @@ class SequentialThinkingDeployer:
             print(f"✅ Updated workspace MCP configuration: {self.workspace_mcp_config}")
 
             return True
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Failed to apply MCP configuration: {e}")
             return False
 
@@ -110,7 +110,7 @@ class SequentialThinkingDeployer:
                 print(f"❌ Environment setup failed: {result.stderr}")
                 return False
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Failed to setup environment: {e}")
             return False
 
@@ -130,7 +130,7 @@ class SequentialThinkingDeployer:
 
             print("✅ Created necessary directories")
             return True
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Failed to create directories: {e}")
             return False
 
@@ -150,7 +150,7 @@ class SequentialThinkingDeployer:
             else:
                 results["mcp_config"] = False
                 print("❌ Sequential thinking not properly configured in MCP")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results["mcp_config"] = False
             print(f"❌ MCP configuration validation failed: {e}")
 
@@ -248,7 +248,7 @@ class SequentialThinkingDeployer:
                 print(f"❌ Booster test failed: {result.stderr}")
                 return False
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"❌ Test execution failed: {e}")
             return False
 

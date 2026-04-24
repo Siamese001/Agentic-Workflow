@@ -25,7 +25,7 @@ async def test_meta_learning_mcp():
     try:
         spec.loader.exec_module(server_module)
         print("✅ Meta-learning server module imported successfully")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to import Meta-learning server module: {e}")
         return False
 
@@ -42,7 +42,7 @@ async def test_meta_learning_mcp():
         tools = await mcp_instance.list_tools()
         tool_names = [tool.name for tool in tools]
         print(f"✅ Found {len(tool_names)} tools: {', '.join(tool_names)}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to list tools: {e}")
         if hasattr(mcp_instance, "_tools"):
             tool_names = list(mcp_instance._tools.keys())
@@ -92,7 +92,7 @@ async def test_meta_learning_mcp():
 
         print("✅ runtime_adg_status() has all required fields")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Error testing runtime_adg_status(): {e}")
         return False
 
@@ -109,7 +109,7 @@ async def test_meta_learning_mcp():
 
         print("✅ learning_pipeline_status() has all required fields")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Error testing learning_pipeline_status(): {e}")
         return False
 

@@ -159,7 +159,7 @@ class PreWriteOrchestrator:
         except subprocess.TimeoutExpired:
             duration = time.time() - start_time
             return SkillResult(skill_name, False, ["Skill execution timed out"], duration)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             duration = time.time() - start_time
             return SkillResult(skill_name, False, [f"Error running skill: {e}"], duration)
 

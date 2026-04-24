@@ -102,7 +102,7 @@ class SkillStatusDashboard:
                         metric.last_run_time = datetime.fromisoformat(data_dict["last_run_time"])
 
                     metrics[name] = metric
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"Warning: Could not load metrics: {e}")
 
         return metrics
@@ -126,7 +126,7 @@ class SkillStatusDashboard:
 
             self.metrics_file.parent.mkdir(parents=True, exist_ok=True)
             self.metrics_file.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"Warning: Could not save metrics: {e}")
 
     def _scan_skills(self) -> dict[str, dict]:
@@ -191,7 +191,7 @@ class SkillStatusDashboard:
         except subprocess.TimeoutExpired:
             duration = time.time() - start_time
             return False, duration, ["Timeout"]
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             duration = time.time() - start_time
             return False, duration, [str(e)]
 

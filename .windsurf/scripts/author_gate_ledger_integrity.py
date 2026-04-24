@@ -7,7 +7,7 @@ Implements the W5 deliverable:
   - canonicalize_row   → stable JSON serialization, excluding self-referential columns
   - verify_chain       → walks the ledger in order, reports first break
   - backfill_chain     → one-shot populator for existing NULL-hash rows
-  - ensure_row_hash    → INSERT-time helper (called by post_cascade_hitl_capture)
+  - ensure_row_hash    → INSERT-time helper (called by post_cascade_author_gate_capture)
 
 INVARIANTS
 ----------
@@ -73,7 +73,8 @@ _EXCLUDED_COLUMNS: frozenset[str] = frozenset(
         "row_hash",
         "sig_alg",
         "signature",
-        "status",  # mutable lifecycle flag; see module docstring
+        "status",              # mutable lifecycle flag (surfaced -> executed)
+        "exit_criteria_json",  # W5.1 — amendable post-hoc as criteria evolve
     }
 )
 

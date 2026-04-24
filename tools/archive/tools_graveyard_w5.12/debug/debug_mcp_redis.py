@@ -40,7 +40,7 @@ def run_command_with_timeout(cmd: str, cwd: str, timeout: int = 30) -> dict:
             "returncode": -1,
             "timed_out": True,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "success": False,
             "stdout": "",

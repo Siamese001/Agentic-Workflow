@@ -18,6 +18,9 @@ from agentic_core.L2_execution.enforcement._adapter_gemini import (
 from agentic_core.L2_execution.enforcement._adapter_openai import (
     OpenAIMessageAdapter,
 )
+from agentic_core.L2_execution.enforcement._adapter_openai_oseries import (
+    OSeriesMessageAdapter,
+)
 
 if TYPE_CHECKING:
     from agentic_core.L2_execution.enforcement.provider_adapter import (
@@ -49,4 +52,44 @@ def get_adapter(provider_type: "ProviderType") -> "ProviderMessageAdapter":
     return _REGISTRY.get(provider_type.name, OpenAIMessageAdapter())
 
 
-__all__ = ["get_adapter"]
+# EQ-2: model-aware selector. Some providers (OpenAI) ship multiple model
+# families with distinct prompting conventions. We keep the ``ProviderType``
+# enum stable and branch on ``model_id`` here instead of introducing a new
+# enum variant. Recognized o-series prefixes per OpenAI model docs.
+_OSERIES_MODEL_PREFIXES: tuple[str, ...] = (
+    "o1",
+    "o3",
+    "o4",
+)
+
+
+def _is_oseries_model(model_id: str | None) -> bool:
+    if not model_id:
+        return False
+    normalized = model_id.strip().lower()
+    for prefix in _OSERIES_MODEL_PREFIXES:
+        # Match e.g. "o1", "o1-mini", "o3-pro", "o4" but not "openai-*".
+        if normalized == prefix or normalized.startswith(prefix + "-"):
+            return True
+    return False
+
+
+def get_adapter_for_model(
+    provider_type: "ProviderType", model_id: str | None
+) -> "ProviderMessageAdapter":
+    """Return the adapter for ``(provider_type, model_id)``.
+
+    EQ-2 extension (ADR-PROMPT-ASSEMBLY-001 Q2): OpenAI o-series models
+    (``o1``, ``o3``, ``o4`` and their variants) route to
+    :class:`OSeriesMessageAdapter`, which lifts D0 to the ``developer``
+    role and drops M0 (CoT prompts). All other providers fall back to the
+    same table used by :func:`get_adapter`.
+    """
+    if provider_type.name in {"OPENAI", "AZURE_OPENAI"} and _is_oseries_model(
+        model_id
+    ):
+        return OSeriesMessageAdapter()
+    return get_adapter(provider_type)
+
+
+__all__ = ["get_adapter", "get_adapter_for_model"]

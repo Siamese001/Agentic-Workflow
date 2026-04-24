@@ -219,7 +219,7 @@ def analyze_file(file_path: pathlib.Path) -> Dict[str, Any]:
             "test_functions": len(visitor.test_functions),
             "needs_conversion": len(visitor.imports_to_delay) > 0 and visitor.has_test_functions,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "file": str(file_path),
             "error": str(e),
@@ -273,7 +273,7 @@ def convert_file(file_path: pathlib.Path, validate: bool = False) -> Dict[str, A
             "safe_imports": len(visitor.safe_imports),
         }
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "file": str(file_path),
             "status": "error",

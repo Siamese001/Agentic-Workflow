@@ -30,7 +30,7 @@ def get_embedding_function():
                 model_name="text-embedding-3-small",  # Cost-effective model
             )
             return openai_ef, "openai"
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.warning(f"Failed to initialize OpenAI embeddings: {e}")
             logger.info("Falling back to mock embeddings")
 
@@ -121,7 +121,7 @@ def upgrade_collection_embeddings(collection_name):
 
         logger.info(f"Successfully upgraded {collection_name} to {ef_type} embeddings")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Error upgrading collection {collection_name}: {e}")
 
 

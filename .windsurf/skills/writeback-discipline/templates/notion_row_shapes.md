@@ -66,7 +66,7 @@
 
 ---
 
-## §3. HITL Decision Ledger (resolved scored question)
+## §3. Author-Gate Decision Ledger (resolved scored question)
 
 **Database ID**: `18bb9145-1320-4191-8b14-6c309776bcf5`
 **Trigger**: Any scored `ask_user_question` reaches user selection

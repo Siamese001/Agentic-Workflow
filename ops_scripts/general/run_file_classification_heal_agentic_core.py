@@ -24,7 +24,7 @@ try:
         AGENTIC_CORE_DIR as _AGENTIC_CORE_DIR,
         REPORTS_DIR as _REPORTS_DIR,
     )
-except Exception:
+except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
     _AGENTIC_CORE_DIR = "agentic_core"
     _REPORTS_DIR = "reports"
 
@@ -94,7 +94,7 @@ def _invoke_agent(agent: Any, file_path: Path, enable_healing: bool) -> tuple[st
             return mode, _normalize_payload(response)
         except TypeError as exc:
             last_error = exc
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise RuntimeError(f"Agent call failed for {file_path}: {exc}") from exc
 
     if last_error is not None:
@@ -159,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         agent_class = _load_agent_class()
         agent = _build_agent(agent_class, enable_healing=args.enable_healing)
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         LOGGER.error("Failed to initialize FileClassificationAgent: %s", exc)
         return 2
 
@@ -168,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             mode, payload = _invoke_agent(agent, file_path, enable_healing=args.enable_healing)
             results.append(ClassificationResult(str(file_path), True, mode, payload, None))
-        except Exception as exc:
+        except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results.append(ClassificationResult(str(file_path), False, "error", None, str(exc)))
 
     ok_count = sum(1 for item in results if item.ok)

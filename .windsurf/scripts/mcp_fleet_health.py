@@ -186,7 +186,7 @@ def check_redis() -> CheckResult:
                 {"version": version, "dbsize": keys},
             )
         return CheckResult("redis", "RED", "ping returned falsy")
-    except Exception as exc:  # guardian: allow-broad-redis -- connection probe
+    except Exception as exc:  # guardian: allow-broad-exception -- redis connection probe; any failure mode means server unhealthy, no need to discriminate
         return CheckResult("redis", "RED", f"connect failed: {exc}")
 
 

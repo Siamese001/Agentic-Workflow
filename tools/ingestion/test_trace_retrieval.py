@@ -60,7 +60,7 @@ def test_trace_retrieval():
 
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Query failed: {e}")
         return False
 
@@ -89,7 +89,7 @@ def test_trace_type_filtering():
 
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to analyze trace types: {e}")
         return False
 

@@ -59,7 +59,7 @@ def test_retrieval():
 
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Query failed: {e}")
         return False
 

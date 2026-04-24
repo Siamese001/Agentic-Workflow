@@ -80,7 +80,7 @@ class IdempotentWaveRunner:
                 "timestamp": datetime.now().isoformat(),
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "wave_name": wave_name,
                 "executed": False,

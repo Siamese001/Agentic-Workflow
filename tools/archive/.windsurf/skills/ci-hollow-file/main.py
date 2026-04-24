@@ -64,7 +64,7 @@ def validate_hollow_file(file_path: str) -> tuple[bool, str, str]:
 
         return True, "File has meaningful content", ""
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False, "", f"Error checking file: {e}"
 
 

@@ -62,7 +62,7 @@ def test_opentelemetry_availability():
             print("✅ OTEL_AVAILABLE = True")
         else:
             print("❌ OTEL_AVAILABLE = False - OpenTelemetry not available to adapter")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["otel_available_flag"] = f"ERROR: {e}"
         print(f"❌ Failed to check OTEL_AVAILABLE flag: {e}")
         traceback.print_exc()
@@ -77,7 +77,7 @@ def test_opentelemetry_availability():
         results["adapter_enabled"] = adapter.is_enabled()
         print("✅ Adapter initialized successfully")
         print(f"   Enabled: {adapter.is_enabled()}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["adapter_init"] = False
         results["adapter_enabled"] = False
         print(f"❌ Adapter initialization failed: {e}")
@@ -102,7 +102,7 @@ def test_opentelemetry_availability():
 
         if spans:
             print(f"   Sample span: {spans[0].get('name', 'unknown')}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["tracing_context"] = False
         results["spans_generated"] = False
         print(f"❌ Basic tracing failed: {e}")
@@ -120,7 +120,7 @@ def test_opentelemetry_availability():
         print(f"✅ Found {len(otel_packages)} OpenTelemetry packages:")
         for pkg in sorted(otel_packages):
             print(f"   - {pkg}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["installed_otel_packages"] = f"ERROR: {e}"
         print(f"❌ Failed to check installed packages: {e}")
 

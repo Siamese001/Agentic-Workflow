@@ -162,7 +162,7 @@ class TerminalMCPServer:
                     return await self._list_allowed_commands()
                 else:
                     raise ValueError(f"Unknown tool: {name}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.error(f"Error in tool {name}: {e}")
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error: {str(e)}")],
@@ -233,7 +233,7 @@ class TerminalMCPServer:
                 ],
                 isError=True,
             )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Execution error: {str(e)}")],
                 isError=True,
@@ -327,6 +327,6 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("Terminal MCP Server stopped by user")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Server error: {e}")
         sys.exit(1)

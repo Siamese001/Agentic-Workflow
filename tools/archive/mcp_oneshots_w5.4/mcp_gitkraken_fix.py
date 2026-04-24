@@ -45,7 +45,7 @@ class MCPGitKrakenFix:
                 "stderr": f"Command timed out after {timeout}s: {cmd}",
                 "returncode": -1,
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "success": False,
                 "stdout": "",

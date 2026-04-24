@@ -29,7 +29,7 @@ for source_file, line_no in violation_rows:
         else:
             print(f"FILE NOT FOUND: {source_file}:{line_no}")
             unapproved.append((source_file, line_no))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"EXCEPTION for {source_file}:{line_no}: {e}")
         unapproved.append((source_file, line_no))
 

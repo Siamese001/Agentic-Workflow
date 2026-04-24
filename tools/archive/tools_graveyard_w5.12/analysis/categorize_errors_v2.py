@@ -83,7 +83,7 @@ for fp in error_files:
                     except ImportError as e:
                         categories["ImportError_other"] += 1
                         cat_samples.setdefault("ImportError_other", []).append((fp, str(e)[:80]))
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                         categories["other_exception"] += 1
                         cat_samples.setdefault("other_exception", []).append(
                             (fp, type(e).__name__, str(e)[:60])
@@ -91,7 +91,7 @@ for fp in error_files:
                 else:
                     categories["no_MODULE_PATH"] += 1
                     cat_samples.setdefault("no_MODULE_PATH", []).append(fp)
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 categories["analysis_failed"] += 1
     elif is_enhanced:
         categories["enhanced_unknown"] += 1

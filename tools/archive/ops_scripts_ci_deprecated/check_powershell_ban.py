@@ -286,7 +286,7 @@ class PowerShellBanChecker:
                         fixed_count += 1
                         self.violations.remove(violation)
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"Failed to fix {violation['file']}: {e}", file=sys.stderr)
 
         return fixed_count > 0

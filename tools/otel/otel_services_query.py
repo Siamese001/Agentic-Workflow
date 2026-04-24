@@ -91,7 +91,7 @@ class OTelQueryService:
                         self._trace_cache.put(trace_id, result)
                         logger.info("otel_trace_loaded_from_store", extra={"trace_id": trace_id})
                         return result
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.error("otel_trace_store_read_error", extra={"trace_id": trace_id, "error": str(exc)})
                 self._metrics.mark_error()
 
@@ -125,7 +125,7 @@ class OTelQueryService:
                     },
                 )
                 return result
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.error("otel_trace_load_error", extra={"trace_id": trace_id, "error": str(exc)})
                 self._metrics.mark_error()
 

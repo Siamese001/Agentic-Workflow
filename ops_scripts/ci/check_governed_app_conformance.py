@@ -56,7 +56,7 @@ def _safe_import_module(module_name: str) -> tuple[object | None, bool, str]:
         return importlib.import_module(module_name), True, module_name
     except (
         Exception
-    ) as exc:  # review: CI gate must degrade to a recorded failure, not crash on import side effects
+    ) as exc:  # review: CI gate must degrade to a recorded failure, not crash on import side effects  # guardian: allow-broad-exception -- offline tooling, reports failure
         return None, False, f"{type(exc).__name__}: {str(exc)[:80]}"
 
 
@@ -278,7 +278,7 @@ def run_conformance_gate() -> bool:
             GovernanceStatus,
             GovernedAppEntry,
         )
-    except Exception as exc:  # review: CI gate must report registry bootstrap failures as a failed gate
+    except Exception as exc:  # review: CI gate must report registry bootstrap failures as a failed gate  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(
             f"[governed_app_conformance] FAIL: could not import app registry: {type(exc).__name__}: {exc}",
             file=sys.stderr,

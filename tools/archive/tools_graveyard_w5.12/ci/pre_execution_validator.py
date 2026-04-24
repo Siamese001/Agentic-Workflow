@@ -178,7 +178,7 @@ class PreExecutionValidator:
                 "details": f"Last execution {time_since.total_seconds() / 3600:.1f} hours ago",
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {"should_execute": True, "details": f"Error checking execution time: {e}"}
 
     def validate_wave_prerequisites(self, wave_name: str) -> dict[str, Any]:

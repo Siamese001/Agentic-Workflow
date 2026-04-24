@@ -32,7 +32,7 @@ def test_wave3_ingestion_scripts():
             print("✅ Runtime ingestion script works")
         else:
             print(f"❌ Runtime ingestion script failed: {result.stderr}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Runtime ingestion script error: {e}")
 
     # Test history ingestion script
@@ -50,7 +50,7 @@ def test_wave3_ingestion_scripts():
             print("✅ History ingestion script works")
         else:
             print(f"❌ History ingestion script failed: {result.stderr}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ History ingestion script error: {e}")
 
 
@@ -73,7 +73,7 @@ def test_synthetic_data_generation():
 
         print("✅ Synthetic data generation components ready")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Synthetic data generation error: {e}")
 
 
@@ -90,10 +90,10 @@ def test_wave3_components():
         try:
             collections = client.list_collections()
             print(f"✅ Available collections: {len(collections)}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"⚠️  Collection listing failed (expected due to compaction): {e}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ ChromaDB client error: {e}")
 
 
@@ -123,7 +123,7 @@ def verify_wave3_artifacts():
         try:
             collections = list(chroma_dir.glob("*"))
             print(f"✅ ChromaDB collections: {len(collections)}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"⚠️  Could not list collections: {e}")
     else:
         print(f"❌ ChromaDB directory missing: {chroma_dir}")

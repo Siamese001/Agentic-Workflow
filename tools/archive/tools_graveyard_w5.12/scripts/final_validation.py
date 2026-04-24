@@ -122,7 +122,7 @@ class FinalValidationOrchestrator:
                 "errors": errors,
                 "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.total_errors += 1
             return {
                 "phase": "2.1",
@@ -154,7 +154,7 @@ class FinalValidationOrchestrator:
                 "errors": errors,
                 "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.total_errors += 1
             return {
                 "phase": "2.4",
@@ -184,7 +184,7 @@ class FinalValidationOrchestrator:
                 "errors": errors,
                 "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.total_errors += 1
             return {
                 "phase": "2.2",
@@ -214,7 +214,7 @@ class FinalValidationOrchestrator:
                 "errors": errors,
                 "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.total_errors += 1
             return {
                 "phase": "2.3",
@@ -249,7 +249,7 @@ class FinalValidationOrchestrator:
                 "errors": errors,
                 "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.total_errors += 1
             return {
                 "wave": "3.0",

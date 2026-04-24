@@ -133,7 +133,7 @@ def main():
                 else:
                     print(f"  ⚠️ File not found: {file_path}")
                 skipped_count += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  ❌ Error processing {file_part}: {e}")
             error_count += 1
 

@@ -70,7 +70,7 @@ for file_path in wave_22_files:
         if convert_file(file_path):
             converted += 1
             print(f"Converted: {file_path}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         errors.append(f"{file_path}: {e}")
         print(f"ERROR: {file_path}: {e}")
 

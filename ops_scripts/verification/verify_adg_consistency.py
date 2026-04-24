@@ -108,7 +108,7 @@ class ADGConsistencyVerifier:
         try:
             with open(self.snapshot_path, encoding="utf-8") as f:
                 return json.load(f)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise ConsistencyVerificationError(f'Failed to load snapshot: {e}') from e
 
     def _execute_sql_query(self, query: str) -> int:
@@ -121,7 +121,7 @@ class ADGConsistencyVerifier:
                 if not result:
                     return 0
                 return int(result[0])
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise ConsistencyVerificationError(f"Failed to execute SQL query '{query}': {e}") from e
 
     def _get_snapshot_metric(self, snapshot: dict[str, Any], metric_name: str) -> int | None:
@@ -188,7 +188,7 @@ class ADGConsistencyVerifier:
                 if missing_edge_columns:
                     self.warnings.append(f"Missing edge columns: {missing_edge_columns}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise ConsistencyVerificationError(f'Schema verification failed: {e}') from e
 
     def _verify_foreign_key_integrity(self) -> None:
@@ -218,7 +218,7 @@ class ADGConsistencyVerifier:
                 if orphaned_dst > 0:
                     self.errors.append(f"Found {orphaned_dst} edges with orphaned destination nodes")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise ConsistencyVerificationError(f'Foreign key verification failed: {e}') from e
 
     def _verify_relation_type_consistency(self) -> None:
@@ -246,7 +246,7 @@ class ADGConsistencyVerifier:
                 if long_types:
                     self.warnings.append(f"Found {len(long_types)} unusually long relation types")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise ConsistencyVerificationError(f'Relation type verification failed: {e}') from e
 
     def _calculate_derived_metrics(self) -> dict[str, int]:
@@ -281,7 +281,7 @@ class ADGConsistencyVerifier:
                 """)
                 derived["top_relation_types"] = dict(cursor.fetchall())
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.warnings.append(f"Failed to calculate derived metrics: {e}")
 
         return derived
@@ -461,7 +461,7 @@ def main():
     ) as e:  # review: ConsistencyVerificationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"💥 Unexpected error: {e}")
         return 1
 

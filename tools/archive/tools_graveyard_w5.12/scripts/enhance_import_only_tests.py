@@ -149,7 +149,7 @@ def file_is_import_only(fp: Path) -> tuple[bool, int, str, str | None]:
     try:
         source = fp.read_text(encoding="utf-8")
         tree = ast.parse(source)
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False, 0, "", None
 
     test_funcs = [
@@ -190,7 +190,7 @@ def enhance_batch(file_paths: list[str]) -> tuple[int, int, list[str]]:
             fp.write_text(enhanced_content, encoding="utf-8")
             enhanced += 1
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             failed += 1
             errors.append(f"{file_path}: {e}")
 

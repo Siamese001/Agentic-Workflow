@@ -39,7 +39,7 @@ try:
         )
     else:
         print(f"  ❌ Error: {result.get('message')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 2: adg_meta
@@ -50,7 +50,7 @@ try:
         print(f"  ✅ OK - Timestamp: {result.get('timestamp', 'N/A')[:20]}...")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 3: adg_snapshot
@@ -63,7 +63,7 @@ try:
         print(f"  ✅ OK - Layers: {len(layers)} layers in snapshot")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 4: adg_assert_fresh
@@ -74,7 +74,7 @@ try:
         print(f"  ✅ OK - Fresh: {result.get('is_fresh')}, Verdict: {result.get('verdict', 'N/A')[:40]}...")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 5: redis_scan
@@ -85,7 +85,7 @@ try:
         print(f"  ✅ OK - Found {result.get('matched_keys')} keys")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 6: redis_type on adg:status
@@ -96,7 +96,7 @@ try:
         print(f"  ✅ OK - Type: {result.get('type')}")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 7: redis_get on adg:status
@@ -107,7 +107,7 @@ try:
         print(f"  ✅ OK - Exists: {result.get('exists')}")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 8: redis_hgetall on adg:meta
@@ -118,7 +118,7 @@ try:
         print(f"  ✅ OK - Fields: {result.get('field_count')}")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 9: adg_nodes_by_layer
@@ -129,7 +129,7 @@ try:
         print(f"  ✅ OK - Total L0 nodes: {result.get('total_count')}")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 10: adg_violations
@@ -140,7 +140,7 @@ try:
         print(f"  ✅ OK - Violations: {result.get('count')}")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 11: redis_smembers on layer set
@@ -151,7 +151,7 @@ try:
         print(f"  ✅ OK - Total L1 nodes: {result.get('total_count')}")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 12: redis_lrange on violations
@@ -162,7 +162,7 @@ try:
         print(f"  ✅ OK - Total violations: {result.get('total_length')}")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 # Test 13: redis_ttl on adg:status
@@ -173,7 +173,7 @@ try:
         print(f"  ✅ OK - TTL: {result.get('ttl_seconds')} (persistent={result.get('persistent')})")
     else:
         print(f"  ❌ Error: {result.get('error')}")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"  ❌ Exception: {e}")
 
 print("\n" + "=" * 60)

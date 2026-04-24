@@ -325,7 +325,7 @@ class CodeChunker:
 
             return chunks
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Error processing {file_path}: {e}")
             return []
 

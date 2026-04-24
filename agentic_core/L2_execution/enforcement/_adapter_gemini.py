@@ -23,11 +23,28 @@ the assembler produces slot maps.
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from agentic_core.L2_execution.enforcement.provider_adapter import (
     ProviderPayload,
 )
+
+
+# EQ-13: long-context threshold for Gemini. Reuses the Anthropic env so
+# operators can tune both simultaneously; Gemini falls back to its own
+# default if the Anthropic one is unset.
+_GEMINI_LONG_CTX_ENV = "GEMINI_LONG_CONTEXT_CHARS"
+_ANTHROPIC_LONG_CTX_ENV = "ANTHROPIC_LONG_CONTEXT_CHARS"
+_LONG_CTX_DEFAULT = 8_000
+
+
+def _long_context_threshold() -> int:
+    for env in (_GEMINI_LONG_CTX_ENV, _ANTHROPIC_LONG_CTX_ENV):
+        raw = os.getenv(env)
+        if raw and raw.strip().isdigit():
+            return int(raw.strip())
+    return _LONG_CTX_DEFAULT
 
 
 class GeminiMessageAdapter:
@@ -47,6 +64,7 @@ class GeminiMessageAdapter:
         tools_schema: Any,
         slots_used: list[str] | tuple[str, ...] | None = None,
         slots_map: dict[str, str] | None = None,
+        response_schema: dict[str, Any] | None = None,
     ) -> ProviderPayload:
         system = final_system_string or ""
         if slots_map is not None:
@@ -54,20 +72,40 @@ class GeminiMessageAdapter:
             if composed:
                 system = composed
 
+        # EQ-13: mark long-context composition when C0 is heavy so
+        # downstream clients can switch to the long-context request
+        # shape (Gemini has no separate API surface today; this is
+        # observability + future-proofing).
+        long_context = False
+        if slots_map is not None:
+            c0 = slots_map.get("C0") or ""
+            if len(c0) >= _long_context_threshold():
+                long_context = True
+
+        extra: dict[str, Any] = {
+            "adapter": self.name,
+            "slots_used": list(slots_used) if slots_used else [],
+            # Gemini-specific routing hint for clients that build the
+            # generate_content envelope. SystemInstruction accepts a
+            # single content part; the markdown hint tells the caller
+            # to place this string there.
+            "system_format": "markdown",
+            "envelope": "system_instruction+contents",
+            "long_context": long_context,
+        }
+        # EQ-5 (ADR-PROMPT-ASSEMBLY-001 Q4): Gemini has native structured
+        # output via ``response_mime_type="application/json"`` plus
+        # ``response_schema=<schema>`` on GenerationConfig. Both fields
+        # are required together — emit them as a pair.
+        if response_schema:
+            extra["response_mime_type"] = "application/json"
+            extra["response_schema"] = response_schema
+
         return ProviderPayload(
             system_prompt=system,
             user_prompt=final_user_string or "",
             tools_schema=tools_schema,
-            extra={
-                "adapter": self.name,
-                "slots_used": list(slots_used) if slots_used else [],
-                # Gemini-specific routing hint for clients that build the
-                # generate_content envelope. SystemInstruction accepts a
-                # single content part; the markdown hint tells the caller
-                # to place this string there.
-                "system_format": "markdown",
-                "envelope": "system_instruction+contents",
-            },
+            extra=extra,
         )
 
     def _compose_system_from_slots(self, slots_map: dict[str, str]) -> str:

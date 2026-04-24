@@ -170,7 +170,7 @@ def main():
         with open(output_file, "w") as f:
             json.dump({"tools": boosted_tools}, f, indent=2)
         print(f"Output written to: {output_file}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error writing output file: {e}")
         sys.exit(1)
 

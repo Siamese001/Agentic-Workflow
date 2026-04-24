@@ -24,7 +24,7 @@ try:
         APPS_SHARED_DIR as _APPS_SHARED_DIR,
         TESTS_DIR as _TESTS_DIR,
     )
-except Exception:
+except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
     _AGENTIC_CORE_DIR = "agentic_core"
     _APPS_LIC_DIR = "apps_lic"
     _APPS_RG_DIR = "apps_rg"

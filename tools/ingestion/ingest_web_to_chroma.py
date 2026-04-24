@@ -165,7 +165,7 @@ class WebRAGIngestionPipeline:
             response = requests.get(url, headers=headers, timeout=30)
             response.raise_for_status()
             return response.text
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.warning(f"Failed to fetch {url}: {e}")
             if retry_once:
                 logger.info(f"Retrying {url}...")
@@ -834,7 +834,7 @@ class WebRAGIngestionPipeline:
                         },
                     )
 
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     logger.error(f"Error processing {url}: {e}")
                     self.stats["urls_failed"] += 1
 

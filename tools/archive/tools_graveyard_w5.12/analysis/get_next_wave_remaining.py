@@ -21,7 +21,7 @@ def get_next_wave_remaining(wave_num, count):
             ast.parse(content)
         except SyntaxError:
             broken_files.append(f)
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             continue
 
     # Skip first 714 files (already fixed)

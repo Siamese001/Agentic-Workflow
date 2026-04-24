@@ -90,7 +90,7 @@ def apply_fixes():
                         "changes": changes,
                     }
                 )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results.append(
                 {
                     "file": rel_path,

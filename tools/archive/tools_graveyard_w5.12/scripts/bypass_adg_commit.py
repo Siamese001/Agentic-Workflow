@@ -26,7 +26,7 @@ def run_command(cmd, description):
             if result.stderr:
                 print(f"Error: {result.stderr[:200]}...")
             return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ {description} exception: {e}")
         return False
 

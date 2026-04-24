@@ -7,7 +7,7 @@ import re
 import sqlite3
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
-
+f"{ADG_ARTIFACTS_DIR}/adg_indexed_04172026_0522.sqlite"
 DB = Path(f"{ADG_ARTIFACTS_DIR}/adg_indexed_04172026_0522.sqlite")
 con = sqlite3.connect(DB)
 cur = con.cursor()

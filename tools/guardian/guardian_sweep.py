@@ -176,7 +176,7 @@ class GuardianSweepFixer:
                         if self.annotations_added % 500 == 0:
                             print(f"    Annotated {self.annotations_added}/{len(self.violations)}...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
 
         print(
@@ -228,7 +228,7 @@ class GuardianSweepFixer:
                 return
 
             conn.commit()
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"    ⚠️  Failed to update disposition: {e}")
         finally:
             conn.close()

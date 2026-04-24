@@ -132,7 +132,7 @@ def test_enforcement_mandatory():
 
             results.append(result)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ ERROR: {e}")
             results.append(
                 {
@@ -246,7 +246,7 @@ def test_enforcement_bypass_attempts():
 
             results.append(result)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ ERROR: {e}")
             results.append(
                 {
@@ -321,7 +321,7 @@ def test_enforcement_configuration():
 
             results.append(result)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ ERROR {test['name']}: {e}")
             results.append(
                 {

@@ -19,7 +19,7 @@ import asyncio
 import logging
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import (
+from agentic_core.L0_routing.config.model_registry import (  # guardian: allow-layer-violation -- model registry SSOT lives in L0 config (lowest layer); QWEN_LOCAL_MODEL_ID is a canonical identifier that every layer reads, matching the same pattern as path_constants.DOCS_REPORTS_DIR
     QWEN_LOCAL_MODEL_ID,
 )
 

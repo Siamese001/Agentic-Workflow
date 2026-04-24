@@ -181,7 +181,7 @@ except (
     print("   Redis hot cache is not available")
 except ImportError:  # guardian: allow-silent-swallow - optional dependency
     print("❌ Redis Python client not installed")
-except Exception as e:
+except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
     print(f"❌ Redis error: {e}")
 
 # 4. Check cache persistence
@@ -201,7 +201,7 @@ if cache_file.exists():
 
         print(f"   Cached modules: {len(cache_data)}")
         print(f"   Cache keys: {list(cache_data.keys())[:5]}...")
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"   ❌ Error reading cache: {e}")
 else:
     print("❌ No scan cache found")

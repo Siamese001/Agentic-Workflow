@@ -44,6 +44,16 @@ from agentic_core.L4_state.cache.tool_embedding_cache import (
     ToolEmbeddingCache,
     get_tool_embedding_cache,
 )
+# RH2B.1: dual-read replay-key migration scaffolding (imports by consumers that
+# compute prompt-replay cache keys — current consumers are tests + golden
+# harness; production callers wire in via the follow-on plan
+# prompt-reception-followups-a7b3c4).
+from agentic_core.L4_state.cache.replay_key import (
+    LEGACY_FLAT_PREFIX,
+    SLOT_DIGEST_PREFIX,
+    SLOT_DIGEST_SCHEME_VERSION,
+    compute_slot_digest_key,
+)
 
 __all__ = [
     # Key builders
@@ -70,4 +80,9 @@ __all__ = [
     "get_schema_validator_cache",
     "ToolEmbeddingCache",
     "get_tool_embedding_cache",
+    # RH2B.1 replay-key migration
+    "LEGACY_FLAT_PREFIX",
+    "SLOT_DIGEST_PREFIX",
+    "SLOT_DIGEST_SCHEME_VERSION",
+    "compute_slot_digest_key",
 ]

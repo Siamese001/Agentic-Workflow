@@ -939,7 +939,7 @@ def run_lifecycle(dry_run: bool = False) -> LifecycleResult:
     try:
         r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
         r.ping()
-    except Exception as exc:
+    except Exception as exc:  # guardian: allow-broad-exception -- offline tooling, reports failure
         raise RuntimeError(f"[lifecycle] cannot connect to Redis: {exc}") from exc
 
     # Stage 1: read drift state

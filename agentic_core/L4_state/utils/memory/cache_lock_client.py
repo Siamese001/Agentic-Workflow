@@ -54,7 +54,7 @@ def acquire_single_flight(
         if acquired:
             try:
                 redis_client.delete(lock_key)
-            except (AttributeError, ConnectionError, TimeoutError, RuntimeError) as exc:
+            except (AttributeError, ConnectionError, TimeoutError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- single-flight redis release is best-effort; lock will expire via TTL if release fails
                 _LOGGER.debug("single-flight redis release error: %s", exc)
 
 

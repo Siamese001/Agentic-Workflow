@@ -170,7 +170,7 @@ class TestFileAnalyzer:
     def analyze(self) -> bool:
         try:
             self.source = self.abs_path.read_text(encoding="utf-8", errors="replace")
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return False
 
         try:

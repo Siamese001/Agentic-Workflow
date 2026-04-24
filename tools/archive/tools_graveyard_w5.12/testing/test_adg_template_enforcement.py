@@ -156,7 +156,7 @@ def test_adg_template_enforcement():
 
             results.append(result)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ ERROR: {e}")
             results.append(
                 {
@@ -261,7 +261,7 @@ def test_template_content_quality():
             "checks_passed": passed_checks,
         }
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Template quality test failed: {e}")
         return {"success": False, "error": str(e)}
 

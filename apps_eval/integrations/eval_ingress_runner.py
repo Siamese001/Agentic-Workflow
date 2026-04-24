@@ -1,0 +1,37 @@
+"""Ingress-wired runner factory for ``apps_eval``.
+
+Closes W8.1. Wires :class:`AppIngressRunner` with apps_eval's required
+payload fields. Callers supply the ``dispatch`` callable to decouple
+ingress wiring from concrete domain runners.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Callable
+
+from agentic_core.L5_safety.enforcement.ingress_envelope_check import IngressEnvelopeCheck
+from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
+
+EVAL_REQUIRED_FIELDS: tuple[str, ...] = ("eval_id", "prompt", "expected")
+
+
+def make_eval_ingress_runner(
+    dispatch: Callable[[dict[str, Any]], Any],
+    *,
+    gate: IngressEnvelopeCheck | None = None,
+) -> AppIngressRunner:
+    """Return an :class:`AppIngressRunner` configured for ``apps_eval``.
+
+    ``dispatch`` receives the normalized payload dict (already stamped and
+    field-validated by the gate) and is expected to drive the domain runner.
+    """
+
+    return AppIngressRunner(
+        dispatch=dispatch,
+        parse=lambda payload: payload,
+        required_fields=EVAL_REQUIRED_FIELDS,
+        gate=gate,
+    )
+
+
+__all__ = ["EVAL_REQUIRED_FIELDS", "make_eval_ingress_runner"]

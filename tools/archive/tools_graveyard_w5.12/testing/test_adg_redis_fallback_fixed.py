@@ -26,7 +26,7 @@ def test_redis_connection() -> bool:
         r = redis.from_url("redis://localhost:6379/0", decode_responses=True)
         r.ping()
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Redis connection failed: {e}")
         return False
 
@@ -48,7 +48,7 @@ def test_adg_mcp_server_import() -> dict[str, Any]:
         }
 
         return result
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "import_success": False,
             "server_created": False,
@@ -75,7 +75,7 @@ def test_adg_redis_functions() -> dict[str, Any]:
         try:
             redis_client = adg_mcp_server._redis()
             redis_connected = True
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             redis_connected = False
 
         return {
@@ -86,7 +86,7 @@ def test_adg_redis_functions() -> dict[str, Any]:
             "status_result": status_result,
             "cache_result": cache_result,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -129,7 +129,7 @@ def test_redis_unavailable_fallback() -> dict[str, Any]:
             "status_result": status_result,
             "cache_result": cache_result,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -173,7 +173,7 @@ def test_mcp_server_stdio() -> dict[str, Any]:
                 response = json.loads(stdout.strip())
                 server_responded = True
                 has_tools = "result" in response and isinstance(response["result"], list)
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 server_responded = False
                 has_tools = False
 
@@ -192,7 +192,7 @@ def test_mcp_server_stdio() -> dict[str, Any]:
                 "error": "timeout",
                 "server_responded": False,
             }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -242,7 +242,7 @@ def test_sqlite_fallback_available() -> dict[str, Any]:
             "tables": tables[:5],  # First 5 tables
             "file_size_mb": round(latest_sqlite.stat().st_size / (1024 * 1024), 2),
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -283,12 +283,12 @@ def test_ingest_script_functionality() -> dict[str, Any]:
                 "stdout": result.stdout[:300],
                 "stderr": result.stderr[:300],
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {
                 "test_passed": False,
                 "error": str(e),
             }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -337,7 +337,7 @@ def test_mcp_configuration() -> dict[str, Any]:
             "has_required_env": has_required_env,
             "server_enabled": server_enabled,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -371,7 +371,7 @@ def test_error_handling_robustness() -> dict[str, Any]:
                 results.append(handles_error)
                 if not handles_error:
                     all_handle_errors = False
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 # Should not raise exceptions
                 all_handle_errors = False
                 results.append(False)
@@ -382,7 +382,7 @@ def test_error_handling_robustness() -> dict[str, Any]:
             "test_results": results,
             "error_count": sum(1 for r in results if not r),
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),

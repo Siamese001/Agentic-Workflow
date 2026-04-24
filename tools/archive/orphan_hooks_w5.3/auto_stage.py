@@ -111,7 +111,7 @@ def main() -> int:
     except subprocess.CalledProcessError as e:
         print(f"[auto-stage] Error: {e}", file=sys.stderr)
         return 1
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[auto-stage] Unexpected error: {e}", file=sys.stderr)
         return 1
 

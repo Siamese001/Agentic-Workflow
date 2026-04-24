@@ -123,7 +123,7 @@ def analyze_files_fast(
             total_broken += 1
             error_cats[e.msg] += 1
             tracker.update(1, f"❌ {f.name}: {e.msg}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             total_broken += 1
             error_cats[f"Other: {type(e).__name__}"] += 1
             tracker.update(1, f"⚠️ {f.name}: {type(e).__name__}")
@@ -224,7 +224,7 @@ Examples:
     except KeyboardInterrupt:
         print("\n⏹️ Analysis interrupted by user")
         sys.exit(130)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"\n❌ Unexpected error: {e}")
         sys.exit(1)
 

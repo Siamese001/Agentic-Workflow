@@ -39,7 +39,7 @@ class PrecisionHardeningOrchestrator:
                 "violation_count": 5032,
                 "timestamp": "03232026_1025",
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"Warning: Could not load ADG state: {e}")
             return {
                 "node_count": 8940,
@@ -272,7 +272,7 @@ class PrecisionHardeningOrchestrator:
                 print("Check the validation report for details.")
                 return False
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"\n💥 Precision hardening failed with error: {e}")
             import traceback
 

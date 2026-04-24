@@ -170,21 +170,26 @@ the ledger side but gates allow lowering when counts drop).
 
 ---
 
-## Open Questions (require user decision before moving to ACCEPTED)
+## Open Questions — Resolved 2026-04-24
 
-1. **Are the 5 proposed surface markers (write / prod / L0_critical / L5_critical /
-   L0 / L5) correct?** Alternative: use ADG node labels directly from the graph layer
-   rather than file-path heuristics. Heuristic is simpler; graph labels are more
-   accurate but require extraction-visitor changes.
+Resolved via bundled Author-Gate (confidence=0.81, gap=0.42):
 
-2. **Is +48 P1 ceiling acceptable?** If CI currently enforces a tight P1 ratchet, the
-   promotion bump may block existing PRs until burndown W5 completes. Alternative:
-   gate the promotion behind a feature flag that defaults OFF and flips ON after W5
-   completes.
+1. **OQ#1 (surface markers)**: **Heuristic markers.** Use 5 file-path heuristic
+   surface markers (write / prod / L0_critical / L5_critical / L0 / L5). No extraction-
+   visitor changes for this ADR. Upgrade path to ADG graph labels deferred to a future
+   ADR if heuristic accuracy proves insufficient.
 
-3. **Should the SC-1 54-item structural-conformance block be covered here?** This ADR
-   currently excludes it. Plan §12 recommends a sibling ADR/plan for SC-1; user to
-   confirm.
+2. **OQ#2 (+48 P1 ceiling)**: **Feature-flagged.** Gate the promotion behind a feature
+   flag that defaults OFF and flips ON after W5 burndown completes. Prevents blocking
+   existing PRs during the transition window. Config surface: single `P1_RATCHET_POLICY_V2`
+   boolean in `tools/generate/validation/gates.py` with default `False`.
+
+3. **OQ#3 (SC-1 coverage)**: **Sibling ADR.** The 54-item structural-conformance block
+   gets a dedicated ADR (TBD: ADR-025) rather than expanding ADR-024's scope. Keeps
+   ADR-024 focused on severity-band rebalancing; SC-1 is a different concern.
+
+Principle applied: each answer preserves a reversible upgrade path over an irreversible
+one-shot commitment.
 
 ---
 

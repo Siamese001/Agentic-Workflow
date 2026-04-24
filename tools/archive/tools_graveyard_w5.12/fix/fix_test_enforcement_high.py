@@ -55,7 +55,7 @@ class TestEnforcementHighFixer:
                     if self.fixes_applied % 20 == 0:
                         print(f"    Added {self.fixes_applied} category markers...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error adding marker to {file_path}: {e}")
 
@@ -90,7 +90,7 @@ class TestEnforcementHighFixer:
                         if self.fixes_applied % 10 == 0:
                             print(f"    Fixed {self.fixes_applied} structure violations...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
                 print(f"    Error fixing structure in {file_path}: {e}")
 

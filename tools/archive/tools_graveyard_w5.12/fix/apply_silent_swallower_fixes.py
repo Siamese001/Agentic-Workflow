@@ -46,7 +46,7 @@ def fix_high_severity_import_errors():
                 original_line = lines[line_no - 1].strip()
                 print(f"    Original: {original_line}")
                 print("    Fix: Add guardian comment or use pytest.importorskip in tests")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"    Error reading file: {e}")
 
 

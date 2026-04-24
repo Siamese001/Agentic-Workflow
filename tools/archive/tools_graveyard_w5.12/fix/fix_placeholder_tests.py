@@ -56,7 +56,7 @@ for filename in os.listdir(test_dir):
         print(f"Fixed: {filename}")
         fixed_count += 1
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error with {filename}: {e}")
 
 print(f"\nTotal files fixed: {fixed_count}")

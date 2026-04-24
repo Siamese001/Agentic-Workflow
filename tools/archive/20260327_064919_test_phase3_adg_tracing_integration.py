@@ -37,7 +37,7 @@ def test_integrated_tracing_mixin():
             f"✅ Status check: OTEL={results['otel_enabled']}, Runtime ADG={results['runtime_adg_enabled']}"
         )
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["integrated_mixin_init"] = False
         results["integrated_status_available"] = False
         results["otel_enabled"] = False
@@ -55,7 +55,7 @@ def test_integrated_tracing_mixin():
 
         print("✅ Integrated span created and executed")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["integrated_span_created"] = False
         print(f"❌ Integrated span creation failed: {e}")
         traceback.print_exc()
@@ -77,7 +77,7 @@ def test_integrated_tracing_mixin():
         results["dual_span_collection"] = True
         print("✅ Dual span collection completed")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["dual_span_collection"] = False
         print(f"❌ Dual span collection failed: {e}")
         traceback.print_exc()
@@ -97,7 +97,7 @@ def test_integrated_tracing_mixin():
         else:
             print(f"❌ Runtime ADG persistence failed: {persistence_result}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["runtime_adg_persistence"] = False
         results["persistence_success"] = False
         print(f"❌ Runtime ADG persistence test failed: {e}")
@@ -112,7 +112,7 @@ def test_integrated_tracing_mixin():
 
         print(f"✅ Trace flushing completed: {len(flushed_traces)} traces")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["trace_flushing"] = False
         results["flushed_trace_count"] = 0
         print(f"❌ Trace flushing failed: {e}")
@@ -176,7 +176,7 @@ def test_adg_tracing_hooks():
         results["hooks_decorator"] = True
         print("✅ ADG tracing hooks decorator applied successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["hooks_decorator"] = False
         print(f"❌ ADG tracing hooks decorator failed: {e}")
         traceback.print_exc()
@@ -197,7 +197,7 @@ def test_adg_tracing_hooks():
         print(f"   - Execute result: {result1}")
         print(f"   - Process result: {result2}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["hooked_execution"] = False
         results["execution_results"] = False
         print(f"❌ Hooked agent execution failed: {e}")
@@ -220,7 +220,7 @@ def test_adg_tracing_hooks():
         print(f"   - Auto-discovery: {hook_status.get('auto_discovery_enabled')}")
         print(f"   - Hooked classes: {hook_status.get('hooked_classes_count')}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["hook_manager_available"] = False
         results["hook_status_available"] = False
         results["global_hooks_enabled"] = False
@@ -259,7 +259,7 @@ def test_adg_tracing_hooks():
         print(f"   - Cognitive result: {thought_result}")
         print(f"   - Tool result: {tool_result}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["cognitive_decorator"] = False
         results["tool_decorator"] = False
         print(f"❌ Decorator tests failed: {e}")
@@ -311,7 +311,7 @@ def test_auto_span_collector():
         results["collector_init"] = True
         print("✅ Auto span collector initialized")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["collector_init"] = False
         print(f"❌ Auto span collector initialization failed: {e}")
         traceback.print_exc()
@@ -335,7 +335,7 @@ def test_auto_span_collector():
         results["agent_registration"] = True
         print("✅ Agent registered successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["agent_registration"] = False
         print(f"❌ Agent registration failed: {e}")
         traceback.print_exc()
@@ -353,7 +353,7 @@ def test_auto_span_collector():
         results["collection_start_stop"] = collection_active and collection_stopped
         print("✅ Collection start/stop working")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["collection_start_stop"] = False
         print(f"❌ Collection start/stop failed: {e}")
         traceback.print_exc()
@@ -379,7 +379,7 @@ def test_auto_span_collector():
         print(f"   - Spans collected: {stats.get('total_spans_collected', 0)}")
         print(f"   - Agents registered: {stats.get('agents_registered', 0)}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["span_collection"] = False
         print(f"❌ Span collection failed: {e}")
         traceback.print_exc()
@@ -409,7 +409,7 @@ def test_auto_span_collector():
         print(f"   - Collection active: {global_stats.get('collection_active')}")
         print(f"   - Runtime ADG enabled: {global_stats.get('runtime_adg_enabled')}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["global_collector"] = False
         results["global_stats_available"] = False
         results["global_collection_active"] = False
@@ -466,7 +466,7 @@ def test_tracing_mixin_integration():
         results["bridge_agent_init"] = True
         print("✅ Bridge agent initialized with OpenTelemetry bridging")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["bridge_agent_init"] = False
         print(f"❌ Bridge agent initialization failed: {e}")
         traceback.print_exc()
@@ -485,7 +485,7 @@ def test_tracing_mixin_integration():
         results["span_bridging"] = True
         print("✅ Span bridging completed")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["span_bridging"] = False
         print(f"❌ Span bridging failed: {e}")
         traceback.print_exc()
@@ -499,7 +499,7 @@ def test_tracing_mixin_integration():
 
         print(f"✅ Bridge trace flushing: {len(flushed_traces)} traces")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["bridge_flush"] = False
         results["bridge_flush_count"] = 0
         print(f"❌ Bridge trace flushing failed: {e}")
@@ -517,7 +517,7 @@ def test_tracing_mixin_integration():
         print(f"   - Service name: {status.get('service_name')}")
         print(f"   - Buffered traces: {status.get('buffered_traces')}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["bridge_status"] = False
         results["bridge_enabled"] = False
         print(f"❌ Bridge tracing status failed: {e}")
@@ -601,7 +601,7 @@ def test_end_to_end_agent_execution():
         results["complete_agent_init"] = True
         print("✅ Complete agent initialized with all tracing features")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["complete_agent_init"] = False
         print(f"❌ Complete agent initialization failed: {e}")
         traceback.print_exc()
@@ -616,7 +616,7 @@ def test_end_to_end_agent_execution():
         print(f"   - Result: {execution_result}")
         print(f"   - Execution count: {agent.execution_count}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["full_execution"] = False
         print(f"❌ Full execution failed: {e}")
         traceback.print_exc()
@@ -635,7 +635,7 @@ def test_end_to_end_agent_execution():
         print(f"   - Runtime ADG: {status.get('runtime_adg', {}).get('enabled')}")
         print(f"   - Auto-persistence: {status.get('runtime_adg', {}).get('auto_persistence')}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["adg_integration_status"] = False
         results["otel_integration"] = False
         results["runtime_adg_integration"] = False
@@ -658,7 +658,7 @@ def test_end_to_end_agent_execution():
         else:
             print(f"❌ Force Runtime ADG persistence failed: {persistence_result}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["force_persistence"] = False
         results["persistence_result_success"] = False
         print(f"❌ Force Runtime ADG persistence test failed: {e}")
@@ -680,7 +680,7 @@ def test_end_to_end_agent_execution():
         print(f"   - Success: {multi_persistence_result.get('success')}")
         print(f"   - Total spans: {multi_persistence_result.get('span_count')}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["multi_execution"] = False
         results["multi_span_count"] = 0
         print(f"❌ Multiple executions failed: {e}")

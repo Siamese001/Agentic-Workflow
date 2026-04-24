@@ -25,7 +25,7 @@ async def test_guardian_mcp():
     try:
         spec.loader.exec_module(server_module)
         print("✅ Guardian server module imported successfully")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to import Guardian server module: {e}")
         return False
 
@@ -42,7 +42,7 @@ async def test_guardian_mcp():
         tools = await mcp_instance.list_tools()
         tool_names = [tool.name for tool in tools]
         print(f"✅ Found {len(tool_names)} tools: {', '.join(tool_names)}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to list tools: {e}")
         if hasattr(mcp_instance, "_tools"):
             tool_names = list(mcp_instance._tools.keys())
@@ -93,7 +93,7 @@ async def test_guardian_mcp():
 
         print("✅ guardian_status() has all required fields")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Error testing guardian_status(): {e}")
         return False
 
@@ -116,7 +116,7 @@ async def test_pytest_mcp():
     try:
         spec.loader.exec_module(server_module)
         print("✅ Pytest server module imported successfully")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to import Pytest server module: {e}")
         return False
 
@@ -133,7 +133,7 @@ async def test_pytest_mcp():
         tools = await mcp_instance.list_tools()
         tool_names = [tool.name for tool in tools]
         print(f"✅ Found {len(tool_names)} tools: {', '.join(tool_names)}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Failed to list tools: {e}")
         if hasattr(mcp_instance, "_tools"):
             tool_names = list(mcp_instance._tools.keys())
@@ -171,7 +171,7 @@ async def test_pytest_mcp():
 
         print("✅ pytest_status() has all required fields")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"❌ Error testing pytest_status(): {e}")
         return False
 

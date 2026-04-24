@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
-
+f"{ADG_ARTIFACTS_DIR}/cache/scan_result_cache.json"
 cache_path = Path(f"{ADG_ARTIFACTS_DIR}/cache/scan_result_cache.json")
 if not cache_path.exists():
     print("Cache file not found:", cache_path)

@@ -112,7 +112,7 @@ def test_adg_connection():
 
         conn.close()
         return str(adg_file), node_count, edge_count
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  ✗ Database error: {e}")
         return None
 
@@ -158,7 +158,7 @@ def test_matplotlib_visualization(node_count=1000, edge_count=5000):
         print(f"  ✓ Chart created: {output_path} ({file_size:,} bytes)")
         output_path.unlink()  # Clean up
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  ✗ matplotlib test failed: {e}")
         return False
 
@@ -221,7 +221,7 @@ def test_plotly_interactive(node_count=1000, edge_count=5000):
         print(f"  ✓ Interactive chart created: {output_path} ({file_size:,} bytes)")
         output_path.unlink()  # Clean up
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  ✗ plotly test failed: {e}")
         return False
 
@@ -271,7 +271,7 @@ def test_pyvis_network():
         print(f"  ✓ Interactive network created: {output_path} ({file_size:,} bytes)")
         output_path.unlink()  # Clean up
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  ✗ pyvis test failed: {e}")
         return False
 
@@ -317,7 +317,7 @@ def test_graphviz_dot():
         else:
             print("  ✗ PNG output not found")
             return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"  ✗ graphviz test failed: {e}")
         return False
 

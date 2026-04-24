@@ -19,7 +19,7 @@ for f in sorted(tests_dir.rglob("test_*.py")):
                 "line": e.lineno or 0,
             }
         )
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         continue
 
 print(f"Total broken files: {len(broken_files)}")

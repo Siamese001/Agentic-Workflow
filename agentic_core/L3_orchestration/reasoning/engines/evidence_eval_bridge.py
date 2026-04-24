@@ -10,7 +10,7 @@ from typing import Any
 
 from agentic_core.L2_execution.audit.telemetry_bus import BusMessage, BusType, get_telemetry_bus
 from agentic_core.L2_execution.types.sealed_l2_artifact import SealedL2Artifact, TerminalClassification
-from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (
+from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- evidence_eval_bridge is the L3 side of shadow-eval async pipeline; the packet schema lives in L6 evaluation utils as the canonical evaluator-input contract, and L3 is the boundary-inversion producer
     AsyncEvalPacket,
     ShadowEvalPacket,
     enqueue_shadow_eval_packet,

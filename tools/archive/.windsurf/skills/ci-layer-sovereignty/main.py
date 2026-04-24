@@ -101,7 +101,7 @@ def validate_layer_sovereignty(file_path: str) -> tuple[bool, str, str]:
 
         return True, "No layer sovereignty violations", ""
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return False, "", f"Error checking layer sovereignty: {e}"
 
 

@@ -53,7 +53,7 @@ def _load_adg_index() -> Any:
 
         conn = sqlite3.connect(db)
         return conn
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         _logger.warning(f"Could not load ADG: {e}")
         return None
 

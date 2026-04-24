@@ -155,10 +155,15 @@ class TestSanitizeFtsQuery:
         assert "refactor" in result
         assert "scope" in result
 
-    def test_keeps_alphanumeric_hyphen_underscore(self):
-        result = _sanitize_fts_query("refactor_scope L2-execution")
+    def test_keeps_alphanumeric_underscore_splits_hyphen(self):
+        """Underscores are kept (valid FTS5 token chars); hyphens tokenize as space
+        because FTS5 parses ``foo-bar`` as the column-filter ``foo NOT bar``."""
+        result = _sanitize_fts_query("refactor_scope L2-execution meta-learning")
         assert "refactor_scope" in result
-        assert "L2-execution" in result
+        # Hyphens become spaces so FTS5 sees distinct tokens
+        assert "L2 execution" in result
+        assert "meta learning" in result
+        assert "-" not in result
 
     def test_empty_string_returns_empty(self):
         assert _sanitize_fts_query("") == ""
@@ -502,8 +507,8 @@ class TestFtsEdgeCases:
         assert "reason" in result
 
     def test_hyphen_only_query_handled_gracefully(self, tmp_path, monkeypatch):
-        """Hyphens survive sanitization but may cause FTS5 OperationalError.
-        The except clause must catch it — result must not raise."""
+        """Hyphen-only sanitizes to empty string — must return none with a reason,
+        not raise an FTS5 OperationalError."""
         db = _seeded_db_path(tmp_path)
         monkeypatch.setattr(_m, "DB_PATH", db)
         result = lookup(
@@ -512,5 +517,53 @@ class TestFtsEdgeCases:
                 "normalized_intent": "--- --- ---",
             }
         )
-        assert result["verdict"] in ("none", "suggestive", "strong")
-        assert "matches" in result
+        assert result["verdict"] == "none"
+        assert "reason" in result
+
+    def test_hyphenated_intent_surfaces_precedent(self, tmp_path, monkeypatch):
+        """Regression: hyphenated intents like ``meta-learning enrichment`` must
+        return precedent when the ledger contains a matching row. Before the fix,
+        FTS5 treated ``meta-learning`` as a column-filter and raised
+        ``OperationalError: no such column: learning`` which the except-clause
+        swallowed, hiding real precedent from Author-Gate scoring."""
+        db = tmp_path / "ledger_hyphen.sqlite"
+        conn = sqlite3.connect(str(db))
+        conn.executescript(_SEED_DDL)
+        conn.execute(
+            """INSERT INTO decisions
+                   (decision_id, created_at, decision_type, request_summary,
+                    normalized_intent, recommended_option_id, status)
+               VALUES ('dec_meta00000001', '2026-04-23T23:00:00+00:00',
+                       'refactor_scope',
+                       'W1+W2+W3 meta-learning enrichment',
+                       'meta-learning fidelity enrichment scope',
+                       'W1+W2+W3 meta-learning enrichment', 'resolved')"""
+        )
+        conn.execute(
+            """INSERT INTO decision_outcomes
+                   (decision_id, tests_passed, regression_found,
+                    rollback_required, promote_to_pattern)
+               VALUES ('dec_meta00000001', 1, 0, 0, 0)"""
+        )
+        conn.execute(
+            """INSERT INTO decisions_fts
+                   (decision_id, normalized_intent, request_summary,
+                    user_goal, selection_rationale)
+               VALUES ('dec_meta00000001',
+                       'meta-learning fidelity enrichment scope',
+                       'W1+W2+W3 meta-learning enrichment', '', '')"""
+        )
+        conn.commit()
+        conn.close()
+        monkeypatch.setattr(_m, "DB_PATH", db)
+
+        result = lookup(
+            {
+                "decision_type": "refactor_scope",
+                "normalized_intent": "meta-learning enrichment",
+            }
+        )
+        assert result["verdict"] in ("suggestive", "strong"), (
+            f"Expected precedent to surface for hyphenated intent, got {result!r}"
+        )
+        assert any(m["decision_id"] == "dec_meta00000001" for m in result["matches"])

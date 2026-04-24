@@ -69,7 +69,7 @@ class HighSeverityRemainingFixer:
                         if self.fixes_applied % 200 == 0:
                             print(f"    Fixed {self.fixes_applied}/{len(violations)}...")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 self.errors += 1
 
         print(f"  ✅ Phase 2.4: {self.fixes_applied} applied, {self.errors} errors")

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-post_cascade_author_gate_capture.py — Windsurf post_cascade_response HITL capture hook.
+post_cascade_author_gate_capture.py — Windsurf post_cascade_response Author-Gate capture hook.
 
 Reads the cascade response payload from stdin.
-Detects surfaced HITL decision packets via the mandatory PACKET HEADER format
+Detects surfaced Author-Gate decision packets via the mandatory PACKET HEADER format
 defined in author-gate-enforcement.md and writes a structured record to the local
 SQLite decision ledger.
 
@@ -38,6 +38,13 @@ try:
     from author_gate_ledger_integrity import ensure_row_hash as _ensure_row_hash
 except ImportError:  # pragma: no cover — integrity lib optional, capture must still work
     _ensure_row_hash = None  # type: ignore[assignment]
+
+try:
+    from author_gate_marker_validator import validate_marker as _validate_marker
+    from author_gate_marker_validator import log_violation as _log_marker_violation
+except ImportError:  # pragma: no cover — validator optional; capture must still work
+    _validate_marker = None  # type: ignore[assignment]
+    _log_marker_violation = None  # type: ignore[assignment]
 
 fail_policy = "open"
 
@@ -157,10 +164,130 @@ def _infer_layer(repo_area: str) -> str:
     return ""
 
 
+# W3.2 — pytest signal location. The conftest plugin writes {exit_code, passed,
+# failed, ts, duration_s} every pytest run. Binder consults this file when
+# binding within FRESH_TEST_WINDOW_S of the signal timestamp.
+_TEST_SIGNAL_PATH = repo_root / "artifacts" / "windsurf" / "last_test_signal.json"
+_FRESH_TEST_WINDOW_S = 1800  # 30 minutes
+
+
+def _read_fresh_test_signal() -> dict[str, object] | None:
+    """Return pytest signal if one was written in the last 30 min, else None."""
+    if not _TEST_SIGNAL_PATH.exists():
+        return None
+    try:
+        data = json.loads(_TEST_SIGNAL_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, json.JSONDecodeError):
+        return None
+    ts_str = data.get("ts") if isinstance(data, dict) else None
+    if not isinstance(ts_str, str):
+        return None
+    try:
+        ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    age = (datetime.now(timezone.utc) - ts).total_seconds()
+    if age > _FRESH_TEST_WINDOW_S:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str,
+                         commit_sha: str, status: str) -> None:
+    """W3.3 — Bind an outcome row IMMEDIATELY at capture time.
+
+    Runs only when the marker carried status='executed' AND a commit SHA is
+    available from git HEAD. Eliminates the post-commit race that strands
+    decisions when git history is rewritten before the binder runs. Idempotent:
+    skipped when an outcome already exists for decision_id.
+    """
+    if status != "executed" or not commit_sha:
+        return
+    try:
+        exists = conn.execute(
+            "SELECT 1 FROM decision_outcomes WHERE decision_id = ?", (decision_id,)
+        ).fetchone()
+    except sqlite3.Error:
+        return
+    if exists:
+        return
+
+    # Fetch commit subject for outcome_label classification
+    subject = ""
+    try:
+        r = subprocess.run(
+            ["git", "show", "-s", "--format=%s", commit_sha],
+            cwd=str(repo_root),
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            shell=False, timeout=5, check=False,
+        )
+        if r.returncode == 0:
+            subject = r.stdout.strip()
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+
+    lower = subject.lower()
+    regression_found = 0
+    rollback_required = 0
+    label = "undecided"
+    if any(tok in lower for tok in ("revert ", "rollback", "hotfix revert")):
+        rollback_required = 1
+        label = "rollback"
+    elif any(tok in lower for tok in ("fix regression", "regression fix", "bug:", "bugfix:")):
+        regression_found = 1
+        label = "rework"
+    elif any(tok in lower for tok in ("fix ", "bugfix")):
+        label = "rework"
+
+    # W3.2 — pull pytest signal if fresh; overrides default tests_passed=0
+    tests_passed = 0
+    test_signal = _read_fresh_test_signal()
+    notes_suffix = ""
+    if test_signal:
+        exit_code = test_signal.get("exit_code")
+        if exit_code == 0:
+            tests_passed = 1
+            if label == "undecided":
+                label = "success"
+            notes_suffix = f" | test_signal=pass (exit={exit_code})"
+        else:
+            notes_suffix = f" | test_signal=fail (exit={exit_code})"
+
+    try:
+        conn.execute(
+            """INSERT INTO decision_outcomes
+                   (decision_id, execution_completed, tests_passed, regression_found,
+                    rollback_required, promote_to_pattern, commit_shas_json,
+                    files_written_json, tests_run_json, latency_to_outcome_s,
+                    pattern_promotion_eligible, outcome_label, bound_at, outcome_notes)
+               VALUES (?, 1, ?, ?, ?, 0, ?, '[]', '[]', 0, 0, ?, ?, ?)""",
+            (
+                decision_id, tests_passed, regression_found, rollback_required,
+                json.dumps([commit_sha]),
+                label,
+                datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                f"direct-bound at capture: {subject[:150]}{notes_suffix}",
+            ),
+        )
+        conn.commit()
+    except sqlite3.Error:
+        # guardian: allow-silent-swallow -- direct-bind: non-fatal; post-commit binder will retry
+        pass
+
+
 def _insert_scope_row(conn: sqlite3.Connection, decision_id: str, repo_area: str) -> None:
-    """Write a decision_scope row so the outcome binder can match commits to this decision."""
+    """Write a decision_scope row so the outcome binder can match commits to this decision.
+
+    Invariant (W1.3, 2026-04-24): if ``repo_area`` is non-empty we ALWAYS populate
+    ``file_path`` — prior logic only set it when the area contained a slash, which
+    left ~68% of scope rows with NULL file_path and broke the binder's
+    file-intersection fallback path. ``repo_area`` is the SSOT for "where does
+    this decision live", so using it as the path is the safest default.
+    """
+    if not repo_area:
+        return
     layer = _infer_layer(repo_area)
-    file_path = repo_area if "/" in repo_area or "\\" in repo_area else None
+    file_path = repo_area[:200]  # ALWAYS set — empty file_path was the 68% gap
     try:
         conn.execute(
             """INSERT INTO decision_scope (decision_id, file_path, layer, repo_area)
@@ -265,6 +392,15 @@ def _init_db() -> Optional[sqlite3.Connection]:
         conn = sqlite3.connect(str(DB_PATH), timeout=10)
         conn.row_factory = sqlite3.Row  # required for column-name access in ensure_row_hash
         conn.executescript(_ddl)
+        # W5.1 — add exit_criteria_json column (additive, nullable, idempotent).
+        # SQLite has no 'ADD COLUMN IF NOT EXISTS' so we probe PRAGMA first.
+        try:
+            cols = {r[1] for r in conn.execute("PRAGMA table_info(decisions)").fetchall()}
+            if "exit_criteria_json" not in cols:
+                conn.execute("ALTER TABLE decisions ADD COLUMN exit_criteria_json TEXT")
+        except sqlite3.Error:
+            # guardian: allow-silent-swallow -- additive migration: non-fatal
+            pass
         conn.commit()
         return conn
     except (
@@ -351,7 +487,7 @@ def _infer_decision_type(text: str) -> str:
 
 
 def _extract_options(text: str) -> list[str]:
-    """Heuristically extract option labels from HITL packet text."""
+    """Heuristically extract option labels from Author-Gate packet text."""
     options: list[str] = []
     for match in re.finditer(r"Option\s+\d+\.?\s+(.+)", text, re.MULTILINE):
         opt = match.group(1).strip()[:120]
@@ -438,6 +574,8 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
     )
     _insert_scope_row(conn, decision_id, area)
     conn.commit()
+    # W3.3 — direct-bind outcome row NOW, before any rebase can orphan the SHA.
+    _direct_bind_outcome(conn, decision_id, sha, status)
     if _ensure_row_hash is not None:
         try:
             _ensure_row_hash(conn, decision_id)
@@ -448,16 +586,16 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
 
 def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     """
-    Detect a HITL packet in text and write a decision record.
+    Detect an Author-Gate packet in text and write a decision record.
     Returns True if a new record was inserted, False otherwise.
-    Tries structured marker first, falls back to HITL packet header heuristic.
+    Tries structured marker first, falls back to packet header heuristic.
     """
-    # Path 1: structured DECISION_CAPTURED marker (reliable, emitted by Cascade post-HITL)
+    # Path 1: structured DECISION_CAPTURED marker (reliable, emitted by Cascade post-Author-Gate)
     marker = _capture_marker_re.search(text)
     if marker:
         return _capture_from_marker(marker, text, conn)
 
-    # Path 2: heuristic HITL packet header in prose (fallback)
+    # Path 2: heuristic Author-Gate packet header in prose (fallback)
     m = _packet_header_re.search(text)
     if not m:
         return False
@@ -466,7 +604,7 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     ts = datetime.now(timezone.utc).isoformat()
     decision_id = _make_decision_id(text, ts)
 
-    # Dedup: same HITL packet may fire hook twice in one session
+    # Dedup: same Author-Gate packet may fire hook twice in one session
     existing = conn.execute("SELECT 1 FROM decisions WHERE decision_id = ?", (decision_id,)).fetchone()
     if existing:
         return False
@@ -553,6 +691,18 @@ def main() -> int:
         marker_found = bool(_capture_marker_re.search(text))
         _debug_log(f"text_len={len(text)} marker={marker_found}")
 
+        # W1.1 — validate marker grammar completeness. Advisory: log violations
+        # but do NOT suppress capture (incomplete data is still valuable).
+        if marker_found and _validate_marker is not None and _log_marker_violation is not None:
+            try:
+                report = _validate_marker(text)
+                if not report["valid"]:
+                    _log_marker_violation(report, context="capture_hook")
+                    _debug_log(f"marker_validator: valid={report['valid']} "
+                               f"found={report['markers_found']}")
+            except (ValueError, OSError):  # guardian: allow-specific-multi -- validator: non-fatal, fail-open
+                pass
+
         conn = _init_db()
         if conn is None:
             _debug_log("db_init_failed")
@@ -561,12 +711,12 @@ def main() -> int:
         try:
             captured = detect_and_capture(text, conn)
             _debug_log(f"captured={captured}")
-        except sqlite3.Error:  # guardian: allow-silent-swallow -- HITL capture: non-fatal, fail-open
+        except sqlite3.Error:  # guardian: allow-silent-swallow -- Author-Gate capture: non-fatal, fail-open
             pass
         finally:
             conn.close()
 
-    except (OSError, ValueError):  # guardian: allow-silent-swallow -- HITL capture main: non-fatal, fail-open
+    except (OSError, ValueError):  # guardian: allow-silent-swallow -- Author-Gate capture main: non-fatal, fail-open
         pass
 
     return 0

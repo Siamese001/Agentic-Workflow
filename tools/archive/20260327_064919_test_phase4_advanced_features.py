@@ -28,7 +28,7 @@ def test_advanced_analytics():
         results["analytics_init"] = analytics is not None
         print("✅ Advanced analytics initialized successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["analytics_init"] = False
         print(f"❌ Advanced analytics initialization failed: {e}")
         traceback.print_exc()
@@ -108,7 +108,7 @@ def test_advanced_analytics():
         print(f"   - Complexity score: {insights.complexity_score:.1f}")
         print(f"   - Reliability score: {insights.reliability_score:.1f}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["pattern_analysis"] = False
         results["performance_metrics"] = False
         results["pattern_metrics"] = False
@@ -140,7 +140,7 @@ def test_advanced_analytics():
             results["slow_operations"] = False
             results["fast_operations"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["perf_metrics_available"] = False
         results["bottleneck_detection"] = False
         results["slow_operations"] = False
@@ -171,7 +171,7 @@ def test_advanced_analytics():
             results["recommendation_types"] = 0
             results["high_priority_recs"] = 0
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["recommendations_available"] = False
         results["recommendation_types"] = 0
         results["high_priority_recs"] = 0
@@ -192,7 +192,7 @@ def test_advanced_analytics():
             print(f"   - Complexity trend: {trends.get('complexity_trend', 'unknown')}")
             print(f"   - Reliability trend: {trends.get('reliability_trend', 'unknown')}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["trend_analysis"] = False
         results["trend_data_available"] = False
         print(f"❌ Trend analysis failed: {e}")
@@ -250,7 +250,7 @@ def test_performance_optimization():
         results["perf_collector_init"] = collector is not None
         print("✅ Performance optimized collector initialized successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["perf_collector_init"] = False
         print(f"❌ Performance optimized collector initialization failed: {e}")
         traceback.print_exc()
@@ -278,7 +278,7 @@ def test_performance_optimization():
             results["compression_enabled"] = False
             results["adaptive_scheduling"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["config_available"] = False
         results["batch_size_configured"] = False
         results["compression_enabled"] = False
@@ -316,7 +316,7 @@ def test_performance_optimization():
             results["agent_registration"] = False
             results["registered_agents"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["agent_registration"] = False
         results["registered_agents"] = False
         print(f"❌ Agent registration failed: {e}")
@@ -365,7 +365,7 @@ def test_performance_optimization():
             results["span_collection"] = False
             results["spans_processed"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["span_collection"] = False
         results["spans_processed"] = False
         print(f"❌ Span collection failed: {e}")
@@ -400,7 +400,7 @@ def test_performance_optimization():
             results["span_optimization"] = False
             results["optimized_span_count"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["optimization_recs"] = False
         results["rec_types"] = 0
         results["span_optimization"] = False
@@ -459,7 +459,7 @@ def test_enhanced_monitoring():
         results["observability_init"] = observability is not None
         print("✅ Enhanced observability initialized successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["observability_init"] = False
         print(f"❌ Enhanced observability initialization failed: {e}")
         traceback.print_exc()
@@ -495,7 +495,7 @@ def test_enhanced_monitoring():
             results["health_score_available"] = False
             results["health_checks_available"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["health_checks"] = False
         results["health_status_available"] = False
         results["health_score_available"] = False
@@ -527,7 +527,7 @@ def test_enhanced_monitoring():
             results["alerts_available"] = False
             results["alert_history"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["alert_system"] = False
         results["alerts_available"] = False
         results["alert_history"] = False
@@ -565,7 +565,7 @@ def test_enhanced_monitoring():
             results["metrics_available"] = False
             results["metrics_history"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["metrics_collection"] = False
         results["metrics_available"] = False
         results["metrics_history"] = False
@@ -595,7 +595,7 @@ def test_enhanced_monitoring():
             results["dashboard_data"] = False
             results["dashboard_sections"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["dashboard_data"] = False
         results["dashboard_sections"] = False
         print(f"❌ Dashboard data failed: {e}")
@@ -652,7 +652,7 @@ def test_distributed_tracing():
         results["coordinator_init"] = coordinator is not None
         print("✅ Distributed tracing coordinator initialized successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["coordinator_init"] = False
         print(f"❌ Distributed tracing coordinator initialization failed: {e}")
         traceback.print_exc()
@@ -679,7 +679,7 @@ def test_distributed_tracing():
             results["coordination_startup"] = False
             results["service_registered"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["coordination_startup"] = False
         results["service_registered"] = False
         print(f"❌ Coordination startup failed: {e}")
@@ -709,7 +709,7 @@ def test_distributed_tracing():
             results["span_id_available"] = False
             results["service_name_set"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["trace_context_creation"] = False
         results["trace_id_available"] = False
         results["span_id_available"] = False
@@ -754,7 +754,7 @@ def test_distributed_tracing():
             results["trace_propagation"] = False
             results["propagation_attempted"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["trace_propagation"] = False
         results["propagation_attempted"] = False
         print(f"❌ Trace propagation failed: {e}")
@@ -784,7 +784,7 @@ def test_distributed_tracing():
             results["stats_sections"] = False
             results["traces_created"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["coordination_stats"] = False
         results["stats_sections"] = False
         results["traces_created"] = False
@@ -841,7 +841,7 @@ def test_analytics_dashboard():
         results["dashboard_init"] = dashboard is not None
         print("✅ Analytics dashboard initialized successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["dashboard_init"] = False
         print(f"❌ Analytics dashboard initialization failed: {e}")
         traceback.print_exc()
@@ -876,7 +876,7 @@ def test_analytics_dashboard():
             results["widget_count"] = False
             results["required_widgets"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["default_widgets"] = False
         results["widget_count"] = False
         results["required_widgets"] = False
@@ -903,7 +903,7 @@ def test_analytics_dashboard():
         else:
             results["dashboard_startup"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["dashboard_startup"] = False
         print(f"❌ Dashboard startup failed: {e}")
         traceback.print_exc()
@@ -945,7 +945,7 @@ def test_analytics_dashboard():
             results["add_widget"] = False
             results["remove_widget"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["widget_management"] = False
         results["add_widget"] = False
         results["remove_widget"] = False
@@ -984,7 +984,7 @@ def test_analytics_dashboard():
             results["config_export"] = False
             results["dashboard_summary"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["dashboard_data_export"] = False
         results["data_sections"] = False
         results["config_export"] = False

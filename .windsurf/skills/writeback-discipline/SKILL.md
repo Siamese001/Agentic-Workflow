@@ -1,6 +1,6 @@
 ---
 name: writeback-discipline
-description: Invoke when a non-trivial task completes and a writeback to Memory MCP (procedural patterns, architectural invariants, project context) or Notion MCP (ADRs, wave/phase status, HITL decisions, MCP registry changes, SC/AP violations) is required. Produces the exact entity shapes and row shapes to paste into the respective MCP calls. Third-person, deterministic, token-efficient.
+description: Invoke when a non-trivial task completes and a writeback to Memory MCP (procedural patterns, architectural invariants, project context) or Notion MCP (ADRs, wave/phase status, Author-Gate decisions, MCP registry changes, SC/AP violations) is required. Produces the exact entity shapes and row shapes to paste into the respective MCP calls. Third-person, deterministic, token-efficient.
 metadata:
   enforcement_layer: windsurf
   enforcement_timing: after_task_completion
@@ -24,7 +24,7 @@ Invoke this skill when ANY of these triggers fire in the current response:
 | Discovered a topology / gravity / structural rule | Memory `ArchitecturalInvariant` | `templates/memory_entity_shapes.md` §3 |
 | Created/ratified an ADR | Notion ADR Registry | `templates/notion_row_shapes.md` §1 |
 | Modified `.windsurf/mcp_config.json` or a gate | Notion MCP Registry | `templates/notion_row_shapes.md` §2 |
-| Resolved a scored `ask_user_question` | Notion HITL Decision Ledger | `templates/notion_row_shapes.md` §3 |
+| Resolved a scored `ask_user_question` | Notion Author-Gate Decision Ledger | `templates/notion_row_shapes.md` §3 |
 | Plan wave/phase status changed | Notion Wave/Phase Convergence | `templates/notion_row_shapes.md` §4 |
 | New SC/AP violations from ADG run | Notion SC/AP Violation Backlog | `templates/notion_row_shapes.md` §5 |
 

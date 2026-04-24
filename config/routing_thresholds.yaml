@@ -1,0 +1,131 @@
+# L0 routing calibration thresholds — W2.P1 / W2.P2 deposit.
+#
+# Plan: .windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W2.
+#
+# Loaded by: agentic_core/runtime/config/routing_thresholds.py
+# Consumed by:
+#   - agentic_core/L4_state/utils/memory/semantic_cache_manager.py (R1B threshold)
+#   - agentic_core/runtime/contracts/abstain_contract.py (R5 threshold, via helper)
+#   - agentic_core/L0_routing/reasoning/route_gates.py (R3 grounding-need gate)
+#
+# BACK-COMPAT: every consumer falls back to the pre-W2 hardcoded literal when
+# this file is absent, malformed, or missing a key. See tests/unit/runtime/
+# config/test_routing_thresholds.py.
+#
+# CALIBRATION SOURCE: docs/reports/calibration/*_sweep.json (W0.P2 output).
+# Numbers below reflect the W0 seed fixture PR curves — seed data only.
+# Re-calibrate on real traces (>=500 labeled queries per path per namespace)
+# before promoting to production.
+
+schema_version: 1
+
+# -----------------------------------------------------------------------------
+# Global defaults — replace the hardcoded literals scattered through the code.
+# -----------------------------------------------------------------------------
+defaults:
+  # Was hardcoded as similarity_threshold=0.98 in semantic_cache_manager.py.
+  # W0 max-F1 operating point on the shipped fixture = 0.930 (precision=1.0,
+  # recall=0.857). Kept conservative — 0.95 — because the seed fixture is
+  # only 16 records. Move to 0.93 once namespace-scoped telemetry confirms
+  # precision holds.
+  r1b_semantic_similarity: 0.95
+
+  # Was hardcoded as DEFAULT_ABSTAIN_THRESHOLD=0.50 in abstain_contract.py.
+  # W0 max-F1 for R5 (invert_score=true) = 0.490. Rounding up to 0.50
+  # preserves exact back-compat with existing callers; per-namespace
+  # overrides below can shift it.
+  r5_abstain_confidence: 0.50
+
+  # New surface — Vertex dynamic-retrieval default is 0.7; W0 fixture
+  # max-F1 = 0.720, so 0.70 is correct. Consumed by W3.P1 R3 gate.
+  r3_grounding_need: 0.70
+
+  # New surface — C0 §C0.6 suggested 0.6 floor; W0 fixture max-F1 = 0.620.
+  # Consumed by W3.P1 R3 gate as a secondary check when grounding_need
+  # fires but coverage is too weak to proceed.
+  c0_coverage_floor: 0.60
+
+  # New surface — R1A freshness cutoff. W0 max-F1 = 0.650. Consumed by
+  # check_d1_exact_cache when a future TTL-ratio signal is threaded through
+  # (deferred — currently check_d1_exact_cache does strict byte-match).
+  r1a_freshness_ratio: 0.65
+
+# -----------------------------------------------------------------------------
+# Per-namespace overrides — any field omitted inherits the default above.
+# Namespaces mirror the existing cache-namespace convention used by
+# SemanticCacheManager (typically agent class: rg / rfp / research / eval /
+# exec / lic / underwriting_ai).
+# -----------------------------------------------------------------------------
+namespaces:
+  rg:
+    # RG agents produce highly variable outputs; hold the R1B threshold high.
+    r1b_semantic_similarity: 0.97
+
+  rfp:
+    # RFP proposals are long-form; reuse is only safe on near-identical asks.
+    r1b_semantic_similarity: 0.97
+
+  research:
+    # Research queries tolerate more semantic reuse — boilerplate responses.
+    r1b_semantic_similarity: 0.92
+
+  eval:
+    # Eval queries are highly boilerplate; recall-optimized.
+    r1b_semantic_similarity: 0.90
+    r5_abstain_confidence: 0.40  # more permissive — eval rarely needs abstain
+
+  exec:
+    # Execution path — conservative, writes imminent.
+    r1b_semantic_similarity: 0.98
+    r5_abstain_confidence: 0.60  # more sensitive — abstain sooner on writes
+
+  lic:
+    r1b_semantic_similarity: 0.95
+
+  underwriting_ai:
+    # High stakes, regulatory. Hold every threshold conservative.
+    r1b_semantic_similarity: 0.98
+    r5_abstain_confidence: 0.65
+    r3_grounding_need: 0.60  # lower bar — underwriting must ground more often
+    c0_coverage_floor: 0.75  # require stronger coverage
+
+# -----------------------------------------------------------------------------
+# R5 multi-signal trigger configuration (W3.P2).
+# Each trigger key is a closed reason-code string; value is the per-signal
+# sensitivity knob. Consumers OR the triggers — any firing trigger produces
+# an R5 decision with that trigger's reason_code in the output.
+# -----------------------------------------------------------------------------
+r5_triggers:
+  low_confidence:
+    enabled: true
+    # Redundant with defaults.r5_abstain_confidence — kept explicit so each
+    # trigger is self-contained in telemetry.
+    threshold: 0.50
+    reason_code: r5_low_confidence
+
+  ood_detected:
+    enabled: true
+    # OOD score >= threshold fires. Conservative default.
+    threshold: 0.70
+    reason_code: r5_ood_detected
+
+  budget_exceeded:
+    # Fires when TokenCapArtifact.gate_result == DENY.
+    enabled: true
+    reason_code: r5_budget_exceeded
+
+  circuit_breaker_open:
+    enabled: true
+    reason_code: r5_circuit_breaker_open
+
+  clarification_needed:
+    # Fires when L1 plan sets unresolved_gaps or proposed_route == CLARIFY.
+    enabled: true
+    reason_code: r5_clarification_needed
+
+  toxicity_flagged:
+    # Fires on L5 guardrail violation. Disabled here by default — L5 owns
+    # its own kill-switch (ADR-042). Enable only if we decide R5 should
+    # also surface the same event through the routing plane.
+    enabled: false
+    reason_code: r5_toxicity_flagged

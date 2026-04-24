@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
 from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -130,7 +131,7 @@ class HistoryIngestion:
                 metadatas.append(metadata)
                 ids.append(f"git_{commit['hash']}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Failed to ingest git history: {e}")
             return 0
 
@@ -150,7 +151,7 @@ class HistoryIngestion:
                         ids=batch_ids,
                     )
                     logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} commits")
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     logger.error(f"Failed to add batch {i // batch_size + 1}: {e}")
                     continue
 
@@ -182,7 +183,7 @@ class HistoryIngestion:
 
         # Also look in specific directories
         incident_dirs = [
-            "docs/reports/plans",  # RCA plans are stored here
+            f"{DOCS_REPORTS_DIR}/plans",  # RCA plans are stored here
             "incidents",
             "rca",
             "postmortem",
@@ -261,7 +262,7 @@ class HistoryIngestion:
                 metadatas.append(metadata)
                 ids.append(f"incident_{rel_path.replace('/', '_')}")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Failed to process {file_path}: {e}")
 
         # Add to ChromaDB in smaller batches to avoid compaction issues
@@ -280,7 +281,7 @@ class HistoryIngestion:
                         ids=batch_ids,
                     )
                     logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} incidents")
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     logger.error(f"Failed to add batch {i // batch_size + 1}: {e}")
                     continue
 
@@ -415,7 +416,7 @@ class HistoryIngestion:
                         ids=batch_ids,
                     )
                     logger.info(f"Added synthetic batch {i // batch_size + 1}: {len(batch_docs)} incidents")
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     logger.error(f"Failed to add synthetic batch {i // batch_size + 1}: {e}")
                     continue
 

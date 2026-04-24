@@ -181,7 +181,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                     }
                     print("    ✗ Failed: Empty result")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 ingestion_results[doc_path.name] = {
                     "success": False,
                     "error": str(e),
@@ -247,7 +247,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                     }
                     print("    ✗ No results found")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 retrieval_results[query] = {
                     "success": False,
                     "error": str(e),
@@ -370,7 +370,7 @@ async def test_rag_ingestion_e2e():
     except ImportError as e:
         print(f"[RAG E2E] RAG pipeline not available: {e}")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[RAG E2E] ❌ Validation failed: {e}")
         import traceback
 

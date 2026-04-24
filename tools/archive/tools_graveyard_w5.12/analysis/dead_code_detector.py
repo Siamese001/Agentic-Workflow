@@ -65,7 +65,7 @@ def find_unused_imports(file_path: Path) -> List[Dict]:
                 unused.append(imp)
 
         return unused
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return [{"error": str(e)}]
 
 
@@ -107,7 +107,7 @@ def find_duplicate_methods(file_path: Path) -> List[Dict]:
                 seen[func["signature"]] = func["name"]
 
         return duplicates
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return [{"error": str(e)}]
 
 

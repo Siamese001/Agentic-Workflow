@@ -14,7 +14,7 @@ def run_command(cmd, cwd=None):
     try:
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd)
         return result.returncode, result.stdout, result.stderr
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return 1, "", str(e)
 
 

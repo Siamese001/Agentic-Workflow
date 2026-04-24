@@ -43,7 +43,7 @@ def find_emitter_calls(file_path: Path) -> list[tuple[int, str]]:
     try:
         with open(file_path, encoding="utf-8") as f:
             lines = f.readlines()
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error reading {file_path}: {e}")
         return emitter_calls
 

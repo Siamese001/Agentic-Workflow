@@ -1,0 +1,35 @@
+# Routing-calibration thresholds (SSOT) — plan l0-routing-calibration-gap-audit-b3c9d4 W2.P1.
+#
+# Consolidates the two scalar literals that previously lived as magic-numbers
+# in agentic_core/runtime/contracts/abstain_contract.py (DEFAULT_ABSTAIN_THRESHOLD)
+# and agentic_core/L4_state/utils/memory/semantic_cache_manager.py (similarity_threshold).
+#
+# Threshold rationale lives inline; empirical calibration (P-R sweeps, per-namespace
+# tuning) is deferred to Wave W3 of the same plan.
+#
+# Override order (highest priority first):
+#   1. Explicit kwarg passed to plan_abstain(threshold=...) / SemanticCacheManager arg
+#   2. Environment variable (AGENTIC_ABSTAIN_THRESHOLD, AGENTIC_SIMILARITY_THRESHOLD)
+#   3. This YAML (SSOT default)
+#   4. Hardcoded fallback in routing_calibration.py (last-resort if YAML is missing)
+
+version: 1
+
+abstain:
+  # Default confidence floor. confidence < threshold triggers R5 (abstain).
+  # Matches the ADEQUATE/WEAK distance boundary used in Wave B B5R/B7 audits —
+  # grounding verdict flips at 0.50.
+  default_threshold: 0.50
+
+semantic_cache:
+  # GPTCache top-k similarity floor for R1B (semantic cache). 0.98 is a
+  # conservative literal carried over from the pre-SSOT implementation;
+  # downstream calibration (W3.P3 — per-namespace thresholds) will replace
+  # this single global with a per-namespace map once precision-recall data
+  # is collected.
+  similarity_threshold: 0.98
+
+  # Placeholder for future per-namespace overrides (W3.P3 lands here). The
+  # loader reads this map and falls back to similarity_threshold when a
+  # namespace is absent.
+  per_namespace_thresholds: {}

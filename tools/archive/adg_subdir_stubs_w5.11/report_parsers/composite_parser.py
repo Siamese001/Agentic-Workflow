@@ -89,7 +89,7 @@ class CompositeReportParser(BaseReportParser):
                 try:
                     deficiencies = parser.extract_deficiencies()
                     all_deficiencies.extend(deficiencies)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     # Log error but continue with other parsers
                     print(f"[CompositeParser] Error from {parser.report_name}: {e}")
 

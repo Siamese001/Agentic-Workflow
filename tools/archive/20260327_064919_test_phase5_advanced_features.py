@@ -598,7 +598,7 @@ class TestPhase5Kubernetes(unittest.TestCase):
             if not docs:
                 self.fail(f"No YAML documents found in {filename}")
             return docs[0]
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.fail(f"Failed to load {filename}: {e}")
 
     def _load_all_yaml_manifests(self, filename: str) -> list[dict[str, Any]]:
@@ -608,7 +608,7 @@ class TestPhase5Kubernetes(unittest.TestCase):
 
             with open(f"{self.k8s_dir}/{filename}") as f:
                 return list(yaml.safe_load_all(f))
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.fail(f"Failed to load {filename}: {e}")
 
 

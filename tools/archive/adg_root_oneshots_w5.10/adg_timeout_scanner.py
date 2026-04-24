@@ -78,7 +78,7 @@ class ADGTimeoutScanner:
                 if violation:
                     violations.append(violation)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             warnings.warn(f"ADG scan failed, falling back to regex: {e}", stacklevel=2)
             violations = self._fallback_regex_scan(directories)
 
@@ -127,7 +127,7 @@ class ADGTimeoutScanner:
                         violation_type=violation_type,
                         context=line_content.strip(),
                     )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             warnings.warn(f"Failed to analyze call {call.file_path}:{call.line_number}: {e}", stacklevel=2)
 
         return None
@@ -178,7 +178,7 @@ class ADGTimeoutScanner:
                                             context=line.strip(),
                                         ),
                                     )
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     warnings.warn(f"Failed to scan {py_file}: {e}", stacklevel=2)
 
         return violations
@@ -205,7 +205,7 @@ class ADGTimeoutScanner:
                 if violation:
                     violations.append(violation)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             warnings.warn(f"ADG loop scan failed, falling back to regex: {e}", stacklevel=2)
             violations = self._fallback_loop_scan(directories)
 
@@ -237,7 +237,7 @@ class ADGTimeoutScanner:
                         violation_type="while_true_no_timeout_guard",
                         context=lines[loop.line_number - 1].strip(),
                     )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             warnings.warn(f"Failed to analyze loop {loop.file_path}:{loop.line_number}: {e}", stacklevel=2)
 
         return None
@@ -283,7 +283,7 @@ class ADGTimeoutScanner:
                                         context=line.strip(),
                                     ),
                                 )
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     warnings.warn(f"Failed to scan {py_file}: {e}", stacklevel=2)
 
         return violations

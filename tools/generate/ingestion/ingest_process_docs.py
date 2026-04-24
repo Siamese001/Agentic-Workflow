@@ -60,6 +60,7 @@ def _discover_repo_root(start: Path) -> Path:
 
 
 from tqdm import tqdm
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -115,11 +116,11 @@ APP_DIRS = [
 # Paths to explicitly exclude (handled by other canonical collections)
 EXCLUDE_PATH_PREFIXES = [
     "docs/architecture",
-    "docs/reports/evidence",
-    "docs/reports/rcas",
+    f"{DOCS_REPORTS_DIR}/evidence",
+    f"{DOCS_REPORTS_DIR}/rcas",
     "docs/rca",
     "docs/external",
-    "docs/reports/plans",
+    f"{DOCS_REPORTS_DIR}/plans",
 ]
 
 EXCLUDE_DIRS = {

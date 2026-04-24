@@ -211,7 +211,7 @@ def main() -> None:
         try:
             wire_module(module_rel)
             print(f"  OK {module_rel}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             stats["errors"].append(f"ERROR: {module_rel}: {e}")
             print(f"  FAIL {module_rel}: {e}")
 

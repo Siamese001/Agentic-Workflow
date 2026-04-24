@@ -202,7 +202,7 @@ class ADGTestSelector:
             self._graph_store = create_sqlite_graph_store_or_none()
             if self._graph_store:
                 Logger.info("ADGTestSelector: Graph store initialized for enhanced features")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             Logger.warning(f"ADGTestSelector: Graph store initialization failed: {e}")
 
     def select_tests(self, changed_files: Iterable[str]) -> list[str]:
@@ -221,7 +221,7 @@ class ADGTestSelector:
         if self._graph_store:
             try:
                 return self._select_tests_via_graph(changed_files)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 Logger.warning(f"Graph-based test selection failed: {e}, falling back to Redis")
 
         # Fallback to Redis-based selection
@@ -289,7 +289,7 @@ class ADGTestSelector:
                                         test_scores.get(test_path, 0.0),
                                         centrality,
                                     )
-                                except Exception:
+                                except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                                     pass
 
         # Sort by centrality score (descending) then by path

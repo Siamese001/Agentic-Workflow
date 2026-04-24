@@ -25,7 +25,7 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
         )
         if result.returncode != 0:
             issues.append("Scope gate validation failed")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Scope gate error: {e}")
 
     # Gate 2: Dependency Graph Gate
@@ -38,7 +38,7 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
         )
         if result.returncode != 0:
             issues.append("ADG freshness gate failed")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"ADG freshness gate error: {e}")
 
     # Gate 3: Test Integrity Gate
@@ -51,7 +51,7 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
         )
         if result.returncode != 0:
             issues.append("Test integrity gate failed")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Test integrity gate error: {e}")
 
     # Gate 4: Evidence Contract Gate
@@ -64,7 +64,7 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
         )
         if result.returncode != 0:
             issues.append("Evidence contract gate failed")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Evidence contract gate error: {e}")
 
     # Gate 5: Rollback Checkpoint Gate
@@ -77,7 +77,7 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
         )
         if result.returncode != 0:
             issues.append("Rollback checkpoint gate failed")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         issues.append(f"Rollback checkpoint gate error: {e}")
 
     return len(issues) == 0, issues

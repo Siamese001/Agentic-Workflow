@@ -142,7 +142,7 @@ def ingest_jsonl_traces():
                 logger.info(f"Ingested {len(chunks)} chunks from {file_info['path']}")
                 total_chunks += len(chunks)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Error processing {file_info['path']}: {e}")
 
     return total_chunks
@@ -234,7 +234,7 @@ def ingest_log_traces():
                 logger.info(f"Ingested {len(chunks)} chunks from {file_info['path']}")
                 total_chunks += len(chunks)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Error processing {file_info['path']}: {e}")
 
     return total_chunks

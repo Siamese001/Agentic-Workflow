@@ -69,7 +69,7 @@ class TraceChunker:
                     if line_num % 10000 == 0:
                         Logger.info(f"Processed {line_num} traces...")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             Logger.error(f"Failed to read trace file {file_path}: {e}")
             return []
 
@@ -231,7 +231,7 @@ class EmbeddingGenerator:
                 batch_embeddings = [item.embedding for item in response.data]
                 embeddings.extend(batch_embeddings)
                 Logger.info(f"Generated embeddings for batch {i // batch_size + 1}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 Logger.error(f"Failed to generate embeddings for batch {i // batch_size + 1}: {e}")
                 # Add zero embeddings as fallback
                 embeddings.extend([[0.0] * 1536] * len(batch))
@@ -309,7 +309,7 @@ class VectorDBIngestor:
                 batch_count = len(batch_ids)
                 total_ingested += batch_count
                 Logger.info(f"Successfully ingested batch {i // batch_size + 1}: {batch_count} traces")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 Logger.error(f"Failed to ingest batch {i // batch_size + 1}: {e}")
                 # Continue with next batch instead of failing completely
 
@@ -326,7 +326,7 @@ class VectorDBIngestor:
                 "vector_dimensions": self.config.VECTOR_DIMENSIONS,
                 "vector_metric": self.config.VECTOR_METRIC,
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             Logger.error(f"Failed to get collection stats: {e}")
             return {}
 
@@ -339,7 +339,7 @@ def count_traces_in_file(file_path: Path) -> int:
             for line in f:
                 if line.strip():
                     count += 1
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         Logger.error(f"Failed to count traces in {file_path}: {e}")
         return 0
 

@@ -26,6 +26,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import (
+    DOCS_REPORTS_DIR,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
@@ -368,8 +369,8 @@ ARTIFACT_TYPE_VALUES: frozenset[str] = frozenset({"diff", "json", "log", "snapsh
 # Aggregate guardian identity (used by run_all_guardians aggregator)
 AGGREGATE_GUARDIAN_ID: str = "combined"
 
-# L6 ingestion contract constants
-GUARDIAN_ARTIFACT_DIR: str = "docs/reports/verification/guardian"
+# L6 ingestion contract constf"{DOCS_REPORTS_DIR}/verification/guardian"ardian"ardian"
+GUARDIAN_ARTIFACT_DIR: str = f"{DOCS_REPORTS_DIR}/verification/guardian"
 
 # Artifact filename patterns (Phase 4: Individual vs Aggregate)
 # Individual: per-guardian results

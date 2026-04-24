@@ -120,7 +120,7 @@ class ADGL4NormalizationVerifier:
                     "l4_nodes": l4_nodes,
                 }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise L4NormalizationError(f'L4 layer classification verification failed: {e}') from e
 
     def _verify_l4_identity_resolution(self) -> dict[str, Any]:
@@ -190,7 +190,7 @@ class ADGL4NormalizationVerifier:
                     "issue_details": identity_issues,
                 }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise L4NormalizationError(f'L4 identity resolution verification failed: {e}') from e
 
     def _verify_l4_path_integrity(self) -> dict[str, Any]:
@@ -235,7 +235,7 @@ class ADGL4NormalizationVerifier:
                     "status": "PASS" if len(unknown_layer_nodes) == 0 else "FAIL",
                 }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise L4NormalizationError(f'L4 path integrity verification failed: {e}') from e
 
     def _verify_l4_persistence_path_normalization(self) -> dict[str, Any]:
@@ -324,7 +324,7 @@ class ADGL4NormalizationVerifier:
                     "path_issue_details": path_issues,
                 }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise L4NormalizationError(f'L4 persistence path verification failed: {e}') from e
 
     def _verify_l4_authoritative_location(self) -> dict[str, Any]:
@@ -402,7 +402,7 @@ class ADGL4NormalizationVerifier:
                     "misplaced_details": misplaced_artifacts,
                 }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise L4NormalizationError(f'L4 authoritative location verification failed: {e}') from e
 
     def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
@@ -522,7 +522,7 @@ def main():
     ) as e:  # review: L4NormalizationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"💥 Unexpected error: {e}")
         return 1
 

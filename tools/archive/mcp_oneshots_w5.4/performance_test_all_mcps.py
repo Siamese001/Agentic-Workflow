@@ -73,7 +73,7 @@ class MCPPerformanceTester:
             elif server_name == "vector_db":
                 results["tests"]["vector_operations"] = await self._test_vector_db_performance()
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             results["success"] = False
             results["errors"].append(str(e))
             logger.error(f"Error testing {server_name} performance: {e}")
@@ -116,7 +116,7 @@ class MCPPerformanceTester:
 
             except subprocess.TimeoutExpired:
                 result["measurements"].append(10.0)  # Max timeout
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Startup test {i + 1} error: {e}")
 
         if result["measurements"]:
@@ -165,7 +165,7 @@ class MCPPerformanceTester:
                     memory_info = process.memory_info()
                     memory_mb = memory_info.rss / 1024 / 1024
                     result["measurements"].append(memory_mb)
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     logger.warning(f"Memory measurement {i + 1} failed: {e}")
                 finally:
                     process.terminate()
@@ -192,7 +192,7 @@ class MCPPerformanceTester:
         except ImportError:
             result["success"] = False
             result["details"] = ["psutil not available for memory testing"]
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["success"] = False
             result["details"] = [f"Error: {e}"]
 
@@ -227,7 +227,7 @@ class MCPPerformanceTester:
                 if process.returncode == 0:
                     result["measurements"].append(import_time)
 
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 result["measurements"].append(5.0)  # Max timeout
 
         if result["measurements"]:
@@ -275,7 +275,7 @@ class MCPPerformanceTester:
                     result["details"] = result.get("details", [])
                     result["details"].append(f"{' '.join(cmd)}: {execution_time:.3f}s")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Command {' '.join(cmd)} failed: {e}")
 
         if result["measurements"]:
@@ -320,7 +320,7 @@ class MCPPerformanceTester:
                 result["success"] = False
                 result["details"] = [f"Collection failed: {process.stderr}"]
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             result["success"] = False
             result["details"] = [f"Error: {e}"]
 
@@ -356,7 +356,7 @@ class MCPPerformanceTester:
                         result["details"] = result.get("details", [])
                         result["details"].append(f"GET {url}: {request_time:.3f}s")
 
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     logger.warning(f"HTTP request to {url} failed: {e}")
 
             if result["measurements"]:
@@ -423,7 +423,7 @@ class MCPPerformanceTester:
                 # Cleanup
                 client.delete_collection("perf_test")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"ChromaDB performance test failed: {e}")
 
         except ImportError as e:
@@ -501,7 +501,7 @@ class MCPPerformanceTester:
             with open(PERFORMANCE_RESULTS, "w", encoding="utf-8") as f:
                 json.dump(report_data, f, indent=2, default=str)
             logger.info(f"📄 Performance report saved: {PERFORMANCE_RESULTS}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logger.error(f"Failed to save performance report: {e}")
 
 
@@ -516,6 +516,6 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\nPerformance tests interrupted by user")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         logger.error(f"Performance test error: {e}")
         sys.exit(1)

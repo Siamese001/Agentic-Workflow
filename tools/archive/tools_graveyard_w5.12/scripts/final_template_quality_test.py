@@ -149,7 +149,7 @@ def main():
             if result["data_found"]:
                 print(f"   Data Found: {', '.join(result['data_found'][:3])}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"   ❌ ERROR: {e}")
             results.append(
                 {

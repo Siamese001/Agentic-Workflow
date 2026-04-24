@@ -113,7 +113,7 @@ class CapabilityExtractor:
 
             return capabilities
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logging.warning(f"Failed to analyze {file_path}: {e}")
             return None
 
@@ -210,7 +210,7 @@ class CapabilityExtractor:
             logging.info(f"Extracted {primary_capability} from {candidate['file_path']}")
             return True
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logging.error(f"Failed to extract capability from {candidate['file_path']}: {e}")
             return False
 
@@ -251,7 +251,7 @@ class CapabilityExtractor:
 
             return "\n".join(extracted_lines)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logging.error(f"Failed to extract code from {source_path}: {e}")
             return ""
 
@@ -424,7 +424,7 @@ def main():
 
             return capabilities
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logging.warning(f"Failed to analyze {file_path}: {e}")
             return None
 
@@ -483,7 +483,7 @@ def main():
             logging.info(f"Extracted {primary_capability} from {candidate['file_path']}")
             return True
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             logging.error(f"Failed to extract capability from {candidate['file_path']}: {e}")
             return False
 

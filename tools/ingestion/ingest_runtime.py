@@ -153,7 +153,7 @@ class RuntimeEvidenceIngestion:
                 metadatas.append(metadata)
                 ids.append(f"runtime_{rel_path.replace('/', '_')}")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 logger.warning(f"Failed to process {file_path}: {e}")
 
         # Add to ChromaDB in batches

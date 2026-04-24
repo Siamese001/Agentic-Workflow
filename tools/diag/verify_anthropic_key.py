@@ -24,6 +24,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import WINDSURF_PLANS_DIR
 
 
 def _load_dotenv_if_available() -> None:
@@ -142,7 +143,7 @@ def main() -> int:
         print()
         print("If HardenedAnthropicExecutor still fails at runtime, the issue")
         print("is NOT your key. See the cascade-import RCA tracked in")
-        print(".windsurf/plans/anthropic-rag-gaps-7f3c2a.md W2 P2.1.followup.")
+        print(f"{WINDSURF_PLANS_DIR}/anthropic-rag-gaps-7f3c2a.md W2 P2.1.followup.")
         return 0
 
     print()

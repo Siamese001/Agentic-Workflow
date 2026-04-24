@@ -29,7 +29,7 @@ def test_opentelemetry_runtime_adg_integration():
             print("❌ OpenTelemetry is NOT available")
             return results
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["otel_available"] = f"ERROR: {e}"
         print(f"❌ Failed to import OpenTelemetry: {e}")
         return results
@@ -60,7 +60,7 @@ def test_opentelemetry_runtime_adg_integration():
 
         print("✅ All span types created successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["orchestrator_span"] = False
         results["cognitive_span"] = False
         results["action_span"] = False
@@ -100,7 +100,7 @@ def test_opentelemetry_runtime_adg_integration():
         else:
             print("❌ No spans drained")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["drain_success"] = False
         results["spans_drained"] = 0
         print(f"❌ Span draining failed: {e}")
@@ -137,7 +137,7 @@ def test_opentelemetry_runtime_adg_integration():
             results["materialization_success"] = False
             print("❌ No spans to materialize")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["materialization_success"] = False
         print(f"❌ Runtime ADG materialization failed: {e}")
         traceback.print_exc()
@@ -169,7 +169,7 @@ def test_opentelemetry_runtime_adg_integration():
 
         print("✅ TracingMixin integration successful")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["tracing_mixin_init"] = False
         results["mixin_span"] = False
         results["trace_context"] = False
@@ -207,7 +207,7 @@ def test_opentelemetry_runtime_adg_integration():
             results["retrieve_match"] = False
             print("❌ No valid snapshot to store")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["store_snapshot"] = False
         results["retrieve_snapshot"] = False
         results["retrieve_match"] = False
@@ -261,7 +261,7 @@ def test_opentelemetry_runtime_adg_integration():
         else:
             print("❌ End-to-end pipeline failed")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["e2e_success"] = False
         print(f"❌ End-to-end pipeline failed: {e}")
         traceback.print_exc()

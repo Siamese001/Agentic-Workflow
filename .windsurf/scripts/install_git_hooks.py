@@ -43,7 +43,7 @@ MARKER = "# WINDSURF-MANAGED-HOOK: post-commit-outcome-binder"
 HOOK_CONTENT = f"""#!/usr/bin/env bash
 {MARKER}
 # Installed by .windsurf/scripts/install_git_hooks.py
-# Purpose: bind executed decisions to their commit outcomes (harness HITL W2)
+# Purpose: bind executed decisions to their commit outcomes (Author-Gate W2)
 # Runs in background; failures are non-blocking (exit 0 always to not block commits)
 
 set +e

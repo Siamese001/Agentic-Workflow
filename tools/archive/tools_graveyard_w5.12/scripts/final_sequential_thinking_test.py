@@ -43,7 +43,7 @@ def test_all_components():
             )
         else:
             print("   ❌ Sequential thinking not properly configured")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"   ❌ MCP config test failed: {e}")
 
     # Test 3: Tool Files
@@ -80,7 +80,7 @@ def test_all_components():
         if len(templates) > 3:
             print(f"   ... and {len(templates) - 3} more templates")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"   ❌ Template test failed: {e}")
 
     # Test 5: Usage Tracker
@@ -95,7 +95,7 @@ def test_all_components():
         print(f"   📊 Total usage: {metrics['total_usage']}")
         print(f"   📊 Success rate: {metrics['success_rate']:.1%}")
         print(f"   📊 Total tokens: {metrics['total_tokens']:,}")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"   ❌ Usage tracker test failed: {e}")
 
     # Test 6: Sequential Thinking Booster
@@ -148,7 +148,7 @@ def test_all_components():
         Path(input_file).unlink(missing_ok=True)
         Path(output_file).unlink(missing_ok=True)
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"   ❌ Booster test failed: {e}")
 
     # Test 7: Workflow Integration
@@ -172,7 +172,7 @@ def test_all_components():
 
         print("   ✅ Workflow integration working correctly")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"   ❌ Workflow test failed: {e}")
 
     # Final Summary

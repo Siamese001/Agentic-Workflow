@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-pre_author_gate.py — Harness HITL trigger gate.
+pre_author_gate.py — Author-Gate trigger gate (developer-loop / harness-side).
 
 Invoked via .windsurf/hooks.json on pre_write_code. Evaluates observable
 features of the pending action against .windsurf/schemas/author_gate_triggers.yaml.
 When a trigger fires AND no active author-gate decision matches the current
-context fingerprint, emits HITL_REQUIRED and blocks the write.
+context fingerprint, emits AUTHOR_GATE_REQUIRED and blocks the write.
+
+Not the same as runtime HITL — that lives in agentic_core/L5_safety/ per ADR-023.
 
 Deny-and-continue semantics (Anthropic Auto Mode):
-    - Exit 2 with structured HITL_REQUIRED marker (legacy name; payload is an Author-Gate denial)
+    - Exit 2 with structured AUTHOR_GATE_REQUIRED marker (back-compat alias HITL_REQUIRED also emitted)
     - Increments consecutive + total denial counters in author_gate_session_state.json
     - After N consecutive (default 3) or M cumulative (default 20) denials,
       escalates to a hard halt and writes a severity=critical violation row
@@ -21,7 +23,7 @@ Fresh invocation modes:
 
 Exit codes:
     0 = pass (Tier 1/2 or no trigger match or bypass condition fired)
-    2 = HITL_REQUIRED — caller must emit a packet and re-run
+    2 = AUTHOR_GATE_REQUIRED — caller must emit a packet and re-run
     3 = HARD_ESCALATION — denial ceiling reached; halt session
     4 = self-test failed
     5 = fatal config error
@@ -62,6 +64,11 @@ LEDGER_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refact
 STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
 SESSION_STATE_PATH = STATE_DIR / "author_gate_session_state.json"
 VIOLATIONS_PATH = STATE_DIR / "author_gate_violations.jsonl"
+# W2.2 — precedent sidecar: cleared at gate-pass, written at gate-fire.
+# Cascade reads this file at packet-construction time and includes the matches
+# in the AUTHOR-GATE DECISION header. Format: dict from lookup_refactor_decisions.
+PRECEDENT_SIDECAR_PATH = STATE_DIR / "author_gate_precedent.json"
+LOOKUP_SKILL_PATH = REPO_ROOT / ".windsurf" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
 
 # Back-compat: legacy paths from pre-rename era (2026-04-21 harness-enforcement-rename).
 # One-shot migration runs on first touch; removed 2026-07-21 when deprecation window closes.
@@ -232,6 +239,142 @@ def append_violation(payload: dict[str, Any]) -> None:
 
 
 # ===================================================================== #
+# W2 — Precedent injection (consult refactor-decision-memory skill)     #
+# ===================================================================== #
+
+
+def _infer_repo_area(snap: ChangeSnapshot) -> str:
+    """Pick the most specific shared prefix of changed files as repo_area.
+
+    Returns "" if no files changed or paths don't share a meaningful prefix.
+    """
+    paths = [p.replace("\\", "/") for p in snap.changed_files + snap.deleted_files]
+    if not paths:
+        return ""
+    if len(paths) == 1:
+        # Single-file change — use the file's directory as the area
+        return "/".join(paths[0].split("/")[:-1]) or paths[0]
+    # Common prefix
+    parts_lists = [p.split("/") for p in paths]
+    common: list[str] = []
+    for segs in zip(*parts_lists):
+        if len(set(segs)) == 1:
+            common.append(segs[0])
+        else:
+            break
+    return "/".join(common) if common else ""
+
+
+def _invoke_lookup(decision_type: str, normalized_intent: str, repo_area: str) -> dict[str, Any]:
+    """Call the refactor-decision-memory skill. Returns {} on any failure.
+
+    Runs as a short-lived subprocess (no import coupling). Fail-open: any
+    non-zero exit, timeout, or parse error returns empty dict.
+    """
+    if not LOOKUP_SKILL_PATH.exists():
+        return {}
+    query = json.dumps({
+        "decision_type": decision_type,
+        "normalized_intent": normalized_intent[:200],
+        "repo_area": repo_area[:100],
+        "limit": 5,
+    })
+    try:
+        r = subprocess.run(
+            [sys.executable, str(LOOKUP_SKILL_PATH)],
+            input=query,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=False,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return {}
+    if r.returncode != 0:
+        return {}
+    try:
+        parsed: dict[str, Any] = json.loads(r.stdout)
+        return parsed
+    except (json.JSONDecodeError, ValueError):
+        return {}
+
+
+def _write_precedent_sidecar(matches: list[dict[str, Any]],
+                             snap: ChangeSnapshot,
+                             triggers: list[dict[str, Any]]) -> None:
+    """Persist precedent lookup result for Cascade to read when building the packet."""
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "fingerprint": snap.fingerprint(),
+        "files_in_scope": sorted(set(snap.changed_files + snap.deleted_files))[:20],
+        "triggers": [t["id"] for t in triggers],
+        "matches": matches,
+        "match_count": len(matches),
+    }
+    try:
+        with PRECEDENT_SIDECAR_PATH.open("w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=2)
+    except OSError:  # guardian: allow-silent-swallow -- sidecar write: non-fatal, fail-open
+        pass
+
+
+def _clear_precedent_sidecar() -> None:
+    try:
+        if PRECEDENT_SIDECAR_PATH.exists():
+            PRECEDENT_SIDECAR_PATH.unlink()
+    except OSError:  # guardian: allow-silent-swallow -- sidecar clear: non-fatal
+        pass
+
+
+def consult_precedent(matched_triggers: list[dict[str, Any]],
+                      snap: ChangeSnapshot) -> list[dict[str, Any]]:
+    """Query the ledger for relevant past decisions. Writes sidecar; returns matches.
+
+    Strategy: try up to 3 queries in widening order so short historical intents
+    (e.g. bare repo_area) still match when current intent is verbose. The lookup
+    skill's FTS5 query is an AND-of-tokens, so a long intent rarely matches a
+    short historical row. Stop at the first non-empty result.
+
+    Query order:
+        1. <trigger.description> + repo_area   (semantic + location)
+        2. repo_area alone                      (location only — widest, lossy)
+        3. trigger.description alone            (semantic only)
+    """
+    if not matched_triggers:
+        return []
+    primary = matched_triggers[0]
+    decision_type = str(primary.get("decision_type", "unknown"))
+    description = str(primary.get("description", "") or primary.get("id", ""))
+    repo_area = _infer_repo_area(snap)
+
+    queries: list[str] = []
+    if description and repo_area:
+        queries.append(f"{description} {repo_area}")
+    if repo_area:
+        queries.append(repo_area)
+    if description:
+        queries.append(description)
+
+    matches: list[dict[str, Any]] = []
+    for intent in queries:
+        result = _invoke_lookup(decision_type, intent[:200], repo_area)
+        raw_matches = result.get("matches", []) if isinstance(result, dict) else []
+        if raw_matches:
+            matches = raw_matches
+            break
+
+    if matches:
+        _write_precedent_sidecar(matches, snap, matched_triggers)
+    else:
+        _clear_precedent_sidecar()
+    return matches
+
+
+# ===================================================================== #
 # Trigger evaluation                                                    #
 # ===================================================================== #
 
@@ -389,7 +532,7 @@ def check_bypass(cfg: dict[str, Any], snap: ChangeSnapshot) -> str | None:
 # ===================================================================== #
 
 
-def emit_hitl_required(
+def emit_author_gate_required(
     matched: list[dict[str, Any]], snap: ChangeSnapshot, session: dict[str, Any], defaults: dict[str, Any]
 ) -> int:
     fingerprint = snap.fingerprint()
@@ -423,13 +566,19 @@ def emit_hitl_required(
 
     save_session_state(session)
     print(
-        f"HITL_REQUIRED: triggers={','.join(m['id'] for m in matched)} "
+        f"AUTHOR_GATE_REQUIRED: triggers={','.join(m['id'] for m in matched)} "
         f"fingerprint={fingerprint} files={len(snap.changed_files) + len(snap.deleted_files)}",
+        file=sys.stderr,
+    )
+    # Back-compat alias for any consumer still grepping the legacy marker
+    print(
+        f"HITL_REQUIRED: triggers={','.join(m['id'] for m in matched)} "
+        f"fingerprint={fingerprint} (legacy alias; use AUTHOR_GATE_REQUIRED)",
         file=sys.stderr,
     )
     print(
         "  Rationale: pending change matches author-gate trigger(s). "
-        "Emit a HITL packet via the harness HITL pipeline before proceeding.",
+        "Emit an Author-Gate packet via ask_user_question before proceeding.",
         file=sys.stderr,
     )
     for m in matched:
@@ -481,7 +630,7 @@ def self_test() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Author-gate (harness HITL) trigger gate.")
+    parser = argparse.ArgumentParser(description="Author-Gate trigger gate (developer-loop, harness-side).")
     parser.add_argument("--self-test", action="store_true", help="Validate triggers.yaml structure")
     parser.add_argument("--dry-run", action="store_true", help="Evaluate without exiting 2")
     parser.add_argument("--reset-session", action="store_true", help="Clear denial counters")
@@ -540,6 +689,7 @@ def main() -> int:
     if not matched:
         if args.verbose:
             print("[pre_author_gate] no trigger match — pass.", file=sys.stderr)
+        _clear_precedent_sidecar()  # W2: stale precedent must not leak forward
         reset_consecutive_on_pass(session)
         return 0
 
@@ -550,6 +700,23 @@ def main() -> int:
             file=sys.stderr,
         )
         return 0
+
+    # W2 — consult the refactor-decision-memory ledger BEFORE surfacing.
+    # The sidecar file is read by Cascade at packet-construction time. This is
+    # the closure of the meta-learning feedback loop: stored precedent -> new
+    # packet. Emit a PRECEDENT_AVAILABLE banner on stderr so it is visible in
+    # the hook output the model sees on the next turn.
+    precedent_matches = consult_precedent(matched, snap)
+    if precedent_matches:
+        top = precedent_matches[0]
+        print(
+            f"PRECEDENT_AVAILABLE: matches={len(precedent_matches)} "
+            f"strongest={top.get('strength','?')} "
+            f"decision_id={top.get('decision_id','?')} "
+            f"sidecar={PRECEDENT_SIDECAR_PATH} "
+            f"(Cascade: include this precedent block in the AUTHOR-GATE DECISION header)",
+            file=sys.stderr,
+        )
 
     enforcement = str(cfg.get("enforcement", "shadow")).lower()
     if enforcement == "shadow":
@@ -563,19 +730,21 @@ def main() -> int:
                 "fingerprint": fingerprint,
                 "triggers": [m["id"] for m in matched],
                 "files": sorted(set(snap.changed_files + snap.deleted_files))[:50],
+                "precedent_matches": len(precedent_matches),
             }
         )
         print(
-            f"[pre_author_gate] SHADOW — would HITL_REQUIRED "
+            f"[pre_author_gate] SHADOW — would AUTHOR_GATE_REQUIRED "
             f"triggers={','.join(m['id'] for m in matched)} "
-            f"fingerprint={fingerprint} (enforcement=shadow; not blocking)",
+            f"fingerprint={fingerprint} precedent={len(precedent_matches)} "
+            f"(enforcement=shadow; not blocking)",
             file=sys.stderr,
         )
         # Also reset consecutive_denials in shadow mode — we aren't actually denying
         reset_consecutive_on_pass(session)
         return 0
 
-    return emit_hitl_required(matched, snap, session, defaults)
+    return emit_author_gate_required(matched, snap, session, defaults)
 
 
 if __name__ == "__main__":

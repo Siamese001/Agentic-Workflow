@@ -109,9 +109,7 @@ def install_default_resolvers() -> None:
         from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
             set_evidence_resolver,
         )
-    except ImportError as exc:
-        # guardian: allow-log-and-swallow -- L4 cache is optional at L0 boot;
-        # if it cannot be imported, route_gates already handles cache absence.
+    except ImportError as exc:  # guardian: allow-return-none-swallow -- L4 cache is optional at L0 boot; if it cannot be imported, route_gates already handles cache absence and None signals the missing resolver to the caller
         Logger.debug("composition_root: L4 cache import failed: %s", exc)
         return
     set_evidence_resolver(_composed_resolver)

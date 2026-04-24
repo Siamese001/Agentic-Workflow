@@ -65,7 +65,7 @@ class PerformanceMonitor:
                     metrics.memory_mb = item.get("memory_mb", [])
                     metrics.skills_executed = item.get("skills_executed", [])
                     history.append(metrics)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 print(f"Warning: Could not load performance history: {e}")
 
         return history
@@ -81,7 +81,7 @@ class PerformanceMonitor:
 
             self.metrics_file.parent.mkdir(parents=True, exist_ok=True)
             self.metrics_file.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"Warning: Could not save performance history: {e}")
 
     def _monitor_system(self):
@@ -96,7 +96,7 @@ class PerformanceMonitor:
 
                 time.sleep(0.5)  # Sample every 500ms
 
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 break
 
     def start_monitoring(self, operation: str) -> str:

@@ -34,7 +34,7 @@ for name, script in SERVERS:
             stdin=subprocess.PIPE,  # MCP reads from stdin — provide pipe so it doesn't inherit terminal
         )
         procs.append((name, p))
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results.append((name, "LAUNCH_ERROR", str(e), ""))
 
 time.sleep(WAIT)

@@ -231,7 +231,7 @@ def main(full_scan: bool = False) -> None:
             commit_sha = subprocess.check_output(
                 ["git", "rev-parse", "HEAD"], cwd=str(ROOT), text=True
             ).strip()
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             commit_sha = ""
 
         os.environ["ADG_SKIP_SELF_TEST"] = "1"

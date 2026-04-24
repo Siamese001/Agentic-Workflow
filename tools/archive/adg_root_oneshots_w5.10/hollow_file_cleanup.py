@@ -222,7 +222,7 @@ class HollowFileCleanupAnalyzer:
 
         except ImportError:
             print("⚠️  ADG not available - using basic import analysis only")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"⚠️  ADG enhancement failed: {e}")
 
         return manifest

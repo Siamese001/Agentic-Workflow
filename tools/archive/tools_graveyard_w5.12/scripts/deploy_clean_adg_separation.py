@@ -100,7 +100,7 @@ class CleanADGDeployer:
                 else:
                     print("ℹ️  CI workflow already uses clean scanner")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 error_msg = f"Failed to update CI workflow: {e}"
                 self.errors.append(error_msg)
                 print(f"❌ {error_msg}")
@@ -140,7 +140,7 @@ class CleanADGDeployer:
                 error_msg = "Static ADG generation timed out"
                 self.errors.append(error_msg)
                 print(f"  ❌ {error_msg}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 error_msg = f"Static ADG generation error: {e}"
                 self.errors.append(error_msg)
                 print(f"  ❌ {error_msg}")
@@ -172,7 +172,7 @@ class CleanADGDeployer:
                 error_msg = "Runtime ADG generation timed out"
                 self.errors.append(error_msg)
                 print(f"  ❌ {error_msg}")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 error_msg = f"Runtime ADG generation error: {e}"
                 self.errors.append(error_msg)
                 print(f"  ❌ {error_msg}")

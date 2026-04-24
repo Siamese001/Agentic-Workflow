@@ -50,6 +50,7 @@ from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import
     shaped_hybrid_search,
 )
 from agentic_core.L3_orchestration.reasoning.engines.evidence_shaper import EvidenceBundle
+from agentic_core.L0_routing.config.path_constants import ADR_DIR
 
 # ---------------------------------------------------------------------------
 # Benchmark query set
@@ -2602,7 +2603,7 @@ def run_app_pilot_proof() -> bool:
             combined_score=0.89,
             metadata={
                 "canonical_digest": "d8a1b2c3",
-                "file_path": "docs/architecture/adr/ADR-0042-evidence-contract.md",
+                "file_path": f"{ADR_DIR}/ADR-0042-evidence-contract.md",
                 "layer": "L3",
                 "doc_type": "adr",
                 "chunk_index": "1",
@@ -2922,7 +2923,7 @@ def run_exec_pilot_proof() -> bool:
             combined_score=0.90,
             metadata={
                 "canonical_digest": "a1b2c3d4",
-                "file_path": "docs/architecture/adr/ADR-0010-layer-boundaries.md",
+                "file_path": f"{ADR_DIR}/ADR-0010-layer-boundaries.md",
                 "layer": "L0",
                 "doc_type": "adr",
                 "chunk_index": "1",
@@ -3221,7 +3222,7 @@ def run_rfp_pilot_proof() -> bool:
             combined_score=0.91,
             metadata={
                 "canonical_digest": "rfp1a2b3c",
-                "file_path": "docs/architecture/adr/ADR-0010-layer-boundaries.md",
+                "file_path": f"{ADR_DIR}/ADR-0010-layer-boundaries.md",
                 "layer": "L0",
                 "doc_type": "adr",
                 "chunk_index": "1",
@@ -3487,7 +3488,7 @@ def run_rg_pilot_proof() -> bool:
             combined_score=0.90,
             metadata={
                 "canonical_digest": "rg1a2b3c",
-                "file_path": "docs/architecture/adr/ADR-0010-layer-boundaries.md",
+                "file_path": f"{ADR_DIR}/ADR-0010-layer-boundaries.md",
                 "layer": "L0",
                 "doc_type": "adr",
                 "chunk_index": "1",
@@ -3756,7 +3757,7 @@ def run_lic_pilot_proof() -> bool:
             combined_score=0.89,
             metadata={
                 "canonical_digest": "lic1a2b3c",
-                "file_path": "docs/architecture/adr/ADR-0010-layer-boundaries.md",
+                "file_path": f"{ADR_DIR}/ADR-0010-layer-boundaries.md",
                 "layer": "L0",
                 "doc_type": "adr",
                 "chunk_index": "1",

@@ -30,7 +30,7 @@ def run_final_validation():
         syntax_ok = result.returncode == 0
         checks.append(("Syntax Validation", syntax_ok, result.stdout.strip()))
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         checks.append(("Syntax Validation", False, str(e)))
 
     # 2. Test collection
@@ -51,7 +51,7 @@ def run_final_validation():
         collection_ok = result.returncode == 0 and "collected" in result.stdout.lower()
         checks.append(("Test Collection", collection_ok, result.stdout.strip()))
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         checks.append(("Test Collection", False, str(e)))
 
     # 3. Smoke tests
@@ -73,7 +73,7 @@ def run_final_validation():
         smoke_ok = result.returncode == 0
         checks.append(("Smoke Tests", smoke_ok, result.stdout.strip()))
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         checks.append(("Smoke Tests", False, str(e)))
 
     # Results

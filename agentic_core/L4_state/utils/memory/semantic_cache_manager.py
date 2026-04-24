@@ -176,7 +176,7 @@ def tier_similarity_threshold(tier: str) -> float:
             value = float(raw)
             if 0.0 <= value <= 1.0:
                 return value
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallow -- env var threshold override: malformed value falls through to canonical default below
             pass  # fall through to default
     return _TIER_THRESHOLD_DEFAULTS.get(tier_norm, 1.0)
 
@@ -246,7 +246,7 @@ def _emit_structured_cache_event(
             freshness_class_for_age,
             new_hit_id,
         )
-    except ImportError as _exc:
+    except ImportError as _exc:  # guardian: allow-return-none-swallow -- structured emit is observability-only; missing payload contract module means no structured event, cache hot path continues
         Logger.debug("structured emit: payload contract import failed: %s", _exc)
         return
     try:
@@ -276,9 +276,7 @@ def _emit_structured_cache_event(
             "p4obs",
             f"structured:{reason_code}:{_payload_json}",
         )
-    except (ValueError, TypeError, RuntimeError) as _exc:
-        # guardian: allow-log-and-swallow -- structured emit is observability-only;
-        # never break the cache hot path on a payload validation glitch.
+    except (ValueError, TypeError, RuntimeError) as _exc:  # guardian: allow-log-and-swallow -- structured emit is observability-only; never break the cache hot path on a payload validation glitch
         Logger.debug("structured emit: payload build failed: %s", _exc)
 
 
@@ -1377,9 +1375,9 @@ class SemanticCacheManager:
                     self._gptcache._sqlite_conn.commit()  # noqa: SLF001
                     try:
                         self._gptcache._chroma_collection.delete(ids=[cid])  # noqa: SLF001
-                    except (AttributeError, RuntimeError) as _cerr:
+                    except (AttributeError, RuntimeError) as _cerr:  # guardian: allow-log-and-swallow -- Chroma evict best-effort: CDC invalidation may miss a stale vector; L2 sqlite row deletion below still runs
                         Logger.debug("[HiveMind] CDC Chroma evict failed: %s", _cerr)
-                except (AttributeError, sqlite3.Error, RuntimeError) as _serr:
+                except (AttributeError, sqlite3.Error, RuntimeError) as _serr:  # guardian: allow-log-and-swallow -- L2 sqlite evict best-effort: CDC invalidation is an optimization; standard TTL expiry still applies
                     Logger.debug("[HiveMind] CDC L2 evict failed: %s", _serr)
             _doc_idx.forget_cache_row(cid)
             evicted += 1
@@ -1420,7 +1418,7 @@ class SemanticCacheManager:
             self._gptcache._sqlite_conn.commit()  # noqa: SLF001
             try:
                 self._gptcache._chroma_collection.delete(ids=ids)  # noqa: SLF001
-            except (AttributeError, RuntimeError) as _cerr:
+            except (AttributeError, RuntimeError) as _cerr:  # guardian: allow-log-and-swallow -- neighborhood Chroma delete best-effort: bulk invalidation may miss stale vectors; TTL-based expiry covers the gap
                 Logger.debug("[HiveMind] Neighborhood Chroma delete failed: %s", _cerr)
             evicted = len(ids)
             if self.redis_enabled:

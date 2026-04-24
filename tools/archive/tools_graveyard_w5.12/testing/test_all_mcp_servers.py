@@ -101,7 +101,7 @@ def test_mcp_server(name, server_config):
             "success": True,
             "message": "Server started (timeout expected)",
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "status": "error",
             "time": 0,
@@ -122,7 +122,7 @@ def get_installed_mcp_packages():
                 mcp_packages.append(line.strip())
 
         return mcp_packages
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return [f"Error getting packages: {e}"]
 
 

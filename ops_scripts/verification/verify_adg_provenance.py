@@ -135,7 +135,7 @@ class ADGProvenanceVerifier:
         try:
             with open(artifact_path, encoding="utf-8") as f:
                 return json.load(f)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise ProvenanceVerificationError(f'Failed to load {artifact_path}: {e}') from e
 
     def _load_sqlite_meta(self, sqlite_path: Path) -> dict[str, Any]:
@@ -161,7 +161,7 @@ class ADGProvenanceVerifier:
                         pass  # Keep as string if not JSON
 
                 return meta
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             raise ProvenanceVerificationError(f'Failed to load SQLite metadata from {sqlite_path}: {e}') from e
 
     def _verify_required_fields(self, artifact_name: str, metadata: dict[str, Any]) -> None:
@@ -393,7 +393,7 @@ def main():
     ) as e:  # review: ProvenanceVerificationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"💥 Unexpected error: {e}")
         return 1
 

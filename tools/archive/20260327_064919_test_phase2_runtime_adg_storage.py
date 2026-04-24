@@ -41,7 +41,7 @@ def test_l4_storage_integration():
             results["l4_invalid_rejected"] = True
             print(f"✅ Non-compliant location correctly rejected: {e}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["l4_default_compliant"] = False
         results["l4_custom_compliant"] = False
         results["l4_invalid_rejected"] = False
@@ -88,7 +88,7 @@ def test_l4_storage_integration():
         results["l4_trace_index"] = trace_version == version_id
         print(f"✅ Trace index working: {trace_version}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["l4_snapshot_created"] = False
         results["l4_persist_success"] = False
         results["l4_retrieve_success"] = False
@@ -122,7 +122,7 @@ def test_l4_storage_integration():
         else:
             results["l4_trace_index_valid"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["l4_base_dir_exists"] = False
         results["l4_index_file_exists"] = False
         results["l4_trace_index_exists"] = False
@@ -188,7 +188,7 @@ def test_l6_integration():
         results["l6_custom_bridge_init"] = True
         print(f"✅ Custom L6 bridge initialized: {custom_bridge._l6_base_dir}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["l6_bridge_init"] = False
         results["l6_custom_bridge_init"] = False
         print(f"❌ L6 bridge initialization failed: {e}")
@@ -224,7 +224,7 @@ def test_l6_integration():
         results["l6_store_success"] = bool(meta_learning_id)
         print(f"✅ Snapshot stored in L6: {meta_learning_id}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["l6_snapshot_created"] = False
         results["l6_store_success"] = False
         print(f"❌ L6 snapshot storage test failed: {e}")
@@ -251,7 +251,7 @@ def test_l6_integration():
             results["l6_component_distribution"] = False
             results["l6_span_type_distribution"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["l6_patterns_retrieved"] = False
         results["l6_layer_distribution"] = False
         results["l6_component_distribution"] = False
@@ -278,7 +278,7 @@ def test_l6_integration():
             results["l6_evolution_events"] = False
             results["l6_runtime_events"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["l6_evolution_log"] = False
         results["l6_evolution_events"] = False
         results["l6_runtime_events"] = False
@@ -349,7 +349,7 @@ def test_auto_persistence():
 
         print("✅ Auto-persistence adapters initialized successfully")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["auto_adapter_init"] = False
         results["auto_factory_init"] = False
         print(f"❌ Auto-persistence initialization failed: {e}")
@@ -374,7 +374,7 @@ def test_auto_persistence():
         # Auto-persistence should happen automatically when exiting context
         print("✅ Auto-persistence trace completed")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["auto_orchestrator_trace"] = False
         results["auto_cognitive_trace"] = False
         results["auto_action_trace"] = False
@@ -405,7 +405,7 @@ def test_auto_persistence():
             results["auto_l4_available"] = False
             results["auto_l6_available"] = False
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["auto_status_retrieved"] = False
         results["auto_enabled"] = False
         results["auto_l4_available"] = False
@@ -434,7 +434,7 @@ def test_auto_persistence():
         else:
             print(f"❌ Force persistence failed: {force_result}")
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         results["auto_force_tool_trace"] = False
         results["auto_force_success"] = False
         print(f"❌ Force persistence test failed: {e}")

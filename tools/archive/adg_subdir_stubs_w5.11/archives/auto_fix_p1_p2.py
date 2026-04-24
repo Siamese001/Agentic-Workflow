@@ -85,7 +85,7 @@ def fix_p1_layer_violations(sqlite_path: Path) -> int:
                         file_path.write_text("".join(lines), encoding="utf-8")
                         print(f"[P1 Auto-fix] Added exemption to: {source_file}")
                         fixes_applied += 1
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     print(f"[P1 Auto-fix] Failed to fix {source_file}: {e}")
 
     return fixes_applied

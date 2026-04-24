@@ -52,7 +52,7 @@ class MCPRobustTesterFixed:
             self.temp_dir = Path(tempfile.mkdtemp(prefix="mcp_test_"))
             print(f"Test environment setup: {self.temp_dir}")
             return True
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Setup Test Environment", False, error=str(e))
             return False
 
@@ -110,7 +110,7 @@ except Exception as e:
 
         except subprocess.TimeoutExpired:
             return {"success": False, "error": f"Timeout after {timeout}s"}
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return {"success": False, "error": str(e)}
 
     def test_filesystem_mcp_direct(self):
@@ -125,7 +125,7 @@ except Exception as e:
                 self.log_result("List Allowed Directories", True, "MCP call successful")
             else:
                 self.log_result("List Allowed Directories", False, error=result.get("error", "Unknown error"))
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("List Allowed Directories", False, error=str(e))
 
         # Test 2: List directory
@@ -135,7 +135,7 @@ except Exception as e:
                 self.log_result("List Directory", True, "MCP call successful")
             else:
                 self.log_result("List Directory", False, error=result.get("error", "Unknown error"))
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("List Directory", False, error=str(e))
 
         # Test 3: Read file
@@ -149,7 +149,7 @@ except Exception as e:
                     self.log_result("Read Text File", False, error=result.get("error", "Unknown error"))
             else:
                 self.log_result("Read Text File", False, error="README.md not found")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Read Text File", False, error=str(e))
 
         # Test 4: Write file
@@ -162,7 +162,7 @@ except Exception as e:
                 self.log_result("Write File", True, "MCP call successful")
             else:
                 self.log_result("Write File", False, error=result.get("error", "Unknown error"))
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Write File", False, error=str(e))
 
         # Test 5: Create directory
@@ -173,7 +173,7 @@ except Exception as e:
                 self.log_result("Create Directory", True, "MCP call successful")
             else:
                 self.log_result("Create Directory", False, error=result.get("error", "Unknown error"))
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Create Directory", False, error=str(e))
 
     def test_filesystem_mcp_actual(self):
@@ -198,7 +198,7 @@ except Exception as e:
                 self.log_result("Basic File Operations", True, "Write and read successful")
             else:
                 self.log_result("Basic File Operations", False, error="Content mismatch")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Basic File Operations", False, error=str(e))
 
         # Test 2: Directory operations
@@ -210,7 +210,7 @@ except Exception as e:
                 self.log_result("Directory Operations", True, "Directory creation successful")
             else:
                 self.log_result("Directory Operations", False, error="Directory not created properly")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Directory Operations", False, error=str(e))
 
         # Test 3: Large file handling
@@ -225,7 +225,7 @@ except Exception as e:
                 self.log_result("Large File Handling", True, "1MB file handled successfully")
             else:
                 self.log_result("Large File Handling", False, error="Large file not created properly")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Large File Handling", False, error=str(e))
 
         # Test 4: Special characters
@@ -243,7 +243,7 @@ except Exception as e:
                 self.log_result("Special Characters", True, "Special characters handled correctly")
             else:
                 self.log_result("Special Characters", False, error="Special characters not handled properly")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Special Characters", False, error=str(e))
 
         # Test 5: Deep directory nesting
@@ -258,7 +258,7 @@ except Exception as e:
                 self.log_result("Deep Directory Nesting", True, "10-level deep directory created")
             else:
                 self.log_result("Deep Directory Nesting", False, error="Deep directory not created")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Deep Directory Nesting", False, error=str(e))
 
     def test_memory_mcp_simulation(self):
@@ -286,7 +286,7 @@ except Exception as e:
                 self.log_result("Create Entities", True, f"Created {len(memory_graph['entities'])} entities")
             else:
                 self.log_result("Create Entities", False, error="Entity creation failed")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Create Entities", False, error=str(e))
 
         # Test 2: Add observations
@@ -304,7 +304,7 @@ except Exception as e:
                 self.log_result("Add Observations", True, "Observations added successfully")
             else:
                 self.log_result("Add Observations", False, error="Observation addition failed")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Add Observations", False, error=str(e))
 
         # Test 3: Search nodes
@@ -321,7 +321,7 @@ except Exception as e:
                 self.log_result("Search Nodes", True, f"Found {len(found_entities)} matching entities")
             else:
                 self.log_result("Search Nodes", False, error="No entities found")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Search Nodes", False, error=str(e))
 
         # Test 4: Read graph
@@ -335,7 +335,7 @@ except Exception as e:
                 self.log_result("Read Graph", True, f"Graph contains {len(graph_data['entities'])} entities")
             else:
                 self.log_result("Read Graph", False, error="Graph is empty")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Read Graph", False, error=str(e))
 
         # Test 5: Get stats
@@ -352,7 +352,7 @@ except Exception as e:
                 self.log_result("Get Memory Stats", True, f"Stats: {stats}")
             else:
                 self.log_result("Get Memory Stats", False, error="No stats available")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Get Memory Stats", False, error=str(e))
 
     def test_memory_mcp_edge_cases(self):
@@ -379,7 +379,7 @@ except Exception as e:
                 self.log_result("Large Observations", True, "Large observation handled")
             else:
                 self.log_result("Large Observations", False, error="Large observation not handled properly")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Large Observations", False, error=str(e))
 
         # Test 2: Special characters in observations
@@ -398,7 +398,7 @@ except Exception as e:
                 self.log_result(
                     "Special Characters in Observations", False, error="Special characters not handled"
                 )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Special Characters in Observations", False, error=str(e))
 
         # Test 3: Duplicate entities (should not create duplicates)
@@ -422,7 +422,7 @@ except Exception as e:
                 self.log_result("Duplicate Entities", True, "Duplicate handling works")
             else:
                 self.log_result("Duplicate Entities", False, error="Duplicate entities created")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Duplicate Entities", False, error=str(e))
 
         # Test 4: Search with special characters
@@ -444,7 +444,7 @@ except Exception as e:
                 self.log_result("Search Special Characters", True, "Special search handled")
             else:
                 self.log_result("Search Special Characters", False, error="Special search failed")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Search Special Characters", False, error=str(e))
 
     def test_mcp_integration(self):
@@ -480,7 +480,7 @@ except Exception as e:
                 self.log_result("Filesystem->Memory Integration", True, "Integration workflow successful")
             else:
                 self.log_result("Filesystem->Memory Integration", False, error="Integration failed")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Filesystem->Memory Integration", False, error=str(e))
 
         # Test 2: Concurrent operations simulation
@@ -499,7 +499,7 @@ except Exception as e:
                         "observations": ["concurrent test"],
                     }
                     results_queue.put((entity_id, True))
-                except Exception as e:
+                except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                     results_queue.put((entity_id, False))
 
             # Create multiple entities concurrently
@@ -528,7 +528,7 @@ except Exception as e:
                 self.log_result(
                     "Concurrent Operations", False, error=f"Only {success_count}/5 operations succeeded"
                 )
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             self.log_result("Concurrent Operations", False, error=str(e))
 
     def run_all_tests(self):

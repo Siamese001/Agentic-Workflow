@@ -207,7 +207,7 @@ def cmd_gap(args: argparse.Namespace, idx: ADGIndex) -> int:
     """
     try:
         report = detect_test_gaps(idx.result, hotspot_index=idx.hotspot)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         _logger.error(f"Failed to detect test gaps: {e}")
         return 1
 
@@ -261,7 +261,7 @@ def cmd_scope(args: argparse.Namespace, idx: ADGIndex) -> int:
 
     try:
         tests = idx.tests_for_changed(changed)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         _logger.error(f"Failed to determine tests for changed files: {e}")
         return 1
 
@@ -550,7 +550,7 @@ def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> int:
     """
     try:
         report = detect_test_gaps(idx.result, hotspot_index=idx.hotspot)
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         _logger.error(f"Failed to detect test gaps: {e}")
         return 1
 
@@ -663,7 +663,7 @@ def main() -> int:
     try:
         scanner = ADGStaticScanner(include_tests=include_tests)
         result = scanner.scan()
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         _logger.error(f"ADG scan failed: {e}")
         return 1
 

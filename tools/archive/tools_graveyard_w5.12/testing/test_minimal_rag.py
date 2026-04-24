@@ -107,7 +107,7 @@ async def test_minimal_rag():
         print("[TEST] Minimal RAG pipeline test completed successfully!")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[TEST] Minimal RAG pipeline test failed: {e}")
         return False
     finally:

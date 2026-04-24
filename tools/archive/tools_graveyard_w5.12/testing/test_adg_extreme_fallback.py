@@ -33,7 +33,7 @@ def test_adg_source_context_fallback() -> dict[str, Any]:
             "has_data": "data" in result,
             "result": result,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -79,7 +79,7 @@ def test_redis_completely_down() -> dict[str, Any]:
             "cache_result": cache_result,
             "sqlite_result": sqlite_result,
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -129,7 +129,7 @@ def test_mcp_server_without_redis() -> dict[str, Any]:
             try:
                 response = json.loads(stdout.strip())
                 has_tools = "result" in response
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 has_tools = False
 
             return {
@@ -147,7 +147,7 @@ def test_mcp_server_without_redis() -> dict[str, Any]:
                 "error": "timeout",
                 "server_responded": False,
             }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -205,7 +205,7 @@ def test_direct_sqlite_access() -> dict[str, Any]:
             "layer_count": len(layer_distribution),
             "file_size_mb": round(latest_sqlite.stat().st_size / (1024 * 1024), 2),
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -248,7 +248,7 @@ def test_ingest_with_redis_down() -> dict[str, Any]:
             "test_passed": False,
             "error": "timeout",
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),
@@ -293,7 +293,7 @@ def test_mcp_error_messages() -> dict[str, Any]:
                     helpful_errors.append(is_helpful)
                 else:
                     helpful_errors.append(True)  # No error is fine
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 helpful_errors.append(False)  # Exception is not helpful
 
         all_helpful = all(helpful_errors)
@@ -304,7 +304,7 @@ def test_mcp_error_messages() -> dict[str, Any]:
             "helpful_count": sum(helpful_errors),
             "total_scenarios": len(helpful_errors),
         }
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         return {
             "test_passed": False,
             "error": str(e),

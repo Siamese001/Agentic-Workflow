@@ -48,7 +48,7 @@ def main():
                 line = proc.stdout.readline()
                 if line:
                     result[0] = json.loads(line.decode().strip())
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
                 result[0] = {"_error": str(e)}
 
         t = threading.Thread(target=reader, daemon=True)
@@ -69,7 +69,7 @@ def main():
         try:
             ok = assertion_fn(resp)
             detail = "OK"
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             detail = str(e)
         if ok:
             PASS += 1
@@ -157,7 +157,7 @@ def main():
     t1_content = {}
     try:
         t1_content = json.loads(t1["result"]["content"][0]["text"])
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         pass
     check("tier1_response", t1, lambda r: "result" in r)
     check("tier1_thought_num", t1_content, lambda c: c.get("thoughtNumber") == 1)
@@ -200,7 +200,7 @@ def main():
         content = {}
         try:
             content = json.loads(resp["result"]["content"][0]["text"])
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             pass
         expected_history = 1 + (i + 1)  # 1 from tier1 + current
         check(
@@ -247,7 +247,7 @@ def main():
     branch_content = {}
     try:
         branch_content = json.loads(branch_resp["result"]["content"][0]["text"])
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         pass
     check("tier3_branch_response", branch_resp, lambda r: "result" in r)
     check(
@@ -283,7 +283,7 @@ def main():
     rev_content = {}
     try:
         rev_content = json.loads(rev_resp["result"]["content"][0]["text"])
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
         pass
     check("tier3_revision_response", rev_resp, lambda r: "result" in r)
     check(

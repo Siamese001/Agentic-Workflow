@@ -61,6 +61,7 @@ class ProviderMessageAdapter(Protocol):
         tools_schema: Any,
         slots_used: list[str] | tuple[str, ...] | None = None,
         slots_map: dict[str, str] | None = None,
+        response_schema: dict[str, Any] | None = None,
     ) -> ProviderPayload:
         """Render artifact fields into a provider payload.
 
@@ -74,6 +75,18 @@ class ProviderMessageAdapter(Protocol):
             When present, adapter MAY use it to produce structured output
             instead of parsing the flat strings. W2 adapters ignore this for
             now and passthrough from the flat strings; W3 wires it in.
+        response_schema: Optional JSON Schema describing the desired response
+            shape. Adapters translate this into the provider-idiomatic
+            structured-output config and place the result on
+            ``ProviderPayload.extra`` under provider-specific keys (EQ-5,
+            ADR-PROMPT-ASSEMBLY-001 Q4):
+              - OpenAI / o-series: ``extra["response_format"]`` with
+                ``{"type": "json_schema", "json_schema": {...}}``.
+              - Anthropic: ``extra["forced_tool_use"]`` with a synthetic
+                ``emit_response`` tool whose schema mirrors the request.
+              - Gemini: ``extra["response_mime_type"]`` +
+                ``extra["response_schema"]`` per Gemini's native shape.
+            Defaults to ``None`` (no structured output forced).
         """
         ...
 

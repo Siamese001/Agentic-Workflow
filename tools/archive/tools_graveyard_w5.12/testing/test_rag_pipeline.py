@@ -51,7 +51,7 @@ async def test_rag_pipeline():
     except ImportError as e:
         print(f"[TEST] RAG pipeline not available: {e}")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"[TEST] RAG pipeline test failed: {e}")
         return False
     finally:

@@ -66,7 +66,7 @@ def main():
                             break
                     print(f"    edge {eid}: {status} {sf}:{ln} sym={sym_short}")
                     print(f"      line: '{line.strip()[:80]}'{nearby}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"    edge {eid}: ERROR {e}")
 
     print(f"\n  Spot-check result: {match_count} match, {mismatch_count} mismatch out of 20")

@@ -19,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 
 try:
     from agentic_core.L0_routing.config.path_constants import DASHBOARD_DIR as _DASHBOARD_DIR
-except Exception:
+except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
     _DASHBOARD_DIR = "dashboard"
 
 DEFAULT_DASHBOARD_BASENAME = "autonomy_dashboard.html"

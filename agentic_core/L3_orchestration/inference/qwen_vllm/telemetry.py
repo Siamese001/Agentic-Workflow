@@ -94,7 +94,7 @@ class QwenInferenceTelemetry:
         # can correlate legacy QwenInferenceMetric rows with routing traces.
         # Best-effort; never raises into the caller.
         try:  # noqa: SIM105
-            from agentic_core.L6_observability.heal_router_otel import (  # noqa: PLC0415
+            from agentic_core.L6_observability.heal_router_otel import (  # noqa: PLC0415  guardian: allow-layer-violation -- Qwen telemetry synthesizes a dispatch-child span using L6 RoutingSpanRecord so MV ingest can correlate legacy metrics with routing traces; strictly best-effort within a try/except
                 RoutingSpanRecord,
                 get_default_emitter,
             )

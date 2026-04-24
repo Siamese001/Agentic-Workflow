@@ -244,7 +244,7 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         return module.materialize_infra_views(db_path)
-    except Exception as exc:  # review: structural scan should fall back to raw SQL instead of crashing
+    except Exception as exc:  # review: structural scan should fall back to raw SQL instead of crashing  # guardian: allow-broad-exception -- offline tooling, reports failure
         _log.warning(
             "Could not materialize infra views for %s: %s — falling back to raw view query", db_path, exc
         )

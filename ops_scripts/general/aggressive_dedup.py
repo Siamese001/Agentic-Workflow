@@ -353,7 +353,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             Path(f).unlink()
             deleted += 1
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"  ✗ Failed: {Path(f).name}: {e}")
     if args.execute:
         print(f"\n  ✓ Deleted {deleted} files")

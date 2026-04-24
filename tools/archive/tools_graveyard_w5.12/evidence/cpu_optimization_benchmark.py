@@ -763,7 +763,7 @@ def main() -> None:
                 )
             else:
                 print(f"    Status: {status} | {r.debug_note}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"    ERROR: {e}")
             r = BenchmarkResult(name=f"{label}: {func.__name__}", description=str(e), status="ERROR")
             r.debug_note = str(e)

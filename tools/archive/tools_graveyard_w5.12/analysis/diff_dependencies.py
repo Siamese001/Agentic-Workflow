@@ -30,7 +30,7 @@ def main():
             [sys.executable, "tools/find_imports.py"], capture_output=True, text=True, check=True
         )
         lines = result.stdout.strip().split("\n")
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
         print(f"Error running find_imports.py: {e}")
         return
 

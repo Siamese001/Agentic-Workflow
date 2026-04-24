@@ -488,7 +488,7 @@ class _HandoffExitVisitor(BaseStructuralVisitor):
         tail = sym.split(".")[-1]
         base = sym.split(".")[0]
 
-        for attr, relation_type, edge_kind in tqdm(self._SYMBOL_SET_MAP, desc="Processing", unit="item"):
+        for attr, relation_type, edge_kind in self._SYMBOL_SET_MAP:
             symbol_set: frozenset[str] = getattr(_su, attr, frozenset())
             if tail in symbol_set or base in symbol_set:
                 self._edges.append(

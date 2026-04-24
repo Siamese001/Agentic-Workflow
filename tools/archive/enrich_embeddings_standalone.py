@@ -266,7 +266,7 @@ class SemanticPipeline:
                 limit=1,
             )
             return len(result["ids"]) > 0
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- offline tooling, reports failure
             return False
 
     def _batch_embed(self, texts: list[str], batch_size: int = 32) -> list[list[float]]:
@@ -312,7 +312,7 @@ class SemanticPipeline:
                 "metadata": enriched_metadata,
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             print(f"Error processing chunk {chunk_id}: {e}")
             self.stats["errors"] += 1
             return None

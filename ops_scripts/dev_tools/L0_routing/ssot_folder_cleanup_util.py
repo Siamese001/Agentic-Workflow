@@ -188,7 +188,7 @@ def update_imports_for_moved_file(
                 updates += 1
                 Logger.info(f"Updated imports in: {py_file}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
             Logger.warning(f"Failed to update imports in {py_file}: {e}")
 
     return updates

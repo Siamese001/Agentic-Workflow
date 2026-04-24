@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-emit_packet.py — Construct + validate + emit a HITL_PACKET JSON block.
+emit_packet.py — Construct + validate + emit an AUTHOR_GATE_PACKET JSON block (with HITL_PACKET legacy alias).
 
 Pipeline:
     1. Read input packet spec from stdin (decision_type, intent, candidates, ...)
@@ -11,7 +11,7 @@ Pipeline:
          - routing rules (dominance / low-conf / surface-top-N)
          - decision_id (ulid-like)
     3. Validate against .windsurf/schemas/decision_record.schema.json
-    4. Emit HITL_PACKET: {<json>} to stdout
+    4. Emit AUTHOR_GATE_PACKET: {<json>} to stdout (with HITL_PACKET: legacy alias)
     5. Exit 0 on success, 1 on validation failure, 2 on fatal error
 
 STDIN JSON shape:
@@ -50,9 +50,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "decision_record.schema.json"
-RULE_PATH = (
-    REPO_ROOT / ".windsurf" / "rules" / "author-gate-enforcement.md"
-)  # TODO: rename → author-gate-enforcement
+RULE_PATH = REPO_ROOT / ".windsurf" / "rules" / "author-gate-enforcement.md"
 PRECEDENT_SCRIPT = Path(__file__).resolve().parent / "precedent_injector.py"
 
 SURFACE_THRESHOLD = 0.72
@@ -224,7 +222,7 @@ def apply_routing(candidates: list[dict[str, Any]]) -> tuple[list[dict[str, Any]
 
 
 def _validate_option_didactic(opt: dict[str, Any]) -> list[str]:
-    """HITL-10 enforcement: surfaced options must have all 10 fields populated."""
+    """AG-10 enforcement: surfaced options must have all 10 fields populated."""
     errors: list[str] = []
     if not opt.get("surfaced"):
         return errors  # suppressed options get a pass
@@ -345,8 +343,8 @@ def build_packet(spec: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Emit schema-valid HITL packet.")
-    parser.add_argument("--strict", action="store_true", help="Fail on didactic-field warnings (HITL-10)")
+    parser = argparse.ArgumentParser(description="Emit schema-valid Author-Gate packet.")
+    parser.add_argument("--strict", action="store_true", help="Fail on didactic-field warnings (AG-10)")
     parser.add_argument("--no-precedent", action="store_true", help="Skip precedent lookup (for testing)")
     args = parser.parse_args()
 
