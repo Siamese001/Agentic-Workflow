@@ -32,7 +32,25 @@ _REPO_ROOT_BOOTSTRAP = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT_BOOTSTRAP) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT_BOOTSTRAP))
 
+from tools.calibration.loop_metrics import (  # noqa: E402
+    EVENTS_ADAPTER,
+    compute_metrics as _lib_compute_metrics,
+    render_calibration_curve,
+    render_precedent_block,
+)
 from tools.ledgers.schema_registry import LEDGER_REGISTRY, REPO_ROOT  # noqa: E402
+
+# Wider band layout for events ledgers since score_numeric semantics vary per
+# ledger. Default to 5 bands across [0, 1] so any 0..1 confidence-style score
+# bins meaningfully. Per-ledger ranges (e.g., progress_eta latency_ms) ride
+# under their own bands when their adapter overrides this.
+_DEFAULT_BANDS: list[tuple[str, float, float]] = [
+    ("[0.0, 0.2)", 0.0, 0.2),
+    ("[0.2, 0.4)", 0.2, 0.4),
+    ("[0.4, 0.6)", 0.4, 0.6),
+    ("[0.6, 0.8)", 0.6, 0.8),
+    ("[0.8, 1.0]", 0.8, 1.0001),
+]
 
 
 def _iso_week(dt: datetime) -> str:
@@ -56,6 +74,17 @@ def _ledger_section(spec) -> str:
             latency_rows = conn.execute(
                 "SELECT latency_ms FROM events WHERE latency_ms IS NOT NULL ORDER BY latency_ms"
             ).fetchall()
+            # W3: pull all rows for library-backed calibration. Bounded read
+            # — every ledger has a single index-friendly scan; if a ledger
+            # exceeds 50k rows we'd add a date-range filter, but no ledger is
+            # near that yet.
+            conn.row_factory = sqlite3.Row
+            full_rows_cursor = conn.execute(
+                "SELECT status, score_band, score_numeric, latency_ms, "
+                "prediction_json, outcome_json, metadata_json, ts_utc, bound_at "
+                "FROM events"
+            )
+            full_rows = [dict(r) for r in full_rows_cursor.fetchall()]
         finally:
             conn.close()
     except sqlite3.Error as exc:
@@ -81,6 +110,27 @@ def _ledger_section(spec) -> str:
         f"- **Wave**: {spec.wave} · **Sunset when**: {spec.sunset_criterion}",
         "",
     ]
+
+    # W3: library-backed calibration block (precedent + per-band curve).
+    # Skipped when ledger is empty or has no bound rows — nothing to compute.
+    if total > 0 and bound > 0:
+        try:
+            metrics = _lib_compute_metrics(
+                full_rows, EVENTS_ADAPTER, bands=_DEFAULT_BANDS, ledger_name=spec.name
+            )
+            lines.append(render_precedent_block(metrics))
+            lines.append(
+                render_calibration_curve(metrics, band_units_label="score_numeric")
+            )
+        except (ValueError, TypeError, KeyError) as exc:
+            lines.append(f"_calibration block error: {exc}_")
+            lines.append("")
+    elif total > 0:
+        lines.append(
+            f"_calibration awaits binding: {predicted} predicted row(s) "
+            "have no outcome yet_"
+        )
+        lines.append("")
     return "\n".join(lines)
 
 

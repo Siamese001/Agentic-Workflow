@@ -47,7 +47,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sqlite3
 import statistics
 import sys
@@ -58,6 +57,16 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+# Library-backed calibration math (W2). Inline Wilson/binning has been retired.
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from tools.calibration.loop_metrics import (  # noqa: E402
+    AUTHOR_GATE_ADAPTER,
+    CalibrationMetrics,
+    compute_metrics as _lib_compute_metrics,
+    render_calibration_curve,
+    render_precedent_block,
+)
 DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_violations.jsonl"
 # Back-compat: legacy name pre-2026-04-21 rename. Read-fallback if canonical missing.
@@ -68,27 +77,6 @@ REPORTS_DIR = REPO_ROOT / "docs" / "reports" / "author-gate"
 
 MAX_JSONL_LINES = 10_000
 RUBBER_STAMP_MS = 2_000
-
-# Per-band calibration curve bins (lower-inclusive, upper-exclusive except last).
-# Bands match the SSOT scoring anchors in author-gate-decision-points.md §AG-9:
-#   - 0.72-0.80 = surface_threshold floor
-#   - 0.80-0.85 = approaching dominance
-#   - 0.85-0.90 = dominance band
-#   - 0.90-1.00 = high-confidence band
-CONFIDENCE_BANDS: list[tuple[str, float, float]] = [
-    ("[0.72, 0.80)", 0.72, 0.80),
-    ("[0.80, 0.85)", 0.80, 0.85),
-    ("[0.85, 0.90)", 0.85, 0.90),
-    ("[0.90, 1.00]", 0.90, 1.0001),
-]
-
-# Wilson score CI z-score for 95% confidence.
-_WILSON_Z = 1.96
-
-# Minimum sample size below which a band reports "insufficient sample" rather
-# than a misleading point estimate. Empirically chosen so a 0/2 success rate
-# does not look like 0% with no signal.
-_MIN_BAND_N = 5
 
 
 # ===================================================================== #
@@ -105,23 +93,6 @@ class Window:
 
 def _iso(dt: datetime) -> str:
     return dt.isoformat(timespec="seconds")
-
-
-def _wilson_interval(successes: int, n: int) -> tuple[float, float, float]:
-    """Return (point_estimate, ci_low, ci_high) using the Wilson score interval.
-
-    Wilson is preferred over the normal approximation for small N because it
-    stays inside [0,1] and gives sensible answers at 0% and 100% success rates.
-    Returns (0.0, 0.0, 0.0) when n == 0 to avoid divide-by-zero.
-    """
-    if n <= 0:
-        return 0.0, 0.0, 0.0
-    p = successes / n
-    z = _WILSON_Z
-    denom = 1 + (z * z) / n
-    centre = (p + (z * z) / (2 * n)) / denom
-    half = (z * math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n)) / denom
-    return p, max(0.0, centre - half), min(1.0, centre + half)
 
 
 def compute_window(week_offset: int = 0) -> Window:
@@ -215,13 +186,8 @@ class Metrics:
     dec_rubber_stamps: int = 0
     dec_latency_p50: float | None = None
     dec_latency_p95: float | None = None
-    dec_with_precedent: int = 0  # Real count: precedent_verdict NOT NULL AND != 'none'
-    dec_precedent_unknown: int = 0  # Pre-migration rows where precedent_verdict IS NULL
-    dec_precedent_by_verdict: Counter = field(default_factory=Counter)
-    # precedent×outcome correlation: rows are verdicts, cols are outcome labels
-    dec_precedent_outcome: dict[str, Counter] = field(default_factory=dict)
-    # per-band calibration curve: band_label -> (n, successes, ci_low, ci_high)
-    dec_calibration_curve: list[tuple[str, int, int, float, float, float]] = field(default_factory=list)
+    # Library-computed calibration block (W2 — replaces inline buckets/Wilson)
+    dec_calibration: CalibrationMetrics | None = None
     dec_by_outcome: Counter = field(default_factory=Counter)
     dec_stale_unbound: int = 0
     # Flip readiness
@@ -257,8 +223,6 @@ def compute_metrics(window: Window) -> Metrics:
     # ---- Decisions ----
     m.dec_total = len(decisions)
     latencies: list[int] = []
-    # Buckets for per-band calibration: band_label -> [n, success_count]
-    band_buckets: dict[str, list[int]] = {label: [0, 0] for label, _, _ in CONFIDENCE_BANDS}
     for d in decisions:
         m.dec_by_type[d.get("decision_type") or "unknown"] += 1
         if d.get("override_vs_recommendation"):
@@ -269,37 +233,7 @@ def compute_metrics(window: Window) -> Metrics:
             m.dec_selections_with_latency += 1
             if lat < RUBBER_STAMP_MS:
                 m.dec_rubber_stamps += 1
-
-        # Real precedent-hit count from W1.2 column (replaces former proxy).
-        # NULL = pre-migration row, can't classify; 'none' = ledger had no match;
-        # 'strong'/'suggestive' = real precedent was injected into the packet.
-        verdict_raw = d.get("precedent_verdict")
-        verdict = verdict_raw.strip().lower() if isinstance(verdict_raw, str) else None
-        if verdict is None:
-            m.dec_precedent_unknown += 1
-        else:
-            m.dec_precedent_by_verdict[verdict] += 1
-            if verdict in ("strong", "suggestive"):
-                m.dec_with_precedent += 1
-
-        outcome_label = d.get("outcome_label") or "unbound"
-        m.dec_by_outcome[outcome_label] += 1
-
-        # Precedent×outcome correlation (W1.3): only count rows that have BOTH
-        # a known precedent verdict AND a bound outcome — unbound rows would
-        # otherwise dilute the signal.
-        if verdict is not None and outcome_label != "unbound":
-            m.dec_precedent_outcome.setdefault(verdict, Counter())[outcome_label] += 1
-
-        # Per-band calibration (W1.4): bucket confidence_top, count successes.
-        confidence = d.get("confidence_top")
-        if isinstance(confidence, (int, float)) and outcome_label != "unbound":
-            for label, low, high in CONFIDENCE_BANDS:
-                if low <= float(confidence) < high:
-                    band_buckets[label][0] += 1
-                    if outcome_label == "success":
-                        band_buckets[label][1] += 1
-                    break
+        m.dec_by_outcome[d.get("outcome_label") or "unbound"] += 1
 
     if latencies:
         m.dec_latency_p50 = round(statistics.median(latencies) / 1000, 2)
@@ -308,11 +242,10 @@ def compute_metrics(window: Window) -> Metrics:
             idx = max(0, int(0.95 * (len(sorted_lat) - 1)))
             m.dec_latency_p95 = round(sorted_lat[idx] / 1000, 2)
 
-    # Materialize calibration curve with Wilson 95% CI per band.
-    for label, _, _ in CONFIDENCE_BANDS:
-        n_band, succ_band = band_buckets[label]
-        point, low, high = _wilson_interval(succ_band, n_band)
-        m.dec_calibration_curve.append((label, n_band, succ_band, point, low, high))
+    # Library-backed calibration computation (W2). Single call covers the three
+    # gaps from W1: real precedent-hit count, precedent×outcome correlation, and
+    # per-band calibration curve with Wilson 95% CIs.
+    m.dec_calibration = _lib_compute_metrics(decisions, AUTHOR_GATE_ADAPTER, ledger_name="author_gate")
 
     # Stale unbound is a ledger-wide metric, not window-scoped; grab it directly.
     m.dec_stale_unbound = _stale_unbound_count()
@@ -489,107 +422,14 @@ def render_markdown(m: Metrics) -> str:
         lines.append("_no outcomes bound this week_")
     lines.append("")
 
-    # Precedent injection telemetry (W1.1 — real count, not the old proxy)
+    # Library-backed precedent + calibration sections (W2)
     lines.append("## Precedent Injection (meta-learning W1)")
     lines.append("")
-    bound_pre = m.dec_total - m.dec_precedent_unknown
-    if m.dec_total == 0:
-        lines.append("_no decisions this week_")
-    elif bound_pre == 0:
-        lines.append(
-            f"_All {m.dec_total} decision(s) this week predate the W1 schema migration "
-            f"(precedent_verdict NULL). Real signal will arrive starting next decision._"
-        )
+    if m.dec_calibration is not None:
+        lines.append(render_precedent_block(m.dec_calibration))
+        lines.append(render_calibration_curve(m.dec_calibration, band_units_label="confidence"))
     else:
-        injection_rate = m.dec_with_precedent / bound_pre if bound_pre else 0.0
-        lines.append(f"- **Decisions with verdict captured:** {bound_pre} of {m.dec_total}")
-        lines.append(
-            f"- **Real precedent-hit rate (excludes NULL):** "
-            f"{m.dec_with_precedent}/{bound_pre} = {injection_rate:.1%}"
-        )
-        if m.dec_precedent_unknown:
-            lines.append(
-                f"- **Pre-migration rows (verdict NULL):** {m.dec_precedent_unknown} "
-                f"— excluded from rate calculation"
-            )
-        lines.append("")
-        lines.append("### By verdict")
-        lines.append("")
-        if m.dec_precedent_by_verdict:
-            lines.append("| Verdict | Count | Share of captured |")
-            lines.append("|---|---:|---:|")
-            for verdict in ("strong", "suggestive", "none"):
-                count = m.dec_precedent_by_verdict.get(verdict, 0)
-                share = count / bound_pre if bound_pre else 0.0
-                lines.append(f"| `{verdict}` | {count} | {share:.1%} |")
-        else:
-            lines.append("_no captured verdicts_")
-    lines.append("")
-
-    # Precedent × outcome correlation (W1.3) — the actual learning signal
-    lines.append("### Precedent × Outcome Correlation")
-    lines.append("")
-    lines.append(
-        "_Does following precedent actually correlate with success?_ "
-        "Counts only decisions whose outcomes are bound (excludes `unbound`)."
-    )
-    lines.append("")
-    if m.dec_precedent_outcome:
-        outcome_labels = sorted({lab for c in m.dec_precedent_outcome.values() for lab in c})
-        header = "| Verdict | n |" + "".join(f" {lab} |" for lab in outcome_labels) + " success_rate (Wilson 95% CI) |"
-        sep = "|---|---:|" + "".join("---:|" for _ in outcome_labels) + "---|"
-        lines.append(header)
-        lines.append(sep)
-        for verdict in ("strong", "suggestive", "none"):
-            ctr = m.dec_precedent_outcome.get(verdict)
-            if not ctr:
-                continue
-            n_v = sum(ctr.values())
-            succ_v = ctr.get("success", 0)
-            point, low, high = _wilson_interval(succ_v, n_v)
-            cells = "".join(f" {ctr.get(lab, 0)} |" for lab in outcome_labels)
-            if n_v < _MIN_BAND_N:
-                rate_cell = f"insufficient sample (n={n_v}<{_MIN_BAND_N})"
-            else:
-                rate_cell = f"{point:.0%} [{low:.0%}, {high:.0%}]"
-            lines.append(f"| `{verdict}` | {n_v} |{cells} {rate_cell} |")
-    else:
-        lines.append("_no decisions have both verdict captured AND outcome bound this week_")
-    lines.append("")
-
-    # Per-band calibration curve (W1.4) — the source signal for tuning thresholds
-    lines.append("### Per-Band Calibration Curve")
-    lines.append("")
-    lines.append(
-        "_Of decisions surfaced at each confidence band, what fraction succeeded?_ "
-        "If the 0.85-0.90 band's success rate sits well below 85%, `confidence_score` is over-confident. "
-        "If the 0.72-0.80 band sits well above 80%, the surface_threshold may be too high."
-    )
-    lines.append("")
-    has_signal = any(n >= _MIN_BAND_N for _, n, _, _, _, _ in m.dec_calibration_curve)
-    if not has_signal:
-        lines.append(
-            "_Insufficient sample in every band (need n≥5). Calibration curve will populate "
-            "as more decisions accumulate. Pre-migration rows lack `confidence_top` and are "
-            "excluded automatically._"
-        )
-    else:
-        lines.append("| Band | n | successes | success rate (Wilson 95% CI) | calibrated? |")
-        lines.append("|---|---:|---:|---|:---:|")
-        for label, n_band, succ_band, point, low, high in m.dec_calibration_curve:
-            if n_band < _MIN_BAND_N:
-                rate = f"insufficient (n={n_band})"
-                cal = "—"
-            else:
-                rate = f"{point:.0%} [{low:.0%}, {high:.0%}]"
-                # Heuristic: success rate CI should overlap the band's nominal range.
-                # Band [0.72,0.80) is calibrated if CI overlaps [0.72,0.80].
-                band_low = float(label.split(",")[0].strip("[ "))
-                band_high_raw = label.split(",")[1].strip(") ]")
-                band_high = float(band_high_raw)
-                overlaps = (high >= band_low) and (low <= band_high)
-                cal = "✅" if overlaps else "⚠️"
-            lines.append(f"| {label} | {n_band} | {succ_band} | {rate} | {cal} |")
+        lines.append("_calibration metrics not computed_")
     lines.append("")
 
     lines.append("---")
