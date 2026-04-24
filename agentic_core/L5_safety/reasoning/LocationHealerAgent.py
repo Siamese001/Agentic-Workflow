@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# guardian: allow-silent-swallower -- Facade pattern delegates to UnifiedAgent, legacy compatibility preserved
 """
 LocationHealerAgent - Facade Shell for Zero-Loss Consolidation.
 
@@ -16,6 +14,32 @@ Responsibility: Heal location violations through file operations
 - Post-heal validation
 
 Extracted from LocationAgent.py as part of SRP fission.
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W5 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling = consumer migration window)
+Category: facade-shell
+Canonical replacement: UnifiedAgent (via facade pattern per file header)
+Consumers at authorization (7):
+  - agentic_core/L5_safety/reasoning/hierarchy_healer.py
+  - agentic_core/L5_safety/utils/location_path_util.py
+  - agentic_core/L5_safety/utils/runners/agent_roster_runner.py
+  - agentic_core/L5_safety/utils/runners/orchestrator_runner.py
+  - ops_scripts/general/sovereign_healing_mission.py
+  - tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py
+  - tools/generate/territory_healer_adapters.py
+
+Policy interpretation (pragmatic constitutional \u00a73): This agent is
+self-documented DEPRECATED with an explicit canonical replacement. The 90-day
+cooling period serves as the formal consumer migration window. W6 archive
+sweep on or after 2026-07-23 will verify zero live consumers via regex grep
+BEFORE physical archive. If consumers remain, W6 blocks the archive and
+schedules per-consumer follow-up; authorization is NOT revoked but the
+archive action is deferred.
+
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/agentic_core__L5_safety__reasoning__LocationHealerAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/w_final_LocationHealerAgent.json
 """
 
 from __future__ import annotations

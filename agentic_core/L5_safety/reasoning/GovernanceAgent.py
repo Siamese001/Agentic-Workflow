@@ -1,3 +1,27 @@
+"""GovernanceAgent
+
+AGENT-DELETION-AUTHORIZED: 2026-04-24 (W5 of agent-deprecation-migration-d7a3f2)
+Authorization date: 2026-04-24
+Archive-eligible date: 2026-07-23 (90-day cooling = consumer migration window)
+Category: deprecated-via-warn
+Canonical replacement: direct call paths - agent emits DeprecationWarning at runtime
+Consumers at authorization (2):
+  - agentic_core/L3_orchestration/enforcement/mission_runner.py (imports GovernanceAgent as ArchitectureGovernor)
+  - agentic_core/L5_safety/validators/GovernanceAgent.py (W2-archive-bound; self-resolves on W6)
+
+Policy interpretation (pragmatic constitutional \u00a73): This agent is
+self-documented DEPRECATED with an explicit canonical replacement. The 90-day
+cooling period serves as the formal consumer migration window. W6 archive
+sweep on or after 2026-07-23 will verify zero live consumers via regex grep
+BEFORE physical archive. If consumers remain, W6 blocks the archive and
+schedules per-consumer follow-up; authorization is NOT revoked but the
+archive action is deferred.
+
+Target archive path on or after eligibility date:
+  archives/agents/2026-07-23/agentic_core__L5_safety__reasoning__GovernanceAgent.py
+Cooling-timer artifact: artifacts/agent_deprecation/w_final_GovernanceAgent.json
+"""
+
 # guardian: allow-silent-swallower -- Governance validation failures logged, non-critical for system operation
 from __future__ import annotations
 
