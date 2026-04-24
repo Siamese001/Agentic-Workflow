@@ -46,6 +46,7 @@ Exit codes
   1 = usage error / bad input
   2 = read error
 """
+
 from __future__ import annotations
 
 import argparse
@@ -66,11 +67,32 @@ from pathlib import Path
 _ALLOWLISTED_CALL_ROOTS = frozenset(
     {
         # builtins used for existence checks
-        "getattr", "hasattr", "callable", "isinstance", "len", "dir", "type",
-        "list", "tuple", "set", "dict", "str", "int", "float", "bool",
-        "print", "repr", "id", "any", "all", "sorted", "reversed",
+        "getattr",
+        "hasattr",
+        "callable",
+        "isinstance",
+        "len",
+        "dir",
+        "type",
+        "list",
+        "tuple",
+        "set",
+        "dict",
+        "str",
+        "int",
+        "float",
+        "bool",
+        "print",
+        "repr",
+        "id",
+        "any",
+        "all",
+        "sorted",
+        "reversed",
         # pytest / importlib scaffolding
-        "pytest", "importlib", "importorskip",
+        "pytest",
+        "importlib",
+        "importorskip",
         # monkeypatch env-shim is treated as scaffolding (env-only mutation)
         "monkeypatch",
     }
@@ -81,16 +103,45 @@ _ALLOWLISTED_CALL_ROOTS = frozenset(
 _ALLOWLISTED_METHOD_ATTRS = frozenset(
     {
         # string reads
-        "startswith", "endswith", "upper", "lower", "strip", "rstrip", "lstrip",
-        "split", "rsplit", "splitlines", "replace", "format", "encode", "decode",
-        "count", "index", "find", "rfind", "casefold",
+        "startswith",
+        "endswith",
+        "upper",
+        "lower",
+        "strip",
+        "rstrip",
+        "lstrip",
+        "split",
+        "rsplit",
+        "splitlines",
+        "replace",
+        "format",
+        "encode",
+        "decode",
+        "count",
+        "index",
+        "find",
+        "rfind",
+        "casefold",
         # dict / mapping reads
-        "keys", "values", "items", "get",
+        "keys",
+        "values",
+        "items",
+        "get",
         # set reads
-        "union", "intersection", "difference",
+        "union",
+        "intersection",
+        "difference",
         # fixture interaction that is not behavior under test
-        "setenv", "delenv", "setattr", "delattr",  # monkeypatch API
-        "importorskip", "fail", "skip", "raises", "warns", "fixture",  # pytest API
+        "setenv",
+        "delenv",
+        "setattr",
+        "delattr",  # monkeypatch API
+        "importorskip",
+        "fail",
+        "skip",
+        "raises",
+        "warns",
+        "fixture",  # pytest API
         "import_module",  # importlib
     }
 )
@@ -194,14 +245,9 @@ def classify_file(path: Path) -> dict:
                 if child.name.startswith("test_"):
                     test_fns.append(child)
                 elif any(
-                    isinstance(d, ast.Call)
-                    and isinstance(d.func, ast.Attribute)
-                    and d.func.attr == "fixture"
+                    isinstance(d, ast.Call) and isinstance(d.func, ast.Attribute) and d.func.attr == "fixture"
                     for d in child.decorator_list
-                ) or any(
-                    isinstance(d, ast.Attribute) and d.attr == "fixture"
-                    for d in child.decorator_list
-                ):
+                ) or any(isinstance(d, ast.Attribute) and d.attr == "fixture" for d in child.decorator_list):
                     fixture_fns.append(child)
             if isinstance(child, ast.ClassDef):
                 _walk(child)
@@ -271,10 +317,16 @@ def cmd_classify(args: argparse.Namespace) -> int:
             pct = idx / total
             filled = int(bar_width * pct)
             bar = "\u2588" * filled + "\u2591" * (bar_width - filled)
-            color = "\033[92m" if pct >= 0.9 else "\033[94m" if pct >= 0.7 else "\033[93m" if pct >= 0.4 else "\033[91m"
-            sys.stderr.write(
-                f"\r{color}[{bar}]\033[0m {int(pct*100):3d}% ({idx}/{total}) classifying"
+            color = (
+                "\033[92m"
+                if pct >= 0.9
+                else "\033[94m"
+                if pct >= 0.7
+                else "\033[93m"
+                if pct >= 0.4
+                else "\033[91m"
             )
+            sys.stderr.write(f"\r{color}[{bar}]\033[0m {int(pct * 100):3d}% ({idx}/{total}) classifying")
             sys.stderr.flush()
     sys.stderr.write("\n")
 
@@ -294,11 +346,82 @@ def cmd_classify(args: argparse.Namespace) -> int:
     return 0
 
 
+# SSOT: ops_scripts/ci/check_test_harness_coverage.py PROD_MODULE_GLOBS.
+# A stub whose derived production module does NOT match these globs is
+# archive-safe without a sibling test, because the harness-coverage gate
+# only enforces coverage on these paths.
+_PROD_MODULE_GLOBS = (
+    "agentic_core/L*/**/*.py",
+    "apps_eval/engines/*.py",
+    "apps_eval/integrations/*.py",
+    "apps_exec/engines/*.py",
+    "apps_exec/integrations/*.py",
+    "apps_lic/engines/*.py",
+    "apps_lic/integrations/*.py",
+    "apps_research/engines/*.py",
+    "apps_research/integrations/*.py",
+    "apps_rfp/engines/*.py",
+    "apps_rfp/integrations/*.py",
+    "apps_rg/engines/*.py",
+    "apps_rg/integrations/*.py",
+    "apps_shared/enforcement/*.py",
+    "apps_underwriting_ai/engines/*.py",
+    "apps_underwriting_ai/ingestion/*.py",
+)
+
+
+def _derive_prod_module(test_rel_posix: str) -> str | None:
+    """Given a repo-relative test path like `tests/unit/agentic_core/L0_routing/types/test_foo_adg.py`,
+    derive the corresponding production module path (best-effort).
+
+    Strategy:
+      1. Drop the leading `tests/unit/` or `tests/` prefix.
+      2. Replace filename `test_<name>_adg.py` -> `<name>.py` (or `__init__.py`
+         when the stub is `test___init___adg.py`).
+    """
+    if not test_rel_posix.startswith("tests/"):
+        return None
+    parts = test_rel_posix.split("/")
+    # strip leading 'tests/unit/' or 'tests/'
+    if len(parts) >= 2 and parts[1] == "unit":
+        parts = parts[2:]
+    else:
+        parts = parts[1:]
+    if not parts:
+        return None
+    fname = parts[-1]
+    if not fname.endswith("_adg.py"):
+        return None
+    stem = fname[: -len("_adg.py")]
+    # test___init__ -> __init__
+    if stem == "test___init__":
+        prod_name = "__init__.py"
+    elif stem.startswith("test_"):
+        prod_name = stem[len("test_"):] + ".py"
+    else:
+        prod_name = stem + ".py"
+    parts[-1] = prod_name
+    return "/".join(parts)
+
+
+def _prod_is_gate_covered(prod_rel_posix: str) -> bool:
+    """Return True iff the production module is under check_test_harness_coverage
+    gate surface. __init__.py is explicitly excluded by the gate."""
+    import fnmatch
+    if prod_rel_posix.endswith("__init__.py"):
+        return False
+    return any(fnmatch.fnmatch(prod_rel_posix, pat) for pat in _PROD_MODULE_GLOBS)
+
+
 def cmd_archive_plan(args: argparse.Namespace) -> int:
     """From a classification report, derive archive candidates.
 
-    A stub is archive-safe iff a sibling non-`_adg` test file exists for the
-    same module (e.g., `test_foo.py` alongside `test_foo_adg.py`).
+    A stub is archive-safe if ANY of:
+      (a) a sibling non-`_adg` test file exists, OR
+      (b) the production module is NOT covered by check_test_harness_coverage
+          (i.e., outside PROD_MODULE_GLOBS, or an `__init__.py` which the gate skips).
+
+    This implements the full coverage-safety envelope.
     """
     repo_root = Path(__file__).resolve().parents[2]
     report_path = Path(args.input)
@@ -308,7 +431,7 @@ def cmd_archive_plan(args: argparse.Namespace) -> int:
 
     summary = json.loads(report_path.read_text(encoding="utf-8"))
     candidates: list[dict] = []
-    skipped_no_sibling: list[dict] = []
+    skipped_unsafe: list[dict] = []
     kept_non_stub: int = 0
     kept_empty_or_error: int = 0
 
@@ -324,7 +447,7 @@ def cmd_archive_plan(args: argparse.Namespace) -> int:
             continue
 
         path = Path(entry["path"])
-        # sibling: strip "_adg" suffix before ".py"
+        rel_posix = str(path).replace("\\", "/")
         name = path.name
         if not name.endswith("_adg.py"):
             continue
@@ -332,31 +455,46 @@ def cmd_archive_plan(args: argparse.Namespace) -> int:
         sibling_abs = repo_root / path.parent / sibling_name
         has_sibling = sibling_abs.is_file()
 
+        prod_rel = _derive_prod_module(rel_posix)
+        gate_covered = _prod_is_gate_covered(prod_rel) if prod_rel else False
+
+        safety_reason: str
         if has_sibling:
-            candidates.append(
-                {
-                    "source": str(path).replace("\\", "/"),
-                    "sibling": str((path.parent / sibling_name)).replace("\\", "/"),
-                    "dest": f"tools/archive/stub_tests/{str(path).replace(chr(92), '/')}",
-                    "test_count": entry.get("test_count", 0),
-                }
-            )
+            safety_reason = f"sibling {sibling_name} exists"
+        elif not gate_covered:
+            if prod_rel and prod_rel.endswith("__init__.py"):
+                safety_reason = f"prod is __init__.py (gate excludes)"
+            else:
+                safety_reason = f"prod {prod_rel or '?'} outside harness-coverage gate surface"
         else:
-            skipped_no_sibling.append(
+            skipped_unsafe.append(
                 {
-                    "source": str(path).replace("\\", "/"),
-                    "reason": f"no sibling {sibling_name}",
+                    "source": rel_posix,
+                    "prod_module": prod_rel,
+                    "reason": "stub is sole test for gate-covered prod module",
                     "test_count": entry.get("test_count", 0),
                 }
             )
+            continue
+
+        candidates.append(
+            {
+                "source": rel_posix,
+                "sibling": str((path.parent / sibling_name)).replace("\\", "/") if has_sibling else None,
+                "prod_module": prod_rel,
+                "dest": f"tools/archive/stub_tests/{rel_posix}",
+                "test_count": entry.get("test_count", 0),
+                "safety": safety_reason,
+            }
+        )
 
     plan = {
         "archive_count": len(candidates),
-        "skipped_no_sibling": len(skipped_no_sibling),
+        "skipped_unsafe": len(skipped_unsafe),
         "kept_non_stub": kept_non_stub,
         "kept_empty_or_error": kept_empty_or_error,
         "candidates": candidates,
-        "skipped": skipped_no_sibling,
+        "skipped": skipped_unsafe,
     }
 
     out_path = Path(args.output)
@@ -364,7 +502,7 @@ def cmd_archive_plan(args: argparse.Namespace) -> int:
     out_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
     print(f"Archive plan: {out_path}")
     print(
-        f"  archive_count={len(candidates)} skipped_no_sibling={len(skipped_no_sibling)} "
+        f"  archive_count={len(candidates)} skipped_unsafe={len(skipped_unsafe)} "
         f"kept_non_stub={kept_non_stub} kept_empty_or_error={kept_empty_or_error}"
     )
     return 0

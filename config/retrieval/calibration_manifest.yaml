@@ -1,0 +1,217 @@
+# Retrieval Calibration Manifest
+# --------------------------------------------------------------------------
+# W0.2 of plan: .windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md
+#
+# Purpose: declare the corpus + query set used by retrieval_benchmark.py to
+# measure baseline (W0.1) and every wave's lift (W1..W6).
+#
+# Invariants:
+#   - Corpus is frozen for the duration of a wave. Changes require an ADR
+#     and a restart of baseline measurement.
+#   - Queries carry ground-truth chunk ids (expected_chunk_ids) so
+#     Recall@K / MRR / NDCG are well-defined.
+#   - Tenant isolation is enforced by the pre-retrieval gate; calibration
+#     runs under a dedicated synthetic tenant "calibration".
+# --------------------------------------------------------------------------
+
+schema_version: 1
+status: draft              # draft | awaiting_chunk_id_bind | frozen
+frozen_at: null            # UTC timestamp when status flips to "frozen"
+
+# Provenance: populated 2026-04-23 against ADG snapshot
+# artifacts/adg/adg_indexed_04232026_2319.sqlite. Query seeds designed to
+# cover: semantic similarity, exact lexical / identifier, multi-doc
+# synthesis, negative (abstain-should-fire), and date/version lookup.
+# Chunk IDs below use the form "<file_path>::<section_slug>" as a stable
+# pre-ingest placeholder. At first corpus ingest these are rewritten to
+# canonical ChunkManifest chunk_ids; status flips draft ->
+# awaiting_chunk_id_bind -> frozen.
+
+tenant_id: calibration
+
+# Sampling strategy for the calibration corpus.
+corpus:
+  # Source selectors. Each entry is resolved against the repo's existing
+  # ingestion pipeline; the calibration builder materializes a snapshot.
+  sources:
+    - kind: repo_docs
+      root: docs/reference
+      # Deep, structured markdown is the closest intra-repo proxy for
+      # enterprise knowledge-base content.
+      include_globs:
+        - "**/*.md"
+      exclude_globs:
+        - "**/archives/**"
+        - "**/_deleted/**"
+    - kind: repo_docs
+      root: docs/architecture
+      include_globs:
+        - "**/*.md"
+    - kind: repo_docs
+      root: .windsurf/rules
+      include_globs:
+        - "**/*.md"
+    - kind: repo_code
+      root: agentic_core/knowledge/retrieval
+      include_globs:
+        - "**/*.py"
+    - kind: repo_code
+      root: agentic_core/L4_state/utils/memory
+      include_globs:
+        - "bm25_store.py"
+  # Chunking policy used by the calibration builder. Must match the
+  # production chunking policy at the time of baseline capture so the
+  # baseline is representative.
+  chunking:
+    policy_ref: agentic_core.knowledge.chunking.chunk_policy_engine
+    target_tokens: 256
+    overlap_tokens: 32
+
+# Query set. Each query carries expected chunk ids for quality scoring.
+# Axes coverage:
+#   semantic        q001 q002 q004 q008 q012
+#   exact_lexical   q003 q006 q011
+#   multi_doc       q004 q010 q012
+#   abstain         q009
+#   date_version    q005 q007
+queries:
+  - id: q001
+    query: "How does the C0.1 pre-retrieval gate enforce tenant isolation?"
+    intent: semantic
+    expected_chunk_ids:
+      - "agentic_core/knowledge/retrieval/retrieval_plan.py::RetrievalPrefilter.check"
+      - "docs/reference/03_L0_Routing/C0 - Retrieval/C0 Context Engine.md::sec_c0_1"
+    notes: "Target chunk must name 'RetrievalPrefilter' and 'tenant_id'. Fail-closed behavior is the key fact."
+
+  - id: q002
+    query: "How does the hybrid recall stage merge dense and sparse retrieval results?"
+    intent: semantic
+    expected_chunk_ids:
+      - "agentic_core/knowledge/retrieval/hybrid_recall_stage.py::HybridRecallStage"
+      - "docs/reference/03_L0_Routing/C0 - Retrieval/C0 Context Engine.md::sec_c0_2"
+    notes: "Answer must mention sparse-wins-on-IDs merge rule."
+
+  - id: q003
+    query: "DEFERRED_SCOPE marker required fields and priority scoring formula"
+    intent: exact_lexical
+    expected_chunk_ids:
+      - ".windsurf/rules/deferred-scope-capture.md::the_deferred_scope_marker_contract"
+      - ".windsurf/rules/deferred-scope-capture.md::the_priority_formula"
+    notes: "Exact identifier query. BM25 should dominate. Must surface the 9-field schema and layer multipliers."
+
+  - id: q004
+    query: "How does Author-Gate decision handling differ from runtime HITL exit control?"
+    intent: multi_doc
+    expected_chunk_ids:
+      - ".windsurf/rules/author-gate-enforcement.md::pipeline"
+      - "docs/architecture/adr/ADR-023-runtime-hitl-exit-control.md::context"
+    notes: "Requires synthesizing the harness-side vs runtime distinction. Single-doc answer is insufficient."
+
+  - id: q005
+    query: "Which ADR accepted ChromaDB as the canonical vector store?"
+    intent: date_version
+    expected_chunk_ids:
+      - "docs/architecture/adr/ADR-018-chromadb-as-canonical-vector-store.md::status"
+    notes: "ADR ID lookup. Correct answer is ADR-018."
+
+  - id: q006
+    query: "sparse wins on IDs merge rule implementation"
+    intent: exact_lexical
+    expected_chunk_ids:
+      - "agentic_core/knowledge/retrieval/hybrid_recall_stage.py::merge_sparse_wins_on_ids"
+      - "docs/reference/03_L0_Routing/C0 - Retrieval/Retrieval Pipeline.md::hybrid_merge"
+    notes: "Term-specific lookup; BM25 should outperform dense here."
+
+  - id: q007
+    query: "Which ADRs were decided on 2026-04-23?"
+    intent: date_version
+    expected_chunk_ids:
+      - "docs/architecture/adr/ADR-044-request-intake-envelope-hardening.md::decision_date"
+      - "docs/architecture/adr/ADR-045-contextual-retrieval.md::decision_date"
+      - "docs/architecture/adr/ADR-046-rerank-revival.md::decision_date"
+      - "docs/architecture/adr/ADR-047-context-platform.md::decision_date"
+    notes: "Date-anchored multi-hit. Tests metadata-driven retrieval."
+
+  - id: q008
+    query: "Why does Anthropic's Contextual Retrieval reduce failed retrievals by 49 percent?"
+    intent: semantic
+    expected_chunk_ids:
+      - "docs/reference/03_L0_Routing/C0 - Retrieval/Anthropic RAG Best Practices.md::sec_contextual_retrieval"
+      - "docs/architecture/adr/ADR-045-contextual-retrieval.md::context"
+    notes: "Concept-level question. Correct answer mentions situated-context prepended before embedding + BM25."
+
+  - id: q009
+    query: "What is the maximum number of concurrent tenants supported by the platform?"
+    intent: abstain
+    expected_chunk_ids: []
+    notes: "NO valid answer exists in corpus. Correct behavior: abstain. Tests abstain-correctness axis, not recall."
+
+  - id: q010
+    query: "How do the L0 routing pre-filter, BM25 sparse store, and evidence contract builder interact during a single retrieval call?"
+    intent: multi_doc
+    expected_chunk_ids:
+      - "agentic_core/knowledge/retrieval/retrieval_plan.py::RetrievalPrefilter"
+      - "agentic_core/L4_state/utils/memory/bm25_store.py::Bm25Store"
+      - "agentic_core/knowledge/retrieval/evidence_contract_builder.py::EvidenceContractBuilder"
+      - "docs/reference/03_L0_Routing/C0 - Retrieval/C0 Context Engine.md::full_pipeline"
+    notes: "3-doc synthesis. Full answer requires stitching flow from pre-filter -> hybrid recall -> evidence contract."
+
+  - id: q011
+    query: "ADG_HOTSPOT_REPORT required fields"
+    intent: exact_lexical
+    expected_chunk_ids:
+      - ".windsurf/rules/adg-canonical-invariants.md::sec_10_required_plan_sections"
+      - ".windsurf/rules/constitutional.md::rule_22"
+    notes: "Exact identifier. Answer must list archetype, layer, fan_in, impact, surface."
+
+  - id: q012
+    query: "What is the difference between static ADG and runtime ADG?"
+    intent: semantic
+    expected_chunk_ids:
+      - ".windsurf/rules/adg-canonical-invariants.md::sec_8_static_vs_runtime"
+      - "docs/reference/AST Dependency Graphs (ADG)/ADG STATIC vs. RUNTIME MENTAL MODEL.md::overview"
+    notes: "Answer must distinguish adg_sqlite MCP vs otel_mcp, AST-scan vs OTEL spans."
+
+# Eval axes actually computed. retrieval_benchmark.py must emit all of
+# these per query and aggregated at top_k = 20.
+eval_axes:
+  retrieval_quality:
+    - precision_at_k
+    - recall_at_k
+    - mean_reciprocal_rank
+    - ndcg_at_k
+  operational:
+    - avg_latency_ms
+    - p95_latency_ms
+    - p99_latency_ms
+  grounding:                # populated once W3.3 ships
+    - citation_precision
+    - per_sentence_support_rate
+  behavioural:              # populated once W6.1 ships
+    - abstain_correctness
+    - stale_hit_rate
+    - retrieval_drift_vs_prior_index
+
+# Acceptance gates per wave. These numbers are contractual exit criteria
+# from the plan. The baseline is captured in W0.1 and stored at
+# artifacts/retrieval_baseline/<UTC-timestamp>.json; all subsequent waves
+# are measured against that frozen baseline.
+acceptance_gates:
+  W1_contextual_retrieval:
+    recall_at_20_lift_pct: 20.0
+  W2_rerank_revival:
+    mrr_at_20_lift_pct: 15.0
+    p95_rerank_ms_max: 250.0
+  W3_grounding:
+    per_sentence_support_rate_min: 0.90
+  W6_eval_completeness:
+    drift_axis_present: true
+    stale_hit_axis_present: true
+    abstain_axis_present: true
+
+# Replay determinism. These fields are stamped on every baseline JSON so a
+# future run can reproduce bit-for-bit.
+replay:
+  policy_hash: ""           # filled at baseline capture time
+  snapshot_id: ""           # ADG snapshot or content digest
+  code_sha: ""              # git HEAD at capture time

@@ -5,6 +5,7 @@ each candidate, creating destination directories as needed.
 
 Idempotent: if dest exists and source is gone, skips. If both exist, fails.
 """
+
 from __future__ import annotations
 
 import json
@@ -41,14 +42,15 @@ def main() -> int:
         filled = int(bar_width * pct)
         bar = "\u2588" * filled + "\u2591" * (bar_width - filled)
         color = (
-            "\033[92m" if pct >= 0.9
-            else "\033[94m" if pct >= 0.7
-            else "\033[93m" if pct >= 0.4
+            "\033[92m"
+            if pct >= 0.9
+            else "\033[94m"
+            if pct >= 0.7
+            else "\033[93m"
+            if pct >= 0.4
             else "\033[91m"
         )
-        sys.stderr.write(
-            f"\r{color}[{bar}]\033[0m {int(pct*100):3d}% ({idx}/{total}) archiving"
-        )
+        sys.stderr.write(f"\r{color}[{bar}]\033[0m {int(pct * 100):3d}% ({idx}/{total}) archiving")
         sys.stderr.flush()
 
         if not src.exists() and dest.exists():
