@@ -1,6 +1,6 @@
 # RAGBench Ablation — 6-Approach Head-to-Head
 
-Generated: 2026-04-24 22:39:17 UTC
+Generated: 2026-04-24 22:45:32 UTC
 Fixture: `C:/Git/Agentic-Workflow/data/eval/golden/ragbench_techqa_synthetic.jsonl`
 Queries: 25
 Top-K: 5

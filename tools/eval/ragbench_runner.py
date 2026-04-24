@@ -246,6 +246,8 @@ def _chunk_passage(
     fixed_overlap: int = 50,
 ) -> list[Chunk]:
     """Return chunks with parent_id metadata so we can hydrate later."""
+    if not text or not text.strip():
+        return []
     if strategy == "fixed":
         # Approximate 200-char fixed + 50-char overlap, matching the blog's baseline.
         chunks: list[Chunk] = []
@@ -628,6 +630,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--top-k", type=int, default=5)
     args = parser.parse_args(argv)
+
+    if args.top_k <= 0:
+        print(f"ERROR: --top-k must be a positive integer (got {args.top_k})", file=sys.stderr)
+        return 2
 
     queries = load_fixture(args.fixture)
     if not queries:
