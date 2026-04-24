@@ -142,14 +142,14 @@ Ten per-decision-class SQLite ledgers under `artifacts/ledgers/` capture predict
 |---|---|---|---|
 | `tool_routing` | `post_cascade_adg_audit.py` | `ledger-consulter-tool-routing` | grep-for-deps audits, retrieval-tool choice |
 | `refactor_outcome` | `post_commit_outcome_binder.py` | `ledger-consulter-refactor-outcome` | commit-bound refactor-class decisions |
-| `prompt_classifier` | `pre_prompt_classifier.py` | `ledger-consulter-prompt-classifier` | T0/T1/T2/T3 tier predictions |
+| `prompt_classifier` | `pre_prompt_classifier.py` (predict) + `ops_scripts/calibration/prompt_classifier_binder.py` (bind) | `ledger-consulter-prompt-classifier` | T0/T1/T2/T3 tier predictions with actual files_edited/lines/layers |
 | `mcp_invocation` | `post_mcp_audit.py` | `ledger-consulter-mcp-invocation` | per-MCP latency, server, tool |
 | `hotspot_defect` | `ops_scripts/calibration/hotspot_defect_join.py` | `ledger-consulter-hotspot-defect` | predicted rank vs 30d churn |
 | `deferred_scope_calibration` | `ops_scripts/calibration/deferred_scope_poller.py` | `ledger-consulter-deferred-scope-calibration` | P-band vs days-to-done |
 | `guardian_exemption` | `post_write_audit.py` | `ledger-consulter-guardian-exemption` | new `# guardian: allow-*` comments |
 | `progress_eta` | `tools/progress_display.py` | `ledger-consulter-progress-eta` | ProgressReporter predicted vs actual |
 | `memory_recall` | `post_cascade_writeback_audit.py` | `ledger-consulter-memory-recall` | writeback-signal corroboration rate |
-| `test_selection` | `post_run_audit.py` | `ledger-consulter-test-selection` | pytest triage selection |
+| `test_selection` | `post_run_audit.py` (predict) + `ops_scripts/calibration/test_selection_binder.py` (bind) | `ledger-consulter-test-selection` | pytest triage selection with pass/fail outcome from `.pytest_cache/v/cache/lastfailed` |
 
 **Invariants**: writer contract via `tools/ledgers/hook_helpers.emit_ledger_event` only; fail-soft; idempotent on `event_id`; additive schema only. See `.windsurf/rules/intelligence-ledger-family.md` and ADR-050 for full rationale.
 
@@ -157,4 +157,4 @@ Ten per-decision-class SQLite ledgers under `artifacts/ledgers/` capture predict
 
 **CI gate**: `python ops_scripts/ci/check_ledger_writer_contract.py` validates schema, writer-hook existence, consulting-skill existence.
 
-**Notion Calibration DB (planned)**: a dedicated Notion database for weekly calibration snapshots is pending one-time operator approval per plan G6. Until then, calibration lives on disk in `docs/reports/calibration/`.
+**Calibration surface**: on-disk only. Weekly reports at `docs/reports/calibration/<YYYY-Www>.md` are the SSOT; no mirror database exists in Notion by design (operator decision 2026-04-24). Revisit after 30 days of accumulated signal if cross-session visibility becomes necessary.

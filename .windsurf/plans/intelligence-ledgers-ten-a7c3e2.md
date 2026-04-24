@@ -1,10 +1,21 @@
 # Intelligence Ledgers — Ten-Ledger Rollout
 
 **Plan ID**: `intelligence-ledgers-ten-a7c3e2`
-**Status**: Draft — pending operator approval
+**Status**: ✅ Complete — operator closeout 2026-04-24
 **Created**: 2026-04-24
+**Completed**: 2026-04-24 (commits `6ed2937f0f`, `114ba23cf2`, plus binders commit)
 **Tier**: T3 (cross-layer: hooks, schemas, skills, calibration scripts, Notion, rules)
 **ADG Snapshot**: `adg_indexed_04242026_0513.sqlite` (healthy, SQLite + Redis green)
+
+## Closeout Note (2026-04-24)
+
+All waves W0–W5 delivered. Operator decisions:
+
+1. **G6 Notion Calibration DB**: **SKIP** (Option B). Weekly reports at `docs/reports/calibration/<YYYY-Www>.md` are the SSOT. Revisit after 30 days.
+2. **W2.1 / W4.4 post-commit binders**: delivered — `ops_scripts/calibration/prompt_classifier_binder.py` and `test_selection_binder.py`.
+3. **30-day coefficient tuning**: calendar item, not a gap. First review: week of 2026-05-24.
+
+CI gate `check_ledger_writer_contract.py` green. Weekly report generating live row counts across all 10 ledgers.
 
 ## Goal
 
