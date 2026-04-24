@@ -383,14 +383,19 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
     # L4: STATE AGENTS
     # ============================================
     "IntelligenceLibrarianAgent": AgentClassification(
-        file_path="agentic_core/L4_state/engines/IntelligenceLibrarianAgent.py",
+        file_path="apps_lic/reasoning/IntelligenceLibrarianAgent.py",
         class_name="IntelligenceLibrarianAgent",
         current_layer="L4",
         canonical_role=CanonicalAgentRole.OBSERVER,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
-        implements_l2_contract=True,
-        notes="L4 state intelligence librarian observer. WAVE 7: Now L2 contract compliant.",
+        status=AgentStatus.OBSOLETE,
+        is_shim=True,
+        implements_l2_contract=False,
+        notes=(
+            "RETIRED 2026-02-08 per original shim declaration. Registry previously "
+            "pointed to phantom path agentic_core/L4_state/engines/IntelligenceLibrarianAgent.py "
+            "which does not exist on disk (W1 fix, 2026-04-24). Archive-eligible 2026-05-09 "
+            "after 90-day cooling per constitutional \u00a73. AGENT-DELETION-AUTHORIZED."
+        ),
     ),
     # ============================================
     # APPS_LIC: Additional Agents
