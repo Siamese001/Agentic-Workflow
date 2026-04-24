@@ -28,6 +28,14 @@ Both callables are OPTIONAL. When ``pass1_fn`` is None, the orchestrator
 returns an empty ``DualPassResult`` with a diagnostic reason — this supports
 offline test runs and the current broken-executor state without crashing.
 
+Wave C (qwen-adoption-waves-a7f3c2): for cost-sensitive flows where pass 1
+does NOT require Anthropic-format citation spans, the companion module
+``agentic_core.knowledge.retrieval.qwen_pass_factories`` ships
+``build_qwen_pass1_fn`` and ``build_qwen_pass2_fn`` factories that return
+drop-in callables backed by the local vLLM Qwen gateway. Typical adoption:
+keep pass 1 on Anthropic (for citations), use Qwen for pass 2 (JSON shape)
+to eliminate Haiku billing on the deterministic reshape step.
+
 References:
 - https://docs.anthropic.com/en/docs/build-with-claude/citations (incompatibility)
 - Plan: .windsurf/plans/anthropic-rag-gaps-7f3c2a.md (phase P2.3)
