@@ -64,6 +64,16 @@ class TraceReplayEvalGate(ADGGateBase):
 
         baseline = self._load_baseline("trace_replay_eval")
         baseline_gaps = baseline.get("gaps", {})
+        # Load baseline coverage so per-layer coverage regressions are computed
+        # against historical values, not the default 100% ceiling that previously
+        # made every 0%-coverage layer permanently flagged.
+        summary["baseline_coverage"] = {
+            layer: info.get("coverage_pct", 0.0) for layer, info in baseline.get("coverage", {}).items()
+        }
+        # Collect CURRENT gaps so they are persisted to the baseline below.
+        # Without this, the baseline's `gaps` dict stays empty forever and every
+        # run treats every existing gap as NEW, making the ratchet unusable.
+        current_gap_keys: dict[str, bool] = {}
 
         # Check trace/replay/eval gaps
         try:
@@ -76,6 +86,7 @@ class TraceReplayEvalGate(ADGGateBase):
                 node_id, file, layer, has_trace, has_replay_link, has_eval, gap_type = row
 
                 key = f"{layer}:{node_id}"
+                current_gap_keys[key] = True
                 prev_gap = baseline_gaps.get(key, False)
 
                 if gap_type == "no_trace":
@@ -155,8 +166,14 @@ class TraceReplayEvalGate(ADGGateBase):
         except sqlite3.Error:
             pass
 
-        new_baseline = {"gaps": {}, "coverage": summary["eval_coverage_by_layer"]}
-        self._save_baseline("trace_replay_eval", new_baseline)
+        # Persist current gaps so the ratchet is meaningful on subsequent runs:
+        # only NEW gaps (keys not in the baseline) will be flagged. Previously
+        # `gaps` was hardcoded to `{}` which re-flagged every existing gap on
+        # every run and kept the gate permanently blocked. Only save when no
+        # new violations were produced - otherwise we'd "accept" the regression.
+        if not violations:
+            new_baseline = {"gaps": current_gap_keys, "coverage": summary["eval_coverage_by_layer"]}
+            self._save_baseline("trace_replay_eval", new_baseline)
 
         summary["total_violations"] = len(violations)
         status = "blocked" if violations else "passed"

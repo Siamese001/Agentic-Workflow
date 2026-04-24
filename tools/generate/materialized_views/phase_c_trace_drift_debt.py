@@ -135,8 +135,23 @@ def materialize_phase_c(sqlite_path: Path) -> dict[str, int]:
                 AND ea.relation_type IN ('writes_to', 'writes_through', 'routes_to_capability',
                                           'invokes_provider')
           )
+          -- Non-runtime code exemptions (2026-04-23 W2 - p1-burndown): trace/replay/eval
+          -- edges are produced by the agentic RUNTIME. Paths that execute outside the
+          -- runtime (tests, tools, ops scripts, hook scripts, ADG build tooling, low-level
+          -- infrastructure) cannot emit runtime telemetry by construction and must not be
+          -- flagged for missing it.
           AND n.resolved_path NOT LIKE 'tests/%'
           AND n.resolved_path NOT LIKE 'tools/%'
+          AND n.resolved_path NOT LIKE 'ops_scripts/%'
+          AND n.resolved_path NOT LIKE '.windsurf/scripts/%'
+          AND n.resolved_path NOT LIKE 'agentic_core/adg/%'
+          AND n.resolved_path NOT LIKE 'infrastructure/%'
+          -- Primitive-provider exemption (config/, types/): hold constants, Enums, and
+          -- dataclass definitions only. They cannot emit trace/replay/eval edges because
+          -- they do not execute orchestration logic.
+          AND n.resolved_path NOT LIKE '%/config/%'
+          AND n.resolved_path NOT LIKE '%/types/%'
+          AND n.resolved_path NOT LIKE '%_types.py'
         ORDER BY gap_type, layer
     """)
 
