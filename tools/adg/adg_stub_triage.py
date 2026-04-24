@@ -404,13 +404,21 @@ def _derive_prod_module(test_rel_posix: str) -> str | None:
     return "/".join(parts)
 
 
-def _prod_is_gate_covered(prod_rel_posix: str) -> bool:
+def _prod_is_gate_covered(prod_rel_posix: str, repo_root: Path) -> bool:
     """Return True iff the production module is under check_test_harness_coverage
-    gate surface. __init__.py is explicitly excluded by the gate."""
+    gate surface AND the file actually exists on disk.
+
+    The gate enumerates prod modules from the filesystem (see
+    check_test_harness_coverage.py::_enumerate_prod_modules), so a derived prod
+    path that doesn't exist is not actually checked by the gate. Stubs
+    pointing to non-existent prod modules are therefore archive-safe.
+    """
     import fnmatch
     if prod_rel_posix.endswith("__init__.py"):
         return False
-    return any(fnmatch.fnmatch(prod_rel_posix, pat) for pat in _PROD_MODULE_GLOBS)
+    if not any(fnmatch.fnmatch(prod_rel_posix, pat) for pat in _PROD_MODULE_GLOBS):
+        return False
+    return (repo_root / prod_rel_posix).is_file()
 
 
 def cmd_archive_plan(args: argparse.Namespace) -> int:
@@ -456,7 +464,7 @@ def cmd_archive_plan(args: argparse.Namespace) -> int:
         has_sibling = sibling_abs.is_file()
 
         prod_rel = _derive_prod_module(rel_posix)
-        gate_covered = _prod_is_gate_covered(prod_rel) if prod_rel else False
+        gate_covered = _prod_is_gate_covered(prod_rel, repo_root) if prod_rel else False
 
         safety_reason: str
         if has_sibling:
