@@ -123,8 +123,77 @@ def get_similarity_threshold(namespace: str | None = None) -> float:
     )
 
 
+# -----------------------------------------------------------------------------
+# v12 L0 Routing thresholds — see
+# docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v12.md §4.2.
+#
+# Additive getters that read the ``v12_routing:`` block in the same YAML SSOT.
+# Env override pattern: AGENTIC_V12_<UPPER_SNAKE_NAME>.
+# -----------------------------------------------------------------------------
+
+_V12_FALLBACKS: dict[str, float] = {
+    "classifier_surface_threshold": 0.72,
+    "classifier_dominance_delta": 0.12,
+    "r1b_semantic_match_threshold": 0.88,
+    "r_casc_escalation_threshold": 0.55,
+    "r_loop_quality_threshold": 0.85,
+    "cold_start_conservative_threshold": 0.50,
+    "loop_guard_efficiency_threshold": 0.40,
+}
+
+# Non-threshold ints (guardrail ceilings). Not clamped to [0,1].
+_V12_INT_FALLBACKS: dict[str, int] = {
+    "min_spans_for_loop_guard": 5,
+    "r_casc_max_depth": 3,
+    "r_loop_max_iterations": 3,
+}
+
+
+def _coerce_positive_int(raw: Any, fallback: int) -> int:
+    """Parse a positive integer; fall back on malformed or non-positive input."""
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        return fallback
+    if value < 1:
+        return fallback
+    return value
+
+
+def get_v12_threshold(name: str) -> float:
+    """Return a v12 routing threshold in [0, 1].
+
+    Raises KeyError for unknown names so typos are caught at dev time.
+    """
+    if name not in _V12_FALLBACKS:
+        raise KeyError(f"unknown v12 routing threshold: {name!r}")
+    env = os.environ.get(f"AGENTIC_V12_{name.upper()}")
+    fallback = _V12_FALLBACKS[name]
+    if env is not None:
+        return _coerce_threshold(env, fallback)
+    cfg = _load_yaml().get("v12_routing") or {}
+    return _coerce_threshold(cfg.get(name), fallback)
+
+
+def get_v12_int(name: str) -> int:
+    """Return a v12 routing integer guardrail (e.g. max_depth, max_iterations).
+
+    Raises KeyError for unknown names.
+    """
+    if name not in _V12_INT_FALLBACKS:
+        raise KeyError(f"unknown v12 routing int param: {name!r}")
+    env = os.environ.get(f"AGENTIC_V12_{name.upper()}")
+    fallback = _V12_INT_FALLBACKS[name]
+    if env is not None:
+        return _coerce_positive_int(env, fallback)
+    cfg = _load_yaml().get("v12_routing") or {}
+    return _coerce_positive_int(cfg.get(name), fallback)
+
+
 __all__ = [
     "get_abstain_threshold",
     "get_similarity_threshold",
+    "get_v12_int",
+    "get_v12_threshold",
     "reset_cache",
 ]

@@ -33,3 +33,50 @@ semantic_cache:
   # loader reads this map and falls back to similarity_threshold when a
   # namespace is absent.
   per_namespace_thresholds: {}
+
+# -----------------------------------------------------------------------------
+# v12 L0 Routing thresholds — doctrine SSOT for
+# docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v12.md §4.2.
+#
+# All thresholds below are DEFAULTS. Production deployments MUST re-calibrate
+# per §4.3 (weekly cadence, domain-labeled data, tail-distribution evaluation).
+# Overrides via environment variables prefixed AGENTIC_V12_*.
+# -----------------------------------------------------------------------------
+v12_routing:
+  # Classifier confidence at or above which the dispatcher may dispatch the
+  # chosen route without wrapping in a conservative fallback. Below this,
+  # cold-start safeguard (§7) kicks in.
+  classifier_surface_threshold: 0.72
+
+  # Minimum gap between top and second-ranked route confidences required to
+  # suppress alternatives from appearing in fallback_chain.
+  classifier_dominance_delta: 0.12
+
+  # R1B semantic-cache match threshold AFTER hybrid-fusion + policy gates.
+  # Separate from the pre-gate similarity_threshold above (0.98), which is a
+  # raw cosine floor; this one is the post-gate decision boundary.
+  r1b_semantic_match_threshold: 0.88
+
+  # R-CASC: executor self-reported confidence below this forces escalation to
+  # the next cost tier (TIER_S → TIER_M → TIER_L). Max cascade depth = 3.
+  r_casc_escalation_threshold: 0.55
+
+  # R-LOOP: critic-agent quality score at or above this breaks the refinement
+  # loop early (before max_iterations).
+  r_loop_quality_threshold: 0.85
+
+  # Classifier confidence below this forces R3_GROUNDED (TIER_M) regardless
+  # of the top pick. See cold_start_safeguard.py.
+  cold_start_conservative_threshold: 0.50
+
+  # Loop Guard: if agent_efficiency_score (unique_productive_spans / total_spans)
+  # falls below this across >= min_spans_for_loop_guard spans within a single
+  # trace, LoopSuspected fires.
+  loop_guard_efficiency_threshold: 0.40
+  min_spans_for_loop_guard: 5
+
+  # R-CASC max hops. Hard ceiling regardless of thresholds.
+  r_casc_max_depth: 3
+
+  # R-LOOP max iterations. Hard ceiling regardless of quality.
+  r_loop_max_iterations: 3

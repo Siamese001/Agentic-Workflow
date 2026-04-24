@@ -1,0 +1,57 @@
+# v12 Default Fallback Chains — SSOT for
+# docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v12.md §6.
+#
+# Every non-terminal route MUST have a non-empty fallback_chain. Terminal
+# cache routes (R1A, R1B) have empty chains on hit (they re-dispatch on miss).
+# R5_FALLBACK is always the final entry when present.
+#
+# Each entry is {route_id, cost_tier, provider?}. provider is optional and
+# supports multi-provider fallback within a single tier (see §6.1).
+
+version: 1
+
+chains:
+  R1B:
+    - {route_id: R1A,          cost_tier: TIER_S}
+    - {route_id: R3_GROUNDED,  cost_tier: TIER_M}
+    - {route_id: R5_FALLBACK,  cost_tier: TIER_S}
+
+  R3_GROUNDED:
+    - {route_id: R3R4_WORKFLOW, cost_tier: TIER_L}
+    - {route_id: R-CASC,        cost_tier: TIER_S}
+    - {route_id: R5_FALLBACK,   cost_tier: TIER_S}
+
+  R4_ACTION:
+    - {route_id: R-HITL,        cost_tier: TIER_M}
+    - {route_id: R5_FALLBACK,   cost_tier: TIER_S}
+
+  R3R4_WORKFLOW:
+    - {route_id: R-LOOP,        cost_tier: TIER_M}
+    - {route_id: R5_FALLBACK,   cost_tier: TIER_S}
+
+  R-CASC:
+    - {route_id: R3R4_WORKFLOW, cost_tier: TIER_L}
+    - {route_id: R5_FALLBACK,   cost_tier: TIER_S}
+
+  R-PAR:
+    - {route_id: R3_GROUNDED,   cost_tier: TIER_M}
+    - {route_id: R5_FALLBACK,   cost_tier: TIER_S}
+
+  R-LOOP:
+    - {route_id: R3_GROUNDED,   cost_tier: TIER_M}
+    - {route_id: R5_FALLBACK,   cost_tier: TIER_S}
+
+  R-HITL:
+    - {route_id: R5_FALLBACK,   cost_tier: TIER_S}
+
+# SLO defaults per (route_id, cost_tier). Missing combos inherit from the
+# closest defined tier with the same route_id.
+slo_defaults:
+  R1A:              {latency_budget_ms: 50,    token_budget_in: 0,     token_budget_out: 0,    cost_cap_usd: 0.00}
+  R1B:              {latency_budget_ms: 250,   token_budget_in: 0,     token_budget_out: 0,    cost_cap_usd: 0.00}
+  R3_GROUNDED__TIER_S: {latency_budget_ms: 2000,  token_budget_in: 4000,  token_budget_out: 800,  cost_cap_usd: 0.01}
+  R3_GROUNDED__TIER_M: {latency_budget_ms: 6000,  token_budget_in: 12000, token_budget_out: 2000, cost_cap_usd: 0.08}
+  R3_GROUNDED__TIER_L: {latency_budget_ms: 20000, token_budget_in: 32000, token_budget_out: 4000, cost_cap_usd: 0.60}
+  R4_ACTION:        {latency_budget_ms: 10000, token_budget_in: 8000,  token_budget_out: 1000, cost_cap_usd: 0.10}
+  R3R4_WORKFLOW:    {latency_budget_ms: 60000, token_budget_in: 64000, token_budget_out: 8000, cost_cap_usd: 2.00}
+  R5_FALLBACK:      {latency_budget_ms: 500,   token_budget_in: 0,     token_budget_out: 200,  cost_cap_usd: 0.00}
