@@ -52,9 +52,14 @@ class SQLiteBackend:
     _lifecycle_lock: threading.RLock
 
     def __init__(self, use_graph_store: bool = True):
-        self._connect()
-        if use_graph_store:
-            self._init_graph_store()
+        # RLock allows the same thread to re-enter (e.g., self-heal recursion
+        # triggered from inside _require_conn while already holding the lock
+        # via reopen()). Must be initialized before _connect().
+        self._lifecycle_lock = threading.RLock()
+        with self._lifecycle_lock:
+            self._connect()
+            if use_graph_store:
+                self._init_graph_store()
 
     @staticmethod
     def _normalize_limit(limit: int, default: int) -> int:
@@ -76,10 +81,52 @@ class SQLiteBackend:
         return f"file:{quote(str(path.resolve()))}?mode=ro"
 
     def _require_conn(self) -> sqlite3.Connection:
-        """Return an open SQLite connection or raise a clear lifecycle error."""
-        if self._conn is None:
-            raise RuntimeError("SQLiteBackend connection is closed")
-        return self._conn
+        """Return an open SQLite connection, self-healing on thread-confinement
+        errors inherited from a prior reopen() that ran on a different thread.
+
+        Defensive layer for the "SQLite objects created in a thread can only
+        be used in that same thread" ProgrammingError. With
+        ``check_same_thread=False`` in `_connect()` this error is no longer
+        raised by the sqlite3 module itself, but we still guard here because
+        (1) older snapshots of this process may hold a pre-fix connection, and
+        (2) a future change to a write connection (check_same_thread=True) or
+        a different thread-safety level would re-open the failure mode.
+
+        Recovery: ping the connection with a trivial SELECT; on ProgrammingError
+        release the lifecycle lock re-entrantly to run reopen() from the
+        current thread, then retry the ping once. If that also fails, surface
+        the original error — something is structurally wrong (missing file,
+        schema corruption) and the caller should see it.
+        """
+        with self._lifecycle_lock:
+            if self._conn is None:
+                raise RuntimeError("SQLiteBackend connection is closed")
+            try:
+                # Cheap liveness probe — costs one function call and no I/O
+                # against the cached sqlite page cache. Detects thread pinning
+                # and any other connection-level sickness without a full query.
+                self._conn.execute("SELECT 1").fetchone()
+                return self._conn
+            except sqlite3.ProgrammingError as exc:
+                if "thread" not in str(exc).lower():
+                    # Some other programming error (e.g., connection closed
+                    # mid-query) — not our concern, surface to caller.
+                    raise
+                logger.warning(
+                    "SQLite connection self-heal triggered: %s. Reopening on current thread (tid=%s).",
+                    exc,
+                    threading.get_ident(),
+                )
+                # RLock re-entrancy: reopen() re-takes the same lock on the
+                # same thread, safe.
+                self.reopen()
+                if self._conn is None:
+                    raise RuntimeError(
+                        "SQLiteBackend connection self-heal failed: connection is still None after reopen()"
+                    ) from exc
+                # One more probe. If it fails, let the caller see it.
+                self._conn.execute("SELECT 1").fetchone()
+                return self._conn
 
     def _init_graph_store(self) -> None:
         """Initialize GraphProjectionBackend for graph-native operations.
@@ -292,30 +339,41 @@ class SQLiteBackend:
             return []
 
     def close(self) -> None:
-        """Close SQLite connection and release file handles."""
-        if self._conn:
-            try:
-                self._conn.close()
-                logger.info("Closed SQLite connection to %s", self._sqlite_path)
-            except Exception as exc:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
-                logger.error("Error closing SQLite connection: %s", exc)
-            finally:
-                self._conn = None
+        """Close SQLite connection and release file handles.
 
-        graph_store = self._graph_store
-        if graph_store is not None and hasattr(graph_store, "close"):
-            try:
-                graph_store.close()
-            except Exception as exc:  # guardian: allow-broad-exception -- optional graph store teardown must not block backend shutdown
-                logger.debug("Error closing graph projection backend: %s", exc)
-        self._graph_store = None
+        Serialized via ``_lifecycle_lock`` so a concurrent query from another
+        FastMCP worker thread cannot observe a torn-down connection.
+        """
+        with self._lifecycle_lock:
+            if self._conn:
+                try:
+                    self._conn.close()
+                    logger.info("Closed SQLite connection to %s", self._sqlite_path)
+                except Exception as exc:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+                    logger.error("Error closing SQLite connection: %s", exc)
+                finally:
+                    self._conn = None
+
+            graph_store = self._graph_store
+            if graph_store is not None and hasattr(graph_store, "close"):
+                try:
+                    graph_store.close()
+                except Exception as exc:  # guardian: allow-broad-exception -- optional graph store teardown must not block backend shutdown
+                    logger.debug("Error closing graph projection backend: %s", exc)
+            self._graph_store = None
 
     def reopen(self) -> None:
-        """Reopen SQLite connection after closing to refresh/release locks lifecycle."""
-        self.close()
-        self._connect()
-        self._init_graph_store()
-        logger.info("Reopened SQLite connection to %s", self._sqlite_path)
+        """Reopen SQLite connection after closing to refresh/release locks lifecycle.
+
+        Serialized via ``_lifecycle_lock``. The new connection is created on
+        whichever thread calls reopen() — with ``check_same_thread=False`` in
+        `_connect`, it is safe to use from any subsequent caller thread.
+        """
+        with self._lifecycle_lock:
+            self.close()
+            self._connect()
+            self._init_graph_store()
+            logger.info("Reopened SQLite connection to %s", self._sqlite_path)
 
     # Graph-native methods that delegate to GraphProjectionBackend when available
 

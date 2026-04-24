@@ -8,6 +8,7 @@ import hashlib
 import logging
 import os
 import signal
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -41,16 +42,12 @@ def _configure_adg_logger() -> logging.Logger:
     logger.setLevel(logging.INFO)
     # Avoid duplicate handlers on module re-import.
     existing = {
-        getattr(h, "baseFilename", None)
-        for h in logger.handlers
-        if isinstance(h, logging.FileHandler)
+        getattr(h, "baseFilename", None) for h in logger.handlers if isinstance(h, logging.FileHandler)
     }
     target = os.path.abspath(LOG_FILE)
     if target not in existing:
         handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
-        handler.setFormatter(
-            logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
-        )
+        handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s"))
         logger.addHandler(handler)
     # Keep log lines scoped to the file handler; FastMCP stderr sinks pick
     # up warnings via their own root config if they need to.
@@ -172,10 +169,14 @@ class ADGServerRuntime:
         regardless of state change.
 
         Slow-path (F2 timeout): the actual ``service.reopen()`` call is
-        executed inside a ``ThreadPoolExecutor`` with a bounded wait
-        (``timeout_s`` seconds, default 15). Under backend contention a bare
-        ``reopen()`` could queue indefinitely and hang the MCP client; this
-        wrapper surfaces a structured error instead of blocking forever.
+        executed on the CALLING thread with a watchdog daemon Thread enforcing
+        an upper bound of ``timeout_s`` seconds (default 15). Under backend
+        contention a bare ``reopen()`` could queue indefinitely and hang the
+        MCP client; the watchdog surfaces a structured error instead of
+        blocking forever. The earlier implementation wrapped reopen() in a
+        ``concurrent.futures.ThreadPoolExecutor``, which pinned the new
+        SQLite connection to an ephemeral worker thread and poisoned every
+        subsequent query — see RCA below.
         """
         # F4 — idempotency: short-circuit if snapshot+mtime unchanged.
         if self._service is not None:
@@ -183,6 +184,7 @@ class ADGServerRuntime:
             if sqlite_backend is not None:
                 try:
                     from tools.adg.shared_modules.path_resolver import latest_sqlite
+
                     current_path = getattr(sqlite_backend, "_sqlite_path", None)
                     current_mtime = getattr(sqlite_backend, "_last_mtime", 0.0)
                     latest_path = latest_sqlite()
@@ -207,16 +209,56 @@ class ADGServerRuntime:
                     # on any inspection error rather than block the caller.
                     LOG.debug("reopen idempotency check failed, proceeding: %s", exc)
 
-        # F2 — bounded timeout: cap service.reopen() wait to ``timeout_s`` seconds.
-        import concurrent.futures as _cf
-
+        # F2 — bounded timeout via watchdog THREAD, not via ThreadPoolExecutor.
+        #
+        # RCA 2026-04-24 (plan mcp-destructive-gate-preflight-e9a14b W1 P3):
+        # The previous implementation wrapped ``service.reopen()`` inside a
+        # ThreadPoolExecutor(max_workers=1) to enforce ``timeout_s``. That
+        # pinned the fresh sqlite3.Connection to an ephemeral worker thread
+        # ("adg-reopen"). Every subsequent MCP tool call from the FastMCP
+        # event loop then raised::
+        #   sqlite3.ProgrammingError: SQLite objects created in a thread can
+        #   only be used in that same thread.
+        # ...and the server went dark until full MCP restart.
+        #
+        # Replacement: run ``service.reopen()`` on the CALLING thread (which
+        # is the same thread that will then dispatch this tool's response),
+        # and enforce the bound with a watchdog daemon thread that only
+        # records whether reopen() completed in time. SQLite's own
+        # ``busy_timeout`` (set to SQLITE_QUERY_TIMEOUT inside
+        # ``sqlite_backend._connect``) already caps contention-driven hangs
+        # at the pragma level, so the outer watchdog is belt-and-suspenders.
+        #
+        # The backend is additionally hardened with check_same_thread=False
+        # and self-healing in ``SQLiteBackend._require_conn`` so that even
+        # if a reopen() *does* end up on a different thread through some
+        # future code path, queries will not fail.
         service = self.service
-        try:
-            with _cf.ThreadPoolExecutor(max_workers=1, thread_name_prefix="adg-reopen") as ex:
-                future = ex.submit(service.reopen)
-                future.result(timeout=timeout_s)
-        except _cf.TimeoutError:
-            LOG.error("reopen_connections timed out after %.1fs", timeout_s)
+        done = threading.Event()
+        reopen_error: list[BaseException] = []
+
+        def _run_reopen() -> None:
+            try:
+                service.reopen()
+            except BaseException as exc:  # guardian: allow-log-and-swallow -- watchdog boundary must capture and surface all exceptions to main thread via shared list
+                reopen_error.append(exc)
+            finally:
+                done.set()
+
+        worker = threading.Thread(
+            target=_run_reopen,
+            name="adg-reopen-watchdog",
+            daemon=True,  # do not block interpreter shutdown if it hangs
+        )
+        worker.start()
+        completed = done.wait(timeout=timeout_s)
+        if not completed:
+            LOG.error(
+                "reopen_connections exceeded %.1fs; returning error. "
+                "Worker thread left running daemonised — it will be reaped on "
+                "process exit. Underlying reopen may still complete in background.",
+                timeout_s,
+            )
             return {
                 "status": "error",
                 "data": {
@@ -227,6 +269,17 @@ class ADGServerRuntime:
                         f"service.reopen() did not return within {timeout_s:.1f}s; "
                         "backend contention likely — retry after snapshot stabilises."
                     ),
+                },
+            }
+        if reopen_error:
+            reopen_exc = reopen_error[0]
+            LOG.error("reopen_connections failed: %s", reopen_exc)
+            return {
+                "status": "error",
+                "data": {
+                    "reopened": False,
+                    "reason": "reopen_exception",
+                    "detail": f"{type(reopen_exc).__name__}: {reopen_exc}",
                 },
             }
         return {
