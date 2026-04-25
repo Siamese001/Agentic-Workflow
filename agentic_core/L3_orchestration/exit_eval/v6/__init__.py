@@ -58,6 +58,20 @@ from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import (
     AggregateDecision,
     aggregate_decision,
 )
+from agentic_core.L3_orchestration.exit_eval.v6.pipeline import (
+    ExitEvalPipeline,
+    ExitEvalResult,
+    run_exit_eval,
+)
+from agentic_core.L3_orchestration.exit_eval.v6.rollback import (
+    NoopRollbackHandler,
+    RollbackOutcome,
+    RollbackPlan,
+    RollbackResult,
+    RollbackStep,
+    SequentialRollbackExecutor,
+)
+from agentic_core.L3_orchestration.exit_eval.v6.sqlite_ledger import SqliteLedger
 from agentic_core.L3_orchestration.exit_eval.v6.uwg import (
     UwgBackends,
     UwgError,
@@ -130,4 +144,17 @@ __all__ = [
     "UwgReceipt",
     "default_backends",
     "process_commit_request",
+    # ledger
+    "SqliteLedger",
+    # rollback
+    "NoopRollbackHandler",
+    "RollbackOutcome",
+    "RollbackPlan",
+    "RollbackResult",
+    "RollbackStep",
+    "SequentialRollbackExecutor",
+    # pipeline
+    "ExitEvalPipeline",
+    "ExitEvalResult",
+    "run_exit_eval",
 ]

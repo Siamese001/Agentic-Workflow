@@ -36,6 +36,11 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+# Ensure the repo root is on sys.path so `from agentic_core...` and
+# `from system_learning...` succeed even when the gate is invoked from
+# pre-commit, CI containers, or wrapper scripts that don't pre-set PYTHONPATH.
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 # Files that *emit* OTel-shaped spans (producers we want wired into
 # runtime ADG). Additive list — add to this as new emitters land.
@@ -75,6 +80,64 @@ def compute_coverage() -> tuple[int, int, list[tuple[Path, bool]]]:
     return wired, len(EMITTER_PATHS), results
 
 
+def _print_tier2_spec_audit() -> None:
+    """Print the spec-side Tier 2 stage status (pure registry view).
+
+    This is a static check — it confirms the ``span_contracts.Tier2``
+    registry has all 14 stages defined per the doctrine document. It does
+    NOT validate any captured snapshot. Snapshot validation is performed
+    at runtime by ``validate_tier2_corpus_coverage``.
+    """
+    try:
+        from system_learning.runtime_adg.span_contracts import (
+            tier2_stage_count,
+            tier2_stage_names,
+        )
+    except ImportError as exc:  # pragma: no cover — defensive
+        print(f"  [Tier 2 spec audit] import failed: {exc}", file=sys.stderr)
+        return
+    count = tier2_stage_count()
+    names = tier2_stage_names()
+    print(f"[runtime-adg-coverage Tier 2 spec] stages={count}/14 registered")
+    if count != 14:
+        print(
+            f"  WARNING: Tier 2 has {count} stages, doctrine spec requires 14. "
+            "Update span_contracts._TIER2_CONTRACTS.",
+            file=sys.stderr,
+        )
+    for n in names:
+        print(f"  [REGISTERED] {n}")
+
+
+def _print_tier2_emitter_audit() -> None:
+    """Print which Tier 2 stages have an emit helper available."""
+    try:
+        from system_learning.runtime_adg.runtime_span_emitter_tier2 import TIER2_EMITTERS
+    except ImportError as exc:  # pragma: no cover
+        print(f"  [Tier 2 emitter audit] import failed: {exc}", file=sys.stderr)
+        return
+    print(
+        f"[runtime-adg-coverage Tier 2 emitters] available={len(TIER2_EMITTERS)} "
+        "(Tier 1 emitters cover stage_01/09/10 separately)"
+    )
+    for stage_key, span_name in sorted(TIER2_EMITTERS.items()):
+        print(f"  [HELPER] {stage_key} -> {span_name}")
+
+
+def _print_semconv_ssot_audit() -> None:
+    """Print the semconv SSOT roll-up (counts of spans / nodes / edges)."""
+    try:
+        from agentic_core.L6_observability.semconv import runtime as R
+    except ImportError as exc:  # pragma: no cover
+        print(f"  [semconv SSOT audit] import failed: {exc}", file=sys.stderr)
+        return
+    print(
+        f"[runtime-adg-coverage semconv SSOT] "
+        f"spans={len(R.ALL_SPAN_NAMES)} nodes={len(R.ALL_NODE_TYPES)} "
+        f"edges={len(R.ALL_EDGE_TYPES)} stages={len(R.STAGE_SPANS)}"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -93,6 +156,14 @@ def main() -> int:
         action="store_true",
         help="Emit per-file wiring status.",
     )
+    parser.add_argument(
+        "--tier2",
+        action="store_true",
+        help=(
+            "Also print Tier 2 spec/emitter/semconv audits (full 14-stage spec "
+            "from docs/reference/OTEL/Runtime ADG and OTEL Spans.md)."
+        ),
+    )
     args = parser.parse_args()
 
     wired, total, results = compute_coverage()
@@ -106,6 +177,12 @@ def main() -> int:
             marker = "OK " if ok else "MISS"
             rel = path.relative_to(REPO_ROOT)
             print(f"  [{marker}] {rel}")
+
+    if args.tier2:
+        print()
+        _print_semconv_ssot_audit()
+        _print_tier2_spec_audit()
+        _print_tier2_emitter_audit()
 
     if pct < args.threshold:
         if args.enforce:

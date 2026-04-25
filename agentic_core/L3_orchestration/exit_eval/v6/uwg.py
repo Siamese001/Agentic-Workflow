@@ -132,6 +132,7 @@ class UwgReceipt:
     rejected_reason: str = ""
     sub_flow_log: list[str] = field(default_factory=list)
     timestamp: int = 0
+    rollback: dict[str, Any] = field(default_factory=dict)
 
 
 # ---- in-memory reference backends ----
@@ -351,6 +352,7 @@ class UwgBackends:
     alias_builder: Callable[[X3CommitRequestPacket, LedgerAppendResult], str] = field(
         default=lambda _packet, result: f"l4://commit/{result.seq:08d}"
     )
+    rollback_executor: Any = None  # SequentialRollbackExecutor | None — typed loose to avoid cycle
 
 
 def default_backends() -> UwgBackends:
@@ -428,9 +430,24 @@ def process_commit_request(
         try:
             refresh_read_surfaces(packet, backends.refresher, l4_alias=l4_alias)
             log.append(f"U5_REFRESH:ok:alias={l4_alias}")
-        except UwgError as exc:
-            receipt.rejected_reason = f"{exc.reason_code}: {exc}"
-            log.append(f"U5_REFRESH:fail:{exc.reason_code}")
+        except (UwgError, OSError, RuntimeError) as exc:
+            receipt.rejected_reason = f"U5_REFRESH_FAILED: {exc}"
+            log.append(f"U5_REFRESH:fail:{type(exc).__name__}")
+            # U5 failure after U4 success is the canonical rollback trigger.
+            if backends.rollback_executor is not None and packet.rollback_plan:
+                from agentic_core.L3_orchestration.exit_eval.v6.rollback import (
+                    RollbackPlan,
+                )
+
+                plan = RollbackPlan.from_dict(packet.rollback_plan)
+                rb_result = backends.rollback_executor.execute(plan)
+                receipt.rollback = {
+                    "outcome": rb_result.outcome.value,
+                    "executed": list(rb_result.executed),
+                    "failed_step": rb_result.failed_step,
+                    "error": rb_result.error,
+                }
+                log.append(f"ROLLBACK:{rb_result.outcome.value}")
             receipt.sub_flow_log = log
             return receipt
 
