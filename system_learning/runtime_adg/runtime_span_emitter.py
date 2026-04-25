@@ -89,6 +89,7 @@ def back_patch_trace_id(adapter: Any, old_trace_id: str, new_trace_id: str) -> i
             patched += 1
     return patched
 
+
 # Span name constants — MUST match patterns in `span_contracts.py`.
 SPAN_TRACE_ROOT = "runtime.trace_root"
 SPAN_STEP_SEAL = "L2.step.seal"
@@ -233,11 +234,11 @@ def seal_step(
         "evidence_ids": tuple(evidence_ids) if evidence_ids else (),
         "replay_key": replay_key or f"replay-{uuid.uuid4().hex[:12]}",
     }
+    status = "error"
     try:
         yield bag
         status = "ok"
     except (OSError, ValueError, TypeError, RuntimeError):
-        status = "error"
         raise
     finally:
         duration_ms = (time.time() - started_at) * 1000

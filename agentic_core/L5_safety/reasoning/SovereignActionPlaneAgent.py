@@ -256,7 +256,10 @@ class SovereignToolsmith:
             os.chmod(tool_path, 493)
             Logger.info(f"Sovereign Toolsmith forged: {tool_path}")
             return tool_path
-        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error(f"Failed to forge tool: {e}")
             return None
 
@@ -332,11 +335,16 @@ class SovereignSandbox:
                     process.terminate()
                     try:
                         process.wait(timeout=DEFAULT_TIMEOUT)
-                    except subprocess.TimeoutExpired:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                    except (
+                        subprocess.TimeoutExpired
+                    ):  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                         process.kill()
                         process.wait()
                         LOGGER.warning(f"Force killed process {process.pid}")
-                except (RuntimeError, OSError) as cleanup_error:  # guardian: allow-log-and-swallow -- process cleanup after timeout: non-fatal, LOGGER.error already called
+                except (
+                    RuntimeError,
+                    OSError,
+                ) as cleanup_error:  # guardian: allow-log-and-swallow -- process cleanup after timeout: non-fatal, LOGGER.error already called
                     LOGGER.error(f"Error cleaning up process {process.pid}: {cleanup_error}")
                 return {
                     "success": False,
@@ -345,7 +353,10 @@ class SovereignSandbox:
                     "return_code": -1,
                     "execution_time": time.time(),
                 }
-        except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- subprocess execution: non-fatal, error surfaced via return dict
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- subprocess execution: non-fatal, error surfaced via return dict
             return {
                 "success": False,
                 "stdout": "",
@@ -362,7 +373,10 @@ class SovereignSandbox:
                     try:
                         process.kill()
                         process.wait()
-                    except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+                    except (
+                        ValueError,
+                        TypeError,
+                    ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
                         pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
 
 
@@ -730,7 +744,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
 def create_sovereign_action_plane(safety_layer: Any = None, SignalLedger: Any = None) -> IActionPlane:
     """Factory function to create sovereign action plane.
 
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    # CRITICAL FIRST: Shared HealingPolicyMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
     Args:

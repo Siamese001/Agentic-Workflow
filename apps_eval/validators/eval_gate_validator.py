@@ -233,7 +233,7 @@ class EvalGateValidator:
             )
 
         if self._fail_on_regression:
-            regressions = [r for r in regression_records if r.verdict == RegressionVerdict.REGRESSION]
+            regressions = [r for r in regression_records if r.verdict == "REGRESSION"]
             if regressions:
                 dims = [r.dimension_id for r in regressions]
                 violations.append(

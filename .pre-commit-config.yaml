@@ -409,6 +409,21 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7j: Notion Wave/Phase MECE v2 Schema ------------------------------------
+      # Enforces the post-2026-04-24 canonical 12-field MECE schema for Notion
+      # writers. Blocks retired-field writes (Sub-Wave, Parent Plan Summary,
+      # Blocking Items, Success Criteria, Dependencies, Coverage Gap %,
+      # Last Scored), requires Evidence, forbids [P\d]/[NEXT·P\d] in Phase Title.
+      # Advisory SSOT: ProceduralPattern:NotionBacklogMECESchemaV2 in memory MCP.
+      - id: notion-schema-mece
+        name: "T7j: Notion MECE v2 Schema"
+        entry: py ops_scripts/ci/check_notion_schema_mece.py
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/scripts/post_cascade_(deferred_scope|next_step)_capture\.py$
+        always_run: false
+        require_serial: true
+
       # NOTE: infra_wiring_scan.py NOT wired — 5 pre-existing violations (google,
       # chromadb, sqlite3 direct imports) need remediation first. Wired at
       # `stages: [manual]` below for on-demand audit.

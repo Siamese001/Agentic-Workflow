@@ -71,12 +71,12 @@ def main() -> int:
             json.dumps(
                 {
                     "trace_id": result.trace_id,
-                    "status": result.status.value,
+                    "status": str(result.status),
                     "overall_score": result.overall_score,
                     "suites_run": len(result.suite_results),
                     "gate_violations": result.gate_violations,
                     "regressions": sum(
-                        1 for r in result.regression_records if r.verdict.value == "REGRESSION"
+                        1 for r in result.regression_records if str(r.verdict) == "REGRESSION"
                     ),
                     "artifacts": result.artifact_paths,
                 },
@@ -84,10 +84,11 @@ def main() -> int:
             ),
         )
 
-    if result.status.value in ("complete", "dry_run"):
+    status_val = result.status.value if hasattr(result.status, "value") else str(result.status)
+    if status_val in ("complete", "dry_run"):
         _log.info("[apps_eval] SUCCESS trace=%s score=%.1f%%", result.trace_id, result.overall_score * 100)
         return 0
-    elif result.status.value == "regression":
+    elif status_val == "regression":
         _log.error("[apps_eval] REGRESSION DETECTED trace=%s", result.trace_id)
         return 2
     else:

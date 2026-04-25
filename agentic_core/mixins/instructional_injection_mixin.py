@@ -176,7 +176,7 @@ class InstructionalInjectionMixin:
     Mixin providing all 30 instructional injection patterns to worker agents.
 
     Usage:
-        class MyAgent(instructional_injection_mixin, HealerMixin, ...):
+        class MyAgent(instructional_injection_mixin, HealingPolicyMixin, ...):
             def process(self, prompt):
                 # Inject safety patterns
                 prompt = self.inject_safety_layer(prompt)

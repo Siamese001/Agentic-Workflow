@@ -178,7 +178,7 @@ _emit_proposal_commits_routing("p1", "StructuralEngineerAgent", "routing_commit"
 
 
 @dataclass
-class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
+class StructuralEngineerAgent(SovereignBaseAgent, HealingPolicyMixin):
     """
     Structural Engineer validates code structure and organization.
 
@@ -387,7 +387,10 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
             resolved_path = Path(file_path).resolve()
             with open(resolved_path, encoding="utf-8") as f:
                 original_code = f.read()
-        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             print(f"      [!] Cannot read {file_path}: {e}")
             return
         violation_details = "\n".join(violations)
@@ -417,7 +420,10 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                 _wg.open_write(file_path, mutated_code)
                 print(f"      [OK] Round {round_num}: Fixed {Path(file_path).name}")
                 return
-            except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
                 print(f"      [X] Cannot write {file_path}: {e}")
                 return
         print(f"      [X] Failed to fix {Path(file_path).name} after {max_rounds} rounds")

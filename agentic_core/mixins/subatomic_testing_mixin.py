@@ -76,12 +76,12 @@ _emit_links_execution_to_snapshot("p4", "subatomic_testing_mixin", "exec_snapsho
 import logging
 
 try:
-    _mod = importlib.import_module("agentic_core.L2_execution.enforcement.MCPHardenedMixin")
-    MCPHardenedMixin = _mod.MCPHardenedMixin
+    _mod = importlib.import_module("agentic_core.L2_execution.enforcement.MCPOperationMixin")
+    MCPOperationMixin = _mod.MCPOperationMixin
 except (ImportError, AttributeError):
 
-    class MCPHardenedMixin:
-        """Stub MCPHardenedMixin for healing resilience."""
+    class MCPOperationMixin:
+        """Stub MCPOperationMixin for healing resilience."""
 
         pass
 
@@ -301,7 +301,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         return {}
 
 
-class L2SelfTestingMixin(SubatomicTestingMixin, MCPHardenedMixin):
+class L2SelfTestingMixin(SubatomicTestingMixin, MCPOperationMixin):
     """
     Alias for SubatomicTestingMixin - use in L2 agents.
     Provides the same functionality with clearer naming.

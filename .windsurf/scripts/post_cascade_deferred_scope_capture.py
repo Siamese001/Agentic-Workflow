@@ -211,62 +211,55 @@ def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> d
     except ValueError:
         est_tokens = 0
 
-    phase_title = f"[{band}] {wave} {phase} — {reason}"
-    sub_wave = f"{wave}-{band}-AUTO"
-    blocking_items = (
-        f"{reason}. Layer={layer}, fan_in={fan_in}, surface={surface}, "
+    # MECE schema v2 (2026-04-24): Phase Title is pure human name — no [P{band}]
+    # or Wave/Phase prefix. P-Band, Wave ID, Phase ID are separate fields already.
+    phase_title = reason
+    # Evidence merges what were 3 separate prose fields (Success Criteria, Blocking
+    # Items, Dependencies) into one authoritative outcome string.
+    evidence = (
+        f"Success: Auto-captured from DEFERRED_SCOPE marker {_utc_today_iso()} "
+        f"— Cascade to fill on execution. "
+        f"| Blocking: {reason}. Layer={layer}, fan_in={fan_in}, surface={surface}, "
         f"coverage_gap_pct={gap}. Priority impact score: {impact}. "
-        f"Auto-captured from DEFERRED_SCOPE marker {_utc_today_iso()}."
-    )
-    parent_summary = (
-        f"{plan_file}: deferred scope auto-captured {_utc_today_iso()} via "
-        f"post_cascade_deferred_scope_capture hook."
+        f"| Deps: pending review (auto-captured)."
     )
 
-    # Coverage gap stored as percent (0..1 for Notion's percent format).
-    try:
-        gap_fraction = float(gap) / 100.0
-    except (ValueError, TypeError):
-        gap_fraction = None
     try:
         fan_in_int = int(fan_in)
     except (ValueError, TypeError):
         fan_in_int = None
 
     properties: dict[str, Any] = {
+        # Identity axis (3)
         "Phase Title": {"title": [{"text": {"content": phase_title}}]},
         "Phase ID": {"rich_text": [{"text": {"content": phase}}]},
+        # Wave ID retained (legacy; used for dedup pre-check query). Schema-MECE gate
+        # will flip this to derivation from Phase ID in a later refactor.
         "Wave ID": {"rich_text": [{"text": {"content": wave}}]},
-        "Sub-Wave": {"rich_text": [{"text": {"content": sub_wave}}]},
-        "Dependencies": {
-            "rich_text": [
-                {"text": {"content": ("Auto-captured from DEFERRED_SCOPE marker. Review before execution.")}}
-            ]
-        },
-        "Success Criteria": {
-            "rich_text": [
-                {"text": {"content": ("See Blocking Items for scope; Cascade to fill on execution start.")}}
-            ]
-        },
-        "Files In Scope": {"rich_text": [{"text": {"content": "TBD — Cascade to fill on execution start."}}]},
-        "Parent Plan Summary": {"rich_text": [{"text": {"content": parent_summary}}]},
+        # Plan File retained (legacy; used for dedup pre-check query). Plan relation
+        # is the SSOT going forward but requires a Plans-DB lookup per write, deferred.
         "Plan File": {"rich_text": [{"text": {"content": plan_file}}]},
-        "Status": {"select": {"name": "Todo"}},
-        "Est Tokens": {"number": est_tokens},
-        "Blocking Items": {"rich_text": [{"text": {"content": blocking_items}}]},
-        # W1 typed fields (added 2026-04-23 per notion-backlog-schema-refactor-7c3d9e).
-        # Legacy `Priority` also populated until the W6 deprecation bake completes.
+        # Classification axis (5)
         "P-Band": {"select": {"name": band}},
-        "Impact Score": {"number": round(float(impact), 2)},
         "Layer": {"select": {"name": layer}},
         "Surface": {"select": {"name": surface}},
-        "Last Scored": {"date": {"start": _utc_today_iso()}},
-        # Legacy `Priority` number field removed 2026-04-23 W6 — P-Band is SSOT now.
+        "Impact Score": {"number": round(float(impact), 2)},
+        # Lifecycle axis (3)
+        "Status": {"select": {"name": "Todo"}},
+        "Est Tokens": {"number": est_tokens},
+        # Files & outcome (2)
+        "Files In Scope": {"rich_text": [{"text": {"content": "TBD — Cascade to fill on execution start."}}]},
+        "Evidence": {"rich_text": [{"text": {"content": evidence}}]},
     }
     if fan_in_int is not None:
         properties["Fan-In"] = {"number": fan_in_int}
-    if gap_fraction is not None:
-        properties["Coverage Gap %"] = {"number": gap_fraction}
+    # MECE v2 RETIRED fields (stop writing):
+    #   - Sub-Wave (composite of Wave + P-Band; derivable)
+    #   - Parent Plan Summary (duplicates on-disk plan file header)
+    #   - Blocking Items, Success Criteria, Dependencies (merged → Evidence)
+    #   - Coverage Gap % (subsumed by Impact Score)
+    #   - Last Scored (use Notion built-in last_edited_time)
+    # Schema properties still present for back-compat; readers may migrate later.
 
     return {
         "parent": {"database_id": WAVE_PHASE_DB_ID},

@@ -41,11 +41,12 @@ Before writing any execution plan:
 
 1. Read template: `.windsurf/templates/execution-plan-template.md`
 2. Include wave summary table with columns: `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
-3. Include per-wave token budgets with GREEN 🟢 / YELLOW 🟡 / RED 🔴 status
-4. Run token estimation via `tools/utils/planning/token_estimator.py` (`ContextWindowEstimator`) — execute with `python tools/utils/planning/token_estimator.py` using `run_command` (Python, NOT PowerShell). Constitutional §3.2 forbids PowerShell, not Python commands. **For T2/T3 plans:** If the estimator cannot run, mark token estimates as `UNRESOLVED` and this is a **BLOCKER** — do not proceed with T2/T3 plans without valid token estimates. For T0/T1 (question/trivial), this is a warning, not a blocker.
-5. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — this table must appear before the Gap Register section.
+3. Token estimates are **self-reported by Cascade** based on scope (files touched, lines changed, complexity). They are sizing heuristics only, not budget gates — the 1M context window (Opus 4.7+) makes historical token-estimation tooling obsolete (see 2026-04-24 decision). Use your own judgment; mark uncertain estimates with `~`.
+4. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — this table must appear before the Gap Register section.
 
 A plan missing the wave summary table **or** the phase-level summary table is **invalid and must not be saved**.
+
+> **History**: The `tools/utils/planning/token_estimator.py` (`ContextWindowEstimator`) module was retired 2026-04-24 and archived to `archives/tools_planning_20260424_obsolete/`. It served the 200k-window era; the 1M-window era makes pre-flight budget enforcement unnecessary friction. Plans still size phases for scope clarity, not for budget compliance.
 
 ## Overwrite Default
 

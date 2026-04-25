@@ -59,7 +59,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
+from apps_rg.utils.mixins import HealingPolicyMixin, MCPOperationMixin
 
 _emit_applies_guardrail("p0", "state_transaction_types", "p0_governance")
 _emit_reads_policy_state("p0", "state_transaction_types", "policy_binding")
@@ -179,7 +179,7 @@ class StateTransaction:
 
 
 @dataclass
-class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
+class ImmutableStagingBuffer(MCPOperationMixin, HealingPolicyMixin):
     """
     Sovereign State Container.
     Enforces Write-Once-Read-Many (WORM) with Deep Copy isolation.
@@ -203,8 +203,8 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
 
     def __post_init__(self) -> None:
         """Initialize mixins."""
-        MCPHardenedMixin.__init__(self)
-        HealerMixin.__init__(self)
+        MCPOperationMixin.__init__(self)
+        HealingPolicyMixin.__init__(self)
 
     def _mcp_audit(self, action: str, details: dict = None) -> None:
         """Safe MCP audit call - falls back to no-op if mixin not fully initialized."""

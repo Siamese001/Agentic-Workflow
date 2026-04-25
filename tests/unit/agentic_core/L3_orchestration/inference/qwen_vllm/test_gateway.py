@@ -64,7 +64,7 @@ class TestQwenInferenceGateway:
         """Test gateway initialization."""
         gateway = QwenInferenceGateway()
         assert gateway is not None
-        assert gateway.model_id == "Qwen/Qwen2.5-14B-Instruct-AWQ"
+        assert gateway.model_id == "Qwen/Qwen2.5-32B-Instruct-AWQ"
         assert gateway.base_url == "http://localhost:8000/v1"
 
     def test_gateway_initialization_with_params(self):

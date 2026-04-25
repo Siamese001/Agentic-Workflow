@@ -431,9 +431,9 @@ class CoreSynthesisAnalyzer:
             if "Healing" in sovereign_requirements:
                 return (
                     Disposition.SYNTHESIZE,
-                    "healer_mixin.HealerMixin",
+                    "healer_mixin.HealingPolicyMixin",
                     0.8,
-                    "Healing logic - merge into HealerMixin",
+                    "Healing logic - merge into HealingPolicyMixin",
                 )
             elif "Hardening" in sovereign_requirements:
                 return (

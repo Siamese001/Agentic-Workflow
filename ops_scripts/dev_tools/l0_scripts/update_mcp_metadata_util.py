@@ -18,7 +18,7 @@ for agent in tqdm(data, desc="Processing", unit="item"):
         continue
     try:
         content = path.read_text(encoding="utf-8")
-        has_mcp = "MCPHardenedMixin" in content
+        has_mcp = "MCPOperationMixin" in content
         currently_marked = agent.get("mcp_hardened", False)
         if has_mcp and (not currently_marked):
             agent["mcp_hardened"] = True

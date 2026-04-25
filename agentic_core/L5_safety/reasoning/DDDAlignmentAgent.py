@@ -107,10 +107,10 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
+    from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:  # guardian: allow-silent-swallow
 
-    class MCPHardenedMixin:
+    class MCPOperationMixin:
         pass
 
 

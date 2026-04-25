@@ -183,7 +183,7 @@ _CANONICAL_PROVIDERS: dict[str, str] = {
     "deterministic": "LOCAL_AGENT",
     "gemini": "gemini-2.5-pro",
     "openai": "gpt-4o",
-    "qwen": "Qwen2.5-14B-Instruct-AWQ",
+    "qwen": "Qwen2.5-32B-Instruct-AWQ",
 }
 
 

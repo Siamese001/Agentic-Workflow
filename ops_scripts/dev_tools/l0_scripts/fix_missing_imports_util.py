@@ -44,11 +44,11 @@ def main() -> int:
         content = path.read_text(encoding="utf-8")
         if (
             "SovereignBaseAgent" not in content
-            and "from agentic_core.mixins.healer_mixin import HealerMixin" in content
+            and "from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin" in content
         ):
             content = content.replace(
-                "from agentic_core.mixins.healer_mixin import HealerMixin",
-                "from agentic_core.mixins.healer_mixin import HealerMixin\nfrom agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent",
+                "from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin",
+                "from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin\nfrom agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent",
             )
             path.write_text(content, encoding="utf-8")
             fixed_count += 1

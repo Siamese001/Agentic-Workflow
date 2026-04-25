@@ -8,7 +8,7 @@ import time
 import uuid
 from typing import Any
 
-from agentic_core.L2_execution.audit.telemetry_bus import BusMessage, BusType, get_telemetry_bus
+from agentic_core.L2_execution.audit.telemetry_bus import BusType, get_telemetry_bus
 from agentic_core.L2_execution.types.sealed_l2_artifact import SealedL2Artifact, TerminalClassification
 from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- evidence_eval_bridge is the L3 side of shadow-eval async pipeline; the packet schema lives in L6 evaluation utils as the canonical evaluator-input contract, and L3 is the boundary-inversion producer
     AsyncEvalPacket,
@@ -182,9 +182,11 @@ def _build_sealed_l2_artifact(bundle: Any, ctx: Any, gate_result: Any | None = N
     escalation_reason = None
     if bool(getattr(bundle, "contradiction_flags", [])):
         escalation_reason = "evidence_contradictions_present"
+    # NOTE: run_scope is a ClassVar on SealedL2Artifact (always "CURRENT_RUN"),
+    # so it MUST NOT be passed to __init__. artifact_id is required.
     return SealedL2Artifact(
+        artifact_id=f"seal-{uuid.uuid4()}",
         trace_id=trace_id,
-        run_scope="CURRENT_RUN",
         exec_trace={"trace_id": trace_id, "run_id": run_id},
         terminal_classification=terminal,
         escalation_reason=escalation_reason,
@@ -192,13 +194,15 @@ def _build_sealed_l2_artifact(bundle: Any, ctx: Any, gate_result: Any | None = N
     )
 
 
-def _publish_metrics(metrics: EvidenceMetrics) -> None:
+def _publish_metrics(metrics: EvidenceMetrics, trace_id: str = "") -> None:
+    # TelemetryBus.publish takes individual args (it builds the BusMessage
+    # internally, including timestamp + trace_id). Calling BusMessage(...) here
+    # directly would skip required positional fields.
     get_telemetry_bus().publish(
-        BusMessage(
-            bus_type=BusType.TELEMETRY,
-            signal_type="evidence_quality_metrics",
-            payload=asdict(metrics),
-        )
+        bus_type=BusType.TELEMETRY,
+        signal_type="evidence_quality_metrics",
+        payload=asdict(metrics),
+        trace_id=trace_id,
     )
 
 
@@ -254,12 +258,18 @@ def evaluate_and_emit(
         gate_result = _default_gate_result(disposition)
         gate_failed = True
 
-    _publish_metrics(metrics)
+    _trace_id_for_publish, _ = _coerce_trace_fields(ctx)
+    _publish_metrics(metrics, trace_id=_trace_id_for_publish)
     artifact = _build_sealed_l2_artifact(bundle, ctx, gate_result=gate_result)
     if gate_failed:
         return gate_result, disposition
     try:
         _enqueue_eval_packets(ctx, metrics, gate_result, disposition, artifact, tool_name)
-    except (AttributeError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow -- eval packet enqueue: non-fatal, gate_result already returned
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ):  # guardian: allow-silent-swallow -- eval packet enqueue: non-fatal, gate_result already returned
         pass
     return gate_result, disposition

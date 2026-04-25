@@ -358,7 +358,7 @@ def standard_heal(func: F) -> F:
     2. Output Normalization: Converts legacy dicts to canonical HealResult schema
     3. Error Containment: Catches crashes and returns valid HealResult with status='ERROR'
 
-    Supports Phase 20 HealerMixin signature (depth, _call_path).
+    Supports Phase 20 HealingPolicyMixin signature (depth, _call_path).
     """
 
     @functools.wraps(func)
@@ -533,7 +533,7 @@ def standard_heal_async(func: F) -> F:
     Async version of @standard_heal decorator.
 
     Provides the same standardization for async heal_repository methods.
-    Supports Phase 20 HealerMixin signature (depth, _call_path).
+    Supports Phase 20 HealingPolicyMixin signature (depth, _call_path).
     """
 
     @functools.wraps(func)

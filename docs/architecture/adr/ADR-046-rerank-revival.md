@@ -1,7 +1,7 @@
 # ADR-046 — Rerank Revival: Cross-Encoder on C0.4
 
-**Status**: Proposed
-**Date**: 2026-04-23
+**Status**: Proposed (amended 2026-04-24 — §2a/2b/2c factory + scorer + late-interaction backend)
+**Date**: 2026-04-23 (amended 2026-04-24)
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/knowledge/retrieval/senior_librarian_reranker.py`, `agentic_core/knowledge/retrieval/hybrid_recall_stage.py`, `agentic_core/knowledge/retrieval/evidence_contract_builder.py`, new `agentic_core/knowledge/retrieval/cross_encoder_reranker.py`
 **Plan**: `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md` (W2)
@@ -55,6 +55,50 @@ Normative requirements:
 6. `replay_key` and `policy_hash` propagate across rerank just as they do
    across recall (`hybrid_recall_stage.py` pattern).
 
+### Amendment (2026-04-24) — Single Factory, Scorer Taxonomy, Late-Interaction Slot
+
+The W1.2 reranker-unification inventory (`docs/reports/plans/reranker-unification-inventory.md`)
+found seven reranker-class modules across four packages; only four form the
+canonical chain (`reranker_factory` → `SeniorLibrarianReranker` → `CrossEncoderReranker` →
+`BgeRerankerAdapter`). Three additional normative requirements are added:
+
+**2a. Single canonical entry point.** All retrieval call sites that need
+reranking SHALL invoke
+`agentic_core.knowledge.retrieval.reranker_factory.get_reranker()` and
+delegate to its return value. Direct construction of
+`SeniorLibrarianReranker`, `CrossEncoderReranker`, or any auxiliary
+reranker is permitted only inside the factory or its tests. CI gate
+`ops_scripts/ci/check_reranker_factory_use.py` enforces this for production
+paths. Whitelist: `agentic_core/knowledge/retrieval/__init__.py`,
+`agentic_core/knowledge/retrieval/reranker_factory.py`, and any test file
+matching `test_*reranker*.py`.
+
+**2b. Auxiliary scorers vs. rerankers.** Modules that emit signals other
+than relevance (e.g. `completeness_reranker.py` → renamed
+`completeness_scorer.py`) are **scorers**, not rerankers. They feed the
+rerank stage as additional features but do not own ordering. The taxonomy
+is: one **reranker** (orderer) per query, ≥0 **scorers** (feature emitters).
+Tier-A retirement candidates from W1.2 inventory:
+- `agentic_core/utils/workflow_engines/reranker.py` — superseded by the canonical chain
+- `agentic_core/L1_cognition/reasoning/reranking_engine.py` — superseded by `get_reranker()`
+
+Both retired only after `adg_edge_fanin` confirms zero callers, per the
+constitutional 90-day deprecation window.
+
+**2c. Late-interaction backend slot.** ColBERT-style late-interaction is
+reinstated as a **second backend** under the canonical chain (parallel to
+`BgeRerankerAdapter`, not in series with it). Selection via
+`RERANKER=cross_encoder_late`; `cross_encoder` (single backend, BGE) remains
+the default opt-in. The late-interaction backend lives at
+`agentic_core/knowledge/retrieval/late_interaction_reranker.py` after
+un-archive from `archives/adg_dead_code/2026-04-23/apps_shared/utils/late_interaction_reranker_util.py`,
+subject to the anti-pattern-author-gate scan called out in the original §Risks.
+
+**Coordination with ADR-056.** Once ADR-056 (BGE-M3 multi-head) lands, the
+`cross_encoder_late` backend can consume the ColBERT head from the same
+forward pass that produces the dense vectors — eliminating the separate
+late-interaction model load. The slot defined here is the integration point.
+
 ## Non-Goals
 
 - Training a custom reranker. Off-the-shelf model, possibly domain-tuned
@@ -87,6 +131,10 @@ Normative requirements:
 - Revived late-interaction code may carry anti-patterns from pre-archive
   era. Pre-revival: run `adg_violations` on the file and apply
   anti-pattern-author-gate if any new violations would land.
+- **(Amendment R3) Caller drift.** Existing call sites bypass the factory.
+  Mitigation: ADG fan-in audit lands before §2a CI gate is enforced;
+  callers migrated incrementally with a 1-release deprecation window on
+  direct imports of `SeniorLibrarianReranker` / `CrossEncoderReranker`.
 
 ## Alternatives Considered
 

@@ -257,13 +257,13 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         """TODO: Add documentation for visit_ClassDef."""
         bases = [self.aliases.get(b.id, b.id) if isinstance(b, ast.Name) else unparse(b) for b in node.bases]
-        if any("BaseAgent" in b for b in bases) and any("MCPHardenedMixin" in b for b in bases):
+        if any("BaseAgent" in b for b in bases) and any("MCPOperationMixin" in b for b in bases):
             self.add_finding(
                 "Redundant Mixin Chain",
-                f"{node.name} redundant MCPHardenedMixin",
+                f"{node.name} redundant MCPOperationMixin",
                 "Inherit only BaseAgent.",
             )
-        if any("HealerMixin" in b for b in bases):
+        if any("HealingPolicyMixin" in b for b in bases):
             heal_method = next(
                 (n for n in node.body if isinstance(n, ast.FunctionDef) and n.name == "heal_repository"),
                 None,

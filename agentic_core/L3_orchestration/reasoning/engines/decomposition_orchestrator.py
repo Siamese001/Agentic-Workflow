@@ -7,7 +7,7 @@ a Directed Acyclic Graph (DAG) of atomic agent tasks.
 ARCHITECTURAL CONSTRAINTS:
 1. SSOT Discovery: Uses agent_discovery_full.json for agent capabilities
 2. Horizontal Governance: Respects HORIZONTAL_BOUNDARIES from structure_blueprint.py
-3. Inheritance: L3OrchestrationBase with proper HealerMixin chain
+3. Inheritance: L3OrchestrationBase with proper HealingPolicyMixin chain
 4. Output: JSON "Mission Plan" with atomic tasks, dependencies, and validation gates
 
 LAYER: L3_orchestration (workflow coordination)

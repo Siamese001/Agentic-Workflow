@@ -93,7 +93,7 @@ def _static_edges_for_node(
                             "layer": r["layer"],
                         }
                     )
-    except sqlite3.Error as exc:
+    except sqlite3.Error as exc:  # guardian: allow-log-and-swallow -- L6 observability is read-only annotation; if the static edge lookup fails (DB locked, schema drift, missing snapshot) the span is annotated with whatever has accumulated and the run continues — losing some annotation richness is preferable to crashing the runtime trace pipeline
         logger.debug("_static_edges_for_node(%s) failed: %s", node_id, exc)
     return out
 

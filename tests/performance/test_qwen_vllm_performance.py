@@ -105,7 +105,7 @@ class QwenPerformanceTestSuite:
     def __init__(
         self,
         base_url: str = "http://localhost:8000/v1",
-        model: str = "Qwen/Qwen2.5-14B-Instruct-AWQ",
+        model: str = "Qwen/Qwen2.5-32B-Instruct-AWQ",
     ):
         self.base_url = base_url
         self.model = model

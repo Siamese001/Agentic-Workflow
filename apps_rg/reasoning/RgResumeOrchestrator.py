@@ -243,7 +243,16 @@ class RgResumeOrchestrator(RGAgentBase):
         self._qwen_session_id = None
         self._qwen_init_error: str | None = None
 
-        if self.qwen_enabled and _QWEN_AVAILABLE:
+        import os as _os_qwen_optout  # noqa: PLC0415
+
+        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in (
+            "1",
+            "true",
+            "True",
+            "yes",
+        )
+
+        if self.qwen_enabled and _QWEN_AVAILABLE and not _qwen_opt_out:
             try:
                 self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
 

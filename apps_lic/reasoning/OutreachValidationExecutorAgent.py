@@ -178,13 +178,13 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-class MCPHardenedMixin:
+class MCPOperationMixin:
     """Legacy mixin - use LICAgentBase instead."""
 
     pass
 
 
-class HealerMixin:
+class HealingPolicyMixin:
     """Legacy mixin - use LICAgentBase instead."""
 
     pass

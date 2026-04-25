@@ -697,8 +697,12 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
                 new_returns = cst.Annotation(annotation=annotation)
                 updated_node = updated_node.with_changes(returns=new_returns)
                 self.modifications_made += 1
-            except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
-                pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except (
+                ValueError,
+                TypeError,
+                cst.ParserSyntaxError,
+            ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+                pass  # guardian: allow-silent-swallow -- intentional: malformed type annotation is a control-flow signal to skip insertion
         return updated_node
 
 

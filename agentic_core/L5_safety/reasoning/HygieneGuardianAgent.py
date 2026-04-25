@@ -216,8 +216,8 @@ class HygieneGuardianAgent(SovereignBaseAgent):
 
     Inherits:
         SubatomicTestingMixin: Testing utilities
-        HealerMixin: Healing chain support
-        MCPHardenedMixin: MCP integration
+        HealingPolicyMixin: Healing chain support
+        MCPOperationMixin: MCP integration
     """
 
     PYTHON_EXTENSIONS = {".py", ".pyi"}

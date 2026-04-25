@@ -75,7 +75,7 @@ _emit_links_execution_to_snapshot("p4", "anomaly_report_config", "exec_snapshot_
 AnomalyReport - Sovereign Anomaly Detection schema
 
 Provides standardized anomaly propagation across layers (L2-L5, apps).
-Integrates with HealerMixin for audited healing decisions.
+Integrates with HealingPolicyMixin for audited healing decisions.
 
 Location: agentic_core/runtime/config/anomaly_report_config.py
 """
@@ -178,7 +178,7 @@ class AnomalyReport(BaseModel):
     Sovereign anomaly report — immutable, auditable structure.
 
     Emitted by detectors (self-testing, validators, monitors).
-    Consumed by HealerMixin._perform_healing().
+    Consumed by HealingPolicyMixin._perform_healing().
 
     Attributes:
         type: Machine-readable anomaly type (e.g., "graph_corruption", "scoring_drift")

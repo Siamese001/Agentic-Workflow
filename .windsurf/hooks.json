@@ -123,6 +123,16 @@
         "show_output": false
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_next_step_capture.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_adr_registry_capture.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_mcp_serialization_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false

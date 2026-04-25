@@ -9,7 +9,7 @@ from concurrent.futures import wait
 
 import pytest
 
-from agentic_core.adg.runtime.eval_spine import EvalSpine
+from agentic_core.runtime.engine.eval_spine import EvalSpine
 from agentic_core.evaluation.golden import GoldenDatasetEvaluator, get_evaluator
 from agentic_core.evaluation.golden.eval_spine_integration import (
     GoldenEvalIntegration,

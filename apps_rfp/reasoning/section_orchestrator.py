@@ -397,7 +397,7 @@ class SectionOrchestrator:
                     self._lineage.append(
                         {
                             "section_id": result.section_id,
-                            "status": result.status.value,
+                            "status": str(result.status),
                             "quality_score": result.quality_score,
                             "generation_time_ms": result.generation_time_ms,
                         }

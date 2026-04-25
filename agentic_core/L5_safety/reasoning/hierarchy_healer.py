@@ -1678,7 +1678,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         - heal_hierarchy(): Standard L2/L3 structure and file relocation.
         - heal_root_violations(): Root-level hygiene (scripts/, logs/, .archived).
         """
-        # CRITICAL: Chain up to HealerMixin
+        # CRITICAL: Chain up to HealingPolicyMixin
         parent_result = super().heal_repository(
             dry_run=dry_run,
             execute=execute,

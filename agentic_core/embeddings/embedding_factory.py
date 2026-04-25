@@ -239,8 +239,18 @@ def get_embedding_client(name: str = "default") -> EmbeddingClient:
     return client
 
 
+def _default_embedding_provider() -> str:
+    """Resolve the default embedding provider from env, falling back to bge-m3.
+
+    Honors ``AGENTIC_EMBEDDING_PROVIDER`` so a deployment can flip the runtime
+    default without touching call sites. Default is ``bge-m3`` so the factory
+    never silently routes to OpenAI when callers omit the provider argument.
+    """
+    return os.environ.get("AGENTIC_EMBEDDING_PROVIDER", "bge-m3")
+
+
 def create_embedding_client(
-    provider: Literal["openai", "gemini", "anthropic", "bge-m3"] = "openai",
+    provider: Literal["openai", "gemini", "anthropic", "bge-m3"] | None = None,
     model: str | None = None,
     client_name: str = "default",
     **kwargs: Any,
@@ -262,6 +272,11 @@ def create_embedding_client(
     """
     if not is_enabled():
         raise EmbeddingDisabledError("EMBEDDING_ENABLED=false: Cannot create embedding clients")
+
+    # Resolve default provider from env when caller omits it (BGE-M3 default —
+    # callers must opt into "openai" explicitly via env or argument).
+    if provider is None:
+        provider = _default_embedding_provider()  # type: ignore[assignment]
 
     # Get caller module for sovereignty check
     import inspect

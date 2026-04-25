@@ -47,7 +47,7 @@ def repair_file(file_path: Path):
         content = STUB_IMPORTS + "\n" + content
     content = content.replace("apps_shared.base_agents", "agentic_core.base_agents")
     content = content.replace(
-        "agentic_core.mixins.mcp_hardened_mixin", "agentic_core.mixins.infrastructure_mixin"
+        "agentic_core.mixins.mcp_operation_mixin", "agentic_core.mixins.infrastructure_mixin"
     )
     file_path.write_text(content, encoding="utf-8")
     try:

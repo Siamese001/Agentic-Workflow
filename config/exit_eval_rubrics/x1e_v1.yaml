@@ -1,0 +1,42 @@
+gate: X1E
+version: X1E@v1
+composition: hybrid
+aggregate_threshold: 0.70
+metadata:
+  description: >
+    Trajectory OK? tool_selection_accuracy and arg_precision are hard
+    code-graded sub-gates. Reasoning coherence / step efficiency /
+    handoff correctness are weighted, with reasoning_coherence graded by
+    LLM-judge with abstain allowed.
+dimensions:
+  - name: tool_selection_accuracy
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 1.0
+    is_hard_gate: true
+    threshold: 1.0
+  - name: arg_precision
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 1.0
+    is_hard_gate: true
+    threshold: 1.0
+  - name: step_efficiency
+    grader_class: code_based
+    scale: [0.0, 1.0]
+    weight: 0.3
+    is_hard_gate: false
+    threshold: 0.60
+  - name: reasoning_coherence
+    grader_class: model_based
+    scale: [0.0, 1.0]
+    weight: 0.4
+    is_hard_gate: false
+    threshold: 0.65
+    abstain_allowed: true
+  - name: handoff_correctness
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 0.3
+    is_hard_gate: false
+    threshold: 1.0

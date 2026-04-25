@@ -282,7 +282,7 @@ class ExecutionResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
-            "status": self.status.value,
+            "status": str(self.status),
             "data": self.data,
             "operation_id": self.context.operation_id,
             "engine_type": self.context.engine_type.value,

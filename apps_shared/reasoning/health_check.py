@@ -68,7 +68,7 @@ class HealthCheckRegistry:
         for checker in self._checkers:
             result = await checker.check_health()
             results[checker.component_name] = {
-                "status": result.status.value,
+                "status": str(result.status),
                 "message": result.message,
             }
         return results

@@ -1,3 +1,3 @@
-from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin
 
-__all__ = ["MCPHardenedMixin"]
+__all__ = ["MCPOperationMixin"]

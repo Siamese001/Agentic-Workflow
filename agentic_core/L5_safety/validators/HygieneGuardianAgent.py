@@ -235,8 +235,8 @@ class HygieneGuardianAgent(SovereignBaseAgent):
 
     Inherits:
         SubatomicTestingMixin: Testing utilities
-        HealerMixin: Healing chain support
-        MCPHardenedMixin: MCP integration
+        HealingPolicyMixin: Healing chain support
+        MCPOperationMixin: MCP integration
     """
 
     # File extensions to check
@@ -461,9 +461,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         )
 
         ignore_dirs = (
-            GLOBAL_EXCLUDED_DIRS
-            | DISCOVERY_EXCLUDED_TERRITORIES
-            | frozenset({".sovereign_healing_backup"})
+            GLOBAL_EXCLUDED_DIRS | DISCOVERY_EXCLUDED_TERRITORIES | frozenset({".sovereign_healing_backup"})
         )
 
         for item in tqdm(directory.rglob("*"), desc="Processing", unit="item"):

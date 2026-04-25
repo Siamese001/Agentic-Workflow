@@ -234,7 +234,7 @@ class RegressionDetector:
                         current_score=row.score,
                         baseline_score=0.0,
                         delta=0.0,
-                        verdict=RegressionVerdict.NO_BASELINE,
+                        verdict="NO_BASELINE",
                     ),
                 )
             else:
@@ -242,7 +242,7 @@ class RegressionDetector:
                 delta = row.score - baseline_score
 
                 if delta < -self._tolerance_delta:
-                    verdict = RegressionVerdict.REGRESSION
+                    verdict = "REGRESSION"
                     result.regression_count += 1
                     _log.warning(
                         "[RegressionDetector] REGRESSION dim=%s delta=%.3f (threshold=%.3f)",
@@ -251,9 +251,9 @@ class RegressionDetector:
                         self._tolerance_delta,
                     )
                 elif delta < 0:
-                    verdict = RegressionVerdict.WARN
+                    verdict = "WARN"
                 else:
-                    verdict = RegressionVerdict.PASS
+                    verdict = "PASS"
 
                 result.records.append(
                     RegressionRecord(

@@ -147,14 +147,14 @@ class TestTraceRegistryHardening:
 class TestManifestManagerHardening:
     """G4: phase-added _sanitize_manifest_id, _manifest_path, atomic save/load.
 
-    ManifestManager inherits HealerMixin which is a fail-fast shim — raises
+    ManifestManager inherits HealingPolicyMixin which is a fail-fast shim — raises
     ModuleNotFoundError when its backing module is absent in this test env.
     Static methods are called directly; instance-based tests use object.__new__
     with manual base_path assignment to bypass the mixin MRO.
     """
 
     def _make_mgr(self, tmp_path):
-        """Bypass HealerMixin.__init__ via object.__new__ + manual field."""
+        """Bypass HealingPolicyMixin.__init__ via object.__new__ + manual field."""
         from apps_lic.utils.manifest_manager_util import ManifestManager
 
         mgr = object.__new__(ManifestManager)

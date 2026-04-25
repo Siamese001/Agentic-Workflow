@@ -1,4 +1,4 @@
-# guardian: allow-silent_degradation -- ADG violation exemption
+# review: allow-silent-degradation -- ADG violation exemption
 
 from __future__ import annotations
 
@@ -7,20 +7,24 @@ from datetime import datetime
 from typing import Any
 
 try:
-    from agentic_core.mixins.healer_mixin import HealerMixin
+    from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 except ImportError:  # guardian: allow-silent-degradation -- Optional healer mixin
 
-    class HealerMixin:  # type: ignore[no-redef]
+    class HealingPolicyMixin:  # type: ignore[no-redef]
         """Stub."""
 
         pass
 
 
 try:
-    from agentic_core.interfaces.mixins import MCPHardenedMixin
-except (ImportError, NameError, ModuleNotFoundError):  # guardian: allow-silent-swallow -- Optional MCP hardened mixin
+    from agentic_core.interfaces.mixins import MCPOperationMixin
+except (
+    ImportError,
+    NameError,
+    ModuleNotFoundError,
+):  # guardian: allow-silent-swallow -- Optional MCP hardened mixin
 
-    class MCPHardenedMixin:  # type: ignore[no-redef]
+    class MCPOperationMixin:  # type: ignore[no-redef]
         """Stub."""
 
         pass
@@ -206,8 +210,8 @@ except (ImportError, AttributeError):  # guardian: allow-silent-swallow -- Optio
 
 
 class DAGManager(
-    HealerMixin,
-    MCPHardenedMixin,
+    HealingPolicyMixin,
+    MCPOperationMixin,
     L3SubatomicTestingMixin,
     RedisCacheMixin,
     PineconeVectorMixin,

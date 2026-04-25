@@ -1,0 +1,24 @@
+{
+  "app": "apps_research",
+  "artifacts": [
+    "C:\\Git\\Agentic-Workflow\\reports\\research\\research_brief_35ee0a44.md",
+    "C:\\Git\\Agentic-Workflow\\reports\\research\\source_register_35ee0a44.json"
+  ],
+  "dry_run": false,
+  "error": "",
+  "gate_violations": [],
+  "mode": "brief",
+  "provenance": {
+    "app": "apps_research",
+    "mode": "brief",
+    "topic": "agentic AI safety",
+    "trace_id": "35ee0a44764435ea"
+  },
+  "quality_score": 1.0,
+  "sections_generated": 3,
+  "sources_registered": 5,
+  "status": "complete",
+  "topic": "agentic AI safety",
+  "trace_id": "35ee0a44764435ea",
+  "version": "1.0.0"
+}

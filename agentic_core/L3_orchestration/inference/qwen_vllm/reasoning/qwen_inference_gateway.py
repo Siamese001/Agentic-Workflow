@@ -74,6 +74,9 @@ class QwenInferenceGateway:
         batch_size: int = 4,
     ):
         # Defaults resolved from L0 model_registry SSOT (env-var driven).
+        # Opt-out for no-local-vLLM environments is handled at the
+        # orchestrator level (each apps_* __post_init__ checks
+        # APPS_QWEN_DISABLED and skips gateway init entirely).
         from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
             QWEN_LOCAL_MODEL_ID,
             VLLM_BASE_URL,

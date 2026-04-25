@@ -31,19 +31,16 @@ Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 
 from __future__ import annotations
 
-import hashlib
-import json
 from dataclasses import dataclass
 from typing import Sequence
 
+from agentic_core.interfaces._principal_envelope_base import (
+    compose_replay_key,
+    compute_principal_chain_digest,
+    require_nonempty,
+)
 from agentic_core.interfaces.principal_chain_types import PrincipalChain
 from agentic_core.interfaces.write_gateway import compute_replay_key
-
-
-def compute_principal_chain_digest(chain: PrincipalChain) -> str:
-    """SHA-256 over the deterministic dict form of a PrincipalChain."""
-    canonical = json.dumps(chain.to_dict(), sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def compute_principal_replay_key(
@@ -69,12 +66,7 @@ def compute_principal_replay_key(
         state_diff_hash=state_diff_hash,
     )
     principal_digest = compute_principal_chain_digest(principal_chain)
-    combined = json.dumps(
-        {"base": base, "principal_digest": principal_digest},
-        sort_keys=True,
-        separators=(",", ":"),
-    )
-    return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+    return compose_replay_key({"base": base, "principal_digest": principal_digest})
 
 
 @dataclass(frozen=True)
@@ -101,20 +93,15 @@ class PrincipalAttachedWrite:
     principal_replay_key: str
 
     def __post_init__(self) -> None:
-        if not self.plan_hash:
-            raise ValueError("PrincipalAttachedWrite: plan_hash required")
-        if not self.stdout_digest:
-            raise ValueError("PrincipalAttachedWrite: stdout_digest required")
-        if not self.state_diff_hash:
-            raise ValueError("PrincipalAttachedWrite: state_diff_hash required")
-        if not self.principal_chain_digest:
-            raise ValueError(
-                "PrincipalAttachedWrite: principal_chain_digest required",
-            )
-        if not self.principal_replay_key:
-            raise ValueError(
-                "PrincipalAttachedWrite: principal_replay_key required",
-            )
+        require_nonempty(
+            [
+                ("PrincipalAttachedWrite: plan_hash", self.plan_hash),
+                ("PrincipalAttachedWrite: stdout_digest", self.stdout_digest),
+                ("PrincipalAttachedWrite: state_diff_hash", self.state_diff_hash),
+                ("PrincipalAttachedWrite: principal_chain_digest", self.principal_chain_digest),
+                ("PrincipalAttachedWrite: principal_replay_key", self.principal_replay_key),
+            ]
+        )
         # Enforce sorted invariant on tool_calls for determinism
         if list(self.tool_calls) != sorted(self.tool_calls):
             object.__setattr__(

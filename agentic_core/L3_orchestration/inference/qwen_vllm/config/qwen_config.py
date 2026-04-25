@@ -3,7 +3,7 @@
 Core configuration for Qwen v2.5 vLLM inference in agentic_core.
 Provides model configurations and prompt templates for L3 orchestration inference services.
 """
-# guardian: allow-config_with_logic -- ADG violation exemption
+# review: allow-config-with-logic -- ADG violation exemption
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ class QwenInferenceConfig:
             timeout_seconds=30,
         ),
         "complex_reasoning": QwenModelConfig(
-            model_id="Qwen/Qwen2.5-14B-Instruct-AWQ",
+            model_id="Qwen/Qwen2.5-32B-Instruct-AWQ",
             max_tokens=2048,
             temperature=0.2,
             confidence_threshold=0.7,

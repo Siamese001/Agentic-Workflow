@@ -1,0 +1,43 @@
+# Ledger Freshness SLOs — W3.1
+# Per-ledger expected write cadence. `check_ledger_freshness.py` fires when
+# the most recent row in the `events` table is older than `silent_alarm_hours`.
+#
+# Tuning:
+#   - fast-cadence ledgers (prompt_classifier, mcp_invocation) expect frequent writes
+#   - slow-cadence ledgers (refactor_outcome, deferred_scope_calibration) expect per-commit
+#   - missing ledgers default to 168h (7 days)
+#
+# Baseline was chosen to NOT fire on a single quiet day; tighten after
+# per-ledger history accumulates.
+
+defaults:
+  silent_alarm_hours: 168   # 7 days
+  allow_empty: true         # newly-created ledgers with 0 rows don't fail
+
+ledgers:
+  tool_routing:
+    silent_alarm_hours: 48
+    notes: "every T2/T3 retrieval tool call should log"
+  prompt_classifier:
+    silent_alarm_hours: 24
+    notes: "every prompt classification"
+  mcp_invocation:
+    silent_alarm_hours: 12
+    notes: "fast cadence — any MCP call"
+  memory_recall:
+    silent_alarm_hours: 48
+  progress_eta:
+    silent_alarm_hours: 72
+  hotspot_defect:
+    silent_alarm_hours: 168
+    notes: "30-day rolling — fine-grained cadence lower priority"
+  refactor_outcome:
+    silent_alarm_hours: 168
+    notes: "per-commit binder — cadence depends on commit velocity"
+  deferred_scope_calibration:
+    silent_alarm_hours: 168
+  test_selection:
+    silent_alarm_hours: 168
+  guardian_exemption:
+    silent_alarm_hours: 336
+    notes: "rare event — 2 weeks"

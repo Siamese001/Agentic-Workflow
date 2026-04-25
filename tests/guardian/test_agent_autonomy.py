@@ -232,7 +232,7 @@ def test_required_methods() -> None:
 
     This test is currently disabled as heal_repository is not universally
     required for all agents. It's only required for agents that inherit
-    from HealerMixin.
+    from HealingPolicyMixin.
     """
     pass
 

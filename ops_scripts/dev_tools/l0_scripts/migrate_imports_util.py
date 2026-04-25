@@ -70,7 +70,7 @@ _emit_captures_evaluation_metric("p4", "migrate_imports_util", "eval_metric")
 _emit_stores_embedding("p4", "migrate_imports_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "migrate_imports_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "migrate_imports_util", "exec_snapshot_link")
-"\nUtility to automate the migration from deep imports to clean SSOT paths.\n\nPhase 5: Repository-Wide Import Migration\n\nThis script updates imports across the codebase to use the new SSOT patterns:\n- agentic_core.config for constants/registry\n- agentic_core.unified for unified agents\n- agentic_core.utils.core_extensions.healer_mixin for HealerMixin\n\nUsage:\n    python -m agentic_core.L0_routing.scripts.migrate_imports --dry-run\n    python -m agentic_core.L0_routing.scripts.migrate_imports --apply\n"
+"\nUtility to automate the migration from deep imports to clean SSOT paths.\n\nPhase 5: Repository-Wide Import Migration\n\nThis script updates imports across the codebase to use the new SSOT patterns:\n- agentic_core.config for constants/registry\n- agentic_core.unified for unified agents\n- agentic_core.utils.core_extensions.healer_mixin for HealingPolicyMixin\n\nUsage:\n    python -m agentic_core.L0_routing.scripts.migrate_imports --dry-run\n    python -m agentic_core.L0_routing.scripts.migrate_imports --apply\n"
 import argparse
 import re
 from pathlib import Path
@@ -163,9 +163,9 @@ MIGRATION_MAP: dict[str, str] = {
     "from agentic_core\\.L5_safety\\.unified\\.code_enforcement_types import CodeEnforcerAgent": "from agentic_core.unified import CodeEnforcerAgent",
     "from agentic_core\\.L5_safety\\.unified\\.structure_enforcement_types import StructureEnforcerAgent": "from agentic_core.unified import StructureEnforcerAgent",
     "from agentic_core\\.L5_safety\\.unified\\.resource_types import ResourceManagerAgent": "from agentic_core.unified import ResourceManagerAgent",
-    "from agentic_core\\.L5_safety\\.validators\\.healer_mixin import": "from agentic_core.mixins.healer_mixin import",
-    "from agentic_core\\.L5_safety\\.guardrails\\.healer_mixin import": "from agentic_core.mixins.healer_mixin import",
-    "from agentic_core\\.common\\.healing\\.healer_mixin import": "from agentic_core.mixins.healer_mixin import",
+    "from agentic_core\\.L5_safety\\.validators\\.healer_mixin import": "from agentic_core.mixins.healing_policy_mixin import",
+    "from agentic_core\\.L5_safety\\.guardrails\\.healer_mixin import": "from agentic_core.mixins.healing_policy_mixin import",
+    "from agentic_core\\.common\\.healing\\.healer_mixin import": "from agentic_core.mixins.healing_policy_mixin import",
 }
 SKIP_FILES = {"migrate_imports_util.py", "test_phase5_migration.py", "__init__.py"}
 

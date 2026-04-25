@@ -210,3 +210,6 @@ class ReasoningToggles(BaseModel):
 
 
 DEFAULT_TOGGLES = ReasoningToggles()
+
+# Backward-compat alias for legacy imports
+RGReasoningToggles = ReasoningToggles

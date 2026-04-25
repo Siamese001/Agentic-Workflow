@@ -218,16 +218,16 @@ DELEGATION_BASES = {
 }
 
 HEALING_BASES = {
-    "HealerMixin",
-    "SubAtomicAgent",  # L2 - has HealerMixin
-    "L3OrchestrationBase",  # L3 - has HealerMixin
-    "L4StateBase",  # L4 - has HealerMixin
-    "L5SafetyBase",  # L5 - has HealerMixin
-    "CanonBaseAgent",  # Parent - child bases have HealerMixin
+    "HealingPolicyMixin",
+    "SubAtomicAgent",  # L2 - has HealingPolicyMixin
+    "L3OrchestrationBase",  # L3 - has HealingPolicyMixin
+    "L4StateBase",  # L4 - has HealingPolicyMixin
+    "L5SafetyBase",  # L5 - has HealingPolicyMixin
+    "CanonBaseAgent",  # Parent - child bases have HealingPolicyMixin
     "L3SubatomicTestingMixin",  # L3 agents inherit healing via base
     "L4SubatomicTestingMixin",  # L4 agents inherit healing via base
     "SubatomicTestingMixin",  # L2 agents inherit healing via base
-    "ABC",  # CanonBaseAgent inherits from ABC + HealerMixin
+    "ABC",  # CanonBaseAgent inherits from ABC + HealingPolicyMixin
 }
 
 # REMOVED: infer_layer() function - migrated to canonical_truth.py (Phase 3)
@@ -403,7 +403,7 @@ def main():
                     "L3OrchestrationBase",
                     "L4StateBase",
                     "L5SafetyBase",
-                    "HealerMixin",
+                    "HealingPolicyMixin",
                     "SubatomicTestingMixin",
                     "L3SubatomicTestingMixin",
                     "L4SubatomicTestingMixin",

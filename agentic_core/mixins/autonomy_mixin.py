@@ -76,11 +76,11 @@ import time
 from typing import Any
 
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
+    from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:  # guardian: allow-silent-swallow -- optional dependency
 
-    class MCPHardenedMixin:
-        """Fallback stub for MCPHardenedMixin."""
+    class MCPOperationMixin:
+        """Fallback stub for MCPOperationMixin."""
 
         pass
 

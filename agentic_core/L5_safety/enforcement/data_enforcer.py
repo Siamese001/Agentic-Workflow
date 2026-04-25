@@ -360,7 +360,7 @@ class DataValidator:
             if "object" in inheritance and len(inheritance) > 1:
                 inheritance_issues.append(f"{name}: Inherits from 'object' + others (redundant)")
             if layer.startswith("L5") and (
-                not any(base in str(inheritance) for base in ["L5", "Safety", "HealerMixin"])
+                not any(base in str(inheritance) for base in ["L5", "Safety", "HealingPolicyMixin"])
             ):
                 self.warnings.append(f"{name}: L5 agent without L5/Safety base class")
         if inheritance_issues:

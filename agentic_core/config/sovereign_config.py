@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import os
+from typing import Any
 from dataclasses import dataclass
 
 from agentic_core.L0_routing.config import model_registry as _MR
@@ -239,6 +240,20 @@ class SovereignConfigManager:
             logger.warning("Config key %s must be >= 0, got %s. Using default %s.", key, parsed, default)
             return default
         return parsed
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """Dict-like accessor for legacy callers.
+
+        Resolution order: instance attribute → environment variable → default.
+        """
+        if hasattr(self, key):
+            value = getattr(self, key)
+            if not callable(value):
+                return value
+        env_val = os.environ.get(key)
+        if env_val is not None:
+            return env_val
+        return default
 
     def get_bool(self, key: str, default: bool = False) -> bool:
         """Get bool env var (true/false/1/0)."""

@@ -212,7 +212,7 @@ class RedSentinelAgent(SovereignBaseAgent):
 
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
-        HealerMixin: Provides healing chain support.
+        HealingPolicyMixin: Provides healing chain support.
     """
 
     def __init__(self, llm_client: Any | None = None) -> None:

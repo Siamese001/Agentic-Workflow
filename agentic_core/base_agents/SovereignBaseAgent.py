@@ -11,7 +11,7 @@ PHASE 9 MIGRATION (Jan 2026):
 PHASE 2 META-LEARNING (Feb 2026):
 - MetaLearningClientMixin integration for healing pattern memory.
 - Redis hot-path caching for expensive AST analysis results.
-- Pinecone semantic retrieval for successful HealerMixin strategies.
+- Pinecone semantic retrieval for successful HealingPolicyMixin strategies.
 - Domain isolation for apps_lic and apps_rg territories.
 
 L0 DNA FLATTENING:
@@ -329,7 +329,13 @@ class SovereignBaseAgent(
                 if dir_path.exists() and not self._is_safe_directory(dir_path):
                     raise ConfigurationError(f"Unsafe directory detected: {dir_path}")
 
-        except (ConfigurationError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
+        except (
+            ConfigurationError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            OSError,
+        ) as e:  # guardian: allow-silent-swallow
             raise ConfigurationError(f"Security validation failed: {str(e)}") from e
 
     def _is_safe_path(self, path: Path) -> bool:
@@ -394,6 +400,84 @@ class SovereignBaseAgent(
         """Elevate the agent's authority level."""
         self._authority_level = level
         logger.info(f"Authority elevated to: {level}")
+
+    def log(self, message: str) -> None:
+        """Compatibility alias for log_info() used by app-layer agents."""
+        logger.info(f"[{getattr(self, 'name', 'SovereignAgent')}] {message}")
+
+    def add_signal(self, signal: str) -> None:
+        """Forward signal to attached ctx if present, else store on agent."""
+        ctx = getattr(self, "ctx", None)
+        if ctx is not None and hasattr(ctx, "add_signal"):
+            ctx.add_signal(signal)
+            return
+        signals = getattr(self, "_signals", None)
+        if signals is None:
+            signals = []
+            self._signals = signals
+        if signal not in signals:
+            signals.append(signal)
+
+    def remove_signal(self, signal: str) -> None:
+        """Forward signal removal to attached ctx if present."""
+        ctx = getattr(self, "ctx", None)
+        if ctx is not None and hasattr(ctx, "remove_signal"):
+            ctx.remove_signal(signal)
+            return
+        signals = getattr(self, "_signals", None)
+        if signals and signal in signals:
+            signals.remove(signal)
+
+    def has_signal(self, signal: str) -> bool:
+        """Check signal state on ctx if present, else on agent."""
+        ctx = getattr(self, "ctx", None)
+        if ctx is not None and hasattr(ctx, "has_signal"):
+            return bool(ctx.has_signal(signal))
+        return signal in (getattr(self, "_signals", None) or [])
+
+    def record_pass(self, message: str = "", **kwargs: Any) -> None:
+        """Record a passing check (compatibility helper for app agents)."""
+        self._record_outcome("PASS", message, **kwargs)
+
+    def record_fail(self, message: str = "", **kwargs: Any) -> None:
+        """Record a failing check (compatibility helper for app agents)."""
+        self._record_outcome("FAIL", message, **kwargs)
+
+    def record_warning(self, message: str = "", **kwargs: Any) -> None:
+        """Record a warning (compatibility helper for app agents)."""
+        self._record_outcome("WARN", message, **kwargs)
+
+    def _record_outcome(self, status: str, message: str, **kwargs: Any) -> None:
+        """Append outcome to the agent's results list and emit a log line.
+
+        Accepts arbitrary kwargs (e.g. data=..., signal=..., score=...) which
+        callers across apps_rg/apps_lic pass as structured context. Stored
+        on the result entry verbatim so downstream consumers can inspect.
+        """
+        name = getattr(self, "name", type(self).__name__)
+        line = f"{status} [{name}]: {message}" if message else f"{status} [{name}]"
+        if status == "FAIL":
+            logger.error(line)
+        elif status == "WARN":
+            logger.warning(line)
+        else:
+            logger.info(line)
+        # Forward signal kwarg to ctx if present (apps_rg pattern).
+        signal = kwargs.pop("signal", None)
+        if signal is not None and status == "FAIL":
+            self.add_signal(signal)
+        results = getattr(self, "results", None)
+        if results is None:
+            results = []
+            try:
+                self.results = results  # type: ignore[attr-defined]
+            except (AttributeError, TypeError):
+                return
+        try:
+            entry = {"status": status, "message": message, **kwargs}
+            results.append(entry)
+        except (AttributeError, TypeError):
+            pass
 
     def log_info(self, message: str) -> None:
         """Log an info message."""
@@ -530,7 +614,9 @@ class SovereignBaseAgent(
                             try:
                                 _st = _os.stat(_fp)
                                 _fs_parts.append(f"{_fp}:{_st.st_mtime_ns}:{_st.st_size}")
-                            except OSError as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                            except (
+                                OSError
+                            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                                 import logging
 
                                 logging.getLogger(__name__).debug(
@@ -731,7 +817,12 @@ class SovereignBaseAgent(
                         f"tier={heal_decision.tier.name} (unresolved={unresolved})",
                     )
 
-        except (RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-log-and-swallow -- heal pipeline broad catch; logs error and returns structured fail dict
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- heal pipeline broad catch; logs error and returns structured fail dict
             errors = 1
             logger.error(f"[heal_repository] {agent_name} error: {e}")
 

@@ -32,7 +32,7 @@ class AppHealResult:
         return {
             "check_id": self.check_id,
             "app": self.app,
-            "status": self.status.value,
+            "status": str(self.status),
             "changes_made": list(self.changes_made),
             "rollback_info": self.rollback_info,
             "detail": self.detail,

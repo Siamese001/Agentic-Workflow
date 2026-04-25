@@ -18,7 +18,7 @@ from apps_lic.reasoning.OutreachLearningAgent import (
     DEFAULT_SLEEP,
     MAX_RETRIES,
     THRESHOLD,
-    HealerMixin,
+    HealingPolicyMixin,
     OutreachConfidenceLevel,
     OutreachEngineContext,
     OutreachInstruction,
@@ -42,15 +42,15 @@ class TestOutreachEngineContextContract:
 
 
 class TestHealerMixinContract:
-    """Contract tests for HealerMixin."""
+    """Contract tests for HealingPolicyMixin."""
 
     def test_is_class(self):
-        """HealerMixin must be a class."""
-        assert isinstance(HealerMixin, type)
+        """HealingPolicyMixin must be a class."""
+        assert isinstance(HealingPolicyMixin, type)
 
     def test_instantiable_or_abstract(self):
-        """HealerMixin must be instantiable or abstract."""
-        assert isinstance(HealerMixin, type)
+        """HealingPolicyMixin must be instantiable or abstract."""
+        assert isinstance(HealingPolicyMixin, type)
 
 
 class TestOutreachConfidenceLevelContract:

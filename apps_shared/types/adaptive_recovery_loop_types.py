@@ -290,7 +290,7 @@ class AdaptiveRecoveryLoop:
                 details={
                     "total_attempts": self.attempt_count,
                     "failure_history": [
-                        {"attempt": f.attempt, "type": f.failure_type.value, "gate": f.gate_id}
+                        {"attempt": f.attempt, "type": str(f.failure_type), "gate": f.gate_id}
                         for f in self.failure_history
                     ],
                 },
@@ -330,7 +330,7 @@ class AdaptiveRecoveryLoop:
                     "from": adj.from_temp,
                     "to": adj.to_temp,
                     "reason": adj.reason,
-                    "type": adj.failure_type.value,
+                    "type": str(adj.failure_type),
                 }
                 for adj in self.temperature_history
             ],
@@ -353,7 +353,7 @@ class AdaptiveRecoveryLoop:
                 "to_temp": adj.to_temp,
                 "delta": adj.to_temp - adj.from_temp,
                 "reason": adj.reason,
-                "failure_type": adj.failure_type.value,
+                "failure_type": str(adj.failure_type),
                 "timestamp": adj.timestamp,
             }
             for adj in self.temperature_history

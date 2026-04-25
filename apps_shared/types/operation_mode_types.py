@@ -443,7 +443,14 @@ class ObservabilityOperationPerformer:
             result.execution_time = time.time() - start_time
             self._track_execution_complete(context, result)
             return result
-        except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
+        except (
+            TypeError,
+            ValueError,
+            KeyError,
+            AttributeError,
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-silent-swallow
             self.logger.error(f"Operation execution failed: {str(e)}")
             return self._create_error_result(context.execution_id, context.operation_id, str(e), start_time)
 
@@ -612,7 +619,14 @@ class ObservabilityOperationPerformer:
                         total_metrics[key].append(value)
                     all_traces.extend(item_output.get("traces", []))
                     all_artifacts.extend(item_output.get("artifacts", []))
-            except (TypeError, ValueError, KeyError, AttributeError, RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
+            except (
+                TypeError,
+                ValueError,
+                KeyError,
+                AttributeError,
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-silent-swallow
                 self.logger.warning(f"Batch item failed: {str(e)}")
                 results.append({"error": str(e)})
         final_metrics = {}
@@ -671,7 +685,7 @@ class ObservabilityOperationPerformer:
         """Track execution start."""
         self._active_executions[context.execution_id] = {
             "operation_id": context.operation_id,
-            "mode": context.mode.value,
+            "mode": str(context.mode),
             "start_time": time.time(),
             "status": "running",
             "cancelled": False,

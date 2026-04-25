@@ -5,10 +5,10 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-# Expects start_vllm_server.sh to be present and executable in the repo checkout.
-# Adjust WorkingDirectory / ExecStart to match your clone path inside WSL.
+# Repo path: Windows-side checkout at C:\Git\Agentic-Workflow accessed from WSL via /mnt/c.
+# If you maintain a separate WSL-native clone, edit ExecStart to point at it.
 WorkingDirectory=%h
-ExecStart=/bin/bash %h/Agentic-Workflow/tools/vllm/start_vllm_server.sh
+ExecStart=/bin/bash /mnt/c/Git/Agentic-Workflow/tools/vllm/start_vllm_server.sh
 Restart=on-failure
 RestartSec=10s
 # vLLM loads ~9GiB weights; give it generous stop timeout for clean shutdown

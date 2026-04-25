@@ -35,7 +35,7 @@ def main() -> int:
             )
             orch = ExecOrchestrator(dry_run=True)
             result = orch.run(req)
-            status = result.status.value
+            status = str(result.status)
             score = result.quality_score
             sections = len(result.sections)
             print(f"  [{status:8s}] persona={persona:15s} score={score:.2f} sections={sections}")

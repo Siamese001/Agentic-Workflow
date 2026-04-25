@@ -449,7 +449,10 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                                 full_path = self.project_root / path_str
                                 if full_path.exists():
                                     agent_paths.append(full_path)
-                except (RuntimeError, OSError) as json_err:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    RuntimeError,
+                    OSError,
+                ) as json_err:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     log.error(f"[AutonomyGuardian] SSOT JSON load failed: {json_err}")
             else:
                 log.warning("[AutonomyGuardian] SSOT JSON missing! Falling back to restricted scan.")
@@ -475,7 +478,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                         "L4StateBase",
                         "L5SafetyBase",
                         "L6ObservabilityBase",
-                        "HealerMixin",
+                        "HealingPolicyMixin",
                     }
                     for node in ast.walk(tree):
                         if isinstance(node, ast.FunctionDef) and node.name == "heal_repository":
@@ -530,12 +533,18 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                                     _wg.open_write(agent_path, "\n".join(lines))
                                     summary["fixed"] += 1
                                     log.info(f"[AutonomyGuardian] ✅ Added heal_repository() to {agent_path}")
-                                except (RuntimeError, OSError) as write_error:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                                except (
+                                    RuntimeError,
+                                    OSError,
+                                ) as write_error:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                                     summary["errors"] += 1
                                     log.error(
                                         f"[AutonomyGuardian] Failed to write {agent_path}: {write_error}",
                                     )
-                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    RuntimeError,
+                    OSError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     summary["errors"] += 1
                     log.error(f"[AutonomyGuardian] Error checking {agent_path}: {e}")
             for forbidden_dir in self.forbidden_dirs:

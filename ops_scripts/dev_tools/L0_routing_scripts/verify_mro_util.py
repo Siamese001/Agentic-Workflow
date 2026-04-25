@@ -197,13 +197,13 @@ def print_mro(agent_class, agent_name: str):
         print(f"{indent}{i}. {cls.__module__}.{cls.__name__}")
     print(f"\nTotal classes in MRO: {len(mro)}")
     has_infra = any("infrastructure_mixin" in cls.__name__ for cls in mro)
-    has_healer = any("HealerMixin" in cls.__name__ for cls in mro)
+    has_healer = any("HealingPolicyMixin" in cls.__name__ for cls in mro)
     has_mcp = any("MCPHardened" in cls.__name__ for cls in mro)
     has_testing = any("SubatomicTesting" in cls.__name__ for cls in mro)
     print("\nInfrastructure Components:")
     print(f"  infrastructure_mixin: {('✅' if has_infra else '❌')}")
-    print(f"  HealerMixin: {('✅' if has_healer else '❌')}")
-    print(f"  MCPHardenedMixin: {('✅' if has_mcp else '❌')}")
+    print(f"  HealingPolicyMixin: {('✅' if has_healer else '❌')}")
+    print(f"  MCPOperationMixin: {('✅' if has_mcp else '❌')}")
     print(f"  SubatomicTestingMixin: {('✅' if has_testing else '❌')}")
     return {
         "has_infra": has_infra,
@@ -265,13 +265,13 @@ def verify_hierarchy_agent():
                 print(f"{indent}{i}. {cls_name}")
             print(f"\nTotal classes in MRO: {len(mro)}")
             has_infra = any("infrastructure_mixin" in cls for cls in mro)
-            has_healer = any("HealerMixin" in cls for cls in mro)
+            has_healer = any("HealingPolicyMixin" in cls for cls in mro)
             has_mcp = any("MCPHardened" in cls for cls in mro)
             has_testing = any("SubatomicTesting" in cls for cls in mro)
             print("\nInfrastructure Components:")
             print(f"  infrastructure_mixin: {('✅' if has_infra else '❌')}")
-            print(f"  HealerMixin: {('✅' if has_healer else '❌')}")
-            print(f"  MCPHardenedMixin: {('✅' if has_mcp else '❌')}")
+            print(f"  HealingPolicyMixin: {('✅' if has_healer else '❌')}")
+            print(f"  MCPOperationMixin: {('✅' if has_mcp else '❌')}")
             print(f"  SubatomicTestingMixin: {('✅' if has_testing else '❌')}")
             return {
                 "has_infra": has_infra,

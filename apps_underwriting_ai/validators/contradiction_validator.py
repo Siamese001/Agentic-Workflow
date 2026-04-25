@@ -60,7 +60,7 @@ class ContradictionValidator:
                 {
                     "field": contradiction.field_name,
                     "variance_pct": contradiction.variance_pct,
-                    "severity": contradiction.severity.value,
+                    "severity": str(contradiction.severity),
                     "explanation": contradiction.explanation,
                 }
             )

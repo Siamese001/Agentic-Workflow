@@ -93,11 +93,11 @@ except ImportError:  # guardian: allow-silent-swallow -- optional dependency
 
 
 try:
-    from agentic_core.interfaces.mixins import HealerMixin
+    from agentic_core.interfaces.mixins import HealingPolicyMixin
 except ImportError:
 
-    class HealerMixin:
-        """Fallback HealerMixin when not available."""
+    class HealingPolicyMixin:
+        """Fallback HealingPolicyMixin when not available."""
 
         pass
 
@@ -182,7 +182,7 @@ _emit_gated_by_confidence("p1", "app_base_util", "confidence_gate")
 
 
 @dataclass
-class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
+class AppBase(MetaLearningMixin, SovereignBaseAgent, HealingPolicyMixin):
     """
     AppBase: Common foundation for all application-level agents.
 
@@ -193,7 +193,7 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
     Architecture:
         - Inherits from SovereignBaseAgent for core sovereignty
         - Includes MetaLearningMixin for learning capabilities
-        - Includes HealerMixin for self-healing capabilities
+        - Includes HealingPolicyMixin for self-healing capabilities
 
     NOTE: This is a CLASS (blueprint), NOT an active worker agent.
     The "Agent" suffix was removed per Zero-Ambiguity Naming Standard.

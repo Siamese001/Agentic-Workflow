@@ -302,7 +302,7 @@ class DeadLetterItem:
             "timestamp": self.timestamp.isoformat(),
             "retry_count": self.retry_count,
             "max_retries": self.max_retries,
-            "status": self.status.value,
+            "status": str(self.status),
             "investigation_notes": self.investigation_notes,
             "resolved_by": self.resolved_by,
             "metadata": self.metadata,

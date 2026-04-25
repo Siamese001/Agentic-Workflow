@@ -1,0 +1,28 @@
+gate: X1B
+version: X1B@v1
+composition: hybrid
+aggregate_threshold: 0.70
+metadata:
+  description: >
+    Answered it? schema_complete is a hard binary sub-gate; instruction
+    following and format fit contribute weighted scores.
+dimensions:
+  - name: schema_complete
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 1.0
+    is_hard_gate: true
+    threshold: 1.0
+  - name: format_fit
+    grader_class: code_based
+    scale: [0.0, 1.0]
+    weight: 0.4
+    is_hard_gate: false
+    threshold: 0.70
+  - name: instruction_following_sys_over_user
+    grader_class: model_based
+    scale: [0.0, 1.0]
+    weight: 0.6
+    is_hard_gate: false
+    threshold: 0.65
+    abstain_allowed: true

@@ -403,7 +403,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         dry_run: bool = True,
     ) -> dict[str, Any]:
         """
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+        # CRITICAL FIRST: Shared HealingPolicyMixin chain (diagnostics, rollback, MCP hardening)
         super().heal_repository()
 
         GOLD STANDARD: Post-heal validation confirming test coverage.

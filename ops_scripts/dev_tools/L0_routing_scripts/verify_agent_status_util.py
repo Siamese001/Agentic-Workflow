@@ -196,8 +196,8 @@ SOVEREIGN_BASES = {
     "L6ObservabilityBase",
 }
 LAYER_BASES = SOVEREIGN_BASES | {
-    "HealerMixin",
-    "MCPHardenedMixin",
+    "HealingPolicyMixin",
+    "MCPOperationMixin",
     "CanonBaseAgent",
     "CognitionCanonBaseAgent",
     "ExecutionCanonBaseAgent",

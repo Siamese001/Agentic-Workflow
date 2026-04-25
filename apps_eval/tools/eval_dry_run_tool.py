@@ -30,7 +30,7 @@ def main() -> int:
         req = EvalRequest(suite_ids=suite_ids, dry_run=True)
         orch = EvalOrchestrator(dry_run=True)
         result = orch.run(req)
-        status = result.status.value
+        status = str(result.status)
         score = result.overall_score
         suites = len(result.suite_results)
         violations = len(result.gate_violations)

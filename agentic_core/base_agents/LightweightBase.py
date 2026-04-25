@@ -14,8 +14,8 @@ Does NOT include:
 - HITLMixin (human-in-the-loop - heavy, not always needed)
 - PerformanceMixin (full version - use split mixins instead)
 - PineconeVectorMixin (vector memory - optional)
-- HealerMixin (healing - optional for simple agents)
-- MCPHardenedMixin (MCP protocol - optional)
+- HealingPolicyMixin (healing - optional for simple agents)
+- MCPOperationMixin (MCP protocol - optional)
 - SubatomicTestingMixin (self-testing - optional)
 
 MRO Depth: ~8 classes (vs ~20+ for full SovereignBaseAgent)
@@ -27,7 +27,7 @@ Usage:
             # Agent-specific initialization
 
     # For agents needing healing, add it explicitly:
-    class HealingAgent(HealerMixin, LightweightAgentBase):
+    class HealingAgent(HealingPolicyMixin, LightweightAgentBase):
         pass
 """
 
@@ -210,10 +210,10 @@ class LightweightAgentBase(
     - Performance metrics collection
 
     For additional capabilities, inherit from the relevant mixins:
-    - HealerMixin: For autonomous healing
+    - HealingPolicyMixin: For autonomous healing
     - HITLMixin: For human-in-the-loop workflows
     - BatchingMixin: For batch operations
-    - MCPHardenedMixin: For MCP protocol safety
+    - MCPOperationMixin: For MCP protocol safety
     """
 
     def __init__(self, **kwargs: Any) -> None:

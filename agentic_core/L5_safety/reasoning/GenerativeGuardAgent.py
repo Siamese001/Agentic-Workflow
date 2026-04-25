@@ -108,7 +108,7 @@ from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 _mod = importlib.import_module("agentic_core.L5_safety.enforcement.mcp_hardened_mixin")
-MCPHardenedMixin = _mod.MCPHardenedMixin
+MCPOperationMixin = _mod.MCPOperationMixin
 try:
     from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
 except ImportError:  # guardian: allow-silent-swallow
@@ -237,7 +237,9 @@ EXCLUDED_DIRS = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
 
 
 @dataclass
-class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterface, MCPHardenedMixin):
+class GenerativeGuardAgent(
+    SovereignBaseAgent, HealingPolicyMixin, CanonBaseAgentInterface, MCPOperationMixin
+):
     """
     KEYS: 45 (Dead Code/Runaway Generation)
     ROLE: The Watchdog. Identifies and deletes recursively-generated files.

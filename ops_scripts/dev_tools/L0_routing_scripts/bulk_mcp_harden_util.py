@@ -1,7 +1,7 @@
 """
-Bulk MCP Hardening Script - Add MCPHardenedMixin to all external agents
+Bulk MCP Hardening Script - Add MCPOperationMixin to all external agents
 
-Reads agent_discovery_full.json and adds MCPHardenedMixin to all agents
+Reads agent_discovery_full.json and adds MCPOperationMixin to all agents
 that have external_touch=True but mcp_hardened=False.
 """
 
@@ -170,7 +170,7 @@ _emit_proposal_commits_routing("p1", "bulk_mcp_harden_util", "routing_commit")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_PATH = PROJECT_ROOT / AGENT_DISCOVERY_JSON
-MCP_IMPORT = "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
+MCP_IMPORT = "from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin"
 
 
 def load_discovery():
@@ -205,10 +205,10 @@ def get_unhardened_external_agents(data):
 
 
 def add_mcp_mixin_to_file(file_path: Path, class_name: str) -> bool:
-    """Add MCPHardenedMixin to a class in a file."""
+    """Add MCPOperationMixin to a class in a file."""
     try:
         content = file_path.read_text(encoding="utf-8")
-        if "MCPHardenedMixin" in content:
+        if "MCPOperationMixin" in content:
             return False
         pattern = f"(class\\s+{re.escape(class_name)}\\s*\\()([^)]+)(\\)\\s*:)"
         match = re.search(pattern, content)
@@ -216,7 +216,7 @@ def add_mcp_mixin_to_file(file_path: Path, class_name: str) -> bool:
             pattern2 = f"(class\\s+{re.escape(class_name)}\\s*)(:)"
             match2 = re.search(pattern2, content)
             if match2:
-                new_content = content[: match2.start(2)] + "(MCPHardenedMixin)" + content[match2.start(2) :]
+                new_content = content[: match2.start(2)] + "(MCPOperationMixin)" + content[match2.start(2) :]
                 new_content = add_import(new_content)
                 assert_no_persistent_write("L0", "write_text")
                 file_path.write_text(new_content, encoding="utf-8")
@@ -224,9 +224,9 @@ def add_mcp_mixin_to_file(file_path: Path, class_name: str) -> bool:
             return False
         bases = match.group(2).strip()
         if bases:
-            new_bases = f"{bases}, MCPHardenedMixin"
+            new_bases = f"{bases}, MCPOperationMixin"
         else:
-            new_bases = "MCPHardenedMixin"
+            new_bases = "MCPOperationMixin"
         new_class_def = f"{match.group(1)}{new_bases}{match.group(3)}"
         new_content = content[: match.start()] + new_class_def + content[match.end() :]
         new_content = add_import(new_content)
@@ -239,7 +239,7 @@ def add_mcp_mixin_to_file(file_path: Path, class_name: str) -> bool:
 
 
 def add_import(content: str) -> str:
-    """Add MCPHardenedMixin import to content."""
+    """Add MCPOperationMixin import to content."""
     if MCP_IMPORT in content:
         return content
     lines = content.split("\n")
@@ -253,7 +253,7 @@ def add_import(content: str) -> str:
 
 def main():
     print("=" * 60)
-    print("BULK MCP HARDENING - Adding MCPHardenedMixin to external agents")
+    print("BULK MCP HARDENING - Adding MCPOperationMixin to external agents")
     print("=" * 60)
     data = load_discovery()
     agents = get_unhardened_external_agents(data)

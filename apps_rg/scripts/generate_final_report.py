@@ -223,7 +223,7 @@ def generate_report():
     print("🔒 LIC METHODOLOGY COMPLIANCE")
     print("-" * 70)
     print("✅ Unified Base: All engines inherit BaseRGEngine")
-    print("✅ Mixin Integration: MCPHardenedMixin + HealerMixin")
+    print("✅ Mixin Integration: MCPOperationMixin + HealingPolicyMixin")
     print("✅ Frozen Knowledge: Zero magic strings")
     print("✅ Strict Typing: Pydantic models enforced")
     print("✅ Zero-Trust Imports: Void compliance active")

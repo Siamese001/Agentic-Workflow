@@ -184,7 +184,7 @@ MAX_RETRIES = 3
 THRESHOLD = 0.95
 
 
-class HealerMixin:
+class HealingPolicyMixin:
     """Legacy mixin - use LICAgentBase instead."""
 
     pass
@@ -413,7 +413,10 @@ class OutreachMemoryPersistence:
         """Save memory to file."""
         try:
             self.memory_file.write_text(json.dumps(self._memory, indent=2), encoding="utf-8")
-        except (OSError, TypeError) as e:  # guardian: allow-log-and-swallow -- memory save is best-effort; debug log sufficient for diagnostics
+        except (
+            OSError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow -- memory save is best-effort; debug log sufficient for diagnostics
             self.logger.debug(f"Failed to save memory: {e}")
 
     # guardian: allow-type-erasure

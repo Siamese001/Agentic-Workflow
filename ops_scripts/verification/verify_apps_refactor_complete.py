@@ -250,7 +250,7 @@ class AppsRefactorVerifier:
         )
 
     def verify_phase3_mcp_mixin_dedup(self) -> None:
-        """Phase 3: No unconditional duplicate MCPHardenedMixin/HealerMixin stubs."""
+        """Phase 3: No unconditional duplicate MCPOperationMixin/HealingPolicyMixin stubs."""
         files_to_check = [
             self.root / "apps_lic" / "reasoning" / "OutreachSignalRouterAgent.py",
             self.root / "apps_lic" / "reasoning" / "OutreachValidationExecutorAgent.py",

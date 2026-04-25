@@ -30,8 +30,8 @@ class SSOTConsolidationAnalyzer:
                 return {"error": "Syntax error - cannot analyze"}
             features = {
                 "has_immutable_staging_buffer": "ImmutableStagingBuffer" in content,
-                "has_healer_mixin": "HealerMixin" in content,
-                "has_mcp_hardened": "MCPHardenedMixin" in content,
+                "has_healer_mixin": "HealingPolicyMixin" in content,
+                "has_mcp_hardened": "MCPOperationMixin" in content,
                 "has_abc_inheritance": "ABC" in content and "from abc import" in content,
                 "has_dataclass": "@dataclass" in content,
                 "has_injection_mixin": "instructional_injection_mixin" in content,

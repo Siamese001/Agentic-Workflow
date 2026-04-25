@@ -250,24 +250,24 @@ _emit_reads_through("l4", "OutreachSignalRouterAgent", "urg_read_84")
 _emit_reads_through("l4", "OutreachSignalRouterAgent", "urg_read_85")
 
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin
 
-    class MCPHardenedMixin(mcp_hardened_mixin):
+    class MCPOperationMixin(mcp_hardened_mixin):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._mixin_init()
 except ImportError:  # guardian: allow-silent-swallow -- optional dependency
 
-    class MCPHardenedMixin:
+    class MCPOperationMixin:
         def __init__(self, *args, **kwargs):
             self._mixin_init()
 
 
 try:
-    from agentic_core.interfaces.mixins import HealerMixin
+    from agentic_core.interfaces.mixins import HealingPolicyMixin
 except ImportError:
 
-    class HealerMixin:
+    class HealingPolicyMixin:
         pass
 
 
@@ -427,7 +427,7 @@ class OutreachSignalRouterAgent(SovereignBaseAgent):
         }
 
 
-class OutreachAgentFactory(MCPHardenedMixin, HealerMixin):
+class OutreachAgentFactory(MCPOperationMixin, HealingPolicyMixin):
     """Factory for creating outreach agents."""
 
     @staticmethod

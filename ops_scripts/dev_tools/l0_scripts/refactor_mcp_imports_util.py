@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Batch Refactoring Script - Fix MCPHardenedMixin Import Violations
+Batch Refactoring Script - Fix MCPOperationMixin Import Violations
 
-Updates all L0 files to use the new MCPHardenedMixin location in utils/core_extensions
+Updates all L0 files to use the new MCPOperationMixin location in utils/core_extensions
 instead of L5_safety/guardrails (which violates layer hierarchy).
 
 This fixes ~10 critical L0 → L5 upward dependency violations.
@@ -162,15 +162,15 @@ _emit_links_execution_to_snapshot("p4", "refactor_mcp_imports_util", "exec_snaps
 REPO = Path(__file__).parent.parent
 
 # Old import pattern (L5 - violates hierarchy)
-OLD_IMPORT = "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
+OLD_IMPORT = "from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin"
 
 # New import pattern (utils - foundational layer)
-NEW_IMPORT = "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
+NEW_IMPORT = "from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin"
 
 
 def refactor_file(file_path: Path) -> bool:
     """
-    Replace old MCPHardenedMixin import with new location.
+    Replace old MCPOperationMixin import with new location.
 
     Returns:
         True if file was modified, False otherwise
@@ -196,10 +196,10 @@ def refactor_file(file_path: Path) -> bool:
 
 
 def main():
-    """Refactor all L0 files with MCPHardenedMixin imports."""
+    """Refactor all L0 files with MCPOperationMixin imports."""
 
     print("=" * 80)
-    print("  MCPHardenedMixin Import Refactoring")
+    print("  MCPOperationMixin Import Refactoring")
     print("=" * 80)
     print()
     print(f"Old import: {OLD_IMPORT}")

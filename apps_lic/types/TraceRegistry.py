@@ -84,13 +84,13 @@ _emit_updates_meta_learning_state("p4", "TraceRegistry", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "TraceRegistry", "exec_snapshot_link")
 
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin
 
-    class MCPHardenedMixin(mcp_hardened_mixin):
+    class MCPOperationMixin(mcp_hardened_mixin):
         pass
 except ImportError:  # guardian: allow-silent-swallow -- optional dependency
 
-    class MCPHardenedMixin:
+    class MCPOperationMixin:
         pass
 
 
@@ -178,7 +178,7 @@ _emit_gated_by_confidence("p1", "TraceRegistry", "confidence_gate")
 
 
 @dataclass
-class TraceRegistry(MCPHardenedMixin):
+class TraceRegistry(MCPOperationMixin):
     """
     Registry for execution traces. Maintains an ordered log of events.
     """

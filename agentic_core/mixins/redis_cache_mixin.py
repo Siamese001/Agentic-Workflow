@@ -207,7 +207,7 @@ class RedisCacheMixin:
     """ULTRA-HARDENED Redis cache Mixin"""
 
     _circuit_breaker = CircuitBreaker()
-    '\n    ULTRA-HARDENED Redis cache Mixin\n\n    Provides automatic caching with graceful degradation to local dict.\n    All operations are safe - failures never crash the agent.\n\n    Usage:\n        class MyAgent(HealerMixin, MCPHardenedMixin, RedisCacheMixin):\n            _cache_prefix = "my_agent"\n            _default_ttl = 3600\n\n            async def expensive_operation(self, key):\n                cached = await self.cache_get(key)\n                if cached:\n                    return cached\n                result = await self._compute(key)\n                await self.cache_set(key, result)\n                return result\n    '
+    '\n    ULTRA-HARDENED Redis cache Mixin\n\n    Provides automatic caching with graceful degradation to local dict.\n    All operations are safe - failures never crash the agent.\n\n    Usage:\n        class MyAgent(HealingPolicyMixin, MCPOperationMixin, RedisCacheMixin):\n            _cache_prefix = "my_agent"\n            _default_ttl = 3600\n\n            async def expensive_operation(self, key):\n                cached = await self.cache_get(key)\n                if cached:\n                    return cached\n                result = await self._compute(key)\n                await self.cache_set(key, result)\n                return result\n    '
     _redis_client = None
     _cache_prefix: str = "agent_cache"
     _default_ttl: int = 3600
@@ -282,7 +282,10 @@ class RedisCacheMixin:
                     log.debug(f"cache HIT (Redis): {key[:50]}...")
                     self._circuit_breaker.record_success()
                     return value
-            except (OSError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                RuntimeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 self._circuit_breaker.record_failure()
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_get")
@@ -313,7 +316,10 @@ class RedisCacheMixin:
         metrics = get_cache_metrics()
         try:
             _ = json.dumps(value)
-        except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- serialization guard: non-fatal, skip cache write
+        except (
+            TypeError,
+            ValueError,
+        ):  # guardian: allow-return-none-swallow -- serialization guard: non-fatal, skip cache write
             log.warning(f"cache SET BLOCKED: Non-serializable value for {key}")
             return
         self._local_cache[full_key] = {"value": value, "expire_at": time.monotonic() + ttl}

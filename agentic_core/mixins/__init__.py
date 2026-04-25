@@ -21,7 +21,7 @@ Runtime/Utility Mixins:
 - SafetyAnalysisMixin: Safety analysis
 - CacheConfig, CacheEntry: Caching utilities
 - SpanContext, TracingMixin: Distributed tracing
-- HealerMixin: Healing capabilities
+- HealingPolicyMixin: Healing capabilities
 
 Layer-Specific Mixins:
 - PromptRenderingMixin: Prompt rendering (L5_safety)

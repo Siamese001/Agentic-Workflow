@@ -207,7 +207,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
     The 'Seal-Guard' of the Sovereign Architecture.
     Ensures compliance stays at 99.7%+ by blocking architectural rot at the source.
 
-    Inherits from L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0RoutingBaseAgent: HealingPolicyMixin, MCPOperationMixin, L0DelegationTestingMixin
 
     This agent runs as a git pre-commit hook to prevent new violations from
     entering the codebase. It validates staged files against SSOT gravity laws.

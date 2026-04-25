@@ -1,5 +1,147 @@
 {
   "description": "Known hardcoded exclusion-set violations as of baseline freeze. These are tech debt; see R3 in docs/reports/exclusion-ssot-consolidated-review-2026-04-19.md. The gate blocks only NEW entries. Shrinking this baseline over time is the burndown goal.",
-  "count": 0,
-  "violations": []
+  "count": 12,
+  "violations": [
+    {
+      "path": "tools/analysis/_mixin_verify_unused.py",
+      "lineno": 38,
+      "canonical_tokens": [
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "tools/analysis/_w3_shim_rewrite.py",
+      "lineno": 20,
+      "canonical_tokens": [
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "tools/analysis/adg_overlay_detector.py",
+      "lineno": 53,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "build",
+        "dist",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "tools/analysis/mixin_audit.py",
+      "lineno": 65,
+      "canonical_tokens": [
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "tools/analysis/tech_debt_audit.py",
+      "lineno": 38,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "tools/debug/_mw_usage_scan.py",
+      "lineno": 32,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives"
+      ]
+    },
+    {
+      "path": "tools/debug/_w3_verify_zero_consumers.py",
+      "lineno": 21,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives"
+      ]
+    },
+    {
+      "path": "tools/debug/_w4_verify.py",
+      "lineno": 33,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives"
+      ]
+    },
+    {
+      "path": "tools/debug/_w5_verify.py",
+      "lineno": 17,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives"
+      ]
+    },
+    {
+      "path": "tools/generate/debt_overlay_enricher.py",
+      "lineno": 62,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "build",
+        "dist",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "tools/generate/r6_backlog_enricher.py",
+      "lineno": 51,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "build",
+        "dist",
+        "node_modules",
+        "venv"
+      ]
+    },
+    {
+      "path": "tools/generate/truth_expansion_enricher.py",
+      "lineno": 65,
+      "canonical_tokens": [
+        ".git",
+        ".venv",
+        "__pycache__",
+        "archives",
+        "build",
+        "dist",
+        "node_modules",
+        "venv"
+      ]
+    }
+  ]
 }

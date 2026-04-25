@@ -205,11 +205,13 @@ TASK_CLASS_OUTPUT_CAPS: dict[str, int] = {
     TaskClass.RESUME_GENERATION.value: 1200,
     TaskClass.GOVERNANCE_ANALYSIS.value: 800,
 }
-EXTENDED_CAP_WHITELIST: frozenset[str] = frozenset({
-    TaskClass.MULTI_FILE_SUMMARY.value,
-    TaskClass.RESEARCH_SYNTHESIS.value,
-    TaskClass.PROPOSAL_GENERATION.value,
-})
+EXTENDED_CAP_WHITELIST: frozenset[str] = frozenset(
+    {
+        TaskClass.MULTI_FILE_SUMMARY.value,
+        TaskClass.RESEARCH_SYNTHESIS.value,
+        TaskClass.PROPOSAL_GENERATION.value,
+    }
+)
 
 
 def get_output_cap(task_class: str) -> int | None:
@@ -400,7 +402,7 @@ def run_preflight_budget_check(prompt: str, task_class: str, max_model_len: int)
 
 LocalTier = Literal["local_fast", "local_strong", "gemini_backstop"]
 QWEN_7B_MODEL_ID: str = "Qwen/Qwen2.5-7B-Instruct"
-QWEN_14B_MODEL_ID: str = "Qwen/Qwen2.5-14B-Instruct"
+QWEN_14B_MODEL_ID: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
 GEMINI_25_PRO_MODEL_ID: str = "gemini-2.5-pro"
 HIGH_SEVERITY_LEVELS: frozenset[str] = frozenset({"high"})
 FAST_TIER_SEVERITY_LEVELS: frozenset[str] = frozenset({"low", "medium"})

@@ -79,21 +79,21 @@ _emit_updates_meta_learning_state("p4", "ImmutableStagingBuffer", "meta_learning
 _emit_links_execution_to_snapshot("p4", "ImmutableStagingBuffer", "exec_snapshot_link")
 
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin
 
-    class MCPHardenedMixin(mcp_hardened_mixin):
+    class MCPOperationMixin(mcp_hardened_mixin):
         pass
 except ImportError:
 
-    class MCPHardenedMixin:
+    class MCPOperationMixin:
         pass
 
 
 try:
-    from agentic_core.interfaces.mixins import HealerMixin
+    from agentic_core.interfaces.mixins import HealingPolicyMixin
 except ImportError:
 
-    class HealerMixin:
+    class HealingPolicyMixin:
         pass
 
 
@@ -177,7 +177,7 @@ _emit_gated_by_confidence("p1", "ImmutableStagingBuffer", "confidence_gate")
 
 
 @dataclass
-class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
+class ImmutableStagingBuffer(MCPOperationMixin, HealingPolicyMixin):
     """
     A hardened buffer that enforces write-once semantics per key.
     Once a key is written, it is locked forever.

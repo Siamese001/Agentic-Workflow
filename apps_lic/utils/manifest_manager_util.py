@@ -86,23 +86,23 @@ _emit_updates_meta_learning_state("p4", "manifest_manager_util", "meta_learning"
 _emit_links_execution_to_snapshot("p4", "manifest_manager_util", "exec_snapshot_link")
 
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+    from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin
 
-    class MCPHardenedMixin(mcp_hardened_mixin):  # type: ignore[misc]
+    class MCPOperationMixin(mcp_hardened_mixin):  # type: ignore[misc]
         pass
 except ImportError:
     logger.debug("mcp_hardened_mixin unavailable; using no-op fallback")
 
-    class MCPHardenedMixin:  # type: ignore[no-redef]
+    class MCPOperationMixin:  # type: ignore[no-redef]
         pass
 
 
 try:
-    from agentic_core.interfaces.mixins import HealerMixin
+    from agentic_core.interfaces.mixins import HealingPolicyMixin
 except ImportError:
-    logger.debug("HealerMixin unavailable; using no-op fallback")
+    logger.debug("HealingPolicyMixin unavailable; using no-op fallback")
 
-    class HealerMixin:  # type: ignore[no-redef]
+    class HealingPolicyMixin:  # type: ignore[no-redef]
         pass
 
 
@@ -186,7 +186,7 @@ _emit_gated_by_confidence("p1", "manifest_manager_util", "confidence_gate")
 
 
 @dataclass
-class ManifestManager(MCPHardenedMixin, HealerMixin):
+class ManifestManager(MCPOperationMixin, HealingPolicyMixin):
     """
     Manages loading and saving of workflow manifests (checkpoints).
     """

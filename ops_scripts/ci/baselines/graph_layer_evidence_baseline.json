@@ -97,6 +97,14 @@
     ".windsurf/plans/wave2-l2-native-persistence-0a0f93.md",
     ".windsurf/plans/wave5-closure-report-d0cb16.md",
     ".windsurf/plans/wave_c_plan.md",
-    ".windsurf/plans/wave_d_plan.md"
+    ".windsurf/plans/wave_d_plan.md",
+    ".windsurf/plans/adg-pipeline-simplification-e2e-9b4c27.md",
+    ".windsurf/plans/meta-learning-loop-hardening-c8f4a2.md",
+    ".windsurf/plans/mixin-mro-simplification-de1850.md",
+    ".windsurf/plans/redis-mv-projections-9262a6.md",
+    ".windsurf/plans/runtime-router-meta-learning-loop-b7e9a1.md",
+    ".windsurf/plans/test-coverage-hotspots-8f2a1c.md",
+    ".windsurf/plans/w6-1-tooling-guardian-codemod-d4e8a7.md",
+    ".windsurf/plans/w7-p1-adr-tooling-followup-b5c9e2.md"
   ]
 }

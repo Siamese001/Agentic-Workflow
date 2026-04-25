@@ -276,13 +276,13 @@ class HealthReport:
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
-            "status": self.status.value,
+            "status": str(self.status),
             "timestamp": self.timestamp,
             "version": self.version,
             "checks": [
                 {
                     "name": c.name,
-                    "status": c.status.value,
+                    "status": str(c.status),
                     "message": c.message,
                     "duration_ms": round(c.duration_ms, 2),
                     "metadata": c.metadata,

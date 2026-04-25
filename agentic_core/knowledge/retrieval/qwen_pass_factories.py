@@ -65,7 +65,7 @@ def build_qwen_pass2_fn(
     """Build a pass-2 callable backed by the local Qwen gateway.
 
     Pass 2 is a deterministic JSON reshape of the pass-1 grounded answer.
-    Qwen-2.5-14B-Instruct-AWQ handles this reliably at temperature 0.0 and
+    Qwen-2.5-32B-Instruct-AWQ handles this reliably at temperature 0.0 and
     costs nothing per call, eliminating Haiku billing for the JSON step.
 
     Returns a callable matching the ``_Pass2Fn`` protocol
@@ -137,8 +137,7 @@ def build_qwen_pass1_fn(
             # Anthropic accepts system as a list of content blocks. Flatten
             # to text for Qwen.
             system_prompt = "\n\n".join(
-                block.get("text", "") if isinstance(block, dict) else str(block)
-                for block in system_prompt
+                block.get("text", "") if isinstance(block, dict) else str(block) for block in system_prompt
             )
 
         # Flatten Anthropic messages into a single Qwen prompt. This loses
@@ -150,8 +149,7 @@ def build_qwen_pass1_fn(
             content = msg.get("content", "")
             if isinstance(content, list):
                 content = "\n\n".join(
-                    block.get("text", "") if isinstance(block, dict) else str(block)
-                    for block in content
+                    block.get("text", "") if isinstance(block, dict) else str(block) for block in content
                 )
             parts.append(f"[{role}]\n{content}")
         prompt_text = "\n\n".join(p for p in parts if p)

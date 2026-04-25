@@ -720,7 +720,7 @@ def plan_observability(
             {
                 "name": a.name,
                 "condition": a.condition,
-                "severity": a.severity.value,
+                "severity": str(a.severity),
                 "threshold": a.threshold,
                 "duration": a.duration,
                 "notification_channels": a.notification_channels,

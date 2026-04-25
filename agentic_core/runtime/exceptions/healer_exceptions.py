@@ -1,7 +1,7 @@
 """
 HealerError - Domain exceptions for sovereign healing operations.
 
-Defines custom exceptions used by HealerMixin and related healing agents.
+Defines custom exceptions used by HealingPolicyMixin and related healing agents.
 """
 
 from __future__ import annotations

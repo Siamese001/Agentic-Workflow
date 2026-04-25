@@ -103,6 +103,9 @@ SANCTIONED_ADAPTER_FILES = {
     # Anthropic adapters — APPROVED 2026-04-23
     "claude_judge.py",  # Anthropic SDK — canonical Claude judge adapter in agentic_core/evaluation/judges/
     "HardenedanthropicexecutorStrategy.py",  # Anthropic SDK — sanctioned executor strategy wrapper in apps_rg/enforcement/
+    # SQLite adapters surfaced during plan adg-architectural-p0-violations-cleanup-bced9c (2026-04-24)
+    "adg_span_annotator.py",  # L6 ADG-snapshot reader for runtime span annotation; read-only consumer of artifacts/adg/*.sqlite (delegated from L3 RuntimeADGQuery)
+    "consistency_sqlite.py",  # L3 exit-eval consistency-check ledger; sqlite-backed per-run hash-chain (peer of ledger_integrity.py and runtime_hitl_ledger.py per ADR-023 §5)
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling

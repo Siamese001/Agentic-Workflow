@@ -1,0 +1,1788 @@
+{
+  "snapshot": "adg_indexed_04242026_1935.sqlite",
+  "mixin_classes_total": 115,
+  "mixin_consumers_total": 57,
+  "deepest_consumers": [
+    {
+      "class": "SovereignBaseAgent",
+      "file": "agentic_core/base_agents/SovereignBaseAgent.py",
+      "bases": [
+        "InfrastructureMixin",
+        "AtomicExecutionMixin",
+        "ConfigMixin",
+        "LLMProviderMixin",
+        "EmbeddingMixin",
+        "ValidatorMixin",
+        "AuditTrailMixin",
+        "MetaLearningClientMixin",
+        "GoldenContextMixin",
+        "RuntimeSafetyMixin",
+        "ADGBehavioralMixin"
+      ],
+      "mixin_bases": [
+        "InfrastructureMixin",
+        "AtomicExecutionMixin",
+        "ConfigMixin",
+        "LLMProviderMixin",
+        "EmbeddingMixin",
+        "ValidatorMixin",
+        "AuditTrailMixin",
+        "MetaLearningClientMixin",
+        "GoldenContextMixin",
+        "RuntimeSafetyMixin",
+        "ADGBehavioralMixin"
+      ],
+      "mixin_count": 11
+    },
+    {
+      "class": "InfrastructureMixin",
+      "file": "agentic_core/mixins/infrastructure_mixin.py",
+      "bases": [
+        "CostGuardrailMixin",
+        "ContextManagementMixin",
+        "ToolReliabilityMixin",
+        "HITLMixin",
+        "BatchingMixin",
+        "HealingPolicyMixin",
+        "MCPOperationMixin",
+        "SubatomicTestingMixin",
+        "TracingMixin"
+      ],
+      "mixin_bases": [
+        "CostGuardrailMixin",
+        "ContextManagementMixin",
+        "ToolReliabilityMixin",
+        "HITLMixin",
+        "BatchingMixin",
+        "HealingPolicyMixin",
+        "MCPOperationMixin",
+        "SubatomicTestingMixin",
+        "TracingMixin"
+      ],
+      "mixin_count": 9
+    },
+    {
+      "class": "LightweightAgentBase",
+      "file": "agentic_core/base_agents/LightweightBase.py",
+      "bases": [
+        "CostGuardrailMixin",
+        "ContextManagementMixin",
+        "TracingMixin",
+        "CachingMixin",
+        "MetricsMixin"
+      ],
+      "mixin_bases": [
+        "CostGuardrailMixin",
+        "ContextManagementMixin",
+        "TracingMixin",
+        "CachingMixin",
+        "MetricsMixin"
+      ],
+      "mixin_count": 5
+    },
+    {
+      "class": "DAGManager",
+      "file": "agentic_core/L3_orchestration/reasoning/engines/dag_manager.py",
+      "bases": [
+        "HealingPolicyMixin",
+        "MCPOperationMixin",
+        "L3SubatomicTestingMixin",
+        "RedisCacheMixin",
+        "PineconeVectorMixin"
+      ],
+      "mixin_bases": [
+        "HealingPolicyMixin",
+        "MCPOperationMixin",
+        "L3SubatomicTestingMixin",
+        "RedisCacheMixin",
+        "PineconeVectorMixin"
+      ],
+      "mixin_count": 5
+    },
+    {
+      "class": "DuplicateCodeDetectorAgent",
+      "file": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+      "bases": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "HealingPolicyMixin",
+        "MCPOperationMixin"
+      ],
+      "mixin_bases": [
+        "AtomicExecutionMixin",
+        "SubatomicTestingMixin",
+        "HealingPolicyMixin",
+        "MCPOperationMixin"
+      ],
+      "mixin_count": 4
+    },
+    {
+      "class": "CodeHealerAgent",
+      "file": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py",
+      "bases": [
+        "PromptRenderingMixin",
+        "CircuitBreakerMixin",
+        "SurgicalCSTHealerMixin",
+        "SovereignBaseAgent"
+      ],
+      "mixin_bases": [
+        "PromptRenderingMixin",
+        "CircuitBreakerMixin",
+        "SurgicalCSTHealerMixin"
+      ],
+      "mixin_count": 3
+    },
+    {
+      "class": "Orchestrator",
+      "file": "agentic_core/runtime/config/security_level_config.py",
+      "bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin",
+        "L3SubatomicTestingMixin"
+      ],
+      "mixin_bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin",
+        "L3SubatomicTestingMixin"
+      ],
+      "mixin_count": 3
+    },
+    {
+      "class": "PlaceholderDetectorAgent",
+      "file": "apps_lic/config/placeholder_detector_agent_config.py",
+      "bases": [
+        "SubatomicTestingMixin",
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_bases": [
+        "SubatomicTestingMixin",
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_count": 3
+    },
+    {
+      "class": "PilotOrchestrator",
+      "file": "apps_shared/reasoning/PilotOrchestrator.py",
+      "bases": [
+        "RateLimitMixin",
+        "StateValidationMixin",
+        "event_emission_mixin",
+        "ContextPropagationMixin"
+      ],
+      "mixin_bases": [
+        "RateLimitMixin",
+        "StateValidationMixin",
+        "ContextPropagationMixin"
+      ],
+      "mixin_count": 3
+    },
+    {
+      "class": "L2SelfTestingMixin",
+      "file": "agentic_core/mixins/subatomic_testing_mixin.py",
+      "bases": [
+        "SubatomicTestingMixin",
+        "MCPOperationMixin"
+      ],
+      "mixin_bases": [
+        "SubatomicTestingMixin",
+        "MCPOperationMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "FilesystemSSOTReconcilerAgent",
+      "file": "agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py",
+      "bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin",
+        "L0RoutingBaseAgent"
+      ],
+      "mixin_bases": [
+        "AutonomyMixin",
+        "SelfDiagnosisMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "GenerativeGuardAgent",
+      "file": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py",
+      "bases": [
+        "SovereignBaseAgent",
+        "HealingPolicyMixin",
+        "CanonBaseAgentInterface",
+        "MCPOperationMixin"
+      ],
+      "mixin_bases": [
+        "HealingPolicyMixin",
+        "MCPOperationMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "BaseEvalEngine",
+      "file": "apps_eval/engines/base_eval_engine.py",
+      "bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin",
+        "ABC"
+      ],
+      "mixin_bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "BaseExecEngine",
+      "file": "apps_exec/engines/base_exec_engine.py",
+      "bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin",
+        "ABC"
+      ],
+      "mixin_bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "OutreachAgentFactory",
+      "file": "apps_lic/reasoning/OutreachSignalRouterAgent.py",
+      "bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "ImmutableStagingBuffer",
+      "file": "apps_lic/types/ImmutableStagingBuffer.py",
+      "bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "ManifestManager",
+      "file": "apps_lic/utils/manifest_manager_util.py",
+      "bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "BaseResearchEngine",
+      "file": "apps_research/engines/base_research_engine.py",
+      "bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin",
+        "ABC"
+      ],
+      "mixin_bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "BaseRfpEngine",
+      "file": "apps_rfp/engines/base_rfp_engine.py",
+      "bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin",
+        "ABC"
+      ],
+      "mixin_bases": [
+        "SemanticCacheMixin",
+        "EmbeddingMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "BaseRGEngine",
+      "file": "apps_rg/engines/base_rg_engine.py",
+      "bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin",
+        "ABC"
+      ],
+      "mixin_bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "ImmutableStagingBuffer",
+      "file": "apps_rg/types/state_transaction_types.py",
+      "bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_bases": [
+        "MCPOperationMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "AppBase",
+      "file": "apps_shared/utils/app_base_util.py",
+      "bases": [
+        "MetaLearningMixin",
+        "SovereignBaseAgent",
+        "HealingPolicyMixin"
+      ],
+      "mixin_bases": [
+        "MetaLearningMixin",
+        "HealingPolicyMixin"
+      ],
+      "mixin_count": 2
+    },
+    {
+      "class": "L0RoutingBase",
+      "file": "agentic_core/base_agents/L0RoutingBase.py",
+      "bases": [
+        "L0DelegationTestingMixin",
+        "SovereignBaseAgent"
+      ],
+      "mixin_bases": [
+        "L0DelegationTestingMixin"
+      ],
+      "mixin_count": 1
+    },
+    {
+      "class": "SovereignHealerBase",
+      "file": "agentic_core/base_agents/SovereignHealerBase.py",
+      "bases": [
+        "HealingStrategyMixin",
+        "ABC"
+      ],
+      "mixin_bases": [
+        "HealingStrategyMixin"
+      ],
+      "mixin_count": 1
+    },
+    {
+      "class": "SovereignValidatorBase",
+      "file": "agentic_core/base_agents/SovereignValidatorBase.py",
+      "bases": [
+        "ValidatorMixin",
+        "ABC"
+      ],
+      "mixin_bases": [
+        "ValidatorMixin"
+      ],
+      "mixin_count": 1
+    }
+  ],
+  "mixin_usage_top": [
+    [
+      "HealingPolicyMixin",
+      14
+    ],
+    [
+      "MCPOperationMixin",
+      14
+    ],
+    [
+      "SubatomicTestingMixin",
+      10
+    ],
+    [
+      "TracingMixin",
+      5
+    ],
+    [
+      "EmbeddingMixin",
+      5
+    ],
+    [
+      "PromptRenderingMixin",
+      5
+    ],
+    [
+      "HITLMixin",
+      4
+    ],
+    [
+      "SemanticCacheMixin",
+      4
+    ],
+    [
+      "AtomicExecutionMixin",
+      3
+    ],
+    [
+      "IntegratedTracingMixin",
+      3
+    ],
+    [
+      "CostGuardrailMixin",
+      2
+    ],
+    [
+      "ContextManagementMixin",
+      2
+    ],
+    [
+      "ValidatorMixin",
+      2
+    ],
+    [
+      "RedisCacheMixin",
+      2
+    ],
+    [
+      "L3SubatomicTestingMixin",
+      2
+    ],
+    [
+      "WriteGovernorMixin",
+      2
+    ],
+    [
+      "HardeningMixin",
+      2
+    ],
+    [
+      "L0DelegationTestingMixin",
+      1
+    ],
+    [
+      "CachingMixin",
+      1
+    ],
+    [
+      "MetricsMixin",
+      1
+    ],
+    [
+      "InfrastructureMixin",
+      1
+    ],
+    [
+      "ConfigMixin",
+      1
+    ],
+    [
+      "LLMProviderMixin",
+      1
+    ],
+    [
+      "AuditTrailMixin",
+      1
+    ],
+    [
+      "MetaLearningClientMixin",
+      1
+    ],
+    [
+      "GoldenContextMixin",
+      1
+    ],
+    [
+      "RuntimeSafetyMixin",
+      1
+    ],
+    [
+      "ADGBehavioralMixin",
+      1
+    ],
+    [
+      "HealingStrategyMixin",
+      1
+    ],
+    [
+      "ToolReliabilityMixin",
+      1
+    ],
+    [
+      "BatchingMixin",
+      1
+    ],
+    [
+      "InstructionalInjectionMixin",
+      1
+    ],
+    [
+      "PineconeVectorMixin",
+      1
+    ],
+    [
+      "HallucinationDetectionMixin",
+      1
+    ],
+    [
+      "CircuitBreakerMixin",
+      1
+    ],
+    [
+      "SurgicalCSTHealerMixin",
+      1
+    ],
+    [
+      "AutonomyMixin",
+      1
+    ],
+    [
+      "SelfDiagnosisMixin",
+      1
+    ],
+    [
+      "RateLimitMixin",
+      1
+    ],
+    [
+      "StateValidationMixin",
+      1
+    ]
+  ],
+  "mixins_unused_as_base": [
+    "ASTEnforcementMixin",
+    "AppsTracingMixin",
+    "CognitiveRecoveryMixin",
+    "FeatureFlaggedAgentMixin",
+    "HealerAgentMixin",
+    "HealingMixin",
+    "HygieneMixin",
+    "L2SelfTestingMixin",
+    "ReplayGuardMixin",
+    "SafetyAnalysisMixin",
+    "SecretsManagementMixin",
+    "StateAnalysisMixin",
+    "TestGetBundledMixin",
+    "TestGetI0Mixin",
+    "TestIsBundledMixin",
+    "_EmbeddingMixin",
+    "_MissingDependencyMixin",
+    "_SemanticCacheMixin"
+  ],
+  "stem_clusters_multi": {
+    "": [
+      "_EmbeddingMixin",
+      "_MissingDependencyMixin",
+      "_SemanticCacheMixin"
+    ],
+    "context": [
+      "ContextManagementMixin",
+      "ContextPropagationMixin"
+    ],
+    "healing": [
+      "HealingMixin",
+      "HealingPolicyMixin",
+      "HealingStrategyMixin"
+    ],
+    "meta": [
+      "MetaLearningClientMixin",
+      "MetaLearningMixin"
+    ],
+    "state": [
+      "StateAnalysisMixin",
+      "StateValidationMixin"
+    ],
+    "test": [
+      "TestGetBundledMixin",
+      "TestGetI0Mixin",
+      "TestIsBundledMixin"
+    ]
+  },
+  "mixins": [
+    {
+      "name": "MCPOperationMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/autonomy_mixin.py",
+      "line": 82,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/healing_policy_mixin.py",
+      "line": 179,
+      "body_size": 18,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/mcp_operation_mixin.py",
+      "line": 170,
+      "body_size": 12,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/subatomic_testing_mixin.py",
+      "line": 83,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "L3_orchestration",
+      "path": "agentic_core/L3_orchestration/reasoning/engines/dag_manager.py",
+      "line": 13,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "L3_orchestration",
+      "path": "agentic_core/L3_orchestration/reasoning/engines/dag_manager.py",
+      "line": 23,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "L5_safety",
+      "path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
+      "line": 113,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "L5_safety",
+      "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+      "line": 236,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "L5_safety",
+      "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+      "line": 244,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "L5_safety",
+      "path": "agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py",
+      "line": 107,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "other",
+      "path": "agentic_core/runtime/config/security_level_config.py",
+      "line": 918,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "other",
+      "path": "agentic_core/runtime/config/security_level_config.py",
+      "line": 928,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/config/placeholder_detector_agent_config.py",
+      "line": 23,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/config/placeholder_detector_agent_config.py",
+      "line": 31,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/reasoning/OutreachLearningAgent.py",
+      "line": 187,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/reasoning/OutreachSignalRouterAgent.py",
+      "line": 255,
+      "body_size": 1,
+      "bases": [
+        "mcp_hardened_mixin"
+      ],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/reasoning/OutreachSignalRouterAgent.py",
+      "line": 261,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/reasoning/OutreachSignalRouterAgent.py",
+      "line": 270,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/reasoning/OutreachValidationExecutorAgent.py",
+      "line": 181,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/reasoning/OutreachValidationExecutorAgent.py",
+      "line": 187,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/types/ImmutableStagingBuffer.py",
+      "line": 84,
+      "body_size": 1,
+      "bases": [
+        "mcp_hardened_mixin"
+      ],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/types/ImmutableStagingBuffer.py",
+      "line": 88,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/types/ImmutableStagingBuffer.py",
+      "line": 96,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/types/TraceRegistry.py",
+      "line": 89,
+      "body_size": 1,
+      "bases": [
+        "mcp_hardened_mixin"
+      ],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/types/TraceRegistry.py",
+      "line": 93,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/utils/lic_agent_base_util.py",
+      "line": 115,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/utils/manifest_manager_util.py",
+      "line": 91,
+      "body_size": 1,
+      "bases": [
+        "mcp_hardened_mixin"
+      ],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/utils/manifest_manager_util.py",
+      "line": 96,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/utils/manifest_manager_util.py",
+      "line": 105,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/validators/MessageDiversityValidator.py",
+      "line": 154,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "MCPOperationMixin",
+      "layer": "apps_rg",
+      "path": "apps_rg/engines/base_rg_engine.py",
+      "line": 102,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_rg",
+      "path": "apps_rg/engines/base_rg_engine.py",
+      "line": 108,
+      "body_size": 3,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "HealingPolicyMixin",
+      "layer": "apps_shared",
+      "path": "apps_shared/utils/app_base_util.py",
+      "line": 99,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 14,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/subatomic_testing_mixin.py",
+      "line": 185,
+      "body_size": 8,
+      "bases": [
+        "InstructionalInjectionMixin"
+      ],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "L2_execution",
+      "path": "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py",
+      "line": 152,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "L5_safety",
+      "path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
+      "line": 121,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "L5_safety",
+      "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+      "line": 228,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "L5_safety",
+      "path": "agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py",
+      "line": 124,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/config/placeholder_detector_agent_config.py",
+      "line": 15,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/types/app_content_validator_agent_types.py",
+      "line": 26,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "SubatomicTestingMixin",
+      "layer": "L0_routing_scripts",
+      "path": "ops_scripts/dev_tools/L0_routing_scripts/execution_context.py",
+      "line": 98,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 10,
+      "importers": 0
+    },
+    {
+      "name": "EmbeddingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/embedding_mixin.py",
+      "line": 158,
+      "body_size": 5,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "PromptRenderingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/prompt_rendering_mixin.py",
+      "line": 45,
+      "body_size": 8,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "TracingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/tracing_mixin.py",
+      "line": 244,
+      "body_size": 19,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "EmbeddingMixin",
+      "layer": "apps_eval",
+      "path": "apps_eval/engines/base_eval_engine.py",
+      "line": 26,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "EmbeddingMixin",
+      "layer": "apps_exec",
+      "path": "apps_exec/engines/base_exec_engine.py",
+      "line": 25,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "EmbeddingMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/utils/lic_agent_base_util.py",
+      "line": 131,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "EmbeddingMixin",
+      "layer": "apps_research",
+      "path": "apps_research/engines/base_research_engine.py",
+      "line": 25,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "EmbeddingMixin",
+      "layer": "apps_rfp",
+      "path": "apps_rfp/engines/base_rfp_engine.py",
+      "line": 25,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 5,
+      "importers": 0
+    },
+    {
+      "name": "HITLMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/hitl_mixin.py",
+      "line": 145,
+      "body_size": 17,
+      "bases": [],
+      "subclassers": 4,
+      "importers": 0
+    },
+    {
+      "name": "SemanticCacheMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/semantic_cache_mixin.py",
+      "line": 156,
+      "body_size": 7,
+      "bases": [],
+      "subclassers": 4,
+      "importers": 0
+    },
+    {
+      "name": "SemanticCacheMixin",
+      "layer": "apps_eval",
+      "path": "apps_eval/engines/base_eval_engine.py",
+      "line": 18,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 4,
+      "importers": 0
+    },
+    {
+      "name": "SemanticCacheMixin",
+      "layer": "apps_exec",
+      "path": "apps_exec/engines/base_exec_engine.py",
+      "line": 17,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 4,
+      "importers": 0
+    },
+    {
+      "name": "SemanticCacheMixin",
+      "layer": "apps_lic",
+      "path": "apps_lic/utils/lic_agent_base_util.py",
+      "line": 123,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 4,
+      "importers": 0
+    },
+    {
+      "name": "SemanticCacheMixin",
+      "layer": "apps_research",
+      "path": "apps_research/engines/base_research_engine.py",
+      "line": 17,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 4,
+      "importers": 0
+    },
+    {
+      "name": "SemanticCacheMixin",
+      "layer": "apps_rfp",
+      "path": "apps_rfp/engines/base_rfp_engine.py",
+      "line": 17,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 4,
+      "importers": 0
+    },
+    {
+      "name": "AtomicExecutionMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/atomic_execution_mixin.py",
+      "line": 210,
+      "body_size": 14,
+      "bases": [],
+      "subclassers": 3,
+      "importers": 0
+    },
+    {
+      "name": "IntegratedTracingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/integrated_tracing_mixin.py",
+      "line": 55,
+      "body_size": 7,
+      "bases": [
+        "TracingMixin"
+      ],
+      "subclassers": 3,
+      "importers": 0
+    },
+    {
+      "name": "ContextManagementMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/context_management_mixin.py",
+      "line": 223,
+      "body_size": 14,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "CostGuardrailMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/cost_mixin.py",
+      "line": 229,
+      "body_size": 12,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "HardeningMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/hardening_mixin.py",
+      "line": 191,
+      "body_size": 6,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "RedisCacheMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/redis_cache_mixin.py",
+      "line": 206,
+      "body_size": 17,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "ValidatorMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/validator_mixin.py",
+      "line": 173,
+      "body_size": 4,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "WriteGovernorMixin",
+      "layer": "L2_execution",
+      "path": "agentic_core/L2_execution/enforcement/write_governor_mixin.py",
+      "line": 189,
+      "body_size": 10,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "RedisCacheMixin",
+      "layer": "L2_execution",
+      "path": "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py",
+      "line": 155,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "L3SubatomicTestingMixin",
+      "layer": "L3_orchestration",
+      "path": "agentic_core/L3_orchestration/reasoning/engines/dag_manager.py",
+      "line": 204,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "L3SubatomicTestingMixin",
+      "layer": "other",
+      "path": "agentic_core/runtime/config/security_level_config.py",
+      "line": 932,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "L3SubatomicTestingMixin",
+      "layer": "other",
+      "path": "agentic_core/runtime/config/security_level_config.py",
+      "line": 189,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 2,
+      "importers": 0
+    },
+    {
+      "name": "L0DelegationTestingMixin",
+      "layer": "other",
+      "path": "agentic_core/base_agents/L0RoutingBase.py",
+      "line": 82,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "ADGBehavioralMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/adg_behavioral_mixin.py",
+      "line": 177,
+      "body_size": 12,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "AuditTrailMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/audit_trail_mixin.py",
+      "line": 210,
+      "body_size": 21,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "AutonomyMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/autonomy_mixin.py",
+      "line": 167,
+      "body_size": 11,
+      "bases": [
+        "SovereignBaseAgent"
+      ],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "BatchingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/batching_mixin.py",
+      "line": 183,
+      "body_size": 16,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "CachingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/caching_mixin.py",
+      "line": 195,
+      "body_size": 9,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "CircuitBreakerMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/circuit_breaker_mixin.py",
+      "line": 191,
+      "body_size": 16,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "ConfigMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/configuration_mixin.py",
+      "line": 159,
+      "body_size": 3,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "ContextPropagationMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/context_propagation_mixin.py",
+      "line": 157,
+      "body_size": 6,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "SurgicalCSTHealerMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/cst_healer_mixin.py",
+      "line": 344,
+      "body_size": 6,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "GoldenContextMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/golden_context_mixin.py",
+      "line": 168,
+      "body_size": 5,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "HallucinationDetectionMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/hallucination_detection_mixin.py",
+      "line": 168,
+      "body_size": 6,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "HealingStrategyMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/healing_mixin.py",
+      "line": 171,
+      "body_size": 4,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "InfrastructureMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/infrastructure_mixin.py",
+      "line": 220,
+      "body_size": 6,
+      "bases": [
+        "CostGuardrailMixin",
+        "ContextManagementMixin",
+        "ToolReliabilityMixin",
+        "HITLMixin",
+        "BatchingMixin",
+        "HealingPolicyMixin",
+        "MCPOperationMixin",
+        "SubatomicTestingMixin",
+        "TracingMixin"
+      ],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "InstructionalInjectionMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/instructional_injection_mixin.py",
+      "line": 174,
+      "body_size": 14,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "L6MetricsEmissionMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/L6MetricsEmissionMixin.py",
+      "line": 61,
+      "body_size": 17,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "LLMProviderMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/llm_provider_mixin.py",
+      "line": 169,
+      "body_size": 5,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "MetaLearningClientMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/meta_learning_client_mixin.py",
+      "line": 191,
+      "body_size": 22,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "MetaLearningMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/meta_learning_mixin.py",
+      "line": 189,
+      "body_size": 19,
+      "bases": [
+        "BaseMetaLearner"
+      ],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "MetricsMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/metrics_mixin.py",
+      "line": 20,
+      "body_size": 4,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "RuntimeSafetyMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/runtime_safety_mixin.py",
+      "line": 195,
+      "body_size": 9,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "SelfDiagnosisMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/self_diagnosis_mixin.py",
+      "line": 157,
+      "body_size": 7,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "StateValidationMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/state_validation_mixin.py",
+      "line": 175,
+      "body_size": 5,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "InstructionalInjectionMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/subatomic_testing_mixin.py",
+      "line": 173,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "ToolReliabilityMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/tool_reliability_mixin.py",
+      "line": 260,
+      "body_size": 16,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "RateLimitMixin",
+      "layer": "apps_shared",
+      "path": "apps_shared/reasoning/PilotOrchestrator.py",
+      "line": 163,
+      "body_size": 3,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "StateValidationMixin",
+      "layer": "apps_shared",
+      "path": "apps_shared/reasoning/PilotOrchestrator.py",
+      "line": 173,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "ContextPropagationMixin",
+      "layer": "apps_shared",
+      "path": "apps_shared/reasoning/PilotOrchestrator.py",
+      "line": 189,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "MetaLearningMixin",
+      "layer": "apps_shared",
+      "path": "apps_shared/utils/app_base_util.py",
+      "line": 89,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 1,
+      "importers": 0
+    },
+    {
+      "name": "_SemanticCacheMixin",
+      "layer": "apps_exec",
+      "path": "apps_exec/_optional_agentic_core.py",
+      "line": 37,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "_EmbeddingMixin",
+      "layer": "apps_exec",
+      "path": "apps_exec/_optional_agentic_core.py",
+      "line": 41,
+      "body_size": 1,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "_MissingDependencyMixin",
+      "layer": "other",
+      "path": "agentic_core/interfaces/mixins.py",
+      "line": 25,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "ASTEnforcementMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/ast_enforcement_mixin.py",
+      "line": 158,
+      "body_size": 5,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "CognitiveRecoveryMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/cognitive_recovery_mixin.py",
+      "line": 154,
+      "body_size": 4,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "FeatureFlaggedAgentMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/feature_flagged_agent_mixin.py",
+      "line": 199,
+      "body_size": 16,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "HealerAgentMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/healer_agent_mixin.py",
+      "line": 162,
+      "body_size": 4,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "HygieneMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/hygiene_mixin.py",
+      "line": 164,
+      "body_size": 10,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "ReplayGuardMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/replay_guard_mixin.py",
+      "line": 177,
+      "body_size": 10,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "SafetyAnalysisMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/safety_mixin.py",
+      "line": 157,
+      "body_size": 4,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "HealingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/safety_mixin.py",
+      "line": 254,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "StateAnalysisMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/safety_mixin.py",
+      "line": 299,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "SecretsManagementMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/secrets_management_mixin.py",
+      "line": 159,
+      "body_size": 6,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "L2SelfTestingMixin",
+      "layer": "core_mixins",
+      "path": "agentic_core/mixins/subatomic_testing_mixin.py",
+      "line": 304,
+      "body_size": 2,
+      "bases": [
+        "SubatomicTestingMixin",
+        "MCPOperationMixin"
+      ],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "AppsTracingMixin",
+      "layer": "apps_shared",
+      "path": "apps_shared/mixins/apps_tracing_mixin.py",
+      "line": 61,
+      "body_size": 10,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "TestGetBundledMixin",
+      "layer": "other",
+      "path": "tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py",
+      "line": 32,
+      "body_size": 4,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "TestIsBundledMixin",
+      "layer": "other",
+      "path": "tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py",
+      "line": 75,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    },
+    {
+      "name": "TestGetI0Mixin",
+      "layer": "L4_state",
+      "path": "tests/unit/agentic_core/L4_state/utils/memory/test_template_registry_behavior.py",
+      "line": 110,
+      "body_size": 2,
+      "bases": [],
+      "subclassers": 0,
+      "importers": 0
+    }
+  ]
+}

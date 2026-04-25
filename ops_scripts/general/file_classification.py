@@ -107,7 +107,12 @@ class AppsLicASTAuditor:
                 classification.base_classes = self._extract_base_classes(node)
                 if any(
                     b in classification.base_classes
-                    for b in ["V2AgentBase", "SubatomicTestingMixin", "MCPHardenedMixin", "HealerMixin"]
+                    for b in [
+                        "V2AgentBase",
+                        "SubatomicTestingMixin",
+                        "MCPOperationMixin",
+                        "HealingPolicyMixin",
+                    ]
                 ):
                     classification.has_v2_base = True
                     classification.category = "SOVEREIGN_AGENT"

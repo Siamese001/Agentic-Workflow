@@ -98,7 +98,9 @@ except ModuleNotFoundError:
 
     def safe_git_execute(cmd, **kwargs):
         """Stub safe_git_execute when security_util is not available."""
-        return subprocess.run(cmd, capture_output=True, text=True, **kwargs)  # guardian: allow-unbounded-subprocess -- fallback stub: caller supplies timeout via **kwargs matching the canonical safe_git_execute signature
+        return subprocess.run(
+            cmd, capture_output=True, text=True, **kwargs
+        )  # guardian: allow-unbounded-subprocess -- fallback stub: caller supplies timeout via **kwargs matching the canonical safe_git_execute signature
 
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -200,7 +202,7 @@ class GitHygieneAgent(SovereignBaseAgent):
 
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
-        HealerMixin: Provides healing chain support.
+        HealingPolicyMixin: Provides healing chain support.
     """
 
     def __init__(self, project_root: Path, ctx: Any) -> None:

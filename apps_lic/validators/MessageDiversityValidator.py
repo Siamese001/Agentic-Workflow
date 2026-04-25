@@ -151,7 +151,7 @@ _emit_links_execution_to_snapshot("p4", "MessageDiversityValidator", "exec_snaps
 "\nMessageDiversityValidator - Extracted for one-class-per-file pattern.\n\nOriginally from: ContentCleanlinessValidatorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
 
 
-class HealerMixin:
+class HealingPolicyMixin:
     """Legacy mixin - use LICAgentBase instead."""
 
     pass

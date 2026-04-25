@@ -816,7 +816,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         Standard healing interface for execute_ssot.py integration.
 
         This method provides the canonical healing interface that integrates
-        with the HealerMixin chain and execute_ssot.py orchestration.
+        with the HealingPolicyMixin chain and execute_ssot.py orchestration.
         """
         if _call_path is None:
             _call_path = set()

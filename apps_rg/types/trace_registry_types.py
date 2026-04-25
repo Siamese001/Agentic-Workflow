@@ -62,7 +62,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
     record_execution_trace,
 )
-from apps_rg.utils.rg_core_mixins import MCPHardenedMixin
+from apps_rg.utils.rg_core_mixins import MCPOperationMixin
 
 _emit_applies_guardrail("p0", "trace_registry_types", "p0_governance")
 _emit_reads_policy_state("p0", "trace_registry_types", "policy_binding")
@@ -198,7 +198,7 @@ class AgentTrace:
 
 
 @dataclass
-class TraceRegistry(MCPHardenedMixin):
+class TraceRegistry(MCPOperationMixin):
     """
     Centralized Telemetry Aggregator.
     Tracks execution spans, latency, and cost.

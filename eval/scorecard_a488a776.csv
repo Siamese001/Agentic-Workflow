@@ -1,0 +1,7 @@
+dimension_id,display_name,score,weight,weighted_score,verdict
+correctness,Correctness,0.7500,3.0,2.2500,WARN
+determinism,Determinism,1.0000,3.0,3.0000,PASS
+governance,Governance,1.0000,2.5,2.5000,PASS
+ml_metric_correctness,Ml Metric Correctness,1.0000,2.0,2.0000,PASS
+latency,Latency,0.0000,1.5,0.0000,FAIL
+output_richness,Output Richness,1.0000,1.0,1.0000,PASS

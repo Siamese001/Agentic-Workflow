@@ -131,10 +131,10 @@ def add_mixin_stubs(file_path: Path, execute: bool) -> bool:
         return False
     content = file_path.read_text(encoding="utf-8", errors="replace")
     stubs_needed = []
-    if "MCPHardenedMixin" in content and "class MCPHardenedMixin" not in content:
-        stubs_needed.append("MCPHardenedMixin")
-    if "HealerMixin" in content and "class HealerMixin" not in content:
-        stubs_needed.append("HealerMixin")
+    if "MCPOperationMixin" in content and "class MCPOperationMixin" not in content:
+        stubs_needed.append("MCPOperationMixin")
+    if "HealingPolicyMixin" in content and "class HealingPolicyMixin" not in content:
+        stubs_needed.append("HealingPolicyMixin")
     if not stubs_needed:
         return False
 

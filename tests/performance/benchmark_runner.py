@@ -36,7 +36,7 @@ class BenchmarkConfig:
     """Configuration for benchmark run."""
 
     base_url: str = "http://localhost:8000/v1"
-    model: str = "Qwen/Qwen2.5-14B-Instruct-AWQ"
+    model: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
 
     # Test phases
     warmup_requests: int = 5

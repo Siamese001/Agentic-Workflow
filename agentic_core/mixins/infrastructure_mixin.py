@@ -8,9 +8,9 @@ L0 DNA FLATTENING (Jan 2026):
 
 This mixin consolidates all core agent capabilities into a single inheritance point:
 
-- HealerMixin (autonomous repair)
+- HealingPolicyMixin (autonomous repair)
 
-- MCPHardenedMixin (MCP protocol safety)
+- MCPOperationMixin (MCP protocol safety)
 
 - SubatomicTestingMixin (self-testing)
 
@@ -62,9 +62,9 @@ from typing import Any
 from agentic_core.mixins.batching_mixin import BatchingMixin
 from agentic_core.mixins.context_management_mixin import ContextManagementMixin
 from agentic_core.mixins.cost_mixin import CostGuardrailMixin
-from agentic_core.mixins.healer_mixin import HealerMixin
+from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 from agentic_core.mixins.hitl_mixin import HITLMixin
-from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
 from agentic_core.mixins.tracing_mixin import TracingMixin
@@ -223,8 +223,8 @@ class InfrastructureMixin(
     ToolReliabilityMixin,
     HITLMixin,
     BatchingMixin,
-    HealerMixin,
-    MCPHardenedMixin,
+    HealingPolicyMixin,
+    MCPOperationMixin,
     SubatomicTestingMixin,
     TracingMixin,
 ):
@@ -246,9 +246,9 @@ class InfrastructureMixin(
 
     5. Performance optimization (BatchingMixin) [PHASE 4 Feb 2026]
 
-    7. Healing capabilities (HealerMixin)
+    7. Healing capabilities (HealingPolicyMixin)
 
-    8. MCP hardening (MCPHardenedMixin)
+    8. MCP hardening (MCPOperationMixin)
 
     9. Subatomic testing (SubatomicTestingMixin)
 
@@ -264,7 +264,7 @@ class InfrastructureMixin(
 
         ContextManagementMixin -> ToolReliabilityMixin -> HITLMixin ->
 
-        BatchingMixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> TracingMixin -> object
+        BatchingMixin -> HealingPolicyMixin -> MCPOperationMixin -> SubatomicTestingMixin -> TracingMixin -> object
 
 
 
@@ -307,9 +307,9 @@ class InfrastructureMixin(
 
         1. _infra_initialized flag not set (super().__init__() not called)
 
-        2. _healer_metrics missing (HealerMixin not initialized)
+        2. _healer_metrics missing (HealingPolicyMixin not initialized)
 
-        3. _mcp_initialized missing (MCPHardenedMixin not initialized)
+        3. _mcp_initialized missing (MCPOperationMixin not initialized)
 
 
 
@@ -350,7 +350,7 @@ class InfrastructureMixin(
             )
         if not hasattr(self, "_healer_metrics"):
             errors.append(
-                f"{self.__class__.__name__}: _healer_metrics is missing. HealerMixin was not properly initialized.",
+                f"{self.__class__.__name__}: _healer_metrics is missing. HealingPolicyMixin was not properly initialized.",
             )
         if errors:
             error_msg = "Infrastructure initialization failed:\n" + "\n".join(f"  - {e}" for e in errors)
@@ -372,9 +372,9 @@ class InfrastructureMixin(
 
                 - infra_initialized (bool): Whether infrastructure is initialized
 
-                - healer_ready (bool): Whether HealerMixin is ready
+                - healer_ready (bool): Whether HealingPolicyMixin is ready
 
-                - mcp_ready (bool): Whether MCPHardenedMixin is ready
+                - mcp_ready (bool): Whether MCPOperationMixin is ready
 
                 - testing_ready (bool): Whether SubatomicTestingMixin is ready
 

@@ -15,8 +15,8 @@ from apps_lic.reasoning.OutreachValidationExecutorAgent import (
     DEFAULT_SLEEP,
     MAX_RETRIES,
     THRESHOLD,
-    HealerMixin,
-    MCPHardenedMixin,
+    HealingPolicyMixin,
+    MCPOperationMixin,
     OutreachValidationExecutorAgent,
     RuleFailure,
     ValidationGateExecutor,
@@ -43,18 +43,18 @@ class TestRuleFailureContract:
 
 class TestMCPHardenedMixinContract:
     def test_is_class(self):
-        assert isinstance(MCPHardenedMixin, type)
+        assert isinstance(MCPOperationMixin, type)
 
     def test_instantiable_or_abstract(self):
-        assert isinstance(MCPHardenedMixin, type)
+        assert isinstance(MCPOperationMixin, type)
 
 
 class TestHealerMixinContract:
     def test_is_class(self):
-        assert isinstance(HealerMixin, type)
+        assert isinstance(HealingPolicyMixin, type)
 
     def test_instantiable_or_abstract(self):
-        assert isinstance(HealerMixin, type)
+        assert isinstance(HealingPolicyMixin, type)
 
 
 class TestOutreachValidationExecutorAgentContract:

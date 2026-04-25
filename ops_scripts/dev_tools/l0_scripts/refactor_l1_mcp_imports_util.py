@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Sprint 1: L1 → L5 MCPHardenedMixin Refactoring
+Sprint 1: L1 → L5 MCPOperationMixin Refactoring
 
-Updates all L1 cognition files to use MCPHardenedMixin from utils/core_extensions
+Updates all L1 cognition files to use MCPOperationMixin from utils/core_extensions
 instead of L5_safety/guardrails.
 
 Target: ~27 L1 → L5 violations
@@ -161,14 +161,14 @@ _emit_links_execution_to_snapshot("p4", "refactor_l1_mcp_imports_util", "exec_sn
 REPO = Path(__file__).parent.parent
 
 # Old import (L5 - violates hierarchy)
-OLD_IMPORT = "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
+OLD_IMPORT = "from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin"
 
 # New import (utils - foundational)
-NEW_IMPORT = "from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin"
+NEW_IMPORT = "from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin"
 
 
 def refactor_file(file_path: Path) -> bool:
-    """Replace L5 MCPHardenedMixin import with utils location."""
+    """Replace L5 MCPOperationMixin import with utils location."""
     try:
         content = file_path.read_text(encoding="utf-8")
 
@@ -190,10 +190,10 @@ def refactor_file(file_path: Path) -> bool:
 
 
 def main():
-    """Refactor all L1 files with MCPHardenedMixin imports."""
+    """Refactor all L1 files with MCPOperationMixin imports."""
 
     print("=" * 80)
-    print("  Sprint 1: L1 → L5 MCPHardenedMixin Refactoring")
+    print("  Sprint 1: L1 → L5 MCPOperationMixin Refactoring")
     print("=" * 80)
     print()
     print(f"Old: {OLD_IMPORT}")

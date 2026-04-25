@@ -21,8 +21,8 @@ SOVEREIGN_BASES = {
     "L4StateBase",
     "L5SafetyBase",
     "L6ObservabilityBase",
-    "HealerMixin",
-    "MCPHardenedMixin",
+    "HealingPolicyMixin",
+    "MCPOperationMixin",
     "CanonBaseAgent",
 }
 

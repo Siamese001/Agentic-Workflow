@@ -206,8 +206,8 @@ class HealthCheckResult:
         """
         return {
             "component": self.component_name,
-            "type": self.component_type.value,
-            "status": self.status.value,
+            "type": str(self.component_type),
+            "status": str(self.status),
             "message": self.message,
             "timestamp": self.timestamp.isoformat(),
             "metrics": self.metrics,

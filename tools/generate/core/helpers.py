@@ -2,11 +2,32 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from tqdm import tqdm
+
+
+def _env_flag(name: str, *, default: bool = False) -> bool:
+    """Parse a boolean environment flag with a single consistent contract.
+
+    Truthy values:   "1", "true", "yes" (case-insensitive, whitespace-trimmed)
+    Falsy values:    anything else (including unset, empty, "0", "false", "no")
+
+    W2.2 (plan adg-pipeline-simplification-e2e-9b4c27): centralises three
+    previously-inline parsers (`ADG_ENABLE_DETERMINISM_PROBE`,
+    `ADG_SKIP_REDIS`, `ADG_SKIP_GIT`) into one testable helper.
+    """
+    raw = os.environ.get(name, "").strip().lower()
+    if not raw:
+        return default
+    if raw in ("1", "true", "yes"):
+        return True
+    if raw in ("0", "false", "no"):
+        return False
+    return default
 
 
 def _discover_repo_root(start: Path) -> Path:

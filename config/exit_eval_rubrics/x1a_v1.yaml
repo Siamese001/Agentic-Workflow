@@ -1,0 +1,15 @@
+gate: X1A
+version: X1A@v1
+composition: binary
+metadata:
+  description: >
+    Today's rules? Deterministic policy lookup against the active baseline
+    manifest. Emits the track label (capability | regression) consumed
+    downstream by X1G for pass^k thresholding.
+dimensions:
+  - name: policy_match
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 1.0
+    is_hard_gate: true
+    threshold: 1.0

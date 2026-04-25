@@ -271,6 +271,13 @@ WHERE e.relation_type IN ('writes_to', 'writes_through')
   AND n_src.resolved_path NOT LIKE '%write_gateway%'
   AND n_src.resolved_path NOT LIKE '%uwg%'
   AND n_src.resolved_path NOT LIKE '%mutation_prohibition%'
+  -- L3 sqlite ledger adapters (ADR-023 §5 hash-chain / consistency / HITL).
+  -- Peers of ledger_integrity.py and runtime_hitl_ledger.py which already
+  -- ship without flagging because their writes are wrapped through the
+  -- ledger contract (no plain Path.mkdir at module surface). This adapter
+  -- writes only to its own ledger db file under the per-run artifacts dir.
+  -- Added 2026-04-24 by plan adg-architectural-p0-violations-cleanup-bced9c.
+  AND n_src.resolved_path NOT LIKE '%/exit_eval/consistency_sqlite%'
   AND n_src.resolved_path NOT LIKE 'tools/%'
   AND n_src.resolved_path NOT LIKE 'tests/%'
   AND n_src.resolved_path NOT LIKE 'ops_scripts/%'

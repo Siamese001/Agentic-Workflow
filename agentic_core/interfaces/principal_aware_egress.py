@@ -30,15 +30,16 @@ Reference:
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Egress Inspection)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
-import hashlib
-import json
 from dataclasses import dataclass
 from typing import Literal
 
-from agentic_core.interfaces.principal_aware_write import (
+from agentic_core.interfaces._principal_envelope_base import (
+    compose_replay_key,
     compute_principal_chain_digest,
+    require_nonempty,
 )
 from agentic_core.interfaces.principal_chain_types import PrincipalChain
 
@@ -66,19 +67,15 @@ def compute_egress_replay_key(
     mismatch implies the replay envelope was tampered with or the audit
     record diverged from ground truth.
     """
-    principal_digest = compute_principal_chain_digest(principal_chain)
-    canonical = json.dumps(
+    return compose_replay_key(
         {
             "egress_kind": egress_kind,
-            "principal_digest": principal_digest,
+            "principal_digest": compute_principal_chain_digest(principal_chain),
             "request_digest": request_digest,
             "response_digest": response_digest,
             "target_id": target_id,
-        },
-        sort_keys=True,
-        separators=(",", ":"),
+        }
     )
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -107,20 +104,15 @@ class PrincipalEgressEnvelope:
                 "llm_provider|mcp_connector|http_tool|a2a_agent, "
                 f"got '{self.egress_kind}'",
             )
-        if not self.target_id:
-            raise ValueError("PrincipalEgressEnvelope: target_id required")
-        if not self.request_digest:
-            raise ValueError("PrincipalEgressEnvelope: request_digest required")
-        if not self.response_digest:
-            raise ValueError("PrincipalEgressEnvelope: response_digest required")
-        if not self.principal_chain_digest:
-            raise ValueError(
-                "PrincipalEgressEnvelope: principal_chain_digest required",
-            )
-        if not self.egress_replay_key:
-            raise ValueError(
-                "PrincipalEgressEnvelope: egress_replay_key required",
-            )
+        require_nonempty(
+            [
+                ("PrincipalEgressEnvelope: target_id", self.target_id),
+                ("PrincipalEgressEnvelope: request_digest", self.request_digest),
+                ("PrincipalEgressEnvelope: response_digest", self.response_digest),
+                ("PrincipalEgressEnvelope: principal_chain_digest", self.principal_chain_digest),
+                ("PrincipalEgressEnvelope: egress_replay_key", self.egress_replay_key),
+            ]
+        )
 
     def to_dict(self) -> dict[str, object]:
         """Deterministic dict used as the audit-log payload and the MCP envelope extension."""

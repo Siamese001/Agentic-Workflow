@@ -230,23 +230,25 @@ except ImportError:  # guardian: allow-silent-swallow -- Optional testing mixin
 
 
 try:
-    from agentic_core.mixins.healer_mixin import HealerMixin
+    from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 except ImportError:  # guardian: allow-silent-swallow -- Optional healer mixin
 
-    class HealerMixin:  # type: ignore[no-redef]
+    class HealingPolicyMixin:  # type: ignore[no-redef]
         pass
 
 
 try:
-    from agentic_core.interfaces.mixins import MCPHardenedMixin
+    from agentic_core.interfaces.mixins import MCPOperationMixin
 except (ImportError, NameError):  # guardian: allow-silent-swallow -- Optional MCP hardened mixin
 
-    class MCPHardenedMixin:  # type: ignore[no-redef]
+    class MCPOperationMixin:  # type: ignore[no-redef]
         pass
 
 
 @dataclass
-class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, HealerMixin, MCPHardenedMixin):
+class DuplicateCodeDetectorAgent(
+    AtomicExecutionMixin, SubatomicTestingMixin, HealingPolicyMixin, MCPOperationMixin
+):
     """L5 Safety agent that detects duplicate files and code blocks.
 
     This batch agent detects exact duplicate files and code blocks across the
@@ -260,8 +262,8 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
 
     Inherits:
         SubatomicTestingMixin: Provides testing utilities.
-        HealerMixin: Provides healing chain support.
-        MCPHardenedMixin: Provides MCP hardening and telemetry.
+        HealingPolicyMixin: Provides healing chain support.
+        MCPOperationMixin: Provides MCP hardening and telemetry.
     """
 
     def __post_init__(self):

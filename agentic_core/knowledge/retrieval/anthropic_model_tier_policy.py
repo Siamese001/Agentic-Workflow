@@ -192,9 +192,7 @@ def select_model(
         # a clear error (invariant: at least the default tier MUST be mapped).
         model = active_tier_models.get(default_tier)
         if model is None:
-            raise ValueError(
-                f"tier_models is missing both {tier!r} and default {default_tier!r}"
-            )
+            raise ValueError(f"tier_models is missing both {tier!r} and default {default_tier!r}")
         reason += f" (tier {tier!r} missing a model; used {default_tier!r} fallback)"
 
     return ModelSelection(model=model, tier=tier, task_type=task_type, reason=reason)
@@ -205,7 +203,7 @@ def select_model(
 # ---------------------------------------------------------------------------
 #
 # Cost-critical tasks (contextualization, reranking, JSON shaping, quick
-# classification) are well within Qwen-2.5-14B-Instruct-AWQ's capability for
+# classification) are well within Qwen-2.5-32B-Instruct-AWQ's capability for
 # zero marginal cost. The overlay below substitutes ``TIER_QWEN`` for
 # ``TIER_HAIKU`` on exactly those tasks while leaving synthesis / reasoning
 # tasks pointed at Anthropic Sonnet / Opus.
@@ -267,12 +265,8 @@ def compose_two_pass_models(
     Returns:
         (pass1_model, pass2_model)
     """
-    pass1 = select_model(
-        TASK_GROUNDED_ANSWER, policy=policy, tier_models=tier_models
-    ).model
-    pass2 = select_model(
-        TASK_JSON_SHAPING, policy=policy, tier_models=tier_models
-    ).model
+    pass1 = select_model(TASK_GROUNDED_ANSWER, policy=policy, tier_models=tier_models).model
+    pass2 = select_model(TASK_JSON_SHAPING, policy=policy, tier_models=tier_models).model
     return pass1, pass2
 
 

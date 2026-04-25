@@ -915,17 +915,17 @@ class OmniContext:
         }
 
 
-class MCPHardenedMixin:
+class MCPOperationMixin:
     """Stub mixin for MCP hardened agents."""
 
     pass
 
 
 try:
-    from agentic_core.mixins.healer_mixin import HealerMixin
+    from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 except ImportError:  # guardian: allow-silent-swallow -- Optional healer mixin
 
-    class HealerMixin:  # type: ignore[no-redef]
+    class HealingPolicyMixin:  # type: ignore[no-redef]
         pass
 
 
@@ -935,7 +935,7 @@ class L3SubatomicTestingMixin:
     pass
 
 
-class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
+class Orchestrator(MCPOperationMixin, HealingPolicyMixin, L3SubatomicTestingMixin):
     """
     Multi-phase execution orchestrator.
 
@@ -1057,7 +1057,9 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 else:
                     agent_func()
                 agents_executed.append(agent_name)
-            except Exception:  # guardian: allow-broad-exception -- agent execution failure propagated to caller for handling
+            except (
+                Exception
+            ):  # guardian: allow-broad-exception -- agent execution failure propagated to caller for handling
                 raise
 
         duration = (time.time() - start_time) * 1000

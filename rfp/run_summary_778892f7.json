@@ -1,0 +1,29 @@
+{
+  "app": "apps_rfp",
+  "artifacts": [
+    "rfp\\proposal_technology_778892f7.md",
+    "rfp\\proposal_manifest_778892f7.json"
+  ],
+  "assumptions_declared": 3,
+  "dry_run": false,
+  "error": "",
+  "gate_violations": [],
+  "industry": "technology",
+  "provenance": {
+    "app": "apps_rfp",
+    "checkpoints": [
+      "HOP-1-ASSEMBLY",
+      "HOP-2-GATE",
+      "HOP-3-EMIT"
+    ],
+    "industry": "technology",
+    "trace_id": "778892f765f3ce1e"
+  },
+  "quality_score": 1.0,
+  "risks_identified": 6,
+  "roadmap_phases": 5,
+  "sections_generated": 6,
+  "status": "complete",
+  "trace_id": "778892f765f3ce1e",
+  "version": "1.0.0"
+}

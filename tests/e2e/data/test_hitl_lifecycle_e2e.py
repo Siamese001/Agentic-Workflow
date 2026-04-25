@@ -42,7 +42,11 @@ import pytest
 
 # Check if HITL modules are available
 try:
-    from agentic_core.adg.runtime.hitl_graph import HITLDecisionType, HITLGraph, HITLRuntimeRecorder
+    from agentic_core.L5_safety.enforcement.hitl.hitl_graph import (
+        HITLDecisionType,
+        HITLGraph,
+        HITLRuntimeRecorder,
+    )
     from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
         HumanAction,
         HumanDecisionArtifact,

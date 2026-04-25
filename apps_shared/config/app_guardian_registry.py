@@ -64,7 +64,7 @@ APP_GUARDIAN_REGISTRY: tuple[AppGuardianSpec, ...] = (
     AppGuardianSpec(
         check_id="AGS-006",
         app="apps_lic",
-        description="Duplicate class definitions (MCPHardenedMixin, HealerMixin stubs)",
+        description="Duplicate class definitions (MCPOperationMixin, HealingPolicyMixin stubs)",
         severity="medium",
         guardian_module="ops_scripts.ci._audit_scan",
     ),

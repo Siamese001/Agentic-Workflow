@@ -69,7 +69,7 @@ _emit_stores_embedding("p4", "L0RoutingBase", "embedding_store")
 _emit_updates_meta_learning_state("p4", "L0RoutingBase", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "L0RoutingBase", "exec_snapshot_link")
 
-"\nL0RoutingBase - Consolidated Base for L0 Routing Agents\n\nZero-Ambiguity Standard: Renamed from L0RoutingBase to L0RoutingBase\nto clarify this is a CLASS (blueprint), not an active worker agent.\n\nCapabilities:\n- HealerMixin: heal_repository() for self-repair\n- MCPHardenedMixin: Hardened MCP via SovereignBaseAgent (root injection)\n- L0DelegationTestingMixin: Delegates testing to higher layers (boot-time safety)\n\nL0 agents run at boot time, so they delegate testing rather than self-test.\n\nMRO HARDENING:\n- Inheritance order: Specialized Mixins -> SovereignBaseAgent (includes MCP)\n- MCPHardenedMixin is now in SovereignBaseAgent - DO NOT add it here\n- MRO: HealerMixin -> L0DelegationTestingMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object\n"
+"\nL0RoutingBase - Consolidated Base for L0 Routing Agents\n\nZero-Ambiguity Standard: Renamed from L0RoutingBase to L0RoutingBase\nto clarify this is a CLASS (blueprint), not an active worker agent.\n\nCapabilities:\n- HealingPolicyMixin: heal_repository() for self-repair\n- MCPOperationMixin: Hardened MCP via SovereignBaseAgent (root injection)\n- L0DelegationTestingMixin: Delegates testing to higher layers (boot-time safety)\n\nL0 agents run at boot time, so they delegate testing rather than self-test.\n\nMRO HARDENING:\n- Inheritance order: Specialized Mixins -> SovereignBaseAgent (includes MCP)\n- MCPOperationMixin is now in SovereignBaseAgent - DO NOT add it here\n- MRO: HealingPolicyMixin -> L0DelegationTestingMixin -> SovereignBaseAgent -> MCPOperationMixin -> object\n"
 from dataclasses import dataclass
 from typing import Any
 
@@ -175,11 +175,11 @@ class L0RoutingBase(L0DelegationTestingMixin, SovereignBaseAgent):
     The "Agent" suffix was removed to clarify its role as a foundational base class.
 
     MRO HARDENING:
-    - HealerMixin: First (specialized capability)
+    - HealingPolicyMixin: First (specialized capability)
     - L0DelegationTestingMixin: Second (L0-specific testing)
-    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    - SovereignBaseAgent: Last (root - includes MCPOperationMixin)
 
-    MRO: HealerMixin -> L0DelegationTestingMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object
+    MRO: HealingPolicyMixin -> L0DelegationTestingMixin -> SovereignBaseAgent -> MCPOperationMixin -> object
 
     Guaranteed Capabilities:
     - heal_repository(): Self-repair method

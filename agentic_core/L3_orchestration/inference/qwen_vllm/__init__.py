@@ -18,7 +18,13 @@ from .telemetry import (
     QwenInferenceTelemetry,
     QwenSessionMetrics,
 )
+
+# Module-level singleton for backward-compat with apps_* importing
+# `apps_qwen_telemetry` (lowercase instance). Class-level name
+# `AppsQwenTelemetry` remains canonical for type usage.
 from .tools import GPUMemoryInfo, GPUMemoryMonitor, GPURecommendation
+
+apps_qwen_telemetry = AppsQwenTelemetry()
 
 __all__ = [
     "AppsQwenGateway",
@@ -42,4 +48,5 @@ __all__ = [
     "QwenSessionMetrics",
     "VLLMRequest",
     "VLLMResponse",
+    "apps_qwen_telemetry",
 ]

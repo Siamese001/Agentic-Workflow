@@ -18,7 +18,7 @@ from typing import Any
 
 # Lazy import to avoid L0->L_TOOLS gravity violation
 def _get_hitl_graph():
-    from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+    from agentic_core.L5_safety.enforcement.hitl.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
     return HITLGraph, HITLRuntimeRecorder
 

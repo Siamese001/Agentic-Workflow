@@ -78,25 +78,30 @@ def main() -> int:
     from apps_exec.types.exec_types import AudiencePersona, BriefTone, EmphasisArea, ExecBriefRequest
 
     source_dirs = [s.strip() for s in args.source_dirs.split(",") if s.strip()]
+    _VALID_EMPHASIS = {"governance", "orchestration", "rag", "safety", "observability"}
+    _VALID_TONE = {"board-ready", "cto-ready", "recruiter-friendly", "technical"}
+    _VALID_AUDIENCE = {"recruiter", "cto", "svp_eng", "board", "head_of_ai"}
+
     emphasis_areas = []
     if args.emphasis:
-        try:
-            emphasis_areas = [EmphasisArea(args.emphasis.strip())]
-        except ValueError:
+        e = args.emphasis.strip()
+        if e in _VALID_EMPHASIS:
+            emphasis_areas = [e]
+        else:
             _log.warning("Unknown emphasis '%s' — ignoring", args.emphasis)
 
-    tone = BriefTone.TECHNICAL
+    tone = "technical"
     if args.tone:
-        try:
-            tone = BriefTone(args.tone.strip())
-        except ValueError:
+        t = args.tone.strip()
+        if t in _VALID_TONE:
+            tone = t
+        else:
             _log.warning("Unknown tone '%s' — using default", args.tone)
 
-    try:
-        audience = AudiencePersona(args.audience)
-    except ValueError:
+    if args.audience not in _VALID_AUDIENCE:
         _log.error("Unknown audience '%s'", args.audience)
         return 1
+    audience = args.audience
 
     request = ExecBriefRequest(
         audience=audience,
@@ -108,13 +113,19 @@ def main() -> int:
         trace_id=args.trace_id,
     )
 
+    import asyncio
+
     orchestrator = ExecOrchestrator(dry_run=args.dry_run, output_dir=args.out)
-    result = orchestrator.run(request)
+    _maybe = orchestrator.run(request)
+    if asyncio.iscoroutine(_maybe):
+        result = asyncio.run(_maybe)
+    else:
+        result = _maybe
 
     if args.json_output:
         summary = {
             "trace_id": result.trace_id,
-            "status": result.status.value,
+            "status": str(result.status),
             "audience": result.audience,
             "quality_score": result.quality_score,
             "sections_generated": len(result.sections),
@@ -123,11 +134,11 @@ def main() -> int:
         }
         print(json.dumps(summary, indent=2))
 
-    if result.status.value in ("complete", "dry_run"):
+    if str(result.status) in ("complete", "dry_run"):
         _log.info(
             "[apps_exec] SUCCESS trace=%s status=%s artifacts=%d",
             result.trace_id,
-            result.status.value,
+            str(result.status),
             len(result.artifact_paths),
         )
         return 0
@@ -135,7 +146,7 @@ def main() -> int:
         _log.error(
             "[apps_exec] FAILED trace=%s status=%s violations=%s error=%s",
             result.trace_id,
-            result.status.value,
+            str(result.status),
             result.gate_violations,
             result.error,
         )

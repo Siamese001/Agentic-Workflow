@@ -40,7 +40,7 @@ def _rewrite_content(content: str, base_import: str) -> tuple[str, bool]:
     def replace(match: re.Match[str]) -> str:
         nonlocal changed
         bases = match.group("bases")
-        if "SovereignBaseAgent" in bases or "MCPHardenedMixin" not in bases:
+        if "SovereignBaseAgent" in bases or "MCPOperationMixin" not in bases:
             return match.group(0)
         changed = True
         return f"class {match.group('name')}(SovereignBaseAgent):"

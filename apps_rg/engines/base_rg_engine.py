@@ -92,21 +92,21 @@ except ImportError as e:  # guardian: allow-silent-swallow -- Optional pydantic
     BaseModel = Any
     logging.getLogger(__name__).debug(f"Pydantic not available: {e}")
 try:
-    from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
+    from apps_rg.utils.mixins import HealingPolicyMixin, MCPOperationMixin
 
     MIXINS_AVAILABLE = True
 except ImportError as e:  # guardian: allow-silent-swallow -- Optional RG mixins
     MIXINS_AVAILABLE = False
     logging.getLogger(__name__).debug(f"RG mixins not available: {e}")
 
-    class MCPHardenedMixin:
-        """Stub MCPHardenedMixin for standalone usage."""
+    class MCPOperationMixin:
+        """Stub MCPOperationMixin for standalone usage."""
 
         def __init__(self, *args, **kwargs):
             pass
 
-    class HealerMixin:
-        """Stub HealerMixin for standalone usage."""
+    class HealingPolicyMixin:
+        """Stub HealingPolicyMixin for standalone usage."""
 
         def __init__(self, *args, **kwargs):
             pass
@@ -204,7 +204,7 @@ _emit_gated_by_confidence("p1", "base_rg_engine", "confidence_gate")
 logger = logging.getLogger(__name__)
 
 
-class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
+class BaseRGEngine(MCPOperationMixin, HealingPolicyMixin, ABC):
     AGENT_ID: str = ""
     _current_trace_id: str = ""
     "\n    Abstract base class for all Resume Generation engines.\n\n    Provides:\n    - MCP hardening capabilities\n    - Self-healing capabilities\n    - Standard logging interface\n    - Pydantic model I/O enforcement\n    - Knowledge base integration\n    "

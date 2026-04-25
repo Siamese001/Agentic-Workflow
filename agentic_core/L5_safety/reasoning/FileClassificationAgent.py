@@ -3745,9 +3745,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         return True
 
             # Check docstrings separately
-            for node in ast.walk(
-                tree
-            ):  # review: Syntax errors should be caught at parser level, not runtime
+            for node in ast.walk(tree):  # review: Syntax errors should be caught at parser level, not runtime
                 if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
                     if (
                         hasattr(node, "doc_string")
@@ -5202,9 +5200,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             "structure_blueprint_config.py",
             "file_classification_healing_manifest.json",  # Prevent self-mutation
         }
-        if (
-            path.name in immune_paths
-        ):  # review: Parsing and encoding errors need separate handling strategies
+        if path.name in immune_paths:  # review: Parsing and encoding errors need separate handling strategies
             self.logger.info(f"[IMMUNE] Skipping rename for SSOT file: {path.name}")
             return None
 
@@ -5582,7 +5578,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         Standard healing interface for execute_ssot.py integration.
 
         This method provides the canonical healing interface that integrates
-        with the HealerMixin chain and execute_ssot.py orchestration.
+        with the HealingPolicyMixin chain and execute_ssot.py orchestration.
 
         Args:
             dry_run: If True, only propose changes without applying them

@@ -244,7 +244,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 attrs={
                     "confidence": triplet.confidence,
                     "source": triplet.source,
-                    "status": triplet.status.value,
+                    "status": str(triplet.status),
                     **triplet.metadata,
                 },
             )

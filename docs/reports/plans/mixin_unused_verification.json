@@ -1,0 +1,313 @@
+{
+  "ASTEnforcementMixin": {
+    "defined_in": [
+      "agentic_core/mixins/ast_enforcement_mixin.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "AppsTracingMixin": {
+    "defined_in": [
+      "apps_shared/mixins/apps_tracing_mixin.py"
+    ],
+    "total_external_refs": 2,
+    "refs": {
+      "test_files": [],
+      "imports": [
+        "apps_lic/engines/control_plane.py"
+      ],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "CognitiveRecoveryMixin": {
+    "defined_in": [
+      "agentic_core/mixins/cognitive_recovery_mixin.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "FeatureFlaggedAgentMixin": {
+    "defined_in": [
+      "agentic_core/mixins/feature_flagged_agent_mixin.py"
+    ],
+    "total_external_refs": 2,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "agentic_core/L5_safety/validators/migration_helper_validator.py",
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "HealerAgentMixin": {
+    "defined_in": [
+      "agentic_core/mixins/healer_agent_mixin.py"
+    ],
+    "total_external_refs": 4,
+    "refs": {
+      "test_files": [],
+      "imports": [
+        "agentic_core/L3_orchestration/types/healer_types.py"
+      ],
+      "isinstance": [],
+      "instantiations": [
+        "agentic_core/L3_orchestration/types/healer_types.py"
+      ],
+      "init_reexports": [
+        "agentic_core/mixins/__init__.py"
+      ],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "HealingMixin": {
+    "defined_in": [
+      "agentic_core/mixins/safety_mixin.py"
+    ],
+    "total_external_refs": 4,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+        "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+        "tools/analysis/_mixin_verify_unused.py",
+        "tools/generate/generate_documentation.py"
+      ]
+    }
+  },
+  "HygieneMixin": {
+    "defined_in": [
+      "agentic_core/mixins/hygiene_mixin.py"
+    ],
+    "total_external_refs": 2,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "L2SelfTestingMixin": {
+    "defined_in": [
+      "agentic_core/mixins/subatomic_testing_mixin.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "ReplayGuardMixin": {
+    "defined_in": [
+      "agentic_core/mixins/replay_guard_mixin.py"
+    ],
+    "total_external_refs": 3,
+    "refs": {
+      "test_files": [
+        "tests/unit/agentic_core/L0_routing/enforcement/test_replay_guard_mixin.py"
+      ],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "agentic_core/L2_execution/reasoning/deterministic_providers.py",
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "SafetyAnalysisMixin": {
+    "defined_in": [
+      "agentic_core/mixins/safety_mixin.py"
+    ],
+    "total_external_refs": 4,
+    "refs": {
+      "test_files": [],
+      "imports": [
+        "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py",
+        "agentic_core/L5_safety/types/safety_types.py"
+      ],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [
+        "agentic_core/mixins/__init__.py"
+      ],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "SecretsManagementMixin": {
+    "defined_in": [
+      "agentic_core/mixins/secrets_management_mixin.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "StateAnalysisMixin": {
+    "defined_in": [
+      "agentic_core/mixins/safety_mixin.py"
+    ],
+    "total_external_refs": 2,
+    "refs": {
+      "test_files": [],
+      "imports": [
+        "agentic_core/utils/state_util.py"
+      ],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "TestGetBundledMixin": {
+    "defined_in": [
+      "tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "TestGetI0Mixin": {
+    "defined_in": [
+      "tests/unit/agentic_core/L4_state/utils/memory/test_template_registry_behavior.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "TestIsBundledMixin": {
+    "defined_in": [
+      "tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "_EmbeddingMixin": {
+    "defined_in": [
+      "apps_exec/_optional_agentic_core.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "_MissingDependencyMixin": {
+    "defined_in": [
+      "agentic_core/interfaces/mixins.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  },
+  "_SemanticCacheMixin": {
+    "defined_in": [
+      "apps_exec/_optional_agentic_core.py"
+    ],
+    "total_external_refs": 1,
+    "refs": {
+      "test_files": [],
+      "imports": [],
+      "isinstance": [],
+      "instantiations": [],
+      "init_reexports": [],
+      "other": [
+        "tools/analysis/_mixin_verify_unused.py"
+      ]
+    }
+  }
+}

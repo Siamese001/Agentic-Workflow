@@ -70,6 +70,14 @@ EXECUTOR_ALLOWLIST = [
     # MCP server entry points — run as their own subprocess per .windsurf/mcp_config.json.
     # Zero production import callers is EXPECTED and CORRECT: they bootstrap out-of-process.
     "tools/adg/mcp/runtime.py",
+    # ADG generator entry point — invoked as `python tools/generate_full_adg.py` per
+    # constitutional §22 and the .pre-commit-config.yaml ADG-refresh hook. The
+    # ThreadPoolExecutor lives in `_run_post_adg_gates_parallel` (plan
+    # adg-pipeline-simplification-e2e-9b4c27 §W3) and runs the 5 post-ADG CI gates
+    # as concurrent subprocesses. Zero production import callers is EXPECTED and
+    # CORRECT — this is a CLI tool, not a library; the parallelism is real
+    # (subprocess fan-out, not theater).
+    "tools/generate/generate_full_adg.py",
 ]
 
 # generate_full_adg.py — forbidden parallel params and strings

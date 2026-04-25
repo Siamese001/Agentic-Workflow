@@ -291,9 +291,9 @@ class TestGeneratorAgent(SovereignBaseAgent):
                     "has_mcp_mixin": False,
                 }
                 for base in class_info["bases"]:
-                    if "HealerMixin" in base:
+                    if "HealingPolicyMixin" in base:
                         class_info["has_healer_mixin"] = True
-                    if "MCPHardenedMixin" in base:
+                    if "MCPOperationMixin" in base:
                         class_info["has_mcp_mixin"] = True
                 for item in node.body:
                     if isinstance(item, ast.FunctionDef) or isinstance(item, ast.AsyncFunctionDef):
@@ -406,10 +406,10 @@ class TestGeneratorAgent(SovereignBaseAgent):
         return lines
 
     def _generate_healer_tests(self, cls: dict[str, Any]) -> list[str]:
-        """Generate tests for HealerMixin compliance."""
+        """Generate tests for HealingPolicyMixin compliance."""
         return [
             "    def test_has_heal_repository(self, instance):",
-            '        """Verify HealerMixin compliance."""',
+            '        """Verify HealingPolicyMixin compliance."""',
             "        assert hasattr(instance, 'heal_repository')",
             "        assert callable(instance.heal_repository)",
             "",
@@ -421,10 +421,10 @@ class TestGeneratorAgent(SovereignBaseAgent):
         ]
 
     def _generate_mcp_tests(self, cls: dict[str, Any]) -> list[str]:
-        """Generate tests for MCPHardenedMixin compliance."""
+        """Generate tests for MCPOperationMixin compliance."""
         return [
             "    def test_has_mcp_validate(self, instance):",
-            '        """Verify MCPHardenedMixin compliance."""',
+            '        """Verify MCPOperationMixin compliance."""',
             "        assert hasattr(instance, 'validate_mcp_response') or hasattr(instance, 'mcp_validate')",
             "",
         ]
@@ -440,7 +440,11 @@ class TestGeneratorAgent(SovereignBaseAgent):
                 if part in _root_anchors:
                     return ".".join(parts[i:])
             return None
-        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             return None
 
     def get_generation_history(self) -> list[dict[str, Any]]:

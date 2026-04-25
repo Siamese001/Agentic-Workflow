@@ -37,7 +37,7 @@ def main() -> int:
             )
             orch = RfpOrchestrator(dry_run=True)
             result = orch.run(req)
-            status = result.status.value
+            status = str(result.status)
             score = result.quality_score
             sections = len(result.sections)
             print(f"  [{status:8s}] industry={industry:20s} score={score:.2f} sections={sections}")

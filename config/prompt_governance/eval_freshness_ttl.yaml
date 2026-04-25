@@ -1,0 +1,47 @@
+# Eval-Freshness TTL Policy — plan system-learning-waves-7b3c91 phase C1.
+#
+# Consumed by system_learning/engines/eval_freshness_gate.py at L4 write time
+# per the v5 normative invariant §1.4 (UWG Sole Ink Path) and §2 KPI
+# "eval_freshness_on_write".
+#
+# Per OpenAI Evaluation Best Practices: every deployment is a re-graded
+# deployment. A change class's TTL is the maximum age (seconds) the gating
+# eval record may have, measured at the time the L4 writer is asked to
+# commit the change. Writes with older eval are blocked and returned to
+# the gauntlet for re-eval.
+#
+# Units: seconds. `null` means no freshness requirement (use sparingly;
+# usually reserved for purely documentation commits).
+
+version: 1
+schema: system_learning.eval_freshness_gate.ttl_schema_v1
+
+ttl_seconds:
+  # Prompt changes are the highest-leverage — must be re-evaled within 6 h.
+  prompt: 21600        # 6 h
+  # Policy / guardrail changes — within 24 h; operationally sensitive.
+  policy: 86400        # 24 h
+  # Rubric updates — within 72 h; slower cadence acceptable because
+  # rubric calibration has its own human-κ cadence (see rule
+  # judge-calibration-cadence.md).
+  rubric: 259200       # 72 h
+  # Retrieval profile / RAG config — within 48 h.
+  retrieval_profile: 172800  # 48 h
+  # Reason priors — within 48 h.
+  reason_prior: 172800       # 48 h
+  # Baselines (token budgets, latency caps, etc.) — within 24 h.
+  baseline: 86400      # 24 h
+  # Documentation-only changes — no gate. Governance tip: be honest about
+  # what is "doc-only"; anything touching semantics is not doc-only.
+  documentation: null
+
+# Change classes must map exactly to one of the keys above. Unknown classes
+# are treated as BLOCKED ("fail closed") — the gate refuses writes it does
+# not have a policy for.
+default_on_unknown_class: block    # one of: block | allow | warn
+
+# Fail-open toggle (emergency only). When true, gate emits a loud warning
+# but does not block. Intended for disaster recovery, not daily use. CI
+# blocks commits that set this to true without a matching ADR reference.
+fail_open: false
+fail_open_adr_ref: null

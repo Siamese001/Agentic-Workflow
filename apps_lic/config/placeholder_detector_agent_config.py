@@ -17,23 +17,23 @@ except ImportError:  # guardian: allow-silent-swallow -- Optional testing mixin
 
 
 try:
-    from agentic_core.interfaces.mixins import MCPHardenedMixin
+    from agentic_core.interfaces.mixins import MCPOperationMixin
 except (ImportError, NameError):  # guardian: allow-silent-swallow -- Optional mixin
 
-    class MCPHardenedMixin:  # type: ignore[no-redef]
+    class MCPOperationMixin:  # type: ignore[no-redef]
         pass
 
 
 try:
-    from agentic_core.mixins.healer_mixin import HealerMixin
+    from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 except ImportError:  # guardian: allow-silent-swallow -- Optional healer mixin
 
-    class HealerMixin:  # type: ignore[no-redef]
+    class HealingPolicyMixin:  # type: ignore[no-redef]
         pass
 
 
 @dataclass
-class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMixin):
+class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPOperationMixin, HealingPolicyMixin):
     """
     Comprehensive placeholder detection
     FEATURE 3.3 from SUPREME_SPELL / GAP 1.5

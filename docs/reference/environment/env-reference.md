@@ -139,7 +139,7 @@ HEALING_CONFIDENCE_X: float = 0.80  # conf > X  → DETERMINISTIC (agent mutates
 HEALING_CONFIDENCE_Y: float = 0.50  # conf <= Y → GEMINI 2.5 Pro recovery
 
 SSOT_SCORE_THRESHOLD_DET:  int = 13   # S <= 13 → DETERMINISTIC
-SSOT_SCORE_THRESHOLD_QWEN: int = 26   # 13 < S <= 26 → QWEN (WSL vLLM Qwen2.5-14B-Instruct-AWQ)
+SSOT_SCORE_THRESHOLD_QWEN: int = 26   # 13 < S <= 26 → QWEN (WSL vLLM Qwen2.5-32B-Instruct-AWQ)
                                       # S > 26 → GEMINI (flash by default)
 ```
 
@@ -150,7 +150,7 @@ SSOT_SCORE_THRESHOLD_QWEN: int = 26   # 13 < S <= 26 → QWEN (WSL vLLM Qwen2.5-
 | Tier             | Trigger                                     | Executor                                                         |
 |------------------|---------------------------------------------|------------------------------------------------------------------|
 | DETERMINISTIC    | `S ≤ 13` or `conf > 0.80`                   | Agent performs mutation directly — no LLM call                   |
-| QWEN             | `13 < S ≤ 26` and Qwen not prohibited       | `Qwen2.5-14B-Instruct-AWQ` via WSL vLLM subprocess (`L2_execution/healers/qwen_vllm_inference.py`) |
+| QWEN             | `13 < S ≤ 26` and Qwen not prohibited       | `Qwen2.5-32B-Instruct-AWQ` via WSL vLLM subprocess (`L2_execution/healers/qwen_vllm_inference.py`) |
 | GEMINI (flash)   | `S > 26`                                    | `GEMINI_MODEL` (default `gemini-3-flash-preview`) via Gemini REST |
 | GEMINI Pro       | Retry-exhaust / hard-override / consensus   | `GEMINI_PRO_MODEL` (default `gemini-2.5-pro`)                    |
 | FAIL_CLOSED      | Both Qwen and Gemini prohibited             | Escalate to human                                                |

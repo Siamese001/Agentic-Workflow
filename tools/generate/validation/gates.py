@@ -51,9 +51,18 @@ def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
 
 
 def _fail_closed_gate(gate_name: str, exc: Exception) -> None:
-    """Abort the run when a gate cannot be evaluated reliably."""
+    """Abort the run when a gate cannot be evaluated reliably.
+
+    Plan adg-cascading-ratchet-defer-exit-a41828 (Wave B): when the
+    ``ADG_CONTINUE_ON_P0=1`` env var (or ``--continue-on-p0`` CLI flag) is
+    set, the failure is recorded into the shared deferred-failure registry
+    instead of terminating the process. ``main()`` reads the registry at
+    the end of the run and exits with the first recorded non-zero rc.
+    """
+    from tools.generate.integration.deferred_failures import record_or_exit
+
     print(f"[ERROR] {gate_name} failed closed: {exc}")
-    sys.exit(1)
+    record_or_exit(gate_name, 1, message=str(exc))
 
 
 def _check_p0_violations(
@@ -91,9 +100,7 @@ def _check_p0_violations(
                     print(f"[INFO] Skipping archived file: {normalized_source_file}")
                     continue
 
-                if is_layer_violation_exempted(
-                    normalized_source_file, line_no, repo_root=ROOT
-                ):
+                if is_layer_violation_exempted(normalized_source_file, line_no, repo_root=ROOT):
                     continue
 
                 # Not exempted — record as unapproved.
@@ -220,10 +227,17 @@ def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             )
 
         if current_count > ceiling:
+            from tools.generate.integration.deferred_failures import record_or_exit
+
             print(f"\n[ERROR] P1 antipattern regression: {current_count} > ceiling {ceiling}")
             print("[ERROR] ADG generation failed - HIGH antipattern count increased")
             print(f"[ERROR] Fix new exception swallows or update ceiling: {ratchet_file}")
-            sys.exit(1)
+            record_or_exit(
+                "P1_ratchet",
+                1,
+                message=f"current={current_count} > ceiling={ceiling}",
+            )
+            return  # only reached when defer-exit is on
         elif current_count < base_ceiling:
             # Only ratchet DOWN against the stored base, not the bumped ceiling,
             # so turning the flag off later doesn't create an artificial regression.
@@ -272,11 +286,18 @@ def _check_p2_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             print(f"[INFO] Initialized P2 ratchet ceiling: {ceiling}")
 
         if current_count > ceiling:
+            from tools.generate.integration.deferred_failures import record_or_exit
+
             print("\n[ERROR] P2 ratchet: MEDIUM antipattern regression detected")
             print(f"[ERROR] Current count: {current_count}, Ceiling: {ceiling}")
             print("[ERROR] ADG generation failed - MEDIUM antipattern count increased")
             print(f"[ERROR] Fix antipatterns or update ceiling: {ratchet_file}")
-            sys.exit(1)
+            record_or_exit(
+                "P2_ratchet",
+                1,
+                message=f"current={current_count} > ceiling={ceiling}",
+            )
+            return  # only reached when defer-exit is on
         elif current_count < ceiling:
             _atomic_json_write(ratchet_file, {"exception_swallow_ceiling": current_count})
             print(f"[INFO] P2 ratchet: Reduced ceiling from {ceiling} to {current_count}")
@@ -333,6 +354,8 @@ def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
             violations = [row for row in raw_violations if not _is_tombstoned(row[0])]
 
             if violations:
+                from tools.generate.integration.deferred_failures import record_or_exit
+
                 print(f"\n[ERROR] Dead production import gate: Found {len(violations)} dead module(s)")
                 print("[ERROR] Modules with ZERO production importers:")
                 for row in violations:
@@ -343,7 +366,12 @@ def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
                 print("[ERROR]   1. Wire them into production code (add imports), OR")
                 print("[ERROR]   2. Archive them to tools/archive/ if deprecated")
                 print("[ERROR] ADG generation blocked. Fix violations and retry.")
-                sys.exit(1)
+                record_or_exit(
+                    "dead_production_imports",
+                    1,
+                    message=f"{len(violations)} dead module(s)",
+                )
+                return  # only reached when defer-exit is on
             else:
                 print("[INFO] Dead production import gate: PASSED (no dead modules in L4_state/cache)")
     except SystemExit:
@@ -894,8 +922,17 @@ def _check_structural_conformance(
                 mode_tag = "[AUDIT]" if audit else "[BLOCK]"
                 print(f"{mode_tag} {check_id} ({label}): {count} violation(s)")
                 if not audit:
+                    from tools.generate.integration.deferred_failures import record_or_exit
+
                     print(f"[ERROR] {check_id} structural conformance check FAILED")
-                    sys.exit(1)
+                    record_or_exit(
+                        f"structural_conformance:{check_id}",
+                        1,
+                        message=f"{count} violation(s)",
+                    )
+                    # only reached when defer-exit is on; loop continues
+                    # to the next check_id so the user sees the full
+                    # picture in one run instead of one-fix-per-iteration
             else:
                 print(f"[ADG] {check_id} ({label}): PASSED")
 
@@ -1513,8 +1550,15 @@ def _check_agentic_antipatterns(
                 mode_tag = "[AUDIT]" if audit else "[BLOCK]"
                 print(f"{mode_tag} {check_id} ({label}): {count} violation(s)")
                 if not audit:
+                    from tools.generate.integration.deferred_failures import record_or_exit
+
                     print(f"[ERROR] {check_id} agentic anti-pattern check FAILED")
-                    sys.exit(1)
+                    record_or_exit(
+                        f"agentic_antipattern:{check_id}",
+                        1,
+                        message=f"{count} violation(s)",
+                    )
+                    # only reached when defer-exit is on; loop continues
             else:
                 print(f"[ADG] {check_id} ({label}): PASSED")
 

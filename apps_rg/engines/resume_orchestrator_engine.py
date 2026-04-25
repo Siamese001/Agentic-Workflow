@@ -252,11 +252,24 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             )
             while iteration < self.MAX_RETRY_ITERATIONS and use_cyclic:
                 iteration += 1
-                quality_engine = ContentQualityEngine(self.ctx)
+                # Sync current_resume from buffer before validators read it.
+                # Engines write to ctx.buffer; ContentQualityAgent expects ctx.current_resume.
+                ranked = self.ctx.buffer.read("ranked_content")
+                optimized = self.ctx.buffer.read("optimized_content")
+                self.ctx.current_resume = ranked or optimized or self.ctx.master_resume
+                quality_engine = ContentQualityEngine()
+                quality_engine.ctx = self.ctx
                 await quality_engine.execute()
-                quality_report = self.ctx.buffer.read("quality_report")
+                quality_passed = not self.ctx.has_signal("QUALITY_FAILURE")
+                quality_report = self.ctx.buffer.read(
+                    "quality_report",
+                    {"status": "passed" if quality_passed else "failed", "issues": []},
+                ) or {"status": "passed" if quality_passed else "failed", "issues": []}
                 await self._run_engine(ATSCompatibilityEngine, "HOP-5-ATS")
-                ats_report = self.ctx.buffer.read("ats_report")
+                ats_report = self.ctx.buffer.read("ats_report", {"valid": False, "issues": []}) or {
+                    "valid": False,
+                    "issues": [],
+                }
                 if quality_report.get("status") == "passed" and ats_report.get("valid", False):
                     self.ctx.trace.add_trace(
                         "VALIDATION_PASSED",

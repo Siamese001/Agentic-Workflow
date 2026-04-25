@@ -343,8 +343,8 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
         if not class_name.endswith("Agent"):
             continue
 
-        # Check if it inherits from HealerMixin or has heal_repository
-        has_healer = "HealerMixin" in class_info["bases"] or "heal_repository" in class_info["methods"]
+        # Check if it inherits from HealingPolicyMixin or has heal_repository
+        has_healer = "HealingPolicyMixin" in class_info["bases"] or "heal_repository" in class_info["methods"]
         if not has_healer:
             continue
 

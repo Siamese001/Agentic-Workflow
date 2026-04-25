@@ -313,7 +313,7 @@ def categorize_agent(class_name: str, base_classes: list | None = None, docstrin
 
     Args:
         class_name: Name of the agent class (e.g., "BaseClassEnforcerAgent")
-        base_classes: List of base class names (e.g., ["L5Agent", "MCPHardenedMixin"])
+        base_classes: List of base class names (e.g., ["L5Agent", "MCPOperationMixin"])
         docstring: Optional docstring content
 
     Returns:

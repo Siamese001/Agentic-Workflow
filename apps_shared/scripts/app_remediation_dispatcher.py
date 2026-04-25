@@ -374,7 +374,7 @@ def dispatch(app: str = "*", strict: bool = False) -> list[dict[str, Any]]:
         _log.info("[AppRemediationDispatcher] running %s (%s)", spec.check_id, spec.description)
         result = _run_spec(spec)
         results.append(result)
-        _log.info("[AppRemediationDispatcher] %s -> %s", spec.check_id, result.status.value)
+        _log.info("[AppRemediationDispatcher] %s -> %s", spec.check_id, str(result.status))
 
     payload = [r.to_dict() for r in results]
 

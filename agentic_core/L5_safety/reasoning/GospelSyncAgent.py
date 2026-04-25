@@ -108,7 +108,7 @@ class GospelSyncAgent(L0RoutingBase):
     Ensures the 'World as it Is' (Filesystem) matches the 'World as it Should Be' (Blueprint).
     Detects heretical files and missing canonical files to protect Toxic Hubs.
 
-    Inherits from L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0RoutingBaseAgent: HealingPolicyMixin, MCPOperationMixin, L0DelegationTestingMixin
     """
 
     def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:

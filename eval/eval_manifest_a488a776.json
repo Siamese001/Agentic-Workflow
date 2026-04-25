@@ -1,0 +1,36 @@
+{
+  "trace_id": "a488a7765b917da3",
+  "overall_score": 0.8269,
+  "suites": [
+    {
+      "suite_id": "routing_enforcement",
+      "pass_rate": 1.0,
+      "scenarios": 3
+    },
+    {
+      "suite_id": "determinism_contracts",
+      "pass_rate": 1.0,
+      "scenarios": 3
+    },
+    {
+      "suite_id": "orchestration_hop",
+      "pass_rate": 1.0,
+      "scenarios": 3
+    },
+    {
+      "suite_id": "output_contracts",
+      "pass_rate": 0.5,
+      "scenarios": 2
+    },
+    {
+      "suite_id": "exec_brief_generation",
+      "pass_rate": 1.0,
+      "scenarios": 3
+    },
+    {
+      "suite_id": "ml_metrics_validation",
+      "pass_rate": 1.0,
+      "scenarios": 6
+    }
+  ]
+}

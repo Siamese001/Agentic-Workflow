@@ -298,8 +298,8 @@ class RGSovereignAuditor:
                 return ("PASSIVE_DATA", {"reason": "Contains only passive data models/enums"})
         [cls for cls in classes if cls.get("is_agent", False)]
         agent_base_indicators = [
-            "HealerMixin",
-            "MCPHardenedMixin",
+            "HealingPolicyMixin",
+            "MCPOperationMixin",
             "BaseAgent",
             "AgentBase",
             "SovereignBaseAgent",

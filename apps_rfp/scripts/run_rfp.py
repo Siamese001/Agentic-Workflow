@@ -66,11 +66,12 @@ def main() -> int:
     from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
     from apps_rfp.types.rfp_types import ArchitecturePosture, RfpRequest
 
-    try:
-        posture = ArchitecturePosture(args.posture)
-    except ValueError:
+    _VALID_POSTURE = {"cloud-first", "hybrid", "sovereign", "regulated"}
+    if args.posture in _VALID_POSTURE:
+        posture = args.posture
+    else:
         _log.warning("Unknown posture '%s' — using cloud-first", args.posture)
-        posture = ArchitecturePosture.CLOUD_FIRST
+        posture = "cloud-first"
 
     request = RfpRequest(
         problem_statement=problem,
@@ -81,15 +82,18 @@ def main() -> int:
         trace_id=args.trace_id,
     )
 
+    import asyncio
+
     orchestrator = RfpOrchestrator(dry_run=args.dry_run, output_dir=args.out)
-    result = orchestrator.run(request)
+    _maybe = orchestrator.run(request)
+    result = asyncio.run(_maybe) if asyncio.iscoroutine(_maybe) else _maybe
 
     if args.json_output:
         print(
             json.dumps(
                 {
                     "trace_id": result.trace_id,
-                    "status": result.status.value,
+                    "status": str(result.status),
                     "quality_score": result.quality_score,
                     "sections": len(result.sections),
                     "gate_violations": result.gate_violations,
@@ -99,7 +103,7 @@ def main() -> int:
             ),
         )
 
-    return 0 if result.status.value in ("complete", "dry_run") else 1
+    return 0 if str(result.status) in ("complete", "dry_run") else 1
 
 
 if __name__ == "__main__":

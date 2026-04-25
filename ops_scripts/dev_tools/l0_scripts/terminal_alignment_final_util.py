@@ -67,17 +67,17 @@ def fix_mro_conflicts(file_path: Path) -> bool:
     """Fix MRO conflicts by removing duplicate mixins."""
     content = file_path.read_text(encoding="utf-8")
     content = re.sub(
-        "class (\\w+)\\(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin, HealerMixin\\):",
+        "class (\\w+)\\(LICAgentBase, SubatomicTestingMixin, MCPOperationMixin, HealingPolicyMixin\\):",
         "class \\1(LICAgentBase):",
         content,
     )
     content = re.sub(
-        "class (\\w+)\\(LICAgentBase, SubatomicTestingMixin, MCPHardenedMixin\\):",
+        "class (\\w+)\\(LICAgentBase, SubatomicTestingMixin, MCPOperationMixin\\):",
         "class \\1(LICAgentBase):",
         content,
     )
     content = re.sub(
-        "class (\\w+)\\(LICAgentBase, HealerMixin, MCPHardenedMixin, SubatomicTestingMixin\\):",
+        "class (\\w+)\\(LICAgentBase, HealingPolicyMixin, MCPOperationMixin, SubatomicTestingMixin\\):",
         "class \\1(LICAgentBase):",
         content,
     )

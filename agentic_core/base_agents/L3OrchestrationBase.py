@@ -182,7 +182,7 @@ class L3OrchestrationBase(SovereignBaseAgent):
     MRO HARDENING:
     - AtomicExecutionMixin: First (if used - for rollback capability)
     - L3OrchestrationBase: Second (layer-specific capabilities)
-    - SovereignBaseAgent: Last (root - includes MCPHardenedMixin)
+    - SovereignBaseAgent: Last (root - includes MCPOperationMixin)
 
     Guaranteed Capabilities:
     - heal_repository(): Self-repair method
@@ -293,7 +293,13 @@ class L3OrchestrationBase(SovereignBaseAgent):
                 else "hybrid"
             )
             _adg_scope_widening = sorted(_bp.antipattern_signals)
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.debug("L3OrchestrationBase.plan_execution degraded to static mode: %s", e)
         return {
             "task": task,

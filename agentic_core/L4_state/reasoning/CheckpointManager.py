@@ -278,8 +278,8 @@ class CheckpointManager(SovereignBaseAgent):
         - AUTONOMOUS: Mirroring, drift detection, and auto-recovery
 
     Inherits from SovereignBaseAgent which provides:
-        - HealerMixin: heal_repository() for self-repair
-        - MCPHardenedMixin: Hardened MCP with retry/timeout
+        - HealingPolicyMixin: heal_repository() for self-repair
+        - MCPOperationMixin: Hardened MCP with retry/timeout
         - RedisCacheMixin: Short-term caching
         - PineconeVectorMixin: Long-term semantic memory
     """

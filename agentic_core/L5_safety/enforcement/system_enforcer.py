@@ -260,8 +260,8 @@ class SystemValidator:
         return core_agents
 
     def check_has_healing(self, code: str) -> bool:
-        """Check if code contains HealerMixin inheritance."""
-        return "HealerMixin" in code or "healer_mixin" in code
+        """Check if code contains HealingPolicyMixin inheritance."""
+        return "HealingPolicyMixin" in code or "healer_mixin" in code
 
     def check_has_testing(self, code: str) -> bool:
         """Check if code contains self-testing methods."""
@@ -287,9 +287,9 @@ class SystemValidator:
         return any(marker.lower() in code_lower for marker in external_markers)
 
     def check_mcp_hardened(self, code: str) -> bool:
-        """Check if code has MCPHardenedMixin."""
+        """Check if code has MCPOperationMixin."""
         return (
-            "MCPHardenedMixin" in code or "mcp_hardened_mixin" in code
+            "MCPOperationMixin" in code or "mcp_hardened_mixin" in code
         )  # review: Syntax errors should be caught at parser level, not runtime
 
     def validate_syntax(self, file_path: Path) -> str | None:

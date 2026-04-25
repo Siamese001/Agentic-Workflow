@@ -66,40 +66,23 @@
         │ [sealed artifacts]
         │
         ├◄────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-        ▼
-┌──────────────────────────────────┐
-│ 5. EXIT EVAL & CONTROL           │ ◄── [ Receiving [RET] Short-Circuits and [Sealed Artifacts] ]
-│ - Final policy & safety review   │
-└──────────────────────────────────┘
-        │
-        ▼
-┌───────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 4. L2 EXECUTE ◄── (handles current single step execution)                                                       │
-│ * BOUNDED AUTONOMY: tool feedback each step | exit conditions | max turns                                       │
-│  ┌────────┐   ┌─────────┐   ┌─────────┐   ┌────────┐   ┌────────┐                                               │
-│  │E1: Prep│──►│E2: Valid│──►│E3: Exec │──►│E4: Heal│──►│E5: Seal│                                               │
-│  └────────┘   └─────────┘   └─▲───────┘   └─┬──────┘   └────────┘                                               │
-│                               │ [retry]     │                                                                   │
-│                               └─────────────┘                                                                   │
-└───────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-        │
-        │ [sealed artifacts]
-        │
-        ├◄─────────────────────────────────────────────────────┐
-        ▼                                                      │
-┌───────────────┐                                              │
-│ 5. EXIT EVAL  ├───────[commit request]───────────────────────┼────────────────────► ┌─────────────┐
-│ & CONTROL     │                                              │                      │ UNIVERSAL   │
-└───────┬─┬─┬───┘                                              │                      │ WRITE GATE  │
-        │ │ │                                                  │                      └──────┬──────┘
-        │ │ │                                                  │                             │
-        │ │ └─[deny/reroute] ──► [ Reroute ]                   │                             │ [commits]
-        │ │                                                    │                             ▼
-        │ └─[escalate] ────────► ┌──────────────┐              │                      ┌─────────────┐
-        │  HIGH-RISK ACTIONS:    │ HUMAN REVIEW │              │                      │ L4 ARCHIVE  │
-        │  pause for guardrails/ └──────┬───────┘              │                      │ (Writes)    │
-        │  human approval before        │                      │                      └─────────────┘
-        │  irreversible writes          └─(resume)─────────────┘
+        ├◄─────────────────────────────────────────────────────────┐
+        ▼                                                          │
+┌──────────────────────────────────┐                               │
+│ 5. EXIT EVAL & CONTROL           ├─────[commit request]──────────┼────────────────────► ┌─────────────┐
+│ - Final policy & safety review   │                               │                      │ UNIVERSAL   │
+│ ◄── [ Receiving [RET] Short-     │                               │                      │ WRITE GATE  │
+│       Circuits & Artifacts ]     │                               │                      └──────┬──────┘
+└───────┬─┬─┬──────────────────────┘                               │                             │
+        │ │ │                                                      │                             │ [commits]
+        │ │ │                                                      │                             ▼
+        │ │ └─[deny/reroute] ──► [ Reroute ]                       │                      ┌─────────────┐
+        │ │                                                        │                      │ L4 ARCHIVE  │
+        │ └─[escalate] ────────► ┌──────────────┐                  │                      │ (Writes)    │
+        │  HIGH-RISK ACTIONS:    │ HUMAN REVIEW │                  │                      └─────────────┘
+        │  pause for guardrails/ └──────┬───────┘                  │
+        │  human approval before        │                          │
+        │  irreversible writes          └─(resume)─────────────────┘
         │
         │ [allow/finish]
         ▼

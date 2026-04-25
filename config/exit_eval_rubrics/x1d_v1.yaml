@@ -1,0 +1,30 @@
+gate: X1D
+version: X1D@v1
+composition: weighted
+aggregate_threshold: 0.75
+metadata:
+  description: >
+    Answer good? Groundedness + citation support + faithfulness. All
+    model-based dimensions support the abstain protocol. citation_support
+    is code-graded (resolvability).
+dimensions:
+  - name: groundedness
+    grader_class: model_based
+    scale: [0.0, 1.0]
+    weight: 0.4
+    is_hard_gate: false
+    threshold: 0.80
+    abstain_allowed: true
+  - name: citation_support
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 0.3
+    is_hard_gate: false
+    threshold: 1.0
+  - name: faithfulness
+    grader_class: model_based
+    scale: [0.0, 1.0]
+    weight: 0.3
+    is_hard_gate: false
+    threshold: 0.70
+    abstain_allowed: true

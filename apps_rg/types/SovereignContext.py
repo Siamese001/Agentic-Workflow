@@ -198,6 +198,26 @@ class SovereignContext:
         self._transaction_log: list[dict[str, Any]] = []
         self.buffer = SimpleBuffer()
         self.trace = SimpleTrace()
+        # In-flight content snapshots. Engines populate these during the HOP
+        # pipeline; downstream validators read them. Defaults are safe sentinels
+        # so attribute access never raises before a HOP populates them.
+        self.master_resume: dict[str, Any] | None = None
+        self.current_resume: dict[str, Any] | None = None
+        self._signals: list[str] = []
+        self._success_history: list[dict[str, Any]] = []
+
+    def remove_signal(self, signal: str) -> None:
+        """Clear a signal after recovery."""
+        if signal in self._signals:
+            self._signals.remove(signal)
+
+    def has_signal(self, signal: str) -> bool:
+        """Check whether a signal is currently raised."""
+        return signal in self._signals
+
+    def record_success(self, resume: dict[str, Any], score: float) -> None:
+        """Record a successful resume generation outcome."""
+        self._success_history.append({"resume": resume, "score": score})
 
     def write_to_airlock(self, key: str, value: Any) -> None:
         """

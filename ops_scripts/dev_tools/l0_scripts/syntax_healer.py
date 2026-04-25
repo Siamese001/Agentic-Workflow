@@ -143,7 +143,7 @@ class PatternSyntaxHealerV2:
 
         Example:
         from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+        from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin
             SOVEREIGN_REGISTRY,
         )
 
@@ -152,7 +152,7 @@ class PatternSyntaxHealerV2:
             SOVEREIGN_REGISTRY,
         )
 
-        from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+        from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin
         """
         fixes = 0
 

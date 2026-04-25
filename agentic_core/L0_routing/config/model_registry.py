@@ -46,7 +46,7 @@ DETERMINISTIC_MODEL_SENTINEL: Final[str] = "local_deterministic"
 # agentic_core/L3_orchestration/inference/qwen_vllm/reasoning/qwen_inference_gateway.py:70
 QWEN_LOCAL_MODEL_ID: Final[str] = os.getenv(
     "VLLM_MODEL_NAME",
-    "Qwen/Qwen2.5-14B-Instruct-AWQ",
+    "Qwen/Qwen2.5-32B-Instruct-AWQ",
 )
 """Identifier for the local Qwen model served by vLLM on VLLM_BASE_URL."""
 

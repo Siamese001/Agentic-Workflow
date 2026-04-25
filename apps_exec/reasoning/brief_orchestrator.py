@@ -89,7 +89,7 @@ class BriefGenerationAgent:
 
     async def execute(self, request: BriefAgentRequest) -> BriefAgentResult:
         """Execute the brief generation task."""
-        _emit_dispatches_agent("enterprise", f"BriefAgent_{self.agent_type.value}", "execute")
+        _emit_dispatches_agent("enterprise", f"BriefAgent_{str(self.agent_type)}", "execute")
 
         start_time = asyncio.get_event_loop().time()
 
@@ -305,8 +305,8 @@ class BriefOrchestrator:
                     self._lineage.append(
                         {
                             "agent_id": result.agent_id,
-                            "agent_type": result.agent_type.value,
-                            "status": result.status.value,
+                            "agent_type": str(result.agent_type),
+                            "status": str(result.status),
                             "execution_time_ms": result.execution_time_ms,
                         }
                     )
@@ -322,9 +322,9 @@ class BriefOrchestrator:
         # Aggregate results by agent type
         by_type: dict[str, list[BriefAgentResult]] = {}
         for r in completed:
-            if r.agent_type.value not in by_type:
-                by_type[r.agent_type.value] = []
-            by_type[r.agent_type.value].append(r)
+            if str(r.agent_type) not in by_type:
+                by_type[str(r.agent_type)] = []
+            by_type[str(r.agent_type)].append(r)
 
         # Extract key metrics
         quality_score = 0.0

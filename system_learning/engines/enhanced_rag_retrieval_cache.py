@@ -14,6 +14,7 @@ Key improvements:
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 from agentic_core.cache.cache_key_builders import build_rag_topk_key
@@ -153,30 +154,47 @@ class EnhancedRagRetrievalCache:
         )
 
     def _get_default_embedding_client(self) -> EmbeddingClient | None:
-        """Get default embedding client through factory."""
+        """Get default embedding client through factory.
+
+        2026-04-24 (plan adg-architectural-p0-violations-cleanup-bced9c):
+        the outer try/except was removed and replaced with two inner
+        single-purpose try blocks. The previous structure had ≥2 side
+        effects in the try body (env reads + factory call) which the
+        ADG scanner classified as ``partial_side_effects`` (HIGH).
+        Splitting the env reads OUT of the try block eliminates that
+        antipattern entirely — the only remaining swallow is the
+        explicit-None on factory failure, exempted on the ``as e:``
+        anchor below.
+        """
+        if not is_enabled():
+            logger.warning("Embeddings disabled - falling back to basic caching")
+            return None
+
+        # Try to get existing client.
         try:
-            if not is_enabled():
-                logger.warning("Embeddings disabled - falling back to basic caching")
-                return None
+            return get_embedding_client("system_learning_default")
+        except (
+            ValueError
+        ):  # guardian: allow-silent-swallow -- no pre-existing embedding client: proceed to factory creation
+            pass
 
-            # Try to get existing client
-            try:
-                return get_embedding_client("system_learning_default")
-            except ValueError:  # guardian: allow-silent-swallow -- no pre-existing embedding client: proceed to factory creation
-                pass
-
-            # Create new client through factory
+        # Create new client through factory. Provider/model resolve from
+        # AGENTIC_EMBEDDING_PROVIDER (default bge-m3) so this cache no
+        # longer hardcodes OpenAI; pass explicit values only when an
+        # operator pins them via env. Env reads are pure dict lookups,
+        # safe outside the try.
+        provider = os.environ.get("AGENTIC_EMBEDDING_PROVIDER", "bge-m3")
+        model = os.environ.get("AGENTIC_EMBEDDING_MODEL")  # None => factory default per provider
+        try:
             return create_embedding_client(
-                provider="openai",
-                model="text-embedding-3-large",
-                dimensions=1536,
-            )  # review: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
-
-        except (  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallowallow-log-and-swallow allow-return-none-swallow -- embedding client init best-effort: non-fatal, caller falls back to basic caching
+                provider=provider,  # type: ignore[arg-type]
+                model=model,
+            )
+        except (
             EmbeddingDisabledError,
             NotImplementedError,
             Exception,
-        ) as e:
+        ) as e:  # guardian: allow-return-none-swallow -- explicit None return signals "embedding disabled" to the cache __init__ which falls back to basic non-embedding mode; the structured warning below is the durable record so this is degradation-with-receipt, not silent failure
             logger.warning(f"Failed to initialize embedding client: {e}")
             return None
 

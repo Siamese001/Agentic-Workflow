@@ -242,7 +242,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
     TYPE_CHECKING blocks are automatically skipped via CanonASTValidator base.
 
     Inherits:
-        HealerMixin: Repository healing capabilities
+        HealingPolicyMixin: Repository healing capabilities
         SubatomicTestingMixin: Self-testing infrastructure
         CanonASTValidator: AST traversal and violation reporting
     """
@@ -335,7 +335,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
         """
         Aggregated healing logic for all AST-based violations.
 
-        Delegates to HealerMixin while maintaining audit trails.
+        Delegates to HealingPolicyMixin while maintaining audit trails.
 
         Args:
             dry_run: If True, only report violations without fixing

@@ -52,7 +52,7 @@ from agentic_core.adg.runtime.dynamic_invocation import (
     DynamicInvocationRisk,
     DynamicInvocationTracker,
 )
-from agentic_core.adg.runtime.eval_spine import (
+from agentic_core.runtime.engine.eval_spine import (
     DPOBatch,
     DriftAlert,
     EvalMetricResult,
@@ -88,7 +88,7 @@ from agentic_core.adg.runtime.healing_orchestrator import (
     HealingTrigger,
     OrchestrationStep,
 )
-from agentic_core.adg.runtime.hitl_graph import (
+from agentic_core.L5_safety.enforcement.hitl.hitl_graph import (
     HITLCheckpoint,
     HITLDecisionType,
     HITLGraph,
@@ -152,6 +152,7 @@ from agentic_core.adg.runtime.safety_observer import (
     RuntimeSafetyReport,
     SafetyViolation,
 )
+
 # sandbox_airlock archived to archives/adg_dead_code/2026-04-23/ (wave D, 2026-04-23).
 # Zero external consumers of AirlockPhase / AirlockSession / CapabilityToken /
 # SandboxAirlockRecorder / SandboxEnvelope / WorkContract from this module.

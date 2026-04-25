@@ -101,10 +101,10 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
+    from agentic_core.mixins.mcp_operation_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError:  # guardian: allow-silent-swallow
 
-    class MCPHardenedMixin:
+    class MCPOperationMixin:
         pass
 
 
@@ -300,7 +300,7 @@ class ReconciliationViolation:
 class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0RoutingBaseAgent):
     """Filesystem-level SSOT enforcer - treats blueprint as the Gospel.
 
-    Inherits from L0RoutingBaseAgent: HealerMixin, MCPHardenedMixin, L0DelegationTestingMixin
+    Inherits from L0RoutingBaseAgent: HealingPolicyMixin, MCPOperationMixin, L0DelegationTestingMixin
 
     Enforces the SSOT blueprint by aligning the filesystem:
     - Creation: Ensures all folders in sovereign_registry exist.

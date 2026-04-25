@@ -109,10 +109,10 @@ _emit_links_execution_to_snapshot("p4", "lic_agent_base_util", "exec_snapshot_li
 
 Logger = logging.getLogger(__name__)
 try:
-    from agentic_core.interfaces.mixins import HealerMixin, MetaLearningMixin
+    from agentic_core.interfaces.mixins import HealingPolicyMixin, MetaLearningMixin
 except ImportError:
 
-    class HealerMixin:
+    class HealingPolicyMixin:
         pass
 
 
@@ -290,7 +290,7 @@ _emit_reads_through("l4", "lic_agent_base_util", "urg_read_78")
 
 
 @dataclass
-class LICAgentBase(AppBase, HealerMixin):
+class LICAgentBase(AppBase, HealingPolicyMixin):
     """
     LICAgentBase: Sovereign Foundation for 'Linked-In Canonical' (LIC).
 

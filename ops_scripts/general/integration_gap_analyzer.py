@@ -38,7 +38,7 @@ CRITICAL_MIXINS = {
     "HITLMixin": "P0",
     "PineconeVectorMixin": "P1",
     "RedisCacheMixin": "P1",
-    "HealerMixin": "P0",
+    "HealingPolicyMixin": "P0",
 }
 CRITICAL_COMPONENTS = {"DetectionSignal": "P0", "VerificationGate": "P0", "HumanReviewQueue": "P0"}
 COMPONENT_PATTERNS = {

@@ -254,6 +254,20 @@ class ContentQualityAgent(RGAgentBase):
                 issues.extend(quantified_issues)
         skill_issues = self._validate_skills_with_logic_node(resume)
         issues.extend(skill_issues)
+        # Compute a continuous quality score: 1.0 for zero issues, decays linearly.
+        max_expected_issues = 20
+        score = max(0.0, 1.0 - (len(issues) / max_expected_issues))
+        quality_report = {
+            "status": "passed" if not issues else "failed",
+            "score": round(score, 3),
+            "issues": issues,
+            "issue_count": len(issues),
+        }
+        # Publish to buffer so the orchestrator and downstream consumers can read it.
+        try:
+            self.ctx.buffer.write("quality_report", quality_report, source_agent=self.__class__.__name__)
+        except (AttributeError, TypeError):
+            pass
         if issues:
             self.record_fail(f"Quality issues: {len(issues)}", data=issues)
             self.add_signal("QUALITY_FAILURE")
@@ -320,7 +334,13 @@ class ContentQualityAgent(RGAgentBase):
                 issues.append(
                     f"Low skill extraction confidence ({skill_analysis.extraction_result.confidence_score:.2f})",
                 )
-        except (AttributeError, ValueError, TypeError, RuntimeError, KeyError) as e:  # guardian: allow-log-and-swallow -- skill validation failure captured as user-visible issue, not logged separately
+        except (
+            AttributeError,
+            ValueError,
+            TypeError,
+            RuntimeError,
+            KeyError,
+        ) as e:  # guardian: allow-log-and-swallow -- skill validation failure captured as user-visible issue, not logged separately
             issues.append(f"Skill validation failed: {str(e)}")
         return issues
 
@@ -391,7 +411,12 @@ class ContentQualityAgent(RGAgentBase):
                 "artifacts": [],
                 "errors": [],
             }
-        except (AttributeError, ValueError, TypeError, RuntimeError) as e:  # guardian: allow-default-fallback -- heal() contract returns a status dict; failure path constructs failed-status dict with exception details
+        except (
+            AttributeError,
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-default-fallback -- heal() contract returns a status dict; failure path constructs failed-status dict with exception details
             return {
                 "status": "failed",
                 "details": f"ContentQualityAgent heal() failed: {str(e)}",

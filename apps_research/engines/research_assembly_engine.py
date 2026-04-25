@@ -253,14 +253,14 @@ class ResearchAssemblyEngine:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchAssemblyEngine.execute"
         )
 
-        mode = request.mode if isinstance(request.mode, ArtifactMode) else ArtifactMode(request.mode)
+        mode = request.mode if isinstance(request.mode, str) else str(request.mode)
         sources = self._build_source_register(request)
         sections = self._build_sections(request, mode, sources)
-        matrix = self._build_comparison_matrix(request) if mode == ArtifactMode.COMPARISON else []
+        matrix = self._build_comparison_matrix(request) if mode == "comparison" else []
 
         _log.info(
             "[ResearchAssemblyEngine] mode=%s sections=%d sources=%d",
-            mode.value,
+            mode,
             len(sections),
             len(sources),
         )
@@ -276,43 +276,43 @@ class ResearchAssemblyEngine:
             SourceEntry(
                 source_id="SRC-001",
                 title="agentic_core L0-L6 Architecture",
-                claim_type=ClaimType.DIRECT_EVIDENCE,
+                claim_type="direct_evidence",
                 confidence=0.95,
                 summary="Six-layer architecture with enforced dependency boundaries",
-                url="docs/architecture/",
+                url="urn:repo:docs/architecture/",
                 section_id="executive_summary",
             ),
             SourceEntry(
                 source_id="SRC-002",
                 title="ADG Anti-Pattern Burndown Ratchet",
-                claim_type=ClaimType.DIRECT_EVIDENCE,
+                claim_type="direct_evidence",
                 confidence=0.95,
                 summary="Pre-commit enforcement of architectural governance rules",
-                url="agentic_core/L5_safety/",
+                url="urn:repo:agentic_core/L5_safety/",
                 section_id="key_findings",
             ),
             SourceEntry(
                 source_id="SRC-003",
                 title="PolicyHashEnforcer — L0 Routing",
-                claim_type=ClaimType.DIRECT_EVIDENCE,
+                claim_type="direct_evidence",
                 confidence=0.90,
                 summary="InstructionPacket policy hash validation at routing entry",
-                url="agentic_core/L0_routing/enforcement/policy_hash_enforcer.py",
+                url="urn:repo:agentic_core/L0_routing/enforcement/policy_hash_enforcer.py",
                 section_id="key_findings",
             ),
             SourceEntry(
                 source_id="SRC-004",
                 title="ExecutionScopeNondeterminismVisitor",
-                claim_type=ClaimType.DIRECT_EVIDENCE,
+                claim_type="direct_evidence",
                 confidence=0.90,
                 summary="Static AST analysis of non-deterministic calls in execution scope",
-                url="agentic_core/L5_safety/static_checks/determinism_serialization_check.py",
+                url="urn:repo:agentic_core/L5_safety/static_checks/determinism_serialization_check.py",
                 section_id="strategic_implications",
             ),
             SourceEntry(
                 source_id="SRC-005",
                 title="Analyst inference: enterprise agentic AI governance trends",
-                claim_type=ClaimType.ANALYST_INFERENCE,
+                claim_type="analyst_inference",
                 confidence=0.70,
                 summary="Growing enterprise demand for auditability in agentic AI systems",
                 url="",
@@ -325,7 +325,7 @@ class ResearchAssemblyEngine:
                     SourceEntry(
                         source_id=f"SRC-C{idx + 1:02d}",
                         title=f"Comparison subject: {subject}",
-                        claim_type=ClaimType.INTERPRETATION,
+                        claim_type="interpretation",
                         confidence=0.65,
                         summary=f"Framework characteristics of {subject} from public documentation",
                         url="",
@@ -346,7 +346,7 @@ class ResearchAssemblyEngine:
         src_ids = tuple(s.source_id for s in sources[:4])
 
         section_map: dict[str, list[ResearchSection]] = {
-            ArtifactMode.BRIEF: [
+            "brief": [
                 ResearchSection(
                     section_id="executive_summary",
                     heading="Executive Summary",
@@ -355,10 +355,10 @@ class ResearchAssemblyEngine:
                         f"This brief examines {topic} with a focus on enterprise agentic AI platforms. "
                         "The evidence base draws from this repository's implementation, which provides "
                         "a working reference architecture for production-grade agentic systems.\n\n"
-                        f"*Audience: {request.audience_style.value}. Time horizon: {horizon}.*"
+                        f"*Audience: {str(request.audience_style)}. Time horizon: {horizon}.*"
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.DIRECT_EVIDENCE,
+                    claim_type="direct_evidence",
                     sources=src_ids,
                     word_count=70,
                 ),
@@ -376,7 +376,7 @@ class ResearchAssemblyEngine:
                         "*Claim type labels: DIRECT_EVIDENCE = from implementation; ANALYST_INFERENCE = analyst judgment.*"
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.DIRECT_EVIDENCE,
+                    claim_type="direct_evidence",
                     sources=src_ids,
                     word_count=100,
                 ),
@@ -395,12 +395,12 @@ class ResearchAssemblyEngine:
                         "*INTERPRETATION = derived from evidence; ANALYST_INFERENCE = analyst judgment.*"
                     ),
                     is_deterministic=False,
-                    claim_type=ClaimType.INTERPRETATION,
+                    claim_type="interpretation",
                     sources=src_ids,
                     word_count=100,
                 ),
             ],
-            ArtifactMode.COMPARISON: [
+            "comparison": [
                 ResearchSection(
                     section_id="comparison_overview",
                     heading="Comparison Overview",
@@ -412,7 +412,7 @@ class ResearchAssemblyEngine:
                         "*All framework characterizations are analyst interpretations from public documentation.*"
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.INTERPRETATION,
+                    claim_type="interpretation",
                     sources=src_ids,
                     word_count=70,
                 ),
@@ -421,7 +421,7 @@ class ResearchAssemblyEngine:
                     heading="Comparison Matrix",
                     body="*See structured comparison matrix in artifact output.*",
                     is_deterministic=True,
-                    claim_type=ClaimType.INTERPRETATION,
+                    claim_type="interpretation",
                     sources=src_ids,
                     word_count=10,
                 ),
@@ -437,12 +437,12 @@ class ResearchAssemblyEngine:
                         "*This recommendation is analyst inference, not direct evidence.*"
                     ),
                     is_deterministic=False,
-                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    claim_type="analyst_inference",
                     sources=src_ids,
                     word_count=70,
                 ),
             ],
-            ArtifactMode.TREND: [
+            "trend": [
                 ResearchSection(
                     section_id="trend_overview",
                     heading="Trend Overview",
@@ -454,7 +454,7 @@ class ResearchAssemblyEngine:
                         "*Trend characterizations are analyst inferences unless otherwise labeled.*"
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    claim_type="analyst_inference",
                     sources=src_ids,
                     word_count=60,
                 ),
@@ -470,7 +470,7 @@ class ResearchAssemblyEngine:
                         "toward explicit orchestration graphs as the dominant pattern."
                     ),
                     is_deterministic=False,
-                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    claim_type="analyst_inference",
                     sources=src_ids,
                     word_count=80,
                 ),
@@ -484,12 +484,12 @@ class ResearchAssemblyEngine:
                         "around 2-3 dominant orchestration frameworks with enterprise governance layers."
                     ),
                     is_deterministic=False,
-                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    claim_type="analyst_inference",
                     sources=src_ids,
                     word_count=60,
                 ),
             ],
-            ArtifactMode.POSITION: [
+            "position": [
                 ResearchSection(
                     section_id="position_statement",
                     heading="Position Statement",
@@ -501,7 +501,7 @@ class ResearchAssemblyEngine:
                         "*This is an analyst-held position, not a vendor claim.*"
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    claim_type="analyst_inference",
                     sources=src_ids,
                     word_count=60,
                 ),
@@ -517,7 +517,7 @@ class ResearchAssemblyEngine:
                         "non-deterministic calls statically before execution (SRC-004)."
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.DIRECT_EVIDENCE,
+                    claim_type="direct_evidence",
                     sources=src_ids,
                     word_count=80,
                 ),
@@ -533,7 +533,7 @@ class ResearchAssemblyEngine:
                         "disabled under pressure. Constitutional enforcement does not."
                     ),
                     is_deterministic=False,
-                    claim_type=ClaimType.INTERPRETATION,
+                    claim_type="interpretation",
                     sources=src_ids,
                     word_count=80,
                 ),
@@ -548,12 +548,12 @@ class ResearchAssemblyEngine:
                         "*All evidence citations link to this repository's implementation.*"
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    claim_type="analyst_inference",
                     sources=src_ids,
                     word_count=70,
                 ),
             ],
-            ArtifactMode.THOUGHT_LEADERSHIP: [
+            "thought_leadership": [
                 ResearchSection(
                     section_id="hook",
                     heading="Opening Hook",
@@ -563,7 +563,7 @@ class ResearchAssemblyEngine:
                         "enforced at every commit, every routing decision, and every output."
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.DIRECT_EVIDENCE,
+                    claim_type="direct_evidence",
                     sources=src_ids,
                     word_count=40,
                 ),
@@ -579,7 +579,7 @@ class ResearchAssemblyEngine:
                         "static analysis ratchets — it becomes load-bearing infrastructure."
                     ),
                     is_deterministic=False,
-                    claim_type=ClaimType.INTERPRETATION,
+                    claim_type="interpretation",
                     sources=src_ids,
                     word_count=70,
                 ),
@@ -594,7 +594,7 @@ class ResearchAssemblyEngine:
                         "*All evidence is from this repository's implementation.*"
                     ),
                     is_deterministic=True,
-                    claim_type=ClaimType.DIRECT_EVIDENCE,
+                    claim_type="direct_evidence",
                     sources=src_ids,
                     word_count=60,
                 ),
@@ -609,14 +609,14 @@ class ResearchAssemblyEngine:
                         "are replicable without this codebase."
                     ),
                     is_deterministic=False,
-                    claim_type=ClaimType.ANALYST_INFERENCE,
+                    claim_type="analyst_inference",
                     sources=src_ids,
                     word_count=60,
                 ),
             ],
         }
 
-        return section_map.get(mode, section_map[ArtifactMode.BRIEF])
+        return section_map.get(mode, section_map["brief"])
 
     def _build_comparison_matrix(self, request: ResearchRequest) -> list[ComparisonRow]:
         """Build a structured comparison matrix for comparison mode."""

@@ -467,7 +467,7 @@ def create_spiffe_manager(
 ) -> SpiffeManager:
     """Factory function to create SPIFFE manager.
 
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
+    # CRITICAL FIRST: Shared HealingPolicyMixin chain (diagnostics, rollback, MCP hardening)
     super().heal_repository()
 
     Args:
