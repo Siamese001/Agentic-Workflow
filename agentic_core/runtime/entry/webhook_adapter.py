@@ -96,7 +96,10 @@ class WebhookIngressAdapter:
     def _to_envelope(cls, headers: dict[str, str], body: dict[str, Any]) -> dict[str, Any]:
         lowered = {k.lower(): v for k, v in headers.items()}
         caller = str(body.get("caller_identity") or lowered.get("x-caller-identity") or "webhook-anon")
-        return {
+        # U4 covers both webhooks and automated alerts; distinguish by event hint.
+        event_kind = str(body.get("event_kind") or lowered.get("x-event-kind") or "").lower()
+        source_class = "alert" if event_kind in {"alert", "alarm", "monitoring"} else "webhook"
+        envelope: dict[str, Any] = {
             "schema_version": body.get("schema_version") or cls.SCHEMA_VERSION,
             "caller_identity": caller,
             "request_id": body.get("request_id") or lowered.get("x-request-id") or str(uuid.uuid4()),
@@ -104,7 +107,13 @@ class WebhookIngressAdapter:
             "tenant_id": body.get("tenant_id") or "default",
             "request_payload": body.get("request_payload") or body.get("event") or body,
             "received_at_utc": time.time(),
+            "ingress_source_class": source_class,
         }
+        if "attachments" in body:
+            envelope["attachments"] = body["attachments"]
+        if "modality" in body:
+            envelope["modality"] = body["modality"]
+        return envelope
 
 
 __all__ = ["WebhookIngressAdapter", "WebhookSignatureError"]

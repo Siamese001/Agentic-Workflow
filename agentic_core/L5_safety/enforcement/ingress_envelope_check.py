@@ -87,6 +87,16 @@ _TRUSTED_SCHEMA_VERSIONS = {"1.0", "1.1", "2.0"}
 _DEFAULT_MAX_PAYLOAD_BYTES = 1_048_576  # 1 MiB
 _DEFAULT_MAX_PAYLOAD_DEPTH = 32
 
+# E2 attachment / modality limits (W2 — spec lines 79-83).
+_DEFAULT_MAX_ATTACHMENTS = 16
+_DEFAULT_MAX_ATTACHMENT_BYTES = 32 * 1024 * 1024  # 32 MiB per attachment
+_DEFAULT_ALLOWED_MODALITIES: frozenset[str] = frozenset(
+    {"text", "image", "audio", "video", "document", "mixed"}
+)
+_VALID_INGRESS_SOURCE_CLASSES: frozenset[str] = frozenset(
+    {"user", "service", "batch", "webhook", "alert", "unknown"}
+)
+
 _REGISTERED = False
 
 
@@ -118,6 +128,10 @@ class RejectionReasonCode(str, Enum):
     SCHEMA_INVALID = "E2_SCHEMA_INVALID"
     PAYLOAD_OVERSIZED = "E2_PAYLOAD_OVERSIZED"
     PAYLOAD_TOO_DEEP = "E2_PAYLOAD_TOO_DEEP"
+    TOO_MANY_ATTACHMENTS = "E2_TOO_MANY_ATTACHMENTS"
+    ATTACHMENT_OVERSIZED = "E2_ATTACHMENT_OVERSIZED"
+    ATTACHMENT_MALFORMED = "E2_ATTACHMENT_MALFORMED"
+    UNSUPPORTED_MODALITY = "E2_UNSUPPORTED_MODALITY"
     IDENTITY_MISSING = "E3_IDENTITY_MISSING"
     IDENTITY_UNTRUSTED = "E3_IDENTITY_UNTRUSTED"
     QUOTA_EXCEEDED = "E4_QUOTA_EXCEEDED"
@@ -167,6 +181,11 @@ class StampedRequest:
     ``request_payload`` is the raw payload as received (preserved for audit).
     ``normalized_payload`` is the E5 canonical form that downstream consumers
     MUST prefer. ``verified_identity`` carries the E3 verified triple.
+
+    Spec output-contract fields (``docs/reference/01_Request_Intake/01_request_intake.md``
+    lines 95-119): ``ingress_source_class``, ``auth_verdict``, ``quota_verdict``,
+    ``schema_verdict``, ``raw_payload_ref``, ``attachment_manifest`` are populated
+    so L1 can read the bounded slip without re-deriving them.
     """
 
     request_id: str
@@ -180,6 +199,14 @@ class StampedRequest:
     tenant_id: str
     verified_identity: VerifiedIdentity | None = None
     stamped_at: float = field(default_factory=time.time)
+    # Spec output-contract additions (W1).
+    ingress_source_class: str = "unknown"
+    auth_verdict: str = "authenticated"
+    quota_verdict: str = "allowed"
+    schema_verdict: str = "valid"
+    raw_payload_ref: str = ""
+    attachment_manifest: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    modality: str = "text"
 
     @property
     def ingress_time_utc(self) -> float:
@@ -210,6 +237,13 @@ class StampedRequest:
             ),
             "stamped_at": self.stamped_at,
             "ingress_time_utc": self.ingress_time_utc,
+            "ingress_source_class": self.ingress_source_class,
+            "auth_verdict": self.auth_verdict,
+            "quota_verdict": self.quota_verdict,
+            "schema_verdict": self.schema_verdict,
+            "raw_payload_ref": self.raw_payload_ref,
+            "attachment_manifest": [dict(a) for a in self.attachment_manifest],
+            "modality": self.modality,
         }
 
 
@@ -265,6 +299,9 @@ class IngressEnvelopeCheck:
         replay_cache: ReplayCache | None = None,
         max_payload_bytes: int = _DEFAULT_MAX_PAYLOAD_BYTES,
         max_payload_depth: int = _DEFAULT_MAX_PAYLOAD_DEPTH,
+        max_attachments: int = _DEFAULT_MAX_ATTACHMENTS,
+        max_attachment_bytes: int = _DEFAULT_MAX_ATTACHMENT_BYTES,
+        allowed_modalities: frozenset[str] | set[str] | None = None,
         enable_safety_screen: bool = True,
         metrics: IngressMetrics | None = None,
     ) -> None:
@@ -277,6 +314,11 @@ class IngressEnvelopeCheck:
         self._normalizer = normalizer or PayloadNormalizer(NormalizerOptions())
         self._max_payload_bytes = int(max_payload_bytes)
         self._max_payload_depth = int(max_payload_depth)
+        self._max_attachments = int(max_attachments)
+        self._max_attachment_bytes = int(max_attachment_bytes)
+        self._allowed_modalities: frozenset[str] = (
+            frozenset(allowed_modalities) if allowed_modalities is not None else _DEFAULT_ALLOWED_MODALITIES
+        )
 
         if replay_cache is not None:
             self._replay_cache: ReplayCache = replay_cache
@@ -337,6 +379,8 @@ class IngressEnvelopeCheck:
         _emit_signs_execution_trace(request_id, _seg_hash, _seg_hash, 0)
 
         self._e2_schema_and_size(raw_envelope, request_id, trace_root)
+        attachment_manifest = self._e2_attachments(raw_envelope, request_id, trace_root)
+        modality = self._e2_modality(raw_envelope, request_id, trace_root)
         verified = self._e3_identity(raw_envelope, request_id, trace_root)
         self._e4_quota(raw_envelope, request_id, trace_root)
         normalized = self._e5_normalize(raw_envelope.get("request_payload"))
@@ -347,6 +391,14 @@ class IngressEnvelopeCheck:
             verified.fingerprint() if verified is not None else self._derive_scope_baseline(raw_envelope)
         )
         tenant_id = verified.tenant_id if verified else str(raw_envelope.get("tenant_id") or "default")
+
+        # Spec output contract additions (W1).
+        source_class_raw = str(raw_envelope.get("ingress_source_class") or "unknown").lower()
+        ingress_source_class = (
+            source_class_raw if source_class_raw in _VALID_INGRESS_SOURCE_CLASSES else "unknown"
+        )
+        auth_verdict = self._derive_auth_verdict(verified, raw_envelope)
+        raw_payload_ref = self._compute_raw_payload_ref(raw_envelope.get("request_payload"))
 
         stamped = StampedRequest(
             request_id=request_id,
@@ -359,6 +411,13 @@ class IngressEnvelopeCheck:
             caller_identity=raw_envelope.get("caller_identity", ""),
             tenant_id=tenant_id,
             verified_identity=verified,
+            ingress_source_class=ingress_source_class,
+            auth_verdict=auth_verdict,
+            quota_verdict="allowed",  # we passed E4 to reach here
+            schema_verdict="valid",   # we passed E2 to reach here
+            raw_payload_ref=raw_payload_ref,
+            attachment_manifest=attachment_manifest,
+            modality=modality,
         )
 
         self._e7_dedup(stamped, trace_root)
@@ -491,6 +550,120 @@ class IngressEnvelopeCheck:
                 )
             )
 
+    # --------------------------------------------------- E2 attachments / modality (W2)
+    def _e2_attachments(
+        self, env: dict, request_id: str, trace_root: str
+    ) -> tuple[dict[str, Any], ...]:
+        """Validate attachment list shape & size; return bounded manifest.
+
+        Manifest is sourced from ``env['attachments']`` OR
+        ``env['request_payload']['attachments']`` (whichever is present).
+        Each attachment must be a dict with at minimum ``filename`` and ``size``.
+        """
+
+        atts = env.get("attachments")
+        if atts is None and isinstance(env.get("request_payload"), dict):
+            atts = env["request_payload"].get("attachments")
+        if atts is None:
+            return ()
+        if not isinstance(atts, (list, tuple)):
+            raise IngressRejected(
+                RejectionSlip(
+                    reason_code=RejectionReasonCode.ATTACHMENT_MALFORMED,
+                    request_id=request_id,
+                    trace_root=trace_root,
+                    message="attachments must be a list of dicts.",
+                    gate_stage="E2_ATTACHMENT",
+                )
+            )
+        if len(atts) > self._max_attachments:
+            raise IngressRejected(
+                RejectionSlip(
+                    reason_code=RejectionReasonCode.TOO_MANY_ATTACHMENTS,
+                    request_id=request_id,
+                    trace_root=trace_root,
+                    message=(
+                        f"attachment count {len(atts)} > limit {self._max_attachments}."
+                    ),
+                    gate_stage="E2_ATTACHMENT",
+                )
+            )
+        manifest: list[dict[str, Any]] = []
+        for idx, att in enumerate(atts):
+            if not isinstance(att, dict):
+                raise IngressRejected(
+                    RejectionSlip(
+                        reason_code=RejectionReasonCode.ATTACHMENT_MALFORMED,
+                        request_id=request_id,
+                        trace_root=trace_root,
+                        message=f"attachments[{idx}] is not a dict.",
+                        gate_stage="E2_ATTACHMENT",
+                    )
+                )
+            filename = att.get("filename") or att.get("name")
+            size_raw = att.get("size")
+            content_type = att.get("content_type") or att.get("mime") or "application/octet-stream"
+            if not isinstance(filename, str) or not filename.strip():
+                raise IngressRejected(
+                    RejectionSlip(
+                        reason_code=RejectionReasonCode.ATTACHMENT_MALFORMED,
+                        request_id=request_id,
+                        trace_root=trace_root,
+                        message=f"attachments[{idx}] missing filename.",
+                        gate_stage="E2_ATTACHMENT",
+                    )
+                )
+            if not isinstance(size_raw, (int, float)) or size_raw < 0:
+                raise IngressRejected(
+                    RejectionSlip(
+                        reason_code=RejectionReasonCode.ATTACHMENT_MALFORMED,
+                        request_id=request_id,
+                        trace_root=trace_root,
+                        message=f"attachments[{idx}] missing or invalid size.",
+                        gate_stage="E2_ATTACHMENT",
+                    )
+                )
+            size = int(size_raw)
+            if size > self._max_attachment_bytes:
+                raise IngressRejected(
+                    RejectionSlip(
+                        reason_code=RejectionReasonCode.ATTACHMENT_OVERSIZED,
+                        request_id=request_id,
+                        trace_root=trace_root,
+                        message=(
+                            f"attachments[{idx}] size {size} > limit {self._max_attachment_bytes} bytes."
+                        ),
+                        gate_stage="E2_ATTACHMENT",
+                    )
+                )
+            manifest.append({
+                "filename": filename,
+                "size": size,
+                "content_type": str(content_type),
+            })
+        return tuple(manifest)
+
+    def _e2_modality(self, env: dict, request_id: str, trace_root: str) -> str:
+        modality_raw = env.get("modality")
+        if modality_raw is None and isinstance(env.get("request_payload"), dict):
+            modality_raw = env["request_payload"].get("modality")
+        if modality_raw is None:
+            return "text"
+        modality = str(modality_raw).strip().lower()
+        if modality not in self._allowed_modalities:
+            raise IngressRejected(
+                RejectionSlip(
+                    reason_code=RejectionReasonCode.UNSUPPORTED_MODALITY,
+                    request_id=request_id,
+                    trace_root=trace_root,
+                    message=(
+                        f"modality {modality!r} not in allowlist {sorted(self._allowed_modalities)}."
+                    ),
+                    gate_stage="E2_MODALITY",
+                )
+            )
+        return modality
+
     # ------------------------------------------------------------------ E5
     def _e5_normalize(self, payload: Any) -> Any:
         return self._normalizer.normalize(payload)
@@ -575,6 +748,45 @@ class IngressEnvelopeCheck:
         identity = env.get("caller_identity", "")
         version = env.get("schema_version", "")
         return hashlib.sha256(f"{identity}:{version}".encode()).hexdigest()[:24]
+
+    @staticmethod
+    def _derive_auth_verdict(
+        verified: VerifiedIdentity | None, env: dict[str, Any]
+    ) -> str:
+        """Map E3 verification outcome to spec auth_verdict label.
+
+        Spec values: ``authenticated`` / ``anonymous`` / ``service_bound`` / ``rejected``.
+        Rejected paths never reach the stamp (they raise IngressRejected) so this
+        only distinguishes the success-path labels.
+        """
+
+        if verified is None:
+            return "anonymous"
+        identity = str(env.get("caller_identity") or "").lower()
+        if identity.startswith("svc-") or identity.startswith("service:"):
+            return "service_bound"
+        if identity.endswith("-anon") or identity in {"anonymous", "anon", "unknown"}:
+            return "anonymous"
+        return "authenticated"
+
+    @staticmethod
+    def _compute_raw_payload_ref(payload: Any) -> str:
+        """Stable short content hash of the raw payload (spec output contract).
+
+        We hash the deterministic JSON encoding when possible; otherwise fall
+        back to ``repr()``. Output is ``sha256:<24-hex>``.
+        """
+
+        try:
+            import json as _json
+
+            encoded = _json.dumps(
+                payload, sort_keys=True, default=repr, ensure_ascii=False
+            ).encode("utf-8")
+        except (TypeError, ValueError):
+            encoded = repr(payload).encode("utf-8", errors="replace")
+        digest = hashlib.sha256(encoded).hexdigest()[:24]
+        return f"sha256:{digest}"
 
 
 __all__ = [

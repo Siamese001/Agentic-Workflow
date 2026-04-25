@@ -83,7 +83,13 @@ class HttpIngressAdapter:
             "tenant_id": tenant,
             "request_payload": body,
             "received_at_utc": time.time(),
+            "ingress_source_class": "service",
         }
+        modality_hdr = lowered.get("x-modality")
+        if modality_hdr:
+            envelope["modality"] = modality_hdr
+        if isinstance(body, dict) and isinstance(body.get("attachments"), (list, tuple)):
+            envelope["attachments"] = body["attachments"]
         auth = lowered.get(self._auth_hdr.lower())
         if auth:
             envelope["authorization"] = auth

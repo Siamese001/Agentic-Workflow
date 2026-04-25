@@ -49,7 +49,7 @@ class ChatIngressAdapter:
         payload: dict[str, Any] = {"intent": message}
         if "attachments" in turn:
             payload["attachments"] = turn["attachments"]
-        return {
+        envelope: dict[str, Any] = {
             "schema_version": cls.SCHEMA_VERSION,
             "caller_identity": caller,
             "request_payload": payload,
@@ -57,7 +57,13 @@ class ChatIngressAdapter:
             "request_id": turn.get("request_id") or str(uuid.uuid4()),
             "tenant_id": turn.get("tenant_id") or "default",
             "received_at_utc": time.time(),
+            "ingress_source_class": "user",
         }
+        if "attachments" in turn:
+            envelope["attachments"] = turn["attachments"]
+        if "modality" in turn:
+            envelope["modality"] = turn["modality"]
+        return envelope
 
 
 __all__ = ["ChatIngressAdapter"]

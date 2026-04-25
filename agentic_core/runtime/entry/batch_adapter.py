@@ -56,7 +56,7 @@ class BatchIngressAdapter:
     @classmethod
     def _to_envelope(cls, row: dict[str, Any], batch_id: str, idx: int) -> dict[str, Any]:
         caller = str(row.get("caller_identity") or row.get("submitter") or f"batch:{batch_id}")
-        return {
+        envelope: dict[str, Any] = {
             "schema_version": row.get("schema_version") or cls.SCHEMA_VERSION,
             "caller_identity": caller,
             "request_id": row.get("request_id") or f"{batch_id}:{idx}",
@@ -66,7 +66,13 @@ class BatchIngressAdapter:
             "received_at_utc": time.time(),
             "batch_index": idx,
             "batch_id": batch_id,
+            "ingress_source_class": "batch",
         }
+        if "attachments" in row:
+            envelope["attachments"] = row["attachments"]
+        if "modality" in row:
+            envelope["modality"] = row["modality"]
+        return envelope
 
 
 __all__ = ["BatchIngressAdapter"]
