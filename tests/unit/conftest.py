@@ -24,6 +24,38 @@ _AGENTIC_CORE_DIR = "agentic_core"
 _TESTS_DIR = "tests"
 
 
+def _preload_real_agentic_core_subpackages() -> None:
+    """Pre-import real ``agentic_core`` subpackages so the compat shims'
+    ``hasattr(agentic_core_pkg, name)`` guard skips them.
+
+    Without this, the shim logic walks tests/unit/agentic_core/ test files
+    and finds ``from agentic_core import runtime`` (or similar) patterns,
+    then installs a ``SimpleNamespace`` shim that shadows the real
+    ``agentic_core.runtime`` subpackage. Subsequent deep imports like
+    ``import agentic_core.runtime.contracts.lifecycle_trace_contract``
+    then fail with ModuleNotFoundError.
+    """
+    real_subpackages = (
+        "agentic_core.runtime",
+        "agentic_core.runtime.contracts",
+        "agentic_core.L0_routing",
+        "agentic_core.L1_cognition",
+        "agentic_core.L2_execution",
+        "agentic_core.L3_orchestration",
+        "agentic_core.L4_state",
+        "agentic_core.L5_safety",
+        "agentic_core.L6_observability",
+    )
+    for mod_name in real_subpackages:
+        try:
+            __import__(mod_name)
+        except ImportError:  # guardian: allow-specific -- subpackage may not exist in all checkouts
+            pass
+
+
+_preload_real_agentic_core_subpackages()
+
+
 def _install_l0_routing_compat_shims() -> None:
     """Provide lightweight agentic_core namespace shims for legacy L0 routing tests."""
     import agentic_core as agentic_core_pkg
