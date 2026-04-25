@@ -8,6 +8,7 @@ and emitting a stable replay digest.
 import hashlib
 import json
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 
@@ -185,6 +186,11 @@ class DeterministicReplayEngine:
 
     def __init__(self):
         """Initialize replay engine with fixed synthetic cases."""
+        # v6 KPI counters (REPLAY_DIVERGENCE_LOCALIZATION).
+        # Producers call mark_failure() once per replay failure with
+        # localized=True/False; publish_kpi_sample() emits the ratio.
+        self._total_failures: int = 0
+        self._localized_failures: int = 0
         self._synthetic_cases = [
             {
                 "query": "machine learning fundamentals",
@@ -361,6 +367,52 @@ class DeterministicReplayEngine:
         }
         canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    # --- v6 KPI surface (REPLAY_DIVERGENCE_LOCALIZATION) ----------------
+
+    def mark_failure(self, *, localized: bool) -> None:
+        """Record one replay failure.
+
+        Parameters
+        ----------
+        localized : True if the failure was pinpointed to a specific span
+            or case; False if the divergence could not be localized.
+        """
+        self._total_failures += 1
+        if localized:
+            self._localized_failures += 1
+
+    @property
+    def failure_counters(self) -> tuple[int, int]:
+        """Return ``(localized_failures, total_failures)``."""
+        return (self._localized_failures, self._total_failures)
+
+    def reset_failure_counters(self) -> None:
+        """Reset v6 KPI counters."""
+        self._total_failures = 0
+        self._localized_failures = 0
+
+    def publish_kpi_sample(self, board: Any) -> None:
+        """Publish REPLAY_DIVERGENCE_LOCALIZATION to ``board``.
+
+        Lazy-imports the producer helper. Never raises.
+        """
+        try:
+            from system_learning.engines.v6_kpi_producers import (  # noqa: PLC0415
+                record_replay_divergence_localization,
+            )
+
+            record_replay_divergence_localization(
+                board,
+                localized_failures=self._localized_failures,
+                total_failures=self._total_failures,
+            )
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break replay
+            import logging  # noqa: PLC0415
+
+            logging.getLogger(__name__).warning(
+                "v6_kpi_replay_divergence_localization_failed: %s", exc
+            )
 
 
 __all__ = ["DeterministicReplayEngine", "ReplayResult"]
