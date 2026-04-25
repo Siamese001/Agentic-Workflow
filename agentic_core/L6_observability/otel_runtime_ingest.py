@@ -117,7 +117,69 @@ def emit_spans_to_runtime_adg(
         "mission": resolved_mission,
     }
     logger.info("otel_runtime_ingest_success", extra=result)
+
+    # v6 KPI: record TRACE_INGEST_FRESHNESS from the newest span timestamp.
+    # Fail-safe: any exception in KPI emission must not take down ingest.
+    _publish_trace_ingest_freshness(spans)
     return result
+
+
+def _newest_span_epoch(spans: list[dict[str, Any]]) -> float | None:
+    """Return the latest ``end_time`` / ``start_time`` epoch from ``spans``.
+
+    Accepts either ``end_time_unix_nano`` (OTel canonical), ``end_time``
+    (epoch seconds), or ``timestamp`` (epoch seconds) on each span. Returns
+    None if no usable timestamp is found.
+    """
+    newest: float | None = None
+    for span in spans:
+        if not isinstance(span, dict):
+            continue
+        ts: float | None = None
+        if "end_time_unix_nano" in span:
+            try:
+                ts = float(span["end_time_unix_nano"]) / 1e9
+            except (TypeError, ValueError):
+                ts = None
+        if ts is None and "end_time" in span:
+            try:
+                ts = float(span["end_time"])
+            except (TypeError, ValueError):
+                ts = None
+        if ts is None and "start_time_unix_nano" in span:
+            try:
+                ts = float(span["start_time_unix_nano"]) / 1e9
+            except (TypeError, ValueError):
+                ts = None
+        if ts is None and "timestamp" in span:
+            try:
+                ts = float(span["timestamp"])
+            except (TypeError, ValueError):
+                ts = None
+        if ts is not None and (newest is None or ts > newest):
+            newest = ts
+    return newest
+
+
+def _publish_trace_ingest_freshness(spans: list[dict[str, Any]]) -> None:
+    """Best-effort v6 KPI emission. Never raises."""
+    try:
+        newest = _newest_span_epoch(spans)
+        if newest is None:
+            return
+        # Lazy imports to avoid cycles and to make the dependency explicit.
+        from agentic_core.L6_observability.utils.evaluation.learning_metrics_dashboard import (  # noqa: PLC0415
+            get_v6_kpi_board,
+        )
+        from system_learning.engines.v6_kpi_producers import (  # noqa: PLC0415
+            record_trace_ingest_freshness,
+        )
+
+        record_trace_ingest_freshness(
+            get_v6_kpi_board(), newest_span_epoch=newest
+        )
+    except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break ingest
+        logger.warning("v6_kpi_trace_ingest_freshness_failed: %s", exc)
 
 
 def emit_span_to_runtime_adg(
