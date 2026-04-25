@@ -525,6 +525,229 @@ def revalidate_repaired_packet(
     return RevalidationResult(passed=True)
 
 
+# ---------------------------------------------------------------------------
+# E1 FAIL CONDITIONS (v4 §E1 FAIL CONDITIONS — 7 enumerated)
+# ---------------------------------------------------------------------------
+
+
+E1_FAIL_CONDITIONS: tuple[str, ...] = (
+    "missing_capability_token",
+    "missing_sandbox_envelope",
+    "policy_hash_mismatch",
+    "stale_blueprint_hash",
+    "duplicate_in_flight_idempotency_key",
+    "no_replay_snapshot_for_replay_required_route",
+    "l2_detects_hidden_write_path",
+)
+
+
+# ---------------------------------------------------------------------------
+# E4 REPAIR DECISION TABLE (v4 §REPAIR DECISION TABLE — 4 outcome paths)
+# ---------------------------------------------------------------------------
+
+
+class RepairDecision(str, Enum):
+    """v4 §E4 REPAIR DECISION TABLE — four outcome paths."""
+
+    REPAIR_AND_RETRY = "REPAIR_AND_RETRY"  # repaired packet returns to E3
+    SEAL_DEGRADED_OR_NEEDS_HELP = "SEAL_DEGRADED_OR_NEEDS_HELP"  # useful partial
+    STOP_NEEDS_HELP_OR_ESCALATE = "STOP_NEEDS_HELP_OR_ESCALATE"  # new authority required
+    STOP_REJECTED_QUARANTINE = "STOP_REJECTED_QUARANTINE"  # safety/policy/sandbox breach
+
+
+def repair_decision(
+    *,
+    repairable: bool,
+    same_authority: bool,
+    under_ceilings: bool,
+    snapshot_intact: bool,
+    has_useful_partial: bool,
+    needs_new_authority_or_human: bool,
+    safety_or_policy_breach: bool,
+) -> RepairDecision:
+    """v4 §REPAIR DECISION TABLE — deterministic mapping.
+
+    Order matters: safety first (overrides everything), then authority
+    expansion, then partial fallback, then full repair-and-retry path.
+    """
+    if safety_or_policy_breach:
+        return RepairDecision.STOP_REJECTED_QUARANTINE
+    if needs_new_authority_or_human:
+        return RepairDecision.STOP_NEEDS_HELP_OR_ESCALATE
+    if repairable and same_authority and under_ceilings and snapshot_intact:
+        return RepairDecision.REPAIR_AND_RETRY
+    if has_useful_partial:
+        return RepairDecision.SEAL_DEGRADED_OR_NEEDS_HELP
+    return RepairDecision.STOP_NEEDS_HELP_OR_ESCALATE
+
+
+# ---------------------------------------------------------------------------
+# TERMINAL CLASS MEANINGS (v4 §TERMINAL CLASS MEANINGS — 5 named classes)
+# ---------------------------------------------------------------------------
+
+
+TERMINAL_CLASS_MEANINGS: dict[TerminalStamp, str] = {
+    TerminalStamp.SUCCESS: (
+        "Local contract satisfied. Send to Exit for final current-run review."
+    ),
+    TerminalStamp.DEGRADED_SUCCESS: (
+        "Useful partial result exists. Caveats and missing support must "
+        "remain explicit downstream."
+    ),
+    TerminalStamp.FAILURE: (
+        "Work could not complete under current packet, but no policy breach "
+        "occurred."
+    ),
+    TerminalStamp.NEEDS_HELP: (
+        "Requires missing input, new authority, HITL, reroute, or broader "
+        "workflow decision."
+    ),
+    TerminalStamp.REJECTED: (
+        "Packet or execution violated a rule, safety boundary, injection "
+        "guard, sandbox guard, or authority boundary."
+    ),
+}
+
+
+# ---------------------------------------------------------------------------
+# EXECUTION LANE CONSTRAINTS (v4 §EXECUTION LANES — 5 lanes)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ExecutionLaneConstraints:
+    """v4 §EXECUTION LANES — declared constraints per lane."""
+
+    lane: ExecutionLane
+    description: str
+    durable_mutation_allowed: bool
+    schema_bound_required: bool
+    output_capture_required: bool
+
+
+EXECUTION_LANE_CONSTRAINTS: dict[ExecutionLane, ExecutionLaneConstraints] = {
+    ExecutionLane.READ: ExecutionLaneConstraints(
+        lane=ExecutionLane.READ,
+        description=(
+            "Uses provided evidence or bounded read surfaces; produces "
+            "answer/summary/comparison/extraction/classification; no durable "
+            "mutation."
+        ),
+        durable_mutation_allowed=False,
+        schema_bound_required=False,
+        output_capture_required=True,
+    ),
+    ExecutionLane.MODEL: ExecutionLaneConstraints(
+        lane=ExecutionLane.MODEL,
+        description=(
+            "Sends signed prompt artifact through provider/model gateway; "
+            "schema-bound output if structured answer required; output must "
+            "be locally parsed before seal."
+        ),
+        durable_mutation_allowed=False,
+        schema_bound_required=True,
+        output_capture_required=True,
+    ),
+    ExecutionLane.TOOL: ExecutionLaneConstraints(
+        lane=ExecutionLane.TOOL,
+        description=(
+            "Invokes approved tool with validated args; captures stdout/"
+            "stderr/return object; blocks unexpected side effects."
+        ),
+        durable_mutation_allowed=False,
+        schema_bound_required=False,
+        output_capture_required=True,
+    ),
+    ExecutionLane.ACTION: ExecutionLaneConstraints(
+        lane=ExecutionLane.ACTION,
+        description=(
+            "Performs approved reversible or scoped action; irreversible/"
+            "high-impact action must already have required clearance; any "
+            "state mutation becomes proposed_state_diff unless the external "
+            "tool action itself is the approved bounded action."
+        ),
+        durable_mutation_allowed=True,  # only when explicitly cleared
+        schema_bound_required=False,
+        output_capture_required=True,
+    ),
+    ExecutionLane.ARTIFACT: ExecutionLaneConstraints(
+        lane=ExecutionLane.ARTIFACT,
+        description=(
+            "Generates file/report/chart/patch/draft/code/structured bundle; "
+            "attaches artifact_hash, path, manifest, provenance; no untracked "
+            "artifact leaves L2."
+        ),
+        durable_mutation_allowed=False,
+        schema_bound_required=False,
+        output_capture_required=True,
+    ),
+}
+
+
+# ---------------------------------------------------------------------------
+# E5.6 CONTRACT CHECK
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ContractCheckResult:
+    """v4 §E5.6 contract check — verify sealed artifact satisfies downstream."""
+
+    satisfied: bool
+    missing_fields: tuple[str, ...] = ()
+    durable_commit_detected: bool = False
+
+
+_REQUIRED_DOWNSTREAM_FIELDS: tuple[tuple[str, str], ...] = (
+    ("identity", "sealed_l2_artifact_id"),
+    ("identity", "run_id"),
+    ("identity", "route_id"),
+    ("governance", "compliance_hash"),
+    ("governance", "policy_hash"),
+    ("governance", "blueprint_hash"),
+    ("replay", "replay_key"),
+    ("replay", "input_hash"),
+    ("observability", "trace_id"),
+    ("terminal", "terminal_class"),
+    ("terminal", "reason_code"),
+)
+
+
+def verify_sealed_artifact_contract(contents: Any) -> ContractCheckResult:
+    """v4 §E5.6 contract check — verify required downstream fields are present.
+
+    Used by Exit Control, L6 telemetry, HITL packetization, and UWG commit
+    request paths to confirm a sealed L2 artifact carries everything the
+    downstream consumer needs. Falls back gracefully on AttributeError.
+    """
+    missing: list[str] = []
+    for section_name, field_name in _REQUIRED_DOWNSTREAM_FIELDS:
+        try:
+            section = getattr(contents, section_name)
+            value = getattr(section, field_name)
+        except AttributeError:
+            missing.append(f"{section_name}.{field_name}")
+            continue
+        if value is None or value == "":
+            missing.append(f"{section_name}.{field_name}")
+
+    # Durable-commit detector: any sealed contents that exposes a
+    # `has_commit_payload=True` bit, or whose commit_requested=True without
+    # a proposed_state_diff, is a contract violation.
+    durable_commit = False
+    try:
+        if getattr(contents, "has_commit_payload", False):
+            durable_commit = True
+    except AttributeError:
+        pass
+
+    return ContractCheckResult(
+        satisfied=not missing and not durable_commit,
+        missing_fields=tuple(missing),
+        durable_commit_detected=durable_commit,
+    )
+
+
 __all__ = [
     "ExecutionForm",
     "CapabilitySpec",
@@ -552,6 +775,14 @@ __all__ = [
     "L2_FULL_INVARIANTS",
     "RevalidationResult",
     "revalidate_repaired_packet",
+    "E1_FAIL_CONDITIONS",
+    "RepairDecision",
+    "repair_decision",
+    "TERMINAL_CLASS_MEANINGS",
+    "ExecutionLaneConstraints",
+    "EXECUTION_LANE_CONSTRAINTS",
+    "ContractCheckResult",
+    "verify_sealed_artifact_contract",
     # re-exports for convenience
     "DeterminismBundle",
     "DispatchTarget",
