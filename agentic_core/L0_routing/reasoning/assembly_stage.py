@@ -1329,3 +1329,69 @@ class AirlockAssembler:
         from dataclasses import replace as _replace
 
         return _replace(unsigned_artifact, signature=signature)
+
+    @staticmethod
+    def assemble_for_provider(
+        bom: PromptBOM,
+        secret_key: bytes,
+        provider: str | None = None,
+        attempt: int = 0,
+        d0_fences: tuple[str, ...] = (),
+        s0_override: str | None = None,
+        allowed_tools: tuple[Any, ...] = (),
+        **adapter_kwargs: Any,
+    ) -> dict[str, Any]:
+        """PA.6 + PA.7 wrapper — render provider-specific + attach idempotency.
+
+        Calls `assemble_from_bom` for the canonical signed artifact (HMAC and
+        replay-key behavior unchanged), then layers two downstream concerns:
+
+          1. **PA.6 provider rendering** — runs `RenderedPrompt = render_for_provider(structured_slots, provider)`
+             so callers can see the provider-specific wire format alongside the
+             legacy concatenated system/user strings.
+          2. **Idempotency envelope** — computes a stable nonce + cache-prefix
+             hash for retries and provider-side prompt caching.
+
+        The legacy `CompiledPromptArtifact` is returned unchanged in
+        `result["artifact"]`; the new fields are additive so existing callers
+        can ignore them.
+
+        Args:
+            bom, secret_key, d0_fences, s0_override, allowed_tools: passed through.
+            provider: Provider hint for PA.6 adapter ('anthropic', 'openai',
+                'gemini', None → passthrough).
+            attempt: 0-indexed retry counter for the idempotency nonce.
+            **adapter_kwargs: Forwarded to OpenAIAdapter (model_family, markdown_output).
+
+        Returns:
+            Dict with keys:
+              - 'artifact'       : CompiledPromptArtifact (signed)
+              - 'rendered'       : RenderedPrompt (provider-specific wire form)
+              - 'idempotency'    : IdempotencyEnvelope
+              - 'provider'       : Resolved provider id
+        """
+        from agentic_core.L0_routing.reasoning.idempotency_nonce import make_envelope
+        from agentic_core.L0_routing.reasoning.provider_adapters import render_for_provider
+
+        artifact = AirlockAssembler.assemble_from_bom(
+            bom=bom,
+            secret_key=secret_key,
+            d0_fences=d0_fences,
+            s0_override=s0_override,
+            allowed_tools=allowed_tools,
+        )
+        # Use structured_slots when present, fall back to concat strings.
+        slots_for_render = getattr(artifact, "structured_slots", None) or {
+            "S0": "",
+            "D0": "",
+            "I0": "",
+            "U0": artifact.final_user_string,
+        }
+        rendered = render_for_provider(slots_for_render, provider, **adapter_kwargs)
+        envelope = make_envelope(trace_id=artifact.trace_id, slots=slots_for_render, attempt=attempt)
+        return {
+            "artifact": artifact,
+            "rendered": rendered,
+            "idempotency": envelope,
+            "provider": rendered.provider,
+        }
