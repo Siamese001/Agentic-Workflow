@@ -1,0 +1,130 @@
+name: Calibration Drift Detector
+
+# Closes G13 from runtime-gate-coverage-hardening-7e3f1a.md.
+# Reads scorecard JSONL artifacts and runs ops_scripts/calibration/calibration_drift_detector.py
+# nightly + on PR touching judge / rubric / scorecard configuration. Alerts via job
+# annotation + uploaded artifact when per-judge unknown-rate breaches the
+# `calibration_drift_policy` thresholds in apps_eval/config/eval_policies.yaml.
+
+on:
+  schedule:
+    # Nightly at 06:00 UTC (≈02:00 ET / 23:00 PT) — quiet hours.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      window_days:
+        description: "Rolling window in days"
+        required: false
+        default: "7"
+  pull_request:
+    paths:
+      - "apps_eval/config/eval_policies.yaml"
+      - "config/judges/rubrics.yaml"
+      - "config/judges/budget.yaml"
+      - "config/exit_eval_rubrics/**"
+      - "ops_scripts/calibration/calibration_drift_detector.py"
+      - ".github/workflows/calibration-drift.yml"
+
+permissions:
+  contents: read
+  pull-requests: write   # so PR comment annotations can be posted
+
+concurrency:
+  group: calibration-drift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift:
+    name: Run calibration drift detector
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
+
+      - name: Resolve window
+        id: cfg
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "window=${{ github.event.inputs.window_days }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "window=7" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run detector
+        id: detector
+        continue-on-error: true   # we surface the exit code as an annotation, not a hard fail (yet)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          set +e
+          python ops_scripts/calibration/calibration_drift_detector.py \
+            --scorecard-dir artifacts/eval/scorecards \
+            --window "${{ steps.cfg.outputs.window }}" \
+            > drift_report.txt 2>&1
+          code=$?
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          echo "----- drift report -----"
+          cat drift_report.txt
+          exit 0
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: calibration-drift-report
+          path: drift_report.txt
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Annotate WARN
+        if: steps.detector.outputs.exit_code == '1'
+        run: |
+          echo "::warning title=Calibration drift WARN::Per-judge unknown-rate breached the warn threshold. See drift_report.txt artifact."
+
+      - name: Annotate ALERT and fail
+        if: steps.detector.outputs.exit_code == '2'
+        run: |
+          echo "::error title=Calibration drift ALERT::Per-judge unknown-rate breached the ALERT threshold. Human recalibration required. See drift_report.txt."
+          exit 1
+
+      - name: Comment on PR (alert only)
+        if: github.event_name == 'pull_request' && steps.detector.outputs.exit_code == '2'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = [
+              '### ⚠️ Calibration drift ALERT',
+              '',
+              'Per-judge unknown-rate breached the alert threshold defined by',
+              '`calibration_drift_policy` in `apps_eval/config/eval_policies.yaml`.',
+              '',
+              'Reference: `.windsurf/plans/runtime-gate-coverage-hardening-7e3f1a.md` (G13).',
+              '',
+              '<details><summary>Drift report</summary>',
+              '',
+              '```',
+              fs.readFileSync('drift_report.txt', 'utf8').slice(0, 50_000),
+              '```',
+              '</details>',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

@@ -1,0 +1,31 @@
+# Exit-Eval Rubric Version Selection (SSOT)
+#
+# Maps each X1 gate to the rubric version the production exit_eval factory should
+# load. Created 2026-04-25 per runtime-gate-promotion-followup follow-up to
+# .windsurf/plans/runtime-gate-coverage-hardening-7e3f1a.md.
+#
+# v2 graduates to default for X1D and X1F because:
+#   - X1D@v2 promotes `groundedness` to a hard veto sub-gate (G5 closure).
+#   - X1F@v2 adds `indirect_injection_resistance` as a hard sub-gate plus
+#     `tool_result_faithfulness` as a model-graded soft dim (G7 closure).
+#
+# Gates not listed default to v1 (back-compat). Tests that load a specific
+# version by explicit filename continue to work because v1 files remain on disk.
+#
+# To roll a gate forward / back, change its value here and regenerate Wave/Phase
+# coverage row. The factory raises KeyError if the named file is missing.
+versions:
+  X1A: v1
+  X1B: v1
+  X1C: v1
+  X1D: v2   # promoted 2026-04-25 (was v1)
+  X1E: v1
+  X1F: v2   # promoted 2026-04-25 (was v1)
+  X1G: v1
+  X1H: v1
+  X1I: v1
+  X1J: v1
+
+# Optional override mechanism — when env var `EXIT_EVAL_RUBRIC_VERSION_<GATE>`
+# is set (e.g. EXIT_EVAL_RUBRIC_VERSION_X1D=v1), it wins over the YAML default.
+# Useful for A/B in CI without editing the SSOT.

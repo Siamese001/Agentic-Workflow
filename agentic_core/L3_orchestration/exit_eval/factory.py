@@ -59,6 +59,51 @@ from agentic_core.L3_orchestration.exit_eval.rubric import load_rubric
 
 DEFAULT_RUBRIC_DIR = Path(__file__).resolve().parents[3] / "config" / "exit_eval_rubrics"
 
+# Rubric-version SSOT — added 2026-04-25 per runtime-gate-coverage-hardening
+# follow-up. Resolves which file (e.g. x1d_v1.yaml vs x1d_v2.yaml) the factory
+# should load for each gate. Reads `_versions.yaml` at the rubric_dir root.
+# Falls back to v1 for any gate not declared.
+_VERSION_FILENAME = "_versions.yaml"
+_FALLBACK_VERSION = "v1"
+
+
+def _resolve_rubric_version(gate_id: str, rubric_dir: Path) -> str:
+    """Resolve which version of a gate rubric to load.
+
+    Order of precedence:
+      1. Env var ``EXIT_EVAL_RUBRIC_VERSION_<GATE>`` (e.g. ``..._X1D=v2``)
+      2. ``{rubric_dir}/_versions.yaml`` ``versions[<GATE>]`` block
+      3. ``v1`` fallback (preserves pre-2026-04-25 behaviour)
+    """
+    import os  # noqa: PLC0415
+
+    env_key = f"EXIT_EVAL_RUBRIC_VERSION_{gate_id.upper()}"
+    env_val = os.environ.get(env_key, "").strip()
+    if env_val:
+        return env_val
+    versions_path = rubric_dir / _VERSION_FILENAME
+    if versions_path.exists():
+        try:
+            import yaml  # noqa: PLC0415
+
+            data = yaml.safe_load(versions_path.read_text(encoding="utf-8")) or {}
+            block = data.get("versions") or {}
+            if isinstance(block, dict):
+                v = block.get(gate_id) or block.get(gate_id.upper())
+                if isinstance(v, str) and v.strip():
+                    return v.strip()
+        except (OSError, UnicodeDecodeError, ValueError) as exc:
+            # Non-fatal — fall through to v1 default. Surface in logs.
+            import logging  # noqa: PLC0415
+
+            logging.getLogger(__name__).warning(
+                "[exit_eval.factory] version resolution failed for %s: %s; using %s",
+                gate_id,
+                exc,
+                _FALLBACK_VERSION,
+            )
+    return _FALLBACK_VERSION
+
 
 # --------------------------------------------------------------------- #
 # Sensible defaults for the code-based grader slots. Callers override by
@@ -249,9 +294,12 @@ def build_pipeline(
 
     gates: list[Gate] = []
     for gate_id in filtered_gate_ids:
-        rubric_path = rubric_dir / f"{gate_id.lower()}_v1.yaml"
+        # Version-aware rubric load — SSOT in {rubric_dir}/_versions.yaml.
+        # Defaults to v1 for any gate not declared in the SSOT (back-compat).
+        version = _resolve_rubric_version(gate_id, rubric_dir)
+        rubric_path = rubric_dir / f"{gate_id.lower()}_{version}.yaml"
         if not rubric_path.exists():
-            raise KeyError(f"rubric file missing for {gate_id}: {rubric_path}")
+            raise KeyError(f"rubric file missing for {gate_id} (version={version}): {rubric_path}")
         rubric = load_rubric(rubric_path)
         graders = _build_graders_for_gate(gate_id, judge_factory, overrides)
         gates.append(Gate(rubric, graders))
