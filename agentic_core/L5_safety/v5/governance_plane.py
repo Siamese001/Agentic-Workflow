@@ -164,6 +164,16 @@ def certify_packet(
     timestamp_iso: str | None = None,
     additional_reason_codes: tuple[ReasonCode, ...] = (),
     declared_mode: GovernanceMode | None = None,
+    # Optional v4 / CI bridge outputs. Each is a JSON-serializable dict
+    # produced by ``agentic_core.L5_safety.v5.bridges.bridge_*``. When
+    # supplied, each one populates the matching named report and may
+    # surface a reason code. None means "delegated module did not run".
+    static_report: Mapping[str, Any] | None = None,
+    runtime_guardrail_report: Mapping[str, Any] | None = None,
+    handoff_report: Mapping[str, Any] | None = None,
+    policy_validation_report: Mapping[str, Any] | None = None,
+    egress_report: Mapping[str, Any] | None = None,
+    registry_match_report: Mapping[str, Any] | None = None,
 ) -> GovernanceResult:
     """Compose the v5 governance pipeline.
 
@@ -257,23 +267,52 @@ def certify_packet(
             "registry_digest_set": list(request.registry_digest_set),
             "principal_chain_id": request.principal_chain_id,
         },
-        # Lanes that v4 / external modules own — empty placeholder dicts
-        # preserve the wire shape without falsifying coverage.
-        "static_report": {},
-        "runtime_guardrail_report": {},
+        # Lanes that v4 / external modules own. Bridge outputs (when
+        # supplied) populate the spec-named report; otherwise empty dict
+        # preserves the wire shape.
+        "static_report": dict(static_report) if static_report else {},
+        "runtime_guardrail_report": (
+            dict(runtime_guardrail_report) if runtime_guardrail_report else {}
+        ),
         "route_alignment_report": {},
-        "handoff_report": {},
+        "handoff_report": dict(handoff_report) if handoff_report else {},
         "context_boundary_report": {},
-        "policy_validation_report": {},
+        "policy_validation_report": (
+            dict(policy_validation_report) if policy_validation_report else {}
+        ),
         "token_sandbox_report": {
             "capability_token": capability_token.to_dict() if capability_token else None,
             "sandbox_envelope": sandbox_envelope.to_dict() if sandbox_envelope else None,
+            "registry_match": dict(registry_match_report) if registry_match_report else {},
         },
-        "egress_report": {},
+        "egress_report": dict(egress_report) if egress_report else {},
         "HITL_report": hitl_disposition.to_dict() if hitl_disposition else {},
         "runtime_regression_report": runtime_regression.to_dict() if runtime_regression else {},
         "audit_seal_report": {"compliance_hash": replay.compliance_hash},
     }
+
+    # Bridge fail-results surface as reason codes on the rail. Codes are
+    # drawn from the spec-line-663-681 reason-code set; bridges are
+    # mapped onto the closest semantic match.
+    bridge_reason_codes: list[ReasonCode] = []
+    if static_report and static_report.get("passed") is False:
+        # S1 blueprint violation → POLICY_VIOLATION (spec line 663
+        # subsumes structural-rule failures under policy-class).
+        bridge_reason_codes.append(ReasonCode.POLICY_VIOLATION)
+    if runtime_guardrail_report and runtime_guardrail_report.get("decision") == "reject":
+        # R1/R2 guardrail reject → INJECTION_DETECTED (spec line 668)
+        bridge_reason_codes.append(ReasonCode.INJECTION_DETECTED)
+    if handoff_report and handoff_report.get("approved") is False:
+        # R4 handoff failure → CONTEXT_BLEED / CROSS_TENANT_RISK
+        bridge_reason_codes.append(ReasonCode.CONTEXT_BLEED)
+    if policy_validation_report and policy_validation_report.get("passed") is False:
+        bridge_reason_codes.append(ReasonCode.POLICY_VIOLATION)
+    if registry_match_report and registry_match_report.get("matched") is False:
+        bridge_reason_codes.append(ReasonCode.REGISTRY_MISMATCH)
+    if egress_report and egress_report.get("decision") == "reject":
+        # R9 connector/network egress violation → CONNECTOR_SCOPE_MISMATCH
+        bridge_reason_codes.append(ReasonCode.CONNECTOR_SCOPE_MISMATCH)
+    additional_reason_codes = additional_reason_codes + tuple(bridge_reason_codes)
 
     # Spec R11 — drift detection fold-in: if the regression report failed,
     # surface DRIFT_DETECTED so the rail can ESCALATE/REJECT appropriately.

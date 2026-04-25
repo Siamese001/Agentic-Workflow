@@ -35,6 +35,14 @@ from agentic_core.L5_safety.v5.contracts import (
     StandardsFingerprint,
     TriageReport,
 )
+from agentic_core.L5_safety.v5.bridges import (
+    bridge_blueprint_paths,
+    bridge_guardrail_bank,
+    bridge_handoff_validation,
+    bridge_policy_bundle,
+    bridge_registry_token_match,
+    map_v5_band_to_v4,
+)
 from agentic_core.L5_safety.v5.decision_rail import emit_verdict
 from agentic_core.L5_safety.v5.g0_entry import (
     EntryValidationFailure,
@@ -91,9 +99,15 @@ __all__ = [
     "TriageFlag",
     "TriageReport",
     "assert_no_current_run_mutation",
+    "bridge_blueprint_paths",
+    "bridge_guardrail_bank",
+    "bridge_handoff_validation",
+    "bridge_policy_bundle",
+    "bridge_registry_token_match",
     "certify_packet",
     "classify_origins",
     "emit_verdict",
+    "map_v5_band_to_v4",
     "seal_replay_envelope",
     "triage_request",
     "validate_entry_packet",

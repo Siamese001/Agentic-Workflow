@@ -85,34 +85,39 @@ Legend:
 
 ## Static Lane (lines 197–295)
 
-The static lane is owned by **CI gates and existing v4 modules**, not the v5 façade. v5 references but does not re-implement.
+The static lane is owned by **CI gates and existing v4 modules**. v5 ships a thin bridge layer (`agentic_core/L5_safety/v5/bridges.py`) so callers can hand v4 outputs to v5 and have them flow into `governance_reports` + reason codes deterministically.
 
-| Gate | Status | Where |
-|------|:------:|-------|
-| S1 Structure enforcement | 🔁 | `agentic_core/L5_safety/config/structure_blueprint/` + `ops_scripts/ci/check_*.py` |
-| S2 Classification kernel | 🔁 | `tools/adg/` ADG classifier |
-| S3 Registry validation x4 | 🔁 | `agentic_core/L5_safety/identity/registries.py` |
-| S4 Policy package integrity | 🔁 | external policy bundle owner |
-| S5 Static regression protection | 🔁 | `ops_scripts/ci/baselines/*.json` |
+| Gate | Status | Bridge | Where |
+|------|:------:|--------|-------|
+| S1 Structure enforcement | 🔁 ✅ | `bridge_blueprint_paths` | `agentic_core/L5_safety/config/structure_blueprint/` (`is_path_allowed`, `has_forbidden_layer_prefix`) |
+| S2 Classification kernel | 🔁 | — | `tools/adg/` ADG classifier (CI-only) |
+| S3 Registry validation x4 | 🔁 ✅ | `bridge_registry_token_match` | `agentic_core/L5_safety/identity/registries.py::verify_token_against_registry` |
+| S4 Policy package integrity | 🔁 ✅ | `bridge_policy_bundle` | `runtime_rails.validate_policy_bundle` |
+| S5 Static regression protection | 🔁 | — | `ops_scripts/ci/baselines/*.json` |
 
-`governance_reports["static_report"]` placeholder kept in v5 wire shape so CI bridge code can populate it.
+Bridge fail-results map to spec-line-663–681 reason codes:
+- `static_report.passed=False` → `POLICY_VIOLATION`
+- `policy_validation_report.passed=False` → `POLICY_VIOLATION`
+- `registry_match_report.matched=False` → `REGISTRY_MISMATCH`
 
 ## Runtime Lane (lines 301–588)
 
-| Gate | Status | Where |
-|------|:------:|-------|
-| R1 Universal guardrail bank | 🔁 | v4 `agentic_core/L5_safety/identity/guardrail_bank.py`; placeholder in `governance_reports["runtime_guardrail_report"]` |
-| R2 Agent-level domain guardrails | 🔁 | v4 `guardrail_bank.py`; placeholder in `governance_reports` |
-| R3 Route + plan alignment | 🔁 | placeholder `route_alignment_report` |
-| R4 Handoff validation (A2A) | 🔁 ✅ | v4 `runtime_rails.validate_handoff`; outcome composed by `evaluate_runtime_lane` and forwarded as `runtime_final_action` |
-| R5 Context boundary enforcement | 🔁 📦 | placeholder `context_boundary_report`; `evidence_contract_id` field on `CapabilityTokenV5` |
-| R6 Policy validation chokepoint | 📦 ✅ | risk-depth FAST/STANDARD/ENHANCED/LOCKDOWN modeled; hard stops surface as reason codes |
-| R7 Capability token + sandbox envelope builder | 📦 ✅ | `CapabilityTokenV5` (12 fields per spec), `SandboxEnvelope` (12 fields per spec) |
-| R8 LLM gateway | 🔁 | v4 `llm_gateway_v4.py`; placeholder in `governance_reports["egress_report"]` |
-| R9 Tool/connector/network egress | 🔁 | v4 `egress_adapter_gated.py`; placeholder in `egress_report` |
-| R10 HITL action gate + human re-entry | 📦 ✅ | `HITLDispositionPacket` (10 fields per spec line 543), human REJECT forces rail REJECT, `re_clearance_required=True` invariant enforced |
-| R11 Runtime regression + drift protection | 📦 ✅ | `RuntimeRegressionReport` (11 boolean checks per spec lines 551–562), failed regression → `DRIFT_DETECTED` reason → ESCALATE |
-| R12 Replay + audit sealing | ✅ | `seal_replay_envelope` produces canonical-JSON sha256 over all spec-line-575 fields |
+| Gate | Status | Bridge | Where |
+|------|:------:|--------|-------|
+| R1 Universal guardrail bank | 🔁 ✅ | `bridge_guardrail_bank("ingress",...)` | v4 `guardrail_bank.resolve_bank_verdict`; reject→`INJECTION_DETECTED` |
+| R2 Agent-level domain guardrails | 🔁 ✅ | `bridge_guardrail_bank("guard_model",...)` | same module, different stage |
+| R3 Route + plan alignment | 🔁 | — | placeholder `route_alignment_report` |
+| R4 Handoff validation (A2A) | 🔁 ✅ | `bridge_handoff_validation` | v4 `runtime_rails.validate_handoff`; failure→`CONTEXT_BLEED` |
+| R5 Context boundary enforcement | 🔁 📦 | — | `evidence_contract_id` on `CapabilityTokenV5` |
+| R6 Policy validation chokepoint | 📦 ✅ | — | review depth + hard stops via reason codes |
+| R7 Capability token + sandbox envelope | 📦 ✅ | — | `CapabilityTokenV5` + `SandboxEnvelope` (12 fields each) |
+| R8 LLM gateway | 🔁 | (caller passes `egress_report`) | v4 `llm_gateway_v4.py`; reject→`CONNECTOR_SCOPE_MISMATCH` |
+| R9 Tool/connector/network egress | 🔁 | (caller passes `egress_report`) | v4 `egress_adapter_gated.py`; reject→`CONNECTOR_SCOPE_MISMATCH` |
+| R10 HITL action gate + human re-entry | 📦 ✅ | — | `HITLDispositionPacket`; human REJECT→rail REJECT; `re_clearance_required=True` |
+| R11 Runtime regression + drift protection | 📦 ✅ | — | `RuntimeRegressionReport` (11 checks); fail→`DRIFT_DETECTED`→ESCALATE |
+| R12 Replay + audit sealing | ✅ | — | `seal_replay_envelope` |
+
+**Risk-tier bridge** — `map_v5_band_to_v4` collapses v5 `RiskTierBandV5.CRITICAL` onto v4 `'HIGH'` (v4 has only LOW/MODERATE/HIGH per spec line 71 delta).
 
 ## Decision Rail (lines 590–650)
 
@@ -195,4 +200,23 @@ These are architectural invariants enforced **outside** the v5 module — by lay
 | Reason codes | 19 | 19 📦 ✅ |
 | Downstream dispositions | 9 | 9 ✅ |
 
-Test count: **59/59 passing** (38 base + 21 gap-closure tests).
+Test count: **74/74 passing** (38 base + 21 gap-closure + 15 bridge integration tests).
+
+## Bridge Module — `agentic_core/L5_safety/v5/bridges.py`
+
+5 bridges + 1 risk-tier mapper, all lazy-imported so v5 stays usable in environments without v4:
+
+| Bridge | Calls | Returns | Auto-mapped reason code |
+|--------|-------|---------|------------------------|
+| `bridge_blueprint_paths` | `structure_blueprint.is_path_allowed`, `has_forbidden_layer_prefix` | `{checked, accepted, rejected, passed}` | `POLICY_VIOLATION` |
+| `bridge_guardrail_bank` | `guardrail_bank.resolve_bank_verdict` | v4 verdict dict (normalized `decision` key) | `INJECTION_DETECTED` |
+| `bridge_handoff_validation` | `runtime_rails.validate_handoff` | v4 `HandoffValidationResult.to_dict()` | `CONTEXT_BLEED` |
+| `bridge_policy_bundle` | `runtime_rails.validate_policy_bundle` | `{violations, rule_count, passed}` | `POLICY_VIOLATION` |
+| `bridge_registry_token_match` | `registries.verify_token_against_registry` | `{matched, reason, token_digest}` | `REGISTRY_MISMATCH` |
+| `map_v5_band_to_v4` | — | `'LOW'\|'MODERATE'\|'HIGH'` | (CRITICAL collapses to HIGH) |
+
+`certify_packet` accepts each bridge's output as a kwarg (`static_report=...`, `runtime_guardrail_report=...`, etc.) and:
+1. Threads it into `governance_reports[<spec_named_key>]` (preserves wire shape per spec lines 731–745).
+2. Detects failure shape (`passed=False`, `decision="reject"`, `matched=False`, `approved=False`) and surfaces the right reason code into the decision rail.
+
+All bridges are total over their inputs; none raise on a healthy v4 object. Callers without v4 simply omit the kwarg — `certify_packet` still issues a sealed verdict with empty placeholder reports.
