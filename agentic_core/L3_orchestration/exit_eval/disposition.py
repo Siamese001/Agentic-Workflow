@@ -88,6 +88,22 @@ class ReasonCode(str, Enum):
     REWARD_HACK_SUSPECT = "REWARD_HACK_SUSPECT"
     BREAK_GLASS_INVOKED = "BREAK_GLASS_INVOKED"
 
+    # v5 §X3A reason-code parity (added 2026-04-25 per plan exit-eval-v5-gap-c0aa47).
+    # Generic catch-all for hard-gate failures whose specific code does not
+    # exist in this taxonomy; emit in preference to leaving a hard-fail
+    # un-coded.
+    HARD_FAIL = "HARD_FAIL"
+    # Structural trajectory invalidity (distinct from heuristic
+    # ``TRAJECTORY_SUSPECT``): emit when the trajectory is malformed,
+    # truncated, or otherwise unusable for grading rather than merely
+    # suspicious.
+    TRAJECTORY_INVALID = "TRAJECTORY_INVALID"
+    # Generic adversarial signal beyond the specific
+    # ``PROMPT_INJECTION_DETECTED`` / ``JAILBREAK_DETECTED`` /
+    # ``ADVERSARIAL_CRASH`` codes. Use when a custom adversarial detector
+    # fires but the specific class is not one of the named ones.
+    ADVERSARIAL_DETECTED = "ADVERSARIAL_DETECTED"
+
 
 @dataclass(frozen=True)
 class DispositionEnvelope:

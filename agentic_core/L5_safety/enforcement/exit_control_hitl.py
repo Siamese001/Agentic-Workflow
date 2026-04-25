@@ -84,18 +84,38 @@ class WriteAuthority(str, Enum):
 
 
 class HumanDecision(str, Enum):
-    """Valid decisions a human reviewer may submit."""
+    """Valid decisions a human reviewer may submit.
+
+    Aligned with v5 §H4 (DECISION) which enumerates ``APPROVE``,
+    ``MODIFY_DIFF``, ``REJECT``, ``RETURN_TO_L1``, and
+    ``REQUEST_MORE_EVIDENCE``. ``DENY`` is retained as a back-compat
+    alias for ``REJECT``.
+    """
 
     APPROVE = "APPROVE"
-    DENY = "DENY"
+    REJECT = "REJECT"
+    DENY = "DENY"  # back-compat alias for REJECT (pre-v5 callers)
     MODIFY_DIFF = "MODIFY_DIFF"
+    RETURN_TO_L1 = "RETURN_TO_L1"
+    REQUEST_MORE_EVIDENCE = "REQUEST_MORE_EVIDENCE"
 
 
 class ReClearOutcome(str, Enum):
-    """Result of the H5 re-clearance gate."""
+    """Result of the H5 re-clearance gate.
+
+    v5 §L5 RE-CLEARANCE GATE outcomes:
+      - ``CLEARED_ALLOW`` / ``CLEARED_COMMIT`` (APPROVE path)
+      - ``RECLEAR_RESTART`` (MODIFY_DIFF path — re-hydrate + restart)
+      - ``RETURNED_TO_L1`` (RETURN_TO_L1 path — replan)
+      - ``MORE_EVIDENCE_REQUESTED`` (REQUEST_MORE_EVIDENCE — bounded re-entry)
+      - ``BLOCKED`` (REJECT, validation failure, or H5 policy fail)
+    """
 
     CLEARED_ALLOW = "CLEARED_ALLOW"
     CLEARED_COMMIT = "CLEARED_COMMIT"
+    RECLEAR_RESTART = "RECLEAR_RESTART"
+    RETURNED_TO_L1 = "RETURNED_TO_L1"
+    MORE_EVIDENCE_REQUESTED = "MORE_EVIDENCE_REQUESTED"
     BLOCKED = "BLOCKED"
 
 
@@ -181,20 +201,39 @@ class ExitControlHITL:
         result = hitl.validate_and_reclear(human_input, packet)
         # result.outcome ∈ {CLEARED_ALLOW, CLEARED_COMMIT, BLOCKED}
 
-    Constraints:
-    - MODIFY_DIFF is BLOCKED (no direct diff application; routes back to L2)
-    - APPROVE without valid packet_id match is BLOCKED
-    - Human input is always re-validated by L5 policy before clearance
-    - authority_state=FROZEN is a typed invariant during H1–H5
+    Constraints (v5 §H4 + §L5 RE-CLEARANCE):
+    - APPROVE without valid packet_id match is BLOCKED.
+    - REJECT / DENY → BLOCKED (DENY is back-compat alias).
+    - RETURN_TO_L1 → RETURNED_TO_L1 (caller routes the run back to L1 replan).
+    - REQUEST_MORE_EVIDENCE → MORE_EVIDENCE_REQUESTED (packet stays active for bounded re-entry).
+    - MODIFY_DIFF → RECLEAR_RESTART when ``reclear_callback`` is wired and
+      returns a re-hydrated artifact mapping; otherwise BLOCKED. The caller
+      is responsible for re-running X1A/X1C/X1F (and X1D if evidence
+      changed; X1G if commit-path remains active) on the re-hydrated
+      artifact before allowing the run to proceed.
+    - Human input is always re-validated by L5 policy before APPROVE clearance.
+    - authority_state=FROZEN is a typed invariant during H1–H5.
     """
 
-    def __init__(self, policy_validator: Any | None = None) -> None:
+    def __init__(
+        self,
+        policy_validator: Any | None = None,
+        *,
+        reclear_callback: Any | None = None,
+    ) -> None:
         """
         Args:
             policy_validator: Optional callable(artifact, reviewer_id) → bool.
                               If None, re-clearance requires APPROVE decision + non-empty justification.
+            reclear_callback: Optional callable(modified_artifact, human_input) → dict.
+                              Invoked on ``MODIFY_DIFF`` to re-hydrate the run with the
+                              proposed diff applied; the returned mapping is recorded as
+                              the ``re_cleared_artifact`` of a ``RECLEAR_RESTART`` outcome.
+                              When None, ``MODIFY_DIFF`` BLOCKS (back-compat with pre-v5
+                              callers that intentionally route diffs back to L2).
         """
         self._policy_validator = policy_validator
+        self._reclear_callback = reclear_callback
         self._active_packets: dict[str, BoundedPacket] = {}
 
     def freeze_and_materialize(
@@ -284,27 +323,9 @@ class ExitControlHITL:
                 reason="authority_state is not FROZEN — H5 re-clearance requires frozen state invariant",
             )
 
-        if human_input.decision == HumanDecision.MODIFY_DIFF:
-            self._active_packets.pop(packet.packet_id, None)
-            return ReClearResult(
-                outcome=ReClearOutcome.BLOCKED,
-                packet_id=packet.packet_id,
-                trace_id=trace_id,
-                reviewer_id=human_input.reviewer_id,
-                reason="MODIFY_DIFF is blocked — direct diff application bypasses L5 re-clearance. "
-                "Route proposed changes back to L2 for re-execution.",
-            )
-
-        if human_input.decision == HumanDecision.DENY:
-            self._active_packets.pop(packet.packet_id, None)
-            return ReClearResult(
-                outcome=ReClearOutcome.BLOCKED,
-                packet_id=packet.packet_id,
-                trace_id=trace_id,
-                reviewer_id=human_input.reviewer_id,
-                reason=f"Human reviewer denied clearance: {human_input.justification}",
-            )
-
+        # Identity + justification gate — mandatory for ALL decisions per
+        # v5 §H4 ("human input = untrusted DATA"). Run before decision
+        # branching so every outcome path requires non-empty attribution.
         if not human_input.reviewer_id or not human_input.reviewer_id.strip():
             return ReClearResult(
                 outcome=ReClearOutcome.BLOCKED,
@@ -323,6 +344,104 @@ class ExitControlHITL:
                 reason="H4 validation failed: justification is missing or empty — human input is untrusted data; justification is mandatory",
             )
 
+        # REJECT / DENY — spec §L5 RE-CLEAR: REJECT → DENY/STOP. Pop packet.
+        if human_input.decision in (HumanDecision.REJECT, HumanDecision.DENY):
+            self._active_packets.pop(packet.packet_id, None)
+            return ReClearResult(
+                outcome=ReClearOutcome.BLOCKED,
+                packet_id=packet.packet_id,
+                trace_id=trace_id,
+                reviewer_id=human_input.reviewer_id,
+                reason=f"Human reviewer rejected clearance: {human_input.justification}",
+            )
+
+        # RETURN_TO_L1 — spec §L5 RE-CLEAR: RETURN_TO_L1 for replan. Pop packet.
+        if human_input.decision == HumanDecision.RETURN_TO_L1:
+            self._active_packets.pop(packet.packet_id, None)
+            return ReClearResult(
+                outcome=ReClearOutcome.RETURNED_TO_L1,
+                packet_id=packet.packet_id,
+                trace_id=trace_id,
+                reviewer_id=human_input.reviewer_id,
+                reason=f"Human reviewer returned to L1 for replan: {human_input.justification}",
+            )
+
+        # REQUEST_MORE_EVIDENCE — spec §L5 RE-CLEAR: bounded re-entry only.
+        # Keep packet active so a follow-up review can land against the
+        # same packet_id; downstream may attach evidence and resubmit.
+        if human_input.decision == HumanDecision.REQUEST_MORE_EVIDENCE:
+            return ReClearResult(
+                outcome=ReClearOutcome.MORE_EVIDENCE_REQUESTED,
+                packet_id=packet.packet_id,
+                trace_id=trace_id,
+                reviewer_id=human_input.reviewer_id,
+                reason=f"Human reviewer requested more evidence: {human_input.justification}",
+            )
+
+        # MODIFY_DIFF — spec §L5 RE-CLEAR: L5 Re-clear → Re-hydrate → RESTART.
+        # When a re-clearance callback is wired, hand off to it; otherwise
+        # preserve back-compat hard-block (pre-v5 callers route to L2).
+        if human_input.decision == HumanDecision.MODIFY_DIFF:
+            if human_input.proposed_diff is None or not isinstance(human_input.proposed_diff, dict):
+                self._active_packets.pop(packet.packet_id, None)
+                return ReClearResult(
+                    outcome=ReClearOutcome.BLOCKED,
+                    packet_id=packet.packet_id,
+                    trace_id=trace_id,
+                    reviewer_id=human_input.reviewer_id,
+                    reason="MODIFY_DIFF requires non-empty proposed_diff mapping",
+                )
+            if self._reclear_callback is None:
+                self._active_packets.pop(packet.packet_id, None)
+                return ReClearResult(
+                    outcome=ReClearOutcome.BLOCKED,
+                    packet_id=packet.packet_id,
+                    trace_id=trace_id,
+                    reviewer_id=human_input.reviewer_id,
+                    reason="MODIFY_DIFF is blocked when no reclear_callback is wired — "
+                    "per v5 §L5 re-clear, supply reclear_callback to ExitControlHITL "
+                    "to enable re-hydrate + restart, or route proposed changes back to L2.",
+                )
+            try:
+                rehydrated = self._reclear_callback(
+                    dict(packet.sealed_artifact_summary),
+                    human_input,
+                )
+            except (ValueError, TypeError, RuntimeError) as exc:
+                self._active_packets.pop(packet.packet_id, None)
+                return ReClearResult(
+                    outcome=ReClearOutcome.BLOCKED,
+                    packet_id=packet.packet_id,
+                    trace_id=trace_id,
+                    reviewer_id=human_input.reviewer_id,
+                    reason=f"reclear_callback failed: {exc!s}",
+                )
+            if not isinstance(rehydrated, dict):
+                self._active_packets.pop(packet.packet_id, None)
+                return ReClearResult(
+                    outcome=ReClearOutcome.BLOCKED,
+                    packet_id=packet.packet_id,
+                    trace_id=trace_id,
+                    reviewer_id=human_input.reviewer_id,
+                    reason="reclear_callback must return a mapping of the re-hydrated artifact",
+                )
+            self._active_packets.pop(packet.packet_id, None)
+            _emit_reclears_human_decision(trace_id, "ExitControlHITL", human_input.reviewer_id)
+            logger.info(
+                "[ExitControlHITL] H5 MODIFY_DIFF re-clear: packet_id=%s reviewer=%s",
+                packet.packet_id,
+                human_input.reviewer_id,
+            )
+            return ReClearResult(
+                outcome=ReClearOutcome.RECLEAR_RESTART,
+                packet_id=packet.packet_id,
+                trace_id=trace_id,
+                reviewer_id=human_input.reviewer_id,
+                reason=f"MODIFY_DIFF re-cleared; pipeline must re-run X1A/X1C/X1F (and X1D if evidence changed) on re-hydrated artifact. Justification: {human_input.justification}",
+                re_cleared_artifact=rehydrated,
+            )
+
+        # APPROVE path — identity + justification already validated above.
         policy_passed = self._run_h5_policy(
             human_input=human_input,
             packet=packet,

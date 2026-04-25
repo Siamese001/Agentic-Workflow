@@ -1,0 +1,21 @@
+gate: X1G
+version: X1G@v1
+composition: binary
+metadata:
+  description: >
+    Consistency Modifier (pass^k). Commit-path only; advisory on non-commit
+    paths. Inspects recent k-trial reliability for the same trajectory_class
+    drawn from BUS T and requires pass^k >= theta declared by the X1A policy
+    manifest. Failure routes to X3B with CONSISTENCY_FAIL; missing history
+    routes with INSUFFICIENT_HISTORY; history backend unavailable routes
+    with CONSISTENCY_HISTORY_UNAVAILABLE. pass@k (analytics) is NOT a
+    runtime gate. v5 spec note: "customer-facing commit: theta high (e.g.
+    0.95); internal commit: theta lower (e.g. 0.85)" — actual theta/k are
+    set by ConsistencyPolicy at the pipeline layer, not in this rubric.
+dimensions:
+  - name: passk_consistency
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 1.0
+    is_hard_gate: true
+    threshold: 1.0
