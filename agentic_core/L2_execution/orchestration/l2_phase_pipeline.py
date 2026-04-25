@@ -53,7 +53,6 @@ from agentic_core.L2_execution.types.l2_v3_receipts import (
     assert_snapshot_match,
 )
 
-
 # ---------------------------------------------------------------------------
 # Adapter result shapes — what user-supplied callables must return.
 # ---------------------------------------------------------------------------

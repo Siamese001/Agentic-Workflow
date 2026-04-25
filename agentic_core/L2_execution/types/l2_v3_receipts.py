@@ -27,7 +27,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-
 # ---------------------------------------------------------------------------
 # Result classes (E3.7 / E5.5) — already exist in HealOutcome /
 # TerminalClassification; this enum is the v3-spec literal mirror so call
