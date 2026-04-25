@@ -21,6 +21,7 @@ import hashlib
 import json
 import logging
 import time
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from typing import Any
 
@@ -383,7 +384,8 @@ class ReasoningPolicyEngine:
         )
 
         calibration_report = {
-            "timestamp": time.time(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "epoch_seconds": time.time(),
             "policy_hash": self._policy_hash,
             "outcome_count": len(outcome_aggregates),
             "tier_adjustments": {},
