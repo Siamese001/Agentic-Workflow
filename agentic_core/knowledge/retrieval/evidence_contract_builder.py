@@ -119,6 +119,57 @@ class NextActionHint:
     ABSTAIN = "abstain"  # evidence too weak; do not generate
 
 
+class EvidenceStatus:
+    """C0.5 unified status (per spec §C0.5 STATUS + Final Contract §status)."""
+
+    PASS = "pass"
+    WEAK = "weak"
+    WEAK_WITH_CAVEATS = "weak_with_caveats"  # post-refine partial recovery
+    CONFLICTED = "conflicted"
+    EMPTY = "empty"
+    BLOCKED = "blocked"
+
+
+class EvidenceClass:
+    """C0.4 stratification classes (per spec §C0.4 STRATIFY)."""
+
+    MUST_USE = "must_use"
+    SUPPORTING = "supporting"
+    CONTRADICTS = "contradicts"
+    BACKGROUND = "background"
+    EXCLUDED = "excluded"
+
+
+class RecommendedDisposition:
+    """Final Contract §recommended_disposition (per spec)."""
+
+    PROCEED = "proceed"
+    CAVEAT = "caveat"
+    ABSTAIN = "abstain"
+    REROUTE = "reroute"  # task became workflow-sized; recommend R5 fallback
+
+
+class RefinementTactic:
+    """C0.6 refinement tactic (per spec §C0.6 CHOOSE ONE TACTIC)."""
+
+    REWRITE = "rewrite"  # same intent, better words
+    BROADEN = "broaden"  # widen synonyms / source class within ACL
+    NARROW = "narrow"  # add exact entity / file / time filter
+    DECOMPOSE = "decompose"  # split compound support target
+    GRAPH_HOP = "graph_hop"  # one bounded relation hop
+    ABSTAIN = "abstain"  # cannot safely recover support
+
+
+@dataclass
+class RefinementDiagnostic:
+    """C0.6 diagnostic record — why evidence is weak and what to do."""
+
+    issue_type: str
+    description: str
+    suggested_tactic: str = RefinementTactic.ABSTAIN
+    affected_chunks: list[str] = field(default_factory=list)
+
+
 @dataclass
 class EvidenceContract:
     """Full C0.4 evidence contract.
@@ -169,6 +220,56 @@ class EvidenceContract:
     provenance_verified: bool = False
     replay_metadata: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
+    # C0.5 unified status + C0.6 refinement state
+    status: str = EvidenceStatus.PASS
+    refinement_diagnostics: list[RefinementDiagnostic] = field(default_factory=list)
+    refine_attempt: int = 0
+    max_refine_attempts: int = 3
+    # ------------------------------------------------------------------
+    # Final Evidence Contract spec fields (per spec §FINAL C0 EVIDENCE CONTRACT)
+    # ------------------------------------------------------------------
+    cited_spans: list[dict[str, Any]] = field(default_factory=list)
+    """Exact spans/line refs/section anchors per cited evidence.
+
+    Each entry: {chunk_id, source_id, span_start, span_end, line_ref, section}.
+    """
+    source_ids: list[str] = field(default_factory=list)
+    """Doc IDs / file paths / version IDs for all cited sources."""
+
+    evidence_classes: dict[str, str] = field(default_factory=dict)
+    """Mapping chunk_id -> EvidenceClass label (5-class stratification)."""
+
+    contradiction_flags: list[str] = field(default_factory=list)
+    """Explicit conflict descriptions (non-empty when status=CONFLICTED)."""
+
+    unresolved_gaps: list[str] = field(default_factory=list)
+    """Query aspects not covered by any retrieved chunk (alias of gaps)."""
+
+    freshness_report: dict[str, Any] = field(default_factory=dict)
+    """Per-source age vs freshness_class (from RetrievalPlan)."""
+
+    acl_report: dict[str, Any] = field(default_factory=dict)
+    """ACL clearance status per cited source."""
+
+    lineage_manifest: dict[str, Any] = field(default_factory=dict)
+    """How each evidence item was found: retrieval_mode, graph_hops, lane."""
+
+    prompt_budget_hint: dict[str, Any] = field(default_factory=dict)
+    """Packing priority for Prompt Assembly (token_estimate, must_use_count, ...)."""
+
+    recommended_disposition: str = RecommendedDisposition.PROCEED
+    """proceed / caveat / abstain / reroute (per spec §FINAL CONTRACT)."""
+
+    budget_report: dict[str, Any] = field(
+        default_factory=lambda: {
+            "retrieval_passes": 1,
+            "graph_hops": 0,
+            "latency_used_ms": 0,
+            "budget_remaining_ms": 0,
+            "tokens_used": 0,
+            "cost_used_usd": 0.0,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -196,11 +297,13 @@ class EvidenceContractBuilder:
         must_use_threshold: float = 0.80,
         min_coverage_to_proceed: float = 0.3,
         must_use_count: int = 3,
+        graph_stage: Any | None = None,
     ) -> None:
         self.min_citation_confidence = min_citation_confidence
         self.must_use_threshold = must_use_threshold
         self.min_coverage_to_proceed = min_coverage_to_proceed
         self.must_use_count = must_use_count
+        self._graph_stage = graph_stage  # GraphRecallStage or None (C0.6 GRAPH_HOP)
         log.info("EvidenceContractBuilder initialized")
 
     def build_contract(
@@ -264,6 +367,27 @@ class EvidenceContractBuilder:
         # Build legacy context packet
         context_packet = self._generate_context_packet(query, citations)
 
+        # ----- C0.5 Final Evidence Contract field population -----
+        status = self._compute_status(
+            citations,
+            support_score,
+            coverage_score,
+            contradiction_status,
+        )
+        cited_spans = self._build_cited_spans(verified_chunks, retrieved_docs)
+        source_ids = self._build_source_ids(citations)
+        evidence_classes = self._build_evidence_classes(verified_chunks, citations)
+        contradiction_flags = self._build_contradiction_flags(verified_chunks)
+        freshness_report = self._build_freshness_report(retrieved_docs)
+        acl_report = self._build_acl_report(retrieved_docs)
+        lineage_manifest = self._build_lineage_manifest(citations, retrieved_docs)
+        prompt_budget_hint = self._build_prompt_budget_hint(verified_chunks)
+        recommended_disposition = self._decide_disposition(
+            status,
+            contradiction_status,
+            coverage_score,
+        )
+
         contract = EvidenceContract(
             query_id=query_id,
             verified_chunks=verified_chunks,
@@ -285,6 +409,18 @@ class EvidenceContractBuilder:
                     sum(c.confidence for c in citations) / len(citations) if citations else 0.0
                 ),
             },
+            # C0.5 unified status + Final Contract fields
+            status=status,
+            cited_spans=cited_spans,
+            source_ids=source_ids,
+            evidence_classes=evidence_classes,
+            contradiction_flags=contradiction_flags,
+            unresolved_gaps=list(gaps),
+            freshness_report=freshness_report,
+            acl_report=acl_report,
+            lineage_manifest=lineage_manifest,
+            prompt_budget_hint=prompt_budget_hint,
+            recommended_disposition=recommended_disposition,
         )
 
         _emit_records_telemetry_event(
@@ -475,6 +611,479 @@ class EvidenceContractBuilder:
         for i, c in enumerate(citations, 1):
             parts.append(f"[{i}] Source: {c.source} (ID: {c.doc_id})\nContent: {c.content_snippet}\n")
         return "\n".join(parts)
+
+    # ------------------------------------------------------------------
+    # C0.5 Final Evidence Contract field builders (per spec §FINAL CONTRACT)
+    # ------------------------------------------------------------------
+
+    def _compute_status(
+        self,
+        citations: list[Citation],
+        support_score: float,
+        coverage_score: float,
+        contradiction_status: str,
+    ) -> str:
+        """C0.5 unified status: PASS / WEAK / CONFLICTED / EMPTY / BLOCKED.
+
+        Per spec §C0.5 STATUS:
+          PASS       = enough direct support
+          WEAK       = partial support, refinement may help
+          CONFLICTED = credible sources disagree
+          EMPTY      = no usable evidence
+          BLOCKED    = source/policy/ACL prevents use (caller-set; default not BLOCKED)
+        """
+        if not citations:
+            return EvidenceStatus.EMPTY
+        if contradiction_status == ContradictionStatus.CONFLICTING:
+            return EvidenceStatus.CONFLICTED
+        if coverage_score < self.min_coverage_to_proceed or support_score < self.min_citation_confidence:
+            return EvidenceStatus.WEAK
+        return EvidenceStatus.PASS
+
+    def _build_cited_spans(
+        self,
+        verified_chunks: list[VerifiedChunk],
+        retrieved_docs: list[Any],
+    ) -> list[dict[str, Any]]:
+        """Build spec §cited_spans: exact spans/line refs/section anchors per chunk."""
+        doc_map = {getattr(d, "doc_id", ""): d for d in retrieved_docs}
+        spans: list[dict[str, Any]] = []
+        for chunk in verified_chunks:
+            doc = doc_map.get(chunk.chunk_id)
+            meta = dict(getattr(doc, "metadata", {}) or {}) if doc is not None else {}
+            spans.append(
+                {
+                    "chunk_id": chunk.chunk_id,
+                    "source_id": chunk.source_id,
+                    "citation_anchor": chunk.citation_anchor,
+                    "span_start": meta.get("span_start"),
+                    "span_end": meta.get("span_end"),
+                    "line_ref": meta.get("line_ref") or meta.get("page_number"),
+                    "section": meta.get("section"),
+                }
+            )
+        return spans
+
+    def _build_source_ids(self, citations: list[Citation]) -> list[str]:
+        """Build spec §source_ids: deduped doc IDs / file paths / version IDs."""
+        return list(dict.fromkeys(c.source for c in citations if c.source and c.source != "unknown"))
+
+    def _build_evidence_classes(
+        self,
+        verified_chunks: list[VerifiedChunk],
+        citations: list[Citation],  # noqa: ARG002
+    ) -> dict[str, str]:
+        """Build spec §evidence_classes: chunk_id -> 5-class stratification label.
+
+        Classes (per spec §C0.4 STRATIFY):
+          MUST_USE / SUPPORTING / CONTRADICTS / BACKGROUND / EXCLUDED
+        """
+        classes: dict[str, str] = {}
+        for chunk in verified_chunks:
+            if chunk.contradiction_flag:
+                classes[chunk.chunk_id] = EvidenceClass.CONTRADICTS
+            elif chunk.is_must_use:
+                classes[chunk.chunk_id] = EvidenceClass.MUST_USE
+            elif chunk.support_score >= 0.5:
+                classes[chunk.chunk_id] = EvidenceClass.SUPPORTING
+            else:
+                classes[chunk.chunk_id] = EvidenceClass.BACKGROUND
+        return classes
+
+    def _build_contradiction_flags(self, verified_chunks: list[VerifiedChunk]) -> list[str]:
+        """Build spec §contradiction_flags: explicit conflict descriptions."""
+        flags: list[str] = []
+        for chunk in verified_chunks:
+            if chunk.contradiction_flag:
+                flags.append(
+                    f"chunk={chunk.chunk_id} source={chunk.source_id}: contradicts another must-use chunk"
+                )
+        return flags
+
+    def _build_freshness_report(self, retrieved_docs: list[Any]) -> dict[str, Any]:
+        """Build spec §freshness_report: source age vs freshness_class."""
+        report: dict[str, Any] = {"by_source": {}, "stale_count": 0, "fresh_count": 0}
+        for doc in retrieved_docs:
+            meta = dict(getattr(doc, "metadata", {}) or {})
+            source_id = meta.get("source_id") or getattr(doc, "doc_id", "")
+            if not source_id:
+                continue
+            band = meta.get("freshness_band", "unknown")
+            age_days = meta.get("age_days")
+            report["by_source"][source_id] = {
+                "freshness_band": band,
+                "age_days": age_days,
+                "indexed_at": meta.get("indexed_at"),
+            }
+            if band in ("stale", "cold", "expired"):
+                report["stale_count"] += 1
+            else:
+                report["fresh_count"] += 1
+        return report
+
+    def _build_acl_report(self, retrieved_docs: list[Any]) -> dict[str, Any]:
+        """Build spec §acl_report: cleared sources only (per-source ACL status)."""
+        report: dict[str, Any] = {"by_source": {}, "cleared_count": 0, "blocked_count": 0}
+        for doc in retrieved_docs:
+            meta = dict(getattr(doc, "metadata", {}) or {})
+            source_id = meta.get("source_id") or getattr(doc, "doc_id", "")
+            if not source_id:
+                continue
+            cleared = bool(meta.get("acl_cleared", True))
+            report["by_source"][source_id] = {
+                "cleared": cleared,
+                "tenant_id": meta.get("tenant_id"),
+                "allowed_principals": meta.get("allowed_principals", []),
+            }
+            if cleared:
+                report["cleared_count"] += 1
+            else:
+                report["blocked_count"] += 1
+        return report
+
+    def _build_lineage_manifest(
+        self,
+        citations: list[Citation],
+        retrieved_docs: list[Any],
+    ) -> dict[str, Any]:
+        """Build spec §lineage_manifest: how each evidence item was found."""
+        doc_map = {getattr(d, "doc_id", ""): d for d in retrieved_docs}
+        by_chunk: dict[str, dict[str, Any]] = {}
+        retrieval_modes_used: set[str] = set()
+        graph_hops_total = 0
+        for c in citations:
+            doc = doc_map.get(c.doc_id)
+            meta = dict(getattr(doc, "metadata", {}) or {}) if doc is not None else {}
+            mode = c.source or meta.get("retrieval_mode", "unknown")
+            retrieval_modes_used.add(mode)
+            graph_hops = int(meta.get("graph_hops", 0) or 0)
+            graph_hops_total += graph_hops
+            by_chunk[c.doc_id] = {
+                "lane": mode,
+                "retrieval_mode": meta.get("retrieval_mode", mode),
+                "graph_hops": graph_hops,
+                "plan_id": meta.get("plan_id"),
+                "rank": meta.get("rank"),
+                "rerank_score": meta.get("rerank_score") or c.confidence,
+            }
+        return {
+            "by_chunk": by_chunk,
+            "retrieval_modes_used": sorted(retrieval_modes_used),
+            "graph_hops_total": graph_hops_total,
+        }
+
+    def _build_prompt_budget_hint(
+        self,
+        verified_chunks: list[VerifiedChunk],
+    ) -> dict[str, Any]:
+        """Build spec §prompt_budget_hint: packing priority for Prompt Assembly."""
+        # Approximate token estimate (4 chars/token)
+        total_chars = sum(len(c.content) for c in verified_chunks)
+        token_estimate = total_chars // 4
+        must_use = [c for c in verified_chunks if c.is_must_use]
+        return {
+            "token_estimate": token_estimate,
+            "must_use_count": len(must_use),
+            "must_use_token_estimate": sum(len(c.content) for c in must_use) // 4,
+            "optional_count": len(verified_chunks) - len(must_use),
+            "packing_order": [c.chunk_id for c in verified_chunks],  # already must-use first
+        }
+
+    def _decide_disposition(
+        self,
+        status: str,
+        contradiction_status: str,
+        coverage_score: float,
+    ) -> str:
+        """Build spec §recommended_disposition: proceed/caveat/abstain/reroute.
+
+        Rules:
+          PASS                                           -> PROCEED
+          WEAK_WITH_CAVEATS or CONFLICTED (recoverable)  -> CAVEAT
+          EMPTY or BLOCKED                               -> ABSTAIN
+          WEAK with very-low coverage                    -> REROUTE (workflow-sized)
+        """
+        if status == EvidenceStatus.PASS:
+            return RecommendedDisposition.PROCEED
+        if status == EvidenceStatus.WEAK_WITH_CAVEATS:
+            return RecommendedDisposition.CAVEAT
+        if status == EvidenceStatus.CONFLICTED:
+            return RecommendedDisposition.CAVEAT
+        if status in (EvidenceStatus.EMPTY, EvidenceStatus.BLOCKED):
+            return RecommendedDisposition.ABSTAIN
+        if status == EvidenceStatus.WEAK:
+            # Very-low coverage signals workflow-sized task
+            if coverage_score < (self.min_coverage_to_proceed / 2.0):
+                return RecommendedDisposition.REROUTE
+            return RecommendedDisposition.CAVEAT
+        # Unknown contradiction-only edge case
+        if contradiction_status == ContradictionStatus.CONFLICTING:
+            return RecommendedDisposition.CAVEAT
+        return RecommendedDisposition.PROCEED
+
+    # ------------------------------------------------------------------
+    # C0.6 Refinement tactic executors
+    # ------------------------------------------------------------------
+
+    def execute_refinement_tactic(
+        self,
+        tactic: str,
+        contract: EvidenceContract,
+        original_plan: Any,
+        query: str = "",
+    ) -> dict[str, Any]:
+        """Execute the chosen C0.6 refinement tactic.
+
+        Each tactic produces a *refined RetrievalPlan* the caller re-issues
+        for one bounded second pass.  GUARDS (per spec): no infinite loop
+        (cap by ``max_refine_attempts``), no source escape (ACL preserved).
+
+        Args:
+            tactic: One of ``RefinementTactic`` constants.
+            contract: Current weak/empty/conflicted contract.
+            original_plan: ``RetrievalPlan`` from the failed first pass.
+            query: Original query string (used by REWRITE/BROADEN/DECOMPOSE).
+
+        Returns:
+            Dict with keys: ``tactic``, ``refined_plan``, ``new_query``,
+            ``decomposed_queries``, ``hop_results``, ``abstain``,
+            ``rationale``.
+        """
+        # GUARD: no infinite loop
+        if contract.refine_attempt >= contract.max_refine_attempts:
+            return {
+                "tactic": RefinementTactic.ABSTAIN,
+                "refined_plan": None,
+                "abstain": True,
+                "rationale": (
+                    f"max_refine_attempts={contract.max_refine_attempts} reached; "
+                    f"forcing ABSTAIN to prevent infinite loop"
+                ),
+            }
+
+        if tactic == RefinementTactic.REWRITE:
+            return self._tactic_rewrite(contract, original_plan, query)
+        if tactic == RefinementTactic.BROADEN:
+            return self._tactic_broaden(contract, original_plan, query)
+        if tactic == RefinementTactic.NARROW:
+            return self._tactic_narrow(contract, original_plan, query)
+        if tactic == RefinementTactic.DECOMPOSE:
+            return self._tactic_decompose(contract, original_plan, query)
+        if tactic == RefinementTactic.GRAPH_HOP:
+            return self._tactic_graph_hop(contract, original_plan)
+        if tactic == RefinementTactic.ABSTAIN:
+            return {
+                "tactic": RefinementTactic.ABSTAIN,
+                "refined_plan": None,
+                "abstain": True,
+                "rationale": "Cannot safely recover support; abstaining per C0.6",
+            }
+        return {
+            "tactic": tactic,
+            "refined_plan": original_plan,
+            "abstain": False,
+            "rationale": f"Unknown tactic '{tactic}'; preserving original plan",
+        }
+
+    def _clone_plan_with(self, original_plan: Any, **overrides: Any) -> Any:
+        """Clone a RetrievalPlan with field overrides; preserves ACL/replay.
+
+        C0.6 GUARDS — no source escape: ACL/tenant/replay/policy fields
+        are always carried forward from the original plan.
+        """
+        from agentic_core.knowledge.retrieval.retrieval_plan import (  # noqa: PLC0415
+            RetrievalPlan,
+        )
+
+        if original_plan is None:
+            return None
+
+        new_kwargs = {
+            "query_id": original_plan.query_id,
+            "retrieval_mode": original_plan.retrieval_mode,
+            "source_collections": list(original_plan.source_collections),
+            "top_k": original_plan.top_k,
+            "allowed_principals": list(original_plan.allowed_principals),
+            "tenant_id": original_plan.tenant_id,
+            "max_freshness_band": original_plan.max_freshness_band,
+            "effective_date_window": original_plan.effective_date_window,
+            "schema_version_bind": original_plan.schema_version_bind,
+            "replay_key": original_plan.replay_key,
+            "policy_hash": original_plan.policy_hash,
+            "metadata": dict(original_plan.metadata),
+        }
+        new_kwargs.update(overrides)
+        new_kwargs["metadata"]["refinement_of"] = original_plan.plan_id
+        return RetrievalPlan(**new_kwargs)
+
+    def _tactic_rewrite(
+        self,
+        contract: EvidenceContract,  # noqa: ARG002
+        original_plan: Any,
+        query: str,
+    ) -> dict[str, Any]:
+        """REWRITE — same intent, better words (deterministic stop-word strip)."""
+        stop = {"the", "a", "an", "of", "to", "is", "are", "what", "how", "in", "on"}
+        tokens = [t for t in query.lower().split() if t not in stop]
+        new_query = " ".join(tokens) if tokens else query
+        return {
+            "tactic": RefinementTactic.REWRITE,
+            "refined_plan": self._clone_plan_with(original_plan),
+            "new_query": new_query,
+            "abstain": False,
+            "rationale": f"Rewrote '{query}' -> '{new_query}' (stopwords removed)",
+        }
+
+    def _tactic_broaden(
+        self,
+        contract: EvidenceContract,  # noqa: ARG002
+        original_plan: Any,
+        query: str,
+    ) -> dict[str, Any]:
+        """BROADEN — loosen freshness one band, widen source_collections, double top_k."""
+        from agentic_core.knowledge.canonical.chunk_manifest import (  # noqa: PLC0415
+            FreshnessBand,
+        )
+
+        bands = FreshnessBand.ordered()
+        try:
+            idx = bands.index(original_plan.max_freshness_band)
+            new_band = bands[min(idx + 1, len(bands) - 1)]
+        except (ValueError, AttributeError):
+            new_band = original_plan.max_freshness_band
+
+        refined = self._clone_plan_with(
+            original_plan,
+            max_freshness_band=new_band,
+            source_collections=[],
+            top_k=min(original_plan.top_k * 2, 100),
+        )
+        return {
+            "tactic": RefinementTactic.BROADEN,
+            "refined_plan": refined,
+            "new_query": query,
+            "abstain": False,
+            "rationale": (
+                f"Widened freshness {original_plan.max_freshness_band}->{new_band}, "
+                f"top_k {original_plan.top_k}->{refined.top_k}, "
+                f"removed source_collections (ACL preserved)"
+            ),
+        }
+
+    def _tactic_narrow(
+        self,
+        contract: EvidenceContract,
+        original_plan: Any,
+        query: str,
+    ) -> dict[str, Any]:
+        """NARROW — restrict source_collections to top must-use sources, halve top_k."""
+        narrow_ids: list[str] = []
+        for chunk in contract.verified_chunks[:3]:
+            sid = getattr(chunk, "source_id", "") or ""
+            if sid and sid != "unknown":
+                narrow_ids.append(sid)
+
+        refined = self._clone_plan_with(
+            original_plan,
+            source_collections=narrow_ids or list(original_plan.source_collections),
+            top_k=max(original_plan.top_k // 2, 5),
+        )
+        return {
+            "tactic": RefinementTactic.NARROW,
+            "refined_plan": refined,
+            "new_query": query,
+            "abstain": False,
+            "rationale": (
+                f"Narrowed source_collections to {narrow_ids or 'unchanged'}, "
+                f"top_k {original_plan.top_k}->{refined.top_k}"
+            ),
+        }
+
+    def _tactic_decompose(
+        self,
+        contract: EvidenceContract,
+        original_plan: Any,
+        query: str,
+    ) -> dict[str, Any]:
+        """DECOMPOSE — split on conjunction/comma, produce one sub-plan per piece."""
+        import re  # noqa: PLC0415
+
+        parts = re.split(r"\s+(?:and|or)\s+|[;,]\s*", query, flags=re.IGNORECASE)
+        parts = [p.strip() for p in parts if p.strip()]
+
+        if len(parts) <= 1:
+            return self._tactic_broaden(contract, original_plan, query)
+
+        sub_plans = [
+            self._clone_plan_with(
+                original_plan,
+                top_k=max(original_plan.top_k // len(parts), 3),
+            )
+            for _ in parts
+        ]
+        return {
+            "tactic": RefinementTactic.DECOMPOSE,
+            "refined_plan": sub_plans[0],
+            "decomposed_queries": parts,
+            "decomposed_plans": sub_plans,
+            "abstain": False,
+            "rationale": f"Decomposed query into {len(parts)} sub-queries",
+        }
+
+    def _tactic_graph_hop(
+        self,
+        contract: EvidenceContract,
+        original_plan: Any,
+    ) -> dict[str, Any]:
+        """GRAPH_HOP — execute one bounded relation hop via injected graph_stage."""
+        if self._graph_stage is None:
+            return {
+                "tactic": RefinementTactic.GRAPH_HOP,
+                "refined_plan": original_plan,
+                "hop_results": [],
+                "abstain": False,
+                "rationale": "No graph_stage wired; graph_hop is a no-op",
+            }
+
+        hop_diags = [
+            d for d in contract.refinement_diagnostics if d.suggested_tactic == RefinementTactic.GRAPH_HOP
+        ]
+        # If no explicit GRAPH_HOP diagnostics, hop from top must-use chunks
+        target_chunk_ids: list[str] = []
+        if hop_diags:
+            for d in hop_diags:
+                target_chunk_ids.extend(d.affected_chunks[:5])
+        else:
+            target_chunk_ids = [c.chunk_id for c in contract.verified_chunks[:3]]
+
+        all_hops: list[Any] = []
+        for chunk_id in target_chunk_ids:
+            source_path = ""
+            for c in contract.verified_chunks:
+                if c.chunk_id == chunk_id:
+                    source_path = c.provenance.get("source_path", "") or c.provenance.get("file_path", "")
+                    break
+            try:
+                hops = self._graph_stage.graph_hop(
+                    chunk_id=chunk_id,
+                    source_path=source_path,
+                    plan=original_plan,
+                )
+                all_hops.extend(hops)
+            except (OSError, ValueError) as exc:
+                log.debug("graph_hop(%s) failed: %s", chunk_id, exc)
+
+        # Update budget report
+        if all_hops:
+            contract.budget_report["graph_hops"] = contract.budget_report.get("graph_hops", 0) + len(all_hops)
+
+        return {
+            "tactic": RefinementTactic.GRAPH_HOP,
+            "refined_plan": original_plan,
+            "hop_results": all_hops,
+            "abstain": False,
+            "rationale": f"Executed {len(all_hops)} graph hops",
+        }
 
 
 # ---------------------------------------------------------------------------

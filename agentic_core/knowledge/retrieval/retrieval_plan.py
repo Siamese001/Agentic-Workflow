@@ -40,16 +40,38 @@ log = logging.getLogger(__name__)
 
 
 class RetrievalMode:
-    """Supported retrieval modes."""
+    """Supported retrieval modes (per spec §C0.2 SEARCH LANES)."""
 
     DENSE = "dense"
     SPARSE = "sparse"
     HYBRID = "hybrid"
     GRAPH = "graph"
+    METADATA = "metadata"  # metadata-only filter lane
+    CACHE = "cache"  # reusable prior context (when freshness + policy allow)
 
     @classmethod
     def all(cls) -> list[str]:
-        return [cls.DENSE, cls.SPARSE, cls.HYBRID, cls.GRAPH]
+        return [cls.DENSE, cls.SPARSE, cls.HYBRID, cls.GRAPH, cls.METADATA, cls.CACHE]
+
+
+class SupportTarget:
+    """C0.1 support_target types (per spec §C0.1 DECISIONS)."""
+
+    EXACT_QUOTE = "exact_quote"
+    SOURCE_BACKED_SUMMARY = "source_backed_summary"
+    CODE_LOCATION = "code_location"
+    POLICY_CLAUSE = "policy_clause"
+    INCIDENT_EVIDENCE = "incident_evidence"
+    RANKED_CAUSE = "ranked_cause"
+
+
+class WeakSupportPolicy:
+    """C0.1 weak_support_policy options (per spec §C0.1 OUTPUT)."""
+
+    REFINE_ONCE = "refine_once"  # one bounded second pass
+    REFINE_MAX = "refine_max"  # up to max_refine_attempts
+    ABSTAIN_ON_WEAK = "abstain_on_weak"  # do not refine; report WEAK
+    REROUTE_ON_WEAK = "reroute_on_weak"  # recommend R5 fallback
 
 
 @dataclass
@@ -95,14 +117,29 @@ class RetrievalPlan:
     plan_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     retrieval_mode: str = RetrievalMode.HYBRID
     source_collections: list[str] = field(default_factory=list)
+    disallowed_sources: list[str] = field(default_factory=list)  # C0.1 spec
     top_k: int = 10
     allowed_principals: list[str] = field(default_factory=list)
     tenant_id: str = "default"
+    region: str = ""  # C0.1 spec — geographical/regulatory scope
     max_freshness_band: str = FreshnessBand.COLD  # accept everything by default
     effective_date_window: tuple[datetime, datetime] | None = None
     schema_version_bind: str | None = None
     replay_key: str | None = None
     policy_hash: str = ""
+    # C0.1 support_target — what kind of evidence is required
+    support_target: str = ""  # one of SupportTarget constants
+    # C0.1 limits (per spec §C0.1 DECISIONS)
+    max_parent_expansion: int = 3  # parent-child hydration cap
+    max_graph_hops: int = 2  # bounded graph traversal cap
+    max_refine_attempts: int = 3  # C0.6 refinement cap
+    # C0.1 budgets (SLO/token/latency/cost — per spec §C0.1 INPUTS)
+    slo_budget_ms: int = 5000  # total C0 stage SLO
+    token_budget: int = 4000  # max evidence tokens for prompt assembly
+    latency_budget_ms: int = 3000  # retrieval-only latency budget
+    cost_budget_usd: float = 0.0  # 0.0 = no cost cap
+    # C0.1 weak_support_policy — what to do when evidence is WEAK
+    weak_support_policy: str = WeakSupportPolicy.REFINE_ONCE
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -325,5 +362,7 @@ __all__ = [
     "RetrievalMode",
     "RetrievalPlan",
     "RetrievalPrefilter",
+    "SupportTarget",
+    "WeakSupportPolicy",
     "get_retrieval_prefilter",
 ]

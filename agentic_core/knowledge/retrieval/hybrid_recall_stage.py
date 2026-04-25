@@ -20,6 +20,7 @@ from typing import Any, Protocol, runtime_checkable
 
 from tqdm import tqdm
 
+from agentic_core.knowledge.retrieval.retrieval_plan import RetrievalMode
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
@@ -108,6 +109,7 @@ class HybridRecallStage:
         vector_store: VectorStore | None = None,
         sparse_store: Any | None = None,
         sparse_fts_collection: str | None = None,
+        graph_stage: Any | None = None,
     ) -> None:
         self.vector_weight = vector_weight
         self.sparse_weight = sparse_weight
@@ -117,15 +119,17 @@ class HybridRecallStage:
         self._sparse_store = sparse_store
         self._sparse_fts_collection = sparse_fts_collection
         self._sparse_fts_index: Any | None = None  # lazily resolved
+        self._graph_stage = graph_stage  # GraphRecallStage or None (C0.3)
 
         log.info(
             "HybridRecallStage initialized (vector=%.2f, sparse=%.2f, "
-            "dense_wired=%s, sparse_store=%s, fts=%s)",
+            "dense_wired=%s, sparse_store=%s, fts=%s, graph=%s)",
             vector_weight,
             sparse_weight,
             vector_store is not None,
             sparse_store is not None,
             sparse_fts_collection,
+            graph_stage is not None,
         )
 
     # ------------------------------------------------------------------
@@ -165,6 +169,50 @@ class HybridRecallStage:
             "HybridRecallStage.recall",
         )
 
+        # Determine retrieval mode (C0.2 mode dispatch)
+        retrieval_mode = plan.retrieval_mode if plan is not None else RetrievalMode.HYBRID
+
+        # C0.3 GRAPH mode — delegate to graph stage
+        if retrieval_mode == RetrievalMode.GRAPH and self._graph_stage is not None:
+            seed_path = scope_filter.get("file_path", "") if scope_filter else ""
+            if seed_path:
+                graph_results = self._graph_stage.recall(
+                    seed_file_path=seed_path,
+                    plan=plan,
+                )
+                for r in graph_results:
+                    r.metadata["replay_key"] = replay_key
+                    r.metadata["policy_hash"] = policy_hash
+                    r.metadata["plan_id"] = plan_id
+                log.debug("Graph recall [plan=%s]: graph=%d", plan_id, len(graph_results))
+                return graph_results[:effective_top_k]
+            log.debug("GRAPH mode but no seed file_path; falling through to hybrid")
+
+        # C0.2 DENSE-only mode — skip sparse
+        if retrieval_mode == RetrievalMode.DENSE:
+            dense_results = self._dense_recall(query_vector, scope_filter)
+            for r in dense_results:
+                r.metadata["replay_key"] = replay_key
+                r.metadata["policy_hash"] = policy_hash
+                r.metadata["plan_id"] = plan_id
+            log.debug("Dense-only recall [plan=%s]: dense=%d", plan_id, len(dense_results))
+            return dense_results[:effective_top_k]
+
+        # C0.2 SPARSE-only mode — skip dense
+        if retrieval_mode == RetrievalMode.SPARSE:
+            sparse_results = self._sparse_recall(
+                query_terms,
+                query_text or " ".join(query_terms),
+                scope_filter,
+            )
+            for r in sparse_results:
+                r.metadata["replay_key"] = replay_key
+                r.metadata["policy_hash"] = policy_hash
+                r.metadata["plan_id"] = plan_id
+            log.debug("Sparse-only recall [plan=%s]: sparse=%d", plan_id, len(sparse_results))
+            return sparse_results[:effective_top_k]
+
+        # HYBRID (default) — run both and merge
         dense_results = self._dense_recall(query_vector, scope_filter)
         sparse_results = self._sparse_recall(
             query_terms,
