@@ -14,7 +14,11 @@ MODULE_CANDIDATES = [
     "agentic_core.L0_routing.reasoning.l0_threshold_tuner",
 ]
 CLASS_CANDIDATES = ["L0ThresholdTuner", "L0ThresholdChangePackage"]
-CALLABLE_CANDIDATES = ["propose_threshold_change", "tune_threshold"]
+CALLABLE_CANDIDATES = [
+    "propose_l0_threshold_changes",
+    "propose_threshold_change",
+    "tune_threshold",
+]
 
 
 def _import_first_available(candidates: list[str]):

@@ -14,7 +14,11 @@ MODULE_CANDIDATES = [
     "agentic_core.L0_routing.reasoning.rag_optimizer",
 ]
 CLASS_CANDIDATES = ["RAGOptimizer", "RAGChangePackage"]
-CALLABLE_CANDIDATES = ["propose_rag_change", "optimize_rag"]
+CALLABLE_CANDIDATES = [
+    "propose_rag_param_changes",
+    "propose_rag_change",
+    "optimize_rag",
+]
 
 
 def _import_first_available(candidates: list[str]):
