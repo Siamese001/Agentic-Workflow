@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -219,6 +219,80 @@ class HumanCalibrationEngine:
         self.drift_threshold = drift_threshold or self.DEFAULT_DRIFT_THRESHOLD
         self.calibration_window = calibration_window or self.DEFAULT_CALIBRATION_WINDOW
         self._calibration_history: list[CalibrationRecord] = []
+        # v6 KPI state.
+        # JUDGE_HUMAN_KAPPA_FRESHNESS: epoch of latest calibration per
+        # rubric_id; we report the OLDEST among rubrics (worst-case age).
+        # JUDGE_UNKNOWN_BUDGET_COMPLIANCE: counters for judges that
+        # respected their unknown_budget vs total judges scored.
+        self._last_calibration_epoch_by_rubric: dict[str, float] = {}
+        self._compliant_judges: int = 0
+        self._total_judges: int = 0
+
+    # --- v6 KPI surface -------------------------------------------------
+
+    def mark_calibration(self, *, rubric_id: str, epoch: float) -> None:
+        """Record that ``rubric_id`` was just calibrated at ``epoch``."""
+        prev = self._last_calibration_epoch_by_rubric.get(rubric_id)
+        if prev is None or epoch > prev:
+            self._last_calibration_epoch_by_rubric[rubric_id] = float(epoch)
+
+    def mark_judge_scored(self, *, compliant: bool) -> None:
+        """Record one judge scored against unknown_budget."""
+        self._total_judges += 1
+        if compliant:
+            self._compliant_judges += 1
+
+    @property
+    def calibration_state(self) -> tuple[dict[str, float], int, int]:
+        """Return ``(per_rubric_epochs, compliant_judges, total_judges)``."""
+        return (
+            dict(self._last_calibration_epoch_by_rubric),
+            self._compliant_judges,
+            self._total_judges,
+        )
+
+    def reset_calibration_state(self) -> None:
+        """Reset all v6 KPI calibration state."""
+        self._last_calibration_epoch_by_rubric.clear()
+        self._compliant_judges = 0
+        self._total_judges = 0
+
+    def publish_kpi_sample(self, board: Any, *, now: float | None = None) -> None:
+        """Publish JUDGE_HUMAN_KAPPA_FRESHNESS and
+        JUDGE_UNKNOWN_BUDGET_COMPLIANCE to ``board``.
+
+        Freshness is reported using the OLDEST calibration epoch across
+        rubrics (worst-case age). If no rubrics have been calibrated, the
+        sample is skipped (no spurious zero).
+
+        Compliance ratio uses the standard zero-total convention: 0.0 when
+        no judges have been scored.
+        """
+        try:
+            from system_learning.engines.v6_kpi_producers import (  # noqa: PLC0415
+                record_judge_human_kappa_freshness,
+                record_judge_unknown_budget_compliance,
+            )
+
+            if self._last_calibration_epoch_by_rubric:
+                oldest_rubric_id, oldest_epoch = min(
+                    self._last_calibration_epoch_by_rubric.items(),
+                    key=lambda kv: kv[1],
+                )
+                record_judge_human_kappa_freshness(
+                    board,
+                    last_calibration_epoch=oldest_epoch,
+                    rubric_id=oldest_rubric_id,
+                    now=now,
+                )
+            record_judge_unknown_budget_compliance(
+                board,
+                compliant_judges=self._compliant_judges,
+                total_judges=self._total_judges,
+                now=now,
+            )
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break calibration
+            logger.warning("v6_kpi_human_calibration_publish_failed: %s", exc)
 
     def record_judgment(
         self,
