@@ -14,7 +14,7 @@ Deterministic, with full ADG traceability.
 from __future__ import annotations
 
 import logging
-from typing import Protocol
+from typing import Any, Protocol
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -126,6 +126,47 @@ class OutcomeEvaluationEngine:
         self.trace_reader = trace_reader
         self.groundedness_checker = groundedness_checker
         self.weights = weights or self.DEFAULT_WEIGHTS.copy()
+        # v6 KPI counters (EVAL_COVERAGE_OF_RUNS).
+        # Producers call mark_run_observed() for each run dispatched and
+        # mark_run_evaluated() for each run that produced an eval record.
+        # publish_kpi_sample() emits the ratio.
+        self._total_runs: int = 0
+        self._runs_with_eval: int = 0
+
+    # --- v6 KPI surface (EVAL_COVERAGE_OF_RUNS) -------------------------
+
+    def mark_run_observed(self) -> None:
+        """Record one observed run dispatch (denominator)."""
+        self._total_runs += 1
+
+    def mark_run_evaluated(self) -> None:
+        """Record one run that produced an eval record (numerator)."""
+        self._runs_with_eval += 1
+
+    @property
+    def coverage_counters(self) -> tuple[int, int]:
+        """Return ``(runs_with_eval, total_runs)``."""
+        return (self._runs_with_eval, self._total_runs)
+
+    def reset_coverage_counters(self) -> None:
+        """Reset v6 KPI coverage counters."""
+        self._total_runs = 0
+        self._runs_with_eval = 0
+
+    def publish_kpi_sample(self, board: Any) -> None:
+        """Publish EVAL_COVERAGE_OF_RUNS to ``board``. Never raises."""
+        try:
+            from system_learning.engines.v6_kpi_producers import (  # noqa: PLC0415
+                record_eval_coverage,
+            )
+
+            record_eval_coverage(
+                board,
+                runs_with_eval=self._runs_with_eval,
+                total_runs=self._total_runs,
+            )
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break eval
+            logger.warning("v6_kpi_eval_coverage_failed: %s", exc)
 
     def evaluate_outcome(
         self,
@@ -150,6 +191,11 @@ class OutcomeEvaluationEngine:
             Deterministic outcome evaluation result.
         """
         _emit_records_execution_trace("outcome_evaluation_engine", "eval_start", trace_id)
+
+        # v6 KPI accounting: every evaluate_outcome() call observes a run
+        # AND produces an eval record (this method is the eval producer).
+        self._total_runs += 1
+        self._runs_with_eval += 1
 
         # Evaluate each metric
         task_completion = self._evaluate_task_completion(execution_result)
