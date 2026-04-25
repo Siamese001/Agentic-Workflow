@@ -20,6 +20,8 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
 pytestmark = pytest.mark.unit
 
 
@@ -106,7 +108,7 @@ def _make_agent(*, qwen_enabled: bool = True, gateway_raises: Exception | None =
             agent._qwen_init_error = "qwen_vllm package unavailable"
         elif agent.qwen_enabled:
             try:
-                agent._qwen_gateway = _mod.AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+                agent._qwen_gateway = _mod.AppsQwenGateway(model_id=QWEN_LOCAL_MODEL_ID)
             except RuntimeError as e:  # guardian: allow-broad-exception-in-test -- mirrors the production except block; gateway raises heterogeneous errors
                 agent._qwen_init_error = str(e)
                 agent._qwen_gateway = None
@@ -272,7 +274,7 @@ class TestAnalyzeGovernanceWithQwenFailLoud:
             success=True,
             response="RISKS_IDENTIFIED: none",
             confidence=0.9,
-            model_used="Qwen/Qwen2.5-7B-Instruct",
+            model_used=QWEN_LOCAL_MODEL_ID,
             latency_ms=120,
             error_message=None,
         )

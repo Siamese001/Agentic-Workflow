@@ -1,5 +1,6 @@
 """Tests for Qwen vLLM gateway orchestration."""
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning import (
     QwenInferenceGateway,
     QwenInferenceRequest,
@@ -33,13 +34,13 @@ class TestQwenInferenceResponse:
             success=True,
             response="Test response",
             confidence=0.95,
-            model_used="Qwen/Qwen2.5-7B-Instruct",
+            model_used=QWEN_LOCAL_MODEL_ID,
             latency_ms=100.0,
         )
         assert response.success is True
         assert response.response == "Test response"
         assert response.confidence == 0.95
-        assert response.model_used == "Qwen/Qwen2.5-7B-Instruct"
+        assert response.model_used == QWEN_LOCAL_MODEL_ID
         assert response.latency_ms == 100.0
 
     def test_response_creation_failure(self):
@@ -48,7 +49,7 @@ class TestQwenInferenceResponse:
             success=False,
             response=None,
             confidence=0.0,
-            model_used="Qwen/Qwen2.5-7B-Instruct",
+            model_used=QWEN_LOCAL_MODEL_ID,
             latency_ms=100.0,
             error_message="Inference failed",
         )

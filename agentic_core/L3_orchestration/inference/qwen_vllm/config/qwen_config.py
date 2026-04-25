@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
@@ -38,24 +39,28 @@ class QwenPromptConfig:
 class QwenInferenceConfig:
     """Central configuration manager for Qwen vLLM inference."""
 
-    # Model configurations for different use cases
+    # Model configurations for different use cases.
+    # Single-tier collapse (2026-04-25): all use cases route to the SSOT
+    # QWEN_LOCAL_MODEL_ID since vLLM serves Qwen2.5-32B-Instruct-AWQ
+    # exclusively. Use-case differentiation lives in the per-config
+    # max_tokens / temperature / timeout knobs applied to the same model.
     MODEL_CONFIGS: dict[str, QwenModelConfig] = {
         "fast_inference": QwenModelConfig(
-            model_id="Qwen/Qwen2.5-7B-Instruct",
+            model_id=QWEN_LOCAL_MODEL_ID,
             max_tokens=1024,
             temperature=0.1,
             confidence_threshold=0.6,
             timeout_seconds=30,
         ),
         "complex_reasoning": QwenModelConfig(
-            model_id="Qwen/Qwen2.5-32B-Instruct-AWQ",
+            model_id=QWEN_LOCAL_MODEL_ID,
             max_tokens=2048,
             temperature=0.2,
             confidence_threshold=0.7,
             timeout_seconds=60,
         ),
         "evaluation": QwenModelConfig(
-            model_id="Qwen/Qwen2.5-7B-Instruct",
+            model_id=QWEN_LOCAL_MODEL_ID,
             max_tokens=1536,
             temperature=0.05,
             confidence_threshold=0.8,

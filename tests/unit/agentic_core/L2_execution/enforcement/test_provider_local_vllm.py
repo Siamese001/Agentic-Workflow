@@ -16,13 +16,14 @@ from agentic_core.L2_execution.enforcement._provider_local_vllm import (
     LocalVLLMProvider,
     _run_async,
 )
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 
 
 @dataclass
 class _FakeResponse:
     success: bool = True
     response: str | None = "mock qwen answer"
-    model_used: str = "Qwen/Qwen2.5-14B-Instruct-AWQ"
+    model_used: str = QWEN_LOCAL_MODEL_ID
     latency_ms: float = 42.0
     cached: bool = False
     tokens_used: int = 17
@@ -80,7 +81,7 @@ def test_generate_success_shape() -> None:
 
     assert out["success"] is True
     assert out["content"] == "mock qwen answer"
-    assert out["model"] == "Qwen/Qwen2.5-14B-Instruct-AWQ"
+    assert out["model"] == QWEN_LOCAL_MODEL_ID
     assert out["tokens_used"] == 17
     assert out["cached"] is False
     assert out["latency_ms"] == 42.0

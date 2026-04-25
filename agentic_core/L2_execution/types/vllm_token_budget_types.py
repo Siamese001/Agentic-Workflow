@@ -175,8 +175,13 @@ VLLM_MAX_TOKENS_EXTENDED: int = 1200
 VLLM_MAX_TOKENS_ABSOLUTE: int = 1200
 SAFETY_MARGIN_TOKENS: int = 256
 _QWEN_CHARS_PER_TOKEN: int = 3
-QWEN_7B_MAX_MODEL_LEN: int = 32768
-QWEN_14B_MAX_MODEL_LEN: int = 32768
+QWEN_MAX_MODEL_LEN: int = 32768
+# Backward-compat aliases (2026-04-25 single-tier collapse) — both names
+# refer to the same QWEN_LOCAL_MODEL_ID model now that vLLM serves
+# Qwen2.5-32B-Instruct-AWQ exclusively. Kept to avoid breaking external
+# consumers that import these symbols. New code should use QWEN_MAX_MODEL_LEN.
+QWEN_7B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
+QWEN_14B_MAX_MODEL_LEN: int = QWEN_MAX_MODEL_LEN
 
 
 class TaskClass(str, Enum):
@@ -401,8 +406,19 @@ def run_preflight_budget_check(prompt: str, task_class: str, max_model_len: int)
 
 
 LocalTier = Literal["local_fast", "local_strong", "gemini_backstop"]
-QWEN_7B_MODEL_ID: str = "Qwen/Qwen2.5-7B-Instruct"
-QWEN_14B_MODEL_ID: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+# Single-tier collapse (2026-04-25): vLLM serves Qwen2.5-32B-Instruct-AWQ
+# exclusively. The QWEN_7B_MODEL_ID/QWEN_14B_MODEL_ID names are preserved
+# as deprecated aliases pointing at the SSOT QWEN_LOCAL_MODEL_ID — both
+# return the same value. New code should import QWEN_LOCAL_MODEL_ID from
+# agentic_core.L0_routing.config.model_registry directly.
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID  # noqa: E402, PLC0415
+
+QWEN_7B_MODEL_ID: str = (
+    QWEN_LOCAL_MODEL_ID  # Deprecated alias (was "Qwen/Qwen2.5-7B-Instruct" — model never served)
+)
+QWEN_14B_MODEL_ID: str = (
+    QWEN_LOCAL_MODEL_ID  # Deprecated alias (was misnamed; value already pointed at 32B-AWQ)
+)
 GEMINI_25_PRO_MODEL_ID: str = "gemini-2.5-pro"
 HIGH_SEVERITY_LEVELS: frozenset[str] = frozenset({"high"})
 FAST_TIER_SEVERITY_LEVELS: frozenset[str] = frozenset({"low", "medium"})
@@ -507,18 +523,23 @@ def select_local_tier(
             preflight=preflight,
             failure_type=VLLMFailureType.LOW_CONFIDENCE,
         )
+    # Single-tier collapse (2026-04-25): vLLM serves only QWEN_LOCAL_MODEL_ID,
+    # so all severity levels route to the same physical model. The "local_fast"
+    # vs "local_strong" distinction was scaffolding for a 7B tier that was
+    # never actually served. Severity is preserved as a tier-name signal for
+    # downstream telemetry/dashboards but no longer changes the model_id.
     if severity in HIGH_SEVERITY_LEVELS:
         return TieredRoutingDecision(
             tier="local_strong",
-            model_id=QWEN_14B_MODEL_ID,
+            model_id=QWEN_LOCAL_MODEL_ID,
             reason="high_severity_local_strong",
             preflight=preflight,
             failure_type=None,
         )
     return TieredRoutingDecision(
         tier="local_fast",
-        model_id=QWEN_7B_MODEL_ID,
-        reason="low_medium_severity_local_fast",
+        model_id=QWEN_LOCAL_MODEL_ID,
+        reason="low_medium_severity_unified_qwen",
         preflight=preflight,
         failure_type=None,
     )
@@ -533,6 +554,8 @@ __all__ = [
     "QWEN_14B_MODEL_ID",
     "QWEN_7B_MAX_MODEL_LEN",
     "QWEN_7B_MODEL_ID",
+    "QWEN_LOCAL_MODEL_ID",
+    "QWEN_MAX_MODEL_LEN",
     "SAFETY_MARGIN_TOKENS",
     "TASK_CLASS_OUTPUT_CAPS",
     "VLLM_MAX_TOKENS_ABSOLUTE",

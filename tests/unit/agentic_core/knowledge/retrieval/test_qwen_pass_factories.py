@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 from agentic_core.knowledge.retrieval.qwen_pass_factories import (
     build_qwen_pass1_fn,
     build_qwen_pass2_fn,
@@ -17,7 +18,7 @@ from agentic_core.knowledge.retrieval.qwen_pass_factories import (
 class _FakeResponse:
     success: bool = True
     response: str | None = '{"result": "ok"}'
-    model_used: str = "Qwen/Qwen2.5-14B-Instruct-AWQ"
+    model_used: str = QWEN_LOCAL_MODEL_ID
     latency_ms: float = 30.0
     cached: bool = False
     tokens_used: int = 20
@@ -79,7 +80,7 @@ def test_pass1_returns_anthropic_shaped_dict() -> None:
         out = p1(payload)
 
     assert out["stop_reason"] == "end_turn"
-    assert out["model"] == "Qwen/Qwen2.5-14B-Instruct-AWQ"
+    assert out["model"] == QWEN_LOCAL_MODEL_ID
     assert out["content"][0]["type"] == "text"
     assert out["content"][0]["text"] == "a grounded answer"
     # Qwen pass 1 never emits citations — always empty list per factory contract.

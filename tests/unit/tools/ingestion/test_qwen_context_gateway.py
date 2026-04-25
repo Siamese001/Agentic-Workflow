@@ -25,6 +25,7 @@ from tools.ingestion.qwen_context_gateway import (
     _vllm_server_reachable,
     build_from_env,
 )
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 
 
 @pytest.fixture(autouse=True)
@@ -138,7 +139,7 @@ class _FakeVLLMResponse:
         self.response = response
         self.error_message = error
         self.confidence = 0.85 if success else 0.0
-        self.model_used = "Qwen/Qwen2.5-14B-Instruct-AWQ"
+        self.model_used = QWEN_LOCAL_MODEL_ID
         self.latency_ms = 42.0
         self.cached = False
         self.tokens_used = 100
@@ -158,14 +159,16 @@ def _patch_gateway_factory(fake_infer_impl):
 
 def test_generate_success_returns_response_text():
     """Happy path: gateway returns non-empty text, adapter returns it verbatim."""
+
     def _ok(_request):
         return _FakeVLLMResponse(success=True, response="This chunk defines X within module Y.")
+
     _patch_gateway_factory(_ok)
 
     adapter = QwenContextGateway()
     result = adapter.generate(
         "prompt",
-        model="Qwen/Qwen2.5-14B-Instruct-AWQ",
+        model=QWEN_LOCAL_MODEL_ID,
         max_tokens=150,
         temperature=0.0,
         timeout_s=30,
@@ -189,7 +192,7 @@ def test_generate_forwards_prompt_and_sampling_kwargs():
     adapter = QwenContextGateway()
     adapter.generate(
         "hello world",
-        model="Qwen/Qwen2.5-14B-Instruct-AWQ",
+        model=QWEN_LOCAL_MODEL_ID,
         max_tokens=150,
         temperature=0.0,
         timeout_s=30,
@@ -203,15 +206,17 @@ def test_generate_forwards_prompt_and_sampling_kwargs():
 def test_generate_raises_runtime_error_on_unsuccessful_response():
     """When vLLM returns success=False, adapter must raise RuntimeError so
     ContextualChunkBuilder catches it and falls back to heuristic."""
+
     def _fail(_request):
         return _FakeVLLMResponse(success=False, response=None, error="model OOM")
+
     _patch_gateway_factory(_fail)
 
     adapter = QwenContextGateway()
     with pytest.raises(RuntimeError, match="inference unsuccessful.*model OOM"):
         adapter.generate(
             "prompt",
-            model="Qwen/Qwen2.5-14B-Instruct-AWQ",
+            model=QWEN_LOCAL_MODEL_ID,
             max_tokens=150,
             temperature=0.0,
             timeout_s=30,
@@ -222,15 +227,17 @@ def test_generate_wraps_transport_exceptions_as_runtime_error():
     """Any transport/timeout error from the underlying gateway must surface as
     RuntimeError so the builder's catch list (ImportError, RuntimeError,
     ValueError, OSError) picks it up and falls back to heuristic."""
+
     def _raise(_request):
         raise OSError("connection refused")
+
     _patch_gateway_factory(_raise)
 
     adapter = QwenContextGateway()
     with pytest.raises(RuntimeError, match="generation failed.*connection refused"):
         adapter.generate(
             "prompt",
-            model="Qwen/Qwen2.5-14B-Instruct-AWQ",
+            model=QWEN_LOCAL_MODEL_ID,
             max_tokens=150,
             temperature=0.0,
             timeout_s=30,
@@ -241,14 +248,16 @@ def test_generate_returns_empty_string_on_empty_success_response():
     """Edge case: vLLM returns success=True but empty text. Adapter returns ""
     (not None, not an exception). Builder treats "" as "no context" and keeps
     the raw chunk — same contract as AnthropicContextGateway."""
+
     def _empty(_request):
         return _FakeVLLMResponse(success=True, response=None)
+
     _patch_gateway_factory(_empty)
 
     adapter = QwenContextGateway()
     result = adapter.generate(
         "prompt",
-        model="Qwen/Qwen2.5-14B-Instruct-AWQ",
+        model=QWEN_LOCAL_MODEL_ID,
         max_tokens=150,
         temperature=0.0,
         timeout_s=30,

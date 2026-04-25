@@ -11,6 +11,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 from agentic_core.evaluation.judges.qwen_judge_provider import QwenJudgeProvider
 
 
@@ -18,7 +19,7 @@ from agentic_core.evaluation.judges.qwen_judge_provider import QwenJudgeProvider
 class _FakeResponse:
     success: bool = True
     response: str | None = '{"faithfulness": 4, "relevance": 5, "reasoning": "looks good"}'
-    model_used: str = "Qwen/Qwen2.5-14B-Instruct-AWQ"
+    model_used: str = QWEN_LOCAL_MODEL_ID
     latency_ms: float = 50.0
     cached: bool = False
     tokens_used: int = 42
@@ -75,7 +76,7 @@ async def test_judge_happy_path_aggregates_criteria() -> None:
     assert result["score"] == pytest.approx(4.5)
     assert result["criteria_scores"] == {"faithfulness": 4.0, "relevance": 5.0}
     assert result["reasoning"] == "looks good"
-    assert result["model"] == "Qwen/Qwen2.5-14B-Instruct-AWQ"
+    assert result["model"] == QWEN_LOCAL_MODEL_ID
 
 
 @pytest.mark.asyncio

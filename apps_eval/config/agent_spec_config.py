@@ -14,6 +14,7 @@ from typing import Any
 from pydantic import BaseModel, Field, model_validator
 
 from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 
 from apps_eval._telemetry import (
     LayerSegment,
@@ -222,7 +223,7 @@ class EvalQwenPilotConfig(BaseModel):
     """Qwen pilot settings for apps_eval."""
 
     enabled: bool = True
-    model_id: str = "Qwen/Qwen2.5-7B-Instruct"
+    model_id: str = QWEN_LOCAL_MODEL_ID
     confidence_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
     prompt_templates_file: str = "apps_eval/data/evaluation_prompts.json"
     max_tokens: int = Field(default=1536, ge=1)

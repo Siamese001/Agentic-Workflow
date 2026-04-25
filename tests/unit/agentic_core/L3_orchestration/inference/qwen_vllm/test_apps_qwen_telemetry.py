@@ -7,6 +7,8 @@ import unittest
 
 import pytest
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
 # Check if qwen_vllm is available
 try:
     # Also import backward compatibility aliases
@@ -48,7 +50,7 @@ class TestQwenInferenceTelemetry(unittest.TestCase):
         instance = QwenInferenceMetric(
             timestamp=time.time(),
             app_name="test_app",
-            model_id="Qwen/Qwen2.5-7B-Instruct",
+            model_id=QWEN_LOCAL_MODEL_ID,
             metric_name="confidence",
             value=0.95,
         )

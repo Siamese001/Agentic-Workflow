@@ -1,5 +1,6 @@
 """Tests for Qwen vLLM engine components."""
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 from agentic_core.L3_orchestration.inference.qwen_vllm.engines import (
     OptimizedVLLMClient,
     VLLMRequest,
@@ -30,7 +31,7 @@ class TestVLLMResponse:
         response = VLLMResponse(
             success=True,
             text="Test response",
-            model="Qwen/Qwen2.5-7B-Instruct",
+            model=QWEN_LOCAL_MODEL_ID,
             tokens_used=50,
             latency_ms=100.0,
         )
@@ -44,7 +45,7 @@ class TestVLLMResponse:
         response = VLLMResponse(
             success=False,
             text="",
-            model="Qwen/Qwen2.5-7B-Instruct",
+            model=QWEN_LOCAL_MODEL_ID,
             tokens_used=0,
             latency_ms=100.0,
             error_message="Connection failed",
@@ -61,12 +62,12 @@ class TestOptimizedVLLMClient:
         """Test client initialization with default parameters."""
         client = OptimizedVLLMClient(
             base_url="http://localhost:8000/v1",
-            model="Qwen/Qwen2.5-7B-Instruct",
+            model=QWEN_LOCAL_MODEL_ID,
             max_concurrent=8,
             batch_size=4,
         )
         assert client.base_url == "http://localhost:8000/v1"
-        assert client.model == "Qwen/Qwen2.5-7B-Instruct"
+        assert client.model == QWEN_LOCAL_MODEL_ID
         assert client.max_concurrent == 8
         assert client.batch_size == 4
 

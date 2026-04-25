@@ -167,17 +167,28 @@ _emit_validated_by_safety_plane("p1", "vllm_serving_profile_types", "safety_vali
 _emit_invokes_eval("p1", "vllm_serving_profile_types", "eval_call")
 _emit_proposal_commits_routing("p1", "vllm_serving_profile_types", "routing_commit")
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID  # noqa: E402, PLC0415
+
 GPU_MEMORY_UTILIZATION: float = 0.85
 GPU_VRAM_GB: int = 32
-LOCAL_FAST_7B_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
+# Single-tier collapse (2026-04-25): vLLM serves Qwen2.5-32B-Instruct-AWQ
+# exclusively. Both "fast" and "strong" profiles now point at the SSOT model;
+# the difference between them is RESOURCE POLICY (max_model_len, max_num_seqs)
+# applied to the same physical model, NOT a different model. The historical
+# LOCAL_FAST_7B / LOCAL_STRONG_14B names are kept to avoid a wide blast-radius
+# rename (consumers in vllm_gateway_integration_types.py and tests pin them).
+LOCAL_FAST_7B_MODEL: str = QWEN_LOCAL_MODEL_ID  # was "Qwen/Qwen2.5-7B-Instruct" — model never served
 LOCAL_FAST_7B_MAX_MODEL_LEN: int = 8192
 LOCAL_FAST_7B_MAX_NUM_SEQS: int = 4
 LOCAL_FAST_7B_GPU_MEMORY_UTILIZATION: float = GPU_MEMORY_UTILIZATION
-LOCAL_STRONG_14B_MODEL: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+LOCAL_STRONG_14B_MODEL: str = QWEN_LOCAL_MODEL_ID  # was misnamed; value already pointed at 32B-AWQ
 LOCAL_STRONG_14B_MAX_MODEL_LEN: int = 16384
 LOCAL_STRONG_14B_MAX_NUM_SEQS: int = 24
 LOCAL_STRONG_14B_GPU_MEMORY_UTILIZATION: float = 0.92
 LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING: int = 16384
+# Authoritative ceiling for the served Qwen2.5-32B-Instruct-AWQ context window.
+# Profiles must not request more than this regardless of profile_name.
+QWEN_SERVED_MODEL_MAX_LEN_CEILING: int = 32768
 
 
 @dataclass(frozen=True)
@@ -209,10 +220,15 @@ class VLLMServingProfile:
                 profile=self.profile_name,
                 reason=f"gpu_memory_utilization={self.gpu_memory_utilization} must be in (0.0, 1.0]",
             )
-        if "14B" in self.profile_name and self.max_model_len > LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING:
+        # Generic context-window ceiling check (replaces the obsolete
+        # `"14B" in profile_name` substring match — profile names no longer
+        # carry model-size semantics post single-tier collapse 2026-04-25).
+        # Any profile that requests more than the served model's max context
+        # window must hard-fail at startup.
+        if self.max_model_len > QWEN_SERVED_MODEL_MAX_LEN_CEILING:
             raise VLLMServingProfileInvalid(
                 profile=self.profile_name,
-                reason=f"max_model_len={self.max_model_len} exceeds LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING={LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING} — hard fail at startup",
+                reason=f"max_model_len={self.max_model_len} exceeds QWEN_SERVED_MODEL_MAX_LEN_CEILING={QWEN_SERVED_MODEL_MAX_LEN_CEILING} — hard fail at startup",
             )
 
 
@@ -352,6 +368,7 @@ __all__ = [
     "LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING",
     "LOCAL_STRONG_14B_MAX_NUM_SEQS",
     "LOCAL_STRONG_14B_MODEL",
+    "QWEN_SERVED_MODEL_MAX_LEN_CEILING",
     "PROFILE_LOCAL_FAST_7B",
     "PROFILE_LOCAL_STRONG_14B",
     "SERVING_PROFILE_REGISTRY",

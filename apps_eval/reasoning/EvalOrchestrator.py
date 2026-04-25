@@ -99,6 +99,8 @@ from apps_eval.types.eval_types import (
 )
 from apps_eval.validators.eval_gate_validator import EvalGateValidator
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for eval; import failure is logged and captured in _qwen_init_error
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
@@ -241,7 +243,7 @@ class EvalOrchestrator:
         self._qwen_session_id = None
         self._qwen_init_error: str | None = None
         self._qwen_prompt_templates: dict[str, Any] = {}
-        qwen_model_id = "Qwen/Qwen2.5-7B-Instruct"
+        qwen_model_id = QWEN_LOCAL_MODEL_ID
         qwen_prompts_path = Path(__file__).resolve().parents[1] / "data" / "evaluation_prompts.json"
 
         if self._specs is not None and hasattr(self._specs, "qwen"):
@@ -250,7 +252,13 @@ class EvalOrchestrator:
             qwen_prompts_path = Path(self._specs.qwen.prompt_templates_file)
 
         import os as _os_qwen_optout  # noqa: PLC0415
-        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in ("1", "true", "True", "yes")
+
+        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in (
+            "1",
+            "true",
+            "True",
+            "yes",
+        )
         if _qwen_opt_out:
             _log.info("EvalOrchestrator: APPS_QWEN_DISABLED=1 — skipping Qwen init")
         elif not _QWEN_AVAILABLE:
@@ -279,7 +287,11 @@ class EvalOrchestrator:
             _profile = _idx.profile_for(Path(__file__).resolve()) if _idx else None
             self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
             self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
-        except (ImportError, AttributeError, OSError):  # guardian: allow-silent-swallow -- Optional ADG behavioral index
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+        ):  # guardian: allow-silent-swallow -- Optional ADG behavioral index
             self.adg_behavioral_score = 0.5
             self.adg_antipattern_signals = []
 
@@ -561,7 +573,7 @@ class EvalOrchestrator:
             _log.error("EvalOrchestrator: telemetry unavailable — cannot proceed with Qwen evaluation")
             return {"success": False, "error": "qwen_telemetry_unavailable", "response": None}
 
-        model_id = "Qwen/Qwen2.5-7B-Instruct"
+        model_id = QWEN_LOCAL_MODEL_ID
         if self._specs is not None and hasattr(self._specs, "qwen"):
             model_id = self._specs.qwen.model_id
 

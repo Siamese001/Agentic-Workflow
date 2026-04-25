@@ -11,6 +11,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 from agentic_core.L3_orchestration.inference.qwen_vllm.engines import (
     CircuitBreaker,
     CircuitBreakerConfig,
@@ -413,7 +414,7 @@ class TestIntegration:
             return_value=VLLMResponse(
                 success=True,
                 text="The answer is 4",
-                model="Qwen/Qwen2.5-14B-Instruct-AWQ",
+                model=QWEN_LOCAL_MODEL_ID,
                 tokens_used=15,
                 latency_ms=150,
             )
@@ -421,7 +422,7 @@ class TestIntegration:
         mock_client.health_check = AsyncMock(
             return_value={
                 "healthy": True,
-                "models": ["Qwen/Qwen2.5-14B-Instruct-AWQ"],
+                "models": [QWEN_LOCAL_MODEL_ID],
             }
         )
         mock_client.get_metrics = MagicMock(
@@ -447,7 +448,7 @@ class TestIntegration:
 
         assert resp.success is True
         assert resp.text == "The answer is 4"
-        assert resp.model == "Qwen/Qwen2.5-14B-Instruct-AWQ"
+        assert resp.model == QWEN_LOCAL_MODEL_ID
 
         # Check circuit still closed
         assert hardened.circuit.state == CircuitState.CLOSED

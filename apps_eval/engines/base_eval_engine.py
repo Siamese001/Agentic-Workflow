@@ -27,6 +27,8 @@ except ImportError:  # guardian: allow-silent-swallow -- Optional embedding mixi
         pass
 
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
@@ -125,7 +127,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             apps_qwen_telemetry.record_request_start(
                 session_id=self._qwen_session_id,
                 app_name="apps_eval",
-                model_id="Qwen/Qwen2.5-7B-Instruct",
+                model_id=QWEN_LOCAL_MODEL_ID,
             )
 
             response = await self._qwen_gateway.infer(request)

@@ -20,6 +20,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for proposal generation; graceful fallback to manual templates
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
@@ -223,7 +225,7 @@ class RfpOrchestrator:
 
         if self.qwen_enabled and _QWEN_AVAILABLE and not _qwen_opt_out:
             try:
-                self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+                self._qwen_gateway = AppsQwenGateway(model_id=QWEN_LOCAL_MODEL_ID)
 
                 if apps_qwen_telemetry is not None:
                     self._qwen_session_id = apps_qwen_telemetry.start_session("apps_rfp")
@@ -556,7 +558,7 @@ class RfpOrchestrator:
                 apps_qwen_telemetry.record_request_start(
                     session_id=self._qwen_session_id,
                     app_name="apps_rfp",
-                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                    model_id=QWEN_LOCAL_MODEL_ID,
                 )
 
             # Perform inference

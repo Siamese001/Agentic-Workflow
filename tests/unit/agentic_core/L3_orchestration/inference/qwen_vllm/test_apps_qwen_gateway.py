@@ -6,6 +6,8 @@ import unittest
 
 import pytest
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
 # Check if qwen_vllm is available
 try:
     # Also import backward compatibility aliases
@@ -46,7 +48,7 @@ class TestQwenInferenceGateway(unittest.TestCase):
             success=True,
             response="Test response",
             confidence=0.85,
-            model_used="Qwen/Qwen2.5-7B-Instruct",
+            model_used=QWEN_LOCAL_MODEL_ID,
             latency_ms=100.0,
         )
         self.assertIsNotNone(instance)

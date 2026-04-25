@@ -2,6 +2,7 @@
 
 import pytest
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
 from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
     QwenInferenceConfig,
     QwenModelConfig,
@@ -15,13 +16,13 @@ class TestQwenModelConfig:
     def test_model_config_creation(self):
         """Test creating a model configuration."""
         config = QwenModelConfig(
-            model_id="Qwen/Qwen2.5-7B-Instruct",
+            model_id=QWEN_LOCAL_MODEL_ID,
             max_tokens=1024,
             temperature=0.1,
             confidence_threshold=0.6,
             timeout_seconds=30,
         )
-        assert config.model_id == "Qwen/Qwen2.5-7B-Instruct"
+        assert config.model_id == QWEN_LOCAL_MODEL_ID
         assert config.max_tokens == 1024
         assert config.temperature == 0.1
         assert config.confidence_threshold == 0.6
@@ -30,7 +31,7 @@ class TestQwenModelConfig:
     def test_model_config_immutability(self):
         """Test that model config is frozen (immutable)."""
         config = QwenModelConfig(
-            model_id="Qwen/Qwen2.5-7B-Instruct",
+            model_id=QWEN_LOCAL_MODEL_ID,
             max_tokens=1024,
             temperature=0.1,
             confidence_threshold=0.6,
