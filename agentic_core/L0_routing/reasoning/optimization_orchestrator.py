@@ -27,6 +27,7 @@ from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_
 from agentic_core.L0_routing.reasoning.routing_optimization import (
     RoutingOptimizationRecord,
     get_routing_optimization_registry,
+    reset_routing_optimization_registry,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
