@@ -519,8 +519,7 @@ class L1PlanContractV2:
             )
         if not isinstance(self.lowest_viable_agency, LowestViableAgency):
             raise PlanContractViolation(
-                "lowest_viable_agency must be LowestViableAgency enum, "
-                f"got {type(self.lowest_viable_agency)}"
+                f"lowest_viable_agency must be LowestViableAgency enum, got {type(self.lowest_viable_agency)}"
             )
         if not isinstance(self.escalation_hint, EscalationHint):
             raise PlanContractViolation(
@@ -536,9 +535,7 @@ class L1PlanContractV2:
             self.proposed_route == ProposedRoute.CLARIFY
             and self.clarify_or_abstain_marker == ClarifyOrAbstainMarker.NONE
         ):
-            raise PlanContractViolation(
-                "proposed_route=CLARIFY requires clarify_or_abstain_marker != NONE."
-            )
+            raise PlanContractViolation("proposed_route=CLARIFY requires clarify_or_abstain_marker != NONE.")
         # Plans flagged with support_target != NONE must declare grounding,
         # otherwise the support claim is unbounded (V2 safety check).
         if (
@@ -606,11 +603,17 @@ class L1PlanContractV2:
         published_rationale: str = "",
         planner_telemetry: Optional[PlannerTelemetry] = None,
         query_spec: Optional[QuerySpec] = None,
+        # v4 doctrine extensions — optional for back-compat with old call sites.
+        support_target: SupportTarget = SupportTarget.NONE,
+        lowest_viable_agency: LowestViableAgency = LowestViableAgency.ANSWER_DIRECTLY,
+        escalation_hint: EscalationHint = EscalationHint.NONE,
+        clarify_or_abstain_marker: ClarifyOrAbstainMarker = ClarifyOrAbstainMarker.NONE,
     ) -> "L1PlanContractV2":
         """Forward-migrate a v1 contract by supplying the v2-only fields.
 
         Used by callers that still produce v1 today but want to emit v2 with
         defaulted enrichments.  The supplied task_spec replaces v1.steps.
+        v4 doctrine fields default to their NONE/ANSWER_DIRECTLY sentinels.
         """
         telemetry = planner_telemetry or PlannerTelemetry(
             refinements_used=0,
@@ -618,6 +621,14 @@ class L1PlanContractV2:
             token_usage=0,
             critic_iterations=0,
         )
+        # If the caller is upgrading a CLARIFY route from v1, ensure the
+        # v4 invariant (CLARIFY ⇒ marker != NONE) holds without requiring
+        # the caller to know about the new field.
+        if (
+            proposed_route == ProposedRoute.CLARIFY
+            and clarify_or_abstain_marker == ClarifyOrAbstainMarker.NONE
+        ):
+            clarify_or_abstain_marker = ClarifyOrAbstainMarker.CLARIFY
         return cls(
             plan_id=v1.plan_id,
             request_id=v1.request_id,
@@ -634,6 +645,10 @@ class L1PlanContractV2:
             published_rationale=published_rationale
             or (f"Auto-migrated from L1PlanContract v1 for plan_id={v1.plan_id}"),
             planner_telemetry=telemetry,
+            support_target=support_target,
+            lowest_viable_agency=lowest_viable_agency,
+            escalation_hint=escalation_hint,
+            clarify_or_abstain_marker=clarify_or_abstain_marker,
         )
 
 

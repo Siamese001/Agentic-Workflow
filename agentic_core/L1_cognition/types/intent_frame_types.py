@@ -22,6 +22,7 @@ __all__ = [
     "AmbiguityRegister",
     "AmbiguityResolutionStrategy",
     "ConstraintBinding",
+    "ConstraintSeverity",
     "IntentFrame",
     "IntentFrameViolation",
     "OutputTargetKind",
@@ -31,6 +32,14 @@ __all__ = [
 
 class IntentFrameViolation(ValueError):
     """Raised when an :class:`IntentFrame` fails validation."""
+
+
+class ConstraintSeverity(str, Enum):
+    """Allowed values of :attr:`ConstraintBinding.severity` (doc § I2)."""
+
+    MUST = "must"
+    SHOULD = "should"
+    AVOID = "avoid"
 
 
 class OutputTargetKind(str, Enum):
@@ -46,23 +55,42 @@ class OutputTargetKind(str, Enum):
 class AmbiguityResolutionStrategy(str, Enum):
     """How L1 expects an unresolved item to be reconciled (I-merge → V5)."""
 
-    CLARIFY = "clarify"        # ask the user
-    ASSUME = "assume"          # declare assumption and proceed
-    GROUND = "ground"          # require C0 retrieval to resolve
-    ABSTAIN = "abstain"        # bounded completion impossible
-    DEFER = "defer"            # punt to a later turn / wave
+    CLARIFY = "clarify"  # ask the user
+    ASSUME = "assume"  # declare assumption and proceed
+    GROUND = "ground"  # require C0 retrieval to resolve
+    ABSTAIN = "abstain"  # bounded completion impossible
+    DEFER = "defer"  # punt to a later turn / wave
+
+
+_VALID_SEVERITIES: frozenset[str] = frozenset({"must", "should", "avoid"})
+_VALID_CONSTRAINT_SOURCES: frozenset[str] = frozenset({"user", "policy", "schema", "prior"})
 
 
 @dataclass(frozen=True)
 class ConstraintBinding:
     """A single rule/constraint surfaced by I2.
 
-    ``severity`` mirrors the doc's ``must / should / avoid`` taxonomy.
+    ``severity`` mirrors the doc's ``must / should / avoid`` taxonomy and
+    is validated to that closed set at construction time.
     """
 
     statement: str
-    severity: str  # "must" | "should" | "avoid"
-    source: str = "user"  # "user" | "policy" | "schema" | "prior"
+    severity: str  # one of _VALID_SEVERITIES
+    source: str = "user"  # one of _VALID_CONSTRAINT_SOURCES
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.statement, str) or not self.statement.strip():
+            raise IntentFrameViolation("ConstraintBinding.statement must be a non-empty string.")
+        if self.severity not in _VALID_SEVERITIES:
+            raise IntentFrameViolation(
+                f"ConstraintBinding.severity must be one of "
+                f"{sorted(_VALID_SEVERITIES)}, got {self.severity!r}"
+            )
+        if self.source not in _VALID_CONSTRAINT_SOURCES:
+            raise IntentFrameViolation(
+                f"ConstraintBinding.source must be one of "
+                f"{sorted(_VALID_CONSTRAINT_SOURCES)}, got {self.source!r}"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -112,14 +140,14 @@ class IntentFrame:
     """
 
     request_id: str
-    goal: str                                 # I1 primary objective
-    success_condition: str                    # I1 success / outcome definition
-    constraints: tuple                        # I2 (ConstraintBinding,)
-    details: tuple                            # I3 entities/numbers/format hints (str,)
-    output_target_kind: OutputTargetKind      # I3 deliverable shape
-    work_class: WorkClass                     # I4 work class
-    audience: str = "user"                    # I1 audience / user need
-    high_risk: bool = False                   # I4 high-risk vs low-risk
+    goal: str  # I1 primary objective
+    success_condition: str  # I1 success / outcome definition
+    constraints: tuple  # I2 (ConstraintBinding,)
+    details: tuple  # I3 entities/numbers/format hints (str,)
+    output_target_kind: OutputTargetKind  # I3 deliverable shape
+    work_class: WorkClass  # I4 work class
+    audience: str = "user"  # I1 audience / user need
+    high_risk: bool = False  # I4 high-risk vs low-risk
     ambiguity: AmbiguityRegister = field(default_factory=AmbiguityRegister)
 
     _REQUIRED_STRINGS: tuple = field(
@@ -134,13 +162,9 @@ class IntentFrame:
         for fname in self._REQUIRED_STRINGS:
             val = getattr(self, fname, None)
             if not isinstance(val, str) or not val.strip():
-                raise IntentFrameViolation(
-                    f"{fname} must be a non-empty string."
-                )
+                raise IntentFrameViolation(f"{fname} must be a non-empty string.")
         if not isinstance(self.work_class, WorkClass):
-            raise IntentFrameViolation(
-                f"work_class must be WorkClass enum, got {type(self.work_class)}"
-            )
+            raise IntentFrameViolation(f"work_class must be WorkClass enum, got {type(self.work_class)}")
         if not isinstance(self.output_target_kind, OutputTargetKind):
             raise IntentFrameViolation(
                 f"output_target_kind must be OutputTargetKind, got {type(self.output_target_kind)}"
@@ -149,20 +173,14 @@ class IntentFrame:
             raise IntentFrameViolation("constraints must be a tuple of ConstraintBinding.")
         for idx, c in enumerate(self.constraints):
             if not isinstance(c, ConstraintBinding):
-                raise IntentFrameViolation(
-                    f"constraints[{idx}] must be ConstraintBinding, got {type(c)}"
-                )
+                raise IntentFrameViolation(f"constraints[{idx}] must be ConstraintBinding, got {type(c)}")
         if isinstance(self.details, str) or not hasattr(self.details, "__iter__"):
             raise IntentFrameViolation("details must be a tuple of str.")
         for idx, d in enumerate(self.details):
             if not isinstance(d, str):
-                raise IntentFrameViolation(
-                    f"details[{idx}] must be str, got {type(d)}"
-                )
+                raise IntentFrameViolation(f"details[{idx}] must be str, got {type(d)}")
         if not isinstance(self.ambiguity, AmbiguityRegister):
-            raise IntentFrameViolation(
-                f"ambiguity must be AmbiguityRegister, got {type(self.ambiguity)}"
-            )
+            raise IntentFrameViolation(f"ambiguity must be AmbiguityRegister, got {type(self.ambiguity)}")
 
     def to_dict(self) -> dict[str, Any]:
         return {
