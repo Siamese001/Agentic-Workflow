@@ -807,6 +807,8 @@ def pytest_configure(config):
     for key in to_delete:
         del sys.modules[key]
 
+    # Pre-load real subpackages BEFORE shims so hasattr-guard skips them.
+    _preload_real_agentic_core_subpackages()
     _install_l0_routing_compat_shims()
     _install_l0_routing_scripts_compat_shims()
     _install_l2_execution_compat_shims()
@@ -818,6 +820,8 @@ def pytest_configure(config):
     _install_l3_orchestration_compat_shims()
     _install_l1_cognition_compat_shims()
     _install_adg_root_compat_shims()
+    # Re-load after shim installation to recover from any stomped attrs.
+    _preload_real_agentic_core_subpackages()
 
     # Add markers
     config.addinivalue_line("markers", "data: marks tests as data-dependent")
