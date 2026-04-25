@@ -1,0 +1,48 @@
+gate: X1D
+version: X1D@v2
+composition: weighted
+aggregate_threshold: 0.75
+metadata:
+  description: >
+    Answer good? v2 closes the X1D groundedness gap identified in the
+    runtime-gate coverage review (2026-04-25). v1 had no hard sub-gate,
+    which let a high-citation answer mask low groundedness. v2 promotes
+    `groundedness` to a hard veto sub-gate at threshold 0.80 so that
+    fabricated content cannot pass even when citation_support and
+    faithfulness compensate in the weighted aggregate.
+
+    Hard sub-gates (any single failure denies):
+      - groundedness  (was soft in v1; now hard at 0.80)
+    Weighted soft dimensions:
+      - citation_support      (code)
+      - faithfulness          (model, abstain)
+
+    Weights rebalanced so that aggregate threshold (0.75) still maps
+    cleanly onto the remaining soft dimensions.
+  superseded_versions:
+    - X1D@v1
+  changes_vs_v1:
+    - groundedness: soft -> hard veto (threshold 0.80)
+    - weights rebalanced (groundedness 0.4 -> contributes via hard gate
+      only; citation_support 0.3 -> 0.5; faithfulness 0.3 -> 0.5)
+dimensions:
+  - name: groundedness
+    grader_class: model_based
+    scale: [0.0, 1.0]
+    weight: 0.0  # contributes via hard gate, not weighted aggregate
+    is_hard_gate: true
+    threshold: 0.80
+    abstain_allowed: true
+  - name: citation_support
+    grader_class: code_based
+    scale: [0, 1]
+    weight: 0.5
+    is_hard_gate: false
+    threshold: 1.0
+  - name: faithfulness
+    grader_class: model_based
+    scale: [0.0, 1.0]
+    weight: 0.5
+    is_hard_gate: false
+    threshold: 0.70
+    abstain_allowed: true

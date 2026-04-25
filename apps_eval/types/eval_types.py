@@ -67,6 +67,10 @@ class ScorecardRow(BaseModel):
     weight: float = Field(..., gt=0, description="Weight multiplier")
     weighted_score: float = Field(..., description="Score × weight")
     verdict: str = Field(..., description="PASS/FAIL/WARN")
+    # Optional taxonomy hints — added 2026-04-25 (G9). When populated, drive
+    # taxonomy-aware regression tolerance per apps_eval/config/eval_policies.yaml.
+    suite_id: str = Field("", description="Originating suite (used to derive taxonomy class)")
+    taxonomy_class: str = Field("", description="capability | regression (empty = derive from suite_id)")
 
 
 class RegressionRecord(BaseModel):

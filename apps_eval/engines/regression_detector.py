@@ -197,9 +197,52 @@ class RegressionDetector:
 
     AGENT_ID = "EVAL_REGRESSION"
 
-    def __init__(self, baseline_dir: str = "eval_baselines", tolerance_delta: float = 0.05) -> None:
+    def __init__(
+        self,
+        baseline_dir: str = "eval_baselines",
+        tolerance_delta: float = 0.05,
+        *,
+        taxonomy_aware: bool = True,
+    ) -> None:
         self._baseline_dir = Path(baseline_dir)
         self._tolerance_delta = tolerance_delta
+        # Taxonomy-aware mode (default ON, 2026-04-25 G9). When enabled, per-row
+        # tolerance is derived from ScorecardRow.taxonomy_class / suite_id and
+        # apps_eval/config/eval_policies.yaml taxonomy_aware_regression_policy.
+        # Set False to fall back to the legacy single-threshold behaviour.
+        self._taxonomy_aware = taxonomy_aware
+        self._taxonomy_policy: dict[str, Any] | None = None
+        if taxonomy_aware:
+            try:
+                from apps_eval.engines._taxonomy import load_taxonomy_policy  # noqa: PLC0415
+
+                self._taxonomy_policy = load_taxonomy_policy()
+            except (ImportError, OSError, ValueError) as exc:
+                _log.warning(
+                    "[RegressionDetector] taxonomy policy load failed (%s); "
+                    "falling back to single-threshold tolerance %.4f",
+                    exc,
+                    tolerance_delta,
+                )
+                self._taxonomy_aware = False
+
+    def _row_tolerance(self, row: ScorecardRow) -> tuple[float, str]:
+        """Return (tolerance_delta, taxonomy_class) for a scorecard row.
+
+        When taxonomy_aware is False, returns the legacy single threshold and
+        an empty class string. When True, resolves class via explicit hint or
+        suite_id prefix and looks up the per-class tolerance.
+        """
+        if not self._taxonomy_aware or self._taxonomy_policy is None:
+            return self._tolerance_delta, ""
+        from apps_eval.engines._taxonomy import resolve_taxonomy_class, tolerance_for_class  # noqa: PLC0415
+
+        klass = resolve_taxonomy_class(
+            explicit_class=getattr(row, "taxonomy_class", "") or "",
+            suite_id=getattr(row, "suite_id", "") or "",
+            policy=self._taxonomy_policy,
+        )
+        return tolerance_for_class(klass, policy=self._taxonomy_policy), klass
 
     def detect(
         self,
@@ -240,15 +283,19 @@ class RegressionDetector:
             else:
                 baseline_score = baseline.get(row.dimension_id, row.score)
                 delta = row.score - baseline_score
+                # Taxonomy-aware tolerance (G9, 2026-04-25). For regression-class
+                # suites this is ~0.005; for capability-class it is ~0.05.
+                row_tolerance, taxonomy_class = self._row_tolerance(row)
 
-                if delta < -self._tolerance_delta:
+                if delta < -row_tolerance:
                     verdict = "REGRESSION"
                     result.regression_count += 1
                     _log.warning(
-                        "[RegressionDetector] REGRESSION dim=%s delta=%.3f (threshold=%.3f)",
+                        "[RegressionDetector] REGRESSION dim=%s delta=%.4f (threshold=%.4f, class=%s)",
                         row.dimension_id,
                         delta,
-                        self._tolerance_delta,
+                        row_tolerance,
+                        taxonomy_class or "legacy",
                     )
                 elif delta < 0:
                     verdict = "WARN"
@@ -257,7 +304,7 @@ class RegressionDetector:
 
                 result.records.append(
                     RegressionRecord(
-                        suite_id="",
+                        suite_id=getattr(row, "suite_id", "") or "",
                         dimension_id=row.dimension_id,
                         current_score=row.score,
                         baseline_score=baseline_score,

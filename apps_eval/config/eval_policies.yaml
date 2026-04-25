@@ -19,7 +19,9 @@ outcome_rules:
     requires_investigation: true
     blocks_gate: true
 
-# Regression Detection Policies
+# Regression Detection Policies (legacy global thresholds — kept for backward compat).
+# New code should consume `taxonomy_aware_regression_policy` below, which is the
+# SSOT after 2026-04-25 (runtime-gate-coverage-hardening-7e3f1a, G9).
 regression_policy:
   # Score delta threshold for regression flag
   threshold: 0.05
@@ -30,14 +32,81 @@ regression_policy:
     WARN: { max_delta: 0.05 }
     REGRESSION: { min_delta: 0.05 }
 
+# Taxonomy-aware regression policy — wires `eval_taxonomy` from
+# config/judges/rubrics.yaml into outcome rules. Anthropic's "Demystifying evals
+# for AI agents" specifies regression suites should hold near 100% (any decline
+# is a defect) while capability suites hill-climb (looser tolerance accepted).
+# The legacy single 0.05 threshold treated both classes the same — fixed here.
+#
+# Suite/scenario taxonomy class is determined by:
+#   1. Explicit ScorecardRow.taxonomy_class field (when present), else
+#   2. suite_id prefix convention: `cap_*` -> capability, `reg_*` -> regression
+#   3. Default fallback: `regression` (fail-safe — stricter tolerance)
+taxonomy_aware_regression_policy:
+  capability:
+    # Hill-climb tasks; some volatility expected. Looser tolerance.
+    tolerance_delta: 0.05
+    verdicts:
+      PASS:       { max_delta: 0.02 }
+      WARN:       { max_delta: 0.05 }
+      REGRESSION: { min_delta: 0.05 }
+  regression:
+    # Fleet-protecting tasks; near-100% pass expected. Strict tolerance.
+    tolerance_delta: 0.005
+    verdicts:
+      PASS:       { max_delta: 0.002 }
+      WARN:       { max_delta: 0.005 }
+      REGRESSION: { min_delta: 0.005 }
+  default_class: regression  # fail-safe: when class cannot be derived, treat as regression
+  suite_id_prefix_map:
+    cap_: capability
+    capability_: capability
+    reg_: regression
+    regression_: regression
+
+# Latency-quality joint band — added 2026-04-25 per runtime-gate-coverage-hardening
+# (G10 gap). Anthropic best-practice: track latency per task alongside quality.
+# A slow correct answer and fast correct answer should not score identically.
+# Bands modulate the scorecard composite by a multiplier, so blazingly fast
+# correct answers earn a small bonus and slow correct answers a small penalty.
+latency_quality_bands:
+  - name: blazing
+    max_p95_ms: 1500
+    score_multiplier: 1.05
+  - name: fast
+    max_p95_ms: 5000
+    score_multiplier: 1.00
+  - name: acceptable
+    max_p95_ms: 15000
+    score_multiplier: 0.97
+  - name: slow
+    max_p95_ms: 30000
+    score_multiplier: 0.90
+  - name: timeout
+    max_p95_ms: null  # exceeds 30s -> already mapped to TIMEOUT outcome below
+    score_multiplier: 0.0
+
 # Gate Policies
 gate_policies:
   # Hard gates - cannot be overridden
   hard_gates:
     - no_critical_errors
     - min_scenarios_executed
+    - taxonomy_regression_class_not_violated   # added 2026-04-25 (G9)
 
   # Soft gates - can be waived with justification
   soft_gates:
     - regression_warnings
     - latency_warnings
+    - capability_class_warnings                # added 2026-04-25 (G9)
+    - calibration_drift_warnings               # added 2026-04-25 (G13)
+
+# Calibration drift policy — added 2026-04-25 (G13 gap). Drives the
+# ops_scripts/eval/calibration_drift_detector.py job. Reads scorecard JSONL
+# and computes per-judge unknown_budget breach rates; alerts if the rate
+# exceeds the breach_rate_alert_threshold over the rolling window.
+calibration_drift_policy:
+  rolling_window_days: 7
+  breach_rate_warn_threshold: 0.10   # 10% of dims Unknown -> warn
+  breach_rate_alert_threshold: 0.20  # 20% Unknown -> page for human recalibration
+  min_runs_for_signal: 5             # do not alert from fewer than N runs
