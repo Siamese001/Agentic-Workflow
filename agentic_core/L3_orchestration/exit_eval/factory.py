@@ -214,8 +214,41 @@ def build_pipeline(
     overrides = dict(grader_overrides or {})
     span_sink = span_sink or NoOpSpanSink()
 
-    gates: list[Gate] = []
+    # X1G is a pipeline-level policy gate, not a grader-based Gate. When the
+    # caller lists ``"X1G"`` in ``gate_ids`` they are enabling the commit-path
+    # pass^k check, which requires both a consistency store and policy. Build
+    # no Gate for it but validate wiring up-front so the error surfaces at
+    # factory time rather than at first evaluate() call.
+    x1g_enabled = False
+    filtered_gate_ids: list[str] = []
     for gate_id in gate_ids:
+        if gate_id == "X1G":
+            x1g_enabled = True
+            continue
+        filtered_gate_ids.append(gate_id)
+
+    if x1g_enabled:
+        if not filtered_gate_ids:
+            raise KeyError(
+                "X1G is a pipeline-level consistency modifier and cannot "
+                "be the only gate; include at least one of "
+                "X1A/X1B/X1C/X1D/X1E/X1F alongside X1G."
+            )
+        if consistency_store is None or consistency_policy is None:
+            raise KeyError(
+                "X1G requested in gate_ids but consistency_store and/or "
+                "consistency_policy is None; supply both to enable the "
+                "commit-path pass^k gate per v5 §X1G."
+            )
+        # The x1g_v1.yaml rubric exists as a governance artifact documenting
+        # the gate's shape; loading it validates the file is well-formed.
+        x1g_rubric_path = rubric_dir / "x1g_v1.yaml"
+        if not x1g_rubric_path.exists():
+            raise KeyError(f"X1G rubric file missing: {x1g_rubric_path}")
+        load_rubric(x1g_rubric_path)  # validate parseability; discard result
+
+    gates: list[Gate] = []
+    for gate_id in filtered_gate_ids:
         rubric_path = rubric_dir / f"{gate_id.lower()}_v1.yaml"
         if not rubric_path.exists():
             raise KeyError(f"rubric file missing for {gate_id}: {rubric_path}")

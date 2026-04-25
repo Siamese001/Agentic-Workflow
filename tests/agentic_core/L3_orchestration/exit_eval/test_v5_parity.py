@@ -65,6 +65,55 @@ def test_v5_added_codes_have_unique_values(code):
     assert len(members) == 1, f"reason code {code!r} should appear exactly once"
 
 
+def test_bucket_key_from_context_extracts_trajectory_class():
+    """v5 §X1G mandates per-trajectory_class pass^k history."""
+    from agentic_core.L3_orchestration.exit_eval.consistency import (
+        BucketKey,
+        bucket_key_from_context,
+    )
+
+    ctx = {
+        "trajectory_class": "brief_assembly",
+        "rubric_version": "X1D@v3",
+        "agent_version": "v42",
+        "policy_version": "2026-04-25",
+    }
+    key = bucket_key_from_context(ctx)
+    assert isinstance(key, BucketKey)
+    assert key.trajectory_class == "brief_assembly"
+    assert key.rubric_version == "X1D@v3"
+
+
+def test_bucket_key_from_context_missing_field_raises():
+    from agentic_core.L3_orchestration.exit_eval.consistency import (
+        bucket_key_from_context,
+    )
+
+    with pytest.raises(KeyError):
+        bucket_key_from_context({"trajectory_class": "x"})  # missing versions
+
+
+def test_bucket_key_rubric_version_bump_invalidates_history():
+    """v5 §X1G invariant: any tuple change resets the bucket."""
+    from agentic_core.L3_orchestration.exit_eval.consistency import (
+        BucketKey,
+        PassKStore,
+        TrialRecord,
+    )
+
+    store = PassKStore()
+    k_old = BucketKey("brief", "X1D@v1", "v1", "v1")
+    k_new = BucketKey("brief", "X1D@v2", "v1", "v1")  # rubric bumped
+    for i in range(5):
+        store.record(k_old, TrialRecord(run_id=f"r{i}", passed=True, timestamp=float(i)))
+    # Old bucket has full history; new bucket starts empty.
+    old_chk = store.check(k_old, k=3, theta=0.5)
+    new_chk = store.check(k_new, k=3, theta=0.5)
+    assert old_chk.has_history is True
+    assert new_chk.has_history is False
+    assert new_chk.reason == "INSUFFICIENT_HISTORY"
+
+
 def test_x1g_rubric_yaml_exists_and_loads():
     """``x1g_v1.yaml`` exists for the consistency gate and parses cleanly."""
     path = RUBRIC_DIR / "x1g_v1.yaml"
