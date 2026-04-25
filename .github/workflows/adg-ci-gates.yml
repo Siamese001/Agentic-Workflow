@@ -94,6 +94,28 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: Audit-Uncovered Gates (AUDIT_1..6 — SSOT, observability, triage SLA)
+        # Six ratchets covering categories not previously enforced by ADG CI:
+        #   AUDIT_1  SSOT magic constants in 3+ layers
+        #   AUDIT_2  high-fan-in modules with no observability edges
+        #   AUDIT_3  hardcoded external-service literals outside SSOT
+        #   AUDIT_4  cross-mainline dispatchers (3+ layers)
+        #   AUDIT_5  env vars referenced outside config layers
+        #   AUDIT_6  HIGH/CRITICAL severity rows untriaged (Tier-B hard-block at 30d)
+        # All ratchet-mode (current ≤ baseline) plus AUDIT_6 has an embedded
+        # Tier-B hard-block for HIGH/CRITICAL untriaged > 30 days. AUDIT_6
+        # closes the severity × disposition coverage gap surfaced in Phase 16.
+        # Plan: .windsurf/plans/audit-uncovered-gates-and-remediation-627368.md
+        run: |
+          python ops_scripts/ci/check_ssot_magic_constants.py
+          python ops_scripts/ci/check_observability_on_high_fanin.py
+          python ops_scripts/ci/check_external_service_literal_ssot.py
+          python ops_scripts/ci/check_cross_mainline_dispatcher.py
+          python ops_scripts/ci/check_env_var_in_config_layer.py
+          python ops_scripts/ci/check_violation_aging_sla.py
+        env:
+          PYTHONPATH: .
+
       - name: Install MCP test dependencies
         run: pip install fakeredis --quiet 2>/dev/null || true
 
