@@ -54,9 +54,14 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "phase_close_audit.jsonl"
 
-NOTION_API_VERSION = "2025-09-03"
-WAVE_PHASE_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
-NOTION_BASE = "https://api.notion.com/v1"
+import sys as _sys
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    NOTION_BASE,
+    WAVE_PHASE_DATA_SOURCE_ID,
+)
 
 # ---------------------------------------------------------------------------
 # Detection patterns

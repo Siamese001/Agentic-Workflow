@@ -8,9 +8,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # Constants for test compatibility
-BATCH_SIZE = 32
-BUFFER_SIZE = 8192
-
 from pydantic import BaseModel, Field
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
@@ -58,6 +55,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from apps_lic.utils.lic_agent_base_util import LICAgentBase
+from apps_shared.config.pipeline_constants_config import BATCH_SIZE, BUFFER_SIZE
 
 _emit_authorize_and_execute("p2", "PIISanitizerSpecialistAgent_util", "execution_auth")
 _emit_validates_capability("p2", "PIISanitizerSpecialistAgent_util", "capability_check")

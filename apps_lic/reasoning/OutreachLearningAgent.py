@@ -70,6 +70,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from apps_shared.config.pipeline_constants_config import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 
 _emit_applies_guardrail("p0", "OutreachLearningAgent", "p0_governance")
 _emit_reads_policy_state("p0", "OutreachLearningAgent", "policy_binding")
@@ -176,14 +183,8 @@ _emit_transcripts_response("p1", "OutreachLearningAgent", "transcript")
 _emit_hard_fails_untranscripted("p1", "OutreachLearningAgent")
 _emit_gated_by_confidence("p1", "OutreachLearningAgent", "confidence_gate")
 
+
 # Constants for test compatibility
-BATCH_SIZE = 32
-BUFFER_SIZE = 8192
-DEFAULT_SLEEP = 1.0
-MAX_RETRIES = 3
-THRESHOLD = 0.95
-
-
 class HealingPolicyMixin:
     """Legacy mixin - use LICAgentBase instead."""
 

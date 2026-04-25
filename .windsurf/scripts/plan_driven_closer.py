@@ -42,9 +42,15 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "plan_driven_close_audit.jsonl"
 
-NOTION_API_VERSION = "2025-09-03"
-WAVE_PHASE_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
-NOTION_BASE = "https://api.notion.com/v1"
+# SSOT: see .windsurf/scripts/_notion_constants.py
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    NOTION_BASE,
+    WAVE_PHASE_DATA_SOURCE_ID,
+)
 
 # Status vocabulary — case-insensitive substring match
 DONE_STATUSES = {

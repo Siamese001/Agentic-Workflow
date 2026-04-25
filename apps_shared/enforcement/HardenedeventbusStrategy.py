@@ -11,12 +11,6 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 # Configuration constants (required for test compatibility)
-BATCH_SIZE = 32
-BUFFER_SIZE = 8192
-DEFAULT_SLEEP = 1.0
-MAX_RETRIES = 3
-THRESHOLD = 0.95
-
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -59,6 +53,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+from apps_shared.config.pipeline_constants_config import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
 )
 
 _emit_authorize_and_execute("p2", "HardenedeventbusStrategy", "execution_auth")

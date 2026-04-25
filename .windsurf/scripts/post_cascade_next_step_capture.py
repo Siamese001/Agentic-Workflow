@@ -42,12 +42,19 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "next_step_capture.jsonl"
 
-WAVE_PHASE_DB_ID = "aa8d2507-101e-4384-81d9-60ea3fe33876"
-WAVE_PHASE_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
-NOTION_API_VERSION = "2025-09-03"
-NOTION_POST_URL = "https://api.notion.com/v1/pages"
-NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{WAVE_PHASE_DS_ID}/query"
-NOTION_HTTP_TIMEOUT_S = 15.0
+import sys as _sys
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    NOTION_HTTP_TIMEOUT_S,
+    NOTION_POST_URL,
+    WAVE_PHASE_DATA_SOURCE_ID as WAVE_PHASE_DS_ID,
+    WAVE_PHASE_DB_ID,
+    query_url,
+)
+
+NOTION_QUERY_URL = query_url(WAVE_PHASE_DS_ID)
 
 DEDUP_WINDOW_MINUTES = 10080  # 7 days — same as DEFERRED_SCOPE
 

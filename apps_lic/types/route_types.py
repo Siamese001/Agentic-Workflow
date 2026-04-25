@@ -55,6 +55,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_shared.config.pipeline_constants_config import THRESHOLD
 
 _emit_applies_guardrail("p0", "route_types", "p0_governance")
 _emit_reads_policy_state("p0", "route_types", "policy_binding")
@@ -159,7 +160,6 @@ _emit_updates_meta_learning_state("p4", "route_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "route_types", "exec_snapshot_link")
 
 LIMIT: int = 5
-THRESHOLD: float = 0.95
 
 
 class Route(str, Enum):

@@ -38,10 +38,16 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jsonl"
 
-WAVE_PHASE_DB_ID = "aa8d2507-101e-4384-81d9-60ea3fe33876"
-NOTION_API_VERSION = "2025-09-03"
-NOTION_POST_URL = "https://api.notion.com/v1/pages"
-NOTION_HTTP_TIMEOUT_S = 15.0
+import sys as _sys
+
+_sys.path.insert(0, str(Path(REPO_ROOT) / ".windsurf" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    NOTION_HTTP_TIMEOUT_S,
+    NOTION_POST_URL,
+    WAVE_PHASE_DB_ID,
+)
+
 
 PENDING_KINDS = {
     "pending_no_token",

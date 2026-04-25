@@ -61,12 +61,19 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "adr_registry_capture.jsonl"
 
-ADR_REGISTRY_DB_ID = "6ed25e12-bd92-4352-ac7a-3a971311f024"
-ADR_REGISTRY_DS_ID = "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"
-NOTION_API_VERSION = "2025-09-03"
-NOTION_POST_URL = "https://api.notion.com/v1/pages"
+import sys as _sys
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import (  # noqa: E402
+    ADR_REGISTRY_DB_ID,
+    ADR_REGISTRY_DS_ID,
+    NOTION_API_VERSION,
+    NOTION_HTTP_TIMEOUT_S,
+    NOTION_POST_URL,
+)
+
+
 NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{ADR_REGISTRY_DS_ID}/query"
-NOTION_HTTP_TIMEOUT_S = 15.0
 
 DEDUP_WINDOW_MINUTES = 10080  # 7 days
 

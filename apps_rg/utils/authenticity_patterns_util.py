@@ -15,12 +15,6 @@ from dataclasses import dataclass
 from typing import Any
 
 # Constants for test compatibility
-BATCH_SIZE = 32
-BUFFER_SIZE = 8192
-DEFAULT_SLEEP = 1.0
-MAX_RETRIES = 3
-THRESHOLD = 0.95
-
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -64,6 +58,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+from apps_shared.config.pipeline_constants_config import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
 )
 
 _emit_applies_guardrail("p0", "authenticity_patterns_util", "p0_governance")

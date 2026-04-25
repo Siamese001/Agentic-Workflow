@@ -22,6 +22,7 @@ Contract tests: every concrete adapter must pass
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
@@ -30,6 +31,9 @@ from typing import Any, Mapping
 from agentic_core.L3_orchestration.exit_control.runtime_hitl_ledger import (
     LedgerEntry,
 )
+
+logger = logging.getLogger(__name__)
+logger.debug("human_approval_adapter module loaded")
 
 
 class AdapterError(RuntimeError):

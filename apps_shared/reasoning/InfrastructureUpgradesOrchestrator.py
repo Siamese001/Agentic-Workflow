@@ -53,6 +53,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_shared.config.pipeline_constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, THRESHOLD
 
 _emit_applies_guardrail("p0", "InfrastructureUpgradesOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "InfrastructureUpgradesOrchestrator", "policy_binding")
@@ -158,12 +159,6 @@ _emit_updates_meta_learning_state("p4", "InfrastructureUpgradesOrchestrator", "m
 _emit_links_execution_to_snapshot("p4", "InfrastructureUpgradesOrchestrator", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
-
-
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
 
 
 class InfrastructureUpgradesOrchestrator:

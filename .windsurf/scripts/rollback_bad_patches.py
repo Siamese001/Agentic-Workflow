@@ -27,8 +27,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "phase_close_audit.jsonl"
 ROLLBACK_LOG = REPO_ROOT / "artifacts" / "windsurf" / "phase_close_rollback.jsonl"
 
-NOTION_API_VERSION = "2025-09-03"
-NOTION_BASE = "https://api.notion.com/v1"
+import sys as _sys
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
 
 # Triggers known to cause over-fanout due to short bare wave IDs with starts_with
 OVER_BROAD_VIAS = {"W1", "W2", "W3", "W5", "E1"}

@@ -22,6 +22,15 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from apps_shared.config.pipeline_constants_config import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    THRESHOLD,
+)
 
 # L1 retrieval wiring (Turn 2, Wave 10): Import creates ADG edge to L1_cognition
 
@@ -39,13 +48,6 @@ emit_replay_key("p0", "environment_config")
 emit_determinism_digest("p0", "environment_config")
 
 
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 

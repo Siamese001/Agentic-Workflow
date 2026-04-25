@@ -42,6 +42,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import sys as _sys
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    NOTION_HTTP_TIMEOUT_S,
+    NOTION_POST_URL,
+    WAVE_PHASE_DATA_SOURCE_ID as WAVE_PHASE_DS_ID,
+    WAVE_PHASE_DB_ID,
+)
+
+
 try:
     from tqdm import tqdm as _tqdm
 except ImportError:  # fail-open: tqdm unavailable in hook context
@@ -53,12 +65,9 @@ CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jso
 MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
 # Notion target
-WAVE_PHASE_DB_ID = "aa8d2507-101e-4384-81d9-60ea3fe33876"
-NOTION_API_VERSION = "2025-09-03"
-NOTION_POST_URL = "https://api.notion.com/v1/pages"
-NOTION_HTTP_TIMEOUT_S = 15.0
+
 # Wave/Phase Convergence data_source_id (reads). Distinct from database_id (writes).
-WAVE_PHASE_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+
 NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{WAVE_PHASE_DS_ID}/query"
 
 # Dedup window: local log lookback widened from 60 min to 7 days (10080 min).

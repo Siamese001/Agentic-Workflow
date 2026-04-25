@@ -19,6 +19,15 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from apps_shared.config.pipeline_constants_config import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    THRESHOLD,
+)
 
 # P0: Foundation Governance
 _emit_applies_guardrail("p0", "operational_config", "p0_governance")
@@ -34,13 +43,6 @@ emit_replay_key("p0", "operational_config")
 emit_determinism_digest("p0", "operational_config")
 
 
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 _ROOT = Path(__file__).resolve().parents[2]

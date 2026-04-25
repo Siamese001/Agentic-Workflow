@@ -529,6 +529,66 @@ repos:
       #     python tools/adg/query.py regressions           (current failures)
       #     python tools/adg/query.py history GATE_ID       (per-gate history)
 
+      # -- AUDIT-UNCOVERED Gates (audit-uncovered-gates-and-remediation-627368) -----
+      # 6 new gates closing coverage gaps surfaced by the 16-phase ADG audit.
+      # Each is a Tier R ratchet — baseline locked at the seeded count; new
+      # violations regress the build. AUDIT_6 has an embedded Tier B hard-block
+      # for HIGH/CRITICAL/P0-severity untriaged violations.
+      # Invoke: pre-commit run audit-<name> --hook-stage manual --all-files
+      - id: audit-ssot-magic-constants
+        name: "CI: AUDIT-1 SSOT Magic Constants"
+        entry: py ops_scripts/ci/check_ssot_magic_constants.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      - id: audit-observability-fanin
+        name: "CI: AUDIT-2 Observability on High Fan-In"
+        entry: py ops_scripts/ci/check_observability_on_high_fanin.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      - id: audit-external-literal-ssot
+        name: "CI: AUDIT-3 External Service Literal SSOT"
+        entry: py ops_scripts/ci/check_external_service_literal_ssot.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      - id: audit-cross-mainline-dispatcher
+        name: "CI: AUDIT-4 Cross-Mainline Dispatcher"
+        entry: py ops_scripts/ci/check_cross_mainline_dispatcher.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      - id: audit-env-var-config-layer
+        name: "CI: AUDIT-5 Env Var in Config Layer"
+        entry: py ops_scripts/ci/check_env_var_in_config_layer.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      - id: audit-violation-aging-sla
+        name: "CI: AUDIT-6 Violation Triage SLA"
+        entry: py ops_scripts/ci/check_violation_aging_sla.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
       # -- ADG Gate Regression Markers (manual, on-demand) ---------------------------
       # H3: markers now emitted by the dispatcher itself via --markers flag.
       # For every ratchet gate above baseline, emits DEFERRED_SCOPE: line that

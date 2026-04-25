@@ -40,10 +40,19 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
 
+import sys as _sys
+
+_sys.path.insert(0, str(Path(REPO_ROOT) / ".windsurf" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    WAVE_PHASE_DATA_SOURCE_ID as WAVE_PHASE_DS_ID,
+)
+
+
 # Wave/Phase Convergence — read from data_source_id (not database_id).
-WAVE_PHASE_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+
 NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{WAVE_PHASE_DS_ID}/query"
-NOTION_API_VERSION = "2025-09-03"
+
 NOTION_HTTP_TIMEOUT_S = 20.0
 NOTION_PAGE_SIZE = 100
 NOTION_MAX_PAGES = 20  # 2000 rows safety cap

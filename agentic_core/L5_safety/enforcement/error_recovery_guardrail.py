@@ -50,6 +50,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     # noqa: E402
     emit_replay_key,
 )
+from apps_shared.config.pipeline_constants_config import DEFAULT_TIMEOUT
 
 emit_replay_key("p0", "error_recovery_guardrail")
 emit_determinism_digest("p0", "error_recovery_guardrail")
@@ -93,7 +94,6 @@ _emit_links_execution_to_snapshot("p4", "error_recovery_guardrail", "exec_snapsh
 
 # guardian: allow-magic-config
 # Configuration constants
-DEFAULT_TIMEOUT = 300
 MAX_ERRORS = 1000
 SUCCESS_RATE_MULTIPLIER = 100
 DEFAULT_ERROR_LOG_LIMIT = 100

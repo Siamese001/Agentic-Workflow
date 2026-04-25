@@ -1,4 +1,4 @@
-# guardian: allow-silent_swallower -- ADG violation exemption
+# review: allow-silent-swallower -- ADG violation exemption
 
 from __future__ import annotations
 
@@ -6,14 +6,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
 )
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 """ReAct (Reasoning and Acting) Engine implementation.
@@ -31,6 +23,16 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
+from apps_shared.config.pipeline_constants_config import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 
 try:
     from agentic_core.L1_cognition.reasoning.trace_models import ReasoningTraceModel

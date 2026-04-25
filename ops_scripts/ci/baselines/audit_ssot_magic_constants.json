@@ -1,0 +1,9 @@
+{
+  "gate_id": "AUDIT_1_ssot_magic_constants",
+  "count": 39,
+  "seeded_at": "2026-04-25T12:22:01.073196+00:00",
+  "snapshot": "adg_indexed_04252026_0817.sqlite",
+  "zero_run_streak": 0,
+  "last_run_at": "2026-04-25T13:03:04.629520+00:00",
+  "last_run_snapshot": "adg_indexed_04252026_0843.sqlite"
+}

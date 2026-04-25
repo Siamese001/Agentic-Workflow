@@ -20,12 +20,11 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
+from apps_shared.config.pipeline_constants_config import BATCH_SIZE, MAX_RETRIES
 
 # Configuration constants
-BATCH_SIZE = 32
 BUFFER_SIZE = 4096
 DEFAULT_SLEEP = 0.1
-MAX_RETRIES = 3
 THRESHOLD = 0.8
 
 
