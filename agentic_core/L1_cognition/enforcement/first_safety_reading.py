@@ -196,10 +196,15 @@ def first_safety_reading(
     """
     if not isinstance(intent, IntentFrame):
         raise TypeError("intent must be IntentFrame")
+    if not isinstance(request_text, str):
+        raise TypeError(
+            f"request_text must be str, got {type(request_text).__name__}"
+        )
 
     # Prefer the raw request when given; otherwise fall back to a synthetic
     # text built from the intent surface so the heuristics still have signal.
-    text = request_text or " ".join(
+    # Pure-whitespace request_text counts as "not given".
+    text = request_text.strip() or " ".join(
         [
             intent.goal,
             intent.success_condition,
