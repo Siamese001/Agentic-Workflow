@@ -35,22 +35,53 @@ from typing import Any
 
 
 class ResultClass(str, Enum):
-    """E3.7 result classification — verbatim v3 spec."""
+    """E3.7 result classification — v3 spec + v4 DEGRADED_SUCCESS extension."""
 
     SUCCESS = "SUCCESS"
     SOFT_REPAIRABLE = "SOFT_REPAIRABLE"
     FAIL_TERMINAL = "FAIL_TERMINAL"
     NEEDS_HELP = "NEEDS_HELP"
     REJECTED = "REJECTED"
+    DEGRADED_SUCCESS = "DEGRADED_SUCCESS"  # v4: usable partial result with caveats
 
 
 class TerminalStamp(str, Enum):
-    """E5.5 terminal stamp — v3 spec literal."""
+    """E5.5 terminal stamp — v3 spec literal + v4 DEGRADED_SUCCESS."""
 
     SUCCESS = "SUCCESS"
     FAILURE = "FAILURE"
     NEEDS_HELP = "NEEDS_HELP"
     REJECTED = "REJECTED"
+    DEGRADED_SUCCESS = "DEGRADED_SUCCESS"  # v4
+
+
+class RepairStatus(str, Enum):
+    """E4 OUTPUT CONTRACT repair_status — v4 §E4."""
+
+    REPAIRED = "REPAIRED"
+    NOT_REPAIRED = "NOT_REPAIRED"
+    QUARANTINED = "QUARANTINED"
+    NEEDS_HELP = "NEEDS_HELP"
+    FAIL_TERMINAL = "FAIL_TERMINAL"
+
+
+class DispatchTarget(str, Enum):
+    """E5 OUTPUT CONTRACT dispatch_target — v4 §E5."""
+
+    EXIT_CONTROL = "EXIT_CONTROL"
+    L3_MERGE = "L3_MERGE"
+    HITL_PACKETIZATION = "HITL_PACKETIZATION"
+    UWG_REQUEST_CANDIDATE = "UWG_REQUEST_CANDIDATE"
+
+
+class ExecutionLane(str, Enum):
+    """E3 EXECUTION LANES — v4 §E3."""
+
+    READ = "READ"
+    MODEL = "MODEL"
+    TOOL = "TOOL"
+    ACTION = "ACTION"
+    ARTIFACT = "ARTIFACT"
 
 
 # ---------------------------------------------------------------------------
@@ -227,7 +258,16 @@ class AttemptReceipt:
     """E3.8 attempt receipt — sealed per individual E3 attempt.
 
     `attempt_count` is monotonic within a packet family. `validation_packet_id`
-    links each attempt back to E2's approval. `result_class` follows v3 §E3.7.
+    links each attempt back to E2's approval. `result_class` follows v3 §E3.7
+    extended with v4's DEGRADED_SUCCESS.
+
+    v4 additions (all defaulted to preserve backward-compat with v3 callers):
+      - execution_lane: which v4 lane (READ/MODEL/TOOL/ACTION/ARTIFACT)
+      - decisive_reason_code: short reason key from E3 OUTPUT CONTRACT
+      - local_check_results: tuple of (check_name, passed) pairs
+      - generated_artifacts: artifact references produced by this attempt
+      - proposed_state_diff: inert mutation proposal (E1.7 / E5.7 invariant)
+      - quarantined_payload: unsafe output stored separately from output_digest
     """
 
     attempt_receipt_id: str
@@ -244,6 +284,13 @@ class AttemptReceipt:
     output_digest: str = ""
     error_summary: str | None = None
     sealed_at: float = field(default_factory=time.monotonic)
+    # ---- v4 additions ----
+    execution_lane: ExecutionLane | None = None
+    decisive_reason_code: str = ""
+    local_check_results: tuple[tuple[str, bool], ...] = ()
+    generated_artifacts: tuple[str, ...] = ()
+    proposed_state_diff: dict[str, Any] = field(default_factory=dict)
+    quarantined_payload: str | None = None
 
     @staticmethod
     def new_id() -> str:
@@ -274,6 +321,14 @@ class HealReceipt:
     Snapshot guard: `determinism.blueprint_hash` and `determinism.policy_hash`
     MUST match the prep receipt. The phase pipeline asserts this before
     sealing.
+
+    v4 additions (defaulted):
+      - repair_status: full v4 RepairStatus enum (incl. QUARANTINED)
+      - repair_tactic: short identifier of the chosen safe repair
+      - before_hash / after_hash: payload digests pre/post repair
+      - oscillation_status: result of E4.5 thrash detection
+      - snapshot_guard_status: result of E4.4 same-snapshot check
+      - next_action: RETURN_TO_E3 or SEND_TO_E5 (v4 §E4 OUTPUT)
     """
 
     repair_attempt_id: str
@@ -286,6 +341,14 @@ class HealReceipt:
     delta_summary: str = ""
     outcome: HealOutcomeStamp = HealOutcomeStamp.NEEDS_HELP
     sealed_at: float = field(default_factory=time.monotonic)
+    # ---- v4 additions ----
+    repair_status: RepairStatus | None = None
+    repair_tactic: str = ""
+    before_hash: str = ""
+    after_hash: str = ""
+    oscillation_status: str = ""  # "CLEAN" | "THRASHING" | "CEILING_REACHED"
+    snapshot_guard_status: str = "PASS"  # "PASS" | "FAIL"
+    next_action: str = ""  # "RETURN_TO_E3" | "SEND_TO_E5"
 
     @staticmethod
     def new_id() -> str:
@@ -332,6 +395,11 @@ class DispatchReceipt:
     )
     has_commit_payload: bool = False  # invariant: NEVER True
     dispatched_at: float = field(default_factory=time.monotonic)
+    # ---- v4 additions ----
+    dispatch_target: DispatchTarget = DispatchTarget.EXIT_CONTROL
+    user_visible_safe: bool = True
+    commit_requested: bool = False
+    downstream_recommendation: str = ""
 
     @staticmethod
     def new_id() -> str:
@@ -348,6 +416,9 @@ class DispatchReceipt:
 __all__ = [
     "ResultClass",
     "TerminalStamp",
+    "RepairStatus",
+    "DispatchTarget",
+    "ExecutionLane",
     "LineageRoot",
     "DeterminismBundle",
     "SnapshotMismatchError",
