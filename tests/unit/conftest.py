@@ -38,6 +38,7 @@ def _preload_real_agentic_core_subpackages() -> None:
     real_subpackages = (
         "agentic_core.runtime",
         "agentic_core.runtime.contracts",
+        "agentic_core.runtime.contracts.lifecycle_trace_contract",
         "agentic_core.L0_routing",
         "agentic_core.L1_cognition",
         "agentic_core.L2_execution",
@@ -46,6 +47,25 @@ def _preload_real_agentic_core_subpackages() -> None:
         "agentic_core.L5_safety",
         "agentic_core.L6_observability",
     )
+    # First, evict any shadow entries that point into tests/.
+    project_root = Path(__file__).resolve().parents[2]
+    for mod_name in list(real_subpackages):
+        existing = sys.modules.get(mod_name)
+        if existing is None:
+            continue
+        existing_file = getattr(existing, "__file__", "") or ""
+        existing_path = getattr(existing, "__path__", None)
+        is_shadow = "tests" in existing_file and str(project_root) in existing_file and (
+            existing_file.startswith(str(project_root / "tests"))
+        )
+        if not is_shadow and existing_path:
+            for p in existing_path if isinstance(existing_path, list) else [existing_path]:
+                if str(project_root / "tests") in str(p):
+                    is_shadow = True
+                    break
+        if is_shadow:
+            del sys.modules[mod_name]
+
     for mod_name in real_subpackages:
         try:
             __import__(mod_name)
