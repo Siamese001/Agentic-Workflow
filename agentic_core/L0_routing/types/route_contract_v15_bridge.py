@@ -163,6 +163,20 @@ def _v15_to_v12_cache_policy(policy: CachePolicyV15) -> CachePolicyV12:
     return CachePolicyV12.NO_CACHE
 
 
+def _translate_fallback_chain(
+    v12_chain: tuple[FallbackEntryV12, ...],
+) -> list[FallbackEntryV15]:
+    """Map a v12 fallback chain to v15; drop entries with no v15 mapping."""
+    out: list[FallbackEntryV15] = []
+    for entry in v12_chain:
+        v15_route = _V12_TO_V15_ROUTE.get(entry.route_id)
+        if v15_route is None:
+            continue
+        cost = _V12_TO_V15_COST[entry.cost_tier]
+        out.append(FallbackEntryV15(route_id=v15_route, cost_tier=cost, provider=entry.provider))
+    return out
+
+
 def _v15_to_v12_execution_form(
     form: ExecutionFormV15,
     route_id: RouteIdV15,
@@ -223,18 +237,7 @@ def v12_to_v15(
         )
 
     # Translate fallback chain — drop entries that map to UNKNOWN routes.
-    v15_chain: list[FallbackEntryV15] = []
-    for v12_entry in annex.fallback_chain:
-        v15_chain_route = _V12_TO_V15_ROUTE.get(v12_entry.route_id)
-        if v15_chain_route is None:
-            continue
-        v15_chain.append(
-            FallbackEntryV15(
-                route_id=v15_chain_route,
-                cost_tier=_V12_TO_V15_COST[v12_entry.cost_tier],
-                provider=v12_entry.provider,
-            ),
-        )
+    v15_chain = _translate_fallback_chain(annex.fallback_chain)
     # Ensure non-terminal route has R5 last (the v15 contract enforces this).
     terminal = {
         RouteIdV15.R1A_EXACT_CACHE,

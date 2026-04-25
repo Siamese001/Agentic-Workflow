@@ -43,6 +43,7 @@ import math
 import os
 from dataclasses import asdict, dataclass, field
 from enum import Enum
+from typing import ClassVar
 
 # ---------------------------------------------------------------------------
 # Hard limits
@@ -284,15 +285,25 @@ def _require_str_tuple(
         )
     for idx, item in enumerate(values):
         if not isinstance(item, str):
-            raise V15RouteContractError(
-                f"{field_name}[{idx}] must be str, got {type(item).__name__}",
-            )
+            raise V15RouteContractError(f"{field_name}[{idx}] must be str, got {type(item).__name__}")
         if len(item) == 0:
             raise V15RouteContractError(f"{field_name}[{idx}] must be non-empty")
         if len(item) > _MAX_STRING_LEN:
-            raise V15RouteContractError(
-                f"{field_name}[{idx}] exceeds max length {_MAX_STRING_LEN}",
-            )
+            raise V15RouteContractError(f"{field_name}[{idx}] exceeds max length {_MAX_STRING_LEN}")
+
+
+def _check_int_field(name: str, value: object, ceiling: int) -> None:
+    """Validate one bounded non-negative int field against a ceiling.
+
+    Used by RouteSLOV15 to keep its validation loop body small and
+    semantically clean.
+    """
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise V15RouteContractError(f"{name} must be int")
+    if value < 0:
+        raise V15RouteContractError(f"{name} must be >= 0")
+    if value > ceiling:
+        raise V15RouteContractError(f"{name} exceeds ceiling {ceiling} (got {value})")
 
 
 # ---------------------------------------------------------------------------
@@ -335,7 +346,7 @@ class RouteSLOV15:
     reserve_for_exit_eval: int
 
     def __post_init__(self) -> None:
-        for name, value, ceiling in (
+        _slo_int_checks = (
             ("max_latency_ms", self.max_latency_ms, _MAX_SLO_LATENCY_MS),
             ("max_tokens", self.max_tokens, _MAX_SLO_TOKENS),
             ("max_retrieval_passes", self.max_retrieval_passes, _MAX_SLO_RETRIEVAL_PASSES),
@@ -343,15 +354,9 @@ class RouteSLOV15:
             ("max_tool_calls", self.max_tool_calls, _MAX_SLO_TOOL_CALLS),
             ("max_iterations", self.max_iterations, _MAX_SLO_ITERATIONS),
             ("reserve_for_exit_eval", self.reserve_for_exit_eval, _MAX_SLO_TOKENS),
-        ):
-            if not isinstance(value, int) or isinstance(value, bool):
-                raise V15RouteContractError(f"{name} must be int")
-            if value < 0:
-                raise V15RouteContractError(f"{name} must be >= 0")
-            if value > ceiling:
-                raise V15RouteContractError(
-                    f"{name} exceeds ceiling {ceiling} (got {value})",
-                )
+        )
+        for name, value, ceiling in _slo_int_checks:
+            _check_int_field(name, value, ceiling)
         if not _is_finite_float(self.max_cost):
             raise V15RouteContractError("max_cost must be finite (no NaN/inf)")
         if self.max_cost < 0.0:
@@ -419,18 +424,20 @@ class TelemetryKeysV15:
     replay_key: str
     route_telemetry_event_id: str
 
+    _FIELDS: ClassVar[tuple[str, ...]] = (
+        "trace_root",
+        "route_span_id",
+        "route_digest",
+        "policy_hash",
+        "blueprint_hash",
+        "snapshot_id",
+        "replay_key",
+        "route_telemetry_event_id",
+    )
+
     def __post_init__(self) -> None:
-        for name, value in (
-            ("trace_root", self.trace_root),
-            ("route_span_id", self.route_span_id),
-            ("route_digest", self.route_digest),
-            ("policy_hash", self.policy_hash),
-            ("blueprint_hash", self.blueprint_hash),
-            ("snapshot_id", self.snapshot_id),
-            ("replay_key", self.replay_key),
-            ("route_telemetry_event_id", self.route_telemetry_event_id),
-        ):
-            _require_nonempty_str(value, f"TelemetryKeysV15.{name}")
+        for name in TelemetryKeysV15._FIELDS:
+            _require_nonempty_str(getattr(self, name), f"TelemetryKeysV15.{name}")
 
 
 @dataclass(frozen=True)
