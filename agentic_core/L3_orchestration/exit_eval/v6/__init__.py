@@ -58,6 +58,14 @@ from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import (
     AggregateDecision,
     aggregate_decision,
 )
+from agentic_core.L3_orchestration.exit_eval.v6.uwg import (
+    UwgBackends,
+    UwgError,
+    UwgOutcome,
+    UwgReceipt,
+    default_backends,
+    process_commit_request,
+)
 from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import (
     build_x3a_deny,
     build_x3b_escalate,
@@ -115,4 +123,11 @@ __all__ = [
     "HITLVerdict",
     "materialize_review_packet",
     "run_l5_reclearance",
+    # uwg
+    "UwgBackends",
+    "UwgError",
+    "UwgOutcome",
+    "UwgReceipt",
+    "default_backends",
+    "process_commit_request",
 ]
