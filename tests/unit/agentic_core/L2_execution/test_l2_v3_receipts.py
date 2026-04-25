@@ -248,14 +248,16 @@ class TestAttemptReceipt:
         assert a.result_class is ResultClass.SUCCESS
 
     def test_all_v3_result_classes_present(self) -> None:
+        # v4 extends v3 with DEGRADED_SUCCESS; assert v3 subset is preserved.
         names = {r.value for r in ResultClass}
-        assert names == {
+        v3_required = {
             "SUCCESS",
             "SOFT_REPAIRABLE",
             "FAIL_TERMINAL",
             "NEEDS_HELP",
             "REJECTED",
         }
+        assert v3_required.issubset(names)
 
 
 # ---------------------------------------------------------------------------
@@ -342,5 +344,7 @@ class TestDispatchReceipt:
             )
 
     def test_terminal_stamps_match_v3_spec(self) -> None:
+        # v4 adds DEGRADED_SUCCESS; v3 subset preserved.
         names = {t.value for t in TerminalStamp}
-        assert names == {"SUCCESS", "FAILURE", "NEEDS_HELP", "REJECTED"}
+        v3_required = {"SUCCESS", "FAILURE", "NEEDS_HELP", "REJECTED"}
+        assert v3_required.issubset(names)
