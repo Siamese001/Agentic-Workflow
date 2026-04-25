@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import re
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -90,6 +91,9 @@ _DEFAULT_MAX_PAYLOAD_DEPTH = 32
 # E2 attachment / modality limits (W2 — spec lines 79-83).
 _DEFAULT_MAX_ATTACHMENTS = 16
 _DEFAULT_MAX_ATTACHMENT_BYTES = 32 * 1024 * 1024  # 32 MiB per attachment
+_MAX_FILENAME_LEN = 512
+_MAX_CONTENT_TYPE_LEN = 256
+_FILENAME_FORBIDDEN_RE = re.compile(r"[\x00-\x1f\x7f]|[\\/]")
 _DEFAULT_ALLOWED_MODALITIES: frozenset[str] = frozenset(
     {"text", "image", "audio", "video", "document", "mixed"}
 )
@@ -414,7 +418,7 @@ class IngressEnvelopeCheck:
             ingress_source_class=ingress_source_class,
             auth_verdict=auth_verdict,
             quota_verdict="allowed",  # we passed E4 to reach here
-            schema_verdict="valid",   # we passed E2 to reach here
+            schema_verdict="valid",  # we passed E2 to reach here
             raw_payload_ref=raw_payload_ref,
             attachment_manifest=attachment_manifest,
             modality=modality,
@@ -551,9 +555,7 @@ class IngressEnvelopeCheck:
             )
 
     # --------------------------------------------------- E2 attachments / modality (W2)
-    def _e2_attachments(
-        self, env: dict, request_id: str, trace_root: str
-    ) -> tuple[dict[str, Any], ...]:
+    def _e2_attachments(self, env: dict, request_id: str, trace_root: str) -> tuple[dict[str, Any], ...]:
         """Validate attachment list shape & size; return bounded manifest.
 
         Manifest is sourced from ``env['attachments']`` OR
@@ -582,9 +584,7 @@ class IngressEnvelopeCheck:
                     reason_code=RejectionReasonCode.TOO_MANY_ATTACHMENTS,
                     request_id=request_id,
                     trace_root=trace_root,
-                    message=(
-                        f"attachment count {len(atts)} > limit {self._max_attachments}."
-                    ),
+                    message=(f"attachment count {len(atts)} > limit {self._max_attachments}."),
                     gate_stage="E2_ATTACHMENT",
                 )
             )
@@ -613,13 +613,36 @@ class IngressEnvelopeCheck:
                         gate_stage="E2_ATTACHMENT",
                     )
                 )
-            if not isinstance(size_raw, (int, float)) or size_raw < 0:
+            if len(filename) > _MAX_FILENAME_LEN:
                 raise IngressRejected(
                     RejectionSlip(
                         reason_code=RejectionReasonCode.ATTACHMENT_MALFORMED,
                         request_id=request_id,
                         trace_root=trace_root,
-                        message=f"attachments[{idx}] missing or invalid size.",
+                        message=(
+                            f"attachments[{idx}] filename length {len(filename)} > {_MAX_FILENAME_LEN}."
+                        ),
+                        gate_stage="E2_ATTACHMENT",
+                    )
+                )
+            if _FILENAME_FORBIDDEN_RE.search(filename):
+                raise IngressRejected(
+                    RejectionSlip(
+                        reason_code=RejectionReasonCode.ATTACHMENT_MALFORMED,
+                        request_id=request_id,
+                        trace_root=trace_root,
+                        message=(f"attachments[{idx}] filename contains control or path separator chars."),
+                        gate_stage="E2_ATTACHMENT",
+                    )
+                )
+            # Reject bool explicitly: ``isinstance(True, int) is True`` in Python.
+            if isinstance(size_raw, bool) or not isinstance(size_raw, (int, float)) or size_raw < 0:
+                raise IngressRejected(
+                    RejectionSlip(
+                        reason_code=RejectionReasonCode.ATTACHMENT_MALFORMED,
+                        request_id=request_id,
+                        trace_root=trace_root,
+                        message=(f"attachments[{idx}] size must be a non-negative integer or float."),
                         gate_stage="E2_ATTACHMENT",
                     )
                 )
@@ -636,11 +659,14 @@ class IngressEnvelopeCheck:
                         gate_stage="E2_ATTACHMENT",
                     )
                 )
-            manifest.append({
-                "filename": filename,
-                "size": size,
-                "content_type": str(content_type),
-            })
+            content_type_str = str(content_type)[:_MAX_CONTENT_TYPE_LEN]
+            manifest.append(
+                {
+                    "filename": filename,
+                    "size": size,
+                    "content_type": content_type_str,
+                }
+            )
         return tuple(manifest)
 
     def _e2_modality(self, env: dict, request_id: str, trace_root: str) -> str:
@@ -656,9 +682,7 @@ class IngressEnvelopeCheck:
                     reason_code=RejectionReasonCode.UNSUPPORTED_MODALITY,
                     request_id=request_id,
                     trace_root=trace_root,
-                    message=(
-                        f"modality {modality!r} not in allowlist {sorted(self._allowed_modalities)}."
-                    ),
+                    message=(f"modality {modality!r} not in allowlist {sorted(self._allowed_modalities)}."),
                     gate_stage="E2_MODALITY",
                 )
             )
@@ -750,19 +774,21 @@ class IngressEnvelopeCheck:
         return hashlib.sha256(f"{identity}:{version}".encode()).hexdigest()[:24]
 
     @staticmethod
-    def _derive_auth_verdict(
-        verified: VerifiedIdentity | None, env: dict[str, Any]
-    ) -> str:
+    def _derive_auth_verdict(verified: VerifiedIdentity | None, env: dict[str, Any]) -> str:
         """Map E3 verification outcome to spec auth_verdict label.
 
         Spec values: ``authenticated`` / ``anonymous`` / ``service_bound`` / ``rejected``.
         Rejected paths never reach the stamp (they raise IngressRejected) so this
         only distinguishes the success-path labels.
+
+        Identity preference: the verified caller_id (from the IdentityVerifier)
+        is authoritative; the raw envelope value is only used as a fallback when
+        no verifier is configured.
         """
 
         if verified is None:
             return "anonymous"
-        identity = str(env.get("caller_identity") or "").lower()
+        identity = str(verified.caller_id or env.get("caller_identity") or "").lower()
         if identity.startswith("svc-") or identity.startswith("service:"):
             return "service_bound"
         if identity.endswith("-anon") or identity in {"anonymous", "anon", "unknown"}:
@@ -780,9 +806,7 @@ class IngressEnvelopeCheck:
         try:
             import json as _json
 
-            encoded = _json.dumps(
-                payload, sort_keys=True, default=repr, ensure_ascii=False
-            ).encode("utf-8")
+            encoded = _json.dumps(payload, sort_keys=True, default=repr, ensure_ascii=False).encode("utf-8")
         except (TypeError, ValueError):
             encoded = repr(payload).encode("utf-8", errors="replace")
         digest = hashlib.sha256(encoded).hexdigest()[:24]
