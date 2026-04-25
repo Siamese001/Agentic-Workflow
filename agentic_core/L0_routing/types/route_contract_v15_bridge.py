@@ -68,6 +68,7 @@ from agentic_core.L0_routing.types.route_contract_v15 import (
     ReasonCodeV15,
     RouteIdV15,
     RouteSLOV15,
+    SafeResponseType,
     SandboxClass,
     SideEffectClass,
     SignaturesV15,
@@ -247,9 +248,7 @@ def v12_to_v15(
             )
 
     fresh_v15 = (
-        freshness_class
-        if freshness_class is not None
-        else _V12_TO_V15_FRESHNESS[annex.freshness_class]
+        freshness_class if freshness_class is not None else _V12_TO_V15_FRESHNESS[annex.freshness_class]
     )
 
     # v15 cache_policy is whitelisted per route. Pick a safe default per route.
@@ -373,12 +372,9 @@ def v12_to_v15(
         telemetry_keys=telemetry,
         signatures=signatures,
         base_contract_id=annex.base_contract_id,
-        hitl_pause_points=(
-            ("HITL_PRECOMMIT",)
-            if annex.route_id == RouteIdV12.R_HITL
-            else ()
-        ),
+        hitl_pause_points=(("HITL_PRECOMMIT",) if annex.route_id == RouteIdV12.R_HITL else ()),
         workflow_blueprint_id=workflow_blueprint_id,
+        safe_response_type=(SafeResponseType.ABSTAIN if v15_route == RouteIdV15.R5_FALLBACK else None),
     )
 
 

@@ -43,6 +43,7 @@ from agentic_core.L0_routing.types.route_contract_v15 import (
     ReasonCodeV15,
     RouteIdV15,
     RouteSLOV15,
+    SafeResponseType,
     SignaturesV15,
     SupportTargetV15,
     TelemetryKeysV15,
@@ -218,9 +219,7 @@ def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
     # ---- step 0: ingress reject / unsafe ----
     if not signals.ingress_ok or signals.unsafe:
         reason = (
-            ReasonCodeV15.SCOPE_FAIL.value
-            if not signals.ingress_ok
-            else ReasonCodeV15.POLICY_BLOCK.value
+            ReasonCodeV15.SCOPE_FAIL.value if not signals.ingress_ok else ReasonCodeV15.POLICY_BLOCK.value
         )
         return _build(
             signals,
@@ -232,6 +231,7 @@ def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
             confidence_class=ConfidenceClass.UNSAFE,
             confidence_score=0.0,
             fallback_chain=(),
+            safe_response_type=SafeResponseType.REFUSE,
         )
 
     # ---- step 1: exact cache hit ----
@@ -293,9 +293,7 @@ def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
             fallback_chain=_default_fallback_for(RouteIdV15.R3R4_MANAGED_WORKFLOW),
             require_blueprint=True,
             hitl_pause_points=(
-                signals.hitl_pause_points
-                if signals.hitl_pause_points
-                else ("HITL_PRECOMMIT",)
+                signals.hitl_pause_points if signals.hitl_pause_points else ("HITL_PRECOMMIT",)
             ),
         )
 
@@ -319,6 +317,7 @@ def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
                 confidence_class=ConfidenceClass.INSUFFICIENT_SUPPORT,
                 confidence_score=0.0,
                 fallback_chain=(),
+                safe_response_type=SafeResponseType.CLARIFY,
             )
         # If grounding is needed, prefer R3 over any action/managed path.
         if signals.grounding_required:
@@ -353,8 +352,10 @@ def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
         return _build_r3(signals, cold_start=False)
 
     # ---- step 6: managed workflow ----
-    if signals.multi_step_required or signals.cross_step_contract_change or (
-        signals.parallel_safe_shards or signals.iterative_refinement_needed
+    if (
+        signals.multi_step_required
+        or signals.cross_step_contract_change
+        or (signals.parallel_safe_shards or signals.iterative_refinement_needed)
     ):
         reason_codes_list: list[str] = [ReasonCodeV15.MULTI_STEP_REQUIRED.value]
         if signals.cross_step_contract_change:
@@ -366,7 +367,9 @@ def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
         return _build(
             signals,
             route_id=RouteIdV15.R3R4_MANAGED_WORKFLOW,
-            cache_policy=CachePolicyV15.READ_THROUGH if signals.grounding_required else CachePolicyV15.NO_CACHE,
+            cache_policy=CachePolicyV15.READ_THROUGH
+            if signals.grounding_required
+            else CachePolicyV15.NO_CACHE,
             support_target=signals.support_target if signals.grounding_required else SupportTargetV15.NONE,
             cost_tier=CostTierV15.TIER_L,
             reason_codes=tuple(reason_codes_list),
@@ -391,6 +394,7 @@ def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
         confidence_class=ConfidenceClass.INSUFFICIENT_SUPPORT,
         confidence_score=0.0,
         fallback_chain=(),
+        safe_response_type=SafeResponseType.ABSTAIN,
     )
 
 
@@ -487,6 +491,7 @@ def _build(
     fallback_chain: tuple[FallbackEntryV15, ...],
     require_blueprint: bool = False,
     hitl_pause_points: tuple[str, ...] = (),
+    safe_response_type: SafeResponseType | None = None,
 ) -> V15RouteContract:
     """Assemble the final V15RouteContract with deterministic digest."""
     # Managed-workflow guard.
@@ -558,6 +563,7 @@ def _build(
         base_contract_id=signals.base_contract_id,
         hitl_pause_points=hitl_pause_points,
         workflow_blueprint_id=workflow_blueprint_id,
+        safe_response_type=safe_response_type,
     )
 
 

@@ -29,6 +29,7 @@ from agentic_core.L0_routing.types.route_contract_v15 import (
     FreshnessClassV15,
     ReasonCodeV15,
     RouteIdV15,
+    SafeResponseType,
     SandboxClass,
     SideEffectClass,
     SupportTargetV15,
@@ -502,10 +503,7 @@ class TestReplayDeterminism:
         )
         c1 = select_route_v15(s1)
         c2 = select_route_v15(s2)
-        assert (
-            c1.signatures.deterministic_route_digest
-            == c2.signatures.deterministic_route_digest
-        )
+        assert c1.signatures.deterministic_route_digest == c2.signatures.deterministic_route_digest
 
     def test_different_snapshot_different_digest(
         self,
@@ -525,10 +523,7 @@ class TestReplayDeterminism:
         )
         c1 = select_route_v15(s1)
         c2 = select_route_v15(s2)
-        assert (
-            c1.signatures.deterministic_route_digest
-            != c2.signatures.deterministic_route_digest
-        )
+        assert c1.signatures.deterministic_route_digest != c2.signatures.deterministic_route_digest
 
 
 # ---------------------------------------------------------------------------
@@ -610,3 +605,81 @@ class TestFallbackChainIntegrity:
         ):
             c = select_route_v15(_make_signals(authority, **sig_overrides))
             assert c.fallback_chain == ()
+
+
+class TestSafeResponseTypeEmission:
+    """Each R5 path must emit the right safe_response_type; non-R5 paths must omit it."""
+
+    def test_ingress_reject_emits_refuse(
+        self,
+        authority: AuthorityScope,
+    ) -> None:
+        c = select_route_v15(_make_signals(authority, ingress_ok=False))
+        assert c.safe_response_type is SafeResponseType.REFUSE
+
+    def test_unsafe_emits_refuse(
+        self,
+        authority: AuthorityScope,
+    ) -> None:
+        c = select_route_v15(_make_signals(authority, unsafe=True))
+        assert c.safe_response_type is SafeResponseType.REFUSE
+
+    def test_cold_start_underspecified_emits_clarify(
+        self,
+        authority: AuthorityScope,
+    ) -> None:
+        c = select_route_v15(
+            _make_signals(
+                authority,
+                classifier_confidence=COLD_START_CONFIDENCE_THRESHOLD - 0.1,
+                underspecified=True,
+            ),
+        )
+        assert c.route_id is RouteIdV15.R5_FALLBACK
+        assert c.safe_response_type is SafeResponseType.CLARIFY
+
+    def test_no_safe_path_emits_abstain(
+        self,
+        authority: AuthorityScope,
+    ) -> None:
+        c = select_route_v15(
+            _make_signals(authority, classifier_confidence=0.80),
+        )
+        assert c.route_id is RouteIdV15.R5_FALLBACK
+        assert c.safe_response_type is SafeResponseType.ABSTAIN
+
+    def test_non_r5_routes_have_none(
+        self,
+        authority: AuthorityScope,
+    ) -> None:
+        # R1A
+        c = select_route_v15(_make_signals(authority, exact_cache_hit=True))
+        assert c.safe_response_type is None
+        # R3
+        c = select_route_v15(
+            _make_signals(
+                authority,
+                grounding_required=True,
+                classifier_confidence=0.80,
+            ),
+        )
+        assert c.safe_response_type is None
+        # R4
+        c = select_route_v15(
+            _make_signals(
+                authority,
+                low_risk_reversible_action=True,
+                classifier_confidence=0.90,
+            ),
+        )
+        assert c.safe_response_type is None
+        # Managed workflow
+        c = select_route_v15(
+            _make_signals(
+                authority,
+                multi_step_required=True,
+                workflow_blueprint_id="bp",
+                classifier_confidence=0.80,
+            ),
+        )
+        assert c.safe_response_type is None

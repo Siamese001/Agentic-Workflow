@@ -189,6 +189,29 @@ class WriteAuthority(str, Enum):
     UWG_CLEARED = "UWG_CLEARED"
 
 
+class SafeResponseType(str, Enum):
+    """v15 §R5 FALLBACK CONTRACT FIELDS — ``safe_response_type``.
+
+    Categorizes the safe terminal response Exit Eval should render. Required
+    on every R5 contract; ignored on non-R5 routes.
+
+    * ``CLARIFY``: ask the user for missing information (intent under-specified
+      but resolvable with one safe clarification).
+    * ``ABSTAIN``: decline to answer because evidence is insufficient or no
+      grounded path is available.
+    * ``REFUSE``: decline because the request is unsafe, blocked by policy,
+      or out of scope.
+    * ``SAFE_PARTIAL``: emit a caveated/partial answer when full grounding
+      cannot be obtained but a bounded partial is genuinely safer than a
+      full abstain.
+    """
+
+    CLARIFY = "CLARIFY"
+    ABSTAIN = "ABSTAIN"
+    REFUSE = "REFUSE"
+    SAFE_PARTIAL = "SAFE_PARTIAL"
+
+
 class CapabilityClass(str, Enum):
     """v15 §authority — capability class declared on the route."""
 
@@ -558,6 +581,7 @@ class V15RouteContract:
     base_contract_id: str = ""
     hitl_pause_points: tuple[str, ...] = field(default_factory=tuple)
     workflow_blueprint_id: str | None = None
+    safe_response_type: SafeResponseType | None = None
 
     def __post_init__(self) -> None:
         # ---- type guards ----
@@ -664,10 +688,7 @@ class V15RouteContract:
         if self.route_id in _TERMINAL_ROUTES_V15:
             # Terminal routes typically have an empty chain. R5 itself is
             # the terminal safety net so its chain must be empty.
-            if (
-                self.route_id == RouteIdV15.R5_FALLBACK
-                and len(self.fallback_chain) > 0
-            ):
+            if self.route_id == RouteIdV15.R5_FALLBACK and len(self.fallback_chain) > 0:
                 raise V15RouteContractError(
                     "R5_FALLBACK must have an empty fallback_chain (it is the terminal safety net)",
                 )
@@ -683,9 +704,7 @@ class V15RouteContract:
                     f"fallback_chain last entry must be R5_FALLBACK, got {last.route_id.value}",
                 )
             # R5 must appear at most once and only at the tail.
-            r5_count = sum(
-                1 for e in self.fallback_chain if e.route_id == RouteIdV15.R5_FALLBACK
-            )
+            r5_count = sum(1 for e in self.fallback_chain if e.route_id == RouteIdV15.R5_FALLBACK)
             if r5_count != 1:
                 raise V15RouteContractError(
                     f"fallback_chain must contain R5_FALLBACK exactly once at tail, found {r5_count}",
@@ -727,12 +746,30 @@ class V15RouteContract:
                 "R5_FALLBACK requires at least one reason_code (no silent fallback)",
             )
 
+        # ---- R5 fallback safe_response_type requirement (v15 §R5 CONTRACT) ----
+        if self.route_id == RouteIdV15.R5_FALLBACK:
+            if self.safe_response_type is None:
+                raise V15RouteContractError(
+                    "R5_FALLBACK requires safe_response_type "
+                    "(CLARIFY|ABSTAIN|REFUSE|SAFE_PARTIAL) per v15 §R5 CONTRACT",
+                )
+            if not isinstance(self.safe_response_type, SafeResponseType):
+                raise V15RouteContractError(
+                    "safe_response_type must be SafeResponseType enum",
+                )
+        else:
+            # Non-R5 routes MUST NOT carry a safe_response_type — it is
+            # the terminal-fallback rendering hint and is meaningless on
+            # cache/grounded/action/managed paths.
+            if self.safe_response_type is not None:
+                raise V15RouteContractError(
+                    f"safe_response_type is meaningful only on R5_FALLBACK; "
+                    f"got {self.safe_response_type.value} on {self.route_id.value}",
+                )
+
         # ---- confidence_class must agree with confidence_score (modulo UNSAFE) ----
         derived = _classify_confidence(self.confidence_score)
-        if (
-            self.confidence_class != ConfidenceClass.UNSAFE
-            and self.confidence_class != derived
-        ):
+        if self.confidence_class != ConfidenceClass.UNSAFE and self.confidence_class != derived:
             raise V15RouteContractError(
                 f"confidence_class={self.confidence_class.value} disagrees with derived "
                 f"class={derived.value} for confidence_score={self.confidence_score}",
@@ -747,13 +784,8 @@ class V15RouteContract:
         """
         payload = asdict(self)
         # Strip the embedded hmac_sig so signing remains idempotent.
-        if (
-            isinstance(payload.get("signatures"), dict)
-            and "hmac_sig" in payload["signatures"]
-        ):
-            payload["signatures"] = {
-                k: v for k, v in payload["signatures"].items() if k != "hmac_sig"
-            }
+        if isinstance(payload.get("signatures"), dict) and "hmac_sig" in payload["signatures"]:
+            payload["signatures"] = {k: v for k, v in payload["signatures"].items() if k != "hmac_sig"}
         return payload
 
     def canonical_json(self) -> bytes:
@@ -802,6 +834,7 @@ class V15RouteContract:
             base_contract_id=self.base_contract_id,
             hitl_pause_points=self.hitl_pause_points,
             workflow_blueprint_id=self.workflow_blueprint_id,
+            safe_response_type=self.safe_response_type,
         )
 
     def verify(self, secret_key: bytes) -> bool:
@@ -874,10 +907,7 @@ def compute_deterministic_route_digest(
     _require_nonempty_str(snapshot_id, "snapshot_id")
 
     # Normalize fallback_chain: tuple of (route_id, cost_tier, provider).
-    chain_repr = [
-        (e.route_id.value, e.cost_tier.value, e.provider or "")
-        for e in fallback_chain
-    ]
+    chain_repr = [(e.route_id.value, e.cost_tier.value, e.provider or "") for e in fallback_chain]
 
     payload = {
         "route_id": route_id.value,
@@ -977,6 +1007,7 @@ __all__ = [
     "ReasonCodeV15",
     "RouteIdV15",
     "RouteSLOV15",
+    "SafeResponseType",
     "SandboxClass",
     "SideEffectClass",
     "SignaturesV15",

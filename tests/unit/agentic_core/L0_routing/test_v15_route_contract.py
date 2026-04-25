@@ -34,6 +34,7 @@ from agentic_core.L0_routing.types.route_contract_v15 import (
     ReasonCodeV15,
     RouteIdV15,
     RouteSLOV15,
+    SafeResponseType,
     SandboxClass,
     SideEffectClass,
     SignaturesV15,
@@ -347,9 +348,7 @@ class TestRouteFormCoherence:
                 cache_policy=CachePolicyV15.READ_THROUGH,
                 support_target=SupportTargetV15.SOURCE_BACKED_SUMMARY,
                 cost_tier=CostTierV15.TIER_M,
-                fallback_chain=(
-                    FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-                ),
+                fallback_chain=(FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),),
                 slo=slo_r3,
                 authority=authority,
                 telemetry_keys=_telem(digest),
@@ -401,9 +400,7 @@ class TestCachePolicyWhitelist:
                 cache_policy=CachePolicyV15.EXACT_ONLY,
                 support_target=SupportTargetV15.NONE,
                 cost_tier=CostTierV15.TIER_M,
-                fallback_chain=(
-                    FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-                ),
+                fallback_chain=(FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),),
                 slo=slo_terminal,
                 authority=authority,
                 telemetry_keys=_telem(digest),
@@ -621,9 +618,7 @@ class TestManagedWorkflowGuards:
                 cache_policy=CachePolicyV15.READ_THROUGH,
                 support_target=SupportTargetV15.SOURCE_BACKED_SUMMARY,
                 cost_tier=CostTierV15.TIER_L,
-                fallback_chain=(
-                    FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-                ),
+                fallback_chain=(FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),),
                 slo=slo,
                 authority=authority,
                 telemetry_keys=_telem(digest),
@@ -683,6 +678,98 @@ class TestR5RequiresReason:
                 authority=authority,
                 telemetry_keys=_telem(digest),
                 signatures=_sigs(digest),
+            )
+
+
+class TestSafeResponseType:
+    """v15 §R5 CONTRACT — safe_response_type required on R5, forbidden elsewhere."""
+
+    def test_r5_without_safe_response_type_rejected(
+        self,
+        authority: AuthorityScope,
+        slo_terminal: RouteSLOV15,
+    ) -> None:
+        digest = "p" * 64
+        with pytest.raises(V15RouteContractError, match="safe_response_type"):
+            V15RouteContract(
+                contract_version="v15.0.0",
+                route_id=RouteIdV15.R5_FALLBACK,
+                execution_form=ExecutionFormV15.TERMINAL_SHORTCIRCUIT,
+                confidence_score=0.0,
+                confidence_class=ConfidenceClass.INSUFFICIENT_SUPPORT,
+                reason_codes=(ReasonCodeV15.FALLBACK_SELECTED.value,),
+                freshness_class=FreshnessClassV15.SLOW_CHANGING,
+                cache_policy=CachePolicyV15.NO_CACHE,
+                support_target=SupportTargetV15.NONE,
+                cost_tier=CostTierV15.TIER_S,
+                fallback_chain=(),
+                slo=slo_terminal,
+                authority=authority,
+                telemetry_keys=_telem(digest),
+                signatures=_sigs(digest),
+                # safe_response_type omitted -> rejection
+            )
+
+    @pytest.mark.parametrize(
+        "srt",
+        [
+            SafeResponseType.CLARIFY,
+            SafeResponseType.ABSTAIN,
+            SafeResponseType.REFUSE,
+            SafeResponseType.SAFE_PARTIAL,
+        ],
+    )
+    def test_r5_accepts_all_four_categories(
+        self,
+        authority: AuthorityScope,
+        slo_terminal: RouteSLOV15,
+        srt: SafeResponseType,
+    ) -> None:
+        digest = "q" * 64
+        contract = V15RouteContract(
+            contract_version="v15.0.0",
+            route_id=RouteIdV15.R5_FALLBACK,
+            execution_form=ExecutionFormV15.TERMINAL_SHORTCIRCUIT,
+            confidence_score=0.0,
+            confidence_class=ConfidenceClass.INSUFFICIENT_SUPPORT,
+            reason_codes=(ReasonCodeV15.FALLBACK_SELECTED.value,),
+            freshness_class=FreshnessClassV15.SLOW_CHANGING,
+            cache_policy=CachePolicyV15.NO_CACHE,
+            support_target=SupportTargetV15.NONE,
+            cost_tier=CostTierV15.TIER_S,
+            fallback_chain=(),
+            slo=slo_terminal,
+            authority=authority,
+            telemetry_keys=_telem(digest),
+            signatures=_sigs(digest),
+            safe_response_type=srt,
+        )
+        assert contract.safe_response_type is srt
+
+    def test_safe_response_type_rejected_on_non_r5_route(
+        self,
+        authority: AuthorityScope,
+        slo_terminal: RouteSLOV15,
+    ) -> None:
+        digest = "r" * 64
+        with pytest.raises(V15RouteContractError, match="safe_response_type"):
+            V15RouteContract(
+                contract_version="v15.0.0",
+                route_id=RouteIdV15.R1A_EXACT_CACHE,
+                execution_form=ExecutionFormV15.TERMINAL_SHORTCIRCUIT,
+                confidence_score=1.0,
+                confidence_class=ConfidenceClass.EXACT,
+                reason_codes=(ReasonCodeV15.EXACT_CACHE_HIT.value,),
+                freshness_class=FreshnessClassV15.SLOW_CHANGING,
+                cache_policy=CachePolicyV15.EXACT_ONLY,
+                support_target=SupportTargetV15.NONE,
+                cost_tier=CostTierV15.TIER_S,
+                fallback_chain=(),
+                slo=slo_terminal,
+                authority=authority,
+                telemetry_keys=_telem(digest),
+                signatures=_sigs(digest),
+                safe_response_type=SafeResponseType.ABSTAIN,  # forbidden on R1A
             )
 
 
@@ -747,9 +834,7 @@ class TestConfidenceClassDerivation:
                 cache_policy=CachePolicyV15.READ_THROUGH,
                 support_target=SupportTargetV15.SOURCE_BACKED_SUMMARY,
                 cost_tier=CostTierV15.TIER_M,
-                fallback_chain=(
-                    FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-                ),
+                fallback_chain=(FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),),
                 slo=slo_r3,
                 authority=authority,
                 telemetry_keys=_telem(digest),
@@ -783,6 +868,7 @@ class TestConfidenceClassDerivation:
             authority=authority,
             telemetry_keys=_telem(digest),
             signatures=_sigs(digest),
+            safe_response_type=SafeResponseType.REFUSE,
         )
         assert contract.confidence_class is ConfidenceClass.UNSAFE
 
@@ -872,9 +958,7 @@ class TestDeterministicDigest:
             support_target=SupportTargetV15.SOURCE_BACKED_SUMMARY,
             cost_tier=CostTierV15.TIER_M,
             reason_codes=reason_codes,
-            fallback_chain=(
-                FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),
-            ),
+            fallback_chain=(FallbackEntryV15(RouteIdV15.R5_FALLBACK, CostTierV15.TIER_S),),
             authority=authority,
             policy_hash=policy_hash,
             blueprint_hash=blueprint_hash,
