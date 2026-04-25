@@ -249,7 +249,11 @@ class EvalOrchestrator:
             qwen_model_id = self._specs.qwen.model_id
             qwen_prompts_path = Path(self._specs.qwen.prompt_templates_file)
 
-        if not _QWEN_AVAILABLE:
+        import os as _os_qwen_optout  # noqa: PLC0415
+        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in ("1", "true", "True", "yes")
+        if _qwen_opt_out:
+            _log.info("EvalOrchestrator: APPS_QWEN_DISABLED=1 — skipping Qwen init")
+        elif not _QWEN_AVAILABLE:
             self._qwen_init_error = globals().get("_QWEN_IMPORT_ERROR", "qwen_vllm package unavailable")
             _log.error(
                 "EvalOrchestrator: Qwen package unavailable — explicit Qwen calls will raise. reason=%s",

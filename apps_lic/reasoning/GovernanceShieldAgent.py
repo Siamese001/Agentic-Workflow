@@ -225,7 +225,13 @@ class GovernanceShieldAgent(LICAgentBase):
         self._qwen_session_id = None
         self._qwen_init_error: str | None = None
 
-        if not _QWEN_AVAILABLE:
+        import os as _os_qwen_optout  # noqa: PLC0415
+        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in ("1", "true", "True", "yes")
+        if _qwen_opt_out:
+            logger.info(
+                "GovernanceShieldAgent: APPS_QWEN_DISABLED=1 — skipping Qwen init, will route to Gemini fallback"
+            )
+        elif not _QWEN_AVAILABLE:
             self._qwen_init_error = globals().get("_QWEN_IMPORT_ERROR", "qwen_vllm package unavailable")
             logger.error(
                 "GovernanceShieldAgent: Qwen package unavailable — explicit Qwen calls will raise. reason=%s",

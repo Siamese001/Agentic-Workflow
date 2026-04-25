@@ -78,7 +78,7 @@ class OptimizedVLLMClient:
         cache_size: int = 1000,
     ):
         resolved_url = base_url or os.getenv("VLLM_BASE_URL") or "http://localhost:8000/v1"
-        resolved_model = model or os.getenv("VLLM_MODEL_NAME") or "Qwen/Qwen2.5-14B-Instruct-AWQ"
+        resolved_model = model or os.getenv("VLLM_MODEL_NAME") or "Qwen/Qwen2.5-32B-Instruct-AWQ"
         self.base_url = resolved_url.rstrip("/")
         self.model = resolved_model
         self.max_concurrent = max_concurrent
@@ -325,7 +325,9 @@ class OptimizedVLLMClient:
 
     async def _call_single(self, request: VLLMRequest) -> VLLMResponse:
         """Call vLLM for single request."""
-        url = urljoin(self.base_url, "chat/completions")
+        # urljoin requires trailing slash on base to preserve path components.
+        # `base_url` is stored stripped of trailing slash (line 82); add it back here.
+        url = urljoin(self.base_url + "/", "chat/completions")
 
         payload = {
             "model": self.model,
@@ -420,7 +422,7 @@ class OptimizedVLLMClient:
             return {"status": "not_started", "healthy": False}
 
         try:
-            url = urljoin(self.base_url, "models")
+            url = urljoin(self.base_url + "/", "models")
             async with self._session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as resp:
                 if resp.status == 200:
                     data = await resp.json()

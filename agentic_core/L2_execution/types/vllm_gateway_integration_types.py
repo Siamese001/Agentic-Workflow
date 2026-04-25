@@ -468,6 +468,7 @@ def evaluate_gateway_call(
     Returns:
         VLLMGatewayCallResult with routing decision, shaped request, telemetry.
     """
+    from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
     from agentic_core.L2_execution.types.vllm_backpressure_types import evaluate_backpressure
     from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
         VLLMInfrastructureFingerprint,
@@ -499,7 +500,7 @@ def evaluate_gateway_call(
         failure_type = VLLMFailureType.TOKEN_BUDGET_EXCEEDED.value
         local_request = None
     else:
-        provider_selected = profile.model
+        provider_selected = QWEN_LOCAL_MODEL_ID
         model_tier = "fast" if profile.profile_name == "LOCAL_FAST_7B" else "strong"
         failure_type = None
         local_request = shape_local_request(prompt, task_class, profile)

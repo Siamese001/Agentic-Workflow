@@ -185,6 +185,12 @@ class TaskClass(str, Enum):
     HEALING_JSON_ARTIFACT = "healing_json_artifact"
     PATCH_SUGGESTION = "patch_suggestion"
     MULTI_FILE_SUMMARY = "multi_file_summary"
+    # apps_* task classes — long-form generation, capped to extended ceiling
+    EXECUTION_PLANNING = "execution_planning"
+    RESEARCH_SYNTHESIS = "research_synthesis"
+    PROPOSAL_GENERATION = "proposal_generation"
+    RESUME_GENERATION = "resume_generation"
+    GOVERNANCE_ANALYSIS = "governance_analysis"
     UNDEFINED = "undefined"
 
 
@@ -192,8 +198,18 @@ TASK_CLASS_OUTPUT_CAPS: dict[str, int] = {
     TaskClass.HEALING_JSON_ARTIFACT.value: 300,
     TaskClass.PATCH_SUGGESTION.value: 600,
     TaskClass.MULTI_FILE_SUMMARY.value: 1200,
+    # apps_* generative task classes — capped at VLLM_MAX_TOKENS_ABSOLUTE (1200)
+    TaskClass.EXECUTION_PLANNING.value: 1200,
+    TaskClass.RESEARCH_SYNTHESIS.value: 1200,
+    TaskClass.PROPOSAL_GENERATION.value: 1200,
+    TaskClass.RESUME_GENERATION.value: 1200,
+    TaskClass.GOVERNANCE_ANALYSIS.value: 800,
 }
-EXTENDED_CAP_WHITELIST: frozenset[str] = frozenset({TaskClass.MULTI_FILE_SUMMARY.value})
+EXTENDED_CAP_WHITELIST: frozenset[str] = frozenset({
+    TaskClass.MULTI_FILE_SUMMARY.value,
+    TaskClass.RESEARCH_SYNTHESIS.value,
+    TaskClass.PROPOSAL_GENERATION.value,
+})
 
 
 def get_output_cap(task_class: str) -> int | None:
