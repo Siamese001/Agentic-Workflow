@@ -167,7 +167,10 @@ _emit_validated_by_safety_plane("p1", "vllm_serving_profile_types", "safety_vali
 _emit_invokes_eval("p1", "vllm_serving_profile_types", "eval_call")
 _emit_proposal_commits_routing("p1", "vllm_serving_profile_types", "routing_commit")
 
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID  # noqa: E402, PLC0415
+from agentic_core.L0_routing.config.model_registry import (  # noqa: E402, PLC0415
+    QWEN_LOCAL_MAX_MODEL_LEN,
+    QWEN_LOCAL_MODEL_ID,
+)
 
 GPU_MEMORY_UTILIZATION: float = 0.85
 GPU_VRAM_GB: int = 32
@@ -188,7 +191,14 @@ LOCAL_STRONG_14B_GPU_MEMORY_UTILIZATION: float = 0.92
 LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING: int = 16384
 # Authoritative ceiling for the served Qwen2.5-32B-Instruct-AWQ context window.
 # Profiles must not request more than this regardless of profile_name.
-QWEN_SERVED_MODEL_MAX_LEN_CEILING: int = 32768
+#
+# Wave 2 of plan qwen-confidence-routing-hardening-d4e7b1 (2026-04-25):
+# previously this was a hardcoded 32768 from the 14B-AWQ era. The 32B-AWQ
+# server actually serves ``max_model_len=16384`` on RTX 5090 + WSL2 (verified
+# 2026-04-25 against ``/v1/models``). The ceiling now reads from the L0
+# SSOT ``QWEN_LOCAL_MAX_MODEL_LEN`` so a stale 32k value can never silently
+# pass validation again.
+QWEN_SERVED_MODEL_MAX_LEN_CEILING: int = QWEN_LOCAL_MAX_MODEL_LEN
 
 
 @dataclass(frozen=True)

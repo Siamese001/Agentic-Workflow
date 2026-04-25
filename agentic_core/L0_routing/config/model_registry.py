@@ -57,6 +57,23 @@ VLLM_BASE_URL: Final[str] = os.getenv(
 """Base URL for the local vLLM OpenAI-compatible server."""
 
 
+# Wave 2 (qwen-confidence-routing-hardening-d4e7b1): canonical max_model_len
+# SSOT. Default 16384 matches the running 32B-AWQ server (verified
+# 2026-04-25 against /v1/models). Env-overridable; profile classes and
+# token-budget validators MUST read from this constant — hardcoded 32768
+# values from the 14B-era are stale and trigger context-window overruns.
+QWEN_LOCAL_MAX_MODEL_LEN: Final[int] = int(
+    os.getenv("VLLM_MAX_MODEL_LEN", "16384"),
+)
+"""Maximum context window (prompt + completion tokens) for the local Qwen vLLM server.
+
+Defaults to 16384 (the value with which the 32B-AWQ server is launched on
+RTX 5090 + WSL2 — see ``tools/vllm/start_vllm_server_32b.sh`` / plan
+``vllm-stack-consolidation-f6e95d``). Env override ``VLLM_MAX_MODEL_LEN``
+lets ops bump this when GPU memory is freed up without redeploying code.
+"""
+
+
 # ============================================================================
 # TIER: GEMINI_FLASH (cheap cloud, fast)
 # ============================================================================
@@ -233,6 +250,7 @@ __all__ = [
     "GEMINI_PRO_MODEL_ID",
     "OPENAI_MODEL_ID",
     "QWEN_DISALLOWED_FAILURE_TYPES",
+    "QWEN_LOCAL_MAX_MODEL_LEN",
     "QWEN_LOCAL_MODEL_ID",
     "TIER_DETERMINISTIC",
     "TIER_GEMINI_FLASH",
