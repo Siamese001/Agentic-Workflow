@@ -145,6 +145,12 @@ ALLOWLIST_PATH_PREFIXES: tuple[str, ...] = (
     # literal sets are semantically the RAG ingestion scope, not a hardcoded
     # replacement for GLOBAL_EXCLUDED_DIRS. Several scripts are retired (Wave B2).
     "tools/generate/ingestion/",
+    # tools/debug/ — one-off investigation scripts. Their inline exclusion sets
+    # are scoped to the specific debug task (e.g., "verify zero-consumer modules
+    # in W3 archive territory") and intentionally NOT tied to the global SSOT.
+    # These scripts are short-lived and frequently deleted; allowlisting the
+    # prefix keeps the gate from pinning every debug session.
+    "tools/debug/",
 )
 
 DEFAULT_SCAN_ROOTS: tuple[str, ...] = (
@@ -223,6 +229,7 @@ def _scan_file(path: Path) -> list[tuple[int, list[str]]]:
 
 def _iter_python_files(roots: Iterable[str]) -> Iterable[Path]:
     for root in roots:
+        # progress_bar: lazy generator over scan roots; outer caller provides progressbar — §16 exempt
         # Support both exact dirs and apps_* glob
         if root.endswith("_"):
             # Wildcard match for apps_*, etc.

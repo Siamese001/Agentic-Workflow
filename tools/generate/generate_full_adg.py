@@ -718,6 +718,7 @@ def generate_full_adg(
         def _move_with_retry(src: str, dst: str, *, attempts: int = 3) -> None:
             last_exc: BaseException | None = None
             for i in range(attempts):
+                # progress_bar: bounded retry loop (3 attempts max — §16 exempt)
                 try:
                     shutil.move(src, dst)
                     return
@@ -864,6 +865,28 @@ def generate_full_adg(
         )
     except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
         print(f"[ADG] truth expansion: SKIPPED ({type(_e).__name__}: {_e})")
+
+    # --- R5-W1 supplementary scanners (A6 entrypoint + A12 gate self-test) ---
+    # truth_expansion_enricher writes to module_entrypoints and gate_self_consistency
+    # tables. These supplementary scanners write entrypoint_kind and gate_self_test
+    # edges into the canonical `edges` table so they are first-class in P6 projection
+    # and consumable by ADG MCP edge_fanin/fanout queries.
+    # Fail-open: any error logs and continues; raw enrichment tables are unaffected.
+    try:
+        from tools.generate.entrypoint_scanner import write_entrypoint_edges as _write_ep_edges
+
+        _ep_count = _write_ep_edges(paths.sqlite)
+        print(f"[ADG] A6 entrypoint scanner: {_ep_count} entrypoint_kind edges written")
+    except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
+        print(f"[ADG] A6 entrypoint scanner: SKIPPED ({type(_e).__name__}: {_e})")
+
+    try:
+        from tools.generate.gate_self_test_scanner import write_gate_self_test_edges as _write_gst_edges
+
+        _gst_count = _write_gst_edges(paths.sqlite)
+        print(f"[ADG] A12 gate self-test scanner: {_gst_count} gate_self_test edges written")
+    except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
+        print(f"[ADG] A12 gate self-test scanner: SKIPPED ({type(_e).__name__}: {_e})")
 
     # --- R6 backlog enrichment (5 remaining low-effort detectors) ---
     # Adds: async_fire_and_forget, external_calls, boundary_strings,
@@ -1848,6 +1871,7 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
     )
     first_failure_rc: int | None = None
     for r in results:
+        # progress_bar: bounded by number of post-ADG gate scripts (~5-10 — §16 exempt)
         label = str(r["label"])
         if r.get("missing"):
             print(f"[ADG] [{label}] gate script missing ({r['script_rel']}), skipping")

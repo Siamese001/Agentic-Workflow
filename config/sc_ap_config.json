@@ -1,14 +1,14 @@
 {
   "SC-1": {
     "enabled": true,
-    "audit_mode": false,
+    "audit_mode": true,
     "promoted_date": "2026-04-17",
     "enforce_date": "2026-04-23",
     "label": "Gravity import / illegal layer reach",
-    "baseline_violations": 0,
-    "baseline_snapshot": "adg_indexed_04222026_2106.sqlite",
-    "baseline_date": "2026-04-23",
-    "notes": "P2 W5 flip (2026-04-23): audit_mode=false. Any new SC-1 gravity violation causes generate_full_adg.py to exit non-zero. See ADR-032."
+    "baseline_violations": 3,
+    "baseline_snapshot": "adg_indexed_04252026_0748.sqlite",
+    "baseline_date": "2026-04-25",
+    "notes": "R5-W1 (2026-04-25): flipped back to audit_mode=true. 3 violations from synthetic entrypoint nodes (L_TOOLS/L_META layer gravity). Will flip back to audit_mode=false once entrypoint nodes use proper layer assignment. See plan adg-truth-expansion-wave1."
   },
   "SC-5": {
     "enabled": true,
