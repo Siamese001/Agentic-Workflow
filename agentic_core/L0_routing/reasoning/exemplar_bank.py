@@ -22,9 +22,10 @@ into the canonical `<example>...</example>` XML block.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from threading import Lock
-from typing import Iterable
+from typing import Iterable, Protocol, Sequence
 
 
 @dataclass(frozen=True)
@@ -194,3 +195,112 @@ def static_similarity_score(query: str, exemplar: Exemplar) -> float:
     intersection = len(q_tokens & e_tokens)
     union = len(q_tokens | e_tokens)
     return intersection / union if union else 0.0
+
+
+# --------------------------------------------------------------------------
+# W7 — Embedding-based dynamic exemplar selection.
+# --------------------------------------------------------------------------
+
+
+class Embedder(Protocol):
+    """Embedder contract — returns float vectors for a list of texts.
+
+    Any implementation that satisfies this protocol can be plugged in:
+      - sentence-transformers (`model.encode(texts).tolist()`)
+      - OpenAI embeddings API
+      - local stub for tests
+    """
+
+    def encode(self, texts: Sequence[str]) -> Sequence[Sequence[float]]:
+        """Return one float vector per input text. All vectors same dimension."""
+        ...
+
+
+def cosine_similarity(a: Sequence[float], b: Sequence[float]) -> float:
+    """Cosine similarity between two equal-length vectors.
+
+    Returns a float in [-1.0, 1.0]. Returns 0.0 when either vector is zero
+    or vectors have mismatched dimensions (defensive — never raises).
+    """
+    if not a or not b or len(a) != len(b):
+        return 0.0
+    dot = sum(x * y for x, y in zip(a, b, strict=False))
+    norm_a = math.sqrt(sum(x * x for x in a))
+    norm_b = math.sqrt(sum(y * y for y in b))
+    if norm_a == 0.0 or norm_b == 0.0:
+        return 0.0
+    return dot / (norm_a * norm_b)
+
+
+def select_by_similarity(
+    query: str,
+    exemplars: Iterable[Exemplar],
+    embedder: Embedder,
+    *,
+    top_k: int = 3,
+    min_score: float = 0.0,
+) -> tuple[tuple[Exemplar, float], ...]:
+    """Rank exemplars by cosine similarity of the query embedding to each task.
+
+    Args:
+        query: User query / task description.
+        exemplars: Pool to rank from.
+        embedder: Embedder implementation (`encode([str, ...]) -> [[float]]`).
+        top_k: Max exemplars to return (after threshold filter).
+        min_score: Minimum cosine similarity to include (default 0.0).
+
+    Returns:
+        Tuple of `(exemplar, score)` pairs sorted by score descending.
+        Empty tuple if no exemplars or query is empty.
+
+    Failure modes:
+        - Embedder raises → caught and returns empty tuple (callers should
+          fall back to `static_similarity_score`).
+        - Vectors of mismatched dimension → score=0.0, item filtered if
+          below min_score.
+    """
+    if not query or top_k <= 0:
+        return ()
+    pool = list(exemplars)
+    if not pool:
+        return ()
+
+    texts = [query, *(e.task for e in pool)]
+    try:
+        vectors = list(embedder.encode(texts))
+    except (RuntimeError, ValueError, AttributeError, TypeError):
+        return ()
+    if len(vectors) != len(texts):
+        return ()
+
+    query_vec = vectors[0]
+    scored: list[tuple[Exemplar, float]] = []
+    for ex, vec in zip(pool, vectors[1:], strict=False):
+        score = cosine_similarity(query_vec, vec)
+        if score >= min_score:
+            scored.append((ex, score))
+
+    # Stable sort: score descending, then weight descending, then insertion order
+    scored.sort(key=lambda pair: (-pair[1], -pair[0].weight))
+    return tuple(scored[:top_k])
+
+
+def select_by_static_similarity(
+    query: str,
+    exemplars: Iterable[Exemplar],
+    *,
+    top_k: int = 3,
+    min_score: float = 0.0,
+) -> tuple[tuple[Exemplar, float], ...]:
+    """Static (token-overlap) version of `select_by_similarity`.
+
+    Useful when no embedder is available or for deterministic fallback.
+    Same return shape as `select_by_similarity`.
+    """
+    if not query or top_k <= 0:
+        return ()
+    pool = list(exemplars)
+    scored = [(ex, static_similarity_score(query, ex)) for ex in pool]
+    scored = [(ex, s) for ex, s in scored if s >= min_score]
+    scored.sort(key=lambda pair: (-pair[1], -pair[0].weight))
+    return tuple(scored[:top_k])
