@@ -12,6 +12,7 @@ for validators and `SovereignHealerBase` for healers (never both).
 Layer authority: L_SHARED (base-class surface).
 Plan: `.windsurf/plans/l2-execute-v2-agent-conformance-c8e4f1.md` Wave W1.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -82,13 +83,11 @@ class SovereignHealerBase(HealingStrategyMixin, ABC):
         """
         if heal_blueprint_hash != parent_blueprint_hash:
             raise SnapshotBindingError(
-                f"blueprint_hash mismatch: heal={heal_blueprint_hash!r} "
-                f"parent={parent_blueprint_hash!r}"
+                f"blueprint_hash mismatch: heal={heal_blueprint_hash!r} parent={parent_blueprint_hash!r}"
             )
         if heal_policy_hash != parent_policy_hash:
             raise SnapshotBindingError(
-                f"policy_hash mismatch: heal={heal_policy_hash!r} "
-                f"parent={parent_policy_hash!r}"
+                f"policy_hash mismatch: heal={heal_policy_hash!r} parent={parent_policy_hash!r}"
             )
 
     def validate(self, *args: Any, **kwargs: Any) -> Any:

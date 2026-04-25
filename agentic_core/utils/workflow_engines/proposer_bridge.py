@@ -431,7 +431,12 @@ class EvaluatorProposerBridge:
                 payload=proposal.to_dict(),
             )
             self.l4_store.put(artifact)
-        except (AttributeError, OSError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("proposer_bridge: Exception swallowed at L430: %s", e)

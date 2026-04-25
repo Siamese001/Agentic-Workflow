@@ -127,7 +127,10 @@ class LocalHealer:
                     fixed_value=fixed_value,
                     requires_llm=False,
                 )
-        except (ValueError, TypeError):  # guardian: allow-silent-swallow -- value fix attempt: non-fatal, returns HealResult(success=False)
+        except (
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow -- value fix attempt: non-fatal, returns HealResult(success=False)
             pass
 
         return HealResult(

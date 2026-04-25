@@ -1,4 +1,5 @@
 """Inspect SC-1 layer violations."""
+
 import sqlite3
 from pathlib import Path
 

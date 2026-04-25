@@ -519,7 +519,9 @@ class HITLMixin:
                 RuntimeError,
                 TypeError,
             ) as e:
-                Logger.error(f"[HITL] Callback error for '{request.operation_name}': {e}")  # guardian: allow-log-and-swallow
+                Logger.error(
+                    f"[HITL] Callback error for '{request.operation_name}': {e}"
+                )  # guardian: allow-log-and-swallow
                 raise
 
     def _trim_history_if_needed(self) -> None:

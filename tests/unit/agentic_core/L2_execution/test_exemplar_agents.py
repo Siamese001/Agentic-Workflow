@@ -1,4 +1,5 @@
 """Tests for W6 exemplar validator + healer pair (plan c8e4f1)."""
+
 from __future__ import annotations
 
 import subprocess
@@ -182,12 +183,7 @@ class TestSnapshotBindingInvariant:
         assert result.blueprint_hash == req.blueprint_hash
 
 
-GATE_SCRIPT = (
-    Path(__file__).resolve().parents[4]
-    / "ops_scripts"
-    / "ci"
-    / "check_agent_sealed_return.py"
-)
+GATE_SCRIPT = Path(__file__).resolve().parents[4] / "ops_scripts" / "ci" / "check_agent_sealed_return.py"
 
 
 class TestCIGateAcceptsExemplars:
@@ -197,7 +193,9 @@ class TestCIGateAcceptsExemplars:
         # Copy just the examples dir into a staging tree the gate will scan.
         staging = tmp_path / "agentic_core" / "L2_execution" / "reasoning" / "examples"
         staging.mkdir(parents=True)
-        src_dir = Path(__file__).resolve().parents[4] / "agentic_core" / "L2_execution" / "reasoning" / "examples"
+        src_dir = (
+            Path(__file__).resolve().parents[4] / "agentic_core" / "L2_execution" / "reasoning" / "examples"
+        )
         for p in src_dir.glob("*.py"):
             (staging / p.name).write_text(p.read_text(encoding="utf-8"), encoding="utf-8")
         # Also stage the seal helper so the AST gate can resolve names (it only
@@ -213,6 +211,5 @@ class TestCIGateAcceptsExemplars:
             check=False,
         )
         assert result.returncode == 0, (
-            f"Gate flagged exemplars as non-conforming.\n"
-            f"stdout={result.stdout}\nstderr={result.stderr}"
+            f"Gate flagged exemplars as non-conforming.\nstdout={result.stdout}\nstderr={result.stderr}"
         )

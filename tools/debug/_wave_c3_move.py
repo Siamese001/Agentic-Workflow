@@ -1,4 +1,5 @@
 """Wave C.3 archive move."""
+
 from __future__ import annotations
 
 import os

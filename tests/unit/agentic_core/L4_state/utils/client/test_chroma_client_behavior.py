@@ -35,9 +35,11 @@ def client(tmp_path: Path):
 
 # ---- _sanitize_metadata --------------------------------------------------
 
+
 class TestSanitizeMetadata:
     def test_scalar_types_preserved(self) -> None:
         from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+
         out = SovereignChromaClient._sanitize_metadata(
             {"s": "x", "i": 1, "f": 1.5, "b": True},
         )
@@ -45,38 +47,46 @@ class TestSanitizeMetadata:
 
     def test_none_becomes_empty_string(self) -> None:
         from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+
         out = SovereignChromaClient._sanitize_metadata({"k": None})
         assert out == {"k": ""}
 
     def test_list_json_encoded(self) -> None:
         from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+
         out = SovereignChromaClient._sanitize_metadata({"tags": ["a", "b"]})
         assert out["tags"] == '["a", "b"]'
 
     def test_dict_json_encoded_sorted(self) -> None:
         from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+
         out = SovereignChromaClient._sanitize_metadata({"nested": {"b": 2, "a": 1}})
         assert out["nested"] == '{"a": 1, "b": 2}'
 
     def test_tuple_json_encoded(self) -> None:
         from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+
         out = SovereignChromaClient._sanitize_metadata({"t": (1, 2)})
         assert out["t"] == "[1, 2]"
 
     def test_other_types_stringified(self) -> None:
         from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+
         out = SovereignChromaClient._sanitize_metadata({"p": Path("/x")})
         assert isinstance(out["p"], str)
 
 
 # ---- embed_texts ---------------------------------------------------------
 
+
 class TestEmbedTexts:
     def test_empty_short_circuits(self, client: Any) -> None:
         assert client.embed_texts([]) == []
 
     def test_disabled_raises(
-        self, client: Any, monkeypatch: pytest.MonkeyPatch,
+        self,
+        client: Any,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
         with pytest.raises(RuntimeError, match="EMBEDDING_ENABLED"):
@@ -84,14 +94,19 @@ class TestEmbedTexts:
 
     @pytest.mark.parametrize("val", ["", "0", "false", "no", "FALSE"])
     def test_non_true_disables(
-        self, client: Any, monkeypatch: pytest.MonkeyPatch, val: str,
+        self,
+        client: Any,
+        monkeypatch: pytest.MonkeyPatch,
+        val: str,
     ) -> None:
         monkeypatch.setenv("EMBEDDING_ENABLED", val)
         with pytest.raises(RuntimeError, match="EMBEDDING_ENABLED"):
             client.embed_texts(["hello"])
 
     def test_enabled_delegates_to_bge(
-        self, client: Any, monkeypatch: pytest.MonkeyPatch,
+        self,
+        client: Any,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
         expected = [[0.1, 0.2], [0.3, 0.4]]
@@ -105,6 +120,7 @@ class TestEmbedTexts:
 
 
 # ---- get_collection caching ---------------------------------------------
+
 
 class TestCollectionCache:
     def test_cache_reuses_collection(self, client: Any) -> None:
@@ -123,6 +139,7 @@ class TestCollectionCache:
 
 # ---- add_documents validation -------------------------------------------
 
+
 class TestAddDocumentsValidation:
     def test_mismatched_metadata_length_rejected(self, client: Any) -> None:
         with pytest.raises(ValueError, match="same length"):
@@ -133,7 +150,9 @@ class TestAddDocumentsValidation:
             )
 
     def test_mismatched_ids_length_rejected(
-        self, client: Any, monkeypatch: pytest.MonkeyPatch,
+        self,
+        client: Any,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
         with pytest.raises(ValueError, match="IDs must match"):
@@ -145,7 +164,9 @@ class TestAddDocumentsValidation:
             )
 
     def test_happy_path_delegates_to_collection(
-        self, client: Any, monkeypatch: pytest.MonkeyPatch,
+        self,
+        client: Any,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
         fake_collection = MagicMock()
@@ -170,7 +191,9 @@ class TestAddDocumentsValidation:
         assert kwargs["ids"] == ["doc_0", "doc_1"]
 
     def test_explicit_ids_pass_through(
-        self, client: Any, monkeypatch: pytest.MonkeyPatch,
+        self,
+        client: Any,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
         fake_collection = MagicMock()
@@ -190,9 +213,12 @@ class TestAddDocumentsValidation:
 
 # ---- query ---------------------------------------------------------------
 
+
 class TestQuery:
     def test_query_delegates(
-        self, client: Any, monkeypatch: pytest.MonkeyPatch,
+        self,
+        client: Any,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
         fake_collection = MagicMock()
@@ -218,6 +244,7 @@ class TestQuery:
 
 # ---- stats / list / delete ----------------------------------------------
 
+
 class TestStatsListDelete:
     def test_get_collection_stats(self, client: Any) -> None:
         fake = MagicMock()
@@ -230,7 +257,8 @@ class TestStatsListDelete:
 
     def test_list_collections(self, client: Any) -> None:
         client._mock_backend.list_collections.return_value = [
-            MagicMock(name="x"), MagicMock(name="y"),
+            MagicMock(name="x"),
+            MagicMock(name="y"),
         ]
         # MagicMock's .name attribute is special — set explicitly
         client._mock_backend.list_collections.return_value[0].name = "a"

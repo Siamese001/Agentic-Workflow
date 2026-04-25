@@ -31,15 +31,22 @@ def _reset() -> None:
 
 # ---- Exception classes ----------------------------------------------
 
+
 class TestExceptions:
-    @pytest.mark.parametrize("exc", [
-        ClockSyncViolation, MonotonicityViolation, WallClockContaminationError,
-    ])
+    @pytest.mark.parametrize(
+        "exc",
+        [
+            ClockSyncViolation,
+            MonotonicityViolation,
+            WallClockContaminationError,
+        ],
+    )
     def test_inherits_runtime_error(self, exc: type) -> None:
         assert issubclass(exc, RuntimeError)
 
 
 # ---- LayerClockRecord -----------------------------------------------
+
 
 class TestLayerClockRecord:
     def test_defaults(self) -> None:
@@ -49,6 +56,7 @@ class TestLayerClockRecord:
 
 
 # ---- assert_clock_synchronized --------------------------------------
+
 
 class TestAssertClockSynchronized:
     def test_equal_ticks_pass(self) -> None:
@@ -67,6 +75,7 @@ class TestAssertClockSynchronized:
 
 
 # ---- ElevatorShaftConsistencyEnforcer -------------------------------
+
 
 class TestEnforcerRecordAdvance:
     def test_first_advance_accepted(self) -> None:
@@ -156,10 +165,12 @@ class TestSummary:
 
 # ---- register_module (mocked wall-clock scanner) -------------------
 
+
 class TestRegisterModule:
     def test_clean_module_registered(self, monkeypatch, tmp_path: Path) -> None:
         # Patch the scanner to return no violations
         import agentic_core.L6_observability.utils.engines.semantic_clock_validator as scv
+
         monkeypatch.setattr(scv, "scan_module_for_wallclock", lambda p: [])
         e = ElevatorShaftConsistencyEnforcer()
         fake = tmp_path / "clean.py"
@@ -169,17 +180,23 @@ class TestRegisterModule:
 
     def test_contaminated_module_rejected(self, monkeypatch, tmp_path: Path) -> None:
         import agentic_core.L6_observability.utils.engines.semantic_clock_validator as scv
+
         monkeypatch.setattr(
-            scv, "scan_module_for_wallclock", lambda p: ["time.time()"],
+            scv,
+            "scan_module_for_wallclock",
+            lambda p: ["time.time()"],
         )
         e = ElevatorShaftConsistencyEnforcer()
         with pytest.raises(WallClockContaminationError):
             e.register_module(tmp_path / "bad.py")
 
     def test_already_scanned_is_idempotent(
-        self, monkeypatch, tmp_path: Path,
+        self,
+        monkeypatch,
+        tmp_path: Path,
     ) -> None:
         import agentic_core.L6_observability.utils.engines.semantic_clock_validator as scv
+
         calls = {"n": 0}
 
         def fake_scan(p):
@@ -196,22 +213,28 @@ class TestRegisterModule:
 
 # ---- assert_no_wall_clock_in_module --------------------------------
 
+
 class TestAssertNoWallClockInModule:
     def test_clean_passes(self, monkeypatch, tmp_path: Path) -> None:
         import agentic_core.L6_observability.utils.engines.semantic_clock_validator as scv
+
         monkeypatch.setattr(scv, "scan_module_for_wallclock", lambda p: [])
         assert_no_wall_clock_in_module(tmp_path / "x.py")
 
     def test_contaminated_raises(self, monkeypatch, tmp_path: Path) -> None:
         import agentic_core.L6_observability.utils.engines.semantic_clock_validator as scv
+
         monkeypatch.setattr(
-            scv, "scan_module_for_wallclock", lambda p: ["datetime.now()"],
+            scv,
+            "scan_module_for_wallclock",
+            lambda p: ["datetime.now()"],
         )
         with pytest.raises(WallClockContaminationError, match="contamination"):
             assert_no_wall_clock_in_module(tmp_path / "x.py", context="test")
 
 
 # ---- get_enforcer / reset_enforcer ---------------------------------
+
 
 class TestGlobalEnforcer:
     def test_get_enforcer_returns_instance(self) -> None:

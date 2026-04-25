@@ -213,7 +213,12 @@ class GoldenEvalIntegration:
                     results = future.result(timeout=0)
                     self.emit_golden_metrics(results)
                     completed.extend(results)
-                except (TimeoutError, RuntimeError, TypeError, ValueError):  # guardian: allow-log-and-swallow -- per-future processing isolation: non-fatal, other futures continue
+                except (
+                    TimeoutError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ):  # guardian: allow-log-and-swallow -- per-future processing isolation: non-fatal, other futures continue
                     Logger.exception("Failed to process golden evaluation result")
                 else:
                     still_pending.append(future)
@@ -224,7 +229,11 @@ class GoldenEvalIntegration:
                     completed.extend(results)
                 except TimeoutError:
                     still_pending.append(future)
-                except (RuntimeError, TypeError, ValueError):  # guardian: allow-log-and-swallow -- per-future processing isolation: non-fatal, other futures continue
+                except (
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ):  # guardian: allow-log-and-swallow -- per-future processing isolation: non-fatal, other futures continue
                     Logger.exception("Failed to process golden evaluation result")
                 else:
                     still_pending.append(future)

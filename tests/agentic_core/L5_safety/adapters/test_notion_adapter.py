@@ -116,9 +116,7 @@ def _set_select(page: dict[str, Any], prop: str, value: str) -> None:
 
 
 def _set_text(page: dict[str, Any], prop: str, value: str) -> None:
-    page.setdefault("properties", {})[prop] = {
-        "rich_text": [{"text": {"content": value}}]
-    }
+    page.setdefault("properties", {})[prop] = {"rich_text": [{"text": {"content": value}}]}
 
 
 # ---------------------------------------------------------------------------
@@ -336,10 +334,7 @@ def test_read_helpers_handle_malformed_shapes():
     # rich_text[0] not a mapping
     assert _read_text({"properties": {"Approver": {"rich_text": ["raw"]}}}, "Approver") is None
     # rich_text[0] mapping but no text/plain_text content
-    assert (
-        _read_text({"properties": {"Approver": {"rich_text": [{"foo": "bar"}]}}}, "Approver")
-        is None
-    )
+    assert _read_text({"properties": {"Approver": {"rich_text": [{"foo": "bar"}]}}}, "Approver") is None
 
 
 def test_notion_properties_round_trip():
@@ -428,9 +423,7 @@ def test_poll_and_cancel_reraise_adapter_error_directly(
             raise AdapterError("archive boom")
 
     adapter2 = NotionApprovalAdapter(database_id="db", transport=RaisingTransport())
-    bad_handle = ApprovalHandle(
-        adapter_kind="notion", external_id="x", ledger_id="l"
-    )
+    bad_handle = ApprovalHandle(adapter_kind="notion", external_id="x", ledger_id="l")
     with pytest.raises(AdapterError, match="poll boom"):
         adapter2.poll(bad_handle)
     with pytest.raises(AdapterError, match="archive boom"):

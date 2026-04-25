@@ -43,9 +43,11 @@ def state_path(tmp_path: Path) -> Path:
 
 def test_all_alive_no_spawn(state_path: Path):
     calls: list[tuple[str, dict, bool]] = []
+
     def spawn_fn(sid, spec, dry):
         calls.append((sid, spec, dry))
         return {"status": "spawned"}
+
     result = supervisor.supervise(
         state_path=state_path,
         heartbeat_report={"ok": True, "alive": ["a", "b"], "dead": [], "total_checked": 2},
@@ -59,9 +61,11 @@ def test_all_alive_no_spawn(state_path: Path):
 
 def test_one_dead_respawns(state_path: Path):
     calls: list[str] = []
+
     def spawn_fn(sid, spec, dry):
         calls.append(sid)
         return {"server_id": sid, "status": "spawned", "pid": 12345}
+
     result = supervisor.supervise(
         state_path=state_path,
         heartbeat_report={"ok": True, "alive": ["a"], "dead": ["b"], "total_checked": 2},
@@ -80,15 +84,17 @@ def test_debounce_blocks_second_call(state_path: Path):
     state_path.parent.mkdir(parents=True, exist_ok=True)
     state_path.write_text(json.dumps({"b": 995.0}), encoding="utf-8")
     calls: list[str] = []
+
     def spawn_fn(sid, spec, dry):
         calls.append(sid)
         return {"server_id": sid, "status": "spawned"}
+
     result = supervisor.supervise(
         state_path=state_path,
         heartbeat_report={"ok": True, "alive": [], "dead": ["b"], "total_checked": 1},
         spec_override={"b": _spec_for("b")},
         spawn_fn=spawn_fn,
-        now=1000.0,     # only 5s after last spawn
+        now=1000.0,  # only 5s after last spawn
         min_interval=30.0,
     )
     assert calls == []
@@ -99,6 +105,7 @@ def test_dry_run_does_not_persist_state(state_path: Path):
     def spawn_fn(sid, spec, dry):
         assert dry is True
         return {"server_id": sid, "status": "dry_run", "argv": ["python"]}
+
     result = supervisor.supervise(
         state_path=state_path,
         heartbeat_report={"ok": True, "alive": [], "dead": ["b"], "total_checked": 1},
@@ -143,7 +150,8 @@ def test_cli_dry_run_allowed_without_flag(monkeypatch: pytest.MonkeyPatch):
     # Patch the heartbeat probe to report all alive so the CLI succeeds
     # without needing a real mcp_config.json with live processes.
     monkeypatch.setattr(
-        supervisor.heartbeat, "check",
+        supervisor.heartbeat,
+        "check",
         lambda: {"ok": True, "alive": ["a"], "dead": [], "total_checked": 1},
     )
     rc = supervisor.main(["--dry-run", "--json"])

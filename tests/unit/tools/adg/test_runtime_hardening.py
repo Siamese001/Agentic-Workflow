@@ -175,9 +175,7 @@ def test_pview_contains_redis_hit_preferred(big_db: Path) -> None:
     reader.pview_contains.return_value = True
     q = RuntimeADGQuery(sqlite_path=big_db, redis_reader=reader)
     assert q.pview_contains("v_p0_test_members", "n_safety") is True
-    reader.pview_contains.assert_called_once_with(
-        "v_p0_test_members", "n_safety", q.snapshot_id
-    )
+    reader.pview_contains.assert_called_once_with("v_p0_test_members", "n_safety", q.snapshot_id)
 
 
 def test_pview_contains_redis_miss_falls_back_to_sqlite(big_db: Path) -> None:
@@ -255,9 +253,7 @@ def test_incremental_reindexer_noop_for_nonpython(tmp_path: Path, big_db: Path) 
     assert delta.imports_removed == []
 
 
-def test_incremental_reindexer_does_not_touch_source(
-    tmp_path: Path, big_db: Path
-) -> None:
+def test_incremental_reindexer_does_not_touch_source(tmp_path: Path, big_db: Path) -> None:
     """Shadow mutations must never reflect in the source."""
     shadow = tmp_path / "shadow.sqlite"
     # Create a tiny Python file that imports something.
@@ -267,9 +263,7 @@ def test_incremental_reindexer_does_not_touch_source(
     src_file.write_text("import os\nimport agentic_core\n")
 
     # Seed the shadow with a node for 'my_mod.py' and for the import target.
-    rx = IncrementalReindexer(
-        source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo
-    )
+    rx = IncrementalReindexer(source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo)
     rx.initialize_shadow()
     # Pre-populate target nodes in the shadow only.
     with sqlite3.connect(str(shadow)) as conn:
@@ -296,16 +290,12 @@ def test_incremental_reindexer_does_not_touch_source(
     assert src_count == 0
 
 
-def test_incremental_reindex_replaces_existing_imports(
-    tmp_path: Path, big_db: Path
-) -> None:
+def test_incremental_reindex_replaces_existing_imports(tmp_path: Path, big_db: Path) -> None:
     shadow = tmp_path / "shadow.sqlite"
     fake_repo = tmp_path / "repo"
     fake_repo.mkdir()
     (fake_repo / "my_mod.py").write_text("import os\n")
-    rx = IncrementalReindexer(
-        source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo
-    )
+    rx = IncrementalReindexer(source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo)
     rx.initialize_shadow()
     with sqlite3.connect(str(shadow)) as conn:
         conn.execute(
@@ -340,32 +330,24 @@ def test_incremental_reindex_replaces_existing_imports(
     assert paths == {"sys.py"}
 
 
-def test_incremental_reindex_tracks_unresolved_imports(
-    tmp_path: Path, big_db: Path
-) -> None:
+def test_incremental_reindex_tracks_unresolved_imports(tmp_path: Path, big_db: Path) -> None:
     shadow = tmp_path / "shadow.sqlite"
     fake_repo = tmp_path / "repo"
     fake_repo.mkdir()
     (fake_repo / "my_mod.py").write_text("import this_module_does_not_exist\n")
-    rx = IncrementalReindexer(
-        source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo
-    )
+    rx = IncrementalReindexer(source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo)
     rx.initialize_shadow()
     delta = rx.reindex_file("my_mod.py")
     assert "this_module_does_not_exist" in delta.unresolved_imports
     assert delta.imports_added == []
 
 
-def test_incremental_reindex_handles_syntax_error_gracefully(
-    tmp_path: Path, big_db: Path
-) -> None:
+def test_incremental_reindex_handles_syntax_error_gracefully(tmp_path: Path, big_db: Path) -> None:
     shadow = tmp_path / "shadow.sqlite"
     fake_repo = tmp_path / "repo"
     fake_repo.mkdir()
     (fake_repo / "broken.py").write_text("def oops(\n")  # syntax error
-    rx = IncrementalReindexer(
-        source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo
-    )
+    rx = IncrementalReindexer(source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo)
     rx.initialize_shadow()
     delta = rx.reindex_file("broken.py")
     # Parse failure returns an empty delta; never raises.
@@ -425,9 +407,7 @@ def test_runtime_query_reads_shadow_snapshot(tmp_path: Path, big_db: Path) -> No
     fake_repo = tmp_path / "repo"
     fake_repo.mkdir()
     (fake_repo / "live_edit.py").write_text("import os\n")
-    rx = IncrementalReindexer(
-        source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo
-    )
+    rx = IncrementalReindexer(source_snapshot=big_db, shadow_snapshot=shadow, repo_root=fake_repo)
     rx.initialize_shadow()
     with sqlite3.connect(str(shadow)) as conn:
         conn.execute(

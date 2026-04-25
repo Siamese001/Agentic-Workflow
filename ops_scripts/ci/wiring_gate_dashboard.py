@@ -79,9 +79,7 @@ class DashRow:
         }
 
 
-def _row_from_record(
-    path: Path, rec: dict[str, Any], now: datetime
-) -> DashRow:
+def _row_from_record(path: Path, rec: dict[str, Any], now: datetime) -> DashRow:
     count = int(rec.get("count", 0) or 0)
     seeded = _parse_iso(rec.get("seeded_at"))
     tightened = _parse_iso(rec.get("tightened_at"))
@@ -90,15 +88,9 @@ def _row_from_record(
         [t for t in (seeded, tightened, last_run) if t is not None],
         default=None,
     )
-    age_days = (
-        int((now - seeded).total_seconds() // 86400) if seeded else None
-    )
+    age_days = int((now - seeded).total_seconds() // 86400) if seeded else None
     change_ts = tightened or effective_ts
-    last_change_days = (
-        int((now - change_ts).total_seconds() // 86400)
-        if change_ts
-        else None
-    )
+    last_change_days = int((now - change_ts).total_seconds() // 86400) if change_ts else None
     history = rec.get("tighten_history") or []
     if isinstance(history, list) and history:
         last_entry = history[-1] or {}
@@ -126,9 +118,7 @@ def _row_from_record(
     )
 
 
-def collect_rows(
-    baseline_dir: Path, *, now: datetime | None = None
-) -> list[DashRow]:
+def collect_rows(baseline_dir: Path, *, now: datetime | None = None) -> list[DashRow]:
     now = now or datetime.now(timezone.utc)
     rows: list[DashRow] = []
     if not baseline_dir.exists():
@@ -150,9 +140,7 @@ def _sort_rows(rows: list[DashRow], sort_key: str) -> list[DashRow]:
     if sort_key == "age":
         return sorted(rows, key=lambda r: -(r.age_days or 0))
     if sort_key == "change":
-        return sorted(
-            rows, key=lambda r: -(r.last_change_days or 0)
-        )
+        return sorted(rows, key=lambda r: -(r.last_change_days or 0))
     # default: by gate_id
     return sorted(rows, key=lambda r: r.gate_id)
 
@@ -161,29 +149,29 @@ def format_table(rows: list[DashRow]) -> str:
     if not rows:
         return "no wiring_*_ratchet.json baselines found"
     header = (
-        "gate_id", "count", "tightens", "last_change",
-        "age_days", "auto_promoted",
+        "gate_id",
+        "count",
+        "tightens",
+        "last_change",
+        "age_days",
+        "auto_promoted",
     )
     data = [header]
     for r in rows:
-        data.append((
-            r.gate_id,
-            str(r.count),
-            f"{r.tighten_count}"
-            + (
-                f" ({r.last_from}->{r.last_to})"
-                if r.last_from is not None else ""
-            ),
-            f"{r.last_change_days}d" if r.last_change_days is not None else "?",
-            f"{r.age_days}d" if r.age_days is not None else "?",
-            r.auto_promoted_tier or "-",
-        ))
+        data.append(
+            (
+                r.gate_id,
+                str(r.count),
+                f"{r.tighten_count}" + (f" ({r.last_from}->{r.last_to})" if r.last_from is not None else ""),
+                f"{r.last_change_days}d" if r.last_change_days is not None else "?",
+                f"{r.age_days}d" if r.age_days is not None else "?",
+                r.auto_promoted_tier or "-",
+            )
+        )
     widths = [max(len(str(row[i])) for row in data) for i in range(len(header))]
     lines = []
     for idx, row in enumerate(data):
-        lines.append("  ".join(
-            str(v).ljust(widths[i]) for i, v in enumerate(row)
-        ))
+        lines.append("  ".join(str(v).ljust(widths[i]) for i, v in enumerate(row)))
         if idx == 0:
             lines.append("  ".join("-" * w for w in widths))
     return "\n".join(lines)
@@ -194,10 +182,7 @@ def summarize(rows: list[DashRow]) -> dict[str, Any]:
     zero_count = sum(1 for r in rows if r.count == 0)
     with_history = sum(1 for r in rows if r.tighten_count > 0)
     promoted = [r.gate_id for r in rows if r.auto_promoted_tier]
-    dormant = [
-        r for r in rows
-        if r.count > 0 and r.tighten_count == 0
-    ]
+    dormant = [r for r in rows if r.count > 0 and r.tighten_count == 0]
     oldest_dormant = None
     if dormant:
         oldest = max(dormant, key=lambda r: r.age_days or 0)
@@ -265,10 +250,7 @@ def main(argv: list[str] | None = None) -> int:
         f"total_debt_units={summary['total_debt_units']}"
     )
     if summary["auto_promoted_gates"]:
-        print(
-            "AUTO-PROMOTED GATES: "
-            + ", ".join(summary["auto_promoted_gates"])
-        )
+        print("AUTO-PROMOTED GATES: " + ", ".join(summary["auto_promoted_gates"]))
     dormant = summary["oldest_dormant_ratchet"]
     if dormant:
         print(

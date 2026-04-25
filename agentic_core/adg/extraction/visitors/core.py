@@ -388,9 +388,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 return True
         # Negative numeric constants: -1, -1.0
         if isinstance(value, ast.UnaryOp) and isinstance(value.op, ast.USub):
-            if isinstance(value.operand, ast.Constant) and isinstance(
-                value.operand.value, (int, float)
-            ):
+            if isinstance(value.operand, ast.Constant) and isinstance(value.operand.value, (int, float)):
                 return True
         return False
 
@@ -832,8 +830,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                         recv_sym = self._extract_symbol(call.func.value) or ""
                         recv_base = recv_sym.split(".")[-1].lower()
                         if any(
-                            k in recv_base
-                            for k in ("error", "failure", "issue", "problem", "exc", "fail")
+                            k in recv_base for k in ("error", "failure", "issue", "problem", "exc", "fail")
                         ):
                             has_counter_increment = True
         # Collector pattern: tracked failure via counter + log = not silent swallow
@@ -1465,9 +1462,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 # has explicit continue, but loop body DOES continue by falling
                 # through. Conservative: treat as retry only if handler body
                 # has no terminal statements at top level.
-                has_terminal = any(
-                    isinstance(s, (ast.Break, ast.Return, ast.Raise)) for s in handler.body
-                )
+                has_terminal = any(isinstance(s, (ast.Break, ast.Return, ast.Raise)) for s in handler.body)
                 if not has_terminal:
                     has_retry_semantics = True
                     break

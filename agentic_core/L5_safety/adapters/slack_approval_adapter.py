@@ -45,14 +45,11 @@ _OUTCOME_BY_STATUS: Mapping[str, ApprovalOutcomeKind] = {
 class SlackTransport(Protocol):
     """Minimal Slack surface this adapter depends on."""
 
-    def post_message(self, channel: str, text: str, blocks: list[Mapping[str, Any]]) -> Mapping[str, Any]:
-        ...
+    def post_message(self, channel: str, text: str, blocks: list[Mapping[str, Any]]) -> Mapping[str, Any]: ...
 
-    def get_message(self, channel: str, ts: str) -> Mapping[str, Any]:
-        ...
+    def get_message(self, channel: str, ts: str) -> Mapping[str, Any]: ...
 
-    def delete_message(self, channel: str, ts: str) -> Mapping[str, Any]:
-        ...
+    def delete_message(self, channel: str, ts: str) -> Mapping[str, Any]: ...
 
 
 def build_approval_blocks(entry: LedgerEntry) -> list[Mapping[str, Any]]:
@@ -149,9 +146,7 @@ class SlackApprovalAdapter(HumanApprovalAdapter):
         if status == STATUS_PENDING:
             return None
         if status == STATUS_CANCELLED:
-            return ApprovalOutcome(
-                kind=ApprovalOutcomeKind.TIMEOUT, reason_code=STATUS_CANCELLED.upper()
-            )
+            return ApprovalOutcome(kind=ApprovalOutcomeKind.TIMEOUT, reason_code=STATUS_CANCELLED.upper())
         kind = _OUTCOME_BY_STATUS.get(status)
         if kind is None:
             raise AdapterError(f"Unrecognized Slack status: {status!r}")
@@ -176,9 +171,7 @@ class SlackApprovalAdapter(HumanApprovalAdapter):
 
     def _require_handle(self, handle: ApprovalHandle) -> None:
         if handle.adapter_kind != self.kind:
-            raise ValueError(
-                f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}"
-            )
+            raise ValueError(f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}")
         if not handle.external_id:
             raise ValueError("handle.external_id is empty")
 

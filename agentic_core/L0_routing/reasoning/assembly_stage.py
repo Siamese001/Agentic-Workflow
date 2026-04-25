@@ -71,9 +71,7 @@ def _load_exemplars(registry: Any, exemplar_ids: tuple[str, ...]) -> str:
     """
     if not exemplar_ids:
         return ""
-    getter = getattr(registry, "get_e0_exemplar", None) or getattr(
-        registry, "get_i0_mixin", None
-    )
+    getter = getattr(registry, "get_e0_exemplar", None) or getattr(registry, "get_i0_mixin", None)
     if getter is None:
         return ""
     parts: list[str] = []
@@ -97,9 +95,7 @@ def _load_meta_cognitive(registry: Any, mixin_id: str | None) -> str:
     """
     if not mixin_id:
         return ""
-    getter = getattr(registry, "get_m0_mixin", None) or getattr(
-        registry, "get_i0_mixin", None
-    )
+    getter = getattr(registry, "get_m0_mixin", None) or getattr(registry, "get_i0_mixin", None)
     if getter is None:
         return ""
     try:
@@ -108,9 +104,31 @@ def _load_meta_cognitive(registry: Any, mixin_id: str | None) -> str:
         return ""
 
 
-def _build_structured_slots(
-    slots: dict[str, str], u0_clean: str
-) -> dict[str, Any] | None:
+def _load_synthesis(registry: Any, synthesis_ids: tuple[str, ...]) -> str:
+    """Load Y0 synthesis content from the template registry.
+
+    Uses ``registry.get_y0_synthesis(id)`` when present; otherwise falls back
+    to ``registry.get_i0_mixin(id)`` so existing mixin-backed synthesis
+    content still resolves during the Y0 shim window. Returns empty
+    string when no synthesis entries are requested.
+    """
+    if not synthesis_ids:
+        return ""
+    getter = getattr(registry, "get_y0_synthesis", None) or getattr(registry, "get_i0_mixin", None)
+    if getter is None:
+        return ""
+    parts: list[str] = []
+    for syn_id in sorted(synthesis_ids):
+        try:
+            content = getter(syn_id)
+        except KeyError:
+            continue
+        if content:
+            parts.append(content)
+    return "\n\n".join(parts)
+
+
+def _build_structured_slots(slots: dict[str, str], u0_clean: str) -> dict[str, Any] | None:
     """Construct ``CompiledPromptArtifact.structured_slots`` from flat content.
 
     Produces one :class:`AuthoritySlot` per populated slot code. Empty slot
@@ -130,8 +148,10 @@ def _build_structured_slots(
         "E0": "L4",
         "C0": "L1",
         "M0": "L4",
+        "Y0": "L4",
         "U0": "L1",
         "H0": "L2",
+        "R0": "L_PG",
     }
     level_by_slot = {
         "S0": AuthorityLevel.ABSOLUTE,
@@ -140,8 +160,10 @@ def _build_structured_slots(
         "E0": AuthorityLevel.EXEMPLAR,
         "C0": AuthorityLevel.INFO,
         "M0": AuthorityLevel.META_COGNITIVE,
+        "Y0": AuthorityLevel.META_LEARNING,
         "U0": AuthorityLevel.ZERO,
         "H0": AuthorityLevel.HEALING,
+        "R0": AuthorityLevel.SCHEMA,
     }
 
     structured: dict[str, Any] = {}
@@ -181,7 +203,10 @@ class GovernedPayload:
     """
     Immutable governed payload with assembly stage slots.
 
-    Slots are ordered S0→D0→I0→C0→U0 for deterministic manifest hashing.
+    Slots are ordered S0→D0→M0→I0→E0→C0→Y0→U0→H0→R0 for deterministic
+    manifest hashing.  The original 5 slots (S0, D0, I0, C0, U0) are
+    required; E0–R0 default to empty and are excluded from the hash when
+    empty, preserving backward compatibility for legacy callers.
     """
 
     s0_system: str
@@ -189,6 +214,14 @@ class GovernedPayload:
     c0_context: str
     u0_user_prompt: str
     d0_injections: str = ""
+    # ── EQ-3 extended slots (E0, M0, H0) ──────────────────────────────
+    e0_exemplars: str = ""
+    m0_meta_cognitive: str = ""
+    h0_healing: str = ""
+    # ── Y0/R0 synthesis + output format slots ─────────────────────────
+    y0_synthesis: str = ""
+    r0_output_format: str = ""
+    # ── metadata ─────────────────────────────────────────────────────
     check_ids: tuple[str, ...] = ()
     sanitized: bool = False
     c0_context_source: str = "static"
@@ -213,6 +246,11 @@ class GovernedPayload:
                 "i0_instructional": self.i0_instructional,
                 "c0_context": self.c0_context,
                 "u0_user_prompt": self.u0_user_prompt,
+                "e0_exemplars": self.e0_exemplars,
+                "m0_meta_cognitive": self.m0_meta_cognitive,
+                "h0_healing": self.h0_healing,
+                "y0_synthesis": self.y0_synthesis,
+                "r0_output_format": self.r0_output_format,
                 "check_ids": tuple(sorted(self.check_ids)),
                 "sanitized": self.sanitized,
                 "c0_context_source": self.c0_context_source,
@@ -224,6 +262,11 @@ class GovernedPayload:
                 "d0_injections": self.d0_injections,
                 "i0_instructional": self.i0_instructional,
                 "u0_user_prompt": self.u0_user_prompt,
+                "e0_exemplars": self.e0_exemplars,
+                "m0_meta_cognitive": self.m0_meta_cognitive,
+                "h0_healing": self.h0_healing,
+                "y0_synthesis": self.y0_synthesis,
+                "r0_output_format": self.r0_output_format,
                 "check_ids": tuple(sorted(self.check_ids)),
                 "sanitized": self.sanitized,
             }
@@ -306,6 +349,11 @@ class AirlockAssembler:
         c0_context: str,
         u0_user_prompt: str,
         d0_injections: str = "",
+        e0_exemplars: str = "",
+        m0_meta_cognitive: str = "",
+        h0_healing: str = "",
+        y0_synthesis: str = "",
+        r0_output_format: str = "",
         c0_context_source: Literal["static", "embedding_artifact"] = "static",
     ) -> GovernedPayload:
         """
@@ -314,11 +362,16 @@ class AirlockAssembler:
         Performs sanitization first, then shredding, then computes manifest hash.
 
         Args:
-            s0_system: System prompt slot
-            d0_injections: Reserved injection slot (default empty)
-            i0_instructional: Instructional prompt slot
-            c0_context: Context slot
-            u0_user_prompt: User prompt slot
+            s0_system: System prompt slot (ABSOLUTE authority)
+            d0_injections: Injection fence slot (BINDING authority)
+            i0_instructional: Instructional prompt slot (GOVERNED authority)
+            c0_context: Context slot (INFORMATIONAL authority)
+            u0_user_prompt: User prompt slot (ZERO authority — airlock required)
+            e0_exemplars: Exemplars slot (GUIDING authority, EQ-3)
+            m0_meta_cognitive: Meta-cognitive mixin slot (PRIVATE authority, EQ-3)
+            h0_healing: Healing proposal slot (PROPOSED authority, EQ-3)
+            y0_synthesis: Synthesis slot (META_LEARNING authority)
+            r0_output_format: Output format slot (SCHEMA authority)
 
         Returns:
             GovernedPayload with deterministic manifest hash
@@ -339,6 +392,11 @@ class AirlockAssembler:
             i0_instructional=i0_instructional,
             c0_context=c0_context,
             u0_user_prompt=sanitized_prompt,
+            e0_exemplars=e0_exemplars,
+            m0_meta_cognitive=m0_meta_cognitive,
+            h0_healing=h0_healing,
+            y0_synthesis=y0_synthesis,
+            r0_output_format=r0_output_format,
             check_ids=check_ids,
             sanitized=sanitized,
             c0_context_source=c0_context_source,
@@ -426,14 +484,15 @@ class AirlockAssembler:
             d0_content = "\n".join(d0_lines)
 
         # 5b. EQ-3 — Load E0 exemplars, M0 meta-cognitive mixin, H0 healing
-        # context when the BOM carries them. All three paths are additive:
-        # missing fields leave the corresponding slot empty, preserving the
-        # legacy 5-slot behavior for callers that have not opted in.
+        # context, Y0 synthesis, R0 output format when the BOM carries them.
+        # All paths are additive: missing fields leave the corresponding
+        # slot empty, preserving the legacy 5-slot behavior for callers
+        # that have not opted in.
         e0_content = _load_exemplars(registry, bom.exemplars_required)
-        m0_content = _load_meta_cognitive(
-            registry, getattr(bom, "meta_cognitive_mixin_id", None)
-        )
+        m0_content = _load_meta_cognitive(registry, getattr(bom, "meta_cognitive_mixin_id", None))
         h0_content = getattr(bom, "healing_context", None) or ""
+        y0_content = _load_synthesis(registry, getattr(bom, "synthesis_required", ()))
+        r0_content = getattr(bom, "output_format_schema", None) or ""
 
         # 6. Validate slot order (S0→D0→I0→E0→C0→M0→U0→H0). E0/M0/H0 are
         # optional — validator only checks present slots are in canonical
@@ -445,8 +504,10 @@ class AirlockAssembler:
             "E0": e0_content,
             "C0": c0_content,
             "M0": m0_content,
+            "Y0": y0_content,
             "U0": u0_content,
             "H0": h0_content,
+            "R0": r0_content,
         }
         slot_order = [
             {"name": "S0", "order": 0},
@@ -469,7 +530,16 @@ class AirlockAssembler:
         # CompiledPromptArtifact.structured_slots instead.
         system_parts = [
             p
-            for p in [s0_content, d0_content, i0_content, e0_content, c0_content, m0_content]
+            for p in [
+                s0_content,
+                d0_content,
+                i0_content,
+                e0_content,
+                c0_content,
+                m0_content,
+                y0_content,
+                r0_content,
+            ]
             if p
         ]
         final_system = "\n\n".join(system_parts)
@@ -488,9 +558,7 @@ class AirlockAssembler:
 
         # 11. Build artifact and sign (post-RH2B.2: rich SSOT variant)
         slots_used = [
-            code
-            for code in ("S0", "D0", "I0", "E0", "C0", "M0", "U0", "H0")
-            if slots.get(code)
+            code for code in ("S0", "D0", "I0", "E0", "C0", "M0", "Y0", "U0", "H0", "R0") if slots.get(code)
         ]
         unsigned_artifact = CompiledPromptArtifact(
             trace_id=bom.trace_id,

@@ -1,4 +1,5 @@
 """One-shot baseline probe for Wave-1 hotspot plan. Reads SQLite directly."""
+
 from __future__ import annotations
 import sqlite3
 import sys
@@ -16,13 +17,11 @@ def main() -> int:
 
     print("=" * 70)
     print("TABLES:")
-    tables = [r[0] for r in c.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
+    tables = [r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
     print("  " + "\n  ".join(tables))
 
     print("\nVIEWS:")
-    views = [r[0] for r in c.execute(
-        "SELECT name FROM sqlite_master WHERE type='view' ORDER BY name")]
+    views = [r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='view' ORDER BY name")]
     print("  " + "\n  ".join(views))
 
     # Violation counts
@@ -30,8 +29,7 @@ def main() -> int:
         print("\n" + "=" * 70)
         print("VIOLATIONS BY CATEGORY:")
         rows = c.execute(
-            "SELECT category, COUNT(*) FROM violations GROUP BY category "
-            "ORDER BY COUNT(*) DESC LIMIT 30"
+            "SELECT category, COUNT(*) FROM violations GROUP BY category ORDER BY COUNT(*) DESC LIMIT 30"
         ).fetchall()
         for cat, n in rows:
             print(f"  {n:>6}  {cat}")
@@ -45,9 +43,7 @@ def main() -> int:
     # Layer distribution
     if "nodes" in tables:
         print("\nNODES BY LAYER:")
-        rows = c.execute(
-            "SELECT layer, COUNT(*) FROM nodes GROUP BY layer ORDER BY layer"
-        ).fetchall()
+        rows = c.execute("SELECT layer, COUNT(*) FROM nodes GROUP BY layer ORDER BY layer").fetchall()
         for layer, n in rows:
             print(f"  {layer or '(none)':<20} {n}")
 
@@ -62,8 +58,7 @@ def main() -> int:
             try:
                 n = c.execute(f"SELECT COUNT(*) FROM {v}").fetchone()[0]
                 print(f"\n{v}: {n} rows")
-                cols = [d[0] for d in c.execute(
-                    f"SELECT * FROM {v} LIMIT 0").description]
+                cols = [d[0] for d in c.execute(f"SELECT * FROM {v} LIMIT 0").description]
                 print(f"  cols: {cols}")
             except sqlite3.Error as exc:
                 print(f"  {v}: error {exc}")

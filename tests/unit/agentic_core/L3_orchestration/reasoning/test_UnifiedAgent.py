@@ -84,4 +84,3 @@ def test_unified_agent_inherits_sovereign_base(mod):
 )
 def test_concrete_strategies_inherit_base_strategy(mod, strat_cls):
     assert issubclass(getattr(mod, strat_cls), mod.BaseStrategy)
-

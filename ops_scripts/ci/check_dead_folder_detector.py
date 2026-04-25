@@ -61,10 +61,18 @@ MIN_FOLDER_SIZE = 2
 _PRODUCTION_LAYERS = ("L1", "L2", "L3", "L4", "L5", "L_APP", "L_PG")
 # Directory basenames we never flag as dead (they frequently hold dynamic
 # dispatch targets the ADG doesn't see as imported).
-_SKIP_DIR_BASENAMES = frozenset({
-    "tests", "test", "__pycache__", "migrations",
-    "scripts", "hooks", "fixtures", "data",
-})
+_SKIP_DIR_BASENAMES = frozenset(
+    {
+        "tests",
+        "test",
+        "__pycache__",
+        "migrations",
+        "scripts",
+        "hooks",
+        "fixtures",
+        "data",
+    }
+)
 
 
 def _parent_dir(resolved_path: str) -> str:
@@ -108,11 +116,7 @@ def find_dead_folders(
     # Group ALL production module resolved_paths by parent directory.
     by_dir: dict[str, list[str]] = defaultdict(list)
     layers_sql = ",".join(f"'{layer}'" for layer in _PRODUCTION_LAYERS)
-    query = (
-        "SELECT resolved_path FROM nodes "
-        "WHERE entity_type='module' "
-        f"AND layer IN ({layers_sql})"
-    )
+    query = f"SELECT resolved_path FROM nodes WHERE entity_type='module' AND layer IN ({layers_sql})"
     for (resolved_path,) in conn.execute(query):
         if not resolved_path:
             continue
@@ -150,24 +154,26 @@ class DeadFolderDetectorGate(WiringGate):
             preview = ", ".join(PurePosixPath(f).name for f in files[:5])
             if len(files) > 5:
                 preview += f", ... (+{len(files) - 5} more)"
-            violations.append(Violation(
-                gate_id=GATE_ID,
-                tier="R",
-                subject=folder,
-                rule="dead_folder",
-                detail=(
-                    f"Production folder '{folder}' has {len(files)} "
-                    "non-__init__ modules, all L0-unreachable and none "
-                    f"matching a dynamic anchor. Files: {preview}. "
-                    "Archive the whole folder in one move — shrinks ADG "
-                    "by folder node + all import edges at once."
-                ),
-                extra={
-                    "folder": folder,
-                    "dead_file_count": len(files),
-                    "dead_files": files,
-                },
-            ))
+            violations.append(
+                Violation(
+                    gate_id=GATE_ID,
+                    tier="R",
+                    subject=folder,
+                    rule="dead_folder",
+                    detail=(
+                        f"Production folder '{folder}' has {len(files)} "
+                        "non-__init__ modules, all L0-unreachable and none "
+                        f"matching a dynamic anchor. Files: {preview}. "
+                        "Archive the whole folder in one move — shrinks ADG "
+                        "by folder node + all import edges at once."
+                    ),
+                    extra={
+                        "folder": folder,
+                        "dead_file_count": len(files),
+                        "dead_files": files,
+                    },
+                )
+            )
         return violations
 
 

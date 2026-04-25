@@ -180,9 +180,7 @@ class _BM25Index:
                 tf = d_tokens.count(t)
                 if tf == 0:
                     continue
-                denom = tf + self.k1 * (
-                    1 - self.b + self.b * (self.doc_lens[i] / max(1.0, self.avg_len))
-                )
+                denom = tf + self.k1 * (1 - self.b + self.b * (self.doc_lens[i] / max(1.0, self.avg_len)))
                 scores[i] += idf * (tf * (self.k1 + 1)) / max(1e-9, denom)
         return scores
 
@@ -192,9 +190,7 @@ class _BM25Index:
 # ---------------------------------------------------------------------------
 
 
-def _rrf_fuse(
-    ranked_lists: list[list[int]], k: int = 60
-) -> list[tuple[int, float]]:
+def _rrf_fuse(ranked_lists: list[list[int]], k: int = 60) -> list[tuple[int, float]]:
     """Reciprocal Rank Fusion. Returns list of (doc_idx, fused_score) desc."""
     acc: dict[int, float] = {}
     for lst in ranked_lists:
@@ -344,16 +340,12 @@ def _retrieve(
     chunk_vecs = _bow_embed(texts)
     q_vec = _bow_embed([query])[0]
     dense_scores = [_cosine(q_vec, v) for v in chunk_vecs]
-    dense_ranked = sorted(
-        range(len(chunks)), key=lambda i: dense_scores[i], reverse=True
-    )
+    dense_ranked = sorted(range(len(chunks)), key=lambda i: dense_scores[i], reverse=True)
 
     if enable_lexical:
         bm25 = _BM25Index.build(texts)
         lex_scores = bm25.score(query)
-        lex_ranked = sorted(
-            range(len(chunks)), key=lambda i: lex_scores[i], reverse=True
-        )
+        lex_ranked = sorted(range(len(chunks)), key=lambda i: lex_scores[i], reverse=True)
         fused = _rrf_fuse([dense_ranked, lex_ranked])
         order = [idx for idx, _ in fused]
     else:
@@ -474,9 +466,7 @@ APPROACHES: list[_Approach] = [
 ]
 
 
-def _contextualise_chunks(
-    chunks: list[Chunk], passages: list[dict[str, str]]
-) -> list[Chunk]:
+def _contextualise_chunks(chunks: list[Chunk], passages: list[dict[str, str]]) -> list[Chunk]:
     """Prepend Anthropic-style situating context to each chunk.
 
     Uses the existing ``ContextualChunkBuilder`` heuristic path (offline,
@@ -527,9 +517,7 @@ def _contextualise_chunks(
     return out
 
 
-def run_ablation(
-    queries: list[EvalQuery], *, top_k: int = 5
-) -> list[dict[str, Any]]:
+def run_ablation(queries: list[EvalQuery], *, top_k: int = 5) -> list[dict[str, Any]]:
     """Run the five approaches on every query and return per-approach metrics."""
     rows: list[dict[str, Any]] = []
     for approach in APPROACHES:
@@ -538,9 +526,7 @@ def run_ablation(
         for q in queries:
             all_chunks: list[Chunk] = []
             for p in q.passages:
-                all_chunks.extend(
-                    _chunk_passage(p["id"], p["text"], approach.chunk_strategy)
-                )
+                all_chunks.extend(_chunk_passage(p["id"], p["text"], approach.chunk_strategy))
             if approach.enable_contextual:
                 all_chunks = _contextualise_chunks(all_chunks, q.passages)
             hits = _retrieve(
@@ -590,9 +576,7 @@ def render_markdown(
         "|---|---|---|",
     ]
     for r in rows:
-        lines.append(
-            f"| {r['label']} | {r[f'hit_at_{top_k}']:.3f} | {r[f'mrr_at_{top_k}']:.3f} |"
-        )
+        lines.append(f"| {r['label']} | {r[f'hit_at_{top_k}']:.3f} | {r[f'mrr_at_{top_k}']:.3f} |")
     lines.extend(
         [
             "",

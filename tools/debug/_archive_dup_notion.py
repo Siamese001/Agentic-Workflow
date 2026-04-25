@@ -1,4 +1,5 @@
 """Archive the 6 duplicate Notion pages created by retry of deferred_scope hook."""
+
 from __future__ import annotations
 
 import json

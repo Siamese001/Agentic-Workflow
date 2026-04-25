@@ -14,6 +14,7 @@ Classification:
   KEEP             — actively used in production
   INVESTIGATE      — ambiguous signal
 """
+
 from __future__ import annotations
 
 import glob
@@ -192,9 +193,7 @@ def main() -> int:
             if d["w3_healresult"]:
                 marks.append("w3")
             mark_str = ",".join(marks) if marks else "-"
-            detail_fanin = ",".join(
-                f"{k}:{v}" for k, v in sorted(d["fanin"].items()) if v > 0
-            ) or "none"
+            detail_fanin = ",".join(f"{k}:{v}" for k, v in sorted(d["fanin"].items()) if v > 0) or "none"
             print(
                 f"  [{mark_str:<20}] fanin={d['total_fanin']:>3} lines={d['lines']:>4}  "
                 f"{d['path']}  [{detail_fanin}]"

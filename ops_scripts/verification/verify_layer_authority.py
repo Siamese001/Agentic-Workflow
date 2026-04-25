@@ -123,7 +123,7 @@ class ADGLayerAuthorityVerifier:
                 result = cursor.fetchone()
                 return result[0] if result else "UNKNOWN"
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise LayerAuthorityError(f'Failed to get layer for node {node_id}: {e}') from e
+            raise LayerAuthorityError(f"Failed to get layer for node {node_id}: {e}") from e
 
     def _check_layer_violation_edge(self, src_layer: str, dst_layer: str, relation_type: str) -> str | None:
         """Check if an edge violates layer authority rules."""
@@ -232,7 +232,7 @@ class ADGLayerAuthorityVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise LayerAuthorityError(f'Layer authority compliance check failed: {e}') from e
+            raise LayerAuthorityError(f"Layer authority compliance check failed: {e}") from e
 
     def _verify_uwg_termination_for_writes(self) -> dict[str, Any]:
         """Verify all write operations terminate at UWG."""
@@ -312,7 +312,7 @@ class ADGLayerAuthorityVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise LayerAuthorityError(f'UWG termination verification failed: {e}') from e
+            raise LayerAuthorityError(f"UWG termination verification failed: {e}") from e
 
     def _verify_l4_identity_completeness(self) -> dict[str, Any]:
         """Verify L4 modules have complete identity."""
@@ -380,7 +380,7 @@ class ADGLayerAuthorityVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise LayerAuthorityError(f'L4 identity verification failed: {e}') from e
+            raise LayerAuthorityError(f"L4 identity verification failed: {e}") from e
 
     def _verify_unauthorized_write_detection(self) -> dict[str, Any]:
         """Verify detection of unauthorized writes."""
@@ -445,7 +445,7 @@ class ADGLayerAuthorityVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise LayerAuthorityError(f'Unauthorized write detection failed: {e}') from e
+            raise LayerAuthorityError(f"Unauthorized write detection failed: {e}") from e
 
     def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
         """Persist report atomically with parent directory creation."""

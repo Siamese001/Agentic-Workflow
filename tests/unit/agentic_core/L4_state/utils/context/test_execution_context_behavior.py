@@ -68,8 +68,12 @@ class TestActionClassProperties:
 class TestGuardrailOutcomeProperties:
     def test_may_proceed_only_allow(self) -> None:
         assert GuardrailOutcome.ALLOW.may_proceed is True
-        for o in (GuardrailOutcome.DENY, GuardrailOutcome.ERROR,
-                  GuardrailOutcome.TIMEOUT, GuardrailOutcome.UNKNOWN):
+        for o in (
+            GuardrailOutcome.DENY,
+            GuardrailOutcome.ERROR,
+            GuardrailOutcome.TIMEOUT,
+            GuardrailOutcome.UNKNOWN,
+        ):
             assert o.may_proceed is False
 
     def test_is_abnormal_inverse_of_may_proceed(self) -> None:
@@ -117,10 +121,12 @@ class TestExecutionContextValidation:
             ExecutionContext(**kwargs)
 
     def test_guardrail_decision_fields_may_be_empty_on_creation(self) -> None:
-        ctx = ExecutionContext(**_valid_kwargs(
-            guardrail_decision_id="",
-            guardrail_decision_hash="",
-        ))
+        ctx = ExecutionContext(
+            **_valid_kwargs(
+                guardrail_decision_id="",
+                guardrail_decision_hash="",
+            )
+        )
         assert ctx.guardrail_decision_id == ""
 
     def test_is_frozen(self) -> None:
@@ -151,8 +157,11 @@ class TestFactoryCreate:
         payload = {"x": 1, "y": [2, 3]}
         expected = hashlib.sha256(repr(payload).encode()).hexdigest()[:32]
         ctx = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input=payload, execution_target="tgt",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input=payload,
+            execution_target="tgt",
         )
         assert ctx.execution_input_hash == expected
 
@@ -160,63 +169,93 @@ class TestFactoryCreate:
         target = "tool:search"
         expected = hashlib.sha256(target.encode()).hexdigest()[:32]
         ctx = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target=target,
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target=target,
         )
         assert ctx.execution_target_hash == expected
 
     def test_create_different_input_differs(self) -> None:
         a = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={"a": 1}, execution_target="tgt",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={"a": 1},
+            execution_target="tgt",
         )
         b = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={"a": 2}, execution_target="tgt",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={"a": 2},
+            execution_target="tgt",
         )
         assert a.execution_input_hash != b.execution_input_hash
 
     def test_create_different_target_differs(self) -> None:
         a = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target="tgt1",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target="tgt1",
         )
         b = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target="tgt2",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target="tgt2",
         )
         assert a.execution_target_hash != b.execution_target_hash
 
     def test_create_request_ids_unique(self) -> None:
         a = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target="x",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target="x",
         )
         b = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target="x",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target="x",
         )
         assert a.execution_request_id != b.execution_request_id
 
     def test_create_trace_id_override(self) -> None:
         ctx = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target="x",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target="x",
             trace_id="explicit-trace",
         )
         assert ctx.trace_id == "explicit-trace"
 
     def test_create_extra_defaults_empty_dict(self) -> None:
         ctx = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target="x",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target="x",
         )
         assert ctx.extra == {}
 
     def test_create_preserves_action_class(self) -> None:
         ctx = ExecutionContext.create(
-            run_id="r", capability_token="t", policy_hash="p",
-            execution_input={}, execution_target="x",
+            run_id="r",
+            capability_token="t",
+            policy_hash="p",
+            execution_input={},
+            execution_target="x",
             action_class=ActionClass.MUTATION,
         )
         assert ctx.action_class is ActionClass.MUTATION

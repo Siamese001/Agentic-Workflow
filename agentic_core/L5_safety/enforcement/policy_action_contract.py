@@ -463,7 +463,10 @@ def _escalate_to_hitl(
             action_name,
             artifact.trace_id,
         )
-    except (ValueError, TypeError) as _escalation_exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+    except (
+        ValueError,
+        TypeError,
+    ) as _escalation_exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         _LOG.error("HUMAN_ESCALATION_ERROR: %s", _escalation_exc)
         # Continue - escalation failure should not block HITL routing
 

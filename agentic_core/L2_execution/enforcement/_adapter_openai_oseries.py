@@ -63,9 +63,7 @@ class OSeriesMessageAdapter:
         m0_dropped = False
 
         if slots_map is not None:
-            system, developer_prompt, m0_dropped = self._compose_from_slots(
-                slots_map
-            )
+            system, developer_prompt, m0_dropped = self._compose_from_slots(slots_map)
             if not system:
                 system = final_system_string or ""
 
@@ -100,9 +98,7 @@ class OSeriesMessageAdapter:
             extra=extra,
         )
 
-    def _compose_from_slots(
-        self, slots_map: dict[str, str]
-    ) -> tuple[str, str, bool]:
+    def _compose_from_slots(self, slots_map: dict[str, str]) -> tuple[str, str, bool]:
         """Build (system_markdown, developer_prompt, m0_dropped)."""
         heading_by_slot = {
             "S0": "# Role",

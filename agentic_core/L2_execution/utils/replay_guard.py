@@ -224,7 +224,9 @@ class ReplayGuard:
         self._restore_all()
 
     def _save(self, key: str, obj: Any, attr: str) -> None:
-        self._saved[key] = getattr(obj, attr)  # guardian: allow-hallucinated-tool-name -- getattr is a Python stdlib builtin used for dynamic attribute save/restore; detector false positive
+        self._saved[key] = getattr(
+            obj, attr
+        )  # guardian: allow-hallucinated-tool-name -- getattr is a Python stdlib builtin used for dynamic attribute save/restore; detector false positive
 
     def _restore(self, key: str, obj: Any, attr: str) -> None:
         if key in self._saved:

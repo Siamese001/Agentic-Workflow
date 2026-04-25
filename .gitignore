@@ -113,3 +113,6 @@ runtime_adg//
 .env.local.backup
 .env.local
 .env.*.backup
+
+# Playwright MCP session output (browser_navigate snapshots, console logs)
+.playwright-mcp/

@@ -1,0 +1,44 @@
+{# M0 - META-COGNITIVE (PRIVATE Authority)
+ Chain-of-Thought, Tree-of-Thought internal reasoning scaffolds.
+ PRIVATE authority — never surfaced to user, internal reasoning only.
+#}
+================================================================================
+REASONING POSTURE (PRIVATE — NOT FOR USER DISPLAY)
+================================================================================
+
+{% if thinking_style %}
+THINKING STYLE: {{ thinking_style }}
+{% endif %}
+
+{% if reasoning_scaffold %}
+REASONING SCAFFOLD:
+{{ reasoning_scaffold }}
+{% endif %}
+
+{% if step_by_step %}
+STEP-BY-STEP INSTRUCTION:
+1. Read the task carefully.
+2. Identify key constraints.
+3. Plan your approach before writing.
+4. Verify each step against constraints.
+5. Review the complete output before finalizing.
+{% endif %}
+
+{% if tree_of_thought %}
+TREE-OF-THOUGHT BRANCHES:
+{% for branch in tree_of_thought %}
+- Branch {{ loop.index }}: {{ branch.hypothesis }}
+  Evaluation: {{ branch.evaluation | default("pending") }}
+{% endfor %}
+{% endif %}
+
+{% if self_check %}
+SELF-CHECK PROTOCOL:
+{% for check in self_check %}
+- {{ check }}
+{% endfor %}
+{% endif %}
+
+================================================================================
+THIS SECTION IS INTERNAL REASONING. DO NOT QUOTE OR PARAPHRASE TO USER.
+================================================================================

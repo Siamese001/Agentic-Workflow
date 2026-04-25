@@ -70,8 +70,7 @@ class SemanticCachePayload:
                 )
         if self.cache_tier not in {"static", "dynamic"}:
             raise ValueError(
-                f"SemanticCachePayload: cache_tier must be 'static' or "
-                f"'dynamic', got {self.cache_tier!r}",
+                f"SemanticCachePayload: cache_tier must be 'static' or 'dynamic', got {self.cache_tier!r}",
             )
         if self.freshness_class not in {"hot", "warm", "cold"}:
             raise ValueError(

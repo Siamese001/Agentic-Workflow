@@ -312,7 +312,9 @@ class AnalyticsDashboard:
 
     def _dashboard_loop(self) -> None:
         """Main dashboard update loop."""
-        while self._dashboard_active and not self._shutdown_requested:  # guardian: allow-retry-without-backoff -- periodic dashboard refresh loop; internal time.sleep provides pacing
+        while (
+            self._dashboard_active and not self._shutdown_requested
+        ):  # guardian: allow-retry-without-backoff -- periodic dashboard refresh loop; internal time.sleep provides pacing
             try:
                 start_time = time.time()
 

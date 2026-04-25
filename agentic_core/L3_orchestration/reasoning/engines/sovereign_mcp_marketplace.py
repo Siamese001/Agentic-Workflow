@@ -234,7 +234,12 @@ class SovereignMcpMarketplace:
                 try:
                     self.safe_tools.append(name)
                     Logger.info(f"[L3 MARKETPLACE] Sovereign MCP validated and armed: {name}")
-                except (RuntimeError, ValueError, TypeError, AttributeError):  # guardian: allow-double-logging -- MCP registration failure logged before re-raise for marketplace audit
+                except (
+                    RuntimeError,
+                    ValueError,
+                    TypeError,
+                    AttributeError,
+                ):  # guardian: allow-double-logging -- MCP registration failure logged before re-raise for marketplace audit
                     raise
         if not self.safe_tools:
             Logger.warning("[L3 MARKETPLACE] No safe MCPs found. Running in LLM-only mode.")

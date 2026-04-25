@@ -4,6 +4,7 @@ Reads each target file's docstring to identify the replacement hint, then querie
 the ADG SQLite snapshot for consumer list via resolves_callsite edges.
 Writes: artifacts/agent_deprecation/w3_replacement_map.json
 """
+
 from __future__ import annotations
 
 import json

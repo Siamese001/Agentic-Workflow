@@ -63,9 +63,7 @@ class ExemplarRecord:
             raise ValueError("input_text and output_text must be non-empty")
         for key in self._FORBIDDEN_METADATA:
             if key in self.metadata:
-                raise ValueError(
-                    f"ExemplarRecord metadata cannot carry {key!r} per E0 invariant"
-                )
+                raise ValueError(f"ExemplarRecord metadata cannot carry {key!r} per E0 invariant")
 
 
 class ExemplarBank:

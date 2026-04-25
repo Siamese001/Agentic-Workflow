@@ -17,6 +17,7 @@ Usage::
 Rollback: git revert the apply commit. All edits are comment-prefix-only; no
 code behavior changes.
 """
+
 from __future__ import annotations
 
 import argparse

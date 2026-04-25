@@ -139,37 +139,25 @@ def _is_finite_float(value: float) -> bool:
 
 def _require_nonempty_str(value: object, field_name: str) -> None:
     if not isinstance(value, str):
-        raise V12RouteContractError(
-            f"{field_name} must be str, got {type(value).__name__}"
-        )
+        raise V12RouteContractError(f"{field_name} must be str, got {type(value).__name__}")
     if len(value) == 0:
         raise V12RouteContractError(f"{field_name} must be non-empty")
     if len(value) > _MAX_STRING_LEN:
-        raise V12RouteContractError(
-            f"{field_name} exceeds max length {_MAX_STRING_LEN} (got {len(value)})"
-        )
+        raise V12RouteContractError(f"{field_name} exceeds max length {_MAX_STRING_LEN} (got {len(value)})")
 
 
-def _require_str_tuple(
-    values: tuple[str, ...], field_name: str, *, max_len: int
-) -> None:
+def _require_str_tuple(values: tuple[str, ...], field_name: str, *, max_len: int) -> None:
     if not isinstance(values, tuple):
         raise V12RouteContractError(f"{field_name} must be a tuple")
     if len(values) > max_len:
-        raise V12RouteContractError(
-            f"{field_name} exceeds max length {max_len} (got {len(values)})"
-        )
+        raise V12RouteContractError(f"{field_name} exceeds max length {max_len} (got {len(values)})")
     for idx, item in enumerate(values):
         if not isinstance(item, str):
-            raise V12RouteContractError(
-                f"{field_name}[{idx}] must be str, got {type(item).__name__}"
-            )
+            raise V12RouteContractError(f"{field_name}[{idx}] must be str, got {type(item).__name__}")
         if len(item) == 0:
             raise V12RouteContractError(f"{field_name}[{idx}] must be non-empty")
         if len(item) > _MAX_STRING_LEN:
-            raise V12RouteContractError(
-                f"{field_name}[{idx}] exceeds max length {_MAX_STRING_LEN}"
-            )
+            raise V12RouteContractError(f"{field_name}[{idx}] exceeds max length {_MAX_STRING_LEN}")
 
 
 @dataclass(frozen=True)
@@ -191,13 +179,9 @@ class FallbackEntry:
             )
         if self.provider is not None:
             if not isinstance(self.provider, str) or len(self.provider) == 0:
-                raise V12RouteContractError(
-                    "FallbackEntry.provider must be non-empty str or None"
-                )
+                raise V12RouteContractError("FallbackEntry.provider must be non-empty str or None")
             if len(self.provider) > _MAX_STRING_LEN:
-                raise V12RouteContractError(
-                    f"FallbackEntry.provider exceeds max length {_MAX_STRING_LEN}"
-                )
+                raise V12RouteContractError(f"FallbackEntry.provider exceeds max length {_MAX_STRING_LEN}")
 
 
 @dataclass(frozen=True)
@@ -215,16 +199,12 @@ class RouteSLO:
     cost_cap_usd: float
 
     def __post_init__(self) -> None:
-        if not isinstance(self.latency_budget_ms, int) or isinstance(
-            self.latency_budget_ms, bool
-        ):
+        if not isinstance(self.latency_budget_ms, int) or isinstance(self.latency_budget_ms, bool):
             raise V12RouteContractError("latency_budget_ms must be int")
         if self.latency_budget_ms < 0:
             raise V12RouteContractError("latency_budget_ms must be >= 0")
         if self.latency_budget_ms > _MAX_SLO_LATENCY_MS:
-            raise V12RouteContractError(
-                f"latency_budget_ms exceeds ceiling {_MAX_SLO_LATENCY_MS}"
-            )
+            raise V12RouteContractError(f"latency_budget_ms exceeds ceiling {_MAX_SLO_LATENCY_MS}")
         for name, value in (
             ("token_budget_in", self.token_budget_in),
             ("token_budget_out", self.token_budget_out),
@@ -234,19 +214,13 @@ class RouteSLO:
             if value < 0:
                 raise V12RouteContractError(f"{name} must be >= 0")
             if value > _MAX_SLO_TOKENS:
-                raise V12RouteContractError(
-                    f"{name} exceeds ceiling {_MAX_SLO_TOKENS}"
-                )
+                raise V12RouteContractError(f"{name} exceeds ceiling {_MAX_SLO_TOKENS}")
         if not _is_finite_float(self.cost_cap_usd):
-            raise V12RouteContractError(
-                "cost_cap_usd must be finite (no NaN/inf)"
-            )
+            raise V12RouteContractError("cost_cap_usd must be finite (no NaN/inf)")
         if self.cost_cap_usd < 0.0:
             raise V12RouteContractError("cost_cap_usd must be >= 0")
         if self.cost_cap_usd > _MAX_SLO_COST_USD:
-            raise V12RouteContractError(
-                f"cost_cap_usd exceeds ceiling {_MAX_SLO_COST_USD}"
-            )
+            raise V12RouteContractError(f"cost_cap_usd exceeds ceiling {_MAX_SLO_COST_USD}")
 
 
 @dataclass(frozen=True)
@@ -298,9 +272,7 @@ class V12RouteAnnex:
         _require_nonempty_str(self.contract_version, "contract_version")
         _require_nonempty_str(self.base_contract_id, "base_contract_id")
         if not isinstance(self.route_id, RouteId):
-            raise V12RouteContractError(
-                f"route_id must be RouteId enum, got {type(self.route_id).__name__}"
-            )
+            raise V12RouteContractError(f"route_id must be RouteId enum, got {type(self.route_id).__name__}")
         if not isinstance(self.freshness_class, FreshnessClass):
             raise V12RouteContractError("freshness_class must be FreshnessClass enum")
         if not isinstance(self.cache_policy, CachePolicy):
@@ -315,19 +287,11 @@ class V12RouteAnnex:
             raise V12RouteContractError("slo must be RouteSLO")
         # Confidence: reject NaN / inf / out-of-range in one check.
         if not _is_finite_float(self.confidence):
-            raise V12RouteContractError(
-                f"confidence must be a finite float, got {self.confidence!r}"
-            )
+            raise V12RouteContractError(f"confidence must be a finite float, got {self.confidence!r}")
         if not 0.0 <= self.confidence <= 1.0:
-            raise V12RouteContractError(
-                f"confidence out of range [0,1]: {self.confidence}"
-            )
-        _require_str_tuple(
-            self.reason_codes, "reason_codes", max_len=_MAX_REASON_CODES
-        )
-        _require_str_tuple(
-            self.telemetry_keys, "telemetry_keys", max_len=_MAX_TELEMETRY_KEYS
-        )
+            raise V12RouteContractError(f"confidence out of range [0,1]: {self.confidence}")
+        _require_str_tuple(self.reason_codes, "reason_codes", max_len=_MAX_REASON_CODES)
+        _require_str_tuple(self.telemetry_keys, "telemetry_keys", max_len=_MAX_TELEMETRY_KEYS)
         # Fallback chain structural rules
         if not isinstance(self.fallback_chain, tuple):
             raise V12RouteContractError("fallback_chain must be a tuple")
@@ -346,10 +310,7 @@ class V12RouteAnnex:
         # has empty chain), and except intentional re-try at a different tier
         # (we allow same route_id at a different cost_tier).
         for idx, entry in enumerate(self.fallback_chain):
-            if (
-                entry.route_id == self.route_id
-                and entry.cost_tier == self.cost_tier
-            ):
+            if entry.route_id == self.route_id and entry.cost_tier == self.cost_tier:
                 raise V12RouteContractError(
                     f"fallback_chain[{idx}] is self-referential: "
                     f"same (route_id={self.route_id}, cost_tier={self.cost_tier}) as primary"
@@ -408,13 +369,9 @@ class V12RouteAnnex:
             footgun and are rejected.
         """
         if not isinstance(secret_key, (bytes, bytearray)):
-            raise V12RouteContractError(
-                f"secret_key must be bytes, got {type(secret_key).__name__}"
-            )
+            raise V12RouteContractError(f"secret_key must be bytes, got {type(secret_key).__name__}")
         if len(secret_key) == 0:
-            raise V12RouteContractError(
-                "secret_key must be non-empty; empty HMAC keys are insecure"
-            )
+            raise V12RouteContractError("secret_key must be non-empty; empty HMAC keys are insecure")
         sig = hmac.new(secret_key, self.canonical_json(), hashlib.sha256).hexdigest()
         # frozen dataclass: rebuild with object.__setattr__-free pattern
         return V12RouteAnnex(

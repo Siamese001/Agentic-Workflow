@@ -1,4 +1,5 @@
 """H2 dry-run: confirm SC-5 promotion won't surprise-block current snapshot."""
+
 import sqlite3
 import sys
 from pathlib import Path

@@ -21,6 +21,7 @@ Reference:
   - ADR-023 (runtime HITL exit-control)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -181,8 +182,7 @@ def verify_v4_token(
     if active_policy_version is not None and token.policy_version:
         if token.policy_version != active_policy_version:
             failures.append(
-                f"POLICY_VERSION_MISMATCH:token={token.policy_version} "
-                f"active={active_policy_version}",
+                f"POLICY_VERSION_MISMATCH:token={token.policy_version} active={active_policy_version}",
             )
 
     # 7. Delegation depth cap

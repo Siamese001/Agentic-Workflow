@@ -311,7 +311,9 @@ def test_runtime_mutation_guard() -> bool:
             guard_setattr(TestProtected, "__class__", object)
             return False
         # guardian: allow-silent-swallow -- acceptable exception handling
-        except RuntimeMutationViolation as e:  # guardian: allow-log-and-swallow -- setattr guard: debug logged, guard check continues
+        except (
+            RuntimeMutationViolation
+        ) as e:  # guardian: allow-log-and-swallow -- setattr guard: debug logged, guard check continues
             logging.getLogger(__name__).debug(
                 "runtime_mutation_guard: RuntimeMutationViolation swallowed at L312: %s", e
             )
@@ -321,7 +323,9 @@ def test_runtime_mutation_guard() -> bool:
             guard_importlib_reload(agentic_core)
             # guardian: allow-silent-swallow -- acceptable exception handling
             return False
-        except RuntimeMutationViolation as e:  # guardian: allow-log-and-swallow -- reload guard: debug logged, guard check continues
+        except (
+            RuntimeMutationViolation
+        ) as e:  # guardian: allow-log-and-swallow -- reload guard: debug logged, guard check continues
             logging.getLogger(__name__).debug(
                 "runtime_mutation_guard: RuntimeMutationViolation swallowed at L320: %s", e
             )

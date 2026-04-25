@@ -45,8 +45,7 @@ class TestFreshnessClassParity:
         l0_values = set(typing.get_args(l0_literal))
         runtime_values = set(typing.get_args(FreshnessClass))
         assert l0_values == runtime_values, (
-            f"FreshnessClass drift — L0={l0_values} runtime={runtime_values}. "
-            "Update both or consolidate."
+            f"FreshnessClass drift — L0={l0_values} runtime={runtime_values}. Update both or consolidate."
         )
 
 

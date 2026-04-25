@@ -67,6 +67,4 @@ def test_public_functions_callable(mod, fn):
 def test_reset_heal_seam_capability_requires_token(mod):
     """Reset is token-gated to prevent stray production resets."""
     sig = inspect.signature(mod.reset_heal_seam_capability)
-    assert "token" in sig.parameters, (
-        "reset_heal_seam_capability must require a token argument for safety"
-    )
+    assert "token" in sig.parameters, "reset_heal_seam_capability must require a token argument for safety"

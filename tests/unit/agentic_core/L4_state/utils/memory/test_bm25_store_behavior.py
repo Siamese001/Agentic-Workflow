@@ -33,6 +33,7 @@ from agentic_core.L4_state.utils.memory.bm25_store import (
 
 # ---- Bm25Store in-memory index ------------------------------------------
 
+
 class TestBm25Store:
     def test_empty_store_returns_empty(self) -> None:
         store = Bm25Store()
@@ -40,11 +41,13 @@ class TestBm25Store:
 
     def test_add_and_query_returns_results(self) -> None:
         store = Bm25Store()
-        store.add_documents([
-            {"id": "a", "text": "alpha beta gamma"},
-            {"id": "b", "text": "delta epsilon zeta"},
-            {"id": "c", "text": "alpha delta"},
-        ])
+        store.add_documents(
+            [
+                {"id": "a", "text": "alpha beta gamma"},
+                {"id": "b", "text": "delta epsilon zeta"},
+                {"id": "c", "text": "alpha delta"},
+            ]
+        )
         results = store.query("alpha", top_k=5)
         ids = {r["id"] for r in results}
         assert "a" in ids or "c" in ids
@@ -56,17 +59,17 @@ class TestBm25Store:
 
     def test_top_k_bounds_results(self) -> None:
         store = Bm25Store()
-        store.add_documents([
-            {"id": f"d{i}", "text": f"token_{i} alpha"} for i in range(10)
-        ])
+        store.add_documents([{"id": f"d{i}", "text": f"token_{i} alpha"} for i in range(10)])
         results = store.query("alpha", top_k=3)
         assert len(results) <= 3
 
     def test_metadata_passthrough(self) -> None:
         store = Bm25Store()
-        store.add_documents([
-            {"id": "a", "text": "keyword content", "metadata": {"tag": "x"}},
-        ])
+        store.add_documents(
+            [
+                {"id": "a", "text": "keyword content", "metadata": {"tag": "x"}},
+            ]
+        )
         results = store.query("keyword")
         assert results[0]["metadata"] == {"tag": "x"}
 
@@ -86,6 +89,7 @@ class TestSingleton:
 
 
 # ---- _tokenize_sparse ----------------------------------------------------
+
 
 class TestTokenizeSparse:
     def test_lowercases(self) -> None:
@@ -136,6 +140,7 @@ class TestTokenizeSparse:
 
 # ---- SparseIndex ---------------------------------------------------------
 
+
 def _build_fts_db(path: Path) -> None:
     """Create an FTS5 sidecar matching SparseIndex's expected schema."""
     conn = sqlite3.connect(str(path))
@@ -143,14 +148,10 @@ def _build_fts_db(path: Path) -> None:
         CREATE VIRTUAL TABLE docs_fts USING fts5(id UNINDEXED, document);
         CREATE TABLE docs (id TEXT PRIMARY KEY, metadata TEXT);
     """)
-    conn.execute("INSERT INTO docs_fts(id, document) VALUES (?, ?)",
-                 ("doc1", "alpha beta gamma"))
-    conn.execute("INSERT INTO docs_fts(id, document) VALUES (?, ?)",
-                 ("doc2", "delta epsilon"))
-    conn.execute("INSERT INTO docs(id, metadata) VALUES (?, ?)",
-                 ("doc1", json.dumps({"tag": "x"})))
-    conn.execute("INSERT INTO docs(id, metadata) VALUES (?, ?)",
-                 ("doc2", json.dumps({"tag": "y"})))
+    conn.execute("INSERT INTO docs_fts(id, document) VALUES (?, ?)", ("doc1", "alpha beta gamma"))
+    conn.execute("INSERT INTO docs_fts(id, document) VALUES (?, ?)", ("doc2", "delta epsilon"))
+    conn.execute("INSERT INTO docs(id, metadata) VALUES (?, ?)", ("doc1", json.dumps({"tag": "x"})))
+    conn.execute("INSERT INTO docs(id, metadata) VALUES (?, ?)", ("doc2", json.dumps({"tag": "y"})))
     conn.commit()
     conn.close()
 
@@ -205,6 +206,7 @@ class TestSparseIndex:
 
 # ---- get_sparse_index ----------------------------------------------------
 
+
 class TestGetSparseIndex:
     def setup_method(self) -> None:
         mod._sparse_index_cache.clear()
@@ -215,10 +217,19 @@ class TestGetSparseIndex:
     def test_unsupported_collection_returns_none(self) -> None:
         assert get_sparse_index("nonexistent_collection") is None
 
-    @pytest.mark.parametrize("name", [
-        "code_chunks", "symbols", "arch_docs", "tests_guardrails",
-        "runtime_evidence", "process_docs", "ext_knowledge", "incidents_rca",
-    ])
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "code_chunks",
+            "symbols",
+            "arch_docs",
+            "tests_guardrails",
+            "runtime_evidence",
+            "process_docs",
+            "ext_knowledge",
+            "incidents_rca",
+        ],
+    )
     def test_supported_collections_return_instance(self, name: str) -> None:
         idx = get_sparse_index(name)
         assert isinstance(idx, SparseIndex)

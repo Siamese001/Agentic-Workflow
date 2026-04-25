@@ -235,7 +235,10 @@ class TelepathyInterface:
                 return None
             LOGGER.info(f"🧠 Telepathic instruction received (Cycle {cycle}): {content[:100]}...")
             return content
-        except (ValueError, TypeError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             LOGGER.error(f"Failed to read telepathy instructions: {e}")
             return None  # guardian: allow-return-none-swallow -- telepathy read: non-fatal, caller checks for None
 

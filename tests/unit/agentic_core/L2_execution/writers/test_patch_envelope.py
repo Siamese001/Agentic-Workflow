@@ -104,17 +104,13 @@ def test_parse_preserves_agent_deletion_marker():
 
 def test_validate_happy_path_returns_no_errors(tree: Path):
     env = Envelope(
-        operations=(
-            AddFile(path="new.py", content="print('hi')\n"),
-        ),
+        operations=(AddFile(path="new.py", content="print('hi')\n"),),
     )
     assert validate_envelope(env, tree) == []
 
 
 def test_validate_size_limit_files(tree: Path):
-    ops = tuple(
-        AddFile(path=f"a{i}.py", content="x\n") for i in range(60)
-    )
+    ops = tuple(AddFile(path=f"a{i}.py", content="x\n") for i in range(60))
     env = Envelope(operations=ops)
     errors = validate_envelope(env, tree, max_files=50)
     codes = {e.code for e in errors}
@@ -257,9 +253,7 @@ def test_apply_validation_failure_writes_nothing(tree: Path):
 
 def test_apply_idempotent_replay_blocks_after_first_apply(tree: Path):
     """Replaying the same envelope after apply hits ADD_OVER_EXISTING."""
-    env = parse_envelope(
-        "*** Begin Patch\n*** Add File: new.py\n+x\n*** End Patch\n"
-    )
+    env = parse_envelope("*** Begin Patch\n*** Add File: new.py\n+x\n*** End Patch\n")
     first = apply_envelope(env, tree)
     assert first.success
     second = apply_envelope(env, tree)

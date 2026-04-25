@@ -6,6 +6,7 @@ docstring and creates a matching cooling-timer artifact.
 Authorization date: 2026-04-24
 Archive-eligible date: 2026-07-23 (90-day cooling per constitutional S3)
 """
+
 from __future__ import annotations
 
 import json
@@ -47,7 +48,7 @@ def insert_marker(path: pathlib.Path, marker: str) -> bool:
         return False
     body = m.group(2).rstrip() + "\n" + marker.rstrip() + "\n"
     new_doc = m.group(1) + body + m.group(3)
-    new_text = text[: m.start()] + new_doc + text[m.end():]
+    new_text = text[: m.start()] + new_doc + text[m.end() :]
     path.write_text(new_text, encoding="utf-8")
     return True
 
@@ -109,9 +110,7 @@ def main() -> int:
                 "status": "authorized_awaiting_cooling",
                 "next_action": f"W6 archive sweep on or after {ELIG_DATE}",
             }
-            (ARTIFACT_DIR / f"w3_{short}.json").write_text(
-                json.dumps(artifact, indent=2), encoding="utf-8"
-            )
+            (ARTIFACT_DIR / f"w3_{short}.json").write_text(json.dumps(artifact, indent=2), encoding="utf-8")
             print(f"  [ok] {rel}")
     print(f"[done] authorized {done}/{len(zero_consumer)}")
     return 0 if done == len(zero_consumer) else 1

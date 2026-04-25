@@ -354,7 +354,12 @@ class EvaluationSignalIntegrator:
                 policy_hash=policy_hash,
                 policy_sensitive=bool(policy_hash),
             )
-        except (AttributeError, RuntimeError, TypeError, ValueError) as _exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as _exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             logger.debug("EVAL_INTEGRATOR evaluate_and_attach skipped: %s", _exc)
         logger.info(
             "EVAL_INTEGRATOR evaluates_output invokes_eval src=%s layer=%s kind=%s score=%.3f label=%s",
@@ -372,7 +377,12 @@ class EvaluationSignalIntegrator:
                     target_layer,
                     score,
                 )
-            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.debug("[EvalSignalIntegrator] Skipping integration: %s", exc)
         return signal
 

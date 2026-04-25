@@ -235,6 +235,7 @@ def _get_UnifiedAgent_mapping() -> dict[str, type]:
     )  # guardian: allow-layer-violation -- L2 module uses L1 cognition type; intentional cross-layer dependency in execution layer
     from agentic_core.L3_orchestration.reasoning.StateManagementAgent import StateManagementAgent
     from agentic_core.L4_state.reasoning.CheckpointManagerAgent import CheckpointManagerAgent
+
     # MW-7 (2026-04-24): CodeEnforcerAgent was a delegating shim; swapped to
     # canonical util class CodeEnforcer (aliased for dict compatibility).
     from agentic_core.L5_safety.utils.code_enforcer_util import CodeEnforcer as CodeEnforcerAgent
@@ -328,6 +329,7 @@ def _get_phase4_detector_healer_router_executor_mapping() -> dict[str, type]:
 
     """
     from agentic_core.L2_execution.execution_bridge.ModelRouterAgent import ModelRouterAgent
+
     # MW-7 (2026-04-24): CodeDetectorAgent was a delegating shim; swapped to
     # canonical util class CodeDetector (aliased for dict compatibility).
     from agentic_core.L5_safety.utils.code_detector_util import CodeDetector as CodeDetectorAgent
@@ -589,7 +591,11 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         try:
             if results:
                 self.redis.set(cache_key, json.dumps(results), ex=3600)
-        except (ImportError, AttributeError, ValueError) as e:  # guardian: allow-silent-swallow -- Optional Redis cache
+        except (
+            ImportError,
+            AttributeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow -- Optional Redis cache
             print(f"Gemini reranking failed: {e}")
         return results
 
@@ -720,6 +726,9 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
             query_engine = get_runtime_query_engine()
             return query_engine.find_agents_by_base_class(base_class)
-        except (ImportError, AttributeError) as exc:  # guardian: allow-silent-swallow -- Optional ADG discovery
+        except (
+            ImportError,
+            AttributeError,
+        ) as exc:  # guardian: allow-silent-swallow -- Optional ADG discovery
             Logger.warning("[SubAtomicRegistry] ADG discovery unavailable: %s", exc)
             return []

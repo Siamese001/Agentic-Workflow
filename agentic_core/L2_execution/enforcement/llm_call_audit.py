@@ -84,10 +84,7 @@ def audit_llm_call(
         return LLMCallFinding(
             compliant=True,
             severity="info",
-            reason=(
-                f"temperature={envelope.temperature} within ceiling "
-                f"{temperature_ceiling}"
-            ),
+            reason=(f"temperature={envelope.temperature} within ceiling {temperature_ceiling}"),
             envelope=envelope,
         )
     return LLMCallFinding(

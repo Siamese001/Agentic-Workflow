@@ -1,4 +1,5 @@
 """Run P0 runner + P1/P2 ratchet checks against latest snapshot."""
+
 import subprocess
 import sys
 from pathlib import Path
@@ -10,7 +11,10 @@ print(f"snap: {snap.name}\n")
 print("=== P0 two-pass runner ===")
 r = subprocess.run(
     [sys.executable, "-m", "ops_scripts.ci.adg_gates.p0_runner", "--sqlite", str(snap)],
-    capture_output=True, text=True, timeout=120, check=False,
+    capture_output=True,
+    text=True,
+    timeout=120,
+    check=False,
 )
 print(f"exit={r.returncode}")
 for line in r.stdout.splitlines()[-15:]:
@@ -23,6 +27,7 @@ print()
 print("=== Ratchet checks ===")
 sys.path.insert(0, str(Path.cwd()))
 from tools.generate.validation import _check_p1_ratchet, _check_p2_ratchet  # noqa: E402
+
 try:
     _check_p2_ratchet(sqlite_path=snap)
     print("  P2 ratchet: OK")

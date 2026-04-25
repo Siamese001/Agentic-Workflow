@@ -239,7 +239,10 @@ class AgentDefaults:
                         return float(env_value)
                     else:
                         return env_value
-                except (ValueError, TypeError):  # guardian: allow-silent-swallow -- intentional: type-coerce control flow
+                except (
+                    ValueError,
+                    TypeError,
+                ):  # guardian: allow-silent-swallow -- intentional: type-coerce control flow
                     pass
             return env_value
 

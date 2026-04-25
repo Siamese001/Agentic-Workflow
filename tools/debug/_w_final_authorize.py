@@ -7,6 +7,7 @@ with a consumer_migration_required_by date equal to the archive-eligible date.
 The 90-day cooling period serves as the formal consumer migration window.
 W6 archive sweep will verify zero consumers BEFORE physical archive.
 """
+
 from __future__ import annotations
 
 import json
@@ -166,7 +167,7 @@ def insert_marker(path: pathlib.Path, marker: str) -> bool:
             return False
         body = m.group(2).rstrip() + "\n" + marker.rstrip() + "\n"
         new_doc = m.group(1) + body + m.group(3)
-        new_text = text[: m.start()] + new_doc + text[m.end():]
+        new_text = text[: m.start()] + new_doc + text[m.end() :]
         path.write_text(new_text, encoding="utf-8")
         return True
     # No docstring - prepend one

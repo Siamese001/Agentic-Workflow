@@ -35,28 +35,19 @@ class TestFlagGating:
         assert is_surface_override_enabled() is False
 
     @pytest.mark.parametrize("val", ["1", "true", "TRUE", "yes", "Yes", "on", "ON"])
-    def test_flag_on_accepts_truthy_values(
-        self, val: str, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_flag_on_accepts_truthy_values(self, val: str, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", val)
         assert is_surface_override_enabled() is True
 
     @pytest.mark.parametrize("val", ["0", "false", "no", "off", "", "   ", "bogus"])
-    def test_flag_off_rejects_falsy_values(
-        self, val: str, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_flag_off_rejects_falsy_values(self, val: str, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", val)
         assert is_surface_override_enabled() is False
 
     def test_flag_off_no_promotion(self) -> None:
         # L5 broad_exception_catch would promote LOW→MEDIUM when flag is on,
         # but returns LOW unchanged when flag is off.
-        assert (
-            effective_severity(
-                "broad_exception_catch", "agentic_core/L5_safety/foo.py", "LOW"
-            )
-            == "LOW"
-        )
+        assert effective_severity("broad_exception_catch", "agentic_core/L5_safety/foo.py", "LOW") == "LOW"
 
 
 class TestSurfaceMarkers:
@@ -104,36 +95,21 @@ class TestSurfaceMarkers:
 class TestPromotion:
     def test_l5_broad_catch_p3_to_p2(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
-        assert (
-            effective_severity(
-                "broad_exception_catch", "agentic_core/L5_safety/foo.py", "LOW"
-            )
-            == "MEDIUM"
-        )
+        assert effective_severity("broad_exception_catch", "agentic_core/L5_safety/foo.py", "LOW") == "MEDIUM"
 
     def test_l0_silent_swallow_p3_to_p1(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
         assert (
-            effective_severity(
-                "silent_exception_swallow", "agentic_core/L0_routing/foo.py", "LOW"
-            )
-            == "HIGH"
+            effective_severity("silent_exception_swallow", "agentic_core/L0_routing/foo.py", "LOW") == "HIGH"
         )
 
-    def test_write_partial_side_effects_p2_to_p1(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_write_partial_side_effects_p2_to_p1(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
         assert (
-            effective_severity(
-                "partial_side_effects", "agentic_core/L4_state/writer.py", "MEDIUM"
-            )
-            == "HIGH"
+            effective_severity("partial_side_effects", "agentic_core/L4_state/writer.py", "MEDIUM") == "HIGH"
         )
 
-    def test_prod_retry_without_backoff_p2_to_p1(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_prod_retry_without_backoff_p2_to_p1(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
         assert (
             effective_severity(
@@ -148,22 +124,15 @@ class TestPromotion:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
         # Even though L5 broad_catch has MEDIUM override, a CRITICAL base stays CRITICAL.
         assert (
-            effective_severity(
-                "broad_exception_catch", "agentic_core/L5_safety/foo.py", "CRITICAL"
-            )
+            effective_severity("broad_exception_catch", "agentic_core/L5_safety/foo.py", "CRITICAL")
             == "CRITICAL"
         )
 
     def test_no_override_for_unknown_kind(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
-        assert (
-            effective_severity("no_such_kind", "agentic_core/L5_safety/foo.py", "LOW")
-            == "LOW"
-        )
+        assert effective_severity("no_such_kind", "agentic_core/L5_safety/foo.py", "LOW") == "LOW"
 
-    def test_no_override_for_unmapped_file(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_no_override_for_unmapped_file(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
         # silent_exception_swallow is only promoted on L0/L5, not L3.
         assert (
@@ -175,47 +144,23 @@ class TestPromotion:
             == "LOW"
         )
 
-    def test_invalid_base_severity_returns_unchanged(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_invalid_base_severity_returns_unchanged(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
-        assert (
-            effective_severity("broad_exception_catch", "foo.py", "UNKNOWN")
-            == "UNKNOWN"
-        )
+        assert effective_severity("broad_exception_catch", "foo.py", "UNKNOWN") == "UNKNOWN"
 
 
 class TestEffectiveBand:
     def test_band_wrapper_flag_off(self) -> None:
         # P3 should stay P3 when flag is off
-        assert (
-            effective_band(
-                "broad_exception_catch", "agentic_core/L5_safety/foo.py", "P3"
-            )
-            == "P3"
-        )
+        assert effective_band("broad_exception_catch", "agentic_core/L5_safety/foo.py", "P3") == "P3"
 
-    def test_band_wrapper_flag_on_promotes(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_band_wrapper_flag_on_promotes(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
-        assert (
-            effective_band(
-                "broad_exception_catch", "agentic_core/L5_safety/foo.py", "P3"
-            )
-            == "P2"
-        )
+        assert effective_band("broad_exception_catch", "agentic_core/L5_safety/foo.py", "P3") == "P2"
 
-    def test_band_wrapper_l0_swallow_p3_to_p1(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_band_wrapper_l0_swallow_p3_to_p1(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("P1_RATCHET_POLICY_V2", "1")
-        assert (
-            effective_band(
-                "silent_exception_swallow", "agentic_core/L0_routing/foo.py", "P3"
-            )
-            == "P1"
-        )
+        assert effective_band("silent_exception_swallow", "agentic_core/L0_routing/foo.py", "P3") == "P1"
 
 
 class TestSurfaceOverrideTable:

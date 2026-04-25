@@ -139,7 +139,7 @@ def _render_document(index: int, chunk: Any) -> str:
     else:
         inner = f"    <document_content>\n{_escape(content)}\n    </document_content>"
 
-    parts = [f"<document index=\"{index}\">"]
+    parts = [f'<document index="{index}">']
     if source:
         parts.append(f"  <source>{_escape(source)}</source>")
     if title:

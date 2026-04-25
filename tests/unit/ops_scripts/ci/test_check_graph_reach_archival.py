@@ -88,15 +88,18 @@ def _mk_snapshot(path: Path, nodes: list[dict], edges: list[dict]) -> None:
     """)
     for n in nodes:
         conn.execute(
-            "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) "
-            "VALUES (?, ?, ?, ?, ?)",
-            (n["id"], n.get("adg_name", ""), n.get("entity_type", ""),
-             n.get("layer", ""), n.get("resolved_path", "")),
+            "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (?, ?, ?, ?, ?)",
+            (
+                n["id"],
+                n.get("adg_name", ""),
+                n.get("entity_type", ""),
+                n.get("layer", ""),
+                n.get("resolved_path", ""),
+            ),
         )
     for i, e in enumerate(edges):
         conn.execute(
-            "INSERT INTO edges (id, src_id, dst_id, relation_type) "
-            "VALUES (?, ?, ?, ?)",
+            "INSERT INTO edges (id, src_id, dst_id, relation_type) VALUES (?, ?, ?, ?)",
             (i + 1, e["src"], e["dst"], e.get("rel", "imports")),
         )
     conn.commit()
@@ -105,20 +108,44 @@ def _mk_snapshot(path: Path, nodes: list[dict], edges: list[dict]) -> None:
 
 def test_find_archival_orphans_filters_anchors(tmp_path: Path) -> None:
     snap = tmp_path / "adg_indexed_test.sqlite"
-    _mk_snapshot(snap, nodes=[
-        {"id": 1, "entity_type": "module", "layer": "L0",
-         "resolved_path": "agentic_core/L0_routing/boot.py"},
-        {"id": 2, "entity_type": "module", "layer": "L2",
-         "resolved_path": "agentic_core/L2_execution/reachable.py"},
-        {"id": 3, "entity_type": "module", "layer": "L2",
-         "resolved_path": "agentic_core/L2_execution/dead_module.py"},
-        {"id": 4, "entity_type": "module", "layer": "L2",
-         "resolved_path": "tests/unit/test_something.py"},
-        {"id": 5, "entity_type": "module", "layer": "L2",
-         "resolved_path": ".windsurf/scripts/post_something.py"},
-    ], edges=[
-        {"src": 1, "dst": 2},  # L0 -> L2 module (reachable)
-    ])
+    _mk_snapshot(
+        snap,
+        nodes=[
+            {
+                "id": 1,
+                "entity_type": "module",
+                "layer": "L0",
+                "resolved_path": "agentic_core/L0_routing/boot.py",
+            },
+            {
+                "id": 2,
+                "entity_type": "module",
+                "layer": "L2",
+                "resolved_path": "agentic_core/L2_execution/reachable.py",
+            },
+            {
+                "id": 3,
+                "entity_type": "module",
+                "layer": "L2",
+                "resolved_path": "agentic_core/L2_execution/dead_module.py",
+            },
+            {
+                "id": 4,
+                "entity_type": "module",
+                "layer": "L2",
+                "resolved_path": "tests/unit/test_something.py",
+            },
+            {
+                "id": 5,
+                "entity_type": "module",
+                "layer": "L2",
+                "resolved_path": ".windsurf/scripts/post_something.py",
+            },
+        ],
+        edges=[
+            {"src": 1, "dst": 2},  # L0 -> L2 module (reachable)
+        ],
+    )
     conn = sqlite3.connect(str(snap))
     try:
         orphans = mod.find_archival_orphans(
@@ -137,10 +164,13 @@ def test_find_archival_orphans_filters_anchors(tmp_path: Path) -> None:
 
 def test_find_archival_orphans_without_l0_seeds(tmp_path: Path) -> None:
     snap = tmp_path / "adg_indexed_noseed.sqlite"
-    _mk_snapshot(snap, nodes=[
-        {"id": 1, "entity_type": "module", "layer": "L2",
-         "resolved_path": "agentic_core/L2/foo.py"},
-    ], edges=[])
+    _mk_snapshot(
+        snap,
+        nodes=[
+            {"id": 1, "entity_type": "module", "layer": "L2", "resolved_path": "agentic_core/L2/foo.py"},
+        ],
+        edges=[],
+    )
     conn = sqlite3.connect(str(snap))
     try:
         orphans = mod.find_archival_orphans(conn, anchor_patterns=[])
@@ -153,17 +183,22 @@ def test_find_archival_orphans_without_l0_seeds(tmp_path: Path) -> None:
 
 def test_orphan_in_anchor_pattern_is_excluded(tmp_path: Path) -> None:
     snap = tmp_path / "adg_indexed_anchor.sqlite"
-    _mk_snapshot(snap, nodes=[
-        {"id": 1, "entity_type": "module", "layer": "L0",
-         "resolved_path": "agentic_core/L0_routing/boot.py"},
-        {"id": 2, "entity_type": "module", "layer": "L2",
-         "resolved_path": "tools/debug/_adhoc.py"},
-    ], edges=[])
+    _mk_snapshot(
+        snap,
+        nodes=[
+            {
+                "id": 1,
+                "entity_type": "module",
+                "layer": "L0",
+                "resolved_path": "agentic_core/L0_routing/boot.py",
+            },
+            {"id": 2, "entity_type": "module", "layer": "L2", "resolved_path": "tools/debug/_adhoc.py"},
+        ],
+        edges=[],
+    )
     conn = sqlite3.connect(str(snap))
     try:
-        orphans = mod.find_archival_orphans(
-            conn, anchor_patterns=["tools/debug/*.py"]
-        )
+        orphans = mod.find_archival_orphans(conn, anchor_patterns=["tools/debug/*.py"])
     finally:
         conn.close()
     assert orphans == []
@@ -171,16 +206,21 @@ def test_orphan_in_anchor_pattern_is_excluded(tmp_path: Path) -> None:
 
 def test_non_production_layers_ignored(tmp_path: Path) -> None:
     snap = tmp_path / "adg_indexed_layer.sqlite"
-    _mk_snapshot(snap, nodes=[
-        {"id": 1, "entity_type": "module", "layer": "L0",
-         "resolved_path": "agentic_core/L0_routing/boot.py"},
-        {"id": 2, "entity_type": "module", "layer": "L_TOOLS",
-         "resolved_path": "tools/foo.py"},
-        {"id": 3, "entity_type": "module", "layer": "L_TEST",
-         "resolved_path": "tests/foo.py"},
-        {"id": 4, "entity_type": "module", "layer": "L_OPS",
-         "resolved_path": "ops_scripts/foo.py"},
-    ], edges=[])
+    _mk_snapshot(
+        snap,
+        nodes=[
+            {
+                "id": 1,
+                "entity_type": "module",
+                "layer": "L0",
+                "resolved_path": "agentic_core/L0_routing/boot.py",
+            },
+            {"id": 2, "entity_type": "module", "layer": "L_TOOLS", "resolved_path": "tools/foo.py"},
+            {"id": 3, "entity_type": "module", "layer": "L_TEST", "resolved_path": "tests/foo.py"},
+            {"id": 4, "entity_type": "module", "layer": "L_OPS", "resolved_path": "ops_scripts/foo.py"},
+        ],
+        edges=[],
+    )
     conn = sqlite3.connect(str(snap))
     try:
         orphans = mod.find_archival_orphans(conn, anchor_patterns=[])

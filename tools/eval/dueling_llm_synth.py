@@ -191,10 +191,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--agent-goal", default="answer grounded in context")
     parser.add_argument("--golden-root", type=Path, default=Path("data/eval/golden"))
     parser.add_argument("--now", default="2026-04-23T00:00:00Z")
-    parser.add_argument("--gateway-mode", choices=["mock", "real"], default="mock",
-                        help="'mock' (hermetic default) or 'real' (requires --gateway-factory)")
-    parser.add_argument("--gateway-factory", default=None,
-                        help="dotted path 'pkg.module:callable' returning a GatewayPort; required for real mode")
+    parser.add_argument(
+        "--gateway-mode",
+        choices=["mock", "real"],
+        default="mock",
+        help="'mock' (hermetic default) or 'real' (requires --gateway-factory)",
+    )
+    parser.add_argument(
+        "--gateway-factory",
+        default=None,
+        help="dotted path 'pkg.module:callable' returning a GatewayPort; required for real mode",
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, stream=sys.stderr, format="%(levelname)s %(name)s: %(message)s")
 
@@ -211,7 +218,9 @@ def main(argv: list[str] | None = None) -> int:
     user = PersonaSpec(name="user", style=args.user_style, goal=args.user_goal)
     agent = PersonaSpec(name="agent", style=args.agent_style, goal=args.agent_goal)
     conv = synthesize_conversation(user, agent, args.turns, args.seed, gateway=gateway)
-    out = write_conversation(conv, args.golden_root, args.rubric_family, args.rubric_id, user, agent, args.now)
+    out = write_conversation(
+        conv, args.golden_root, args.rubric_family, args.rubric_id, user, agent, args.now
+    )
     logger.info("wrote synthesized conversation to %s (mode=%s)", out, args.gateway_mode)
     return 0
 

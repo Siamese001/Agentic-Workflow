@@ -3,6 +3,7 @@
 For each util, list (a) module path exists, (b) top-level exported names,
 (c) whether a 1:1 function equivalent of the agent's public methods exists.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -16,8 +17,7 @@ TARGETS = [
     (
         "SSOTFolderCleanupAgent",
         "agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent",
-        ["agentic_core.L0_routing.utils.ssot_folder_cleanup_util",
-         "agentic_core.L0_routing.utils"],
+        ["agentic_core.L0_routing.utils.ssot_folder_cleanup_util", "agentic_core.L0_routing.utils"],
     ),
     (
         "CodeJanitorAgent",
@@ -73,7 +73,8 @@ for agent_cls, agent_mod, utils in TARGETS:
         cls = getattr(am, agent_cls, None)
         if cls:
             methods = [
-                n for n, _ in inspect.getmembers(cls, predicate=inspect.isfunction)
+                n
+                for n, _ in inspect.getmembers(cls, predicate=inspect.isfunction)
                 if not n.startswith("_") or n == "__init__"
             ]
             print(f"    agent public methods: {methods[:15]}")

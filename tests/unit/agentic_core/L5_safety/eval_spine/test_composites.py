@@ -22,15 +22,11 @@ def _decision_fixture(**overrides: object) -> exit_decision.ExitDecision:
         "disposition": "allow_finish",
         "reason_code": "grader.ok",
         "final_response": exit_decision.FinalResponseMetrics(),
-        "trajectory": exit_decision.TrajectoryMetrics(
-            failure=False, latency_ms=10, tool_call_count=1
-        ),
+        "trajectory": exit_decision.TrajectoryMetrics(failure=False, latency_ms=10, tool_call_count=1),
         "safety": exit_decision.SafetyFlags(),
         "budget": exit_decision.BudgetReport(budget_fit=True),
         "quality": exit_decision.QualityVerdict(verdict="pass"),
-        "output_contract": exit_decision.OutputContractReport(
-            required_form_satisfied=True
-        ),
+        "output_contract": exit_decision.OutputContractReport(required_form_satisfied=True),
         "policy_snapshot": "sha-abcd",
     }
     defaults.update(overrides)
@@ -74,17 +70,13 @@ class TestExitDecision:
 class TestEscalationPacket:
     def test_from_exit_decision(self):
         decision = _decision_fixture(
-            safety=exit_decision.SafetyFlags(
-                policy_violation=True, severity_band="high"
-            )
+            safety=exit_decision.SafetyFlags(policy_violation=True, severity_band="high")
         )
         packet = escalation_packet.from_exit_decision(
             decision,
             hitl_class="safety",
             reason_detail="pii leaked",
-            evidence_refs=(
-                escalation_packet.EvidenceRef(kind="trace_span", ref="sp-1"),
-            ),
+            evidence_refs=(escalation_packet.EvidenceRef(kind="trace_span", ref="sp-1"),),
             options_ledger=(
                 escalation_packet.OptionLedgerEntry(
                     label="block",
@@ -109,9 +101,7 @@ class TestEscalationPacket:
                 decision,
                 hitl_class="not_a_class",
                 reason_detail="x",
-                evidence_refs=(
-                    escalation_packet.EvidenceRef(kind="trace_span", ref="sp"),
-                ),
+                evidence_refs=(escalation_packet.EvidenceRef(kind="trace_span", ref="sp"),),
                 options_ledger=(
                     escalation_packet.OptionLedgerEntry(
                         label="x",
@@ -132,9 +122,7 @@ class TestEscalationPacket:
                 decision,
                 hitl_class="safety",
                 reason_detail="x",
-                evidence_refs=(
-                    escalation_packet.EvidenceRef(kind="trace_span", ref="sp"),
-                ),
+                evidence_refs=(escalation_packet.EvidenceRef(kind="trace_span", ref="sp"),),
                 options_ledger=(
                     escalation_packet.OptionLedgerEntry(
                         label="x",
@@ -174,9 +162,7 @@ class TestKillSwitch:
 
     def test_fleet_scope_matches_everything(self):
         store = kill_switch.KillSwitchStore()
-        store.activate(
-            scope="fleet", reason="x", operator="ops", on_hit="escalate"
-        )
+        store.activate(scope="fleet", reason="x", operator="ops", on_hit="escalate")
         assert store.hit({}).hit is True
         assert store.hit({"tenant": "anything"}).on_hit == "escalate"
 
@@ -212,9 +198,7 @@ class TestTraceGrader:
 
     def test_safety_hit_triggers_violated_flag(self):
         g = trace_grader.TraceGrader()
-        out = g.grade(
-            trace_grader.GraderInput(policy_hits=("pii_leak", "unauth_access"))
-        )
+        out = g.grade(trace_grader.GraderInput(policy_hits=("pii_leak", "unauth_access")))
         assert out.safety_violated is True
 
     def test_handoff_required_but_not_fired(self):

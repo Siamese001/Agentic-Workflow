@@ -100,6 +100,12 @@ server_rows = [
         "Prefer over plain pytest CLI when possible.",
     ),
     (
+        "io.windsurf/mcp-playwright",
+        "Browser automation, accessibility snapshots, end-to-end UI verification",
+        "browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot",
+        "Official Microsoft @playwright/mcp thin npx wrapper. Use for live UI/E2E checks, not for static HTML fetching (use enhanced_http for that). Output lands in repo-root .playwright-mcp/ (gitignored). Always close tabs after use.",
+    ),
+    (
         "notion",
         "Notion pages and project-management databases",
         "API-query-data-source, API-retrieve-a-page, API-patch-page",
@@ -266,8 +272,12 @@ def generate_notion_map_block() -> str:
     lines.append("")
     lines.append(f"Bot: **{ws.get('bot', '?')}** | Workspace: **{ws.get('space', '?')}**")
     lines.append("")
-    lines.append("| Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |")
-    lines.append("|----------|-----------------------|----------------------|--------------|----------------------------|")
+    lines.append(
+        "| Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |"
+    )
+    lines.append(
+        "|----------|-----------------------|----------------------|--------------|----------------------------|"
+    )
     for db in dbs:
         lines.append(
             f"| {db['name']} | `{db['id']}` | `{db.get('database_id', '— MISSING —')}` | "
@@ -278,7 +288,7 @@ def generate_notion_map_block() -> str:
         "**Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2. Add `filter`/`sorts` as needed."
     )
     lines.append(
-        "**Write pattern (creates)**: `API-post-page` with `parent: {type: \"database_id\", database_id: <column 3>}`. "
+        '**Write pattern (creates)**: `API-post-page` with `parent: {type: "database_id", database_id: <column 3>}`. '
         "Using data_source_id for writes returns 404."
     )
     lines.append("")

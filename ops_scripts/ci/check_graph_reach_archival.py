@@ -85,17 +85,13 @@ def _build_import_digraph(conn: sqlite3.Connection) -> Any:
             resolved_path=resolved_path or "",
             adg_name=adg_name or "",
         )
-    for src, tgt in conn.execute(
-        "SELECT src_id, dst_id FROM edges WHERE relation_type='imports'"
-    ):
+    for src, tgt in conn.execute("SELECT src_id, dst_id FROM edges WHERE relation_type='imports'"):
         if src in g and tgt in g:
             g.add_edge(src, tgt)
     return g
 
 
-def find_archival_orphans(
-    conn: sqlite3.Connection, anchor_patterns: list[str]
-) -> list[tuple[int, str, str]]:
+def find_archival_orphans(conn: sqlite3.Connection, anchor_patterns: list[str]) -> list[tuple[int, str, str]]:
     """Return (node_id, resolved_path, layer) for each archival orphan."""
     try:
         import networkx as nx
@@ -103,8 +99,7 @@ def find_archival_orphans(
         return []
     g = _build_import_digraph(conn)
     l0_seeds = [
-        n for n, d in g.nodes(data=True)
-        if d.get("layer") == "L0" and d.get("entity_type") == "module"
+        n for n, d in g.nodes(data=True) if d.get("layer") == "L0" and d.get("entity_type") == "module"
     ]
     if not l0_seeds:
         return []

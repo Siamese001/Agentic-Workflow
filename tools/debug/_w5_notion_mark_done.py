@@ -12,6 +12,7 @@ Deferred (stay Todo):
 
 Reads NOTION_TOKEN from env. Uses Notion HTTP API v2025-09-03.
 """
+
 from __future__ import annotations
 import json
 import os
@@ -38,8 +39,8 @@ TO_MARK_DONE = {
     "GUARDIAN-TOKEN-SSOT",
     "SCANNER-EDGEKIND-MISCLASSIFY",
     "TIER-B-ANNOTATIONS",
-    "SSOT-HARDCODING-W2",            # constants added 855f0e6c23; safe codemod ran d1c37c3628
-    "SSOT-HARDCODING-W2-CODEMOD",    # 19/19 safe production sites migrated (d1c37c3628)
+    "SSOT-HARDCODING-W2",  # constants added 855f0e6c23; safe codemod ran d1c37c3628
+    "SSOT-HARDCODING-W2-CODEMOD",  # 19/19 safe production sites migrated (d1c37c3628)
 }
 
 

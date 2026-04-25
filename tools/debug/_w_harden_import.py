@@ -4,6 +4,7 @@ py_compile only checks syntax; this executes the module-level code path that
 runs on actual import (top-level imports, __all__ evaluation, class body,
 module-level calls).
 """
+
 from __future__ import annotations
 
 import importlib

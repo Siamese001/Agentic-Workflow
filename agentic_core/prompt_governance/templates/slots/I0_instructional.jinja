@@ -1,0 +1,37 @@
+{# I0 - INSTRUCTIONAL (GOVERNED Authority)
+ Identity and specialized manuals defining agent capabilities.
+ Defines "How" the agent acts with GOVERNED authority.
+#}
+================================================================================
+AGENT IDENTITY & CAPABILITIES (GOVERNED AUTHORITY)
+================================================================================
+
+{% if agent_identity %}
+IDENTITY: {{ agent_identity }}
+{% endif %}
+
+{% if mixins %}
+MIXINS LOADED:
+{% for mixin in mixins %}
+- {{ mixin }}
+{% endfor %}
+{% endif %}
+
+{% if capabilities %}
+CAPABILITIES:
+{% for cap in capabilities %}
+- {{ cap.name }}: {{ cap.description }}
+{% endfor %}
+{% endif %}
+
+{% if operational_mode %}
+OPERATIONAL MODE: {{ operational_mode }}
+{% endif %}
+
+{% if tool_access %}
+TOOL ACCESS SCOPE: {{ tool_access }}
+{% endif %}
+
+================================================================================
+OPERATE WITHIN DEFINED CAPABILITIES. ESCALATE IF REQUESTED ACTION EXCEEDS SCOPE.
+================================================================================

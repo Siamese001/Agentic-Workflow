@@ -25,7 +25,10 @@ if str(_REPO_ROOT_BOOTSTRAP) not in sys.path:
 try:
     from tools.mcp.mcp_bootstrap import create_mcp_server
 except ImportError as exc:
-    print(f"[otel_mcp] FATAL: mcp bootstrap import failed - {exc}. Install with: pip install mcp", file=sys.stderr)
+    print(
+        f"[otel_mcp] FATAL: mcp bootstrap import failed - {exc}. Install with: pip install mcp",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 from tools.otel.otel_config import build_config
@@ -71,6 +74,7 @@ if __name__ == "__main__":
     # try to bind the same OTel collector port/ingest lock. Added 2026-04-23
     # after RCA of orphan MCP session fleet.
     from tools.mcp.mcp_bootstrap import guard_single_instance
+
     guard_single_instance(
         ("tools/otel/otel_mcp_server.py", "tools.otel.otel_mcp_server"),
         skip_env="OTEL_MCP_SKIP_ZOMBIE_KILL",

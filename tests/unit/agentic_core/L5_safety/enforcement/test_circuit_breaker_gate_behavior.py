@@ -44,6 +44,7 @@ def _clean_registry() -> Generator[None, None, None]:
 
 # ---- Dataclass defaults + enum ------------------------------------------
 
+
 class TestDefaults:
     def test_circuit_state_values(self) -> None:
         assert CircuitState.CLOSED.value == "closed"
@@ -74,6 +75,7 @@ class TestDefaults:
 
 # ---- Exceptions ----------------------------------------------------------
 
+
 class TestExceptions:
     def test_open_error_carries_metadata(self) -> None:
         e = CircuitBreakerOpenError("svc", 12.3)
@@ -90,6 +92,7 @@ class TestExceptions:
 
 
 # ---- State transitions --------------------------------------------------
+
 
 class TestStateTransitions:
     def test_starts_closed(self) -> None:
@@ -128,9 +131,13 @@ class TestStateTransitions:
         assert cb.is_closed
 
     def test_open_rejects_until_reset_timeout(self) -> None:
-        cb = CircuitBreaker("t", CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=60.0,
-        ))
+        cb = CircuitBreaker(
+            "t",
+            CircuitBreakerConfig(
+                failure_threshold=1,
+                reset_timeout_seconds=60.0,
+            ),
+        )
         cb.record_failure()
         assert cb.is_open
         # Next allow_request stays rejected
@@ -138,9 +145,13 @@ class TestStateTransitions:
         assert cb.metrics.rejected_calls == 1
 
     def test_open_to_half_open_after_timeout(self) -> None:
-        cb = CircuitBreaker("t", CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=0.01,
-        ))
+        cb = CircuitBreaker(
+            "t",
+            CircuitBreakerConfig(
+                failure_threshold=1,
+                reset_timeout_seconds=0.01,
+            ),
+        )
         cb.record_failure()
         assert cb.is_open
         time.sleep(0.02)
@@ -148,24 +159,34 @@ class TestStateTransitions:
         assert cb.is_half_open
 
     def test_half_open_caps_concurrent_calls(self) -> None:
-        cb = CircuitBreaker("t", CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=0.01, half_open_max_calls=2,
-        ))
+        cb = CircuitBreaker(
+            "t",
+            CircuitBreakerConfig(
+                failure_threshold=1,
+                reset_timeout_seconds=0.01,
+                half_open_max_calls=2,
+            ),
+        )
         cb.record_failure()
         time.sleep(0.02)
         # First call transitions OPEN→HALF_OPEN and returns True WITHOUT bumping
         # _half_open_calls. Subsequent HALF_OPEN calls bump the counter up to
         # half_open_max_calls, after which they are rejected.
-        assert cb.allow_request() is True   # transitional, count stays 0
-        assert cb.allow_request() is True   # count -> 1
-        assert cb.allow_request() is True   # count -> 2
+        assert cb.allow_request() is True  # transitional, count stays 0
+        assert cb.allow_request() is True  # count -> 1
+        assert cb.allow_request() is True  # count -> 2
         assert cb.allow_request() is False  # capped
 
     def test_half_open_to_closed_after_success_threshold(self) -> None:
-        cb = CircuitBreaker("t", CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=0.01,
-            success_threshold=2, half_open_max_calls=5,
-        ))
+        cb = CircuitBreaker(
+            "t",
+            CircuitBreakerConfig(
+                failure_threshold=1,
+                reset_timeout_seconds=0.01,
+                success_threshold=2,
+                half_open_max_calls=5,
+            ),
+        )
         cb.record_failure()
         time.sleep(0.02)
         cb.allow_request()
@@ -176,8 +197,10 @@ class TestStateTransitions:
 
     def test_half_open_failure_reopens_with_backoff(self) -> None:
         cfg = CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=1.0,
-            backoff_multiplier=2.0, max_reset_timeout_seconds=60.0,
+            failure_threshold=1,
+            reset_timeout_seconds=1.0,
+            backoff_multiplier=2.0,
+            max_reset_timeout_seconds=60.0,
         )
         cb = CircuitBreaker("t", cfg)
         cb.record_failure()
@@ -192,6 +215,7 @@ class TestStateTransitions:
 
 
 # ---- Metrics -------------------------------------------------------------
+
 
 class TestMetrics:
     def test_timeout_error_bumps_timed_out_counter(self) -> None:
@@ -209,6 +233,7 @@ class TestMetrics:
 
 # ---- get_time_until_retry -----------------------------------------------
 
+
 class TestTimeUntilRetry:
     def test_zero_when_closed(self) -> None:
         cb = CircuitBreaker("t")
@@ -220,23 +245,32 @@ class TestTimeUntilRetry:
         assert cb.get_time_until_retry() == 0.0
 
     def test_positive_when_open_recent_failure(self) -> None:
-        cb = CircuitBreaker("t", CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=60.0,
-        ))
+        cb = CircuitBreaker(
+            "t",
+            CircuitBreakerConfig(
+                failure_threshold=1,
+                reset_timeout_seconds=60.0,
+            ),
+        )
         cb.record_failure()
         remaining = cb.get_time_until_retry()
         assert 0.0 < remaining <= 60.0
 
     def test_zero_after_timeout_elapsed(self) -> None:
-        cb = CircuitBreaker("t", CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=0.01,
-        ))
+        cb = CircuitBreaker(
+            "t",
+            CircuitBreakerConfig(
+                failure_threshold=1,
+                reset_timeout_seconds=0.01,
+            ),
+        )
         cb.record_failure()
         time.sleep(0.02)
         assert cb.get_time_until_retry() == 0.0
 
 
 # ---- protect() decorator ------------------------------------------------
+
 
 class TestProtect:
     def test_passes_result_when_closed(self) -> None:
@@ -246,10 +280,14 @@ class TestProtect:
         assert cb.metrics.successful_calls >= 1
 
     def test_raises_open_error_when_open(self) -> None:
-        cb = CircuitBreaker("t", CircuitBreakerConfig(
-            failure_threshold=1, reset_timeout_seconds=60.0,
-            execution_timeout_seconds=5.0,
-        ))
+        cb = CircuitBreaker(
+            "t",
+            CircuitBreakerConfig(
+                failure_threshold=1,
+                reset_timeout_seconds=60.0,
+                execution_timeout_seconds=5.0,
+            ),
+        )
         cb.record_failure()
         wrapped = cb.protect(lambda: 1)
         with pytest.raises(CircuitBreakerOpenError):
@@ -257,13 +295,16 @@ class TestProtect:
 
     def test_preserves_function_name(self) -> None:
         cb = CircuitBreaker("t")
+
         def original() -> int:
             return 1
+
         wrapped = cb.protect(original)
         assert wrapped.__name__ == "original"
 
 
 # ---- Registry -----------------------------------------------------------
+
 
 class TestRegistry:
     def test_get_breaker_caches_by_name(self) -> None:

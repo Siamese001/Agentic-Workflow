@@ -114,21 +114,11 @@ def collect_stale(
 
 def format_human(stale: list[dict[str, Any]], threshold_days: int) -> str:
     if not stale:
-        return (
-            f"[S_STALE] tier=W status=pass "
-            f"threshold_days={threshold_days} stale_ratchets=0"
-        )
-    lines = [
-        f"[S_STALE] tier=W status=warn "
-        f"threshold_days={threshold_days} stale_ratchets={len(stale)}"
-    ]
+        return f"[S_STALE] tier=W status=pass threshold_days={threshold_days} stale_ratchets=0"
+    lines = [f"[S_STALE] tier=W status=warn threshold_days={threshold_days} stale_ratchets={len(stale)}"]
     width = max(len(r["gate_id"]) for r in stale)
     for r in sorted(stale, key=lambda x: -x["age_days"]):
-        promoted = (
-            f" auto_promoted={r['auto_promoted_tier']}"
-            if r["auto_promoted_tier"]
-            else ""
-        )
+        promoted = f" auto_promoted={r['auto_promoted_tier']}" if r["auto_promoted_tier"] else ""
         lines.append(
             f"  - {r['gate_id']:<{width}} "
             f"count={r['count']:<6} "

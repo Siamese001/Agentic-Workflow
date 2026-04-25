@@ -35,14 +35,12 @@ def main() -> int:
     for folder in FOLDERS:
         print(f"=== {folder} ===")
         rows = conn.execute(
-            "SELECT resolved_path, id FROM nodes "
-            "WHERE resolved_path LIKE ? AND entity_type = 'module'",
+            "SELECT resolved_path, id FROM nodes WHERE resolved_path LIKE ? AND entity_type = 'module'",
             (f"{folder}/%",),
         ).fetchall()
         for path, nid in rows:
             total = conn.execute(
-                "SELECT COUNT(DISTINCT src_id) FROM edges "
-                "WHERE dst_id = ? AND relation_type = 'imports'",
+                "SELECT COUNT(DISTINCT src_id) FROM edges WHERE dst_id = ? AND relation_type = 'imports'",
                 (nid,),
             ).fetchone()[0]
             importers = conn.execute(
@@ -52,15 +50,10 @@ def main() -> int:
                 (nid,),
             ).fetchall()
             prod_importers = [
-                p[0]
-                for p in importers
-                if p[0] and not any(p[0].startswith(x) for x in EXCLUDE)
+                p[0] for p in importers if p[0] and not any(p[0].startswith(x) for x in EXCLUDE)
             ]
             status = "ARCHIVABLE" if not prod_importers else "BLOCKED"
-            print(
-                f"  [{status}] {path}: total_imports_fanin={total} "
-                f"prod_importers={len(prod_importers)}"
-            )
+            print(f"  [{status}] {path}: total_imports_fanin={total} prod_importers={len(prod_importers)}")
             if prod_importers:
                 for p in prod_importers[:5]:
                     print(f"      <- {p}")

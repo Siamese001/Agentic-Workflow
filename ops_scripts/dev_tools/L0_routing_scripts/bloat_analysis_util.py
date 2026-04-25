@@ -257,7 +257,10 @@ def find_empty_or_stub_files():
                             "total_lines": len(content.splitlines()),
                         },
                     )
-            except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
+            except (
+                OSError,
+                UnicodeDecodeError,
+            ) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                 print(f"Failed to scan {f.name}: {e}")
     return stubs
 
@@ -384,7 +387,10 @@ def find_script_candidates():
                         "signals": signals,  # review: File operations with encoding need error-specific handling
                     },
                 )
-        except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
             print(f"Failed to scan {f.name}: {e}")
     return candidates
 

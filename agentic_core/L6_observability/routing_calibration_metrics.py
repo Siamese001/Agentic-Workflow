@@ -115,7 +115,11 @@ def _emit_otel_counter(
             attributes["reason_code"] = reason_code
         counter.add(increment, attributes=attributes)
         return True
-    except (AttributeError, TypeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- OTEL emission is best-effort; fallback counter preserves signal
+    except (
+        AttributeError,
+        TypeError,
+        RuntimeError,
+    ) as exc:  # guardian: allow-log-and-swallow -- OTEL emission is best-effort; fallback counter preserves signal
         Logger.debug(
             "routing_calibration_metrics: OTEL emission for %s failed: %s",
             metric,
@@ -205,10 +209,7 @@ def hit_ratio(namespace: str = "default") -> float:
     snap = snapshot_counters()
     r1a = snap.get((METRIC_R1_EXACT_HIT, namespace, ""), 0)
     r1b = snap.get((METRIC_R1_SEMANTIC_HIT, namespace, ""), 0)
-    r5 = sum(
-        v for (m, ns, _r), v in snap.items()
-        if m == METRIC_R5_FIRED and ns == namespace
-    )
+    r5 = sum(v for (m, ns, _r), v in snap.items() if m == METRIC_R5_FIRED and ns == namespace)
     total = r1a + r1b + r5
     if total == 0:
         return 0.0

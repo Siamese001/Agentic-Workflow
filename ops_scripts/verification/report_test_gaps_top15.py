@@ -48,7 +48,8 @@ from ops_scripts.verification.report_risk_weighted_test_gaps import (  # noqa: E
 
 def _latest_adg() -> Path:
     cands = sorted(
-        p for p in glob.glob(str(REPO_ROOT / "artifacts" / "adg" / "adg_indexed_*.sqlite"))
+        p
+        for p in glob.glob(str(REPO_ROOT / "artifacts" / "adg" / "adg_indexed_*.sqlite"))
         if "99999999" not in p and not p.endswith(".tmp")
     )
     if not cands:
@@ -75,9 +76,7 @@ def _progress(i: int, total: int, label: str, start: float) -> None:
     if pct > 0.02 and elapsed > 1:
         remaining = elapsed * (1 - pct) / pct
         eta = f" - ETA: {int(remaining)}s"
-    sys.stderr.write(
-        f"\r{color}[{bar}]\033[0m {int(pct*100):3d}% ({i}/{total}) {label}{eta}   "
-    )
+    sys.stderr.write(f"\r{color}[{bar}]\033[0m {int(pct * 100):3d}% ({i}/{total}) {label}{eta}   ")
     sys.stderr.flush()
     if i >= total:
         sys.stderr.write("\n")
@@ -188,15 +187,17 @@ def build_top15(db: Path) -> dict:
         ti = test_imp.get(mod["id"], 0)
         fi = prod_fi.get(mod["id"], 0)
         fo = prod_fo.get(mod["id"], 0)
-        rows.append({
-            "path": path,
-            "layer": mod["layer"],
-            "test_importers": ti,
-            "prod_fan_in": fi,
-            "prod_fan_out": fo,
-            "gap_score_fanin": gap_score_fanin(mod["layer"], ti, fi),
-            "gap_score_fanout": gap_score_fanout(mod["layer"], ti, fo),
-        })
+        rows.append(
+            {
+                "path": path,
+                "layer": mod["layer"],
+                "test_importers": ti,
+                "prod_fan_in": fi,
+                "prod_fan_out": fo,
+                "gap_score_fanin": gap_score_fanin(mod["layer"], ti, fi),
+                "gap_score_fanout": gap_score_fanout(mod["layer"], ti, fo),
+            }
+        )
     untested = [r for r in rows if r["test_importers"] == 0]
 
     # Top-N by each axis
@@ -212,9 +213,7 @@ def build_top15(db: Path) -> dict:
             continue
         seen.add(r["path"])
         r2 = dict(r)
-        r2["combined_score"] = round(
-            r["gap_score_fanin"] + 0.6 * r["gap_score_fanout"], 4
-        )
+        r2["combined_score"] = round(r["gap_score_fanin"] + 0.6 * r["gap_score_fanout"], 4)
         combined_pool.append(r2)
     combined_pool.sort(key=lambda r: r["combined_score"], reverse=True)
     top15 = combined_pool[:15]

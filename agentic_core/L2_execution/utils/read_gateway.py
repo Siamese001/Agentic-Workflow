@@ -7,7 +7,7 @@ with graceful fallback to direct Python I/O when the MCP server is unavailable.
 
 Tool ID Prefix: ACT-020
 """
-# guardian: allow-silent_swallower -- ADG violation exemption
+# review: allow-silent-swallower -- ADG violation exemption
 
 from __future__ import annotations
 
@@ -314,7 +314,10 @@ def get_file_info(path: str | Path) -> dict[str, Any]:
         return result if isinstance(result, dict) else {"raw": result}
     except ImportError as e:  # guardian: allow-log-and-swallow -- re-raises wrapped ImportError; Logger.debug below is unreachable dead code
         raise ImportError(f"Required dependency missing: {e}")
-    except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow -- mcp6 file_info: non-fatal, falls back to direct stat
+    except (
+        RuntimeError,
+        ValueError,
+    ) as e:  # guardian: allow-log-and-swallow -- mcp6 file_info: non-fatal, falls back to direct stat
         Logger.warning(f"[ReadGateway] mcp6 file_info failed for {p}, falling back: {e}")
     stat = p.stat()
     return {

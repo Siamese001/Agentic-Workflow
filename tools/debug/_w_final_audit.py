@@ -1,4 +1,5 @@
 """Audit the 12 remaining agents for actual DEPRECATION status + replacement hint."""
+
 from __future__ import annotations
 
 import json
@@ -57,8 +58,7 @@ for rel in TARGETS:
 
     # Check first real code block
     non_doc_lines = [
-        ln for ln in text.splitlines()
-        if ln.strip() and not ln.strip().startswith(("#", '"', "'"))
+        ln for ln in text.splitlines() if ln.strip() and not ln.strip().startswith(("#", '"', "'"))
     ][:3]
     category = "unknown"
     if has_keep_banner:
@@ -96,4 +96,4 @@ for r in report:
     name = r["path"].split("/")[-1]
     cat = r.get("category", "?")
     repl = r.get("use_x_instead") or r.get("delegates_to") or ""
-    print(f'  [{cat:30s}] {name:40s} {r.get("file_lines", 0):5d} lines  -> {repl}')
+    print(f"  [{cat:30s}] {name:40s} {r.get('file_lines', 0):5d} lines  -> {repl}")

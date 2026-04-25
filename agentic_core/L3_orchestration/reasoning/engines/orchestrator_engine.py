@@ -27,7 +27,7 @@ Phase 3 Enhancement (Jan 31, 2026):
 - Converted to facade shell delegating to UnifiedAgent
 - Preserves 100% legacy signature compatibility
 """
-# guardian: allow-silent_swallower -- ADG violation exemption
+# review: allow-silent-swallower -- ADG violation exemption
 # guardian: allow-silent-degradation -- Orchestration requires exception handling
 
 from __future__ import annotations
@@ -1067,7 +1067,10 @@ class Orchestrator(SovereignBaseAgent):
                     if gw_result.success:
                         _call_path.discard(agent_name)
                         return gw_result.healing_output
-                except (RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    RuntimeError,
+                    ValueError,
+                ) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     self.logger.warning("[V15] Gateway execution failed (LOG_ONLY): %s", exc)
         try:
             metrics = self._orchestrator_heal_body(dry_run)
@@ -1086,7 +1089,10 @@ class Orchestrator(SovereignBaseAgent):
             if not strategies:
                 metrics["violations_found"] += 1
                 self.logger.warning("No strategies loaded")
-        except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             metrics["violations_found"] += 1
             self.logger.warning(f"Strategy loading failed: {e}")
         try:
@@ -1096,7 +1102,10 @@ class Orchestrator(SovereignBaseAgent):
                 self.logger.warning("No agents discovered")
             else:
                 self.logger.info(f"Discovered {len(available_agents)} agents")
-        except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             metrics["violations_found"] += 1
             self.logger.warning(f"Agent discovery failed: {e}")
         if not self.project_root.exists():

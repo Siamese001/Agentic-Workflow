@@ -66,7 +66,4 @@ class TestSummarizeOrFallback:
             def summarize(self, messages: list[dict]) -> str:
                 return "CUSTOM"
 
-        assert (
-            summarize_or_fallback([], summarizer=_Custom())
-            == "CUSTOM"
-        )
+        assert summarize_or_fallback([], summarizer=_Custom()) == "CUSTOM"

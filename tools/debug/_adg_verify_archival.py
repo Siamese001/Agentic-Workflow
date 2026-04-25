@@ -7,6 +7,7 @@ Checks:
      should skip archived tree).
   3. Report any orphan references in edges (src/tgt pointing to archived modules).
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -51,8 +52,10 @@ def archived_files_from_commits() -> list[str]:
         for line in stat.splitlines():
             # Rxxx\tfrom\tto
             parts = line.split("\t")
-            if len(parts) == 3 and parts[0].startswith("R") and parts[2].startswith(
-                "archives/adg_dead_code/"
+            if (
+                len(parts) == 3
+                and parts[0].startswith("R")
+                and parts[2].startswith("archives/adg_dead_code/")
             ):
                 originals.add(parts[1])
             elif len(parts) == 2 and parts[0] == "D":
@@ -119,7 +122,9 @@ if never_in_old:
 total_dropped_nodes = sum(n for _, n in dropped_cleanly)
 print(f"\n--- AGGREGATE ---")
 print(f"Total nodes dropped (per-file sum): {total_dropped_nodes}")
-print(f"Global node delta (old-new):       {conn_old.execute('SELECT COUNT(*) FROM nodes').fetchone()[0] - conn_new.execute('SELECT COUNT(*) FROM nodes').fetchone()[0]}")
+print(
+    f"Global node delta (old-new):       {conn_old.execute('SELECT COUNT(*) FROM nodes').fetchone()[0] - conn_new.execute('SELECT COUNT(*) FROM nodes').fetchone()[0]}"
+)
 
 conn_new.close()
 conn_old.close()

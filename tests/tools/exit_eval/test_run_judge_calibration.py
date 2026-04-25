@@ -50,18 +50,14 @@ def gold_file(tmp_path: Path) -> Path:
             "groundedness": "Unknown",
         },
     ]
-    path.write_text(
-        "\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8"
-    )
+    path.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
     return path
 
 
 class TestFakeJudge:
     def test_mirrors_human_score_with_zero_noise(self, gold_file: Path, tmp_path: Path) -> None:
         rows = [
-            json.loads(line)
-            for line in gold_file.read_text(encoding="utf-8").splitlines()
-            if line.strip()
+            json.loads(line) for line in gold_file.read_text(encoding="utf-8").splitlines() if line.strip()
         ]
         gold_by_id = {r["item_id"]: r for r in rows}
         judge = _FakeCalibrationJudge(gold_by_id=gold_by_id)
@@ -78,9 +74,7 @@ class TestFakeJudge:
             assert summary.report.dimension_kappa[dim] == 1.0
 
     def test_noise_reduces_kappa(self, gold_file: Path, tmp_path: Path) -> None:
-        rows = [
-            json.loads(line) for line in gold_file.read_text(encoding="utf-8").splitlines() if line
-        ]
+        rows = [json.loads(line) for line in gold_file.read_text(encoding="utf-8").splitlines() if line]
         # Force enough agreement mass so κ is measurable: duplicate rows with
         # varied scores so kappa != 0/1 degenerate.
         extra = tmp_path / "bigger_gold.jsonl"
@@ -118,9 +112,7 @@ class TestFakeJudge:
             assert n_k <= p_k
 
     def test_unknown_mirroring(self, gold_file: Path, tmp_path: Path) -> None:
-        rows = [
-            json.loads(line) for line in gold_file.read_text(encoding="utf-8").splitlines() if line
-        ]
+        rows = [json.loads(line) for line in gold_file.read_text(encoding="utf-8").splitlines() if line]
         gold_by_id = {r["item_id"]: r for r in rows}
         judge = _FakeCalibrationJudge(gold_by_id=gold_by_id, abstain_on_unknown=True)
         summary = run_calibration(
@@ -133,9 +125,7 @@ class TestFakeJudge:
         # g3 is Unknown on every dim → unknown_rate = 1/3 per dim.
         # Report rounds to 4 decimals (0.3333), compare with matching tolerance.
         for dim in DEFAULT_DIMENSIONS:
-            assert summary.report.unknown_rate_by_dim[dim] == pytest.approx(
-                1 / 3, abs=1e-4
-            )
+            assert summary.report.unknown_rate_by_dim[dim] == pytest.approx(1 / 3, abs=1e-4)
 
     def test_abstains_on_missing_item(self, gold_file: Path) -> None:
         judge = _FakeCalibrationJudge(gold_by_id={})
@@ -208,9 +198,7 @@ class TestCLI:
         assert (tmp_path / "out.jsonl").exists()
         assert (tmp_path / "r.json").exists()
 
-    def test_min_kappa_gate_passes_on_perfect(
-        self, gold_file: Path, tmp_path: Path
-    ) -> None:
+    def test_min_kappa_gate_passes_on_perfect(self, gold_file: Path, tmp_path: Path) -> None:
         rc = _main(
             [
                 "--judge",
@@ -227,9 +215,7 @@ class TestCLI:
         )
         assert rc == 0
 
-    def test_min_kappa_gate_fails_when_kappa_below(
-        self, gold_file: Path, tmp_path: Path
-    ) -> None:
+    def test_min_kappa_gate_fails_when_kappa_below(self, gold_file: Path, tmp_path: Path) -> None:
         rc = _main(
             [
                 "--judge",

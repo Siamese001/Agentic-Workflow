@@ -1,4 +1,5 @@
 """Show the active_usage context windows from W3.2 consumers."""
+
 import json
 import pathlib
 
@@ -20,5 +21,5 @@ for r in actives:
         print(f"  --- around line {ln} ---")
         for i in range(ctx_start, ctx_end + 1):
             marker = ">>>" if i == ln else "   "
-            print(f"  {marker} {i:4d}: {text[i-1]}")
+            print(f"  {marker} {i:4d}: {text[i - 1]}")
     print()

@@ -1,0 +1,42 @@
+{# Y0 - SYNTHESIS (ANALYTIC Authority)
+ Pattern analysis, telemetry summarization, meta-learning proposals.
+ ANALYTIC authority — observations and proposals, not directives.
+#}
+================================================================================
+SYNTHESIS & PATTERN ANALYSIS (ANALYTIC AUTHORITY)
+================================================================================
+
+{% if telemetry_summary %}
+TELEMETRY SUMMARY:
+{{ telemetry_summary }}
+{% endif %}
+
+{% if pattern_observations %}
+PATTERN OBSERVATIONS:
+{% for pattern in pattern_observations %}
+- [{{ pattern.confidence | default("unrated") }}] {{ pattern.description }}
+{% endfor %}
+{% endif %}
+
+{% if meta_learning_proposals %}
+META-LEARNING PROPOSALS:
+{% for proposal in meta_learning_proposals %}
+- {{ proposal }}
+{% endfor %}
+{% endif %}
+
+{% if convergence_forecast %}
+CONVERGENCE FORECAST:
+{{ convergence_forecast }}
+{% endif %}
+
+{% if calibration_signals %}
+CALIBRATION SIGNALS:
+{% for signal in calibration_signals %}
+- {{ signal.metric }}: expected={{ signal.expected }}, actual={{ signal.actual }}
+{% endfor %}
+{% endif %}
+
+================================================================================
+SYNTHESIS IS ANALYTIC. OBSERVATIONS INFORM BUT DO NOT OVERRIDE GOVERNANCE.
+================================================================================

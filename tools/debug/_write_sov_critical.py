@@ -1,10 +1,10 @@
 """Show the 93 critical write_sovereignty violations."""
+
 import json
 from collections import Counter
 from pathlib import Path
 
-artifacts = sorted(Path("artifacts/ci_gates").glob("p0_runner_full_*.json"),
-                   key=lambda p: p.stat().st_mtime)
+artifacts = sorted(Path("artifacts/ci_gates").glob("p0_runner_full_*.json"), key=lambda p: p.stat().st_mtime)
 d = json.loads(artifacts[-1].read_text(encoding="utf-8"))
 for r in d["results"]:
     if r["gate_family"] != "write_sovereignty":
@@ -21,9 +21,12 @@ for r in d["results"]:
         by_layer[v.get("layer_src") or "?"] += 1
     print(f"Critical total: {sum(by_file.values())}")
     print("\n=== by layer ===")
-    for k, n in by_layer.most_common(): print(f"  {n:4d}  {k}")
+    for k, n in by_layer.most_common():
+        print(f"  {n:4d}  {k}")
     print("\n=== top 20 files ===")
-    for k, n in by_file.most_common(20): print(f"  {n:4d}  {k}")
+    for k, n in by_file.most_common(20):
+        print(f"  {n:4d}  {k}")
     print("\n=== top 15 write symbols ===")
-    for k, n in by_symbol.most_common(15): print(f"  {n:4d}  {k}")
+    for k, n in by_symbol.most_common(15):
+        print(f"  {n:4d}  {k}")
     break

@@ -46,9 +46,7 @@ SECTION_HEADINGS = {
     "next_steps": re.compile(r"^#{2,3}\s+Next Steps?", re.IGNORECASE),
     "open_questions": re.compile(r"^#{2,3}\s+Open Questions?", re.IGNORECASE),
     "out_of_scope": re.compile(r"^#{2,3}\s+Out of Scope", re.IGNORECASE),
-    "future_opportunities": re.compile(
-        r"^#{2,3}\s+Future\s+(Improvement\s+)?Opportunities?", re.IGNORECASE
-    ),
+    "future_opportunities": re.compile(r"^#{2,3}\s+Future\s+(Improvement\s+)?Opportunities?", re.IGNORECASE),
     "deferred": re.compile(r"^#{2,3}\s+Deferred", re.IGNORECASE),
     "followup": re.compile(r"^#{2,3}\s+Follow[-\s]?ups?", re.IGNORECASE),
 }
@@ -62,17 +60,13 @@ GAP_ID_RE = re.compile(
     re.MULTILINE,
 )
 BULLET_RE = re.compile(r"^\s*[-*]\s+\*\*([^*]+?)\*\*:?\s*(.*)$", re.MULTILINE)
-TABLE_ROW_RE = re.compile(
-    r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|", re.MULTILINE
-)
+TABLE_ROW_RE = re.compile(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|", re.MULTILINE)
 
 STATUS_HINTS = {
     "deferred": re.compile(r"\bdeferred\b", re.IGNORECASE),
     "blocked": re.compile(r"\bblock(ed|er|ing)\b", re.IGNORECASE),
     "todo": re.compile(r"\b(todo|pending|open|not\s+started)\b", re.IGNORECASE),
-    "in_progress": re.compile(
-        r"\b(in\s+progress|wip|underway)\b", re.IGNORECASE
-    ),
+    "in_progress": re.compile(r"\b(in\s+progress|wip|underway)\b", re.IGNORECASE),
     "done": re.compile(r"\b(done|complete|shipped|resolved)\b", re.IGNORECASE),
     "descoped": re.compile(r"\bdesc(o|ro)ped\b", re.IGNORECASE),
 }
@@ -236,9 +230,7 @@ def _as_markdown(items: list[OpenScopeItem]) -> str:
     for it in items:
         hints = ",".join(it.status_hints) or "-"
         title = it.title.replace("|", "\\|")
-        out.append(
-            f"| `{it.source_file}` | {it.section} | {it.item_id or '-'} | {title} | {hints} |"
-        )
+        out.append(f"| `{it.source_file}` | {it.section} | {it.item_id or '-'} | {title} | {hints} |")
     return "\n".join(out) + "\n"
 
 

@@ -121,9 +121,7 @@ class TestConcurrencyAndLtrim:
 
         def writer(idx: int) -> None:
             for i in range(20):
-                store.record(
-                    bucket, _trial(f"t{idx}-{i}", True, float(i)), max_retained=cap
-                )
+                store.record(bucket, _trial(f"t{idx}-{i}", True, float(i)), max_retained=cap)
 
         threads = [threading.Thread(target=writer, args=(i,)) for i in range(10)]
         for t in threads:
@@ -141,9 +139,7 @@ class TestErrorPropagation:
     def test_invalid_url_surfaces_store_backend_error(self, redis_module) -> None:
         # Point at an obviously-down port; record() must surface a
         # StoreBackendError, not silently no-op.
-        bad = redis_module.Redis(
-            host="127.0.0.1", port=1, socket_timeout=0.1, socket_connect_timeout=0.1
-        )
+        bad = redis_module.Redis(host="127.0.0.1", port=1, socket_timeout=0.1, socket_connect_timeout=0.1)
         store = RedisPassKStore(bad, key_prefix="should:never:write")
         with pytest.raises(StoreBackendError):
             store.record(_key(), _trial())
@@ -160,9 +156,7 @@ class TestSentinelFailover:
             pytest.skip("REDIS_SENTINEL_HOST not set — sentinel profile not up")
         return host, int(port)
 
-    def test_writes_survive_master_restart(
-        self, redis_module, sentinel_url, store, client
-    ) -> None:
+    def test_writes_survive_master_restart(self, redis_module, sentinel_url, store, client) -> None:
         """Light-touch failover: verify writes before the boundary persist.
 
         We deliberately do NOT script `docker compose restart` from the

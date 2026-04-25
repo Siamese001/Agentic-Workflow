@@ -115,9 +115,7 @@ def test_from_texts_large_corpus_keeps_rag():
 def test_from_texts_custom_threshold_and_ratio():
     chunks = ["x" * 1000]
     # 1000 chars @ 2 chars/tok = 500 tokens > threshold 100 -> keep RAG
-    result = should_skip_rag_from_texts(
-        chunks, threshold_tokens=100, chars_per_token=2.0
-    )
+    result = should_skip_rag_from_texts(chunks, threshold_tokens=100, chars_per_token=2.0)
     assert result.skip_rag is False
     assert result.estimated_tokens == 500
 

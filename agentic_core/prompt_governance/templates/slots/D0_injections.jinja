@@ -1,0 +1,44 @@
+{# D0 - INJECTIONS/FENCES (BINDING Authority)
+ Semantic fences applied during assembly to scope agent access.
+ Constraints before commit with BINDING authority.
+#}
+================================================================================
+CONSTRAINTS & SEMANTIC FENCES (BINDING AUTHORITY)
+================================================================================
+
+{% if max_file_size %}
+MAX FILE SIZE: {{ max_file_size }}
+{% endif %}
+
+{% if forbidden_operations %}
+FORBIDDEN OPERATIONS:
+{% for op in forbidden_operations %}
+- [BLOCKED] {{ op }}
+{% endfor %}
+{% endif %}
+
+{% if allowed_tools %}
+ALLOWED TOOLS:
+{% for tool in allowed_tools %}
+- [PERMITTED] {{ tool }}
+{% endfor %}
+{% endif %}
+
+{% if stop_sequences %}
+STOP SEQUENCES (injected into LLM API call):
+{% for seq in stop_sequences %}
+- "{{ seq }}"
+{% endfor %}
+{% endif %}
+
+{% if token_budget %}
+TOKEN BUDGET: {{ token_budget }} (hard limit)
+{% endif %}
+
+{% if safety_threshold %}
+SAFETY THRESHOLD: {{ safety_threshold }}
+{% endif %}
+
+================================================================================
+CONSTRAINTS ARE BINDING. VIOLATION TRIGGERS BLOCK/DEFER RESPONSE.
+================================================================================

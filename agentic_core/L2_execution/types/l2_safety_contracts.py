@@ -113,8 +113,7 @@ class SafetyProfile:
     def requires_e2_confirmation(self) -> bool:
         """E2 validate-before-execute gate predicate."""
         return ConsequenceLevel.requires_confirmation(self.consequence) or (
-            self.reversibility is Reversibility.IRREVERSIBLE
-            and self.side_effect is not SideEffectClass.READ
+            self.reversibility is Reversibility.IRREVERSIBLE and self.side_effect is not SideEffectClass.READ
         )
 
 

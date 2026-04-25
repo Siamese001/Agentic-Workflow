@@ -206,7 +206,7 @@ def get_canonical_truth_provider() -> CanonicalTruthProvider:
         module = importlib.import_module("agentic_core.L5_safety.utils.canonical_truth_util")
         return module
     except ImportError as e:
-        raise RuntimeError(f'Failed to load canonical truth provider: {e}') from e
+        raise RuntimeError(f"Failed to load canonical truth provider: {e}") from e
 
 
 def get_canonical_layer(file_path: Path) -> int:

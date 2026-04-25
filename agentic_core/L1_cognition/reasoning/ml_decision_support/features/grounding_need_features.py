@@ -264,10 +264,7 @@ def classify_work_class(query: str) -> WorkClass:
         # on whether an obvious external action verb fires.
         if any(t in tokens for t in ("deploy", "execute", "run", "submit", "send", "apply")):
             return WorkClass.ACT
-    if any(
-        t in tokens
-        for t in ("what", "when", "who", "where", "how", "why", "is", "does")
-    ):
+    if any(t in tokens for t in ("what", "when", "who", "where", "how", "why", "is", "does")):
         # Question words lean factual unless also creative.
         if any(t in tokens for t in ("imagine", "fiction", "story", "poem")):
             return WorkClass.GENERATE

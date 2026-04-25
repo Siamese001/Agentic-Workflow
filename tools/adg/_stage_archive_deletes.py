@@ -2,6 +2,7 @@
 
 Avoids co-staging unrelated workspace edits. Idempotent.
 """
+
 from __future__ import annotations
 
 import json
@@ -14,9 +15,7 @@ PLAN = REPO / "artifacts" / "adg" / "stub_archive_candidates.json"
 
 
 def run(args: list[str]) -> tuple[int, str, str]:
-    result = subprocess.run(
-        args, capture_output=True, text=True, cwd=str(REPO), timeout=60, check=False
-    )
+    result = subprocess.run(args, capture_output=True, text=True, cwd=str(REPO), timeout=60, check=False)
     return result.returncode, result.stdout, result.stderr
 
 

@@ -175,9 +175,7 @@ class TestSchemaMigration:
         SqliteMemoryStore(db)
 
         conn = sqlite3.connect(str(db))
-        row = conn.execute(
-            "SELECT confidence, last_reinforced FROM entities WHERE name='Legacy'"
-        ).fetchone()
+        row = conn.execute("SELECT confidence, last_reinforced FROM entities WHERE name='Legacy'").fetchone()
         conn.close()
         assert row[0] == pytest.approx(1.0)  # default
         assert row[1] == pytest.approx(ts)  # back-filled from updated_at
@@ -197,22 +195,16 @@ class TestReadTimeFilter:
         store.create_entities([{"name": "Stale", "entityType": "general", "observations": []}])
         past = time.time() - 60 * 86400
         with store.connection() as conn:
-            conn.execute(
-                "UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,)
-            )
+            conn.execute("UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,))
         # 60 days with 14-day half-life: 0.5 ** (60/14) = ~0.0504 < 0.3
         assert store.load_entity("Stale") is None
 
     def test_old_protected_entity_still_visible(self, store: SqliteMemoryStore) -> None:
         """Protected types never decay — an ancient ConstitutionalRule is still returned."""
-        store.create_entities(
-            [{"name": "Rule", "entityType": "ConstitutionalRule", "observations": ["r"]}]
-        )
+        store.create_entities([{"name": "Rule", "entityType": "ConstitutionalRule", "observations": ["r"]}])
         ancient = time.time() - 365 * 86400
         with store.connection() as conn:
-            conn.execute(
-                "UPDATE entities SET last_reinforced = ? WHERE name='Rule'", (ancient,)
-            )
+            conn.execute("UPDATE entities SET last_reinforced = ? WHERE name='Rule'", (ancient,))
         e = store.load_entity("Rule")
         assert e is not None
         assert e["effectiveConfidence"] == pytest.approx(1.0)
@@ -221,14 +213,10 @@ class TestReadTimeFilter:
         store.create_entities([{"name": "Stale", "entityType": "general", "observations": []}])
         past = time.time() - 60 * 86400
         with store.connection() as conn:
-            conn.execute(
-                "UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,)
-            )
+            conn.execute("UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,))
         assert store.load_entity("Stale", include_low_confidence=True) is not None
 
-    def test_read_graph_hides_and_drops_dangling_relations(
-        self, store: SqliteMemoryStore
-    ) -> None:
+    def test_read_graph_hides_and_drops_dangling_relations(self, store: SqliteMemoryStore) -> None:
         store.create_entities(
             [
                 {"name": "Fresh", "entityType": "general", "observations": []},
@@ -238,9 +226,7 @@ class TestReadTimeFilter:
         store.create_relations([{"from": "Fresh", "to": "Stale", "relationType": "references"}])
         past = time.time() - 60 * 86400
         with store.connection() as conn:
-            conn.execute(
-                "UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,)
-            )
+            conn.execute("UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,))
         g = store.read_graph()
         names = {e["name"] for e in g["entities"]}
         assert "Fresh" in names
@@ -259,18 +245,14 @@ class TestStoreReinforcement:
         past = time.time() - 60 * 86400  # ~4 half-lives -> ~0.05
         with store.connection() as conn:
             conn.execute("UPDATE entities SET last_reinforced = ? WHERE name='A'", (past,))
-            before = conn.execute(
-                "SELECT confidence FROM entities WHERE name='A'"
-            ).fetchone()[0]
+            before = conn.execute("SELECT confidence FROM entities WHERE name='A'").fetchone()[0]
 
         assert store.load_entity("A") is None  # hidden below threshold
 
         assert store.reinforce("A") is True
 
         with store.connection() as conn:
-            after = conn.execute(
-                "SELECT confidence FROM entities WHERE name='A'"
-            ).fetchone()[0]
+            after = conn.execute("SELECT confidence FROM entities WHERE name='A'").fetchone()[0]
         # Stored confidence was decayed-then-bumped: 0.05 + 0.10 = 0.15
         assert after < before  # below original stored value
         assert after > 0.10  # but above the decayed floor
@@ -288,15 +270,11 @@ class TestStoreReinforcement:
         assert e["effectiveConfidence"] > 0.30
 
     def test_duplicate_observation_reinforces(self, store: SqliteMemoryStore) -> None:
-        store.create_entities(
-            [{"name": "A", "entityType": "general", "observations": ["obs-v1"]}]
-        )
+        store.create_entities([{"name": "A", "entityType": "general", "observations": ["obs-v1"]}])
         # Age it
         past = time.time() - 10 * 86400
         with store.connection() as conn:
-            conn.execute(
-                "UPDATE observations SET last_reinforced = ? WHERE content='obs-v1'", (past,)
-            )
+            conn.execute("UPDATE observations SET last_reinforced = ? WHERE content='obs-v1'", (past,))
             before = conn.execute(
                 "SELECT last_reinforced FROM observations WHERE content='obs-v1'"
             ).fetchone()[0]
@@ -306,9 +284,7 @@ class TestStoreReinforcement:
             after = conn.execute(
                 "SELECT last_reinforced FROM observations WHERE content='obs-v1'"
             ).fetchone()[0]
-            count = conn.execute(
-                "SELECT COUNT(*) FROM observations WHERE content='obs-v1'"
-            ).fetchone()[0]
+            count = conn.execute("SELECT COUNT(*) FROM observations WHERE content='obs-v1'").fetchone()[0]
         assert count == 1
         assert after > before
 

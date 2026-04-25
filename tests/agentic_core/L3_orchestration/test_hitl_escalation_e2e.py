@@ -93,6 +93,7 @@ def stack(tmp_path: Path, monkeypatch):
     def capture(name: str):
         def _emit(**kwargs):
             spans.append((name, kwargs))
+
         return _emit
 
     monkeypatch.setattr(hitl_spans, "emit_escalate", capture("escalate"))

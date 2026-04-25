@@ -205,7 +205,10 @@ class CognitiveRecoveryMixin:
         try:
             client = self._get_cognitive_client()
             patterns = client.find_healing_pattern(query)
-        except (AttributeError, RuntimeError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             logger.error(f"[{self.__class__.__name__}] Cognitive RCA failed: {e}")
             return None
         if patterns:

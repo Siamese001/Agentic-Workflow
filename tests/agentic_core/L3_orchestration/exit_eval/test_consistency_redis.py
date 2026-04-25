@@ -179,8 +179,9 @@ class TestErrorPropagation:
     def test_corrupt_payload_raises(self, redis_client, store) -> None:
         # Inject a garbage entry directly — bypasses the encoder.
         key = _key()
-        raw_key = f"test:passk:{key.trajectory_class}:{key.rubric_version}:"\
-                  f"{key.agent_version}:{key.policy_version}"
+        raw_key = (
+            f"test:passk:{key.trajectory_class}:{key.rubric_version}:{key.agent_version}:{key.policy_version}"
+        )
         redis_client.rpush(raw_key, b"not-json")
         redis_client.rpush(raw_key, b"still-not-json")
         redis_client.rpush(raw_key, b"another")

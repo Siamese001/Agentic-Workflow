@@ -41,7 +41,7 @@ class SaturationThresholds:
 class DimensionHistory:
     rubric_family: str
     dimension: str
-    pass_rates: tuple[float, ...]   # oldest → newest
+    pass_rates: tuple[float, ...]  # oldest → newest
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,7 +50,7 @@ class PromotionProposal:
     dimension: str
     last_window_mean: float
     window_slope: float
-    recommended_target: str         # "regression"
+    recommended_target: str  # "regression"
     rationale: str
 
 
@@ -68,7 +68,7 @@ def _slope(values: tuple[float, ...]) -> float:
 def evaluate(history: DimensionHistory, thresholds: SaturationThresholds) -> PromotionProposal | None:
     if len(history.pass_rates) < thresholds.min_age_runs:
         return None
-    window = history.pass_rates[-thresholds.window:]
+    window = history.pass_rates[-thresholds.window :]
     if len(window) < thresholds.window:
         return None
     window_mean = statistics.fmean(window)
@@ -93,8 +93,12 @@ def evaluate(history: DimensionHistory, thresholds: SaturationThresholds) -> Pro
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--history", type=Path, required=True,
-                        help="JSONL file; each line = {rubric_family, dimension, pass_rates: [..]}")
+    parser.add_argument(
+        "--history",
+        type=Path,
+        required=True,
+        help="JSONL file; each line = {rubric_family, dimension, pass_rates: [..]}",
+    )
     parser.add_argument("--out", type=Path, default=Path("artifacts/eval/saturation_proposals.json"))
     parser.add_argument("--ceiling", type=float, default=0.95)
     parser.add_argument("--slope-epsilon", type=float, default=0.01)

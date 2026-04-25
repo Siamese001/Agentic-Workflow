@@ -68,7 +68,8 @@ def _composed_resolver(evidence_id: str) -> bool:
             # crash the cache; treat as unresolved (fail-closed).
             Logger.debug(
                 "composition_root: registered resolver raised for %r: %s",
-                evidence_id, exc,
+                evidence_id,
+                exc,
             )
             return False
     if os.getenv("SEMANTIC_CACHE_FAIL_OPEN_RESOLVER", "0") == "1":

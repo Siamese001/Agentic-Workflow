@@ -1,7 +1,7 @@
 ================================================================================
 [typehint_only] SubAtomicAgent -> agentic_core.L3_orchestration.utils.subatomic_agent_util
   consumer: agentic_core/L5_safety/reasoning/DocumentationAgent.py
-       100: 
+       100:
   >>>  101: from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
        102: from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
@@ -12,11 +12,11 @@
 ================================================================================
 [class_reference_only] SubAtomicAgent -> agentic_core.L3_orchestration.utils.subatomic_agent_util
   consumer: agentic_core/L5_safety/reasoning/TypeMechanicAgent.py
-        94: 
+        94:
   >>>   95: "\nTypeMechanicAgent - Extracted from SubAtomicAgent.py\nPart of the SubAtomic agent family for code quality enforcement.\n"
         96: import ast
 
-        98: 
+        98:
   >>>   99: from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
        100: from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
@@ -27,7 +27,7 @@
 ================================================================================
 [class_reference_only] SubAtomicAgent -> agentic_core.L3_orchestration.utils.subatomic_agent_util
   consumer: agentic_core/L5_safety/utils/extract_pattern_util.py
-        88: 
+        88:
   >>>   89: "\nExtract PatternEnforcerAgent from canon_agents_pattern.py.\nAlso removes SubAtomicAgent stub and adds proper import.\n"
         90: import ast
 
@@ -56,19 +56,19 @@
   consumer: agentic_core/L5_safety/validators/CodeJanitorAgent.py
          1: """
   >>>    2: validators/CodeJanitorAgent.py ΓÇö backward-compat re-export shim.
-         3: 
+         3:
 
          4: Canonical implementation has moved to:
   >>>    5:     agentic_core.L5_safety.reasoning.CodeJanitorAgent
-         6: 
+         6:
 
          8: All filesystem writes (_write_file_content, _smart_fix, heal_repository) are in
   >>>    9: reasoning/CodeJanitorAgent.py (L5 healer territory).
-        10: 
+        10:
 
-        10: 
+        10:
   >>>   11: ADG fix: A-04 (CodeJanitorAgent split ΓÇö healer logic moved to reasoning/).
-        12: 
+        12:
 
         16: Consumers at authorization: 0 (verified via live-code grep of
   >>>   17: `L5_safety.validators.CodeJanitorAgent` \u2014 4 previously-reported consumers
@@ -78,7 +78,7 @@
   >>>   20: Unique logic: none (pure re-export of agentic_core.L5_safety.reasoning.CodeJanitorAgent).
         21: Target archive path on or after eligibility date:
 
-        28: 
+        28:
   >>>   29: from agentic_core.L5_safety.reasoning.CodeJanitorAgent import (
         30:     CodeJanitorAgent,
 
@@ -86,7 +86,7 @@
   >>>   30:     CodeJanitorAgent,
         31:     JanitorViolation,
 
-        97: 
+        97:
   >>>   98: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_1")
         99: _emit_emits_metric_event("CodeJanitorAgent", "p4obs", "metric_2")
 
@@ -224,11 +224,11 @@
   >>>   16:         GravityStateAgent,
         17:         CachedStateLedger,
 
-        23: 
+        23:
   >>>   24: from agentic_core.L3_orchestration.reasoning.GravityStateAgent import GravityStateAgent
         25: from agentic_core.L4_state.reasoning.CachedStateLedger import CachedStateLedger
 
-        27: 
+        27:
   >>>   28: __all__ = ["GravityStateAgent", "CachedStateLedger", "CheckpointManager"]
 
 ================================================================================
@@ -245,4 +245,3 @@
        264:     init_file = UNIFIED_DIR / "__init__.py"
   >>>  265:     new_init = '"""\nUnified L5 Safety/Validation Agents\n\n[PHASE 33c UPGRADE 2026-01-21]: Removed "Unified" prefix from agent names.\nBackward compatibility aliases maintained fo
        266:     init_file.write_text(new_init, encoding="utf-8")
-

@@ -1,4 +1,5 @@
 """Broader inventory of all violation categories + guardian-related patterns."""
+
 from __future__ import annotations
 
 import sqlite3
@@ -21,10 +22,7 @@ for r in cur.fetchall():
     print(f"  {r[1]:>6}  {r[0]}")
 print()
 
-cur.execute(
-    "SELECT evidence, COUNT(*) FROM violations "
-    "GROUP BY evidence ORDER BY 2 DESC LIMIT 15"
-)
+cur.execute("SELECT evidence, COUNT(*) FROM violations GROUP BY evidence ORDER BY 2 DESC LIMIT 15")
 print("== top 15 evidence strings ==")
 for r in cur.fetchall():
     ev = (r[0] or "")[:100]
@@ -36,29 +34,56 @@ print()
 import ast
 import os
 
-ROOTS = ("agentic_core", "apps_shared", "apps_rg", "apps_eval", "apps_exec",
-         "apps_research", "apps_rfp", "apps_underwriting_ai", "apps_lic",
-         "tools", "ops_scripts", "system_learning", "infrastructure")
+ROOTS = (
+    "agentic_core",
+    "apps_shared",
+    "apps_rg",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "apps_lic",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
+)
 
 from collections import Counter
+
 by_layer: Counter[str] = Counter()
 by_type: Counter[str] = Counter()
 total = 0
 
+
 def layer_of(path: str) -> str:
-    if "agentic_core/L0_" in path: return "L0"
-    if "agentic_core/L1_" in path: return "L1"
-    if "agentic_core/L2_" in path: return "L2"
-    if "agentic_core/L3_" in path: return "L3"
-    if "agentic_core/L4_" in path: return "L4"
-    if "agentic_core/L5_" in path: return "L5"
-    if "agentic_core/L6_" in path: return "L6"
-    if path.startswith("apps_"): return "L_APP"
-    if path.startswith("tools/"): return "L_TOOLS"
-    if path.startswith("ops_scripts/"): return "L_OPS"
-    if path.startswith("system_learning/"): return "L_SL"
-    if path.startswith("infrastructure/"): return "L_INFRA"
+    if "agentic_core/L0_" in path:
+        return "L0"
+    if "agentic_core/L1_" in path:
+        return "L1"
+    if "agentic_core/L2_" in path:
+        return "L2"
+    if "agentic_core/L3_" in path:
+        return "L3"
+    if "agentic_core/L4_" in path:
+        return "L4"
+    if "agentic_core/L5_" in path:
+        return "L5"
+    if "agentic_core/L6_" in path:
+        return "L6"
+    if path.startswith("apps_"):
+        return "L_APP"
+    if path.startswith("tools/"):
+        return "L_TOOLS"
+    if path.startswith("ops_scripts/"):
+        return "L_OPS"
+    if path.startswith("system_learning/"):
+        return "L_SL"
+    if path.startswith("infrastructure/"):
+        return "L_INFRA"
     return "other"
+
 
 for root in ROOTS:
     if not Path(root).exists():

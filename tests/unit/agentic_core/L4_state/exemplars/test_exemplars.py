@@ -150,9 +150,7 @@ class TestRetriever:
     def test_unknown_class_returns_empty(self) -> None:
         bank = ExemplarBank()
         self._populate(bank)
-        assert (
-            select_top_k(query="x", task_class="unknown", bank=bank, k=3) == ()
-        )
+        assert select_top_k(query="x", task_class="unknown", bank=bank, k=3) == ()
 
     def test_deterministic_tiebreak(self) -> None:
         """Equal scores \u2014 should sort by exemplar_id ascending."""
@@ -173,30 +171,22 @@ class TestCoverageGate:
         assert errs == []
 
     def test_eligible_with_too_few_fails(self) -> None:
-        ok, errs = check_exemplar_coverage(
-            task_class="rfp", exemplars_provided=2, eligibility=True
-        )
+        ok, errs = check_exemplar_coverage(task_class="rfp", exemplars_provided=2, eligibility=True)
         assert not ok
         assert any("minimum" in e for e in errs)
 
     def test_ineligible_noop(self) -> None:
-        ok, errs = check_exemplar_coverage(
-            task_class="rfp", exemplars_provided=0, eligibility=False
-        )
+        ok, errs = check_exemplar_coverage(task_class="rfp", exemplars_provided=0, eligibility=False)
         assert ok
         assert errs == []
 
     def test_empty_class_rejected(self) -> None:
-        ok, errs = check_exemplar_coverage(
-            task_class="", exemplars_provided=5, eligibility=True
-        )
+        ok, errs = check_exemplar_coverage(task_class="", exemplars_provided=5, eligibility=True)
         assert not ok
         assert any("task_class" in e for e in errs)
 
     def test_negative_count_rejected(self) -> None:
-        ok, errs = check_exemplar_coverage(
-            task_class="c", exemplars_provided=-1, eligibility=False
-        )
+        ok, errs = check_exemplar_coverage(task_class="c", exemplars_provided=-1, eligibility=False)
         assert not ok
         assert any(">= 0" in e for e in errs)
 

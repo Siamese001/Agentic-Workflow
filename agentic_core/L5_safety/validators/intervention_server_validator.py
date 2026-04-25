@@ -425,7 +425,9 @@ class InterventionServer:
             if instructions:
                 Logger.info(f"Telepathy instructions received: {instructions[:100]}...")
                 return instructions
-        except Exception:  # guardian: allow-broad-exception -- telepathy read error re-raised to caller for handling
+        except (
+            Exception
+        ):  # guardian: allow-broad-exception -- telepathy read error re-raised to caller for handling
             raise
 
     def parse_telepathy_commands(self, instructions: str) -> dict[str, Any]:

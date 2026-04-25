@@ -116,10 +116,7 @@ def main() -> int:
         else:
             total_skipped += 1
 
-    print(
-        f"\nSummary: changed={total_changed} skipped={total_skipped} "
-        f"failures={failures}"
-    )
+    print(f"\nSummary: changed={total_changed} skipped={total_skipped} failures={failures}")
     return 0 if failures == 0 else 1
 
 

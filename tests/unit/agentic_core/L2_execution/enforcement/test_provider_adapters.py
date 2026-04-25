@@ -152,9 +152,7 @@ class TestAdapterRegistry:
             (ProviderType.LOCAL_VLLM, "openai"),
         ],
     )
-    def test_registry_dispatches_correctly(
-        self, provider_type: ProviderType, expected_name: str
-    ) -> None:
+    def test_registry_dispatches_correctly(self, provider_type: ProviderType, expected_name: str) -> None:
         adapter = get_adapter(provider_type)
         assert adapter.name == expected_name
 

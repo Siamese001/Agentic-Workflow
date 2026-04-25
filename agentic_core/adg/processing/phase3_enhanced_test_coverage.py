@@ -397,7 +397,12 @@ class TestCoverageAnalyzer:
                     elif line.startswith("class "):
                         return line.split("(")[0].replace("class ", "")
 
-        except (OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-silent-swallow allow-return-none-swallow -- coverage lookup best-effort: caller treats None as no coverage data
+        except (
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow allow-return-none-swallow -- coverage lookup best-effort: caller treats None as no coverage data
             pass
 
         return None

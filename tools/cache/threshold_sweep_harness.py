@@ -107,15 +107,31 @@ def write_csv(rows: list[SweepRow], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as fp:
         writer = csv.writer(fp)
-        writer.writerow([
-            "threshold", "total", "hits", "true_positives", "false_positives",
-            "hit_rate", "precision", "false_positive_rate",
-        ])
+        writer.writerow(
+            [
+                "threshold",
+                "total",
+                "hits",
+                "true_positives",
+                "false_positives",
+                "hit_rate",
+                "precision",
+                "false_positive_rate",
+            ]
+        )
         for r in rows:
-            writer.writerow([
-                f"{r.threshold:.3f}", r.total, r.hits, r.true_positives, r.false_positives,
-                f"{r.hit_rate:.4f}", f"{r.precision:.4f}", f"{r.false_positive_rate:.4f}",
-            ])
+            writer.writerow(
+                [
+                    f"{r.threshold:.3f}",
+                    r.total,
+                    r.hits,
+                    r.true_positives,
+                    r.false_positives,
+                    f"{r.hit_rate:.4f}",
+                    f"{r.precision:.4f}",
+                    f"{r.false_positive_rate:.4f}",
+                ]
+            )
 
 
 def write_md(rows: list[SweepRow], path: Path) -> None:
@@ -133,8 +149,10 @@ def write_md(rows: list[SweepRow], path: Path) -> None:
             f"{r.false_positive_rate:.4f} |"
         )
     lines.append("")
-    lines.append("Operator guidance: pick the lowest threshold whose precision is ≥ 0.99 "
-                 "AND false-positive rate is ≤ 0.005 across ≥1k samples.")
+    lines.append(
+        "Operator guidance: pick the lowest threshold whose precision is ≥ 0.99 "
+        "AND false-positive rate is ≤ 0.005 across ≥1k samples."
+    )
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -144,10 +162,12 @@ def _parse_thresholds(spec: str) -> list[float]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Sweep semantic-cache similarity thresholds.")
-    parser.add_argument("--fixtures", type=Path, required=True,
-                        help="JSONL file with query/expected/candidate rows.")
-    parser.add_argument("--thresholds", default="0.85,0.90,0.92,0.95,0.97,0.99",
-                        help="Comma-separated thresholds to test.")
+    parser.add_argument(
+        "--fixtures", type=Path, required=True, help="JSONL file with query/expected/candidate rows."
+    )
+    parser.add_argument(
+        "--thresholds", default="0.85,0.90,0.92,0.95,0.97,0.99", help="Comma-separated thresholds to test."
+    )
     parser.add_argument("--out-csv", type=Path, default=Path("artifacts/cache/sweep_report.csv"))
     parser.add_argument("--out-md", type=Path, default=Path("artifacts/cache/sweep_report.md"))
     args = parser.parse_args(argv)
@@ -161,8 +181,7 @@ def main(argv: list[str] | None = None) -> int:
     rows = sweep(fixtures, thresholds)
     write_csv(rows, args.out_csv)
     write_md(rows, args.out_md)
-    print(f"wrote {args.out_csv} and {args.out_md} ({len(fixtures)} fixtures, "
-          f"{len(thresholds)} thresholds)")
+    print(f"wrote {args.out_csv} and {args.out_md} ({len(fixtures)} fixtures, {len(thresholds)} thresholds)")
     return 0
 
 

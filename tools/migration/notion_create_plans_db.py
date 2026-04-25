@@ -17,6 +17,7 @@ Usage:
     python tools/migration/notion_create_plans_db.py --dry-run
     python tools/migration/notion_create_plans_db.py --execute
 """
+
 from __future__ import annotations
 
 import argparse
@@ -59,8 +60,7 @@ def _headers(tok: str) -> dict[str, str]:
     }
 
 
-def _http(method: str, url: str, tok: str, body: dict | None = None,
-          timeout: int = 30) -> dict[str, Any]:
+def _http(method: str, url: str, tok: str, body: dict | None = None, timeout: int = 30) -> dict[str, Any]:
     data = json.dumps(body).encode("utf-8") if body else None
     req = urllib.request.Request(url, data=data, method=method, headers=_headers(tok))
     for attempt in range(3):
@@ -72,8 +72,7 @@ def _http(method: str, url: str, tok: str, body: dict | None = None,
                 time.sleep(int(err.headers.get("Retry-After", "2")))
                 continue
             raise RuntimeError(
-                f"HTTP {err.code} {method} {url}: "
-                f"{err.read().decode('utf-8', errors='replace')}"
+                f"HTTP {err.code} {method} {url}: {err.read().decode('utf-8', errors='replace')}"
             ) from err
         except urllib.error.URLError as err:
             if attempt < 2:
@@ -115,9 +114,7 @@ def fetch_backlog_rows(tok: str) -> list[dict]:
         body: dict = {"page_size": 100}
         if cursor:
             body["start_cursor"] = cursor
-        resp = _http("POST",
-                     f"{NOTION_API}/data_sources/{BACKLOG_DS_ID}/query",
-                     tok, body)
+        resp = _http("POST", f"{NOTION_API}/data_sources/{BACKLOG_DS_ID}/query", tok, body)
         rows.extend(resp.get("results", []))
         if not resp.get("has_more"):
             break
@@ -201,8 +198,7 @@ def list_existing_plans(tok: str, plans_db_id: str) -> dict[str, str]:
             body["start_cursor"] = cursor
         resp = _http("POST", f"{NOTION_API}/data_sources/{ds_id}/query", tok, body)
         for page in resp.get("results", []):
-            slug = "".join(x.get("plain_text", "")
-                           for x in page["properties"]["Slug"]["title"])
+            slug = "".join(x.get("plain_text", "") for x in page["properties"]["Slug"]["title"])
             if slug:
                 mapping[slug] = page["id"]
         if not resp.get("has_more"):
@@ -211,8 +207,7 @@ def list_existing_plans(tok: str, plans_db_id: str) -> dict[str, str]:
     return mapping
 
 
-def create_plan_page(tok: str, plans_db_id: str, slug: str,
-                     exists_on_disk: bool) -> str:
+def create_plan_page(tok: str, plans_db_id: str, slug: str, exists_on_disk: bool) -> str:
     file_path = f".windsurf/plans/{slug}.md" if exists_on_disk else ""
     status = "Active" if exists_on_disk else "Proposed"
     ds_id = _plans_data_source_id(tok, plans_db_id)
@@ -222,8 +217,7 @@ def create_plan_page(tok: str, plans_db_id: str, slug: str,
             "Slug": {"title": [{"type": "text", "text": {"content": slug}}]},
             "Status": {"select": {"name": status}},
             "Plan File Path": {
-                "rich_text": [{"type": "text", "text": {"content": file_path}}]
-                if file_path else []
+                "rich_text": [{"type": "text", "text": {"content": file_path}}] if file_path else []
             },
             "Exists On Disk": {"checkbox": exists_on_disk},
         },
@@ -233,11 +227,12 @@ def create_plan_page(tok: str, plans_db_id: str, slug: str,
 
 
 def patch_backlog_relation(tok: str, page_id: str, plan_page_id: str) -> None:
-    _http("PATCH", f"{NOTION_API}/pages/{page_id}", tok, {
-        "properties": {
-            "Plan": {"relation": [{"id": plan_page_id}]}
-        }
-    })
+    _http(
+        "PATCH",
+        f"{NOTION_API}/pages/{page_id}",
+        tok,
+        {"properties": {"Plan": {"relation": [{"id": plan_page_id}]}}},
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -268,8 +263,9 @@ def main(argv: list[str] | None = None) -> int:
     unique_slugs = sorted(slug_map.keys())
     on_disk = [s for s in unique_slugs if s in disk_plans]
     off_disk = [s for s in unique_slugs if s not in disk_plans]
-    print(f"[2/5] Extracted {len(unique_slugs)} unique slugs "
-          f"({len(on_disk)} on disk, {len(off_disk)} proposed)")
+    print(
+        f"[2/5] Extracted {len(unique_slugs)} unique slugs ({len(on_disk)} on disk, {len(off_disk)} proposed)"
+    )
 
     if args.dry_run:
         print()
@@ -280,8 +276,9 @@ def main(argv: list[str] | None = None) -> int:
         for s in off_disk:
             print(f"  [Proposed] {s}  (raw: {slug_map[s][:60]})")
         print()
-        print(f"Would create: 1 Plans DB, {len(unique_slugs)} plan rows, "
-              f"{len(page_to_slug)} relation patches")
+        print(
+            f"Would create: 1 Plans DB, {len(unique_slugs)} plan rows, {len(page_to_slug)} relation patches"
+        )
         return 0
 
     # Step 3: create Plans DB (or reuse)
@@ -297,8 +294,7 @@ def main(argv: list[str] | None = None) -> int:
         # Add the Plan relation column to backlog DS (only on fresh create)
         add_relation_to_backlog(tok, plans_db_id)
         print("      Added 'Plan' relation to Backlog Items")
-        audit({"op": "add_relation_property", "backlog_ds": BACKLOG_DS_ID,
-               "target_db": plans_db_id})
+        audit({"op": "add_relation_property", "backlog_ds": BACKLOG_DS_ID, "target_db": plans_db_id})
 
     # Step 4: backfill Plans pages (idempotent)
     existing_plans = list_existing_plans(tok, plans_db_id)
@@ -311,8 +307,7 @@ def main(argv: list[str] | None = None) -> int:
         page_id = create_plan_page(tok, plans_db_id, slug, exists)
         existing_plans[slug] = page_id
         created += 1
-        audit({"op": "create_plan", "slug": slug, "page_id": page_id,
-               "exists_on_disk": exists})
+        audit({"op": "create_plan", "slug": slug, "page_id": page_id, "exists_on_disk": exists})
         if created % 5 == 0:
             print(f"      Created {created} plan pages...")
             time.sleep(0.3)
@@ -342,12 +337,10 @@ def main(argv: list[str] | None = None) -> int:
                 time.sleep(0.35)
         except RuntimeError as exc:
             errors += 1
-            audit({"op": "link_error", "row_id": row_id, "slug": slug,
-                   "error": str(exc)[:200]})
+            audit({"op": "link_error", "row_id": row_id, "slug": slug, "error": str(exc)[:200]})
         if i % 20 == 0 or i == total:
             pct = i * 100 // total
-            print(f"  [{i:>3}/{total}] {pct:>3}% linked={linked} "
-                  f"skipped={skipped} errors={errors}")
+            print(f"  [{i:>3}/{total}] {pct:>3}% linked={linked} skipped={skipped} errors={errors}")
 
     print()
     print("=== W3 migration complete ===")

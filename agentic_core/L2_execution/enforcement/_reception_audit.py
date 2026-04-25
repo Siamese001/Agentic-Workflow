@@ -151,7 +151,10 @@ def emit(evidence: ReceptionEvidence) -> None:
         with sink.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(payload, sort_keys=True, ensure_ascii=False))
             fh.write("\n")
-    except (OSError, ValueError) as exc:  # guardian: allow-log-and-swallow -- audit sink write is best-effort observability; failure must not break the generate() hot path
+    except (
+        OSError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- audit sink write is best-effort observability; failure must not break the generate() hot path
         _LOGGER.warning("prompt_reception audit sink failed: %s", exc)
 
 

@@ -122,9 +122,7 @@ class TestGuardrailPipeline:
         pipe.add_inline(
             "redact",
             GuardrailPhase.PRE_EXECUTE,
-            lambda p: GuardrailOutput(
-                "redact", GuardrailPhase.PRE_EXECUTE, replacement={"x": "[REDACTED]"}
-            ),
+            lambda p: GuardrailOutput("redact", GuardrailPhase.PRE_EXECUTE, replacement={"x": "[REDACTED]"}),
         )
         assert pipe.run_pre({"x": "secret"}) == {"x": "[REDACTED]"}
 

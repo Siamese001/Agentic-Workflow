@@ -233,7 +233,10 @@ class ConfigFileCache:
                     return cached
             except FileNotFoundError:  # review: File operations should check existence before access
                 raise
-            except (OSError, ConnectionError) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to disk parse
+            except (
+                OSError,
+                ConnectionError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to disk parse
                 logger.warning(f"[Config cache] Cache read failed: {e}")
 
         logger.debug(f"[Config cache] MISS for {config_path.name} — parsing from disk")
@@ -246,7 +249,10 @@ class ConfigFileCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:  # guardian: allow-silent-swallow -- config deleted after fetch: skip cache write, disk parse already served caller
                 pass
-            except (OSError, ConnectionError) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, parsed result already served caller
+            except (
+                OSError,
+                ConnectionError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, parsed result already served caller
                 logger.warning(f"[Config cache] Cache write failed: {e}")
 
         return result

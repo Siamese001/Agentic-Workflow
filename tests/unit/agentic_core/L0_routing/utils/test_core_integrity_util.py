@@ -109,9 +109,7 @@ class TestCalculateMerkleRoot:
 
         assert r1 != r2
 
-    def test_raises_when_no_python_files(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_raises_when_no_python_files(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         empty = tmp_path / "empty_core"
         empty.mkdir()
         monkeypatch.setattr(CoreIntegrityVerifier, "CORE_PATH", empty)
@@ -125,20 +123,14 @@ class TestForceVerify:
         assert CoreIntegrityVerifier.force_verify() is True
 
     @pytest.mark.parametrize("bad_suffix", [".tmp", ".bak", ".pyc"])
-    def test_raises_on_unsafe_artifacts(
-        self, fake_core: Path, bad_suffix: str
-    ) -> None:
+    def test_raises_on_unsafe_artifacts(self, fake_core: Path, bad_suffix: str) -> None:
         (fake_core / f"bad{bad_suffix}").write_bytes(b"x")
 
         with pytest.raises(ConfigurationError, match="Integrity Breach"):
             CoreIntegrityVerifier.force_verify()
 
-    def test_raises_when_core_missing(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        monkeypatch.setattr(
-            CoreIntegrityVerifier, "CORE_PATH", tmp_path / "nonexistent_core"
-        )
+    def test_raises_when_core_missing(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(CoreIntegrityVerifier, "CORE_PATH", tmp_path / "nonexistent_core")
 
         with pytest.raises(ConfigurationError, match="Sovereign Core Missing"):
             CoreIntegrityVerifier.force_verify()
@@ -180,9 +172,7 @@ class TestVerifyCoreIntegrity:
         assert new_seal == CoreIntegrityVerifier._calculate_merkle_root()
 
     @pytest.mark.parametrize("bad_suffix", [".tmp", ".bak", ".pyc"])
-    def test_raises_on_unsafe_artifacts(
-        self, fake_core: Path, bad_suffix: str
-    ) -> None:
+    def test_raises_on_unsafe_artifacts(self, fake_core: Path, bad_suffix: str) -> None:
         (fake_core / f"bad{bad_suffix}").write_bytes(b"x")
 
         with pytest.raises(ConfigurationError, match="Integrity Breach"):

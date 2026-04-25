@@ -254,7 +254,13 @@ class PromptInjectionLoader:
 
                 logger.debug(f"Loaded injection {injection.id} from {file_path}")
 
-            except (OSError, ValueError, TypeError, KeyError, AttributeError):  # guardian: allow-double-logging -- injection-load failure logged before re-raise for startup diagnostics
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+            ):  # guardian: allow-double-logging -- injection-load failure logged before re-raise for startup diagnostics
                 raise
 
         # Load instructional injections

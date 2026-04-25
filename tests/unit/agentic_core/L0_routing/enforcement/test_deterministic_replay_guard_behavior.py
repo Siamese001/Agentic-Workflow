@@ -57,6 +57,7 @@ def _reset_singleton() -> Generator[None, None, None]:
 
 # ---- Exception hierarchy ------------------------------------------------
 
+
 class TestDeterminismViolation:
     def test_is_runtime_error(self) -> None:
         assert issubclass(DeterminismViolation, RuntimeError)
@@ -68,10 +69,13 @@ class TestDeterminismViolation:
 
 # ---- ReplayVerificationResult -------------------------------------------
 
+
 class TestReplayVerificationResult:
     def test_pass_summary(self) -> None:
         r = ReplayVerificationResult(
-            artifact=_artifact(), expected_replay_key="abc", actual_replay_key="abc",
+            artifact=_artifact(),
+            expected_replay_key="abc",
+            actual_replay_key="abc",
             passed=True,
         )
         assert r.mismatch_summary == "PASS"
@@ -91,7 +95,9 @@ class TestReplayVerificationResult:
 
     def test_is_frozen(self) -> None:
         r = ReplayVerificationResult(
-            artifact=_artifact(), expected_replay_key="a", actual_replay_key="b",
+            artifact=_artifact(),
+            expected_replay_key="a",
+            actual_replay_key="b",
             passed=False,
         )
         with pytest.raises(AttributeError):
@@ -99,6 +105,7 @@ class TestReplayVerificationResult:
 
 
 # ---- verify_routing_replay ----------------------------------------------
+
 
 def _mock_gateway(verify_result: bool) -> MagicMock:
     gw = MagicMock()
@@ -148,7 +155,9 @@ class TestVerifyRoutingReplay:
     def test_get_routing_gateway_called_with_policy_hash(self) -> None:
         guard = DeterministicReplayGuard(replay_mode=False)
         with patch.object(
-            mod, "get_routing_gateway", return_value=_mock_gateway(True),
+            mod,
+            "get_routing_gateway",
+            return_value=_mock_gateway(True),
         ) as mock_gw:
             guard.verify_routing_replay(_artifact(policy_config_hash="policy-xyz"))
         mock_gw.assert_called_once_with("policy-xyz")
@@ -156,8 +165,11 @@ class TestVerifyRoutingReplay:
     def test_expected_key_computed_from_artifact_fields(self) -> None:
         """expected_replay_key is sha256(route_path:policy:trace) — deterministic."""
         import hashlib
+
         a = _artifact(
-            trace_id="trace-abc", route_path="D1", policy_config_hash="ph-42",
+            trace_id="trace-abc",
+            route_path="D1",
+            policy_config_hash="ph-42",
             replay_key="rk-custom",
         )
         expected = hashlib.sha256("D1:ph-42:trace-abc".encode()).hexdigest()
@@ -168,6 +180,7 @@ class TestVerifyRoutingReplay:
 
 
 # ---- get_replay_guard / reset_replay_guard ------------------------------
+
 
 class TestSingleton:
     def test_returns_same_instance(self) -> None:

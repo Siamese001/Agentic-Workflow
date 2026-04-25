@@ -152,6 +152,7 @@ _emit_validated_by_safety_plane("p1", "phase3_functional_coverage", "safety_vali
 _ROOT = get_validated_project_root()
 f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json"
 
+
 def load_missing_modules() -> list[dict]:
     """Load list of modules that need tests created."""
     with open(f"{DOCS_REPORTS_DIR}/plans/phase0_discovery_report.json") as f:

@@ -3,6 +3,7 @@
 Goal: find nodes/edges that can be removed with low risk to reduce
 ADG size without changing behavior.
 """
+
 from __future__ import annotations
 import sqlite3
 from pathlib import Path
@@ -26,21 +27,22 @@ def main():
     print("  nodes:", rows(c, "SELECT COUNT(*) FROM nodes")[0][0])
     print("  edges:", rows(c, "SELECT COUNT(*) FROM edges")[0][0])
     print("  node count by entity_type:")
-    for r in rows(c, "SELECT entity_type,COUNT(*) FROM nodes "
-                     "GROUP BY entity_type ORDER BY 2 DESC"):
+    for r in rows(c, "SELECT entity_type,COUNT(*) FROM nodes GROUP BY entity_type ORDER BY 2 DESC"):
         print(f"    {r[1]:>7}  {r[0]}")
 
     # 1. unused_import edges (ruff F401 territory)
     sec("1. UNUSED IMPORTS (relation_type=unused_import)")
-    tot = rows(c, "SELECT COUNT(*) FROM edges "
-                  "WHERE relation_type='unused_import'")[0][0]
+    tot = rows(c, "SELECT COUNT(*) FROM edges WHERE relation_type='unused_import'")[0][0]
     print(f"  total unused_import edges: {tot}")
     print("\n  top 20 files by unused-import count:")
-    for f, n in rows(c, """
+    for f, n in rows(
+        c,
+        """
         SELECT source_file, COUNT(*) c FROM edges
          WHERE relation_type='unused_import'
          GROUP BY source_file ORDER BY c DESC LIMIT 20
-    """):
+    """,
+    ):
         print(f"    {n:>4}  {f}")
 
     # 2. Zero-caller symbols (dead symbols inside live modules)
@@ -139,9 +141,7 @@ def main():
     """
     for r in rows(c, q4):
         print(f"    [{r[1] or '?':>10}]  {r[0]}")
-    total_true_orphans = rows(c, q4.replace(
-        "ORDER BY n.resolved_path LIMIT 60",
-        ""))
+    total_true_orphans = rows(c, q4.replace("ORDER BY n.resolved_path LIMIT 60", ""))
     print(f"  total: {len(total_true_orphans)}")
 
     # 5. Duplicated adapters (pre-classified by ADG)
@@ -156,23 +156,18 @@ def main():
 
     # 7. Unknown taxonomy / orphans MV
     sec("7. mv_unknown_taxonomy_and_orphans (top 30)")
-    cols = [r[1] for r in rows(c,
-        "PRAGMA table_info(mv_unknown_taxonomy_and_orphans)")]
+    cols = [r[1] for r in rows(c, "PRAGMA table_info(mv_unknown_taxonomy_and_orphans)")]
     print("  cols:", cols)
-    for r in rows(c,
-        "SELECT * FROM mv_unknown_taxonomy_and_orphans LIMIT 30"):
+    for r in rows(c, "SELECT * FROM mv_unknown_taxonomy_and_orphans LIMIT 30"):
         print(" ", r)
 
     # 8. Agent tool ratio / agent specialization overlap
     sec("8. mv_agent_specialization_overlap (candidates to collapse)")
-    cols = [r[1] for r in rows(c,
-        "PRAGMA table_info(mv_agent_specialization_overlap)")]
+    cols = [r[1] for r in rows(c, "PRAGMA table_info(mv_agent_specialization_overlap)")]
     print("  cols:", cols)
-    n = rows(c,
-        "SELECT COUNT(*) FROM mv_agent_specialization_overlap")[0][0]
+    n = rows(c, "SELECT COUNT(*) FROM mv_agent_specialization_overlap")[0][0]
     print(f"  rows: {n}")
-    for r in rows(c,
-        "SELECT * FROM mv_agent_specialization_overlap LIMIT 20"):
+    for r in rows(c, "SELECT * FROM mv_agent_specialization_overlap LIMIT 20"):
         print(" ", r)
 
     # 9. archives/ imports — should be zero per constitutional §12
@@ -192,13 +187,12 @@ def main():
 
     # 10. Files with ONLY violations-type edges and no real use
     sec("10. POTENTIAL SHRINKAGE ESTIMATE")
-    unused = rows(c,
-        "SELECT COUNT(*) FROM edges WHERE relation_type='unused_import'")[0][0]
+    unused = rows(c, "SELECT COUNT(*) FROM edges WHERE relation_type='unused_import'")[0][0]
     zero_mods = len(r3)
     print(f"  delete unused_imports     -> ~{unused:>6} edges gone")
-    print(f"  remove {zero_mods} zero-caller modules -> ~{zero_mods * 20:>6} "
-          f"edges gone (est 20/file)")
+    print(f"  remove {zero_mods} zero-caller modules -> ~{zero_mods * 20:>6} edges gone (est 20/file)")
     print("  collapse duplicated adapters ->   ~few hundred edges")
+
 
 if __name__ == "__main__":
     main()

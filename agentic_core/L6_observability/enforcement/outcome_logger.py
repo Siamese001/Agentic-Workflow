@@ -117,7 +117,11 @@ class OutcomeLogger:
                 evaluated_stage=EvaluationStage.FINAL_OUTCOME_TRACE,
                 trace_id=trace_id,
             )
-        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             pass
         return record
 

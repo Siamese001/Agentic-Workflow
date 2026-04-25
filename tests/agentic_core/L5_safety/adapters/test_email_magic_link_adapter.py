@@ -66,9 +66,7 @@ class FakeMagicLinkStore:
     def cancel(self, ledger_id):
         if self.cancel_should_fail:
             raise RuntimeError("store down")
-        self.entries[ledger_id] = StoredOutcome(
-            kind=ApprovalOutcomeKind.TIMEOUT, reason_code="CANCELLED"
-        )
+        self.entries[ledger_id] = StoredOutcome(kind=ApprovalOutcomeKind.TIMEOUT, reason_code="CANCELLED")
 
     # test-only helper
     def resolve(self, ledger_id, outcome, *, approver_id=None, reason_code=None, rationale=None):
@@ -103,10 +101,16 @@ def adapter(email, store):
 @pytest.fixture
 def ledger_entry():
     return LedgerEntry(
-        ledger_id="led-e1", run_id="r1", trace_id="t1",
-        hitl_class=HitlClass.FINANCIAL, approver_pool="finance@example.com",
-        timeout_s=3600, policy_snapshot="snap", envelope={"amount": 5000},
-        state=LedgerState.PENDING, created_at=1.0,
+        ledger_id="led-e1",
+        run_id="r1",
+        trace_id="t1",
+        hitl_class=HitlClass.FINANCIAL,
+        approver_pool="finance@example.com",
+        timeout_s=3600,
+        policy_snapshot="snap",
+        envelope={"amount": 5000},
+        state=LedgerState.PENDING,
+        created_at=1.0,
     )
 
 
@@ -120,14 +124,14 @@ def harness(adapter, store, ledger_entry):
         adapter._email.should_fail = True  # type: ignore[attr-defined]
 
     return AdapterContractHarness(
-        adapter=adapter, ledger_entry=ledger_entry,
-        resolve=resolve, fail_transport=fail_transport,
+        adapter=adapter,
+        ledger_entry=ledger_entry,
+        resolve=resolve,
+        fail_transport=fail_transport,
     )
 
 
-@pytest.mark.parametrize(
-    "assertion", CONTRACT_ASSERTIONS, ids=[a.__name__ for a in CONTRACT_ASSERTIONS]
-)
+@pytest.mark.parametrize("assertion", CONTRACT_ASSERTIONS, ids=[a.__name__ for a in CONTRACT_ASSERTIONS])
 def test_email_magic_link_contract(assertion, harness):
     assertion(harness)
 
@@ -137,16 +141,12 @@ def test_email_magic_link_contract(assertion, harness):
 
 def test_constructor_rejects_empty_base_url(email, store):
     with pytest.raises(ValueError, match="base_url"):
-        EmailMagicLinkAdapter(
-            base_url="", signing_secret=b"s", email=email, store=store
-        )
+        EmailMagicLinkAdapter(base_url="", signing_secret=b"s", email=email, store=store)
 
 
 def test_constructor_rejects_empty_secret(email, store):
     with pytest.raises(ValueError, match="signing_secret"):
-        EmailMagicLinkAdapter(
-            base_url="https://x", signing_secret=b"", email=email, store=store
-        )
+        EmailMagicLinkAdapter(base_url="https://x", signing_secret=b"", email=email, store=store)
 
 
 def test_enqueue_records_pending_and_sends_email(adapter, email, store, ledger_entry):
@@ -183,11 +183,10 @@ def test_enqueue_wraps_email_error(adapter, email, ledger_entry):
 
 def test_enqueue_raises_when_no_message_id(store, ledger_entry):
     class NullEmail:
-        def send(self, to, subject, body): return ""
+        def send(self, to, subject, body):
+            return ""
 
-    adapter = EmailMagicLinkAdapter(
-        base_url="https://x", signing_secret=b"s", email=NullEmail(), store=store
-    )
+    adapter = EmailMagicLinkAdapter(base_url="https://x", signing_secret=b"s", email=NullEmail(), store=store)
     with pytest.raises(AdapterError, match="no message_id"):
         adapter.enqueue(ledger_entry)
 
@@ -200,8 +199,10 @@ def test_poll_pending_returns_none(adapter, ledger_entry):
 def test_poll_approved(adapter, store, ledger_entry):
     handle = adapter.enqueue(ledger_entry)
     store.resolve(
-        handle.ledger_id, ApprovalOutcomeKind.APPROVED,
-        approver_id="alice", rationale="looks good",
+        handle.ledger_id,
+        ApprovalOutcomeKind.APPROVED,
+        approver_id="alice",
+        rationale="looks good",
     )
     outcome = adapter.poll(handle)
     assert outcome is not None
@@ -255,34 +256,43 @@ def test_adapter_errors_pass_through(store, ledger_entry):
     class RaisingStore:
         def record_pending(self, ledger_id):
             raise AdapterError("upstream-record")
+
         def get(self, ledger_id):
             raise AdapterError("upstream-get")
+
         def cancel(self, ledger_id):
             raise AdapterError("upstream-cancel")
 
     # Record failure
     adapter = EmailMagicLinkAdapter(
-        base_url="https://x", signing_secret=b"s",
-        email=FakeEmailTransport(), store=RaisingStore(),
+        base_url="https://x",
+        signing_secret=b"s",
+        email=FakeEmailTransport(),
+        store=RaisingStore(),
     )
     with pytest.raises(AdapterError, match="upstream-record"):
         adapter.enqueue(ledger_entry)
 
     # Email failure as AdapterError (skip store record)
     adapter2 = EmailMagicLinkAdapter(
-        base_url="https://x", signing_secret=b"s",
-        email=RaisingEmail(), store=store,
+        base_url="https://x",
+        signing_secret=b"s",
+        email=RaisingEmail(),
+        store=store,
     )
     with pytest.raises(AdapterError, match="upstream-email"):
         adapter2.enqueue(ledger_entry)
 
     # Poll + cancel pass-through
     class PollRaiseStore(RaisingStore):
-        def record_pending(self, ledger_id): return None
+        def record_pending(self, ledger_id):
+            return None
 
     adapter3 = EmailMagicLinkAdapter(
-        base_url="https://x", signing_secret=b"s",
-        email=FakeEmailTransport(), store=PollRaiseStore(),
+        base_url="https://x",
+        signing_secret=b"s",
+        email=FakeEmailTransport(),
+        store=PollRaiseStore(),
     )
     handle = adapter3.enqueue(ledger_entry)
     with pytest.raises(AdapterError, match="upstream-get"):

@@ -12,6 +12,7 @@ Primary source: artifacts/windsurf/wiring_gate_violations.jsonl
 
 Secondary: P1 class-based gates (ADG MVs) invoked in-process.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -23,8 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-SNAP = sorted((ROOT / "artifacts/adg").glob("adg_indexed_*.sqlite"),
-              key=lambda p: p.stat().st_mtime)[-1]
+SNAP = sorted((ROOT / "artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime)[-1]
 print(f"Snapshot: {SNAP.name}\n")
 
 # ---------------------------------------------------------------------------
@@ -75,10 +75,10 @@ TIER_MAP = {
 # Class-based P1 gates
 # ---------------------------------------------------------------------------
 CLASS_GATES = [
-    ("P1", "G-P1-LIFE",          "gate_p1_lifecycle",            "LifecycleCoverageGate"),
-    ("P1", "G-P1-TRACE",         "gate_p1_trace_replay",         "TraceReplayEvalGate"),
-    ("P1", "G-P1-PROMPT-WIRING", "gate_p1_prompt_wiring",        "PromptAssemblyWiringGate"),
-    ("P1", "G-P1-ARCH-WITNESS",  "gate_p1_architecture_witness", "ArchitectureWitnessGate"),
+    ("P1", "G-P1-LIFE", "gate_p1_lifecycle", "LifecycleCoverageGate"),
+    ("P1", "G-P1-TRACE", "gate_p1_trace_replay", "TraceReplayEvalGate"),
+    ("P1", "G-P1-PROMPT-WIRING", "gate_p1_prompt_wiring", "PromptAssemblyWiringGate"),
+    ("P1", "G-P1-ARCH-WITNESS", "gate_p1_architecture_witness", "ArchitectureWitnessGate"),
 ]
 
 class_results: list[dict] = []
@@ -92,36 +92,37 @@ for tier, gate_id, modname, cls in CLASS_GATES:
         # These gates' MVs already apply exemptions at definition time.
         # gross != net would require re-running MV without exemptions, which we
         # approximate by reading the raw underlying MV row count.
-        class_results.append({
-            "tier": tier, "gate_id": gate_id, "status": res.status,
-            "gross": None, "net": net, "exempt": None,
-            "source_views": list(GateCls.source_views) if hasattr(GateCls, "source_views") else [],
-        })
+        class_results.append(
+            {
+                "tier": tier,
+                "gate_id": gate_id,
+                "status": res.status,
+                "gross": None,
+                "net": net,
+                "exempt": None,
+                "source_views": list(GateCls.source_views) if hasattr(GateCls, "source_views") else [],
+            }
+        )
     except (ImportError, AttributeError, sqlite3.Error, RuntimeError, TypeError) as e:
-        class_results.append({"tier": tier, "gate_id": gate_id,
-                              "error": f"{type(e).__name__}: {e}"})
+        class_results.append({"tier": tier, "gate_id": gate_id, "error": f"{type(e).__name__}: {e}"})
 
 # Raw MV row counts for "gross" approximation of P1 gates
 conn = sqlite3.connect(SNAP)
+
+
 def _count(t: str) -> int | None:
     try:
         return conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
     except sqlite3.Error:
         return None
 
+
 MV_ROWS = {
-    "G-P1-LIFE": (
-        (_count("mv_l2_phase_coverage") or 0) +
-        (_count("mv_exit_disposition_coverage") or 0)
-    ),
-    "G-P1-TRACE": (
-        (_count("mv_trace_replay_eval_gaps") or 0) +
-        (_count("mv_eval_coverage_by_path") or 0)
-    ),
+    "G-P1-LIFE": ((_count("mv_l2_phase_coverage") or 0) + (_count("mv_exit_disposition_coverage") or 0)),
+    "G-P1-TRACE": ((_count("mv_trace_replay_eval_gaps") or 0) + (_count("mv_eval_coverage_by_path") or 0)),
     "G-P1-PROMPT-WIRING": _count("mv_prompt_assembly_wiring_gaps") or 0,
     "G-P1-ARCH-WITNESS": (
-        (_count("mv_handoff_witness_tiers") or 0) +
-        (_count("mv_cross_cutting_witness_tiers") or 0)
+        (_count("mv_handoff_witness_tiers") or 0) + (_count("mv_cross_cutting_witness_tiers") or 0)
     ),
 }
 
@@ -142,9 +143,8 @@ high_crit = conn.execute(
     "SELECT COUNT(*) FROM violations WHERE severity IN ('HIGH','CRITICAL') "
     "AND disposition NOT IN ('exempt','waived','triaged_exempt','deferred','accepted')"
 ).fetchone()[0]
-by_sev = {r[0]: r[1] for r in conn.execute(
-    "SELECT severity, COUNT(*) FROM violations GROUP BY severity"
-)}
+by_sev = {r[0]: r[1] for r in conn.execute("SELECT severity, COUNT(*) FROM violations GROUP BY severity")}
+
 
 # ---------------------------------------------------------------------------
 # Render report
@@ -152,16 +152,20 @@ by_sev = {r[0]: r[1] for r in conn.execute(
 def fmt(v):
     return "—" if v is None else str(v)
 
+
 def print_table(title: str, rows: list[dict], keys: list[str], headers: list[str]):
     print(f"\n{title}")
     print("-" * 110)
-    widths = [max(len(headers[i]), max((len(fmt(r.get(k))) for r in rows), default=0)) + 2
-              for i, k in enumerate(keys)]
+    widths = [
+        max(len(headers[i]), max((len(fmt(r.get(k))) for r in rows), default=0)) + 2
+        for i, k in enumerate(keys)
+    ]
     fmts = "".join(f"{{:<{w}}}" for w in widths)
     print(fmts.format(*headers))
     print("-" * 110)
     for r in rows:
         print(fmts.format(*[fmt(r.get(k)) for k in keys]))
+
 
 print("=" * 110)
 print("P1/P2/P3 BURNDOWN REPORT")
@@ -187,10 +191,17 @@ for gid, rec in sorted(latest.items()):
     if gross is not None and net is not None:
         exempt = gross - net
     status = rec.get("status") or ("fail" if (net or 0) > (baseline or 0) else "pass")
-    ratchet_rows.append({
-        "tier": tier, "gate_id": gid, "status": status,
-        "gross": gross, "exempt": exempt, "net": net, "baseline": baseline,
-    })
+    ratchet_rows.append(
+        {
+            "tier": tier,
+            "gate_id": gid,
+            "status": status,
+            "gross": gross,
+            "exempt": exempt,
+            "net": net,
+            "baseline": baseline,
+        }
+    )
 
 ratchet_rows.sort(key=lambda r: (r["tier"], r["gate_id"]))
 print_table(
@@ -225,7 +236,7 @@ for r in class_results + ratchet_rows:
 # Fold AP backlog into P1 too (it's the P1 HARDEN gate's input)
 totals["P1"][0] += total_viol
 totals["P1"][1] += exempt_viol
-totals["P1"][2] += (total_viol - exempt_viol)
+totals["P1"][2] += total_viol - exempt_viol
 
 print(f"{'Tier':<8}{'Gross':>12}{'Exempt':>12}{'Net':>12}")
 print("-" * 44)
@@ -234,17 +245,25 @@ for t, (g, e, n) in totals.items():
 
 # Persist
 out = ROOT / "artifacts/ci_gates/p123_burndown_report.json"
-out.write_text(json.dumps({
-    "snapshot": SNAP.name,
-    "p1_class_gates": class_results,
-    "p2_p3_ratchet_gates": ratchet_rows,
-    "violations_table": {
-        "gross": total_viol, "exempt": exempt_viol,
-        "net": total_viol - exempt_viol, "high_crit": high_crit, "by_severity": by_sev,
-    },
-    "totals": {t: {"gross": g, "exempt": e, "net": n}
-               for t, (g, e, n) in totals.items()},
-}, indent=2), encoding="utf-8")
+out.write_text(
+    json.dumps(
+        {
+            "snapshot": SNAP.name,
+            "p1_class_gates": class_results,
+            "p2_p3_ratchet_gates": ratchet_rows,
+            "violations_table": {
+                "gross": total_viol,
+                "exempt": exempt_viol,
+                "net": total_viol - exempt_viol,
+                "high_crit": high_crit,
+                "by_severity": by_sev,
+            },
+            "totals": {t: {"gross": g, "exempt": e, "net": n} for t, (g, e, n) in totals.items()},
+        },
+        indent=2,
+    ),
+    encoding="utf-8",
+)
 print(f"\nreport written: {out.relative_to(ROOT)}")
 
 conn.close()

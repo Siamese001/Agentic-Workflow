@@ -24,9 +24,7 @@ class TestAuthorityLevelExtensions:
             ("h0", AuthorityLevel.HEALING),
         ],
     )
-    def test_from_slot_code_maps_new_slots(
-        self, code: str, expected: AuthorityLevel
-    ) -> None:
+    def test_from_slot_code_maps_new_slots(self, code: str, expected: AuthorityLevel) -> None:
         assert AuthorityLevel.from_slot_code(code) is expected
 
     def test_preexisting_slots_unchanged(self) -> None:
@@ -47,9 +45,7 @@ class TestAuthoritySlotInstantiation:
             ("H0", AuthorityLevel.HEALING),
         ],
     )
-    def test_new_slots_can_be_constructed(
-        self, slot_code: str, level: AuthorityLevel
-    ) -> None:
+    def test_new_slots_can_be_constructed(self, slot_code: str, level: AuthorityLevel) -> None:
         slot = AuthoritySlot(
             slot_type=slot_code,
             content="payload",

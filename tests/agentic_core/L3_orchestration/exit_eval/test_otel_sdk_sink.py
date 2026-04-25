@@ -136,10 +136,7 @@ class TestLiveOtelPath:
 
         # Per-dimension event
         gate_spans = [s for s in spans if s.name == "exit_control.gate"]
-        assert any(
-            any(e.name == "dimension_scored" for e in s.events)
-            for s in gate_spans
-        )
+        assert any(any(e.name == "dimension_scored" for e in s.events) for s in gate_spans)
 
         # Disposition → Gate link
         disp_spans = [s for s in spans if s.name == "exit_control.disposition"]

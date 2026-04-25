@@ -54,9 +54,7 @@ def _seed_ledger_with_fallback_heavy_pool(
 
 
 class TestActivationPipeline:
-    def test_run_on_empty_ledger_returns_ok_with_zero_drafts(
-        self, tmp_path: Path
-    ) -> None:
+    def test_run_on_empty_ledger_returns_ok_with_zero_drafts(self, tmp_path: Path) -> None:
         ledger_path = tmp_path / "empty_ledger.db"
         draft_dir = tmp_path / "drafts"
         # Touch the ledger by constructing (which creates the DB).
@@ -72,9 +70,7 @@ class TestActivationPipeline:
         assert summary["drafts_produced"] == 0
         assert summary["drafts_written"] == 0
 
-    def test_run_on_missing_ledger_returns_ok_false(
-        self, tmp_path: Path
-    ) -> None:
+    def test_run_on_missing_ledger_returns_ok_false(self, tmp_path: Path) -> None:
         summary = run(
             ledger_path=tmp_path / "does_not_exist.db",
             draft_dir=tmp_path / "drafts",
@@ -99,9 +95,7 @@ class TestActivationPipeline:
         assert summary["total_ledger_entries"] == 10, summary
         assert summary["resolved_entries"] == 10  # all timed out = resolved
         assert summary["bucket_count"] >= 1
-        assert summary["drafts_produced"] >= 1, (
-            "high timeout rate should trigger at least one draft proposal"
-        )
+        assert summary["drafts_produced"] >= 1, "high timeout rate should trigger at least one draft proposal"
         assert summary["drafts_written"] == summary["drafts_produced"]
 
         # Verify draft files exist and are valid JSON with expected shape.
@@ -115,9 +109,7 @@ class TestActivationPipeline:
             assert "target" in data
             assert "rationale" in data
 
-    def test_dry_run_produces_drafts_without_writing(
-        self, tmp_path: Path
-    ) -> None:
+    def test_dry_run_produces_drafts_without_writing(self, tmp_path: Path) -> None:
         ledger_path = tmp_path / "dryrun_ledger.db"
         draft_dir = tmp_path / "drafts"
 
@@ -149,9 +141,12 @@ class TestCliMain:
         _seed_ledger_with_fallback_heavy_pool(ledger, n_escalations=8)
 
         argv = [
-            "--ledger", str(ledger_path),
-            "--draft-dir", str(draft_dir),
-            "--run-id", _SEED_RUN_ID,
+            "--ledger",
+            str(ledger_path),
+            "--draft-dir",
+            str(draft_dir),
+            "--run-id",
+            _SEED_RUN_ID,
             "--json",
         ]
         rc = main(argv)
@@ -161,9 +156,7 @@ class TestCliMain:
         assert summary["ok"] is True
         assert summary["drafts_produced"] >= 1
 
-    def test_cli_main_missing_ledger_returns_2(
-        self, tmp_path: Path, capsys
-    ) -> None:
+    def test_cli_main_missing_ledger_returns_2(self, tmp_path: Path, capsys) -> None:
         from tools.meta_learning.run_hitl_consumer import main
 
         rc = main(["--ledger", str(tmp_path / "nope.db")])

@@ -30,6 +30,7 @@ Reference:
   - docs/reference/00_L5_Policy_Plane/guardrail_families.md
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -78,7 +79,8 @@ def run_chokepoint_v4(
     ingress_verdict = resolve_bank_verdict("ingress", tuple(ingress_outcomes))
     egress_verdict = resolve_bank_verdict("egress", tuple(egress_outcomes))
     egress_inspection = compose_egress_inspection(
-        egress_verdict, guard_model_outcome,
+        egress_verdict,
+        guard_model_outcome,
     )
 
     # final_action = most restrictive of ingress + egress_inspection

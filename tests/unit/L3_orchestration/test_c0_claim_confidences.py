@@ -57,19 +57,25 @@ class TestClaimGroundingConfidenceValidation:
     def test_whitespace_claim_id_rejected(self) -> None:
         with pytest.raises(C0ContractViolation, match="claim_id is required"):
             ClaimGroundingConfidence(
-                claim_id="   ", confidence=0.5, supporting_span_ids=("span-1",),
+                claim_id="   ",
+                confidence=0.5,
+                supporting_span_ids=("span-1",),
             )
 
     def test_out_of_range_confidence_rejected(self) -> None:
         with pytest.raises(C0ContractViolation, match="must be in"):
             ClaimGroundingConfidence(
-                claim_id="c-1", confidence=1.2, supporting_span_ids=("span-1",),
+                claim_id="c-1",
+                confidence=1.2,
+                supporting_span_ids=("span-1",),
             )
 
     def test_negative_confidence_rejected(self) -> None:
         with pytest.raises(C0ContractViolation, match="must be in"):
             ClaimGroundingConfidence(
-                claim_id="c-1", confidence=-0.1, supporting_span_ids=("span-1",),
+                claim_id="c-1",
+                confidence=-0.1,
+                supporting_span_ids=("span-1",),
             )
 
     def test_nan_confidence_rejected(self) -> None:
@@ -84,13 +90,17 @@ class TestClaimGroundingConfidenceValidation:
         # Prevents "claim with 0.8 confidence but no supporting spans".
         with pytest.raises(C0ContractViolation, match="no supporting_span_ids"):
             ClaimGroundingConfidence(
-                claim_id="c-1", confidence=0.8, supporting_span_ids=(),
+                claim_id="c-1",
+                confidence=0.8,
+                supporting_span_ids=(),
             )
 
     def test_zero_confidence_without_spans_allowed(self) -> None:
         # "Explicit no-support" marker — legitimate.
         claim = ClaimGroundingConfidence(
-            claim_id="c-1", confidence=0.0, supporting_span_ids=(),
+            claim_id="c-1",
+            confidence=0.0,
+            supporting_span_ids=(),
         )
         assert claim.confidence == 0.0
 
@@ -114,10 +124,14 @@ class TestContractWithClaimConfidences:
             cited_spans=(_span("span-1"), _span("span-2")),
             claim_confidences=(
                 ClaimGroundingConfidence(
-                    claim_id="c-1", confidence=0.9, supporting_span_ids=("span-1",),
+                    claim_id="c-1",
+                    confidence=0.9,
+                    supporting_span_ids=("span-1",),
                 ),
                 ClaimGroundingConfidence(
-                    claim_id="c-2", confidence=0.75, supporting_span_ids=("span-2",),
+                    claim_id="c-2",
+                    confidence=0.75,
+                    supporting_span_ids=("span-2",),
                 ),
             ),
         )
@@ -160,13 +174,19 @@ class TestContractWithClaimConfidences:
             cited_spans=(_span("span-1"), _span("span-2"), _span("span-3")),
             claim_confidences=(
                 ClaimGroundingConfidence(
-                    claim_id="c-1", confidence=0.95, supporting_span_ids=("span-1",),
+                    claim_id="c-1",
+                    confidence=0.95,
+                    supporting_span_ids=("span-1",),
                 ),
                 ClaimGroundingConfidence(
-                    claim_id="c-2", confidence=0.20, supporting_span_ids=("span-2",),
+                    claim_id="c-2",
+                    confidence=0.20,
+                    supporting_span_ids=("span-2",),
                 ),
                 ClaimGroundingConfidence(
-                    claim_id="c-3", confidence=0.88, supporting_span_ids=("span-3",),
+                    claim_id="c-3",
+                    confidence=0.88,
+                    supporting_span_ids=("span-3",),
                 ),
             ),
         )

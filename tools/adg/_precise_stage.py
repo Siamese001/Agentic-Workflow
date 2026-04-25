@@ -4,6 +4,7 @@ Iterates the candidates JSON and stages each source individually with
 `git add -u --`, which stages tracked deletions without co-staging unrelated
 workspace mods.
 """
+
 from __future__ import annotations
 
 import json
@@ -16,9 +17,7 @@ PLAN = REPO / "artifacts" / "adg" / "stub_archive_candidates.json"
 
 
 def run(args: list[str]) -> tuple[int, str]:
-    r = subprocess.run(
-        args, capture_output=True, text=True, cwd=str(REPO), timeout=30, check=False
-    )
+    r = subprocess.run(args, capture_output=True, text=True, cwd=str(REPO), timeout=30, check=False)
     return r.returncode, (r.stderr or r.stdout)
 
 
@@ -31,11 +30,7 @@ def main() -> int:
     if rc != 0:
         print(f"ls-files failed: {tracked_out}", file=sys.stderr)
         return 1
-    tracked = {
-        line.strip().replace("\\", "/")
-        for line in tracked_out.splitlines()
-        if line.strip()
-    }
+    tracked = {line.strip().replace("\\", "/") for line in tracked_out.splitlines() if line.strip()}
     targets = [s for s in sources if s in tracked]
 
     staged_ok = 0

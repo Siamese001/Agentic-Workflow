@@ -50,6 +50,7 @@ def _reset_singletons() -> Generator[None, None, None]:
 
 # ---- TemplateEntry -------------------------------------------------------
 
+
 class TestTemplateEntry:
     def test_frozen(self) -> None:
         entry = TemplateEntry(manifest=_manifest(), content="hello")
@@ -64,6 +65,7 @@ class TestTemplateEntry:
 
 
 # ---- Singleton semantics ------------------------------------------------
+
 
 class TestSingleton:
     def test_class_instance_cached(self) -> None:
@@ -87,6 +89,7 @@ class TestSingleton:
 
 
 # ---- Delegation to version store ----------------------------------------
+
 
 class TestGetS0:
     def test_delegates_to_store(self) -> None:
@@ -128,6 +131,7 @@ class TestGetI0Mixin:
 
 # ---- register_template --------------------------------------------------
 
+
 class TestRegisterTemplate:
     def test_hashes_content_sha256(self) -> None:
         registry = TemplateRegistry()
@@ -167,6 +171,7 @@ class TestRegisterTemplate:
 
 
 # ---- list_available_mixins ----------------------------------------------
+
 
 class TestListMixins:
     def test_delegates_to_store(self) -> None:

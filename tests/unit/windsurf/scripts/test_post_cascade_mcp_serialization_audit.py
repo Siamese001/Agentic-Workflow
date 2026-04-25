@@ -22,19 +22,14 @@ from pathlib import Path
 import pytest
 
 SCRIPT_PATH = (
-    Path(__file__).resolve().parents[4]
-    / ".windsurf"
-    / "scripts"
-    / "post_cascade_mcp_serialization_audit.py"
+    Path(__file__).resolve().parents[4] / ".windsurf" / "scripts" / "post_cascade_mcp_serialization_audit.py"
 )
 
 
 def _load_module():
     """Load the hook module by absolute path so tests don't depend on sys.path."""
 
-    spec = importlib.util.spec_from_file_location(
-        "post_cascade_mcp_serialization_audit", SCRIPT_PATH
-    )
+    spec = importlib.util.spec_from_file_location("post_cascade_mcp_serialization_audit", SCRIPT_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -140,9 +135,8 @@ def test_mixed_compliant_and_violating_blocks(audit):
 def test_prose_mention_of_mcp_name_not_a_violation(audit):
     """Mentioning ``mcp1_adg_health`` in markdown must not count as a call."""
 
-    text = (
-        "I considered using `mcp1_adg_health` but opted for a direct SQLite read.\n\n"
-        + _wrap(_invoke("read_file"))
+    text = "I considered using `mcp1_adg_health` but opted for a direct SQLite read.\n\n" + _wrap(
+        _invoke("read_file")
     )
     assert audit.detect_violations(text) == []
 

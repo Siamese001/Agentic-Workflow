@@ -1,4 +1,5 @@
 """Enumerate the 8 SC-1 gravity violations."""
+
 import sqlite3
 import sys
 from pathlib import Path

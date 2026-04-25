@@ -20,11 +20,7 @@ class TestY0Enum:
         # Enum auto() assigns incrementing ints — we use that ordering
         # as a stable proxy for "lower authority than HEALING, higher
         # than ZERO".
-        assert (
-            AuthorityLevel.HEALING.value
-            < AuthorityLevel.META_LEARNING.value
-            < AuthorityLevel.ZERO.value
-        )
+        assert AuthorityLevel.HEALING.value < AuthorityLevel.META_LEARNING.value < AuthorityLevel.ZERO.value
 
 
 class TestY0SlotRoundTrip:

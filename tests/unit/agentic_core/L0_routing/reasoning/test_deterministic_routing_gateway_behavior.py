@@ -23,9 +23,7 @@ pytestmark = pytest.mark.unit
 
 @pytest.fixture(scope="module")
 def drg():
-    return pytest.importorskip(
-        "agentic_core.L0_routing.reasoning.deterministic_routing_gateway"
-    )
+    return pytest.importorskip("agentic_core.L0_routing.reasoning.deterministic_routing_gateway")
 
 
 @pytest.fixture(scope="module")
@@ -143,8 +141,13 @@ class TestRoutingArtifact:
 
     @pytest.mark.parametrize(
         "route",
-        ["low_risk_bypass", "standard_validation", "human_escalation",
-         "policy_challenge_loop", "route_recovery_budget_overflow"],
+        [
+            "low_risk_bypass",
+            "standard_validation",
+            "human_escalation",
+            "policy_challenge_loop",
+            "route_recovery_budget_overflow",
+        ],
     )
     def test_as_route_decision_accepts_all_route_paths(self, drg, rat, route):
         a = _mk_artifact(drg, route_path=route)
@@ -190,7 +193,9 @@ class TestStampDecision:
         gw.stamp_decision("low_risk_bypass")
         assert len(gw.ledger()) == 3
         assert [a.route_path for a in gw.ledger()] == [
-            "standard_validation", "human_escalation", "low_risk_bypass",
+            "standard_validation",
+            "human_escalation",
+            "low_risk_bypass",
         ]
 
     def test_ledger_returns_copy_not_reference(self, drg):
@@ -221,9 +226,13 @@ class TestVerifyReplay:
         route, policy, trace = "standard_validation", "pol", "t-xyz"
         key = drg._compute_replay_key(route, policy, trace)
         artifact = drg.RoutingArtifact(
-            trace_id=trace, replay_key=key, determinism_digest="0" * 32,
-            route_path=route, policy_config_hash=policy,
-            timestamp_monotonic=0.0, metadata={},
+            trace_id=trace,
+            replay_key=key,
+            determinism_digest="0" * 32,
+            route_path=route,
+            policy_config_hash=policy,
+            timestamp_monotonic=0.0,
+            metadata={},
         )
         gw = drg.DeterministicRoutingGateway()
         assert gw.verify_replay(artifact) is True
@@ -233,10 +242,13 @@ class TestVerifyReplay:
         # Guarantee the first char flips to a different hex digit
         flipped = ("0" if key[0] != "0" else "1") + key[1:]
         artifact = drg.RoutingArtifact(
-            trace_id="t-1", replay_key=flipped,
+            trace_id="t-1",
+            replay_key=flipped,
             determinism_digest="0" * 32,
-            route_path="standard_validation", policy_config_hash="pol",
-            timestamp_monotonic=0.0, metadata={},
+            route_path="standard_validation",
+            policy_config_hash="pol",
+            timestamp_monotonic=0.0,
+            metadata={},
         )
         gw = drg.DeterministicRoutingGateway()
         assert gw.verify_replay(artifact) is False
@@ -244,10 +256,13 @@ class TestVerifyReplay:
     def test_false_when_route_path_tampered(self, drg):
         key = drg._compute_replay_key("standard_validation", "pol", "t-1")
         artifact = drg.RoutingArtifact(
-            trace_id="t-1", replay_key=key, determinism_digest="0" * 32,
+            trace_id="t-1",
+            replay_key=key,
+            determinism_digest="0" * 32,
             route_path="human_escalation",  # changed after key was computed
             policy_config_hash="pol",
-            timestamp_monotonic=0.0, metadata={},
+            timestamp_monotonic=0.0,
+            metadata={},
         )
         gw = drg.DeterministicRoutingGateway()
         assert gw.verify_replay(artifact) is False
@@ -272,9 +287,14 @@ class TestEscalateLowConfidence:
     def test_custom_threshold_respected(self, drg):
         gw = drg.DeterministicRoutingGateway()
         # 0.6 < 0.7 threshold -> would escalate; but 0.8 >= 0.7 should short-circuit
-        assert gw.escalate_low_confidence_route(
-            "standard_validation", confidence=0.8, threshold=0.7,
-        ) is False
+        assert (
+            gw.escalate_low_confidence_route(
+                "standard_validation",
+                confidence=0.8,
+                threshold=0.7,
+            )
+            is False
+        )
 
 
 # --------------------------------------------------------------------------- #

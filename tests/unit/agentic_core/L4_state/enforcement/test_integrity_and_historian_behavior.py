@@ -22,19 +22,31 @@ from agentic_core.L4_state.enforcement.knowledge_integrity_guard import (
 class TestKnowledgeNode:
     def test_signature_deterministic(self) -> None:
         a = KnowledgeNode(
-            content_hash="c", prev_hash="p", node_id="n", content={"x": 1},
+            content_hash="c",
+            prev_hash="p",
+            node_id="n",
+            content={"x": 1},
         )
         b = KnowledgeNode(
-            content_hash="c", prev_hash="p", node_id="n", content={"x": 1},
+            content_hash="c",
+            prev_hash="p",
+            node_id="n",
+            content={"x": 1},
         )
         assert a.signature == b.signature
 
     def test_signature_changes_with_content_hash(self) -> None:
         a = KnowledgeNode(
-            content_hash="c1", prev_hash="p", node_id="n", content={},
+            content_hash="c1",
+            prev_hash="p",
+            node_id="n",
+            content={},
         )
         b = KnowledgeNode(
-            content_hash="c2", prev_hash="p", node_id="n", content={},
+            content_hash="c2",
+            prev_hash="p",
+            node_id="n",
+            content={},
         )
         assert a.signature != b.signature
 
@@ -125,6 +137,7 @@ def historian(tmp_path: Path, fake_gateway: MagicMock):
         from agentic_core.L4_state.enforcement.mission_historian import (
             MissionHistorian,
         )
+
         yield MissionHistorian(log_path=log), log
 
 
@@ -137,6 +150,7 @@ class TestMissionHistorianConstruction:
             from agentic_core.L4_state.enforcement.mission_historian import (
                 MissionHistorian,
             )
+
             h = MissionHistorian()
             assert h.log_path == Path("mission_audit.csv")
 
@@ -149,7 +163,9 @@ class TestMissionHistorianConstruction:
 
 class TestMissionHistorianRecord:
     def test_record_calls_gateway(
-        self, historian: tuple, fake_gateway: MagicMock,
+        self,
+        historian: tuple,
+        fake_gateway: MagicMock,
     ) -> None:
         h, _ = historian
         with patch(
@@ -175,6 +191,7 @@ class TestMissionHistorianGetHistory:
             from agentic_core.L4_state.enforcement.mission_historian import (
                 MissionHistorian,
             )
+
             h = MissionHistorian(log_path=tmp_path / "missing.csv")
             # Remove file that init may have created (gw is mocked so no actual init)
             p = tmp_path / "missing.csv"
@@ -198,6 +215,7 @@ class TestMissionHistorianGetHistory:
             from agentic_core.L4_state.enforcement.mission_historian import (
                 MissionHistorian,
             )
+
             h = MissionHistorian(log_path=log)
             all_rows = h.get_history()
             assert len(all_rows) == 2
@@ -224,6 +242,7 @@ class TestMissionHistorianGetSummary:
             from agentic_core.L4_state.enforcement.mission_historian import (
                 MissionHistorian,
             )
+
             h = MissionHistorian(log_path=log)
             summary = h.get_summary()
             assert summary["total_records"] == 3

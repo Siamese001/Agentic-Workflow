@@ -61,25 +61,66 @@ def _adg_db(tmp_path: Path) -> Path:
         conn.executemany(
             "INSERT INTO nodes (id, adg_name, layer, resolved_path) VALUES (?,?,?,?)",
             [
-                (101, "ADG::Symbol::agentic_core.L5_safety.gateway.Guardian",
-                 "L5", "agentic_core/L5_safety/gateway.py"),
-                (202, "ADG::Symbol::agentic_core.L3_orchestration.router.Router",
-                 "L3", "agentic_core/L3_orchestration/router.py"),
-                (303, "ADG::Symbol::agentic_core.L6_observability.tracer.Tracer",
-                 "L6", "agentic_core/L6_observability/tracer.py"),
-                (404, "ADG::Module::some/unknown_module.py",
-                 "L_UNKNOWN", "some/unknown_module.py"),
+                (
+                    101,
+                    "ADG::Symbol::agentic_core.L5_safety.gateway.Guardian",
+                    "L5",
+                    "agentic_core/L5_safety/gateway.py",
+                ),
+                (
+                    202,
+                    "ADG::Symbol::agentic_core.L3_orchestration.router.Router",
+                    "L3",
+                    "agentic_core/L3_orchestration/router.py",
+                ),
+                (
+                    303,
+                    "ADG::Symbol::agentic_core.L6_observability.tracer.Tracer",
+                    "L6",
+                    "agentic_core/L6_observability/tracer.py",
+                ),
+                (404, "ADG::Module::some/unknown_module.py", "L_UNKNOWN", "some/unknown_module.py"),
             ],
         )
         conn.executemany(
             "INSERT INTO mv_hotspot_centrality VALUES (?,?,?,?,?,?,?,?,?,?)",
             [
-                ("snap1", 101, "ADG::Symbol::Guardian", "L5",
-                 "agentic_core/L5_safety/gateway.py", 100, 5, 105, 50.0, 0.8),
-                ("snap1", 202, "ADG::Symbol::Router", "L3",
-                 "agentic_core/L3_orchestration/router.py", 40, 10, 50, 5.0, 0.4),
-                ("snap1", 303, "ADG::Symbol::Tracer", "L6",
-                 "agentic_core/L6_observability/tracer.py", 5, 2, 7, 0.1, 0.05),
+                (
+                    "snap1",
+                    101,
+                    "ADG::Symbol::Guardian",
+                    "L5",
+                    "agentic_core/L5_safety/gateway.py",
+                    100,
+                    5,
+                    105,
+                    50.0,
+                    0.8,
+                ),
+                (
+                    "snap1",
+                    202,
+                    "ADG::Symbol::Router",
+                    "L3",
+                    "agentic_core/L3_orchestration/router.py",
+                    40,
+                    10,
+                    50,
+                    5.0,
+                    0.4,
+                ),
+                (
+                    "snap1",
+                    303,
+                    "ADG::Symbol::Tracer",
+                    "L6",
+                    "agentic_core/L6_observability/tracer.py",
+                    5,
+                    2,
+                    7,
+                    0.1,
+                    0.05,
+                ),
             ],
         )
         conn.commit()
@@ -119,10 +160,10 @@ def test_rerank_no_adg_path_returns_input(tmp_path: Path) -> None:
 def test_rerank_applies_layer_multiplier_and_centrality(adg_db: Path) -> None:
     engine = HybridSearchEngine(adg_db_path=str(adg_db))
     rows = [
-        _result("c-l5", 0.5, adg_node_id=101, layer="L5"),   # bonus = 0.15*2.0*0.8 = 0.24
-        _result("c-l3", 0.5, adg_node_id=202, layer="L3"),   # bonus = 0.15*1.75*0.4 = 0.105
-        _result("c-l6", 0.5, adg_node_id=303, layer="L6"),   # bonus = 0.15*0.75*0.05 = 0.0056
-        _result("c-none", 0.5),                              # no adg_node_id → unchanged
+        _result("c-l5", 0.5, adg_node_id=101, layer="L5"),  # bonus = 0.15*2.0*0.8 = 0.24
+        _result("c-l3", 0.5, adg_node_id=202, layer="L3"),  # bonus = 0.15*1.75*0.4 = 0.105
+        _result("c-l6", 0.5, adg_node_id=303, layer="L6"),  # bonus = 0.15*0.75*0.05 = 0.0056
+        _result("c-none", 0.5),  # no adg_node_id → unchanged
     ]
     out = engine._adg_rerank(rows)
     by_id = {r.chunk_id: r for r in out}

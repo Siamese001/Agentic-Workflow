@@ -23,6 +23,7 @@ register_http_tools(mcp)
 def _http_health_extra() -> dict[str, object]:
     try:
         import aiohttp  # type: ignore[import-not-found]
+
         aiohttp_version = getattr(aiohttp, "__version__", "?")
     except ImportError:
         aiohttp_version = "unavailable"
@@ -37,6 +38,7 @@ if __name__ == "__main__":
     # aiohttp session pools and doubles outbound connection count. Added
     # 2026-04-23 after RCA of orphan MCP session fleet.
     from tools.mcp.mcp_bootstrap import guard_single_instance
+
     guard_single_instance(
         "enhanced_http_server.py",
         skip_env="ENHANCED_HTTP_SKIP_ZOMBIE_KILL",

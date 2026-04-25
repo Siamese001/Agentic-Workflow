@@ -202,11 +202,7 @@ class ExecutionOrchestrator:
         _replay_mode = bool(intent_input.get("replay_mode", False))
         _namespace = intent_input.get("namespace", "default")
         _corpus_version = intent_input.get("corpus_version", "") or ""
-        _policy_version = (
-            intent_input.get("policy_version", "")
-            or getattr(_active, "policy_hash", "")
-            or ""
-        )
+        _policy_version = intent_input.get("policy_version", "") or getattr(_active, "policy_hash", "") or ""
         try:
             from agentic_core.L0_routing.reasoning.route_gates import (  # noqa: PLC0415
                 check_route_gates as _check_route_gates,
@@ -223,15 +219,17 @@ class ExecutionOrchestrator:
                 corpus_version=_corpus_version,
                 policy_version=_policy_version,
             )
-        except (ImportError, RuntimeError, ValueError) as _ge:  # guardian: allow-log-and-swallow -- cache gate is opportunistic; miss is safe
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+        ) as _ge:  # guardian: allow-log-and-swallow -- cache gate is opportunistic; miss is safe
             Logger.debug("[L0-ORCH] route_gates check skipped: %s", _ge)
             _gate_result = None
         if _gate_result is not None:
             _contract, _cached_payload = _gate_result
             _route_label = _contract["selected_route"].value  # "R1A" or "R1B"
-            Logger.info(
-                "[L0-ORCH] cache short-circuit route=%s namespace=%s", _route_label, _namespace
-            )
+            Logger.info("[L0-ORCH] cache short-circuit route=%s namespace=%s", _route_label, _namespace)
             return {
                 "path": None,
                 "state": "cache_hit",
@@ -289,9 +287,7 @@ class ExecutionOrchestrator:
                 )
 
                 # D2 key: canonical JSON string of the request (matches check_d2)
-                _d2_context = json.dumps(
-                    intent_input, sort_keys=True, separators=(",", ":"), default=str
-                )
+                _d2_context = json.dumps(intent_input, sort_keys=True, separators=(",", ":"), default=str)
                 # D1 key: SHA-256 hash of canonical JSON (matches check_d1)
                 _d1_key = _canonical_request_hash(intent_input)
                 if _semantic_cache_enabled():
@@ -347,7 +343,13 @@ class ExecutionOrchestrator:
                 corpus_version=corpus_version,
                 policy_version=policy_version,
             )
-        except (ImportError, RuntimeError, ValueError, TypeError, AttributeError) as _e:  # guardian: allow-return-none-swallow -- D2 semantic cache learn is opportunistic: orchestration already succeeded; cache learn failure must not fail the request
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+        ) as _e:  # guardian: allow-return-none-swallow -- D2 semantic cache learn is opportunistic: orchestration already succeeded; cache learn failure must not fail the request
             Logger.debug("[L0-ORCH] D2 semantic cache learn skipped: %s", _e)
             return
         # Optional L2 promotion — gated and quality-checked.
@@ -380,7 +382,11 @@ class ExecutionOrchestrator:
                     policy_version=policy_version,
                 ),
             )
-        except (RuntimeError, ValueError, TypeError) as _pe:  # guardian: allow-log-and-swallow -- L2 promotion is a background quality optimization; promotion failure is non-fatal to the current request
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as _pe:  # guardian: allow-log-and-swallow -- L2 promotion is a background quality optimization; promotion failure is non-fatal to the current request
             Logger.debug("[L0-ORCH] D2 semantic cache promote skipped: %s", _pe)
 
     def _populate_d1_cache(self, payload_key: str, l3_result: dict[str, Any]) -> None:
@@ -414,7 +420,13 @@ class ExecutionOrchestrator:
                 payload_key,
                 json.dumps(_serializable, sort_keys=True, default=str, separators=(",", ":")),
             )
-        except (ImportError, AttributeError, RuntimeError, TypeError, ValueError) as _e:  # guardian: allow-log-and-swallow -- D1 exact cache writeback is opportunistic; failure must not fail the request
+        except (
+            ImportError,
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as _e:  # guardian: allow-log-and-swallow -- D1 exact cache writeback is opportunistic; failure must not fail the request
             Logger.debug("[L0-ORCH] D1 exact cache writeback skipped: %s", _e)
 
     def plan_execution_with_impact_analysis(self, changed_files: list[str]) -> dict[str, Any]:

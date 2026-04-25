@@ -111,31 +111,23 @@ def validate(marker_line: str) -> ValidationResult:
             if not 0.0 <= gp <= 100.0:
                 errors.append(f"coverage_gap_pct must be 0.0-100.0, got {gp}")
         except ValueError:
-            errors.append(
-                f"coverage_gap_pct must be float, got '{fields['coverage_gap_pct']}'"
-            )
+            errors.append(f"coverage_gap_pct must be float, got '{fields['coverage_gap_pct']}'")
 
     if "layer" in fields:
         layer = fields["layer"].strip().upper()
         if not layer.startswith(VALID_LAYER_PREFIX):
-            errors.append(
-                f"layer must start with L0-L6 or L_, got '{fields['layer']}'"
-            )
+            errors.append(f"layer must start with L0-L6 or L_, got '{fields['layer']}'")
 
     if "surface" in fields:
         surface = fields["surface"].strip()
         surface_norm = surface[0].upper() + surface[1:].lower() if surface else ""
         if surface_norm not in VALID_SURFACES:
-            errors.append(
-                f"surface must be one of {sorted(VALID_SURFACES)}, got '{surface}'"
-            )
+            errors.append(f"surface must be one of {sorted(VALID_SURFACES)}, got '{surface}'")
 
     if "plan" in fields:
         plan = fields["plan"]
         if not plan or plan == "NEW:" or plan.startswith("(") or plan.endswith(")"):
-            errors.append(
-                f"plan must be a real slug or NEW:<slug>, got '{plan}'"
-            )
+            errors.append(f"plan must be a real slug or NEW:<slug>, got '{plan}'")
 
     if "reason" in fields and not fields["reason"].strip():
         errors.append("reason must not be empty")

@@ -83,7 +83,12 @@ class TelemetryBus:
         for handler in self._handlers[bus_type]:
             try:
                 handler(msg)
-            except (RuntimeError, ValueError, TypeError, KeyError):  # guardian: allow-silent-swallow -- handler notification: single handler failure non-fatal, continues other handlers
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+                KeyError,
+            ):  # guardian: allow-silent-swallow -- handler notification: single handler failure non-fatal, continues other handlers
                 pass  # Continue notifying other handlers
 
     def subscribe(

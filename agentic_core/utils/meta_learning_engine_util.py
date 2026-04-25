@@ -213,7 +213,14 @@ class MetaLearningEngine:
                         cls._kg_bridge = KnowledgeGraphBridge.get_instance()
                         cls._kg_bridge.register_agent(agent_name, agent_type="Agent")
                         Logger.debug(f"[{agent_name}] Connected to Knowledge Graph")
-                    except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                    except (
+                        ImportError,
+                        AttributeError,
+                        OSError,
+                        RuntimeError,
+                        ValueError,
+                        TypeError,
+                    ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                         cls._kg_bridge = None
                         Logger.warning("[%s] Knowledge Graph unavailable: %s", agent_name, e)
 
@@ -236,7 +243,13 @@ class MetaLearningEngine:
                     f"[{agent_name}] Discovered {len(context['observations'])} observations from Knowledge Graph",
                 )
             return context
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[{agent_name}] Context discovery failed: {e}")
             return {}
 
@@ -268,7 +281,13 @@ class MetaLearningEngine:
                 if not isinstance(result, dict):
                     payload = {"result": result, "_wrapped": True}
                 _schedule_learn_task(agent_name, context, payload)
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.warning("[%s] DNA WRITE ERROR: Could not learn experience: %s", agent_name, e)
         return result
 
@@ -297,7 +316,14 @@ class MetaLearningEngine:
                 duration_ms=duration_ms,
             )
             cls._kg_bridge.reflect_on_execution(trace)
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.warning("[%s] Reflection failed: %s", agent_name, e)
 
     @classmethod
@@ -318,7 +344,13 @@ class MetaLearningEngine:
                 success=success,
                 error_type=error_type,
             )
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.warning("[%s] Interaction recording failed: %s", caller_agent, e)
 
     @classmethod
@@ -328,7 +360,13 @@ class MetaLearningEngine:
             return
         try:
             cls._kg_bridge.establish_inheritance(child_entity=child_entity, parent_entity=parent_entity)
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.warning("[%s] Inheritance setup failed: %s", child_entity, e)
 
     @classmethod
@@ -338,7 +376,13 @@ class MetaLearningEngine:
             return
         try:
             cls._kg_bridge.mark_incompatibility(entity_a=entity_a, entity_b=entity_b, reason=reason)
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.warning("[%s] Incompatibility marking failed: %s", entity_a, e)
 
     @classmethod
@@ -348,7 +392,13 @@ class MetaLearningEngine:
             return
         try:
             cls._kg_bridge.add_observation(entity_name=agent_name, observation=observation)
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.warning("[%s] Observation recording failed: %s", agent_name, e)
 
     @classmethod
@@ -358,7 +408,13 @@ class MetaLearningEngine:
             return None
         try:
             return cls._kg_bridge.get_statistics()
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             return None
 
     @classmethod

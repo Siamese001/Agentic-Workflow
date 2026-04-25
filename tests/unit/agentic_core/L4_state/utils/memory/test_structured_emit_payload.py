@@ -58,7 +58,10 @@ def test_structured_emit_disabled_is_noop(captured_events, monkeypatch):
     monkeypatch.setenv("SEMANTIC_CACHE_STRUCTURED_EMIT", "0")
     events, scm = captured_events
     scm._emit_structured_cache_event(
-        namespace="x", tenant_id="y", cache_lineage="L2", reason_code="exact_hit",
+        namespace="x",
+        tenant_id="y",
+        cache_lineage="L2",
+        reason_code="exact_hit",
     )
     assert events == []
 
@@ -68,7 +71,10 @@ def test_invalid_reason_code_swallowed_no_emit(captured_events, monkeypatch):
     events, scm = captured_events
     # not in whitelist
     scm._emit_structured_cache_event(
-        namespace="x", tenant_id="y", cache_lineage="L1", reason_code="totally_made_up",
+        namespace="x",
+        tenant_id="y",
+        cache_lineage="L1",
+        reason_code="totally_made_up",
     )
     assert events == []  # ValueError swallowed, no emit
 
@@ -98,18 +104,25 @@ def test_l2_writeback_lineage(captured_events, monkeypatch):
 def test_freshness_class_age_buckets(captured_events, monkeypatch):
     """Old written_at → cold; recent → hot."""
     import time  # noqa: PLC0415
+
     monkeypatch.delenv("SEMANTIC_CACHE_STRUCTURED_EMIT", raising=False)
     events, scm = captured_events
     # written 2 days ago → cold
     scm._emit_structured_cache_event(
-        namespace="ns", tenant_id="t", cache_lineage="L2", reason_code="exact_hit",
+        namespace="ns",
+        tenant_id="t",
+        cache_lineage="L2",
+        reason_code="exact_hit",
         written_at=time.time() - 2 * 86400,
     )
     payload = json.loads(events[-1][2].split(":", 2)[2])
     assert payload["freshness_class"] == "cold"
     # written 5 minutes ago → hot
     scm._emit_structured_cache_event(
-        namespace="ns", tenant_id="t", cache_lineage="L2", reason_code="exact_hit",
+        namespace="ns",
+        tenant_id="t",
+        cache_lineage="L2",
+        reason_code="exact_hit",
         written_at=time.time() - 300,
     )
     payload = json.loads(events[-1][2].split(":", 2)[2])

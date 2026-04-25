@@ -43,9 +43,7 @@ class _StubExecAgent(L2ExecutionAgent):
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
         self.executed = True
-        return L2PhaseResult(
-            phase=L2ExecutionPhase.EXECUTE, success=True, output={"done": True}
-        )
+        return L2PhaseResult(phase=L2ExecutionPhase.EXECUTE, success=True, output={"done": True})
 
     def l2_synthesize(self, context: L2ExecutionContext) -> L2PhaseResult:
         return L2PhaseResult(phase=L2ExecutionPhase.SYNTHESIZE, success=True, output={})
@@ -88,18 +86,14 @@ class TestRunL2PhasesE2Gate:
 
     def test_approved_path_with_hitl_ticket(self) -> None:
         agent = _StubExecAgent()
-        contract = _high_consequence_contract(
-            meta={"e2_hitl_approval_ticket": "approved-1"}
-        )
+        contract = _high_consequence_contract(meta={"e2_hitl_approval_ticket": "approved-1"})
         result = agent.run_l2_phases(inputs={"tool_contract": contract})
         assert result["success"] is True
         assert agent.executed is True
 
     def test_non_toolcontract_in_inputs_is_ignored(self) -> None:
         agent = _StubExecAgent()
-        result = agent.run_l2_phases(
-            inputs={"tool_contract": "not-a-contract"}
-        )
+        result = agent.run_l2_phases(inputs={"tool_contract": "not-a-contract"})
         # The gate must be a no-op for non-ToolContract objects; execution
         # proceeds normally.
         assert result["success"] is True
@@ -134,9 +128,7 @@ class TestCallInterceptorE2Gate:
 
     def test_allows_with_hitl_ticket(self) -> None:
         ci = CallInterceptor()
-        contract = _high_consequence_contract(
-            meta={"e2_hitl_approval_ticket": "ticket-xyz"}
-        )
+        contract = _high_consequence_contract(meta={"e2_hitl_approval_ticket": "ticket-xyz"})
         r = ci.intercept(
             target="wire.high.consequence",
             args={"operation": "send"},

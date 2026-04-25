@@ -262,7 +262,9 @@ def safe_subprocess_run(
         " ".join(str(a) for a in argv),
         target_name="safe_subprocess.safe_subprocess_run",
     )
-    return subprocess.run(argv, cwd=cwd, capture_output=capture_output, text=text, check=check, **kwargs)  # guardian: allow-unbounded-subprocess -- canonical wrapper: caller supplies timeout via **kwargs; adding a default here would override caller intent
+    return subprocess.run(
+        argv, cwd=cwd, capture_output=capture_output, text=text, check=check, **kwargs
+    )  # guardian: allow-unbounded-subprocess -- canonical wrapper: caller supplies timeout via **kwargs; adding a default here would override caller intent
 
 
 def safe_subprocess_call(
@@ -356,4 +358,6 @@ def safe_subprocess_popen(
                     )
     if not isinstance(argv, list):
         raise TypeError("argv must be a list of strings")
-    return subprocess.Popen(argv, cwd=cwd, **kwargs)  # guardian: allow-popen-leak -- canonical Popen wrapper: caller owns process lifecycle (wait/terminate/with-block)
+    return subprocess.Popen(
+        argv, cwd=cwd, **kwargs
+    )  # guardian: allow-popen-leak -- canonical Popen wrapper: caller owns process lifecycle (wait/terminate/with-block)

@@ -11,7 +11,10 @@ def _validated_root(candidate: Path | None) -> Path | None:
         return None
     try:
         resolved = candidate.expanduser().resolve(strict=True)
-    except (OSError, RuntimeError):  # guardian: allow-return-none-swallow -- path resolution: non-fatal, caller falls back to None
+    except (
+        OSError,
+        RuntimeError,
+    ):  # guardian: allow-return-none-swallow -- path resolution: non-fatal, caller falls back to None
         return None
     if (resolved / ".git").is_dir() and (resolved / AGENTIC_CORE_DIR).is_dir():
         return resolved

@@ -397,7 +397,9 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
                     rule = SafetyRule.from_dict(rule_data)
                     self.rules[rule.rule_id] = rule
             Logger.info(f"Loaded {len(self.rules)} safety rules")
-        except Exception:  # guardian: allow-broad-exception -- rule load error re-raised to caller for handling
+        except (
+            Exception
+        ):  # guardian: allow-broad-exception -- rule load error re-raised to caller for handling
             raise
 
     # guardian: allow-type-erasure
@@ -411,7 +413,9 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
             }
             _wg.write_json(self.rules_storage_path, data, indent=2)
             Logger.debug(f"Saved {len(self.rules)} rules")
-        except Exception:  # guardian: allow-broad-exception -- rule save error re-raised to caller for handling
+        except (
+            Exception
+        ):  # guardian: allow-broad-exception -- rule save error re-raised to caller for handling
             raise
 
     async def detect_threats(self, text: str, context: dict[str, Any] | None = None) -> ThreatDetection:

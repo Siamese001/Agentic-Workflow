@@ -26,6 +26,7 @@ Reference:
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (G-15)
 Parent plan: .windsurf/plans/l5-governance-best-practice-gap-4615ae.md
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -49,11 +50,11 @@ class RiskEscalationReason(str, Enum):
     """Why the runtime band was escalated above the token's declared band."""
 
     NONE = "none"
-    EXTERNAL_RUNG = "external_rung"            # external-side-effect action
-    MUTATE_ON_WRITE_SURFACE = "mutate_write"   # mutate + write surface intersect
-    DELEGATION_DEPTH_AT_CAP = "depth_at_cap"   # depth equals cap (one more hop → fail)
-    UNKNOWN_CONNECTOR = "unknown_connector"    # connector not in registry
-    SHADOW_OPERATOR = "shadow_operator"        # invoking_user == unknown_local_operator
+    EXTERNAL_RUNG = "external_rung"  # external-side-effect action
+    MUTATE_ON_WRITE_SURFACE = "mutate_write"  # mutate + write surface intersect
+    DELEGATION_DEPTH_AT_CAP = "depth_at_cap"  # depth equals cap (one more hop → fail)
+    UNKNOWN_CONNECTOR = "unknown_connector"  # connector not in registry
+    SHADOW_OPERATOR = "shadow_operator"  # invoking_user == unknown_local_operator
 
 
 @dataclass(frozen=True)
@@ -226,8 +227,7 @@ def validate_handoff(
     cap = {"LOW": 3, "MODERATE": 2, "HIGH": 1}[risk_tier_band]
     if source_chain.delegation_depth + 1 > cap:
         failures.append(
-            f"DEPTH_CAP_EXCEEDED:{source_chain.delegation_depth + 1}>{cap}"
-            f"(band={risk_tier_band})",
+            f"DEPTH_CAP_EXCEEDED:{source_chain.delegation_depth + 1}>{cap}(band={risk_tier_band})",
         )
 
     # 2. Inbound scope whitelist + 3. ceiling
@@ -241,9 +241,7 @@ def validate_handoff(
             failures.append(f"SCOPE_ABOVE_CEILING:{scope}")
 
     # Compute effective scopes
-    effective = (
-        set(source_chain.scopes) | set(requested_scope_added)
-    ) - set(requested_scope_removed)
+    effective = (set(source_chain.scopes) | set(requested_scope_added)) - set(requested_scope_removed)
 
     for scope in effective:
         if ceiling and scope not in ceiling:

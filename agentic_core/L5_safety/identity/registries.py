@@ -22,6 +22,7 @@ Reference:
   - docs/contracts/identity_propagation.md §4 (Registry verification)
 Parent plan: .windsurf/plans/l5-governance-best-practice-gap-4615ae.md
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -203,9 +204,7 @@ class MCPConnectorRegistryEntry:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "allowed_invoking_user_kinds": sorted(
-                k.value for k in self.allowed_invoking_user_kinds
-            ),
+            "allowed_invoking_user_kinds": sorted(k.value for k in self.allowed_invoking_user_kinds),
             "allowed_principals": list(self.allowed_principals),
             "connector_id": self.connector_id,
             "deprecated": self.deprecated,
@@ -252,7 +251,8 @@ class RegistrySnapshot:
     ) -> str:
         payload = {
             "agents": sorted(
-                (a.to_dict() for a in agents), key=lambda d: d["agent_id"],
+                (a.to_dict() for a in agents),
+                key=lambda d: d["agent_id"],
             ),
             "connectors": sorted(
                 (c.to_dict() for c in connectors),
@@ -260,17 +260,23 @@ class RegistrySnapshot:
             ),
             "policy_version": policy_version,
             "prompts": sorted(
-                (p.to_dict() for p in prompts), key=lambda d: d["prompt_id"],
+                (p.to_dict() for p in prompts),
+                key=lambda d: d["prompt_id"],
             ),
             "tools": sorted(
-                (t.to_dict() for t in tools), key=lambda d: d["tool_id"],
+                (t.to_dict() for t in tools),
+                key=lambda d: d["tool_id"],
             ),
         }
         return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
     def to_json(self) -> str:
         return RegistrySnapshot._canonical(
-            self.policy_version, self.agents, self.tools, self.prompts, self.connectors,
+            self.policy_version,
+            self.agents,
+            self.tools,
+            self.prompts,
+            self.connectors,
         )
 
 
@@ -288,7 +294,11 @@ def build_registry_snapshot(
     prompts_t = tuple(prompts)
     connectors_t = tuple(connectors)
     canonical = RegistrySnapshot._canonical(
-        policy_version, agents_t, tools_t, prompts_t, connectors_t,
+        policy_version,
+        agents_t,
+        tools_t,
+        prompts_t,
+        connectors_t,
     )
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     return RegistrySnapshot(

@@ -21,6 +21,7 @@ Top-level wrapper keys (`hooks`, `mcpServers`, `_note`, schema version) are
 allowed. This gate is deterministic, has no external deps, and exits 1 on
 any unrecognized field.
 """
+
 from __future__ import annotations
 
 import json
@@ -69,9 +70,7 @@ KNOWN_POISON_FIELDS = {
 }
 
 
-def _check_entry(
-    entry: dict, allowed: set[str], path: str, violations: list[str]
-) -> None:
+def _check_entry(entry: dict, allowed: set[str], path: str, violations: list[str]) -> None:
     for key in entry.keys():
         if key in allowed:
             continue
@@ -104,23 +103,19 @@ def _validate_hooks(violations: list[str]) -> None:
     for key in sorted(unknown_top):
         if key.startswith("_"):
             continue
-        violations.append(
-            f"  ❌ {HOOKS_PATH.name}: unknown top-level key '{key}'"
-        )
+        violations.append(f"  ❌ {HOOKS_PATH.name}: unknown top-level key '{key}'")
 
     hooks_block = data.get("hooks", {})
     if not isinstance(hooks_block, dict):
         violations.append(
-            f"  ❌ {HOOKS_PATH.name}: 'hooks' must be an object, got "
-            f"{type(hooks_block).__name__}"
+            f"  ❌ {HOOKS_PATH.name}: 'hooks' must be an object, got {type(hooks_block).__name__}"
         )
         return
 
     for event_name, entries in hooks_block.items():
         if not isinstance(entries, list):
             violations.append(
-                f"  ❌ {HOOKS_PATH.name}.hooks.{event_name}: must be a list, got "
-                f"{type(entries).__name__}"
+                f"  ❌ {HOOKS_PATH.name}.hooks.{event_name}: must be a list, got {type(entries).__name__}"
             )
             continue
         for idx, entry in enumerate(entries):
@@ -151,15 +146,12 @@ def _validate_mcp(violations: list[str]) -> None:
     for key in sorted(unknown_top):
         if key.startswith("_"):
             continue
-        violations.append(
-            f"  ❌ {MCP_PATH.name}: unknown top-level key '{key}'"
-        )
+        violations.append(f"  ❌ {MCP_PATH.name}: unknown top-level key '{key}'")
 
     servers = data.get("mcpServers", {})
     if not isinstance(servers, dict):
         violations.append(
-            f"  ❌ {MCP_PATH.name}: 'mcpServers' must be an object, got "
-            f"{type(servers).__name__}"
+            f"  ❌ {MCP_PATH.name}: 'mcpServers' must be an object, got {type(servers).__name__}"
         )
         return
 
@@ -185,10 +177,7 @@ def main() -> int:
     _validate_mcp(violations)
 
     if violations:
-        print(
-            f"❌ Windsurf config schema violations "
-            f"({len(violations)} issue(s)):"
-        )
+        print(f"❌ Windsurf config schema violations ({len(violations)} issue(s)):")
         for v in violations:
             print(v)
         print(
@@ -199,10 +188,7 @@ def main() -> int:
         )
         return 1
 
-    print(
-        "✅ Windsurf config schema purity validated "
-        "(hooks.json + mcp_config.json)"
-    )
+    print("✅ Windsurf config schema purity validated (hooks.json + mcp_config.json)")
     return 0
 
 

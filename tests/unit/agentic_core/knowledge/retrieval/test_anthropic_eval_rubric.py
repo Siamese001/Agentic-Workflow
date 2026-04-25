@@ -136,8 +136,13 @@ def test_custom_thresholds_change_status():
 def test_overall_status_is_worst_of_dimensions():
     # Relevance red + everything else green -> overall red
     measurements = [
-        _m(relevance_score=0.4, faithfulness_score=0.95, citation_correctness=0.9,
-           latency_ms=500.0, cost_usd=0.01),
+        _m(
+            relevance_score=0.4,
+            faithfulness_score=0.95,
+            citation_correctness=0.9,
+            latency_ms=500.0,
+            cost_usd=0.01,
+        ),
     ]
     card = build_report_card("worst-wins", measurements)
     assert card.overall_status == "red"
@@ -145,8 +150,13 @@ def test_overall_status_is_worst_of_dimensions():
 
 def test_overall_yellow_when_no_red_but_any_yellow():
     measurements = [
-        _m(relevance_score=0.72, faithfulness_score=0.95, citation_correctness=0.9,
-           latency_ms=500.0, cost_usd=0.01),
+        _m(
+            relevance_score=0.72,
+            faithfulness_score=0.95,
+            citation_correctness=0.9,
+            latency_ms=500.0,
+            cost_usd=0.01,
+        ),
     ]
     card = build_report_card("yellow", measurements)
     assert card.overall_status == "yellow"
@@ -154,8 +164,13 @@ def test_overall_yellow_when_no_red_but_any_yellow():
 
 def test_overall_green_when_all_green():
     measurements = [
-        _m(relevance_score=0.95, faithfulness_score=0.98, citation_correctness=0.92,
-           latency_ms=500.0, cost_usd=0.01),
+        _m(
+            relevance_score=0.95,
+            faithfulness_score=0.98,
+            citation_correctness=0.92,
+            latency_ms=500.0,
+            cost_usd=0.01,
+        ),
     ]
     card = build_report_card("green", measurements)
     assert card.overall_status == "green"
@@ -214,8 +229,7 @@ def test_no_failures_produces_empty_counter():
 
 def test_markdown_contains_key_sections():
     measurements = [
-        _m(relevance_score=0.9, latency_ms=1000.0, cost_usd=0.05,
-           failure_mode=FAILURE_JSON_PARSE),
+        _m(relevance_score=0.9, latency_ms=1000.0, cost_usd=0.05, failure_mode=FAILURE_JSON_PARSE),
     ]
     card = build_report_card("md-test", measurements)
     md = report_card_to_markdown(card)

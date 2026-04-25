@@ -18,6 +18,7 @@ Helper primitives:
 All helpers are ADDITIVE. No existing agent is required to migrate in this
 plan; W6 demonstrates the pattern on two exemplar agents.
 """
+
 from __future__ import annotations
 
 import time

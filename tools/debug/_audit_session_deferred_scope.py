@@ -1,4 +1,5 @@
 """Audit: list all DEFERRED_SCOPE captures since a cutoff timestamp."""
+
 from __future__ import annotations
 
 import json

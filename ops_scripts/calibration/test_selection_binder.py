@@ -99,8 +99,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if not LEDGER_DB.exists():
-        print(f"[test_selection_binder] ledger not found: {LEDGER_DB}",
-              file=sys.stderr)
+        print(f"[test_selection_binder] ledger not found: {LEDGER_DB}", file=sys.stderr)
         return 0
 
     try:
@@ -117,8 +116,7 @@ def main() -> int:
         conn.close()
 
     if not predictions:
-        print("[test_selection_binder] no unbound triage_selection rows.",
-              file=sys.stderr)
+        print("[test_selection_binder] no unbound triage_selection rows.", file=sys.stderr)
         return 0
 
     bound = 0
@@ -162,8 +160,10 @@ def main() -> int:
 
     stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
     mode = "would bind" if args.dry_run else "bound"
-    print(f"[test_selection_binder] {stamp} {mode}={bound} "
-          f"lastfailed_count={len(lastfailed)} scanned_predictions={len(predictions)}")
+    print(
+        f"[test_selection_binder] {stamp} {mode}={bound} "
+        f"lastfailed_count={len(lastfailed)} scanned_predictions={len(predictions)}"
+    )
     return 0
 
 

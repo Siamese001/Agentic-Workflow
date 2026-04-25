@@ -234,7 +234,10 @@ class SafetyAgentFactory:
         try:
             module = import_module(module_name)
             agent_cls = getattr(module, class_name)
-        except (ImportError, AttributeError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallowallow-return-none-swallow -- safety agent lookup: optional agent, caller treats None as unavailable
+        except (
+            ImportError,
+            AttributeError,
+        ) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallowallow-return-none-swallow -- safety agent lookup: optional agent, caller treats None as unavailable
             logger.warning(
                 "Safety agent unavailable agent=%s module=%s class=%s error=%s",
                 agent_name,
@@ -255,7 +258,10 @@ class SafetyAgentFactory:
         try:
             module = import_module("agentic_core.L5_safety.reasoning.CodeHealerAgent")
             factory = getattr(module, "create_legacy_import_healer")
-        except (ImportError, AttributeError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallowallow-return-none-swallow -- legacy healer factory: optional, caller treats None as unavailable
+        except (
+            ImportError,
+            AttributeError,
+        ) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallowallow-return-none-swallow -- legacy healer factory: optional, caller treats None as unavailable
             logger.warning("Legacy import healer factory unavailable: %s", exc)
             return None
 

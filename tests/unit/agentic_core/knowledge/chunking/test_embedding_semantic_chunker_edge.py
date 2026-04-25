@@ -312,9 +312,7 @@ class TestMultiParagraphAndUnicode:
             assert needle in joined
 
     def test_unicode_preserved(self):
-        c = EmbeddingSemanticChunker(
-            embedder=_identity_stub, min_chunk_chars=0, max_chunk_chars=10_000
-        )
+        c = EmbeddingSemanticChunker(embedder=_identity_stub, min_chunk_chars=0, max_chunk_chars=10_000)
         text = "Café résumé naïve. Ürümqi Москва Tōkyō. 北京 東京 ソウル."
         chunks = c.chunk(text, doc_id="uni")
         joined = " ".join(ch.content for ch in chunks)
@@ -390,10 +388,7 @@ class TestExactContent:
             min_chunk_chars=0,
             max_chunk_chars=10_000,
         )
-        text = (
-            "Alpha one. Alpha two. Alpha three. "
-            "Beta one. Beta two. Beta three."
-        )
+        text = "Alpha one. Alpha two. Alpha three. Beta one. Beta two. Beta three."
         chunks = c.chunk(text, doc_id="exact")
         assert len(chunks) == 2
         assert "alpha" in chunks[0].content.lower()

@@ -69,7 +69,11 @@ class Proc:
 
 def _run(cmd: list[str]) -> str:
     return subprocess.run(
-        cmd, capture_output=True, text=True, timeout=30, check=False,
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
     ).stdout
 
 
@@ -81,12 +85,18 @@ def list_processes_windows() -> list[Proc]:
         "Select-Object ProcessId, CreationDate, CommandLine | "
         "ConvertTo-Json -Depth 2 -Compress"
     )
-    raw = _run([
-        "powershell", "-NoProfile", "-Command", ps_script,
-    ])
+    raw = _run(
+        [
+            "powershell",
+            "-NoProfile",
+            "-Command",
+            ps_script,
+        ]
+    )
     if not raw.strip():
         return []
     import json
+
     try:
         items = json.loads(raw)
     except json.JSONDecodeError:
@@ -165,11 +175,7 @@ def find_orphans(
         break
     min_orphan_age = timedelta(minutes=stale_min)
     now = datetime.now()
-    return [
-        p for p in mcp_procs
-        if p.started < active_cutoff
-        and (now - p.started) >= min_orphan_age
-    ]
+    return [p for p in mcp_procs if p.started < active_cutoff and (now - p.started) >= min_orphan_age]
 
 
 def kill(pid: int) -> tuple[bool, str]:
@@ -178,7 +184,10 @@ def kill(pid: int) -> tuple[bool, str]:
         if os.name == "nt":
             rc = subprocess.run(
                 ["taskkill", "/F", "/PID", str(pid)],
-                capture_output=True, text=True, timeout=10, check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
             )
             return rc.returncode == 0, (rc.stderr or rc.stdout).strip()
         os.kill(pid, signal.SIGTERM)
@@ -190,27 +199,30 @@ def kill(pid: int) -> tuple[bool, str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--kill", action="store_true",
+        "--kill",
+        action="store_true",
         help="kill detected orphans (default: report only)",
     )
     parser.add_argument(
-        "--cohort-gap-sec", type=int, default=60,
+        "--cohort-gap-sec",
+        type=int,
+        default=60,
         help="max seconds between neighbour start-times inside a cohort",
     )
     parser.add_argument(
-        "--stale-min", type=int, default=5,
+        "--stale-min",
+        type=int,
+        default=5,
         help="minimum age (minutes) for a proc to be considered orphan",
     )
     parser.add_argument(
-        "--json", action="store_true",
+        "--json",
+        action="store_true",
         help="emit JSON instead of human summary",
     )
     args = parser.parse_args(argv)
 
-    listed = (
-        list_processes_windows() if os.name == "nt"
-        else list_processes_posix()
-    )
+    listed = list_processes_windows() if os.name == "nt" else list_processes_posix()
     orphans = find_orphans(
         listed,
         cohort_gap_sec=args.cohort_gap_sec,
@@ -219,27 +231,33 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.json:
         import json
-        print(json.dumps({
-            "total_procs_seen": len(listed),
-            "mcp_procs": sum(1 for p in listed if p.is_mcp()),
-            "orphan_count": len(orphans),
-            "orphans": [
-                {"pid": p.pid, "started": p.started.isoformat(),
-                 "cmdline": p.cmdline}
-                for p in orphans
-            ],
-        }, indent=2))
+
+        print(
+            json.dumps(
+                {
+                    "total_procs_seen": len(listed),
+                    "mcp_procs": sum(1 for p in listed if p.is_mcp()),
+                    "orphan_count": len(orphans),
+                    "orphans": [
+                        {"pid": p.pid, "started": p.started.isoformat(), "cmdline": p.cmdline}
+                        for p in orphans
+                    ],
+                },
+                indent=2,
+            )
+        )
         return 1 if orphans and not args.kill else 0
 
-    print(f"[orphan-mcp] scanned {len(listed)} python/node procs, "
-          f"{sum(1 for p in listed if p.is_mcp())} look like MCP, "
-          f"{len(orphans)} are orphans")
+    print(
+        f"[orphan-mcp] scanned {len(listed)} python/node procs, "
+        f"{sum(1 for p in listed if p.is_mcp())} look like MCP, "
+        f"{len(orphans)} are orphans"
+    )
     if not orphans:
         print("[orphan-mcp] clean.")
         return 0
     for p in orphans:
-        print(f"  PID {p.pid:>6} started={p.started.isoformat()} "
-              f"cmd={p.cmdline[:120]}")
+        print(f"  PID {p.pid:>6} started={p.started.isoformat()} cmd={p.cmdline[:120]}")
     if not args.kill:
         print("[orphan-mcp] rerun with --kill to terminate.")
         return 1

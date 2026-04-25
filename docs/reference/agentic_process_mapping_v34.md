@@ -544,148 +544,39 @@
          [ FUTURE RUNTIME SURFACES UPDATED: BUS U pushes Prompts, Policies, Baselines, Rubrics, and Approved Reason Priors ]
          [ INVARIANT: learning signals inform next-run behavior only. They do not mutate or rescue the completed run. ]
 
- ------------------------------------------------------------------------------------------------------------------------------
- §6 ADDENDUM (2026-04-23, plan shadow-learning-bestpractice-gap-7b3e4c) — external best practice closure map:
- ------------------------------------------------------------------------------------------------------------------------------
- Capability vs Regression taxonomy        → config/judges/rubrics.yaml::eval_taxonomy (Anthropic)
- Partial-credit composite scoring         → config/judges/rubrics.yaml::partial_credit (Anthropic)
- Governance + Security rubric families    → config/judges/rubrics.yaml::governance_dimensions, security_dimensions
- Golden dataset + ≥2-rater κ≥0.6 gate     → data/eval/golden/** (rag/gov/sec) (Anthropic + Google)
- Adversarial / red-team suite             → data/eval/adversarial/**, tools/eval/adversarial_generator.py (Google pillar 4)
- Prod→golden virtuous loop                → system_learning/adapters/golden_curation_adapter.py (Google)
- Dueling-LLM synthetic dataset            → tools/eval/dueling_llm_synth.py (Google)
- Transcript sampling + regrade queue      → tools/eval/transcript_sampler.py (Anthropic step 6)
- Trace-grade review surface               → tools/eval/trace_grade_view.py + otel_mcp (OpenAI)
- Eval-in-CI quality gate                  → .github/workflows/eval-harness.yml (OpenAI + Google)
- Eval trial isolation contract            → ADR-038 + tests/eval/conftest.py (Anthropic step 4)
- Saturation detector + promotion proposal → tools/eval/saturation_detector.py (Anthropic step 7)
- Prompt optimizer prototype               → system_learning/engines/prompt_optimizer_engine.py (OpenAI)
- Bus U — rubric channel                   → system_learning/adapters/rubric_publication_adapter.py
- Bus U — reason-prior channel             → system_learning/adapters/reason_prior_adapter.py
- ------------------------------------------------------------------------------------------------------------------------------
- Every channel above is proposal-only and flows through the approval gauntlet + UWG. No current-run mutation is introduced.
- ------------------------------------------------------------------------------------------------------------------------------
+ ========================================================================================================================================
+SIMPLE QUERY EXAMPLES — v14
+========================================================================================================================================
 
-==============================================================================================================================
-[4.1] L2 MODULE BREAKOUT — EXECUTION COMPONENT MAP
-==============================================================================================================================
-Canonical mapping of L2 execution modules to process map phases E1-E5.
-Generated: 2026-04-03 | ADG Source: adg_indexed_04032026_1923.sqlite
+R1A EXACT CACHE:
+- "What does ADR mean?"
+- "What is golden path meaning?"
 
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.1] Phase E1 — PRE-COMMIT / PREP DESK (L2.1 INIT)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2ExecutionAgent (base)                          │ Phase orchestration             │ run_l2_phases()
-L2EmbeddingSovereignAgent                        │ Embedding context setup         │ l2_init()
-L2RedisSovereignAgent                            │ Redis connection init           │ l2_init()
-L2SovereignMCPGatewayAgent                      │ MCP tool binding                │ l2_init()
-L2StructuredEngineAgent                          │ Intent validation               │ l2_init()
-L2SubAtomicRegistryAgent                         │ Registry lookup                 │ l2_init()
-ToolIntentExecutor                               │ Sandbox validation              │ l2_init()
+R1B SEMANTIC CACHE:
+- "Explain Jaccard again."
+- "Remind me what semantic cache does."
 
-Responsibilities:
-- Environment/capabilities/budget locking
-- Idempotency key binding  
-- Blueprint hash binding for healing replay
-- Sandbox state validation (for mutating ops)
+R3 SIMPLE GROUNDED READ:
+- "What does C5 say about prompt assembly?"
+- "Review this file and tell me where retrieval happens."
+- "What does my lease say about the pet policy?"
 
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.2] Phase E2 — VALIDATE / WORK ORDER CHECK (L2.1 INIT cont.)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-ToolIntentExecutor                               │ Intent + sandbox validation     │ l2_init() → validation
-SovereignLLMGateway                              │ Capability token validation     │ authorize_and_execute()
-UniversalWriteGateway                            │ Write permission check          │ MutationRecord validation
+R4 SINGLE ACTION:
+- "Create a calendar event for Monday at 3 PM."
+- "Draft an email to Amy."
+- "Archive these three emails."
 
-Validation Gates:
-- Integrity & Signature Chain
-- Cap Scope & Env Budget
-- Schema & Side-Effect Class
-- Mutation Type Sanity
+R3/R4 MANAGED WORKFLOW:
+- "Review 90 days of tickets, incident logs, and churn notes; find top themes, pull evidence,
+   rerun weak areas, rank causes, and draft remediation."
+- "Audit the repo for OpenAI embedding call sites, classify each one, propose BGE migration,
+   and produce a test plan."
 
-FAIL here = Request rejected before any work starts (sealed rejection)
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.3] Phase E3 — EXECUTE / DOING THE WORK (L2.2 EXECUTE)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2EmbeddingSovereignAgent                        │ Generate embeddings             │ l2_execute()
-L2RedisSovereignAgent                            │ Cache operations                │ l2_execute()
-L2SovereignMCPGatewayAgent                       │ MCP tool invocation             │ l2_execute()
-L2StructuredEngineAgent                          │ Process structured intents      │ l2_execute()
-L2SubAtomicRegistryAgent                         │ Registry operations             │ l2_execute()
-ToolIntentExecutor                               │ Tool invocation with sandbox    │ l2_execute()
-EmbeddingSovereignAgent (legacy)                 │ Async embedding generation      │ get_embedding()
-RedisSovereignAgent (legacy)                     │ Redis get/set/delete            │ cache operations
-
-Execution Model:
-- Bounded invocation with timeout/circuit breaker
-- Isolated execution (sandbox for mutating ops)
-- Execution telemetry emission
-- Result classification: SUCCESS | SOFT_REPAIRABLE | FAIL_TERMINAL
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.4] Phase E4 — HEAL LOOP / FIXING MISTAKES (L2.3 EVALUATE_HEAL)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2ExecutionAgent (base)                          │ Phase result evaluation         │ should_attempt_heal()
-L2EmbeddingSovereignAgent                        │ Provider fallback (bge→gemini)  │ l2_evaluate_and_heal()
-L2RedisSovereignAgent                            │ Retry with reconnection         │ l2_evaluate_and_heal()
-L2SovereignMCPGatewayAgent                       │ Tool retry / fallback           │ l2_evaluate_and_heal()
-L2StructuredEngineAgent                          │ Intent reprocessing             │ l2_evaluate_and_heal()
-L2SubAtomicRegistryAgent                         │ Registry retry                  │ l2_evaluate_and_heal()
-ToolIntentExecutor                               │ Retry with recovery             │ l2_evaluate_and_heal()
-healing_tier_router.py                           │ Tier-based routing              │ route_by_confidence()
-healing_tier_dispatcher.py                       │ Healing dispatch                │ dispatch_healing()
-
-Healing Tiers:
-- LOCAL_AGENT: In-agent retry (handled by l2_evaluate_and_heal)
-- COORDINATED: Multi-agent healing (via healing_tier_router)
-- ESCALATED: Human-in-the-loop or abort
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.5] Phase E5 — SEAL OUTPUT / FINAL FOLDER (L2.4 SYNTHESIZE)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2EmbeddingSovereignAgent                        │ Embedding result packaging      │ l2_synthesize()
-L2RedisSovereignAgent                            │ Operation result packaging      │ l2_synthesize()
-L2SovereignMCPGatewayAgent                      │ Tool result packaging           │ l2_synthesize()
-L2StructuredEngineAgent                          │ Intent result packaging         │ l2_synthesize()
-L2SubAtomicRegistryAgent                         │ Registry result packaging       │ l2_synthesize()
-ToolIntentExecutor                               │ ToolResult creation             │ l2_synthesize()
-
-Sealing Requirements:
-- Final answer / artifact attachment
-- Traces / ancestry / lineage
-- Replay keys / validation counters
-- Terminal class: SUCCESS | FAILURE | NEEDS_HELP | REJECTED
-- NO durable commit (L2 only emits sealed artifacts)
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.6] L2 Execution Contract Compliance Matrix
-----------------------------------------------------------------------------------------------------------------------------
-AGENT/WRAPPER                    │ l2_init │ l2_execute │ l2_evaluate_and_heal │ l2_synthesize │ STATUS
-───────────────────────────────────┼─────────┼────────────┼──────────────────────┼───────────────┼──────────
-L2EmbeddingSovereignAgent        │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2RedisSovereignAgent            │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2SovereignMCPGatewayAgent        │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2StructuredEngineAgent           │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2SubAtomicRegistryAgent          │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-ToolIntentExecutor                │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-EmbeddingSovereignAgent (legacy)   │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-RedisSovereignAgent (legacy)       │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-SovereignMCPGateway (legacy)       │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-StructuredEngineAgent (legacy)    │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-SubAtomicRegistryAgent (legacy)    │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-ToolsmithAgent (deprecated)        │    N/A  │    N/A     │         N/A          │      N/A      │ DEPRECATED
-
-Migration Path: Legacy agents → L2 Wrappers → Full L2ExecutionAgent inheritance
+R5 FALLBACK:
+- "Delete anything that looks old."
+- "Send this vague message to everyone in my contacts."
+- "Use whatever credentials you can find."
+- "Tell me what the document says" when no document exists.
 
 ==============================================================================================================================
 [ LEGEND ] LAYER DEFINITIONS (L0 - L6)
@@ -700,36 +591,3 @@ Migration Path: Legacy agents → L2 Wrappers → Full L2ExecutionAgent inherita
  L5    │ Safety Officer           │ Cross-cutting policy plane; enforces guardrails across all runtime/exit points.           
  L6    │ Observer                 │ Shadow evaluation; monitors telemetry for future-run system learning and RCA.             
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-==============================================================================================================================
-[APPENDIX A] L2 BEST-PRACTICES HARDENING MODULES (2026-Q2)
-==============================================================================================================================
-Additive modules landed under plan .windsurf/plans/l2-execute-best-practices-gap-b7c4e2.md.
-None change the canonical E1-E5 flow; they provide opt-in primitives called by new consumers
-and (selectively) wired into run_l2_phases() and CallInterceptor.intercept().
-
-Gap   | Module path                                                                           | Phase
-------+----------------------------------------------------------------------------------------+--------
-G1    | agentic_core/L2_execution/enforcement/tool_guardrail_pipeline.py                      | E2/E3/E5
-G8    | agentic_core/L2_execution/enforcement/e2_validate_before_execute.py                   | E2
-G9    | agentic_core/L2_execution/types/l2_safety_contracts.py                                | E2
-G2    | agentic_core/L2_execution/enforcement/egress_proxy.py                                 | E1/E3
-G3    | agentic_core/L2_execution/capability/scoped_credential_mint.py                        | E1
-G16   | agentic_core/L2_execution/capability/step_scoped_identity.py                          | E1
-G4/G5/G10 | agentic_core/L2_execution/types/l2_tool_enrichment.py                             | E2/E3/E4
-G6    | agentic_core/L2_execution/reasoning/tool_search.py                                    | E1
-G7    | agentic_core/L2_execution/reasoning/programmatic_tool_runner.py                       | E3
-G12   | agentic_core/L2_execution/enforcement/kill_switch.py                                  | E3/E4
-G11   | agentic_core/L2_execution/enforcement/llm_call_audit.py                               | E2/E3
-G13   | agentic_core/L2_execution/enforcement/runtime_behavior_monitor.py                     | cross-cut
-G14   | agentic_core/L2_execution/enforcement/seal_schema_validator.py                        | E5
-G15   | agentic_core/L2_execution/types/trace_grading_hooks.py                                | E5 -> L6 6B
-
-Wired call sites (W1-P1.3):
-  * L2ExecutionAgent.run_l2_phases() gains _maybe_gate_e2() between L2.1 INIT and L2.2 EXECUTE.
-  * CallInterceptor.intercept() surfaces needs_hitl_confirmation + e2_verdict when context
-    carries a ToolContract whose SafetyProfile requires E2 confirmation.
-
-Opt-in by design. Legacy call sites without tool_contract in inputs see zero behavior change.
-
-Verification: python -m pytest tests/unit/agentic_core/L2_execution/test_l2_safety_w1.py tests/unit/agentic_core/L2_execution/test_l2_safety_w1_p3_wiring.py tests/unit/agentic_core/L2_execution/test_l2_safety_w2.py tests/unit/agentic_core/L2_execution/test_l2_safety_w3.py tests/unit/agentic_core/L2_execution/test_l2_safety_w4.py tests/unit/agentic_core/L2_execution/test_l2_safety_w5.py -> 102 passed.

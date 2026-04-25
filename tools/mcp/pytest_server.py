@@ -34,8 +34,10 @@ mcp.tool()(list_pytest_config)
 
 def _pytest_health_extra() -> dict[str, object]:
     import sys as _sys
+
     try:
         import pytest as _pytest  # type: ignore[import-not-found]
+
         version = getattr(_pytest, "__version__", "?")
     except ImportError:
         version = "unavailable"
@@ -51,6 +53,7 @@ if __name__ == "__main__":
     # on the same test collection / coverage artifacts produce flaky,
     # duplicated results. Added 2026-04-23 after RCA of orphan MCP fleet.
     from tools.mcp.mcp_bootstrap import guard_single_instance
+
     guard_single_instance(
         "pytest_server.py",
         skip_env="PYTEST_MCP_SKIP_ZOMBIE_KILL",

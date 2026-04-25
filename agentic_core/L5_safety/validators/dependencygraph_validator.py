@@ -362,7 +362,9 @@ class ValidationContext:
         api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
         if api_key:
             try:
-                self._client = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(self.model_id)
+                self._client = importlib.import_module("infrastructure.sdks_mcps").create_gemini_model(
+                    self.model_id
+                )
                 self.intelligence_enabled = True
                 print("      [OK] Gemini Connected")
             except (ImportError, AttributeError, ValueError) as e:

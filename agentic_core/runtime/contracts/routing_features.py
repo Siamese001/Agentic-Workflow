@@ -154,11 +154,13 @@ class RoutingFeatureVector:
     def __post_init__(self) -> None:
         # Validate numeric scores first — fail fast on bad input.
         validated_ground = _validate_unit_or_sentinel(
-            "grounding_need_score", self.grounding_need_score,
+            "grounding_need_score",
+            self.grounding_need_score,
         )
         validated_ood = _validate_unit_or_sentinel("ood_score", self.ood_score)
         validated_budget = _validate_unit_or_sentinel(
-            "budget_headroom_ratio", self.budget_headroom_ratio,
+            "budget_headroom_ratio",
+            self.budget_headroom_ratio,
         )
 
         # Validate enum fields. FreshnessClass is a Literal; validate by membership.

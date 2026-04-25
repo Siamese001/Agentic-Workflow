@@ -1,4 +1,5 @@
 """P1/P2/P3 burndown report — gross (pre-exemption MV rows) vs net (gate-filtered)."""
+
 from __future__ import annotations
 
 import json
@@ -9,8 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-SNAP = sorted((ROOT / "artifacts/adg").glob("adg_indexed_*.sqlite"),
-              key=lambda p: p.stat().st_mtime)[-1]
+SNAP = sorted((ROOT / "artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime)[-1]
 conn = sqlite3.connect(SNAP)
 print(f"Snapshot: {SNAP.name}\n")
 
@@ -23,10 +23,13 @@ def count(sql: str, params=()) -> int:
 
 
 def mv_exists(name: str) -> bool:
-    return count(
-        "SELECT COUNT(*) FROM sqlite_master WHERE type IN ('table','view') AND name=?",
-        (name,),
-    ) > 0
+    return (
+        count(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type IN ('table','view') AND name=?",
+            (name,),
+        )
+        > 0
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -39,13 +42,13 @@ print("=" * 78)
 
 # Structural-conformance MVs — show row counts + any defect/gap_type filter
 p1_mvs = [
-    ("G-P1-LIFE",          "mv_l2_phase_coverage",              "phase_coverage_pct < 100 OR phase_coverage_pct IS NULL"),
-    ("G-P1-LIFE",          "mv_exit_disposition_coverage",      "exit_coverage_pct < 100 OR exit_coverage_pct IS NULL"),
-    ("G-P1-TRACE",         "mv_trace_replay_eval_gaps",         None),
-    ("G-P1-TRACE",         "mv_eval_coverage_by_path",          None),
-    ("G-P1-PROMPT-WIRING", "mv_prompt_assembly_wiring",         None),
-    ("G-P1-ARCH-WITNESS",  "mv_handoff_witness_tiers",          None),
-    ("G-P1-ARCH-WITNESS",  "mv_cross_cutting_witness_tiers",    None),
+    ("G-P1-LIFE", "mv_l2_phase_coverage", "phase_coverage_pct < 100 OR phase_coverage_pct IS NULL"),
+    ("G-P1-LIFE", "mv_exit_disposition_coverage", "exit_coverage_pct < 100 OR exit_coverage_pct IS NULL"),
+    ("G-P1-TRACE", "mv_trace_replay_eval_gaps", None),
+    ("G-P1-TRACE", "mv_eval_coverage_by_path", None),
+    ("G-P1-PROMPT-WIRING", "mv_prompt_assembly_wiring", None),
+    ("G-P1-ARCH-WITNESS", "mv_handoff_witness_tiers", None),
+    ("G-P1-ARCH-WITNESS", "mv_cross_cutting_witness_tiers", None),
 ]
 
 print(f"\n{'Gate':<22}{'MV':<40}{'Rows':>8}  Filter")
@@ -68,9 +71,7 @@ print("Current snapshot vs baseline deltas printed by gate_m_gates runner.")
 # Anti-pattern / skip ratchets — use antipatterns table
 if mv_exists("antipatterns"):
     print(f"\n{'G-P1-HARDEN':<22}antipatterns (all detectors)")
-    cur = conn.execute(
-        "SELECT detector, COUNT(*) AS n FROM antipatterns GROUP BY detector ORDER BY n DESC"
-    )
+    cur = conn.execute("SELECT detector, COUNT(*) AS n FROM antipatterns GROUP BY detector ORDER BY n DESC")
     total_ap = 0
     for det, n in cur.fetchall():
         print(f"{'':<22}  {det:<40}{n:>8}")
@@ -93,8 +94,8 @@ print("=" * 78)
 # G-P2-BURNDOWN — adg_burndown_gate — aggregates antipattern counts vs ceilings
 # G-P2-CENTRALITY — centrality_gate — centrality thresholds
 p2_mvs = [
-    ("G-P2-DRIFT",      "mv_snapshot_baseline"),
-    ("G-P2-BURNDOWN",   "antipatterns"),
+    ("G-P2-DRIFT", "mv_snapshot_baseline"),
+    ("G-P2-BURNDOWN", "antipatterns"),
     ("G-P2-CENTRALITY", "mv_hotspot_centrality"),
     ("G-P2-CENTRALITY", "mv_dependency_cone_risk"),
 ]

@@ -4,11 +4,12 @@ Script to fix cost-budget-ops nesting issues in unified_structure_subatomic.yaml
 Moves cost-budget-ops from being nested under constraint-check-ops to be a direct child of safety-phase-group
 """
 
+
 def fix_yaml_file():
     file_path = "unified_structure_subatomic.yaml"
 
     # Read the file
-    with open(file_path, encoding='utf-8') as f:
+    with open(file_path, encoding="utf-8") as f:
         lines = f.readlines()
 
     fixed_lines = []
@@ -55,10 +56,11 @@ def fix_yaml_file():
         i += 1
 
     # Write the fixed content back
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         f.writelines(fixed_lines)
 
     print(f"Fixed YAML file: {file_path}")
+
 
 if __name__ == "__main__":
     fix_yaml_file()

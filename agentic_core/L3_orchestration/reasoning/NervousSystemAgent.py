@@ -544,7 +544,9 @@ class NervousSystemAgent(SovereignBaseAgent):
                 actor_id="NervousSystemAgent",
                 run_id=getattr(context, "run_id", "") or "",
             )
-        except PolicyEnforcementError:  # guardian: allow-double-logging -- policy breach logged before re-raise for L5-safety audit trail
+        except (
+            PolicyEnforcementError
+        ):  # guardian: allow-double-logging -- policy breach logged before re-raise for L5-safety audit trail
             raise
         _rsa = get_run_state_authority()
         _rsa.observe_runtime_state(
@@ -786,7 +788,10 @@ class NervousSystemAgent(SovereignBaseAgent):
                 report["post_phase_status"] = "PARTIAL"
                 report["message"] = f"Phase {phase_name} post-validation: Partial completion"
             Logger.info(f"[NervousSystemAgent] {report['message']}")
-        except (RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             report["post_phase_status"] = "ERROR"
             report["message"] = f"Post-phase validation error: {e}"
             Logger.error(f"[NervousSystemAgent] Post-phase validation failed: {e}")

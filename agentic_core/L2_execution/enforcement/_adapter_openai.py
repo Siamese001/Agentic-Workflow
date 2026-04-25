@@ -66,9 +66,7 @@ class OpenAIMessageAdapter:
                 system = composed
             # EQ-2: append condensed I0 as `# Final instructions` when C0
             # is heavy — OpenAI long-context guidance.
-            system, long_context_tail_reminder = (
-                self._apply_final_instructions_tail(system, slots_map)
-            )
+            system, long_context_tail_reminder = self._apply_final_instructions_tail(system, slots_map)
 
         extra: dict[str, Any] = {
             "adapter": self.name,
@@ -100,9 +98,7 @@ class OpenAIMessageAdapter:
             extra=extra,
         )
 
-    def _apply_final_instructions_tail(
-        self, system: str, slots_map: dict[str, str]
-    ) -> tuple[str, bool]:
+    def _apply_final_instructions_tail(self, system: str, slots_map: dict[str, str]) -> tuple[str, bool]:
         """Append a `# Final instructions` block when C0 is heavy.
 
         OpenAI long-context guidance: placing instructions both before and

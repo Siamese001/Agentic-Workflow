@@ -109,8 +109,7 @@ class RoutingThresholdConfig:
         """
         if key not in _KEY_VOCAB:
             raise KeyError(
-                f"Unknown routing threshold key {key!r}. "
-                f"Valid keys: {sorted(_KEY_VOCAB)}",
+                f"Unknown routing threshold key {key!r}. Valid keys: {sorted(_KEY_VOCAB)}",
             )
 
         env_override = _read_env_override(key)
@@ -141,7 +140,10 @@ def _read_env_override(key: str) -> float | None:
         return None
     try:
         value = float(raw)
-    except (ValueError, TypeError):  # guardian: allow-return-none-swallow -- env var override parse: invalid values are logged and None signals "use default threshold" to the caller
+    except (
+        ValueError,
+        TypeError,
+    ):  # guardian: allow-return-none-swallow -- env var override parse: invalid values are logged and None signals "use default threshold" to the caller
         Logger.warning(
             "routing_thresholds: env var %s=%r is not a float; ignoring",
             env_key,
@@ -294,7 +296,9 @@ def _build_config(raw: dict[str, Any], source_path: str) -> RoutingThresholdConf
                     )
                     continue
                 coerced = _coerce_threshold(
-                    value, key=key, path=f"namespaces.{ns_name}",
+                    value,
+                    key=key,
+                    path=f"namespaces.{ns_name}",
                 )
                 if coerced is not None:
                     cleaned[key] = coerced

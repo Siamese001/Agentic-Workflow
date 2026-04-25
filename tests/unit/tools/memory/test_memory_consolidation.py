@@ -82,41 +82,35 @@ class TestJaccardDedup:
         )
         store.add_observations([{"entityName": "A", "contents": ["the quick brown fox jumps"]}])
         with store.connection() as conn:
-            count = conn.execute(
-                "SELECT COUNT(*) FROM observations WHERE entity_name='A'"
-            ).fetchone()[0]
+            count = conn.execute("SELECT COUNT(*) FROM observations WHERE entity_name='A'").fetchone()[0]
         assert count == 1
 
-    def test_near_duplicate_reinforces_not_inserts(
-        self, store: SqliteMemoryStore
-    ) -> None:
+    def test_near_duplicate_reinforces_not_inserts(self, store: SqliteMemoryStore) -> None:
         """Re-phrased observation with high token overlap should reinforce."""
         store.create_entities(
-            [{"name": "A", "entityType": "general", "observations": ["fixed the cache lookup bug in replay key"]}]
+            [
+                {
+                    "name": "A",
+                    "entityType": "general",
+                    "observations": ["fixed the cache lookup bug in replay key"],
+                }
+            ]
         )
         # Same 6 content tokens (fixed cache lookup bug replay key) plus one new — Jaccard ~0.857 >= 0.60
         store.add_observations(
             [{"entityName": "A", "contents": ["fixed cache lookup bug replay key yesterday"]}]
         )
         with store.connection() as conn:
-            rows = conn.execute(
-                "SELECT content FROM observations WHERE entity_name='A'"
-            ).fetchall()
+            rows = conn.execute("SELECT content FROM observations WHERE entity_name='A'").fetchall()
         assert len(rows) == 1, f"expected 1 obs after near-dup merge, got {[r[0] for r in rows]}"
 
-    def test_genuinely_different_observation_inserts(
-        self, store: SqliteMemoryStore
-    ) -> None:
+    def test_genuinely_different_observation_inserts(self, store: SqliteMemoryStore) -> None:
         store.create_entities(
             [{"name": "A", "entityType": "general", "observations": ["fixed cache lookup bug"]}]
         )
-        store.add_observations(
-            [{"entityName": "A", "contents": ["added unit test for decay function"]}]
-        )
+        store.add_observations([{"entityName": "A", "contents": ["added unit test for decay function"]}])
         with store.connection() as conn:
-            count = conn.execute(
-                "SELECT COUNT(*) FROM observations WHERE entity_name='A'"
-            ).fetchone()[0]
+            count = conn.execute("SELECT COUNT(*) FROM observations WHERE entity_name='A'").fetchone()[0]
         assert count == 2
 
     def test_near_duplicate_bumps_confidence(self, store: SqliteMemoryStore) -> None:
@@ -126,15 +120,9 @@ class TestJaccardDedup:
         # Age it so a bump has room to grow
         past = time.time() - 10 * 86400
         with store.connection() as conn:
-            conn.execute(
-                "UPDATE observations SET last_reinforced = ? WHERE entity_name='A'", (past,)
-            )
-            before = conn.execute(
-                "SELECT confidence FROM observations WHERE entity_name='A'"
-            ).fetchone()[0]
-        store.add_observations(
-            [{"entityName": "A", "contents": ["shared alpha beta gamma delta epsilon"]}]
-        )
+            conn.execute("UPDATE observations SET last_reinforced = ? WHERE entity_name='A'", (past,))
+            before = conn.execute("SELECT confidence FROM observations WHERE entity_name='A'").fetchone()[0]
+        store.add_observations([{"entityName": "A", "contents": ["shared alpha beta gamma delta epsilon"]}])
         with store.connection() as conn:
             after_rows = conn.execute(
                 "SELECT confidence, last_reinforced FROM observations WHERE entity_name='A'"
@@ -148,15 +136,11 @@ class TestJaccardDedup:
     ) -> None:
         """Raising Jaccard threshold to 0.95 treats moderate overlap as new."""
         monkeypatch.setenv("MEMORY_JACCARD_THRESHOLD", "0.95")
-        store.create_entities(
-            [{"name": "A", "entityType": "general", "observations": ["hello world"]}]
-        )
+        store.create_entities([{"name": "A", "entityType": "general", "observations": ["hello world"]}])
         # Jaccard ~0.5 (< 0.95) -> inserts
         store.add_observations([{"entityName": "A", "contents": ["hello universe"]}])
         with store.connection() as conn:
-            count = conn.execute(
-                "SELECT COUNT(*) FROM observations WHERE entity_name='A'"
-            ).fetchone()[0]
+            count = conn.execute("SELECT COUNT(*) FROM observations WHERE entity_name='A'").fetchone()[0]
         assert count == 2
 
 
@@ -171,9 +155,7 @@ class TestAccessCounter:
         for _ in range(3):
             assert store.load_entity("A") is not None
         with store.connection() as conn:
-            ac = conn.execute(
-                "SELECT access_count FROM entities WHERE name='A'"
-            ).fetchone()[0]
+            ac = conn.execute("SELECT access_count FROM entities WHERE name='A'").fetchone()[0]
         assert ac == 3
 
     def test_access_count_column_present(self, store: SqliteMemoryStore) -> None:
@@ -207,9 +189,7 @@ class TestTopEntities:
 
     def test_limit_respected(self, store: SqliteMemoryStore) -> None:
         for i in range(10):
-            store.create_entities(
-                [{"name": f"E{i}", "entityType": "general", "observations": []}]
-            )
+            store.create_entities([{"name": f"E{i}", "entityType": "general", "observations": []}])
         assert len(store.top_entities(limit=3)) == 3
 
     def test_type_filter(self, store: SqliteMemoryStore) -> None:
@@ -231,16 +211,12 @@ class TestTopEntities:
 
 class TestConsolidation:
     def test_dry_run_plan_is_a_dataclass(self, store: SqliteMemoryStore) -> None:
-        store.create_entities(
-            [{"name": "A", "entityType": "general", "observations": ["x"]}]
-        )
+        store.create_entities([{"name": "A", "entityType": "general", "observations": ["x"]}])
         plan = build_plan(store)
         assert isinstance(plan, ConsolidationPlan)
 
     def test_plan_does_not_mutate_db(self, store: SqliteMemoryStore) -> None:
-        store.create_entities(
-            [{"name": "A", "entityType": "general", "observations": ["x", "y", "z"]}]
-        )
+        store.create_entities([{"name": "A", "entityType": "general", "observations": ["x", "y", "z"]}])
         with store.connection() as conn:
             before = conn.execute("SELECT COUNT(*) FROM observations").fetchone()[0]
         build_plan(store)
@@ -257,11 +233,17 @@ class TestConsolidation:
         # simulating a pre-dedup legacy DB.
         monkeypatch.setenv("MEMORY_JACCARD_THRESHOLD", "0.99")
         store.create_entities(
-            [{"name": "A", "entityType": "general", "observations": [
-                "fixed the cache bug",
-                "fixed cache bug yesterday",
-                "completely unrelated note",
-            ]}]
+            [
+                {
+                    "name": "A",
+                    "entityType": "general",
+                    "observations": [
+                        "fixed the cache bug",
+                        "fixed cache bug yesterday",
+                        "completely unrelated note",
+                    ],
+                }
+            ]
         )
         # Build plan at merge_threshold=0.50 so the two near-dups cluster.
         plan = build_plan(store, merge_threshold=0.50)
@@ -272,9 +254,7 @@ class TestConsolidation:
         assert result["merged_observations"] == 1
 
         with store.connection() as conn:
-            remaining = conn.execute(
-                "SELECT COUNT(*) FROM observations WHERE entity_name='A'"
-            ).fetchone()[0]
+            remaining = conn.execute("SELECT COUNT(*) FROM observations WHERE entity_name='A'").fetchone()[0]
         assert remaining == 2  # 3 - 1 merged
 
     def test_prunes_low_confidence_entity(self, store: SqliteMemoryStore) -> None:
@@ -282,23 +262,17 @@ class TestConsolidation:
         # Age it heavily: ~100 days with 14-day half-life -> effective ~0.007
         past = time.time() - 100 * 86400
         with store.connection() as conn:
-            conn.execute(
-                "UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,)
-            )
+            conn.execute("UPDATE entities SET last_reinforced = ? WHERE name='Stale'", (past,))
         plan = build_plan(store, prune_floor=0.05)
         assert "Stale" in plan.prune_entity_names
 
         apply_plan(store, plan)
         with store.connection() as conn:
-            still = conn.execute(
-                "SELECT COUNT(*) FROM entities WHERE name='Stale'"
-            ).fetchone()[0]
+            still = conn.execute("SELECT COUNT(*) FROM entities WHERE name='Stale'").fetchone()[0]
         assert still == 0
 
     def test_protected_types_never_pruned(self, store: SqliteMemoryStore) -> None:
-        store.create_entities(
-            [{"name": "Rule", "entityType": "ConstitutionalRule", "observations": []}]
-        )
+        store.create_entities([{"name": "Rule", "entityType": "ConstitutionalRule", "observations": []}])
         # Force absurd age — doesn't matter, protected types have inf half-life
         past = time.time() - 10000 * 86400
         with store.connection() as conn:
@@ -310,9 +284,7 @@ class TestConsolidation:
         assert "Rule" not in plan.prune_entity_names
 
     def test_idempotent(self, store: SqliteMemoryStore) -> None:
-        store.create_entities(
-            [{"name": "A", "entityType": "general", "observations": ["x", "y"]}]
-        )
+        store.create_entities([{"name": "A", "entityType": "general", "observations": ["x", "y"]}])
         plan1 = build_plan(store)
         apply_plan(store, plan1)
         plan2 = build_plan(store)

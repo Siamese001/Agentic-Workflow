@@ -106,10 +106,7 @@ class TestMetricsBoundary:
 
     def test_mrr_at_k_truncates_at_k(self):
         # gold at rank 4, k=3 → no hit
-        hits = [
-            _Retrieved(doc_id=f"d{i}", chunk_id=f"d{i}_0", score=0.0)
-            for i in range(5)
-        ]
+        hits = [_Retrieved(doc_id=f"d{i}", chunk_id=f"d{i}_0", score=0.0) for i in range(5)]
         assert _mrr_at_k(hits, {"d3"}, k=3) == 0.0
         assert _mrr_at_k(hits, {"d3"}, k=4) == pytest.approx(1 / 4)
 

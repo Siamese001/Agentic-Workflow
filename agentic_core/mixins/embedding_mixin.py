@@ -186,7 +186,9 @@ class EmbeddingMixin:
 
                 self._embedding_gateway = get_embedding_gateway()
             except ImportError:  # guardian: allow-silent-swallow -- optional dependency
-                raise NotImplementedError('EmbeddingMixin: Embedding gateway is not available. Install the required dependencies or configure agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent.') from None
+                raise NotImplementedError(
+                    "EmbeddingMixin: Embedding gateway is not available. Install the required dependencies or configure agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent."
+                ) from None
         return self._embedding_gateway
 
     async def get_embedding(
@@ -206,7 +208,11 @@ class EmbeddingMixin:
         """Get batch embeddings through gateway."""
         try:
             return await self.embedding_gateway.get_embeddings_batch(contents, provider)
-        except (AttributeError, RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- embedding batch: non-fatal, logging.debug already called
+        except (
+            AttributeError,
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- embedding batch: non-fatal, logging.debug already called
             import logging
 
             logging.getLogger(__name__).debug("embedding_mixin: Exception swallowed at L204: %s", e)

@@ -297,9 +297,7 @@ class IngressEnvelopeCheck:
 
         return self.check_blocking(raw_envelope)
 
-    def check_blocking(
-        self, raw_envelope: dict[str, Any]
-    ) -> StampedRequest | ClarificationRequired:
+    def check_blocking(self, raw_envelope: dict[str, Any]) -> StampedRequest | ClarificationRequired:
         """Blocking variant — runs all checks before any downstream call.
 
         This is the recommended mode: no expensive / side-effecting downstream
@@ -318,18 +316,12 @@ class IngressEnvelopeCheck:
             raise
 
         if isinstance(result, ClarificationRequired):
-            self._metrics.record_clarification(
-                reason=result.reason, latency_ms=monotonic_ms() - started_ms
-            )
+            self._metrics.record_clarification(reason=result.reason, latency_ms=monotonic_ms() - started_ms)
         else:
-            self._metrics.record_accepted(
-                tenant_id=result.tenant_id, latency_ms=monotonic_ms() - started_ms
-            )
+            self._metrics.record_accepted(tenant_id=result.tenant_id, latency_ms=monotonic_ms() - started_ms)
         return result
 
-    def _do_check(
-        self, raw_envelope: dict[str, Any]
-    ) -> StampedRequest | ClarificationRequired:
+    def _do_check(self, raw_envelope: dict[str, Any]) -> StampedRequest | ClarificationRequired:
         pre_request_id = str(uuid.uuid4())
         pre_trace = hashlib.sha256(f"{pre_request_id}:{time.time()}".encode()).hexdigest()[:16]
 
@@ -352,9 +344,7 @@ class IngressEnvelopeCheck:
 
         session_id = raw_envelope.get("session_id") or str(uuid.uuid4())
         caller_scope_baseline = (
-            verified.fingerprint()
-            if verified is not None
-            else self._derive_scope_baseline(raw_envelope)
+            verified.fingerprint() if verified is not None else self._derive_scope_baseline(raw_envelope)
         )
         tenant_id = verified.tenant_id if verified else str(raw_envelope.get("tenant_id") or "default")
 
@@ -567,8 +557,7 @@ class IngressEnvelopeCheck:
         if isinstance(payload, dict):
             intent_fields = ("intent", "query", "prompt", "question", "goal", "task")
             has_intent = any(
-                isinstance(payload.get(f), str) and payload.get(f, "").strip()
-                for f in intent_fields
+                isinstance(payload.get(f), str) and payload.get(f, "").strip() for f in intent_fields
             )
             if not has_intent and not payload:
                 return ClarificationRequired(

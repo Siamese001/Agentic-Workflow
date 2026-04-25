@@ -102,8 +102,7 @@ class AnthropicContextGateway:
         effective_model = model or self._default_model
         if not effective_model:
             raise RuntimeError(
-                "AnthropicContextGateway.generate called with no model and no "
-                "default_model configured"
+                "AnthropicContextGateway.generate called with no model and no default_model configured"
             )
 
         try:
@@ -112,9 +111,7 @@ class AnthropicContextGateway:
             # ingestion processes that never contextualize free of that cost.
             from apps_rg.utils.providers_anthropic_client_util import run_llm_anthropic
         except ImportError as exc:
-            raise RuntimeError(
-                f"AnthropicContextGateway could not import run_llm_anthropic: {exc}"
-            ) from exc
+            raise RuntimeError(f"AnthropicContextGateway could not import run_llm_anthropic: {exc}") from exc
 
         try:
             return run_llm_anthropic(

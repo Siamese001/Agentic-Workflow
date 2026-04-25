@@ -1,4 +1,5 @@
 """One-off: audit this-chat DEFERRED_SCOPE markers vs. Notion posts."""
+
 from __future__ import annotations
 import json
 from pathlib import Path
@@ -9,8 +10,8 @@ LOG = Path(f"{WINDSURF_ARTIFACTS_DIR}/deferred_scope_capture.jsonl")
 # Plan slugs used by markers emitted during this chat session
 SESSION_SLUGS = [
     "prompt-assembly-reception-hardening-9c4e2b",  # W5b.1, W5b.2 emitted during W5 close
-    "prompt-reception-followups-a7b3c4",            # final 9-row plan
-    "hook-tty-guard-rollout",                       # RCA response HOOK1.1
+    "prompt-reception-followups-a7b3c4",  # final 9-row plan
+    "hook-tty-guard-rollout",  # RCA response HOOK1.1
 ]
 
 found: dict[str, list[dict]] = {s: [] for s in SESSION_SLUGS}

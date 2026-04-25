@@ -140,9 +140,7 @@ class ToolUseExample:
         return {
             "description": self.description,
             "args": dict(self.args),
-            "expected_shape": (
-                None if self.expected_shape is None else dict(self.expected_shape)
-            ),
+            "expected_shape": (None if self.expected_shape is None else dict(self.expected_shape)),
             "notes": self.notes,
         }
 
@@ -163,9 +161,7 @@ def register_tool_examples(
         raise ValueError("tool_name is required")
     tup = tuple(examples)
     if not (1 <= len(tup) <= 5):
-        raise ValueError(
-            f"tool_name={tool_name!r} must have 1..5 examples, got {len(tup)}"
-        )
+        raise ValueError(f"tool_name={tool_name!r} must have 1..5 examples, got {len(tup)}")
     _examples[tool_name] = tup
 
 

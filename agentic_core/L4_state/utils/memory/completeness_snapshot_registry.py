@@ -516,10 +516,14 @@ class CompletenessSnapshotRegistry:
                     triggers = json.loads(triggers_json)
                     for trigger in triggers:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
-                except (AttributeError, json.JSONDecodeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- trigger processing: non-fatal, single trigger failure skips counting
-                    Logger.debug(
-                        "completeness_snapshot_registry: Exception swallowed at L498: %s", e
-                    )
+                except (
+                    AttributeError,
+                    json.JSONDecodeError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ) as e:  # guardian: allow-log-and-swallow -- trigger processing: non-fatal, single trigger failure skips counting
+                    Logger.debug("completeness_snapshot_registry: Exception swallowed at L498: %s", e)
 
             return {
                 "avg_completeness_score": row[0] or 0.0,

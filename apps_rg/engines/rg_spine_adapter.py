@@ -188,12 +188,17 @@ class _RgAssemblerAdapter:
     Thin adapter so ExecutionOrchestrator.execute() can call
     self.assembler.assemble(intent_input: dict) with the RG slot mapping.
 
-    Slot mapping:
-      s0_system       ← intent_input.get("s0_system", "")
-      i0_instructional← intent_input.get("i0_instructional", "")
-      c0_context      ← intent_input.get("c0_context", "")
-      u0_user_prompt  ← intent_input.get("u0_user_prompt", "")
-      d0_injections   ← intent_input.get("d0_injections", "")
+    Slot mapping (10-slot, backward-compatible):
+      s0_system        ← intent_input.get("s0_system", "")
+      i0_instructional ← intent_input.get("i0_instructional", "")
+      c0_context       ← intent_input.get("c0_context", "")
+      u0_user_prompt   ← intent_input.get("u0_user_prompt", "")
+      d0_injections    ← intent_input.get("d0_injections", "")
+      e0_exemplars     ← intent_input.get("e0_exemplars", "")
+      m0_meta_cognitive← intent_input.get("m0_meta_cognitive", "")
+      h0_healing       ← intent_input.get("h0_healing", "")
+      y0_synthesis     ← intent_input.get("y0_synthesis", "")
+      r0_output_format ← intent_input.get("r0_output_format", "")
     """
 
     def assemble(self, intent_input: dict[str, Any]) -> GovernedPayload:
@@ -203,6 +208,11 @@ class _RgAssemblerAdapter:
             c0_context=intent_input.get("c0_context", ""),
             u0_user_prompt=intent_input.get("u0_user_prompt", ""),
             d0_injections=intent_input.get("d0_injections", ""),
+            e0_exemplars=intent_input.get("e0_exemplars", ""),
+            m0_meta_cognitive=intent_input.get("m0_meta_cognitive", ""),
+            h0_healing=intent_input.get("h0_healing", ""),
+            y0_synthesis=intent_input.get("y0_synthesis", ""),
+            r0_output_format=intent_input.get("r0_output_format", ""),
         )
 
 

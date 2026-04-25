@@ -365,7 +365,7 @@ class TestNoExceptions:
 
         except Exception as e:
             logger.exception("Unhandled exception during healing")
-            raise AssertionError(f'Healing should not raise exceptions: {e}') from e
+            raise AssertionError(f"Healing should not raise exceptions: {e}") from e
 
 
 if __name__ == "__main__":

@@ -624,9 +624,7 @@ class EmbeddingSemanticChunker(ChunkingStrategy):
             pos += len(para) + 2
         return out
 
-    def _group_sentences(
-        self, sentences: list[tuple[int, int, str]]
-    ) -> list[str]:
+    def _group_sentences(self, sentences: list[tuple[int, int, str]]) -> list[str]:
         """Merge each sentence with ``buffer_size`` neighbours on each side."""
         n = len(sentences)
         groups: list[str] = []
@@ -667,9 +665,7 @@ class EmbeddingSemanticChunker(ChunkingStrategy):
             # consecutive gaps, cut above the Nth percentile of the gradient.
             if len(distances) < 2:
                 return []
-            gradients = [
-                abs(distances[i + 1] - distances[i]) for i in range(len(distances) - 1)
-            ]
+            gradients = [abs(distances[i + 1] - distances[i]) for i in range(len(distances) - 1)]
             cutoff = _percentile(gradients, self.breakpoint_threshold)
             return [i for i, g in enumerate(gradients) if g > cutoff]
 
@@ -782,14 +778,9 @@ class EmbeddingSemanticChunker(ChunkingStrategy):
         groups = self._group_sentences(sentences)
         embeddings = self.embedder(groups)
         if len(embeddings) != len(groups):
-            raise ValueError(
-                f"embedder returned {len(embeddings)} vectors for {len(groups)} groups"
-            )
+            raise ValueError(f"embedder returned {len(embeddings)} vectors for {len(groups)} groups")
 
-        distances = [
-            _cosine_distance(embeddings[i], embeddings[i + 1])
-            for i in range(len(embeddings) - 1)
-        ]
+        distances = [_cosine_distance(embeddings[i], embeddings[i + 1]) for i in range(len(embeddings) - 1)]
         breakpoints = self._compute_breakpoints(distances)
         return self._assemble_chunks(sentences, breakpoints, doc_id)
 

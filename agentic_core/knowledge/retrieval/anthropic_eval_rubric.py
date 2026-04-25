@@ -200,7 +200,9 @@ def _summarize_latency(
     red_ms: float,
 ) -> DimensionSummary:
     if not values:
-        return DimensionSummary(name="latency_ms", sample_count=0, mean=None, p50=None, p95=None, status="unknown")
+        return DimensionSummary(
+            name="latency_ms", sample_count=0, mean=None, p50=None, p95=None, status="unknown"
+        )
     p95 = _percentile(values, 95)
     return DimensionSummary(
         name="latency_ms",
@@ -218,7 +220,9 @@ def _summarize_cost(
     red_usd: float,
 ) -> DimensionSummary:
     if not values:
-        return DimensionSummary(name="cost_usd", sample_count=0, mean=None, p50=None, p95=None, status="unknown")
+        return DimensionSummary(
+            name="cost_usd", sample_count=0, mean=None, p50=None, p95=None, status="unknown"
+        )
     m = mean(values)
     return DimensionSummary(
         name="cost_usd",

@@ -23,9 +23,7 @@ def test_research_spec_inherits_reception_fields() -> None:
     assert specs.adapter_version == "v2"
     assert specs.exemplar_task_class is None
     # Override via constructor
-    overridden = ResearchAgentSpecs(
-        adapter_version="v1", exemplar_task_class="research_brief"
-    )
+    overridden = ResearchAgentSpecs(adapter_version="v1", exemplar_task_class="research_brief")
     assert overridden.adapter_version == "v1"
     assert overridden.exemplar_task_class == "research_brief"
 

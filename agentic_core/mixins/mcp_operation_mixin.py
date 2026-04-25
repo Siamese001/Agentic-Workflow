@@ -248,7 +248,12 @@ class MCPOperationMixin:
                 duration_ms = (time.monotonic() - start) * 1000
                 self._audit_mcp(tool_name, "SUCCESS", duration_ms, audit_context_id, attempt)
                 return result
-            except (RuntimeError, OSError, TimeoutError, AttributeError) as e:  # guardian: allow-silent-swallow
+            except (
+                RuntimeError,
+                OSError,
+                TimeoutError,
+                AttributeError,
+            ) as e:  # guardian: allow-silent-swallow
                 duration_ms = (time.monotonic() - start) * 1000
                 last_exception = e
                 self._audit_mcp(tool_name, "RETRY", duration_ms, audit_context_id, attempt)

@@ -3,6 +3,7 @@
 Writes structured report to ``artifacts/guardian_lint/w17_triage_2026-04-24.txt``.
 Used to scope ADR-027 and the bulk-fix CLI.
 """
+
 from __future__ import annotations
 
 import re
@@ -83,7 +84,9 @@ def main() -> None:
         lines.append(f"  {line[:160]}")
     out.write_text("\n".join(lines), encoding="utf-8")
     print(f"Report: {out}")
-    print(f"canonical={len(result['canonical'])}  malformed={len(result['malformed'])}  bare={len(result['bare'])}")
+    print(
+        f"canonical={len(result['canonical'])}  malformed={len(result['malformed'])}  bare={len(result['bare'])}"
+    )
 
 
 if __name__ == "__main__":

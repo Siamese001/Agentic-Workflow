@@ -77,9 +77,7 @@ def _hybrid_enabled() -> bool:
     return os.environ.get("SEMANTIC_CACHE_HYBRID_ENABLED", "1") != "0"
 
 
-_HYBRID_FUSED_THRESHOLD: float = float(
-    os.environ.get("SEMANTIC_CACHE_HYBRID_THRESHOLD", "0.88")
-)
+_HYBRID_FUSED_THRESHOLD: float = float(os.environ.get("SEMANTIC_CACHE_HYBRID_THRESHOLD", "0.88"))
 _HYBRID_DENSE_WEIGHT: float = float(os.environ.get("SEMANTIC_CACHE_DENSE_WEIGHT", "0.7"))
 _HYBRID_SPARSE_WEIGHT: float = float(os.environ.get("SEMANTIC_CACHE_SPARSE_WEIGHT", "0.3"))
 
@@ -206,9 +204,11 @@ def _normalize_l1_context(context: str) -> str:
     if not _l1_key_hardening_enabled():
         return context
     import unicodedata  # noqa: PLC0415
+
     global _WS_RE  # noqa: PLW0603
     if _WS_RE is None:
         import re as _re  # noqa: PLC0415
+
         _WS_RE = _re.compile(r"\s+")
     normalized = unicodedata.normalize("NFKC", context).strip()
     return _WS_RE.sub(" ", normalized)
@@ -276,7 +276,11 @@ def _emit_structured_cache_event(
             "p4obs",
             f"structured:{reason_code}:{_payload_json}",
         )
-    except (ValueError, TypeError, RuntimeError) as _exc:  # guardian: allow-log-and-swallow -- structured emit is observability-only; never break the cache hot path on a payload validation glitch
+    except (
+        ValueError,
+        TypeError,
+        RuntimeError,
+    ) as _exc:  # guardian: allow-log-and-swallow -- structured emit is observability-only; never break the cache hot path on a payload validation glitch
         Logger.debug("structured emit: payload build failed: %s", _exc)
 
 
@@ -792,7 +796,9 @@ class SemanticCacheManager:
         # whitespace / unicode-form variants do not produce different keys.
         # D2 path above is unaffected (its query_hash is computed before).
         normalized_context = _normalize_l1_context(context)
-        key = "|".join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, normalized_context])
+        key = "|".join(
+            [namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, normalized_context]
+        )
         return hashlib.sha256(key.encode()).hexdigest()
 
     def recall(
@@ -855,8 +861,7 @@ class SemanticCacheManager:
             _live_reason = _query_has_live_signal(context)
             if _live_reason is not None:
                 Logger.debug(
-                    "[HiveMind] semantic_cache_bypass: bypass_reason=live_signal "
-                    "signal=%s namespace=%s",
+                    "[HiveMind] semantic_cache_bypass: bypass_reason=live_signal signal=%s namespace=%s",
                     _live_reason,
                     namespace,
                 )
@@ -954,10 +959,12 @@ class SemanticCacheManager:
                     if _l2_mismatch is not None:
                         Logger.debug(
                             "[HiveMind] L2 scope-mismatch suppressed: reason=%s namespace=%s",
-                            _l2_mismatch, namespace,
+                            _l2_mismatch,
+                            namespace,
                         )
                         _emit_emits_metric_event(
-                            "semantic_cache_manager", "p4obs",
+                            "semantic_cache_manager",
+                            "p4obs",
                             f"l2_scope_mismatch:{_l2_mismatch}:{namespace}",
                         )
                         _record_semantic_cache_prom_event("scope_mismatch", namespace)
@@ -971,9 +978,7 @@ class SemanticCacheManager:
                             if _cached_features:
                                 _incoming_features = _extract_sparse_features(context)
                                 _jaccard = _jaccard_overlap(_incoming_features, _cached_features)
-                                _dense_floor = float(
-                                    getattr(self._gptcache, "similarity_threshold", 0.95)
-                                )
+                                _dense_floor = float(getattr(self._gptcache, "similarity_threshold", 0.95))
                                 _fused = _fused_reuse_score(
                                     _dense_floor,
                                     _jaccard,
@@ -984,11 +989,14 @@ class SemanticCacheManager:
                                     Logger.debug(
                                         "[HiveMind] L2 hybrid-reject: namespace=%s "
                                         "jaccard=%.3f fused=%.3f threshold=%.3f",
-                                        namespace, _jaccard, _fused,
+                                        namespace,
+                                        _jaccard,
+                                        _fused,
                                         _HYBRID_FUSED_THRESHOLD,
                                     )
                                     _emit_emits_metric_event(
-                                        "semantic_cache_manager", "p4obs",
+                                        "semantic_cache_manager",
+                                        "p4obs",
                                         f"l2_hybrid_reject:{namespace}",
                                     )
                                     _record_semantic_cache_prom_event("hybrid_reject", namespace)
@@ -1008,22 +1016,24 @@ class SemanticCacheManager:
                                     except (LookupError, ValueError, RuntimeError) as _res_err:
                                         Logger.debug(
                                             "[HiveMind] evidence resolver raised: id=%s err=%s",
-                                            _eid, _res_err,
+                                            _eid,
+                                            _res_err,
                                         )
                                         _unresolved.append(str(_eid))
                                 if _unresolved:
                                     Logger.debug(
                                         "[HiveMind] L2 support-manifest reject: "
                                         "namespace=%s unresolved=%d/%d",
-                                        namespace, len(_unresolved), len(_evidence_ids),
+                                        namespace,
+                                        len(_unresolved),
+                                        len(_evidence_ids),
                                     )
                                     _emit_emits_metric_event(
-                                        "semantic_cache_manager", "p4obs",
+                                        "semantic_cache_manager",
+                                        "p4obs",
                                         f"l2_support_manifest_reject:{namespace}",
                                     )
-                                    _record_semantic_cache_prom_event(
-                                        "support_manifest_reject", namespace
-                                    )
+                                    _record_semantic_cache_prom_event("support_manifest_reject", namespace)
                                     with self._lock:
                                         self.stats["cache_misses"] += 1
                                     _record_semantic_cache_prom_event("miss", namespace)
@@ -1160,14 +1170,13 @@ class SemanticCacheManager:
         _l1_ttl = _jittered_ttl(self.DEFAULT_WORKING_MEMORY_TTL, _TTL_JITTER_PCT)
         if self.redis_enabled:
             if _single_flight_enabled():
-                with _acquire_single_flight(
-                    self.redis_client, f"learn:{ctx_hash}", ttl_seconds=5
-                ) as _won:
+                with _acquire_single_flight(self.redis_client, f"learn:{ctx_hash}", ttl_seconds=5) as _won:
                     if _won:
                         self.redis_client.setex(f"memory:{ctx_hash}", _l1_ttl, payload_json)
                     else:
                         _emit_emits_metric_event(
-                            "semantic_cache_manager", "p4obs",
+                            "semantic_cache_manager",
+                            "p4obs",
                             f"l1_single_flight_skip:{namespace}",
                         )
             else:
@@ -1366,7 +1375,9 @@ class SemanticCacheManager:
             if self.redis_enabled:
                 try:
                     self.redis_client.delete(f"memory:{cid}")
-                except _REDIS_RECOVERABLE_EXCEPTIONS as _exc:  # guardian: allow-log-and-swallow -- per-key delete non-fatal
+                except (
+                    _REDIS_RECOVERABLE_EXCEPTIONS
+                ) as _exc:  # guardian: allow-log-and-swallow -- per-key delete non-fatal
                     Logger.debug("[HiveMind] CDC Redis evict failed: %s", _exc)
             if self.gptcache_enabled and self._gptcache is not None:
                 try:
@@ -1375,15 +1386,20 @@ class SemanticCacheManager:
                     self._gptcache._sqlite_conn.commit()  # noqa: SLF001
                     try:
                         self._gptcache._chroma_collection.delete(ids=[cid])  # noqa: SLF001
-                    except (AttributeError, RuntimeError) as _cerr:  # guardian: allow-log-and-swallow -- Chroma evict best-effort: CDC invalidation may miss a stale vector; L2 sqlite row deletion below still runs
+                    except (
+                        AttributeError,
+                        RuntimeError,
+                    ) as _cerr:  # guardian: allow-log-and-swallow -- Chroma evict best-effort: CDC invalidation may miss a stale vector; L2 sqlite row deletion below still runs
                         Logger.debug("[HiveMind] CDC Chroma evict failed: %s", _cerr)
-                except (AttributeError, sqlite3.Error, RuntimeError) as _serr:  # guardian: allow-log-and-swallow -- L2 sqlite evict best-effort: CDC invalidation is an optimization; standard TTL expiry still applies
+                except (
+                    AttributeError,
+                    sqlite3.Error,
+                    RuntimeError,
+                ) as _serr:  # guardian: allow-log-and-swallow -- L2 sqlite evict best-effort: CDC invalidation is an optimization; standard TTL expiry still applies
                     Logger.debug("[HiveMind] CDC L2 evict failed: %s", _serr)
             _doc_idx.forget_cache_row(cid)
             evicted += 1
-        _emit_emits_metric_event(
-            "semantic_cache_manager", "p4obs", f"cdc_evict:{doc_id}:{evicted}"
-        )
+        _emit_emits_metric_event("semantic_cache_manager", "p4obs", f"cdc_evict:{doc_id}:{evicted}")
         _record_semantic_cache_prom_event("cdc_evict", doc_id)
         return evicted
 
@@ -1418,22 +1434,25 @@ class SemanticCacheManager:
             self._gptcache._sqlite_conn.commit()  # noqa: SLF001
             try:
                 self._gptcache._chroma_collection.delete(ids=ids)  # noqa: SLF001
-            except (AttributeError, RuntimeError) as _cerr:  # guardian: allow-log-and-swallow -- neighborhood Chroma delete best-effort: bulk invalidation may miss stale vectors; TTL-based expiry covers the gap
+            except (
+                AttributeError,
+                RuntimeError,
+            ) as _cerr:  # guardian: allow-log-and-swallow -- neighborhood Chroma delete best-effort: bulk invalidation may miss stale vectors; TTL-based expiry covers the gap
                 Logger.debug("[HiveMind] Neighborhood Chroma delete failed: %s", _cerr)
             evicted = len(ids)
             if self.redis_enabled:
                 for cid in ids:
                     try:
                         self.redis_client.delete(f"memory:{cid}")
-                    except _REDIS_RECOVERABLE_EXCEPTIONS as _exc:  # guardian: allow-log-and-swallow -- per-key delete non-fatal
+                    except (
+                        _REDIS_RECOVERABLE_EXCEPTIONS
+                    ) as _exc:  # guardian: allow-log-and-swallow -- per-key delete non-fatal
                         Logger.debug("[HiveMind] Neighborhood Redis evict failed: %s", _exc)
                     _doc_idx.forget_cache_row(cid)
         except (AttributeError, RuntimeError) as exc:
             Logger.warning("[HiveMind] Neighborhood invalidation failed: %s", exc)
             return 0
-        _emit_emits_metric_event(
-            "semantic_cache_manager", "p4obs", f"neighborhood_evict:{evicted}"
-        )
+        _emit_emits_metric_event("semantic_cache_manager", "p4obs", f"neighborhood_evict:{evicted}")
         _record_semantic_cache_prom_event("neighborhood_evict", "")
         return evicted
 

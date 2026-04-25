@@ -20,6 +20,7 @@ No call-site migration is required by this plan — the decorator is landed
 as a reusable primitive. Future plans can apply ``@e2_agent_gate`` to
 specific agent methods when those methods should go through the gate.
 """
+
 from __future__ import annotations
 
 import functools
@@ -78,9 +79,7 @@ class AgentGateRejected(Exception):
 _CONTRACT_KWARGS: tuple[str, ...] = ("tool_contract", "contract", "e2_contract")
 
 
-def extract_contract(
-    args: tuple[Any, ...], kwargs: dict[str, Any]
-) -> ToolContract | None:
+def extract_contract(args: tuple[Any, ...], kwargs: dict[str, Any]) -> ToolContract | None:
     """Pull a ToolContract out of *args* / *kwargs* if present.
 
     Lookup order:

@@ -39,6 +39,7 @@ Reference:
   - runtime_entry_sweep.py (Wave-L source of RuntimeLaneDecisionWithSweep)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 from agentic_core.L5_safety.exit_control.hitl_classes import HitlClass

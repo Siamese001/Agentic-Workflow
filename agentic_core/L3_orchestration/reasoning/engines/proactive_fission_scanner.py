@@ -368,7 +368,10 @@ class ProactiveFissionScanner:
             )
             Logger.info(f"   [OK] Refactor proposal created: {len(candidates)} files")
             return branch_name
-        except (RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             Logger.error(f"   [X] Failed to create refactor proposal: {e}")
             return None
 

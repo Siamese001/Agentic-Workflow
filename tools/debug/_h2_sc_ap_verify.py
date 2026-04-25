@@ -1,4 +1,5 @@
 """H2 verification: confirm SC-5/SC-7/AP-14 promoted in sc_ap_config.json."""
+
 import sys
 from pathlib import Path
 

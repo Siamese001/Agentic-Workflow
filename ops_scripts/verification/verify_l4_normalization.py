@@ -121,7 +121,7 @@ class ADGL4NormalizationVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise L4NormalizationError(f'L4 layer classification verification failed: {e}') from e
+            raise L4NormalizationError(f"L4 layer classification verification failed: {e}") from e
 
     def _verify_l4_identity_resolution(self) -> dict[str, Any]:
         """Verify L4 modules have resolved identity."""
@@ -191,7 +191,7 @@ class ADGL4NormalizationVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise L4NormalizationError(f'L4 identity resolution verification failed: {e}') from e
+            raise L4NormalizationError(f"L4 identity resolution verification failed: {e}") from e
 
     def _verify_l4_path_integrity(self) -> dict[str, Any]:
         """Verify L4 path integrity - all L4 modules have valid paths and proper layer assignment.
@@ -236,7 +236,7 @@ class ADGL4NormalizationVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise L4NormalizationError(f'L4 path integrity verification failed: {e}') from e
+            raise L4NormalizationError(f"L4 path integrity verification failed: {e}") from e
 
     def _verify_l4_persistence_path_normalization(self) -> dict[str, Any]:
         """Verify L4 persistence paths are normalized and queryable."""
@@ -325,7 +325,7 @@ class ADGL4NormalizationVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise L4NormalizationError(f'L4 persistence path verification failed: {e}') from e
+            raise L4NormalizationError(f"L4 persistence path verification failed: {e}") from e
 
     def _verify_l4_authoritative_location(self) -> dict[str, Any]:
         """Verify L4 is authoritative location for key artifacts."""
@@ -403,7 +403,7 @@ class ADGL4NormalizationVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise L4NormalizationError(f'L4 authoritative location verification failed: {e}') from e
+            raise L4NormalizationError(f"L4 authoritative location verification failed: {e}") from e
 
     def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
         """Persist report atomically with parent directory creation."""
@@ -517,9 +517,7 @@ def main():
 
         return 0 if result["status"] == "PASS" else 1
 
-    except (
-        L4NormalizationError
-    ) as e:  # review: L4NormalizationError should be handled with specific context
+    except L4NormalizationError as e:  # review: L4NormalizationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure

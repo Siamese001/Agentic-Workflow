@@ -145,12 +145,8 @@ def build_citations_from_qwen_text(
             source=chunk.source_id or default_source,
             confidence=float(chunk.support_score or 0.0),
             citation_anchor=anchor,
-            page_number=chunk.provenance.get("page_number")
-            if isinstance(chunk.provenance, dict)
-            else None,
-            section=chunk.provenance.get("section")
-            if isinstance(chunk.provenance, dict)
-            else None,
+            page_number=chunk.provenance.get("page_number") if isinstance(chunk.provenance, dict) else None,
+            section=chunk.provenance.get("section") if isinstance(chunk.provenance, dict) else None,
         )
         citations.append(citation)
         anchor_counter += 1

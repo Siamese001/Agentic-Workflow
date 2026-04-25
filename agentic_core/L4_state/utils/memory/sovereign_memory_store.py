@@ -212,7 +212,13 @@ class SovereignMemoryMcp:
                 )
                 created.append(name)
             return {"status": "success", "created": created}
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[SovereignMemoryMcp] Entity creation failure: {e}")
             return {"status": "error", "msg": str(e)}
 
@@ -228,7 +234,13 @@ class SovereignMemoryMcp:
                     self._bridge.add_observation(name, content)
                     added.setdefault(name, []).append(content)
             return {"status": "success", "added_count": len(added)}
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"[SovereignMemoryMcp] Observation failure: {e}")
             return {"status": "error", "msg": str(e)}
 
@@ -236,5 +248,11 @@ class SovereignMemoryMcp:
         """Semantic search across eternal memory — delegated to GraphMemoryBridge."""
         try:
             return self._bridge.search_entities(query)
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ):  # guardian: allow-silent-swallow
             return []

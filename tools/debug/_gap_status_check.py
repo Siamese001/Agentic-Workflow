@@ -1,4 +1,5 @@
 """Quick diagnostic for the 5 gaps the user listed."""
+
 from __future__ import annotations
 
 import json
@@ -18,8 +19,10 @@ _hdr(1, "Archive cleanup script: does it require current_ts -> real sqlite?")
 script = _REPO / "tools/archive/archive_old_adg.py"
 src = script.read_text(encoding="utf-8")
 has_sqlite_constraint = (
-    "require" in src.lower() and "sqlite" in src.lower()
-) or "sqlite_exists" in src.lower() or "must have a sqlite" in src.lower()
+    ("require" in src.lower() and "sqlite" in src.lower())
+    or "sqlite_exists" in src.lower()
+    or "must have a sqlite" in src.lower()
+)
 print(f"  script path:                    {script.relative_to(_REPO)}")
 print(f"  requires sqlite to define 'current' run: {'YES' if has_sqlite_constraint else 'NO'}")
 print(f"  STATUS:                         {'DONE' if has_sqlite_constraint else 'OPEN'}")
@@ -50,7 +53,9 @@ else:
 
 mem_server = _REPO / "tools/memory/adg_memory_server.py"
 mem_src = mem_server.read_text(encoding="utf-8")
-protected_block_match = mem_src.split("_PROTECTED_TYPES = (")[1].split(")")[0] if "_PROTECTED_TYPES = (" in mem_src else ""
+protected_block_match = (
+    mem_src.split("_PROTECTED_TYPES = (")[1].split(")")[0] if "_PROTECTED_TYPES = (" in mem_src else ""
+)
 has_adg_protection = "ADGModule" in mem_src or "ADGLayer" in mem_src or "ADGNode" in protected_block_match
 print(f"  _PROTECTED_TYPES in adg_memory_server includes ADG_*: {'YES' if has_adg_protection else 'NO'}")
 print(f"  STATUS:                         {'DONE' if has_adg_protection else 'OPEN'}")
@@ -64,7 +69,7 @@ print(f"  runtime_adg_dir:                {rta_dir.relative_to(_REPO)}")
 print(f"  snapshot count:                 {len(snaps)}")
 if snaps:
     sizes = [p.stat().st_size / 1024 for p in snaps]
-    print(f"  avg size KB:                    {sum(sizes)/len(sizes):.1f}")
+    print(f"  avg size KB:                    {sum(sizes) / len(sizes):.1f}")
     print(f"  sample snapshot:                {snaps[0].name}")
     try:
         sample = json.loads(snaps[0].read_text(encoding="utf-8"))
@@ -107,15 +112,19 @@ if consumer_path.exists():
         print(f"      - {ref[:120]}")
 # Check where it's imported
 import subprocess
+
 res = subprocess.run(
-    ["git", "grep", "-l", "runtime_hitl_consumer"],
-    cwd=_REPO, capture_output=True, text=True, timeout=10
+    ["git", "grep", "-l", "runtime_hitl_consumer"], cwd=_REPO, capture_output=True, text=True, timeout=10
 )
-importers = [line for line in res.stdout.splitlines() if line and line != "system_learning/runtime_hitl_consumer.py"]
+importers = [
+    line for line in res.stdout.splitlines() if line and line != "system_learning/runtime_hitl_consumer.py"
+]
 print(f"  importers of runtime_hitl_consumer: {len(importers)}")
 for p in importers[:10]:
     print(f"    - {p}")
-print(f"  STATUS:                         {'OPEN — activation path unclear' if len(importers) < 2 else 'INVESTIGATED'}")
+print(
+    f"  STATUS:                         {'OPEN — activation path unclear' if len(importers) < 2 else 'INVESTIGATED'}"
+)
 
 
 # --- Gap 5: _subsystem_gap_analysis.py hardcoded OTEL path ---

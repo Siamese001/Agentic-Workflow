@@ -29,22 +29,16 @@ class NullBackend:
 
     __slots__ = ("_note", "_dim_name")
 
-    def __init__(
-        self, note: str | None = None, *, dim_name: str | None = None
-    ) -> None:
+    def __init__(self, note: str | None = None, *, dim_name: str | None = None) -> None:
         self._note = note
         self._dim_name = dim_name
 
-    def __call__(
-        self, _inputs: GraderInput, dim_spec: Mapping[str, Any]
-    ) -> DimensionResult:
+    def __call__(self, _inputs: GraderInput, dim_spec: Mapping[str, Any]) -> DimensionResult:
         # Prefer explicit dim_name passed at construction; fall back to
         # the spec key ``name`` if the grader injects it; last resort is
         # a sentinel that callers can detect.
         name = self._dim_name or str(dim_spec.get("name", "unknown_dim"))
-        return DimensionResult(
-            name=name, score="Unknown", verdict="unknown", notes=self._note
-        )
+        return DimensionResult(name=name, score="Unknown", verdict="unknown", notes=self._note)
 
 
 __all__ = ["NullBackend"]

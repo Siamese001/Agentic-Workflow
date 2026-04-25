@@ -229,21 +229,13 @@ class TestOpenAIFinalInstructionsTail:
 
 
 class TestRegistryModelAwareDispatch:
-    @pytest.mark.parametrize(
-        "model_id", ["o1", "o1-preview", "o1-mini", "o3", "o3-pro", "o4", "o4-mini"]
-    )
-    def test_oseries_model_ids_route_to_oseries_adapter(
-        self, model_id: str
-    ) -> None:
+    @pytest.mark.parametrize("model_id", ["o1", "o1-preview", "o1-mini", "o3", "o3-pro", "o4", "o4-mini"])
+    def test_oseries_model_ids_route_to_oseries_adapter(self, model_id: str) -> None:
         adapter = get_adapter_for_model(ProviderType.OPENAI, model_id)
         assert adapter.name == "openai_oseries"
 
-    @pytest.mark.parametrize(
-        "model_id", ["gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4", "openai-compat"]
-    )
-    def test_non_oseries_openai_routes_to_default_adapter(
-        self, model_id: str
-    ) -> None:
+    @pytest.mark.parametrize("model_id", ["gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4", "openai-compat"])
+    def test_non_oseries_openai_routes_to_default_adapter(self, model_id: str) -> None:
         adapter = get_adapter_for_model(ProviderType.OPENAI, model_id)
         assert adapter.name == "openai"
 

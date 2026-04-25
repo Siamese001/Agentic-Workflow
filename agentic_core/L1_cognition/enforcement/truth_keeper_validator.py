@@ -236,7 +236,13 @@ class TruthKeeper:
                         )
         except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "file": file_path, "message": f"Syntax error: {e}"})
-        except (ValueError, TypeError, AttributeError, OSError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            ValueError,
+            TypeError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             LOGGER.error(f"Error checking {file_path}: {e}")
         return {"violations": violations, "fixes": fixes, "file": file_path}
 

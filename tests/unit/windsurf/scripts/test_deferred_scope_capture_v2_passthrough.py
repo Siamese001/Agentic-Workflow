@@ -49,7 +49,9 @@ def test_v2_heavy_signals_promote_band():
     m["item_class"] = "regression"
     rec = hook._process_marker(m, has_receipt=True, token=None)
     assert rec["kind"] == "confirmed_by_receipt"
-    assert rec["band"] == "P1", f"expected P1 with heavy signals, got {rec['band']} impact={rec['impact_score']}"
+    assert rec["band"] == "P1", (
+        f"expected P1 with heavy signals, got {rec['band']} impact={rec['impact_score']}"
+    )
 
 
 def test_v2_adds_complexity_penalty():

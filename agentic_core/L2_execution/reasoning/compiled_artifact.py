@@ -123,6 +123,7 @@ class AuthorityLevel(Enum):
     META_COGNITIVE = auto()  # M0 - Thinking-approach / CoT guidance
     HEALING = auto()  # H0 - Recovery / re-entry context
     META_LEARNING = auto()  # Y0 - Meta-learning adjustments (EQ-17)
+    SCHEMA = auto()  # R0 - Output format / response schema constraints
     ZERO = auto()  # U0 - Raw Intent (e.g., "Fix module X")
 
     @classmethod
@@ -137,6 +138,7 @@ class AuthorityLevel(Enum):
             "E0": cls.EXEMPLAR,
             "M0": cls.META_COGNITIVE,
             "H0": cls.HEALING,
+            "R0": cls.SCHEMA,
             "U0": cls.ZERO,
         }
         return mapping.get(code.upper(), cls.ZERO)
@@ -165,7 +167,7 @@ class AuthoritySlot:
                 f"Slot type {self.slot_type} does not match authority level {self.authority_level}",
             )
         # Security invariant: no routing/safety fields in C0/U0/E0/M0/H0/Y0 (all informational).
-        if self.slot_type in ("C0", "U0", "E0", "M0", "H0", "Y0"):
+        if self.slot_type in ("C0", "U0", "E0", "M0", "H0", "Y0", "R0"):
             forbidden = ["route_mode", "safety_threshold", "execution_tier", "auth_token"]
             for key in forbidden:
                 if key in self.metadata:
@@ -299,9 +301,7 @@ class CompiledPromptArtifact:
             "slots_used": sorted(self.slots_used),
             "schema_version": self.schema_version,
         }
-        payload_bytes = json.dumps(
-            payload, sort_keys=True, ensure_ascii=False
-        ).encode("utf-8")
+        payload_bytes = json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
         return hashlib.sha256(payload_bytes).hexdigest()
 
     def verify_signature(self, secret_key: bytes) -> bool:
@@ -343,9 +343,7 @@ class CompiledPromptArtifact:
             "timestamp": self.timestamp,
             "schema_version": self.schema_version,
         }
-        payload_bytes = json.dumps(
-            payload, sort_keys=True, ensure_ascii=False
-        ).encode("utf-8")
+        payload_bytes = json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
         return hmac.new(secret_key, payload_bytes, hashlib.sha256).hexdigest()
 
     def _compute_signature_v1(self, secret_key: bytes) -> str:
@@ -366,9 +364,7 @@ class CompiledPromptArtifact:
             "slots_used": self.slots_used,
             "timestamp": self.timestamp,
         }
-        payload_bytes = json.dumps(
-            payload, sort_keys=True, ensure_ascii=False
-        ).encode("utf-8")
+        payload_bytes = json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
         return hmac.new(secret_key, payload_bytes, hashlib.sha256).hexdigest()
 
     def to_dict(self) -> dict[str, Any]:

@@ -50,8 +50,10 @@ class _FakePsutil:
         class _Proc:
             def is_running(self) -> bool:
                 return captured_status != "dead"
+
             def status(self) -> str:
                 return captured_status
+
         return _Proc()
 
 
@@ -68,6 +70,7 @@ def fake_psutil(monkeypatch: pytest.MonkeyPatch):
         fake = _FakePsutil(live_pids)
         monkeypatch.setitem(sys.modules, "psutil", fake)
         return fake
+
     return _install
 
 

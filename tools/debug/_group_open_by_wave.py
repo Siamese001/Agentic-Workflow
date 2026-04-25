@@ -3,6 +3,7 @@
 Reads all rows from Notion (not just a single page) and groups them by wave
 so we can present the deferred scope one-wave-at-a-time.
 """
+
 from __future__ import annotations
 
 import collections
@@ -87,10 +88,7 @@ def main() -> int:
     out = {
         "total_rows": len(rows),
         "waves": {
-            w: [
-                {"band": b, "status": s, "phase": p, "title": t, "impact": i}
-                for (b, s, p, t, i) in items
-            ]
+            w: [{"band": b, "status": s, "phase": p, "title": t, "impact": i} for (b, s, p, t, i) in items]
             for w, items in active_waves.items()
         },
     }

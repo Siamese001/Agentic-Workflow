@@ -19,9 +19,7 @@ except ImportError:  # pragma: no cover - optional dependency
 
 _SCHEMA_PATH = Path("config/schemas/exit_decision.schema.json")
 
-Disposition = Literal[
-    "allow_finish", "deny_reroute", "escalate_hitl", "commit_request"
-]
+Disposition = Literal["allow_finish", "deny_reroute", "escalate_hitl", "commit_request"]
 Verdict = Literal["pass", "warn", "fail", "unknown"]
 SeverityBand = Literal["info", "low", "medium", "high", "critical"]
 
@@ -52,9 +50,7 @@ class FinalResponseMetrics:
     faithfulness: float | str = "Unknown"
     context_precision: float | str | None = None
     completeness: float | str = "Unknown"
-    hallucination: HallucinationMetric = field(
-        default_factory=lambda: HallucinationMetric(1.0, 0, True)
-    )
+    hallucination: HallucinationMetric = field(default_factory=lambda: HallucinationMetric(1.0, 0, True))
 
     def as_dict(self) -> dict[str, Any]:
         base: dict[str, Any] = {
@@ -235,9 +231,7 @@ class ExitDecision:
         return json.dumps(self.to_dict(), indent=indent, ensure_ascii=False)
 
 
-def validate_dict(
-    payload: Mapping[str, Any], *, schema_path: Path | None = None
-) -> list[str]:
+def validate_dict(payload: Mapping[str, Any], *, schema_path: Path | None = None) -> list[str]:
     """Return a list of validation-error strings (empty == valid)."""
     path = schema_path or _SCHEMA_PATH
     if not path.exists():

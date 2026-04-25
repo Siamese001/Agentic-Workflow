@@ -56,17 +56,13 @@ class TestEgressProxy:
         assert "fail-closed default" in exc.value.reason
 
     def test_allowlist_match(self) -> None:
-        install_egress_policy(
-            build_policy(name="p1", allowed_hosts={"api.example.com"})
-        )
+        install_egress_policy(build_policy(name="p1", allowed_hosts={"api.example.com"}))
         d = check_url("https://api.example.com/x")
         assert d.allowed is True
         assert d.matched_pattern == "api.example.com"
 
     def test_glob_allowlist(self) -> None:
-        install_egress_policy(
-            build_policy(name="p1", allowed_hosts={"*.example.com"})
-        )
+        install_egress_policy(build_policy(name="p1", allowed_hosts={"*.example.com"}))
         assert check_url("https://a.example.com/").allowed is True
         with pytest.raises(EgressDenied):
             check_url("https://example.com/")  # glob *.example.com does not match bare
@@ -84,9 +80,7 @@ class TestEgressProxy:
         assert "denylist" in exc.value.reason
 
     def test_scheme_gate(self) -> None:
-        install_egress_policy(
-            build_policy(name="p1", allowed_hosts={"api.example.com"})
-        )
+        install_egress_policy(build_policy(name="p1", allowed_hosts={"api.example.com"}))
         with pytest.raises(EgressDenied):
             check_url("http://api.example.com/")  # http not in default https-only
         install_egress_policy(

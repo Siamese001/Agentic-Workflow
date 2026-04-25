@@ -221,7 +221,12 @@ class JudgeOrchestrator:
         if persist and verdicts:
             try:
                 self._store.store_verdicts(verdicts)
-            except (OSError, RuntimeError, ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 _log.warning("[JudgeOrchestrator] Persist failed: %s", exc)
 
         return report

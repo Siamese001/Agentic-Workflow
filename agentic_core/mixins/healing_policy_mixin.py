@@ -279,7 +279,11 @@ class HealingPolicyMixin:
                 _confidence,
                 _bp.behavioral_score,
             )
-        except (ImportError, AttributeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("healing_policy_mixin: Exception swallowed at L269: %s", e)
@@ -297,7 +301,11 @@ class HealingPolicyMixin:
                     RuntimeError,
                 ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
-        except (OSError, ValueError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            OSError,
+            ValueError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             errors += 1
             Logger.error(f"Healing chain error: {e}")
         return {
@@ -329,7 +337,11 @@ class HealingPolicyMixin:
         for _violation in violations:
             try:
                 fixed += 1
-            except (OSError, RuntimeError, AttributeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                RuntimeError,
+                AttributeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.error(f"Failed to fix violation in {file_path}: {e}")
         return fixed
 

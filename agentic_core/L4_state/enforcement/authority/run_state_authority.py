@@ -572,7 +572,13 @@ class RunStateAuthority(WriteGovernorMixin):
                 result = self._backend.get(key)
                 if result is not None:
                     return result
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- multi-backend read best-effort; failure logged and next backend tried
+            except (
+                AttributeError,
+                OSError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as exc:  # guardian: allow-log-and-swallow -- multi-backend read best-effort; failure logged and next backend tried
                 logger.debug("RUN_STATE_AUTHORITY backend_read failed key=%s: %s", key, exc)
         return default
 

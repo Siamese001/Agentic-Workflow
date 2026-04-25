@@ -113,7 +113,9 @@ class ConsensusJudge:
         unknown_reasons: dict[str, str] = {}
 
         for dim in DIMENSIONS:
-            values = [getattr(js, dim) for js in per_judge]  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads JudgeScore dataclass attr by name
+            values = [
+                getattr(js, dim) for js in per_judge
+            ]  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads JudgeScore dataclass attr by name
             aggregated[dim] = self._aggregate_dim(values)
             rng = self._dim_range(values)
             disagreements.append((dim, round(rng, 4)))

@@ -88,17 +88,13 @@ class AnthropicMessageAdapter:
                 system = composed
             # EQ-2: long-context hoist when C0 is heavy. Mutates `system`
             # but only when a real slots_map is present.
-            hoisted, long_context_hoisted = self._apply_long_context_hoist(
-                system, slots_map
-            )
+            hoisted, long_context_hoisted = self._apply_long_context_hoist(system, slots_map)
             system = hoisted
 
         extra: dict[str, Any] = {
             "adapter": self.name,
             "slots_used": list(slots_used) if slots_used else [],
-            "structural_tags_detected": any(
-                m in system for m in self._STRUCTURAL_MARKERS
-            ),
+            "structural_tags_detected": any(m in system for m in self._STRUCTURAL_MARKERS),
             "long_context_hoisted": long_context_hoisted,
         }
         # EQ-5 (ADR-PROMPT-ASSEMBLY-001 Q4): Anthropic has no native JSON
@@ -158,16 +154,13 @@ class AnthropicMessageAdapter:
             parts.append(f"<{tag}>\n{content}\n</{tag}>")
         return "\n\n".join(parts)
 
-
     # ------------------------------------------------------------------
     # EQ-2 — ADR-PROMPT-ASSEMBLY-001 Q3: long-context hoist + <document>
     # wrapping. Both helpers are additive and only run when a slots_map
     # is present.
     # ------------------------------------------------------------------
 
-    def _apply_long_context_hoist(
-        self, system: str, slots_map: dict[str, str]
-    ) -> tuple[str, bool]:
+    def _apply_long_context_hoist(self, system: str, slots_map: dict[str, str]) -> tuple[str, bool]:
         """Hoist C0 to the top and append a tail task reminder when heavy.
 
         Anthropic long-context guidance: placing longform data near the
@@ -197,9 +190,7 @@ class AnthropicMessageAdapter:
         i0 = (slots_map.get("I0") or "").strip().splitlines()
         reminder = i0[0] if i0 else ""
         if reminder:
-            new_system = (
-                f"{new_system}\n\n<task_reminder>\n{reminder}\n</task_reminder>"
-            )
+            new_system = f"{new_system}\n\n<task_reminder>\n{reminder}\n</task_reminder>"
 
         return new_system, True
 
@@ -241,7 +232,7 @@ class AnthropicMessageAdapter:
         if open_idx == -1 or close_idx == -1:
             return system
         before = system[:open_idx].rstrip()
-        after = system[close_idx + len("</context>"):].lstrip()
+        after = system[close_idx + len("</context>") :].lstrip()
         if before and after:
             return f"{before}\n\n{after}"
         return before or after

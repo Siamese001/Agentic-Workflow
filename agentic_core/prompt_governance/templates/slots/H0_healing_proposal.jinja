@@ -1,0 +1,47 @@
+{# H0 - HEALING PROPOSAL (PROPOSED Authority)
+ L2.3 healing corrections with re-entry validation required.
+ PROPOSED authority — must be validated before application.
+#}
+================================================================================
+HEALING PROPOSAL (PROPOSED — REQUIRES RE-ENTRY VALIDATION)
+================================================================================
+
+{% if healing_context %}
+DIAGNOSED ISSUE:
+{{ healing_context }}
+{% endif %}
+
+{% if proposed_fix %}
+PROPOSED CORRECTION:
+{{ proposed_fix }}
+{% endif %}
+
+{% if affected_layers %}
+AFFECTED LAYERS:
+{% for layer in affected_layers %}
+- {{ layer }}
+{% endfor %}
+{% endif %}
+
+{% if blast_radius %}
+BLAST RADIUS:
+- Fan-in: {{ blast_radius.fan_in | default("unknown") }}
+- Surface: {{ blast_radius.surface | default("unknown") }}
+- Impact score: {{ blast_radius.impact_score | default("unknown") }}
+{% endif %}
+
+{% if reentry_checks %}
+RE-ENTRY VALIDATION CHECKS:
+{% for check in reentry_checks %}
+- [ ] {{ check }}
+{% endfor %}
+{% endif %}
+
+{% if rollback_plan %}
+ROLLBACK PLAN:
+{{ rollback_plan }}
+{% endif %}
+
+================================================================================
+HEALING IS PROPOSED, NOT EXECUTED. RE-ENTRY VALIDATION IS MANDATORY BEFORE APPLYING.
+================================================================================

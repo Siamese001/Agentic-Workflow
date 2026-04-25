@@ -100,33 +100,25 @@ class AppIngressRunner:
         return self._dispatch_or_clarify(result)
 
     # ------------------------------------------------------------------ shared
-    def _dispatch_or_clarify(
-        self, stamped: StampedRequest
-    ) -> Any | ClarificationRequired:
+    def _dispatch_or_clarify(self, stamped: StampedRequest) -> Any | ClarificationRequired:
         payload = stamped.normalized_payload
         if not isinstance(payload, dict):
             return ClarificationRequired(
                 request_id=stamped.request_id,
                 trace_root=stamped.trace_root,
                 reason="request_payload must be an object with domain fields.",
-                suggested_followups=(
-                    f"Provide a JSON object containing: {', '.join(self._required)}.",
-                ),
+                suggested_followups=(f"Provide a JSON object containing: {', '.join(self._required)}.",),
             )
 
         missing = [
-            f
-            for f in self._required
-            if not (isinstance(payload.get(f), str) and payload.get(f, "").strip())
+            f for f in self._required if not (isinstance(payload.get(f), str) and payload.get(f, "").strip())
         ]
         if missing:
             return ClarificationRequired(
                 request_id=stamped.request_id,
                 trace_root=stamped.trace_root,
                 reason=f"request_payload missing required fields: {missing}",
-                suggested_followups=(
-                    f"Provide non-empty string values for: {', '.join(missing)}.",
-                ),
+                suggested_followups=(f"Provide non-empty string values for: {', '.join(missing)}.",),
             )
 
         domain_request = self._parse(payload)
@@ -135,9 +127,7 @@ class AppIngressRunner:
                 request_id=stamped.request_id,
                 trace_root=stamped.trace_root,
                 reason="domain request could not be parsed from payload.",
-                suggested_followups=(
-                    f"Verify types for required fields: {', '.join(self._required)}.",
-                ),
+                suggested_followups=(f"Verify types for required fields: {', '.join(self._required)}.",),
             )
 
         return self._dispatch(domain_request)

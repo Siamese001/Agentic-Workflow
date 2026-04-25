@@ -141,9 +141,7 @@ class PromptMessages:
         ``_SYSTEM_SLOT_CODES``. Falls back to the synthetic ``SYSTEM`` key
         used when slots are not retained.
         """
-        if "SYSTEM" in self.slot_map and not any(
-            c in self.slot_map for c in _SYSTEM_SLOT_CODES
-        ):
+        if "SYSTEM" in self.slot_map and not any(c in self.slot_map for c in _SYSTEM_SLOT_CODES):
             return self.slot_map["SYSTEM"]
 
         ordered = self.ordered_slots or tuple(self.slot_map)
@@ -198,11 +196,11 @@ def _parse_exemplar_turns(e0_content: str) -> tuple[tuple[str, str], ...]:
         if stripped.upper().startswith("USER:"):
             _flush()
             current_role = "user"
-            current_buf = [stripped[len("USER:"):].strip()]
+            current_buf = [stripped[len("USER:") :].strip()]
         elif stripped.upper().startswith("ASSISTANT:"):
             _flush()
             current_role = "assistant"
-            current_buf = [stripped[len("ASSISTANT:"):].strip()]
+            current_buf = [stripped[len("ASSISTANT:") :].strip()]
         else:
             current_buf.append(line)
     _flush()

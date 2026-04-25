@@ -49,7 +49,10 @@ def _get_conn(db_path: Path | None = None) -> sqlite3.Connection | None:
             conn.commit()
             _CONN = conn
             return conn
-        except (sqlite3.Error, OSError) as exc:  # guardian: allow-return-none-swallow -- G5 CDC inverse index is a best-effort optimization; None disables CDC invalidation and falls back to standard cache eviction
+        except (
+            sqlite3.Error,
+            OSError,
+        ) as exc:  # guardian: allow-return-none-swallow -- G5 CDC inverse index is a best-effort optimization; None disables CDC invalidation and falls back to standard cache eviction
             _LOGGER.warning("doc_to_cache_index init failed: %s", exc)
             return None
 

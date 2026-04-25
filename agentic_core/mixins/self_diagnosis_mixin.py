@@ -246,7 +246,11 @@ class SelfDiagnosisMixin:
                 _bp = _gbp(_self_file, _root)
                 diagnosis["adg_antipatterns"] = sorted(_bp.antipattern_signals)
                 diagnosis["adg_behavioral_score"] = _bp.behavioral_score
-        except (AttributeError, ImportError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            ImportError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("self_diagnosis_mixin: Exception swallowed at L243: %s", e)

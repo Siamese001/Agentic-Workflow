@@ -64,7 +64,8 @@ def layer_mult(layer: str) -> float:
 
 def _latest_adg() -> Path:
     cands = sorted(
-        p for p in glob.glob(str(REPO_ROOT / "artifacts" / "adg" / "adg_indexed_*.sqlite"))
+        p
+        for p in glob.glob(str(REPO_ROOT / "artifacts" / "adg" / "adg_indexed_*.sqlite"))
         if "99999999" not in p
     )
     if not cands:
@@ -91,9 +92,7 @@ def _progress(i: int, total: int, label: str, start: float) -> None:
     if pct > 0.02 and elapsed > 1:
         remaining = elapsed * (1 - pct) / pct
         eta = f" - ETA: {int(remaining)}s"
-    sys.stderr.write(
-        f"\r{color}[{bar}]\033[0m {int(pct*100):3d}% ({i}/{total}) {label}{eta}   "
-    )
+    sys.stderr.write(f"\r{color}[{bar}]\033[0m {int(pct * 100):3d}% ({i}/{total}) {label}{eta}   ")
     sys.stderr.flush()
     if i >= total:
         sys.stderr.write("\n")
@@ -121,7 +120,7 @@ def _symbol_to_module_paths(sym_name: str) -> List[str]:
     """
     if not sym_name or not sym_name.startswith(_SYMBOL_PREFIX):
         return []
-    body = sym_name[len(_SYMBOL_PREFIX):]
+    body = sym_name[len(_SYMBOL_PREFIX) :]
     if "::" in body:
         return [body.split("::", 1)[0].replace("\\", "/")]
     if body.endswith(".*"):
@@ -287,8 +286,15 @@ def is_source_file(path: str) -> bool:
     if not path or not path.endswith(".py"):
         return False
     bad_prefixes = (
-        "tests/", "archives/", "tools/archive/", ".windsurf/", "docs/", "artifacts/",
-        "reports/", "data/", "node_modules/",
+        "tests/",
+        "archives/",
+        "tools/archive/",
+        ".windsurf/",
+        "docs/",
+        "artifacts/",
+        "reports/",
+        "data/",
+        "node_modules/",
     )
     return not any(path.startswith(p) for p in bad_prefixes)
 
@@ -320,14 +326,16 @@ def build_report(db: Path, since_days: int) -> dict:
         ti = test_imp.get(mod["id"], 0)
         pf = prod_fi.get(mod["id"], 0)
         score = score_module(mod, ti, pf)
-        rows.append({
-            "path": path,
-            "layer": mod["layer"],
-            "test_importers": ti,
-            "prod_fan_in": pf,
-            "gap_score": score,
-            "changed_recently": path in changed,
-        })
+        rows.append(
+            {
+                "path": path,
+                "layer": mod["layer"],
+                "test_importers": ti,
+                "prod_fan_in": pf,
+                "gap_score": score,
+                "changed_recently": path in changed,
+            }
+        )
     _progress(total, total, "scoring modules", start)
 
     rows.sort(key=lambda r: r["gap_score"], reverse=True)
@@ -406,9 +414,7 @@ def write_outputs(report: dict, out_dir: Path) -> Tuple[Path, Path]:
         "|---:|---|---|---:|---:|",
     ]
     for i, r in enumerate(top_overall, 1):
-        lines.append(
-            f"| {i} | `{r['layer']}` | `{r['path']}` | {r['prod_fan_in']} | {r['gap_score']} |"
-        )
+        lines.append(f"| {i} | `{r['layer']}` | `{r['path']}` | {r['prod_fan_in']} | {r['gap_score']} |")
 
     lines += [
         "",
@@ -421,9 +427,7 @@ def write_outputs(report: dict, out_dir: Path) -> Tuple[Path, Path]:
         lines.append("| _(none — no recently-changed untested modules)_ |  |  |  |  |")
     else:
         for i, r in enumerate(top_changed, 1):
-            lines.append(
-                f"| {i} | `{r['layer']}` | `{r['path']}` | {r['prod_fan_in']} | {r['gap_score']} |"
-            )
+            lines.append(f"| {i} | `{r['layer']}` | `{r['path']}` | {r['prod_fan_in']} | {r['gap_score']} |")
 
     lines += [
         "",

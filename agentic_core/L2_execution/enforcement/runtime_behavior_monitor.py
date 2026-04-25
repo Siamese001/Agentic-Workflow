@@ -122,10 +122,7 @@ class BehaviorMonitor:
                     BehaviorFinding(
                         kind="retry_storm",
                         severity="critical",
-                        reason=(
-                            f"step {ev.step_id!r} tool {ev.tool_name!r} "
-                            f"retry_count={ev.retry_count}"
-                        ),
+                        reason=(f"step {ev.step_id!r} tool {ev.tool_name!r} retry_count={ev.retry_count}"),
                         evidence={"step_id": ev.step_id, "retries": ev.retry_count},
                     )
                 )
@@ -134,10 +131,7 @@ class BehaviorMonitor:
                     BehaviorFinding(
                         kind="retry_storm",
                         severity="warning",
-                        reason=(
-                            f"step {ev.step_id!r} tool {ev.tool_name!r} "
-                            f"retry_count={ev.retry_count}"
-                        ),
+                        reason=(f"step {ev.step_id!r} tool {ev.tool_name!r} retry_count={ev.retry_count}"),
                         evidence={"step_id": ev.step_id, "retries": ev.retry_count},
                     )
                 )

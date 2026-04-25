@@ -1,6 +1,8 @@
 """Direct trace of why scanner does not match a guardian on route_gates.py:237."""
+
 import sys
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
@@ -13,13 +15,20 @@ from agentic_core.adg.artifact.multi_writer import (
 )
 
 fp = "agentic_core/L0_routing/reasoning/route_gates.py"
-for line_no, kind in [(237, "return_none_swallow"), (255, "return_none_swallow"),
-                      (127, "broad_exception_catch"),
-                      (303, "silent_exception_swallow"), (347, "silent_exception_swallow"), (349, "log_and_swallow"),
-                      (28, "hardcoded_secret"),
-                      (146, "return_none_swallow"), (144, "return_none_swallow")]:
+for line_no, kind in [
+    (237, "return_none_swallow"),
+    (255, "return_none_swallow"),
+    (127, "broad_exception_catch"),
+    (303, "silent_exception_swallow"),
+    (347, "silent_exception_swallow"),
+    (349, "log_and_swallow"),
+    (28, "hardcoded_secret"),
+    (146, "return_none_swallow"),
+    (144, "return_none_swallow"),
+]:
     path_map = {
-        237: fp, 255: fp,
+        237: fp,
+        255: fp,
         127: "agentic_core/L2_execution/reasoning/programmatic_tool_runner.py",
         303: "agentic_core/L5_safety/enforcement/exit_control_gate.py",
         347: "agentic_core/L5_safety/enforcement/exit_control_gate.py",

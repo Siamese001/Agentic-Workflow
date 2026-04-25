@@ -1,4 +1,5 @@
 import sqlite3
+
 c = sqlite3.connect(r"artifacts/adg/adg_indexed_04232026_0925.sqlite")
 
 # Total class-shaped symbols
@@ -15,8 +16,7 @@ SELECT COUNT(*) FROM nodes
  WHERE entity_type='symbol'
    AND adg_name LIKE 'ADG::Symbol::%.%.%'
 """
-print("symbol nodes with >= 3 dotted parts (method-ish):",
-      c.execute(q2).fetchone())
+print("symbol nodes with >= 3 dotted parts (method-ish):", c.execute(q2).fetchone())
 
 # Sample 10
 q3 = """

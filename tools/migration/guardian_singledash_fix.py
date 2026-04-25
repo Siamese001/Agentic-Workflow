@@ -15,6 +15,7 @@ Usage::
     python tools/migration/guardian_singledash_fix.py --dry-run
     python tools/migration/guardian_singledash_fix.py --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -25,9 +26,21 @@ import sys
 import tempfile
 from pathlib import Path
 
-ROOTS = ("agentic_core", "apps_rg", "apps_shared", "apps_lic", "apps_eval",
-         "apps_exec", "apps_research", "apps_rfp", "apps_underwriting_ai",
-         "tools", "ops_scripts", "system_learning", "infrastructure")
+ROOTS = (
+    "agentic_core",
+    "apps_rg",
+    "apps_shared",
+    "apps_lic",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
+)
 
 EXCLUDE_PATTERNS = (
     r"(^|[/\\])__pycache__[/\\]",
@@ -44,9 +57,9 @@ EXCLUDE_PATTERNS = (
 # We use a negative lookahead to avoid matching the canonical '--' form.
 PATTERN = re.compile(
     r"(#\s*guardian:\s*allow-[A-Za-z0-9_-]+)"  # group 1: comment+token
-    r"\s+-\s+"                                 # single ' - ' separator
-    r"(?!-)"                                   # NOT followed by another '-'
-    r"(\S)",                                   # group 2: first justification char
+    r"\s+-\s+"  # single ' - ' separator
+    r"(?!-)"  # NOT followed by another '-'
+    r"(\S)",  # group 2: first justification char
 )
 
 REPLACEMENT = r"\1 -- \2"

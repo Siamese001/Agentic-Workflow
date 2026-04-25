@@ -226,11 +226,16 @@ class HygieneMixin:
 
                         content = py_file.read_text(encoding="utf-8")
                         ast.parse(content)
-                    except SyntaxError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
+                    except (
+                        SyntaxError
+                    ) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                         results["syntax_errors"].append(
                             {"file": str(rel_path), "error": str(e)}
                         )  # review: File operations with encoding need error-specific handling
-                except (OSError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
+                except (
+                    OSError,
+                    UnicodeDecodeError,
+                ) as e:  # guardian: allow-silent-swallow -- acceptable exception handling
                     self.logger.debug(f"Failed to scan {rel_path}: {e}")
                     continue
         except (OSError, ValueError, RuntimeError) as e:

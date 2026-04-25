@@ -31,9 +31,7 @@ def _valid_entry(**overrides):
 
 
 def test_validate_entry_complete_passes() -> None:
-    with mock.patch.object(
-        mod, "_provenance_path_exists", return_value=True
-    ):
+    with mock.patch.object(mod, "_provenance_path_exists", return_value=True):
         assert mod.validate_entry(_valid_entry(), now=NOW) == []
 
 
@@ -53,9 +51,7 @@ def test_missing_provenance() -> None:
 
 def test_bad_date_format() -> None:
     entry = _valid_entry(expires_on="July 2026")
-    with mock.patch.object(
-        mod, "_provenance_path_exists", return_value=True
-    ):
+    with mock.patch.object(mod, "_provenance_path_exists", return_value=True):
         problems = mod.validate_entry(entry, now=NOW)
     assert any("YYYY-MM-DD" in p for p in problems)
 
@@ -64,26 +60,20 @@ def test_adr_file_must_exist() -> None:
     entry = _valid_entry()
     del entry["plan"]
     entry["adr"] = "ADR-999-missing.md"
-    with mock.patch.object(
-        mod, "_provenance_path_exists", return_value=False
-    ):
+    with mock.patch.object(mod, "_provenance_path_exists", return_value=False):
         problems = mod.validate_entry(entry, now=NOW)
     assert any("adr provenance" in p for p in problems)
 
 
 def test_plan_file_must_exist() -> None:
     entry = _valid_entry(plan="nonexistent-plan.md")
-    with mock.patch.object(
-        mod, "_provenance_path_exists", return_value=False
-    ):
+    with mock.patch.object(mod, "_provenance_path_exists", return_value=False):
         problems = mod.validate_entry(entry, now=NOW)
     assert any("plan provenance" in p for p in problems)
 
 
 def test_empty_string_field_is_missing() -> None:
-    problems = mod.validate_entry(
-        _valid_entry(reason="   "), now=NOW
-    )
+    problems = mod.validate_entry(_valid_entry(reason="   "), now=NOW)
     assert any("reason" in p for p in problems)
 
 
@@ -109,10 +99,7 @@ def test_load_waivers_malformed(tmp_path: Path) -> None:
 def test_load_waivers_filters_non_dict(tmp_path: Path) -> None:
     p = tmp_path / "w.yaml"
     p.write_text(
-        "waivers:\n"
-        "  - gate: X\n"
-        "    scope: Y\n"
-        "  - this-is-a-string\n",
+        "waivers:\n  - gate: X\n    scope: Y\n  - this-is-a-string\n",
         encoding="utf-8",
     )
     got = mod._load_waivers(p)
@@ -127,12 +114,8 @@ def test_provenance_exact_path_match(tmp_path: Path, monkeypatch) -> None:
     (tmp_path / "docs" / "architecture" / "adr").mkdir(parents=True)
     adr = tmp_path / "docs" / "architecture" / "adr" / "ADR-001-foo.md"
     adr.write_text("adr", encoding="utf-8")
-    assert mod._provenance_path_exists(
-        "docs/architecture/adr/ADR-001-foo.md", mod.ADR_GLOB
-    )
-    assert not mod._provenance_path_exists(
-        "docs/architecture/adr/ADR-999.md", mod.ADR_GLOB
-    )
+    assert mod._provenance_path_exists("docs/architecture/adr/ADR-001-foo.md", mod.ADR_GLOB)
+    assert not mod._provenance_path_exists("docs/architecture/adr/ADR-999.md", mod.ADR_GLOB)
 
 
 def test_provenance_basename_match(tmp_path: Path, monkeypatch) -> None:
@@ -140,9 +123,7 @@ def test_provenance_basename_match(tmp_path: Path, monkeypatch) -> None:
     plan_dir = tmp_path / ".windsurf" / "plans"
     plan_dir.mkdir(parents=True)
     (plan_dir / "my-plan-abc123.md").write_text("x", encoding="utf-8")
-    assert mod._provenance_path_exists(
-        "my-plan-abc123.md", mod.PLAN_GLOB
-    )
+    assert mod._provenance_path_exists("my-plan-abc123.md", mod.PLAN_GLOB)
     # Partial/fuzzy match should also hit via fnmatch
     assert mod._provenance_path_exists("my-plan", mod.PLAN_GLOB)
 
@@ -150,9 +131,7 @@ def test_provenance_basename_match(tmp_path: Path, monkeypatch) -> None:
 # ---- Gate integration ---------------------------------------------------
 
 
-def test_gate_returns_empty_on_empty_waivers(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_gate_returns_empty_on_empty_waivers(tmp_path: Path, monkeypatch) -> None:
     waiver_file = tmp_path / "w.yaml"
     waiver_file.write_text("waivers: []\n", encoding="utf-8")
     monkeypatch.setattr(mod, "WAIVER_FILE", waiver_file)
@@ -163,9 +142,7 @@ def test_gate_returns_empty_on_empty_waivers(
     assert violations == []
 
 
-def test_gate_flags_malformed_waiver(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_gate_flags_malformed_waiver(tmp_path: Path, monkeypatch) -> None:
     waiver_file = tmp_path / "w.yaml"
     waiver_file.write_text(
         "waivers:\n"

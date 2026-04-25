@@ -40,8 +40,7 @@ class EmbeddingProvider(Protocol):
 
     name: str
 
-    def embed(self, texts: Sequence[str]) -> list[list[float]]:
-        ...
+    def embed(self, texts: Sequence[str]) -> list[list[float]]: ...
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
@@ -102,14 +101,12 @@ def select_top_k_by_embedding(
     vectors = provider.embed(texts)
     if len(vectors) != len(texts):
         raise ValueError(
-            f"EmbeddingProvider {provider.name!r} returned {len(vectors)} "
-            f"vectors for {len(texts)} inputs"
+            f"EmbeddingProvider {provider.name!r} returned {len(vectors)} vectors for {len(texts)} inputs"
         )
 
     query_vec = vectors[0]
     scored = [
-        (_cosine(query_vec, vectors[idx + 1]), rec.exemplar_id, rec)
-        for idx, rec in enumerate(candidates)
+        (_cosine(query_vec, vectors[idx + 1]), rec.exemplar_id, rec) for idx, rec in enumerate(candidates)
     ]
     # Primary: -score (descending). Secondary: exemplar_id (ascending).
     scored.sort(key=lambda triple: (-triple[0], triple[1]))
@@ -131,9 +128,7 @@ def select_with_fallback(
     """
     if provider is None:
         return _static_select(query=query, task_class=task_class, bank=bank, k=k)
-    return select_top_k_by_embedding(
-        query=query, task_class=task_class, bank=bank, provider=provider, k=k
-    )
+    return select_top_k_by_embedding(query=query, task_class=task_class, bank=bank, provider=provider, k=k)
 
 
 __all__ = [

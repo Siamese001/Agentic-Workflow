@@ -199,6 +199,7 @@ def run_orchestrator_mission(project_root: Path, targets: list[str], execute: bo
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+
         # MW-9 (2026-04-24): Class body relocated to utils module.
         from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
 

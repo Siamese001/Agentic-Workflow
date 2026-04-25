@@ -1,4 +1,5 @@
 """Live demo: Gap 4 activation working end-to-end."""
+
 from __future__ import annotations
 
 import sys

@@ -103,8 +103,7 @@ def _count_unbound() -> int:
         conn = sqlite3.connect(str(LEDGER_DB), timeout=5)
         try:
             row = conn.execute(
-                "SELECT COUNT(*) FROM events WHERE status='predicted' "
-                "AND event_kind='deferred_scope_capture'"
+                "SELECT COUNT(*) FROM events WHERE status='predicted' AND event_kind='deferred_scope_capture'"
             ).fetchone()
             return int(row[0]) if row else 0
         finally:

@@ -76,12 +76,9 @@ _GUARDIAN_MARKERS = (
 # Stdlib functions that spawn unbounded processes — always flagged
 _BANNED_CALLS: dict[tuple[str, str], str] = {
     ("os", "system"): (
-        "os.system() cannot be bounded or reaped; use subprocess.run(argv, "
-        "shell=False, timeout=N)"
+        "os.system() cannot be bounded or reaped; use subprocess.run(argv, shell=False, timeout=N)"
     ),
-    ("os", "popen"): (
-        "os.popen() is deprecated and leaks stdio pipes; use subprocess.run"
-    ),
+    ("os", "popen"): ("os.popen() is deprecated and leaks stdio pipes; use subprocess.run"),
 }
 
 # subprocess.Popen requires .wait() / .terminate() / .kill() / context manager
@@ -249,8 +246,7 @@ def check_file(path: Path) -> list[Violation]:
                 Violation(
                     path,
                     node.lineno,
-                    "subprocess.run without timeout= kwarg — unbounded runtime "
-                    "(constitutional §14)",
+                    "subprocess.run without timeout= kwarg — unbounded runtime (constitutional §14)",
                 )
             )
 
@@ -336,17 +332,11 @@ def main(argv: list[str] | None = None) -> int:
             "Fix: use `with subprocess.Popen(...) as p:`, add "
             "`timeout=` to subprocess.run, or replace os.system with subprocess.run."
         )
-        print(
-            "Guardian exemption (rare): add `# guardian: allow-popen-leak -- "
-            "<reason>` on the call line."
-        )
+        print("Guardian exemption (rare): add `# guardian: allow-popen-leak -- <reason>` on the call line.")
         return 1
 
     if args.verbose:
-        print(
-            f"[check_terminal_cleanup] OK: scanned {len(paths)} files, "
-            f"no violations"
-        )
+        print(f"[check_terminal_cleanup] OK: scanned {len(paths)} files, no violations")
     return 0
 
 

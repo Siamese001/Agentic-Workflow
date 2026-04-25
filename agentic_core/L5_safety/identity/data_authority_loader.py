@@ -30,6 +30,7 @@ Reference:
   - agentic_core/L5_safety/identity/registry_loader.py (parallel loader)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 import threading

@@ -156,7 +156,13 @@ class APIDocumentationGenerator(DocumentationGenerator):
 
             return artifact
 
-        except (OSError, ValueError, TypeError, AttributeError, RuntimeError):  # guardian: allow-double-logging -- API doc generation failure logged before re-raise for batch diagnostics
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            AttributeError,
+            RuntimeError,
+        ):  # guardian: allow-double-logging -- API doc generation failure logged before re-raise for batch diagnostics
             raise
 
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:

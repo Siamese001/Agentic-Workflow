@@ -86,9 +86,7 @@ class TestHelpers:
         assert norm_sq == pytest.approx(1.0, rel=1e-6)
 
     def test_bm25_scores_keyword_matches_higher(self):
-        idx = _BM25Index.build(
-            ["the firewall blocks UDP", "an unrelated paragraph about pricing"]
-        )
+        idx = _BM25Index.build(["the firewall blocks UDP", "an unrelated paragraph about pricing"])
         scores = idx.score("firewall UDP")
         assert scores[0] > scores[1]
 

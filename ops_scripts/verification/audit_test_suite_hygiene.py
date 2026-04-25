@@ -76,7 +76,7 @@ def _progress(i: int, total: int, label: str, start: float) -> None:
         remaining = elapsed * (1 - pct) / pct
         eta = f" - ETA: {int(remaining)}s"
     sys.stderr.write(
-        f"\r{color}[{bar}]\033[0m {int(pct*100):3d}% ({i}/{total}) {label}{eta}   ",
+        f"\r{color}[{bar}]\033[0m {int(pct * 100):3d}% ({i}/{total}) {label}{eta}   ",
     )
     sys.stderr.flush()
     if i >= total:
@@ -293,7 +293,14 @@ def write_reports(records: list[dict[str, Any]]) -> tuple[Path, Path]:
         "substantive": "**KEEP** — real behavioral coverage",
         "unreadable": "Investigate — read error",
     }
-    for bucket in ["mechanical_twin", "near_twin", "broken_assertions", "importorskip_smoke", "substantive", "unreadable"]:
+    for bucket in [
+        "mechanical_twin",
+        "near_twin",
+        "broken_assertions",
+        "importorskip_smoke",
+        "substantive",
+        "unreadable",
+    ]:
         cnt = bucket_counts.get(bucket, 0)
         lines.append(f"| `{bucket}` | {cnt} | {action_map.get(bucket, '?')} |")
     lines.append("")
@@ -362,15 +369,16 @@ def write_reports(records: list[dict[str, Any]]) -> tuple[Path, Path]:
     # Phase 1 scope summary
     lines.append("## Phase 1 Proposed Deletion Scope")
     lines.append("")
-    p1_delete = (
-        bucket_counts.get("mechanical_twin", 0)
-        + bucket_counts.get("broken_assertions", 0)
-    )
+    p1_delete = bucket_counts.get("mechanical_twin", 0) + bucket_counts.get("broken_assertions", 0)
     p1_review = bucket_counts.get("near_twin", 0)
-    lines.append(f"- **Delete without review**: {bucket_counts.get('mechanical_twin', 0)} mechanical_twin + "
-                 f"{bucket_counts.get('broken_assertions', 0)} broken_assertions = **{p1_delete}** files")
+    lines.append(
+        f"- **Delete without review**: {bucket_counts.get('mechanical_twin', 0)} mechanical_twin + "
+        f"{bucket_counts.get('broken_assertions', 0)} broken_assertions = **{p1_delete}** files"
+    )
     lines.append(f"- **Delete after spot-check**: {p1_review} near_twin files")
-    lines.append(f"- **Defer to Phase 2 per-surface**: {bucket_counts.get('importorskip_smoke', 0)} importorskip_smoke files")
+    lines.append(
+        f"- **Defer to Phase 2 per-surface**: {bucket_counts.get('importorskip_smoke', 0)} importorskip_smoke files"
+    )
     lines.append(f"- **Leave alone**: {bucket_counts.get('substantive', 0)} substantive files")
     lines.append("")
 
@@ -410,7 +418,14 @@ def main() -> int:
     for r in records:
         bucket_counts[r.get("bucket", "unreadable")] += 1
     print("\nSummary by bucket:")
-    for bucket in ["mechanical_twin", "near_twin", "broken_assertions", "importorskip_smoke", "substantive", "unreadable"]:
+    for bucket in [
+        "mechanical_twin",
+        "near_twin",
+        "broken_assertions",
+        "importorskip_smoke",
+        "substantive",
+        "unreadable",
+    ]:
         print(f"  {bucket:<22s} {bucket_counts.get(bucket, 0):>6d}")
     return 0
 

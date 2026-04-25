@@ -26,4 +26,6 @@ def import_module_or_skip(module_path: str) -> ModuleType:
 def import_attr_or_skip(module_path: str, attr_name: str) -> Any:
     """Import an attribute from a module, skipping cleanly on missing runtime deps."""
     module = import_module_or_skip(module_path)
-    return getattr(module, attr_name)  # guardian: allow-hallucinated-tool-name -- getattr is a Python stdlib builtin, not a hallucinated tool; detector false positive
+    return getattr(
+        module, attr_name
+    )  # guardian: allow-hallucinated-tool-name -- getattr is a Python stdlib builtin, not a hallucinated tool; detector false positive

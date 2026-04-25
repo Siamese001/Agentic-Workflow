@@ -154,9 +154,7 @@ def _score_handoff(inputs: GraderInput, dim_spec: Mapping[str, Any]) -> Dimensio
     )
 
 
-def _score_instruction_adherence(
-    inputs: GraderInput, dim_spec: Mapping[str, Any]
-) -> DimensionResult:
+def _score_instruction_adherence(inputs: GraderInput, dim_spec: Mapping[str, Any]) -> DimensionResult:
     violations = inputs.instruction_violations
     if not violations:
         score: float | str = 5.0
@@ -180,9 +178,7 @@ def _score_instruction_adherence(
     )
 
 
-def _score_safety_policy(
-    inputs: GraderInput, dim_spec: Mapping[str, Any]
-) -> DimensionResult:
+def _score_safety_policy(inputs: GraderInput, dim_spec: Mapping[str, Any]) -> DimensionResult:
     hits = inputs.policy_hits
     if not hits:
         score = 5.0
@@ -202,9 +198,7 @@ def _score_safety_policy(
     )
 
 
-def _score_trajectory_shape(
-    inputs: GraderInput, dim_spec: Mapping[str, Any]
-) -> DimensionResult:
+def _score_trajectory_shape(inputs: GraderInput, dim_spec: Mapping[str, Any]) -> DimensionResult:
     issues: list[str] = []
     if not inputs.budget_fit:
         issues.append("budget_breach")

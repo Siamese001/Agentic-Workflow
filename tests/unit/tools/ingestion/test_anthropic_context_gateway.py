@@ -170,10 +170,13 @@ def test_builder_uses_gateway_path_when_adapter_injected():
     def fake_run_llm_anthropic(*_args, **_kwargs):
         return stub_output
 
-    with patch(
-        "apps_rg.utils.providers_anthropic_client_util.run_llm_anthropic",
-        fake_run_llm_anthropic,
-    ), patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-test"}):
+    with (
+        patch(
+            "apps_rg.utils.providers_anthropic_client_util.run_llm_anthropic",
+            fake_run_llm_anthropic,
+        ),
+        patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-test"}),
+    ):
         gw = AnthropicContextGateway()
         builder = ContextualChunkBuilder(gateway=gw)
         result = builder.build(
@@ -195,10 +198,13 @@ def test_builder_falls_back_to_heuristic_when_gateway_raises():
     def fail(*_args, **_kwargs):
         raise RuntimeError("service unavailable")
 
-    with patch(
-        "apps_rg.utils.providers_anthropic_client_util.run_llm_anthropic",
-        fail,
-    ), patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-test"}):
+    with (
+        patch(
+            "apps_rg.utils.providers_anthropic_client_util.run_llm_anthropic",
+            fail,
+        ),
+        patch.dict(os.environ, {"ANTHROPIC_API_KEY": "sk-test"}),
+    ):
         gw = AnthropicContextGateway()
         builder = ContextualChunkBuilder(gateway=gw)
         result = builder.build(

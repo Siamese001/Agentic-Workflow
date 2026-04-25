@@ -124,8 +124,7 @@ def check() -> int:
         _make_slots(["S0"])  # smoke: import path and helper work.
     except (ImportError, ModuleNotFoundError) as exc:
         print(
-            f"[{Path(__file__).name}] WARN: agentic_core unavailable ({exc}); "
-            "gate short-circuits to pass.",
+            f"[{Path(__file__).name}] WARN: agentic_core unavailable ({exc}); gate short-circuits to pass.",
             file=sys.stderr,
         )
         return 0
@@ -156,9 +155,7 @@ def check() -> int:
     short_ = _build_artifact(_make_slots(["S0", "U0"]))
     long_ = _build_artifact(_make_slots(["S0", "I0", "U0"]))
     if short_.manifest_hash == long_.manifest_hash:
-        errors.append(
-            "INVARIANT 3 FAIL — manifest_hash collision between different slot sets"
-        )
+        errors.append("INVARIANT 3 FAIL — manifest_hash collision between different slot sets")
 
     if errors:
         print("CACHE-PREFIX STABILITY FAILED:\n", file=sys.stderr)

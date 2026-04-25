@@ -30,9 +30,7 @@ class CrossEncoderUnavailable(RuntimeError):
 
 BGE_RERANKER_MODEL: str = "BAAI/bge-reranker-v2-m3"
 BGE_RERANKER_MAX_LENGTH: int = 512
-BGE_RERANKER_ALLOW_DOWNLOAD: bool = (
-    os.environ.get("BGE_RERANKER_ALLOW_DOWNLOAD", "false").lower() == "true"
-)
+BGE_RERANKER_ALLOW_DOWNLOAD: bool = os.environ.get("BGE_RERANKER_ALLOW_DOWNLOAD", "false").lower() == "true"
 
 
 _MODEL_LOCK = threading.Lock()
@@ -43,6 +41,7 @@ def _resolve_device() -> str:
     """Co-locate reranker on the same device as the embedder."""
     try:
         from agentic_core.embeddings.bge_runtime import _resolve_device as _rd  # noqa: PLC0415
+
         return _rd()
     except ImportError:
         return "cpu"
@@ -63,9 +62,7 @@ def _load_model() -> Any:
         try:
             from sentence_transformers import CrossEncoder  # noqa: PLC0415
         except ImportError as exc:
-            raise CrossEncoderUnavailable(
-                f"sentence-transformers required for BGE reranker: {exc}"
-            ) from exc
+            raise CrossEncoderUnavailable(f"sentence-transformers required for BGE reranker: {exc}") from exc
         device = _resolve_device()
         logger.info(
             "Loading BGE reranker: %s (device=%s, allow_download=%s)",

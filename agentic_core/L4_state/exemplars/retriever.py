@@ -59,9 +59,7 @@ def select_top_k(
         return ()
 
     query_tokens = _tokens(query)
-    scored = [
-        (_score(rec, query_tokens), rec.exemplar_id, rec) for rec in candidates
-    ]
+    scored = [(_score(rec, query_tokens), rec.exemplar_id, rec) for rec in candidates]
     # Sort: primary = -score (desc), secondary = exemplar_id (asc) for determinism.
     scored.sort(key=lambda triple: (-triple[0], triple[1]))
     return tuple(rec for _, _, rec in scored[:k])

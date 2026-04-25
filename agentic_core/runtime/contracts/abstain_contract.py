@@ -188,9 +188,7 @@ def plan_clarify(
         raise ValueError(f"threshold must be in [0.0, 1.0], got {threshold!r}")
 
     if ambiguity_score >= threshold:
-        reason = reason_hint or (
-            f"ambiguity {ambiguity_score:.4f} at/above clarify floor {threshold:.4f}"
-        )
+        reason = reason_hint or (f"ambiguity {ambiguity_score:.4f} at/above clarify floor {threshold:.4f}")
         return ClarifyDecision(
             decision=DECISION_CLARIFY,
             reason=reason,
@@ -200,9 +198,7 @@ def plan_clarify(
             action=ACTION_REQUEST_CLARIFICATION,
         )
 
-    reason = reason_hint or (
-        f"ambiguity {ambiguity_score:.4f} below clarify floor {threshold:.4f}"
-    )
+    reason = reason_hint or (f"ambiguity {ambiguity_score:.4f} below clarify floor {threshold:.4f}")
     return ClarifyDecision(
         decision=DECISION_PROCEED,
         reason=reason,

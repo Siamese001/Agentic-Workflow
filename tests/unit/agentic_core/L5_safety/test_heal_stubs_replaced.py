@@ -3,6 +3,7 @@
 Plan: .windsurf/plans/l2-execute-v2-agent-conformance-c8e4f1.md §W3.
 Replaces: NotImplementedError + stub `{"status": "skipped"}` dicts.
 """
+
 from __future__ import annotations
 
 from agentic_core.L5_safety.types.heal_request_types import HealOutcome, HealResult
@@ -91,6 +92,7 @@ class TestResumeAssemblyAgentHeal:
         from apps_rg.reasoning import ResumeAssemblyAgent as module
 
         heal_method = module.ResumeAssemblyAgent.heal
+
         # Call unbound with a minimal self-stub; the method doesn't touch self.
         class _Stub:
             pass

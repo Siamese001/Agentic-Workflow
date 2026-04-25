@@ -27,6 +27,7 @@ def store(tmp_path: Path) -> ActivationFlagsStore:
 
 # ---- Dataclass defaults ---------------------------------------------
 
+
 class TestActivationFlagsDefaults:
     def test_defaults_all_false(self) -> None:
         f = ActivationFlags()
@@ -46,13 +47,13 @@ class TestActivationFlagsDefaults:
 
 class TestActivationProofDefaults:
     def test_frozen(self) -> None:
-        p = ActivationProof(flags_hash="h", guardian_signature="s",
-                            timestamp=0.0, previous_flags_hash="")
+        p = ActivationProof(flags_hash="h", guardian_signature="s", timestamp=0.0, previous_flags_hash="")
         with pytest.raises((AttributeError, Exception)):
             p.flags_hash = "tampered"  # type: ignore[misc]
 
 
 # ---- ActivationFlagsStore construction ------------------------------
+
 
 class TestActivationFlagsStoreConstruction:
     def test_fresh_store_has_default_flags(self, store: ActivationFlagsStore) -> None:
@@ -66,20 +67,23 @@ class TestActivationFlagsStoreConstruction:
 
 # ---- update_flags ---------------------------------------------------
 
+
 class TestUpdateFlags:
     def test_requires_signature(self, store: ActivationFlagsStore) -> None:
         with pytest.raises(RuntimeError, match="signature required"):
             store.update_flags(ActivationFlags(), guardian_signature="")
 
     def test_meta_learning_requires_replay_digest(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         flags = ActivationFlags(meta_learning_enabled=True, replay_digest_hash="")
         with pytest.raises(RuntimeError, match="Replay digest required"):
             store.update_flags(flags, guardian_signature="sig")
 
     def test_successful_update_returns_proof(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         proof = store.update_flags(ActivationFlags(), guardian_signature="sig")
         assert isinstance(proof, ActivationProof)
@@ -88,26 +92,32 @@ class TestUpdateFlags:
         assert proof.previous_flags_hash == ""
 
     def test_chained_update_records_previous_hash(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         first = store.update_flags(ActivationFlags(), guardian_signature="sig1")
         second = store.update_flags(
-            ActivationFlags(execution_hardened=True), guardian_signature="sig2",
+            ActivationFlags(execution_hardened=True),
+            guardian_signature="sig2",
         )
         assert second.previous_flags_hash == first.flags_hash
 
     def test_update_persists_to_disk(
-        self, store: ActivationFlagsStore, tmp_path: Path,
+        self,
+        store: ActivationFlagsStore,
+        tmp_path: Path,
     ) -> None:
         store.update_flags(ActivationFlags(), guardian_signature="sig")
         assert (tmp_path / ".activation" / "activation_flags.json").exists()
         assert (tmp_path / ".activation" / "activation_proof.json").exists()
 
     def test_update_sets_current_flags(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         store.update_flags(
-            ActivationFlags(execution_hardened=True), guardian_signature="sig",
+            ActivationFlags(execution_hardened=True),
+            guardian_signature="sig",
         )
         current = store.get_current_flags()
         assert current is not None
@@ -117,9 +127,11 @@ class TestUpdateFlags:
 
 # ---- verify_activation_chain ----------------------------------------
 
+
 class TestVerifyActivationChain:
     def test_no_proof_is_trivially_valid(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         assert store.verify_activation_chain() is True
 
@@ -128,10 +140,13 @@ class TestVerifyActivationChain:
         assert store.verify_activation_chain() is True
 
     def test_tampered_flags_detected(
-        self, store: ActivationFlagsStore, tmp_path: Path,
+        self,
+        store: ActivationFlagsStore,
+        tmp_path: Path,
     ) -> None:
         store.update_flags(
-            ActivationFlags(execution_hardened=True), guardian_signature="sig",
+            ActivationFlags(execution_hardened=True),
+            guardian_signature="sig",
         )
         # Tamper with the on-disk flags — simulate attacker modification
         flags_file = tmp_path / ".activation" / "activation_flags.json"
@@ -145,6 +160,7 @@ class TestVerifyActivationChain:
 
 # ---- verify_replay_binding ------------------------------------------
 
+
 class TestVerifyReplayBinding:
     def test_match(self, store: ActivationFlagsStore) -> None:
         store.update_flags(
@@ -155,7 +171,8 @@ class TestVerifyReplayBinding:
 
     def test_mismatch(self, store: ActivationFlagsStore) -> None:
         store.update_flags(
-            ActivationFlags(replay_digest_hash="abc"), guardian_signature="sig",
+            ActivationFlags(replay_digest_hash="abc"),
+            guardian_signature="sig",
         )
         assert store.verify_replay_binding("wrong") is False
 
@@ -168,10 +185,12 @@ class TestVerifyReplayBinding:
 
 # ---- reset_to_defaults ----------------------------------------------
 
+
 class TestResetToDefaults:
     def test_resets_flags_and_proof(self, store: ActivationFlagsStore) -> None:
         store.update_flags(
-            ActivationFlags(execution_hardened=True), guardian_signature="sig",
+            ActivationFlags(execution_hardened=True),
+            guardian_signature="sig",
         )
         store.reset_to_defaults()
         flags = store.get_current_flags()
@@ -181,6 +200,7 @@ class TestResetToDefaults:
 
 
 # ---- Corrupt payload on load ----------------------------------------
+
 
 class TestCorruptPayloadFailClosed:
     def test_corrupt_flags_file_resets_to_default(self, tmp_path: Path) -> None:
@@ -194,6 +214,7 @@ class TestCorruptPayloadFailClosed:
 
 
 # ---- ActivationGate --------------------------------------------------
+
 
 class TestActivationGate:
     def test_p0_requires_all_three(self, store: ActivationFlagsStore) -> None:
@@ -211,7 +232,8 @@ class TestActivationGate:
         assert gate.check_p0_ready() is True
 
     def test_p0_coverage_below_threshold(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         gate = ActivationGate(store)
         store.update_flags(
@@ -250,21 +272,24 @@ class TestActivationGate:
         assert gate.check_p2_ready() is True
 
     def test_check_meta_learning_allowed_requires_p0(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         gate = ActivationGate(store)
         with pytest.raises(RuntimeError):
             gate.check_meta_learning_allowed()
 
     def test_assert_meta_learning_allowed_raises_when_not_ready(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         gate = ActivationGate(store)
         with pytest.raises(RuntimeError):
             gate.assert_meta_learning_allowed()
 
     def test_check_meta_learning_allowed_full_happy_path(
-        self, store: ActivationFlagsStore,
+        self,
+        store: ActivationFlagsStore,
     ) -> None:
         gate = ActivationGate(store)
         store.update_flags(

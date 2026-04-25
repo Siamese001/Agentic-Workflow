@@ -4,6 +4,7 @@ Nodes counted per file:
   - module node:   resolved_path = <filepath>
   - symbol node:   adg_name LIKE 'ADG::Symbol::<filepath>::%'
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -18,24 +19,35 @@ SNAPSHOT_OLD = ROOT / "artifacts" / "adg" / "adg_indexed_04232026_0925.sqlite"
 def archived_from_commits() -> list[str]:
     out = subprocess.run(
         ["git", "log", "--format=%H", "a7b1e1e45b^..HEAD", "--", "."],
-        capture_output=True, text=True, cwd=ROOT, check=False,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        check=False,
     ).stdout
     originals: set[str] = set()
     for sha in (s for s in out.splitlines() if s.strip()):
         subj = subprocess.run(
             ["git", "log", "-1", "--format=%s", sha],
-            capture_output=True, text=True, cwd=ROOT, check=False,
+            capture_output=True,
+            text=True,
+            cwd=ROOT,
+            check=False,
         ).stdout.strip()
         if "wave" not in subj.lower() or "archive" not in subj.lower():
             continue
         stat = subprocess.run(
             ["git", "show", "--name-status", "-M", "--format=", sha],
-            capture_output=True, text=True, cwd=ROOT, check=False,
+            capture_output=True,
+            text=True,
+            cwd=ROOT,
+            check=False,
         ).stdout
         for line in stat.splitlines():
             parts = line.split("\t")
-            if len(parts) == 3 and parts[0].startswith("R") and parts[2].startswith(
-                "archives/adg_dead_code/"
+            if (
+                len(parts) == 3
+                and parts[0].startswith("R")
+                and parts[2].startswith("archives/adg_dead_code/")
             ):
                 originals.add(parts[1])
             elif len(parts) == 2 and parts[0] == "D":
@@ -92,7 +104,9 @@ print(f"Never in old snapshot:          {len(never)}")
 print(f"\n--- NODE ACCOUNTING (archived files only) ---")
 print(f"Old snapshot: {total_old_mod} modules + {total_old_sym} symbols = {total_old_mod + total_old_sym}")
 print(f"New snapshot: {total_new_mod} modules + {total_new_sym} symbols = {total_new_mod + total_new_sym}")
-print(f"Delta:        {total_old_mod - total_new_mod} modules + {total_old_sym - total_new_sym} symbols = {(total_old_mod - total_new_mod) + (total_old_sym - total_new_sym)}")
+print(
+    f"Delta:        {total_old_mod - total_new_mod} modules + {total_old_sym - total_new_sym} symbols = {(total_old_mod - total_new_mod) + (total_old_sym - total_new_sym)}"
+)
 
 # Global stats for sanity
 g_old = conn_old.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]

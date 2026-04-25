@@ -1,4 +1,5 @@
 """Smoke test — preflight gate + audit hook."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -41,6 +42,7 @@ def _load_post_module():
 print("=== test 1: module imports ===")
 _ = _load_post_module()
 import importlib
+
 spec = importlib.util.spec_from_file_location(
     "pre_mcp_gate", str(repo / ".windsurf" / "scripts" / "pre_mcp_gate.py")
 )
@@ -66,6 +68,7 @@ assert "BLOCKED" in res.stderr
 
 print("\n=== test 3: fresh heartbeat ALLOWS destructive call ===")
 import time
+
 hb_path.write_text(json.dumps({"adg_sqlite": time.time()}), encoding="utf-8")
 res = _run_pre({"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_close_connections"}})
 print(f"  rc={res.returncode} (expect 0 — fresh heartbeat)")
@@ -78,8 +81,13 @@ env["MCP_PREFLIGHT_BYPASS"] = "1"
 hb_path.write_text(json.dumps({"adg_sqlite": 0.0}), encoding="utf-8")  # stale
 res2 = subprocess.run(
     [sys.executable, str(script)],
-    input=json.dumps({"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_close_connections"}}),
-    capture_output=True, text=True, timeout=10, env=env,
+    input=json.dumps(
+        {"tool_info": {"mcp_server_name": "adg_sqlite", "mcp_tool_name": "adg_close_connections"}}
+    ),
+    capture_output=True,
+    text=True,
+    timeout=10,
+    env=env,
 )
 print(f"  rc={res2.returncode} (expect 0 — bypass)")
 assert res2.returncode == 0, res2.stderr

@@ -19,9 +19,7 @@ class TestFeatureFlag:
         monkeypatch.delenv("USE_DETERMINISTIC_EVICTION", raising=False)
         messages = [_msg("user", "a" * 1000)]
         # budget_tokens=1 would evict but the flag is off, so passthrough.
-        assert compress_history(
-            messages, budget_tokens=1, provider="openai"
-        ) == messages
+        assert compress_history(messages, budget_tokens=1, provider="openai") == messages
 
     def test_flag_on_respects_budget(self, monkeypatch) -> None:
         monkeypatch.setenv("USE_DETERMINISTIC_EVICTION", "1")
@@ -33,9 +31,7 @@ class TestFeatureFlag:
     def test_force_bypasses_flag(self, monkeypatch) -> None:
         monkeypatch.delenv("USE_DETERMINISTIC_EVICTION", raising=False)
         messages = [_msg("user", "a" * 1000)]
-        out = compress_history(
-            messages, budget_tokens=1, provider="openai", force=True
-        )
+        out = compress_history(messages, budget_tokens=1, provider="openai", force=True)
         assert out == []
 
 
@@ -66,9 +62,7 @@ class TestEvictionOrder:
             _msg("user", "newest" + "z" * 34),  # idx 2, evictable
         ]
         # Budget 25 fits exactly 2 messages (20 tokens) then blocks.
-        out = compress_history(
-            messages, budget_tokens=25, provider="unknown-heuristic"
-        )
+        out = compress_history(messages, budget_tokens=25, provider="unknown-heuristic")
         contents = [m["content"] for m in out]
         assert all(not c.startswith("oldest") for c in contents)
         assert any(c.startswith("middle") for c in contents)

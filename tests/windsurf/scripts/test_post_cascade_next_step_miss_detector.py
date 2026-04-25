@@ -61,9 +61,7 @@ class TestAntiSignals:
         assert report["anti_signal"] == "deferred_scope_marker_present"
 
     def test_explicit_negation_zeros_score(self) -> None:
-        text = (
-            "## Follow-ups\n\nNo follow-ups needed — all waves landed.\n"
-        )
+        text = "## Follow-ups\n\nNo follow-ups needed — all waves landed.\n"
         score, report = _compute_miss_score(text)
         assert score == 0
         assert report["anti_signal"] == "explicit_negation"
@@ -108,10 +106,7 @@ class TestPositiveSignals:
         assert len(report["keywords_hit"]) >= 3
 
     def test_heading_with_three_bullets_strong_signal(self) -> None:
-        text = (
-            "## TODO\n\n"
-            "- Foo\n- Bar\n- Baz\n- Qux\n"
-        )
+        text = "## TODO\n\n- Foo\n- Bar\n- Baz\n- Qux\n"
         score, _ = _compute_miss_score(text)
         # Heading (+2) + bullets >=3 (+2) = 4
         assert score >= 4
@@ -137,10 +132,7 @@ class TestBulletCounting:
         assert score >= MISS_SCORE_THRESHOLD
 
     def test_next_heading_bounds_bullet_section(self) -> None:
-        text = (
-            "## Follow-ups\n\n- one\n- two\n\n"
-            "## Summary\n\n- not a followup bullet\n- neither\n"
-        )
+        text = "## Follow-ups\n\n- one\n- two\n\n## Summary\n\n- not a followup bullet\n- neither\n"
         _, report = _compute_miss_score(text)
         # Only the two under Follow-ups count.
         assert report["bullets_under_heading"] == 2

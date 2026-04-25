@@ -25,9 +25,7 @@ class TrajectoryRecordError(ValueError):
 def _validate(record: ToolCallRecord, index: int, source: str) -> tuple[str, str]:
     missing = [field for field in _REQUIRED_FIELDS if not record.get(field)]
     if missing:
-        raise TrajectoryRecordError(
-            f"{source}[{index}] missing required field(s): {missing}"
-        )
+        raise TrajectoryRecordError(f"{source}[{index}] missing required field(s): {missing}")
     tool = record["tool"]
     args = record["args_hash"]
     if not isinstance(tool, str) or not isinstance(args, str):
@@ -41,9 +39,7 @@ def _as_tuples(records: Sequence[ToolCallRecord], source: str) -> list[tuple[str
     return [_validate(record, index, source) for index, record in enumerate(records)]
 
 
-def trajectory_exact_match(
-    predicted: Sequence[ToolCallRecord], reference: Sequence[ToolCallRecord]
-) -> int:
+def trajectory_exact_match(predicted: Sequence[ToolCallRecord], reference: Sequence[ToolCallRecord]) -> int:
     """Return 1 iff predicted is identical to reference (order + content)."""
     return 1 if _as_tuples(predicted, "predicted") == _as_tuples(reference, "reference") else 0
 
@@ -75,9 +71,7 @@ def trajectory_any_order_match(
     return 1
 
 
-def trajectory_precision(
-    predicted: Sequence[ToolCallRecord], reference: Sequence[ToolCallRecord]
-) -> float:
+def trajectory_precision(predicted: Sequence[ToolCallRecord], reference: Sequence[ToolCallRecord]) -> float:
     """|predicted ∩ reference| / |predicted|; 0.0 if predicted is empty."""
     pred = _as_tuples(predicted, "predicted")
     if not pred:
@@ -92,9 +86,7 @@ def trajectory_precision(
     return hits / len(pred)
 
 
-def trajectory_recall(
-    predicted: Sequence[ToolCallRecord], reference: Sequence[ToolCallRecord]
-) -> float:
+def trajectory_recall(predicted: Sequence[ToolCallRecord], reference: Sequence[ToolCallRecord]) -> float:
     """|predicted ∩ reference| / |reference|; 1.0 if reference is empty."""
     ref = _as_tuples(reference, "reference")
     if not ref:
@@ -108,9 +100,7 @@ def trajectory_recall(
     return hits / len(ref)
 
 
-def single_tool_use(
-    predicted: Sequence[ToolCallRecord], tool_name: str
-) -> dict[str, object]:
+def single_tool_use(predicted: Sequence[ToolCallRecord], tool_name: str) -> dict[str, object]:
     """Return ``{tool_name, present}`` — presence of ``tool_name`` in predicted."""
     if not isinstance(tool_name, str) or not tool_name:
         raise TrajectoryRecordError(f"tool_name must be non-empty string, got {tool_name!r}")
@@ -152,9 +142,7 @@ def compute_all(
         )
     if single_tool_names:
         # When multiple tool names requested, emit a dict keyed by tool name.
-        result["single_tool_use"] = {
-            name: single_tool_use(predicted, name) for name in single_tool_names
-        }
+        result["single_tool_use"] = {name: single_tool_use(predicted, name) for name in single_tool_names}
     else:
         result["single_tool_use"] = None
     return result

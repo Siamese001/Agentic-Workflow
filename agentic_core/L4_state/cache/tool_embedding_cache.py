@@ -232,7 +232,10 @@ class ToolEmbeddingCache:
                     return (cached["embeddings"], cached["tool_names"])
             except ValueError:
                 raise
-            except (OSError, ConnectionError) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to compute
+            except (
+                OSError,
+                ConnectionError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to compute
                 logger.warning(f"[Tool embedding cache] Cache read failed: {e}")
         logger.debug("[Tool embedding cache] MISS — computing embeddings")
         embeddings, tool_names = fetch_embeddings()
@@ -245,9 +248,14 @@ class ToolEmbeddingCache:
                     {"embeddings": embeddings, "tool_names": tool_names},
                     ttl_seconds=self._ttl,
                 )
-            except ValueError:  # guardian: allow-silent-swallow -- cache key hash failure: non-fatal, cache write skipped
+            except (
+                ValueError
+            ):  # guardian: allow-silent-swallow -- cache key hash failure: non-fatal, cache write skipped
                 pass
-            except (OSError, ConnectionError) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, computed embeddings already returned
+            except (
+                OSError,
+                ConnectionError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, computed embeddings already returned
                 logger.warning(f"[Tool embedding cache] Cache write failed: {e}")
         return (embeddings, tool_names)
 

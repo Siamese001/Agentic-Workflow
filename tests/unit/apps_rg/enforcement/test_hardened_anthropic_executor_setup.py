@@ -23,10 +23,7 @@ from pathlib import Path
 import pytest
 
 _EXECUTOR_PATH = (
-    Path(__file__).resolve().parents[4]
-    / "apps_rg"
-    / "enforcement"
-    / "HardenedanthropicexecutorStrategy.py"
+    Path(__file__).resolve().parents[4] / "apps_rg" / "enforcement" / "HardenedanthropicexecutorStrategy.py"
 )
 
 
@@ -54,9 +51,9 @@ def test_dotenv_load_is_called_at_module_level(executor_source: str):
         "available at client construction time."
     )
     # load_dotenv() is called at module-level (not inside a function)
-    assert re.search(
-        r"^load_dotenv\(\)", executor_source, re.MULTILINE
-    ), "load_dotenv() must be invoked at module-load time, not lazily."
+    assert re.search(r"^load_dotenv\(\)", executor_source, re.MULTILINE), (
+        "load_dotenv() must be invoked at module-load time, not lazily."
+    )
 
 
 # ---------------------------------------------------------------------------

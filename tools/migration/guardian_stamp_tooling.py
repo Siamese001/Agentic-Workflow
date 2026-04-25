@@ -22,6 +22,7 @@ Usage:
     python tools/migration/guardian_stamp_tooling.py --scope tools --apply
     python tools/migration/guardian_stamp_tooling.py --scope ops_scripts --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -103,9 +104,7 @@ def _stamp_line(line: str, stamp: str) -> str:
     return stripped + "  # " + stamp + "\n"
 
 
-def process_file(
-    path: Path, *, dry_run: bool, stamp: str
-) -> tuple[int, int, list[str]]:
+def process_file(path: Path, *, dry_run: bool, stamp: str) -> tuple[int, int, list[str]]:
     """Return (stamped, skipped, diff_lines) for one file."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -224,6 +223,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         from tqdm import tqdm  # type: ignore[import-not-found]
+
         iterator = tqdm(files, desc="Stamping", unit="file")
     except ImportError:
         iterator = files

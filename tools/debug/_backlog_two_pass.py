@@ -7,6 +7,7 @@ Outputs (no Notion writes, dry-run only):
   artifacts/notion/_pending_rescore.json
   artifacts/notion/_pending_audit.json
 """
+
 from __future__ import annotations
 
 import json
@@ -25,27 +26,41 @@ CONST_RULE = ROOT / ".windsurf" / "rules" / "constitutional.md"
 RULES_DIR = ROOT / ".windsurf" / "rules"
 
 LAYER_MULT = {
-    "L0": 2.0, "L5": 2.0,
-    "L3": 1.75, "L4": 1.75,
-    "L1": 1.0, "L2": 1.0,
+    "L0": 2.0,
+    "L5": 2.0,
+    "L3": 1.75,
+    "L4": 1.75,
+    "L1": 1.0,
+    "L2": 1.0,
     "L6": 0.75,
 }
 SURFACE_BOOST = {
-    "Security": 1.5, "Write": 1.4, "Execution": 1.3,
-    "State": 1.2, "Observability": 1.1, "None": 1.0, "": 1.0,
+    "Security": 1.5,
+    "Write": 1.4,
+    "Execution": 1.3,
+    "State": 1.2,
+    "Observability": 1.1,
+    "None": 1.0,
+    "": 1.0,
 }
 SURFACE_FROM_EDGE = {
-    "writes_to": "Write", "writes_through": "Write",
-    "emits_side_effect": "State", "reads_from": "State",
-    "applies_guardrail": "Security", "validates_uwg_intent": "Security",
-    "invokes_provider": "Execution", "resolves_callsite": "Execution",
+    "writes_to": "Write",
+    "writes_through": "Write",
+    "emits_side_effect": "State",
+    "reads_from": "State",
+    "applies_guardrail": "Security",
+    "validates_uwg_intent": "Security",
+    "invokes_provider": "Execution",
+    "resolves_callsite": "Execution",
     "controls_flow": "Execution",
-    "escalates_to_human": "Observability", "orchestrates_healing": "Observability",
+    "escalates_to_human": "Observability",
+    "orchestrates_healing": "Observability",
 }
 
 PATH_RE = re.compile(r"[a-zA-Z_][\w/.-]*\.py\b")
 
 # ---- ADG lookups ----------------------------------------------------------
+
 
 def adg_lookup(conn: sqlite3.Connection, file_rel: str) -> dict:
     """Return layer + fan_in + inferred surface for a file path (relative)."""
@@ -63,8 +78,23 @@ def adg_lookup(conn: sqlite3.Connection, file_rel: str) -> dict:
     # Prefer module/file nodes; pick highest-level node
     layers = {m[2] for m in matches if m[2]}
     layer = ""
-    for L in ("L0", "L5", "L3", "L4", "L1", "L2", "L6", "L_RUNTIME", "L_OPS", "L_TOOLS",
-              "L_APP", "L_SHARED", "L_SL", "L_PG", "L_INFRA"):
+    for L in (
+        "L0",
+        "L5",
+        "L3",
+        "L4",
+        "L1",
+        "L2",
+        "L6",
+        "L_RUNTIME",
+        "L_OPS",
+        "L_TOOLS",
+        "L_APP",
+        "L_SHARED",
+        "L_SL",
+        "L_PG",
+        "L_INFRA",
+    ):
         if L in layers:
             layer = L
             break
@@ -81,9 +111,7 @@ def adg_lookup(conn: sqlite3.Connection, file_rel: str) -> dict:
 
     # Surface inference: look at outbound semantic edges from these nodes
     cur.execute(
-        f"SELECT relation_type, COUNT(*) FROM edges "
-        f"WHERE src_id IN ({placeholders}) "
-        f"GROUP BY relation_type",
+        f"SELECT relation_type, COUNT(*) FROM edges WHERE src_id IN ({placeholders}) GROUP BY relation_type",
         ids,
     )
     rel_counts = dict(cur.fetchall())
@@ -106,16 +134,21 @@ def adg_lookup(conn: sqlite3.Connection, file_rel: str) -> dict:
 
 # ---- Pass 1: Rescore ------------------------------------------------------
 
+
 def extract_paths(row: dict) -> list[str]:
     blob = " ".join([row.get("title", ""), row.get("blocking", ""), row.get("phase", "")])
     return list(dict.fromkeys(PATH_RE.findall(blob)))
 
 
 def compute_band(impact: float) -> str:
-    if impact >= 300: return "P1"
-    if impact >= 150: return "P2"
-    if impact >= 75: return "P3"
-    if impact >= 30: return "P4"
+    if impact >= 300:
+        return "P1"
+    if impact >= 150:
+        return "P2"
+    if impact >= 75:
+        return "P3"
+    if impact >= 30:
+        return "P4"
     return "P5"
 
 
@@ -164,6 +197,7 @@ def rescore_pass(rows: list[dict], conn: sqlite3.Connection) -> list[dict]:
 
         layer_mult = LAYER_MULT.get(layer, 1.0)
         from math import log10
+
         impact = coverage_gap * layer_mult * (1 + log10(1 + fan_in)) * SURFACE_BOOST[surface]
 
         unscorable = not candidate_paths or not any(a.get("matched") for a in adg_results)
@@ -188,6 +222,7 @@ def rescore_pass(rows: list[dict], conn: sqlite3.Connection) -> list[dict]:
 
 
 # ---- Pass 2: Audit ambiguous rows ----------------------------------------
+
 
 def hooks_json_text() -> str:
     if not HOOKS_JSON.exists():
@@ -249,7 +284,9 @@ def audit_governance_rule(phase: str, title: str) -> dict:
         "keywords": keywords,
         "rules_files_found": rules_found[:5],
         "referenced_in_constitutional": referenced,
-        "verdict": "LANDED" if rules_found and referenced else ("PARTIAL" if rules_found or referenced else "MISSING"),
+        "verdict": "LANDED"
+        if rules_found and referenced
+        else ("PARTIAL" if rules_found or referenced else "MISSING"),
     }
 
 
@@ -267,9 +304,9 @@ def audit_graph_edge(phase: str, title: str, conn: sqlite3.Connection) -> dict:
     return {
         "edge_candidates": edge_cands,
         "existing_in_adg": matched,
-        "verdict": "LANDED" if matched and len(matched) == len(edge_cands) else (
-            "PARTIAL" if matched else "MISSING"
-        ),
+        "verdict": "LANDED"
+        if matched and len(matched) == len(edge_cands)
+        else ("PARTIAL" if matched else "MISSING"),
     }
 
 
@@ -296,11 +333,15 @@ def audit_filesystem_op(title: str) -> dict:
     syms = [s for s in syms if s not in common and len(s) > 4][:3]
     findings = {}
     import subprocess
+
     for s in syms:
         try:
             r = subprocess.run(
                 ["git", "grep", "-l", s, "--", "*.py"],
-                cwd=ROOT, capture_output=True, text=True, timeout=10,
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             hits = [ln for ln in r.stdout.splitlines() if "archives/" not in ln and "tools/debug/" not in ln]
             findings[s] = len(hits)
@@ -325,8 +366,14 @@ def audit_pass(rows: list[dict], conn: sqlite3.Connection) -> list[dict]:
         cat = classify_ambiguous(r)
         if not cat:
             continue
-        result = {"id": r["id"], "url": r["url"], "wave": r["wave"], "phase": r["phase"],
-                  "title": r["title"][:120], "category": cat}
+        result = {
+            "id": r["id"],
+            "url": r["url"],
+            "wave": r["wave"],
+            "phase": r["phase"],
+            "title": r["title"][:120],
+            "category": cat,
+        }
         if cat == "hook_gate":
             result.update(audit_hook_gate(r["phase"], r["title"]))
         elif cat == "governance":
@@ -340,6 +387,7 @@ def audit_pass(rows: list[dict], conn: sqlite3.Connection) -> list[dict]:
 
 
 # ---- Main -----------------------------------------------------------------
+
 
 def main():
     rows = json.loads(ROWS_PATH.read_text(encoding="utf-8"))

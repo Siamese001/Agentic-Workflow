@@ -487,9 +487,7 @@ class PathRouter:
             plan_abstain_multi_signal,
         )
 
-        effective_confidence = (
-            float(confidence) if confidence is not None else 1.0
-        )
+        effective_confidence = float(confidence) if confidence is not None else 1.0
 
         # --- Step 1: multi-signal R5 ------------------------------------
         r5_signals: R5Signals = {
@@ -567,7 +565,9 @@ class PathRouter:
 
         # --- Step 3: fallback to existing confidence-aware selector -----
         fallback = self.route_with_confidence(
-            payload, effective_confidence, threshold,
+            payload,
+            effective_confidence,
+            threshold,
         )
         return RoutingFeatureDispatch(
             result=fallback,

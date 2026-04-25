@@ -261,7 +261,10 @@ def emit_safety_audit_record(
             reason=audit.reason_hash,
             timestamp_utc=int(audit.audit_epoch * 1000),
         )
-    except (ValueError, TypeError):  # guardian: allow-silent-swallow -- system learning unavailable: audit emission skipped, caller continues
+    except (
+        ValueError,
+        TypeError,
+    ):  # guardian: allow-silent-swallow -- system learning unavailable: audit emission skipped, caller continues
         # System learning unavailable - continue without emission
         pass
 

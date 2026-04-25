@@ -3,6 +3,7 @@
 1. Plans DB registration retry — probe schema, retry with correct column names
 2. Wave D.2 — band-extraction from Blocking Items text for the 63 rows that had no [Pn] in title
 """
+
 from __future__ import annotations
 
 import json
@@ -50,13 +51,19 @@ def _title(s, max_len=200):
 
 def receipt(op, page_id, ok, **extra):
     RECEIPTS.parent.mkdir(parents=True, exist_ok=True)
-    rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "op": op, "page_id": page_id, "ok": ok, **extra}
+    rec = {
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "op": op,
+        "page_id": page_id,
+        "ok": ok,
+        **extra,
+    }
     with RECEIPTS.open("a", encoding="utf-8") as f:
         f.write(json.dumps(rec) + "\n")
 
 
 # ---- Part 1: Plans DB schema probe + retry --------------------------------
+
 
 def probe_plans_schema():
     """Retrieve data source to see actual column names + types."""
@@ -140,7 +147,9 @@ def wave_d2():
         # Check blocking items
         match = BAND_RE.search(row["blocking"])
         if match:
-            candidates.append((row["id"], row["wave"], row["phase"], row["title"], match.group(1), "blocking"))
+            candidates.append(
+                (row["id"], row["wave"], row["phase"], row["title"], match.group(1), "blocking")
+            )
 
     print(f"Wave D.2: {len(candidates)} rows have [Pn] in Blocking Items")
 
@@ -159,7 +168,9 @@ def wave_d2():
         }
         try:
             http("PATCH", f"https://api.notion.com/v1/pages/{page_id}", body)
-            receipt("PATCH-band-extracted-d2", page_id, True, wave=wave, phase=phase, band=band, source=source)
+            receipt(
+                "PATCH-band-extracted-d2", page_id, True, wave=wave, phase=phase, band=band, source=source
+            )
             done += 1
             if done % 10 == 0:
                 print(f"  [{done}/{len(candidates)}] ...")
@@ -172,6 +183,7 @@ def wave_d2():
 
 
 # ---- Main -----------------------------------------------------------------
+
 
 def main():
     if not TOKEN:

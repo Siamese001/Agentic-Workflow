@@ -38,11 +38,7 @@ _VOLATILE_FIELDS: Final[frozenset[str]] = frozenset(
 def _strip_volatile(obj: Any) -> Any:
     """Recursively strip volatile fields from a JSON-like object."""
     if isinstance(obj, Mapping):
-        return {
-            key: _strip_volatile(value)
-            for key, value in obj.items()
-            if key not in _VOLATILE_FIELDS
-        }
+        return {key: _strip_volatile(value) for key, value in obj.items() if key not in _VOLATILE_FIELDS}
     if isinstance(obj, list):
         return [_strip_volatile(item) for item in obj]
     if isinstance(obj, tuple):

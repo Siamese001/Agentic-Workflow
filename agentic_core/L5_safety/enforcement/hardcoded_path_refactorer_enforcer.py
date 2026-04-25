@@ -367,7 +367,10 @@ def refactor_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
 
         return False, 0
 
-    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow -- enforcer resilience; refactor failure non-fatal
+    except (
+        ValueError,
+        TypeError,
+    ) as e:  # guardian: allow-silent-swallow -- enforcer resilience; refactor failure non-fatal
         print(f"❌ Error processing {file_path}: {e}")
         return False, 0
 

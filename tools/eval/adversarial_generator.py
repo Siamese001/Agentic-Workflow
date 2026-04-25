@@ -49,6 +49,7 @@ def _mutate_typoglycemia(text: str, rng: random.Random) -> str:
         mid = list(word[1:-1])
         rng.shuffle(mid)
         return word[0] + "".join(mid) + word[-1]
+
     return " ".join(scramble(w) for w in text.split())
 
 
@@ -101,18 +102,20 @@ def generate_for_item(source: dict, mutations: list[str], seed: int, now_iso: st
             continue
         transformed_query = _MUTATORS[mut](source.get("query", ""), rng)
         transformed_ctx = _MUTATORS[mut](source.get("context", ""), rng)
-        out.append(AdversarialItem(
-            item_id=_deterministic_id(source.get("item_id", "unknown"), mut),
-            source_item_id=source.get("item_id", "unknown"),
-            mutation=mut,
-            rubric_id=source.get("rubric_id", "sec_prompt_injection_resistance"),
-            query=transformed_query,
-            context=transformed_ctx,
-            answer=None,
-            gold_score=None,
-            gold_outcome="pending",
-            created_at=now_iso,
-        ))
+        out.append(
+            AdversarialItem(
+                item_id=_deterministic_id(source.get("item_id", "unknown"), mut),
+                source_item_id=source.get("item_id", "unknown"),
+                mutation=mut,
+                rubric_id=source.get("rubric_id", "sec_prompt_injection_resistance"),
+                query=transformed_query,
+                context=transformed_ctx,
+                answer=None,
+                gold_score=None,
+                gold_outcome="pending",
+                created_at=now_iso,
+            )
+        )
     return out
 
 

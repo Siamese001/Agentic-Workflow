@@ -104,9 +104,7 @@ def test_guard_multi_marker_matches_dot_form(decoy_marker: str) -> None:
         assert psutil.pid_exists(decoy.pid)
         # Pass both — only the dot marker can actually match.
         mcp_bootstrap.guard_single_instance((slash_form, dot_form))
-        assert _wait_for_pid_gone(decoy.pid), (
-            "tuple-marker guard failed to match dot-form cmdline"
-        )
+        assert _wait_for_pid_gone(decoy.pid), "tuple-marker guard failed to match dot-form cmdline"
     finally:
         if psutil.pid_exists(decoy.pid):
             try:
@@ -123,13 +121,10 @@ def test_guard_does_not_kill_unrelated_sibling(decoy_marker: str) -> None:
         time.sleep(0.3)
         assert psutil.pid_exists(decoy.pid)
         # Wrong marker on purpose.
-        mcp_bootstrap.guard_single_instance(
-            f"__completely_unrelated_{time.time_ns()}"
-        )
+        mcp_bootstrap.guard_single_instance(f"__completely_unrelated_{time.time_ns()}")
         time.sleep(0.5)
         assert psutil.pid_exists(decoy.pid), (
-            "guard incorrectly killed a process whose cmdline did NOT "
-            "match the configured marker"
+            "guard incorrectly killed a process whose cmdline did NOT match the configured marker"
         )
     finally:
         if psutil.pid_exists(decoy.pid):
@@ -139,22 +134,16 @@ def test_guard_does_not_kill_unrelated_sibling(decoy_marker: str) -> None:
                 pass
 
 
-def test_guard_skips_via_env_var(
-    decoy_marker: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_guard_skips_via_env_var(decoy_marker: str, monkeypatch: pytest.MonkeyPatch) -> None:
     """Opt-out env var is honored — decoy survives."""
     decoy = _spawn_decoy(decoy_marker)
     try:
         time.sleep(0.3)
         assert psutil.pid_exists(decoy.pid)
         monkeypatch.setenv("TEST_GUARD_SKIP", "1")
-        mcp_bootstrap.guard_single_instance(
-            decoy_marker, skip_env="TEST_GUARD_SKIP"
-        )
+        mcp_bootstrap.guard_single_instance(decoy_marker, skip_env="TEST_GUARD_SKIP")
         time.sleep(0.5)
-        assert psutil.pid_exists(decoy.pid), (
-            "guard fired despite SKIP env var being set to 1"
-        )
+        assert psutil.pid_exists(decoy.pid), "guard fired despite SKIP env var being set to 1"
     finally:
         if psutil.pid_exists(decoy.pid):
             try:

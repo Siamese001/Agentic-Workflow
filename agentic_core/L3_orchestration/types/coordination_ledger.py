@@ -412,7 +412,10 @@ def update_coordination_ledger(
                 sv_int = int(sv)
                 if sv_int > ledger.state_version:
                     ledger.state_version = sv_int
-            except (ValueError, TypeError):  # guardian: allow-silent-swallow -- state_version parse failure: use default, deserialization continues
+            except (
+                ValueError,
+                TypeError,
+            ):  # guardian: allow-silent-swallow -- state_version parse failure: use default, deserialization continues
                 pass
 
     # 6. Increment state_version

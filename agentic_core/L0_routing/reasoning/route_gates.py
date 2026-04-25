@@ -156,7 +156,11 @@ def check_d1_exact_cache(request: dict[str, Any]) -> dict[str, Any] | None:
         cache = get_global_l1_cache()
         request_hash = canonical_request_hash(request)
         hit = cache.get(request_hash)
-    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None is the miss-safe default
+    except (
+        AttributeError,
+        RuntimeError,
+        ValueError,
+    ) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None is the miss-safe default
         Logger.debug("route_gates: D1 recall failed: %s", exc)
         return None
     if hit is None:
@@ -286,7 +290,11 @@ def check_d2_semantic_cache(
             corpus_version=corpus_version,
             policy_version=policy_version,
         )
-    except (AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None signals cache miss as the safe default
+    except (
+        AttributeError,
+        RuntimeError,
+        ValueError,
+    ) as exc:  # guardian: allow-return-none-swallow -- cache recall: non-fatal, None signals cache miss as the safe default
         Logger.debug("route_gates: D2 recall failed: %s", exc)
         return None
 
@@ -476,8 +484,7 @@ def check_r3_grounding_gate(
         return False, "no_grounding_signal"
     if not 0.0 <= grounding_need_score <= 1.0:
         Logger.warning(
-            "check_r3_grounding_gate: grounding_need_score=%r outside [0,1]; "
-            "treating as no-signal",
+            "check_r3_grounding_gate: grounding_need_score=%r outside [0,1]; treating as no-signal",
             grounding_need_score,
         )
         return False, "no_grounding_signal"

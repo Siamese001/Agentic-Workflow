@@ -36,9 +36,7 @@ class TestRecord:
 
     def test_negative_thinking_tokens_rejected(self, ledger: ThinkingTokenLedger) -> None:
         with pytest.raises(ValueError, match="thinking_tokens"):
-            ledger.record(
-                trace_id="t1", provider="openai", thinking_tokens=-5
-            )
+            ledger.record(trace_id="t1", provider="openai", thinking_tokens=-5)
 
 
 class TestAccumulation:
@@ -64,27 +62,21 @@ class TestReconcile:
         out = ledger.reconcile("t1")
         assert out == {"actual": 300, "budget": 500, "delta": -200}
 
-    def test_reconcile_with_no_budget_observations(
-        self, ledger: ThinkingTokenLedger
-    ) -> None:
+    def test_reconcile_with_no_budget_observations(self, ledger: ThinkingTokenLedger) -> None:
         ledger.record(trace_id="t1", provider="x", thinking_tokens=50)
         out = ledger.reconcile("t1")
         assert out["actual"] == 50
         assert out["budget"] is None
         assert out["delta"] is None
 
-    def test_reconcile_uses_latest_budget(
-        self, ledger: ThinkingTokenLedger
-    ) -> None:
+    def test_reconcile_uses_latest_budget(self, ledger: ThinkingTokenLedger) -> None:
         ledger.record(trace_id="t1", provider="x", thinking_tokens=10, budget_tokens=100)
         ledger.record(trace_id="t1", provider="x", thinking_tokens=10, budget_tokens=300)
         out = ledger.reconcile("t1")
         # 20 actual, latest budget observation wins.
         assert out == {"actual": 20, "budget": 300, "delta": -280}
 
-    def test_reconcile_over_budget_has_positive_delta(
-        self, ledger: ThinkingTokenLedger
-    ) -> None:
+    def test_reconcile_over_budget_has_positive_delta(self, ledger: ThinkingTokenLedger) -> None:
         ledger.record(trace_id="t1", provider="x", thinking_tokens=800, budget_tokens=500)
         out = ledger.reconcile("t1")
         assert out["delta"] == 300

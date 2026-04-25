@@ -89,12 +89,8 @@ class TestTrajectoryMetrics:
 
     def test_precision_recall(self, seq):
         predicted = [seq[0], seq[1], {"tool": "x", "args_hash": "hx"}]
-        assert trajectory_metrics.trajectory_precision(predicted, seq) == pytest.approx(
-            2 / 3
-        )
-        assert trajectory_metrics.trajectory_recall(predicted, seq) == pytest.approx(
-            2 / 3
-        )
+        assert trajectory_metrics.trajectory_precision(predicted, seq) == pytest.approx(2 / 3)
+        assert trajectory_metrics.trajectory_recall(predicted, seq) == pytest.approx(2 / 3)
 
     def test_recall_empty_reference(self, seq):
         assert trajectory_metrics.trajectory_recall(seq, []) == 1.0
@@ -114,9 +110,7 @@ class TestTrajectoryMetrics:
         assert out["precision"] is None
 
     def test_compute_all_with_reference_and_single(self, seq):
-        out = trajectory_metrics.compute_all(
-            seq, seq, single_tool_names=("a", "z")
-        )
+        out = trajectory_metrics.compute_all(seq, seq, single_tool_names=("a", "z"))
         assert out["exact_match"] == 1
         assert out["single_tool_use"]["a"]["present"] is True
         assert out["single_tool_use"]["z"]["present"] is False
@@ -134,9 +128,7 @@ class TestBudgetEnvelopeCheckFit:
         env = budget_envelope.BudgetEnvelope(
             tokens_max=1000, latency_ms_max=10000, tool_calls_max=10, cost_usd_max=1.0
         )
-        consumed = budget_envelope.BudgetConsumed(
-            tokens=500, latency_ms=5000, tool_calls=2, cost_usd=0.25
-        )
+        consumed = budget_envelope.BudgetConsumed(tokens=500, latency_ms=5000, tool_calls=2, cost_usd=0.25)
         fit = budget_envelope.check_fit(consumed, env)
         assert fit.budget_fit is True
         assert fit.severity_band == "info"
@@ -224,17 +216,13 @@ class TestBudgetEnvelopeResolve:
         assert env.origin.startswith("tenant:")
 
     def test_route_fallback(self, tmp_policy):
-        env = budget_envelope.resolve_envelope(
-            tenant=None, route_class="R2", policy_path=tmp_policy
-        )
+        env = budget_envelope.resolve_envelope(tenant=None, route_class="R2", policy_path=tmp_policy)
         # "_default" tenant default applies before route fallback.
         assert env.tokens_max == 500
 
     def test_caller_clamped_by_ceiling(self, tmp_policy):
         caller = budget_envelope.BudgetEnvelope(tokens_max=999_999)
-        env = budget_envelope.resolve_envelope(
-            caller_envelope=caller, tenant="acme", policy_path=tmp_policy
-        )
+        env = budget_envelope.resolve_envelope(caller_envelope=caller, tenant="acme", policy_path=tmp_policy)
         assert env.tokens_max == 10_000  # clamped by acme ceiling
 
     def test_missing_policy(self, tmp_path: Path):
@@ -287,9 +275,7 @@ class TestOutputContractValidator:
 
     def test_unresolved_contract(self, tmp_path: Path):
         (tmp_path / "nothing").mkdir()
-        result = output_contract_validator.validate(
-            "x", "does_not_exist", contract_root=tmp_path
-        )
+        result = output_contract_validator.validate("x", "does_not_exist", contract_root=tmp_path)
         assert result.required_form_satisfied is False
         assert any("unresolved" in v for v in result.violations)
 
@@ -304,9 +290,7 @@ class TestOutputContractValidator:
             "reason": "ok",
             "schema_version": 1,
         }
-        r_good = output_contract_validator.validate(
-            good, "env", contract_root=tmp_path
-        )
+        r_good = output_contract_validator.validate(good, "env", contract_root=tmp_path)
         assert r_good.required_form_satisfied is True
 
         bad = {"success": True, "payload": {}}
@@ -337,11 +321,7 @@ class TestOutputContractValidator:
         (tmp_path / "tc.json").write_text(json.dumps(contract), encoding="utf-8")
         long_text = "a" * 20
         secret_text = "topsecret"
-        r_long = output_contract_validator.validate(
-            long_text, "tc", contract_root=tmp_path
-        )
-        r_secret = output_contract_validator.validate(
-            secret_text, "tc", contract_root=tmp_path
-        )
+        r_long = output_contract_validator.validate(long_text, "tc", contract_root=tmp_path)
+        r_secret = output_contract_validator.validate(secret_text, "tc", contract_root=tmp_path)
         assert r_long.required_form_satisfied is False
         assert r_secret.required_form_satisfied is False

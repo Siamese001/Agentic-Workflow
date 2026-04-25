@@ -24,9 +24,7 @@ def test_module_imports_cleanly(mod):
     assert mod is not None
 
 
-@pytest.mark.parametrize(
-    "name", ["ConstitutionalReviewResult", "ConstitutionalReviewerAgent"]
-)
+@pytest.mark.parametrize("name", ["ConstitutionalReviewResult", "ConstitutionalReviewerAgent"])
 def test_public_classes_present(mod, name):
     assert hasattr(mod, name)
     assert inspect.isclass(getattr(mod, name))

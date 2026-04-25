@@ -115,13 +115,9 @@ class CodeValidator:
         """
         self.ruleset = ruleset or RuleSet()
         self._violations: list[Violation] = []
-        self.project_root: Path | None = (
-            Path(project_root) if project_root is not None else None
-        )
+        self.project_root: Path | None = Path(project_root) if project_root is not None else None
 
-    def validate_repository(
-        self, project_root: Path | str | None = None
-    ) -> dict[str, Any]:
+    def validate_repository(self, project_root: Path | str | None = None) -> dict[str, Any]:
         """Validate the entire repository under project_root.
 
         MW-11 (2026-04-24): API-parity shim for CodeValidatorAgent.validate_repository.

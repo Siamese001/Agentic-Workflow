@@ -67,6 +67,7 @@ def _build_signed_artifact(
     from agentic_core.L2_execution.reasoning.compiled_artifact import (  # noqa: WPS433
         CompiledPromptArtifact,
     )
+
     timestamp = datetime.now(UTC).isoformat()
     unsigned = CompiledPromptArtifact(
         trace_id=f"eval-synth-{seed}",
@@ -133,12 +134,11 @@ def sovereign_default() -> _SovereignAdapter:
     """
     secret = os.environ.get("SOVEREIGN_GATEWAY_HMAC")
     if not secret:
-        raise RuntimeError(
-            "SOVEREIGN_GATEWAY_HMAC environment variable is required for real gateway mode"
-        )
+        raise RuntimeError("SOVEREIGN_GATEWAY_HMAC environment variable is required for real gateway mode")
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (  # noqa: WPS433
         SovereignLLMGateway,
     )
+
     secret_bytes = secret.encode("utf-8")
     gateway = SovereignLLMGateway(
         secret_key=secret_bytes,

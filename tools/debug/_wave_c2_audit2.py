@@ -1,4 +1,5 @@
 """Wave C.2 audit v2: filter analysis-artifact noise, classify by commit-message nature."""
+
 from __future__ import annotations
 
 import pathlib
@@ -84,9 +85,7 @@ for t, r in risky[:12]:
     print(f"  {t}")
     print(f"    -> {r}")
 
-(ROOT / "artifacts" / "adg" / "wave_c2_safe.txt").write_text(
-    "\n".join(safe) + "\n", encoding="utf-8"
-)
+(ROOT / "artifacts" / "adg" / "wave_c2_safe.txt").write_text("\n".join(safe) + "\n", encoding="utf-8")
 (ROOT / "artifacts" / "adg" / "wave_c2_risky.txt").write_text(
     "\n".join(f"{t}\t{r}" for t, r in risky) + "\n", encoding="utf-8"
 )

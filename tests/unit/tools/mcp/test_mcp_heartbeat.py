@@ -47,9 +47,7 @@ class TestWriteAndRead:
         path.write_text("this is not a valid heartbeat", encoding="utf-8")
         assert mcp_heartbeat.read_heartbeat("corrupt_marker") is None
 
-    def test_marker_with_unsafe_chars_sanitized(
-        self, isolated_heartbeat_dir: Path
-    ) -> None:
+    def test_marker_with_unsafe_chars_sanitized(self, isolated_heartbeat_dir: Path) -> None:
         mcp_heartbeat.write_heartbeat("tools/mcp/server with spaces.py")
         files = list(isolated_heartbeat_dir.glob("*.hb"))
         assert len(files) == 1
@@ -104,9 +102,7 @@ class TestGuardSingleInstanceIntegration:
     terminating. This is smoke-tested by monkeypatching the probe.
     """
 
-    def test_force_kill_env_overrides_heartbeat(
-        self, isolated_heartbeat_dir: Path, monkeypatch
-    ) -> None:
+    def test_force_kill_env_overrides_heartbeat(self, isolated_heartbeat_dir: Path, monkeypatch) -> None:
         # Write a fresh heartbeat.
         mcp_heartbeat.write_heartbeat("bogus_marker_xyz")
         assert mcp_heartbeat.is_heartbeat_fresh("bogus_marker_xyz") is True
@@ -121,9 +117,7 @@ class TestGuardSingleInstanceIntegration:
         # left behind.
         mcp_bootstrap.guard_single_instance("bogus_marker_xyz")
 
-    def test_heartbeat_aware_default_behavior(
-        self, isolated_heartbeat_dir: Path, monkeypatch
-    ) -> None:
+    def test_heartbeat_aware_default_behavior(self, isolated_heartbeat_dir: Path, monkeypatch) -> None:
         """Default: heartbeat present => guard should NOT force-kill."""
         mcp_heartbeat.write_heartbeat("unique_noop_marker_abc")
         monkeypatch.delenv("MCP_GUARD_FORCE_KILL", raising=False)

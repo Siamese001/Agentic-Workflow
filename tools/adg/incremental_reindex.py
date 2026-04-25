@@ -198,8 +198,7 @@ class IncrementalReindexer:
                 if tgt_row is None:
                     continue
                 conn.execute(
-                    "INSERT INTO edges (src_id, tgt_id, relation_type) "
-                    "VALUES (?, ?, 'imports')",
+                    "INSERT INTO edges (src_id, tgt_id, relation_type) VALUES (?, ?, 'imports')",
                     (node_id, str(tgt_row["id"])),
                 )
             conn.commit()
@@ -230,9 +229,7 @@ def _extract_import_modules(tree: ast.AST) -> list[str]:
     return out
 
 
-def _resolve_module_to_node(
-    conn: sqlite3.Connection, module_name: str
-) -> tuple[str | None, str | None]:
+def _resolve_module_to_node(conn: sqlite3.Connection, module_name: str) -> tuple[str | None, str | None]:
     """Given a dotted module name, find the best matching node in the DB.
 
     Returns ``(node_id, resolved_path)`` or ``(None, None)`` on miss.
@@ -251,8 +248,7 @@ def _resolve_module_to_node(
     for cand in candidates:
         adg = ADG_MODULE_PREFIX + cand
         row = conn.execute(
-            "SELECT id, resolved_path FROM nodes "
-            "WHERE adg_name = ? OR resolved_path = ? LIMIT 1",
+            "SELECT id, resolved_path FROM nodes WHERE adg_name = ? OR resolved_path = ? LIMIT 1",
             (adg, cand),
         ).fetchone()
         if row is not None:

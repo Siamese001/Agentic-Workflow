@@ -1147,9 +1147,7 @@ def main() -> int:
     except MutationGuardError as exc:  # review: MutationGuardError should be handled with specific context
         print(f"ERROR: {exc}", file=sys.stderr)
         return 3
-    except (
-        ApprovalGatingError
-    ) as exc:  # review: ApprovalGatingError should be handled with specific context
+    except ApprovalGatingError as exc:  # review: ApprovalGatingError should be handled with specific context
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 

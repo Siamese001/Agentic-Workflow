@@ -1,4 +1,5 @@
 """Wave D sandbox file verification."""
+
 from __future__ import annotations
 
 import pathlib

@@ -65,8 +65,7 @@ class TestInheritanceContract:
     def test_is_runtime_error_subclass(self, he, name):
         cls = getattr(he, name)
         assert issubclass(cls, RuntimeError), (
-            f"{name} must inherit RuntimeError so legacy `except RuntimeError` "
-            "handlers still catch it"
+            f"{name} must inherit RuntimeError so legacy `except RuntimeError` handlers still catch it"
         )
 
     @pytest.mark.parametrize("name", ERROR_CLASS_NAMES)
@@ -76,9 +75,7 @@ class TestInheritanceContract:
 
     def test_distinct_classes(self, he):
         classes = [getattr(he, n) for n in ERROR_CLASS_NAMES]
-        assert len(set(classes)) == len(classes), (
-            "each hardening error must be a distinct type"
-        )
+        assert len(set(classes)) == len(classes), "each hardening error must be a distinct type"
 
 
 # --------------------------------------------------------------------------- #

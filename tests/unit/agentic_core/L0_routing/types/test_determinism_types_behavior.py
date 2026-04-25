@@ -77,8 +77,7 @@ class TestFixConstraint:
 # --------------------------------------------------------------------------- #
 
 
-def _mk_manifest(dt, *, schema_version="1.0.0", target_layer="L0",
-                 ast_snippet="x=1", manifest_hash=None):
+def _mk_manifest(dt, *, schema_version="1.0.0", target_layer="L0", ast_snippet="x=1", manifest_hash=None):
     """Build a SurgicalManifest with optional overrides; computes correct hash if None."""
     if manifest_hash is None:
         manifest_hash = hashlib.sha256(ast_snippet.encode("utf-8")).hexdigest()
@@ -280,29 +279,41 @@ class TestValidateSemanticClock:
 class TestTrajectoryReuseConstraint:
     def test_reusable_when_above_threshold_and_reason_matches(self, dt):
         c = dt.TrajectoryReuseConstraint(
-            trace_id="t", similarity_score=0.9, similarity_threshold=0.8,
-            failure_reason="timeout", candidate_failure_reason="timeout",
+            trace_id="t",
+            similarity_score=0.9,
+            similarity_threshold=0.8,
+            failure_reason="timeout",
+            candidate_failure_reason="timeout",
         )
         assert c.reusable is True
 
     def test_not_reusable_when_below_threshold(self, dt):
         c = dt.TrajectoryReuseConstraint(
-            trace_id="t", similarity_score=0.7, similarity_threshold=0.8,
-            failure_reason="timeout", candidate_failure_reason="timeout",
+            trace_id="t",
+            similarity_score=0.7,
+            similarity_threshold=0.8,
+            failure_reason="timeout",
+            candidate_failure_reason="timeout",
         )
         assert c.reusable is False
 
     def test_not_reusable_when_reason_differs(self, dt):
         c = dt.TrajectoryReuseConstraint(
-            trace_id="t", similarity_score=0.95, similarity_threshold=0.8,
-            failure_reason="timeout", candidate_failure_reason="syntax_error",
+            trace_id="t",
+            similarity_score=0.95,
+            similarity_threshold=0.8,
+            failure_reason="timeout",
+            candidate_failure_reason="syntax_error",
         )
         assert c.reusable is False
 
     def test_reusable_at_exact_threshold(self, dt):
         c = dt.TrajectoryReuseConstraint(
-            trace_id="t", similarity_score=0.8, similarity_threshold=0.8,
-            failure_reason="x", candidate_failure_reason="x",
+            trace_id="t",
+            similarity_score=0.8,
+            similarity_threshold=0.8,
+            failure_reason="x",
+            candidate_failure_reason="x",
         )
         assert c.reusable is True  # >= not >
 
@@ -414,29 +425,38 @@ class TestSemanticClockAdvancementArtifact:
 class TestDataContainers:
     def test_boundary_snapshot_artifact_fields(self, dt):
         b = dt.BoundarySnapshotArtifact(
-            trace_id="t", filesystem_hash="fs", git_state_hash="git",
-            agent_memory_hash="mem", semantic_clock_tick=7,
+            trace_id="t",
+            filesystem_hash="fs",
+            git_state_hash="git",
+            agent_memory_hash="mem",
+            semantic_clock_tick=7,
         )
         assert b.semantic_clock_tick == 7
 
     def test_episodic_memory_query_result_fields(self, dt):
         e = dt.EpisodicMemoryQueryResult(
-            trace_id="t", query_hash="qh",
-            results=("a", "b"), confidence_scores=(0.9, 0.8),
+            trace_id="t",
+            query_hash="qh",
+            results=("a", "b"),
+            confidence_scores=(0.9, 0.8),
         )
         assert e.results == ("a", "b")
         assert e.confidence_scores == (0.9, 0.8)
 
     def test_memory_hypostate_fields(self, dt):
         m = dt.MemoryHypostate(
-            trace_id="t", semantic_clock_tick=3,
-            memory_snapshot_hash="h", state_commit_id="cid",
+            trace_id="t",
+            semantic_clock_tick=3,
+            memory_snapshot_hash="h",
+            state_commit_id="cid",
         )
         assert m.semantic_clock_tick == 3
 
     def test_episodic_semantic_link_fields(self, dt):
         link = dt.EpisodicSemanticLink(
-            trace_id="t", episodic_memory_id="em",
-            semantic_outcome_id="so", reasoning_context_hash="rh",
+            trace_id="t",
+            episodic_memory_id="em",
+            semantic_outcome_id="so",
+            reasoning_context_hash="rh",
         )
         assert link.episodic_memory_id == "em"

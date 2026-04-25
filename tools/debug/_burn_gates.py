@@ -1,4 +1,5 @@
 """Inspect latest gate dispatcher results and P0 two-pass runner."""
+
 import json
 import pathlib
 

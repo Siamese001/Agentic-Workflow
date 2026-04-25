@@ -40,8 +40,7 @@ def _recent_commits(lookback: int) -> list[dict]:
     """Return [{sha, ts_iso, files:[...], lines_added, lines_deleted}, ...] newest first."""
     try:
         result = subprocess.run(
-            ["git", "log", f"-n{lookback}", "--pretty=format:@@@%H@@@%cI",
-             "--numstat", "--no-merges"],
+            ["git", "log", f"-n{lookback}", "--pretty=format:@@@%H@@@%cI", "--numstat", "--no-merges"],
             cwd=str(_REPO_ROOT),
             capture_output=True,
             text=True,
@@ -62,13 +61,15 @@ def _recent_commits(lookback: int) -> list[dict]:
                 _, sha, ts_iso = line.split("@@@")
             except ValueError:
                 continue
-            commits.append({
-                "sha": sha,
-                "ts_iso": ts_iso,
-                "files": [],
-                "lines_added": 0,
-                "lines_deleted": 0,
-            })
+            commits.append(
+                {
+                    "sha": sha,
+                    "ts_iso": ts_iso,
+                    "files": [],
+                    "lines_added": 0,
+                    "lines_deleted": 0,
+                }
+            )
             continue
         if not line.strip() or not commits:
             continue
@@ -144,22 +145,18 @@ def _accuracy_band(predicted: str, actual: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--lookback", type=int, default=100,
-                        help="Max predictions to scan (default 100)")
-    parser.add_argument("--commit-lookback", type=int, default=50,
-                        help="Max commits to scan (default 50)")
+    parser.add_argument("--lookback", type=int, default=100, help="Max predictions to scan (default 100)")
+    parser.add_argument("--commit-lookback", type=int, default=50, help="Max commits to scan (default 50)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     if not LEDGER_DB.exists():
-        print(f"[prompt_classifier_binder] ledger not found: {LEDGER_DB}",
-              file=sys.stderr)
+        print(f"[prompt_classifier_binder] ledger not found: {LEDGER_DB}", file=sys.stderr)
         return 0
 
     commits = _recent_commits(args.commit_lookback)
     if not commits:
-        print("[prompt_classifier_binder] no commits returned from git log.",
-              file=sys.stderr)
+        print("[prompt_classifier_binder] no commits returned from git log.", file=sys.stderr)
         return 0
 
     try:
@@ -175,8 +172,7 @@ def main() -> int:
         conn.close()
 
     if not predictions:
-        print("[prompt_classifier_binder] no unbound tier_prediction rows.",
-              file=sys.stderr)
+        print("[prompt_classifier_binder] no unbound tier_prediction rows.", file=sys.stderr)
         return 0
 
     # commits sorted newest-first from git log; reverse so we scan oldest-first
@@ -219,8 +215,10 @@ def main() -> int:
 
     stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
     mode = "would bind" if args.dry_run else "bound"
-    print(f"[prompt_classifier_binder] {stamp} {mode}={bound} "
-          f"scanned_predictions={len(predictions)} scanned_commits={len(commits)}")
+    print(
+        f"[prompt_classifier_binder] {stamp} {mode}={bound} "
+        f"scanned_predictions={len(predictions)} scanned_commits={len(commits)}"
+    )
     return 0
 
 

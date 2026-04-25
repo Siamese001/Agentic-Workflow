@@ -33,6 +33,7 @@ from agentic_core.L0_routing.types.crypto_trust_types import (
 
 # ---- Enums ---------------------------------------------------------------
 
+
 class TestEnums:
     def test_key_status_members(self) -> None:
         assert KeyStatus.ACTIVE.value == "active"
@@ -46,6 +47,7 @@ class TestEnums:
 
 
 # ---- KeyRecord -----------------------------------------------------------
+
 
 def _kr(**overrides: object) -> KeyRecord:
     kwargs: dict[str, object] = {
@@ -92,6 +94,7 @@ class TestKeyRecord:
 
 # ---- TrustRoot -----------------------------------------------------------
 
+
 class TestTrustRoot:
     def test_valid_empty(self) -> None:
         tr = TrustRoot(keys=())
@@ -123,6 +126,7 @@ class TestTrustRoot:
 
 # ---- SignatureEnvelope ---------------------------------------------------
 
+
 def _env(**overrides: object) -> SignatureEnvelope:
     kwargs: dict[str, object] = {
         "trace_id": "t1",
@@ -142,7 +146,8 @@ class TestSignatureEnvelope:
         assert e.semantic_clock_tick == 5
 
     @pytest.mark.parametrize(
-        "field", ["trace_id", "artifact_hash", "key_id", "signature"],
+        "field",
+        ["trace_id", "artifact_hash", "key_id", "signature"],
     )
     def test_empty_string_field_rejected(self, field: str) -> None:
         with pytest.raises(ValueError, match=field):
@@ -158,6 +163,7 @@ class TestSignatureEnvelope:
 
 
 # ---- SignedGuardianArtifact ---------------------------------------------
+
 
 def _sga(**overrides: object) -> SignedGuardianArtifact:
     kwargs: dict[str, object] = {
@@ -193,6 +199,7 @@ class TestSignedGuardianArtifact:
 
 # ---- SignedModify --------------------------------------------------------
 
+
 class TestSignedModify:
     def _base(self, **overrides: object) -> SignedModify:
         kwargs: dict[str, object] = {
@@ -210,7 +217,8 @@ class TestSignedModify:
         assert m.resolution is HumanResolution.MODIFY
 
     @pytest.mark.parametrize(
-        "field", ["trace_id", "human_reviewer_id", "modified_manifest", "signature"],
+        "field",
+        ["trace_id", "human_reviewer_id", "modified_manifest", "signature"],
     )
     def test_empty_required_field(self, field: str) -> None:
         with pytest.raises(ValueError, match=field):
@@ -222,6 +230,7 @@ class TestSignedModify:
 
 
 # ---- ReplayGuardRecord ---------------------------------------------------
+
 
 class TestReplayGuardRecord:
     def test_valid_defaults(self) -> None:
@@ -247,6 +256,7 @@ class TestReplayGuardRecord:
 
 
 # ---- HashMismatchTracker -------------------------------------------------
+
 
 class TestHashMismatchTracker:
     def test_defaults(self) -> None:
@@ -287,6 +297,7 @@ class TestHashMismatchTracker:
 
 
 # ---- DeterministicTestEnclave -------------------------------------------
+
 
 @pytest.fixture
 def trust_root() -> TrustRoot:

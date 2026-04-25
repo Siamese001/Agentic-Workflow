@@ -71,7 +71,9 @@ class TestR5MultiSignalDispatch:
     def test_circuit_breaker_fires_r5(self) -> None:
         router = PathRouter()
         result = router.route_with_features(
-            _payload(), _fv(), circuit_breaker_open=True,
+            _payload(),
+            _fv(),
+            circuit_breaker_open=True,
         )
         assert result["gate_fired"] == "r5_multi_signal"
         assert result["r5_primary_reason"] == "r5_circuit_breaker_open"
@@ -79,7 +81,9 @@ class TestR5MultiSignalDispatch:
     def test_budget_fires_r5(self) -> None:
         router = PathRouter()
         result = router.route_with_features(
-            _payload(), _fv(), budget_exceeded=True,
+            _payload(),
+            _fv(),
+            budget_exceeded=True,
         )
         assert result["gate_fired"] == "r5_multi_signal"
         assert result["r5_primary_reason"] == "r5_budget_exceeded"
@@ -96,7 +100,10 @@ class TestR5MultiSignalDispatch:
     def test_low_confidence_fires_r5(self) -> None:
         router = PathRouter()
         result = router.route_with_features(
-            _payload(), _fv(), confidence=0.30, threshold=0.50,
+            _payload(),
+            _fv(),
+            confidence=0.30,
+            threshold=0.50,
         )
         assert result["gate_fired"] == "r5_multi_signal"
         assert result["r5_primary_reason"] == "r5_low_confidence"
@@ -104,7 +111,10 @@ class TestR5MultiSignalDispatch:
     def test_r5_metric_emitted_with_primary_reason(self) -> None:
         router = PathRouter()
         router.route_with_features(
-            _payload(), _fv(), toxicity_flagged=True, namespace="rg",
+            _payload(),
+            _fv(),
+            toxicity_flagged=True,
+            namespace="rg",
         )
         snap = snapshot_counters()
         assert snap.get((METRIC_R5_FIRED, "rg", "r5_toxicity_flagged")) == 1
@@ -174,8 +184,11 @@ class TestRoutingFeatureDispatchShape:
         # TypedDict at runtime is just a dict.
         assert isinstance(result, dict)
         for key in (
-            "result", "gate_fired", "r5_primary_reason",
-            "r5_triggered_reasons", "r3_reason_code",
+            "result",
+            "gate_fired",
+            "r5_primary_reason",
+            "r5_triggered_reasons",
+            "r3_reason_code",
         ):
             assert key in result
 

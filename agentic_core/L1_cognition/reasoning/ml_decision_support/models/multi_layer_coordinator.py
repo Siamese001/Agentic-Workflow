@@ -192,7 +192,7 @@ class MultiLayerCoordinator(BaseMLModel):
             self.is_loaded = True
 
         except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:
-            raise RuntimeError(f'Failed to load model: {e}') from e
+            raise RuntimeError(f"Failed to load model: {e}") from e
 
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""

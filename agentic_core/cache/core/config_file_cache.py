@@ -222,7 +222,11 @@ class ConfigFileCache:
                     return cached
             except FileNotFoundError:  # guardian: allow-silent-swallow -- optional file resource
                 raise
-            except (OSError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(f"[Config cache] Cache read failed: {e}")
 
         logger.debug(f"[Config cache] MISS for {config_path.name} — parsing from disk")
@@ -236,7 +240,11 @@ class ConfigFileCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:  # guardian: allow-silent-swallow -- file deleted after fetch
                 pass
-            except (OSError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning(f"[Config cache] Cache write failed: {e}")
 
         return result

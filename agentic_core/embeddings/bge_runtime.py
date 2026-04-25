@@ -57,7 +57,10 @@ def _resolve_device() -> str:
 
         if torch.cuda.is_available():
             return "cuda"
-    except (ImportError, RuntimeError):  # guardian: allow-silent-swallow -- torch is an optional dep; CPU fallback is the intended behavior when CUDA/torch is unavailable
+    except (
+        ImportError,
+        RuntimeError,
+    ):  # guardian: allow-silent-swallow -- torch is an optional dep; CPU fallback is the intended behavior when CUDA/torch is unavailable
         pass
     return "cpu"
 
@@ -127,9 +130,7 @@ def bge_embed_batch(texts: list[str], batch_size: int = 64) -> list[list[float]]
             f"BGE_EMBED_FAILED: expected {len(sanitized)} rows, got {0 if encoded is None else len(encoded)}"
         )
     if encoded.shape[1] != BGE_QUERY_DIM:
-        raise RuntimeError(
-            f"BGE_DIM_MISMATCH: expected {BGE_QUERY_DIM}, got {encoded.shape[1]}"
-        )
+        raise RuntimeError(f"BGE_DIM_MISMATCH: expected {BGE_QUERY_DIM}, got {encoded.shape[1]}")
     return encoded.tolist()
 
 
@@ -215,8 +216,7 @@ def _get_multivec_model() -> object:
                     from FlagEmbedding import BGEM3FlagModel  # type: ignore[import-not-found]
                 except ImportError as exc:
                     raise BGEMultiVecUnavailable(
-                        "FlagEmbedding is not installed. "
-                        "Run: pip install -U FlagEmbedding"
+                        "FlagEmbedding is not installed. Run: pip install -U FlagEmbedding"
                     ) from exc
                 device = _resolve_device()
                 use_fp16 = device == "cuda"
@@ -282,16 +282,10 @@ def bge_embed_multi(
         if sparse is None:
             raise RuntimeError("BGE_MULTIVEC_FAILED: lexical_weights missing")
         # Convert numpy keys/values to plain python ints/floats for JSON safety
-        out["sparse"] = [
-            {int(k): float(v) for k, v in weights.items()}
-            for weights in sparse
-        ]
+        out["sparse"] = [{int(k): float(v) for k, v in weights.items()} for weights in sparse]
     if return_colbert:
         colbert = result.get("colbert_vecs")
         if colbert is None:
             raise RuntimeError("BGE_MULTIVEC_FAILED: colbert_vecs missing")
-        out["colbert"] = [
-            vec.tolist() if hasattr(vec, "tolist") else list(vec)
-            for vec in colbert
-        ]
+        out["colbert"] = [vec.tolist() if hasattr(vec, "tolist") else list(vec) for vec in colbert]
     return out

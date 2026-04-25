@@ -84,8 +84,7 @@ class ChunkSpan:
     def __post_init__(self) -> None:
         if self.start < 0 or self.end <= self.start:
             raise ValueError(
-                f"ChunkSpan must satisfy 0 <= start < end; got start={self.start}, "
-                f"end={self.end}"
+                f"ChunkSpan must satisfy 0 <= start < end; got start={self.start}, end={self.end}"
             )
 
 
@@ -197,9 +196,7 @@ def _plan_windows(
     if n_tokens <= window_size:
         return [(0, n_tokens)]
     if overlap >= window_size:
-        raise ValueError(
-            f"overlap ({overlap}) must be strictly less than window_size ({window_size})"
-        )
+        raise ValueError(f"overlap ({overlap}) must be strictly less than window_size ({window_size})")
     stride = window_size - overlap
     windows: list[tuple[int, int]] = []
     start = 0
@@ -325,9 +322,7 @@ class LateChunkingEmbedder:
             add_special_tokens=False,
             truncation=False,
         )
-        token_offsets: list[tuple[int, int]] = [
-            (int(s), int(e)) for s, e in encoding["offset_mapping"]
-        ]
+        token_offsets: list[tuple[int, int]] = [(int(s), int(e)) for s, e in encoding["offset_mapping"]]
         n_tokens = len(token_offsets)
 
         if n_tokens == 0:
@@ -363,9 +358,7 @@ class LateChunkingEmbedder:
                     normalize=self.config.normalize,
                 )
             except (ValueError, IndexError) as exc:
-                logger.warning(
-                    "Late chunking pool failed for chunk_id=%s: %s", chunk.chunk_id, exc
-                )
+                logger.warning("Late chunking pool failed for chunk_id=%s: %s", chunk.chunk_id, exc)
                 fallback_ids.append(chunk)
                 continue
             out[chunk.chunk_id] = vec

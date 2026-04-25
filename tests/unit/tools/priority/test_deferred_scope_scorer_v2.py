@@ -5,6 +5,7 @@ Covers two critical properties:
   2. New signals each move the score in the documented direction with the
      documented magnitude.
 """
+
 from __future__ import annotations
 
 import math
@@ -140,9 +141,7 @@ class TestComplexityPenalty:
         assert penalized.impact_score < plain.impact_score
         assert penalized.complexity_penalty == COMPLEXITY_PENALTY
         # impact_score is rounded to 2 decimals, so use absolute tolerance.
-        assert penalized.impact_score == pytest.approx(
-            plain.impact_score * COMPLEXITY_PENALTY, abs=0.01
-        )
+        assert penalized.impact_score == pytest.approx(plain.impact_score * COMPLEXITY_PENALTY, abs=0.01)
 
     def test_flag_off_is_neutral(self):
         r = score_deferred_scope(**BASELINE, adds_complexity=False)
@@ -159,9 +158,7 @@ class TestADR031WorkedExample:
     realistic operational signals."""
 
     def test_sc1_today_is_p3(self):
-        r = score_deferred_scope(
-            layer="L_TOOLS", fan_in=3, surface="Security", coverage_gap_pct=60.0
-        )
+        r = score_deferred_scope(layer="L_TOOLS", fan_in=3, surface="Security", coverage_gap_pct=60.0)
         assert r.band == "P3"
 
     def test_sc1_modest_signals_promote_to_p2(self):
@@ -211,9 +208,15 @@ def test_score_result_is_frozen_dataclass():
 def test_all_fields_present():
     r = score_deferred_scope(**BASELINE)
     expected_fields = {
-        "band", "impact_score",
-        "layer_multiplier", "surface_boost", "fan_in_factor",
-        "prod_factor", "trajectory_factor",
-        "reversibility_boost", "item_class_multiplier", "complexity_penalty",
+        "band",
+        "impact_score",
+        "layer_multiplier",
+        "surface_boost",
+        "fan_in_factor",
+        "prod_factor",
+        "trajectory_factor",
+        "reversibility_boost",
+        "item_class_multiplier",
+        "complexity_penalty",
     }
     assert set(r.__dataclass_fields__.keys()) == expected_fields

@@ -218,7 +218,13 @@ class SovereignSemanticCache(SovereignBaseAgent):
         try:
             self.redis = get_redis_client()
             Logger.info("[L4 REDIS] Sovereign MCP cache armed.")
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-silent-swallow
             raise
 
     def _cache_key(self, file_path: str) -> str:
@@ -262,7 +268,13 @@ class SovereignSemanticCache(SovereignBaseAgent):
                 if cached_data:
                     Logger.info(f"[L4 HIT] Redis MCP recall for {Path(file_path).name}")
                     return
-            except (AttributeError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-silent-swallow
+            except (
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ):  # guardian: allow-silent-swallow
                 raise
                 pass
         ast_features: Any = self._extract_ast_features(code)
@@ -289,7 +301,13 @@ class SovereignSemanticCache(SovereignBaseAgent):
                 "namespace": self.namespace,
             }
             Logger.info(f"[L4 STORE] Dual-sync complete for {Path(file_path).name}")
-        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
 
     # guardian: allow-type-erasure
@@ -299,7 +317,13 @@ class SovereignSemanticCache(SovereignBaseAgent):
         if self.redis:
             try:
                 self.redis.delete(key)
-            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 import logging
 
                 logging.getLogger(__name__).debug(
@@ -341,7 +365,14 @@ class SovereignSemanticCache(SovereignBaseAgent):
             if not vecs or not vecs[0]:
                 return []
             q_vec = vecs[0]
-        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-silent-swallow
+        except (
+            ImportError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow
             return []
 
         q_mag = math.sqrt(sum(x * x for x in q_vec))

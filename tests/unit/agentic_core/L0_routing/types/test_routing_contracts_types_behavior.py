@@ -60,6 +60,7 @@ from agentic_core.L0_routing.types.routing_contracts_types import (
 
 # ---- LawSlotHandler ------------------------------------------------------
 
+
 class TestLawSlotHandler:
     def test_register_then_acquire(self) -> None:
         h = LawSlotHandler(trace_id="t", total_slots=2)
@@ -88,6 +89,7 @@ class TestLawSlotHandler:
 
 # ---- PolicyConfigGuard ---------------------------------------------------
 
+
 class TestPolicyConfigGuard:
     def test_read_unchanged_config_returns_it(self) -> None:
         cfg = {"a": 1, "b": 2}
@@ -108,6 +110,7 @@ class TestPolicyConfigGuard:
 
 
 # ---- static_policy_alignment_check ---------------------------------------
+
 
 class TestStaticPolicyAlignment:
     def test_all_pass_aligned(self) -> None:
@@ -143,10 +146,14 @@ class TestStaticPolicyAlignment:
 
 # ---- GuardrailGuard ------------------------------------------------------
 
+
 def _tc(gate: TokenGateResult = TokenGateResult.ALLOW) -> TokenCapArtifact:
     return TokenCapArtifact(
-        trace_id="t", policy_hash="p", budget_limit=100,
-        tokens_requested=50, gate_result=gate,
+        trace_id="t",
+        policy_hash="p",
+        budget_limit=100,
+        tokens_requested=50,
+        gate_result=gate,
     )
 
 
@@ -180,22 +187,33 @@ class TestGuardrailGuard:
 
     def test_enforce_all_passes(self) -> None:
         g = GuardrailGuard("t")
-        assert g.enforce_all(
-            token_cap=_tc(), payload_hash="h", expected_hash="h",
-            markers=["trace_id_present", "policy_hash_present", "schema_valid"],
-            boundary_token="tok",
-        ) is True
+        assert (
+            g.enforce_all(
+                token_cap=_tc(),
+                payload_hash="h",
+                expected_hash="h",
+                markers=["trace_id_present", "policy_hash_present", "schema_valid"],
+                boundary_token="tok",
+            )
+            is True
+        )
 
     def test_enforce_all_fails_on_any(self) -> None:
         g = GuardrailGuard("t")
-        assert g.enforce_all(
-            token_cap=_tc(TokenGateResult.DENY), payload_hash="h", expected_hash="h",
-            markers=["trace_id_present", "policy_hash_present", "schema_valid"],
-            boundary_token="tok",
-        ) is False
+        assert (
+            g.enforce_all(
+                token_cap=_tc(TokenGateResult.DENY),
+                payload_hash="h",
+                expected_hash="h",
+                markers=["trace_id_present", "policy_hash_present", "schema_valid"],
+                boundary_token="tok",
+            )
+            is False
+        )
 
 
 # ---- enforce_artifact_presence ------------------------------------------
+
 
 class TestArtifactPresence:
     def test_passes_for_any_non_none(self) -> None:
@@ -210,6 +228,7 @@ class TestArtifactPresence:
 
 
 # ---- meta_guardian_check -------------------------------------------------
+
 
 class TestMetaGuardian:
     def test_passes_above_threshold(self) -> None:
@@ -232,6 +251,7 @@ class TestMetaGuardian:
 
 
 # ---- aggregate_gate_check ------------------------------------------------
+
 
 class TestAggregateGate:
     def _ag(self, **overrides: Any) -> AggregateArtifact:
@@ -262,6 +282,7 @@ class TestAggregateGate:
 
 
 # ---- HealingTransactionBoundary ------------------------------------------
+
 
 class TestHealingTransactionBoundary:
     def test_commit_flow(self) -> None:
@@ -294,6 +315,7 @@ class TestHealingTransactionBoundary:
 
 # ---- validate_result_emission --------------------------------------------
 
+
 class TestResultEmission:
     def test_l2_allowed(self) -> None:
         validate_result_emission("L2_execution")  # no raise
@@ -306,6 +328,7 @@ class TestResultEmission:
 
 
 # ---- RouteRecoveryBox ----------------------------------------------------
+
 
 class TestRouteRecoveryBox:
     def test_retry_when_within_2x_budget(self) -> None:
@@ -326,6 +349,7 @@ class TestRouteRecoveryBox:
 
 
 # ---- PipeOrderEnforcer ---------------------------------------------------
+
 
 class TestPipeOrderEnforcer:
     def test_correct_sequence_advances(self) -> None:
@@ -353,6 +377,7 @@ class TestPipeOrderEnforcer:
 
 # ---- TieredVigilanceMonitor ----------------------------------------------
 
+
 class TestTieredVigilanceMonitor:
     def test_starts_tier_i(self) -> None:
         m = TieredVigilanceMonitor("t")
@@ -377,24 +402,33 @@ class TestTieredVigilanceMonitor:
 
 # ---- TelemetryEmitter ----------------------------------------------------
 
+
 class TestTelemetryEmitter:
     def test_emit_incident(self) -> None:
         e = TelemetryEmitter()
         inc = IncidentArtifact(
-            trace_id="t", incident_id="i1", correlation_hash="h",
-            severity_enum=SeverityEnum.ERROR, telemetry_events=[],
+            trace_id="t",
+            incident_id="i1",
+            correlation_hash="h",
+            severity_enum=SeverityEnum.ERROR,
+            telemetry_events=[],
         )
         e.emit_incident(inc)
-        assert e.events == [{
-            "type": "INCIDENT", "trace_id": "t",
-            "incident_id": "i1", "severity": "error",
-        }]
+        assert e.events == [
+            {
+                "type": "INCIDENT",
+                "trace_id": "t",
+                "incident_id": "i1",
+                "severity": "error",
+            }
+        ]
 
     def test_emit_result(self) -> None:
         # ResultArtifact __post_init__ invokes a separate layer-emission validator
         # which is out of scope for this test. Use a duck-typed stand-in carrying
         # the two attributes emit_result reads.
         from types import SimpleNamespace
+
         e = TelemetryEmitter()
         e.emit_result(SimpleNamespace(trace_id="t", execution_outcome="success"))
         assert e.events[0]["type"] == "RESULT"
@@ -404,6 +438,7 @@ class TestTelemetryEmitter:
     def test_emit_route_decision_payload_is_dict(self) -> None:
         # RouteDecisionArtifact is a dataclass — minimal fields to construct
         from dataclasses import fields as dc_fields
+
         defaults: dict[str, Any] = {}
         for f in dc_fields(RouteDecisionArtifact):
             ann = f.type
@@ -429,8 +464,11 @@ class TestTelemetryEmitter:
     def test_events_returns_copy(self) -> None:
         e = TelemetryEmitter()
         inc = IncidentArtifact(
-            trace_id="t", incident_id="i", correlation_hash="h",
-            severity_enum=SeverityEnum.INFO, telemetry_events=[],
+            trace_id="t",
+            incident_id="i",
+            correlation_hash="h",
+            severity_enum=SeverityEnum.INFO,
+            telemetry_events=[],
         )
         e.emit_incident(inc)
         events = e.events
@@ -444,8 +482,11 @@ class TestTelemetryEmitter:
     def test_flush_writes_ndjson(self, tmp_path: Path) -> None:
         e = TelemetryEmitter()
         inc = IncidentArtifact(
-            trace_id="t", incident_id="i", correlation_hash="h",
-            severity_enum=SeverityEnum.WARNING, telemetry_events=[],
+            trace_id="t",
+            incident_id="i",
+            correlation_hash="h",
+            severity_enum=SeverityEnum.WARNING,
+            telemetry_events=[],
         )
         e.emit_incident(inc)
         out = e.flush_to_artifacts_dir(tmp_path)

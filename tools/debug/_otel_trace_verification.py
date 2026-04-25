@@ -89,6 +89,7 @@ def _run_sync_path(adapter: AutoPersistenceTracingAdapter) -> None:
 
 def _run_async_path(adapter: AutoPersistenceTracingAdapter) -> None:
     """Exercise an async caller (simulates apps_rg async def execute)."""
+
     async def _work() -> None:
         with adapter.trace_orchestrator(mission="otel-verify-async"):
             a = get_current_adapter()
@@ -137,28 +138,31 @@ def main() -> int:
         orch = next(s for s in spans_sync if s["name"] == "orchestrator.execute")
         exit_span = next(s for s in spans_sync if s["name"] == SPAN_EXIT_DISPOSITION)
         tids = {root["trace_id"], orch["trace_id"], exit_span["trace_id"]}
-        _check("trace_ids unified across root/orch/exit", len(tids) == 1,
-               f"distinct trace_ids: {len(tids)}")
+        _check("trace_ids unified across root/orch/exit", len(tids) == 1, f"distinct trace_ids: {len(tids)}")
 
         # Attribute coverage.
         root_attrs = root["attributes"]
-        _check("trace_root has trace_id/run_id/envelope_hash",
-               all(k in root_attrs for k in ("trace_id", "run_id", "input_envelope_hash")))
+        _check(
+            "trace_root has trace_id/run_id/envelope_hash",
+            all(k in root_attrs for k in ("trace_id", "run_id", "input_envelope_hash")),
+        )
         _check("trace_root parent_span_id is empty", root_attrs.get("parent_span_id") == "")
 
         seals = [s for s in spans_sync if s["name"] == SPAN_STEP_SEAL]
         for s in seals:
             a = s["attributes"]
             required = ("step_id", "output_hash", "evidence_ids", "replay_key", "lineage_hash")
-            _check(f"seal[{a.get('step_id')}] has all 5 attrs",
-                   all(k in a for k in required))
+            _check(f"seal[{a.get('step_id')}] has all 5 attrs", all(k in a for k in required))
 
         exit_attrs = exit_span["attributes"]
-        _check("Exit has exit_disposition/policy_hash/reason_codes/guardrail_result",
-               all(k in exit_attrs for k in
-                   ("exit_disposition", "policy_hash", "reason_codes", "guardrail_result")))
-        _check("Exit disposition == 'allow' on happy path",
-               exit_attrs["exit_disposition"] == "allow")
+        _check(
+            "Exit has exit_disposition/policy_hash/reason_codes/guardrail_result",
+            all(
+                k in exit_attrs
+                for k in ("exit_disposition", "policy_hash", "reason_codes", "guardrail_result")
+            ),
+        )
+        _check("Exit disposition == 'allow' on happy path", exit_attrs["exit_disposition"] == "allow")
 
         # -------------------------------------------------------------------
         print("\n[2] Async orchestrator path")
@@ -174,10 +178,11 @@ def main() -> int:
         _run_exception_path(adapter)
         spans_exc = adapter.drain_completed_spans()
         exc_exit = next(s for s in spans_exc if s["name"] == SPAN_EXIT_DISPOSITION)
-        _check("Exception path: disposition == 'deny'",
-               exc_exit["attributes"]["exit_disposition"] == "deny")
-        _check("Exception path: reason_codes includes error marker",
-               "auto_persist_error" in exc_exit["attributes"]["reason_codes"])
+        _check("Exception path: disposition == 'deny'", exc_exit["attributes"]["exit_disposition"] == "deny")
+        _check(
+            "Exception path: reason_codes includes error marker",
+            "auto_persist_error" in exc_exit["attributes"]["reason_codes"],
+        )
 
         # -------------------------------------------------------------------
         print("\n[4] Materializer (step [6] SHADOW EVAL ingest)")
@@ -185,10 +190,8 @@ def main() -> int:
         _run_sync_path(adapter)
         all_spans = adapter.drain_completed_spans()
         snapshot = RuntimeADGMaterializer().materialize(all_spans, mission="otel-verify")
-        _check("materializer produced snapshot",
-               snapshot is not None and hasattr(snapshot, "nodes"))
-        _check("snapshot has >=3 nodes", len(snapshot.nodes) >= 3,
-               f"got {len(snapshot.nodes)} nodes")
+        _check("materializer produced snapshot", snapshot is not None and hasattr(snapshot, "nodes"))
+        _check("snapshot has >=3 nodes", len(snapshot.nodes) >= 3, f"got {len(snapshot.nodes)} nodes")
 
         # -------------------------------------------------------------------
         print("\n[5] Tier 1 corpus coverage on real run")
@@ -199,15 +202,14 @@ def main() -> int:
             if hits:
                 example = f" (e.g. {hits[0]})"
             print(f"      [{status:<14}] {cat}{example}")
-        _check("runtime.trace_root satisfied",
-               report.category_status["runtime.trace_root"] == "satisfied")
-        _check("L2.step.seal satisfied",
-               report.category_status["L2.step.seal"] == "satisfied")
-        _check("Exit.disposition satisfied",
-               report.category_status["Exit.disposition"] == "satisfied")
-        _check("Tier 1 coverage reached 3/5 from this synthetic run",
-               report.satisfied_count() >= 3,
-               f"got {report.satisfied_count()}/5")
+        _check("runtime.trace_root satisfied", report.category_status["runtime.trace_root"] == "satisfied")
+        _check("L2.step.seal satisfied", report.category_status["L2.step.seal"] == "satisfied")
+        _check("Exit.disposition satisfied", report.category_status["Exit.disposition"] == "satisfied")
+        _check(
+            "Tier 1 coverage reached 3/5 from this synthetic run",
+            report.satisfied_count() >= 3,
+            f"got {report.satisfied_count()}/5",
+        )
 
     # -----------------------------------------------------------------------
     print("\n" + "=" * 78)

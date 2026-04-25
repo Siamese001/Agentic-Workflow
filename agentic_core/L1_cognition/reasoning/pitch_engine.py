@@ -244,7 +244,13 @@ class PitchGenerator:
                     "timestamp": datetime.now().isoformat(),
                 },
             )
-        except (RuntimeError, ValueError, TypeError, KeyError, OSError) as e:  # guardian: allow-silent-swallow
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+            KeyError,
+            OSError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"LLM pitch generation failed: {e}")
             return self._generate_with_template(context, relationships)
 
@@ -304,7 +310,13 @@ class PitchGenerator:
                     "timestamp": datetime.now().isoformat(),
                 },
             )
-        except (RuntimeError, ValueError, TypeError, KeyError, OSError) as e:  # guardian: allow-silent-swallow
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+            KeyError,
+            OSError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"LLM pitch refinement failed: {e}")
             return self._refine_with_rules(pitch, error_reason)
 

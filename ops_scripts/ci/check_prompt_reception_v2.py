@@ -25,9 +25,7 @@ import sys
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_GATEWAY_FILE = (
-    _REPO_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
-)
+_GATEWAY_FILE = _REPO_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
 
 _REQUIRED_IMPORTS: tuple[tuple[str, str], ...] = (
     (

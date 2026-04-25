@@ -194,9 +194,7 @@ class TestObjectives:
         assert best is not None
         assert best.threshold == pytest.approx(0.40)
 
-    def test_precision_first_respects_floor(
-        self, sample_points: tuple[PRPoint, ...]
-    ) -> None:
+    def test_precision_first_respects_floor(self, sample_points: tuple[PRPoint, ...]) -> None:
         best = select_optimal_threshold(
             sample_points,
             "precision_first",
@@ -207,9 +205,7 @@ class TestObjectives:
         assert best is not None
         assert best.threshold == pytest.approx(0.60)
 
-    def test_precision_first_unreachable_returns_none(
-        self, sample_points: tuple[PRPoint, ...]
-    ) -> None:
+    def test_precision_first_unreachable_returns_none(self, sample_points: tuple[PRPoint, ...]) -> None:
         assert (
             select_optimal_threshold(
                 sample_points,
@@ -219,9 +215,7 @@ class TestObjectives:
             is None
         )
 
-    def test_recall_first_respects_floor(
-        self, sample_points: tuple[PRPoint, ...]
-    ) -> None:
+    def test_recall_first_respects_floor(self, sample_points: tuple[PRPoint, ...]) -> None:
         best = select_optimal_threshold(
             sample_points,
             "recall_first",
@@ -238,9 +232,7 @@ class TestObjectives:
         assert best is not None
         assert best.threshold >= VERTEX_DEFAULT_THRESHOLD
 
-    def test_unknown_objective_raises(
-        self, sample_points: tuple[PRPoint, ...]
-    ) -> None:
+    def test_unknown_objective_raises(self, sample_points: tuple[PRPoint, ...]) -> None:
         with pytest.raises(ValueError, match="Unknown objective"):
             select_optimal_threshold(sample_points, "nonsense")  # type: ignore[arg-type]
 

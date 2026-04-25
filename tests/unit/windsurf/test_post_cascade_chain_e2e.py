@@ -169,8 +169,7 @@ class TestFullChainRun:
         result = _run_hook(SCRIPTS / "post_cascade_long_command_audit.py", payload)
         assert result.returncode == 0
         assert "DETECTED" in result.stderr, (
-            f"long_command hook did not detect pytest invocation.\n"
-            f"stderr: {result.stderr}"
+            f"long_command hook did not detect pytest invocation.\nstderr: {result.stderr}"
         )
 
 
@@ -210,9 +209,7 @@ class TestHeartbeatProvesChainFired:
         path = ARTIFACTS / "post_cascade_heartbeat.jsonl"
         # Use line count instead of mtime — Windows mtime resolution is coarse
         # and a full chain run completes in <1s.
-        start_lines = (
-            len(path.read_text(encoding="utf-8").splitlines()) if path.exists() else 0
-        )
+        start_lines = len(path.read_text(encoding="utf-8").splitlines()) if path.exists() else 0
         payload = _make_payload("trivial response")
         for script in _load_chain():
             _run_hook(script, payload)

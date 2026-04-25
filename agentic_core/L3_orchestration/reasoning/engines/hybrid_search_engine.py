@@ -867,8 +867,7 @@ class HybridSearchEngine:
                 tuple(node_ids),
             )
             rows = {
-                int(row[0]): (row[1], float(row[2]) if row[2] is not None else 0.0)
-                for row in cur.fetchall()
+                int(row[0]): (row[1], float(row[2]) if row[2] is not None else 0.0) for row in cur.fetchall()
             }
         except sqlite3.Error:
             return list(results)
@@ -936,9 +935,7 @@ class HybridSearchEngine:
         if conn is None:
             return []
 
-        tokens = [
-            tok for tok in self.ADG_SEED_SYMBOL_RE.findall(normalized) if len(tok) >= 3
-        ]
+        tokens = [tok for tok in self.ADG_SEED_SYMBOL_RE.findall(normalized) if len(tok) >= 3]
         if not tokens:
             return []
         # Dedup while preserving insertion order.
@@ -1069,8 +1066,12 @@ class HybridSearchEngine:
         if reranker is not None and deduped:
             try:
                 reranked = reranker(list(deduped), query)
-            except Exception as exc:  # guardian: allow-broad-exception -- user plugin boundary, must not crash retrieval
-                _RERANKER_LOG.warning("Reranker raised %s: %s; keeping pre-rerank order", type(exc).__name__, exc)
+            except (
+                Exception
+            ) as exc:  # guardian: allow-broad-exception -- user plugin boundary, must not crash retrieval
+                _RERANKER_LOG.warning(
+                    "Reranker raised %s: %s; keeping pre-rerank order", type(exc).__name__, exc
+                )
                 reranked = None
             if reranked:
                 deduped = reranked

@@ -54,9 +54,7 @@ _COMPENSATING_CONTROLS_MIN = 2
 def _safe_import_module(module_name: str) -> tuple[object | None, bool, str]:
     try:
         return importlib.import_module(module_name), True, module_name
-    except (
-        Exception
-    ) as exc:  # review: CI gate must degrade to a recorded failure, not crash on import side effects  # guardian: allow-broad-exception -- offline tooling, reports failure
+    except Exception as exc:  # review: CI gate must degrade to a recorded failure, not crash on import side effects  # guardian: allow-broad-exception -- offline tooling, reports failure
         return None, False, f"{type(exc).__name__}: {str(exc)[:80]}"
 
 

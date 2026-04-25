@@ -211,7 +211,13 @@ class ParentChildExpander:
                         }
                     )
 
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- neighbor lookup failure: non-fatal, Logger.error already called
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- neighbor lookup failure: non-fatal, Logger.error already called
             Logger.error(f"Failed to get neighbors for {chunk_id}: {e}")
 
         return neighbors

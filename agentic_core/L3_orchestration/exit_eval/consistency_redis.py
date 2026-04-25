@@ -63,6 +63,7 @@ class StoreBackendError(RuntimeError):
     NOT swallow; route to HITL per H8.
     """
 
+
 DEFAULT_KEY_PREFIX = "exit_eval:passk"
 
 
@@ -153,9 +154,7 @@ class RedisPassKStore:
                 self._client.rpush(rk, payload)
                 self._client.ltrim(rk, -max_retained, -1)
         except Exception as exc:  # guardian: allow-broad -- redis client raises provider-specific errors (redis.ConnectionError, TimeoutError, ResponseError) we reclassify as StoreBackendError
-            raise StoreBackendError(
-                f"RedisPassKStore.record failed for bucket {rk!r}: {exc}"
-            ) from exc
+            raise StoreBackendError(f"RedisPassKStore.record failed for bucket {rk!r}: {exc}") from exc
 
     # -------------------------------------------------------------- reads
 
@@ -185,16 +184,12 @@ class RedisPassKStore:
                 )
             raw_recent = self._client.lrange(rk, -k, -1)
         except Exception as exc:  # guardian: allow-broad -- redis error taxonomy is provider-defined; we uniformly reclassify as StoreBackendError
-            raise StoreBackendError(
-                f"RedisPassKStore.check failed for bucket {rk!r}: {exc}"
-            ) from exc
+            raise StoreBackendError(f"RedisPassKStore.check failed for bucket {rk!r}: {exc}") from exc
 
         try:
             recent = [_decode(raw) for raw in raw_recent]
         except (ValueError, KeyError, TypeError) as exc:
-            raise StoreBackendError(
-                f"RedisPassKStore.check: corrupt payload in {rk!r}: {exc}"
-            ) from exc
+            raise StoreBackendError(f"RedisPassKStore.check: corrupt payload in {rk!r}: {exc}") from exc
 
         successes = sum(1 for t in recent if t.passed)
         pass_k = successes / k
@@ -213,25 +208,23 @@ class RedisPassKStore:
         rk = _bucket_key(self._prefix, key)
         try:
             raw_all = self._client.lrange(rk, 0, -1)
-        except Exception as exc:  # guardian: allow-broad -- redis provider-specific errors reclassified as StoreBackendError
-            raise StoreBackendError(
-                f"RedisPassKStore.history failed for bucket {rk!r}: {exc}"
-            ) from exc
+        except (
+            Exception
+        ) as exc:  # guardian: allow-broad -- redis provider-specific errors reclassified as StoreBackendError
+            raise StoreBackendError(f"RedisPassKStore.history failed for bucket {rk!r}: {exc}") from exc
         try:
             return tuple(_decode(raw) for raw in raw_all)
         except (ValueError, KeyError, TypeError) as exc:
-            raise StoreBackendError(
-                f"RedisPassKStore.history: corrupt payload in {rk!r}: {exc}"
-            ) from exc
+            raise StoreBackendError(f"RedisPassKStore.history: corrupt payload in {rk!r}: {exc}") from exc
 
     def clear(self, key: BucketKey) -> None:
         rk = _bucket_key(self._prefix, key)
         try:
             self._client.delete(rk)
-        except Exception as exc:  # guardian: allow-broad -- redis provider-specific errors reclassified as StoreBackendError
-            raise StoreBackendError(
-                f"RedisPassKStore.clear failed for bucket {rk!r}: {exc}"
-            ) from exc
+        except (
+            Exception
+        ) as exc:  # guardian: allow-broad -- redis provider-specific errors reclassified as StoreBackendError
+            raise StoreBackendError(f"RedisPassKStore.clear failed for bucket {rk!r}: {exc}") from exc
 
     # ----------------------------------------------------------- admin
 
@@ -266,10 +259,10 @@ class RedisPassKStore:
                     )
                 if cursor == 0:
                     return
-        except Exception as exc:  # guardian: allow-broad -- redis provider-specific errors reclassified as StoreBackendError
-            raise StoreBackendError(
-                f"RedisPassKStore.iter_buckets failed: {exc}"
-            ) from exc
+        except (
+            Exception
+        ) as exc:  # guardian: allow-broad -- redis provider-specific errors reclassified as StoreBackendError
+            raise StoreBackendError(f"RedisPassKStore.iter_buckets failed: {exc}") from exc
 
 
 __all__ = ["DEFAULT_KEY_PREFIX", "RedisPassKStore", "StoreBackendError"]

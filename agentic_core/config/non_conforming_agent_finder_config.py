@@ -119,7 +119,9 @@ try:
     # Update if import succeeds
     AGENTIC_CORE_DIR = _acquired_core_dir
     ARCHIVES_DIR = _acquired_archives_dir
-except ImportError:  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow- optional dependency
+except (
+    ImportError
+):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow- optional dependency
     pass
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

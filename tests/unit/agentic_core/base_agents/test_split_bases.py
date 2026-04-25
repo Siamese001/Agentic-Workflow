@@ -1,4 +1,5 @@
 """Tests for W1 additive split-base classes (plan c8e4f1)."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -40,6 +41,7 @@ class TestValidatorBase:
 
     def test_validator_rejects_subclass_with_heal(self):
         with pytest.raises(TypeError, match="cannot define 'heal"):
+
             class _Bad(SovereignValidatorBase):  # noqa: N801
                 def validate(self, packet: Any) -> dict[str, Any]:
                     return {"is_allowed": True}
@@ -49,6 +51,7 @@ class TestValidatorBase:
 
     def test_validator_rejects_subclass_with_heal_repository(self):
         with pytest.raises(TypeError, match="cannot define 'heal_repository"):
+
             class _Bad(SovereignValidatorBase):  # noqa: N801
                 def validate(self, packet: Any) -> dict[str, Any]:
                     return {"is_allowed": True}
@@ -58,6 +61,7 @@ class TestValidatorBase:
 
     def test_validator_rejects_subclass_with_repair(self):
         with pytest.raises(TypeError, match="cannot define 'repair"):
+
             class _Bad(SovereignValidatorBase):  # noqa: N801
                 def validate(self, packet: Any) -> dict[str, Any]:
                     return {"is_allowed": True}
@@ -79,6 +83,7 @@ class TestHealerBase:
 
     def test_healer_rejects_subclass_with_validate(self):
         with pytest.raises(TypeError, match="cannot define 'validate"):
+
             class _Bad(SovereignHealerBase):  # noqa: N801
                 def heal(self, heal_request: Any) -> Any:
                     return {}
@@ -88,6 +93,7 @@ class TestHealerBase:
 
     def test_healer_rejects_subclass_with_check(self):
         with pytest.raises(TypeError, match="cannot define 'check"):
+
             class _Bad(SovereignHealerBase):  # noqa: N801
                 def heal(self, heal_request: Any) -> Any:
                     return {}

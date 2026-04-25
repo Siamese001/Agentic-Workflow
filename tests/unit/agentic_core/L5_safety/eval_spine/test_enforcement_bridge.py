@@ -92,54 +92,38 @@ class TestTranslation:
 class TestMergeDisposition:
     def test_no_upgrade_when_both_allow(self):
         decision = _make_decision(disposition="allow_finish")
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.ALLOW_RESPONSE, decision
-        )
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.ALLOW_RESPONSE, decision)
         assert final == ExitDisposition.ALLOW_RESPONSE
         assert reason is None
 
     def test_upgrade_allow_to_deny(self):
-        decision = _make_decision(
-            disposition="deny_reroute", reason_code="grader.quality_fail"
-        )
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.ALLOW_RESPONSE, decision
-        )
+        decision = _make_decision(disposition="deny_reroute", reason_code="grader.quality_fail")
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.ALLOW_RESPONSE, decision)
         assert final == ExitDisposition.DENY_RETURN
         assert reason is not None
         assert "deny_reroute" in reason
 
     def test_upgrade_allow_to_escalate(self):
-        decision = _make_decision(
-            disposition="escalate_hitl", reason_code="grader.safety_violation"
-        )
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.ALLOW_RESPONSE, decision
-        )
+        decision = _make_decision(disposition="escalate_hitl", reason_code="grader.safety_violation")
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.ALLOW_RESPONSE, decision)
         assert final == ExitDisposition.ESCALATE_TO_HITL
         assert reason is not None
 
     def test_upgrade_deny_to_escalate(self):
         decision = _make_decision(disposition="escalate_hitl")
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.DENY_RETURN, decision
-        )
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.DENY_RETURN, decision)
         assert final == ExitDisposition.ESCALATE_TO_HITL
         assert reason is not None
 
     def test_never_downgrade_escalate_to_allow(self):
         decision = _make_decision(disposition="allow_finish")
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.ESCALATE_TO_HITL, decision
-        )
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.ESCALATE_TO_HITL, decision)
         assert final == ExitDisposition.ESCALATE_TO_HITL
         assert reason is None
 
     def test_never_downgrade_deny_to_allow(self):
         decision = _make_decision(disposition="allow_finish")
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.DENY_RETURN, decision
-        )
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.DENY_RETURN, decision)
         assert final == ExitDisposition.DENY_RETURN
         assert reason is None
 
@@ -147,26 +131,20 @@ class TestMergeDisposition:
         decision = _make_decision(
             disposition="allow_finish", policy_halt=True, reason_code="grader.policy_halt"
         )
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.ALLOW_RESPONSE, decision
-        )
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.ALLOW_RESPONSE, decision)
         assert final == ExitDisposition.ESCALATE_TO_HITL
         assert reason is not None
         assert "policy_halt" in reason
 
     def test_policy_halt_noop_when_already_escalate(self):
         decision = _make_decision(disposition="escalate_hitl", policy_halt=True)
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.ESCALATE_TO_HITL, decision
-        )
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.ESCALATE_TO_HITL, decision)
         assert final == ExitDisposition.ESCALATE_TO_HITL
         assert reason is None
 
     def test_unknown_disposition_keeps_legacy(self):
         decision = _make_decision(disposition="garbage")
-        final, reason = enforcement_bridge.merge_disposition(
-            ExitDisposition.ALLOW_RESPONSE, decision
-        )
+        final, reason = enforcement_bridge.merge_disposition(ExitDisposition.ALLOW_RESPONSE, decision)
         assert final == ExitDisposition.ALLOW_RESPONSE
         assert reason is None
 
@@ -213,9 +191,7 @@ class TestExitControlGateEnforceIntegration:
         }
         assert rank[on_result.disposition] >= rank[off_result.disposition]
 
-    def test_flag_on_does_not_leak_shadow_writes(
-        self, monkeypatch, tmp_path
-    ):
+    def test_flag_on_does_not_leak_shadow_writes(self, monkeypatch, tmp_path):
         # Enforce flag alone must not write shadow artifacts (distinct flag).
         monkeypatch.setenv("EVAL_SPINE_ENFORCE", "1")
         monkeypatch.setattr(shadow_observer, "_DEFAULT_OUTPUT_ROOT", tmp_path)

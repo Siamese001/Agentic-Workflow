@@ -1,4 +1,5 @@
 import json, pathlib
+
 p = pathlib.Path("artifacts/windsurf/deferred_scope_capture.jsonl")
 if not p.exists():
     print("NO LOG FILE at", p)

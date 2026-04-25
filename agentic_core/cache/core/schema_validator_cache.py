@@ -213,7 +213,10 @@ class SchemaValidatorCache:
                 # TODO: Add proper input validation
                 logger.warning(f"Invalid input: {e}")
                 raise
-            except (OSError, TypeError) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to compile
+            except (
+                OSError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache read failure: non-fatal, falls through to compile
                 logger.warning(f"[Schema validator cache] Cache read failed: {e}")
         logger.debug("[Schema validator cache] MISS — compiling validator")
         result = fetch_validator()
@@ -222,9 +225,14 @@ class SchemaValidatorCache:
                 schema_hash = self._compute_schema_hash(schema)
                 cache_key = f"schema_validator:{schema_hash}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            except ValueError:  # guardian: allow-silent-swallow -- cache key hash failure: non-fatal, cache write skipped
+            except (
+                ValueError
+            ):  # guardian: allow-silent-swallow -- cache key hash failure: non-fatal, cache write skipped
                 pass
-            except (OSError, TypeError) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, compiled validator already returned
+            except (
+                OSError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow -- cache write failure: non-fatal, compiled validator already returned
                 logger.warning(f"[Schema validator cache] Cache write failed: {e}")
         return result
 

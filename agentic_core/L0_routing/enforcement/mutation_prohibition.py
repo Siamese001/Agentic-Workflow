@@ -199,7 +199,9 @@ def enforce_protected_root(
                 raise SourceMutationBlocked(
                     f"Protected root mutation blocked: target={resolved} matched_root={immutable_root.name}",
                 )
-            except ValueError:  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+            except (
+                ValueError
+            ):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
                 pass
 
 
@@ -255,7 +257,9 @@ def assert_no_persistent_write(
             )
 
             record_prohibition_hit(layer, op, path)
-        except ImportError:  # guardian: allow-silent-swallow -- optional dependency: gateway import non-fatal, signal skipped
+        except (
+            ImportError
+        ):  # guardian: allow-silent-swallow -- optional dependency: gateway import non-fatal, signal skipped
             pass  # Gateway not available; skip signal
 
     raise PermissionError(msg)

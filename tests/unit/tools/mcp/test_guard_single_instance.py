@@ -32,8 +32,7 @@ class _FakeProc:
         return None
 
 
-def _install_fake_psutil(monkeypatch: pytest.MonkeyPatch,
-                        procs: list[_FakeProc]) -> None:
+def _install_fake_psutil(monkeypatch: pytest.MonkeyPatch, procs: list[_FakeProc]) -> None:
     fake = mock.MagicMock()
     fake.process_iter = mock.MagicMock(return_value=procs)
 
@@ -51,9 +50,7 @@ def _install_fake_psutil(monkeypatch: pytest.MonkeyPatch,
 
 
 def test_single_str_marker_matches(monkeypatch: pytest.MonkeyPatch) -> None:
-    target = _FakeProc(
-        42, ["python", "-u", "C:/x/tools/mcp/vector_db_server.py"]
-    )
+    target = _FakeProc(42, ["python", "-u", "C:/x/tools/mcp/vector_db_server.py"])
     other = _FakeProc(43, ["python", "-m", "unrelated"])
     _install_fake_psutil(monkeypatch, [target, other])
     monkeypatch.setattr(os, "getpid", lambda: 1)
@@ -63,9 +60,7 @@ def test_single_str_marker_matches(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_single_str_marker_no_match(monkeypatch: pytest.MonkeyPatch) -> None:
-    p = _FakeProc(
-        42, ["python", "-u", "-m", "tools.adg.mcp.server"]
-    )
+    p = _FakeProc(42, ["python", "-u", "-m", "tools.adg.mcp.server"])
     _install_fake_psutil(monkeypatch, [p])
     monkeypatch.setattr(os, "getpid", lambda: 1)
     # Original (buggy) slash-separated marker against dot invocation
@@ -79,9 +74,7 @@ def test_single_str_marker_no_match(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_tuple_markers_match_dot_form(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    p = _FakeProc(
-        42, ["python", "-u", "-m", "tools.adg.mcp.server"]
-    )
+    p = _FakeProc(42, ["python", "-u", "-m", "tools.adg.mcp.server"])
     _install_fake_psutil(monkeypatch, [p])
     monkeypatch.setattr(os, "getpid", lambda: 1)
     mod.guard_single_instance(
@@ -93,9 +86,7 @@ def test_tuple_markers_match_dot_form(
 def test_tuple_markers_match_slash_form(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    p = _FakeProc(
-        42, ["python", "-u", "C:/x/tools/adg/mcp/server.py"]
-    )
+    p = _FakeProc(42, ["python", "-u", "C:/x/tools/adg/mcp/server.py"])
     _install_fake_psutil(monkeypatch, [p])
     monkeypatch.setattr(os, "getpid", lambda: 1)
     mod.guard_single_instance(
@@ -106,9 +97,7 @@ def test_tuple_markers_match_slash_form(
 
 def test_list_markers_accepted(monkeypatch: pytest.MonkeyPatch) -> None:
     """Sequence type is tolerant of list as well as tuple."""
-    p = _FakeProc(
-        42, ["python", "-m", "tools.adg.mcp.server"]
-    )
+    p = _FakeProc(42, ["python", "-m", "tools.adg.mcp.server"])
     _install_fake_psutil(monkeypatch, [p])
     monkeypatch.setattr(os, "getpid", lambda: 1)
     mod.guard_single_instance(
@@ -171,11 +160,10 @@ def test_psutil_missing_returns_silently(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     import sys as _sys
+
     monkeypatch.delitem(_sys.modules, "psutil", raising=False)
 
-    real_import = __builtins__["__import__"] if isinstance(
-        __builtins__, dict
-    ) else __builtins__.__import__
+    real_import = __builtins__["__import__"] if isinstance(__builtins__, dict) else __builtins__.__import__
 
     def _raising(name, *a, **kw):
         if name == "psutil":

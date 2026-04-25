@@ -15,9 +15,7 @@ from unittest.mock import patch
 
 def _load_executor_class():
     """Dynamic import keeps this test resilient to path moves."""
-    module = importlib.import_module(
-        "ops_scripts.dev_tools.L0_routing_scripts.core_synthesis_executor"
-    )
+    module = importlib.import_module("ops_scripts.dev_tools.L0_routing_scripts.core_synthesis_executor")
     return module.CoreSynthesisExecutor
 
 
@@ -35,6 +33,7 @@ def test_build_governed_slot_returns_c0_info_authority_with_provenance() -> None
     assert slot.slot_code == "C0"
     # INFO is the canonical C0 authority level (see compiled_artifact.AuthorityLevel).
     from agentic_core.L2_execution.reasoning.compiled_artifact import AuthorityLevel
+
     assert slot.authority_level == AuthorityLevel.INFO
     assert (
         slot.metadata["synthesis_producer"]
@@ -76,10 +75,7 @@ def test_build_governed_slot_surfaces_bridge_rejection_as_none(capsys) -> None:
     CoreSynthesisExecutor = _load_executor_class()
     executor = CoreSynthesisExecutor.__new__(CoreSynthesisExecutor)
 
-    target = (
-        "ops_scripts.dev_tools.L0_routing_scripts."
-        "core_synthesis_executor.wrap_synthesis_output"
-    )
+    target = "ops_scripts.dev_tools.L0_routing_scripts.core_synthesis_executor.wrap_synthesis_output"
     from agentic_core.L2_execution.enforcement.synthesis_bridge import (
         SynthesisBridgeError,
     )

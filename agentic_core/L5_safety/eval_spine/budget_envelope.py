@@ -146,9 +146,7 @@ def _load_policy(path: Path) -> Mapping[str, Any]:
     return raw
 
 
-def _envelope_from_mapping(
-    data: Mapping[str, Any] | None, origin: str
-) -> BudgetEnvelope | None:
+def _envelope_from_mapping(data: Mapping[str, Any] | None, origin: str) -> BudgetEnvelope | None:
     if not isinstance(data, Mapping):
         return None
     return BudgetEnvelope(
@@ -191,10 +189,9 @@ def resolve_envelope(
     path = policy_path or _DEFAULT_POLICY_PATH
     policy = _load_policy(path)
 
-    global_fallback = (
-        _envelope_from_mapping(policy.get("global_fallback"), "global_fallback")
-        or BudgetEnvelope(origin="global_fallback")
-    )
+    global_fallback = _envelope_from_mapping(
+        policy.get("global_fallback"), "global_fallback"
+    ) or BudgetEnvelope(origin="global_fallback")
 
     route_defaults: Mapping[str, Any] = policy.get("route_class_defaults", {}) or {}
     route_env = (
@@ -205,30 +202,16 @@ def resolve_envelope(
 
     tenants: Mapping[str, Any] = policy.get("tenants", {}) or {}
     tenant_key = tenant if tenant is not None else "_default"
-    tenant_entry: Mapping[str, Any] = (
-        tenants.get(tenant_key) or tenants.get("_default") or {}
-    )
-    tenant_env = _envelope_from_mapping(
-        tenant_entry.get("defaults"), f"tenant:{tenant or '_default'}"
-    )
-    tenant_ceiling = _envelope_from_mapping(
-        tenant_entry.get("ceiling"), "tenant_ceiling"
-    )
+    tenant_entry: Mapping[str, Any] = tenants.get(tenant_key) or tenants.get("_default") or {}
+    tenant_env = _envelope_from_mapping(tenant_entry.get("defaults"), f"tenant:{tenant or '_default'}")
+    tenant_ceiling = _envelope_from_mapping(tenant_entry.get("ceiling"), "tenant_ceiling")
 
     if caller_envelope is not None and tenant_ceiling is not None:
         return BudgetEnvelope(
-            tokens_max=_clamp_int(
-                caller_envelope.tokens_max, tenant_ceiling.tokens_max
-            ),
-            latency_ms_max=_clamp_int(
-                caller_envelope.latency_ms_max, tenant_ceiling.latency_ms_max
-            ),
-            tool_calls_max=_clamp_int(
-                caller_envelope.tool_calls_max, tenant_ceiling.tool_calls_max
-            ),
-            cost_usd_max=_clamp_float(
-                caller_envelope.cost_usd_max, tenant_ceiling.cost_usd_max
-            ),
+            tokens_max=_clamp_int(caller_envelope.tokens_max, tenant_ceiling.tokens_max),
+            latency_ms_max=_clamp_int(caller_envelope.latency_ms_max, tenant_ceiling.latency_ms_max),
+            tool_calls_max=_clamp_int(caller_envelope.tool_calls_max, tenant_ceiling.tool_calls_max),
+            cost_usd_max=_clamp_float(caller_envelope.cost_usd_max, tenant_ceiling.cost_usd_max),
             origin="caller",
         )
     if caller_envelope is not None:

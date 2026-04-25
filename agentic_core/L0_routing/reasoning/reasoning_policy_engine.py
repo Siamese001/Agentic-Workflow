@@ -330,7 +330,11 @@ class ReasoningPolicyEngine:
             # ADG scanner: instantiate ProposalCommitter to trigger proposal_commits_routing edge
             _committer = ProposalCommitter()
             create_and_commit_routing_contract(_rctx_rpe)
-        except (ValueError, TypeError, RuntimeError) as _rce:  # guardian: allow-log-and-swallow -- routing contract: non-fatal, logged and routing continues
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as _rce:  # guardian: allow-log-and-swallow -- routing contract: non-fatal, logged and routing continues
             logger.warning("reasoning_policy_engine: routing contract failed: %s", _rce)
 
         logger.info(

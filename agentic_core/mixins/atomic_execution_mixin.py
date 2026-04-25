@@ -284,7 +284,7 @@ class AtomicExecutionMixin:
             return backup
         except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow
             logger.error(f"Failed to backup {file_path}: {e}")
-            raise AtomicExecutionError(f'Backup failed for {file_path}: {e}', txn.transaction_id) from e
+            raise AtomicExecutionError(f"Backup failed for {file_path}: {e}", txn.transaction_id) from e
 
     def _rollback_transaction(self, txn: AtomicTransaction) -> None:
         """Rollback all changes in a transaction."""

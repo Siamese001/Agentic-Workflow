@@ -8,6 +8,7 @@ A module is truly dead only if:
   - neither the module node NOR any of its symbol nodes have inbound
     imports / calls / resolves_callsite / instantiates / implements edges
 """
+
 from __future__ import annotations
 import sqlite3
 from pathlib import Path
@@ -69,10 +70,8 @@ def main():
         if not rp.endswith(".py"):
             continue
         dotted = rp[:-3].replace("/", ".").replace("\\", ".")
-        to_insert.append((m["id"], rp, m["layer"] or "?",
-                          f"ADG::Symbol::{dotted}."))
-    c.executemany(
-        "INSERT INTO _mod_prefix VALUES(?,?,?,?)", to_insert)
+        to_insert.append((m["id"], rp, m["layer"] or "?", f"ADG::Symbol::{dotted}."))
+    c.executemany("INSERT INTO _mod_prefix VALUES(?,?,?,?)", to_insert)
 
     # Now find modules where NEITHER the module node NOR any symbol
     # with matching prefix has inbound "live" edges.
@@ -129,6 +128,7 @@ def main():
 
     sec("3. REAL DEAD MODULES — concentration by directory (top 20)")
     from collections import Counter
+
     dirs = Counter()
     for r in real_dead:
         parts = r["resolved_path"].split("/")
@@ -139,6 +139,7 @@ def main():
 
     sec("4. ENTRY-POINT 'DEAD' MODULES BY DIRECTORY (for confirmation)")
     from collections import Counter
+
     e_dirs = Counter()
     for r in entry:
         parts = r["resolved_path"].split("/")
@@ -156,8 +157,7 @@ def main():
         if fp.exists():
             total_bytes += fp.stat().st_size
             total_files += 1
-    print(f"  {total_files} files · {total_bytes/1024:.1f} KB "
-          f"({total_bytes/1024/1024:.2f} MB)")
+    print(f"  {total_files} files · {total_bytes / 1024:.1f} KB ({total_bytes / 1024 / 1024:.2f} MB)")
 
     # Estimate ADG shrinkage from removing real dead
     sec("6. ADG SHRINKAGE ESTIMATE FROM REMOVING REAL DEAD")
@@ -166,18 +166,18 @@ def main():
     if mod_ids:
         placeholders = ",".join("?" * len(mod_ids))
         n_edges_out = c.execute(
-            f"SELECT COUNT(*) FROM edges WHERE src_id IN ({placeholders})",
-            mod_ids).fetchone()[0]
+            f"SELECT COUNT(*) FROM edges WHERE src_id IN ({placeholders})", mod_ids
+        ).fetchone()[0]
         n_edges_in = c.execute(
-            f"SELECT COUNT(*) FROM edges WHERE dst_id IN ({placeholders})",
-            mod_ids).fetchone()[0]
+            f"SELECT COUNT(*) FROM edges WHERE dst_id IN ({placeholders})", mod_ids
+        ).fetchone()[0]
         # Count symbols owned by these modules
         sym_count = 0
         for r in real_dead[:]:
             pref = f"ADG::Symbol::{r['resolved_path'][:-3].replace('/', '.')}."
             sym_count += c.execute(
-                "SELECT COUNT(*) FROM nodes WHERE adg_name LIKE ?",
-                (pref + "%",)).fetchone()[0]
+                "SELECT COUNT(*) FROM nodes WHERE adg_name LIKE ?", (pref + "%",)
+            ).fetchone()[0]
         print(f"  module nodes removed:   {len(real_dead)}")
         print(f"  symbol nodes removed:   ~{sym_count}")
         print(f"  outbound edges removed: ~{n_edges_out}")
@@ -193,6 +193,7 @@ def main():
     # List a few
     for r in init_like[:15]:
         print(f"    {r['resolved_path']}")
+
 
 if __name__ == "__main__":
     main()

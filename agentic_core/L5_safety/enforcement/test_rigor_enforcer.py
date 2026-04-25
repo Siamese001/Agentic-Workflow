@@ -395,7 +395,10 @@ class TestRigorEnforcer:
 
             return 0
 
-        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow -- test collection: non-fatal, caller handles None as no tests
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-return-none-swallow -- test collection: non-fatal, caller handles None as no tests
             print(f"[TEST-RIGOR] Collection failed: {e}")
             return None
 
@@ -441,7 +444,10 @@ class TestRigorEnforcer:
 
             return (passed, failed, skipped)
 
-        except (RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow -- test execution: non-fatal, caller handles None as failed run
+        except (
+            RuntimeError,
+            OSError,
+        ) as e:  # guardian: allow-return-none-swallow -- test execution: non-fatal, caller handles None as failed run
             print(f"[TEST-RIGOR] Execution failed: {e}")
             return None
 

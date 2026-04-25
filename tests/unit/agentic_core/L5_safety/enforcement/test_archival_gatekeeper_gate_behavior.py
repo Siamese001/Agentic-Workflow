@@ -39,6 +39,7 @@ from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
 
 # ---- fixtures -----------------------------------------------------------
 
+
 @pytest.fixture
 def project_root(tmp_path: Path) -> Path:
     """Isolated project root for each test."""
@@ -47,7 +48,8 @@ def project_root(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def gk(
-    project_root: Path, monkeypatch: pytest.MonkeyPatch,
+    project_root: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> Generator[ArchivalGatekeeper, None, None]:
     """ArchivalGatekeeper with approval auto-disabled for write-through tests."""
     ArchivalGatekeeper.reset_instance()
@@ -68,6 +70,7 @@ def _mkfile(root: Path, rel: str, content: str = "data") -> Path:
 
 
 # ---- Enum + Result ------------------------------------------------------
+
 
 class TestArchivalOperation:
     def test_values(self) -> None:
@@ -96,14 +99,16 @@ class TestArchivalResult:
 
     def test_to_dict_none_destination(self, tmp_path: Path) -> None:
         r = ArchivalResult(
-            success=False, operation=ArchivalOperation.DELETE,
+            success=False,
+            operation=ArchivalOperation.DELETE,
             source_path=tmp_path / "x",
         )
         assert r.to_dict()["destination_path"] is None
 
     def test_default_timestamp_and_status(self, tmp_path: Path) -> None:
         r = ArchivalResult(
-            success=True, operation=ArchivalOperation.MOVE,
+            success=True,
+            operation=ArchivalOperation.MOVE,
             source_path=tmp_path / "x",
         )
         assert r.approval_status == "PENDING"
@@ -112,6 +117,7 @@ class TestArchivalResult:
 
 
 # ---- Singleton ---------------------------------------------------------
+
 
 class TestSingleton:
     def test_first_call_requires_project_root(self) -> None:
@@ -137,6 +143,7 @@ class TestSingleton:
 
 # ---- _get_archive_path -------------------------------------------------
 
+
 class TestGetArchivePath:
     def test_uses_date_folder(self, gk: ArchivalGatekeeper, project_root: Path) -> None:
         src = project_root / "sub" / "foo.py"
@@ -152,7 +159,9 @@ class TestGetArchivePath:
         assert gk.archive_root in ap.parents
 
     def test_out_of_root_source_handled(
-        self, gk: ArchivalGatekeeper, tmp_path_factory: pytest.TempPathFactory,
+        self,
+        gk: ArchivalGatekeeper,
+        tmp_path_factory: pytest.TempPathFactory,
     ) -> None:
         # A file outside project_root → source.relative_to raises ValueError,
         # and _get_archive_path falls back to an escaped name.
@@ -163,6 +172,7 @@ class TestGetArchivePath:
 
 
 # ---- _validate_path ----------------------------------------------------
+
 
 class TestValidatePath:
     def test_missing_source_error(self, gk: ArchivalGatekeeper, project_root: Path) -> None:
@@ -190,7 +200,9 @@ class TestValidatePath:
         assert err is None or "archive directory" not in err
 
     def test_protected_dir_rejected(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         # Pick a known-protected name — GLOBAL_EXCLUDED_DIRS contains __pycache__
         protected = project_root / "pkg" / "__pycache__" / "m.pyc"
@@ -203,11 +215,14 @@ class TestValidatePath:
 
 # ---- safe_move ---------------------------------------------------------
 
+
 class TestSafeMove:
     def test_missing_source_errors(self, gk: ArchivalGatekeeper, project_root: Path) -> None:
         r = gk.safe_move(
-            project_root / "no-such", project_root / "dst",
-            "Agent", "reason",
+            project_root / "no-such",
+            project_root / "dst",
+            "Agent",
+            "reason",
         )
         assert r.success is False
         assert "does not exist" in (r.error or "")
@@ -222,7 +237,9 @@ class TestSafeMove:
         assert r.operation == ArchivalOperation.MOVE
 
     def test_destination_exists_no_overwrite(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         src = _mkfile(project_root, "src.py")
         dst = _mkfile(project_root, "dst.py", "existing")
@@ -234,7 +251,9 @@ class TestSafeMove:
         assert dst.read_text() == "existing"
 
     def test_overwrite_replaces_file(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         src = _mkfile(project_root, "src.py", "NEW")
         dst = _mkfile(project_root, "dst.py", "OLD")
@@ -244,7 +263,9 @@ class TestSafeMove:
         assert not src.exists()
 
     def test_denial_returns_failed_result(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         gk.set_require_approval(True)
         gk.set_input_function(lambda _prompt: "n")
@@ -260,9 +281,12 @@ class TestSafeMove:
 
 # ---- safe_archive ------------------------------------------------------
 
+
 class TestSafeArchive:
     def test_success_moves_to_archive(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         src = _mkfile(project_root, "to_archive.py", "content")
         r = gk.safe_archive(src, "Agent", "violation")
@@ -273,14 +297,18 @@ class TestSafeArchive:
         assert gk.archive_root in r.destination_path.parents
 
     def test_missing_source_errors(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         r = gk.safe_archive(project_root / "ghost.py", "Agent", "r")
         assert r.success is False
         assert "does not exist" in (r.error or "")
 
     def test_collision_suffixes_with_time(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         # First archive succeeds; re-create source and archive again to force collision
         src1 = _mkfile(project_root, "dup.py", "v1")
@@ -298,9 +326,12 @@ class TestSafeArchive:
 
 # ---- safe_delete (soft) ------------------------------------------------
 
+
 class TestSafeDelete:
     def test_soft_delete_moves_to_archive(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         src = _mkfile(project_root, "delete_me.py", "x")
         r = gk.safe_delete(src, "Agent", "cleanup")
@@ -312,7 +343,9 @@ class TestSafeDelete:
         assert "SOFT DELETE" in r.reason
 
     def test_missing_source_errors(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         r = gk.safe_delete(project_root / "ghost.py", "Agent", "r")
         assert r.success is False
@@ -320,9 +353,12 @@ class TestSafeDelete:
 
 # ---- restore_from_archive ---------------------------------------------
 
+
 class TestRestoreFromArchive:
     def test_out_of_archive_rejected(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         outside = _mkfile(project_root, "outside.py")
         r = gk.restore_from_archive(outside, "Agent", "r")
@@ -330,7 +366,9 @@ class TestRestoreFromArchive:
         assert "not in archive" in (r.error or "")
 
     def test_success_restores_to_original_location(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         src = _mkfile(project_root, "pkg/mod.py", "content")
         arch = gk.safe_archive(src, "Agent", "first")
@@ -343,9 +381,12 @@ class TestRestoreFromArchive:
 
 # ---- Batch / approval modes --------------------------------------------
 
+
 class TestApprovalModes:
     def test_batch_accept_env(
-        self, project_root: Path, monkeypatch: pytest.MonkeyPatch,
+        self,
+        project_root: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         ArchivalGatekeeper.reset_instance()
         monkeypatch.setenv("ARCHIVE_BATCH_ACCEPT", "1")
@@ -359,7 +400,9 @@ class TestApprovalModes:
         ArchivalGatekeeper.reset_instance()
 
     def test_sovereign_auto_approve(
-        self, project_root: Path, monkeypatch: pytest.MonkeyPatch,
+        self,
+        project_root: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         ArchivalGatekeeper.reset_instance()
         monkeypatch.setenv("SOVEREIGN_AUTO_APPROVE", "1")
@@ -372,7 +415,9 @@ class TestApprovalModes:
         ArchivalGatekeeper.reset_instance()
 
     def test_require_approval_false_bypasses_prompt(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         gk.set_require_approval(False)
 
@@ -388,9 +433,12 @@ class TestApprovalModes:
 
 # ---- L4 ledger hook ----------------------------------------------------
 
+
 class TestL4LedgerHook:
     def test_hook_called_on_success(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         hook = MagicMock()
         gk.set_l4_ledger_hook(hook)
@@ -402,7 +450,9 @@ class TestL4LedgerHook:
         assert passed.operation == ArchivalOperation.ARCHIVE
 
     def test_hook_exception_propagates(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         def bad_hook(_r: ArchivalResult) -> None:
             raise RuntimeError("ledger-failed")
@@ -415,12 +465,15 @@ class TestL4LedgerHook:
 
 # ---- Audit log + counters ----------------------------------------------
 
+
 class TestAuditLog:
     def test_get_audit_log_empty(self, gk: ArchivalGatekeeper) -> None:
         assert gk.get_audit_log() == []
 
     def test_get_audit_log_returns_recent_first(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         gk.safe_archive(_mkfile(project_root, "a.py"), "A", "first")
         gk.safe_archive(_mkfile(project_root, "b.py"), "A", "second")
@@ -431,7 +484,9 @@ class TestAuditLog:
         assert entries[1]["reason"] == "first"
 
     def test_get_audit_log_respects_limit(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         for i in range(5):
             gk.safe_archive(_mkfile(project_root, f"f{i}.py"), "A", f"n{i}")
@@ -439,7 +494,9 @@ class TestAuditLog:
         assert len(entries) == 3
 
     def test_audit_log_jsonl_parseable(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         gk.safe_archive(_mkfile(project_root, "parse.py"), "A", "r")
         raw = gk.audit_log_path.read_text(encoding="utf-8").splitlines()
@@ -449,7 +506,9 @@ class TestAuditLog:
 
 class TestOperationCounter:
     def test_counter_increments_on_success(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         start = gk.get_operation_count()
         gk.safe_archive(_mkfile(project_root, "a.py"), "A", "r")
@@ -457,7 +516,9 @@ class TestOperationCounter:
         assert gk.get_operation_count() == start + 2
 
     def test_counter_skips_failed(
-        self, gk: ArchivalGatekeeper, project_root: Path,
+        self,
+        gk: ArchivalGatekeeper,
+        project_root: Path,
     ) -> None:
         start = gk.get_operation_count()
         gk.safe_archive(project_root / "ghost.py", "A", "r")  # missing source

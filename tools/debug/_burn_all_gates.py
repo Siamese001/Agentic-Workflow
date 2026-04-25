@@ -1,4 +1,5 @@
 """Run every blocking gate against the latest snapshot."""
+
 import sys
 from pathlib import Path
 

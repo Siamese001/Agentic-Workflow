@@ -230,7 +230,10 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
                     return future.result(timeout=5)
             else:
                 return loop.run_until_complete(mcp.call_tool(tool, args))
-        except (RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             import logging
 
             logging.getLogger(__name__).warning(f"[Redis MCP] call_tool('{tool}') failed: {e}")

@@ -124,7 +124,10 @@ class CodeDetector:
         if self._detector_config.baseline_path and self._detector_config.baseline_path.exists():
             try:
                 self._baseline = json.loads(self._detector_config.baseline_path.read_text())
-            except (json.JSONDecodeError, OSError) as e:  # guardian: allow-log-and-swallow -- baseline load best-effort: non-fatal, detector runs without baseline
+            except (
+                json.JSONDecodeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow -- baseline load best-effort: non-fatal, detector runs without baseline
                 Logger.warning(f"Failed to load baseline: {e}")
 
     def run_full_scan(self) -> list[Detection]:

@@ -58,12 +58,12 @@ _GATEWAY_APPROVED_PATHS = (
     "SovereignMCPGateway",
     "SovereignLLMGateway",
     # Added 2026-04-23 (W10) — sanctioned provider adapter modules:
-    "agentic_core/gateway/",                                        # explicit gateway package
-    "agentic_core/L3_orchestration/inference/qwen_vllm/",           # VLLM inference adapter
+    "agentic_core/gateway/",  # explicit gateway package
+    "agentic_core/L3_orchestration/inference/qwen_vllm/",  # VLLM inference adapter
     "agentic_core/L4_state/utils/memory/blob_storage_provider.py",  # S3 blob storage adapter
-    "agentic_core/L4_state/utils/memory/canonical_store.py",        # canonical S3 store adapter
-    "agentic_core/evaluation/judges/claude_judge.py",               # Claude judge adapter
-    "apps_rg/enforcement/HardenedanthropicexecutorStrategy.py",     # Hardened Anthropic executor
+    "agentic_core/L4_state/utils/memory/canonical_store.py",  # canonical S3 store adapter
+    "agentic_core/evaluation/judges/claude_judge.py",  # Claude judge adapter
+    "apps_rg/enforcement/HardenedanthropicexecutorStrategy.py",  # Hardened Anthropic executor
 )
 
 

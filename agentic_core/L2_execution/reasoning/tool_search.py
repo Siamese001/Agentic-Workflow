@@ -85,9 +85,7 @@ class ToolSearchIndex:
                 if self._doc_freq[term] <= 0:
                     del self._doc_freq[term]
         self._entries[entry.tool_name] = entry
-        tokens = _tokenize(entry.tool_name) + _tokenize(entry.description) + [
-            t.lower() for t in entry.tags
-        ]
+        tokens = _tokenize(entry.tool_name) + _tokenize(entry.description) + [t.lower() for t in entry.tags]
         tf = Counter(tokens)
         self._term_freq[entry.tool_name] = tf
         for term in tf:
@@ -122,11 +120,7 @@ class ToolSearchIndex:
                     score += tf[term] * idf[term]
             if score > 0:
                 entry = self._entries[name]
-                results.append(
-                    ToolSearchResult(
-                        tool_name=name, score=score, description=entry.description
-                    )
-                )
+                results.append(ToolSearchResult(tool_name=name, score=score, description=entry.description))
         # Sort by score desc, then by registered insertion order (stable).
         order_index = {n: i for i, n in enumerate(self._entries.keys())}
         results.sort(key=lambda r: (-r.score, order_index[r.tool_name]))

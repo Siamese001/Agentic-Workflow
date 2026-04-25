@@ -48,6 +48,7 @@ _REAL_AGENT_ID = list_agent_ids()[0]  # guaranteed registered
 def _manifest(correlation_id: str = "cid-1", node_id: str = "node-1") -> SurgicalManifest:
     """Build a valid SurgicalManifest with all 10 required fields (§1.1/§1.3)."""
     import hashlib
+
     ast_snippet = "pass"
     return SurgicalManifest(
         schema_version="1.0.0",
@@ -73,6 +74,7 @@ def _heal_ok(_m: SurgicalManifest) -> dict[str, Any]:  # pragma: no cover
 
 # ---- Error classes ------------------------------------------------------
 
+
 class TestExceptionClasses:
     def test_execution_gateway_error_is_runtime_error(self) -> None:
         assert issubclass(ExecutionGatewayError, RuntimeError)
@@ -93,10 +95,14 @@ class TestExceptionClasses:
 
 # ---- GatewayResult ------------------------------------------------------
 
+
 class TestGatewayResult:
     def test_minimal_fields(self) -> None:
         r = GatewayResult(
-            success=True, manifest=None, semantic_clock_tick=0, pre_snapshot=None,
+            success=True,
+            manifest=None,
+            semantic_clock_tick=0,
+            pre_snapshot=None,
         )
         assert r.success is True
         assert r.manifest is None
@@ -111,17 +117,26 @@ class TestGatewayResult:
     def test_healing_output_default_independent(self) -> None:
         """dataclass default_factory must give each instance its own dict."""
         r1 = GatewayResult(
-            success=True, manifest=None, semantic_clock_tick=0, pre_snapshot=None,
+            success=True,
+            manifest=None,
+            semantic_clock_tick=0,
+            pre_snapshot=None,
         )
         r2 = GatewayResult(
-            success=True, manifest=None, semantic_clock_tick=0, pre_snapshot=None,
+            success=True,
+            manifest=None,
+            semantic_clock_tick=0,
+            pre_snapshot=None,
         )
         r1.healing_output["x"] = 1
         assert "x" not in r2.healing_output
 
     def test_fields_mutable(self) -> None:
         r = GatewayResult(
-            success=False, manifest=None, semantic_clock_tick=0, pre_snapshot=None,
+            success=False,
+            manifest=None,
+            semantic_clock_tick=0,
+            pre_snapshot=None,
         )
         r.success = True
         r.error = "later"
@@ -130,6 +145,7 @@ class TestGatewayResult:
 
 
 # ---- V15ExecutionGateway construction & clock --------------------------
+
 
 class TestGatewayConstruction:
     def test_init_state(self) -> None:
@@ -153,6 +169,7 @@ class TestGatewayConstruction:
 
 
 # ---- _enforce_agent_registered ------------------------------------------
+
 
 class TestEnforceAgentRegistered:
     def test_empty_raises(self) -> None:
@@ -184,6 +201,7 @@ class TestEnforceAgentRegistered:
 
 # ---- execute() agent_id contract ----------------------------------------
 
+
 class TestExecuteAgentIdContract:
     def test_empty_agent_id_raises(self) -> None:
         gw = V15ExecutionGateway()
@@ -208,6 +226,7 @@ class TestExecuteAgentIdContract:
 
 # ---- SOFT_FAIL dedupe path ----------------------------------------------
 
+
 class TestSoftFailDedupePath:
     """Duplicate-signal detection lives inside _validate_manifest and raises
     V15SoftFailAbort. execute() catches SOFT_FAIL and returns a failed
@@ -218,6 +237,7 @@ class TestSoftFailDedupePath:
         gw = V15ExecutionGateway()
         # Pre-seed seen signals so the first (and only) validate call trips dedupe
         from agentic_core.L0_routing.types.determinism_contracts_types import dedupe_sha256
+
         m = _manifest(correlation_id="abc", node_id="xyz")
         gw._seen_signals.add(dedupe_sha256(m.correlation_id + m.node_id))
 

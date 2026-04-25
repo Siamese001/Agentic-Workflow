@@ -151,8 +151,7 @@ class CredentialMint:
             raise CredentialExpired(f"expired at {credential.expires_at}, now {now}")
         if expected_audience is not None and credential.audience != expected_audience:
             raise InvalidCredential(
-                f"audience mismatch: got {credential.audience!r}, "
-                f"expected {expected_audience!r}"
+                f"audience mismatch: got {credential.audience!r}, expected {expected_audience!r}"
             )
         expected_sig = self._sign(
             credential.step_id,

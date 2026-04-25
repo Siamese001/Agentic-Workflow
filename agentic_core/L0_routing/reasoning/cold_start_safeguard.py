@@ -87,38 +87,22 @@ def maybe_override_for_cold_start(
     if not isinstance(classifier_confidence, (int, float)) or not _math.isfinite(
         float(classifier_confidence)
     ):
-        raise ValueError(
-            f"classifier_confidence must be a finite float, got {classifier_confidence!r}"
-        )
+        raise ValueError(f"classifier_confidence must be a finite float, got {classifier_confidence!r}")
     if not 0.0 <= classifier_confidence <= 1.0:
-        raise ValueError(
-            f"classifier_confidence out of range [0,1]: {classifier_confidence}"
-        )
-    if not isinstance(cold_start_threshold, (int, float)) or not _math.isfinite(
-        float(cold_start_threshold)
-    ):
-        raise ValueError(
-            f"cold_start_threshold must be a finite float, got {cold_start_threshold!r}"
-        )
+        raise ValueError(f"classifier_confidence out of range [0,1]: {classifier_confidence}")
+    if not isinstance(cold_start_threshold, (int, float)) or not _math.isfinite(float(cold_start_threshold)):
+        raise ValueError(f"cold_start_threshold must be a finite float, got {cold_start_threshold!r}")
     if not 0.0 <= cold_start_threshold <= 1.0:
-        raise ValueError(
-            f"cold_start_threshold out of range [0,1]: {cold_start_threshold}"
-        )
+        raise ValueError(f"cold_start_threshold out of range [0,1]: {cold_start_threshold}")
     if not isinstance(top_pick, RouteId):
-        raise TypeError(
-            f"top_pick must be RouteId enum, got {type(top_pick).__name__}"
-        )
+        raise TypeError(f"top_pick must be RouteId enum, got {type(top_pick).__name__}")
     if not isinstance(top_pick_tier, CostTier):
-        raise TypeError(
-            f"top_pick_tier must be CostTier enum, got {type(top_pick_tier).__name__}"
-        )
+        raise TypeError(f"top_pick_tier must be CostTier enum, got {type(top_pick_tier).__name__}")
     # Conservative route cannot itself be a terminal — that would render the
     # override pointless (terminal routes short-circuit without a downstream).
     _terminal = {RouteId.R1A, RouteId.R1B, RouteId.R5_FALLBACK}
     if conservative_route in _terminal:
-        raise ValueError(
-            f"conservative_route must not be a terminal route; got {conservative_route}"
-        )
+        raise ValueError(f"conservative_route must not be a terminal route; got {conservative_route}")
     if top_pick in _terminal:
         return ColdStartDecision(
             overridden=False,

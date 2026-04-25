@@ -346,7 +346,7 @@ class InstructionPacket:
                 if clock_provider.now(timezone.utc) > expiration:
                     raise SignatureVerificationError("InstructionPacket L5 certification has expired")
             except ValueError as e:
-                raise SignatureVerificationError(f'Invalid expiration timestamp format: {e}') from e
+                raise SignatureVerificationError(f"Invalid expiration timestamp format: {e}") from e
         else:
             raise SignatureVerificationError("InstructionPacket missing expiration timestamp")
 

@@ -41,18 +41,14 @@ class AnthropicBackend:
 
     def __init__(self, *, dim_name: str | None = None) -> None:
         self._dim_name = dim_name
-        self._null_fallback = NullBackend(
-            note="anthropic:no_api_key", dim_name=dim_name
-        )
+        self._null_fallback = NullBackend(note="anthropic:no_api_key", dim_name=dim_name)
 
     def is_active(self) -> bool:
         """Return True iff the API key is present in the environment."""
         value = os.environ.get(_API_KEY_ENV, "").strip()
         return bool(value)
 
-    def __call__(
-        self, inputs: GraderInput, dim_spec: Mapping[str, Any]
-    ) -> DimensionResult:
+    def __call__(self, inputs: GraderInput, dim_spec: Mapping[str, Any]) -> DimensionResult:
         if not self.is_active():
             return self._null_fallback(inputs, dim_spec)
         # Deliberate: the seam exists but the implementation is not in

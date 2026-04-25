@@ -41,7 +41,7 @@ RUBRIC_MAX: int = 5
 @dataclass(frozen=True, slots=True)
 class RaterLabel:
     rater_id: str
-    score: int | None            # None == "unknown"
+    score: int | None  # None == "unknown"
     notes: str = ""
 
 
@@ -100,7 +100,7 @@ def compute_kappa(rater_labels: list[RaterLabel]) -> float | None:
     # directly with quadratic weight.
     kappas: list[float] = []
     for i, ra in enumerate(integer_labels):
-        for rb in integer_labels[i + 1:]:
+        for rb in integer_labels[i + 1 :]:
             kappas.append(_pairwise_weighted_kappa([ra.score], [rb.score]))  # type: ignore[list-item]
     return statistics.fmean(kappas) if kappas else None
 
@@ -135,37 +135,66 @@ def evaluate_item(
     outcome = str(item.get("gold_outcome") or "").lower()
 
     if outcome == "scored":
-        return PromotionDecision(item_id, "unchanged", item.get("gold_score"), None,
-                                 len(item.get("human_labels") or []),
-                                 "already scored; idempotent no-op")
+        return PromotionDecision(
+            item_id,
+            "unchanged",
+            item.get("gold_score"),
+            None,
+            len(item.get("human_labels") or []),
+            "already scored; idempotent no-op",
+        )
 
     raw = item.get("human_labels") or []
     raters = [
-        RaterLabel(rater_id=str(e.get("rater_id") or f"anon-{i}"),
-                   score=(int(e["score"]) if isinstance(e.get("score"), (int, float)) and e.get("score") is not None else None),
-                   notes=str(e.get("notes") or ""))
+        RaterLabel(
+            rater_id=str(e.get("rater_id") or f"anon-{i}"),
+            score=(
+                int(e["score"])
+                if isinstance(e.get("score"), (int, float)) and e.get("score") is not None
+                else None
+            ),
+            notes=str(e.get("notes") or ""),
+        )
         for i, e in enumerate(raw)
     ]
 
     if any(r.score is None for r in raters):
         if not raters:
-            return PromotionDecision(item_id, "pending", None, None, 0,
-                                     "no human labels yet")
-        return PromotionDecision(item_id, "unknown", None, None, len(raters),
-                                 "at least one rater returned unknown; outcome=unknown")
+            return PromotionDecision(item_id, "pending", None, None, 0, "no human labels yet")
+        return PromotionDecision(
+            item_id,
+            "unknown",
+            None,
+            None,
+            len(raters),
+            "at least one rater returned unknown; outcome=unknown",
+        )
 
     if len(raters) < 2:
-        return PromotionDecision(item_id, "pending", None, None, len(raters),
-                                 f"need >=2 raters; got {len(raters)}")
+        return PromotionDecision(
+            item_id, "pending", None, None, len(raters), f"need >=2 raters; got {len(raters)}"
+        )
 
     kappa = compute_kappa(raters)
     if kappa is None or kappa < kappa_threshold:
-        return PromotionDecision(item_id, "pending", None, kappa, len(raters),
-                                 f"kappa={kappa} < threshold={kappa_threshold}; rubric prompt needs revision")
+        return PromotionDecision(
+            item_id,
+            "pending",
+            None,
+            kappa,
+            len(raters),
+            f"kappa={kappa} < threshold={kappa_threshold}; rubric prompt needs revision",
+        )
 
     gold = _consensus_score(raters)
-    return PromotionDecision(item_id, "scored", gold, kappa, len(raters),
-                             f"kappa={kappa:.3f} meets threshold; gold_score={gold} (strict tie-break)")
+    return PromotionDecision(
+        item_id,
+        "scored",
+        gold,
+        kappa,
+        len(raters),
+        f"kappa={kappa:.3f} meets threshold; gold_score={gold} (strict tie-break)",
+    )
 
 
 def apply_promotion(item: dict[str, Any], decision: PromotionDecision) -> dict[str, Any]:

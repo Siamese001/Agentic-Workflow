@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+
 p = Path("artifacts/adg/adg_indexed_04242026_0720.sqlite")
 print(f"exists={p.exists()}  size={p.stat().st_size if p.exists() else 'N/A'}")
 c = sqlite3.connect(str(p))

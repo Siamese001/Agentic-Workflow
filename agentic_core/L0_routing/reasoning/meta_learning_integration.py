@@ -675,7 +675,11 @@ class MetaLearningFramework:
                     },
                 )
 
-            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- meta-learner update: non-fatal, logger.error already called
+            except (
+                ValueError,
+                TypeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-log-and-swallow -- meta-learner update: non-fatal, logger.error already called
                 logger.error(f"Meta-learner {learner_name} failed: {e}")
 
         # Update framework performance

@@ -447,8 +447,7 @@ def mem_cleanup_stale(older_than_days: float = 30.0) -> dict[str, Any]:
     # Defensive: if the delete already ran, mark them for the caller.
     deleted_names = type_result.get("deleted_names", [])
     spuriously_deleted = [
-        name for name in deleted_names
-        if any(name.startswith(prefix) for prefix in _PROTECTED_NAME_PREFIXES)
+        name for name in deleted_names if any(name.startswith(prefix) for prefix in _PROTECTED_NAME_PREFIXES)
     ]
     type_result["protected_name_prefixes"] = list(_PROTECTED_NAME_PREFIXES)
     type_result["protected_types"] = list(_PROTECTED_TYPES)
@@ -476,5 +475,6 @@ if __name__ == "__main__":
     # write to knowledge_graph.sqlite and corrupt observation dedup. Added
     # 2026-04-22 MCP standardization.
     from tools.mcp.mcp_bootstrap import guard_single_instance
+
     guard_single_instance("adg_memory_server.py", skip_env="MEMORY_SKIP_ZOMBIE_KILL")
     mcp.run(transport="stdio")

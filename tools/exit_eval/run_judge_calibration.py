@@ -162,9 +162,7 @@ def _build_real_judge(kind: str) -> JudgeProtocol:
         endpoint = os.environ.get("JUDGE_ENDPOINT_URL")
         model = os.environ.get("JUDGE_MODEL", "unspecified")
         if not endpoint:
-            raise ValueError(
-                "HTTP judge requires JUDGE_ENDPOINT_URL env var"
-            )
+            raise ValueError("HTTP judge requires JUDGE_ENDPOINT_URL env var")
         return HttpJudge(endpoint=endpoint, model=model)
     raise ValueError(f"unknown --judge kind: {kind!r}")
 
@@ -258,15 +256,9 @@ def run_calibration(
 
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
     if outputs_path is None:
-        outputs_path = (
-            gold_path.parent / "judge_runs" / f"{judge_id}-{ts}.jsonl"
-        )
+        outputs_path = gold_path.parent / "judge_runs" / f"{judge_id}-{ts}.jsonl"
     if report_path is None:
-        report_path = (
-            gold_path.parent
-            / "reports"
-            / f"{ts.split('T')[0]}-{judge_id}.json"
-        )
+        report_path = gold_path.parent / "reports" / f"{ts.split('T')[0]}-{judge_id}.json"
     outputs_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -311,9 +303,7 @@ def run_calibration(
         judge_path=outputs_path,
         dimensions=dims,
     )
-    report_path.write_text(
-        json.dumps(report.to_dict(), indent=2), encoding="utf-8"
-    )
+    report_path.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
     return RunSummary(
         n_items=total,
         n_abstained=n_abstained,
@@ -383,9 +373,7 @@ def _main(argv: list[str] | None = None) -> int:
             gold_by_id = {str(r["item_id"]): r for r in gold_rows}
             judge: JudgeProtocol = _FakeCalibrationJudge(
                 gold_by_id=gold_by_id,
-                noise_by_dim={
-                    d: args.fake_noise for d in (args.dim or DEFAULT_DIMENSIONS)
-                },
+                noise_by_dim={d: args.fake_noise for d in (args.dim or DEFAULT_DIMENSIONS)},
             )
         else:
             judge = _build_real_judge(args.judge)
@@ -404,19 +392,14 @@ def _main(argv: list[str] | None = None) -> int:
         report_path=args.report,
         dimensions=args.dim or DEFAULT_DIMENSIONS,
     )
-    print(
-        f"Judge calibration complete: n={summary.n_items} "
-        f"abstained={summary.n_abstained}"
-    )
+    print(f"Judge calibration complete: n={summary.n_items} abstained={summary.n_abstained}")
     print(f"  judge outputs: {summary.judge_path}")
     print(f"  report:        {summary.report_path}")
     for dim, kappa in summary.report.dimension_kappa.items():
         alpha = summary.report.dimension_alpha.get(dim, float("nan"))
         print(f"  [{dim:22s}] kappa={kappa:.3f} alpha={alpha:.3f}")
     if args.min_kappa > 0:
-        failing = [
-            d for d, k in summary.report.dimension_kappa.items() if k < args.min_kappa
-        ]
+        failing = [d for d, k in summary.report.dimension_kappa.items() if k < args.min_kappa]
         if failing:
             print(
                 f"\nFAIL: dimensions below κ={args.min_kappa}: {failing}",

@@ -63,6 +63,7 @@ def _reset_registry() -> Generator[None, None, None]:
 
 # ---- Exception classes --------------------------------------------------
 
+
 class TestExceptions:
     def test_ungoverned_is_runtime_error(self) -> None:
         assert issubclass(UngovernnedRouteError, RuntimeError)
@@ -76,6 +77,7 @@ class TestExceptions:
 
 # ---- RoutingContext.validate -------------------------------------------
 
+
 class TestRoutingContextValidate:
     def test_complete_context_passes(self) -> None:
         _ctx().validate()  # no raise
@@ -83,8 +85,12 @@ class TestRoutingContextValidate:
     @pytest.mark.parametrize(
         "field_name",
         [
-            "run_id", "router_id", "request_hash",
-            "chosen_route", "policy_hash", "policy_version",
+            "run_id",
+            "router_id",
+            "request_hash",
+            "chosen_route",
+            "policy_hash",
+            "policy_version",
         ],
     )
     def test_missing_scalar_field_raises(self, field_name: str) -> None:
@@ -97,20 +103,31 @@ class TestRoutingContextValidate:
 
     def test_all_missing_fields_reported(self) -> None:
         c = RoutingContext(
-            run_id="", router_id="", request_hash="",
-            candidate_routes=[], chosen_route="",
-            policy_hash="", policy_version="",
+            run_id="",
+            router_id="",
+            request_hash="",
+            candidate_routes=[],
+            chosen_route="",
+            policy_hash="",
+            policy_version="",
         )
         with pytest.raises(RoutingContractValidationError) as info:
             c.validate()
         msg = str(info.value)
-        for f in ("run_id", "router_id", "request_hash",
-                  "candidate_routes", "chosen_route",
-                  "policy_hash", "policy_version"):
+        for f in (
+            "run_id",
+            "router_id",
+            "request_hash",
+            "candidate_routes",
+            "chosen_route",
+            "policy_hash",
+            "policy_version",
+        ):
             assert f in msg
 
 
 # ---- RoutingContract (immutable) ----------------------------------------
+
 
 def _fresh_contract() -> RoutingContract:
     return create_and_commit_routing_contract(_ctx())
@@ -125,11 +142,20 @@ class TestRoutingContractImmutable:
     def test_all_14_fields_populated(self) -> None:
         c = _fresh_contract()
         for fname in (
-            "routing_contract_id", "run_id", "trace_id", "router_id",
-            "request_hash", "candidate_routes_hash", "chosen_route_hash",
-            "policy_hash", "policy_version", "replay_key",
-            "determinism_digest", "contract_version",
-            "created_at_tick", "expiry_tick",
+            "routing_contract_id",
+            "run_id",
+            "trace_id",
+            "router_id",
+            "request_hash",
+            "candidate_routes_hash",
+            "chosen_route_hash",
+            "policy_hash",
+            "policy_version",
+            "replay_key",
+            "determinism_digest",
+            "contract_version",
+            "created_at_tick",
+            "expiry_tick",
         ):
             val = getattr(c, fname)
             assert val not in (None, "", 0), f"{fname} must be populated"
@@ -173,11 +199,16 @@ class TestPolicyAndExpiry:
 
 # ---- RoutingProposal ----------------------------------------------------
 
+
 class TestRoutingProposal:
     def test_frozen(self) -> None:
         p = RoutingProposal(
-            routing_contract_id="rc-1", run_id="r", router_id="rt",
-            chosen_route="D1", policy_hash="ph", proposal_hash="prop",
+            routing_contract_id="rc-1",
+            run_id="r",
+            router_id="rt",
+            chosen_route="D1",
+            policy_hash="ph",
+            proposal_hash="prop",
         )
         with pytest.raises(AttributeError):
             p.chosen_route = "D2"  # type: ignore[misc]
@@ -187,14 +218,19 @@ class TestRoutingProposal:
 
     def test_commit_proposal_records_in_registry(self) -> None:
         p = RoutingProposal(
-            routing_contract_id="rc-x", run_id="r", router_id="rt",
-            chosen_route="D1", policy_hash="ph", proposal_hash="prop",
+            routing_contract_id="rc-x",
+            run_id="r",
+            router_id="rt",
+            chosen_route="D1",
+            policy_hash="ph",
+            proposal_hash="prop",
         )
         commit_proposal(p)
         assert p in _get_contract_registry().all_proposals()
 
 
 # ---- create_and_commit_routing_contract --------------------------------
+
 
 class TestCreateAndCommit:
     def test_stored_in_registry(self) -> None:
@@ -248,6 +284,7 @@ class TestCreateAndCommit:
 
 # ---- execute_route -----------------------------------------------------
 
+
 class TestExecuteRoute:
     def test_forwards_args_on_valid_contract(self) -> None:
         c = _fresh_contract()
@@ -269,6 +306,7 @@ class TestExecuteRoute:
 
 
 # ---- reset_contract_registry -------------------------------------------
+
 
 class TestResetRegistry:
     def test_clears_contracts_and_proposals(self) -> None:

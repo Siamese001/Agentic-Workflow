@@ -1,10 +1,10 @@
 """Break down capability_egress violations."""
+
 import json
 from collections import Counter
 from pathlib import Path
 
-artifacts = sorted(Path("artifacts/ci_gates").glob("p0_runner_full_*.json"),
-                   key=lambda p: p.stat().st_mtime)
+artifacts = sorted(Path("artifacts/ci_gates").glob("p0_runner_full_*.json"), key=lambda p: p.stat().st_mtime)
 d = json.loads(artifacts[-1].read_text(encoding="utf-8"))
 for r in d["results"]:
     if r["gate_family"] != "capability_egress":
@@ -43,6 +43,6 @@ for r in d["results"]:
             continue
         seen[gt] += 1
         print(f"  [{gt}] {v.get('file')}")
-        print(f"     msg: {v.get('message','')[:180]}")
+        print(f"     msg: {v.get('message', '')[:180]}")
         print(f"     extra: {extra}")
     break

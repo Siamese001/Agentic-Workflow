@@ -206,6 +206,194 @@ class TemplateRegistry:
 
         return content_hash
 
+    def get_e0_exemplar(self, exemplar_id: str) -> str:
+        """Fetch E0 exemplar content by ID.
+
+        E0 exemplars are golden-context few-shot examples that guide output
+        style or logic. If the version store exposes ``get_exemplar``, it
+        is used. Otherwise falls back to ``get_mixin`` so mixin-backed
+        exemplar content still resolves during the E0 shim window.
+
+        Args:
+            exemplar_id: Exemplar identifier.
+
+        Returns:
+            E0 exemplar content.
+
+        Raises:
+            KeyError: If exemplar_id not found.
+        """
+        store = self._get_version_store()
+        getter = getattr(store, "get_exemplar", None)
+        if callable(getter):
+            return getter(exemplar_id)
+        return store.get_mixin(exemplar_id)
+
+    def get_m0_mixin(self, mixin_id: str) -> str:
+        """Fetch M0 meta-cognitive mixin content by ID.
+
+        M0 mixins carry chain-of-thought or tree-of-thought reasoning
+        scaffolds. They are authored as mixins with the ``thinking`` tag
+        convention. If the version store exposes ``get_meta_cognitive``,
+        it is used. Otherwise falls back to ``get_mixin``.
+
+        Args:
+            mixin_id: Meta-cognitive mixin identifier.
+
+        Returns:
+            M0 meta-cognitive content.
+
+        Raises:
+            KeyError: If mixin_id not found.
+        """
+        store = self._get_version_store()
+        getter = getattr(store, "get_meta_cognitive", None)
+        if callable(getter):
+            return getter(mixin_id)
+        return store.get_mixin(mixin_id)
+
+    def get_y0_synthesis(self, synthesis_id: str) -> str:
+        """Fetch Y0 synthesis content by ID.
+
+        Y0 synthesis entries are meta-learning / pattern-analysis proposals
+        that summarize telemetry into actionable configuration. If the
+        version store exposes ``get_synthesis``, it is used. Otherwise
+        falls back to ``get_mixin`` so mixin-backed synthesis content
+        still resolves during the Y0 shim window.
+
+        Args:
+            synthesis_id: Synthesis entry identifier.
+
+        Returns:
+            Y0 synthesis content.
+
+        Raises:
+            KeyError: If synthesis_id not found.
+        """
+        store = self._get_version_store()
+        getter = getattr(store, "get_synthesis", None)
+        if callable(getter):
+            return getter(synthesis_id)
+        return store.get_mixin(synthesis_id)
+
+    def get_h0_healing(self, healing_id: str) -> str:
+        """Fetch H0 healing proposal content by ID.
+
+        H0 healing proposals carry L2.3 correction context with re-entry
+        validation requirements. If the version store exposes
+        ``get_healing``, it is used. Otherwise falls back to
+        ``get_mixin`` so mixin-backed healing content still resolves
+        during the H0 shim window.
+
+        Args:
+            healing_id: Healing proposal identifier.
+
+        Returns:
+            H0 healing proposal content.
+
+        Raises:
+            KeyError: If healing_id not found.
+        """
+        store = self._get_version_store()
+        getter = getattr(store, "get_healing", None)
+        if callable(getter):
+            return getter(healing_id)
+        return store.get_mixin(healing_id)
+
+    def get_r0_output_format(self, format_id: str) -> str:
+        """Fetch R0 output format schema content by ID.
+
+        R0 output format entries define response schemas, format
+        constraints, and structural requirements. If the version store
+        exposes ``get_output_format``, it is used. Otherwise falls back
+        to ``get_mixin`` so mixin-backed format content still resolves
+        during the R0 shim window.
+
+        Args:
+            format_id: Output format identifier.
+
+        Returns:
+            R0 output format content.
+
+        Raises:
+            KeyError: If format_id not found.
+        """
+        store = self._get_version_store()
+        getter = getattr(store, "get_output_format", None)
+        if callable(getter):
+            return getter(format_id)
+        return store.get_mixin(format_id)
+
+    def get_c0_context(self, context_id: str) -> str:
+        """Fetch C0 grounded context content by ID.
+
+        C0 context entries carry verified chunks, citations, and graph
+        facts with INFORMATIONAL authority. If the version store exposes
+        ``get_context``, it is used. Otherwise falls back to
+        ``get_mixin`` so mixin-backed context content still resolves
+        during the C0 shim window.
+
+        Args:
+            context_id: Context entry identifier.
+
+        Returns:
+            C0 context content.
+
+        Raises:
+            KeyError: If context_id not found.
+        """
+        store = self._get_version_store()
+        getter = getattr(store, "get_context", None)
+        if callable(getter):
+            return getter(context_id)
+        return store.get_mixin(context_id)
+
+    def get_slot_template(self, slot_key: str) -> str:
+        """Fetch Jinja slot template content by slot key (e.g. 'S0', 'D0').
+
+        Loads the ``.jinja`` template file from
+        ``prompt_governance/templates/slots/`` and returns its content
+        as a string. Callers can then render via ``jinja2.Template``.
+
+        Args:
+            slot_key: Slot identifier (e.g. 'S0', 'D0', 'I0', 'E0',
+                'C0', 'M0', 'U0', 'H0', 'Y0', 'R0').
+
+        Returns:
+            Template file content as string.
+
+        Raises:
+            FileNotFoundError: If template file does not exist.
+            ValueError: If slot_key is not a recognized slot.
+        """
+        from pathlib import Path
+
+        _VALID_SLOTS = ("S0", "D0", "I0", "E0", "C0", "M0", "U0", "H0", "Y0", "R0")
+        if slot_key not in _VALID_SLOTS:
+            raise ValueError(f"Invalid slot_key {slot_key!r}; expected one of {_VALID_SLOTS}")
+
+        _SLOT_TEMPLATE_MAP = {
+            "S0": "S0_system_state.jinja",
+            "D0": "D0_injections.jinja",
+            "I0": "I0_instructional.jinja",
+            "E0": "E0_exemplars.jinja",
+            "C0": "C0_grounded_context.jinja",
+            "M0": "M0_meta_cognitive.jinja",
+            "U0": "U0_user_prompt.jinja",
+            "H0": "H0_healing_proposal.jinja",
+            "Y0": "Y0_synthesis.jinja",
+            "R0": "R0_output_format.jinja",
+        }
+
+        filename = _SLOT_TEMPLATE_MAP[slot_key]
+        template_dir = (
+            Path(__file__).resolve().parents[4] / "agentic_core" / "prompt_governance" / "templates" / "slots"
+        )
+        template_path = template_dir / filename
+        if not template_path.exists():
+            raise FileNotFoundError(f"Slot template not found: {template_path}")
+        return template_path.read_text(encoding="utf-8")
+
     def list_available_mixins(self) -> list[str]:
         """List available I0 mixin IDs."""
         store = self._get_version_store()

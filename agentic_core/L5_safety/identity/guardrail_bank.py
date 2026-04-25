@@ -25,6 +25,7 @@ Reference:
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Runtime Lane)
 Parent plan: .windsurf/plans/l5-governance-best-practice-gap-4615ae.md
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -82,8 +83,7 @@ class GuardrailOutcome:
             )
         if self.action not in ("allow", "remediate", "reject"):
             raise ValueError(
-                f"GuardrailOutcome: action must be allow|remediate|reject, "
-                f"got '{self.action}'",
+                f"GuardrailOutcome: action must be allow|remediate|reject, got '{self.action}'",
             )
         if self.hard_constraint and self.action == "remediate":
             raise ValueError(
@@ -161,14 +161,12 @@ def resolve_bank_verdict(
     # Enforce layer ordering (client_universal before agent_domain)
     layered = sorted(
         outcomes,
-        key=lambda o: (0 if o.layer == "client_universal" else 1),
+        key=lambda o: 0 if o.layer == "client_universal" else 1,
     )
     ordered = tuple(layered)
 
     has_reject = any(o.action == "reject" for o in ordered)
-    has_hard_remediate = any(
-        o.hard_constraint and o.action == "remediate" for o in ordered
-    )
+    has_hard_remediate = any(o.hard_constraint and o.action == "remediate" for o in ordered)
     has_remediate = any(o.action == "remediate" for o in ordered)
 
     if has_hard_remediate:
@@ -233,15 +231,9 @@ class EgressInspectionResult:
         # final_action must be the most restrictive of (bank, guard_model)
         _ORDER: dict[GuardrailAction, int] = {"allow": 0, "remediate": 1, "reject": 2}
         bank_rank = _ORDER[self.bank_verdict.verdict]
-        guard_rank = (
-            _ORDER[self.guard_model_outcome.action]
-            if self.guard_model_outcome is not None
-            else 0
-        )
+        guard_rank = _ORDER[self.guard_model_outcome.action] if self.guard_model_outcome is not None else 0
         expected_rank = max(bank_rank, guard_rank)
-        expected_action = next(
-            a for a, r in _ORDER.items() if r == expected_rank
-        )
+        expected_action = next(a for a, r in _ORDER.items() if r == expected_rank)
         if self.final_action != expected_action:
             raise ValueError(
                 f"EgressInspectionResult: final_action must be the most "
@@ -254,9 +246,7 @@ class EgressInspectionResult:
             "bank_verdict": self.bank_verdict.to_dict(),
             "final_action": self.final_action,
             "guard_model_outcome": (
-                self.guard_model_outcome.to_dict()
-                if self.guard_model_outcome is not None
-                else None
+                self.guard_model_outcome.to_dict() if self.guard_model_outcome is not None else None
             ),
         }
 
@@ -272,11 +262,7 @@ def compose_egress_inspection(
     """
     _ORDER: dict[GuardrailAction, int] = {"allow": 0, "remediate": 1, "reject": 2}
     bank_rank = _ORDER[bank_verdict.verdict]
-    guard_rank = (
-        _ORDER[guard_model_outcome.action]
-        if guard_model_outcome is not None
-        else 0
-    )
+    guard_rank = _ORDER[guard_model_outcome.action] if guard_model_outcome is not None else 0
     rank = max(bank_rank, guard_rank)
     final_action: GuardrailAction = next(a for a, r in _ORDER.items() if r == rank)
     return EgressInspectionResult(

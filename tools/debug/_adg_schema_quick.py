@@ -1,4 +1,5 @@
 import sqlite3
+
 DB = "artifacts/adg/adg_indexed_04242026_0513.sqlite"
 c = sqlite3.connect(DB)
 cur = c.cursor()
@@ -16,7 +17,9 @@ for r in cur.execute("SELECT * FROM nodes LIMIT 1").fetchall():
     print(r)
 
 print("\n=== distinct edges.relation_type ===")
-for r in cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY 2 DESC LIMIT 30").fetchall():
+for r in cur.execute(
+    "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY 2 DESC LIMIT 30"
+).fetchall():
     print(f"  {r[0]:<35} {r[1]}")
 
 print("\n=== distinct nodes.layer ===")

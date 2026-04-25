@@ -32,11 +32,7 @@ from typing import Iterator
 import pytest
 
 MULTI_WRITER_PATH = (
-    Path(__file__).resolve().parents[5]
-    / "agentic_core"
-    / "adg"
-    / "artifact"
-    / "multi_writer.py"
+    Path(__file__).resolve().parents[5] / "agentic_core" / "adg" / "artifact" / "multi_writer.py"
 )
 
 
@@ -55,15 +51,11 @@ def _extract_severity_case_from_source() -> str:
     start_anchor = "INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)"
     start = source.find(start_anchor)
     if start < 0:
-        raise RuntimeError(
-            "Could not locate the 'INSERT INTO violations' anchor in multi_writer.py"
-        )
+        raise RuntimeError("Could not locate the 'INSERT INTO violations' anchor in multi_writer.py")
     case_start = source.find("CASE", start)
     case_end = source.find("END as severity", case_start)
     if case_start < 0 or case_end < 0:
-        raise RuntimeError(
-            "Could not locate CASE ... END as severity in multi_writer.py"
-        )
+        raise RuntimeError("Could not locate CASE ... END as severity in multi_writer.py")
     return source[case_start : case_end + len("END")]
 
 
@@ -105,8 +97,7 @@ def _classify(
     """Insert one edge row, run the CASE against it, return the severity."""
     connection.execute("DELETE FROM edges")
     connection.execute(
-        "INSERT INTO edges (relation_type, edge_kind, source_file, line_no, symbol) "
-        "VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO edges (relation_type, edge_kind, source_file, line_no, symbol) VALUES (?, ?, ?, ?, ?)",
         (relation_type, edge_kind, source_file, 1, ""),
     )
     query = f"SELECT {severity_case_sql} FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')"
@@ -138,12 +129,8 @@ def test_tier1_agent_safety_is_critical(
     edge_kind: str,
     source_file: str,
 ) -> None:
-    severity = _classify(
-        conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file
-    )
-    assert severity == "CRITICAL", (
-        f"{edge_kind} @ {source_file} must be CRITICAL; got {severity}"
-    )
+    severity = _classify(conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file)
+    assert severity == "CRITICAL", f"{edge_kind} @ {source_file} must be CRITICAL; got {severity}"
 
 
 # ---------------------------------------------------------------------------
@@ -175,12 +162,8 @@ def test_high_class_in_production_is_high(
     edge_kind: str,
     source_file: str,
 ) -> None:
-    severity = _classify(
-        conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file
-    )
-    assert severity == "HIGH", (
-        f"{edge_kind} @ {source_file} must be HIGH; got {severity}"
-    )
+    severity = _classify(conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file)
+    assert severity == "HIGH", f"{edge_kind} @ {source_file} must be HIGH; got {severity}"
 
 
 # ---------------------------------------------------------------------------
@@ -204,12 +187,8 @@ def test_high_class_in_downgrade_paths_is_low(
     edge_kind: str,
     source_file: str,
 ) -> None:
-    severity = _classify(
-        conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file
-    )
-    assert severity == "LOW", (
-        f"{edge_kind} @ {source_file} must be LOW via downgrade path; got {severity}"
-    )
+    severity = _classify(conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file)
+    assert severity == "LOW", f"{edge_kind} @ {source_file} must be LOW via downgrade path; got {severity}"
 
 
 # ---------------------------------------------------------------------------
@@ -229,9 +208,7 @@ def test_high_class_outside_production_is_medium(
         edge_kind=edge_kind,
         source_file="apps_rg/reasoning/cool_feature.py",
     )
-    assert severity == "MEDIUM", (
-        f"{edge_kind} @ apps_rg/reasoning/... must be MEDIUM; got {severity}"
-    )
+    assert severity == "MEDIUM", f"{edge_kind} @ apps_rg/reasoning/... must be MEDIUM; got {severity}"
 
 
 # ---------------------------------------------------------------------------
@@ -266,12 +243,8 @@ def test_always_medium_kinds_stay_medium_or_low(
     Result is either MEDIUM (default) or LOW (if path downgrade applies —
     not applicable for these source_files, but defensive).
     """
-    severity = _classify(
-        conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file
-    )
-    assert severity in {"MEDIUM", "LOW"}, (
-        f"{edge_kind} @ {source_file} must be MEDIUM or LOW; got {severity}"
-    )
+    severity = _classify(conn, severity_case_sql, edge_kind=edge_kind, source_file=source_file)
+    assert severity in {"MEDIUM", "LOW"}, f"{edge_kind} @ {source_file} must be MEDIUM or LOW; got {severity}"
     assert severity not in {"CRITICAL", "HIGH"}
 
 

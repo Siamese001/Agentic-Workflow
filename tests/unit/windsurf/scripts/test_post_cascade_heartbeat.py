@@ -192,9 +192,7 @@ def test_health_flags_stale_after_thirty_minutes(health_mod) -> None:
     assert result["threshold"] == 30 * 60
 
 
-def test_health_env_override_still_honored(
-    health_mod, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_health_env_override_still_honored(health_mod, monkeypatch: pytest.MonkeyPatch) -> None:
     """W10.1: POST_CASCADE_HEARTBEAT_STALE_SECONDS env override still works
     after the default tightening, so operators can relax the threshold
     when justified (e.g. long-running batch sessions)."""

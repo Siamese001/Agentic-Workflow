@@ -242,7 +242,7 @@ class PromptLoader:
             except yaml.YAMLError as e:
                 raise PromptLoadError(f"Invalid YAML in {prompt_file}: {e}")
             except OSError as e:  # review: Add error context logging
-                raise PromptLoadError(f'Cannot read {prompt_file}: {e}') from e
+                raise PromptLoadError(f"Cannot read {prompt_file}: {e}") from e
             if not isinstance(data, dict):
                 raise PromptSchemaError(f"Prompt must be a dict: {prompt_file}")
             if "template" not in data:
@@ -279,9 +279,9 @@ class PromptLoader:
         try:
             return template.format(constraints=constraints_text, **template_vars)
         except KeyError as e:
-            raise PromptSchemaError(f'Missing template variable {e} in {domain}:{name}') from e
+            raise PromptSchemaError(f"Missing template variable {e} in {domain}:{name}") from e
         except (ValueError, TypeError) as e:
-            raise PromptSchemaError(f'Template formatting error in {domain}:{name}: {e}') from e
+            raise PromptSchemaError(f"Template formatting error in {domain}:{name}: {e}") from e
 
     def clear_cache(self) -> None:
         """Clear the internal cache. Useful for testing."""

@@ -115,31 +115,20 @@ def _validate_collection(
         if meta_errors:
             drift_count += 1
             if drift_count <= 3:  # cap verbosity
-                errors.append(
-                    f"chunk[{i}] metadata drift: {meta_errors[:4]}"
-                )
+                errors.append(f"chunk[{i}] metadata drift: {meta_errors[:4]}")
         # Per-chunk declared vs stored embedding model/dim
         stored_model = (meta or {}).get("embedding_model")
         if declared_model and stored_model and stored_model != declared_model:
-            errors.append(
-                f"chunk[{i}] embedding_model {stored_model!r} "
-                f"!= collection {declared_model!r}"
-            )
+            errors.append(f"chunk[{i}] embedding_model {stored_model!r} != collection {declared_model!r}")
         stored_dim = (meta or {}).get("embedding_dim")
         if declared_dim and stored_dim and stored_dim != declared_dim:
-            errors.append(
-                f"chunk[{i}] embedding_dim {stored_dim} "
-                f"!= collection {declared_dim}"
-            )
+            errors.append(f"chunk[{i}] embedding_dim {stored_dim} != collection {declared_dim}")
         # Sampled embedding vector dim vs declared dim
         if len(embs) and i < len(embs) and embs[i] is not None:
             emb_vec = embs[i]
             got = len(emb_vec.tolist() if hasattr(emb_vec, "tolist") else list(emb_vec))
             if declared_dim and got != declared_dim:
-                errors.append(
-                    f"chunk[{i}] actual vector dim {got} "
-                    f"!= collection declared {declared_dim}"
-                )
+                errors.append(f"chunk[{i}] actual vector dim {got} != collection declared {declared_dim}")
 
     if drift_count > 3:
         errors.append(f"... and {drift_count - 3} more chunks with metadata drift")
@@ -168,7 +157,9 @@ def _build_sparse_sidecars(collections: tuple[str, ...]) -> None:
     for name in collections:
         try:
             build_for_collection(name, dry_run=False)
-        except Exception as exc:  # guardian: allow-broad-exception -- best-effort sidecar build, must not fail stage
+        except (
+            Exception
+        ) as exc:  # guardian: allow-broad-exception -- best-effort sidecar build, must not fail stage
             print(f"  sparse: {name} build failed: {exc}")
 
 

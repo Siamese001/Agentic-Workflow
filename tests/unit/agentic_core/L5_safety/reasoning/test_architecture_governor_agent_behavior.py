@@ -19,6 +19,7 @@ from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
 
 # ---- Dataclass defaults + __post_init__ --------------------------
 
+
 class TestConstructor:
     def test_defaults(self, tmp_path: Path) -> None:
         agent = ArchitectureGovernorAgent(project_root=tmp_path)
@@ -84,6 +85,7 @@ class TestConstructor:
 
 
 # ---- Module constants --------------------------------------------
+
 
 class TestModuleConstants:
     def test_layer_dirs_is_set(self) -> None:

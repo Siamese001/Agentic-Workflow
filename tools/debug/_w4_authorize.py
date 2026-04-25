@@ -1,4 +1,5 @@
 """W4.1: authorize 3 zero-consumer medium-fan-in DEPRECATED agents."""
+
 from __future__ import annotations
 
 import json
@@ -54,7 +55,7 @@ def insert_marker(path: pathlib.Path, marker: str) -> bool:
         return False
     body = m.group(2).rstrip() + "\n" + marker.rstrip() + "\n"
     new_doc = m.group(1) + body + m.group(3)
-    new_text = text[: m.start()] + new_doc + text[m.end():]
+    new_text = text[: m.start()] + new_doc + text[m.end() :]
     path.write_text(new_text, encoding="utf-8")
     return True
 
@@ -96,9 +97,7 @@ def main() -> int:
                 "status": "authorized_awaiting_cooling",
                 "next_action": f"W6 archive sweep on or after {ELIG_DATE}",
             }
-            (ARTIFACT_DIR / f"w4_{short}.json").write_text(
-                json.dumps(artifact, indent=2), encoding="utf-8"
-            )
+            (ARTIFACT_DIR / f"w4_{short}.json").write_text(json.dumps(artifact, indent=2), encoding="utf-8")
             print(f"  [ok] {rel}")
     print(f"[done] authorized {done}/{len(TARGETS)}")
     return 0 if done == len(TARGETS) else 1

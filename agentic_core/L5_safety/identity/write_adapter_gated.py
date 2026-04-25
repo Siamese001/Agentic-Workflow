@@ -34,6 +34,7 @@ Reference:
   - runtime_entry_sweep.py (Wave-L source of the gating decision)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 from typing import Sequence

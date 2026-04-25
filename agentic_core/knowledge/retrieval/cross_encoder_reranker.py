@@ -117,9 +117,7 @@ class CrossEncoderReranker:
         try:
             scores = adapter.score(query, texts)
         except (RuntimeError, ValueError, OSError) as exc:
-            logger.warning(
-                "Cross-encoder scoring failed (%s); falling back to heuristic", exc
-            )
+            logger.warning("Cross-encoder scoring failed (%s); falling back to heuristic", exc)
             return stage1[:top_k]
 
         if len(scores) != len(stage1):
@@ -173,7 +171,10 @@ class CrossEncoderReranker:
         except CrossEncoderUnavailable as exc:  # guardian: allow-return-none-swallow -- cross-encoder is an optional retrieval enrichment; unavailability falls back to the calling pipeline's no-rerank path
             logger.warning("Cross-encoder unavailable: %s; falling back", exc)
             return None
-        except (RuntimeError, OSError) as exc:  # guardian: allow-return-none-swallow -- cross-encoder init best-effort; init failure falls back to no-rerank path, upstream retrieval proceeds normally
+        except (
+            RuntimeError,
+            OSError,
+        ) as exc:  # guardian: allow-return-none-swallow -- cross-encoder init best-effort; init failure falls back to no-rerank path, upstream retrieval proceeds normally
             logger.warning("Cross-encoder init failed: %s; falling back", exc)
             return None
 

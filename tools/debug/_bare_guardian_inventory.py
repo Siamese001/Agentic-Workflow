@@ -4,6 +4,7 @@ Queries the latest ADG snapshot's violations table and groups bare/guardian-
 adjacent antipattern types by layer to produce the 1696-site breakdown
 referenced in the prior plan's Non-Goals.
 """
+
 from __future__ import annotations
 
 import sqlite3

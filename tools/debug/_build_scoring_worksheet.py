@@ -3,6 +3,7 @@
 Reads artifacts/notion/_pending_rescore.json + open_rows_with_ids.json
 and emits a CSV-style markdown worksheet for a human to fill in.
 """
+
 from __future__ import annotations
 
 import json
@@ -17,9 +18,19 @@ BAND_RE = re.compile(r"\[(P[1-5])\]")
 
 # Already-scored rows from last session (Wave A + Wave B + Wave D applications)
 APPLIED_IN_PRIOR = {
-    "W2-P1/2.1", "F4/F4.2", "W3/P3.1", "W4/W4",  # Wave A
-    "GAP/GAP-4", "W5/5.1", "Wave 3/3.2", "W1-P0/1.2",  # Wave B
-    "H6/H6.1", "H7/H7.1", "H8/H8.1", "H9/H9.1", "H10/H10.1",  # Wave D
+    "W2-P1/2.1",
+    "F4/F4.2",
+    "W3/P3.1",
+    "W4/W4",  # Wave A
+    "GAP/GAP-4",
+    "W5/5.1",
+    "Wave 3/3.2",
+    "W1-P0/1.2",  # Wave B
+    "H6/H6.1",
+    "H7/H7.1",
+    "H8/H8.1",
+    "H9/H9.1",
+    "H10/H10.1",  # Wave D
 }
 
 
@@ -121,17 +132,19 @@ def main():
     data_dest = ROOT / "artifacts" / "notion" / "human_scoring_worksheet.json"
     data = []
     for r in worksheet_rows:
-        data.append({
-            "id": r["id"],
-            "wave": r["wave"],
-            "phase": r["phase"],
-            "title": r["title"],
-            "category": categorize(r["wave"], r["phase"], r["title"]),
-            "BAND": "",
-            "LAYER": "",
-            "FILES": "",
-            "NOTES": "",
-        })
+        data.append(
+            {
+                "id": r["id"],
+                "wave": r["wave"],
+                "phase": r["phase"],
+                "title": r["title"],
+                "category": categorize(r["wave"], r["phase"], r["title"]),
+                "BAND": "",
+                "LAYER": "",
+                "FILES": "",
+                "NOTES": "",
+            }
+        )
     data_dest.write_text(json.dumps(data, indent=2), encoding="utf-8")
     print(f"Wrote: {data_dest}")
 

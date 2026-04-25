@@ -456,7 +456,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="Wave 3: Runtime Evidence Ingestion")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
-    parser.add_argument("--chroma-dir", default=canonical_persist_dir_str(), help="ChromaDB persistence directory")
+    parser.add_argument(
+        "--chroma-dir", default=canonical_persist_dir_str(), help="ChromaDB persistence directory"
+    )
     parser.add_argument(
         "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
     )

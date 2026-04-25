@@ -1,4 +1,5 @@
 """Tests for W5 agent_seal_helper + check_agent_sealed_return CI gate (plan c8e4f1)."""
+
 from __future__ import annotations
 
 import subprocess

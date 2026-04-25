@@ -70,7 +70,7 @@ def _default_schema_grader() -> Grader:
     # Accept any non-empty dict for output — production callers override
     # with their request-schema validator.
     return SchemaGrader(
-        lambda out: ((True, "ok") if isinstance(out, dict) and out else (False, "empty or non-dict output"))
+        lambda out: (True, "ok") if isinstance(out, dict) and out else (False, "empty or non-dict output")
     )
 
 

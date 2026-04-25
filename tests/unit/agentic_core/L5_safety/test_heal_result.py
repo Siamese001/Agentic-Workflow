@@ -1,4 +1,5 @@
 """Tests for W2 HealResult + HealOutcome (plan c8e4f1)."""
+
 from __future__ import annotations
 
 import pytest

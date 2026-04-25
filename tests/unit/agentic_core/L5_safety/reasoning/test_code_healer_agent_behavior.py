@@ -32,17 +32,22 @@ from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
 
 # ---- HealingType enum --------------------------------------------
 
+
 class TestHealingType:
-    @pytest.mark.parametrize("name,value", [
-        ("CANON", "CANON"),
-        ("IMPORT", "IMPORT"),
-        ("STRUCTURAL", "STRUCTURAL"),
-    ])
+    @pytest.mark.parametrize(
+        "name,value",
+        [
+            ("CANON", "CANON"),
+            ("IMPORT", "IMPORT"),
+            ("STRUCTURAL", "STRUCTURAL"),
+        ],
+    )
     def test_values(self, name: str, value: str) -> None:
         assert HealingType[name].value == value
 
 
 # ---- HealingAction dataclass --------------------------------------
+
 
 class TestHealingAction:
     def test_required_fields(self, tmp_path: Path) -> None:
@@ -73,6 +78,7 @@ class TestHealingAction:
 
 # ---- HealerConfig defaults ---------------------------------------
 
+
 class TestHealerConfig:
     def test_defaults(self) -> None:
         c = HealerConfig()
@@ -85,7 +91,9 @@ class TestHealerConfig:
 
     def test_overrides(self) -> None:
         c = HealerConfig(
-            enable_canon=False, dry_run=False, enable_structural=False,
+            enable_canon=False,
+            dry_run=False,
+            enable_structural=False,
         )
         assert c.enable_canon is False
         assert c.dry_run is False
@@ -93,6 +101,7 @@ class TestHealerConfig:
 
 
 # ---- CodeHealerAgent construction ---------------------------------
+
 
 class TestCodeHealerAgentConstruction:
     def test_defaults_project_root_is_cwd(self) -> None:
@@ -109,7 +118,8 @@ class TestCodeHealerAgentConstruction:
         assert agent._agent_config.dry_run is True
 
     def test_backup_dir_derived_under_project_root(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ) -> None:
         agent = CodeHealerAgent(project_root=tmp_path)
         # HEALING_BACKUPS_DIR is "artifacts/healing_backups"
@@ -140,12 +150,29 @@ class TestCodeHealerAgentConstruction:
 
 # ---- STDLIB_MODULES classification helper -----------------------
 
+
 class TestStdlibModules:
-    @pytest.mark.parametrize("name", [
-        "os", "sys", "re", "json", "ast", "typing", "pathlib",
-        "logging", "datetime", "collections", "functools", "itertools",
-        "threading", "asyncio", "dataclasses", "enum",
-    ])
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "os",
+            "sys",
+            "re",
+            "json",
+            "ast",
+            "typing",
+            "pathlib",
+            "logging",
+            "datetime",
+            "collections",
+            "functools",
+            "itertools",
+            "threading",
+            "asyncio",
+            "dataclasses",
+            "enum",
+        ],
+    )
     def test_expected_stdlib_modules(self, name: str) -> None:
         assert name in CodeHealerAgent.STDLIB_MODULES
 
@@ -155,10 +182,17 @@ class TestStdlibModules:
 
 # ---- Module surface ----------------------------------------------
 
+
 class TestModuleSurface:
-    @pytest.mark.parametrize("name", [
-        "CodeHealerAgent", "HealerConfig", "HealingAction",
-        "HealingType", "CodeHealingStrategy",
-    ])
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "CodeHealerAgent",
+            "HealerConfig",
+            "HealingAction",
+            "HealingType",
+            "CodeHealingStrategy",
+        ],
+    )
     def test_symbol_present(self, name: str) -> None:
         assert hasattr(mod, name)

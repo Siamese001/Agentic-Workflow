@@ -16,6 +16,8 @@ from typing import Any
 
 from apps_lic.utils.lic_agent_base_util import LICAgentBase
 
+from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for governance analysis; import failure is logged and captured in _qwen_init_error
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
@@ -226,7 +228,13 @@ class GovernanceShieldAgent(LICAgentBase):
         self._qwen_init_error: str | None = None
 
         import os as _os_qwen_optout  # noqa: PLC0415
-        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in ("1", "true", "True", "yes")
+
+        _qwen_opt_out = _os_qwen_optout.getenv("APPS_QWEN_DISABLED", "").strip() in (
+            "1",
+            "true",
+            "True",
+            "yes",
+        )
         if _qwen_opt_out:
             logger.info(
                 "GovernanceShieldAgent: APPS_QWEN_DISABLED=1 — skipping Qwen init, will route to Gemini fallback"
@@ -239,7 +247,7 @@ class GovernanceShieldAgent(LICAgentBase):
             )
         elif self.qwen_enabled:
             try:
-                self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+                self._qwen_gateway = AppsQwenGateway(model_id=QWEN_LOCAL_MODEL_ID)
 
                 if apps_qwen_telemetry is not None:
                     self._qwen_session_id = apps_qwen_telemetry.start_session("apps_lic")
@@ -647,7 +655,7 @@ class GovernanceShieldAgent(LICAgentBase):
                 apps_qwen_telemetry.record_request_start(
                     session_id=self._qwen_session_id,
                     app_name="apps_lic",
-                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                    model_id=QWEN_LOCAL_MODEL_ID,
                 )
 
             # Perform inference

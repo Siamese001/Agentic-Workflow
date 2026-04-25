@@ -27,7 +27,7 @@ def _parse_frontmatter(content: str) -> dict:
 
         return yaml.safe_load(parts[1]) or {}
     except ImportError as exc:
-        raise ValueError(f'yaml module required: {exc}') from exc
+        raise ValueError(f"yaml module required: {exc}") from exc
 
 
 class TestSkillsContract(unittest.TestCase):

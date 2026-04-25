@@ -30,10 +30,13 @@ from agentic_core.L0_routing.types.governance_types import (
 
 # ---- Enums ---------------------------------------------------------------
 
+
 class TestEnums:
     def test_exception_scope(self) -> None:
         assert {e.value for e in ExceptionScope} == {
-            "single_agent", "healing_wave", "full_pipeline",
+            "single_agent",
+            "healing_wave",
+            "full_pipeline",
         }
 
     def test_proposal_status(self) -> None:
@@ -41,7 +44,10 @@ class TestEnums:
 
     def test_hil_outcome(self) -> None:
         assert {o.value for o in HILOutcome} == {
-            "approved", "rejected", "overridden", "needs_more_info",
+            "approved",
+            "rejected",
+            "overridden",
+            "needs_more_info",
         }
 
     def test_change_action(self) -> None:
@@ -50,10 +56,14 @@ class TestEnums:
 
 # ---- RouteDecisionRef / PolicySnapshot -----------------------------------
 
+
 class TestSimpleFrozenDataclasses:
     def test_route_decision_ref_constructs(self) -> None:
         r = RouteDecisionRef(
-            trace_id="t", decision="ALLOW", agent_name="agent", reason="policy-ok",
+            trace_id="t",
+            decision="ALLOW",
+            agent_name="agent",
+            reason="policy-ok",
         )
         assert r.decision == "ALLOW"
 
@@ -73,6 +83,7 @@ class TestSimpleFrozenDataclasses:
 
 
 # ---- EvidencePack --------------------------------------------------------
+
 
 def _ep(**overrides: object) -> EvidencePack:
     kwargs: dict[str, object] = {
@@ -129,6 +140,7 @@ class TestEvidencePack:
 
 # ---- PolicyExceptionArtifact --------------------------------------------
 
+
 def _pea(**overrides: object) -> PolicyExceptionArtifact:
     kwargs: dict[str, object] = {
         "trace_id": "t1",
@@ -178,6 +190,7 @@ class TestPolicyExceptionArtifact:
 
 # ---- HILReviewOutcome ----------------------------------------------------
 
+
 class TestHILReviewOutcome:
     def test_defaults(self) -> None:
         h = HILReviewOutcome(decision="APPROVE", reviewer_id="r1", reviewer_sig="sig")
@@ -185,7 +198,9 @@ class TestHILReviewOutcome:
 
     def test_modify_diff_flag(self) -> None:
         h = HILReviewOutcome(
-            decision="MODIFY_DIFF", reviewer_id="r1", reviewer_sig="sig",
+            decision="MODIFY_DIFF",
+            reviewer_id="r1",
+            reviewer_sig="sig",
             requires_l5_reclear=True,
         )
         assert h.requires_l5_reclear is True
@@ -198,24 +213,32 @@ class TestHILReviewOutcome:
 
 # ---- ProposedPolicyChange ------------------------------------------------
 
+
 class TestProposedPolicyChange:
     def test_minimal(self) -> None:
         p = ProposedPolicyChange(
-            target="rule-42", action=ChangeAction.ADJUST,
-            scope="pipeline", risk_note="low-risk",
+            target="rule-42",
+            action=ChangeAction.ADJUST,
+            scope="pipeline",
+            risk_note="low-risk",
         )
         assert p.current_value == ""
         assert p.proposed_value == ""
 
     def test_full(self) -> None:
         p = ProposedPolicyChange(
-            target="r1", action=ChangeAction.ADD, scope="agent",
-            risk_note="n", current_value="old", proposed_value="new",
+            target="r1",
+            action=ChangeAction.ADD,
+            scope="agent",
+            risk_note="n",
+            current_value="old",
+            proposed_value="new",
         )
         assert p.action is ChangeAction.ADD
 
 
 # ---- PolicyUpdateProposal ------------------------------------------------
+
 
 def _pup(**overrides: object) -> PolicyUpdateProposal:
     kwargs: dict[str, object] = {
@@ -267,7 +290,10 @@ class TestPolicyUpdateProposal:
 
     def test_with_proposed_changes(self) -> None:
         change = ProposedPolicyChange(
-            target="r", action=ChangeAction.REMOVE, scope="s", risk_note="n",
+            target="r",
+            action=ChangeAction.REMOVE,
+            scope="s",
+            risk_note="n",
         )
         p = _pup(proposed_changes=(change,))
         assert len(p.proposed_changes) == 1

@@ -1,4 +1,5 @@
 """Find or create W4/W5 rows in Wave/Phase Convergence DB; update statuses."""
+
 import json
 import os
 import requests
@@ -45,7 +46,7 @@ for row in rows:
     wave_id_parts = row.get("properties", {}).get("Wave ID", {}).get("rich_text", [])
     wave_id = "".join(p.get("plain_text", "") for p in wave_id_parts)
     pid = row["id"]
-    print(f'  {pid}  wave={wave_id!r}  title={title[:80]!r}')
+    print(f"  {pid}  wave={wave_id!r}  title={title[:80]!r}")
     if wave_id.strip() == "W4" and w4_page is None:
         w4_page = pid
     elif wave_id.strip() == "W5" and w5_page is None:
@@ -112,21 +113,27 @@ w5_note = (
 if w4_page:
     print("W4 patch:", patch(w4_page, "In Progress", w4_note))
 else:
-    print("W4 create:", create(
-        "W4",
-        "P4",
-        "[P2] W4 P4 — Medium-fan-in DEPRECATED migration (7 agents, 3 authorized)",
-        "In Progress",
-        w4_note,
-    ))
+    print(
+        "W4 create:",
+        create(
+            "W4",
+            "P4",
+            "[P2] W4 P4 — Medium-fan-in DEPRECATED migration (7 agents, 3 authorized)",
+            "In Progress",
+            w4_note,
+        ),
+    )
 
 if w5_page:
     print("W5 patch:", patch(w5_page, "Blocked", w5_note))
 else:
-    print("W5 create:", create(
-        "W5",
-        "P5",
-        "[P1] W5 P5 — High-fan-in DEPRECATED (3 agents, blocked on consumer-refactor)",
-        "Blocked",
-        w5_note,
-    ))
+    print(
+        "W5 create:",
+        create(
+            "W5",
+            "P5",
+            "[P1] W5 P5 — High-fan-in DEPRECATED (3 agents, blocked on consumer-refactor)",
+            "Blocked",
+            w5_note,
+        ),
+    )

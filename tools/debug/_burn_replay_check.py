@@ -1,4 +1,5 @@
 """Check replay_key.py import edges in latest snapshot."""
+
 import sqlite3
 from pathlib import Path
 

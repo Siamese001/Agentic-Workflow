@@ -95,11 +95,7 @@ class WebhookIngressAdapter:
     @classmethod
     def _to_envelope(cls, headers: dict[str, str], body: dict[str, Any]) -> dict[str, Any]:
         lowered = {k.lower(): v for k, v in headers.items()}
-        caller = str(
-            body.get("caller_identity")
-            or lowered.get("x-caller-identity")
-            or "webhook-anon"
-        )
+        caller = str(body.get("caller_identity") or lowered.get("x-caller-identity") or "webhook-anon")
         return {
             "schema_version": body.get("schema_version") or cls.SCHEMA_VERSION,
             "caller_identity": caller,

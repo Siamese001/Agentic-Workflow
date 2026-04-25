@@ -23,9 +23,7 @@ class TestG5DocToCacheIndex:
 
     def test_register_and_lookup_roundtrip(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(doc_to_cache_index, "_DEFAULT_PATH", tmp_path / "idx.db")
-        rows = doc_to_cache_index.register_cache_row(
-            "cache-abc", ["doc-1", "doc-2", "doc-3"]
-        )
+        rows = doc_to_cache_index.register_cache_row("cache-abc", ["doc-1", "doc-2", "doc-3"])
         assert rows == 3
         assert set(doc_to_cache_index.cache_ids_for_document("doc-1")) == {"cache-abc"}
         assert set(doc_to_cache_index.cache_ids_for_document("doc-2")) == {"cache-abc"}

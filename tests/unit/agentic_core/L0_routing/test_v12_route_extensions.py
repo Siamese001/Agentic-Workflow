@@ -566,9 +566,7 @@ class TestRouteSelectorDecisionOrder:
 class TestHardeningV12RouteAnnex:
     """Pathological input rejection at annex construction time."""
 
-    def test_nan_confidence_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_nan_confidence_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         import math
 
         with pytest.raises(V12RouteContractError, match="finite"):
@@ -588,9 +586,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_infinity_confidence_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_infinity_confidence_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         import math
 
         with pytest.raises(V12RouteContractError, match="finite"):
@@ -610,9 +606,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_empty_base_contract_id_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_empty_base_contract_id_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="base_contract_id"):
             V12RouteAnnex(
                 contract_version="1.0.0",
@@ -630,9 +624,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_empty_contract_version_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_empty_contract_version_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="contract_version"):
             V12RouteAnnex(
                 contract_version="",
@@ -650,9 +642,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_reason_codes_reject_empty_string(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_reason_codes_reject_empty_string(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="reason_codes"):
             V12RouteAnnex(
                 contract_version="1.0.0",
@@ -670,9 +660,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_reason_codes_reject_non_string(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_reason_codes_reject_non_string(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="reason_codes"):
             V12RouteAnnex(
                 contract_version="1.0.0",
@@ -690,9 +678,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_reason_codes_reject_over_limit(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_reason_codes_reject_over_limit(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="max length"):
             V12RouteAnnex(
                 contract_version="1.0.0",
@@ -710,9 +696,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_self_referential_chain_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_self_referential_chain_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="self-referential"):
             V12RouteAnnex(
                 contract_version="1.0.0",
@@ -733,9 +717,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_same_route_different_tier_allowed(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_same_route_different_tier_allowed(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         # Primary is R3_GROUNDED TIER_M; chain has R3_GROUNDED TIER_L — OK.
         annex = V12RouteAnnex(
             contract_version="1.0.0",
@@ -757,9 +739,7 @@ class TestHardeningV12RouteAnnex:
         )
         assert len(annex.fallback_chain) == 2
 
-    def test_chain_depth_cap(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_chain_depth_cap(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="max depth"):
             V12RouteAnnex(
                 contract_version="1.0.0",
@@ -788,9 +768,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_wrong_enum_type_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_wrong_enum_type_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         with pytest.raises(V12RouteContractError, match="RouteId"):
             V12RouteAnnex(
                 contract_version="1.0.0",
@@ -808,9 +786,7 @@ class TestHardeningV12RouteAnnex:
                 tenant_scope=tenant,
             )
 
-    def test_empty_hmac_key_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_empty_hmac_key_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         annex = V12RouteAnnex(
             contract_version="1.0.0",
             base_contract_id="c1",
@@ -829,9 +805,7 @@ class TestHardeningV12RouteAnnex:
         with pytest.raises(V12RouteContractError, match="non-empty"):
             annex.sign(b"")
 
-    def test_non_bytes_hmac_key_rejected(
-        self, tenant: TenantScope, minimal_slo: RouteSLO
-    ) -> None:
+    def test_non_bytes_hmac_key_rejected(self, tenant: TenantScope, minimal_slo: RouteSLO) -> None:
         annex = V12RouteAnnex(
             contract_version="1.0.0",
             base_contract_id="c1",
@@ -995,9 +969,7 @@ class TestHardeningLoopGuard:
         import math
 
         with pytest.raises(ValueError, match="finite"):
-            evaluate_loop_guard(
-                ["a"], set(), efficiency_threshold=math.nan, min_spans=1
-            )
+            evaluate_loop_guard(["a"], set(), efficiency_threshold=math.nan, min_spans=1)
 
     def test_zero_min_spans_rejected(self) -> None:
         with pytest.raises(ValueError, match="min_spans"):
@@ -1005,9 +977,7 @@ class TestHardeningLoopGuard:
 
     def test_negative_min_spans_rejected(self) -> None:
         with pytest.raises(ValueError, match="min_spans"):
-            evaluate_loop_guard(
-                ["a"], set(), efficiency_threshold=0.4, min_spans=-5
-            )
+            evaluate_loop_guard(["a"], set(), efficiency_threshold=0.4, min_spans=-5)
 
     def test_non_list_span_ids(self) -> None:
         with pytest.raises(TypeError, match="span_ids must be list"):
@@ -1049,9 +1019,7 @@ class TestHardeningCalibration:
     def test_env_with_whitespace(self) -> None:
         os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "  0.77  "
         try:
-            v = routing_calibration.get_v12_threshold(
-                "classifier_surface_threshold"
-            )
+            v = routing_calibration.get_v12_threshold("classifier_surface_threshold")
             assert v == pytest.approx(0.77)
         finally:
             os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)
@@ -1059,9 +1027,7 @@ class TestHardeningCalibration:
     def test_env_scientific_notation(self) -> None:
         os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "5e-1"
         try:
-            v = routing_calibration.get_v12_threshold(
-                "classifier_surface_threshold"
-            )
+            v = routing_calibration.get_v12_threshold("classifier_surface_threshold")
             assert v == pytest.approx(0.5)
         finally:
             os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)
@@ -1070,9 +1036,7 @@ class TestHardeningCalibration:
         os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "1.5"
         try:
             # Out-of-range env value is ignored; fallback 0.72 is used.
-            v = routing_calibration.get_v12_threshold(
-                "classifier_surface_threshold"
-            )
+            v = routing_calibration.get_v12_threshold("classifier_surface_threshold")
             assert v == pytest.approx(0.72)
         finally:
             os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)
@@ -1080,9 +1044,7 @@ class TestHardeningCalibration:
     def test_env_nan_falls_back(self) -> None:
         os.environ["AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD"] = "nan"
         try:
-            v = routing_calibration.get_v12_threshold(
-                "classifier_surface_threshold"
-            )
+            v = routing_calibration.get_v12_threshold("classifier_surface_threshold")
             assert v == pytest.approx(0.72)
         finally:
             os.environ.pop("AGENTIC_V12_CLASSIFIER_SURFACE_THRESHOLD", None)

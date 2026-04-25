@@ -112,23 +112,16 @@ class TestFeatureVectorPassthrough:
             logger="agentic_core.L0_routing.utils.routing_telemetry",
         )
         record_routing_telemetry(_minimal_ctx(feature_vector=fv))
-        feature_lines = [
-            r for r in caplog.records if "ROUTING_FEATURE_VECTOR" in r.getMessage()
-        ]
+        feature_lines = [r for r in caplog.records if "ROUTING_FEATURE_VECTOR" in r.getMessage()]
         assert len(feature_lines) == 1, (
-            "Expected exactly one ROUTING_FEATURE_VECTOR log line "
-            f"(got {len(feature_lines)})"
+            f"Expected exactly one ROUTING_FEATURE_VECTOR log line (got {len(feature_lines)})"
         )
 
-    def test_no_log_line_when_no_feature_vector(
-        self, caplog: pytest.LogCaptureFixture
-    ) -> None:
+    def test_no_log_line_when_no_feature_vector(self, caplog: pytest.LogCaptureFixture) -> None:
         caplog.set_level(
             "DEBUG",
             logger="agentic_core.L0_routing.utils.routing_telemetry",
         )
         record_routing_telemetry(_minimal_ctx(feature_vector=None))
-        feature_lines = [
-            r for r in caplog.records if "ROUTING_FEATURE_VECTOR" in r.getMessage()
-        ]
+        feature_lines = [r for r in caplog.records if "ROUTING_FEATURE_VECTOR" in r.getMessage()]
         assert len(feature_lines) == 0

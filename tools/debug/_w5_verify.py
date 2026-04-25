@@ -1,4 +1,5 @@
 """W5 live-consumer verification for the top 3 high-fan-in DEPRECATED agents."""
+
 from __future__ import annotations
 
 import json
@@ -64,10 +65,10 @@ for rel in W5_TARGETS:
 OUT.write_text(json.dumps({"total": len(entries), "entries": entries}, indent=2), encoding="utf-8")
 print(f"[ok] wrote {OUT}")
 for e in sorted(entries, key=lambda x: x["live_consumer_count"]):
-    print(f'=== {e["class_name"]} ({e["live_consumer_count"]} consumers) ===')
-    print(f'  doc: {(e["docstring_head"] or "").replace(chr(10)," | ")[:180]}')
+    print(f"=== {e['class_name']} ({e['live_consumer_count']} consumers) ===")
+    print(f"  doc: {(e['docstring_head'] or '').replace(chr(10), ' | ')[:180]}")
     for c in e["live_consumer_files"][:15]:
-        print(f'  consumer: {c}')
+        print(f"  consumer: {c}")
     if e["live_consumer_count"] > 15:
-        print(f'  ... and {e["live_consumer_count"]-15} more')
+        print(f"  ... and {e['live_consumer_count'] - 15} more")
     print()

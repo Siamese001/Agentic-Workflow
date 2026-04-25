@@ -241,9 +241,9 @@ class ExpectedGroundTruth:
     compare observed evidence against this declaration to decide REPLAN.
     """
 
-    signal_kind: str          # e.g. "document_set", "tool_result", "metric"
-    shape_hint: str           # informal shape / schema hint
-    success_predicate: str    # natural-language predicate describing success
+    signal_kind: str  # e.g. "document_set", "tool_result", "metric"
+    shape_hint: str  # informal shape / schema hint
+    success_predicate: str  # natural-language predicate describing success
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -370,9 +370,7 @@ class L1PlanContractV2:
             if val is None:
                 missing.append(f)
         if missing:
-            raise PlanContractViolation(
-                f"L1PlanContractV2 is missing mandatory fields: {missing}."
-            )
+            raise PlanContractViolation(f"L1PlanContractV2 is missing mandatory fields: {missing}.")
         if not isinstance(self.proposed_route, ProposedRoute):
             raise PlanContractViolation(
                 f"proposed_route must be ProposedRoute enum, got {type(self.proposed_route)}"
@@ -382,9 +380,7 @@ class L1PlanContractV2:
                 f"reasoning_mode must be ReasoningMode enum, got {type(self.reasoning_mode)}"
             )
         if not isinstance(self.route_risk, RouteRisk):
-            raise PlanContractViolation(
-                f"route_risk must be RouteRisk, got {type(self.route_risk)}"
-            )
+            raise PlanContractViolation(f"route_risk must be RouteRisk, got {type(self.route_risk)}")
         if not isinstance(self.planner_telemetry, PlannerTelemetry):
             raise PlanContractViolation(
                 f"planner_telemetry must be PlannerTelemetry, got {type(self.planner_telemetry)}"
@@ -399,39 +395,27 @@ class L1PlanContractV2:
                 "task_spec must be a tuple of PlanTaskStep, not a bare string or non-sequence."
             )
         if not self.task_spec:
-            raise PlanContractViolation(
-                "task_spec must be non-empty — L1 must produce at least one step."
-            )
+            raise PlanContractViolation("task_spec must be non-empty — L1 must produce at least one step.")
         for idx, step in enumerate(self.task_spec):
             if not isinstance(step, PlanTaskStep):
-                raise PlanContractViolation(
-                    f"task_spec[{idx}] must be PlanTaskStep, got {type(step)}"
-                )
+                raise PlanContractViolation(f"task_spec[{idx}] must be PlanTaskStep, got {type(step)}")
         # declared_assumptions shape
         if isinstance(self.declared_assumptions, str) or not hasattr(self.declared_assumptions, "__iter__"):
             raise PlanContractViolation("declared_assumptions must be a tuple of Assumption.")
         for idx, a in enumerate(self.declared_assumptions):
             if not isinstance(a, Assumption):
-                raise PlanContractViolation(
-                    f"declared_assumptions[{idx}] must be Assumption, got {type(a)}"
-                )
+                raise PlanContractViolation(f"declared_assumptions[{idx}] must be Assumption, got {type(a)}")
         # unresolved_gaps shape
         if isinstance(self.unresolved_gaps, str) or not hasattr(self.unresolved_gaps, "__iter__"):
             raise PlanContractViolation("unresolved_gaps must be a tuple of str.")
         for idx, g in enumerate(self.unresolved_gaps):
             if not isinstance(g, str):
-                raise PlanContractViolation(
-                    f"unresolved_gaps[{idx}] must be str, got {type(g)}"
-                )
+                raise PlanContractViolation(f"unresolved_gaps[{idx}] must be str, got {type(g)}")
         # grounding_required ⇒ query_spec required
         if self.grounding_required and self.query_spec is None:
-            raise PlanContractViolation(
-                "grounding_required=True requires a non-None query_spec."
-            )
+            raise PlanContractViolation("grounding_required=True requires a non-None query_spec.")
         if self.query_spec is not None and not isinstance(self.query_spec, QuerySpec):
-            raise PlanContractViolation(
-                f"query_spec must be QuerySpec or None, got {type(self.query_spec)}"
-            )
+            raise PlanContractViolation(f"query_spec must be QuerySpec or None, got {type(self.query_spec)}")
         # non-empty string invariants
         for fname in ("plan_id", "request_id", "policy_hash", "published_rationale"):
             val = getattr(self, fname)
@@ -523,9 +507,8 @@ class L1PlanContractV2:
             grounding_required=v1.grounding_required,
             declared_assumptions=declared_assumptions,
             unresolved_gaps=unresolved_gaps,
-            published_rationale=published_rationale or (
-                f"Auto-migrated from L1PlanContract v1 for plan_id={v1.plan_id}"
-            ),
+            published_rationale=published_rationale
+            or (f"Auto-migrated from L1PlanContract v1 for plan_id={v1.plan_id}"),
             planner_telemetry=telemetry,
         )
 

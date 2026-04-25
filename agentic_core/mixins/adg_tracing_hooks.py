@@ -104,7 +104,11 @@ def _trace_agent_init(func: Callable) -> Callable:
                 # Try to initialize IntegratedTracingMixin if not already done
                 try:
                     IntegratedTracingMixin.__init__(self, service_name=service_name)
-                except (AttributeError, TypeError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    AttributeError,
+                    TypeError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.warning(f"[ADG_HOOKS] Failed to initialize tracing for {class_name}: {e}")
 
         # Trace initialization

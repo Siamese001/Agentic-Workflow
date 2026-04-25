@@ -246,7 +246,10 @@ def remediate_file(file_path: Path) -> bool:
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
-    except (UnicodeDecodeError, PermissionError):  # guardian: allow-silent-swallow -- acceptable exception handling
+    except (
+        UnicodeDecodeError,
+        PermissionError,
+    ):  # guardian: allow-silent-swallow -- acceptable exception handling
         return False
 
     if "def heal_repository" not in content:

@@ -63,10 +63,7 @@ def load_local(path: Path) -> list[_Row]:
                     query_id=str(obj["query_id"]),
                     query=str(obj["query"]),
                     relevant_passage_ids=[str(x) for x in obj["relevant_passage_ids"]],
-                    passages=[
-                        {"id": str(p["id"]), "text": str(p["text"])}
-                        for p in obj["passages"]
-                    ],
+                    passages=[{"id": str(p["id"]), "text": str(p["text"])} for p in obj["passages"]],
                 )
             )
     return rows
@@ -118,9 +115,7 @@ def download_techqa(out_path: Path, *, n: int = 50) -> int:
                 continue
             # Synthesise stable passage ids per row.
             passage_ids = [f"p{i:03d}_{j:02d}" for j in range(len(documents))]
-            relevant_ids = [
-                passage_ids[idx] for idx in gold if 0 <= idx < len(documents)
-            ]
+            relevant_ids = [passage_ids[idx] for idx in gold if 0 <= idx < len(documents)]
             if not relevant_ids:
                 continue
             payload = {
@@ -128,8 +123,7 @@ def download_techqa(out_path: Path, *, n: int = 50) -> int:
                 "query": str(row.get("question") or ""),
                 "relevant_passage_ids": relevant_ids,
                 "passages": [
-                    {"id": pid, "text": str(text)}
-                    for pid, text in zip(passage_ids, documents, strict=False)
+                    {"id": pid, "text": str(text)} for pid, text in zip(passage_ids, documents, strict=False)
                 ],
             }
             f.write(json.dumps(payload, ensure_ascii=False))

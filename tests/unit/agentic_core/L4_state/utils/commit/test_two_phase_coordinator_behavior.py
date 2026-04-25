@@ -52,7 +52,8 @@ class TestExecuteCommitPhase1Failure:
         [ValueError("bad"), RuntimeError("boom"), TypeError("nope"), AttributeError("x")],
     )
     def test_phase_1_error_raises_mutation_commit_failure(
-        self, exc: Exception,
+        self,
+        exc: Exception,
     ) -> None:
         c = TwoPhaseCoordinator()
         ledger_calls: list[Any] = []

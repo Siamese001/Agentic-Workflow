@@ -59,17 +59,12 @@ class TestBundledMixinContentHash:
         int(digest, 16)  # Must be valid hex — raises ValueError otherwise.
 
     def test_hashes_are_distinct_across_mixins(self) -> None:
-        hashes = {
-            mixin_id: bundled_mixin_content_hash(mixin_id)
-            for mixin_id in BUNDLED_MIXIN_IDS
-        }
+        hashes = {mixin_id: bundled_mixin_content_hash(mixin_id) for mixin_id in BUNDLED_MIXIN_IDS}
         # All three bundled mixins must have different content.
         assert len(set(hashes.values())) == len(BUNDLED_MIXIN_IDS)
 
     def test_hash_is_stable_across_calls(self) -> None:
-        assert bundled_mixin_content_hash(
-            "plan_then_act"
-        ) == bundled_mixin_content_hash("plan_then_act")
+        assert bundled_mixin_content_hash("plan_then_act") == bundled_mixin_content_hash("plan_then_act")
 
 
 class TestIsBundledMixin:

@@ -29,9 +29,7 @@ class TestGeminiPassthrough:
     def test_tools_schema_passthrough(self) -> None:
         schema = [{"function_declarations": [{"name": "search"}]}]
         adapter = GeminiMessageAdapter()
-        payload = adapter.render(
-            final_system_string="s", final_user_string="u", tools_schema=schema
-        )
+        payload = adapter.render(final_system_string="s", final_user_string="u", tools_schema=schema)
         assert payload.tools_schema is schema
 
 

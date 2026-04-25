@@ -1,10 +1,12 @@
 """Invoke phase2 disposition processor against current snapshot and report delta."""
+
 from pathlib import Path
 import sqlite3
 import sys
 
 import glob
 import os
+
 DB = Path(sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"), key=os.path.getmtime)[-1])
 print(f"Using latest snapshot: {DB}")
 
@@ -22,6 +24,7 @@ def main() -> int:
     from agentic_core.adg.processing.phase2_disposition_processor import (
         run_phase2_disposition_processing,
     )
+
     result = run_phase2_disposition_processing(DB)
     print(f"\nphase2 result: {result}")
 

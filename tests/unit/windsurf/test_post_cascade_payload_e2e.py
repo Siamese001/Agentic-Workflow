@@ -77,9 +77,7 @@ class TestDeferredScopeCaptureHook:
     """Integration: pipe the real payload shape into the hook and verify
     markers land in the capture log."""
 
-    def test_windsurf_payload_captures_marker(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_windsurf_payload_captures_marker(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         # Point the hook's capture log at a tmp file so we don't pollute the
         # real jsonl, and disable Notion posting by clearing the token.
         import subprocess
@@ -106,6 +104,5 @@ class TestDeferredScopeCaptureHook:
         # the marker skips Notion post but still logs a record.
         assert proc.returncode == 0
         assert "markers=1" in (proc.stderr or ""), (
-            f"Expected 'markers=1' in stderr; got:\nSTDERR: {proc.stderr}\n"
-            f"STDOUT: {proc.stdout}"
+            f"Expected 'markers=1' in stderr; got:\nSTDERR: {proc.stderr}\nSTDOUT: {proc.stdout}"
         )

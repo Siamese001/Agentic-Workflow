@@ -453,7 +453,10 @@ class RecursiveOrchestrator(SovereignBaseAgent):
             elif isinstance(hop_spec, dict):
                 return hop_spec.get("hop_function")
             return None
-        except (RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             logger.warning(f"Failed to extract function name for {node_id}: {e}")
             return None
 

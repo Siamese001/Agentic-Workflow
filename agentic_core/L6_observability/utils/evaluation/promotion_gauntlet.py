@@ -33,7 +33,13 @@ def _now_epoch() -> float:
     if get_clock is not None:
         try:
             return float(get_clock().now_epoch())
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow -- clock access: non-fatal, monotonic fallback
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ):  # guardian: allow-silent-swallow -- clock access: non-fatal, monotonic fallback
             pass
     return time.time()
 

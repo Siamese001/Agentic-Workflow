@@ -47,14 +47,11 @@ class OrkesTransport(Protocol):
         self,
         task_def_name: str,
         input_data: Mapping[str, Any],
-    ) -> Mapping[str, Any]:
-        ...
+    ) -> Mapping[str, Any]: ...
 
-    def get_human_task(self, task_id: str) -> Mapping[str, Any]:
-        ...
+    def get_human_task(self, task_id: str) -> Mapping[str, Any]: ...
 
-    def terminate_human_task(self, task_id: str, reason: str) -> Mapping[str, Any]:
-        ...
+    def terminate_human_task(self, task_id: str, reason: str) -> Mapping[str, Any]: ...
 
 
 class OrkesApprovalAdapter(HumanApprovalAdapter):
@@ -127,15 +124,11 @@ class OrkesApprovalAdapter(HumanApprovalAdapter):
                 )
             raise AdapterError(f"Unrecognized Orkes decision: {decision!r}")
         if status == TASK_FAILED:
-            return ApprovalOutcome(
-                kind=ApprovalOutcomeKind.DENIED, reason_code="ORKES_FAILED"
-            )
+            return ApprovalOutcome(kind=ApprovalOutcomeKind.DENIED, reason_code="ORKES_FAILED")
         if status == TASK_TIMED_OUT:
             return ApprovalOutcome(kind=ApprovalOutcomeKind.TIMEOUT)
         if status in (TASK_TERMINATED, TASK_CANCELED):
-            return ApprovalOutcome(
-                kind=ApprovalOutcomeKind.TIMEOUT, reason_code="CANCELLED"
-            )
+            return ApprovalOutcome(kind=ApprovalOutcomeKind.TIMEOUT, reason_code="CANCELLED")
         raise AdapterError(f"Unrecognized Orkes task status: {status!r}")
 
     def cancel(self, handle: ApprovalHandle, reason: str = "CANCELLED") -> None:
@@ -149,9 +142,7 @@ class OrkesApprovalAdapter(HumanApprovalAdapter):
 
     def _require_handle(self, handle: ApprovalHandle) -> None:
         if handle.adapter_kind != self.kind:
-            raise ValueError(
-                f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}"
-            )
+            raise ValueError(f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}")
         if not handle.external_id:
             raise ValueError("handle.external_id is empty")
 

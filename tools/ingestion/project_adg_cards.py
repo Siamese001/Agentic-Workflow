@@ -112,7 +112,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args(argv)
 
-    logging.basicConfig(level=args.log_level.upper(), stream=sys.stderr, format="%(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=args.log_level.upper(), stream=sys.stderr, format="%(levelname)s %(name)s: %(message)s"
+    )
 
     if not args.adg_db.exists():
         parser.error(f"ADG sqlite not found: {args.adg_db}")

@@ -27,6 +27,7 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
 
 # ---- ClassificationResult ------------------------------------------
 
+
 class TestClassificationResult:
     def test_required_fields(self) -> None:
         r = ClassificationResult(
@@ -48,6 +49,7 @@ class TestClassificationResult:
 
 
 # ---- FileClassificationHealerAgent construction -------------------
+
 
 class TestHealerAgentDefaults:
     def test_defaults(self, tmp_path: Path) -> None:
@@ -79,14 +81,35 @@ class TestHealerAgentDefaults:
         assert "violations" in agent.stats
         assert isinstance(agent.stats["violations"], dict)
 
-    @pytest.mark.parametrize("category", [
-        "AGENT", "CLASS", "MIXIN", "UTILITY", "PROTOCOL",
-        "ENGINE", "STUB", "TEST", "SCRIPT", "TYPES", "GATEWAY",
-        "ORCHESTRATOR", "VALIDATOR", "FACTORY", "CONFIG",
-        "ADAPTER", "STRATEGY", "ENFORCER", "SEAM", "EXCEPTION",
-    ])
+    @pytest.mark.parametrize(
+        "category",
+        [
+            "AGENT",
+            "CLASS",
+            "MIXIN",
+            "UTILITY",
+            "PROTOCOL",
+            "ENGINE",
+            "STUB",
+            "TEST",
+            "SCRIPT",
+            "TYPES",
+            "GATEWAY",
+            "ORCHESTRATOR",
+            "VALIDATOR",
+            "FACTORY",
+            "CONFIG",
+            "ADAPTER",
+            "STRATEGY",
+            "ENFORCER",
+            "SEAM",
+            "EXCEPTION",
+        ],
+    )
     def test_all_violation_categories_present(
-        self, tmp_path: Path, category: str,
+        self,
+        tmp_path: Path,
+        category: str,
     ) -> None:
         agent = FileClassificationHealerAgent(project_root=tmp_path)
         assert category in agent.stats["violations"]
@@ -97,13 +120,16 @@ class TestHealerAgentDefaults:
 
     def test_dry_run_mode(self, tmp_path: Path) -> None:
         agent = FileClassificationHealerAgent(
-            project_root=tmp_path, dry_run=True, verbose=True,
+            project_root=tmp_path,
+            dry_run=True,
+            verbose=True,
         )
         assert agent.dry_run is True
         assert agent.verbose is True
 
 
 # ---- get_python_files_fast ----------------------------------------
+
 
 class TestGetPythonFilesFast:
     def test_returns_list_of_paths(self, tmp_path: Path) -> None:
@@ -128,16 +154,20 @@ class TestGetPythonFilesFast:
 
 # ---- Module imports ----------------------------------------------
 
+
 class TestModuleImports:
     def test_has_agent_class(self) -> None:
         from agentic_core.L5_safety.reasoning import FileClassificationAgent as mod
+
         assert hasattr(mod, "FileClassificationHealerAgent")
 
     def test_has_classification_result(self) -> None:
         from agentic_core.L5_safety.reasoning import FileClassificationAgent as mod
+
         assert hasattr(mod, "ClassificationResult")
 
     def test_has_sovereign_base_flag(self) -> None:
         from agentic_core.L5_safety.reasoning import FileClassificationAgent as mod
+
         assert hasattr(mod, "HAS_SOVEREIGN_BASE")
         assert mod.HAS_SOVEREIGN_BASE is True  # bases are importable in test env

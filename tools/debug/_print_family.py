@@ -16,5 +16,5 @@ for w in names:
         phase = (it["phase"] or "").strip()
         title = (it["title"] or "").strip()
         if title.startswith(f"[{band}]"):
-            title = title[len(f"[{band}]"):].strip()
+            title = title[len(f"[{band}]") :].strip()
         print(f"{w}|{band}|{imp_s}|{phase}|{title}")

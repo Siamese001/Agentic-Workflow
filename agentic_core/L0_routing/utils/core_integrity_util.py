@@ -314,7 +314,7 @@ class CoreIntegrityVerifier:
         try:
             return hashlib.sha256(path.read_bytes()).hexdigest()
         except (OSError, RuntimeError, TypeError, ValueError) as e:
-            raise ConfigurationError(f'Failed to hash file {path}: {e}') from e
+            raise ConfigurationError(f"Failed to hash file {path}: {e}") from e
 
     @classmethod
     def update_golden_seal(cls) -> str:

@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+
 for ts in ["0713", "0720", "0721"]:
     p = Path(f"artifacts/adg/adg_indexed_04242026_{ts}.sqlite")
     if not p.exists():

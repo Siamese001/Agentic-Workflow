@@ -19,6 +19,7 @@ CONSTITUTIONAL
     - UTF-8 stdio
     - Specific exceptions
 """
+
 from __future__ import annotations
 
 import json
@@ -37,10 +38,15 @@ def _log_bypass(reason: str) -> None:
     try:
         BYPASS_LOG.parent.mkdir(parents=True, exist_ok=True)
         with BYPASS_LOG.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps({
-                "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-                "reason": reason,
-            }) + "\n")
+            fh.write(
+                json.dumps(
+                    {
+                        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                        "reason": reason,
+                    }
+                )
+                + "\n"
+            )
     except OSError:
         pass
 
@@ -52,8 +58,7 @@ def main() -> int:
         return 0
 
     if not AUDIT_SCRIPT.exists():
-        print(f"[check_ledger_coverage] audit script missing: {AUDIT_SCRIPT} "
-              f"(fail-open)", file=sys.stderr)
+        print(f"[check_ledger_coverage] audit script missing: {AUDIT_SCRIPT} (fail-open)", file=sys.stderr)
         return 0
 
     try:
@@ -68,16 +73,17 @@ def main() -> int:
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
-        print(f"[check_ledger_coverage] audit invocation failed: {exc} "
-              f"(fail-open)", file=sys.stderr)
+        print(f"[check_ledger_coverage] audit invocation failed: {exc} (fail-open)", file=sys.stderr)
         return 0
 
     try:
         report = json.loads(r.stdout)
     except (json.JSONDecodeError, ValueError):
-        print(f"[check_ledger_coverage] audit output unparseable (fail-open):\n"
-              f"  stdout={r.stdout[:300]}\n  stderr={r.stderr[:300]}",
-              file=sys.stderr)
+        print(
+            f"[check_ledger_coverage] audit output unparseable (fail-open):\n"
+            f"  stdout={r.stdout[:300]}\n  stderr={r.stderr[:300]}",
+            file=sys.stderr,
+        )
         return 0
 
     status = report.get("status", "UNKNOWN")
@@ -90,20 +96,18 @@ def main() -> int:
     for k, v in rates.items():
         classify = statuses.get(k, "?")
         print(f"  {k:20s} = {v:.2%}  [{classify}]", file=sys.stderr)
-    print(f"  outcomes_w_tests_passed = {totals.get('outcomes_with_tests_passed', '?')}",
-          file=sys.stderr)
+    print(f"  outcomes_w_tests_passed = {totals.get('outcomes_with_tests_passed', '?')}", file=sys.stderr)
     print(f"  promoted_patterns       = {totals.get('promoted', '?')}", file=sys.stderr)
-    print(f"  unreachable_shas        = {totals.get('unreachable_shas', '?')}",
-          file=sys.stderr)
+    print(f"  unreachable_shas        = {totals.get('unreachable_shas', '?')}", file=sys.stderr)
 
     if status == "FAIL":
-        print("\n[check_ledger_coverage] FAIL — meta-learning ledger coverage below floor.",
-              file=sys.stderr)
-        print("  Fix: run `python .windsurf/scripts/post_commit_outcome_binder.py "
-              "--lookback 100` then `python .windsurf/scripts/promote_author_gate_patterns.py`.",
-              file=sys.stderr)
-        print("  Bypass for unblocking (not recommended): LEDGER_COVERAGE_BYPASS=1",
-              file=sys.stderr)
+        print("\n[check_ledger_coverage] FAIL — meta-learning ledger coverage below floor.", file=sys.stderr)
+        print(
+            "  Fix: run `python .windsurf/scripts/post_commit_outcome_binder.py "
+            "--lookback 100` then `python .windsurf/scripts/promote_author_gate_patterns.py`.",
+            file=sys.stderr,
+        )
+        print("  Bypass for unblocking (not recommended): LEDGER_COVERAGE_BYPASS=1", file=sys.stderr)
         return 2
 
     return 0

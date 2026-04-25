@@ -76,8 +76,11 @@ class TestToDict:
         p = _ip()
         d = p.to_dict()
         assert set(d.keys()) == {
-            "trace_id", "path", "intent_class",
-            "required_mixins", "escalation_threshold",
+            "trace_id",
+            "path",
+            "intent_class",
+            "required_mixins",
+            "escalation_threshold",
         }
 
     def test_mixins_sorted(self) -> None:

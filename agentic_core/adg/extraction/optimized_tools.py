@@ -162,7 +162,10 @@ class OptimizedLayerBoundaryChecker:
                         if violation:
                             violations.append(violation)
 
-            except (OSError, UnicodeDecodeError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                OSError,
+                UnicodeDecodeError,
+            ) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 logger.warning("Failed to check %s: %s", file_path, exc)
 
             return violations

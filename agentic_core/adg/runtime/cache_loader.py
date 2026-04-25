@@ -253,10 +253,16 @@ def load_or_scan(
             # Check cache validity or force usage
             if force_cache or _is_cache_valid(cached):
                 cache_status = "forced" if force_cache else "valid"
-                logger.info("ADG cache %s: %s", cache_status, cache)  # guardian: allow-log-and-swallow -- cache read best-effort: failure falls through to fresh scanner.scan() below
+                logger.info(
+                    "ADG cache %s: %s", cache_status, cache
+                )  # guardian: allow-log-and-swallow -- cache read best-effort: failure falls through to fresh scanner.scan() below
                 return ScanResult.from_dict(cached)
             logger.info("ADG cache miss (key changed): %s", cache)
-        except (OSError, json.JSONDecodeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- cache read best-effort: falls through to fresh scanner.scan() below
+        except (
+            OSError,
+            json.JSONDecodeError,
+            ValueError,
+        ) as exc:  # guardian: allow-log-and-swallow -- cache read best-effort: falls through to fresh scanner.scan() below
             logger.warning("ADG cache read error (%s): %s — running fresh scan", cache, exc)
     root = Path(repo_root) if repo_root else Path.cwd()
     scanner = ADGStaticScanner(repo_root=root)
@@ -266,8 +272,13 @@ def load_or_scan(
         payload = result.to_dict()
         payload["_cache_key"] = _cache_key(_SCANNER_VERSION, _SCHEMA_VERSION)
         cache.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-        logger.info("ADG cache written: %s (%d edges)", cache, len(result.edges))  # guardian: allow-log-and-swallow -- cache write best-effort: scan result is returned regardless of cache persistence
-    except (OSError, ValueError) as exc:  # guardian: allow-log-and-swallow -- cache write best-effort: return ScanResult regardless of persistence
+        logger.info(
+            "ADG cache written: %s (%d edges)", cache, len(result.edges)
+        )  # guardian: allow-log-and-swallow -- cache write best-effort: scan result is returned regardless of cache persistence
+    except (
+        OSError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow -- cache write best-effort: return ScanResult regardless of persistence
         logger.warning("ADG cache write failed: %s", exc)
     return result
 

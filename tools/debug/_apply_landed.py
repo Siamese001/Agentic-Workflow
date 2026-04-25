@@ -1,4 +1,5 @@
 """Apply LANDED verdicts: mark 5 audited rows as Done with evidence."""
+
 from __future__ import annotations
 
 import json
@@ -60,28 +61,38 @@ def main():
         try:
             http("PATCH", f"https://api.notion.com/v1/pages/{r['id']}", body)
             with RECEIPTS.open("a", encoding="utf-8") as f:
-                f.write(json.dumps({
-                    "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                    "op": "PATCH-landed-to-done",
-                    "page_id": r["id"],
-                    "ok": True,
-                    "wave": r["wave"],
-                    "phase": r["phase"],
-                    "title": r["title"][:120],
-                    "category": r["category"],
-                }) + "\n")
+                f.write(
+                    json.dumps(
+                        {
+                            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                            "op": "PATCH-landed-to-done",
+                            "page_id": r["id"],
+                            "ok": True,
+                            "wave": r["wave"],
+                            "phase": r["phase"],
+                            "title": r["title"][:120],
+                            "category": r["category"],
+                        }
+                    )
+                    + "\n"
+                )
             done += 1
             print(f"[{done}/{len(landed)}] DONE {r['wave']}/{r['phase']}: {r['title'][:80]}")
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             detail = getattr(e, "read", lambda: b"")().decode() if hasattr(e, "read") else str(e)
             with RECEIPTS.open("a", encoding="utf-8") as f:
-                f.write(json.dumps({
-                    "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                    "op": "PATCH-landed-to-done",
-                    "page_id": r["id"],
-                    "ok": False,
-                    "detail": detail[:300],
-                }) + "\n")
+                f.write(
+                    json.dumps(
+                        {
+                            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                            "op": "PATCH-landed-to-done",
+                            "page_id": r["id"],
+                            "ok": False,
+                            "detail": detail[:300],
+                        }
+                    )
+                    + "\n"
+                )
             print(f"[FAIL] {r['id']}: {e}", file=sys.stderr)
 
     print(f"\nDone: {done}/{len(landed)}")

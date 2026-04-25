@@ -235,9 +235,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                 method_names=method_names,
                             ),
                         )
-                    except (
-                        SyntaxError
-                    ):  # review: Syntax errors should be caught at parser level, not runtime
+                    except SyntaxError:  # review: Syntax errors should be caught at parser level, not runtime
                         agents.append(
                             AgentInfo(
                                 name=class_name,

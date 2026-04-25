@@ -41,6 +41,90 @@ _allowed_script_suffixes = (
 # Windows paths with or without spaces (C:/Program Files/PowerShell/7/pwsh.exe).
 # The pattern anchors to start of string and allows an optional path prefix
 # containing any chars except spaces — OR a quoted path.
+# Interactive / stdin-blocking commands that hang Cascade's turn forever.
+# Cascade's terminal cannot send keystrokes, so any command that waits for
+# keyboard input (pagers, editors, watchers, REPLs) blocks indefinitely.
+# Constitutional §14 (`subprocess.run` timeout=) covers Python invocations,
+# but the shell pipeline itself is the blocking entity here — a Python-level
+# timeout cannot save the turn. This gate closes that gap at exec time.
+#
+# Categories blocked:
+#   1) Pipe targets:    `<anything> | more`, `| less`, `| most`, `| bat`
+#   2) Leading pagers:  `more file.json`, `less foo`, `most bar`
+#   3) Editors:         `vi`, `vim`, `nvim`, `nano`, `pico`, `emacs`, `ed`
+#   4) Live watchers:   `top`, `htop`, `btop`, `watch ...`, `tail -f`, `tail --follow`
+#   5) Bare REPLs:      `python` / `python3` / `node` / `irb` / `ipython` with no script
+#
+# Recovery patterns:
+#   - Redirect to file (`> out.txt`) and read it back via read_file
+#   - Use `head -n N` / `Get-Content -TotalCount N` for long output
+#   - Use `Blocking=false` + `WaitMsBeforeAsync` for genuine long-runners
+
+# Pagers piped to: `... | more`, `... | less`, etc.
+_INTERACTIVE_PAGER_PIPE_RE = re.compile(
+    r"\|\s*\"?(?:more(?:\.com)?|less|most|bat)\"?(?:\.exe)?(?:\s|$|\|)",
+    re.IGNORECASE,
+)
+
+# Pagers as leading executable: `more file`, `less file`, etc.
+# Anchored to start-of-string OR after a separator (; & && || |).
+_INTERACTIVE_PAGER_LEAD_RE = re.compile(
+    r"(?:^|[;&|])\s*\"?(?:more(?:\.com)?|less|most)\"?(?:\.exe)?\s+\S",
+    re.IGNORECASE,
+)
+
+# Editors that take over the terminal. Match as leading executable only
+# (not as substring — `vim` could appear in a file path otherwise).
+# Includes both bare invocations (`vim`) and with-args (`vim file.txt`).
+_INTERACTIVE_EDITOR_RE = re.compile(
+    r"(?:^|[;&|])\s*\"?(?:vi|vim|nvim|nano|pico|emacs|ed|view)\"?(?:\.exe)?(?:\s|$)",
+    re.IGNORECASE,
+)
+
+# Live-watch commands: `top`, `htop`, `btop`, `watch <cmd>`, `tail -f|--follow`.
+# `tail` without -f is allowed (bounded output).
+_INTERACTIVE_WATCHER_RE = re.compile(
+    r"(?:^|[;&|])\s*\"?(?:top|htop|btop|watch)\"?(?:\.exe)?(?:\s|$)",
+    re.IGNORECASE,
+)
+_TAIL_FOLLOW_RE = re.compile(
+    r"(?:^|[;&|])\s*\"?tail\"?(?:\.exe)?\s+(?:[^|;&]*\s)?(?:-f|--follow)\b",
+    re.IGNORECASE,
+)
+
+# Bare REPLs (no script argument). `python script.py` is fine; bare `python`
+# is not. Match: command at start-of-string or after separator, followed by
+# end-of-string, whitespace+separator, or whitespace+only-flags-no-script.
+# We treat `-i` (interactive) as always-blocking even with a script.
+_BARE_REPL_RE = re.compile(
+    r"(?:^|[;&|])\s*\"?(?:python|python3|node|irb|ipython|bash|sh)\"?(?:\.exe)?\s*(?:$|[;&|])",
+    re.IGNORECASE,
+)
+_INTERACTIVE_FLAG_RE = re.compile(
+    r"(?:^|[;&|])\s*\"?(?:python|python3|node|bash|sh)\"?(?:\.exe)?\s+(?:[^|;&]*\s)?-i(?:\s|$)",
+    re.IGNORECASE,
+)
+
+
+def _check_interactive(command_line: str) -> str | None:
+    """Return a category label if `command_line` will block on stdin, else None."""
+    if _INTERACTIVE_PAGER_PIPE_RE.search(command_line):
+        return "pager (piped)"
+    if _INTERACTIVE_PAGER_LEAD_RE.search(command_line):
+        return "pager (leading)"
+    if _INTERACTIVE_EDITOR_RE.search(command_line):
+        return "editor"
+    if _INTERACTIVE_WATCHER_RE.search(command_line):
+        return "live watcher"
+    if _TAIL_FOLLOW_RE.search(command_line):
+        return "tail --follow"
+    if _BARE_REPL_RE.search(command_line):
+        return "bare REPL"
+    if _INTERACTIVE_FLAG_RE.search(command_line):
+        return "interactive flag (-i)"
+    return None
+
+
 _POWERSHELL_EXEC_RE = re.compile(
     r"""
     (?:^|(?<=\s))           # start of string or preceded by whitespace
@@ -88,6 +172,17 @@ def check_command(command_line: str) -> int:
                 f"PowerShell is forbidden (matched '{matched}'). "
                 "Use argv list with shell=False per constitutional §0.",
             )
+
+    interactive_kind = _check_interactive(command_line)
+    if interactive_kind is not None:
+        return _exit_block(
+            f"Interactive / stdin-blocking command detected ({interactive_kind}). "
+            "Cascade's terminal cannot send keystrokes, so the command will hang "
+            "the turn forever. Recovery: (a) redirect output to a file with `> out.txt` "
+            "and read it back via read_file; (b) use `head -n N` for long output; "
+            "(c) for genuine long-runners, set Blocking=false + WaitMsBeforeAsync. "
+            "Constitutional §27.",
+        )
 
     if _FULL_SUITE_RE.search(command_line) and os.environ.get("ADG_REPAIR_ACTIVE"):
         return _exit_block(

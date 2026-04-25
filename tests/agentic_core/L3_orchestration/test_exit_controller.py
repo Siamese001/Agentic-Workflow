@@ -145,9 +145,7 @@ def test_classify_exit_deny_reason_empty_is_none(loaded_policy, ledger):
     assert d.deny_reason is None
 
 
-def test_classify_exit_escalate_records_ledger_and_span(
-    loaded_policy, ledger, span_capture
-):
+def test_classify_exit_escalate_records_ledger_and_span(loaded_policy, ledger, span_capture):
     env = {"is_financial": True, "amount": 10_000}
     d = classify_exit(env, loaded_policy, run_id="run-1", trace_id="tr-1", ledger=ledger)
 
@@ -196,13 +194,9 @@ def test_classify_exit_rejects_non_mapping(loaded_policy, ledger):
 
 
 def test_controller_approval_emits_span_and_updates_ledger(controller, span_capture):
-    d = controller.classify(
-        {"is_safety_impacting": True}, run_id="run-A", trace_id="tr-A"
-    )
+    d = controller.classify({"is_safety_impacting": True}, run_id="run-A", trace_id="tr-A")
     assert d.action is ExitAction.ESCALATE_HITL
-    entry = controller.record_approval(
-        d.ledger_id, approver_id="alice", rationale="looks fine"
-    )
+    entry = controller.record_approval(d.ledger_id, approver_id="alice", rationale="looks fine")
     assert entry.state is LedgerState.APPROVED
     assert entry.approver_id == "alice"
     assert entry.rationale == "looks fine"
@@ -294,16 +288,28 @@ def test_ledger_hash_chain_links_entries(ledger):
 
 def test_ledger_list_by_run_orders_by_created(ledger):
     ledger.record_escalation(
-        run_id="R", trace_id="a", hitl_class=HitlClass.FINANCIAL,
-        approver_pool="p", timeout_s=1, policy_snapshot="s",
+        run_id="R",
+        trace_id="a",
+        hitl_class=HitlClass.FINANCIAL,
+        approver_pool="p",
+        timeout_s=1,
+        policy_snapshot="s",
     )
     ledger.record_escalation(
-        run_id="R", trace_id="b", hitl_class=HitlClass.SAFETY,
-        approver_pool="p", timeout_s=1, policy_snapshot="s",
+        run_id="R",
+        trace_id="b",
+        hitl_class=HitlClass.SAFETY,
+        approver_pool="p",
+        timeout_s=1,
+        policy_snapshot="s",
     )
     ledger.record_escalation(
-        run_id="OTHER", trace_id="c", hitl_class=HitlClass.FINANCIAL,
-        approver_pool="p", timeout_s=1, policy_snapshot="s",
+        run_id="OTHER",
+        trace_id="c",
+        hitl_class=HitlClass.FINANCIAL,
+        approver_pool="p",
+        timeout_s=1,
+        policy_snapshot="s",
     )
     entries = ledger.list_by_run("R")
     assert len(entries) == 2
@@ -313,8 +319,13 @@ def test_ledger_list_by_run_orders_by_created(ledger):
 def test_ledger_envelope_round_trip(ledger):
     env = {"amount": 42, "nested": {"k": [1, 2, 3]}, "flag": True}
     e = ledger.record_escalation(
-        run_id="r", trace_id="t", hitl_class=HitlClass.FINANCIAL,
-        approver_pool="p", timeout_s=1, policy_snapshot="s", envelope=env,
+        run_id="r",
+        trace_id="t",
+        hitl_class=HitlClass.FINANCIAL,
+        approver_pool="p",
+        timeout_s=1,
+        policy_snapshot="s",
+        envelope=env,
     )
     fetched = ledger.get(e.ledger_id)
     assert fetched is not None
@@ -332,8 +343,12 @@ def test_ledger_record_approved_rejects_missing(ledger):
 
 def test_ledger_record_approved_rejects_already_resolved(ledger):
     e = ledger.record_escalation(
-        run_id="r", trace_id="t", hitl_class=HitlClass.FINANCIAL,
-        approver_pool="p", timeout_s=1, policy_snapshot="s",
+        run_id="r",
+        trace_id="t",
+        hitl_class=HitlClass.FINANCIAL,
+        approver_pool="p",
+        timeout_s=1,
+        policy_snapshot="s",
     )
     ledger.record_approved(e.ledger_id, approver_id="alice")
     with pytest.raises(ValueError, match="already resolved"):
@@ -357,14 +372,26 @@ def test_hash_payload_stable():
 def test_hitl_spans_emit_no_raise():
     """All four emitters must succeed regardless of OTel availability."""
     hitl_spans.emit_escalate(
-        run_id="r", trace_id="t", hitl_class="financial",
-        approver_pool="p", timeout_s=1, policy_snapshot="s",
+        run_id="r",
+        trace_id="t",
+        hitl_class="financial",
+        approver_pool="p",
+        timeout_s=1,
+        policy_snapshot="s",
     )
     hitl_spans.emit_approved(
-        run_id="r", trace_id="t", approver_id="a", latency_ms=10, rationale_len=5,
+        run_id="r",
+        trace_id="t",
+        approver_id="a",
+        latency_ms=10,
+        rationale_len=5,
     )
     hitl_spans.emit_denied(
-        run_id="r", trace_id="t", approver_id="a", latency_ms=10, reason_code="X",
+        run_id="r",
+        trace_id="t",
+        approver_id="a",
+        latency_ms=10,
+        reason_code="X",
     )
     hitl_spans.emit_timeout(run_id="r", trace_id="t", timeout_s=1, fallback_taken="DENY")
 
@@ -389,8 +416,12 @@ def test_hitl_spans_no_otel_fallback(monkeypatch):
     monkeypatch.setattr(hitl_spans, "_OTEL_AVAILABLE", False)
     monkeypatch.setattr(hitl_spans, "_TRACER", None)
     hitl_spans.emit_escalate(
-        run_id="r", trace_id="t", hitl_class="financial",
-        approver_pool="p", timeout_s=1, policy_snapshot="s",
+        run_id="r",
+        trace_id="t",
+        hitl_class="financial",
+        approver_pool="p",
+        timeout_s=1,
+        policy_snapshot="s",
     )
     # No assertion — just must not raise.
 
@@ -410,8 +441,6 @@ def test_e2e_escalate_approve_cycle(controller, span_capture):
     assert d.hitl_class is HitlClass.NOVEL_CONTEXT
     assert d.timeout_s == 900
 
-    final = controller.record_approval(
-        d.ledger_id, approver_id="carol", rationale="reviewed"
-    )
+    final = controller.record_approval(d.ledger_id, approver_id="carol", rationale="reviewed")
     assert final.state is LedgerState.APPROVED
     assert [n for n, _ in span_capture] == ["escalate", "approved"]

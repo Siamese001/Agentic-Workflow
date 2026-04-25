@@ -74,9 +74,7 @@ def _is_oseries_model(model_id: str | None) -> bool:
     return False
 
 
-def get_adapter_for_model(
-    provider_type: "ProviderType", model_id: str | None
-) -> "ProviderMessageAdapter":
+def get_adapter_for_model(provider_type: "ProviderType", model_id: str | None) -> "ProviderMessageAdapter":
     """Return the adapter for ``(provider_type, model_id)``.
 
     EQ-2 extension (ADR-PROMPT-ASSEMBLY-001 Q2): OpenAI o-series models
@@ -85,9 +83,7 @@ def get_adapter_for_model(
     role and drops M0 (CoT prompts). All other providers fall back to the
     same table used by :func:`get_adapter`.
     """
-    if provider_type.name in {"OPENAI", "AZURE_OPENAI"} and _is_oseries_model(
-        model_id
-    ):
+    if provider_type.name in {"OPENAI", "AZURE_OPENAI"} and _is_oseries_model(model_id):
         return OSeriesMessageAdapter()
     return get_adapter(provider_type)
 

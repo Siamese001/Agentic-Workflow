@@ -243,7 +243,14 @@ class InMemoryVectorCache:
                 f"Added {len(documents)} documents to hot cache (collection: {self.collection_name})",
             )
             return True
-        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            KeyError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Failed to add to hot cache: {e}")
             return False
 
@@ -282,7 +289,14 @@ class InMemoryVectorCache:
             )
             Logger.debug(f"In-memory search returned {len(results.get('ids', [[]])[0])} results")
             return results
-        except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            KeyError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"In-memory search failed: {e}")
             return {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
 
@@ -294,7 +308,13 @@ class InMemoryVectorCache:
         """
         try:
             return self.collection.count()
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Failed to get cache count: {e}")
             return 0
 
@@ -309,7 +329,13 @@ class InMemoryVectorCache:
             self.collection = self.client.get_or_create_collection(name=self.collection_name)
             Logger.info(f"Cleared hot cache (collection: {self.collection_name})")
             return True
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Failed to clear cache: {e}")
             return False
 
@@ -323,7 +349,13 @@ class InMemoryVectorCache:
             self.client.delete_collection(name=self.collection_name)
             Logger.info(f"Deleted collection: {self.collection_name}")
             return True
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.error(f"Failed to delete collection: {e}")
             return False
 

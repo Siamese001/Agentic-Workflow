@@ -1,0 +1,35 @@
+{# E0 - EXEMPLARS (GUIDING Authority)
+ Golden Context, few-shot examples, best-in-class patterns.
+ Provides approved answer shapes with GUIDING authority.
+#}
+================================================================================
+APPROVED EXAMPLES & PATTERNS (GUIDING AUTHORITY)
+================================================================================
+
+{% if exemplars %}
+{% for exemplar in exemplars %}
+---
+EXAMPLE {{ loop.index }}: {{ exemplar.label | default("unnamed") }}
+---
+{{ exemplar.content }}
+
+{% endfor %}
+{% endif %}
+
+{% if golden_patterns %}
+GOLDEN PATTERNS:
+{% for pattern in golden_patterns %}
+- {{ pattern }}
+{% endfor %}
+{% endif %}
+
+{% if approved_answer_shapes %}
+APPROVED ANSWER SHAPES:
+{% for shape in approved_answer_shapes %}
+- {{ shape }}
+{% endfor %}
+{% endif %}
+
+================================================================================
+FOLLOW APPROVED PATTERNS. DO NOT INVENT NOVEL OUTPUT STRUCTURES.
+================================================================================

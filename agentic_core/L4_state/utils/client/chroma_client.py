@@ -178,8 +178,7 @@ class SovereignChromaClient:
         if embeddings is not None:
             if len(embeddings) != len(documents):
                 raise ValueError(
-                    f"embeddings length ({len(embeddings)}) must match "
-                    f"documents length ({len(documents)})"
+                    f"embeddings length ({len(embeddings)}) must match documents length ({len(documents)})"
                 )
         else:
             # Default path: generate embeddings from the document texts.
@@ -196,11 +195,7 @@ class SovereignChromaClient:
         for i, (meta, doc) in enumerate(zip(metadatas, documents)):
             m = dict(meta or {})
             if m.get("metadata_version") != CHUNK_METADATA_VERSION:
-                anchor = (
-                    m.get("canonical_digest")
-                    or (ids[i] if ids else None)
-                    or f"{collection_name}:{i}"
-                )
+                anchor = m.get("canonical_digest") or (ids[i] if ids else None) or f"{collection_name}:{i}"
                 coerce_to_v1(
                     m,
                     artifact_type=artifact_type,
@@ -214,10 +209,7 @@ class SovereignChromaClient:
         # Prefer canonical_digest as the chunk ID when the caller didn't
         # supply one — delivers idempotent upsert for free.
         if not ids:
-            ids = [
-                str(m.get("canonical_digest") or f"doc_{i}")
-                for i, m in enumerate(coerced)
-            ]
+            ids = [str(m.get("canonical_digest") or f"doc_{i}") for i, m in enumerate(coerced)]
 
         # Sanitize metadata for ChromaDB v2 (scalar values only)
         sanitized_metadatas = [self._sanitize_metadata(m) for m in coerced]

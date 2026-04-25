@@ -37,10 +37,7 @@ class TestClassifyWorkClass:
     def test_creative_question_goes_to_generate(self) -> None:
         # "what" would normally route to FACTUAL, but a creative keyword
         # flips the heuristic.
-        assert (
-            classify_work_class("What if we imagine a fictional city?")
-            == WorkClass.GENERATE
-        )
+        assert classify_work_class("What if we imagine a fictional city?") == WorkClass.GENERATE
 
 
 class TestClassifyGroundingNeed:
@@ -137,10 +134,8 @@ class TestClassifyGroundingNeed:
         """
         positive_cases = [
             # Factual / policy / recent — should score > default 0.7.
-            ("What is the current policy on data retention as of 2026?",
-             WorkClass.FACTUAL),
-            ("Compare the latest prices of two cloud providers",
-             WorkClass.COMPARE),
+            ("What is the current policy on data retention as of 2026?", WorkClass.FACTUAL),
+            ("Compare the latest prices of two cloud providers", WorkClass.COMPARE),
         ]
         negative_cases = [
             ("Summarize this text for me", WorkClass.SUMMARIZE),

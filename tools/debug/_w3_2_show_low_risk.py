@@ -1,4 +1,5 @@
 """Show context windows for the 11 low-risk W3.2 touches."""
+
 import json
 import pathlib
 
@@ -20,5 +21,5 @@ for r in low_risk:
         ctx_end = min(len(text), ln + 1)
         for i in range(ctx_start, ctx_end + 1):
             marker = ">>>" if i == ln else "   "
-            print(f"  {marker} {i:4d}: {text[i-1][:180]}")
+            print(f"  {marker} {i:4d}: {text[i - 1][:180]}")
         print()

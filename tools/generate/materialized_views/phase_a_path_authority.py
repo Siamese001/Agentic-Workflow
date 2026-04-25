@@ -64,12 +64,21 @@ _SPINE_LAYERS = ("L0", "L1", "L2", "L3", "L4", "L5", "L6")
 # spine-layer modules. L_APP/L_SHARED sit above the runtime spine but actively
 # consume its exports — their imports prove a module is reachable.
 _SPINE_CONNECTION_SOURCE_LAYERS = (
-    "L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_SHARED",
+    "L0",
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L5",
+    "L6",
+    "L_APP",
+    "L_SHARED",
 )
 
 
 def _spine_connection_sources_in() -> str:
     return "(" + ", ".join(f"'{l}'" for l in _SPINE_CONNECTION_SOURCE_LAYERS) + ")"
+
 
 _FORBIDDEN_LAYER_PAIRS = (
     ("L6", "L2"),

@@ -135,16 +135,12 @@ def test_extract_citations_increments_anchor_counter_across_blocks():
             {
                 "type": "text",
                 "text": "First.",
-                "citations": [
-                    {"type": "char_location", "cited_text": "a", "document_index": 0}
-                ],
+                "citations": [{"type": "char_location", "cited_text": "a", "document_index": 0}],
             },
             {
                 "type": "text",
                 "text": "Second.",
-                "citations": [
-                    {"type": "char_location", "cited_text": "b", "document_index": 1}
-                ],
+                "citations": [{"type": "char_location", "cited_text": "b", "document_index": 1}],
             },
         ]
     )
@@ -252,9 +248,7 @@ def test_extract_citations_heading_path_used_when_section_absent():
             {
                 "type": "text",
                 "text": ".",
-                "citations": [
-                    {"type": "char_location", "cited_text": "x", "document_index": 0}
-                ],
+                "citations": [{"type": "char_location", "cited_text": "x", "document_index": 0}],
             }
         ]
     )
@@ -274,9 +268,7 @@ def test_extract_citations_empty_cited_text_falls_back_to_chunk_content():
             {
                 "type": "text",
                 "text": ".",
-                "citations": [
-                    {"type": "char_location", "cited_text": "", "document_index": 0}
-                ],
+                "citations": [{"type": "char_location", "cited_text": "", "document_index": 0}],
             }
         ]
     )

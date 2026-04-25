@@ -196,7 +196,12 @@ class CacheDecisionEngine:
                     result = dict(policy["decision"])
                     result["policy_name"] = policy["name"]
                     return result
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 log.warning(f"Policy {policy['name']} evaluation error: {e}")
 
         # Default decision

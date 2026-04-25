@@ -277,7 +277,10 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
                     for alias in node.names:
                         if alias.name.startswith(AGENTIC_CORE_DIR):
                             imports.add(alias.name)
-        except (ValueError, TypeError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+        except (
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
             pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
         return imports
 

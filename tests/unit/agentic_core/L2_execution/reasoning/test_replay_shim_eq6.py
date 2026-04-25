@@ -83,9 +83,7 @@ class TestShimActive:
     def test_inactive_after_sunset(self) -> None:
         assert _shim_active(today=date(2027, 1, 1)) is False
 
-    def test_override_env_keeps_shim_active_past_sunset(
-        self, monkeypatch
-    ) -> None:
+    def test_override_env_keeps_shim_active_past_sunset(self, monkeypatch) -> None:
         monkeypatch.setenv(_SHIM_OVERRIDE_ENV, "1")
         assert _shim_active(today=date(2030, 1, 1)) is True
 
@@ -94,9 +92,7 @@ class TestShimActive:
             monkeypatch.setenv(_SHIM_OVERRIDE_ENV, value)
             assert _shim_active(today=date(2030, 1, 1)) is True
 
-    def test_override_env_falsy_values_do_not_activate(
-        self, monkeypatch
-    ) -> None:
+    def test_override_env_falsy_values_do_not_activate(self, monkeypatch) -> None:
         for value in ("0", "false", "", "no"):
             monkeypatch.setenv(_SHIM_OVERRIDE_ENV, value)
             assert _shim_active(today=date(2030, 1, 1)) is False
@@ -146,9 +142,7 @@ class TestVerifySignatureShim:
             slots_used=["S0", "U0"],
             signature="",
         )
-        signed = artifact.__class__(
-            **{**artifact.__dict__, "signature": artifact._compute_signature(SECRET)}
-        )
+        signed = artifact.__class__(**{**artifact.__dict__, "signature": artifact._compute_signature(SECRET)})
         assert signed.verify_signature(SECRET) is True
         # v2 path must NOT bump the v1 telemetry counter.
         assert get_v1_verification_count() == 0
@@ -167,25 +161,19 @@ class TestVerifySignatureShim:
         a1.verify_signature(SECRET)
         a2.verify_signature(SECRET)
         # Two verifications, ONE warning record.
-        v1_warnings = [
-            r for r in caplog.records if "v1 signature shim" in r.getMessage()
-        ]
+        v1_warnings = [r for r in caplog.records if "v1 signature shim" in r.getMessage()]
         assert len(v1_warnings) == 1
         assert get_v1_verification_count() == 2
 
     def test_v1_signature_rejected_after_sunset(self, monkeypatch) -> None:
         # Force shim inactive by overriding the date check at module level.
-        monkeypatch.setattr(
-            ca_mod, "_shim_active", lambda today=None: False
-        )
+        monkeypatch.setattr(ca_mod, "_shim_active", lambda today=None: False)
         artifact = _v1_signed_artifact()
         assert artifact.verify_signature(SECRET) is False
         # No v1 verification was recorded — branch was skipped.
         assert get_v1_verification_count() == 0
 
-    def test_v1_signature_accepted_when_override_set_post_sunset(
-        self, monkeypatch
-    ) -> None:
+    def test_v1_signature_accepted_when_override_set_post_sunset(self, monkeypatch) -> None:
         # Sunset has passed AND override is set => still verifies.
         monkeypatch.setenv(_SHIM_OVERRIDE_ENV, "1")
         artifact = _v1_signed_artifact()

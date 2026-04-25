@@ -110,7 +110,10 @@ class AuditHealingStrategy:
                         entry_time = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                         if entry_time < cutoff:
                             continue
-                    except (ValueError, AttributeError):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+                    except (
+                        ValueError,
+                        AttributeError,
+                    ):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
                         pass
                 if entry.get("action") == "apply" and "event_id" not in entry:
                     gaps.append(entry)

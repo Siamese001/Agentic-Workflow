@@ -18,6 +18,7 @@ This class demonstrates the L2 Execute v2 §E4 Fixing Desk pattern:
 
 The paired validator is in ``code_quality_validator.py``.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -151,9 +152,5 @@ class CodeQualityHealerExemplar(SovereignHealerBase):
         repair stayed on the originating snapshot.
         """
         result = self.heal(heal_request)
-        trace_id = (
-            heal_request.request_id
-            if isinstance(heal_request, HealRequest)
-            else str(uuid.uuid4())
-        )
+        trace_id = heal_request.request_id if isinstance(heal_request, HealRequest) else str(uuid.uuid4())
         return build_seal_from_heal(result, trace_id=trace_id)

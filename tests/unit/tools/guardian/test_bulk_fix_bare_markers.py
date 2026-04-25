@@ -8,6 +8,7 @@ Critical invariants:
 - Indentation and trailing content on the line are preserved.
 - Non-.py files and excluded paths are skipped.
 """
+
 from __future__ import annotations
 
 import sys
@@ -33,9 +34,9 @@ class TestBareMarkerClassifier:
         "body",
         [
             " allow-broad-exception -- hook fail-soft",  # long form
-            " allow-silent-swallow",                     # short form
+            " allow-silent-swallow",  # short form
             " allow-magic-config",
-            "allow-type-erasure",                        # no leading space
+            "allow-type-erasure",  # no leading space
             " allow-global-mutation -- env init",
         ],
     )
@@ -74,9 +75,7 @@ class TestRegexBacktrackSafety:
             "except X:  # guardian: allow-silent-swallow",
         ],
     )
-    def test_exemption_lines_are_preserved(
-        self, tmp_path: Path, line: str
-    ) -> None:
+    def test_exemption_lines_are_preserved(self, tmp_path: Path, line: str) -> None:
         file = tmp_path / "sample.py"
         file.write_text(line + "\n", encoding="utf-8")
         edit = _rewrite_file(file, apply=True)
@@ -113,11 +112,11 @@ class TestRewriteBehavior:
     def test_mixed_file_only_rewrites_bare(self, tmp_path: Path) -> None:
         file = tmp_path / "mixed.py"
         original = (
-            "a = 1  # guardian: allow-silent-swallow\n"          # keep
-            "b = 2  # guardian: ReviewNote needed\n"             # rewrite
+            "a = 1  # guardian: allow-silent-swallow\n"  # keep
+            "b = 2  # guardian: ReviewNote needed\n"  # rewrite
             "c = 3  # guardian: allow-broad -- with justification\n"  # keep
-            "d = 4  # guardian: TODO\n"                          # rewrite
-            "e = 5  # regular comment\n"                         # keep
+            "d = 4  # guardian: TODO\n"  # rewrite
+            "e = 5  # regular comment\n"  # keep
         )
         file.write_text(original, encoding="utf-8")
         edit = _rewrite_file(file, apply=True)
@@ -146,9 +145,7 @@ class TestRewriteBehavior:
         assert edit.count == 4
         assert len(edit.preview) == 3  # capped at 3
 
-    def test_regex_does_not_match_prose_containing_guardian(
-        self, tmp_path: Path
-    ) -> None:
+    def test_regex_does_not_match_prose_containing_guardian(self, tmp_path: Path) -> None:
         file = tmp_path / "sample.py"
         # String literal mentioning "guardian:" should not be rewritten.
         original = 'msg = "The guardian: woke"\n'

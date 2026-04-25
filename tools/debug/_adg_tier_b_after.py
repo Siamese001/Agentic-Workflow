@@ -15,7 +15,7 @@ for tgt in targets:
     rows = c.execute(
         "SELECT COUNT(*), disposition FROM violations WHERE file_path = ? "
         "AND category='antipattern' GROUP BY disposition",
-        (tgt,)
+        (tgt,),
     ).fetchall()
     print(f"{tgt}:")
     for n, d in rows:

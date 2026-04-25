@@ -119,18 +119,14 @@ def test_user_content_whitespace_only_suffix_reverts_to_single_block():
 
 def test_user_content_cache_prefix_false_produces_plain_split():
     prompt = _LONG + "QUERY"
-    blocks = build_user_content(
-        prompt, cache_boundary_hint=len(_LONG), cache_prefix=False
-    )
+    blocks = build_user_content(prompt, cache_boundary_hint=len(_LONG), cache_prefix=False)
     assert len(blocks) == 2
     assert "cache_control" not in blocks[0]
 
 
 def test_user_content_1h_ttl_applied_to_prefix():
     prompt = _LONG + "Q"
-    blocks = build_user_content(
-        prompt, cache_boundary_hint=len(_LONG), ttl=CACHE_TTL_1H
-    )
+    blocks = build_user_content(prompt, cache_boundary_hint=len(_LONG), ttl=CACHE_TTL_1H)
     assert blocks[0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
 
 

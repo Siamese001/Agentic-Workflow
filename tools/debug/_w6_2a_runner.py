@@ -1,4 +1,5 @@
 """Self-contained runner for the W6.2a prefix codemod with guaranteed logging."""
+
 from __future__ import annotations
 
 import sys

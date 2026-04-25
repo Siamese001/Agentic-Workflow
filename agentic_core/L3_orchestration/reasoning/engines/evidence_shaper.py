@@ -193,7 +193,10 @@ def apply_authority_rerank(
         if bonus > 0.0:
             try:
                 r = _replace(r, combined_score=r.combined_score + bonus)
-            except (TypeError, AttributeError):  # guardian: allow-silent-swallow -- score replacement: non-fatal, original score kept
+            except (
+                TypeError,
+                AttributeError,
+            ):  # guardian: allow-silent-swallow -- score replacement: non-fatal, original score kept
                 pass
         boosted.append(r)
     boosted.sort(key=lambda x: getattr(x, "combined_score", 0.0), reverse=True)

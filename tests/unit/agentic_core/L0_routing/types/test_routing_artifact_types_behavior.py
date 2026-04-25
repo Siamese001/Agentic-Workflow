@@ -168,9 +168,11 @@ class TestVigilanceTier:
 class TestFrozenDataclasses:
     def test_route_decision_is_frozen(self, rat):
         r = rat.RouteDecisionArtifact(
-            trace_id="t", timestamp="2026-01-01T00:00:00Z",
+            trace_id="t",
+            timestamp="2026-01-01T00:00:00Z",
             route_path=rat.RoutePath.STANDARD_VALIDATION,
-            risk_score=0.5, budget_est=1.0,
+            risk_score=0.5,
+            budget_est=1.0,
             rationale_enum=rat.RoutingRationale.STANDARD_VALIDATION,
             policy_config_hash="h",
         )
@@ -179,8 +181,10 @@ class TestFrozenDataclasses:
 
     def test_token_cap_is_frozen(self, rat):
         t = rat.TokenCapArtifact(
-            trace_id="t", policy_hash="p",
-            budget_limit=1000, tokens_requested=500,
+            trace_id="t",
+            policy_hash="p",
+            budget_limit=1000,
+            tokens_requested=500,
             gate_result=rat.TokenGateResult.ALLOW,
         )
         with pytest.raises((AttributeError, Exception)):
@@ -193,7 +197,8 @@ class TestFrozenDataclasses:
 
     def test_incident_is_frozen(self, rat):
         i = rat.IncidentArtifact(
-            trace_id="t", incident_id="i",
+            trace_id="t",
+            incident_id="i",
             correlation_hash="h",
             severity_enum=rat.SeverityEnum.ERROR,
             telemetry_events=[],
@@ -266,7 +271,8 @@ class TestKnownBugs:
         """
         with pytest.raises(AttributeError, match=r"validate_emission"):
             rat.HealingPlan(
-                trace_id="t", plan_id="p",
+                trace_id="t",
+                plan_id="p",
                 manifests=("m",),
                 semantic_clock_tick=0,
                 policy_liaison_node="node",
@@ -439,31 +445,42 @@ class TestHealerPipeOrder:
 class TestArtifactConstruction:
     def test_aggregate(self, rat):
         a = rat.AggregateArtifact(
-            trace_id="t", impact_scope=["a", "b"], rollback_vector="rb",
-            risk_delta=0.2, pre_heal_assessment="ok",
+            trace_id="t",
+            impact_scope=["a", "b"],
+            rollback_vector="rb",
+            risk_delta=0.2,
+            pre_heal_assessment="ok",
         )
         assert a.impact_scope == ["a", "b"]
 
     def test_self_healing_trigger(self, rat):
         t = rat.SelfHealingTrigger(
-            trace_id="t", source_layer="L6", target_pipe="pipe-1",
-            signal_hash="sh", severity_enum=rat.SeverityEnum.CRITICAL,
+            trace_id="t",
+            source_layer="L6",
+            target_pipe="pipe-1",
+            signal_hash="sh",
+            severity_enum=rat.SeverityEnum.CRITICAL,
         )
         assert t.severity_enum == rat.SeverityEnum.CRITICAL
 
     def test_evacuation_protocol(self, rat):
         e = rat.EvacuationProtocol(
-            trace_id="t", tier=rat.VigilanceTier.TIER_III,
-            freeze_state=True, exfiltration_path="/out", reason="breach",
+            trace_id="t",
+            tier=rat.VigilanceTier.TIER_III,
+            freeze_state=True,
+            exfiltration_path="/out",
+            reason="breach",
         )
         assert e.tier == rat.VigilanceTier.TIER_III
         assert e.freeze_state is True
 
     def test_route_decision_with_semantic_clock_default_none(self, rat):
         r = rat.RouteDecisionArtifact(
-            trace_id="t", timestamp="2026-01-01T00:00:00Z",
+            trace_id="t",
+            timestamp="2026-01-01T00:00:00Z",
             route_path=rat.RoutePath.LOW_RISK_BYPASS,
-            risk_score=0.1, budget_est=10.0,
+            risk_score=0.1,
+            budget_est=10.0,
             rationale_enum=rat.RoutingRationale.LOW_RISK_BYPASS,
             policy_config_hash="hash",
         )

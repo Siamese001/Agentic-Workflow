@@ -238,7 +238,10 @@ class CircuitBreaker:
                 success_count=self._success_count,
                 current_backoff=self._current_reset_timeout,
             )
-        except (ValueError, TypeError):  # guardian: allow-silent-swallow -- SL event emission: non-fatal, continues without tracking
+        except (
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow -- SL event emission: non-fatal, continues without tracking
             # System learning unavailable - continue without emission
             pass
 

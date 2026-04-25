@@ -81,14 +81,14 @@ SURFACE_BOOSTS: dict[str, float] = {
 
 # ADR-031 operational-signal constants (neutral defaults preserve v1 parity)
 REVERSIBILITY_BOOSTS: dict[str, float] = {
-    "write": 1.5,    # irreversible durable-state mutation
-    "action": 1.3,   # external side-effect (HTTP, subprocess, notification)
-    "read": 1.0,     # reversible / idempotent
+    "write": 1.5,  # irreversible durable-state mutation
+    "action": 1.3,  # external side-effect (HTTP, subprocess, notification)
+    "read": 1.0,  # reversible / idempotent
 }
 
 ITEM_CLASS_MULTIPLIERS: dict[str, float] = {
-    "regression": 1.5,   # known-good behavior broke — trumps new capability
-    "capability": 1.0,   # new feature / unmet capability
+    "regression": 1.5,  # known-good behavior broke — trumps new capability
+    "capability": 1.0,  # new feature / unmet capability
 }
 
 # Anthropic "Building Effective Agents" — add complexity only when it

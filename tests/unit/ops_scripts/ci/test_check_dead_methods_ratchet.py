@@ -20,12 +20,16 @@ def _write_py(tmp_path: Path, rel: str, src: str) -> Path:
 
 
 def test_collect_class_methods_basic(tmp_path: Path) -> None:
-    f = _write_py(tmp_path, "m.py", """
+    f = _write_py(
+        tmp_path,
+        "m.py",
+        """
 class Foo:
     def alpha(self): ...
     def beta(self): ...
     def _private(self): ...
-""")
+""",
+    )
     out = mod.collect_class_methods(f)
     names = [m for _, m, _ in out]
     assert "alpha" in names
@@ -34,27 +38,35 @@ class Foo:
 
 
 def test_collect_skips_abstractmethod(tmp_path: Path) -> None:
-    f = _write_py(tmp_path, "m.py", """
+    f = _write_py(
+        tmp_path,
+        "m.py",
+        """
 from abc import abstractmethod
 class Foo:
     @abstractmethod
     def pure(self): ...
     def concrete(self): ...
-""")
+""",
+    )
     names = [m for _, m, _ in mod.collect_class_methods(f)]
     assert "concrete" in names
     assert "pure" not in names
 
 
 def test_collect_skips_property_and_fixture(tmp_path: Path) -> None:
-    f = _write_py(tmp_path, "m.py", """
+    f = _write_py(
+        tmp_path,
+        "m.py",
+        """
 class Foo:
     @property
     def name(self): ...
     @fixture
     def thing(self): ...
     def real(self): ...
-""")
+""",
+    )
     names = [m for _, m, _ in mod.collect_class_methods(f)]
     assert "real" in names
     assert "name" not in names
@@ -62,12 +74,16 @@ class Foo:
 
 
 def test_collect_skips_framework_methods(tmp_path: Path) -> None:
-    f = _write_py(tmp_path, "m.py", """
+    f = _write_py(
+        tmp_path,
+        "m.py",
+        """
 class Foo:
     def setUp(self): ...
     def model_post_init(self, _): ...
     def custom(self): ...
-""")
+""",
+    )
     names = [m for _, m, _ in mod.collect_class_methods(f)]
     assert "custom" in names
     assert "setUp" not in names
@@ -75,7 +91,10 @@ class Foo:
 
 
 def test_collect_ignores_nested_classes(tmp_path: Path) -> None:
-    f = _write_py(tmp_path, "m.py", """
+    f = _write_py(
+        tmp_path,
+        "m.py",
+        """
 def outer():
     class Nested:
         def nm(self): ...
@@ -83,7 +102,8 @@ def outer():
 
 class Top:
     def t(self): ...
-""")
+""",
+    )
     names = [c + "." + m for c, m, _ in mod.collect_class_methods(f)]
     assert "Top.t" in names
     # Nested class inside function not top-level -> skipped
@@ -99,12 +119,16 @@ def test_collect_bad_syntax_returns_empty(tmp_path: Path) -> None:
 
 
 def test_is_skipped_decorator_detects_calls(tmp_path: Path) -> None:
-    f = _write_py(tmp_path, "m.py", """
+    f = _write_py(
+        tmp_path,
+        "m.py",
+        """
 class Foo:
     @pytest_fixture(scope="module")
     def fx(self): ...
     def real(self): ...
-""")
+""",
+    )
     names = [m for _, m, _ in mod.collect_class_methods(f)]
     assert "real" in names
     assert "fx" not in names
@@ -114,12 +138,8 @@ class Foo:
 
 
 def test_name_index_captures_attr_calls(tmp_path: Path) -> None:
-    _write_py(tmp_path, "caller.py",
-              "x.alpha()\ny.beta('arg')\n"
-              "z['gamma']\n\"delta\" in spec")
-    got = mod.build_method_name_index(
-        [tmp_path / "caller.py"]
-    )
+    _write_py(tmp_path, "caller.py", "x.alpha()\ny.beta('arg')\nz['gamma']\n\"delta\" in spec")
+    got = mod.build_method_name_index([tmp_path / "caller.py"])
     assert "alpha" in got
     assert "beta" in got
     assert "gamma" in got
@@ -142,9 +162,7 @@ def test_load_dynamic_anchor_patterns_absent(tmp_path: Path) -> None:
 def test_load_dynamic_anchor_patterns_parses(tmp_path: Path) -> None:
     p = tmp_path / "anchors.yaml"
     p.write_text(
-        "anchors:\n"
-        "  - pattern: 'tools/debug/*.py'\n"
-        "    reason: x\n",
+        "anchors:\n  - pattern: 'tools/debug/*.py'\n    reason: x\n",
         encoding="utf-8",
     )
     assert mod.load_dynamic_anchor_patterns(p) == ["tools/debug/*.py"]
@@ -157,8 +175,10 @@ def test_load_dynamic_anchor_patterns_parses(tmp_path: Path) -> None:
 def test_gate_runs_on_real_snapshot() -> None:
     """Smoke: gate executes on the latest ADG without crashing."""
     from ops_scripts.ci._adg_wiring_gate_base import (
-        connect_snapshot, latest_snapshot,
+        connect_snapshot,
+        latest_snapshot,
     )
+
     conn = connect_snapshot(latest_snapshot())
     try:
         violations = mod.DeadMethodsRatchetGate().run(conn)

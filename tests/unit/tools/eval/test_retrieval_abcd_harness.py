@@ -342,6 +342,7 @@ def test_default_retriever_factory_sets_reranker_env_before_retrieval(monkeypatc
     retrieve = factory(cell)
 
     import os
+
     assert os.environ["RERANKER"] == "cross_encoder"
 
     out = retrieve("some query", "col")

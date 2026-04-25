@@ -11,7 +11,9 @@ print("=" * 90)
 scored = [r for r in rescore if r["proposed_band"] != "UNSCORABLE"]
 scored.sort(key=lambda x: -(x["impact"] or 0))
 for r in scored:
-    print(f"\n[{r['proposed_band']}] impact={r['impact']} layer={r['computed_layer']} fan_in={r['computed_fan_in']} surface={r['computed_surface']}")
+    print(
+        f"\n[{r['proposed_band']}] impact={r['impact']} layer={r['computed_layer']} fan_in={r['computed_fan_in']} surface={r['computed_surface']}"
+    )
     print(f"  {r['wave']}/{r['phase']}: {r['title']}")
     print(f"  paths: {r['candidate_paths'][:3]}")
     print(f"  id={r['id']}")
@@ -34,7 +36,9 @@ landed = [r for r in audit if r.get("verdict") == "LANDED"]
 for r in landed:
     print(f"\n  {r['wave']}/{r['phase']} [{r['category']}]: {r['title']}")
     print(f"    id={r['id']}")
-    extras = {k: v for k, v in r.items() if k not in ("id", "url", "wave", "phase", "title", "category", "verdict")}
+    extras = {
+        k: v for k, v in r.items() if k not in ("id", "url", "wave", "phase", "title", "category", "verdict")
+    }
     for k, v in extras.items():
         print(f"    {k}: {v}")
 
@@ -46,7 +50,9 @@ partial = [r for r in audit if r.get("verdict") == "PARTIAL"]
 for r in partial:
     print(f"\n  {r['wave']}/{r['phase']} [{r['category']}]: {r['title']}")
     print(f"    id={r['id']}")
-    extras = {k: v for k, v in r.items() if k not in ("id", "url", "wave", "phase", "title", "category", "verdict")}
+    extras = {
+        k: v for k, v in r.items() if k not in ("id", "url", "wave", "phase", "title", "category", "verdict")
+    }
     for k, v in extras.items():
         print(f"    {k}: {v}")
 
@@ -59,4 +65,4 @@ print(f"Total: {len(missing)}")
 for r in missing[:10]:
     print(f"  {r['wave']}/{r['phase']}: {r['title'][:100]}")
 if len(missing) > 10:
-    print(f"  ... ({len(missing)-10} more)")
+    print(f"  ... ({len(missing) - 10} more)")

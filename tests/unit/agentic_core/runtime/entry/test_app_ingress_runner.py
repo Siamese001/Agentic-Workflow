@@ -63,9 +63,7 @@ def _complete_payload(fields: tuple[str, ...]) -> dict[str, str]:
 
 
 @pytest.mark.parametrize("app_name,factory,fields", APP_CASES, ids=[c[0] for c in APP_CASES])
-def test_happy_path_dispatches(
-    app_name: str, factory: FactoryFn, fields: tuple[str, ...]
-) -> None:
+def test_happy_path_dispatches(app_name: str, factory: FactoryFn, fields: tuple[str, ...]) -> None:
     calls: list[dict[str, Any]] = []
 
     def dispatch(payload: dict[str, Any]) -> str:
@@ -83,9 +81,7 @@ def test_happy_path_dispatches(
 
 
 @pytest.mark.parametrize("app_name,factory,fields", APP_CASES, ids=[c[0] for c in APP_CASES])
-def test_missing_required_field_clarifies(
-    app_name: str, factory: FactoryFn, fields: tuple[str, ...]
-) -> None:
+def test_missing_required_field_clarifies(app_name: str, factory: FactoryFn, fields: tuple[str, ...]) -> None:
     calls: list[Any] = []
 
     def dispatch(payload: dict[str, Any]) -> str:
@@ -105,9 +101,7 @@ def test_missing_required_field_clarifies(
 
 
 @pytest.mark.parametrize("app_name,factory,fields", APP_CASES, ids=[c[0] for c in APP_CASES])
-def test_oversized_payload_rejected(
-    app_name: str, factory: FactoryFn, fields: tuple[str, ...]
-) -> None:
+def test_oversized_payload_rejected(app_name: str, factory: FactoryFn, fields: tuple[str, ...]) -> None:
     calls: list[Any] = []
 
     def dispatch(payload: dict[str, Any]) -> str:

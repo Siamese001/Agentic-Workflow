@@ -173,6 +173,7 @@ def _get_imports():
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_imports", "p0_governance")
     from agentic_core.InterventionServer import FASTAPI_AVAILABLE, approval_event, start_intervention_server
+
     # MW-10 (2026-04-24): GovernanceAgent was deprecated-via-warn; swapped to the
     # canonical ArchitectureGovernorAgent which is the intended target indicated by
     # the 'as ArchitectureGovernor' alias. GovernanceAgent archive-eligible 2026-07-23.

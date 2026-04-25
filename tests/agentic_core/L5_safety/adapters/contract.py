@@ -44,8 +44,7 @@ class ResolveFn(Protocol):
         approver_id: str | None = None,
         reason_code: str | None = None,
         rationale: str | None = None,
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 @dataclass

@@ -397,7 +397,7 @@ def _derive_prod_module(test_rel_posix: str) -> str | None:
     if stem == "test___init__":
         prod_name = "__init__.py"
     elif stem.startswith("test_"):
-        prod_name = stem[len("test_"):] + ".py"
+        prod_name = stem[len("test_") :] + ".py"
     else:
         prod_name = stem + ".py"
     parts[-1] = prod_name
@@ -414,6 +414,7 @@ def _prod_is_gate_covered(prod_rel_posix: str, repo_root: Path) -> bool:
     pointing to non-existent prod modules are therefore archive-safe.
     """
     import fnmatch
+
     if prod_rel_posix.endswith("__init__.py"):
         return False
     if not any(fnmatch.fnmatch(prod_rel_posix, pat) for pat in _PROD_MODULE_GLOBS):

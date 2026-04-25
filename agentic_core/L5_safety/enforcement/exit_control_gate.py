@@ -327,17 +327,12 @@ class ExitControlGate:
 
                 sealed = sealed_l2_to_eval_spine(artifact)
                 env = BudgetEnvelope(origin="enforce_default")
-                pol = ExitEvalPolicy(
-                    policy_snapshot=self._policy_hash or "enforce-unknown"
-                )
+                pol = ExitEvalPolicy(policy_snapshot=self._policy_hash or "enforce-unknown")
                 result = evaluate_exit(sealed, env, pol)
-                upgraded, upgrade_reason = merge_disposition(
-                    disposition, result.exit_decision
-                )
+                upgraded, upgrade_reason = merge_disposition(disposition, result.exit_decision)
                 if upgrade_reason is not None:
                     logger.warning(
-                        "[ExitControlGate.evaluate_sealed] eval_spine upgraded "
-                        "disposition %s -> %s: %s",
+                        "[ExitControlGate.evaluate_sealed] eval_spine upgraded disposition %s -> %s: %s",
                         disposition.value,
                         upgraded.value,
                         upgrade_reason,
@@ -346,7 +341,11 @@ class ExitControlGate:
                     reason = f"{reason} | {upgrade_reason}"
         except ImportError:  # guardian: allow-silent-swallow -- enforcement is opt-in; missing subpackage must not break the live exit path (falls through to legacy disposition)
             pass
-        except (AttributeError, TypeError, ValueError) as enforce_exc:  # guardian: allow-log-and-swallow -- enforcement merge bugs must never fail the live exit path; logs warning and falls back to legacy disposition
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+        ) as enforce_exc:  # guardian: allow-log-and-swallow -- enforcement merge bugs must never fail the live exit path; logs warning and falls back to legacy disposition
             logger.warning(
                 "[ExitControlGate.evaluate_sealed] eval_spine enforce failed: %s",
                 enforce_exc,

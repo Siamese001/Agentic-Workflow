@@ -40,9 +40,7 @@ class SubContextToolError(Exception):
     """Raised when a step inside the sub-context fails."""
 
     def __init__(self, step_index: int, tool_name: str, cause: BaseException) -> None:
-        super().__init__(
-            f"sub-context step {step_index} tool={tool_name!r} failed: {cause!r}"
-        )
+        super().__init__(f"sub-context step {step_index} tool={tool_name!r} failed: {cause!r}")
         self.step_index = step_index
         self.tool_name = tool_name
         self.cause = cause

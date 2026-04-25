@@ -2,6 +2,7 @@
 
 Targets from W0 assessment (fan-in 15-46 via ADG resolves_callsite).
 """
+
 from __future__ import annotations
 
 import json
@@ -104,4 +105,4 @@ for e in sorted(entries, key=lambda x: x.get("live_consumer_count", 999)):
     name = e["agent_path"].split("/")[-1]
     cnt = e.get("live_consumer_count", "?")
     repl = e.get("replacement_util")
-    print(f'  {cnt:>3} {name:40s} -> {repl}')
+    print(f"  {cnt:>3} {name:40s} -> {repl}")

@@ -96,13 +96,7 @@ class TestExemplarCoverageGate:
 class TestReceptionV2Gate:
     def test_repo_gateway_wiring_intact(self) -> None:
         """Live gateway file must pass the wiring gate."""
-        gateway = (
-            REPO_ROOT
-            / "agentic_core"
-            / "L2_execution"
-            / "enforcement"
-            / "SovereignLLMGateway.py"
-        )
+        gateway = REPO_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
         ok, errors = validate_gateway_wiring(gateway)
         assert ok, f"gateway wiring gate failed: {errors}"
 

@@ -569,7 +569,10 @@ class RecursionMonitor:
         if self.alert_callback:
             try:
                 self.alert_callback(alert)
-            except (ValueError, TypeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 Logger.error(f"Alert callback failed: {e}")
         Logger.log(
             logging.CRITICAL if severity == AlertSeverity.CRITICAL else logging.WARNING,

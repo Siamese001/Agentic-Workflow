@@ -155,6 +155,7 @@ def start_heartbeat_writer(marker: str) -> threading.Thread:
     Returns the thread object so callers can inspect it; the thread is
     daemonized so it dies with the process.
     """
+
     def _loop() -> None:
         # Write immediately so sibling GUARD_CLEAN checks see us right away.
         write_heartbeat(marker)

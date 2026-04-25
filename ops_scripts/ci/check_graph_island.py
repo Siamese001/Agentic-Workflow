@@ -46,8 +46,7 @@ def _build_undirected(conn: sqlite3.Connection):
 
     g = nx.Graph()
     for node_id, layer, resolved_path, adg_name in conn.execute(
-        "SELECT id, layer, resolved_path, adg_name FROM nodes "
-        "WHERE entity_type='module'"
+        "SELECT id, layer, resolved_path, adg_name FROM nodes WHERE entity_type='module'"
     ):
         g.add_node(
             node_id,
@@ -55,9 +54,7 @@ def _build_undirected(conn: sqlite3.Connection):
             resolved_path=resolved_path or "",
             adg_name=adg_name or "",
         )
-    for src, dst in conn.execute(
-        "SELECT src_id, dst_id FROM edges WHERE relation_type='imports'"
-    ):
+    for src, dst in conn.execute("SELECT src_id, dst_id FROM edges WHERE relation_type='imports'"):
         if src in g and dst in g:
             g.add_edge(src, dst)
     return g
@@ -84,14 +81,9 @@ class GraphIslandGate(WiringGate):
         islands = [c for c in components if c is not giant and len(c) > 1]
 
         violations: list[Violation] = []
-        for idx, comp in enumerate(
-            sorted(islands, key=len, reverse=True), start=1
-        ):
+        for idx, comp in enumerate(sorted(islands, key=len, reverse=True), start=1):
             members = sorted(
-                (
-                    g.nodes[n].get("resolved_path") or g.nodes[n].get("adg_name") or f"node#{n}"
-                )
-                for n in comp
+                (g.nodes[n].get("resolved_path") or g.nodes[n].get("adg_name") or f"node#{n}") for n in comp
             )
             subject = members[0]
             violations.append(

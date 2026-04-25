@@ -36,7 +36,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Phrases that suggest deferred scope without a marker
 PROSE_PATTERNS = [
-    re.compile(r"\bdeferred\s+to\s+(?:a\s+)?(?:future|later|next)\s+(?:wave|phase|session|sprint)\b", re.IGNORECASE),
+    re.compile(
+        r"\bdeferred\s+to\s+(?:a\s+)?(?:future|later|next)\s+(?:wave|phase|session|sprint)\b", re.IGNORECASE
+    ),
     re.compile(r"\bout\s+of\s+scope\s+for\s+this\s+(?:wave|phase|plan|session)\b", re.IGNORECASE),
     re.compile(r"\bfuture\s+work\b", re.IGNORECASE),
     re.compile(r"\bwill\s+be\s+done\s+(?:later|next|in\s+a\s+future)\b", re.IGNORECASE),

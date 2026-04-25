@@ -39,8 +39,7 @@ from agentic_core.L5_safety.adapters.human_approval_adapter import (
 
 
 class EmailTransport(Protocol):
-    def send(self, to: str, subject: str, body: str) -> str:
-        ...
+    def send(self, to: str, subject: str, body: str) -> str: ...
 
 
 @dataclass(frozen=True)
@@ -52,14 +51,11 @@ class StoredOutcome:
 
 
 class MagicLinkStore(Protocol):
-    def record_pending(self, ledger_id: str) -> None:
-        ...
+    def record_pending(self, ledger_id: str) -> None: ...
 
-    def get(self, ledger_id: str) -> StoredOutcome | None:
-        ...
+    def get(self, ledger_id: str) -> StoredOutcome | None: ...
 
-    def cancel(self, ledger_id: str) -> None:
-        ...
+    def cancel(self, ledger_id: str) -> None: ...
 
 
 class EmailMagicLinkAdapter(HumanApprovalAdapter):
@@ -164,16 +160,11 @@ class EmailMagicLinkAdapter(HumanApprovalAdapter):
 
     def _build_url(self, ledger_id: str, decision: str) -> str:
         sig = self.sign(ledger_id, decision)
-        return (
-            f"{self._base_url}/hitl/resolve"
-            f"?ledger_id={ledger_id}&decision={decision}&sig={sig}"
-        )
+        return f"{self._base_url}/hitl/resolve?ledger_id={ledger_id}&decision={decision}&sig={sig}"
 
     def _require_handle(self, handle: ApprovalHandle) -> None:
         if handle.adapter_kind != self.kind:
-            raise ValueError(
-                f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}"
-            )
+            raise ValueError(f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}")
         if not handle.external_id:
             raise ValueError("handle.external_id is empty")
 

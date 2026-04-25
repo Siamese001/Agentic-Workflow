@@ -93,7 +93,8 @@ class TestNamespaceThreshold:
         # underwriting_ai YAML override sets r3_grounding_need = 0.60.
         # Without threshold_override, the namespace lookup should apply.
         should, reason = check_r3_grounding_gate(
-            0.65, namespace="underwriting_ai",
+            0.65,
+            namespace="underwriting_ai",
         )
         assert should is True  # 0.65 >= 0.60 for underwriting_ai
         assert reason == "d3_grounding_required"
@@ -102,7 +103,8 @@ class TestNamespaceThreshold:
         # "research" namespace has no r3_grounding_need override; falls back
         # to default 0.70.
         should, reason = check_r3_grounding_gate(
-            0.65, namespace="research",
+            0.65,
+            namespace="research",
         )
         assert should is False  # 0.65 < 0.70 default
         assert reason == "below_grounding_threshold"
@@ -112,7 +114,8 @@ class TestNamespaceThreshold:
         reload_routing_thresholds()
         # Very permissive threshold via env → 0.65 clears it.
         should, reason = check_r3_grounding_gate(
-            0.65, namespace="underwriting_ai",
+            0.65,
+            namespace="underwriting_ai",
         )
         assert should is True
         assert reason == "d3_grounding_required"

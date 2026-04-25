@@ -125,9 +125,7 @@ class TestConversion:
 class TestEmitShadowExitDecision:
     def test_flag_off_returns_none(self, tmp_path: Path):
         artifact = SealedL2Artifact(artifact_id="a", trace_id="t")
-        result = shadow_observer.emit_shadow_exit_decision(
-            artifact, output_root=tmp_path
-        )
+        result = shadow_observer.emit_shadow_exit_decision(artifact, output_root=tmp_path)
         assert result is None
         assert list(tmp_path.iterdir()) == []
 
@@ -157,9 +155,7 @@ class TestEmitShadowExitDecision:
         bad_root = blocker / "subdir"
         artifact = SealedL2Artifact(artifact_id="a", trace_id="t")
         # Must not raise; returns None.
-        result = shadow_observer.emit_shadow_exit_decision(
-            artifact, output_root=bad_root
-        )
+        result = shadow_observer.emit_shadow_exit_decision(artifact, output_root=bad_root)
         assert result is None
 
 

@@ -112,10 +112,16 @@ def adapter(transport):
 @pytest.fixture
 def ledger_entry():
     return LedgerEntry(
-        ledger_id="led-o1", run_id="r1", trace_id="t1",
-        hitl_class=HitlClass.REGULATED, approver_pool="compliance_oncall",
-        timeout_s=7200, policy_snapshot="snap", envelope={"filing": "10-K"},
-        state=LedgerState.PENDING, created_at=1.0,
+        ledger_id="led-o1",
+        run_id="r1",
+        trace_id="t1",
+        hitl_class=HitlClass.REGULATED,
+        approver_pool="compliance_oncall",
+        timeout_s=7200,
+        policy_snapshot="snap",
+        envelope={"filing": "10-K"},
+        state=LedgerState.PENDING,
+        created_at=1.0,
     )
 
 
@@ -128,14 +134,14 @@ def harness(adapter, transport, ledger_entry):
         transport.create_should_fail = True
 
     return AdapterContractHarness(
-        adapter=adapter, ledger_entry=ledger_entry,
-        resolve=resolve, fail_transport=fail_transport,
+        adapter=adapter,
+        ledger_entry=ledger_entry,
+        resolve=resolve,
+        fail_transport=fail_transport,
     )
 
 
-@pytest.mark.parametrize(
-    "assertion", CONTRACT_ASSERTIONS, ids=[a.__name__ for a in CONTRACT_ASSERTIONS]
-)
+@pytest.mark.parametrize("assertion", CONTRACT_ASSERTIONS, ids=[a.__name__ for a in CONTRACT_ASSERTIONS])
 def test_orkes_adapter_contract(assertion, harness):
     assertion(harness)
 
@@ -156,7 +162,9 @@ def test_enqueue_wraps_transport_error(adapter, transport, ledger_entry):
 
 def test_enqueue_raises_when_no_task_id(ledger_entry):
     class BadTransport:
-        def create_human_task(self, *_a, **_k): return {"nothing": 1}
+        def create_human_task(self, *_a, **_k):
+            return {"nothing": 1}
+
         def get_human_task(self, *_a, **_k): ...
         def terminate_human_task(self, *_a, **_k): ...
 
@@ -174,8 +182,10 @@ def test_poll_pending_scheduled_returns_none(adapter, transport, ledger_entry):
 def test_poll_completed_approve(adapter, transport, ledger_entry):
     handle = adapter.enqueue(ledger_entry)
     transport.resolve(
-        handle.external_id, ApprovalOutcomeKind.APPROVED,
-        approver_id="alice", rationale="ok",
+        handle.external_id,
+        ApprovalOutcomeKind.APPROVED,
+        approver_id="alice",
+        rationale="ok",
     )
     outcome = adapter.poll(handle)
     assert outcome is not None
@@ -186,8 +196,10 @@ def test_poll_completed_approve(adapter, transport, ledger_entry):
 def test_poll_completed_deny_with_reason(adapter, transport, ledger_entry):
     handle = adapter.enqueue(ledger_entry)
     transport.resolve(
-        handle.external_id, ApprovalOutcomeKind.DENIED,
-        approver_id="bob", reason_code="NON_COMPLIANT",
+        handle.external_id,
+        ApprovalOutcomeKind.DENIED,
+        approver_id="bob",
+        reason_code="NON_COMPLIANT",
     )
     outcome = adapter.poll(handle)
     assert outcome is not None
@@ -269,8 +281,10 @@ def test_adapter_errors_pass_through(ledger_entry):
     class RaisingTransport:
         def create_human_task(self, *_a, **_k):
             raise AdapterError("upstream-create")
+
         def get_human_task(self, *_a, **_k):
             raise AdapterError("upstream-get")
+
         def terminate_human_task(self, *_a, **_k):
             raise AdapterError("upstream-term")
 
@@ -281,6 +295,7 @@ def test_adapter_errors_pass_through(ledger_entry):
 
 def test_read_helper_non_mapping_returns_none():
     from agentic_core.L5_safety.adapters.orkes_approval_adapter import _read
+
     assert _read("not-a-mapping", "key") is None
     assert _read(None, "key") is None
 

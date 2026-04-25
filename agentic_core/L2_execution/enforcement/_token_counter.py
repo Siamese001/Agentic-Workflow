@@ -85,12 +85,18 @@ def _tiktoken_encoder(model: str | None) -> Any:
     try:
         if model:
             return tiktoken.encoding_for_model(model)
-    except (KeyError, ValueError):  # guardian: allow-silent-swallow -- unknown model name: intentional fall-through to the generic cl100k_base encoding below
+    except (
+        KeyError,
+        ValueError,
+    ):  # guardian: allow-silent-swallow -- unknown model name: intentional fall-through to the generic cl100k_base encoding below
         # Unknown model name — fall through to the generic encoding.
         pass
     try:
         return tiktoken.get_encoding("cl100k_base")
-    except (KeyError, ValueError):  # guardian: allow-return-none-swallow -- tiktoken encoding lookup fail: None tells caller to fall back to byte-length counting
+    except (
+        KeyError,
+        ValueError,
+    ):  # guardian: allow-return-none-swallow -- tiktoken encoding lookup fail: None tells caller to fall back to byte-length counting
         return None
 
 

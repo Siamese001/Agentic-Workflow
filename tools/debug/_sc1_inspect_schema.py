@@ -1,4 +1,5 @@
 """Inspect SC-1 / structural conformance schema in latest ADG snapshot."""
+
 from __future__ import annotations
 
 import sqlite3

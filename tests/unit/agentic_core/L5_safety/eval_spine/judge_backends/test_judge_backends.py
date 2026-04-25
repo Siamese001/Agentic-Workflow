@@ -93,9 +93,7 @@ class TestBackendName:
 class TestRegistrationWithTraceGrader:
     def test_null_backend_plugs_into_grader(self):
         grader = TraceGrader()
-        grader.register_dim_scorer(
-            "tool_selection", NullBackend(dim_name="tool_selection")
-        )
+        grader.register_dim_scorer("tool_selection", NullBackend(dim_name="tool_selection"))
         out = grader.grade(GraderInput())
         sel = out.dim("tool_selection")
         assert sel is not None
@@ -103,9 +101,7 @@ class TestRegistrationWithTraceGrader:
 
     def test_anthropic_without_key_plugs_in_safely(self):
         grader = TraceGrader()
-        grader.register_dim_scorer(
-            "tool_selection", AnthropicBackend(dim_name="tool_selection")
-        )
+        grader.register_dim_scorer("tool_selection", AnthropicBackend(dim_name="tool_selection"))
         out = grader.grade(GraderInput())
         sel = out.dim("tool_selection")
         assert sel is not None

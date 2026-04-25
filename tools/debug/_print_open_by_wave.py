@@ -14,7 +14,7 @@ for w in order:
         phase = (it["phase"] or "").strip()
         title = (it["title"] or "").strip()
         if title.startswith(f"[{band}]"):
-            title = title[len(f"[{band}]"):].strip()
+            title = title[len(f"[{band}]") :].strip()
         title = title[:90]
         print(f"  [{band:<8}] {imp_s:>4}  {phase:<20} {title}")
     print()

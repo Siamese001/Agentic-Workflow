@@ -60,19 +60,24 @@ class TestConfidenceFromSpanRelevance:
     def test_out_of_range_relevance_clipped(self) -> None:
         # Some retrievers emit scores slightly over 1.0; clip into [0, 1].
         claim = confidence_from_span_relevance(
-            "c-1", (_span("s1", 1.2),),
+            "c-1",
+            (_span("s1", 1.2),),
         )
         assert claim.confidence == pytest.approx(1.0)
 
     def test_unknown_aggregation_rejected(self) -> None:
         with pytest.raises(ValueError, match="aggregation"):
             confidence_from_span_relevance(
-                "c-1", (_span("s1"),), aggregation="mode",
+                "c-1",
+                (_span("s1"),),
+                aggregation="mode",
             )
 
     def test_snippet_passthrough(self) -> None:
         claim = confidence_from_span_relevance(
-            "c-1", (_span("s1"),), claim_text_snippet="test claim",
+            "c-1",
+            (_span("s1"),),
+            claim_text_snippet="test claim",
         )
         assert claim.claim_text_snippet == "test claim"
 
@@ -102,7 +107,8 @@ class TestEnrichContract:
     def test_enrich_returns_new_instance_not_mutation(self) -> None:
         base = self._base_contract()
         enriched = enrich_contract_with_claim_confidences(
-            base, {"c-1": ("s1",)},
+            base,
+            {"c-1": ("s1",)},
         )
         assert enriched is not base
         assert base.claim_confidences == ()  # originale untouched
@@ -111,7 +117,8 @@ class TestEnrichContract:
         base = self._base_contract()
         with pytest.raises(C0ContractViolation, match="unknown span_id"):
             enrich_contract_with_claim_confidences(
-                base, {"c-1": ("ghost",)},
+                base,
+                {"c-1": ("ghost",)},
             )
 
     def test_snippet_map_passthrough(self) -> None:

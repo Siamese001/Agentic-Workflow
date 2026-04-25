@@ -98,7 +98,10 @@ class KillSwitchStore:
             return
         try:
             self._audit_sink(payload)
-        except (OSError, ValueError):  # guardian: allow-silent-swallow -- audit-sink failures never block runtime kill-switch decisions; observability is best-effort here
+        except (
+            OSError,
+            ValueError,
+        ):  # guardian: allow-silent-swallow -- audit-sink failures never block runtime kill-switch decisions; observability is best-effort here
             pass
 
     def activate(

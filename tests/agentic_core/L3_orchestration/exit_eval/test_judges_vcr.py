@@ -101,8 +101,7 @@ def _make_replay_urlopen(cassette: dict[str, Any]):
             url = str(request)
             headers = {}
         assert url == expected_endpoint, (
-            f"cassette endpoint mismatch: expected {expected_endpoint!r}, "
-            f"got {url!r}"
+            f"cassette endpoint mismatch: expected {expected_endpoint!r}, got {url!r}"
         )
         missing = expected_headers - set(headers.keys())
         if missing:

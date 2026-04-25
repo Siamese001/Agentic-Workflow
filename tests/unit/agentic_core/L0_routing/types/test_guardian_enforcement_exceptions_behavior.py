@@ -60,7 +60,8 @@ class TestIsV15Enforced:
         assert is_v15_enforced() is False
 
     @pytest.mark.parametrize(
-        "value", ["1", "true", "yes", "on", "log", "soft", "TRUE", "On", "Soft", "LOG"],
+        "value",
+        ["1", "true", "yes", "on", "log", "soft", "TRUE", "On", "Soft", "LOG"],
     )
     def test_truthy_values_enable(self, monkeypatch: pytest.MonkeyPatch, value: str) -> None:
         monkeypatch.setenv("V15_ENFORCEMENT", value)

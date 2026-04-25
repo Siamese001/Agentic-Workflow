@@ -30,6 +30,7 @@ Reference:
   - audit_binding_lane.py (Wave-M record)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 import hashlib

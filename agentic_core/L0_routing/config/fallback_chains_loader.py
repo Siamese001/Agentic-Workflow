@@ -168,9 +168,7 @@ def get_fallback_chain(route_id: RouteId | str) -> tuple[FallbackEntry, ...]:
     - R5_FALLBACK, if present, is the final entry
     """
     if not isinstance(route_id, (RouteId, str)):
-        raise V12RouteContractError(
-            f"route_id must be RouteId or str, got {type(route_id).__name__}"
-        )
+        raise V12RouteContractError(f"route_id must be RouteId or str, got {type(route_id).__name__}")
     key = route_id.value if isinstance(route_id, RouteId) else str(route_id)
     if key in {"R1A", "R5_FALLBACK"}:
         return ()
@@ -178,13 +176,10 @@ def get_fallback_chain(route_id: RouteId | str) -> tuple[FallbackEntry, ...]:
     if not raw:
         return ()
     if not isinstance(raw, list):
-        raise V12RouteContractError(
-            f"fallback chain for {key} must be a list, got {type(raw).__name__}"
-        )
+        raise V12RouteContractError(f"fallback chain for {key} must be a list, got {type(raw).__name__}")
     if len(raw) > _MAX_CHAIN_DEPTH:
         raise V12RouteContractError(
-            f"fallback chain for {key} exceeds max depth {_MAX_CHAIN_DEPTH} "
-            f"(got {len(raw)})"
+            f"fallback chain for {key} exceeds max depth {_MAX_CHAIN_DEPTH} (got {len(raw)})"
         )
     entries: list[FallbackEntry] = []
     seen_pairs: set[tuple[str, str]] = set()
@@ -201,14 +196,10 @@ def get_fallback_chain(route_id: RouteId | str) -> tuple[FallbackEntry, ...]:
                 provider=row.get("provider"),
             )
         except (KeyError, ValueError, V12RouteContractError) as exc:
-            raise V12RouteContractError(
-                f"invalid fallback_chain entry for {key}[{idx}]: {row!r}"
-            ) from exc
+            raise V12RouteContractError(f"invalid fallback_chain entry for {key}[{idx}]: {row!r}") from exc
         pair = (entry.route_id.value, entry.cost_tier.value)
         if pair in seen_pairs:
-            raise V12RouteContractError(
-                f"duplicate fallback entry for {key}: {pair}"
-            )
+            raise V12RouteContractError(f"duplicate fallback entry for {key}: {pair}")
         seen_pairs.add(pair)
         # Detect chain entries that loop back to the primary route at the
         # same (or unspecified) tier. Because this loader doesn't know the
@@ -226,13 +217,9 @@ def get_fallback_chain(route_id: RouteId | str) -> tuple[FallbackEntry, ...]:
             f"primary route ({sorted(primary_tier_keys)}); this is a cycle"
         )
     # R5 must be last if present.
-    r5_positions = [
-        i for i, e in enumerate(entries) if e.route_id == RouteId.R5_FALLBACK
-    ]
+    r5_positions = [i for i, e in enumerate(entries) if e.route_id == RouteId.R5_FALLBACK]
     if r5_positions and r5_positions[-1] != len(entries) - 1:
-        raise V12RouteContractError(
-            f"R5_FALLBACK must be the last entry in fallback chain for {key}"
-        )
+        raise V12RouteContractError(f"R5_FALLBACK must be the last entry in fallback chain for {key}")
     return tuple(entries)
 
 

@@ -298,8 +298,10 @@ _install_integration_compat_shims()
 # artifacts/windsurf/last_test_signal.json at session end so the
 # post_cascade_author_gate_capture hook can populate decision_outcomes.tests_passed.
 
+
 def pytest_sessionstart(session):  # noqa: ARG001 — pytest hook signature
     import time as _time
+
     session.__author_gate_start_ts = _time.time()
 
 

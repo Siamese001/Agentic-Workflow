@@ -257,7 +257,9 @@ def _is_protected(paths: Sequence[Path], repo_root: Path) -> bool:
             rel = p.relative_to(repo_root)
             if rel.parts and rel.parts[0] in HITL_PROTECTED_PATHS:
                 return True
-        except ValueError:  # guardian: allow-silent-swallow -- relative_to ValueError: non-fatal, path excluded
+        except (
+            ValueError
+        ):  # guardian: allow-silent-swallow -- relative_to ValueError: non-fatal, path excluded
             pass
     return False
 

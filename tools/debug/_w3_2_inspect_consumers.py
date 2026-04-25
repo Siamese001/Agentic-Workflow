@@ -4,6 +4,7 @@
 - class_only: referenced in type hints / isinstance / annotations only
 - active_usage: instantiated or methods called
 """
+
 from __future__ import annotations
 
 import json

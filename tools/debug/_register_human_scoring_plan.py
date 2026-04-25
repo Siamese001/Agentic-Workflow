@@ -3,6 +3,7 @@
 1. POST plan row to Plans DB
 2. POST 5 wave summary rows to Wave/Phase Convergence DB (one per wave, Status=Todo)
 """
+
 from __future__ import annotations
 
 import json
@@ -53,28 +54,53 @@ def _title(s, max_len=200):
 
 def receipt(op, page_id, ok, **extra):
     RECEIPTS.parent.mkdir(parents=True, exist_ok=True)
-    rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "op": op, "page_id": page_id, "ok": ok, **extra}
+    rec = {
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "op": op,
+        "page_id": page_id,
+        "ok": ok,
+        **extra,
+    }
     with RECEIPTS.open("a", encoding="utf-8") as f:
         f.write(json.dumps(rec) + "\n")
 
 
 WAVES = [
-    ("1", "Score 4 graph-edge rows (W9/W11/W12/W13)",
-     "Human reviews W9 (OTel span->ADG edge), W11 (watchdog + secret telemetry), W12 (HITL decision log edges), W13 (profiler calls). Assigns band based on ADR completeness priority.",
-     2000, 4),
-    ("2", "Score 22 governance rows (W1.x / W2.x / W2-P1.x)",
-     "Human audits each governance row against .windsurf/rules/ and .windsurf/hooks.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
-     5000, 22),
-    ("3", "Score 8 baseline-burndown rows (GAP/W1-P0/W3-P2/W4-P3)",
-     "Human spot-checks baseline counts (153 env flags, 142 legacy leaks, 1051 uncovered modules) for freshness, then scores.",
-     3000, 8),
-    ("4", "Score 22 singleton rows (H/B/EQ/ENH/misc)",
-     "Human reviews remaining H-series (H3/H6-H10 not in prior Wave D), B-series (B1-B5), EQ-series (EQ-8b/11b/12b/15/16), ENH-series (ENH1-ENH6), and misc singletons (W0/W4/W1-W5/RT3/M/S/TechDebt/INDEX).",
-     5000, 22),
-    ("5", "Apply filled worksheet to Notion",
-     "Cascade runs tools/debug/_apply_human_scoring.py once human finishes waves 1-4. Script PATCHes every row with BAND filled, descopes rows marked DESCOPE, skips rows marked SKIP/empty.",
-     2000, 63),
+    (
+        "1",
+        "Score 4 graph-edge rows (W9/W11/W12/W13)",
+        "Human reviews W9 (OTel span->ADG edge), W11 (watchdog + secret telemetry), W12 (HITL decision log edges), W13 (profiler calls). Assigns band based on ADR completeness priority.",
+        2000,
+        4,
+    ),
+    (
+        "2",
+        "Score 22 governance rows (W1.x / W2.x / W2-P1.x)",
+        "Human audits each governance row against .windsurf/rules/ and .windsurf/hooks.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
+        5000,
+        22,
+    ),
+    (
+        "3",
+        "Score 8 baseline-burndown rows (GAP/W1-P0/W3-P2/W4-P3)",
+        "Human spot-checks baseline counts (153 env flags, 142 legacy leaks, 1051 uncovered modules) for freshness, then scores.",
+        3000,
+        8,
+    ),
+    (
+        "4",
+        "Score 22 singleton rows (H/B/EQ/ENH/misc)",
+        "Human reviews remaining H-series (H3/H6-H10 not in prior Wave D), B-series (B1-B5), EQ-series (EQ-8b/11b/12b/15/16), ENH-series (ENH1-ENH6), and misc singletons (W0/W4/W1-W5/RT3/M/S/TechDebt/INDEX).",
+        5000,
+        22,
+    ),
+    (
+        "5",
+        "Apply filled worksheet to Notion",
+        "Cascade runs tools/debug/_apply_human_scoring.py once human finishes waves 1-4. Script PATCHes every row with BAND filled, descopes rows marked DESCOPE, skips rows marked SKIP/empty.",
+        2000,
+        63,
+    ),
 ]
 
 
@@ -117,10 +143,16 @@ def post_wave(wave_num: str, label: str, summary: str, tokens: int, row_count: i
             "Plan File": _rt(PLAN_FILE),
             "Parent Plan Summary": _rt(PLAN_SUMMARY),
             "Success Criteria": _rt(success_crit),
-            "Files In Scope": _rt("artifacts/notion/human_scoring_worksheet.json, artifacts/notion/human_scoring_worksheet.md, tools/debug/_apply_human_scoring.py"),
+            "Files In Scope": _rt(
+                "artifacts/notion/human_scoring_worksheet.json, artifacts/notion/human_scoring_worksheet.md, tools/debug/_apply_human_scoring.py"
+            ),
             "Dependencies": _rt(
                 "Pass 1/Pass 2 dry-run output from prior plan notion-backlog-residual-cleanup-c3d8f2. "
-                + ("Depends on completion of Waves 1-4 (human-filled worksheet)." if wave_num == "5" else "No upstream deps within this plan.")
+                + (
+                    "Depends on completion of Waves 1-4 (human-filled worksheet)."
+                    if wave_num == "5"
+                    else "No upstream deps within this plan."
+                )
             ),
             "Blocking Items": _rt(summary),
             "Status": {"select": {"name": "Todo"}},

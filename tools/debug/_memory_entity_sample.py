@@ -13,13 +13,14 @@ def main() -> None:
         print(f"entities columns: {cols}")
         print()
 
-        order = "updated_at DESC" if "updated_at" in cols else (
-            "created_at DESC" if "created_at" in cols else "rowid DESC"
+        order = (
+            "updated_at DESC"
+            if "updated_at" in cols
+            else ("created_at DESC" if "created_at" in cols else "rowid DESC")
         )
 
         rows = c.execute(
-            f"SELECT name FROM entities WHERE entity_type = 'general' "
-            f"ORDER BY {order} LIMIT 10"
+            f"SELECT name FROM entities WHERE entity_type = 'general' ORDER BY {order} LIMIT 10"
         ).fetchall()
         print("Latest 10 'general' entities:")
         for (n,) in rows:
@@ -27,8 +28,7 @@ def main() -> None:
 
         print()
         rows = c.execute(
-            f"SELECT entity_type, name FROM entities "
-            f"WHERE entity_type != 'general' ORDER BY {order} LIMIT 10"
+            f"SELECT entity_type, name FROM entities WHERE entity_type != 'general' ORDER BY {order} LIMIT 10"
         ).fetchall()
         print("Latest 10 protected entities:")
         for et, n in rows:

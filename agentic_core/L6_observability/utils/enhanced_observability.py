@@ -242,7 +242,9 @@ class EnhancedObservability:
 
     def _monitoring_loop(self) -> None:
         """Main monitoring loop."""
-        while self._monitoring_active and not self._shutdown_requested:  # guardian: allow-retry-without-backoff -- periodic observability polling loop; internal time.sleep provides pacing
+        while (
+            self._monitoring_active and not self._shutdown_requested
+        ):  # guardian: allow-retry-without-backoff -- periodic observability polling loop; internal time.sleep provides pacing
             try:
                 start_time = time.time()
 

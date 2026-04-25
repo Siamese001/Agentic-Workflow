@@ -83,15 +83,15 @@ def _live_ping(model: str) -> tuple[bool, str]:
     usage = getattr(response, "usage", None)
     usage_str = ""
     if usage is not None:
-        usage_str = (
-            f" (input={usage.input_tokens}, output={usage.output_tokens})"
-        )
+        usage_str = f" (input={usage.input_tokens}, output={usage.output_tokens})"
 
     return True, f"live call succeeded{usage_str}; response: {text!r}"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         "--model",
         default="claude-haiku-4-5",

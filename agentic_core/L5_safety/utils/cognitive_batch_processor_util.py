@@ -251,6 +251,7 @@ class CognitiveBatchProcessor:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
+
     def process_batch(self, violations: list[Any], auto_execute: bool = False) -> dict[str, int]:
         """
         Process a batch of violations with rate limiting and checkpointing.

@@ -49,6 +49,7 @@ class TestAuthorityLevel:
         assert AuthorityLevel.from_slot_code("M0") == AuthorityLevel.META_COGNITIVE
         assert AuthorityLevel.from_slot_code("H0") == AuthorityLevel.HEALING
         assert AuthorityLevel.from_slot_code("Y0") == AuthorityLevel.META_LEARNING
+        assert AuthorityLevel.from_slot_code("R0") == AuthorityLevel.SCHEMA
         assert AuthorityLevel.from_slot_code("U0") == AuthorityLevel.ZERO
 
     def test_from_slot_code_case_insensitive(self) -> None:
@@ -108,6 +109,46 @@ class TestAuthoritySlot:
             metadata={"route_mode": "safe", "auth_token": "x"},
         )
         assert s.metadata["auth_token"] == "x"
+
+    def test_y0_rejects_forbidden_metadata(self) -> None:
+        with pytest.raises(ValueError, match="cannot carry"):
+            AuthoritySlot(
+                slot_type="Y0",
+                content="telemetry",
+                authority_level=AuthorityLevel.META_LEARNING,
+                source_layer="L4",
+                metadata={"execution_tier": "T3"},
+            )
+
+    def test_r0_rejects_forbidden_metadata(self) -> None:
+        with pytest.raises(ValueError, match="cannot carry"):
+            AuthoritySlot(
+                slot_type="R0",
+                content="json schema",
+                authority_level=AuthorityLevel.SCHEMA,
+                source_layer="L_PG",
+                metadata={"safety_threshold": 0.5},
+            )
+
+    def test_r0_slot_roundtrip(self) -> None:
+        s = AuthoritySlot(
+            slot_type="R0",
+            content="json: {answer: str}",
+            authority_level=AuthorityLevel.SCHEMA,
+            source_layer="L_PG",
+        )
+        assert s.slot_code == "R0"
+        assert s.authority_level is AuthorityLevel.SCHEMA
+
+    def test_y0_slot_roundtrip(self) -> None:
+        s = AuthoritySlot(
+            slot_type="Y0",
+            content="pattern summary",
+            authority_level=AuthorityLevel.META_LEARNING,
+            source_layer="L4",
+        )
+        assert s.slot_code == "Y0"
+        assert s.authority_level is AuthorityLevel.META_LEARNING
 
     def test_frozen(self) -> None:
         s = AuthoritySlot(slot_type="U0", content="", authority_level=AuthorityLevel.ZERO, source_layer="L0")

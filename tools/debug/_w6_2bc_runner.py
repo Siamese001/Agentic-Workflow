@@ -1,4 +1,5 @@
 """W6.2b+c runner: apply prefix codemod for non-artifacts/adg literals."""
+
 from __future__ import annotations
 
 import importlib.util

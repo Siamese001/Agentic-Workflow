@@ -26,10 +26,7 @@ class TestDefaults:
         assert AgentRoutingSpec(reasoning_effort="low").is_default() is False
         assert AgentRoutingSpec(verbosity="medium").is_default() is False
         assert AgentRoutingSpec(markdown_output=True).is_default() is False
-        assert (
-            AgentRoutingSpec(response_schema={"type": "object"}).is_default()
-            is False
-        )
+        assert AgentRoutingSpec(response_schema={"type": "object"}).is_default() is False
 
 
 class TestValidation:
@@ -104,8 +101,6 @@ class TestMergeIntoExtra:
         assert original == snapshot
 
     def test_none_valued_fields_omitted_from_routing_meta(self) -> None:
-        spec = AgentRoutingSpec(
-            thinking_budget=100
-        )  # only this one is populated
+        spec = AgentRoutingSpec(thinking_budget=100)  # only this one is populated
         merged = spec.merge_into_extra({})
         assert merged["routing_meta"] == {"thinking_budget": 100}

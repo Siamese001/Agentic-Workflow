@@ -107,9 +107,7 @@ def _load_sweep_report(fixture_stem: str) -> dict[str, Any] | None:
     return data
 
 
-def _resolve_deployed_default(
-    key: str, config: RoutingThresholdConfig
-) -> float:
+def _resolve_deployed_default(key: str, config: RoutingThresholdConfig) -> float:
     """Look up the deployed default for ``key`` from the loader."""
     return config.lookup(key, namespace="")
 
@@ -188,12 +186,8 @@ def _render_report(
     lines.append("")
     lines.append(f"Drift thresholds: warn ≥ {_DRIFT_WARN:.2f}, alert ≥ {_DRIFT_ALERT:.2f}")
     lines.append("")
-    lines.append(
-        "| Fixture | Threshold key | Deployed | Sweep optimum | F1 | |Δ| | Severity |"
-    )
-    lines.append(
-        "|---|---|---:|---:|---:|---:|:---:|"
-    )
+    lines.append("| Fixture | Threshold key | Deployed | Sweep optimum | F1 | |Δ| | Severity |")
+    lines.append("|---|---|---:|---:|---:|---:|:---:|")
     any_alert = False
     for row in rows:
         if row.severity == "alert":
@@ -221,21 +215,13 @@ def _render_report(
             "`docs/reports/calibration/*_sweep.json` before promoting the new threshold."
         )
     else:
-        lines.append(
-            "No alert-level drift. No threshold-promotion action recommended this cycle."
-        )
+        lines.append("No alert-level drift. No threshold-promotion action recommended this cycle.")
     lines.append("")
     lines.append("## Next steps")
     lines.append("")
-    lines.append(
-        "- Review any non-`ok` rows against the corresponding sweep JSON report."
-    )
-    lines.append(
-        "- If a row is `alert`, update `config/routing_thresholds.yaml` with the new value."
-    )
-    lines.append(
-        "- Re-run this job after the YAML change to confirm drift clears."
-    )
+    lines.append("- Review any non-`ok` rows against the corresponding sweep JSON report.")
+    lines.append("- If a row is `alert`, update `config/routing_thresholds.yaml` with the new value.")
+    lines.append("- Re-run this job after the YAML change to confirm drift clears.")
     lines.append(
         "- Calibration harness: `python -m tools.calibration --all` "
         "(or `python ops_scripts/calibration/weekly_refresh.py` to re-run both)."
@@ -259,8 +245,7 @@ def _build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help=(
-            "Destination path for the drift report. Defaults to "
-            "docs/reports/calibration/drift_<YYYYMMDD>.md."
+            "Destination path for the drift report. Defaults to docs/reports/calibration/drift_<YYYYMMDD>.md."
         ),
     )
     parser.add_argument(
@@ -303,8 +288,8 @@ def run(
 
     generated_at = datetime.now(timezone.utc)
     report_text = _render_report(rows, config=config, generated_at=generated_at)
-    destination = output if output is not None else (
-        _REPORT_DIR / f"drift_{generated_at.strftime('%Y%m%d')}.md"
+    destination = (
+        output if output is not None else (_REPORT_DIR / f"drift_{generated_at.strftime('%Y%m%d')}.md")
     )
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(report_text, encoding="utf-8")

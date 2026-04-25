@@ -86,8 +86,8 @@ def test_multiple_documents_render_in_envelope_order():
     c2 = _FakeChunk(content="second content", metadata={"title": "Second"})
     env = _envelope([c1, c2])
     rendered = render_anthropic_prompt(env, query="q")
-    idx1 = rendered.text.index("<document index=\"1\">")
-    idx2 = rendered.text.index("<document index=\"2\">")
+    idx1 = rendered.text.index('<document index="1">')
+    idx2 = rendered.text.index('<document index="2">')
     assert idx1 < idx2
     assert rendered.document_block_count == 2
     assert "first content" in rendered.text
@@ -247,9 +247,7 @@ def test_result_is_rendered_prompt_dataclass():
 
 @pytest.mark.parametrize("n_chunks", [1, 3, 10])
 def test_document_block_count_matches_chunk_count(n_chunks):
-    chunks = [
-        _FakeChunk(content=f"content {i}", metadata={"title": f"T{i}"}) for i in range(n_chunks)
-    ]
+    chunks = [_FakeChunk(content=f"content {i}", metadata={"title": f"T{i}"}) for i in range(n_chunks)]
     env = _envelope(chunks)
     rendered = render_anthropic_prompt(env, query="q")
     assert rendered.document_block_count == n_chunks

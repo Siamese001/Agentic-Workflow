@@ -363,17 +363,13 @@ def load_manifest(path: Path) -> list[CalibrationQuery]:
         try:
             import yaml  # noqa: PLC0415
         except ImportError as exc:
-            raise RuntimeError(
-                "PyYAML required for YAML manifests; install or switch to JSON"
-            ) from exc
+            raise RuntimeError("PyYAML required for YAML manifests; install or switch to JSON") from exc
         data = yaml.safe_load(raw)
     else:
         data = json.loads(raw)
 
     if not isinstance(data, dict) or "queries" not in data:
-        raise ValueError(
-            f"Manifest must be an object with 'queries' key; got {type(data).__name__}"
-        )
+        raise ValueError(f"Manifest must be an object with 'queries' key; got {type(data).__name__}")
     out: list[CalibrationQuery] = []
     for entry in data["queries"]:
         out.append(
@@ -500,9 +496,7 @@ def main(argv: list[str] | None = None) -> int:
     print(render_summary_table(results))
 
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    out_path = args.output or (
-        Path("artifacts/retrieval_baseline") / f"c0_abcd_{timestamp}.json"
-    )
+    out_path = args.output or (Path("artifacts/retrieval_baseline") / f"c0_abcd_{timestamp}.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     report = render_json_report(results, top_k=args.top_k, timestamp=timestamp)
     out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")

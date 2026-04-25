@@ -1,4 +1,5 @@
 import sqlite3
+
 for snap in ["adg_indexed_04242026_0620.sqlite", "adg_indexed_04242026_0618.sqlite"]:
     c = sqlite3.connect(f"artifacts/adg/{snap}")
     print(snap)

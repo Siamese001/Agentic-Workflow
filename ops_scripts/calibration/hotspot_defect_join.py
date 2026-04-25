@@ -46,7 +46,8 @@ def _git_churn(window_days: int) -> dict[str, int]:
     """Return map of file_path -> number of commits touching it in the window."""
     try:
         cmd = [
-            "git", "log",
+            "git",
+            "log",
             f"--since={window_days}.days.ago",
             "--pretty=format:",
             "--name-only",
@@ -78,9 +79,7 @@ def _read_hotspots(adg_db: Path, top_n: int) -> tuple[list[dict], str]:
         conn = sqlite3.connect(str(adg_db), timeout=5)
         conn.row_factory = sqlite3.Row
         try:
-            tbl = conn.execute(
-                "SELECT name FROM sqlite_master WHERE name='mv_hotspot_centrality'"
-            ).fetchone()
+            tbl = conn.execute("SELECT name FROM sqlite_master WHERE name='mv_hotspot_centrality'").fetchone()
             if tbl:
                 rows = conn.execute(
                     """
@@ -93,9 +92,7 @@ def _read_hotspots(adg_db: Path, top_n: int) -> tuple[list[dict], str]:
                 return [dict(r) for r in rows], "mv_hotspot_centrality"
 
             # Fallback: top-N files by violation count joined with nodes for layer info
-            has_viol = conn.execute(
-                "SELECT name FROM sqlite_master WHERE name='violations'"
-            ).fetchone()
+            has_viol = conn.execute("SELECT name FROM sqlite_master WHERE name='violations'").fetchone()
             if not has_viol:
                 return [], "none"
             rows = conn.execute(
@@ -149,23 +146,23 @@ def main() -> int:
 
     snapshot = _latest_adg_snapshot()
     if snapshot is None:
-        print("[hotspot_defect_join] no ADG snapshot found under artifacts/adg/",
-              file=sys.stderr)
+        print("[hotspot_defect_join] no ADG snapshot found under artifacts/adg/", file=sys.stderr)
         return 2
 
     hotspots, source = _read_hotspots(snapshot, args.top_n)
     if not hotspots:
-        print(f"[hotspot_defect_join] no hotspots derivable from {snapshot.name} "
-              f"(source={source}); dry_run={args.dry_run}", file=sys.stderr)
+        print(
+            f"[hotspot_defect_join] no hotspots derivable from {snapshot.name} "
+            f"(source={source}); dry_run={args.dry_run}",
+            file=sys.stderr,
+        )
         return 0 if args.dry_run else 2
 
     churn = _git_churn(args.window_days)
     # Rank churn files so we can compute rank_delta
     churn_ranked = {
         path: rank
-        for rank, (path, _) in enumerate(
-            sorted(churn.items(), key=lambda kv: kv[1], reverse=True), start=1
-        )
+        for rank, (path, _) in enumerate(sorted(churn.items(), key=lambda kv: kv[1], reverse=True), start=1)
     }
 
     emitted = 0
@@ -174,8 +171,7 @@ def main() -> int:
     try:
         from tools.ledgers.hook_helpers import emit_ledger_event
     except ImportError:
-        print("[hotspot_defect_join] ledger helpers missing; dry-run only",
-              file=sys.stderr)
+        print("[hotspot_defect_join] ledger helpers missing; dry-run only", file=sys.stderr)
         emit_ledger_event = None  # type: ignore[assignment]
 
     for pred_rank, row in enumerate(hotspots, start=1):

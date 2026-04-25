@@ -10,6 +10,7 @@ UNSAFE (skip, flag for manual review):
   E. Inside comments (not AST-visible anyway)
   F. In test/debug files where the literal is test data
 """
+
 from __future__ import annotations
 import ast
 import re
@@ -34,13 +35,31 @@ LITERALS = {
     ADR_DIR: "ADR_DIR",
 }
 
-ROOTS = ("agentic_core", "apps_rg", "apps_shared", "apps_lic", "apps_eval",
-         "apps_exec", "apps_research", "apps_rfp", "apps_underwriting_ai",
-         "tools", "ops_scripts", "system_learning", "infrastructure")
-EXCLUDE = (r"\\__pycache__\\", r"\\archives?\\", r"\\_archive\\",
-           r"\\tools\\archive\\", r"\\tests\\", r"\\tools\\debug\\",
-           # the SSOT file itself
-           r"path_constants\.py$")
+ROOTS = (
+    "agentic_core",
+    "apps_rg",
+    "apps_shared",
+    "apps_lic",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
+)
+EXCLUDE = (
+    r"\\__pycache__\\",
+    r"\\archives?\\",
+    r"\\_archive\\",
+    r"\\tools\\archive\\",
+    r"\\tests\\",
+    r"\\tools\\debug\\",
+    # the SSOT file itself
+    r"path_constants\.py$",
+)
 
 
 def _is_docstring(node: ast.Constant, parent: ast.AST) -> bool:
@@ -75,7 +94,11 @@ def classify_file(path: Path) -> list[tuple[str, str, int, str, str]]:
         if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
             if getattr(node, "body", None):
                 first = node.body[0]
-                if isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and isinstance(first.value.value, str):
+                if (
+                    isinstance(first, ast.Expr)
+                    and isinstance(first.value, ast.Constant)
+                    and isinstance(first.value.value, str)
+                ):
                     docstring_nodes.add(id(first.value))
 
     lines = text.splitlines()

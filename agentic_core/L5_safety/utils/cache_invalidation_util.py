@@ -214,7 +214,10 @@ def heal_invalidate_cache(pattern: str = ""):
                 try:
                     invalidated = await self.cache_invalidate(pattern)
                     log.info(f"cache invalidated for pattern '{pattern}' after heal ({invalidated} keys)")
-                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    RuntimeError,
+                    OSError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     log.debug(f"cache invalidation failed: {e}")
             return result
 
@@ -255,7 +258,10 @@ def invalidate_on_file_change(file_path_arg: str = "file_path"):
                 try:
                     await self.cache_invalidate(file_name)
                     log.debug(f"cache invalidated for file: {file_name}")
-                except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    RuntimeError,
+                    OSError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     log.debug(f"File cache invalidation failed: {e}")
             return result
 

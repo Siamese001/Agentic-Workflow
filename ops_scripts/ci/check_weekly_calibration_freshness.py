@@ -53,11 +53,14 @@ def _latest_report() -> Path | None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--max-age-days", type=int, default=8,
+        "--max-age-days",
+        type=int,
+        default=8,
         help="Maximum age in days before the latest report is considered stale (default 8)",
     )
     parser.add_argument(
-        "--smoke-run", action="store_true",
+        "--smoke-run",
+        action="store_true",
         help="Also run the generator script with --no-write style dry probe",
     )
     args = parser.parse_args()
@@ -69,17 +72,12 @@ def main() -> int:
     latest = _latest_report()
     if latest is None:
         print(
-            f"[check_weekly_calibration_freshness] FAIL — no report under "
-            f"{REPORT_DIR.relative_to(REPO_ROOT)}"
+            f"[check_weekly_calibration_freshness] FAIL — no report under {REPORT_DIR.relative_to(REPO_ROOT)}"
         )
-        print(
-            "  Run: python ops_scripts/calibration/ledger_weekly_report.py"
-        )
+        print("  Run: python ops_scripts/calibration/ledger_weekly_report.py")
         return 1
 
-    age = datetime.now(timezone.utc) - datetime.fromtimestamp(
-        latest.stat().st_mtime, tz=timezone.utc
-    )
+    age = datetime.now(timezone.utc) - datetime.fromtimestamp(latest.stat().st_mtime, tz=timezone.utc)
     age_days = age.total_seconds() / 86400
     if age_days > args.max_age_days:
         print(

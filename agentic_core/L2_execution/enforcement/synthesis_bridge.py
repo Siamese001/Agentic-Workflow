@@ -115,9 +115,7 @@ def wrap_synthesis_output(
     if max_bytes <= 0:
         raise SynthesisBridgeError(f"max_bytes must be > 0, got {max_bytes}")
     if source_layer not in {"L0", "L1", "L2", "L3", "L4", "L5", "L6"}:
-        raise SynthesisBridgeError(
-            f"source_layer must be L0..L6, got {source_layer!r}"
-        )
+        raise SynthesisBridgeError(f"source_layer must be L0..L6, got {source_layer!r}")
 
     raw_bytes = text.encode("utf-8")
     original_byte_len = len(raw_bytes)

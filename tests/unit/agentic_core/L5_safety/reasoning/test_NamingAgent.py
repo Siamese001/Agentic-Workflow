@@ -30,7 +30,9 @@ def test_all_exports_declared(mod):
     assert set(mod.__all__) >= expected
 
 
-@pytest.mark.parametrize("name", ["NamingAgent", "get_naming_agent", "TREE_SITTER_AVAILABLE", "PlacementResult"])
+@pytest.mark.parametrize(
+    "name", ["NamingAgent", "get_naming_agent", "TREE_SITTER_AVAILABLE", "PlacementResult"]
+)
 def test_public_surface(mod, name):
     assert hasattr(mod, name)
 

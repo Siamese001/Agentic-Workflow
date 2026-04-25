@@ -91,25 +91,41 @@ EXCLUDE_PREFIXES = (
 
 # Framework / protocol method names that are valid to keep even without
 # an explicit call site.
-FRAMEWORK_METHODS = frozenset({
-    # unittest
-    "setUp", "tearDown", "setUpClass", "tearDownClass",
-    "asyncSetUp", "asyncTearDown",
-    # pytest fixture targets for classes
-    "setup_method", "teardown_method",
-    # Django / FastAPI / Flask lifecycle
-    "dispatch", "get_queryset", "get_context_data",
-    # context-manager protocol
-    "__enter__", "__exit__", "__aenter__", "__aexit__",
-    # async iterator
-    "__aiter__", "__anext__",
-    # dataclass / __init_subclass__
-    "__init_subclass__", "__post_init__",
-    # Pydantic v2
-    "model_post_init", "model_dump", "model_dump_json",
-    # typing Protocol
-    "__class_getitem__",
-})
+FRAMEWORK_METHODS = frozenset(
+    {
+        # unittest
+        "setUp",
+        "tearDown",
+        "setUpClass",
+        "tearDownClass",
+        "asyncSetUp",
+        "asyncTearDown",
+        # pytest fixture targets for classes
+        "setup_method",
+        "teardown_method",
+        # Django / FastAPI / Flask lifecycle
+        "dispatch",
+        "get_queryset",
+        "get_context_data",
+        # context-manager protocol
+        "__enter__",
+        "__exit__",
+        "__aenter__",
+        "__aexit__",
+        # async iterator
+        "__aiter__",
+        "__anext__",
+        # dataclass / __init_subclass__
+        "__init_subclass__",
+        "__post_init__",
+        # Pydantic v2
+        "model_post_init",
+        "model_dump",
+        "model_dump_json",
+        # typing Protocol
+        "__class_getitem__",
+    }
+)
 
 ANCHORS_FILE = REPO_ROOT / "config" / "wiring_dynamic_dispatch_anchors.yaml"
 
@@ -178,9 +194,7 @@ def collect_class_methods(
         if not isinstance(node, ast.ClassDef):
             continue
         for child in node.body:
-            if not isinstance(
-                child, (ast.FunctionDef, ast.AsyncFunctionDef)
-            ):
+            if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
             if any(_is_skipped_decorator(d) for d in child.decorator_list):
                 continue
@@ -193,9 +207,7 @@ def collect_class_methods(
     return results
 
 
-_METHOD_REFERENCE_RE = re.compile(
-    r"(?:\.|[\"'])([a-z][a-zA-Z0-9_]*)\b"
-)
+_METHOD_REFERENCE_RE = re.compile(r"(?:\.|[\"'])([a-z][a-zA-Z0-9_]*)\b")
 
 
 def build_method_name_index(
@@ -254,7 +266,7 @@ def _get_live_class_names(conn) -> set[str]:
     ).fetchall()
     names: set[str] = set()
     for (adg_name,) in rows:
-        tail = adg_name[len("ADG::Symbol::"):]
+        tail = adg_name[len("ADG::Symbol::") :]
         last = tail.rsplit(".", 1)[-1]
         if last and last[0].isupper() and not last.startswith("_"):
             names.add(last)
@@ -345,10 +357,7 @@ def main() -> int:
         return 0
     result = gate.execute()
     if result.baseline_count is not None:
-        print(
-            f"[{gate.gate_id}] current={len(result.violations)} "
-            f"baseline={result.baseline_count}"
-        )
+        print(f"[{gate.gate_id}] current={len(result.violations)} baseline={result.baseline_count}")
     return cli_exit(result)
 
 

@@ -31,6 +31,7 @@ _ACTIVE = "abc123" * 8  # 48 hex chars
 
 # ---- PolicyHashViolation ------------------------------------------------
 
+
 class TestPolicyHashViolation:
     def test_is_runtime_error(self) -> None:
         assert issubclass(PolicyHashViolation, RuntimeError)
@@ -45,6 +46,7 @@ class TestPolicyHashViolation:
 
 
 # ---- Construction / validation ------------------------------------------
+
 
 class TestConstruction:
     def test_valid(self) -> None:
@@ -73,6 +75,7 @@ class TestConstruction:
 
 
 # ---- validate() ---------------------------------------------------------
+
 
 def _packet(policy_hash: str = _ACTIVE, instruction_id: str = "pkt-1") -> object:
     return SimpleNamespace(
@@ -131,6 +134,7 @@ class TestValidate:
 
 # ---- enforce() ----------------------------------------------------------
 
+
 class TestEnforce:
     def test_hard_fail_raises_on_missing(self) -> None:
         e = PolicyHashEnforcer(active_merkle_root=_ACTIVE, mode="HARD_FAIL")
@@ -156,13 +160,17 @@ class TestEnforce:
 
 # ---- derive_root --------------------------------------------------------
 
+
 class TestDeriveRoot:
     def test_sha256_of_canonical_json(self) -> None:
         config = {"b": 2, "a": 1}
-        expected = hashlib.sha256(
-            json.dumps(config, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
-            .encode("utf-8"),
-        ).hexdigest().lower()
+        expected = (
+            hashlib.sha256(
+                json.dumps(config, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8"),
+            )
+            .hexdigest()
+            .lower()
+        )
         assert PolicyHashEnforcer.derive_root(config) == expected
 
     def test_determinism_key_order_invariant(self) -> None:
@@ -184,12 +192,16 @@ class TestDeriveRoot:
 
 # ---- format -------------------------------------------------------------
 
+
 class TestResultFormat:
     def test_pass_format(self) -> None:
         r = PolicyHashValidationResult(
-            passed=True, packet_id="P1",
-            policy_hash_present=True, policy_hash_matches=True,
-            active_root="root-hash-long-value", packet_hash="root-hash-long-value",
+            passed=True,
+            packet_id="P1",
+            policy_hash_present=True,
+            policy_hash_matches=True,
+            active_root="root-hash-long-value",
+            packet_hash="root-hash-long-value",
         )
         s = r.format()
         assert "PASS" in s
@@ -198,9 +210,12 @@ class TestResultFormat:
 
     def test_fail_format(self) -> None:
         r = PolicyHashValidationResult(
-            passed=False, packet_id="P2",
-            policy_hash_present=False, policy_hash_matches=False,
-            active_root="a" * 64, packet_hash="",
+            passed=False,
+            packet_id="P2",
+            policy_hash_present=False,
+            policy_hash_matches=False,
+            active_root="a" * 64,
+            packet_hash="",
             reason="missing",
         )
         s = r.format()

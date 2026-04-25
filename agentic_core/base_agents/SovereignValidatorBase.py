@@ -11,6 +11,7 @@ for validators and `SovereignHealerBase` for healers (never both).
 Layer authority: L_SHARED (base-class surface).
 Plan: `.windsurf/plans/l2-execute-v2-agent-conformance-c8e4f1.md` Wave W1.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

@@ -640,7 +640,9 @@ class ToolReliabilityMixin:
                     # Re-check circuit breaker before retry
                     try:
                         self._check_circuit_breaker(tool_name)
-                    except CircuitBreakerError:  # guardian: allow-silent-swallow -- acceptable exception handling
+                    except (
+                        CircuitBreakerError
+                    ):  # guardian: allow-silent-swallow -- acceptable exception handling
                         break
 
         # All retries exhausted

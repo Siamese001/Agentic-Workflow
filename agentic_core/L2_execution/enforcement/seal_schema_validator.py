@@ -81,25 +81,17 @@ def validate_sealed_artifact(
         value = artifact[spec.name]
         if not isinstance(value, spec.type):
             type_names = _type_names(spec.type)
-            errors.append(
-                f"field {spec.name!r} expected {type_names}, got {type(value).__name__}"
-            )
+            errors.append(f"field {spec.name!r} expected {type_names}, got {type(value).__name__}")
             continue
         if spec.min_len is not None and hasattr(value, "__len__"):
             if len(value) < spec.min_len:
-                errors.append(
-                    f"field {spec.name!r} length {len(value)} below min_len {spec.min_len}"
-                )
+                errors.append(f"field {spec.name!r} length {len(value)} below min_len {spec.min_len}")
         if spec.max_len is not None and hasattr(value, "__len__"):
             if len(value) > spec.max_len:
-                errors.append(
-                    f"field {spec.name!r} length {len(value)} above max_len {spec.max_len}"
-                )
+                errors.append(f"field {spec.name!r} length {len(value)} above max_len {spec.max_len}")
         if spec.enum is not None and isinstance(value, str):
             if value not in spec.enum:
-                errors.append(
-                    f"field {spec.name!r} value {value!r} not in enum {spec.enum}"
-                )
+                errors.append(f"field {spec.name!r} value {value!r} not in enum {spec.enum}")
 
     if not schema.allow_extra:
         extras = set(artifact.keys()) - declared

@@ -157,7 +157,13 @@ class QueryRouter:
 
             return chunks
 
-        except (RuntimeError, ValueError, AttributeError, KeyError, TypeError):  # guardian: allow-double-logging -- structural-search failure logged before re-raise for query diagnostics
+        except (
+            RuntimeError,
+            ValueError,
+            AttributeError,
+            KeyError,
+            TypeError,
+        ):  # guardian: allow-double-logging -- structural-search failure logged before re-raise for query diagnostics
             raise
 
     def _hybrid_search(

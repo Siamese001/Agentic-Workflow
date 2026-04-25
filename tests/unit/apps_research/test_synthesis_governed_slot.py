@@ -71,10 +71,7 @@ class TestSynthesisEngineServiceGovernedSlot:
             source_trace_ids=("upstream-1",),
             model="gemini-2.5-flash",
         )
-        assert (
-            slot.metadata["synthesis_producer"]
-            == "apps_research.services.synthesis_engine_service"
-        )
+        assert slot.metadata["synthesis_producer"] == "apps_research.services.synthesis_engine_service"
         assert slot.metadata["synthesis_source_trace_ids"] == ["upstream-1"]
         assert slot.metadata["synthesis_model"] == "gemini-2.5-flash"
         assert slot.metadata["synthesis_kind"] == "knowledge"
@@ -97,17 +94,12 @@ class TestKnowledgeSynthesisAgentGovernedSlot:
 
     def test_agent_delegates_to_service_and_returns_c0_slot(self) -> None:
         agent = KnowledgeSynthesisAgent()
-        slot = agent.build_governed_slot(
-            {"trace_id": "trace-xyz", "synthesis": _sample_synthesis()}
-        )
+        slot = agent.build_governed_slot({"trace_id": "trace-xyz", "synthesis": _sample_synthesis()})
         assert slot.slot_type == "C0"
         assert slot.authority_level is AuthorityLevel.INFO
         # Provenance producer remains the service's module path because the
         # agent delegates and should not misattribute.
-        assert (
-            slot.metadata["synthesis_producer"]
-            == "apps_research.services.synthesis_engine_service"
-        )
+        assert slot.metadata["synthesis_producer"] == "apps_research.services.synthesis_engine_service"
         # Source trace id from the agent's synthesize() return is carried.
         assert slot.metadata["synthesis_source_trace_ids"] == ["trace-xyz"]
 

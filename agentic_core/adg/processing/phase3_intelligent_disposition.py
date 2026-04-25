@@ -247,8 +247,12 @@ class FeatureExtractor:
                     elif line.startswith("class "):
                         return line.split("(")[0].replace("class ", "")
 
-        except (OSError, UnicodeDecodeError) as exc:  # guardian: allow-log-and-swallow -- file read helper, None returned on failure
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as exc:  # guardian: allow-log-and-swallow -- file read helper, None returned on failure
             import logging
+
             logging.getLogger(__name__).debug("_extract_function_name: could not read %s: %s", file_path, exc)
 
         return None

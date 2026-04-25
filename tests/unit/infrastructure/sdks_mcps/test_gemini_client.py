@@ -249,9 +249,7 @@ def test_from_env_uses_create_gemini_model(monkeypatch: pytest.MonkeyPatch) -> N
     def fake_factory(name: str) -> Any:
         return mock_model
 
-    monkeypatch.setattr(
-        "infrastructure.sdks_mcps.create_gemini_model", fake_factory
-    )
+    monkeypatch.setattr("infrastructure.sdks_mcps.create_gemini_model", fake_factory)
     client = GeminiClient.from_env("gemini-2.5-pro")
     assert client.model_name == "gemini-2.5-pro"
     # Trigger lazy model resolution.
@@ -364,20 +362,20 @@ class _MockStreamingModel:
 
 
 def _chunk(text: str, finish_reason: Any = None) -> SimpleNamespace:
-    candidates = (
-        [SimpleNamespace(finish_reason=finish_reason)] if finish_reason else []
-    )
+    candidates = [SimpleNamespace(finish_reason=finish_reason)] if finish_reason else []
     return SimpleNamespace(text=text, candidates=candidates)
 
 
 def test_send_stream_yields_typed_chunks_in_order() -> None:
     """PRF2.B3: streaming yields ``GeminiStreamChunk`` per SDK delta,
     preserving order and surfacing finish_reason on terminal chunk."""
-    mock_model = _MockStreamingModel([
-        _chunk("The "),
-        _chunk("answer "),
-        _chunk("is 42.", finish_reason="STOP"),
-    ])
+    mock_model = _MockStreamingModel(
+        [
+            _chunk("The "),
+            _chunk("answer "),
+            _chunk("is 42.", finish_reason="STOP"),
+        ]
+    )
     client = GeminiClient(model_factory=lambda name: mock_model)
     ir = _artifact().to_prompt_messages()
 
@@ -408,6 +406,7 @@ def test_send_stream_passes_stream_true_and_generation_config() -> None:
 def test_send_stream_stringifies_enum_finish_reason() -> None:
     """PRF2.B3: SDK enum finish_reason is normalized to its ``.name``
     the same way ``send()`` does."""
+
     class _FinishEnum:
         name = "MAX_TOKENS"
 

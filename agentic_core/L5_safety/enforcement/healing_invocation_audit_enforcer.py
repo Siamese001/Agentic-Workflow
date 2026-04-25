@@ -279,7 +279,10 @@ class HealingInvocationAudit:
                 if method_match:
                     method_body = method_match.group(0)
                     return "super().heal_repository(" in method_body
-        except (RuntimeError, OSError):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+        except (
+            RuntimeError,
+            OSError,
+        ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
             pass
         return False
 

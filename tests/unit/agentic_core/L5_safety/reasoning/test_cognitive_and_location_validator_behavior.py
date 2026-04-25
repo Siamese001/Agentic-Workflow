@@ -55,7 +55,8 @@ class TestCognitiveDispositionAgent:
 
     def test_custom_confidence_threshold(self, tmp_path: Path) -> None:
         agent = CognitiveDispositionAgent(
-            project_root=tmp_path, confidence_threshold=0.9,
+            project_root=tmp_path,
+            confidence_threshold=0.9,
         )
         assert agent.confidence_threshold == 0.9
 
@@ -110,6 +111,7 @@ class TestLocationValidatorAgentValidateSovereignRoots:
         from agentic_core.L5_safety.config.structure_blueprint import (
             ROOT_WHITELIST,
         )
+
         for name in ROOT_WHITELIST:
             (tmp_path / name).mkdir()
         agent = LocationValidatorAgent(project_root=tmp_path)

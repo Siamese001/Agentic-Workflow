@@ -268,7 +268,14 @@ class SovereignRagOrchestrator:
             from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
 
             self.Bm25Store = get_bm25_store()
-        except (AttributeError, ImportError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            ImportError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ):  # guardian: allow-silent-swallow
             self.Bm25Store = None
         self.engine = None
 
@@ -329,7 +336,13 @@ class SovereignRagOrchestrator:
                     ],
                 )
             print(f"Indexed {len(text_chunks)} chunks for {doc_id}")
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             print(f"Document indexing failed: {e}")
 
     # guardian: allow-magic-config
@@ -348,7 +361,13 @@ class SovereignRagOrchestrator:
             from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
 
             _adg_confidence = _gbp(Path(__file__).resolve(), self.project_root).behavioral_score
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("rag_orchestrator: Exception swallowed at L344: %s", e)
@@ -368,7 +387,12 @@ class SovereignRagOrchestrator:
                     }
                     for i, res in enumerate(raw_results)
                 ]
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-silent-swallow
                 print(f"Vector search failed: {e}")
         if self.Bm25Store:
             bm25_candidates = self.Bm25Store.query(query, top_k=top_k * 3)

@@ -29,7 +29,8 @@ class TestBuildRoutingFeatureVector:
 
     def test_grounding_score_honors_explicit_override(self) -> None:
         fv = build_routing_feature_vector(
-            "anything", grounding_need_score=0.12,
+            "anything",
+            grounding_need_score=0.12,
         )
         assert fv.grounding_need_score == pytest.approx(0.12)
 
@@ -39,7 +40,8 @@ class TestBuildRoutingFeatureVector:
 
     def test_work_class_explicit_enum(self) -> None:
         fv = build_routing_feature_vector(
-            "q", work_class=WorkClass.ANALYZE,
+            "q",
+            work_class=WorkClass.ANALYZE,
         )
         assert fv.work_class is WorkClass.ANALYZE
 
@@ -66,7 +68,9 @@ class TestBuildRoutingFeatureVector:
 
     def test_ood_and_budget_passthrough(self) -> None:
         fv = build_routing_feature_vector(
-            "q", ood_score=0.33, budget_headroom_ratio=0.66,
+            "q",
+            ood_score=0.33,
+            budget_headroom_ratio=0.66,
         )
         assert fv.ood_score == pytest.approx(0.33)
         assert fv.budget_headroom_ratio == pytest.approx(0.66)

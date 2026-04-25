@@ -86,17 +86,36 @@ ARGPARSE_DOC_KWARGS = {"help", "description", "epilog", "metavar", "prog", "usag
 # Function names (attribute tail) whose first positional arg is a regex
 # pattern — migrating the literal would corrupt the regex.
 RE_COMPILE_METHODS = {
-    "compile", "match", "search", "fullmatch", "findall", "finditer",
-    "split", "sub", "subn",
+    "compile",
+    "match",
+    "search",
+    "fullmatch",
+    "findall",
+    "finditer",
+    "split",
+    "sub",
+    "subn",
 }
 
 # List / collection names that, by convention, accumulate prose output
 # (markdown, report lines, human-readable messages). A literal appended to
 # one of these is documentation text, not a computed path.
 PROSE_LIST_NAMES = {
-    "lines", "lines_out", "out", "output", "doc", "docs", "body",
-    "messages", "report", "report_lines", "rows", "md", "markdown",
-    "text", "text_lines",
+    "lines",
+    "lines_out",
+    "out",
+    "output",
+    "doc",
+    "docs",
+    "body",
+    "messages",
+    "report",
+    "report_lines",
+    "rows",
+    "md",
+    "markdown",
+    "text",
+    "text_lines",
 }
 
 
@@ -125,9 +144,7 @@ def _is_format_call(call: ast.Call) -> bool:
     return isinstance(func, ast.Attribute) and func.attr == "format"
 
 
-def _is_argparse_doc_kwarg(
-    node: ast.Constant, parents: dict[int, ast.AST]
-) -> bool:
+def _is_argparse_doc_kwarg(node: ast.Constant, parents: dict[int, ast.AST]) -> bool:
     """True if this constant is the value of an argparse help/description/... kwarg."""
     kw = parents.get(id(node))
     if not isinstance(kw, ast.keyword) or kw.arg not in ARGPARSE_DOC_KWARGS:
@@ -148,9 +165,7 @@ def _is_raise_arg(node: ast.Constant, parents: dict[int, ast.AST]) -> bool:
     return False
 
 
-def _is_regex_pattern(
-    node: ast.Constant, parents: dict[int, ast.AST]
-) -> bool:
+def _is_regex_pattern(node: ast.Constant, parents: dict[int, ast.AST]) -> bool:
     """True if node is the first positional arg of an re.<method>(...) call."""
     call = parents.get(id(node))
     if not isinstance(call, ast.Call):
@@ -168,9 +183,7 @@ def _is_regex_pattern(
     return False
 
 
-def _is_prose_append(
-    node: ast.Constant, parents: dict[int, ast.AST]
-) -> bool:
+def _is_prose_append(node: ast.Constant, parents: dict[int, ast.AST]) -> bool:
     """True if node is an arg to <prose_list>.append(...) / extend(...)."""
     call = parents.get(id(node))
     if not isinstance(call, ast.Call):

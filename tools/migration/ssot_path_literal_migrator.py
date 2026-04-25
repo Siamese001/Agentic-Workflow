@@ -25,6 +25,7 @@ Exit codes:
   1  at least one file failed to compile after rewrite (auto-reverted)
   2  invalid args
 """
+
 from __future__ import annotations
 
 import argparse
@@ -35,21 +36,34 @@ import sys
 import tempfile
 from collections import defaultdict
 from pathlib import Path
+
 # literal -> (canonical_symbol, canonical_module)
 # Keys MUST stay as plain string literals, otherwise a re-run of this codemod
 # on itself (if exclusion ever fails) produces a self-referential dict.
 SSOT_MAP: dict[str, tuple[str, str]] = {
-    "artifacts/adg":        ("ADG_ARTIFACTS_DIR",      "agentic_core.L0_routing.config.path_constants"),
-    "artifacts/windsurf":   ("WINDSURF_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
-    ".windsurf/plans":      ("WINDSURF_PLANS_DIR",     "agentic_core.L0_routing.config.path_constants"),
-    ".windsurf/scripts":    ("WINDSURF_SCRIPTS_DIR",   "agentic_core.L0_routing.config.path_constants"),
-    "docs/reports":         ("DOCS_REPORTS_DIR",       "agentic_core.L0_routing.config.path_constants"),
-    "docs/architecture/adr": ("ADR_DIR",               "agentic_core.L0_routing.config.path_constants"),
+    "artifacts/adg": ("ADG_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    "artifacts/windsurf": ("WINDSURF_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    ".windsurf/plans": ("WINDSURF_PLANS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    ".windsurf/scripts": ("WINDSURF_SCRIPTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    "docs/reports": ("DOCS_REPORTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    "docs/architecture/adr": ("ADR_DIR", "agentic_core.L0_routing.config.path_constants"),
 }
 
-ROOTS = ("agentic_core", "apps_rg", "apps_shared", "apps_lic", "apps_eval",
-         "apps_exec", "apps_research", "apps_rfp", "apps_underwriting_ai",
-         "tools", "ops_scripts", "system_learning", "infrastructure")
+ROOTS = (
+    "agentic_core",
+    "apps_rg",
+    "apps_shared",
+    "apps_lic",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
+)
 
 EXCLUDE_PATTERNS = (
     # Path-segment matches — accept either / or \ as separator AND allow
@@ -76,6 +90,7 @@ EXCLUDE_PATTERNS = (
 # ---------------------------------------------------------------------------
 # AST analysis
 # ---------------------------------------------------------------------------
+
 
 def _is_docstring_node(tree: ast.Module, target_id: int) -> bool:
     """True if target_id is the id of a docstring first-statement Constant."""
@@ -127,16 +142,18 @@ def _find_sites(path: Path) -> list[dict]:
             # Only migrate when node has positions (py3.8+)
             if getattr(node, "lineno", None) is None:
                 continue
-            sites.append({
-                "literal": val,
-                "symbol": sym,
-                "module": module,
-                "kind": kind,
-                "lineno": node.lineno,
-                "col": node.col_offset,
-                "end_col": node.end_col_offset,
-                "end_lineno": getattr(node, "end_lineno", node.lineno),
-            })
+            sites.append(
+                {
+                    "literal": val,
+                    "symbol": sym,
+                    "module": module,
+                    "kind": kind,
+                    "lineno": node.lineno,
+                    "col": node.col_offset,
+                    "end_col": node.end_col_offset,
+                    "end_lineno": getattr(node, "end_lineno", node.lineno),
+                }
+            )
             break  # one literal per node
     return sites
 
@@ -144,6 +161,7 @@ def _find_sites(path: Path) -> list[dict]:
 # ---------------------------------------------------------------------------
 # Text rewrite
 # ---------------------------------------------------------------------------
+
 
 def _rewrite_literal(line: str, col: int, end_col: int, replacement: str, kind: str) -> str:
     """Replace the string literal between col..end_col with `replacement`.
@@ -180,7 +198,7 @@ def _inject_import(text: str, tree: ast.Module, module: str, symbol: str) -> str
         # through to the "no existing import" branch and ADD a new line.
         start = existing_node.lineno - 1
         end = getattr(existing_node, "end_lineno", existing_node.lineno) - 1
-        block_lines = lines[start:end + 1]
+        block_lines = lines[start : end + 1]
         has_inline_comment = any("#" in bl for bl in block_lines)
         if not has_inline_comment:
             new_names = sorted({*existing_names, symbol})
@@ -189,7 +207,7 @@ def _inject_import(text: str, tree: ast.Module, module: str, symbol: str) -> str
             else:
                 body = ",\n    ".join(new_names)
                 replacement = f"from {module} import (\n    {body},\n)\n"
-            lines[start:end + 1] = [replacement]
+            lines[start : end + 1] = [replacement]
             return "".join(lines)
         # else: keep the commented block intact and add a separate import below
 
@@ -259,11 +277,13 @@ def _apply_file(path: Path, sites: list[dict], dry_run: bool) -> tuple[bool, lis
             trail, line_text = "\n", line_text[:-1]
         for s in line_sites:
             line_text = _rewrite_literal(
-                line_text, s["col"], s["end_col"], s["symbol"], s["kind"],
+                line_text,
+                s["col"],
+                s["end_col"],
+                s["symbol"],
+                s["kind"],
             )
-            messages.append(
-                f"{path}:{ln}  {s['literal']!r} [{s['kind']}] -> {s['symbol']}"
-            )
+            messages.append(f"{path}:{ln}  {s['literal']!r} [{s['kind']}] -> {s['symbol']}")
         lines[ln - 1] = line_text + trail
 
     new_text = "".join(lines)
@@ -302,6 +322,7 @@ def _apply_file(path: Path, sites: list[dict], dry_run: bool) -> tuple[bool, lis
         return False, [f"{path}: post-rewrite compile failed, reverted: {exc}"]
     finally:
         import shutil  # noqa: PLC0415 -- local: only needed on the write path
+
         shutil.rmtree(tmp_dir, ignore_errors=True)
     messages.append(f"  WROTE {path}  ({len(sites)} site(s))")
     return True, messages
@@ -311,16 +332,21 @@ def _apply_file(path: Path, sites: list[dict], dry_run: bool) -> tuple[bool, lis
 # Driver
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true", help="preview without writing")
     parser.add_argument("--apply", action="store_true", help="write changes to disk")
     parser.add_argument(
-        "--limit", type=int, default=0,
+        "--limit",
+        type=int,
+        default=0,
         help="max number of files to migrate (0 = all)",
     )
     parser.add_argument(
-        "--only-literal", action="append", default=[],
+        "--only-literal",
+        action="append",
+        default=[],
         help="restrict to one literal (repeatable). e.g. --only-literal artifacts/adg",
     )
     args = parser.parse_args()
@@ -351,7 +377,7 @@ def main() -> int:
                 all_sites[py] = sites
 
     if args.limit:
-        keep = list(all_sites)[:args.limit]
+        keep = list(all_sites)[: args.limit]
         all_sites = {p: all_sites[p] for p in keep}
 
     total_sites = sum(len(v) for v in all_sites.values())

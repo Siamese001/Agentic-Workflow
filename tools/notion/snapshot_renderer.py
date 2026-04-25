@@ -26,6 +26,7 @@ code-block-and-toggle-free markdown rendering. Target size ≤5 KB.
 No hardcoded secrets. NOTION_TOKEN resolved from env or .env.
 Subprocess-free. Uses only urllib.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -72,8 +73,7 @@ def _headers(tok: str) -> dict[str, str]:
     }
 
 
-def _http(method: str, url: str, tok: str, body: dict | None = None,
-          timeout: int = 30) -> dict[str, Any]:
+def _http(method: str, url: str, tok: str, body: dict | None = None, timeout: int = 30) -> dict[str, Any]:
     data = json.dumps(body).encode("utf-8") if body else None
     req = urllib.request.Request(url, data=data, method=method, headers=_headers(tok))
     for attempt in range(3):
@@ -107,9 +107,7 @@ def fetch_backlog_rows(tok: str) -> list[dict]:
         body: dict = {"page_size": 100}
         if cursor:
             body["start_cursor"] = cursor
-        resp = _http("POST",
-                     f"{NOTION_API}/data_sources/{BACKLOG_DS_ID}/query",
-                     tok, body)
+        resp = _http("POST", f"{NOTION_API}/data_sources/{BACKLOG_DS_ID}/query", tok, body)
         rows.extend(resp.get("results", []))
         if not resp.get("has_more"):
             break
@@ -153,33 +151,28 @@ def _plan_file(row: dict) -> str:
 
 def build_markdown(rows: list[dict]) -> str:
     """Compose the snapshot markdown body. Kept deliberately compact."""
-    open_rows = [r for r in rows if _status(r) not in ("Done", "Complete",
-                                                        "Descoped")]
-    bands: collections.Counter[str] = collections.Counter(
-        _pband(r) for r in open_rows)
-    all_bands: collections.Counter[str] = collections.Counter(
-        _pband(r) for r in rows)
+    open_rows = [r for r in rows if _status(r) not in ("Done", "Complete", "Descoped")]
+    bands: collections.Counter[str] = collections.Counter(_pband(r) for r in open_rows)
+    all_bands: collections.Counter[str] = collections.Counter(_pband(r) for r in rows)
 
     # Top-N by impact, P1+P2 only, open only
-    scored = [r for r in open_rows
-              if _pband(r) in ("P1", "P2") and _impact(r) is not None]
+    scored = [r for r in open_rows if _pband(r) in ("P1", "P2") and _impact(r) is not None]
     scored.sort(key=lambda r: _impact(r) or 0.0, reverse=True)
     top = scored[:TOP_N]
 
-    stale = [r for r in open_rows
-             if _pband(r) == "UNSCORED" and _status(r) == "Todo"]
+    stale = [r for r in open_rows if _pband(r) == "UNSCORED" and _status(r) == "Todo"]
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines: list[str] = []
     lines.append(f"**Generated:** {now}")
     lines.append(f"**Source:** Wave/Phase Convergence (`{BACKLOG_DS_ID[:8]}...`)")
-    lines.append(f"**Total rows:** {len(rows)} | **Open:** {len(open_rows)} "
-                 f"| **Stale (UNSCORED Todo):** {len(stale)}")
+    lines.append(
+        f"**Total rows:** {len(rows)} | **Open:** {len(open_rows)} | **Stale (UNSCORED Todo):** {len(stale)}"
+    )
     lines.append("")
     lines.append("## Band distribution (open only)")
     for b in ("P0", "P1", "P2", "P3", "P4", "P5", "UNSCORED"):
-        lines.append(f"- **{b}**: {bands.get(b, 0)} open / "
-                     f"{all_bands.get(b, 0)} total")
+        lines.append(f"- **{b}**: {bands.get(b, 0)} open / {all_bands.get(b, 0)} total")
     lines.append("")
     lines.append(f"## Top {TOP_N} open P1+P2 by impact")
     lines.append("")
@@ -187,14 +180,11 @@ def build_markdown(rows: list[dict]) -> str:
     lines.append("|---|------|--------|-------|---------|-------|")
     for i, r in enumerate(top, 1):
         title = _title(r)[:70].replace("|", "/")
-        lines.append(f"| {i} | {_pband(r)} | {_impact(r):.1f} | "
-                     f"{_layer(r)} | {_surface(r)} | {title} |")
+        lines.append(f"| {i} | {_pband(r)} | {_impact(r):.1f} | {_layer(r)} | {_surface(r)} | {title} |")
     lines.append("")
     lines.append("## Maintenance")
-    lines.append(f"- {len(stale)} open rows are UNSCORED "
-                 f"(no `[Pn]` prefix; scorer needed)")
-    lines.append("- Regenerate via `python tools/notion/snapshot_renderer.py "
-                 "--regenerate`")
+    lines.append(f"- {len(stale)} open rows are UNSCORED (no `[Pn]` prefix; scorer needed)")
+    lines.append("- Regenerate via `python tools/notion/snapshot_renderer.py --regenerate`")
     return "\n".join(lines)
 
 
@@ -202,8 +192,7 @@ def _paragraph(text: str) -> dict:
     return {
         "object": "block",
         "type": "paragraph",
-        "paragraph": {"rich_text": [{"type": "text",
-                                      "text": {"content": text}}]},
+        "paragraph": {"rich_text": [{"type": "text", "text": {"content": text}}]},
     }
 
 
@@ -211,8 +200,7 @@ def _heading(text: str, level: int = 2) -> dict:
     return {
         "object": "block",
         "type": f"heading_{level}",
-        f"heading_{level}": {"rich_text": [{"type": "text",
-                                             "text": {"content": text}}]},
+        f"heading_{level}": {"rich_text": [{"type": "text", "text": {"content": text}}]},
     }
 
 
@@ -246,12 +234,8 @@ def render_blocks(md: str) -> list[dict]:
 def create_snapshot_page(tok: str) -> str:
     body = {
         "parent": {"type": "page_id", "page_id": PARENT_PAGE_ID},
-        "properties": {
-            "title": [{"type": "text",
-                       "text": {"content": "Backlog Snapshot"}}]
-        },
-        "children": [_paragraph("Snapshot page — regenerated by "
-                                "tools/notion/snapshot_renderer.py")],
+        "properties": {"title": [{"type": "text", "text": {"content": "Backlog Snapshot"}}]},
+        "children": [_paragraph("Snapshot page — regenerated by tools/notion/snapshot_renderer.py")],
     }
     resp = _http("POST", f"{NOTION_API}/pages", tok, body)
     return resp["id"]
@@ -275,8 +259,7 @@ def clear_page_children(tok: str, page_id: str) -> None:
 def append_children(tok: str, page_id: str, blocks: list[dict]) -> None:
     # Notion caps appends at 100 children per call
     for i in range(0, len(blocks), 100):
-        _http("PATCH", f"{NOTION_API}/blocks/{page_id}/children", tok,
-              {"children": blocks[i:i + 100]})
+        _http("PATCH", f"{NOTION_API}/blocks/{page_id}/children", tok, {"children": blocks[i : i + 100]})
 
 
 def regenerate(tok: str, page_id: str) -> dict:
@@ -287,8 +270,13 @@ def regenerate(tok: str, page_id: str) -> dict:
     clear_page_children(tok, page_id)
     append_children(tok, page_id, blocks)
     elapsed = time.time() - t0
-    return {"page_id": page_id, "rows": len(rows), "md_chars": len(md),
-            "blocks": len(blocks), "elapsed_s": round(elapsed, 2)}
+    return {
+        "page_id": page_id,
+        "rows": len(rows),
+        "md_chars": len(md),
+        "blocks": len(blocks),
+        "elapsed_s": round(elapsed, 2),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -308,25 +296,21 @@ def main(argv: list[str] | None = None) -> int:
         page_id = create_snapshot_page(tok)
         PAGE_ID_FILE.write_text(page_id, encoding="utf-8")
         print(f"Created Backlog Snapshot page: {page_id}")
-        _audit({"op": "create_page", "page_id": page_id,
-                "ts": datetime.now(timezone.utc).isoformat()})
+        _audit({"op": "create_page", "page_id": page_id, "ts": datetime.now(timezone.utc).isoformat()})
         print("Running initial regenerate...")
         result = regenerate(tok, page_id)
         print(f"Regenerated: {result}")
-        _audit({"op": "regenerate", **result,
-                "ts": datetime.now(timezone.utc).isoformat()})
+        _audit({"op": "regenerate", **result, "ts": datetime.now(timezone.utc).isoformat()})
         return 0
 
     # --regenerate
     if not PAGE_ID_FILE.exists():
-        print("No snapshot page yet. Run with --create-page first.",
-              file=sys.stderr)
+        print("No snapshot page yet. Run with --create-page first.", file=sys.stderr)
         return 2
     page_id = PAGE_ID_FILE.read_text(encoding="utf-8").strip()
     result = regenerate(tok, page_id)
     print(f"Regenerated: {result}")
-    _audit({"op": "regenerate", **result,
-            "ts": datetime.now(timezone.utc).isoformat()})
+    _audit({"op": "regenerate", **result, "ts": datetime.now(timezone.utc).isoformat()})
     return 0
 
 

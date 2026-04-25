@@ -81,6 +81,7 @@ def _build_context_gateway() -> Any:
         return gw
     return build_anthropic_context_gateway()
 
+
 # Setup logging (needed by ADGNodeResolver below)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -731,9 +732,7 @@ def ingest_code(
         )
         precomputed_embeddings = apply_late_chunking(all_chunks)
         if precomputed_embeddings is None:
-            logger.warning(
-                "Late chunking returned None (deps unavailable); falling back to default embedder"
-            )
+            logger.warning("Late chunking returned None (deps unavailable); falling back to default embedder")
         elif len(precomputed_embeddings) != len(all_chunks):
             logger.error(
                 "Late chunking output length (%d) != chunks (%d); falling back",
@@ -753,9 +752,7 @@ def ingest_code(
         documents = [chunk["content"] for chunk in batch]
         metadatas = [chunk["metadata"] for chunk in batch]
         batch_embeddings = (
-            precomputed_embeddings[i : i + batch_size]
-            if precomputed_embeddings is not None
-            else None
+            precomputed_embeddings[i : i + batch_size] if precomputed_embeddings is not None else None
         )
 
         chroma_client.add_documents(

@@ -288,7 +288,12 @@ class ReplayEvaluationRunner:
                 payload=delta.to_dict(),
             )
             self.l4_store.put(artifact)
-        except (AttributeError, OSError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            AttributeError,
+            OSError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("replay_eval_runner: Exception swallowed at L292: %s", e)

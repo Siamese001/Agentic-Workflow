@@ -112,15 +112,13 @@ def derive_step_identity(derivation: IdentityDerivation) -> StepIdentity:
     extra_caps = derivation.requested_capabilities - derivation.parent_capabilities
     if extra_caps:
         raise CapabilityEscalation(
-            f"step {derivation.step_id!r} requested capabilities outside parent: "
-            f"{sorted(extra_caps)}"
+            f"step {derivation.step_id!r} requested capabilities outside parent: {sorted(extra_caps)}"
         )
 
     extra_auds = derivation.requested_audiences - derivation.parent_audiences
     if extra_auds:
         raise AudienceEscalation(
-            f"step {derivation.step_id!r} requested audiences outside parent: "
-            f"{sorted(extra_auds)}"
+            f"step {derivation.step_id!r} requested audiences outside parent: {sorted(extra_auds)}"
         )
 
     issued_at = time.time()

@@ -184,18 +184,14 @@ class HealResult:
         if not self.parent_packet_id or not self.parent_packet_id.strip():
             raise ValueError("HealResult.parent_packet_id is required (non-empty)")
         if not isinstance(self.repair_count, int) or self.repair_count < 0:
-            raise ValueError(
-                f"HealResult.repair_count must be int >= 0; got {self.repair_count!r}"
-            )
+            raise ValueError(f"HealResult.repair_count must be int >= 0; got {self.repair_count!r}")
         if not self.policy_hash or not self.blueprint_hash:
             raise ValueError(
                 "HealResult requires non-empty policy_hash and blueprint_hash "
                 "per L2 Execute v2 §E4 snapshot-binding invariant"
             )
         if not isinstance(self.evidence, dict):
-            raise ValueError(
-                f"HealResult.evidence must be dict; got {type(self.evidence).__name__}"
-            )
+            raise ValueError(f"HealResult.evidence must be dict; got {type(self.evidence).__name__}")
 
     def to_dict(self) -> dict[str, Any]:
         return {

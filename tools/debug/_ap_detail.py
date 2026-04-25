@@ -1,6 +1,8 @@
 """Anti-pattern detail: by evidence type (detector) and disposition."""
+
 import sqlite3
 from pathlib import Path
+
 p = sorted(Path("artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda x: x.stat().st_mtime)[-1]
 c = sqlite3.connect(p)
 

@@ -41,6 +41,7 @@ class _FakeProposal:
 
 # ---- BlastRadiusMetrics ---------------------------------------------
 
+
 class TestBlastRadiusMetrics:
     def test_frozen(self) -> None:
         m = BlastRadiusMetrics(
@@ -54,6 +55,7 @@ class TestBlastRadiusMetrics:
 
 
 # ---- BlastRadiusCalculator ------------------------------------------
+
 
 class TestBlastRadiusCalculator:
     def test_count_affected_objects_dataclass(self) -> None:
@@ -111,6 +113,7 @@ class TestBlastRadiusCalculator:
 
 # ---- BlastRadiusEnforcer --------------------------------------------
 
+
 class TestBlastRadiusEnforcer:
     def test_enforce_stores_metrics(self) -> None:
         e = BlastRadiusEnforcer()
@@ -156,6 +159,7 @@ class TestBlastRadiusEnforcer:
 
 
 # ---- Module-level exports -------------------------------------------
+
 
 class TestModuleExports:
     def test_enforce_and_get(self) -> None:

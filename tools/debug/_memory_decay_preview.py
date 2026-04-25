@@ -20,9 +20,7 @@ def main() -> None:
     now = time.time()
 
     with store.connection() as conn:
-        rows = conn.execute(
-            "SELECT name, entity_type, confidence, last_reinforced FROM entities"
-        ).fetchall()
+        rows = conn.execute("SELECT name, entity_type, confidence, last_reinforced FROM entities").fetchall()
 
     by_type_total: Counter[str] = Counter()
     by_type_visible: Counter[str] = Counter()
@@ -47,10 +45,7 @@ def main() -> None:
     print(f"{'entity_type':<25} {'total':>7} {'visible':>9} {'hidden':>8}")
     print("-" * 55)
     for et in sorted(by_type_total, key=lambda x: -by_type_total[x]):
-        print(
-            f"{et:<25} {by_type_total[et]:>7} "
-            f"{by_type_visible[et]:>9} {by_type_hidden[et]:>8}"
-        )
+        print(f"{et:<25} {by_type_total[et]:>7} {by_type_visible[et]:>9} {by_type_hidden[et]:>8}")
     print("-" * 55)
     print(
         f"{'TOTAL':<25} {sum(by_type_total.values()):>7} "

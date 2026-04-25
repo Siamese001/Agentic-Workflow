@@ -10,7 +10,7 @@ Design invariants:
 - L1 must not import from L0 or L5. This module imports only from L4 state stores and
   system_learning engines — layer boundaries enforced at import time.
 """
-# guardian: allow-silent_swallower -- ADG violation exemption
+# review: allow-silent-swallower -- ADG violation exemption
 
 from __future__ import annotations
 
@@ -324,12 +324,24 @@ class HealingMemoryRetriever:
             from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             query_vec = bmg_embed_text(signal_text)
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-silent-swallow
             logger.debug("[HealingMemoryRetriever] bmg_embed_text unavailable: %s", exc)
             return []
         try:
             raw = self._store.search(self._index_id, query_vec, top_k=effective_top_k, cutoff=cutoff)
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-silent-swallow
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-silent-swallow
             logger.debug("[HealingMemoryRetriever] store.search failed: %s", exc)
             return []
         results: list[SimilarIncident] = []
@@ -380,7 +392,12 @@ class HealingMemoryRetriever:
                 top_k_used=effective_top_k,
                 timestamp_utc=int(time.time() * 1000),
             )
-        except (ImportError, OSError, RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow -- system learning tracking: non-fatal, continues without tracking
+        except (
+            ImportError,
+            OSError,
+            RuntimeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow -- system learning tracking: non-fatal, continues without tracking
             # System learning unavailable - continue without tracking
             logging.getLogger(__name__).warning(
                 "healing_memory_retriever: system learning tracking unavailable: %s", e
@@ -418,7 +435,9 @@ def build_retriever(
         if disk_dir.exists():
             try:
                 store.load_from_disk(index_id, disk_dir)
-            except ManifestIntegrityError as e:  # guardian: allow-log-and-swallow -- index load: non-fatal, starts with empty store
+            except (
+                ManifestIntegrityError
+            ) as e:  # guardian: allow-log-and-swallow -- index load: non-fatal, starts with empty store
                 logging.getLogger(__name__).warning(
                     "healing_memory_retriever: index load failed, starting with empty store: %s", e
                 )

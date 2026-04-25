@@ -53,14 +53,11 @@ class NotionTransport(Protocol):
     return a page record with ``id`` or raise.
     """
 
-    def create_page(self, database_id: str, properties: Mapping[str, Any]) -> Mapping[str, Any]:
-        ...
+    def create_page(self, database_id: str, properties: Mapping[str, Any]) -> Mapping[str, Any]: ...
 
-    def retrieve_page(self, page_id: str) -> Mapping[str, Any]:
-        ...
+    def retrieve_page(self, page_id: str) -> Mapping[str, Any]: ...
 
-    def archive_page(self, page_id: str) -> Mapping[str, Any]:
-        ...
+    def archive_page(self, page_id: str) -> Mapping[str, Any]: ...
 
 
 @dataclass(frozen=True)
@@ -91,9 +88,7 @@ class NotionProperties:
             "Approver Pool": {"select": {"name": self.approver_pool}},
             "Timeout (s)": {"number": self.timeout_s},
             "Status": {"select": {"name": self.status}},
-            "Policy Snapshot": {
-                "rich_text": [{"text": {"content": self.policy_snapshot}}]
-            },
+            "Policy Snapshot": {"rich_text": [{"text": {"content": self.policy_snapshot}}]},
             "Envelope": {"rich_text": [{"text": {"content": self.envelope_json}}]},
         }
 
@@ -158,9 +153,7 @@ class NotionApprovalAdapter(HumanApprovalAdapter):
             return None
         if status == STATUS_CANCELLED:
             # Cancelled without explicit outcome — treat as TIMEOUT fallback.
-            return ApprovalOutcome(
-                kind=ApprovalOutcomeKind.TIMEOUT, reason_code=STATUS_CANCELLED
-            )
+            return ApprovalOutcome(kind=ApprovalOutcomeKind.TIMEOUT, reason_code=STATUS_CANCELLED)
         kind = _OUTCOME_BY_STATUS.get(status)
         if kind is None:
             raise AdapterError(f"Unrecognized Notion Status value: {status!r}")
@@ -186,9 +179,7 @@ class NotionApprovalAdapter(HumanApprovalAdapter):
 
     def _require_handle(self, handle: ApprovalHandle) -> None:
         if handle.adapter_kind != self.kind:
-            raise ValueError(
-                f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}"
-            )
+            raise ValueError(f"handle.adapter_kind {handle.adapter_kind!r} != {self.kind!r}")
         if not handle.external_id:
             raise ValueError("handle.external_id is empty")
 

@@ -215,7 +215,12 @@ class SovereignMcpRouter(SovereignBaseAgent):
             await self.manager.connect(self.role)
             self.initialized = True
             Logger.info(f"[L3 MCP] Sovereign router ARMED for role '{self.role}'")
-        except (RuntimeError, ValueError, FileNotFoundError, OSError) as e:  # guardian: allow-double-logging -- MCP breach recorded in authority register before re-raise; critical log is audit-required
+        except (
+            RuntimeError,
+            ValueError,
+            FileNotFoundError,
+            OSError,
+        ) as e:  # guardian: allow-double-logging -- MCP breach recorded in authority register before re-raise; critical log is audit-required
             Logger.critical(f"[L3 MCP BREACH] Initialization failed: {e}")
             get_mcp_authority().record_breach(str(e))
             raise
@@ -300,7 +305,10 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             except (RuntimeError, ValueError, TypeError) as wiki_e:
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
                                 return {"status": "l2_deepwiki_unavailable", "reason": str(wiki_e)}
-                except (ImportError, AttributeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                except (
+                    ImportError,
+                    AttributeError,
+                ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                     Logger.debug(
                         f"DeepWiki MCP unavailable: {e}"
                     )  # guardian: allow-log-and-swallow -- DeepWiki MCP: optional routing target, non-fatal

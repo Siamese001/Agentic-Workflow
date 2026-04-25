@@ -11,7 +11,7 @@ def validate_yaml_structure():
 
     # Load YAML
     try:
-        with open('unified_structure_restructured.yaml', encoding='utf-8') as f:
+        with open("unified_structure_restructured.yaml", encoding="utf-8") as f:
             data = yaml.safe_load(f)
         print("✅ YAML parses correctly")
     except Exception as e:
@@ -54,6 +54,7 @@ def validate_yaml_structure():
 
     # CRITERION 3: Layer names shortened
     expected_layers = ["plan-layer", "orc-layer", "exec-layer", "mem-layer", "safe-layer"]
+
     def check_layers(obj):
         if isinstance(obj, dict):
             for key, value in obj.items():
@@ -74,27 +75,59 @@ def validate_yaml_structure():
         print(f"   ❌ {layers_result[1]}")
 
     # CRITERION 4: L4 domains are engine-specific
-    rg_domains = ["get-resume-info", "score-job-fit", "pick-best-resume-content",
-                  "check-resume-rules", "check-resume-structure", "use-resume-tools",
-                  "update-resume-state", "find-resume-problems", "improve-resume-output",
-                  "manage-resume-costs", "understand-resume-meaning", "convert-resume-to-vectors"]
+    rg_domains = [
+        "get-resume-info",
+        "score-job-fit",
+        "pick-best-resume-content",
+        "check-resume-rules",
+        "check-resume-structure",
+        "use-resume-tools",
+        "update-resume-state",
+        "find-resume-problems",
+        "improve-resume-output",
+        "manage-resume-costs",
+        "understand-resume-meaning",
+        "convert-resume-to-vectors",
+    ]
 
-    lic_domains = ["get-recipient-info", "score-personalization", "pick-best-message",
-                   "check-outreach-rules", "check-message-structure", "use-message-tools",
-                   "update-outreach-state", "find-message-problems", "improve-message-output",
-                   "manage-outreach-costs", "understand-message-meaning", "convert-message-to-vectors"]
+    lic_domains = [
+        "get-recipient-info",
+        "score-personalization",
+        "pick-best-message",
+        "check-outreach-rules",
+        "check-message-structure",
+        "use-message-tools",
+        "update-outreach-state",
+        "find-message-problems",
+        "improve-message-output",
+        "manage-outreach-costs",
+        "understand-message-meaning",
+        "convert-message-to-vectors",
+    ]
 
-    shared_domains = ["get-shared-info", "convert-shared-content", "pick-best-result",
-                      "combine-scores", "check-data-structure", "check-shared-rules",
-                      "use-shared-tools", "update-shared-state", "find-shared-problems",
-                      "improve-shared-output", "manage-shared-costs", "understand-shared-meaning"]
+    shared_domains = [
+        "get-shared-info",
+        "convert-shared-content",
+        "pick-best-result",
+        "combine-scores",
+        "check-data-structure",
+        "check-shared-rules",
+        "use-shared-tools",
+        "update-shared-state",
+        "find-shared-problems",
+        "improve-shared-output",
+        "manage-shared-costs",
+        "understand-shared-meaning",
+    ]
 
     def check_engine_domains(obj, engine_name, expected_domains, path=""):
         if isinstance(obj, dict):
             for key, value in obj.items():
                 if engine_name in path and key in expected_domains:
                     continue
-                elif engine_name in path and key not in expected_domains and "-" in key and "phase" not in key:
+                elif (
+                    engine_name in path and key not in expected_domains and "-" in key and "phase" not in key
+                ):
                     return False, f"Unexpected domain in {engine_name}: {key}"
                 result = check_engine_domains(value, engine_name, expected_domains, f"{path}/{key}")
                 if not result[0]:
@@ -115,6 +148,7 @@ def validate_yaml_structure():
 
     # CRITERION 5: L5 names are short (≤10 chars)
     expected_l5 = ["general", "utility", "policy", "semantic", "routing", "embedding", "refinement"]
+
     def check_l5_names(obj, path=""):
         if isinstance(obj, dict):
             for key, value in obj.items():
@@ -135,15 +169,26 @@ def validate_yaml_structure():
         print(f"   ❌ {l5_result[1]}")
 
     # CRITERION 6: L6 names are layman-friendly
-    expected_l6 = ["understand-request", "prepare-information", "compare-meaning",
-                   "adjust-scores", "retry-task", "update-memory", "use-a-tool", "check-safety"]
+    expected_l6 = [
+        "understand-request",
+        "prepare-information",
+        "compare-meaning",
+        "adjust-scores",
+        "retry-task",
+        "update-memory",
+        "use-a-tool",
+        "check-safety",
+    ]
+
     def check_l6_names(obj, path=""):
         if isinstance(obj, dict):
             for key, value in obj.items():
                 if key in expected_l6:
                     continue
                 # Check if this looks like L6 (has L7 files)
-                if isinstance(value, dict) and any(str(k).endswith('.py') or str(k) == 'null' for k in value.values()):
+                if isinstance(value, dict) and any(
+                    str(k).endswith(".py") or str(k) == "null" for k in value.values()
+                ):
                     return False, f"Unexpected L6 name: {key}"
                 result = check_l6_names(value, f"{path}/{key}")
                 if not result[0]:
@@ -181,7 +226,9 @@ def validate_yaml_structure():
         if isinstance(obj, dict):
             for key, value in obj.items():
                 # Check if we've reached a file (L7)
-                if isinstance(value, dict) and any(str(k).endswith('.py') or str(k) == 'null' for k in value.values()):
+                if isinstance(value, dict) and any(
+                    str(k).endswith(".py") or str(k) == "null" for k in value.values()
+                ):
                     if current_depth != target_depth:
                         return False, f"File at wrong depth: {key} at depth {current_depth}"
                 else:
@@ -201,9 +248,9 @@ def validate_yaml_structure():
         violations = []
         if isinstance(obj, dict):
             for key, value in obj.items():
-                if isinstance(value, dict) and any(str(k).endswith('.py') for k in value.keys()):
+                if isinstance(value, dict) and any(str(k).endswith(".py") for k in value.keys()):
                     for filename in value.keys():
-                        if str(filename).endswith('.py') and len(str(filename)) < 10:
+                        if str(filename).endswith(".py") and len(str(filename)) < 10:
                             violations.append(f"Short filename: {path}/{key}/{filename}")
                 violations.extend(check_l7_filenames(value, f"{path}/{key}"))
         return violations
@@ -234,10 +281,20 @@ def validate_yaml_structure():
             print(f"   ❌ {violation}")
 
     # CRITERION 11: No legacy ops domains remain
-    legacy_domains = ["retrieval-ops", "vectorization-ops", "ranking-ops", "cost-budget-ops",
-                      "state-management-ops", "constraint-check-ops", "diagnostics-ops",
-                      "schema-validation-ops", "tool-adapter-ops", "semantic-evaluators",
-                      "embedding-operations", "response-refinement"]
+    legacy_domains = [
+        "retrieval-ops",
+        "vectorization-ops",
+        "ranking-ops",
+        "cost-budget-ops",
+        "state-management-ops",
+        "constraint-check-ops",
+        "diagnostics-ops",
+        "schema-validation-ops",
+        "tool-adapter-ops",
+        "semantic-evaluators",
+        "embedding-operations",
+        "response-refinement",
+    ]
 
     def check_no_legacy(obj, path=""):
         for key in obj.keys() if isinstance(obj, dict) else []:
@@ -261,7 +318,7 @@ def validate_yaml_structure():
         if isinstance(obj, dict):
             for key, value in obj.items():
                 # Check L2-L6 names (not L1 root, not L7 files)
-                if len(key) > 20 and not key.endswith('.py') and path != "":
+                if len(key) > 20 and not key.endswith(".py") and path != "":
                     violations.append(f"Name too long ({len(key)} chars): {path}/{key}")
                 if isinstance(value, dict):
                     violations.extend(check_name_lengths(value, f"{path}/{key}"))
@@ -294,6 +351,7 @@ def validate_yaml_structure():
         print(f"   Failed: {failed_criteria}")
 
     return all_true
+
 
 if __name__ == "__main__":
     validate_yaml_structure()

@@ -23,9 +23,7 @@ pytestmark = pytest.mark.unit
 
 @pytest.fixture(scope="module")
 def oh():
-    return pytest.importorskip(
-        "agentic_core.L3_orchestration.types.orchestration_handoff_contract"
-    )
+    return pytest.importorskip("agentic_core.L3_orchestration.types.orchestration_handoff_contract")
 
 
 # --------------------------------------------------------------------------- #
@@ -146,9 +144,14 @@ class TestCreateFactory:
 
     def test_handoff_id_is_24_hex(self, oh):
         c = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="reason",
-            input_payload={}, policy_hash="p", trace_id="t-hid",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="reason",
+            input_payload={},
+            policy_hash="p",
+            trace_id="t-hid",
         )
         assert len(c.handoff_id) == 24
         assert all(ch in "0123456789abcdef" for ch in c.handoff_id)
@@ -156,9 +159,14 @@ class TestCreateFactory:
     def test_reason_hash_matches_sha256_16(self, oh):
         reason = "delegate to child agent"
         c = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason=reason,
-            input_payload="payload", policy_hash="p", trace_id="t-rhash",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason=reason,
+            input_payload="payload",
+            policy_hash="p",
+            trace_id="t-rhash",
         )
         expected = hashlib.sha256(reason.encode()).hexdigest()[:16]
         assert c.handoff_reason_hash == expected
@@ -166,72 +174,116 @@ class TestCreateFactory:
     def test_input_payload_hash_matches_sha256_16(self, oh):
         payload = {"key": "value", "nested": [1, 2, 3]}
         c = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="x",
-            input_payload=payload, policy_hash="p", trace_id="t-phash",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="x",
+            input_payload=payload,
+            policy_hash="p",
+            trace_id="t-phash",
         )
         expected = hashlib.sha256(str(payload).encode()).hexdigest()[:16]
         assert c.input_payload_hash == expected
 
     def test_explicit_trace_id_preserved(self, oh):
         c = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="x",
-            input_payload={}, policy_hash="p",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="x",
+            input_payload={},
+            policy_hash="p",
             trace_id="trace-abc-123",
         )
         assert c.trace_id == "trace-abc-123"
 
     def test_metadata_none_becomes_empty_dict(self, oh):
         c = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="x",
-            input_payload={}, policy_hash="p", trace_id="t-meta",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="x",
+            input_payload={},
+            policy_hash="p",
+            trace_id="t-meta",
             metadata=None,
         )
         assert c.metadata == {}
 
     def test_metadata_passed_through(self, oh):
         c = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="x",
-            input_payload={}, policy_hash="p", trace_id="t-mpass",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="x",
+            input_payload={},
+            policy_hash="p",
+            trace_id="t-mpass",
             metadata={"key": "val", "n": 1},
         )
         assert c.metadata == {"key": "val", "n": 1}
 
     def test_workflow_stage_passed_through(self, oh):
         c = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="x",
-            input_payload={}, policy_hash="p", trace_id="t-ws",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="x",
+            input_payload={},
+            policy_hash="p",
+            trace_id="t-ws",
             workflow_stage="preflight",
         )
         assert c.workflow_stage == "preflight"
 
     def test_reason_hash_differs_with_reason(self, oh):
         a = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="reason-1",
-            input_payload={}, policy_hash="p", trace_id="t-rd1",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="reason-1",
+            input_payload={},
+            policy_hash="p",
+            trace_id="t-rd1",
         )
         b = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="reason-2",
-            input_payload={}, policy_hash="p", trace_id="t-rd2",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="reason-2",
+            input_payload={},
+            policy_hash="p",
+            trace_id="t-rd2",
         )
         assert a.handoff_reason_hash != b.handoff_reason_hash
 
     def test_payload_hash_differs_with_payload(self, oh):
         a = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="x",
-            input_payload={"a": 1}, policy_hash="p", trace_id="t-pd1",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="x",
+            input_payload={"a": 1},
+            policy_hash="p",
+            trace_id="t-pd1",
         )
         b = oh.OrchestrationHandoffContract.create(
-            parent_agent_id="A", child_agent_id="B", run_id="r",
-            capability_token="t", handoff_reason="x",
-            input_payload={"a": 2}, policy_hash="p", trace_id="t-pd2",
+            parent_agent_id="A",
+            child_agent_id="B",
+            run_id="r",
+            capability_token="t",
+            handoff_reason="x",
+            input_payload={"a": 2},
+            policy_hash="p",
+            trace_id="t-pd2",
         )
         assert a.input_payload_hash != b.input_payload_hash
 
@@ -260,9 +312,17 @@ class TestToDict:
         c = _mk_contract(oh)
         d = c.to_dict()
         expected_keys = {
-            "handoff_id", "parent_agent_id", "child_agent_id", "run_id",
-            "capability_token", "handoff_reason_hash", "input_payload_hash",
-            "policy_hash", "trace_id", "workflow_stage", "created_epoch",
+            "handoff_id",
+            "parent_agent_id",
+            "child_agent_id",
+            "run_id",
+            "capability_token",
+            "handoff_reason_hash",
+            "input_payload_hash",
+            "policy_hash",
+            "trace_id",
+            "workflow_stage",
+            "created_epoch",
         }
         assert set(d.keys()) == expected_keys
 
@@ -316,9 +376,13 @@ class TestKnownBugs:
         """
         with pytest.raises(ModuleNotFoundError, match=r"trace_context"):
             oh.OrchestrationHandoffContract.create(
-                parent_agent_id="A", child_agent_id="B", run_id="r",
-                capability_token="t", handoff_reason="x",
-                input_payload={}, policy_hash="p",
+                parent_agent_id="A",
+                child_agent_id="B",
+                run_id="r",
+                capability_token="t",
+                handoff_reason="x",
+                input_payload={},
+                policy_hash="p",
                 # trace_id omitted -> triggers broken fallback
             )
 

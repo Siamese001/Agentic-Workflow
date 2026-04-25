@@ -44,6 +44,7 @@ def _build_ctx(content: str = SAMPLE) -> SurgicalContext:
 
 # ---- ASTCoordinate -------------------------------------------------------
 
+
 class TestASTCoordinate:
     def test_required_fields(self) -> None:
         c = ASTCoordinate(node_id="n1", node_type="Name", line=1, column=0)
@@ -53,8 +54,13 @@ class TestASTCoordinate:
 
     def test_all_fields(self) -> None:
         c = ASTCoordinate(
-            node_id="n1", node_type="Call", line=5, column=4,
-            end_line=5, end_column=15, parent_id="p1",
+            node_id="n1",
+            node_type="Call",
+            line=5,
+            column=4,
+            end_line=5,
+            end_column=15,
+            parent_id="p1",
             children_ids=["c1", "c2"],
         )
         assert c.children_ids == ["c1", "c2"]
@@ -63,24 +69,32 @@ class TestASTCoordinate:
 
 # ---- ViolationConstraint -------------------------------------------------
 
+
 class TestViolationConstraint:
     def test_minimal(self) -> None:
         v = ViolationConstraint(
-            constraint_type="no-bare-except", severity="high", message="bad catch",
+            constraint_type="no-bare-except",
+            severity="high",
+            message="bad catch",
         )
         assert v.rule_id is None
         assert v.fix_type is None
 
     def test_full(self) -> None:
         v = ViolationConstraint(
-            constraint_type="t", severity="low", message="m",
-            rule_id="R1", expected_pattern="ok", actual_pattern="bad",
+            constraint_type="t",
+            severity="low",
+            message="m",
+            rule_id="R1",
+            expected_pattern="ok",
+            actual_pattern="bad",
             fix_type="replace",
         )
         assert v.rule_id == "R1"
 
 
 # ---- SurgicalContext queries ---------------------------------------------
+
 
 class TestSurgicalContextQueries:
     def test_get_target_node_hit(self) -> None:
@@ -114,12 +128,17 @@ class TestSurgicalContextQueries:
     def test_line_range_multi(self) -> None:
         ctx = _build_ctx()
         coord = ASTCoordinate(
-            node_id="n", node_type="x", line=4, column=0, end_line=5,
+            node_id="n",
+            node_type="x",
+            line=4,
+            column=0,
+            end_line=5,
         )
         assert ctx.get_line_range(coord) == (4, 5)
 
 
 # ---- SurgicalContext.extract_source_segment ------------------------------
+
 
 class TestExtractSourceSegment:
     def test_single_line(self) -> None:
@@ -130,7 +149,11 @@ class TestExtractSourceSegment:
     def test_multi_line(self) -> None:
         ctx = _build_ctx()
         coord = ASTCoordinate(
-            node_id="n", node_type="x", line=4, column=0, end_line=5,
+            node_id="n",
+            node_type="x",
+            line=4,
+            column=0,
+            end_line=5,
         )
         segment = ctx.extract_source_segment(coord)
         assert "def foo" in segment
@@ -138,6 +161,7 @@ class TestExtractSourceSegment:
 
 
 # ---- to_dict / from_dict round-trip --------------------------------------
+
 
 class TestSerialization:
     def test_to_dict_shape(self) -> None:
@@ -175,12 +199,15 @@ class TestSerialization:
 
 # ---- SurgicalContextBuilder ---------------------------------------------
 
+
 class TestSurgicalContextBuilder:
     def test_reads_file_and_parses(self, tmp_path: Path) -> None:
         f = tmp_path / "m.py"
         f.write_text(SAMPLE, encoding="utf-8")
         b = SurgicalContextBuilder(
-            file_path=f, detector_agent="detector", detection_method="scan",
+            file_path=f,
+            detector_agent="detector",
+            detection_method="scan",
         )
         assert b.file_content == SAMPLE
         assert isinstance(b.ast_tree, ast.Module)
@@ -189,7 +216,9 @@ class TestSurgicalContextBuilder:
         f = tmp_path / "m.py"
         f.write_text(SAMPLE, encoding="utf-8")
         b = SurgicalContextBuilder(
-            file_path=f, detector_agent="d", detection_method="ast_walk",
+            file_path=f,
+            detector_agent="d",
+            detection_method="ast_walk",
         )
         fn_nodes = [n for n in ast.walk(b.ast_tree) if isinstance(n, ast.FunctionDef)]
         ctx = b.build_context(
@@ -212,7 +241,9 @@ class TestSurgicalContextBuilder:
         f = tmp_path / "m.py"
         f.write_text(SAMPLE, encoding="utf-8")
         b = SurgicalContextBuilder(
-            file_path=f, detector_agent="d", detection_method="m",
+            file_path=f,
+            detector_agent="d",
+            detection_method="m",
         )
         ctx = b.build_context(violation_id="v", violations=[], target_nodes=[])
         assert ctx.target_coordinates == []

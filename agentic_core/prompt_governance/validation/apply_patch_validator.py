@@ -47,9 +47,7 @@ _BEGIN = "*** Begin Patch"
 _END = "*** End Patch"
 
 # File header forms accepted by apply_patch.
-_FILE_ACTION_PATTERN = re.compile(
-    r"^\*\*\* (Update File|Add File|Delete File): (.+)$"
-)
+_FILE_ACTION_PATTERN = re.compile(r"^\*\*\* (Update File|Add File|Delete File): (.+)$")
 
 
 @dataclass
@@ -89,20 +87,14 @@ def validate_apply_patch(
         return ApplyPatchReport(ok=False, reasons=["empty or non-string input"])
 
     if _BEGIN not in raw_output:
-        return ApplyPatchReport(
-            ok=False, reasons=["missing '*** Begin Patch' sentinel"]
-        )
+        return ApplyPatchReport(ok=False, reasons=["missing '*** Begin Patch' sentinel"])
     if _END not in raw_output:
-        return ApplyPatchReport(
-            ok=False, reasons=["missing '*** End Patch' sentinel"]
-        )
+        return ApplyPatchReport(ok=False, reasons=["missing '*** End Patch' sentinel"])
 
     begin_idx = raw_output.index(_BEGIN)
     end_idx = raw_output.index(_END)
     if end_idx <= begin_idx:
-        return ApplyPatchReport(
-            ok=False, reasons=["'End Patch' appears before 'Begin Patch'"]
-        )
+        return ApplyPatchReport(ok=False, reasons=["'End Patch' appears before 'Begin Patch'"])
 
     body = raw_output[begin_idx + len(_BEGIN) : end_idx]
     has_any_file = False
@@ -115,18 +107,12 @@ def validate_apply_patch(
         if not path:
             reasons.append(f"{action}: empty path")
             continue
-        if allowed_path_prefixes and not any(
-            path.startswith(prefix) for prefix in allowed_path_prefixes
-        ):
-            reasons.append(
-                f"{action}: path {path!r} outside allowed prefixes {allowed_path_prefixes}"
-            )
+        if allowed_path_prefixes and not any(path.startswith(prefix) for prefix in allowed_path_prefixes):
+            reasons.append(f"{action}: path {path!r} outside allowed prefixes {allowed_path_prefixes}")
         files.append((action, path))
 
     if not has_any_file:
-        reasons.append(
-            "no file action (Update File / Add File / Delete File) found inside envelope"
-        )
+        reasons.append("no file action (Update File / Add File / Delete File) found inside envelope")
 
     return ApplyPatchReport(ok=not reasons, files=files, reasons=reasons)
 

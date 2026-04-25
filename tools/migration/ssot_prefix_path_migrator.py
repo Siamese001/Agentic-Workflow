@@ -31,6 +31,7 @@ Exit codes:
   1  at least one file failed to compile after rewrite (auto-reverted)
   2  invalid args
 """
+
 from __future__ import annotations
 
 import argparse
@@ -44,18 +45,28 @@ from pathlib import Path
 
 # literal -> (canonical_symbol, canonical_module)
 SSOT_MAP: dict[str, tuple[str, str]] = {
-    "artifacts/adg":         ("ADG_ARTIFACTS_DIR",      "agentic_core.L0_routing.config.path_constants"),
-    "artifacts/windsurf":    ("WINDSURF_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
-    ".windsurf/plans":       ("WINDSURF_PLANS_DIR",     "agentic_core.L0_routing.config.path_constants"),
-    ".windsurf/scripts":     ("WINDSURF_SCRIPTS_DIR",   "agentic_core.L0_routing.config.path_constants"),
-    "docs/reports":          ("DOCS_REPORTS_DIR",       "agentic_core.L0_routing.config.path_constants"),
-    "docs/architecture/adr": ("ADR_DIR",                "agentic_core.L0_routing.config.path_constants"),
+    "artifacts/adg": ("ADG_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    "artifacts/windsurf": ("WINDSURF_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    ".windsurf/plans": ("WINDSURF_PLANS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    ".windsurf/scripts": ("WINDSURF_SCRIPTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    "docs/reports": ("DOCS_REPORTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    "docs/architecture/adr": ("ADR_DIR", "agentic_core.L0_routing.config.path_constants"),
 }
 
 ROOTS = (
-    "agentic_core", "apps_rg", "apps_shared", "apps_lic", "apps_eval",
-    "apps_exec", "apps_research", "apps_rfp", "apps_underwriting_ai",
-    "tools", "ops_scripts", "system_learning", "infrastructure",
+    "agentic_core",
+    "apps_rg",
+    "apps_shared",
+    "apps_lic",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
 )
 
 EXCLUDE_PATTERNS = (
@@ -81,6 +92,7 @@ FORBIDDEN_SUFFIX_CHARS = "{}"
 # ---------------------------------------------------------------------------
 # AST analysis
 # ---------------------------------------------------------------------------
+
 
 def _is_docstring_node(tree: ast.Module, target_id: int) -> bool:
     for node in ast.walk(tree):
@@ -134,14 +146,14 @@ def _find_sites(path: Path) -> list[dict]:
             if val == lit + "/":
                 # EXACT_TRAILING — owned by the other migrator
                 continue
-            suffix = val[len(lit):]  # includes the leading "/"
+            suffix = val[len(lit) :]  # includes the leading "/"
             # Reject f-string-incompatible suffix characters
             if any(c in suffix for c in FORBIDDEN_SUFFIX_CHARS):
                 continue
             # Inspect the source text to detect outer quote and reject
             # raw / bytes / formatted-string / multi-segment-concat cases.
             line_text = src_lines[node.lineno - 1] if node.lineno - 1 < len(src_lines) else ""
-            seg = line_text[node.col_offset:node.end_col_offset]
+            seg = line_text[node.col_offset : node.end_col_offset]
             if not seg or seg[0] not in ("'", '"'):
                 # Could be inside an f-string segment, a parenthesized literal
                 # spanning weird coords, or a string-prefix (r, b, u, rb).
@@ -161,16 +173,18 @@ def _find_sites(path: Path) -> list[dict]:
             # raw seg can be longer than 2 + len(val); we accept anything that
             # starts/ends with the same quote, but compute the replacement
             # using the seg bounds rather than the val length.
-            sites.append({
-                "literal": val,
-                "suffix": suffix,
-                "symbol": sym,
-                "module": module,
-                "lineno": node.lineno,
-                "col": node.col_offset,
-                "end_col": node.end_col_offset,
-                "quote": quote,
-            })
+            sites.append(
+                {
+                    "literal": val,
+                    "suffix": suffix,
+                    "symbol": sym,
+                    "module": module,
+                    "lineno": node.lineno,
+                    "col": node.col_offset,
+                    "end_col": node.end_col_offset,
+                    "quote": quote,
+                }
+            )
             break  # one literal per node
     return sites
 
@@ -179,11 +193,12 @@ def _find_sites(path: Path) -> list[dict]:
 # Text rewrite
 # ---------------------------------------------------------------------------
 
+
 def _rewrite_prefix(line: str, col: int, end_col: int, symbol: str, suffix: str, quote: str) -> str:
     """Replace `quote + literal + quote` with `f"{symbol}<suffix>"` (preserve quote style)."""
     before = line[:col]
     after = line[end_col:]
-    new = f'f{quote}{{{symbol}}}{suffix}{quote}'
+    new = f"f{quote}{{{symbol}}}{suffix}{quote}"
     return before + new + after
 
 
@@ -197,7 +212,7 @@ def _inject_import(text: str, tree: ast.Module, module: str, symbol: str) -> str
     if existing_node is not None:
         start = existing_node.lineno - 1
         end = getattr(existing_node, "end_lineno", existing_node.lineno) - 1
-        block_lines = lines[start:end + 1]
+        block_lines = lines[start : end + 1]
         has_inline_comment = any("#" in bl for bl in block_lines)
         if not has_inline_comment:
             new_names = sorted({*existing_names, symbol})
@@ -206,7 +221,7 @@ def _inject_import(text: str, tree: ast.Module, module: str, symbol: str) -> str
             else:
                 body = ",\n    ".join(new_names)
                 replacement = f"from {module} import (\n    {body},\n)\n"
-            lines[start:end + 1] = [replacement]
+            lines[start : end + 1] = [replacement]
             return "".join(lines)
 
     last_import_lineno = 0
@@ -262,12 +277,14 @@ def _apply_file(path: Path, sites: list[dict], dry_run: bool) -> tuple[bool, lis
             trail, line_text = "\n", line_text[:-1]
         for s in line_sites:
             line_text = _rewrite_prefix(
-                line_text, s["col"], s["end_col"],
-                s["symbol"], s["suffix"], s["quote"],
+                line_text,
+                s["col"],
+                s["end_col"],
+                s["symbol"],
+                s["suffix"],
+                s["quote"],
             )
-            messages.append(
-                f"{path}:{ln}  {s['literal']!r} -> f\"{{{s['symbol']}}}{s['suffix']}\""
-            )
+            messages.append(f'{path}:{ln}  {s["literal"]!r} -> f"{{{s["symbol"]}}}{s["suffix"]}"')
         lines[ln - 1] = line_text + trail
 
     new_text = "".join(lines)
@@ -299,6 +316,7 @@ def _apply_file(path: Path, sites: list[dict], dry_run: bool) -> tuple[bool, lis
         return False, [f"{path}: post-rewrite compile failed, reverted: {exc}"]
     finally:
         import shutil  # noqa: PLC0415
+
         shutil.rmtree(tmp_dir, ignore_errors=True)
     messages.append(f"  WROTE {path}  ({len(sites)} site(s))")
     return True, messages
@@ -308,16 +326,21 @@ def _apply_file(path: Path, sites: list[dict], dry_run: bool) -> tuple[bool, lis
 # Driver
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true", help="preview without writing")
     parser.add_argument("--apply", action="store_true", help="write changes to disk")
     parser.add_argument(
-        "--limit", type=int, default=0,
+        "--limit",
+        type=int,
+        default=0,
         help="max number of files to migrate (0 = all)",
     )
     parser.add_argument(
-        "--only-literal", action="append", default=[],
+        "--only-literal",
+        action="append",
+        default=[],
         help="restrict to one literal (repeatable). Default: artifacts/adg only.",
     )
     args = parser.parse_args()
@@ -352,7 +375,7 @@ def main() -> int:
                 all_sites[py] = sites
 
     if args.limit:
-        keep = list(all_sites)[:args.limit]
+        keep = list(all_sites)[: args.limit]
         all_sites = {p: all_sites[p] for p in keep}
 
     total_sites = sum(len(v) for v in all_sites.values())

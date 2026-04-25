@@ -195,9 +195,7 @@ def build_messages_payload(
     The returned dict never contains a `model` or `max_tokens` key — the
     caller owns those; this helper only handles cache-aware content shaping.
     """
-    system_blocks = build_system_blocks(
-        system_prompt, cache=cache_system, ttl=ttl
-    )
+    system_blocks = build_system_blocks(system_prompt, cache=cache_system, ttl=ttl)
     user_content = build_user_content(
         user_prompt,
         cache_boundary_hint=cache_boundary_hint,

@@ -48,6 +48,7 @@ class TestContextVarAdapter:
         t2 = set_current_adapter(a2)
         assert get_current_adapter() is a2
         from system_learning.runtime_adg.runtime_span_emitter import reset_current_adapter
+
         reset_current_adapter(t2)
         assert get_current_adapter() is a1
         reset_current_adapter(t1)
@@ -63,6 +64,7 @@ class TestContextVarAdapter:
                 bag["output"] = "work-done"
         finally:
             from system_learning.runtime_adg.runtime_span_emitter import reset_current_adapter
+
             reset_current_adapter(token)
         assert len(adapter._completed_spans) == 1
         assert adapter._completed_spans[0]["name"] == SPAN_STEP_SEAL
@@ -91,6 +93,7 @@ class TestBackPatchTraceId:
 
     def test_fail_open_on_bad_adapter(self) -> None:
         from system_learning.runtime_adg.runtime_span_emitter import back_patch_trace_id
+
         assert back_patch_trace_id(None, "a", "b") == 0
 
         class Bad:
@@ -100,6 +103,7 @@ class TestBackPatchTraceId:
 
     def test_fail_open_on_empty_old_id(self) -> None:
         from system_learning.runtime_adg.runtime_span_emitter import back_patch_trace_id
+
         adapter = _FakeAdapter()
         adapter._completed_spans.append({"trace_id": "", "name": "x"})
         assert back_patch_trace_id(adapter, "", "real") == 0

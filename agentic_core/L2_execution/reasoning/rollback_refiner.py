@@ -408,6 +408,9 @@ class DefaultDeterministicRollbackRefiner:
                 execution_time_ms=execution_time_ms,
                 timestamp_utc=timestamp_utc,
             )
-        except (ValueError, TypeError):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+        except (
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
             # System learning unavailable - continue without tracking
             pass

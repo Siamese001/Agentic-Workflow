@@ -34,6 +34,7 @@ def _stub_builder_result(context: str):
     Patched via ``patch.object(cls, "build", fn)`` — fn receives ``self``
     plus the request. Signature must match.
     """
+
     class _Result:
         def __init__(self, ctx: str) -> None:
             self.context = ctx
@@ -53,10 +54,12 @@ def test_contextualize_flag_parsed(
     'ENABLED' banner on run start."""
     src = _make_doc(tmp_path)
     monkeypatch.setattr(
-        sys, "argv",
+        sys,
+        "argv",
         [
             "ingest_docs.py",
-            "--source-dir", str(src),
+            "--source-dir",
+            str(src),
             "--dry-run",
             "--mock-embeddings",
             "--contextualize",
@@ -87,7 +90,8 @@ def test_contextualize_prepends_context_and_stamps_metadata(
 
     def _capturing_chunk(self, file_path, *, embedding_model=None, embedding_dim=None):
         chunks = original_chunk(
-            self, file_path,
+            self,
+            file_path,
             embedding_model=embedding_model,
             embedding_dim=embedding_dim,
         )
@@ -96,14 +100,14 @@ def test_contextualize_prepends_context_and_stamps_metadata(
         captured_chunks.extend(chunks)
         return chunks
 
+    monkeypatch.setattr(ingest_docs.DocumentChunker, "chunk_document", _capturing_chunk)
     monkeypatch.setattr(
-        ingest_docs.DocumentChunker, "chunk_document", _capturing_chunk
-    )
-    monkeypatch.setattr(
-        sys, "argv",
+        sys,
+        "argv",
         [
             "ingest_docs.py",
-            "--source-dir", str(src),
+            "--source-dir",
+            str(src),
             "--dry-run",
             "--mock-embeddings",
             "--contextualize",
@@ -111,7 +115,8 @@ def test_contextualize_prepends_context_and_stamps_metadata(
     )
 
     with patch.object(
-        ingest_docs.ContextualChunkBuilder, "build",
+        ingest_docs.ContextualChunkBuilder,
+        "build",
         _stub_builder_result("SYNTHETIC_CONTEXT_PREFIX"),
     ):
         rc = ingest_docs.main()
@@ -137,21 +142,22 @@ def test_contextualize_off_does_not_mutate_chunks(
 
     def _capturing_chunk(self, file_path, *, embedding_model=None, embedding_dim=None):
         chunks = original_chunk(
-            self, file_path,
+            self,
+            file_path,
             embedding_model=embedding_model,
             embedding_dim=embedding_dim,
         )
         captured_chunks.extend(chunks)
         return chunks
 
+    monkeypatch.setattr(ingest_docs.DocumentChunker, "chunk_document", _capturing_chunk)
     monkeypatch.setattr(
-        ingest_docs.DocumentChunker, "chunk_document", _capturing_chunk
-    )
-    monkeypatch.setattr(
-        sys, "argv",
+        sys,
+        "argv",
         [
             "ingest_docs.py",
-            "--source-dir", str(src),
+            "--source-dir",
+            str(src),
             "--dry-run",
             "--mock-embeddings",
         ],  # no --contextualize
@@ -159,9 +165,7 @@ def test_contextualize_off_does_not_mutate_chunks(
 
     # Should never be called. Use a sentinel that raises if invoked.
     def _forbidden(_self, _request):
-        raise AssertionError(
-            "ContextualChunkBuilder.build was invoked when --contextualize was absent"
-        )
+        raise AssertionError("ContextualChunkBuilder.build was invoked when --contextualize was absent")
 
     with patch.object(ingest_docs.ContextualChunkBuilder, "build", _forbidden):
         rc = ingest_docs.main()
@@ -186,34 +190,35 @@ def test_contextualize_skips_chunks_when_context_is_empty(
 
     def _capturing_chunk(self, file_path, *, embedding_model=None, embedding_dim=None):
         chunks = original_chunk(
-            self, file_path,
+            self,
+            file_path,
             embedding_model=embedding_model,
             embedding_dim=embedding_dim,
         )
         captured_chunks.extend(chunks)
         return chunks
 
+    monkeypatch.setattr(ingest_docs.DocumentChunker, "chunk_document", _capturing_chunk)
     monkeypatch.setattr(
-        ingest_docs.DocumentChunker, "chunk_document", _capturing_chunk
-    )
-    monkeypatch.setattr(
-        sys, "argv",
+        sys,
+        "argv",
         [
             "ingest_docs.py",
-            "--source-dir", str(src),
+            "--source-dir",
+            str(src),
             "--dry-run",
             "--mock-embeddings",
             "--contextualize",
         ],
     )
+
     def _record_and_empty(_self, _request):
         class _R:
             context = ""
+
         return _R()
 
-    with patch.object(
-        ingest_docs.ContextualChunkBuilder, "build", _record_and_empty
-    ):
+    with patch.object(ingest_docs.ContextualChunkBuilder, "build", _record_and_empty):
         rc = ingest_docs.main()
 
     assert rc == 0

@@ -45,6 +45,7 @@ Reference:
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 Ref: ADR-049, G-04 (identity propagation), G-13 (data authority)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -87,11 +88,7 @@ class PreL5SweepResult:
 
     @property
     def all_pass(self) -> bool:
-        return (
-            self.verification.is_pass
-            and self.registry_match
-            and self.data_authority_all_match
-        )
+        return self.verification.is_pass and self.registry_match and self.data_authority_all_match
 
     @property
     def needs_step_up(self) -> bool:
@@ -100,9 +97,7 @@ class PreL5SweepResult:
         # remediable by a policy-bump + re-issue rather than a hard deny.
         if self.verification.needs_step_up:
             return True
-        if self.verification.is_pass and not (
-            self.registry_match and self.data_authority_all_match
-        ):
+        if self.verification.is_pass and not (self.registry_match and self.data_authority_all_match):
             return True
         return False
 

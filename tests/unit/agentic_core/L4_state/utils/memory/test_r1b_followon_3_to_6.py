@@ -23,6 +23,7 @@ def test_tier_threshold_defaults(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         tier_similarity_threshold,
     )
+
     assert tier_similarity_threshold("static") == 1.0
     assert tier_similarity_threshold("dynamic") == 0.95
 
@@ -33,6 +34,7 @@ def test_tier_threshold_env_override(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         tier_similarity_threshold,
     )
+
     assert tier_similarity_threshold("dynamic") == pytest.approx(0.88)
     assert tier_similarity_threshold("static") == pytest.approx(0.99)
 
@@ -42,6 +44,7 @@ def test_tier_threshold_invalid_falls_through(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         tier_similarity_threshold,
     )
+
     assert tier_similarity_threshold("dynamic") == 0.95
 
 
@@ -49,6 +52,7 @@ def test_tier_threshold_unknown_tier_is_safe(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         tier_similarity_threshold,
     )
+
     # Unknown tier returns most conservative (1.0) so callers can't accidentally
     # serve a low-similarity hit.
     assert tier_similarity_threshold("nonexistent") == 1.0
@@ -62,6 +66,7 @@ def test_normalize_l1_strips_and_collapses_whitespace(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         _normalize_l1_context,
     )
+
     assert _normalize_l1_context("  hello   world  \n") == "hello world"
     assert _normalize_l1_context("a\tb\nc") == "a b c"
 
@@ -71,6 +76,7 @@ def test_normalize_l1_nfkc_unicode(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         _normalize_l1_context,
     )
+
     # Half-width katakana → full-width via NFKC
     assert _normalize_l1_context("ｶﾀｶﾅ") == "カタカナ"
     # Ligature ﬁ → fi
@@ -82,6 +88,7 @@ def test_normalize_l1_disabled_passthrough(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         _normalize_l1_context,
     )
+
     assert _normalize_l1_context("  hello   world  ") == "  hello   world  "
 
 
@@ -90,6 +97,7 @@ def test_compute_hash_normalizes_whitespace_legacy_path(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         SemanticCacheManager,
     )
+
     mgr = SemanticCacheManager.__new__(SemanticCacheManager)
     # legacy path ⇒ no tenant_id ⇒ normalization applies
     h1 = mgr._compute_hash("hello world", "ns")
@@ -104,6 +112,7 @@ def test_compute_hash_preserves_case(monkeypatch):
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
         SemanticCacheManager,
     )
+
     mgr = SemanticCacheManager.__new__(SemanticCacheManager)
     assert mgr._compute_hash("Apple", "ns") != mgr._compute_hash("apple", "ns")
 
@@ -114,12 +123,24 @@ def test_compute_hash_preserves_case(monkeypatch):
 def _make_fixture(tmp_path: Path) -> Path:
     """3 candidates with different similarities, 2 correct, 1 incorrect."""
     rows = [
-        {"query": "q1", "expected_answer_id": "a1",
-         "candidate_answer_id": "a1", "candidate_similarity": 0.99},
-        {"query": "q2", "expected_answer_id": "a2",
-         "candidate_answer_id": "a2", "candidate_similarity": 0.92},
-        {"query": "q3", "expected_answer_id": "a3",
-         "candidate_answer_id": "WRONG", "candidate_similarity": 0.97},
+        {
+            "query": "q1",
+            "expected_answer_id": "a1",
+            "candidate_answer_id": "a1",
+            "candidate_similarity": 0.99,
+        },
+        {
+            "query": "q2",
+            "expected_answer_id": "a2",
+            "candidate_answer_id": "a2",
+            "candidate_similarity": 0.92,
+        },
+        {
+            "query": "q3",
+            "expected_answer_id": "a3",
+            "candidate_answer_id": "WRONG",
+            "candidate_similarity": 0.97,
+        },
     ]
     p = tmp_path / "fix.jsonl"
     p.write_text("\n".join(json.dumps(r) for r in rows), encoding="utf-8")
@@ -128,6 +149,7 @@ def _make_fixture(tmp_path: Path) -> Path:
 
 def test_sweep_basic_counts():
     from tools.cache.threshold_sweep_harness import sweep  # noqa: PLC0415
+
     fixtures = [
         {"expected_answer_id": "a", "candidate_answer_id": "a", "candidate_similarity": 0.99},
         {"expected_answer_id": "a", "candidate_answer_id": "b", "candidate_similarity": 0.96},
@@ -147,8 +169,12 @@ def test_sweep_basic_counts():
 
 def test_sweep_writes_csv_and_md(tmp_path):
     from tools.cache.threshold_sweep_harness import (  # noqa: PLC0415
-        _load_fixtures, sweep, write_csv, write_md,
+        _load_fixtures,
+        sweep,
+        write_csv,
+        write_md,
     )
+
     fix_path = _make_fixture(tmp_path)
     fixtures = _load_fixtures(fix_path)
     rows = sweep(fixtures, [0.95, 0.90])
@@ -166,15 +192,22 @@ def test_sweep_writes_csv_and_md(tmp_path):
 
 def test_sweep_main_cli(tmp_path, capsys):
     from tools.cache.threshold_sweep_harness import main  # noqa: PLC0415
+
     fix_path = _make_fixture(tmp_path)
     csv_path = tmp_path / "out.csv"
     md_path = tmp_path / "out.md"
-    rc = main([
-        "--fixtures", str(fix_path),
-        "--thresholds", "0.95,0.90",
-        "--out-csv", str(csv_path),
-        "--out-md", str(md_path),
-    ])
+    rc = main(
+        [
+            "--fixtures",
+            str(fix_path),
+            "--thresholds",
+            "0.95,0.90",
+            "--out-csv",
+            str(csv_path),
+            "--out-md",
+            str(md_path),
+        ]
+    )
     assert rc == 0
     assert csv_path.exists() and md_path.exists()
 
@@ -202,9 +235,14 @@ def test_dashboard_covers_all_event_codes():
     text = path.read_text(encoding="utf-8")
     # Codes recorded via _record_semantic_cache_prom_event() across the cache:
     required_codes = [
-        "hit", "miss", "bypass", "scope_mismatch",
-        "hybrid_reject", "support_manifest_reject",
-        "cdc_evict", "neighborhood_evict",
+        "hit",
+        "miss",
+        "bypass",
+        "scope_mismatch",
+        "hybrid_reject",
+        "support_manifest_reject",
+        "cdc_evict",
+        "neighborhood_evict",
     ]
     for code in required_codes:
         assert code in text, f"dashboard missing event code: {code}"

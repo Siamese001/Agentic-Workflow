@@ -103,10 +103,16 @@ def adapter(transport):
 @pytest.fixture
 def ledger_entry():
     return LedgerEntry(
-        ledger_id="led-s1", run_id="r1", trace_id="t1",
-        hitl_class=HitlClass.SAFETY, approver_pool="safety_oncall",
-        timeout_s=1800, policy_snapshot="snap", envelope={"risk": "high"},
-        state=LedgerState.PENDING, created_at=1.0,
+        ledger_id="led-s1",
+        run_id="r1",
+        trace_id="t1",
+        hitl_class=HitlClass.SAFETY,
+        approver_pool="safety_oncall",
+        timeout_s=1800,
+        policy_snapshot="snap",
+        envelope={"risk": "high"},
+        state=LedgerState.PENDING,
+        created_at=1.0,
     )
 
 
@@ -119,14 +125,14 @@ def harness(adapter, transport, ledger_entry):
         transport.create_should_fail = True
 
     return AdapterContractHarness(
-        adapter=adapter, ledger_entry=ledger_entry,
-        resolve=resolve, fail_transport=fail_transport,
+        adapter=adapter,
+        ledger_entry=ledger_entry,
+        resolve=resolve,
+        fail_transport=fail_transport,
     )
 
 
-@pytest.mark.parametrize(
-    "assertion", CONTRACT_ASSERTIONS, ids=[a.__name__ for a in CONTRACT_ASSERTIONS]
-)
+@pytest.mark.parametrize("assertion", CONTRACT_ASSERTIONS, ids=[a.__name__ for a in CONTRACT_ASSERTIONS])
 def test_slack_adapter_contract(assertion, harness):
     assertion(harness)
 
@@ -141,11 +147,7 @@ def test_constructor_rejects_empty_channel(transport):
 
 def test_build_approval_blocks_contains_ledger_id(ledger_entry):
     blocks = build_approval_blocks(ledger_entry)
-    assert any(
-        b.get("block_id") == ledger_entry.ledger_id
-        for b in blocks
-        if isinstance(b, dict)
-    )
+    assert any(b.get("block_id") == ledger_entry.ledger_id for b in blocks if isinstance(b, dict))
 
 
 def test_enqueue_wraps_transport_error(adapter, transport, ledger_entry):
@@ -215,8 +217,10 @@ def test_adapter_error_passes_through_enqueue(ledger_entry):
     class RaisingTransport:
         def post_message(self, channel, text, blocks):
             raise AdapterError("upstream")
+
         def get_message(self, channel, ts):
             raise AdapterError("upstream")
+
         def delete_message(self, channel, ts):
             raise AdapterError("upstream")
 
@@ -229,8 +233,10 @@ def test_adapter_error_passes_through_poll_cancel(ledger_entry):
     class RaisingTransport:
         def post_message(self, channel, text, blocks):
             return {"ts": "ok"}
+
         def get_message(self, channel, ts):
             raise AdapterError("poll upstream")
+
         def delete_message(self, channel, ts):
             raise AdapterError("cancel upstream")
 
@@ -260,5 +266,6 @@ def test_poll_missing_status_treated_as_pending(adapter, transport, ledger_entry
 
 def test_read_status_non_mapping_returns_pending():
     from agentic_core.L5_safety.adapters.slack_approval_adapter import _read_status
+
     assert _read_status("not-a-mapping") == STATUS_PENDING  # type: ignore[arg-type]
     assert _read_status(None) == STATUS_PENDING  # type: ignore[arg-type]

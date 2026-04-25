@@ -31,7 +31,7 @@ class TestImportErrorHandling:
                 something.use_it()
             except ImportError:
                 # This is expected error handling
-                raise ValueError('Import failed as expected') from None
+                raise ValueError("Import failed as expected") from None
 
         with pytest.raises(ValueError, match="Import failed as expected"):
             test_with_nested_bad_import()

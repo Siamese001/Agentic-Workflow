@@ -1,4 +1,5 @@
 """Probe each HIGH/CRITICAL antipattern with full source context for bulk burn."""
+
 import sqlite3
 from pathlib import Path
 
@@ -19,5 +20,5 @@ for vid, sev, kind, sym, fp, ln in rows:
     lo, hi = max(0, ln - 3), min(len(src), ln + 3)
     for i in range(lo, hi):
         marker = " >>>" if i + 1 == ln else "    "
-        print(f"  {marker} {i+1:5}: {src[i][:130]}")
+        print(f"  {marker} {i + 1:5}: {src[i][:130]}")
     print()

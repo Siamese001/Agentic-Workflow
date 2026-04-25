@@ -74,7 +74,11 @@ def safe_execute(
             timeout=timeout,
             check=False,
         )
-    except (FileNotFoundError, subprocess.TimeoutExpired, OSError) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- command execution failure: caller treats None as unavailable
+    except (
+        FileNotFoundError,
+        subprocess.TimeoutExpired,
+        OSError,
+    ) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- command execution failure: caller treats None as unavailable
         Logger.debug(f"Command execution failed: {e}")
         return None
 
@@ -181,7 +185,11 @@ class DependencyPruner:
             _src = Path(__file__).resolve()
             _bp = _gbp(_src, self.project_root)
             adg_dead_imports = len(_bp.antipattern_signals)
-        except (RuntimeError, OSError, ImportError) as e:  # guardian: allow-log-and-swallow -- ADG dead imports lookup optional: non-fatal, continues without telemetry
+        except (
+            RuntimeError,
+            OSError,
+            ImportError,
+        ) as e:  # guardian: allow-log-and-swallow -- ADG dead imports lookup optional: non-fatal, continues without telemetry
             import logging
 
             logging.getLogger(__name__).debug(

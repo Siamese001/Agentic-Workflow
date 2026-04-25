@@ -59,9 +59,7 @@ class ThinkingTokenLedger:
     ) -> None:
         """Append a single observation. ``thinking_tokens=0`` is a valid no-op entry."""
         if thinking_tokens < 0:
-            raise ValueError(
-                f"thinking_tokens must be >= 0, got {thinking_tokens}"
-            )
+            raise ValueError(f"thinking_tokens must be >= 0, got {thinking_tokens}")
         record = ThinkingRecord(
             trace_id=trace_id,
             provider=provider,

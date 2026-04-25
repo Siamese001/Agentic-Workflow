@@ -443,19 +443,19 @@ _GUARDIAN_MAP: dict[str, tuple[str, ...]] = {
         # tools/debug/_w5_token_inventory.py (≥2 occurrences, each with `--`
         # justification form). Variants describe the same semantic action —
         # silent swallow of a specific handler context:
-        "guardian: allow-silent-swallower",       # 32 authored uses
-        "guardian: allow-import-fail",            # 2 uses; ImportError-specific silent swallow
-        "guardian: allow-rollback-failure",       # 2 uses; sqlite3 rollback best-effort
-        "guardian: allow-specific",               # 19 uses; specific type but body still swallows
-        "guardian: allow-specific-multi",         # 2 uses; tuple-form specific-type silent swallow
+        "guardian: allow-silent-swallower",  # 32 authored uses
+        "guardian: allow-import-fail",  # 2 uses; ImportError-specific silent swallow
+        "guardian: allow-rollback-failure",  # 2 uses; sqlite3 rollback best-effort
+        "guardian: allow-specific",  # 19 uses; specific type but body still swallows
+        "guardian: allow-specific-multi",  # 2 uses; tuple-form specific-type silent swallow
         "guardian: allow-broad-exception",
     ),
     "broad_exception_catch": (
         "guardian: allow-broad-exception",
         # W5.1 (2026-04-23): short/variant forms for broad catches:
-        "guardian: allow-broad-except",           # 3 authored uses
-        "guardian: allow-broad-catch",            # 2 uses
-        "guardian: allow-broad",                  # 2 uses; deliberate short form
+        "guardian: allow-broad-except",  # 3 authored uses
+        "guardian: allow-broad-catch",  # 2 uses
+        "guardian: allow-broad",  # 2 uses; deliberate short form
         "guardian: allow-in-process-dispatcher",  # 2 uses; dispatcher-level broad isolation
     ),
     "log_and_swallow": (
@@ -570,10 +570,10 @@ _CANONICAL_GUARDIAN_TOKENS = frozenset(
         # deferred to a follow-up wave. Until then, these tokens are
         # recognized as canonical (not flagged as non-canonical) but are not
         # wired into has_guardian_for_violation for any specific edge_kind.
-        "allow-magic-config",          # 454 uses — hardcoded-literal-where-SSOT-expected
-        "allow-type-erasure",          # 356 uses — runtime cast discarded
-        "allow-global-mutation",       # 152 uses — intentional module-level mutation
-        "allow-path-string",           # 114 uses — str where Path expected (API-compat)
+        "allow-magic-config",  # 454 uses — hardcoded-literal-where-SSOT-expected
+        "allow-type-erasure",  # 356 uses — runtime cast discarded
+        "allow-global-mutation",  # 152 uses — intentional module-level mutation
+        "allow-path-string",  # 114 uses — str where Path expected (API-compat)
     }
 )
 

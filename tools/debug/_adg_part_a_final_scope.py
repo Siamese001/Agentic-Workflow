@@ -1,4 +1,5 @@
 """Part A final scope — join violations with edges to get pattern kind."""
+
 import sqlite3
 import json
 import re
@@ -87,10 +88,16 @@ for fp, sites in sorted(by_file.items(), key=lambda x: -len(x[1]))[:20]:
     print(f"  {len(sites):>3d}  {fp}  {dict(kinds)}")
 
 out = REPO / "tools/debug/_adg_part_a_final_scope.json"
-out.write_text(json.dumps({
-    "snapshot": "04212026_1441",
-    "total_candidate_sites": len(rows),
-    "uncovered_sites": len(needs_work),
-    "by_file": {fp: [s for s in sites] for fp, sites in by_file.items()},
-}, indent=2), encoding="utf-8")
+out.write_text(
+    json.dumps(
+        {
+            "snapshot": "04212026_1441",
+            "total_candidate_sites": len(rows),
+            "uncovered_sites": len(needs_work),
+            "by_file": {fp: [s for s in sites] for fp, sites in by_file.items()},
+        },
+        indent=2,
+    ),
+    encoding="utf-8",
+)
 print(f"\nWrote: {out}")

@@ -1,4 +1,5 @@
 """One-shot import-health scan for apps_lic. Safe to delete after audit."""
+
 from __future__ import annotations
 
 import importlib

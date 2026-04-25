@@ -282,10 +282,7 @@ def test_classify_novel_context_threshold_boundary(policy: HitlPolicy):
 
 def test_classify_low_confidence_threshold_boundary(policy: HitlPolicy):
     # At threshold (<=) → match
-    assert (
-        classify_escalation_class({"confidence_score": 0.60}, policy)
-        == HitlClass.LOW_CONFIDENCE
-    )
+    assert classify_escalation_class({"confidence_score": 0.60}, policy) == HitlClass.LOW_CONFIDENCE
     # Just above → no match
     assert classify_escalation_class({"confidence_score": 0.6001}, policy) is None
 
@@ -335,8 +332,7 @@ def test_resolve_approver_pool(policy: HitlPolicy):
     assert resolve_approver_pool(HitlClass.POLICY_OVERRIDE, policy) == "policy_board"
     # tenant/time_of_day currently ignored; API-stable for future overlay
     assert (
-        resolve_approver_pool(HitlClass.SAFETY, policy, tenant="acme", time_of_day="02:00")
-        == "safety_oncall"
+        resolve_approver_pool(HitlClass.SAFETY, policy, tenant="acme", time_of_day="02:00") == "safety_oncall"
     )
 
 

@@ -312,7 +312,12 @@ class ReindexCoordinator:
         for callback in self._on_complete_callbacks:
             try:
                 callback(job)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- complete callback isolation: non-fatal, other callbacks continue
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- complete callback isolation: non-fatal, other callbacks continue
                 log.warning(f"Complete callback error: {e}")
 
     def _notify_progress(self, job_id: str, progress: float) -> None:
@@ -320,7 +325,12 @@ class ReindexCoordinator:
         for callback in self._on_progress_callbacks:
             try:
                 callback(job_id, progress)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- progress callback isolation: non-fatal, other callbacks continue
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow -- progress callback isolation: non-fatal, other callbacks continue
                 log.warning(f"Progress callback error: {e}")
 
 

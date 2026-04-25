@@ -33,9 +33,7 @@ class InMemoryMetricsSink:
     """Default thread-safe counter sink for tests and smoke runs."""
 
     counters: Counter[tuple[str, tuple[tuple[str, str], ...]]] = field(default_factory=Counter)
-    observations: dict[tuple[str, tuple[tuple[str, str], ...]], list[float]] = field(
-        default_factory=dict
-    )
+    observations: dict[tuple[str, tuple[tuple[str, str], ...]], list[float]] = field(default_factory=dict)
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def incr(self, metric: str, *, labels: dict[str, str] | None = None) -> None:
@@ -85,28 +83,18 @@ class IngressMetrics:
             "ingress_latency_ms", latency_ms, labels={"outcome": "accepted", "tenant": tenant_id}
         )
 
-    def record_rejection(
-        self, *, reason_code: str, gate_stage: str, latency_ms: float
-    ) -> None:
-        self._sink.incr(
-            "ingress_requests_total", labels={"outcome": "rejected"}
-        )
+    def record_rejection(self, *, reason_code: str, gate_stage: str, latency_ms: float) -> None:
+        self._sink.incr("ingress_requests_total", labels={"outcome": "rejected"})
         self._sink.incr(
             "ingress_rejections_total",
             labels={"reason_code": reason_code, "gate_stage": gate_stage},
         )
-        self._sink.observe(
-            "ingress_latency_ms", latency_ms, labels={"outcome": "rejected"}
-        )
+        self._sink.observe("ingress_latency_ms", latency_ms, labels={"outcome": "rejected"})
 
     def record_clarification(self, *, reason: str, latency_ms: float) -> None:
         self._sink.incr("ingress_requests_total", labels={"outcome": "clarification"})
-        self._sink.incr(
-            "ingress_clarifications_total", labels={"reason": reason[:60]}
-        )
-        self._sink.observe(
-            "ingress_latency_ms", latency_ms, labels={"outcome": "clarification"}
-        )
+        self._sink.incr("ingress_clarifications_total", labels={"reason": reason[:60]})
+        self._sink.observe("ingress_latency_ms", latency_ms, labels={"outcome": "clarification"})
 
 
 # Module-level default metrics instance. Callers may replace the sink by

@@ -361,7 +361,9 @@ class JudgeScore:
 
     def known_dimensions(self) -> dict[str, float]:
         """Dimensions that were actually scored (exclude Unknown)."""
-        return {d: getattr(self, d) for d in DIMENSIONS if not self.is_unknown(d)}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads dimension attr by name
+        return {
+            d: getattr(self, d) for d in DIMENSIONS if not self.is_unknown(d)
+        }  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads dimension attr by name
 
     def unknown_rate(self) -> float:
         """Fraction of dimensions the judge abstained on in [0.0, 1.0]."""

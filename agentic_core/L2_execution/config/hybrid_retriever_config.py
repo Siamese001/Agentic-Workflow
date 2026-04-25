@@ -386,7 +386,14 @@ class HybridRetriever:
                 relevant_chunks=[],  # Ground truth unavailable at runtime
                 eval_mode="shadow",
             )
-        except (ImportError, AttributeError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-log-and-swallow -- hybrid search best-effort: non-fatal, falls back to primary retriever
+        except (
+            ImportError,
+            AttributeError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            OSError,
+        ) as e:  # guardian: allow-log-and-swallow -- hybrid search best-effort: non-fatal, falls back to primary retriever
             # Non-blocking: log warning but don't fail the search
             import logging
 

@@ -1,4 +1,5 @@
 """Wave-I smoke: registry loader singleton determinism + swap."""
+
 from agentic_core.L5_safety.identity.registry_loader import (
     get_active_registry_snapshot,
     set_active_registry_snapshot,

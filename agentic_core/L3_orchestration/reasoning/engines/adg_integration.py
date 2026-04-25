@@ -197,11 +197,13 @@ class ADGQueryClient:
             return
         min_bytes = 1_000_000  # 1MB - real snapshots are 100+ MB; stubs are ~24KB
         candidates = [
-            p for p in adg_dir.glob("adg_indexed_*.sqlite")
+            p
+            for p in adg_dir.glob("adg_indexed_*.sqlite")
             if "99999999" not in p.name and p.stat().st_size >= min_bytes
         ]
         if not candidates:
             return
+
         # Filename format: adg_indexed_MMDDYYYY_HHMM.sqlite -> parse the stamp.
         # Lexical sort on "YYYYMMDD_HHMM" gives chronological order.
         def _stamp_key(p: Path) -> str:
@@ -211,6 +213,7 @@ class ADGQueryClient:
                 mmddyyyy, hhmm = stem[:8], stem[9:13]
                 return f"{mmddyyyy[4:]}{mmddyyyy[:4]}_{hhmm}"
             return stem
+
         candidates.sort(key=_stamp_key, reverse=True)
         self.adg_db_path = candidates[0]
         Logger.info(f"Auto-discovered ADG: {self.adg_db_path}")

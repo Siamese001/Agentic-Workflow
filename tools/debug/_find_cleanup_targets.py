@@ -3,6 +3,7 @@
 2. Duplicate targets: W8 P2 duplicate, E.F3 P3 unscored duplicate, E.F2 P4 duplicate
 3. AGG meta-rows: all 7 GAP-AGG rows
 """
+
 import json
 
 rows = json.load(open("artifacts/notion/open_rows_with_ids.json", encoding="utf-8"))
@@ -10,8 +11,16 @@ rows = json.load(open("artifacts/notion/open_rows_with_ids.json", encoding="utf-
 print("=" * 80)
 print("COMPLETION CANDIDATES (L1 reasoning best-practices)")
 print("=" * 80)
-keywords = ["planner_budget", "planner_overhead", "prompt_envelope", "thought_redactor",
-            "l1-reasoning", "L1 reasoning", "reasoning best", "best-practice"]
+keywords = [
+    "planner_budget",
+    "planner_overhead",
+    "prompt_envelope",
+    "thought_redactor",
+    "l1-reasoning",
+    "L1 reasoning",
+    "reasoning best",
+    "best-practice",
+]
 for r in rows:
     t = (r["title"] + " " + r["blocking"] + " " + r["plan_file"]).lower()
     if any(k.lower() in t for k in keywords):

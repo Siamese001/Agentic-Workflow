@@ -7,6 +7,7 @@ import tempfile
 
 from collections import Counter
 from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR
+
 f"{ADG_ARTIFACTS_DIR}/adg_indexed_*.sqlite"
 dbs = sorted(glob.glob(f"{ADG_ARTIFACTS_DIR}/adg_indexed_*.sqlite"), key=os.path.getmtime)
 NEW = dbs[-1]

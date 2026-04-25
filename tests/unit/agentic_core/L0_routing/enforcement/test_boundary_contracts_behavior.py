@@ -44,6 +44,7 @@ from agentic_core.L0_routing.types.boundary_types import (
 
 # ---- Exception hierarchy -----------------------------------------------
 
+
 class TestExceptions:
     @pytest.mark.parametrize(
         "exc_cls",
@@ -59,6 +60,7 @@ class TestExceptions:
 
 
 # ---- resolve_ssot_binding ----------------------------------------------
+
 
 class TestResolveSsotBinding:
     def test_empty_node_id_rejected(self) -> None:
@@ -78,10 +80,13 @@ class TestResolveSsotBinding:
 
 # ---- ContextRetrievalRequest helpers -----------------------------------
 
+
 class TestBuildContextRetrievalRequest:
     def test_success(self) -> None:
         req = build_context_retrieval_request(
-            trace_id="t1", query_hash="q1", semantic_clock_tick=5,
+            trace_id="t1",
+            query_hash="q1",
+            semantic_clock_tick=5,
         )
         assert req.trace_id == "t1"
         assert req.query_hash == "q1"
@@ -94,7 +99,9 @@ class TestBuildContextRetrievalRequest:
         # Empty trace_id triggers ValueError in __post_init__ → wrapped
         with pytest.raises(ContextRetrievalError, match="FAIL"):
             build_context_retrieval_request(
-                trace_id="", query_hash="q", semantic_clock_tick=0,
+                trace_id="",
+                query_hash="q",
+                semantic_clock_tick=0,
             )
 
 
@@ -106,6 +113,7 @@ class TestValidateContextRetrievalReadOnly:
 
 # ---- validate_boundary_schema -----------------------------------------
 
+
 class TestValidateBoundarySchema:
     def test_wrong_type_rejected(self) -> None:
         with pytest.raises(BoundarySchemaError, match="Expected BoundarySchemaDescriptor"):
@@ -113,8 +121,10 @@ class TestValidateBoundarySchema:
 
     def test_invalid_status_rejected(self) -> None:
         d = BoundarySchemaDescriptor(
-            schema_id="s1", schema_version="1.0",
-            source_layer="L0", target_layer="L4",
+            schema_id="s1",
+            schema_version="1.0",
+            source_layer="L0",
+            target_layer="L4",
             validation_status=SchemaValidationStatus.INVALID,
         )
         with pytest.raises(BoundarySchemaError, match="INVALID"):
@@ -122,8 +132,10 @@ class TestValidateBoundarySchema:
 
     def test_missing_status_rejected(self) -> None:
         d = BoundarySchemaDescriptor(
-            schema_id="s1", schema_version="1.0",
-            source_layer="L0", target_layer="L4",
+            schema_id="s1",
+            schema_version="1.0",
+            source_layer="L0",
+            target_layer="L4",
             validation_status=SchemaValidationStatus.MISSING,
         )
         with pytest.raises(BoundarySchemaError, match="MISSING"):
@@ -131,14 +143,17 @@ class TestValidateBoundarySchema:
 
     def test_valid_passes(self) -> None:
         d = BoundarySchemaDescriptor(
-            schema_id="s1", schema_version="1.0",
-            source_layer="L0", target_layer="L4",
+            schema_id="s1",
+            schema_version="1.0",
+            source_layer="L0",
+            target_layer="L4",
             validation_status=SchemaValidationStatus.VALID,
         )
         assert validate_boundary_schema(d) is True
 
 
 # ---- build_boundary_schema --------------------------------------------
+
 
 class TestBuildBoundarySchema:
     def test_without_known_schemas_returns_valid(self) -> None:
@@ -147,24 +162,37 @@ class TestBuildBoundarySchema:
 
     def test_unknown_id_returns_missing(self) -> None:
         d = build_boundary_schema(
-            "s1", "1.0", "L0", "L4", known_schemas={"other": "1.0"},
+            "s1",
+            "1.0",
+            "L0",
+            "L4",
+            known_schemas={"other": "1.0"},
         )
         assert d.validation_status == SchemaValidationStatus.MISSING
 
     def test_version_mismatch_returns_invalid(self) -> None:
         d = build_boundary_schema(
-            "s1", "1.0", "L0", "L4", known_schemas={"s1": "2.0"},
+            "s1",
+            "1.0",
+            "L0",
+            "L4",
+            known_schemas={"s1": "2.0"},
         )
         assert d.validation_status == SchemaValidationStatus.INVALID
 
     def test_match_returns_valid(self) -> None:
         d = build_boundary_schema(
-            "s1", "1.0", "L0", "L4", known_schemas={"s1": "1.0"},
+            "s1",
+            "1.0",
+            "L0",
+            "L4",
+            known_schemas={"s1": "1.0"},
         )
         assert d.validation_status == SchemaValidationStatus.VALID
 
 
 # ---- assert_cross_run_pins --------------------------------------------
+
 
 class TestAssertCrossRunPins:
     def test_both_match_passes(self) -> None:
@@ -195,17 +223,20 @@ class TestAssertCrossRunPins:
 
 # ---- assert_chain_closure ---------------------------------------------
 
+
 class TestAssertChainClosure:
     def test_clean(self) -> None:
         check, violation = assert_chain_closure(
-            frozenset({"a", "b"}), frozenset({"a", "b"}),
+            frozenset({"a", "b"}),
+            frozenset({"a", "b"}),
         )
         assert check.passed is True
         assert violation is None
 
     def test_missing(self) -> None:
         check, violation = assert_chain_closure(
-            frozenset({"a", "b"}), frozenset({"a"}),
+            frozenset({"a", "b"}),
+            frozenset({"a"}),
         )
         assert check.passed is False
         assert violation is not None
@@ -214,7 +245,8 @@ class TestAssertChainClosure:
 
     def test_orphans(self) -> None:
         check, violation = assert_chain_closure(
-            frozenset({"a"}), frozenset({"a", "extra"}),
+            frozenset({"a"}),
+            frozenset({"a", "extra"}),
         )
         assert check.passed is False
         assert violation is not None
@@ -222,7 +254,8 @@ class TestAssertChainClosure:
 
     def test_missing_and_orphan(self) -> None:
         check, violation = assert_chain_closure(
-            frozenset({"a", "b"}), frozenset({"b", "c"}),
+            frozenset({"a", "b"}),
+            frozenset({"b", "c"}),
         )
         assert check.passed is False
         assert violation is not None
@@ -233,12 +266,17 @@ class TestAssertChainClosure:
 
 # ---- run_meta_invariants ----------------------------------------------
 
+
 class TestRunMetaInvariants:
     def test_all_pass_produces_clean_report(self) -> None:
         report = run_meta_invariants(
-            trace_id="t", run_id="r", semantic_clock_tick=1,
-            discovery_hash="d", expected_discovery_hash="d",
-            schema_version="v", expected_schema_version="v",
+            trace_id="t",
+            run_id="r",
+            semantic_clock_tick=1,
+            discovery_hash="d",
+            expected_discovery_hash="d",
+            schema_version="v",
+            expected_schema_version="v",
             expected_artifacts=frozenset({"a"}),
             actual_artifacts=frozenset({"a"}),
         )
@@ -248,19 +286,28 @@ class TestRunMetaInvariants:
 
     def test_cross_run_pins_failure_captured(self) -> None:
         report = run_meta_invariants(
-            trace_id="t", run_id="r", semantic_clock_tick=1,
-            discovery_hash="d1", expected_discovery_hash="d2",
-            schema_version="v", expected_schema_version="v",
-            expected_artifacts=frozenset(), actual_artifacts=frozenset(),
+            trace_id="t",
+            run_id="r",
+            semantic_clock_tick=1,
+            discovery_hash="d1",
+            expected_discovery_hash="d2",
+            schema_version="v",
+            expected_schema_version="v",
+            expected_artifacts=frozenset(),
+            actual_artifacts=frozenset(),
         )
         assert report.pass_fail is False
         assert any(v.invariant_id == "cross_run_pins" for v in report.violations)
 
     def test_chain_closure_failure_captured(self) -> None:
         report = run_meta_invariants(
-            trace_id="t", run_id="r", semantic_clock_tick=1,
-            discovery_hash="d", expected_discovery_hash="d",
-            schema_version="v", expected_schema_version="v",
+            trace_id="t",
+            run_id="r",
+            semantic_clock_tick=1,
+            discovery_hash="d",
+            expected_discovery_hash="d",
+            schema_version="v",
+            expected_schema_version="v",
             expected_artifacts=frozenset({"a"}),
             actual_artifacts=frozenset({"b"}),
         )
@@ -269,9 +316,13 @@ class TestRunMetaInvariants:
 
     def test_both_failures_captured(self) -> None:
         report = run_meta_invariants(
-            trace_id="t", run_id="r", semantic_clock_tick=1,
-            discovery_hash="d1", expected_discovery_hash="d2",
-            schema_version="v1", expected_schema_version="v2",
+            trace_id="t",
+            run_id="r",
+            semantic_clock_tick=1,
+            discovery_hash="d1",
+            expected_discovery_hash="d2",
+            schema_version="v1",
+            expected_schema_version="v2",
             expected_artifacts=frozenset({"a"}),
             actual_artifacts=frozenset({"b"}),
         )
@@ -281,22 +332,33 @@ class TestRunMetaInvariants:
 
 # ---- fail_closed_on_violation ----------------------------------------
 
+
 class TestFailClosedOnViolation:
     def test_passes_when_clean(self) -> None:
         report = run_meta_invariants(
-            trace_id="t", run_id="r", semantic_clock_tick=1,
-            discovery_hash="d", expected_discovery_hash="d",
-            schema_version="v", expected_schema_version="v",
-            expected_artifacts=frozenset(), actual_artifacts=frozenset(),
+            trace_id="t",
+            run_id="r",
+            semantic_clock_tick=1,
+            discovery_hash="d",
+            expected_discovery_hash="d",
+            schema_version="v",
+            expected_schema_version="v",
+            expected_artifacts=frozenset(),
+            actual_artifacts=frozenset(),
         )
         assert fail_closed_on_violation(report) is True
 
     def test_raises_on_violation(self) -> None:
         report = run_meta_invariants(
-            trace_id="t", run_id="r-bad", semantic_clock_tick=1,
-            discovery_hash="d1", expected_discovery_hash="d2",
-            schema_version="v", expected_schema_version="v",
-            expected_artifacts=frozenset(), actual_artifacts=frozenset(),
+            trace_id="t",
+            run_id="r-bad",
+            semantic_clock_tick=1,
+            discovery_hash="d1",
+            expected_discovery_hash="d2",
+            schema_version="v",
+            expected_schema_version="v",
+            expected_artifacts=frozenset(),
+            actual_artifacts=frozenset(),
         )
         with pytest.raises(MetaInvariantError, match="r-bad"):
             fail_closed_on_violation(report)

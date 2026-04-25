@@ -1,4 +1,5 @@
 import sqlite3, glob, os, sys
+
 snap = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"))[-1]
 print("snapshot:", os.path.basename(snap))
 con = sqlite3.connect(f"file:{snap}?mode=ro", uri=True)

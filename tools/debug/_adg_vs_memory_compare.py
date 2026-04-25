@@ -15,9 +15,10 @@ def main() -> None:
     print(f"File:  {adg.name}")
     print(f"Size:  {adg.stat().st_size / 1024 / 1024:.0f} MB")
     with sqlite3.connect(str(adg)) as c:
-        tables = [r[0] for r in c.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name LIMIT 15"
-        )]
+        tables = [
+            r[0]
+            for r in c.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name LIMIT 15")
+        ]
         print(f"Sample tables ({len(tables)} of many): {tables}")
         nodes = c.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
         edges = c.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
@@ -30,9 +31,7 @@ def main() -> None:
         print(f"  first row: {row[:4]}...")
         print()
         print("Example edge:")
-        row = c.execute(
-            "SELECT relation_type, src_id, dst_id FROM edges LIMIT 1"
-        ).fetchone()
+        row = c.execute("SELECT relation_type, src_id, dst_id FROM edges LIMIT 1").fetchone()
         print(f"  relation={row[0]!r}  src={row[1]}  dst={row[2]}")
 
     print()
@@ -43,9 +42,7 @@ def main() -> None:
     print(f"File:  {mem.name}")
     print(f"Size:  {mem.stat().st_size / 1024:.0f} KB")
     with sqlite3.connect(str(mem)) as c:
-        tables = [r[0] for r in c.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-        )]
+        tables = [r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
         print(f"Tables: {tables}")
         for t in tables:
             try:
@@ -56,9 +53,7 @@ def main() -> None:
         print()
         print("Example memory entity:")
         try:
-            row = c.execute(
-                "SELECT name, entityType FROM entities LIMIT 1"
-            ).fetchone()
+            row = c.execute("SELECT name, entityType FROM entities LIMIT 1").fetchone()
             if row:
                 print(f"  name={row[0]!r}  type={row[1]!r}")
         except sqlite3.Error as e:

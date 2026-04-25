@@ -243,6 +243,7 @@ class TieredBatchProcessor:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
+
     def _get_semantic_cache(self):
         """
         [PHASE 17] Lazy-load SemanticCacheManager.
@@ -309,6 +310,7 @@ class TieredBatchProcessor:
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
+
     def process_batch(self, violations: list[Any]) -> dict[str, Any]:
         """
         Process violations with tiered strategy.

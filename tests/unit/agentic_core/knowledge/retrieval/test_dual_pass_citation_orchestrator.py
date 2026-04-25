@@ -153,9 +153,7 @@ def test_citation_coverage_computed_against_must_use_only():
         # Only cite chunk 0; chunk 1 is must-use but uncited; chunk 2 optional
         return _mk_pass1_response(
             text=".",
-            citations=[
-                {"type": "char_location", "cited_text": "x", "document_index": 0}
-            ],
+            citations=[{"type": "char_location", "cited_text": "x", "document_index": 0}],
         )
 
     orch = DualPassCitationOrchestrator(pass1_fn=pass1)
@@ -179,9 +177,7 @@ def test_citation_coverage_computed_against_must_use_only():
 def test_full_two_pass_ok_with_json_shape():
     pass1_response = _mk_pass1_response(
         text="BM25 is a lexical retrieval algorithm.",
-        citations=[
-            {"type": "char_location", "cited_text": "BM25", "document_index": 0}
-        ],
+        citations=[{"type": "char_location", "cited_text": "BM25", "document_index": 0}],
     )
 
     def pass1(_payload):
@@ -212,7 +208,7 @@ def test_pass2_extracts_json_from_fenced_code_block():
         return _mk_pass1_response(text="Answer.")
 
     def pass2(_p):
-        return "Here is your JSON:\n```json\n{\"x\": 1}\n```\nThanks."
+        return 'Here is your JSON:\n```json\n{"x": 1}\n```\nThanks.'
 
     orch = DualPassCitationOrchestrator(pass1_fn=pass1, pass2_fn=pass2)
     env = _envelope([_chunk()])

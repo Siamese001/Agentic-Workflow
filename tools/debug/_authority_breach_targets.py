@@ -1,10 +1,10 @@
 """List (src_file, dst_file) pairs for all mv_authority_boundary_breaches."""
+
 import json
 from collections import Counter
 from pathlib import Path
 
-artifacts = sorted(Path("artifacts/ci_gates").glob("p0_runner_full_*.json"),
-                   key=lambda p: p.stat().st_mtime)
+artifacts = sorted(Path("artifacts/ci_gates").glob("p0_runner_full_*.json"), key=lambda p: p.stat().st_mtime)
 d = json.loads(artifacts[-1].read_text(encoding="utf-8"))
 pairs: Counter = Counter()
 for r in d["results"]:

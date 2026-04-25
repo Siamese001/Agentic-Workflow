@@ -59,10 +59,7 @@ def test_golden_fixture_matches_current_projection(fixture_path: Path) -> None:
 
     replay_key = compute_slot_digest_key(ir)
     assert replay_key.startswith(expected["replay_key_prefix"])
-    assert (
-        len(replay_key) - len(SLOT_DIGEST_PREFIX)
-        == expected["replay_key_digest_length"]
-    )
+    assert len(replay_key) - len(SLOT_DIGEST_PREFIX) == expected["replay_key_digest_length"]
 
 
 def test_harness_imports_cleanly_without_fixtures() -> None:

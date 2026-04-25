@@ -27,6 +27,7 @@ from agentic_core.L5_safety.types.healing_orchestration_types import (
 
 # ---- Fake strategies for injection into the private _strategies map -----
 
+
 class _Strategy:
     """Minimal duck-typed strategy matching what run_strategy expects."""
 
@@ -60,6 +61,7 @@ def _suite_with(strategies: dict[str, Any]) -> HealingOrchestrationSuite:
 
 # ---- HealingResult / HealingSuiteResult ---------------------------------
 
+
 class TestHealingResultDefaults:
     def test_minimal(self) -> None:
         r = HealingResult(strategy_name="s", success=True)
@@ -71,9 +73,12 @@ class TestHealingResultDefaults:
 
     def test_with_fields(self) -> None:
         r = HealingResult(
-            strategy_name="s", success=False,
-            violations_found=3, violations_fixed=1,
-            errors=["e1"], metadata={"k": "v"},
+            strategy_name="s",
+            success=False,
+            violations_found=3,
+            violations_fixed=1,
+            errors=["e1"],
+            metadata={"k": "v"},
         )
         assert r.errors == ["e1"]
         assert r.metadata == {"k": "v"}
@@ -82,8 +87,12 @@ class TestHealingResultDefaults:
 class TestHealingSuiteResultDefaults:
     def test_defaults(self) -> None:
         sr = HealingSuiteResult(
-            overall_success=True, strategies_run=0, strategies_succeeded=0,
-            strategies_failed=0, total_violations_found=0, total_violations_fixed=0,
+            overall_success=True,
+            strategies_run=0,
+            strategies_succeeded=0,
+            strategies_failed=0,
+            total_violations_found=0,
+            total_violations_fixed=0,
         )
         assert sr.results == []
         assert sr.execution_time_ms == 0.0
@@ -91,6 +100,7 @@ class TestHealingSuiteResultDefaults:
 
 
 # ---- run_strategy --------------------------------------------------------
+
 
 class TestRunStrategy:
     def test_unknown_strategy_returns_failure(self) -> None:
@@ -108,10 +118,15 @@ class TestRunStrategy:
         assert r.metadata.get("reason") == "violation_type_not_supported"
 
     def test_successful_heal(self) -> None:
-        strategy = _Strategy(heal_result={
-            "success": True, "violations_found": 2,
-            "violations_fixed": 2, "errors": [], "extra": "meta",
-        })
+        strategy = _Strategy(
+            heal_result={
+                "success": True,
+                "violations_found": 2,
+                "violations_fixed": 2,
+                "errors": [],
+                "extra": "meta",
+            }
+        )
         suite = _suite_with({"s1": strategy})
         r = suite.run_strategy("s1", violation={"type": "x"})
         assert r.success is True
@@ -120,10 +135,14 @@ class TestRunStrategy:
         assert r.metadata == {"extra": "meta"}
 
     def test_failed_heal_zeroes_fixed(self) -> None:
-        strategy = _Strategy(heal_result={
-            "success": False, "violations_found": 2,
-            "violations_fixed": 2, "errors": ["oh no"],
-        })
+        strategy = _Strategy(
+            heal_result={
+                "success": False,
+                "violations_found": 2,
+                "violations_fixed": 2,
+                "errors": ["oh no"],
+            }
+        )
         suite = _suite_with({"s1": strategy})
         r = suite.run_strategy("s1", violation={"type": "x"})
         assert r.success is False
@@ -155,16 +174,27 @@ class TestRunStrategy:
 
 # ---- run_all -------------------------------------------------------------
 
+
 class TestRunAll:
     def test_aggregates_success(self) -> None:
-        suite = _suite_with({
-            "a": _Strategy(heal_result={
-                "success": True, "violations_found": 3, "violations_fixed": 3,
-            }),
-            "b": _Strategy(heal_result={
-                "success": True, "violations_found": 2, "violations_fixed": 2,
-            }),
-        })
+        suite = _suite_with(
+            {
+                "a": _Strategy(
+                    heal_result={
+                        "success": True,
+                        "violations_found": 3,
+                        "violations_fixed": 3,
+                    }
+                ),
+                "b": _Strategy(
+                    heal_result={
+                        "success": True,
+                        "violations_found": 2,
+                        "violations_fixed": 2,
+                    }
+                ),
+            }
+        )
         sr = suite.run_all(violation={"type": "x"})
         assert sr.strategies_run == 2
         assert sr.strategies_succeeded == 2
@@ -175,10 +205,12 @@ class TestRunAll:
         assert sr.execution_time_ms >= 0.0
 
     def test_partial_failure_marks_overall_failure(self) -> None:
-        suite = _suite_with({
-            "a": _Strategy(heal_result={"success": True, "violations_found": 1, "violations_fixed": 1}),
-            "b": _Strategy(heal_result={"success": False, "violations_found": 1}),
-        })
+        suite = _suite_with(
+            {
+                "a": _Strategy(heal_result={"success": True, "violations_found": 1, "violations_fixed": 1}),
+                "b": _Strategy(heal_result={"success": False, "violations_found": 1}),
+            }
+        )
         sr = suite.run_all(violation={"type": "x"})
         assert sr.overall_success is False
         assert sr.strategies_failed == 1
@@ -192,6 +224,7 @@ class TestRunAll:
 
 
 # ---- Singleton / convenience --------------------------------------------
+
 
 class TestSingleton:
     def setup_method(self) -> None:
@@ -207,9 +240,11 @@ class TestSingleton:
         assert s1 is s2
 
     def test_run_healing_operation_delegates(self) -> None:
-        suite = _suite_with({
-            "a": _Strategy(heal_result={"success": True, "violations_found": 1, "violations_fixed": 1}),
-        })
+        suite = _suite_with(
+            {
+                "a": _Strategy(heal_result={"success": True, "violations_found": 1, "violations_fixed": 1}),
+            }
+        )
         hot_mod._healing_suite = suite
         result = run_healing_operation(violation={"type": "x"})
         assert isinstance(result, HealingSuiteResult)
@@ -218,6 +253,7 @@ class TestSingleton:
 
 
 # ---- Convenience wrappers -----------------------------------------------
+
 
 class TestConvenienceWrappers:
     def test_run_resilience_check_uses_chaos_strategy(self) -> None:

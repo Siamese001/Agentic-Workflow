@@ -1,4 +1,5 @@
 """Pull top Wave-1 targets from ADG SQLite. Direct read, no MCP."""
+
 from __future__ import annotations
 import sqlite3
 import sys
@@ -7,8 +8,13 @@ from pathlib import Path
 DB = Path("artifacts/adg/adg_indexed_04232026_2248.sqlite")
 
 LAYER_MULT = {
-    "L0": 2.0, "L5": 2.0, "L3": 1.75, "L4": 1.75,
-    "L1": 1.0, "L2": 1.0, "L6": 0.75,
+    "L0": 2.0,
+    "L5": 2.0,
+    "L3": 1.75,
+    "L4": 1.75,
+    "L1": 1.0,
+    "L2": 1.0,
+    "L6": 0.75,
 }
 
 

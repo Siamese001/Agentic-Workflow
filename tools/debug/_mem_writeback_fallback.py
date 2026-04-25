@@ -26,12 +26,7 @@ def main() -> int:
 
     con = sqlite3.connect(str(DB))
     try:
-        tables = [
-            r[0]
-            for r in con.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
-        ]
+        tables = [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
         print("[mem-writeback] tables:", tables)
 
         # Probe for the memory MCP schema shape.
@@ -42,9 +37,7 @@ def main() -> int:
             )
             return 3
 
-        ent_cols = [
-            r[1] for r in con.execute("PRAGMA table_info(entities)").fetchall()
-        ]
+        ent_cols = [r[1] for r in con.execute("PRAGMA table_info(entities)").fetchall()]
         obs_cols = (
             [r[1] for r in con.execute("PRAGMA table_info(observations)").fetchall()]
             if "observations" in tables
@@ -122,16 +115,14 @@ def main() -> int:
             content_col = "content" if "content" in obs_cols else "observation"
             if entity_ref_col is None:
                 print(
-                    "[mem-writeback] observation entity-ref column unknown; cols="
-                    + str(obs_cols),
+                    "[mem-writeback] observation entity-ref column unknown; cols=" + str(obs_cols),
                     file=sys.stderr,
                 )
             else:
                 existing = {
                     r[0]
                     for r in con.execute(
-                        f"SELECT {content_col} FROM observations "
-                        f"WHERE {entity_ref_col} = ?",
+                        f"SELECT {content_col} FROM observations WHERE {entity_ref_col} = ?",
                         (name,),
                     ).fetchall()
                 }
@@ -147,10 +138,7 @@ def main() -> int:
                         (name, obs, now, 1.0, now, 0),
                     )
                     new_count += 1
-                print(
-                    f"[mem-writeback] wrote {new_count} new observations "
-                    f"(existing={len(existing)})"
-                )
+                print(f"[mem-writeback] wrote {new_count} new observations (existing={len(existing)})")
         con.commit()
         print(f"[mem-writeback] OK at {now}")
         return 0

@@ -1,4 +1,5 @@
 """Wave E discovery: find duplicate adapter patterns via ADG P-views."""
+
 from __future__ import annotations
 
 import sqlite3

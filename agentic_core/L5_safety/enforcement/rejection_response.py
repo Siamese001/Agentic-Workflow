@@ -120,10 +120,7 @@ def render_webhook(resp: RejectionResponse) -> dict[str, Any]:
 def render_chat(resp: RejectionResponse) -> str:
     """Render a compact chat-bubble string for U1 chat adapters."""
 
-    return (
-        f"[request rejected: {resp.reason_code}] {resp.message} "
-        f"(request_id={resp.request_id})"
-    )
+    return f"[request rejected: {resp.reason_code}] {resp.message} (request_id={resp.request_id})"
 
 
 def render_batch(resp: RejectionResponse) -> dict[str, Any]:

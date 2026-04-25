@@ -314,7 +314,7 @@ def test_embed_full_doc_single_window_happy_path():
             LateChunkingConfig(window_size_tokens=20, window_overlap_tokens=5, normalize=False)
         )
         chunks = [
-            ChunkSpan("c1", 0, 25),   # tokens 0..5
+            ChunkSpan("c1", 0, 25),  # tokens 0..5
             ChunkSpan("c2", 25, 50),  # tokens 5..10
         ]
         result = embedder.embed_chunks_from_doc(doc, chunks)

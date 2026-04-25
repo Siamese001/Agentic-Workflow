@@ -166,7 +166,9 @@ class Envelope:
     @property
     def deletes_agent_files(self) -> tuple[str, ...]:
         return tuple(
-            op.path for op in self.operations if isinstance(op, DeleteFile) and _AGENT_FILE_PATTERN.search(op.path)
+            op.path
+            for op in self.operations
+            if isinstance(op, DeleteFile) and _AGENT_FILE_PATTERN.search(op.path)
         )
 
 
@@ -273,9 +275,9 @@ def _parse_hunks(body: list[str], cursor: int) -> tuple[list[Hunk], int]:
         hunk_lines: list[str] = []
         while cursor < len(body):
             inner = body[cursor]
-            if inner.startswith(("*** Update File:", "*** Add File:", "*** Delete File:")) or inner.startswith(
-                HUNK_HEADER_PREFIX
-            ):
+            if inner.startswith(
+                ("*** Update File:", "*** Add File:", "*** Delete File:")
+            ) or inner.startswith(HUNK_HEADER_PREFIX):
                 break
             hunk_lines.append(inner)
             cursor += 1

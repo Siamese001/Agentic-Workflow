@@ -113,24 +113,19 @@ def test_threshold_override(tmp_path: Path) -> None:
 
 
 def test_malformed_json_is_skipped(tmp_path: Path) -> None:
-    (tmp_path / "wiring_bad_ratchet.json").write_text(
-        "not valid json", encoding="utf-8"
-    )
+    (tmp_path / "wiring_bad_ratchet.json").write_text("not valid json", encoding="utf-8")
     assert mod.collect_stale(tmp_path, threshold_days=30, now=NOW) == []
 
 
 def test_non_wiring_prefix_ignored(tmp_path: Path) -> None:
     _write(
         tmp_path / "other_ratchet.json",
-        {"gate_id": "OTHER", "count": 100,
-         "seeded_at": (NOW - timedelta(days=400)).isoformat()},
+        {"gate_id": "OTHER", "count": 100, "seeded_at": (NOW - timedelta(days=400)).isoformat()},
     )
     assert mod.collect_stale(tmp_path, threshold_days=30, now=NOW) == []
 
 
-def test_cli_default_returns_zero_when_empty(
-    tmp_path: Path, capsys: pytest.CaptureFixture
-) -> None:
+def test_cli_default_returns_zero_when_empty(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
     rc = mod.main(["--baseline-dir", str(tmp_path), "--days", "30"])
     assert rc == 0
     out = capsys.readouterr().out
@@ -138,9 +133,7 @@ def test_cli_default_returns_zero_when_empty(
     assert "stale_ratchets=0" in out
 
 
-def test_cli_strict_fails_when_stale(
-    tmp_path: Path, capsys: pytest.CaptureFixture
-) -> None:
+def test_cli_strict_fails_when_stale(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
     _write(
         tmp_path / "wiring_stale_ratchet.json",
         {
@@ -149,17 +142,13 @@ def test_cli_strict_fails_when_stale(
             "seeded_at": (NOW - timedelta(days=60)).isoformat(),
         },
     )
-    rc = mod.main(
-        ["--baseline-dir", str(tmp_path), "--days", "30", "--strict"]
-    )
+    rc = mod.main(["--baseline-dir", str(tmp_path), "--days", "30", "--strict"])
     assert rc == 1
     out = capsys.readouterr().out
     assert "STALE" in out
 
 
-def test_cli_json_output_is_machine_readable(
-    tmp_path: Path, capsys: pytest.CaptureFixture
-) -> None:
+def test_cli_json_output_is_machine_readable(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
     _write(
         tmp_path / "wiring_jsoncase_ratchet.json",
         {

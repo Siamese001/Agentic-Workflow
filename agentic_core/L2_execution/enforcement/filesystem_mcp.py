@@ -167,5 +167,4 @@ except ImportError as e:
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
 
-
 print("   [OK] agentic_core.L4_state.memory package initialized (stub mode)")

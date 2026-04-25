@@ -10,7 +10,6 @@ except ImportError as e:
     )  # guardian: allow-silent-degradation -- Optional L5 safety base
 
 
-
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,

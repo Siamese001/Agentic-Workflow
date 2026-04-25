@@ -33,18 +33,14 @@ class TestWrapBasicBehavior:
 
     def test_provenance_attached(self) -> None:
         slot = wrap_synthesis_output(text="x", provenance=_prov())
-        assert slot.metadata["synthesis_producer"] == (
-            "apps_research.synthesis_engine_service"
-        )
+        assert slot.metadata["synthesis_producer"] == ("apps_research.synthesis_engine_service")
         assert slot.metadata["synthesis_source_trace_ids"] == ["trace-1", "trace-2"]
         assert slot.metadata["synthesis_model"] == "claude-3-5-sonnet"
         assert slot.metadata["synthesis_kind"] == "knowledge"
         assert slot.metadata["synthesis_truncated"] is False
 
     def test_custom_source_layer(self) -> None:
-        slot = wrap_synthesis_output(
-            text="x", provenance=_prov(), source_layer="L1"
-        )
+        slot = wrap_synthesis_output(text="x", provenance=_prov(), source_layer="L1")
         assert slot.source_layer == "L1"
 
 
@@ -78,16 +74,12 @@ class TestTruncation:
         assert slot.metadata["synthesis_original_bytes"] == len(huge.encode("utf-8"))
 
     def test_no_truncation_when_under_budget(self) -> None:
-        slot = wrap_synthesis_output(
-            text="short", provenance=_prov(), max_bytes=10_000
-        )
+        slot = wrap_synthesis_output(text="short", provenance=_prov(), max_bytes=10_000)
         assert "TRUNCATED" not in slot.content
         assert slot.metadata["synthesis_truncated"] is False
 
     def test_custom_budget(self) -> None:
-        slot = wrap_synthesis_output(
-            text="a" * 200, provenance=_prov(), max_bytes=50
-        )
+        slot = wrap_synthesis_output(text="a" * 200, provenance=_prov(), max_bytes=50)
         assert len(slot.content.encode("utf-8")) <= 50
         assert slot.metadata["synthesis_truncated"] is True
 

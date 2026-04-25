@@ -241,7 +241,12 @@ def _ensure_utf8():
             # Replace os.system with safe_execute for security
             safe_execute(["chcp", "65001"], capture_output=True, check=False)
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        except (OSError, AttributeError, UnicodeDecodeError, RuntimeError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            OSError,
+            AttributeError,
+            UnicodeDecodeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             import logging
 
             logging.getLogger(__name__).debug("colors_config: Exception swallowed at L245: %s", e)

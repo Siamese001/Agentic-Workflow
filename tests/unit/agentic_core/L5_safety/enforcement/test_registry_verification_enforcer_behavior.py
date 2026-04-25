@@ -32,6 +32,7 @@ from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
 
 # ---- fixtures -----------------------------------------------------------
 
+
 @pytest.fixture
 def fake_root(tmp_path: Path) -> Path:
     """Build a fake project tree with agent discovery JSON + *Agent.py files."""
@@ -55,19 +56,20 @@ def fake_root(tmp_path: Path) -> Path:
     tests_dir = tmp_path / "tests"
     tests_dir.mkdir()
     (tests_dir / "test_FooAgent.py").write_text(
-        "class TestAgent(object): pass", encoding="utf-8",
+        "class TestAgent(object): pass",
+        encoding="utf-8",
     )
 
     # Registry JSON file
     disc_dir = tmp_path / "agentic_core" / "L0_routing"
     disc_dir.mkdir(parents=True)
     (disc_dir / "agent_discovery.json").write_text(
-        json.dumps([
-            {"class_name": "FooAgent",
-             "path": "agentic_core/L3_orchestration/reasoning/FooAgent.py"},
-            {"class_name": "GhostAgent",
-             "path": "agentic_core/L5_safety/GhostAgent.py"},
-        ]),
+        json.dumps(
+            [
+                {"class_name": "FooAgent", "path": "agentic_core/L3_orchestration/reasoning/FooAgent.py"},
+                {"class_name": "GhostAgent", "path": "agentic_core/L5_safety/GhostAgent.py"},
+            ]
+        ),
         encoding="utf-8",
     )
     return tmp_path
@@ -80,10 +82,13 @@ def verifier(fake_root: Path) -> RegistryVerifier:
 
 # ---- Dataclass defaults -------------------------------------------------
 
+
 class TestDataclasses:
     def test_agent_info_defaults(self, tmp_path: Path) -> None:
         ai = AgentInfo(
-            class_name="X", file_path=tmp_path / "x.py", relative_path="x.py",
+            class_name="X",
+            file_path=tmp_path / "x.py",
+            relative_path="x.py",
         )
         assert ai.layer == "Unknown"
         assert ai.has_agent_class is False
@@ -105,12 +110,15 @@ class TestDataclasses:
 
 # ---- Path / layer helpers ----------------------------------------------
 
+
 class TestIsExcluded:
     def test_excludes_pycache(self, verifier: RegistryVerifier, fake_root: Path) -> None:
         assert verifier._is_excluded(fake_root / "pkg" / "__pycache__" / "a.py")
 
     def test_clean_path_not_excluded(
-        self, verifier: RegistryVerifier, fake_root: Path,
+        self,
+        verifier: RegistryVerifier,
+        fake_root: Path,
     ) -> None:
         assert not verifier._is_excluded(
             fake_root / "agentic_core" / "L3_orchestration" / "reasoning" / "FooAgent.py",
@@ -129,18 +137,24 @@ class TestIsTestFile:
 
 
 class TestExtractLayer:
-    @pytest.mark.parametrize("rel,expected", [
-        ("agentic_core/L3_orchestration/reasoning/X.py", "L3"),
-        ("agentic_core/L0_routing/enforcement/X.py", "L0"),
-        ("agentic_core/L5_safety/reasoning/X.py", "L5"),
-        ("agentic_core/base_agents/X.py", "Base"),
-        ("apps_rg/engines/X.py", "Apps_RG"),
-        ("apps_lic/X.py", "Apps_LIC"),
-        ("apps_shared/X.py", "Apps_Shared"),
-        ("other/path.py", "Unknown"),
-    ])
+    @pytest.mark.parametrize(
+        "rel,expected",
+        [
+            ("agentic_core/L3_orchestration/reasoning/X.py", "L3"),
+            ("agentic_core/L0_routing/enforcement/X.py", "L0"),
+            ("agentic_core/L5_safety/reasoning/X.py", "L5"),
+            ("agentic_core/base_agents/X.py", "Base"),
+            ("apps_rg/engines/X.py", "Apps_RG"),
+            ("apps_lic/X.py", "Apps_LIC"),
+            ("apps_shared/X.py", "Apps_Shared"),
+            ("other/path.py", "Unknown"),
+        ],
+    )
     def test_parametric(
-        self, verifier: RegistryVerifier, rel: str, expected: str,
+        self,
+        verifier: RegistryVerifier,
+        rel: str,
+        expected: str,
     ) -> None:
         assert verifier._extract_layer(rel) == expected
 
@@ -150,9 +164,12 @@ class TestExtractLayer:
 
 # ---- _parse_agent_file --------------------------------------------------
 
+
 class TestParseAgentFile:
     def test_extracts_agent_class(
-        self, verifier: RegistryVerifier, fake_root: Path,
+        self,
+        verifier: RegistryVerifier,
+        fake_root: Path,
     ) -> None:
         p = fake_root / "agentic_core" / "L3_orchestration" / "reasoning" / "FooAgent.py"
         info = verifier._parse_agent_file(p)
@@ -165,18 +182,24 @@ class TestParseAgentFile:
         assert info.layer == "L3"
 
     def test_returns_none_on_syntax_error(
-        self, verifier: RegistryVerifier, fake_root: Path,
+        self,
+        verifier: RegistryVerifier,
+        fake_root: Path,
     ) -> None:
         p = fake_root / "agentic_core" / "L3_orchestration" / "BrokenAgent.py"
         assert verifier._parse_agent_file(p) is None
 
     def test_returns_none_when_missing(
-        self, verifier: RegistryVerifier, fake_root: Path,
+        self,
+        verifier: RegistryVerifier,
+        fake_root: Path,
     ) -> None:
         assert verifier._parse_agent_file(fake_root / "no-file.py") is None
 
     def test_returns_none_when_no_agent_class(
-        self, verifier: RegistryVerifier, fake_root: Path,
+        self,
+        verifier: RegistryVerifier,
+        fake_root: Path,
     ) -> None:
         p = fake_root / "agentic_core" / "Other.py"
         p.parent.mkdir(parents=True, exist_ok=True)
@@ -186,9 +209,12 @@ class TestParseAgentFile:
 
 # ---- scan_filesystem ---------------------------------------------------
 
+
 class TestScanFilesystem:
     def test_finds_real_agents_only(
-        self, verifier: RegistryVerifier, fake_root: Path,
+        self,
+        verifier: RegistryVerifier,
+        fake_root: Path,
     ) -> None:
         agents = verifier.scan_filesystem()
         class_names = [a.class_name for a in agents]
@@ -200,6 +226,7 @@ class TestScanFilesystem:
 
 
 # ---- load_registry -----------------------------------------------------
+
 
 class TestLoadRegistry:
     def test_parses_json(self, verifier: RegistryVerifier) -> None:
@@ -213,7 +240,8 @@ class TestLoadRegistry:
         assert v.load_registry() == []
 
     def test_returns_empty_on_malformed_json(
-        self, verifier: RegistryVerifier,
+        self,
+        verifier: RegistryVerifier,
     ) -> None:
         # Overwrite discovery with invalid JSON
         verifier.discovery_path.write_text("{not json", encoding="utf-8")
@@ -222,9 +250,11 @@ class TestLoadRegistry:
 
 # ---- verify_registry (full roundtrip) ----------------------------------
 
+
 class TestVerifyRegistry:
     def test_orphan_and_missing_classified(
-        self, verifier: RegistryVerifier,
+        self,
+        verifier: RegistryVerifier,
     ) -> None:
         result = verifier.verify_registry()
         # Registry has GhostAgent but no file → orphan
@@ -243,20 +273,23 @@ class TestVerifyRegistry:
         assert result.coverage_percentage == pytest.approx(100.0)
 
     def test_is_complete_false_when_orphans(
-        self, verifier: RegistryVerifier,
+        self,
+        verifier: RegistryVerifier,
     ) -> None:
         result = verifier.verify_registry()
         assert result.is_complete is False  # GhostAgent orphan
 
     def test_is_complete_true_when_clean(
-        self, verifier: RegistryVerifier,
+        self,
+        verifier: RegistryVerifier,
     ) -> None:
         # Remove the orphan from the registry → clean state
         verifier.discovery_path.write_text(
-            json.dumps([
-                {"class_name": "FooAgent",
-                 "path": "agentic_core/L3_orchestration/reasoning/FooAgent.py"},
-            ]),
+            json.dumps(
+                [
+                    {"class_name": "FooAgent", "path": "agentic_core/L3_orchestration/reasoning/FooAgent.py"},
+                ]
+            ),
             encoding="utf-8",
         )
         result = verifier.verify_registry()
@@ -266,14 +299,16 @@ class TestVerifyRegistry:
         assert result.path_mismatches == []
 
     def test_path_mismatch_detected(
-        self, verifier: RegistryVerifier,
+        self,
+        verifier: RegistryVerifier,
     ) -> None:
         # Registry claims FooAgent is at a different path
         verifier.discovery_path.write_text(
-            json.dumps([
-                {"class_name": "FooAgent",
-                 "path": "wrong/location/FooAgent.py"},
-            ]),
+            json.dumps(
+                [
+                    {"class_name": "FooAgent", "path": "wrong/location/FooAgent.py"},
+                ]
+            ),
             encoding="utf-8",
         )
         result = verifier.verify_registry()
@@ -282,6 +317,7 @@ class TestVerifyRegistry:
 
 
 # ---- generate_report ---------------------------------------------------
+
 
 class TestGenerateReport:
     def test_summary_rendered(self, verifier: RegistryVerifier) -> None:
@@ -293,7 +329,8 @@ class TestGenerateReport:
         assert "Status:" in report
 
     def test_orphan_section_present_when_orphans(
-        self, verifier: RegistryVerifier,
+        self,
+        verifier: RegistryVerifier,
     ) -> None:
         result = verifier.verify_registry()
         report = verifier.generate_report(result)
@@ -301,7 +338,8 @@ class TestGenerateReport:
         assert "GhostAgent" in report
 
     def test_orphan_section_absent_when_no_orphans(
-        self, verifier: RegistryVerifier,
+        self,
+        verifier: RegistryVerifier,
     ) -> None:
         empty = VerificationResult()
         report = verifier.generate_report(empty)
@@ -312,7 +350,9 @@ class TestGenerateReport:
         assert "## Missing from Registry" not in report
 
     def test_missing_agents_truncated_at_50(
-        self, verifier: RegistryVerifier, tmp_path: Path,
+        self,
+        verifier: RegistryVerifier,
+        tmp_path: Path,
     ) -> None:
         result = VerificationResult()
         for i in range(55):
@@ -328,6 +368,7 @@ class TestGenerateReport:
 
 
 # ---- run_verification --------------------------------------------------
+
 
 class TestRunVerification:
     def test_returns_verification_result(self) -> None:

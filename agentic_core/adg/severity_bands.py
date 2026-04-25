@@ -115,9 +115,7 @@ def severity_to_band(severity: str) -> str:
     try:
         return SEVERITY_TO_BAND[severity]
     except KeyError as exc:
-        raise ValueError(
-            f"Unknown severity {severity!r}; expected one of {list(SEVERITY_TO_BAND)}"
-        ) from exc
+        raise ValueError(f"Unknown severity {severity!r}; expected one of {list(SEVERITY_TO_BAND)}") from exc
 
 
 def band_to_severity(band: str) -> str:
@@ -129,9 +127,7 @@ def band_to_severity(band: str) -> str:
     try:
         return BAND_TO_SEVERITY[band]
     except KeyError as exc:
-        raise ValueError(
-            f"Unknown band {band!r}; expected one of {list(BAND_TO_SEVERITY)}"
-        ) from exc
+        raise ValueError(f"Unknown band {band!r}; expected one of {list(BAND_TO_SEVERITY)}") from exc
 
 
 def normalize_band(value: str) -> str:
@@ -241,16 +237,16 @@ def resolve_surface_markers(file_path: str) -> frozenset[str]:
 # Ordering within a row set is NOT significant; the caller iterates all markers
 # for a file and applies the highest-severity override that matches.
 SURFACE_OVERRIDE: Final[dict[tuple[str, str], str]] = {
-    ("partial_side_effects", "write"): Severity.HIGH.value,       # P2 → P1
-    ("default_fallback_masking", "write"): Severity.HIGH.value,   # P2 → P1
-    ("retry_without_backoff", "prod"): Severity.HIGH.value,       # P2 → P1
+    ("partial_side_effects", "write"): Severity.HIGH.value,  # P2 → P1
+    ("default_fallback_masking", "write"): Severity.HIGH.value,  # P2 → P1
+    ("retry_without_backoff", "prod"): Severity.HIGH.value,  # P2 → P1
     ("global_state_mutation", "L0_critical"): Severity.MEDIUM.value,  # P3 → P2
     ("global_state_mutation", "L5_critical"): Severity.MEDIUM.value,  # P3 → P2
-    ("broad_exception_catch", "L5"): Severity.MEDIUM.value,           # P3 → P2
-    ("silent_exception_swallow", "L0"): Severity.HIGH.value,          # P3 → P1
-    ("silent_exception_swallow", "L5"): Severity.HIGH.value,          # P3 → P1
-    ("log_and_swallow", "L0"): Severity.HIGH.value,                   # P3 → P1
-    ("log_and_swallow", "L5"): Severity.HIGH.value,                   # P3 → P1
+    ("broad_exception_catch", "L5"): Severity.MEDIUM.value,  # P3 → P2
+    ("silent_exception_swallow", "L0"): Severity.HIGH.value,  # P3 → P1
+    ("silent_exception_swallow", "L5"): Severity.HIGH.value,  # P3 → P1
+    ("log_and_swallow", "L0"): Severity.HIGH.value,  # P3 → P1
+    ("log_and_swallow", "L5"): Severity.HIGH.value,  # P3 → P1
 }
 
 

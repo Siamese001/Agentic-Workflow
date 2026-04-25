@@ -57,6 +57,7 @@ except ImportError:
     class MemoryStoreConfig:  # type: ignore[no-redef]
         VECTOR_METRIC = "cosine"
 
+
 from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 from agentic_core.L4_state.utils.chunk_metadata import (
     build_canonical_digest,
@@ -355,14 +356,10 @@ class EmbeddingGenerator:
         )
         if encoded is None or len(encoded) != len(texts):
             raise RuntimeError(
-                f"BGE_EMBED_FAILED: expected {len(texts)} rows, "
-                f"got {0 if encoded is None else len(encoded)}"
+                f"BGE_EMBED_FAILED: expected {len(texts)} rows, got {0 if encoded is None else len(encoded)}"
             )
         if encoded.shape[1] != self.vector_dimensions:
-            raise RuntimeError(
-                f"BGE_DIM_MISMATCH: expected {self.vector_dimensions}, "
-                f"got {encoded.shape[1]}"
-            )
+            raise RuntimeError(f"BGE_DIM_MISMATCH: expected {self.vector_dimensions}, got {encoded.shape[1]}")
         embeddings = [[float(x) for x in emb] for emb in encoded.tolist()]
         Logger.info(f"Successfully generated {len(embeddings)} BGE-M3 embeddings")
         return embeddings
@@ -628,9 +625,7 @@ def main():
 
     Logger.info(f"Generated {len(all_chunks)} chunks from {total_files} files")
     if args.contextualize:
-        Logger.info(
-            f"Contextualization complete: {enriched_count}/{len(all_chunks)} chunks enriched."
-        )
+        Logger.info(f"Contextualization complete: {enriched_count}/{len(all_chunks)} chunks enriched.")
 
     if args.dry_run:
         Logger.info("DRY RUN - Not ingesting into ChromaDB")

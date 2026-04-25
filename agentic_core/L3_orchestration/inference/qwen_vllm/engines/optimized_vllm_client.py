@@ -72,10 +72,10 @@ class OptimizedVLLMClient:
         self,
         base_url: str | None = None,
         model: str | None = None,
-        max_concurrent: int = 6,  # Optimized for 32B model memory constraints
-        batch_size: int = 2,  # Smaller batches for 32B model to prevent OOM
-        batch_timeout_ms: float = 75.0,  # Slightly longer timeout for 32B processing
-        cache_size: int = 500,  # Reduced cache size for 32B model memory efficiency
+        max_concurrent: int = 8,
+        batch_size: int = 4,
+        batch_timeout_ms: float = 50.0,
+        cache_size: int = 1000,
     ):
         resolved_url = base_url or os.getenv("VLLM_BASE_URL") or "http://localhost:8000/v1"
         resolved_model = model or os.getenv("VLLM_MODEL_NAME") or "Qwen/Qwen2.5-32B-Instruct-AWQ"

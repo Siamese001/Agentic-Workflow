@@ -163,7 +163,7 @@ def git_rm(paths: list[str]) -> int:
             failed += len(chunk)
             continue
         if result.returncode != 0:
-            print(f"[warn] git rm chunk {i//chunk_size} returned {result.returncode}", file=sys.stderr)
+            print(f"[warn] git rm chunk {i // chunk_size} returned {result.returncode}", file=sys.stderr)
             if result.stderr:
                 print(result.stderr, file=sys.stderr)
             failed += len(chunk)
@@ -208,12 +208,11 @@ def write_plan_report(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--apply", action="store_true",
-                        help="actually delete files (default: dry run)")
-    parser.add_argument("--include-near-twins", action="store_true",
-                        help="include near_twin bucket in deletion")
-    parser.add_argument("--report", type=Path, default=None,
-                        help="path to audit JSON (default: latest)")
+    parser.add_argument("--apply", action="store_true", help="actually delete files (default: dry run)")
+    parser.add_argument(
+        "--include-near-twins", action="store_true", help="include near_twin bucket in deletion"
+    )
+    parser.add_argument("--report", type=Path, default=None, help="path to audit JSON (default: latest)")
     args = parser.parse_args()
 
     report_path = args.report or find_latest_report()
@@ -223,7 +222,8 @@ def main() -> int:
     records: list[dict[str, Any]] = data["records"]
 
     to_delete, representatives, stats = build_deletion_plan(
-        records, include_near_twins=args.include_near_twins,
+        records,
+        include_near_twins=args.include_near_twins,
     )
 
     print(f"\n[info] deletion plan:", file=sys.stderr)
@@ -244,7 +244,10 @@ def main() -> int:
     print(f"\n[info] executing git rm for {len(to_delete)} files...", file=sys.stderr)
     failed = git_rm([d["path"] for d in to_delete])
     if failed:
-        print(f"[warn] {failed} files could not be removed (may have been already deleted or untracked)", file=sys.stderr)
+        print(
+            f"[warn] {failed} files could not be removed (may have been already deleted or untracked)",
+            file=sys.stderr,
+        )
     print(f"[done] Phase 1 complete. Review with `git status` and commit.", file=sys.stderr)
     return 0
 

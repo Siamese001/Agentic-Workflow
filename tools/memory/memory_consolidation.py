@@ -135,22 +135,18 @@ def build_plan(
                     prune_obs.append(int(orow["id"]))
 
             # Find Jaccard clusters >= merge_threshold.
-            surviving = [
-                orow for orow in obs_rows if int(orow["id"]) not in prune_obs
-            ]
+            surviving = [orow for orow in obs_rows if int(orow["id"]) not in prune_obs]
             seen: set[int] = set()
             for i, a in enumerate(surviving):
                 aid = int(a["id"])
                 if aid in seen:
                     continue
                 group = [aid]
-                for b in surviving[i + 1:]:
+                for b in surviving[i + 1 :]:
                     bid = int(b["id"])
                     if bid in seen:
                         continue
-                    if jaccard_similarity(
-                        str(a["content"]), str(b["content"])
-                    ) >= merge_threshold:
+                    if jaccard_similarity(str(a["content"]), str(b["content"])) >= merge_threshold:
                         group.append(bid)
                         seen.add(bid)
                 if len(group) > 1:
@@ -186,8 +182,7 @@ def apply_plan(store: SqliteMemoryStore, plan: ConsolidationPlan) -> dict[str, i
             )
             # Touch survivor so future reads see the latest reinforcement.
             conn.execute(
-                "UPDATE observations SET last_reinforced = ?, "
-                "access_count = access_count + ? WHERE id = ?",
+                "UPDATE observations SET last_reinforced = ?, access_count = access_count + ? WHERE id = ?",
                 (now, len(losers), survivor_id),
             )
             merged += len(losers)
@@ -230,12 +225,24 @@ def main() -> int:
     ap.add_argument("--db", type=Path, default=None, help="Path to memory SQLite DB")
     ap.add_argument("--report", action="store_true", help="Print plan without applying (default)")
     ap.add_argument("--apply", action="store_true", help="Execute the plan")
-    ap.add_argument("--merge-jaccard", type=float, default=0.80,
-                    help="Jaccard similarity threshold for merging (default 0.80)")
-    ap.add_argument("--prune-floor", type=float, default=0.05,
-                    help="Effective confidence floor below which rows are pruned (default 0.05)")
-    ap.add_argument("--llm-hook", type=str, default=None,
-                    help="Optional 'module:function' hook that refines the plan before apply")
+    ap.add_argument(
+        "--merge-jaccard",
+        type=float,
+        default=0.80,
+        help="Jaccard similarity threshold for merging (default 0.80)",
+    )
+    ap.add_argument(
+        "--prune-floor",
+        type=float,
+        default=0.05,
+        help="Effective confidence floor below which rows are pruned (default 0.05)",
+    )
+    ap.add_argument(
+        "--llm-hook",
+        type=str,
+        default=None,
+        help="Optional 'module:function' hook that refines the plan before apply",
+    )
     args = ap.parse_args()
 
     store = SqliteMemoryStore(args.db)

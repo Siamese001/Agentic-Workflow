@@ -8,6 +8,7 @@ Extra filters vs Wave C.1/C.2:
   - Exclude any file referenced in .github/workflows/*.yml
   - Exclude any file referenced in .windsurf/workflows/*.md or hooks.json
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -28,7 +29,7 @@ def has_main(f: pathlib.Path) -> bool:
         txt = f.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return False
-    return bool(re.search(r'if __name__ ?== ?.__main__.', txt))
+    return bool(re.search(r"if __name__ ?== ?.__main__.", txt))
 
 
 # Gather candidates
@@ -102,7 +103,5 @@ print("\n--- RISKY sample (first 15) ---")
 for t, r in risky[:15]:
     print(f"  {t}  [{r}]")
 
-(ROOT / "artifacts" / "adg" / "wave_c3_safe.txt").write_text(
-    "\n".join(safe) + "\n", encoding="utf-8"
-)
+(ROOT / "artifacts" / "adg" / "wave_c3_safe.txt").write_text("\n".join(safe) + "\n", encoding="utf-8")
 print(f"\nwrote wave_c3_safe.txt ({len(safe)})")

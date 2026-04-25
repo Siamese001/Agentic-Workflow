@@ -1,4 +1,5 @@
 """W6.2b: apply prefix codemod for docs/reports literal only."""
+
 from __future__ import annotations
 
 import importlib.util

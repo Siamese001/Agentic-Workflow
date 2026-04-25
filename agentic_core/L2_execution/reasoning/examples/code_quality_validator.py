@@ -16,6 +16,7 @@ Production agents migrating from the legacy co-located pattern should model
 themselves on this structure (and the sibling healer in
 ``code_quality_healer.py``).
 """
+
 from __future__ import annotations
 
 import time

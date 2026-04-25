@@ -119,17 +119,12 @@ def _ledger_section(spec) -> str:
                 full_rows, EVENTS_ADAPTER, bands=_DEFAULT_BANDS, ledger_name=spec.name
             )
             lines.append(render_precedent_block(metrics))
-            lines.append(
-                render_calibration_curve(metrics, band_units_label="score_numeric")
-            )
+            lines.append(render_calibration_curve(metrics, band_units_label="score_numeric"))
         except (ValueError, TypeError, KeyError) as exc:
             lines.append(f"_calibration block error: {exc}_")
             lines.append("")
     elif total > 0:
-        lines.append(
-            f"_calibration awaits binding: {predicted} predicted row(s) "
-            "have no outcome yet_"
-        )
+        lines.append(f"_calibration awaits binding: {predicted} predicted row(s) have no outcome yet_")
         lines.append("")
     return "\n".join(lines)
 
@@ -164,10 +159,13 @@ def _ledger_calibration_summary(spec) -> dict:
             predicted = conn.execute("SELECT COUNT(*) FROM events WHERE status='predicted'").fetchone()[0]
             bound = conn.execute("SELECT COUNT(*) FROM events WHERE status='bound'").fetchone()[0]
             conn.row_factory = sqlite3.Row
-            rows = [dict(r) for r in conn.execute(
-                "SELECT status, score_band, score_numeric, prediction_json, "
-                "outcome_json, metadata_json FROM events"
-            ).fetchall()]
+            rows = [
+                dict(r)
+                for r in conn.execute(
+                    "SELECT status, score_band, score_numeric, prediction_json, "
+                    "outcome_json, metadata_json FROM events"
+                ).fetchall()
+            ]
         finally:
             conn.close()
     except sqlite3.Error:
@@ -206,7 +204,7 @@ def _render_dashboard(rollups: list[dict]) -> list[str]:
             lines.append(f"| `{r['name']}` | {r['wave']} | — | — | — | — | — | — |")
             continue
         if r["verdict_count"] > 0:
-            hit = f"{r['hit_count']}/{r['verdict_count']} = {r['hit_count']/r['verdict_count']:.0%}"
+            hit = f"{r['hit_count']}/{r['verdict_count']} = {r['hit_count'] / r['verdict_count']:.0%}"
         else:
             hit = "—"
         if r["sufficient"] == 0:
@@ -239,19 +237,19 @@ def _render_report(now: datetime) -> str:
     header.extend(_render_dashboard(rollups))
 
     # Legacy summary table preserved for back-compat with prior consumers.
-    header.extend([
-        "## Row Summary",
-        "",
-        "| Ledger | Rows | Predicted | Bound | Wave |",
-        "|---|---:|---:|---:|---|",
-    ])
+    header.extend(
+        [
+            "## Row Summary",
+            "",
+            "| Ledger | Rows | Predicted | Bound | Wave |",
+            "|---|---:|---:|---:|---|",
+        ]
+    )
     for r in rollups:
         if not r["available"]:
             header.append(f"| `{r['name']}` | — | — | — | {r['wave']} |")
             continue
-        header.append(
-            f"| `{r['name']}` | {r['total']} | {r['predicted']} | {r['bound']} | {r['wave']} |"
-        )
+        header.append(f"| `{r['name']}` | {r['total']} | {r['predicted']} | {r['bound']} | {r['wave']} |")
 
     body = ["", "## Per-Ledger Detail", ""]
     for spec in LEDGER_REGISTRY:

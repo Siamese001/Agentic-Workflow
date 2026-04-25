@@ -66,8 +66,7 @@ class TripwireTriggered(Exception):
 
     def __init__(self, output: GuardrailOutput) -> None:
         super().__init__(
-            f"tripwire={output.guardrail_name} phase={output.phase.value} "
-            f"reason={output.reason!r}"
+            f"tripwire={output.guardrail_name} phase={output.phase.value} reason={output.reason!r}"
         )
         self.output = output
 

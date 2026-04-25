@@ -336,8 +336,7 @@ def render_precedent_block(metrics: CalibrationMetrics, min_n: int = DEFAULT_MIN
     lines.append("#### Precedent × Outcome Correlation")
     lines.append("")
     lines.append(
-        "_Does precedent verdict correlate with success?_ "
-        "Excludes rows whose outcomes are still unbound."
+        "_Does precedent verdict correlate with success?_ Excludes rows whose outcomes are still unbound."
     )
     lines.append("")
     if not metrics.precedent_correlation:
@@ -345,9 +344,7 @@ def render_precedent_block(metrics: CalibrationMetrics, min_n: int = DEFAULT_MIN
         lines.append("")
         return "\n".join(lines)
 
-    outcome_labels = sorted(
-        {lab for c in metrics.precedent_correlation for lab in c.by_outcome}
-    )
+    outcome_labels = sorted({lab for c in metrics.precedent_correlation for lab in c.by_outcome})
     header_cells = "".join(f" {lab} |" for lab in outcome_labels)
     sep_cells = "".join("---:|" for _ in outcome_labels)
     lines.append(f"| Verdict | n |{header_cells} success rate (Wilson 95% CI) |")
@@ -384,8 +381,7 @@ def render_calibration_curve(
 
     if not any(b.sufficient for b in metrics.calibration_curve):
         lines.append(
-            "_Insufficient sample in every band. Calibration curve will populate "
-            "as more rows accumulate._"
+            "_Insufficient sample in every band. Calibration curve will populate as more rows accumulate._"
         )
         lines.append("")
         return "\n".join(lines)

@@ -39,6 +39,7 @@ Reference:
   - docs/contracts/identity_propagation.md §5 (Composition)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

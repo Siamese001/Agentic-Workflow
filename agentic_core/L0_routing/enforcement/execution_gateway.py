@@ -227,7 +227,9 @@ class V15ExecutionGateway:
         try:
             profile = get_profile(agent_id)
         except KeyError:
-            raise UnregisteredAgentError(f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py.") from None
+            raise UnregisteredAgentError(
+                f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py."
+            ) from None
         except RuntimeError as exc:
             raise ExecutionGatewayError("Agent registry lookup failed", exc) from exc
         Logger.debug("[V15-GW] Agent '%s' registry check OK (mode=%s)", agent_id, profile.execution_mode)

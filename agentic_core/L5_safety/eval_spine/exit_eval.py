@@ -180,8 +180,10 @@ def _decide_disposition_and_reason(
     policy: ExitEvalPolicy,
 ) -> tuple[str, str]:
     if kill_hit.hit:
-        return ("deny_reroute" if kill_hit.on_hit == "deny_reroute" else "escalate_hitl",
-                "grader.policy_halt")
+        return (
+            "deny_reroute" if kill_hit.on_hit == "deny_reroute" else "escalate_hitl",
+            "grader.policy_halt",
+        )
     if grader.safety_violated:
         return "escalate_hitl", "grader.safety_violation"
     if not output_contract.required_form_satisfied and output_contract.contract_ref:
@@ -189,9 +191,7 @@ def _decide_disposition_and_reason(
     if grader.aggregate_verdict == "unknown":
         return "escalate_hitl", "grader.unknown_budget_exceeded"
     if not budget_fit.budget_fit:
-        disposition = (
-            "deny_reroute" if policy.budget_deny_reroute_on_breach else "escalate_hitl"
-        )
+        disposition = "deny_reroute" if policy.budget_deny_reroute_on_breach else "escalate_hitl"
         return disposition, "grader.budget_breach"
     if grader.instruction_violated:
         return "deny_reroute", "grader.instruction_violation"
@@ -209,11 +209,7 @@ def _quality_verdict(grader: GraderOutput, budget_fit: BudgetFit) -> QualityVerd
     if grader.safety_violated:
         verdict = "fail"
     narrowed: Any = verdict  # Literal narrowing handled by QualityVerdict's schema.
-    numeric_scores = [
-        float(r.score)
-        for r in grader.per_dim
-        if isinstance(r.score, (int, float))
-    ]
+    numeric_scores = [float(r.score) for r in grader.per_dim if isinstance(r.score, (int, float))]
     weighted = (sum(numeric_scores) / (5.0 * len(numeric_scores))) if numeric_scores else None
     return QualityVerdict(
         verdict=narrowed,
@@ -235,8 +231,7 @@ def evaluate_exit(
     final_response = _derive_final_response(artifact)
     trajectory = _derive_trajectory(artifact, policy)
     budget_report, budget_fit = _derive_budget(artifact, envelope)
-    contract_result = validate(artifact.artifact_payload or artifact.answer_text,
-                               policy.output_contract_ref)
+    contract_result = validate(artifact.artifact_payload or artifact.answer_text, policy.output_contract_ref)
     output_contract = OutputContractReport(
         required_form_satisfied=contract_result.required_form_satisfied,
         contract_ref=contract_result.contract_ref,

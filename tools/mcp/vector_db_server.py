@@ -23,6 +23,7 @@ from tools.retrieval.vector_config import (
     BACKGROUND_PREWARM_ENABLED,
     validate_startup_config as _validate_startup_config,
 )
+
 # MCP-6 (2026-04-22): async facade moved to tools/retrieval/vector_db_async_facade.
 # Re-exported here with the original name for callers still using the old path.
 from tools.retrieval.vector_db_async_facade import (

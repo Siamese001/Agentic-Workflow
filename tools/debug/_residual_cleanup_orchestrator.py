@@ -12,6 +12,7 @@ Plus:
 - POST plan to Plans DB
 - POST + PATCH 5 wave summary rows to Wave/Phase Convergence DB
 """
+
 from __future__ import annotations
 
 import json
@@ -74,6 +75,7 @@ def receipt(op, page_id, ok, **extra):
 
 
 # ---- Plans DB registration ------------------------------------------------
+
 
 def register_plan() -> str:
     """POST a Plans DB row for this plan. Returns page_id."""
@@ -154,25 +156,33 @@ def wave_a():
 WAVE_B_DECISIONS = {
     # phase -> (action, note)
     # action: 'descope', 'unscored', 'apply' (with computed values)
-    "GAP-4": ("unscored",
-              "INVESTIGATED 2026-04-24 (Wave B): naive scorer matched _constants.py too broadly "
-              "(fan_in=257 across many _constants.py files in the repo). The real target is "
-              "L5_safety/config/structure_blueprint/_constants.py per plan slug 'streamline-constants'. "
-              "Decision: leave UNSCORED until plan author specifies the exact target file in Files In Scope."),
-    "5.1": ("unscored",
-            "INVESTIGATED 2026-04-24 (Wave B): row is an action ('Post-W4 resnapshot'), not file-work. "
-            "Naive scorer matched a debug script. Decision: leave UNSCORED — actions don't take P-bands. "
-            "Action item: run python tools/generate_full_adg.py once W4 lands, then descope."),
-    "3.2": ("unscored",
-            "INVESTIGATED 2026-04-24 (Wave B): naive scorer matched literal 'init.py' token. Real targets "
-            "are __init__.py files in the structure_blueprint_config retirement scope (ref: parent plan "
-            "structure-blueprint-config-retirement-*.md). Decision: leave UNSCORED until parent plan "
-            "lists exact __init__.py files in Files In Scope."),
-    "1.2": ("apply",
-            "INVESTIGATED 2026-04-24 (Wave B): scorer computed impact=0 because tests mirror exists for "
-            "EmbeddingSovereignAgent. However, work is to ADD ValueError handlers (a guardrail addition), "
-            "not test coverage. Coverage-gap-based scoring underweights guardrail additions. "
-            "Decision: assign P3 manually (L2 layer, fan_in=5 callers, Execution surface). Impact: ~50."),
+    "GAP-4": (
+        "unscored",
+        "INVESTIGATED 2026-04-24 (Wave B): naive scorer matched _constants.py too broadly "
+        "(fan_in=257 across many _constants.py files in the repo). The real target is "
+        "L5_safety/config/structure_blueprint/_constants.py per plan slug 'streamline-constants'. "
+        "Decision: leave UNSCORED until plan author specifies the exact target file in Files In Scope.",
+    ),
+    "5.1": (
+        "unscored",
+        "INVESTIGATED 2026-04-24 (Wave B): row is an action ('Post-W4 resnapshot'), not file-work. "
+        "Naive scorer matched a debug script. Decision: leave UNSCORED — actions don't take P-bands. "
+        "Action item: run python tools/generate_full_adg.py once W4 lands, then descope.",
+    ),
+    "3.2": (
+        "unscored",
+        "INVESTIGATED 2026-04-24 (Wave B): naive scorer matched literal 'init.py' token. Real targets "
+        "are __init__.py files in the structure_blueprint_config retirement scope (ref: parent plan "
+        "structure-blueprint-config-retirement-*.md). Decision: leave UNSCORED until parent plan "
+        "lists exact __init__.py files in Files In Scope.",
+    ),
+    "1.2": (
+        "apply",
+        "INVESTIGATED 2026-04-24 (Wave B): scorer computed impact=0 because tests mirror exists for "
+        "EmbeddingSovereignAgent. However, work is to ADD ValueError handlers (a guardrail addition), "
+        "not test coverage. Coverage-gap-based scoring underweights guardrail additions. "
+        "Decision: assign P3 manually (L2 layer, fan_in=5 callers, Execution surface). Impact: ~50.",
+    ),
 }
 
 WAVE_B_PHASE_TO_WAVE = {
@@ -215,7 +225,15 @@ def wave_b():
             }
             try:
                 http("PATCH", f"https://api.notion.com/v1/pages/{row['id']}", body)
-                receipt("PATCH-pass1-investigate", row["id"], True, wave=wave, phase=phase, action="apply", band="P3")
+                receipt(
+                    "PATCH-pass1-investigate",
+                    row["id"],
+                    True,
+                    wave=wave,
+                    phase=phase,
+                    action="apply",
+                    band="P3",
+                )
                 decisions[f"{wave}/{phase}"] = "apply P3"
                 done += 1
                 print(f"  [{done}/4] {wave}/{phase} -> P3 (manual override, impact 50)")
@@ -317,12 +335,16 @@ def wave_d():
 
 # ---- Wave E ---------------------------------------------------------------
 
+
 def wave_e():
     print("\n=== Wave E: git push origin main ===")
     try:
         r = subprocess.run(
             ["git", "push", "origin", "main"],
-            cwd=ROOT, capture_output=True, text=True, timeout=60,
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=60,
         )
         print(r.stdout)
         print(r.stderr, file=sys.stderr)
@@ -339,6 +361,7 @@ def wave_e():
 
 
 # ---- Summary rows in Wave/Phase Convergence -----------------------------
+
 
 def post_wave_summary(wave_letter: str, label: str, scope: str, est_tokens: int, status: str, results: str):
     body = {
@@ -376,6 +399,7 @@ def post_wave_summary(wave_letter: str, label: str, scope: str, est_tokens: int,
 
 # ---- Main -----------------------------------------------------------------
 
+
 def main():
     if not TOKEN:
         print("NOTION_TOKEN missing", file=sys.stderr)
@@ -396,21 +420,46 @@ def main():
 
     # Post summary rows for each wave
     print("\n=== Posting wave summary rows ===")
-    post_wave_summary("A", "Apply 4 valid Pass 1 scores",
-                     "4 PATCHes with computed P-Band + Impact Score", 2000, "Done",
-                     f"{a_done}/4 PATCHes applied. See _writeback_receipts.jsonl op=PATCH-pass1-valid.")
-    post_wave_summary("B", "Investigate 4 questionable scores",
-                     "Per-row decisions documented; 3 unscored, 1 manual P3 override", 6000, "Done",
-                     f"{b_done}/4 decisions applied. See _wave_b_decisions.json + receipts op=PATCH-pass1-investigate.")
-    post_wave_summary("C", "Rewrite 3 PARTIAL Blocking Items",
-                     "3 rewrites with explicit gap text", 3000, "Done",
-                     f"{c_done}/3 PATCHes applied. See receipts op=PATCH-partial-rewrite.")
-    post_wave_summary("D", "Band-extraction for 68 unscorable",
-                     "Regex extract [Pn] from titles, PATCH P-Band, no impact recomputation", 8000, "Done",
-                     f"{d_done} band extractions applied. See receipts op=PATCH-band-extracted.")
-    post_wave_summary("E", "Push to origin/main",
-                     "git push origin main", 1000, "Done" if e_done else "Blocked",
-                     f"{'Pushed successfully' if e_done else 'Push failed; check stderr in receipts'}.")
+    post_wave_summary(
+        "A",
+        "Apply 4 valid Pass 1 scores",
+        "4 PATCHes with computed P-Band + Impact Score",
+        2000,
+        "Done",
+        f"{a_done}/4 PATCHes applied. See _writeback_receipts.jsonl op=PATCH-pass1-valid.",
+    )
+    post_wave_summary(
+        "B",
+        "Investigate 4 questionable scores",
+        "Per-row decisions documented; 3 unscored, 1 manual P3 override",
+        6000,
+        "Done",
+        f"{b_done}/4 decisions applied. See _wave_b_decisions.json + receipts op=PATCH-pass1-investigate.",
+    )
+    post_wave_summary(
+        "C",
+        "Rewrite 3 PARTIAL Blocking Items",
+        "3 rewrites with explicit gap text",
+        3000,
+        "Done",
+        f"{c_done}/3 PATCHes applied. See receipts op=PATCH-partial-rewrite.",
+    )
+    post_wave_summary(
+        "D",
+        "Band-extraction for 68 unscorable",
+        "Regex extract [Pn] from titles, PATCH P-Band, no impact recomputation",
+        8000,
+        "Done",
+        f"{d_done} band extractions applied. See receipts op=PATCH-band-extracted.",
+    )
+    post_wave_summary(
+        "E",
+        "Push to origin/main",
+        "git push origin main",
+        1000,
+        "Done" if e_done else "Blocked",
+        f"{'Pushed successfully' if e_done else 'Push failed; check stderr in receipts'}.",
+    )
 
     print(f"\n=== ORCHESTRATOR COMPLETE ===")
     print(f"Wave A: {a_done}/4")

@@ -9,6 +9,7 @@ For each row with BAND filled:
 
 Idempotent: safe to re-run.
 """
+
 from __future__ import annotations
 
 import json
@@ -48,8 +49,13 @@ def _rt(s, max_len=2000):
 
 def receipt(op, page_id, ok, **extra):
     RECEIPTS.parent.mkdir(parents=True, exist_ok=True)
-    rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "op": op, "page_id": page_id, "ok": ok, **extra}
+    rec = {
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "op": op,
+        "page_id": page_id,
+        "ok": ok,
+        **extra,
+    }
     with RECEIPTS.open("a", encoding="utf-8") as f:
         f.write(json.dumps(rec) + "\n")
 
@@ -80,8 +86,15 @@ def apply_row(row: dict) -> str:
         }
         try:
             http("PATCH", f"https://api.notion.com/v1/pages/{page_id}", body)
-            receipt("PATCH-human-scored", page_id, True,
-                    wave=row["wave"], phase=row["phase"], action="descope", notes=notes[:200])
+            receipt(
+                "PATCH-human-scored",
+                page_id,
+                True,
+                wave=row["wave"],
+                phase=row["phase"],
+                action="descope",
+                notes=notes[:200],
+            )
             return "descoped"
         except urllib.error.HTTPError as e:
             detail = e.read().decode()
@@ -89,14 +102,15 @@ def apply_row(row: dict) -> str:
             return "error"
 
     if band not in VALID_BANDS:
-        print(f"  [WARN] unknown BAND value '{band}' for {row['wave']}/{row['phase']}; skipping", file=sys.stderr)
+        print(
+            f"  [WARN] unknown BAND value '{band}' for {row['wave']}/{row['phase']}; skipping",
+            file=sys.stderr,
+        )
         return "error"
 
     # Normal band assignment
     props = {"P-Band": {"select": {"name": band}}}
-    blocking_parts = [
-        f"HUMAN-SCORED 2026-04-24 (Wave 5 of {PLAN_SLUG}): band={band}"
-    ]
+    blocking_parts = [f"HUMAN-SCORED 2026-04-24 (Wave 5 of {PLAN_SLUG}): band={band}"]
     if layer:
         props["Layer"] = {"select": {"name": layer}}
         blocking_parts.append(f"layer={layer}")
@@ -110,9 +124,18 @@ def apply_row(row: dict) -> str:
     body = {"properties": props}
     try:
         http("PATCH", f"https://api.notion.com/v1/pages/{page_id}", body)
-        receipt("PATCH-human-scored", page_id, True,
-                wave=row["wave"], phase=row["phase"], action="patch", band=band,
-                layer=layer, has_files=bool(files), notes=notes[:200])
+        receipt(
+            "PATCH-human-scored",
+            page_id,
+            True,
+            wave=row["wave"],
+            phase=row["phase"],
+            action="patch",
+            band=band,
+            layer=layer,
+            has_files=bool(files),
+            notes=notes[:200],
+        )
         return "patched"
     except urllib.error.HTTPError as e:
         detail = e.read().decode()

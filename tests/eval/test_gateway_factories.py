@@ -66,8 +66,12 @@ def test_signature_matches_artifact_internal_contract():
 
 def test_signature_fails_with_wrong_key():
     artifact = _build_signed_artifact(
-        system_prompt="sys", user_prompt="usr",
-        seed=3, max_tokens=32, temperature=0.0, secret_key=b"right",
+        system_prompt="sys",
+        user_prompt="usr",
+        seed=3,
+        max_tokens=32,
+        temperature=0.0,
+        secret_key=b"right",
     )
     assert artifact.verify_signature(b"wrong") is False
 

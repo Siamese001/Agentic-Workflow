@@ -308,7 +308,13 @@ class HealingMemoryEmbedder:
             if embedding:
                 self.stats["embeddings_generated"] += 1
                 return embedding
-        except (ImportError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            OSError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[HealingMemoryEmbedder] Embedding failed: {e}")
             self.stats["errors"] += 1
         self.stats["fallback_hashes"] += 1
@@ -342,7 +348,13 @@ class HealingMemoryEmbedder:
             if embedding:
                 self.stats["embeddings_generated"] += 1
                 return embedding
-        except (ImportError, RuntimeError, ValueError, TypeError, OSError) as e:  # guardian: allow-silent-swallow
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            OSError,
+        ) as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[HealingMemoryEmbedder] Pattern embedding failed: {e}")
             self.stats["errors"] += 1
         self.stats["fallback_hashes"] += 1

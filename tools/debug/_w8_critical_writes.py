@@ -1,4 +1,5 @@
 """Show all critical write_sovereignty entries with symbols."""
+
 import sqlite3
 from pathlib import Path
 

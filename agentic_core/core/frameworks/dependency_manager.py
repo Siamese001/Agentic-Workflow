@@ -319,7 +319,10 @@ class OptionalDependency:
         try:
             self.dependency = get_dependency(self.name)
             return self.dependency
-        except (DependencyError, CircuitBreakerError):  # guardian: allow-return-none-swallow -- context manager exit: non-fatal, caller handles None as unavailable dependency
+        except (
+            DependencyError,
+            CircuitBreakerError,
+        ):  # guardian: allow-return-none-swallow -- context manager exit: non-fatal, caller handles None as unavailable dependency
             if self.fallback is not None:
                 return self.fallback
             return None

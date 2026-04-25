@@ -136,9 +136,7 @@ def apply_late_chunking(
         if span is None:
             fallback_ids.add(chunk_id)
             continue
-        per_file_spans[key].append(
-            (chunk_id, ChunkSpan(chunk_id=chunk_id, start=span[0], end=span[1]))
-        )
+        per_file_spans[key].append((chunk_id, ChunkSpan(chunk_id=chunk_id, start=span[0], end=span[1])))
 
     # Run the embedder once per file, collect the {chunk_id: vector} map.
     all_vectors: dict[str, list[float]] = {}

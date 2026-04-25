@@ -430,7 +430,10 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
                     or "guardian: allow_silent_swallower" in line
                 ):
                     return True
-        except (IndexError, TypeError):  # guardian: allow-silent-swallow -- boundary access best-effort: caller treats False as "no match"
+        except (
+            IndexError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow -- boundary access best-effort: caller treats False as "no match"
             pass
         return False
 

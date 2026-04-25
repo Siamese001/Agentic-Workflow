@@ -85,16 +85,12 @@ def _provenance_path_exists(value: str, glob_pattern: str) -> bool:
     base = (REPO_ROOT / glob_pattern).parent
     if base.exists():
         for candidate in base.glob("*"):
-            if candidate.name == value or fnmatch.fnmatch(
-                candidate.name, f"*{value}*"
-            ):
+            if candidate.name == value or fnmatch.fnmatch(candidate.name, f"*{value}*"):
                 return True
     return False
 
 
-def validate_entry(
-    entry: dict[str, Any], *, now: datetime | None = None
-) -> list[str]:
+def validate_entry(entry: dict[str, Any], *, now: datetime | None = None) -> list[str]:
     """Return list of reasons an entry is invalid; empty list means ok."""
     now = now or datetime.now(timezone.utc)
     problems: list[str] = []
@@ -105,25 +101,12 @@ def validate_entry(
     # Provenance — at least one of adr/plan, file must exist.
     prov = {k: entry.get(k) for k in PROVENANCE_KEYS if entry.get(k)}
     if not prov:
-        problems.append(
-            "missing provenance — must cite one of: "
-            + ", ".join(PROVENANCE_KEYS)
-        )
+        problems.append("missing provenance — must cite one of: " + ", ".join(PROVENANCE_KEYS))
     else:
-        if "adr" in prov and not _provenance_path_exists(
-            str(prov["adr"]), ADR_GLOB
-        ):
-            problems.append(
-                f"adr provenance {prov['adr']!r} does not match any "
-                f"file in {ADR_GLOB}"
-            )
-        if "plan" in prov and not _provenance_path_exists(
-            str(prov["plan"]), PLAN_GLOB
-        ):
-            problems.append(
-                f"plan provenance {prov['plan']!r} does not match any "
-                f"file in {PLAN_GLOB}"
-            )
+        if "adr" in prov and not _provenance_path_exists(str(prov["adr"]), ADR_GLOB):
+            problems.append(f"adr provenance {prov['adr']!r} does not match any file in {ADR_GLOB}")
+        if "plan" in prov and not _provenance_path_exists(str(prov["plan"]), PLAN_GLOB):
+            problems.append(f"plan provenance {prov['plan']!r} does not match any file in {PLAN_GLOB}")
     # expires_on parseable
     exp = entry.get("expires_on")
     if isinstance(exp, str):

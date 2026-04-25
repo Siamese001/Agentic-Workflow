@@ -7,6 +7,7 @@ agentic_core.adg.severity_bands, and are used across >=5 files.
 Output: ranked list of (literal, canonical_symbol, occurrence_count) so
 we can pick the top-N migrations. Does NOT modify source.
 """
+
 from __future__ import annotations
 import ast
 import re
@@ -28,12 +29,30 @@ CANDIDATES = [
 # ADG layer names that should come from severity_bands or similar SSOT
 LAYER_LITERALS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 
-ROOTS = ("agentic_core", "apps_rg", "apps_shared", "apps_lic", "apps_eval",
-         "apps_exec", "apps_research", "apps_rfp", "apps_underwriting_ai",
-         "tools", "ops_scripts", "system_learning", "infrastructure")
-EXCLUDE_PATS = (r"\\__pycache__\\", r"\\archives?\\", r"\\_archive\\",
-                r"\\tools\\archive\\", r"\\tests\\", r"\\artifacts\\",
-                r"\\tools\\debug\\")
+ROOTS = (
+    "agentic_core",
+    "apps_rg",
+    "apps_shared",
+    "apps_lic",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
+)
+EXCLUDE_PATS = (
+    r"\\__pycache__\\",
+    r"\\archives?\\",
+    r"\\_archive\\",
+    r"\\tools\\archive\\",
+    r"\\tests\\",
+    r"\\artifacts\\",
+    r"\\tools\\debug\\",
+)
 
 
 def _scan_path_literals() -> dict[str, list[tuple[str, int]]]:
@@ -61,9 +80,7 @@ def _scan_path_literals() -> dict[str, list[tuple[str, int]]]:
 
             # Check if the file already imports from path_constants
             already_imports = any(
-                isinstance(node, ast.ImportFrom)
-                and node.module
-                and "path_constants" in node.module
+                isinstance(node, ast.ImportFrom) and node.module and "path_constants" in node.module
                 for node in ast.walk(tree)
             )
 
@@ -72,17 +89,12 @@ def _scan_path_literals() -> dict[str, list[tuple[str, int]]]:
                     val = node.value
                     for lit, _mod, _sym in CANDIDATES:
                         # Match literal value or value that starts with literal
-                        if val == lit or (
-                            len(val) <= 100 and val.startswith(lit)
-                            and lit.endswith("/")
-                        ):
+                        if val == lit or (len(val) <= 100 and val.startswith(lit) and lit.endswith("/")):
                             key = lit
                             sites[key].append((sp, getattr(node, "lineno", 0)))
                             break
                     # Don't count imports of path_constants themselves
-                    if already_imports and any(
-                        val == lit for lit, _, _ in CANDIDATES
-                    ):
+                    if already_imports and any(val == lit for lit, _, _ in CANDIDATES):
                         pass  # still counted; migration may still be wanted
     return sites
 

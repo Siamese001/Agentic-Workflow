@@ -1,4 +1,5 @@
 """Show mv_path_criticality_rollup score distribution."""
+
 import sqlite3
 from pathlib import Path
 

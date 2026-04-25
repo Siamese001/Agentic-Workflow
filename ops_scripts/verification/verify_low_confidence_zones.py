@@ -162,7 +162,7 @@ class ADGDeadCodeZoneControlVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise DeadCodeZoneControlError(f'Dead import detection verification failed: {e}') from e
+            raise DeadCodeZoneControlError(f"Dead import detection verification failed: {e}") from e
 
     def _verify_dead_code_candidate_detection(self) -> dict[str, Any]:
         """Verify dead code candidates are properly detected."""
@@ -232,7 +232,7 @@ class ADGDeadCodeZoneControlVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise DeadCodeZoneControlError(f'Dead code candidate detection verification failed: {e}') from e
+            raise DeadCodeZoneControlError(f"Dead code candidate detection verification failed: {e}") from e
 
     def _verify_unresolved_import_analysis(self) -> dict[str, Any]:
         """Verify unresolved imports are properly tracked."""
@@ -309,7 +309,7 @@ class ADGDeadCodeZoneControlVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise DeadCodeZoneControlError(f'Unresolved import analysis verification failed: {e}') from e
+            raise DeadCodeZoneControlError(f"Unresolved import analysis verification failed: {e}") from e
 
     def _verify_low_confidence_zone_analysis(self) -> dict[str, Any]:
         """Verify low-confidence zones are identified and tracked."""
@@ -425,7 +425,7 @@ class ADGDeadCodeZoneControlVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise DeadCodeZoneControlError(f'Low-confidence zone analysis verification failed: {e}') from e
+            raise DeadCodeZoneControlError(f"Low-confidence zone analysis verification failed: {e}") from e
 
     def _verify_inferred_symbol_analysis(self) -> dict[str, Any]:
         """Verify inferred symbol ratio is tracked."""
@@ -490,7 +490,7 @@ class ADGDeadCodeZoneControlVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise DeadCodeZoneControlError(f'Inferred symbol analysis verification failed: {e}') from e
+            raise DeadCodeZoneControlError(f"Inferred symbol analysis verification failed: {e}") from e
 
     def _verify_executive_readiness(self) -> dict[str, Any]:
         """Verify executive-quality reporting capabilities."""
@@ -593,7 +593,7 @@ class ADGDeadCodeZoneControlVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise DeadCodeZoneControlError(f'Executive readiness verification failed: {e}') from e
+            raise DeadCodeZoneControlError(f"Executive readiness verification failed: {e}") from e
 
     def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
         """Persist report atomically with parent directory creation."""

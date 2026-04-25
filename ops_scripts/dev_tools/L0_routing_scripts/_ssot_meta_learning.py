@@ -516,7 +516,12 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                         if _loaded_vecs and len(_loaded_vecs[0]) == _dim:
                             _prior_vecs = _loaded_vecs
                             _prior_metas = _loaded_metas
-                    except (_MIE, ImportError, AttributeError, OSError):  # guardian: allow-silent-swallow — FAISS load failure non-blocking
+                    except (
+                        _MIE,
+                        ImportError,
+                        AttributeError,
+                        OSError,
+                    ):  # guardian: allow-silent-swallow — FAISS load failure non-blocking
                         pass
                 _all_vecs = _prior_vecs + _faiss_vectors
                 _all_metas = _prior_metas + _faiss_metas

@@ -9,6 +9,7 @@ Outputs per-layer counts of:
   - covered: has guardian comment
   - uncovered: needs guardian or migration to specific exception
 """
+
 from __future__ import annotations
 
 import ast
@@ -18,9 +19,19 @@ from collections import Counter
 from pathlib import Path
 
 ROOTS = (
-    "agentic_core", "apps_shared", "apps_rg", "apps_eval", "apps_exec",
-    "apps_research", "apps_rfp", "apps_underwriting_ai", "apps_lic",
-    "tools", "ops_scripts", "system_learning", "infrastructure",
+    "agentic_core",
+    "apps_shared",
+    "apps_rg",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "apps_lic",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
 )
 
 GUARDIAN_RE = re.compile(r"guardian\s*:\s*allow-\S+", re.IGNORECASE)
@@ -28,18 +39,30 @@ GUARDIAN_RE = re.compile(r"guardian\s*:\s*allow-\S+", re.IGNORECASE)
 
 def layer_of(path: str) -> str:
     p = path.replace("\\", "/")
-    if "agentic_core/L0_" in p: return "L0"
-    if "agentic_core/L1_" in p: return "L1"
-    if "agentic_core/L2_" in p: return "L2"
-    if "agentic_core/L3_" in p: return "L3"
-    if "agentic_core/L4_" in p: return "L4"
-    if "agentic_core/L5_" in p: return "L5"
-    if "agentic_core/L6_" in p: return "L6"
-    if p.startswith("apps_"): return "L_APP"
-    if p.startswith("tools/"): return "L_TOOLS"
-    if p.startswith("ops_scripts/"): return "L_OPS"
-    if p.startswith("system_learning/"): return "L_SL"
-    if p.startswith("infrastructure/"): return "L_INFRA"
+    if "agentic_core/L0_" in p:
+        return "L0"
+    if "agentic_core/L1_" in p:
+        return "L1"
+    if "agentic_core/L2_" in p:
+        return "L2"
+    if "agentic_core/L3_" in p:
+        return "L3"
+    if "agentic_core/L4_" in p:
+        return "L4"
+    if "agentic_core/L5_" in p:
+        return "L5"
+    if "agentic_core/L6_" in p:
+        return "L6"
+    if p.startswith("apps_"):
+        return "L_APP"
+    if p.startswith("tools/"):
+        return "L_TOOLS"
+    if p.startswith("ops_scripts/"):
+        return "L_OPS"
+    if p.startswith("system_learning/"):
+        return "L_SL"
+    if p.startswith("infrastructure/"):
+        return "L_INFRA"
     return "other"
 
 
@@ -79,9 +102,7 @@ for root in ROOTS:
                 lay = layer_of(fp)
                 ln = node.lineno
                 # Check this line ± 1 for guardian comment
-                ctx = " ".join(
-                    lines[i] for i in range(max(0, ln - 2), min(len(lines), ln + 2))
-                )
+                ctx = " ".join(lines[i] for i in range(max(0, ln - 2), min(len(lines), ln + 2)))
                 if GUARDIAN_RE.search(ctx):
                     covered[lay] += 1
                 else:

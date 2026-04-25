@@ -24,6 +24,7 @@ Reference:
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Planes)
 Parent plan: .windsurf/plans/l5-governance-best-practice-gap-4615ae.md
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -116,19 +117,13 @@ def decide_calibration_outcome(
     """
     passes = (
         golden_pass_rate >= CALIBRATION_THRESHOLDS["golden_pass_rate_min"]
-        and adversarial_catch_rate
-        >= CALIBRATION_THRESHOLDS["adversarial_catch_rate_min"]
-        and false_positive_rate
-        <= CALIBRATION_THRESHOLDS["false_positive_rate_max"]
+        and adversarial_catch_rate >= CALIBRATION_THRESHOLDS["adversarial_catch_rate_min"]
+        and false_positive_rate <= CALIBRATION_THRESHOLDS["false_positive_rate_max"]
         and latency_p95_ms <= CALIBRATION_LATENCY_P95_MAX_MS
     )
     if passes:
         outcome = CalibrationOutcome.PROMOTE
-    elif (
-        golden_pass_rate < 0.80
-        or adversarial_catch_rate < 0.70
-        or false_positive_rate > 0.15
-    ):
+    elif golden_pass_rate < 0.80 or adversarial_catch_rate < 0.70 or false_positive_rate > 0.15:
         outcome = CalibrationOutcome.REGRESS
     else:
         outcome = CalibrationOutcome.HOLD
@@ -208,8 +203,7 @@ def assurance_gate_passes(
     for r in runs:
         if r.catch_rate < ASSURANCE_CATCH_RATE_MIN:
             failures.append(
-                f"{r.suite_kind.value}:CATCH_RATE_LOW:{r.catch_rate:.3f}<"
-                f"{ASSURANCE_CATCH_RATE_MIN}",
+                f"{r.suite_kind.value}:CATCH_RATE_LOW:{r.catch_rate:.3f}<{ASSURANCE_CATCH_RATE_MIN}",
             )
         if r.cases_false_positive > ASSURANCE_FALSE_POSITIVE_MAX:
             failures.append(
@@ -256,18 +250,14 @@ def decide_policy_promotion(
 ) -> PolicyPromotionDecision:
     """Combine calibration + assurance into one decision record."""
     if calibration.candidate_policy_version != (
-        assurance_runs[0].candidate_policy_version
-        if assurance_runs
-        else calibration.candidate_policy_version
+        assurance_runs[0].candidate_policy_version if assurance_runs else calibration.candidate_policy_version
     ):
         raise ValueError(
             "decide_policy_promotion: calibration and assurance_runs must "
             "target the SAME candidate_policy_version",
         )
     assurance_ok, assurance_failures = assurance_gate_passes(assurance_runs)
-    may_promote = (
-        calibration.outcome is CalibrationOutcome.PROMOTE and assurance_ok
-    )
+    may_promote = calibration.outcome is CalibrationOutcome.PROMOTE and assurance_ok
     canonical = json.dumps(
         {
             "assurance": [r.to_dict() for r in assurance_runs],

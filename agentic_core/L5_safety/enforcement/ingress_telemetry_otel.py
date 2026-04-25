@@ -90,9 +90,7 @@ class OtelMetricsSink:
             self._counters[metric] = counter
         counter.add(1, labels or None)
 
-    def observe(
-        self, metric: str, value: float, *, labels: dict[str, str] | None = None
-    ) -> None:
+    def observe(self, metric: str, value: float, *, labels: dict[str, str] | None = None) -> None:
         hist = self._histograms.get(metric)
         if hist is None:
             hist = self._meter.create_histogram(
@@ -143,14 +141,22 @@ class StubMeter:
         self.histograms: dict[str, _StubHistogram] = {}
 
     def create_counter(
-        self, name: str, *, description: str = "", unit: str = ""  # noqa: ARG002
+        self,
+        name: str,
+        *,
+        description: str = "",
+        unit: str = "",  # noqa: ARG002
     ) -> _StubCounter:
         if name not in self.counters:
             self.counters[name] = _StubCounter(name)
         return self.counters[name]
 
     def create_histogram(
-        self, name: str, *, description: str = "", unit: str = ""  # noqa: ARG002
+        self,
+        name: str,
+        *,
+        description: str = "",
+        unit: str = "",  # noqa: ARG002
     ) -> _StubHistogram:
         if name not in self.histograms:
             self.histograms[name] = _StubHistogram(name)

@@ -272,7 +272,11 @@ class BudgetEnforcer:
             try:
                 mem_bytes = budget.memory_mb * 1024 * 1024
                 resource.setrlimit(resource.RLIMIT_AS, (mem_bytes, resource.RLIM_INFINITY))
-            except (AttributeError, ValueError, OSError):  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow
+            except (
+                AttributeError,
+                ValueError,
+                OSError,
+            ):  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow
                 pass
         buf = io.BytesIO()
         with _wall_clock_cap(budget.compute_ms):

@@ -129,10 +129,9 @@ def test_single_mcp_process_is_not_orphan() -> None:
 def test_main_clean_returns_zero(
     capsys: pytest.CaptureFixture,
 ) -> None:
-    with mock.patch.object(
-        mod, "list_processes_windows", return_value=[]
-    ), mock.patch.object(
-        mod, "list_processes_posix", return_value=[]
+    with (
+        mock.patch.object(mod, "list_processes_windows", return_value=[]),
+        mock.patch.object(mod, "list_processes_posix", return_value=[]),
     ):
         rc = mod.main([])
     out = capsys.readouterr().out
@@ -147,10 +146,7 @@ def test_main_reports_orphans_returns_one(
         _p(701, 0, "python tools/mcp/pytest_server.py"),
         _p(702, 30, "python tools/mcp/redis_mcp_server.py"),
     ]
-    target = (
-        "list_processes_windows" if os.name == "nt"
-        else "list_processes_posix"
-    )
+    target = "list_processes_windows" if os.name == "nt" else "list_processes_posix"
     with mock.patch.object(mod, target, return_value=fake):
         rc = mod.main([])
     out = capsys.readouterr().out
@@ -172,13 +168,11 @@ def test_main_kill_calls_kill(
         killed.append(pid)
         return True, "ok"
 
-    target = (
-        "list_processes_windows" if os.name == "nt"
-        else "list_processes_posix"
-    )
-    with mock.patch.object(
-        mod, target, return_value=fake
-    ), mock.patch.object(mod, "kill", side_effect=_fake_kill):
+    target = "list_processes_windows" if os.name == "nt" else "list_processes_posix"
+    with (
+        mock.patch.object(mod, target, return_value=fake),
+        mock.patch.object(mod, "kill", side_effect=_fake_kill),
+    ):
         rc = mod.main(["--kill"])
     assert rc == 0
     assert killed == [802]
@@ -189,14 +183,12 @@ def test_main_json_output(capsys: pytest.CaptureFixture) -> None:
         _p(901, 0, "python tools/mcp/pytest_server.py"),
         _p(902, 30, "python tools/mcp/redis_mcp_server.py"),
     ]
-    target = (
-        "list_processes_windows" if os.name == "nt"
-        else "list_processes_posix"
-    )
+    target = "list_processes_windows" if os.name == "nt" else "list_processes_posix"
     with mock.patch.object(mod, target, return_value=fake):
         rc = mod.main(["--json"])
     assert rc == 1
     import json
+
     payload = json.loads(capsys.readouterr().out)
     assert payload["orphan_count"] == 1
     assert payload["orphans"][0]["pid"] == 902

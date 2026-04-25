@@ -3,7 +3,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-files = sorted(glob.glob('artifacts/adg/adg_indexed_*.sqlite'), key=os.path.getmtime)
+files = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"), key=os.path.getmtime)
 latest = files[-1]
 print(f"LATEST: {latest}")
 print(f"prior:  {files[-2] if len(files) > 1 else '(none)'}")

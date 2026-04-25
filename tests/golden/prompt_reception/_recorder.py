@@ -44,9 +44,7 @@ def _build_artifact_and_slots(
             authority_level=AuthorityLevel.from_slot_code(code),
             source_layer="L0",
         )
-    system_parts = [
-        slots[c] for c in ("S0", "I0", "D0", "C0", "E0", "M0", "H0") if c in slots
-    ]
+    system_parts = [slots[c] for c in ("S0", "I0", "D0", "C0", "E0", "M0", "H0") if c in slots]
     final_system = "\n\n".join(p for p in system_parts if p)
     final_user = slots.get("U0", "")
     artifact = CompiledPromptArtifact(

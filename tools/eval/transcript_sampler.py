@@ -35,9 +35,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_SNAPSHOT_INDEX = Path(
-    "system_learning/meta_learning/runtime_adg_snapshots/snapshot_index.json"
-)
+_DEFAULT_SNAPSHOT_INDEX = Path("system_learning/meta_learning/runtime_adg_snapshots/snapshot_index.json")
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,17 +121,19 @@ def _load_runtime_traces(source: Path, window: str, now_epoch: float) -> list[di
         if ts < cutoff:
             continue
         mission = str(entry.get("mission", ""))
-        out.append({
-            "meta_learning_id": meta_learning_id,
-            "trace_id": str(entry.get("trace_id", "")),
-            "mission": mission,
-            "rubric_family": _infer_rubric_family(mission),
-            "timestamp": ts,
-            "node_count": int(entry.get("node_count", 0)),
-            "edge_count": int(entry.get("edge_count", 0)),
-            "duration_ms": int(entry.get("duration_ms", 0)),
-            "snapshot_path": str(entry.get("file_path", "")),
-        })
+        out.append(
+            {
+                "meta_learning_id": meta_learning_id,
+                "trace_id": str(entry.get("trace_id", "")),
+                "mission": mission,
+                "rubric_family": _infer_rubric_family(mission),
+                "timestamp": ts,
+                "node_count": int(entry.get("node_count", 0)),
+                "edge_count": int(entry.get("edge_count", 0)),
+                "duration_ms": int(entry.get("duration_ms", 0)),
+                "snapshot_path": str(entry.get("file_path", "")),
+            }
+        )
     logger.info("loaded %d traces within window=%s from %s", len(out), window, source)
     return out
 
@@ -160,10 +160,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--window", default="24h", help="time window, e.g. 24h, 7d")
     parser.add_argument("--per-family", type=int, default=25)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--source", type=Path, default=_DEFAULT_SNAPSHOT_INDEX,
-                        help="L6 snapshot index JSON (default: runtime_adg_snapshots/snapshot_index.json)")
-    parser.add_argument("--now-epoch", type=float, default=None,
-                        help="override 'now' for deterministic test runs")
+    parser.add_argument(
+        "--source",
+        type=Path,
+        default=_DEFAULT_SNAPSHOT_INDEX,
+        help="L6 snapshot index JSON (default: runtime_adg_snapshots/snapshot_index.json)",
+    )
+    parser.add_argument(
+        "--now-epoch", type=float, default=None, help="override 'now' for deterministic test runs"
+    )
     parser.add_argument("--out", type=Path, default=Path("artifacts/eval/regrade_queue.jsonl"))
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, stream=sys.stderr, format="%(levelname)s %(name)s: %(message)s")

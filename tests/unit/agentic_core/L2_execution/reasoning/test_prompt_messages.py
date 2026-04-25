@@ -146,12 +146,7 @@ def test_as_dict_is_plain_serializable(artifact: CompiledPromptArtifact) -> None
 
 
 def test_parse_exemplar_turns_two_turn_conversation() -> None:
-    content = (
-        "USER: What is 2+2?\n"
-        "ASSISTANT: 4\n"
-        "USER: And 3+3?\n"
-        "ASSISTANT: 6\n"
-    )
+    content = "USER: What is 2+2?\nASSISTANT: 4\nUSER: And 3+3?\nASSISTANT: 6\n"
     turns = _parse_exemplar_turns(content)
     assert turns == (
         ("user", "What is 2+2?"),

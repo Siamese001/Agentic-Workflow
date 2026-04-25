@@ -1,0 +1,52 @@
+{# R0 - OUTPUT FORMAT (SCHEMA Authority)
+ Response schema, format constraints, structural requirements.
+ SCHEMA authority — defines the shape of the output, not its content.
+#}
+================================================================================
+OUTPUT FORMAT SPECIFICATION (SCHEMA AUTHORITY)
+================================================================================
+
+{% if response_schema %}
+RESPONSE SCHEMA:
+{{ response_schema }}
+{% endif %}
+
+{% if format_constraints %}
+FORMAT CONSTRAINTS:
+{% for constraint in format_constraints %}
+- {{ constraint }}
+{% endfor %}
+{% endif %}
+
+{% if required_sections %}
+REQUIRED SECTIONS:
+{% for section in required_sections %}
+- {{ section.name }}{% if section.required %} (MANDATORY){% else %} (OPTIONAL){% endif %}
+{% endfor %}
+{% endif %}
+
+{% if output_type %}
+OUTPUT TYPE: {{ output_type }}
+{% endif %}
+
+{% if max_length %}
+MAXIMUM LENGTH: {{ max_length }}
+{% endif %}
+
+{% if encoding_requirements %}
+ENCODING REQUIREMENTS:
+{% for req in encoding_requirements %}
+- {{ req }}
+{% endfor %}
+{% endif %}
+
+{% if validation_rules %}
+VALIDATION RULES:
+{% for rule in validation_rules %}
+- {{ rule }}
+{% endfor %}
+{% endif %}
+
+================================================================================
+OUTPUT MUST CONFORM TO THIS SCHEMA. DEVIATION TRIGGERS RE-ASSEMBLY.
+================================================================================

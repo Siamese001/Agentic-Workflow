@@ -7,6 +7,7 @@ Collects four signals:
 3. Current hooks.json config for post_cascade_response → what SHOULD be firing.
 4. Any error rows recorded anywhere under artifacts/windsurf/ today.
 """
+
 from __future__ import annotations
 
 import json
@@ -70,9 +71,7 @@ def main() -> None:
         post = data.get("hooks", {}).get("post_cascade_response")
         if isinstance(post, list):
             for i, h in enumerate(post):
-                flags = ", ".join(
-                    f"{k}={v}" for k, v in h.items() if k not in ("description",)
-                )
+                flags = ", ".join(f"{k}={v}" for k, v in h.items() if k not in ("description",))
                 print(f"    [{i}] {flags}")
         else:
             print(f"    (unexpected shape: {type(post).__name__})")
@@ -95,12 +94,7 @@ def main() -> None:
                 except json.JSONDecodeError:
                     continue
                 status = str(rec.get("status") or rec.get("kind") or "").lower()
-                if (
-                    "error" in status
-                    or "fail" in status
-                    or rec.get("error")
-                    or rec.get("exception")
-                ):
+                if "error" in status or "fail" in status or rec.get("error") or rec.get("exception"):
                     ts = rec.get("timestamp") or rec.get("timestamp_iso") or ""
                     error_hits.append((p.name, f"{ts}: {str(rec)[:160]}"))
         except (OSError, UnicodeDecodeError):

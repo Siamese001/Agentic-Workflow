@@ -122,7 +122,8 @@ def check_prerequisites() -> list[Prereq]:
             name="collection:repo_adg_graph",
             ok="repo_adg_graph" in existing,
             detail=(
-                "present — retirement candidate" if "repo_adg_graph" in existing
+                "present — retirement candidate"
+                if "repo_adg_graph" in existing
                 else "already absent — nothing to retire"
             ),
         )

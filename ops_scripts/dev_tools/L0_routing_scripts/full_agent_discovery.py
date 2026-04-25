@@ -358,7 +358,7 @@ def main() -> bool:
         try:
             validate_path_within_project(project_root, project_root)
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise DiscoveryError(f'Project root validation failed: {e}') from e
+            raise DiscoveryError(f"Project root validation failed: {e}") from e
 
         # Run discovery inside a cache context so classifications are fresh
         # on entry and don't leak stale state to subsequent operations.
@@ -902,9 +902,7 @@ def cli_interface() -> None:
         else:
             # Default: run full discovery
             success = main()
-            sys.exit(
-                0 if success else 1
-            )  # review: KeyboardInterrupt should be handled with specific context
+            sys.exit(0 if success else 1)  # review: KeyboardInterrupt should be handled with specific context
 
     except KeyboardInterrupt:
         Logger.info("[DISCOVERY] Operation cancelled by user")

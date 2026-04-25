@@ -128,9 +128,7 @@ class TestConstruction:
 
     def test_rejects_inverted_bounds(self):
         with pytest.raises(ValueError, match="min_chunk_chars"):
-            EmbeddingSemanticChunker(
-                embedder=_identity_stub, min_chunk_chars=500, max_chunk_chars=100
-            )
+            EmbeddingSemanticChunker(embedder=_identity_stub, min_chunk_chars=500, max_chunk_chars=100)
 
     def test_default_threshold_per_mode(self):
         assert (
@@ -140,15 +138,11 @@ class TestConstruction:
             == 95.0
         )
         assert (
-            EmbeddingSemanticChunker(
-                embedder=_identity_stub, breakpoint_type="stdev"
-            ).breakpoint_threshold
+            EmbeddingSemanticChunker(embedder=_identity_stub, breakpoint_type="stdev").breakpoint_threshold
             == 3.0
         )
         assert (
-            EmbeddingSemanticChunker(
-                embedder=_identity_stub, breakpoint_type="iqr"
-            ).breakpoint_threshold
+            EmbeddingSemanticChunker(embedder=_identity_stub, breakpoint_type="iqr").breakpoint_threshold
             == 1.5
         )
 
@@ -165,9 +159,7 @@ class TestChunkingBehaviour:
         assert c.chunk("   \n\n   ", doc_id="d1") == []
 
     def test_single_sentence_returns_single_chunk(self):
-        c = EmbeddingSemanticChunker(
-            embedder=_identity_stub, min_chunk_chars=0
-        )
+        c = EmbeddingSemanticChunker(embedder=_identity_stub, min_chunk_chars=0)
         chunks = c.chunk("Just one sentence here.", doc_id="solo")
         assert len(chunks) == 1
         assert chunks[0].content.startswith("Just one sentence")

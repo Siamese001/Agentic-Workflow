@@ -20,9 +20,7 @@ class TestCachePrefixStabilityGate:
         monkeypatch.setenv(gate._BYPASS_ENV, "1")
         assert gate.check() == 0
 
-    def test_reports_nonzero_when_insertion_order_matters(
-        self, monkeypatch
-    ) -> None:
+    def test_reports_nonzero_when_insertion_order_matters(self, monkeypatch) -> None:
         """Simulate an AuthoritySlot hashing bug by making the canonical
         payload order-sensitive, and verify the gate catches it."""
         from agentic_core.L2_execution.reasoning import compiled_artifact
@@ -34,14 +32,8 @@ class TestCachePrefixStabilityGate:
         def leaky_hash(self) -> str:
             import hashlib
 
-            keys_in_order = (
-                list(self.structured_slots.keys())
-                if self.structured_slots
-                else []
-            )
-            return hashlib.sha256(
-                ("|".join(keys_in_order) + self.final_system_string).encode()
-            ).hexdigest()
+            keys_in_order = list(self.structured_slots.keys()) if self.structured_slots else []
+            return hashlib.sha256(("|".join(keys_in_order) + self.final_system_string).encode()).hexdigest()
 
         monkeypatch.setattr(
             compiled_artifact.CompiledPromptArtifact,
@@ -53,18 +45,14 @@ class TestCachePrefixStabilityGate:
         # Restore automatic via monkeypatch teardown.
         _ = original
 
-    def test_reports_nonzero_when_nonce_leaks_into_hash(
-        self, monkeypatch
-    ) -> None:
+    def test_reports_nonzero_when_nonce_leaks_into_hash(self, monkeypatch) -> None:
         """Simulate a nonce leak into manifest_hash and verify the gate catches it."""
         from agentic_core.L2_execution.reasoning import compiled_artifact
 
         def nonce_leaking_hash(self) -> str:
             import hashlib
 
-            return hashlib.sha256(
-                (self.final_system_string + self.idempotency_nonce).encode()
-            ).hexdigest()
+            return hashlib.sha256((self.final_system_string + self.idempotency_nonce).encode()).hexdigest()
 
         monkeypatch.setattr(
             compiled_artifact.CompiledPromptArtifact,

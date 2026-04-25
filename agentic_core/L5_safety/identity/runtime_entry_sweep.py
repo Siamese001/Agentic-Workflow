@@ -36,6 +36,7 @@ Reference:
   - pre_l5_sweep.py (Wave-K composite)
 Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

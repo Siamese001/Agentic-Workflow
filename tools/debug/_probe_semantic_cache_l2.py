@@ -5,6 +5,7 @@ Run from repo root:
 
 Requires Redis reachable via REDIS_URL (default redis://localhost:6379).
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -35,11 +36,8 @@ def main() -> int:
     ns = "l2_proof"
     payload = {"answer": "Paris", "evidence_ids": ["geo1"], "grounding_complete": True}
     # learn() first so isolation metadata is captured in Redis, then promote
-    mgr.learn(ctx, ns, payload, feedback_score=0.9,
-              tenant_id="", corpus_version="cv1", policy_version="pv1")
-    asyncio.run(
-        mgr.promote_to_long_term(ctx, ns, payload, feedback_score=0.9)
-    )
+    mgr.learn(ctx, ns, payload, feedback_score=0.9, tenant_id="", corpus_version="cv1", policy_version="pv1")
+    asyncio.run(mgr.promote_to_long_term(ctx, ns, payload, feedback_score=0.9))
     print("[1] promote_to_long_term done")
 
     con = sqlite3.connect("artifacts/gptcache/l2_cache.db")
@@ -57,9 +55,7 @@ def main() -> int:
 
     import redis  # noqa: PLC0415
 
-    rc = redis.from_url(
-        os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True
-    )
+    rc = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
     ctx_hash = mgr._compute_hash(ctx, ns)  # noqa: SLF001
     rc.delete(f"memory:{ctx_hash}")
     print("[4] Redis L1 manually evicted")

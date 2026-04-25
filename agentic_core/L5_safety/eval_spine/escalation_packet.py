@@ -136,9 +136,7 @@ class EscalationPacket:
 
     def __post_init__(self) -> None:
         if self.hitl_class not in CLASS_NAMES:
-            raise ValueError(
-                f"hitl_class {self.hitl_class!r} not in canonical HitlClass enum"
-            )
+            raise ValueError(f"hitl_class {self.hitl_class!r} not in canonical HitlClass enum")
         if not self.evidence_refs:
             raise ValueError("evidence_refs must contain at least one entry")
         if not self.options_ledger:
@@ -209,9 +207,7 @@ def from_exit_decision(
     class_name = hitl_class.value if isinstance(hitl_class, HitlClass) else hitl_class
     snapshot = policy_snapshot or decision.policy_snapshot
     if not snapshot:
-        raise ValueError(
-            "policy_snapshot missing — required for escalation audit binding (ADR-023)"
-        )
+        raise ValueError("policy_snapshot missing — required for escalation audit binding (ADR-023)")
     now = datetime.now(timezone.utc)
     deadline = now + timedelta(seconds=max(0, deadline_seconds))
     return EscalationPacket(
@@ -239,9 +235,7 @@ def from_exit_decision(
     )
 
 
-def validate_dict(
-    payload: Mapping[str, Any], *, schema_path: Path | None = None
-) -> list[str]:
+def validate_dict(payload: Mapping[str, Any], *, schema_path: Path | None = None) -> list[str]:
     path = schema_path or _SCHEMA_PATH
     if not path.exists():
         return [f"schema_not_found:{path}"]

@@ -52,9 +52,7 @@ def _make_runtime_with_service(
     return runtime, service
 
 
-def test_reopen_noop_when_snapshot_unchanged(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_reopen_noop_when_snapshot_unchanged(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """W2.2 F4: same path + mtime → skip service.reopen() entirely."""
     snap = tmp_path / "adg_indexed_20260424_0000.sqlite"
     snap.write_bytes(b"stub")
@@ -71,9 +69,7 @@ def test_reopen_noop_when_snapshot_unchanged(
     service.reopen.assert_not_called()
 
 
-def test_reopen_runs_when_mtime_changes(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_reopen_runs_when_mtime_changes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """W2.2 F4: mtime drift → real reopen (not noop)."""
     snap = tmp_path / "adg_indexed_20260424_0001.sqlite"
     snap.write_bytes(b"stub")
@@ -89,17 +85,13 @@ def test_reopen_runs_when_mtime_changes(
     service.reopen.assert_called_once()
 
 
-def test_reopen_timeout_returns_structured_error(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_reopen_timeout_returns_structured_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """W1.2 F2: slow reopen is bounded by timeout_s and returns status=error."""
     snap = tmp_path / "adg_indexed_20260424_0002.sqlite"
     snap.write_bytes(b"stub")
     stale_mtime = snap.stat().st_mtime - 10.0
 
-    runtime, service = _make_runtime_with_service(
-        monkeypatch, snap, stale_mtime, reopen_sleep_s=2.0
-    )
+    runtime, service = _make_runtime_with_service(monkeypatch, snap, stale_mtime, reopen_sleep_s=2.0)
 
     result = runtime.reopen_connections(timeout_s=0.1)
 
@@ -121,16 +113,12 @@ def test_log_file_handler_registered_on_named_logger() -> None:
     import os as _os
     from tools.adg.mcp.runtime import LOG, LOG_FILE
 
-    file_handlers = [
-        h for h in LOG.handlers if isinstance(h, _logging.FileHandler)
-    ]
-    assert file_handlers, (
-        "adg_mcp logger must have at least one FileHandler"
-    )
+    file_handlers = [h for h in LOG.handlers if isinstance(h, _logging.FileHandler)]
+    assert file_handlers, "adg_mcp logger must have at least one FileHandler"
     target = _os.path.abspath(LOG_FILE)
-    assert any(
-        _os.path.abspath(h.baseFilename) == target for h in file_handlers
-    ), f"Expected a FileHandler at {target}; got {[h.baseFilename for h in file_handlers]}"
+    assert any(_os.path.abspath(h.baseFilename) == target for h in file_handlers), (
+        f"Expected a FileHandler at {target}; got {[h.baseFilename for h in file_handlers]}"
+    )
     # propagate=False keeps our file output from being duplicated to
     # FastMCP stderr sinks.
     assert LOG.propagate is False
@@ -145,19 +133,11 @@ def test_log_configuration_is_idempotent_on_reimport() -> None:
     import logging as _logging
     from tools.adg.mcp.runtime import LOG_FILE, _configure_adg_logger
 
-    before = [
-        h for h in _logging.getLogger("adg_mcp").handlers
-        if isinstance(h, _logging.FileHandler)
-    ]
+    before = [h for h in _logging.getLogger("adg_mcp").handlers if isinstance(h, _logging.FileHandler)]
     _configure_adg_logger()
     _configure_adg_logger()
-    after = [
-        h for h in _logging.getLogger("adg_mcp").handlers
-        if isinstance(h, _logging.FileHandler)
-    ]
-    assert len(before) == len(after), (
-        f"Handler count changed on re-config: {len(before)} -> {len(after)}"
-    )
+    after = [h for h in _logging.getLogger("adg_mcp").handlers if isinstance(h, _logging.FileHandler)]
+    assert len(before) == len(after), f"Handler count changed on re-config: {len(before)} -> {len(after)}"
 
 
 def test_reopen_noop_when_no_service_instance(

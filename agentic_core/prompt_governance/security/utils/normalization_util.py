@@ -77,11 +77,17 @@ def _base64_high_confidence_decode(text: str) -> str | None:
         return None
     try:
         raw = base64.b64decode(stripped, validate=True)
-    except (ValueError, TypeError, RuntimeError):  # guardian: allow-return-none-swallow -- base64 decode failure: caller treats None as non-base64 input
+    except (
+        ValueError,
+        TypeError,
+        RuntimeError,
+    ):  # guardian: allow-return-none-swallow -- base64 decode failure: caller treats None as non-base64 input
         return None
     try:
         decoded = raw.decode("utf-8")
-    except UnicodeDecodeError:  # guardian: allow-return-none-swallow -- UTF-8 decode failure: caller treats None as non-text payload
+    except (
+        UnicodeDecodeError
+    ):  # guardian: allow-return-none-swallow -- UTF-8 decode failure: caller treats None as non-text payload
         return None
     if len(decoded) > MAX_DECODED_CHARS:
         return None

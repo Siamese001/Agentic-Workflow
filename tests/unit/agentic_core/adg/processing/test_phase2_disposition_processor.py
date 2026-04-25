@@ -196,12 +196,11 @@ class TestW5VariantTokenRecognition:
         must all auto-disposition to `approved` after Wave-5.1 expansion.
         """
         result = run_phase2_disposition_processing(adg_with_w5_variant_tokens)
-        assert result["approved"] == 3, (
-            f"Expected all 3 variant-token sites approved, got {result}"
-        )
+        assert result["approved"] == 3, f"Expected all 3 variant-token sites approved, got {result}"
 
     def test_log_and_swallow_aliases_return_none_swallow(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ) -> None:
         """Scanner misclassification: `except X: Logger.debug(...)` with an
         enclosing `return None` gets edge_kind=return_none_swallow, but authors

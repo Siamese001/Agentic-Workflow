@@ -103,9 +103,7 @@ class TestAssertNoPersistentWrite:
 
     def test_message_format_includes_path_and_trace_id_when_given(self, mp):
         with pytest.raises(PermissionError) as exc_info:
-            mp.assert_no_persistent_write(
-                "L4", "json.dump", path="/var/x.json", trace_id="trace-123"
-            )
+            mp.assert_no_persistent_write("L4", "json.dump", path="/var/x.json", trace_id="trace-123")
         msg = str(exc_info.value)
         assert "path=/var/x.json" in msg
         assert "trace_id=trace-123" in msg

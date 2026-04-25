@@ -1,4 +1,5 @@
 """Final Notion sync: mark W3/W3.3/W4/W4.2/W5 with authorization-complete status."""
+
 import json
 import os
 import requests
@@ -44,31 +45,53 @@ w3_note = (
     "All archive-eligible 2026-07-23; W6 sweep verifies zero consumers before "
     "physical archive."
 )
-print("W3:", patch(W3_PAGE, {
-    "Status": {"select": {"name": "Done"}},
-    "Blocking Items": {"rich_text": rt(w3_note)},
-}))
+print(
+    "W3:",
+    patch(
+        W3_PAGE,
+        {
+            "Status": {"select": {"name": "Done"}},
+            "Blocking Items": {"rich_text": rt(w3_note)},
+        },
+    ),
+)
 
 # Mark W3.2 Done explicitly
-print("W3.2:", patch(W3_2_PAGE, {
-    "Status": {"select": {"name": "Done"}},
-    "Blocking Items": {"rich_text": rt(
-        "W3.2 complete 2026-04-24 (commit 2814c674a6): 2 agents authorized via "
-        "dead-compat-shim entry removal (CostGovernorAgent, GravityStateAgent)."
-    )},
-}))
+print(
+    "W3.2:",
+    patch(
+        W3_2_PAGE,
+        {
+            "Status": {"select": {"name": "Done"}},
+            "Blocking Items": {
+                "rich_text": rt(
+                    "W3.2 complete 2026-04-24 (commit 2814c674a6): 2 agents authorized via "
+                    "dead-compat-shim entry removal (CostGovernorAgent, GravityStateAgent)."
+                )
+            },
+        },
+    ),
+)
 
 # Mark W3.3 Done with migration-required status
-print("W3.3:", patch(W3_3_PAGE, {
-    "Status": {"select": {"name": "Done"}},
-    "Blocking Items": {"rich_text": rt(
-        "W3.3 complete 2026-04-24 (commit 6224407658): 6 agents authorized with "
-        "pragmatic constitutional S3 interpretation - cooling period serves as "
-        "consumer migration window. Consumers MUST migrate before 2026-07-23. "
-        "Per-agent consumer lists in artifacts/agent_deprecation/w_final_*.json. "
-        "W6 archive sweep verifies zero consumers BEFORE physical archive."
-    )},
-}))
+print(
+    "W3.3:",
+    patch(
+        W3_3_PAGE,
+        {
+            "Status": {"select": {"name": "Done"}},
+            "Blocking Items": {
+                "rich_text": rt(
+                    "W3.3 complete 2026-04-24 (commit 6224407658): 6 agents authorized with "
+                    "pragmatic constitutional S3 interpretation - cooling period serves as "
+                    "consumer migration window. Consumers MUST migrate before 2026-07-23. "
+                    "Per-agent consumer lists in artifacts/agent_deprecation/w_final_*.json. "
+                    "W6 archive sweep verifies zero consumers BEFORE physical archive."
+                )
+            },
+        },
+    ),
+)
 
 # W4 - fully addressed now (3 W4.1 + 1 W4.2 = 4 of 7, 3 removed from scope)
 w4_note = (
@@ -80,10 +103,16 @@ w4_note = (
     "marker, has is_legacy_agent helper), CognitiveDispositionAgent (self-declared "
     "KEEP in docstring). ADG resolves_callsite flags on these were misleading."
 )
-print("W4:", patch(W4_PAGE, {
-    "Status": {"select": {"name": "Done"}},
-    "Blocking Items": {"rich_text": rt(w4_note)},
-}))
+print(
+    "W4:",
+    patch(
+        W4_PAGE,
+        {
+            "Status": {"select": {"name": "Done"}},
+            "Blocking Items": {"rich_text": rt(w4_note)},
+        },
+    ),
+)
 
 # W5 - 2 of 3 authorized (FileClassificationAgent removed from scope)
 w5_note = (
@@ -96,10 +125,16 @@ w5_note = (
     "authorized with migration-required status; W6 verifies zero consumers "
     "before physical archive 2026-07-23."
 )
-print("W5:", patch(W5_PAGE, {
-    "Status": {"select": {"name": "Done"}},
-    "Blocking Items": {"rich_text": rt(w5_note)},
-}))
+print(
+    "W5:",
+    patch(
+        W5_PAGE,
+        {
+            "Status": {"select": {"name": "Done"}},
+            "Blocking Items": {"rich_text": rt(w5_note)},
+        },
+    ),
+)
 
 # W6 - update with total count
 w6_note = (
@@ -111,6 +146,12 @@ w6_note = (
     "interpretation adopted for W3.3+W4.2+W5). Cooling artifacts at "
     "artifacts/agent_deprecation/ provide full consumer lists + migration deadlines."
 )
-print("W6:", patch(W6_PAGE, {
-    "Blocking Items": {"rich_text": rt(w6_note)},
-}))
+print(
+    "W6:",
+    patch(
+        W6_PAGE,
+        {
+            "Blocking Items": {"rich_text": rt(w6_note)},
+        },
+    ),
+)

@@ -174,9 +174,7 @@ class ExitController:
         rationale: str | None = None,
     ) -> LedgerEntry:
         entry = self._require_pending(ledger_id)
-        updated = self._ledger.record_approved(
-            ledger_id, approver_id=approver_id, rationale=rationale
-        )
+        updated = self._ledger.record_approved(ledger_id, approver_id=approver_id, rationale=rationale)
         hitl_spans.emit_approved(
             run_id=entry.run_id,
             trace_id=entry.trace_id,
@@ -226,9 +224,7 @@ class ExitController:
         if entry is None:
             raise KeyError(f"ledger entry not found: {ledger_id}")
         if entry.state is not LedgerState.PENDING:
-            raise ValueError(
-                f"ledger entry {ledger_id} already resolved as {entry.state.value}"
-            )
+            raise ValueError(f"ledger entry {ledger_id} already resolved as {entry.state.value}")
         return entry
 
 

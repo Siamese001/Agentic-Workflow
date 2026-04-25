@@ -183,7 +183,10 @@ def dynamic_import(module_path: str, class_name: str) -> Any | None:
     try:
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
-    except (ImportError, AttributeError):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+    except (
+        ImportError,
+        AttributeError,
+    ):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         return None
 
 

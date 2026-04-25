@@ -274,7 +274,10 @@ class NativePersistentCacheClient:
             # Skip the query entirely in that case; miss is the correct result.
             try:
                 _coll_count = self._chroma_collection.count()
-            except (AttributeError, RuntimeError):  # guardian: allow-log-and-swallow -- count() unavailable treated as "unknown, try query"
+            except (
+                AttributeError,
+                RuntimeError,
+            ):  # guardian: allow-log-and-swallow -- count() unavailable treated as "unknown, try query"
                 _coll_count = -1
             if _coll_count == 0:
                 self._miss_count += 1

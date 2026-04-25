@@ -150,18 +150,11 @@ class SqliteMemoryStore:
                 continue
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {decl}")
         # Back-fill last_reinforced once, using updated_at/created_at as a proxy.
-        conn.execute(
-            "UPDATE entities SET last_reinforced = updated_at "
-            "WHERE last_reinforced IS NULL"
-        )
-        conn.execute(
-            "UPDATE observations SET last_reinforced = created_at "
-            "WHERE last_reinforced IS NULL"
-        )
+        conn.execute("UPDATE entities SET last_reinforced = updated_at WHERE last_reinforced IS NULL")
+        conn.execute("UPDATE observations SET last_reinforced = created_at WHERE last_reinforced IS NULL")
         # Index used by threshold-filtered reads.
         conn.execute(
-            "CREATE INDEX IF NOT EXISTS idx_ent_confidence "
-            "ON entities (confidence, last_reinforced)"
+            "CREATE INDEX IF NOT EXISTS idx_ent_confidence ON entities (confidence, last_reinforced)"
         )
 
     def _upsert_entity(self, conn: sqlite3.Connection, name: str, etype: str, now: float) -> None:
@@ -187,8 +180,7 @@ class SqliteMemoryStore:
             now=now,
         )
         conn.execute(
-            "UPDATE entities SET updated_at = ?, confidence = ?, "
-            "last_reinforced = ? WHERE name = ?",
+            "UPDATE entities SET updated_at = ?, confidence = ?, last_reinforced = ? WHERE name = ?",
             (now, new_conf, now, name),
         )
 
@@ -217,8 +209,7 @@ class SqliteMemoryStore:
 
         # Stage 1: exact-match fast path (UNIQUE constraint).
         existing_exact = conn.execute(
-            "SELECT id, confidence, last_reinforced FROM observations "
-            "WHERE entity_name = ? AND content = ?",
+            "SELECT id, confidence, last_reinforced FROM observations WHERE entity_name = ? AND content = ?",
             (name, content),
         ).fetchone()
         if existing_exact is not None:
@@ -228,8 +219,7 @@ class SqliteMemoryStore:
         # Stage 2: Jaccard near-duplicate check against siblings.
         threshold = jaccard_threshold()
         sibling_rows = conn.execute(
-            "SELECT id, content, confidence, last_reinforced FROM observations "
-            "WHERE entity_name = ?",
+            "SELECT id, content, confidence, last_reinforced FROM observations WHERE entity_name = ?",
             (name,),
         ).fetchall()
         best_sim = 0.0
@@ -256,9 +246,7 @@ class SqliteMemoryStore:
             return False
 
     @staticmethod
-    def _reinforce_observation(
-        conn: sqlite3.Connection, row: sqlite3.Row, etype: str, now: float
-    ) -> None:
+    def _reinforce_observation(conn: sqlite3.Connection, row: sqlite3.Row, etype: str, now: float) -> None:
         """Apply reinforcement to an observation row — bumps confidence and
         touches last_reinforced. Shared by exact-match and Jaccard paths."""
         new_conf = reinforced_confidence(
@@ -268,8 +256,7 @@ class SqliteMemoryStore:
             now=now,
         )
         conn.execute(
-            "UPDATE observations SET confidence = ?, last_reinforced = ? "
-            "WHERE id = ?",
+            "UPDATE observations SET confidence = ?, last_reinforced = ? WHERE id = ?",
             (new_conf, now, row["id"]),
         )
 
@@ -408,7 +395,11 @@ class SqliteMemoryStore:
                 ).fetchall()
             }
             all_names = direct | via_obs
-        loaded = [e for n in sorted(all_names) if (e := self.load_entity(n, include_low_confidence=include_low_confidence))]
+        loaded = [
+            e
+            for n in sorted(all_names)
+            if (e := self.load_entity(n, include_low_confidence=include_low_confidence))
+        ]
         return loaded
 
     def read_graph(self, include_low_confidence: bool = False) -> dict[str, Any]:
@@ -449,7 +440,8 @@ class SqliteMemoryStore:
                         float(r["last_reinforced"] or now),
                         str(row["entity_type"]),
                         now=now,
-                    ) >= threshold
+                    )
+                    >= threshold
                 ]
                 entities.append(
                     {
@@ -552,7 +544,8 @@ class SqliteMemoryStore:
                     float(r["last_reinforced"] or now),
                     etype,
                     now=now,
-                ) >= threshold
+                )
+                >= threshold
             ]
             rels = [
                 {"from": r["from_entity"], "relationType": r["relation_type"], "to": r["to_entity"]}
@@ -640,8 +633,7 @@ class SqliteMemoryStore:
             params = entity_types
         with self.connection() as conn:
             rows = conn.execute(
-                f"SELECT name, entity_type, confidence, last_reinforced, access_count "
-                f"FROM entities {where}",
+                f"SELECT name, entity_type, confidence, last_reinforced, access_count FROM entities {where}",
                 params,
             ).fetchall()
         threshold = confidence_threshold()
@@ -685,8 +677,7 @@ class SqliteMemoryStore:
         now = time.time()
         with self.connection() as conn:
             row = conn.execute(
-                "SELECT confidence, last_reinforced, entity_type "
-                "FROM entities WHERE name = ?",
+                "SELECT confidence, last_reinforced, entity_type FROM entities WHERE name = ?",
                 (name,),
             ).fetchone()
             if row is None:
@@ -698,8 +689,7 @@ class SqliteMemoryStore:
                 now=now,
             )
             conn.execute(
-                "UPDATE entities SET confidence = ?, last_reinforced = ? "
-                "WHERE name = ?",
+                "UPDATE entities SET confidence = ?, last_reinforced = ? WHERE name = ?",
                 (new_conf, now, name),
             )
         return True

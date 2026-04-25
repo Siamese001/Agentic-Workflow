@@ -69,6 +69,7 @@ def _make_manifest(ast_snippet: str = "x = 1", *, bad_hash: bool = False) -> Sur
 
 # ---- ForbiddenInputError / validate_execution_input ----------------------
 
+
 class TestForbiddenInput:
     def test_validate_accepts_manifest(self) -> None:
         m = _make_manifest()
@@ -90,6 +91,7 @@ class TestForbiddenInput:
 
 
 # ---- validate_manifest_emission / require_manifest_hash_ok ---------------
+
 
 class TestManifestEmission:
     def test_valid_manifest_passes(self) -> None:
@@ -114,6 +116,7 @@ class TestManifestEmission:
 
 
 # ---- canonical_ast_serialize / verify_ast_determinism --------------------
+
 
 class TestCanonicalAST:
     def test_returns_canonical_result(self) -> None:
@@ -143,6 +146,7 @@ class TestCanonicalAST:
 
 # ---- dedupe --------------------------------------------------------------
 
+
 class TestDedupe:
     def test_sha256_is_deterministic(self) -> None:
         assert dedupe_sha256("signal") == dedupe_sha256("signal")
@@ -167,6 +171,7 @@ class TestDedupe:
 
 
 # ---- WallClockViolation + ast_scan_wall_clock ----------------------------
+
 
 class TestWallClockScan:
     def test_violation_carries_metadata(self) -> None:
@@ -201,12 +206,16 @@ class TestWallClockScan:
 
 # ---- create_boundary_snapshot + verify_rollback_integrity ----------------
 
+
 class TestBoundarySnapshot:
     def test_create_populates_fields(self) -> None:
         clock = SemanticClock()
         snap = create_boundary_snapshot(
-            trace_id="t", filesystem_hash="fs", git_state_hash="git",
-            agent_memory_hash="mem", semantic_clock=clock,
+            trace_id="t",
+            filesystem_hash="fs",
+            git_state_hash="git",
+            agent_memory_hash="mem",
+            semantic_clock=clock,
         )
         assert isinstance(snap, BoundarySnapshotArtifact)
         assert snap.trace_id == "t"
@@ -215,8 +224,11 @@ class TestBoundarySnapshot:
 
     def test_rollback_integrity_matching(self) -> None:
         snap = BoundarySnapshotArtifact(
-            trace_id="t", filesystem_hash="fs", git_state_hash="git",
-            agent_memory_hash="mem", semantic_clock_tick=0,
+            trace_id="t",
+            filesystem_hash="fs",
+            git_state_hash="git",
+            agent_memory_hash="mem",
+            semantic_clock_tick=0,
         )
         assert verify_rollback_integrity(snap, "fs", "git", "mem") is True
 
@@ -229,11 +241,18 @@ class TestBoundarySnapshot:
         ],
     )
     def test_rollback_integrity_mismatch(
-        self, fs: str, git: str, mem: str, field: str,
+        self,
+        fs: str,
+        git: str,
+        mem: str,
+        field: str,
     ) -> None:
         snap = BoundarySnapshotArtifact(
-            trace_id="t", filesystem_hash="fs", git_state_hash="git",
-            agent_memory_hash="mem", semantic_clock_tick=0,
+            trace_id="t",
+            filesystem_hash="fs",
+            git_state_hash="git",
+            agent_memory_hash="mem",
+            semantic_clock_tick=0,
         )
         with pytest.raises(RollbackHashMismatch) as exc:
             verify_rollback_integrity(snap, fs, git, mem)
@@ -241,6 +260,7 @@ class TestBoundarySnapshot:
 
 
 # ---- Episodic memory gate ------------------------------------------------
+
 
 class TestEpisodicGate:
     def test_none_raises(self) -> None:
@@ -253,6 +273,7 @@ class TestEpisodicGate:
 
 
 # ---- knowledge_supervisor_check / check_velocity_threshold --------------
+
 
 class TestSupervisorThresholds:
     def test_ks_below_threshold_requires_retrain(self) -> None:

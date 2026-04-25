@@ -102,9 +102,7 @@ def test_tier_models_override_changes_model_id():
         TIER_SONNET: "claude-sonnet-test-stub",
         TIER_OPUS: "claude-opus-test-stub",
     }
-    selection = select_model(
-        TASK_CHUNK_CONTEXTUALIZATION, tier_models=custom_tier_models
-    )
+    selection = select_model(TASK_CHUNK_CONTEXTUALIZATION, tier_models=custom_tier_models)
     assert selection.tier == TIER_HAIKU
     assert selection.model == "claude-haiku-test-stub"
 

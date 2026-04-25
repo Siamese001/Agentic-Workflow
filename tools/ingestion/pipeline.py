@@ -232,10 +232,7 @@ def run_stage(
     # a ``../`` relative path — resolve both cases against the pipeline dir.
     script_path = (REPO_ROOT / "tools" / "ingestion" / stage.script).resolve()
 
-    header = (
-        f"{BLUE}[{idx}/{total}  {pct:3d}%]{RESET} "
-        f"stage={stage.name:<25} script={stage.script}"
-    )
+    header = f"{BLUE}[{idx}/{total}  {pct:3d}%]{RESET} stage={stage.name:<25} script={stage.script}"
     print(header, flush=True)
 
     # Pre-flight: skip if any required input file is missing or an empty stub.
@@ -298,8 +295,7 @@ def run_stage(
                 return "fail", elapsed
             return "ok", elapsed
         print(
-            f"         {RED}FAIL{RESET} rc={result.returncode} "
-            f"elapsed={elapsed:.1f}s  log={log_file}",
+            f"         {RED}FAIL{RESET} rc={result.returncode} elapsed={elapsed:.1f}s  log={log_file}",
             flush=True,
         )
         return "fail", elapsed
@@ -328,9 +324,7 @@ def main() -> int:
     repo_str = str(REPO_ROOT)
     existing_pp = env.get("PYTHONPATH", "")
     if repo_str not in existing_pp.split(os.pathsep):
-        env["PYTHONPATH"] = (
-            repo_str + (os.pathsep + existing_pp if existing_pp else "")
-        )
+        env["PYTHONPATH"] = repo_str + (os.pathsep + existing_pp if existing_pp else "")
 
     print(f"Pipeline: {len(stages)} stages, logs -> {LOG_DIR}", flush=True)
 

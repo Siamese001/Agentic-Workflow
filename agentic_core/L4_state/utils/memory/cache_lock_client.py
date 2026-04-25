@@ -35,11 +35,7 @@ def acquire_single_flight(
     try:
         while True:
             try:
-                ok = bool(
-                    redis_client.set(
-                        lock_key, "1", nx=True, ex=max(1, int(ttl_seconds))
-                    )
-                )
+                ok = bool(redis_client.set(lock_key, "1", nx=True, ex=max(1, int(ttl_seconds))))
             except (AttributeError, ConnectionError, TimeoutError, RuntimeError) as exc:
                 _LOGGER.debug("single-flight redis error: %s", exc)
                 ok = False
@@ -54,7 +50,12 @@ def acquire_single_flight(
         if acquired:
             try:
                 redis_client.delete(lock_key)
-            except (AttributeError, ConnectionError, TimeoutError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- single-flight redis release is best-effort; lock will expire via TTL if release fails
+            except (
+                AttributeError,
+                ConnectionError,
+                TimeoutError,
+                RuntimeError,
+            ) as exc:  # guardian: allow-log-and-swallow -- single-flight redis release is best-effort; lock will expire via TTL if release fails
                 _LOGGER.debug("single-flight redis release error: %s", exc)
 
 

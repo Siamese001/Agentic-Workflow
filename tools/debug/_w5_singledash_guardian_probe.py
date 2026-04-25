@@ -4,17 +4,34 @@ The extractor requires `# guardian: allow-X -- <justification>`.
 Find sites that use `# guardian: allow-X - <justification>` (single dash)
 or other near-miss separators.
 """
+
 from __future__ import annotations
 import re
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-ROOTS = ("agentic_core", "apps_rg", "apps_shared", "apps_lic", "apps_eval",
-         "apps_exec", "apps_research", "apps_rfp", "apps_underwriting_ai",
-         "tools", "ops_scripts", "system_learning", "infrastructure")
-EXCLUDE = (r"(^|[/\\])__pycache__[/\\]", r"(^|[/\\])archives?[/\\]",
-           r"(^|[/\\])tests[/\\]", r"(^|[/\\])tools[/\\]debug[/\\]")
+ROOTS = (
+    "agentic_core",
+    "apps_rg",
+    "apps_shared",
+    "apps_lic",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    "infrastructure",
+)
+EXCLUDE = (
+    r"(^|[/\\])__pycache__[/\\]",
+    r"(^|[/\\])archives?[/\\]",
+    r"(^|[/\\])tests[/\\]",
+    r"(^|[/\\])tools[/\\]debug[/\\]",
+)
 
 # Match `# guardian: allow-X SEP justification` where SEP is NOT --
 # Allow letters/digits/dashes in token name.
@@ -25,9 +42,9 @@ RX_DOUBLE_DASH = re.compile(r"#\s*guardian:\s*(allow-[A-Za-z0-9_-]+)\s+--\s+(\S+
 
 categories = {
     "BARE_NO_JUSTIFICATION": (RX_BARE, set()),
-    "SINGLE_DASH_SEPARATOR":  (RX_SINGLE_DASH, set()),
-    "COLON_SEPARATOR":        (RX_COLON, set()),
-    "CANONICAL_DOUBLE_DASH":  (RX_DOUBLE_DASH, set()),
+    "SINGLE_DASH_SEPARATOR": (RX_SINGLE_DASH, set()),
+    "COLON_SEPARATOR": (RX_COLON, set()),
+    "CANONICAL_DOUBLE_DASH": (RX_DOUBLE_DASH, set()),
 }
 
 counts: dict[str, int] = defaultdict(int)

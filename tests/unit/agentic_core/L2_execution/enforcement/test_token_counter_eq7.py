@@ -62,9 +62,7 @@ class TestHeuristics:
 
     def test_gemini_uses_openai_heuristic(self) -> None:
         text = "a" * 16
-        assert count_tokens(text, "gemini") == math.ceil(
-            16 / HEURISTIC_CHARS_PER_TOKEN_GEMINI
-        )
+        assert count_tokens(text, "gemini") == math.ceil(16 / HEURISTIC_CHARS_PER_TOKEN_GEMINI)
 
     def test_minimum_floor_is_one_for_any_nonempty(self) -> None:
         # 1 char under any provider MUST count as at least 1 token.
@@ -94,14 +92,10 @@ class TestProviderNormalization:
         expected = math.ceil(21 / HEURISTIC_CHARS_PER_TOKEN_CLAUDE)
         assert count_tokens(text, alias) == expected
 
-    @pytest.mark.parametrize(
-        "alias", ["gemini", "vertex_ai", "google-gemini"]
-    )
+    @pytest.mark.parametrize("alias", ["gemini", "vertex_ai", "google-gemini"])
     def test_gemini_aliases(self, alias: str) -> None:
         text = "a" * 16
-        assert count_tokens(text, alias) == math.ceil(
-            16 / HEURISTIC_CHARS_PER_TOKEN_GEMINI
-        )
+        assert count_tokens(text, alias) == math.ceil(16 / HEURISTIC_CHARS_PER_TOKEN_GEMINI)
 
 
 # --------------------------------------------------------------------------
@@ -121,21 +115,15 @@ class TestOpenAITiktoken:
         # yields 2 tokens, not the heuristic's ceil(11/4) = 3.
         assert out == 2
 
-    def test_heuristic_fallback_when_tiktoken_missing(
-        self, monkeypatch
-    ) -> None:
+    def test_heuristic_fallback_when_tiktoken_missing(self, monkeypatch) -> None:
         """If the tiktoken import fails the heuristic path is used."""
         tc._tiktoken_encoder.cache_clear()
         # Force _tiktoken_encoder to behave as if tiktoken is missing.
         monkeypatch.setattr(tc, "_tiktoken_encoder", lambda model: None)
         text = "a" * 20
-        assert count_tokens(text, "openai", model="gpt-4") == math.ceil(
-            20 / HEURISTIC_CHARS_PER_TOKEN_OPENAI
-        )
+        assert count_tokens(text, "openai", model="gpt-4") == math.ceil(20 / HEURISTIC_CHARS_PER_TOKEN_OPENAI)
 
-    def test_encoder_error_falls_back_to_heuristic(
-        self, monkeypatch
-    ) -> None:
+    def test_encoder_error_falls_back_to_heuristic(self, monkeypatch) -> None:
         """A tiktoken runtime error must not crash the caller."""
 
         class _BrokenEncoder:
@@ -143,13 +131,9 @@ class TestOpenAITiktoken:
                 raise ValueError("unencodable")
 
         tc._tiktoken_encoder.cache_clear()
-        monkeypatch.setattr(
-            tc, "_tiktoken_encoder", lambda model: _BrokenEncoder()
-        )
+        monkeypatch.setattr(tc, "_tiktoken_encoder", lambda model: _BrokenEncoder())
         text = "a" * 20
-        assert count_tokens(text, "openai", model="gpt-4") == math.ceil(
-            20 / HEURISTIC_CHARS_PER_TOKEN_OPENAI
-        )
+        assert count_tokens(text, "openai", model="gpt-4") == math.ceil(20 / HEURISTIC_CHARS_PER_TOKEN_OPENAI)
 
 
 # --------------------------------------------------------------------------
@@ -163,9 +147,7 @@ class TestCountTokensForMessages:
             {"role": "system", "content": "a" * 12},
             {"role": "user", "content": "a" * 8},
         ]
-        expected = count_tokens("a" * 12, "anthropic") + count_tokens(
-            "a" * 8, "anthropic"
-        )
+        expected = count_tokens("a" * 12, "anthropic") + count_tokens("a" * 8, "anthropic")
         assert count_tokens_for_messages(messages, "anthropic") == expected
 
     def test_ignores_non_string_content(self) -> None:

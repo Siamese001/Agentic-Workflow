@@ -315,7 +315,8 @@ class TestValidateCitationChain:
     def test_bundle_query_hash_mismatch_raises(self, tc, tt):
         query, chunks, bundle = self._build_valid(tc, tt)
         bad_bundle = tt.CitationBundle(
-            trace_id="t", bundle_id="b1",
+            trace_id="t",
+            bundle_id="b1",
             citations=bundle.citations,
             retrieval_query_hash="wrong-hash",
             bundle_hash="bh",
@@ -327,7 +328,8 @@ class TestValidateCitationChain:
         query, chunks, bundle = self._build_valid(tc, tt)
         # Remove citation for c2
         trimmed_bundle = tt.CitationBundle(
-            trace_id="t", bundle_id="b1",
+            trace_id="t",
+            bundle_id="b1",
             citations=(bundle.citations[0],),  # only c1
             retrieval_query_hash=query.query_hash,
             bundle_hash="bh",
@@ -338,7 +340,8 @@ class TestValidateCitationChain:
     def test_phantom_citation_raises(self, tc, tt):
         query, chunks, bundle = self._build_valid(tc, tt)
         phantom_bundle = tt.CitationBundle(
-            trace_id="t", bundle_id="b1",
+            trace_id="t",
+            bundle_id="b1",
             citations=bundle.citations + (_mk_citation(tt, "c99", query.query_hash),),
             retrieval_query_hash=query.query_hash,
             bundle_hash="bh",
@@ -350,7 +353,8 @@ class TestValidateCitationChain:
         query, chunks, bundle = self._build_valid(tc, tt)
         # Citation with wrong retrieval_hash
         bad_bundle = tt.CitationBundle(
-            trace_id="t", bundle_id="b1",
+            trace_id="t",
+            bundle_id="b1",
             citations=(
                 _mk_citation(tt, "c1", query.query_hash),
                 _mk_citation(tt, "c2", "wrong-hash"),
@@ -370,7 +374,12 @@ class TestValidateCitationChain:
 class TestBuildCognitiveDiffBundle:
     def test_construction(self, tc, tt):
         b = tc.build_cognitive_diff_bundle(
-            "t", "inc-1", "intended", "actual", "diff", 0,
+            "t",
+            "inc-1",
+            "intended",
+            "actual",
+            "diff",
+            0,
         )
         assert isinstance(b, tt.CognitiveDiffBundle)
         assert b.incident_id == "inc-1"

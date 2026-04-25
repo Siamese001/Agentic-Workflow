@@ -8,6 +8,7 @@ An import match is:
 Self-references (inside the agent's own file) are excluded.
 archives/ and tools/archive/ paths are excluded.
 """
+
 from __future__ import annotations
 
 import json
@@ -75,4 +76,4 @@ print(f"[ok] zero live consumers: {len(zero)}/{len(results)}")
 print(f"[ok] with live consumers: {len(nonzero)}")
 for r in sorted(results, key=lambda x: x["live_consumer_count"]):
     name = r["agent_path"].split("/")[-1]
-    print(f'  {r["live_consumer_count"]:3d} {name:50s}')
+    print(f"  {r['live_consumer_count']:3d} {name:50s}")

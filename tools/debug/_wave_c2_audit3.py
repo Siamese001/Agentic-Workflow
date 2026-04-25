@@ -1,4 +1,5 @@
 """Wave C.2 final audit: zero-real-refs signal only, ignore mechanical-commit-age noise."""
+
 from __future__ import annotations
 
 import pathlib
@@ -48,7 +49,5 @@ for t, refs in risky:
     for q, f in refs:
         print(f"    [{q}] {f}")
 
-(ROOT / "artifacts" / "adg" / "wave_c2_safe.txt").write_text(
-    "\n".join(safe) + "\n", encoding="utf-8"
-)
+(ROOT / "artifacts" / "adg" / "wave_c2_safe.txt").write_text("\n".join(safe) + "\n", encoding="utf-8")
 print(f"\nwrote wave_c2_safe.txt ({len(safe)})")

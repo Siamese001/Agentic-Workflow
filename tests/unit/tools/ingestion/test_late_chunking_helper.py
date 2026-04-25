@@ -37,17 +37,20 @@ from tools.ingestion.late_chunking_helper import (
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("env_val,expected", [
-    ("1", True),
-    ("true", True),
-    ("True", True),
-    ("yes", True),
-    ("on", True),
-    ("0", False),
-    ("false", False),
-    ("", False),
-    ("no", False),
-])
+@pytest.mark.parametrize(
+    "env_val,expected",
+    [
+        ("1", True),
+        ("true", True),
+        ("True", True),
+        ("yes", True),
+        ("on", True),
+        ("0", False),
+        ("false", False),
+        ("", False),
+        ("no", False),
+    ],
+)
 def test_env_flag_parses_truthy_values(env_val, expected, monkeypatch):
     monkeypatch.setenv("LATE_CHUNKING", env_val)
     assert is_enabled_from_env_or_flag(False) is expected
@@ -195,6 +198,7 @@ def test_apply_late_chunking_falls_back_when_chunk_cannot_be_relocated(tmp_path,
         return fallback_vec
 
     import agentic_core.embeddings.bge_runtime as bge_rt
+
     monkeypatch.setattr(bge_rt, "bge_embed_query", _fake_bge_query)
 
     with patch(
@@ -205,8 +209,8 @@ def test_apply_late_chunking_falls_back_when_chunk_cannot_be_relocated(tmp_path,
 
     assert result is not None
     assert len(result) == 2
-    assert result[0] == [0.5] * 1024      # late-chunked
-    assert result[1] == fallback_vec      # fallback for unlocatable chunk
+    assert result[0] == [0.5] * 1024  # late-chunked
+    assert result[1] == fallback_vec  # fallback for unlocatable chunk
     assert fallback_calls == ["not_in_file"]
 
 
@@ -216,6 +220,7 @@ def test_apply_late_chunking_fallback_on_missing_file(tmp_path, monkeypatch):
 
     fallback_vec = [0.7] * 1024
     import agentic_core.embeddings.bge_runtime as bge_rt
+
     monkeypatch.setattr(bge_rt, "bge_embed_query", lambda t: fallback_vec)
 
     # Still need the LateChunkingEmbedder import to succeed so the helper
@@ -245,6 +250,7 @@ def test_apply_late_chunking_fallback_when_embedder_raises(tmp_path, monkeypatch
 
     fallback_vec = [0.3] * 1024
     import agentic_core.embeddings.bge_runtime as bge_rt
+
     monkeypatch.setattr(bge_rt, "bge_embed_query", lambda t: fallback_vec)
 
     with patch(

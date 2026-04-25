@@ -55,9 +55,7 @@ def get_bundled_mixin(mixin_id: str) -> str:
     hot paths do not hit disk repeatedly.
     """
     if mixin_id not in BUNDLED_MIXIN_IDS:
-        raise MixinNotFoundError(
-            f"{mixin_id!r} is not a bundled mixin; known: {BUNDLED_MIXIN_IDS}"
-        )
+        raise MixinNotFoundError(f"{mixin_id!r} is not a bundled mixin; known: {BUNDLED_MIXIN_IDS}")
     path = _mixin_path(mixin_id)
     return path.read_text(encoding="utf-8")
 

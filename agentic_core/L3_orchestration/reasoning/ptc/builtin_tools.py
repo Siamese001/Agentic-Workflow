@@ -312,7 +312,7 @@ def expr_eval_handler(args: dict[str, Any]) -> str:
         result = _evaluate_expression(expr)
         return str(result)
     except SyntaxError as e:  # review: Syntax errors should be caught at parser level, not runtime
-        raise ValueError(f'Invalid syntax: {e}') from e
+        raise ValueError(f"Invalid syntax: {e}") from e
     except Exception as e:  # guardian: allow-broad-exception  -- ADG-burn: broad_exception_catch
         raise ValueError(str(e)) from e
 

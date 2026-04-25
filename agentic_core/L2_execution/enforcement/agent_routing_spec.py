@@ -51,19 +51,13 @@ class AgentRoutingSpec:
 
     def __post_init__(self) -> None:
         if self.thinking_budget is not None and self.thinking_budget < 0:
-            raise ValueError(
-                f"thinking_budget must be >= 0, got {self.thinking_budget}"
-            )
+            raise ValueError(f"thinking_budget must be >= 0, got {self.thinking_budget}")
         if self.reasoning_effort is not None and self.reasoning_effort not in _VALID_EFFORT:
             raise ValueError(
-                f"reasoning_effort must be one of {sorted(_VALID_EFFORT)}; "
-                f"got {self.reasoning_effort!r}"
+                f"reasoning_effort must be one of {sorted(_VALID_EFFORT)}; got {self.reasoning_effort!r}"
             )
         if self.verbosity is not None and self.verbosity not in _VALID_VERBOSITY:
-            raise ValueError(
-                f"verbosity must be one of {sorted(_VALID_VERBOSITY)}; "
-                f"got {self.verbosity!r}"
-            )
+            raise ValueError(f"verbosity must be one of {sorted(_VALID_VERBOSITY)}; got {self.verbosity!r}")
 
     def is_default(self) -> bool:
         """Return True iff every field is at its opt-out default.

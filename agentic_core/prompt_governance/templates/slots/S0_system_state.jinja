@@ -1,0 +1,35 @@
+{# S0 - SYSTEM/STATE (ABSOLUTE Authority)
+ Mandatory safety rules and constitutions.
+ This slot anchors all reasoning with ABSOLUTE authority.
+#}
+================================================================================
+SYSTEM STATE (ABSOLUTE AUTHORITY)
+================================================================================
+
+{% if constitution_rules %}
+CONSTITUTIONAL INVARIANTS:
+{% for rule in constitution_rules %}
+- [ABSOLUTE] {{ rule }}
+{% endfor %}
+{% endif %}
+
+{% if layer_gravity %}
+LAYER GRAVITY RULES:
+{{ layer_gravity }}
+{% endif %}
+
+{% if uwg_policy %}
+UNIVERSAL WRITE GATEWAY POLICY:
+{{ uwg_policy }}
+{% endif %}
+
+{% if determinism_rules %}
+DETERMINISM CONSTRAINTS:
+{% for rule in determinism_rules %}
+- {{ rule }}
+{% endfor %}
+{% endif %}
+
+================================================================================
+VIOLATION OF ABOVE RULES IS PROHIBITED AND WILL TRIGGER SAFETY ESCALATION.
+================================================================================

@@ -24,16 +24,19 @@ def test_collect_rows_empty_dir(tmp_path: Path) -> None:
 
 
 def test_row_parses_core_fields(tmp_path: Path) -> None:
-    _write(tmp_path / "wiring_alpha_ratchet.json", {
-        "gate_id": "ALPHA",
-        "count": 42,
-        "seeded_at": (NOW - timedelta(days=100)).isoformat(),
-        "tightened_at": (NOW - timedelta(days=2)).isoformat(),
-        "tighten_history": [
-            {"from": 90, "to": 50, "at": "x"},
-            {"from": 50, "to": 42, "at": "y"},
-        ],
-    })
+    _write(
+        tmp_path / "wiring_alpha_ratchet.json",
+        {
+            "gate_id": "ALPHA",
+            "count": 42,
+            "seeded_at": (NOW - timedelta(days=100)).isoformat(),
+            "tightened_at": (NOW - timedelta(days=2)).isoformat(),
+            "tighten_history": [
+                {"from": 90, "to": 50, "at": "x"},
+                {"from": 50, "to": 42, "at": "y"},
+            ],
+        },
+    )
     rows = mod.collect_rows(tmp_path, now=NOW)
     assert len(rows) == 1
     r = rows[0]
@@ -47,27 +50,34 @@ def test_row_parses_core_fields(tmp_path: Path) -> None:
 
 
 def test_auto_promoted_tier_surfaced(tmp_path: Path) -> None:
-    _write(tmp_path / "wiring_bravo_ratchet.json", {
-        "gate_id": "BRAVO",
-        "count": 0,
-        "auto_promoted_tier": "B",
-    })
+    _write(
+        tmp_path / "wiring_bravo_ratchet.json",
+        {
+            "gate_id": "BRAVO",
+            "count": 0,
+            "auto_promoted_tier": "B",
+        },
+    )
     rows = mod.collect_rows(tmp_path, now=NOW)
     assert rows[0].auto_promoted_tier == "B"
 
 
 def test_summary_aggregates(tmp_path: Path) -> None:
-    _write(tmp_path / "wiring_a_ratchet.json",
-           {"gate_id": "A", "count": 0})
-    _write(tmp_path / "wiring_b_ratchet.json",
-           {"gate_id": "B", "count": 10,
-            "seeded_at": (NOW - timedelta(days=60)).isoformat()})
-    _write(tmp_path / "wiring_c_ratchet.json",
-           {"gate_id": "C", "count": 3,
+    _write(tmp_path / "wiring_a_ratchet.json", {"gate_id": "A", "count": 0})
+    _write(
+        tmp_path / "wiring_b_ratchet.json",
+        {"gate_id": "B", "count": 10, "seeded_at": (NOW - timedelta(days=60)).isoformat()},
+    )
+    _write(
+        tmp_path / "wiring_c_ratchet.json",
+        {
+            "gate_id": "C",
+            "count": 3,
             "seeded_at": (NOW - timedelta(days=5)).isoformat(),
-            "tighten_history": [{"from": 5, "to": 3}]})
-    _write(tmp_path / "wiring_d_ratchet.json",
-           {"gate_id": "D", "count": 0, "auto_promoted_tier": "B"})
+            "tighten_history": [{"from": 5, "to": 3}],
+        },
+    )
+    _write(tmp_path / "wiring_d_ratchet.json", {"gate_id": "D", "count": 0, "auto_promoted_tier": "B"})
 
     rows = mod.collect_rows(tmp_path, now=NOW)
     summary = mod.summarize(rows)
@@ -91,30 +101,28 @@ def test_sort_by_count(tmp_path: Path) -> None:
 
 
 def test_sort_by_age(tmp_path: Path) -> None:
-    _write(tmp_path / "wiring_a_ratchet.json",
-           {"gate_id": "A", "count": 1,
-            "seeded_at": (NOW - timedelta(days=10)).isoformat()})
-    _write(tmp_path / "wiring_b_ratchet.json",
-           {"gate_id": "B", "count": 1,
-            "seeded_at": (NOW - timedelta(days=100)).isoformat()})
+    _write(
+        tmp_path / "wiring_a_ratchet.json",
+        {"gate_id": "A", "count": 1, "seeded_at": (NOW - timedelta(days=10)).isoformat()},
+    )
+    _write(
+        tmp_path / "wiring_b_ratchet.json",
+        {"gate_id": "B", "count": 1, "seeded_at": (NOW - timedelta(days=100)).isoformat()},
+    )
     rows = mod.collect_rows(tmp_path, now=NOW)
     sorted_rows = mod._sort_rows(rows, "age")
     assert sorted_rows[0].gate_id == "B"
 
 
 def test_malformed_json_skipped(tmp_path: Path) -> None:
-    (tmp_path / "wiring_bad_ratchet.json").write_text("{ broken",
-                                                       encoding="utf-8")
+    (tmp_path / "wiring_bad_ratchet.json").write_text("{ broken", encoding="utf-8")
     _write(tmp_path / "wiring_ok_ratchet.json", {"gate_id": "OK", "count": 1})
     rows = mod.collect_rows(tmp_path, now=NOW)
     assert [r.gate_id for r in rows] == ["OK"]
 
 
-def test_cli_table_output(
-    tmp_path: Path, capsys: pytest.CaptureFixture
-) -> None:
-    _write(tmp_path / "wiring_x_ratchet.json",
-           {"gate_id": "X", "count": 7})
+def test_cli_table_output(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    _write(tmp_path / "wiring_x_ratchet.json", {"gate_id": "X", "count": 7})
     rc = mod.main(["--baseline-dir", str(tmp_path)])
     assert rc == 0
     out = capsys.readouterr().out
@@ -123,11 +131,8 @@ def test_cli_table_output(
     assert "total_debt_units=7" in out
 
 
-def test_cli_json_output(
-    tmp_path: Path, capsys: pytest.CaptureFixture
-) -> None:
-    _write(tmp_path / "wiring_j_ratchet.json",
-           {"gate_id": "J", "count": 0})
+def test_cli_json_output(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    _write(tmp_path / "wiring_j_ratchet.json", {"gate_id": "J", "count": 0})
     rc = mod.main(["--baseline-dir", str(tmp_path), "--json"])
     assert rc == 0
     payload = json.loads(capsys.readouterr().out)
@@ -135,15 +140,10 @@ def test_cli_json_output(
     assert payload["rows"][0]["gate_id"] == "J"
 
 
-def test_cli_only_nonzero(
-    tmp_path: Path, capsys: pytest.CaptureFixture
-) -> None:
-    _write(tmp_path / "wiring_zz_ratchet.json",
-           {"gate_id": "ZZ", "count": 0})
-    _write(tmp_path / "wiring_nz_ratchet.json",
-           {"gate_id": "NZ", "count": 3})
-    rc = mod.main(["--baseline-dir", str(tmp_path),
-                   "--only-nonzero", "--json"])
+def test_cli_only_nonzero(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    _write(tmp_path / "wiring_zz_ratchet.json", {"gate_id": "ZZ", "count": 0})
+    _write(tmp_path / "wiring_nz_ratchet.json", {"gate_id": "NZ", "count": 3})
+    rc = mod.main(["--baseline-dir", str(tmp_path), "--only-nonzero", "--json"])
     assert rc == 0
     payload = json.loads(capsys.readouterr().out)
     gate_ids = [r["gate_id"] for r in payload["rows"]]

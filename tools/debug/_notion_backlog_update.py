@@ -7,6 +7,7 @@ Operations:
 
 Writes receipts to artifacts/notion/_writeback_receipts.jsonl.
 """
+
 from __future__ import annotations
 
 import json
@@ -23,9 +24,18 @@ RECEIPTS = "artifacts/notion/_writeback_receipts.jsonl"
 
 DUPLICATES_TO_DESCOPE = [
     # (page_id, reason)
-    ("34b27693-f55c-81ec-9fd1-f0e747af570a", "Duplicate of W8.1 P3 scored row 34b27693-f55c-81aa-aaa4-ed950838e2cb (same SC-1 54-violation work)"),
-    ("34b27693-f55c-8100-9bb4-eb5cf4427274", "Duplicate of E.F3 P3 scored row 34b27693-f55c-819c-bb0b-f2eb2ec217e1 (same repo_adg_graph retirement)"),
-    ("34b27693-f55c-8147-aed1-db0c0bdf4773", "Duplicate of E.F2 P3 scored row 34b27693-f55c-81a0-a658-fbabcb7150ba (same ADG coverage hardening phase 0)"),
+    (
+        "34b27693-f55c-81ec-9fd1-f0e747af570a",
+        "Duplicate of W8.1 P3 scored row 34b27693-f55c-81aa-aaa4-ed950838e2cb (same SC-1 54-violation work)",
+    ),
+    (
+        "34b27693-f55c-8100-9bb4-eb5cf4427274",
+        "Duplicate of E.F3 P3 scored row 34b27693-f55c-819c-bb0b-f2eb2ec217e1 (same repo_adg_graph retirement)",
+    ),
+    (
+        "34b27693-f55c-8147-aed1-db0c0bdf4773",
+        "Duplicate of E.F2 P3 scored row 34b27693-f55c-81a0-a658-fbabcb7150ba (same ADG coverage hardening phase 0)",
+    ),
 ]
 
 AGG_TO_DESCOPE = [
@@ -105,13 +115,18 @@ def patch_descope(page_id, note):
 def log_receipt(op, page_id, ok, detail):
     os.makedirs(os.path.dirname(RECEIPTS), exist_ok=True)
     with open(RECEIPTS, "a", encoding="utf-8") as f:
-        f.write(json.dumps({
-            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "op": op,
-            "page_id": page_id,
-            "ok": ok,
-            "detail": detail,
-        }) + "\n")
+        f.write(
+            json.dumps(
+                {
+                    "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "op": op,
+                    "page_id": page_id,
+                    "ok": ok,
+                    "detail": detail,
+                }
+            )
+            + "\n"
+        )
 
 
 def main():
@@ -140,11 +155,16 @@ def main():
     # 2. PATCH duplicates
     for page_id, reason in DUPLICATES_TO_DESCOPE:
         try:
-            http("PATCH", f"https://api.notion.com/v1/pages/{page_id}",
-                 {"properties": {
-                     "Status": {"select": {"name": "Descoped"}},
-                     "Blocking Items": _rt(f"DESCOPED 2026-04-24 (duplicate): {reason}"),
-                 }})
+            http(
+                "PATCH",
+                f"https://api.notion.com/v1/pages/{page_id}",
+                {
+                    "properties": {
+                        "Status": {"select": {"name": "Descoped"}},
+                        "Blocking Items": _rt(f"DESCOPED 2026-04-24 (duplicate): {reason}"),
+                    }
+                },
+            )
             log_receipt("PATCH-descope-dup", page_id, True, reason[:120])
             done += 1
             print(f"[{done}/{total_ops}] DESCOPED dup {page_id}")
@@ -157,11 +177,16 @@ def main():
     for page_id, plan_slug in AGG_TO_DESCOPE:
         note = f"AGG meta-row — real items tracked under their own Wave IDs. Parent plan: {plan_slug}."
         try:
-            http("PATCH", f"https://api.notion.com/v1/pages/{page_id}",
-                 {"properties": {
-                     "Status": {"select": {"name": "Descoped"}},
-                     "Blocking Items": _rt(f"DESCOPED 2026-04-24 (AGG meta-row): {note}"),
-                 }})
+            http(
+                "PATCH",
+                f"https://api.notion.com/v1/pages/{page_id}",
+                {
+                    "properties": {
+                        "Status": {"select": {"name": "Descoped"}},
+                        "Blocking Items": _rt(f"DESCOPED 2026-04-24 (AGG meta-row): {note}"),
+                    }
+                },
+            )
             log_receipt("PATCH-descope-agg", page_id, True, plan_slug)
             done += 1
             print(f"[{done}/{total_ops}] DESCOPED AGG {page_id} ({plan_slug})")

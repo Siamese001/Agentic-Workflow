@@ -196,7 +196,12 @@ def _try_load_text(file_path: Path) -> str | None:
     """
     try:
         raw = Path(file_path).read_text(encoding="utf-8", errors="ignore")
-    except (OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+    except (
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         log.warning("HTML read failed for %s: %s", file_path, exc)
         return None
     try:
@@ -207,9 +212,16 @@ def _try_load_text(file_path: Path) -> str | None:
             tag.decompose()
         text: str = soup.get_text(separator=" ", strip=True)
         return _RE_WHITESPACE.sub(" ", text).strip()
-    except ImportError:  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow- optional dependency
+    except (
+        ImportError
+    ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow- optional dependency
         pass
-    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         log.warning("bs4 extraction failed, falling back to stdlib: %s", exc)
     try:
         stripper = _TagStripper()
@@ -218,7 +230,12 @@ def _try_load_text(file_path: Path) -> str | None:
         text = html.unescape(text)
         text = _RE_WHITESPACE.sub(" ", text).strip()
         return text
-    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
         log.warning("Stdlib HTML extraction failed for %s: %s", file_path, exc)
     try:
         text = _RE_SCRIPT_STYLE.sub("", raw)
@@ -226,7 +243,12 @@ def _try_load_text(file_path: Path) -> str | None:
         text = html.unescape(text)
         text = _RE_WHITESPACE.sub(" ", text).strip()
         return text
-    except (AttributeError, RuntimeError, TypeError, ValueError):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+    except (
+        AttributeError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
         return None
 
 

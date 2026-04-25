@@ -53,14 +53,16 @@ def _load_graded_traces(source: Path) -> list[TraceGradeRow]:
             if not line:
                 continue
             obj = json.loads(line)
-            rows.append(TraceGradeRow(
-                trace_id=str(obj.get("trace_id", "")),
-                rubric_family=str(obj.get("rubric_family", "")),
-                dimension=str(obj.get("dimension", "")),
-                score=obj.get("score"),
-                outcome=str(obj.get("outcome", "")),
-                summary=str(obj.get("summary", "")),
-            ))
+            rows.append(
+                TraceGradeRow(
+                    trace_id=str(obj.get("trace_id", "")),
+                    rubric_family=str(obj.get("rubric_family", "")),
+                    dimension=str(obj.get("dimension", "")),
+                    score=obj.get("score"),
+                    outcome=str(obj.get("outcome", "")),
+                    summary=str(obj.get("summary", "")),
+                )
+            )
     return rows
 
 
@@ -68,6 +70,7 @@ def list_rows(rows: list[TraceGradeRow], limit: int) -> list[TraceGradeRow]:
     def _key(r: TraceGradeRow) -> tuple[float, str]:
         score = r.score if r.score is not None else 999.0
         return (score, r.trace_id)
+
     return sorted(rows, key=_key)[:limit]
 
 

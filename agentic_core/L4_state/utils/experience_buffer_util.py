@@ -243,7 +243,12 @@ class ExperienceBuffer:
         try:
             with self.path.open("r", encoding="utf-8") as f:
                 lines = f.readlines()
-        except (OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
             self.Logger.error(f"Failed to read experience buffer: {e}")
             return
         if len(lines) > self.max_entries:
@@ -252,7 +257,13 @@ class ExperienceBuffer:
                 assert_no_persistent_write("L4", "write_text")
                 _get_write_gateway().write_text(self.path, "".join(kept), encoding="utf-8")
                 self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
-            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (
+                AttributeError,
+                OSError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
                 raise
 
     def load_all(self) -> list[dict[str, Any]]:
@@ -265,7 +276,13 @@ class ExperienceBuffer:
                     if line:
                         entries.append(json.loads(line))
             return list(reversed(entries))
-        except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallow
+        except (
+            json.JSONDecodeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-silent-swallow
             self.Logger.error(f"Failed to load experience buffer: {e}")
             return []
 

@@ -24,6 +24,7 @@ Usage:
 Artifacts:
     artifacts/windsurf/notion_backfill_audit.jsonl
 """
+
 from __future__ import annotations
 
 import argparse
@@ -50,8 +51,7 @@ METRICS_RE = re.compile(
     re.IGNORECASE,
 )
 
-VALID_LAYERS = {"L0", "L1", "L2", "L3", "L4", "L5", "L6",
-                "L_APP", "L_OPS", "L_TOOLS", "L_SHARED"}
+VALID_LAYERS = {"L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_OPS", "L_TOOLS", "L_SHARED"}
 VALID_SURFACES = {"Security", "Write", "Execution", "State", "Observability", "None"}
 
 
@@ -75,8 +75,7 @@ def _headers(token: str) -> dict[str, str]:
     }
 
 
-def _http(method: str, url: str, token: str, body: dict | None = None,
-          timeout: int = 30) -> dict:
+def _http(method: str, url: str, token: str, body: dict | None = None, timeout: int = 30) -> dict:
     data = json.dumps(body).encode("utf-8") if body else None
     req = urllib.request.Request(url, data=data, method=method, headers=_headers(token))
     for attempt in range(3):
@@ -118,9 +117,7 @@ def fetch_all_rows(token: str) -> list[dict]:
         body: dict = {"page_size": 100}
         if cursor:
             body["start_cursor"] = cursor
-        resp = _http("POST",
-                     f"{NOTION_API}/data_sources/{DATA_SOURCE_ID}/query",
-                     token, body)
+        resp = _http("POST", f"{NOTION_API}/data_sources/{DATA_SOURCE_ID}/query", token, body)
         rows.extend(resp.get("results", []))
         if not resp.get("has_more"):
             break
@@ -187,8 +184,7 @@ def build_patch_properties(parsed: dict) -> dict:
 
 
 def patch_page(page_id: str, properties: dict, token: str) -> dict:
-    return _http("PATCH", f"{NOTION_API}/pages/{page_id}", token,
-                 {"properties": properties})
+    return _http("PATCH", f"{NOTION_API}/pages/{page_id}", token, {"properties": properties})
 
 
 def audit_log(entry: dict) -> None:
@@ -200,10 +196,8 @@ def audit_log(entry: dict) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--dry-run", action="store_true",
-                       help="Parse + report, no writes")
-    group.add_argument("--execute", action="store_true",
-                       help="Parse + write typed fields via API-patch-page")
+    group.add_argument("--dry-run", action="store_true", help="Parse + report, no writes")
+    group.add_argument("--execute", action="store_true", help="Parse + write typed fields via API-patch-page")
     args = parser.parse_args(argv)
 
     token = _load_token()
@@ -259,9 +253,11 @@ def main(argv: list[str] | None = None) -> int:
         audit_log(entry)
         bar_pct = idx * 100 // total
         if idx % 10 == 0 or idx == total:
-            print(f"  [{idx:>3}/{total}] {bar_pct:>3}% "
-                  f"scored={scored} band_only={band_only} "
-                  f"skipped={skipped} errors={errors}")
+            print(
+                f"  [{idx:>3}/{total}] {bar_pct:>3}% "
+                f"scored={scored} band_only={band_only} "
+                f"skipped={skipped} errors={errors}"
+            )
 
     print()
     print(f"=== Backfill {'EXECUTE' if args.execute else 'DRY-RUN'} complete ===")

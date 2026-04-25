@@ -1,4 +1,5 @@
 """Enumerate all views in latest ADG snapshot to locate SC-1 analog."""
+
 from __future__ import annotations
 
 import sqlite3

@@ -19,6 +19,7 @@ Exit codes:
     1 — at least one conformance violation
     2 — internal error (unreadable file, etc.)
 """
+
 from __future__ import annotations
 
 import ast
@@ -98,8 +99,7 @@ def _check_class(cls: ast.ClassDef, file_path: Path) -> list[str]:
             continue
         if not _return_annotation_mentions_sealed(stmt):
             violations.append(
-                f"{file_path}:{stmt.lineno}: {cls.name}.{stmt.name} "
-                f"return type missing {SEALED_RETURN_TYPE}"
+                f"{file_path}:{stmt.lineno}: {cls.name}.{stmt.name} return type missing {SEALED_RETURN_TYPE}"
             )
     return violations
 

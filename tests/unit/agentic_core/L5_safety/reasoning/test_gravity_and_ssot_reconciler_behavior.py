@@ -121,15 +121,20 @@ class TestFilesystemSSOTReconcilerAgent:
 
     def test_enforcement_mode_override(self, tmp_path: Path) -> None:
         agent = FilesystemSSOTReconcilerAgent(
-            project_root=tmp_path, enforcement_mode=False,
+            project_root=tmp_path,
+            enforcement_mode=False,
         )
         assert agent.enforcement_mode is False
 
     def test_blueprint_file_path(self, tmp_path: Path) -> None:
         agent = FilesystemSSOTReconcilerAgent(project_root=tmp_path)
-        assert agent.blueprint_file == (
-            tmp_path / "agentic_core" / "L5_safety" / "config" / "structure_blueprint_config.py"
-        ).resolve() or agent.blueprint_file.parent.parent.parent.parent == tmp_path.resolve()
+        assert (
+            agent.blueprint_file
+            == (
+                tmp_path / "agentic_core" / "L5_safety" / "config" / "structure_blueprint_config.py"
+            ).resolve()
+            or agent.blueprint_file.parent.parent.parent.parent == tmp_path.resolve()
+        )
 
     def test_class_attrs_present(self) -> None:
         assert hasattr(FilesystemSSOTReconcilerAgent, "BLUEPRINT_PATH")

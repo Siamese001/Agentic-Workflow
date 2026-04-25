@@ -1,4 +1,5 @@
 """Probe: why does mv_runtime_spine_gaps report 100% disconnection on every layer?"""
+
 import sqlite3
 from pathlib import Path
 
@@ -29,7 +30,9 @@ row = conn.execute(
 print(f"  symbol-targeted edges: {row[0]}")
 
 print("\n== mv_runtime_spine_gaps rows ==")
-for row in conn.execute("SELECT layer, module_count, connected_count, gap_count, gap_pct FROM mv_runtime_spine_gaps"):
+for row in conn.execute(
+    "SELECT layer, module_count, connected_count, gap_count, gap_pct FROM mv_runtime_spine_gaps"
+):
     print(f"  {row[0]:10s} mod={row[1]:4d} conn={row[2]:4d} gap={row[3]:4d} pct={row[4]}")
 
 print("\n== sample: pick one module that IS imported and check the edge target entity_type ==")
@@ -40,12 +43,14 @@ row = conn.execute(
 if row:
     mid, path, layer = row
     print(f"  module node: id={mid}, path={path}, layer={layer}")
-    fan = conn.execute("SELECT COUNT(*) FROM edges WHERE dst_id=? AND relation_type='imports'", (mid,)).fetchone()[0]
+    fan = conn.execute(
+        "SELECT COUNT(*) FROM edges WHERE dst_id=? AND relation_type='imports'", (mid,)
+    ).fetchone()[0]
     print(f"  inbound imports edges (dst=module_id): {fan}")
     # Inbound via any symbol owned by this module
     fan2 = conn.execute(
         "SELECT COUNT(*) FROM edges e JOIN nodes dst ON dst.id=e.dst_id "
         "WHERE e.relation_type='imports' AND dst.resolved_path=?",
-        (path,)
+        (path,),
     ).fetchone()[0]
     print(f"  inbound imports edges (dst.resolved_path=module): {fan2}")

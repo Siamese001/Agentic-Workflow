@@ -163,6 +163,7 @@ if __name__ == "__main__":
     # so the original slash-only marker never matched any cmdline and the
     # guard silently no-oped, letting stale siblings survive window reloads.
     from tools.mcp.mcp_bootstrap import guard_single_instance
+
     guard_single_instance(
         ("tools.adg.mcp.server", "tools/adg/mcp/server"),
         skip_env="ADG_SKIP_ZOMBIE_KILL",

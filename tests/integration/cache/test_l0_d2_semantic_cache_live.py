@@ -167,12 +167,10 @@ def test_l1_scope_mismatch_suppresses_hit(_l1_only_env: None) -> None:
     ctx = f"scope-mismatch-{uuid.uuid4()}"
     ns = "test_scope_iso"
     payload = {"answer": "tenantA-only", "evidence_ids": ["e1"]}
-    mgr.learn(ctx, ns, payload, tenant_id="tenantA",
-              corpus_version="corpus_v1", policy_version="pol_v1")
+    mgr.learn(ctx, ns, payload, tenant_id="tenantA", corpus_version="corpus_v1", policy_version="pol_v1")
 
     # Same-scope MUST hit
-    hit_same = mgr.recall(ctx, ns, tenant_id="tenantA",
-                          corpus_version="corpus_v1", policy_version="pol_v1")
+    hit_same = mgr.recall(ctx, ns, tenant_id="tenantA", corpus_version="corpus_v1", policy_version="pol_v1")
     assert hit_same is not None
     assert hit_same["answer"] == "tenantA-only"
 
@@ -184,8 +182,8 @@ def test_l1_scope_mismatch_suppresses_hit(_l1_only_env: None) -> None:
     assert mgr.recall(ctx, ns, tenant_id="tenantA", policy_version="pol_v2") is None
 
     import redis  # noqa: PLC0415
-    client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"),
-                            decode_responses=True)
+
+    client = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
     ctx_hash = mgr._compute_hash(ctx, ns)
     client.delete(f"memory:{ctx_hash}")
 
@@ -198,24 +196,39 @@ def test_populate_d2_cache_writes_isolation_fields(_d1_and_d2_env: None) -> None
     from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
     orch = ExecutionOrchestrator(
-        assembler=MagicMock(), path_router=MagicMock(), d0_engine=MagicMock(),
-        risk_gate=MagicMock(), cid_registry=MagicMock(), reentry_loop=MagicMock(),
-        vigilance_dispatcher=MagicMock(), meta_bus=MagicMock(),
+        assembler=MagicMock(),
+        path_router=MagicMock(),
+        d0_engine=MagicMock(),
+        risk_gate=MagicMock(),
+        cid_registry=MagicMock(),
+        reentry_loop=MagicMock(),
+        vigilance_dispatcher=MagicMock(),
+        meta_bus=MagicMock(),
     )
     mgr = SemanticCacheManager.get_instance()
 
     ctx = f"isolation-{uuid.uuid4()}"
     ns = "test_isolation"
-    path_obj = MagicMock(); path_obj.value = "D"
+    path_obj = MagicMock()
+    path_obj.value = "D"
     l3_result = {
-        "path": path_obj, "risk": MagicMock(), "cycle": MagicMock(), "state": "success",
-        "orchestration": {"completed": True, "stage": "final", "signals": [],
-                          "metadata": {"evidence_ids": ["e"], "grounding_complete": True, "feedback_score": 0.9}},
+        "path": path_obj,
+        "risk": MagicMock(),
+        "cycle": MagicMock(),
+        "state": "success",
+        "orchestration": {
+            "completed": True,
+            "stage": "final",
+            "signals": [],
+            "metadata": {"evidence_ids": ["e"], "grounding_complete": True, "feedback_score": 0.9},
+        },
     }
-    orch._populate_d2_cache(ctx, ns, "tenantX", l3_result,
-                            corpus_version="corpus_a", policy_version="policy_a")
+    orch._populate_d2_cache(
+        ctx, ns, "tenantX", l3_result, corpus_version="corpus_a", policy_version="policy_a"
+    )
 
     import redis as _r  # noqa: PLC0415
+
     client = _r.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
     ctx_hash = mgr._compute_hash(ctx, ns)
     raw = client.get(f"memory:{ctx_hash}")
@@ -228,11 +241,14 @@ def test_populate_d2_cache_writes_isolation_fields(_d1_and_d2_env: None) -> None
     assert meta["embedding_model_id"]  # auto-filled from _get_model_id()
 
     # Same-scope recall hits
-    assert mgr.recall(ctx, ns, tenant_id="tenantX",
-                       corpus_version="corpus_a", policy_version="policy_a") is not None
+    assert (
+        mgr.recall(ctx, ns, tenant_id="tenantX", corpus_version="corpus_a", policy_version="policy_a")
+        is not None
+    )
     # Cross-corpus recall misses
-    assert mgr.recall(ctx, ns, tenant_id="tenantX",
-                       corpus_version="corpus_b", policy_version="policy_a") is None
+    assert (
+        mgr.recall(ctx, ns, tenant_id="tenantX", corpus_version="corpus_b", policy_version="policy_a") is None
+    )
 
     client.delete(f"memory:{ctx_hash}")
 
@@ -248,9 +264,14 @@ def test_r1a_writeback_and_d1_hit(_d1_and_d2_env: None) -> None:
     from agentic_core.L4_state.utils.memory.l1_exact_cache import get_global_l1_cache
 
     orch = ExecutionOrchestrator(
-        assembler=MagicMock(), path_router=MagicMock(), d0_engine=MagicMock(),
-        risk_gate=MagicMock(), cid_registry=MagicMock(), reentry_loop=MagicMock(),
-        vigilance_dispatcher=MagicMock(), meta_bus=MagicMock(),
+        assembler=MagicMock(),
+        path_router=MagicMock(),
+        d0_engine=MagicMock(),
+        risk_gate=MagicMock(),
+        cid_registry=MagicMock(),
+        reentry_loop=MagicMock(),
+        vigilance_dispatcher=MagicMock(),
+        meta_bus=MagicMock(),
     )
 
     # Use a unique request so we don't collide with other tests
@@ -261,9 +282,11 @@ def test_r1a_writeback_and_d1_hit(_d1_and_d2_env: None) -> None:
     # payload_key (a string); we match that shape in the writeback call too.
     payload_key = canonical_request_hash(request)
 
-    path_obj = MagicMock(); path_obj.value = "D"
+    path_obj = MagicMock()
+    path_obj.value = "D"
     l3_result = {
-        "path": path_obj, "state": "success",
+        "path": path_obj,
+        "state": "success",
         "orchestration": {"completed": True, "answer": "Alice", "unique": unique_token},
     }
     orch._populate_d1_cache(payload_key, l3_result)
@@ -412,6 +435,7 @@ def test_execute_short_circuits_on_r1a_cache_hit(_d1_and_d2_env: None) -> None:
 def test_d1_writeback_disabled_by_default() -> None:
     """With EXACT_CACHE_D1_ENABLED unset, _populate_d1_cache must no-op."""
     import os as _os
+
     _os.environ.pop("EXACT_CACHE_D1_ENABLED", None)
 
     from agentic_core.L0_routing.reasoning.execution_orchestrator import ExecutionOrchestrator
@@ -419,15 +443,20 @@ def test_d1_writeback_disabled_by_default() -> None:
     from agentic_core.L4_state.utils.memory.l1_exact_cache import get_global_l1_cache
 
     orch = ExecutionOrchestrator(
-        assembler=MagicMock(), path_router=MagicMock(), d0_engine=MagicMock(),
-        risk_gate=MagicMock(), cid_registry=MagicMock(), reentry_loop=MagicMock(),
-        vigilance_dispatcher=MagicMock(), meta_bus=MagicMock(),
+        assembler=MagicMock(),
+        path_router=MagicMock(),
+        d0_engine=MagicMock(),
+        risk_gate=MagicMock(),
+        cid_registry=MagicMock(),
+        reentry_loop=MagicMock(),
+        vigilance_dispatcher=MagicMock(),
+        meta_bus=MagicMock(),
     )
     request = {"q": "disabled-default", "uid": str(uuid.uuid4())}
     payload_key = canonical_request_hash(request)
-    path_obj = MagicMock(); path_obj.value = "D"
-    l3_result = {"path": path_obj, "state": "success",
-                 "orchestration": {"completed": True, "answer": "nope"}}
+    path_obj = MagicMock()
+    path_obj.value = "D"
+    l3_result = {"path": path_obj, "state": "success", "orchestration": {"completed": True, "answer": "nope"}}
 
     orch._populate_d1_cache(payload_key, l3_result)
     cache = get_global_l1_cache()

@@ -1,4 +1,5 @@
 """Filter Wave C dead-module candidates: exclude those re-exported via parent __init__.py."""
+
 from __future__ import annotations
 
 import pathlib
@@ -37,7 +38,5 @@ bydir = Counter(str(pathlib.Path(d).parent).replace("\\", "/") for d in truly_de
 for k, v in sorted(bydir.items(), key=lambda x: -x[1]):
     print(f"  {v:3d}  {k}")
 
-pathlib.Path("artifacts/adg/wave_c_targets.txt").write_text(
-    "\n".join(truly_dead) + "\n", encoding="utf-8"
-)
+pathlib.Path("artifacts/adg/wave_c_targets.txt").write_text("\n".join(truly_dead) + "\n", encoding="utf-8")
 print("rewrote artifacts/adg/wave_c_targets.txt")

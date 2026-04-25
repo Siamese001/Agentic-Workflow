@@ -40,8 +40,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True, slots=True)
 class SuiteResult:
-    suite: str                  # "capability" or "regression"
-    rubric_family: str          # "rag" | "governance" | "security"
+    suite: str  # "capability" or "regression"
+    rubric_family: str  # "rag" | "governance" | "security"
     dimension: str
     trials: int
     passes: int

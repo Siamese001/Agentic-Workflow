@@ -134,7 +134,7 @@ class ADGIdentityCompletenessVerifier:
                 cursor.execute(f"PRAGMA table_info({table_name})")
                 return {row[1] for row in cursor.fetchall()}
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise IdentityCompletenessError(f'Failed to get columns for {table_name}: {e}') from e
+            raise IdentityCompletenessError(f"Failed to get columns for {table_name}: {e}") from e
 
     def _first_party_module_where_clause(self) -> str:
         """Build a consistent first-party module predicate across schema variants."""
@@ -253,7 +253,7 @@ class ADGIdentityCompletenessVerifier:
                             self.errors.append(f"Invalid {column_name} values: {invalid_values}")
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise IdentityCompletenessError(f'Enum constraint verification failed: {e}') from e
+            raise IdentityCompletenessError(f"Enum constraint verification failed: {e}") from e
 
         print("   ✅ Enum value constraints verified")
 
@@ -314,7 +314,7 @@ class ADGIdentityCompletenessVerifier:
                 print(f"   📊 L4 modules: {l4_count}, Unknown layer: {unknown_layer_count}")
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise IdentityCompletenessError(f'First-party module verification failed: {e}') from e
+            raise IdentityCompletenessError(f"First-party module verification failed: {e}") from e
 
         print("   ✅ First-party module completeness verified")
 
@@ -361,7 +361,7 @@ class ADGIdentityCompletenessVerifier:
                     self.warnings.append(f"{high_conf_unresolved} unresolved imports have non-LOW confidence")
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise IdentityCompletenessError(f'Low-confidence traceability verification failed: {e}') from e
+            raise IdentityCompletenessError(f"Low-confidence traceability verification failed: {e}") from e
 
         print("   ✅ Low-confidence node traceability verified")
 
@@ -408,7 +408,7 @@ class ADGIdentityCompletenessVerifier:
                 print(f"   📊 Dead import edges for unresolved: {dead_import_edges}")
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise IdentityCompletenessError(f'Unresolved import traceability verification failed: {e}') from e
+            raise IdentityCompletenessError(f"Unresolved import traceability verification failed: {e}") from e
 
         print("   ✅ Unresolved import traceability verified")
 

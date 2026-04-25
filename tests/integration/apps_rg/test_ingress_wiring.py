@@ -100,5 +100,3 @@ def test_http_happy_path_dispatches_to_runner() -> None:
     assert isinstance(out, _FakeRunRecord)
     assert out.target_role == "Senior Engineer"
     assert len(fake.calls) == 1
-
-

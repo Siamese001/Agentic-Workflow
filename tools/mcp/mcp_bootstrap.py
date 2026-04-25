@@ -38,6 +38,7 @@ logging.basicConfig(
 _FASTMCP_AVAILABLE = False
 try:
     from mcp.server.fastmcp import FastMCP  # type: ignore
+
     _FASTMCP_AVAILABLE = True
 except ImportError:
     FastMCP = None  # type: ignore
@@ -101,14 +102,12 @@ def _resolve_fastmcp_kwargs(name: str, instructions: str) -> dict[str, Any]:
 
 def create_mcp_server(name: str, instructions: str = "") -> FastMCP:
     """Create a FastMCP server instance with standardized configuration.
-    
+
     Raises:
         ImportError: If the mcp package is not installed.
     """
     if not _FASTMCP_AVAILABLE or FastMCP is None:
-        raise ImportError(
-            "mcp package not found. Install with: pip install mcp"
-        )
+        raise ImportError("mcp package not found. Install with: pip install mcp")
     logger = logging.getLogger(name)
     logger.info("Creating FastMCP server: %s", name)
     return FastMCP(name, **_resolve_fastmcp_kwargs(name, instructions))
@@ -214,9 +213,7 @@ def guard_single_instance(
     else:
         markers = tuple(str(m) for m in script_marker if m)
     if not markers:
-        logging.getLogger("mcp_bootstrap").warning(
-            "GUARD_NOOP: empty marker list, guard disabled"
-        )
+        logging.getLogger("mcp_bootstrap").warning("GUARD_NOOP: empty marker list, guard disabled")
         return
     marker_display = markers[0] if len(markers) == 1 else list(markers)
 
@@ -250,6 +247,7 @@ def guard_single_instance(
     if not force_kill:
         try:
             from tools.mcp.mcp_heartbeat import is_heartbeat_authoritative  # noqa: PLC0415
+
             # Authoritative: heartbeat file fresh AND owning PID alive + non-zombie.
             # A wedged or terminating sibling no longer earns a deferral.
             heartbeat_fresh = any(is_heartbeat_authoritative(m) for m in markers)
@@ -312,13 +310,15 @@ def guard_single_instance(
     if killed:
         logger.info(
             "GUARD_COMPLETE: terminated pids=%s deferred=%s (marker=%s)",
-            killed, deferred, marker_display,
+            killed,
+            deferred,
+            marker_display,
         )
     elif deferred:
         logger.info(
-            "GUARD_DEFERRED_ALL: no terminations; %d fresh sibling(s) "
-            "preserved (marker=%s)",
-            len(deferred), marker_display,
+            "GUARD_DEFERRED_ALL: no terminations; %d fresh sibling(s) preserved (marker=%s)",
+            len(deferred),
+            marker_display,
         )
     else:
         logger.info("GUARD_CLEAN: no sibling processes (marker=%s)", marker_display)
@@ -330,6 +330,7 @@ def guard_single_instance(
     if os.environ.get("MCP_HEARTBEAT_DISABLE") != "1":
         try:
             from tools.mcp.mcp_heartbeat import start_heartbeat_writer  # noqa: PLC0415
+
             # Register a heartbeat per marker so multi-form markers all show up.
             for marker in markers:
                 start_heartbeat_writer(marker)
@@ -372,6 +373,7 @@ def run_prewarms() -> None:
     """Start a daemon thread for each registered prewarm callable."""
     import threading as _threading
     import time as _time
+
     logger = logging.getLogger("mcp_bootstrap")
 
     def _wrap(wname: str, wfn: Callable[[], None]) -> None:

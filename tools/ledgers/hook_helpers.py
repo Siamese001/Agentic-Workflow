@@ -46,6 +46,7 @@ def emit_ledger_event(
     """Best-effort ledger row emit. Returns event_id or empty string on any error."""
     try:
         from tools.ledgers import writer_for  # lazy import
+
         return writer_for(ledger).append(
             event_kind=event_kind,
             prediction=prediction,
@@ -63,8 +64,7 @@ def emit_ledger_event(
     except Exception as exc:  # broad catch is intentional: hooks must never raise
         # guardian: allow-broad-except -- hook fail-soft contract; writer path already
         # fail-soft, this catches ImportError / circular-import edge cases in CI envs
-        print(f"[hook_helpers] emit_ledger_event({ledger}) suppressed: {exc!r}",
-              file=sys.stderr)
+        print(f"[hook_helpers] emit_ledger_event({ledger}) suppressed: {exc!r}", file=sys.stderr)
         return ""
 
 
@@ -82,6 +82,7 @@ def bind_ledger_outcome(
         return False
     try:
         from tools.ledgers import writer_for
+
         return writer_for(ledger).bind_outcome(
             event_id,
             outcome=outcome,
@@ -91,6 +92,5 @@ def bind_ledger_outcome(
         )
     except Exception as exc:  # noqa: BLE001
         # guardian: allow-broad-except -- hook fail-soft contract
-        print(f"[hook_helpers] bind_ledger_outcome({ledger}) suppressed: {exc!r}",
-              file=sys.stderr)
+        print(f"[hook_helpers] bind_ledger_outcome({ledger}) suppressed: {exc!r}", file=sys.stderr)
         return False

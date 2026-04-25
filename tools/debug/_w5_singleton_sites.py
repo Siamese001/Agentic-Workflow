@@ -2,6 +2,7 @@
 singleton non-canonical guardian tokens so Cascade can normalize them
 deterministically (typo fixes, not vocabulary additions).
 """
+
 from __future__ import annotations
 import re
 import sys
@@ -10,20 +11,31 @@ from pathlib import Path
 
 SINGLETONS = {
     # token -> intended canonical replacement (evidence-based)
-    "allow-broad-to-wrap": "allow-broad-exception",    # broad catch that re-raises as wrapped
-    "allow-broad-shadow": "allow-broad-exception",     # broad catch in shadow-eval path
-    "allow-broad-enforce": "allow-broad-exception",    # broad catch in enforcement chokepoint
-    "allow-importerror": "allow-import-fail",          # ImportError catch; use W5.1 canonical
-    "allow-x": None,                                   # likely placeholder/garbage — manual review
-    "allow-exception": "allow-broad-exception",        # synonym
+    "allow-broad-to-wrap": "allow-broad-exception",  # broad catch that re-raises as wrapped
+    "allow-broad-shadow": "allow-broad-exception",  # broad catch in shadow-eval path
+    "allow-broad-enforce": "allow-broad-exception",  # broad catch in enforcement chokepoint
+    "allow-importerror": "allow-import-fail",  # ImportError catch; use W5.1 canonical
+    "allow-x": None,  # likely placeholder/garbage — manual review
+    "allow-exception": "allow-broad-exception",  # synonym
 }
 
-ROOTS = ("agentic_core", "apps_rg", "apps_shared", "apps_lic", "apps_eval",
-         "apps_exec", "apps_research", "apps_rfp", "apps_underwriting_ai",
-         "tools", "ops_scripts", "system_learning", ".windsurf/scripts",
-         "infrastructure")
-EXCLUDE_PATS = (r"\\__pycache__\\", r"\\archives?\\", r"\\_archive\\",
-                r"\\tools\\archive\\", r"\\tests\\")
+ROOTS = (
+    "agentic_core",
+    "apps_rg",
+    "apps_shared",
+    "apps_lic",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_underwriting_ai",
+    "tools",
+    "ops_scripts",
+    "system_learning",
+    ".windsurf/scripts",
+    "infrastructure",
+)
+EXCLUDE_PATS = (r"\\__pycache__\\", r"\\archives?\\", r"\\_archive\\", r"\\tools\\archive\\", r"\\tests\\")
 
 
 def main() -> int:

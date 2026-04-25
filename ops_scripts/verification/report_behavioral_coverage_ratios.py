@@ -139,7 +139,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise RuntimeStructuralBalanceError(f'Runtime-semantic edge detection failed: {e}') from e
+            raise RuntimeStructuralBalanceError(f"Runtime-semantic edge detection failed: {e}") from e
 
     def _verify_structural_edge_detection(self) -> dict[str, Any]:
         """Verify structural edges are properly detected."""
@@ -191,7 +191,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise RuntimeStructuralBalanceError(f'Structural edge detection failed: {e}') from e
+            raise RuntimeStructuralBalanceError(f"Structural edge detection failed: {e}") from e
 
     def _calculate_balance_metrics(self) -> dict[str, Any]:
         """Calculate balance metrics between runtime and structural."""
@@ -253,7 +253,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise RuntimeStructuralBalanceError(f'Balance metrics calculation failed: {e}') from e
+            raise RuntimeStructuralBalanceError(f"Balance metrics calculation failed: {e}") from e
 
     def _verify_layer_balance_analysis(self) -> dict[str, Any]:
         """Verify balance analysis by architectural layer."""
@@ -345,7 +345,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise RuntimeStructuralBalanceError(f'Layer balance analysis failed: {e}') from e
+            raise RuntimeStructuralBalanceError(f"Layer balance analysis failed: {e}") from e
 
     def _verify_domain_balance_analysis(self) -> dict[str, Any]:
         """Verify balance analysis by domain."""
@@ -449,7 +449,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise RuntimeStructuralBalanceError(f'Domain balance analysis failed: {e}') from e
+            raise RuntimeStructuralBalanceError(f"Domain balance analysis failed: {e}") from e
 
     def _verify_first_party_balance_analysis(self) -> dict[str, Any]:
         """Verify balance analysis for first-party modules only."""
@@ -527,7 +527,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 }
 
         except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
-            raise RuntimeStructuralBalanceError(f'First-party balance analysis failed: {e}') from e
+            raise RuntimeStructuralBalanceError(f"First-party balance analysis failed: {e}") from e
 
     def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
         """Persist report atomically with parent directory creation."""

@@ -93,9 +93,7 @@ def _validate_markdown_sections(artifact: Any, contract: Mapping[str, Any]) -> l
     violations: list[str] = []
     # Collect existing heading lines in order (ATX only).
     found_headings = [
-        line.lstrip("#").strip()
-        for line in artifact.splitlines()
-        if line.lstrip().startswith("#")
+        line.lstrip("#").strip() for line in artifact.splitlines() if line.lstrip().startswith("#")
     ]
     cursor = 0
     for section in required:
@@ -110,22 +108,16 @@ def _validate_markdown_sections(artifact: Any, contract: Mapping[str, Any]) -> l
             )
             cursor = idx + 1
         except StopIteration:
-            violations.append(
-                f"contract.markdown_sections.missing_or_out_of_order:{section}"
-            )
+            violations.append(f"contract.markdown_sections.missing_or_out_of_order:{section}")
     return violations
 
 
-def _validate_tool_result_envelope(
-    artifact: Any, contract: Mapping[str, Any]
-) -> list[str]:
+def _validate_tool_result_envelope(artifact: Any, contract: Mapping[str, Any]) -> list[str]:
     if not isinstance(artifact, Mapping):
         return ["contract.tool_result_envelope.artifact_not_object"]
     required_fields = ("success", "payload", "reason", "schema_version")
     missing = [field_ for field_ in required_fields if field_ not in artifact]
-    violations: list[str] = [
-        f"contract.tool_result_envelope.missing_field:{field_}" for field_ in missing
-    ]
+    violations: list[str] = [f"contract.tool_result_envelope.missing_field:{field_}" for field_ in missing]
     expected_version = contract.get("envelope_version")
     actual_version = artifact.get("schema_version")
     if isinstance(expected_version, int) and actual_version != expected_version:

@@ -334,7 +334,13 @@ class GraphMemoryBridge:
         try:
             result = fn(*args, **kwargs)
             return result
-        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-return-none-swallow -- MCP operation failure: non-fatal, Logger.warning already called
+        except (
+            AttributeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-return-none-swallow -- MCP operation failure: non-fatal, Logger.warning already called
             with self._lock:
                 self.stats["mcp_errors"] += 1
             Logger.warning(f"[GraphMemoryBridge] {operation} failed: {e}")

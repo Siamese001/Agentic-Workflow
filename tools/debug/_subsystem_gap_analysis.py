@@ -79,8 +79,10 @@ def main() -> None:
         nodes = _sqlite_count(current_snap, "nodes")
         edges = _sqlite_count(current_snap, "edges")
         print(f"    nodes / edges:         {nodes:,} / {edges:,}")
-    print(f"  Generator script:        tools/generate_full_adg.py  "
-          f"({'exists' if Path('tools/generate_full_adg.py').exists() else 'MISSING'})")
+    print(
+        f"  Generator script:        tools/generate_full_adg.py  "
+        f"({'exists' if Path('tools/generate_full_adg.py').exists() else 'MISSING'})"
+    )
     print(f"  Directory total:         {_file_count(adg_dir)} files, {_size_mb(adg_dir):.0f} MB")
     print(f"  Archive retention:       keep_runs=1 (designed)")
     print(f"  Gap:                     none obvious — archiver now handles both TS formats")
@@ -102,8 +104,10 @@ def main() -> None:
         try:
             with sqlite3.connect(str(mem)) as c:
                 cols = [r[1] for r in c.execute("PRAGMA table_info(entities)")]
-                type_col = "entity_type" if "entity_type" in cols else (
-                    "entityType" if "entityType" in cols else None
+                type_col = (
+                    "entity_type"
+                    if "entity_type" in cols
+                    else ("entityType" if "entityType" in cols else None)
                 )
                 if type_col:
                     rows = c.execute(
@@ -115,8 +119,10 @@ def main() -> None:
                         print(f"    {t or '(null)':30s}  {n:>4}")
         except sqlite3.Error as e:
             print(f"  [type breakdown failed: {e}]")
-    print(f"  Server script:           tools/memory/adg_memory_server.py  "
-          f"({'exists' if Path('tools/memory/adg_memory_server.py').exists() else 'MISSING'})")
+    print(
+        f"  Server script:           tools/memory/adg_memory_server.py  "
+        f"({'exists' if Path('tools/memory/adg_memory_server.py').exists() else 'MISSING'})"
+    )
     print(f"  Gap:                     none obvious")
 
     # ---- 3. Runtime ADG / OTEL ----
@@ -131,8 +137,9 @@ def main() -> None:
     try:
         from tools.otel.otel_config import build_config  # noqa: PLC0415
 
-        _cfg = build_config(__file__.replace("tools\\debug\\_subsystem_gap_analysis.py",
-                                              "tools\\otel\\otel_mcp_server.py"))
+        _cfg = build_config(
+            __file__.replace("tools\\debug\\_subsystem_gap_analysis.py", "tools\\otel\\otel_mcp_server.py")
+        )
         runtime_adg_dir = _cfg.runtime_adg_dir
     except (ImportError, AttributeError, OSError) as exc:
         # Hard fallback to the canonical literal if the config module is unusable.
@@ -146,7 +153,8 @@ def main() -> None:
     print(f"  runtime_adg_dir:         {display_path}")
     if runtime_adg_dir.exists():
         snapshot_files = [
-            p for p in runtime_adg_dir.rglob("*.json")
+            p
+            for p in runtime_adg_dir.rglob("*.json")
             if p.name != "_index.json" and p.name != "_trace_index.json"
         ]
         print(f"    snapshot files:        {len(snapshot_files)}")
@@ -155,8 +163,9 @@ def main() -> None:
         print(f"    MISSING")
 
     # look for traces
-    traces_count = sum(1 for p in Path(".").rglob("*.jsonl")
-                       if "trace" in p.name.lower() or "span" in p.name.lower())
+    traces_count = sum(
+        1 for p in Path(".").rglob("*.jsonl") if "trace" in p.name.lower() or "span" in p.name.lower()
+    )
     print(f"  trace/span JSONL files:  {traces_count} (repo-wide)")
 
     # ---- 4. system_learning/ ----
@@ -165,9 +174,17 @@ def main() -> None:
     sl = Path("system_learning")
     print(f"  Source tree:             {'exists' if sl.exists() else 'MISSING'}")
     key_subdirs = [
-        "adapters", "arbitration", "confidence", "meta_learning",
-        "stores", "state", "snapshots", "ports", "engines",
-        "runtime_adg", "telemetry",
+        "adapters",
+        "arbitration",
+        "confidence",
+        "meta_learning",
+        "stores",
+        "state",
+        "snapshots",
+        "ports",
+        "engines",
+        "runtime_adg",
+        "telemetry",
     ]
     for sd in key_subdirs:
         p = sl / sd

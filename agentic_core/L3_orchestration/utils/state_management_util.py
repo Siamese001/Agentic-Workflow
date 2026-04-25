@@ -280,7 +280,10 @@ class StateManager:
             try:
                 with open(file_path, encoding="utf-8") as f:
                     return json.load(f)
-            except (json.JSONDecodeError, OSError) as e:  # guardian: allow-return-none-swallow -- state read: non-fatal, caller handles None as missing state
+            except (
+                json.JSONDecodeError,
+                OSError,
+            ) as e:  # guardian: allow-return-none-swallow -- state read: non-fatal, caller handles None as missing state
                 Logger.error(f"Failed to read state {key}: {e}")
                 return None
 

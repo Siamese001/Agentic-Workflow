@@ -1,9 +1,12 @@
 """Get all 145 P1 violations ranked by fan-in then count."""
+
 import sqlite3
 from pathlib import Path
 from collections import defaultdict
 
-snaps = sorted(Path("artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True)
+snaps = sorted(
+    Path("artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True
+)
 DB = str(snaps[0])
 conn = sqlite3.connect(DB)
 cur = conn.cursor()

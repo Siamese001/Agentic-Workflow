@@ -39,8 +39,7 @@ def test_sc1_gravity_is_zero() -> None:
 
     if violations:
         preview = "\n".join(
-            f"  {v.get('source_file')}:{v.get('line_no')} — {v.get('evidence')}"
-            for v in violations[:10]
+            f"  {v.get('source_file')}:{v.get('line_no')} — {v.get('evidence')}" for v in violations[:10]
         )
         pytest.fail(
             f"SC-1 regression: {len(violations)} gravity violation(s) detected "

@@ -72,42 +72,24 @@ def evaluate_loop_guard(
     import math as _math  # local — avoid touching module header
 
     if not isinstance(span_ids, list):
-        raise TypeError(
-            f"span_ids must be list, got {type(span_ids).__name__}"
-        )
+        raise TypeError(f"span_ids must be list, got {type(span_ids).__name__}")
     if not isinstance(productive_span_ids, set):
-        raise TypeError(
-            f"productive_span_ids must be set, got {type(productive_span_ids).__name__}"
-        )
-    if not isinstance(efficiency_threshold, (int, float)) or not _math.isfinite(
-        float(efficiency_threshold)
-    ):
-        raise ValueError(
-            f"efficiency_threshold must be a finite float, got {efficiency_threshold!r}"
-        )
+        raise TypeError(f"productive_span_ids must be set, got {type(productive_span_ids).__name__}")
+    if not isinstance(efficiency_threshold, (int, float)) or not _math.isfinite(float(efficiency_threshold)):
+        raise ValueError(f"efficiency_threshold must be a finite float, got {efficiency_threshold!r}")
     if not 0.0 <= efficiency_threshold <= 1.0:
-        raise ValueError(
-            f"efficiency_threshold out of range [0,1]: {efficiency_threshold}"
-        )
+        raise ValueError(f"efficiency_threshold out of range [0,1]: {efficiency_threshold}")
     if not isinstance(min_spans, int) or isinstance(min_spans, bool):
-        raise TypeError(
-            f"min_spans must be int, got {type(min_spans).__name__}"
-        )
+        raise TypeError(f"min_spans must be int, got {type(min_spans).__name__}")
     if min_spans < 1:
-        raise ValueError(
-            f"min_spans must be >= 1, got {min_spans}"
-        )
+        raise ValueError(f"min_spans must be >= 1, got {min_spans}")
     # Reject non-string span ids — catches accidental int/None leakage.
     for idx, sid in enumerate(span_ids):
         if not isinstance(sid, str) or len(sid) == 0:
-            raise ValueError(
-                f"span_ids[{idx}] must be a non-empty str, got {sid!r}"
-            )
+            raise ValueError(f"span_ids[{idx}] must be a non-empty str, got {sid!r}")
     for sid in productive_span_ids:
         if not isinstance(sid, str) or len(sid) == 0:
-            raise ValueError(
-                f"productive_span_ids contains invalid id: {sid!r}"
-            )
+            raise ValueError(f"productive_span_ids contains invalid id: {sid!r}")
     total = len(span_ids)
     if total == 0:
         return LoopGuardVerdict(

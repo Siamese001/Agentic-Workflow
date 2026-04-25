@@ -1,4 +1,5 @@
 """Compare ADG snapshots before/after archival waves."""
+
 from __future__ import annotations
 
 import sqlite3

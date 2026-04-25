@@ -255,7 +255,11 @@ class PhaseLockStore:
                 lock_data = json.load(f)
             Logger.info(f"Phase lock restored: phase={lock_data.get('phase')}")
             return lock_data
-        except (OSError, ValueError, json.JSONDecodeError) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- phase lock restore: non-fatal, caller handles None
+        except (
+            OSError,
+            ValueError,
+            json.JSONDecodeError,
+        ) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- phase lock restore: non-fatal, caller handles None
             Logger.error(f"Failed to restore phase lock: {e}")
             return None
 
@@ -341,7 +345,12 @@ class ActivationFlagsStore:
             )
             Logger.info("Activation flags restored from L4")
             return flags
-        except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- activation flags restore: non-fatal, caller handles None
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            json.JSONDecodeError,
+        ) as e:  # guardian: allow-return-none-swallow allow-log-and-swallow -- activation flags restore: non-fatal, caller handles None
             Logger.error(f"Failed to restore activation flags: {e}")
             return None
 

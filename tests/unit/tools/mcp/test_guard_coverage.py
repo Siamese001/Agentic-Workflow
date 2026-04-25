@@ -28,11 +28,11 @@ MCP_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
 
 # Third-party / npx-based servers cannot carry an in-process guard.
 NODE_EXCLUDED_SERVERS = {
-    "filesystem",          # node filesystem_mcp_launcher.js
-    "notion",              # npx @notionhq/notion-mcp-server
-    "task_manager",        # npx @blizzy/mcp-task-manager
-    "deepwiki",            # remote sse — no local process
-    "GitKraken",           # external binary
+    "filesystem",  # node filesystem_mcp_launcher.js
+    "notion",  # npx @notionhq/notion-mcp-server
+    "task_manager",  # npx @blizzy/mcp-task-manager
+    "deepwiki",  # remote sse — no local process
+    "GitKraken",  # external binary
 }
 
 
@@ -54,8 +54,7 @@ def _resolve_python_server_path(args: list[str]) -> Path | None:
         if a == "-m" and i + 1 < len(args):
             mod_path = args[i + 1]
             if isinstance(mod_path, str):
-                return (REPO_ROOT / mod_path.replace(".", "/")
-                        ).with_suffix(".py")
+                return (REPO_ROOT / mod_path.replace(".", "/")).with_suffix(".py")
     return None
 
 
@@ -85,19 +84,12 @@ def test_mcp_config_has_python_servers() -> None:
 
 
 @pytest.mark.parametrize("server_name, server_path", _python_mcp_servers())
-def test_python_mcp_server_calls_guard(
-    server_name: str, server_path: Path
-) -> None:
+def test_python_mcp_server_calls_guard(server_name: str, server_path: Path) -> None:
     """Every python MCP server MUST call guard_single_instance()."""
-    assert server_path.exists(), (
-        f"MCP config references missing file: {server_path} "
-        f"(server {server_name!r})"
-    )
+    assert server_path.exists(), f"MCP config references missing file: {server_path} (server {server_name!r})"
     src = server_path.read_text(encoding="utf-8")
     # Tolerate both import forms.
-    has_call = bool(
-        re.search(r"\bguard_single_instance\s*\(", src)
-    )
+    has_call = bool(re.search(r"\bguard_single_instance\s*\(", src))
     assert has_call, (
         f"Python MCP server {server_name!r} ({server_path.name}) does NOT "
         "call guard_single_instance(). Add it in the __main__ block per "
@@ -107,18 +99,14 @@ def test_python_mcp_server_calls_guard(
 
 
 @pytest.mark.parametrize("server_name, server_path", _python_mcp_servers())
-def test_python_mcp_server_guard_inside_main_block(
-    server_name: str, server_path: Path
-) -> None:
+def test_python_mcp_server_guard_inside_main_block(server_name: str, server_path: Path) -> None:
     """The guard call must sit inside the __main__ block (not at import)."""
     src = server_path.read_text(encoding="utf-8")
     main_idx = src.find('if __name__ == "__main__":')
     guard_idx = src.find("guard_single_instance(")
     if guard_idx == -1:
         pytest.skip(f"{server_name}: already covered by adoption test")
-    assert main_idx != -1, (
-        f"{server_name}: no __main__ block found"
-    )
+    assert main_idx != -1, f"{server_name}: no __main__ block found"
     assert guard_idx > main_idx, (
         f"{server_name}: guard_single_instance() must be INSIDE the "
         "__main__ block, not at import time (calling at import can "

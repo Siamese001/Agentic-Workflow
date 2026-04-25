@@ -35,7 +35,9 @@ class CoreKnowledgeIngestion:
     - repo_arch_docs: Architectural documentation
     """
 
-    def __init__(self, repo_root: str, adg_db_path: str, chroma_persist_dir: str = canonical_persist_dir_str()):
+    def __init__(
+        self, repo_root: str, adg_db_path: str, chroma_persist_dir: str = canonical_persist_dir_str()
+    ):
         """
         Initialize core knowledge ingestion.
 
@@ -364,7 +366,9 @@ def main():
     parser = argparse.ArgumentParser(description="Wave 1: Core Knowledge Ingestion")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--adg-db", help="Path to ADG SQLite database")
-    parser.add_argument("--chroma-dir", default=canonical_persist_dir_str(), help="ChromaDB persistence directory")
+    parser.add_argument(
+        "--chroma-dir", default=canonical_persist_dir_str(), help="ChromaDB persistence directory"
+    )
     parser.add_argument(
         "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
     )

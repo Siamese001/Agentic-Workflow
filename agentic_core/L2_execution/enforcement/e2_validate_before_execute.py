@@ -86,8 +86,7 @@ class E2RejectedBeforeExecute(Exception):
 
     def __init__(self, verdict: E2Verdict) -> None:
         super().__init__(
-            f"e2_rejected tool={verdict.tool_name} "
-            f"trace_id={verdict.trace_id} reason={verdict.reason!r}"
+            f"e2_rejected tool={verdict.tool_name} trace_id={verdict.trace_id} reason={verdict.reason!r}"
         )
         self.verdict = verdict
 

@@ -75,10 +75,13 @@ def _ledger_signal(spec) -> dict | None:
         conn = sqlite3.connect(str(spec.db_path), timeout=5)
         try:
             conn.row_factory = sqlite3.Row
-            rows = [dict(r) for r in conn.execute(
-                "SELECT status, score_band, score_numeric, prediction_json, "
-                "outcome_json, metadata_json FROM events"
-            ).fetchall()]
+            rows = [
+                dict(r)
+                for r in conn.execute(
+                    "SELECT status, score_band, score_numeric, prediction_json, "
+                    "outcome_json, metadata_json FROM events"
+                ).fetchall()
+            ]
         finally:
             conn.close()
     except sqlite3.Error:
@@ -90,9 +93,14 @@ def _ledger_signal(spec) -> dict | None:
     except (ValueError, TypeError, KeyError):
         return None
     miscal_bands = [
-        {"band": b.label, "n": b.n, "rate": round(b.point, 3),
-         "ci": [round(b.ci_low, 3), round(b.ci_high, 3)]}
-        for b in m.calibration_curve if b.calibrated is False
+        {
+            "band": b.label,
+            "n": b.n,
+            "rate": round(b.point, 3),
+            "ci": [round(b.ci_low, 3), round(b.ci_high, 3)],
+        }
+        for b in m.calibration_curve
+        if b.calibrated is False
     ]
     if m.bound_rows == 0 and not miscal_bands:
         return None
@@ -124,9 +132,7 @@ def _build_payload(now: datetime) -> dict:
         if miscal_total == 0:
             health_phrase = "All ledgers calibrated within sample bounds."
         else:
-            mc_names = sorted({
-                s["name"] for s in signals if s["miscalibrated_bands"]
-            })
+            mc_names = sorted({s["name"] for s in signals if s["miscalibrated_bands"]})
             health_phrase = (
                 f"{miscal_total} mis-calibrated band(s) across "
                 f"{len(mc_names)} ledger(s): {', '.join(mc_names)}."
@@ -173,7 +179,9 @@ def main() -> int:
 
     out_path = Path(args.out) if args.out else OUT_DIR / f"weekly_summary_{payload['iso_week']}.json"
     out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"[post_weekly_summary] wrote {out_path.relative_to(REPO_ROOT)} ({len(payload['ledgers_with_signal'])} ledgers w/ signal)")
+    print(
+        f"[post_weekly_summary] wrote {out_path.relative_to(REPO_ROOT)} ({len(payload['ledgers_with_signal'])} ledgers w/ signal)"
+    )
     print(f"  summary: {payload['summary_text']}")
     return 0
 

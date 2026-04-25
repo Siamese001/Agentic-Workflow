@@ -51,7 +51,10 @@ def test_apply_contextualization_enriches_chunks_with_heuristic_fallback(tmp_pat
     assert enriched == 1
     assert chunks[0]["metadata"].get("chunk_context")
     # Content should be prefixed with the context (heuristic uses module/name)
-    assert "foo" in chunks[0]["metadata"]["chunk_context"].lower() or "mod" in chunks[0]["metadata"]["chunk_context"].lower()
+    assert (
+        "foo" in chunks[0]["metadata"]["chunk_context"].lower()
+        or "mod" in chunks[0]["metadata"]["chunk_context"].lower()
+    )
     # The original chunk body must still appear after the prepended context
     assert "def foo(): pass" in chunks[0]["content"]
 

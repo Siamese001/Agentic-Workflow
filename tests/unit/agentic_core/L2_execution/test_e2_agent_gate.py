@@ -1,4 +1,5 @@
 """Tests for W4 e2_agent_gate decorator (plan c8e4f1)."""
+
 from __future__ import annotations
 
 import pytest

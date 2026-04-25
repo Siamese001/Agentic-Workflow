@@ -127,6 +127,11 @@ class PromptBOM:
     # continue to work unchanged.
     meta_cognitive_mixin_id: str | None = None
     healing_context: str | None = None
+    # Y0 synthesis and R0 output format carriers (EQ-18).
+    # Both default to absent; legacy callers that construct a BOM
+    # without Y0/R0 continue to work unchanged.
+    synthesis_required: tuple[str, ...] = ()
+    output_format_schema: str | None = None
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -149,6 +154,8 @@ class PromptBOM:
             "path": self.path,
             "meta_cognitive_mixin_id": self.meta_cognitive_mixin_id,
             "healing_context": self.healing_context,
+            "synthesis_required": tuple(sorted(self.synthesis_required)),
+            "output_format_schema": self.output_format_schema,
         }
 
     def stable_hash(self) -> str:

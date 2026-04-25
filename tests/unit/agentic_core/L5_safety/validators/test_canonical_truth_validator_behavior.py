@@ -19,6 +19,7 @@ from agentic_core.L5_safety.validators.canonical_truth_validator import (
 
 # ---- CanonicalTruthValidator ----------------------------------------
 
+
 class TestCanonicalTruthValidator:
     def test_register_and_get(self) -> None:
         v = CanonicalTruthValidator()
@@ -58,6 +59,7 @@ class TestCanonicalTruthValidator:
 
 # ---- validate_canonical_truth / canonical_truth ---------------------
 
+
 class TestValidateCanonicalTruth:
     def test_always_allows_unregistered_via_fresh_validator(self) -> None:
         # Each call creates a fresh validator, so no truth is registered
@@ -69,16 +71,20 @@ class TestValidateCanonicalTruth:
 
 # ---- get_canonical_layer --------------------------------------------
 
+
 class TestGetCanonicalLayer:
-    @pytest.mark.parametrize("layer_id,expected_name", [
-        ("L0", "Routing"),
-        ("L1", "Cognition"),
-        ("L2", "Execution"),
-        ("L3", "Orchestration"),
-        ("L4", "State"),
-        ("L5", "Safety"),
-        ("L6", "Observability"),
-    ])
+    @pytest.mark.parametrize(
+        "layer_id,expected_name",
+        [
+            ("L0", "Routing"),
+            ("L1", "Cognition"),
+            ("L2", "Execution"),
+            ("L3", "Orchestration"),
+            ("L4", "State"),
+            ("L5", "Safety"),
+            ("L6", "Observability"),
+        ],
+    )
     def test_known_layer(self, layer_id: str, expected_name: str) -> None:
         layer = get_canonical_layer(layer_id)
         assert layer is not None
@@ -95,29 +101,40 @@ class TestGetCanonicalLayer:
 
 # ---- Public surface -------------------------------------------------
 
+
 class TestPublicSurface:
-    @pytest.mark.parametrize("name", [
-        "CanonicalTruthValidator", "validate_canonical_truth",
-        "get_canonical_layer", "canonical_truth",
-    ])
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "CanonicalTruthValidator",
+            "validate_canonical_truth",
+            "get_canonical_layer",
+            "canonical_truth",
+        ],
+    )
     def test_symbol_present(self, name: str) -> None:
         assert hasattr(mod, name)
 
     def test_all_lists_full_surface(self) -> None:
         assert set(mod.__all__) == {
-            "CanonicalTruthValidator", "validate_canonical_truth",
-            "get_canonical_layer", "canonical_truth",
+            "CanonicalTruthValidator",
+            "validate_canonical_truth",
+            "get_canonical_layer",
+            "canonical_truth",
         }
 
 
 # ---- Package __init__ exports (validators/) ------------------------
 
+
 class TestPackageInit:
     def test_canonical_truth_singleton_accessible(self) -> None:
         from agentic_core.L5_safety.validators import canonical_truth as singleton
+
         assert isinstance(singleton, CanonicalTruthValidator)
 
     def test_package_all_exports(self) -> None:
         import agentic_core.L5_safety.validators as pkg
+
         assert "CanonicalTruthValidator" in pkg.__all__
         assert "canonical_truth" in pkg.__all__

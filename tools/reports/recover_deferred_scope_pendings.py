@@ -127,9 +127,7 @@ def _notion_token() -> str | None:
     return os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")
 
 
-def _build_notion_payload(
-    marker: dict[str, str], band: str, impact: float
-) -> dict[str, Any]:
+def _build_notion_payload(marker: dict[str, str], band: str, impact: float) -> dict[str, Any]:
     plan = marker["plan"]
     if plan.startswith("NEW:"):
         plan_file = f"{plan[4:]}.md"
@@ -156,8 +154,7 @@ def _build_notion_payload(
         f"RECOVERED from pending entry on {_utc_today_iso()}."
     )
     parent = (
-        f"{plan_file}: deferred scope recovered {_utc_today_iso()} via "
-        f"recover_deferred_scope_pendings.py."
+        f"{plan_file}: deferred scope recovered {_utc_today_iso()} via recover_deferred_scope_pendings.py."
     )
 
     return {
@@ -177,13 +174,9 @@ def _build_notion_payload(
                 ]
             },
             "Success Criteria": {
-                "rich_text": [
-                    {"text": {"content": "See Blocking Items for scope; fill on execution start."}}
-                ]
+                "rich_text": [{"text": {"content": "See Blocking Items for scope; fill on execution start."}}]
             },
-            "Files In Scope": {
-                "rich_text": [{"text": {"content": "TBD — fill on execution start."}}]
-            },
+            "Files In Scope": {"rich_text": [{"text": {"content": "TBD — fill on execution start."}}]},
             "Parent Plan Summary": {"rich_text": [{"text": {"content": parent}}]},
             "Plan File": {"rich_text": [{"text": {"content": plan_file}}]},
             "Status": {"select": {"name": "Todo"}},

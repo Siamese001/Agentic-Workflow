@@ -19,11 +19,20 @@ from pathlib import Path
 
 import pytest
 
-_ENV_ALLOWLIST: frozenset[str] = frozenset({
-    "PATH", "PYTHONPATH", "HOME", "USERPROFILE", "TEMP", "TMP",
-    "PYTEST_CURRENT_TEST", "CI", "GITHUB_ACTIONS",
-    "EVAL_TRIAL_ID",
-})
+_ENV_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        "PATH",
+        "PYTHONPATH",
+        "HOME",
+        "USERPROFILE",
+        "TEMP",
+        "TMP",
+        "PYTEST_CURRENT_TEST",
+        "CI",
+        "GITHUB_ACTIONS",
+        "EVAL_TRIAL_ID",
+    }
+)
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -66,8 +75,7 @@ def _block_network(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPat
 
     def _raise(*_args: object, **_kwargs: object) -> None:
         raise RuntimeError(
-            "network access is blocked in eval trials; "
-            "add @pytest.mark.eval_network to opt in"
+            "network access is blocked in eval trials; add @pytest.mark.eval_network to opt in"
         )
 
     monkeypatch.setattr(socket, "getaddrinfo", _raise)

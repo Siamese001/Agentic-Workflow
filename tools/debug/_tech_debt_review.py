@@ -2,6 +2,7 @@
 
 Uses SQLite directly (canonical truth per ADG invariants).
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -21,9 +22,7 @@ def run(conn: sqlite3.Connection, sql: str, params: tuple = ()) -> list:
 
 
 def table_exists(conn: sqlite3.Connection, name: str) -> bool:
-    return bool(conn.execute(
-        "SELECT 1 FROM sqlite_master WHERE name=? LIMIT 1", (name,)
-    ).fetchone())
+    return bool(conn.execute("SELECT 1 FROM sqlite_master WHERE name=? LIMIT 1", (name,)).fetchone())
 
 
 def main() -> int:
@@ -34,29 +33,37 @@ def main() -> int:
 
     # -------- Schema inventory --------
     section("0. SCHEMA INVENTORY — mv_* / v_p* / core tables")
-    rows = run(c, """
+    rows = run(
+        c,
+        """
         SELECT type, name FROM sqlite_master
          WHERE type IN ('table','view')
            AND (name LIKE 'mv_%' OR name LIKE 'v_p%'
                 OR name IN ('violations','nodes','edges'))
          ORDER BY type, name
-    """)
+    """,
+    )
     for t, n in rows:
         print(f"  [{t}] {n}")
 
     # graph projection
     if GDB.exists():
-        g_rows = run(c, """
+        g_rows = run(
+            c,
+            """
             SELECT type, name FROM g.sqlite_master
              WHERE type IN ('table','view') ORDER BY type, name
-        """)
+        """,
+        )
         print("\n  -- graph projection (attached 'g') --")
         for t, n in g_rows:
             print(f"  [g.{t}] {n}")
 
     # -------- Violations by severity × class --------
     section("1. ANTI-PATTERN VIOLATIONS \u2014 severity \u00d7 class \u00d7 category")
-    rows = run(c, """
+    rows = run(
+        c,
+        """
         SELECT COALESCE(severity,'?') sev,
                COALESCE(violation_class,'?') vc,
                COALESCE(category,'?') cat,
@@ -64,7 +71,8 @@ def main() -> int:
           FROM violations
          GROUP BY sev, vc, cat
          ORDER BY sev, n DESC
-    """)
+    """,
+    )
     cur = None
     for sev, vc, cat, n in rows:
         if sev != cur:
@@ -74,7 +82,9 @@ def main() -> int:
 
     # -------- Top files by violation count --------
     section("2. TOP 25 DEBT CONCENTRATION FILES (by violation count)")
-    rows = run(c, """
+    rows = run(
+        c,
+        """
         SELECT file_path,
                SUM(CASE WHEN severity='CRITICAL' THEN 1 ELSE 0 END) crit,
                SUM(CASE WHEN severity='HIGH'     THEN 1 ELSE 0 END) high,
@@ -84,14 +94,17 @@ def main() -> int:
          GROUP BY file_path
          ORDER BY total DESC
          LIMIT 25
-    """)
+    """,
+    )
     print(f"  {'CRIT':>4} {'HIGH':>4} {'LOW':>4} {'TOT':>4}  FILE")
     for f, cr, hi, lo, tot in rows:
         print(f"  {cr:>4} {hi:>4} {lo:>4} {tot:>4}  {f}")
 
     # -------- Fan-in hotspots (blast radius) --------
     section("3. TOP 25 FAN-IN (imports) \u2014 blast radius risk")
-    rows = run(c, """
+    rows = run(
+        c,
+        """
         SELECT n.resolved_path, COUNT(*) AS fanin
           FROM edges e
           JOIN nodes n ON n.id = e.dst_id
@@ -100,13 +113,16 @@ def main() -> int:
          GROUP BY n.resolved_path
          ORDER BY fanin DESC
          LIMIT 25
-    """)
+    """,
+    )
     for f, fi in rows:
         print(f"  {fi:>5}  {f}")
 
     # -------- Fan-out hotspots (orchestrators) --------
     section("4. TOP 25 FAN-OUT (imports) \u2014 orchestrator files")
-    rows = run(c, """
+    rows = run(
+        c,
+        """
         SELECT COALESCE(e.source_file, n.resolved_path) f, COUNT(*) AS fanout
           FROM edges e
           JOIN nodes n ON n.id = e.src_id
@@ -114,14 +130,17 @@ def main() -> int:
          GROUP BY f
          ORDER BY fanout DESC
          LIMIT 25
-    """)
+    """,
+    )
     for f, fo in rows:
         print(f"  {fo:>5}  {f}")
 
     # -------- Impact-ranked hotspots --------
     section("5. IMPACT-RANKED HOTSPOTS (violations \u00d7 fan-in \u00d7 layer-mult)")
     print("  layer mult: L0/L5=2.0  L3/L4=1.75  L1/L2=1.0  L6=0.75")
-    rows = run(c, """
+    rows = run(
+        c,
+        """
         WITH v AS (
           SELECT file_path, COUNT(*) vcount,
                  SUM(CASE WHEN severity IN ('CRITICAL','HIGH') THEN 1 ELSE 0 END) crit
@@ -155,7 +174,8 @@ def main() -> int:
           LEFT JOIN lyr l ON l.fp = v.file_path
          ORDER BY impact DESC
          LIMIT 30
-    """)
+    """,
+    )
     print(f"  {'LYR':>3} {'VIO':>4} {'CRIT':>4} {'FI':>5} {'IMPACT':>8}  FILE")
     for f, layer, vc, crit, fi_, imp in rows:
         print(f"  {layer:>3} {vc:>4} {crit:>4} {fi_:>5} {imp:>8}  {f}")
@@ -190,12 +210,24 @@ def main() -> int:
             count = run(c, f"SELECT COUNT(*) FROM {mv}")[0][0]
             print(f"\n  -- {mv}  ({count} rows)  cols={cols[:6]} --")
             order_col = next(
-                (x for x in cols if x in (
-                    "impact_score","centrality_score","risk_score",
-                    "blast_radius","fanin","fan_in","count","debt_score")),
-                cols[0])
-            sample = run(c,
-                f"SELECT * FROM {mv} ORDER BY {order_col} DESC LIMIT 10")
+                (
+                    x
+                    for x in cols
+                    if x
+                    in (
+                        "impact_score",
+                        "centrality_score",
+                        "risk_score",
+                        "blast_radius",
+                        "fanin",
+                        "fan_in",
+                        "count",
+                        "debt_score",
+                    )
+                ),
+                cols[0],
+            )
+            sample = run(c, f"SELECT * FROM {mv} ORDER BY {order_col} DESC LIMIT 10")
             for row in sample:
                 vals = [str(v)[:50] for v in row]
                 print("   ", " | ".join(vals))
@@ -204,11 +236,14 @@ def main() -> int:
 
     # -------- P-views (pre-classified architectural concerns) --------
     section("7. P-VIEW COUNTS (pre-classified defect rows)")
-    pviews = run(c, """
+    pviews = run(
+        c,
+        """
         SELECT name FROM sqlite_master
          WHERE type='view' AND name LIKE 'v_p%'
          ORDER BY name
-    """)
+    """,
+    )
     for (name,) in pviews:
         try:
             n = run(c, f"SELECT COUNT(*) FROM {name}")[0][0]
@@ -218,22 +253,23 @@ def main() -> int:
 
     # -------- Semantic edges (behavioral graph layer) --------
     section("8. SEMANTIC EDGE INVENTORY")
-    rows = run(c, """
+    rows = run(
+        c,
+        """
         SELECT relation_type, COUNT(*) AS n
           FROM edges
          GROUP BY relation_type
          ORDER BY n DESC
-    """)
+    """,
+    )
     for rt, n in rows:
         print(f"  {n:>7}  {rt}")
 
     # -------- Guardian exemptions near critical paths --------
     if table_exists(c, "mv_exemptions_near_critical_paths"):
         section("9. GUARDIAN EXEMPTIONS NEAR CRITICAL PATHS")
-        cols = [r[1] for r in run(c,
-            "PRAGMA table_info(mv_exemptions_near_critical_paths)")]
-        rows = run(c,
-            "SELECT * FROM mv_exemptions_near_critical_paths LIMIT 15")
+        cols = [r[1] for r in run(c, "PRAGMA table_info(mv_exemptions_near_critical_paths)")]
+        rows = run(c, "SELECT * FROM mv_exemptions_near_critical_paths LIMIT 15")
         print("  cols:", cols)
         for r in rows:
             print("   ", " | ".join(str(v)[:60] for v in r))
@@ -244,8 +280,7 @@ def main() -> int:
         n = run(c, "SELECT COUNT(*) FROM v_p1_zero_caller_infra")[0][0]
         print(f"  v_p1_zero_caller_infra rows: {n}")
         rows = run(c, "SELECT * FROM v_p1_zero_caller_infra LIMIT 15")
-        cols = [r[1] for r in run(c,
-            "PRAGMA table_info(v_p1_zero_caller_infra)")]
+        cols = [r[1] for r in run(c, "PRAGMA table_info(v_p1_zero_caller_infra)")]
         print("  cols:", cols)
         for r in rows:
             print("   ", " | ".join(str(v)[:60] for v in r))

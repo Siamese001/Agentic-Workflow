@@ -205,7 +205,13 @@ class ResearchCache:
                                 self._index[query_hash] = line_num
                         except json.JSONDecodeError:
                             continue
-        except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            json.JSONDecodeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             raise
 
     def exists(self, query: str) -> bool:
@@ -246,7 +252,13 @@ class ResearchCache:
                     if i == line_num:
                         entry = json.loads(line.strip())
                         return entry.get("result")
-        except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            json.JSONDecodeError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"Failed to retrieve cache entry: {e}")
         return None
 
@@ -283,7 +295,12 @@ class ResearchCache:
                 self.cache_file.unlink()
             self._index = {}
             Logger.info("Research cache cleared")
-        except (OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
             Logger.error(f"Failed to clear cache: {e}")
 
     def get_stats(self) -> dict[str, Any]:

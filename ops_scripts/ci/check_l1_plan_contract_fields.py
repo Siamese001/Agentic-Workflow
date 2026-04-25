@@ -24,13 +24,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONTRACT_PATH = (
-    REPO_ROOT
-    / "agentic_core"
-    / "L1_cognition"
-    / "types"
-    / "plan_contract_types.py"
-)
+CONTRACT_PATH = REPO_ROOT / "agentic_core" / "L1_cognition" / "types" / "plan_contract_types.py"
 
 # Canonical v1 fields (frozen at ADR-043 baseline).
 V1_REQUIRED_FIELDS = (

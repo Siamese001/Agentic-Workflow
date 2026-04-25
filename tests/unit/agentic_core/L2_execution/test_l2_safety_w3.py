@@ -31,12 +31,8 @@ class TestThoughtSignatures:
         clear_all_registries()
 
     def test_deterministic_for_same_inputs(self) -> None:
-        a = make_thought_signature(
-            reasoning_payload="hello", trace_id="t-1", turn_index=0
-        )
-        b = make_thought_signature(
-            reasoning_payload="hello", trace_id="t-1", turn_index=0
-        )
+        a = make_thought_signature(reasoning_payload="hello", trace_id="t-1", turn_index=0)
+        b = make_thought_signature(reasoning_payload="hello", trace_id="t-1", turn_index=0)
         assert a.signature == b.signature
         assert len(a.signature) == 32
 
@@ -66,9 +62,7 @@ class TestThoughtSignatures:
             make_thought_signature(reasoning_payload="x", trace_id="")
 
     def test_to_dict_shape(self) -> None:
-        sig = make_thought_signature(
-            reasoning_payload="x", trace_id="t-1", model_hint="gemini-3"
-        )
+        sig = make_thought_signature(reasoning_payload="x", trace_id="t-1", model_hint="gemini-3")
         d = sig.to_dict()
         assert d["trace_id"] == "t-1"
         assert d["model_hint"] == "gemini-3"
@@ -151,13 +145,9 @@ class TestExecutionMarkers:
         with pytest.raises(ValueError):
             register_execution_markers(ExecutionMarkers(tool_name=""))
         with pytest.raises(ValueError):
-            register_execution_markers(
-                ExecutionMarkers(tool_name="t", max_retries=-1)
-            )
+            register_execution_markers(ExecutionMarkers(tool_name="t", max_retries=-1))
         with pytest.raises(ValueError):
-            register_execution_markers(
-                ExecutionMarkers(tool_name="t", retry_backoff_ms=-5)
-            )
+            register_execution_markers(ExecutionMarkers(tool_name="t", retry_backoff_ms=-5))
 
     def test_to_dict_shape(self) -> None:
         m = ExecutionMarkers(

@@ -3,6 +3,7 @@
 Reads the ADG sqlite snapshot and emits markdown-ready hotspot evidence for
 the C0 retrieval surface.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -38,11 +39,7 @@ PLAN_FILES = [
 
 
 def all_tables(cur: sqlite3.Cursor) -> list[str]:
-    cur.execute(
-        "SELECT name FROM sqlite_master "
-        "WHERE type IN ('view','table') "
-        "ORDER BY name"
-    )
+    cur.execute("SELECT name FROM sqlite_master WHERE type IN ('view','table') ORDER BY name")
     return [r[0] for r in cur.fetchall()]
 
 
@@ -125,8 +122,7 @@ def file_fanin(cur: sqlite3.Cursor, file_path: str) -> dict:
 def violations_for_file(cur: sqlite3.Cursor, file_path: str) -> dict:
     # violations table schema: (id, kind, severity, file_path, line, ...)
     cur.execute(
-        "SELECT category, severity, COUNT(*) FROM violations "
-        "WHERE file_path = ? GROUP BY category, severity",
+        "SELECT category, severity, COUNT(*) FROM violations WHERE file_path = ? GROUP BY category, severity",
         (file_path,),
     )
     rows = cur.fetchall()
@@ -178,10 +174,7 @@ def main() -> int:
     for fp in PLAN_FILES:
         rows.append(file_fanin(cur, fp))
     rows.sort(key=lambda r: -(r["import_fanin"] + r["call_fanin"]))
-    print(
-        f"{'file':<70} {'layer':<6} {'nodes':>6} "
-        f"{'imp_in':>7} {'call_in':>8} {'imp_out':>8}"
-    )
+    print(f"{'file':<70} {'layer':<6} {'nodes':>6} {'imp_in':>7} {'call_in':>8} {'imp_out':>8}")
     for r in rows:
         print(
             f"{r['file']:<70} {r['layer']:<6} {r['nodes']:>6} "

@@ -46,6 +46,7 @@ class ProgressReporter:
         file: object = None,
     ) -> None:
         import time as _time
+
         self._total = total
         self._label = label
         self._count = 0
@@ -56,6 +57,7 @@ class ProgressReporter:
         # W4.2 — progress_eta ledger: emit prediction row with total and caller
         try:
             from tools.ledgers.hook_helpers import emit_ledger_event
+
             # Resolve caller location (file:line) best-effort using already-imported sys
             frame = sys._getframe(1) if hasattr(sys, "_getframe") else None  # noqa: SLF001
             caller = ""
@@ -129,6 +131,7 @@ class ProgressReporter:
         try:
             import time as _time
             from tools.ledgers.hook_helpers import bind_ledger_outcome
+
             duration_s = _time.monotonic() - self._start_monotonic
             overrun_ratio = duration_s / max(self._total, 1) if self._total else None
             if overrun_ratio is None:

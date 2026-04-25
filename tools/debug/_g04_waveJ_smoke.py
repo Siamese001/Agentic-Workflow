@@ -1,4 +1,5 @@
 """Wave-J smoke: data authority loader singleton + sweep determinism."""
+
 from agentic_core.L5_safety.identity.data_authority_loader import (
     DataAuthorityRecord,
     DataSourceKind,
