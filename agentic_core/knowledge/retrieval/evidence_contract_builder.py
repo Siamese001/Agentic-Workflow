@@ -375,7 +375,7 @@ class EvidenceContractBuilder:
             contradiction_status,
         )
         cited_spans = self._build_cited_spans(verified_chunks, retrieved_docs)
-        source_ids = self._build_source_ids(citations)
+        source_ids = self._build_source_ids(citations, retrieved_docs)
         evidence_classes = self._build_evidence_classes(verified_chunks, citations)
         contradiction_flags = self._build_contradiction_flags(verified_chunks)
         freshness_report = self._build_freshness_report(retrieved_docs)
@@ -486,11 +486,18 @@ class EvidenceContractBuilder:
             if doc is not None:
                 provenance = dict(getattr(doc, "metadata", {}) or {})
 
+            # Prefer the real source identifier from provenance metadata;
+            # fall back to citation.source (lane label) only if missing.
+            real_source_id = (
+                provenance.get("source_id")
+                or provenance.get("file_path")
+                or citation.source
+            )
             chunks.append(
                 VerifiedChunk(
                     chunk_id=citation.doc_id,
                     content=getattr(doc, "content", "") if doc else citation.content_snippet,
-                    source_id=citation.source,
+                    source_id=real_source_id,
                     citation_anchor=citation.citation_anchor,
                     support_score=support,
                     is_must_use=is_must_use,
@@ -664,9 +671,33 @@ class EvidenceContractBuilder:
             )
         return spans
 
-    def _build_source_ids(self, citations: list[Citation]) -> list[str]:
-        """Build spec §source_ids: deduped doc IDs / file paths / version IDs."""
-        return list(dict.fromkeys(c.source for c in citations if c.source and c.source != "unknown"))
+    def _build_source_ids(
+        self,
+        citations: list[Citation],
+        retrieved_docs: list[Any] | None = None,
+    ) -> list[str]:
+        """Build spec §source_ids: deduped doc IDs / file paths / version IDs.
+
+        Uses provenance metadata.source_id when available, falling back to
+        citation.doc_id (which is the chunk identifier and an acceptable
+        source-of-record handle).
+        """
+        doc_map = {
+            getattr(d, "doc_id", ""): d for d in (retrieved_docs or [])
+        }
+        ids: list[str] = []
+        for c in citations:
+            doc = doc_map.get(c.doc_id)
+            meta = dict(getattr(doc, "metadata", {}) or {}) if doc is not None else {}
+            source_id = (
+                meta.get("source_id")
+                or meta.get("file_path")
+                or c.doc_id
+            )
+            if source_id and source_id != "unknown":
+                ids.append(source_id)
+        # Dedupe preserving order
+        return list(dict.fromkeys(ids))
 
     def _build_evidence_classes(
         self,
@@ -912,6 +943,27 @@ class EvidenceContractBuilder:
             "policy_hash": original_plan.policy_hash,
             "metadata": dict(original_plan.metadata),
         }
+        # Carry forward C0.1-spec fields when present on the source plan
+        # (older plans may not have them; getattr keeps backward compatibility).
+        for spec_field in (
+            "disallowed_sources",
+            "region",
+            "support_target",
+            "weak_support_policy",
+            "max_parent_expansion",
+            "max_graph_hops",
+            "max_refine_attempts",
+            "slo_budget_ms",
+            "token_budget",
+            "latency_budget_ms",
+            "cost_budget_usd",
+        ):
+            if hasattr(original_plan, spec_field):
+                value = getattr(original_plan, spec_field)
+                # Defensive copy of mutable containers
+                if isinstance(value, list):
+                    value = list(value)
+                new_kwargs[spec_field] = value
         new_kwargs.update(overrides)
         new_kwargs["metadata"]["refinement_of"] = original_plan.plan_id
         return RetrievalPlan(**new_kwargs)
