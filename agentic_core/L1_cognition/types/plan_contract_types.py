@@ -204,6 +204,72 @@ class Reversibility(str, Enum):
     WRITE = "WRITE"
 
 
+class SupportTarget(str, Enum):
+    """Answer-support expectation declared by L1.
+
+    Mirrors ``02_L1_Reasoning_Plan_Generation_v4.md`` line 183::
+
+        support_target: none / citation / direct span / code location
+                       / policy clause / evidence bundle
+    """
+
+    NONE = "none"
+    CITATION = "citation"
+    DIRECT_SPAN = "direct_span"
+    CODE_LOCATION = "code_location"
+    POLICY_CLAUSE = "policy_clause"
+    EVIDENCE_BUNDLE = "evidence_bundle"
+
+
+class LowestViableAgency(str, Enum):
+    """The smallest agentic posture that still satisfies the request.
+
+    Doc reference line 133 / line 185 — V4 simplification gate.
+
+    ANSWER_DIRECTLY — pure prose response, no retrieval, no tool use.
+    GROUNDED_READ   — single C0 retrieval pass + answer.
+    SINGLE_ACTION   — one bounded tool call.
+    WORKFLOW        — multi-step orchestration.
+    FALLBACK        — abstain / clarify / refuse.
+    """
+
+    ANSWER_DIRECTLY = "answer_directly"
+    GROUNDED_READ = "grounded_read"
+    SINGLE_ACTION = "single_action"
+    WORKFLOW = "workflow"
+    FALLBACK = "fallback"
+
+
+class EscalationHint(str, Enum):
+    """Why downstream layers may need to escalate (L5 / HITL / UWG).
+
+    Doc reference line 132 / line 186. ``NONE`` is the default; any
+    other value alerts the L5 exit gate that the plan crosses a risk
+    threshold even if it currently validates.
+    """
+
+    NONE = "none"
+    HIGH_IMPACT = "high_impact"
+    IRREVERSIBLE = "irreversible"
+    AMBIGUOUS_AUTHORITY = "ambiguous_authority"
+    UNSAFE = "unsafe"
+    INSUFFICIENT_SUPPORT = "insufficient_support"
+
+
+class ClarifyOrAbstainMarker(str, Enum):
+    """V5 outcome marker — set when bounded completion is not safe.
+
+    Doc reference line 184. ``NONE`` is the default for ordinary plans;
+    the other values are mutually exclusive and instruct the exit gate
+    on how to surface the situation to the user.
+    """
+
+    NONE = "none"
+    CLARIFY = "clarify"
+    ABSTAIN = "abstain"
+    FALLBACK = "fallback"
+
+
 @dataclass(frozen=True)
 class Assumption:
     """A single declared assumption with its fact-grade."""
@@ -340,6 +406,14 @@ class L1PlanContractV2:
     unresolved_gaps: tuple
     published_rationale: str
     planner_telemetry: PlannerTelemetry
+    # ── v4 doctrine extensions (additive, default-safe) ────────────────
+    # Doc: 02_L1_Reasoning_Plan_Generation_v4.md § L1 PLAN OUTPUT CONTRACT.
+    # Defaults preserve back-compat with v2 callers that pre-date these
+    # fields; new callers SHOULD populate them.
+    support_target: SupportTarget = SupportTarget.NONE
+    lowest_viable_agency: LowestViableAgency = LowestViableAgency.ANSWER_DIRECTLY
+    escalation_hint: EscalationHint = EscalationHint.NONE
+    clarify_or_abstain_marker: ClarifyOrAbstainMarker = ClarifyOrAbstainMarker.NONE
 
     _REQUIRED_FIELDS: tuple = field(
         default=(
@@ -356,6 +430,10 @@ class L1PlanContractV2:
             "unresolved_gaps",
             "published_rationale",
             "planner_telemetry",
+            "support_target",
+            "lowest_viable_agency",
+            "escalation_hint",
+            "clarify_or_abstain_marker",
         ),
         init=False,
         repr=False,
@@ -434,6 +512,48 @@ class L1PlanContractV2:
                 "published_rationale contains unredacted private scratchpad; "
                 "adapter must strip scratchpad before crossing L1 → L0."
             )
+        # v4 doctrine extensions — enum-typed fields must be the right enum.
+        if not isinstance(self.support_target, SupportTarget):
+            raise PlanContractViolation(
+                f"support_target must be SupportTarget enum, got {type(self.support_target)}"
+            )
+        if not isinstance(self.lowest_viable_agency, LowestViableAgency):
+            raise PlanContractViolation(
+                "lowest_viable_agency must be LowestViableAgency enum, "
+                f"got {type(self.lowest_viable_agency)}"
+            )
+        if not isinstance(self.escalation_hint, EscalationHint):
+            raise PlanContractViolation(
+                f"escalation_hint must be EscalationHint enum, got {type(self.escalation_hint)}"
+            )
+        if not isinstance(self.clarify_or_abstain_marker, ClarifyOrAbstainMarker):
+            raise PlanContractViolation(
+                "clarify_or_abstain_marker must be ClarifyOrAbstainMarker enum, "
+                f"got {type(self.clarify_or_abstain_marker)}"
+            )
+        # CLARIFY route ⇔ clarify_or_abstain_marker must agree on intent.
+        if (
+            self.proposed_route == ProposedRoute.CLARIFY
+            and self.clarify_or_abstain_marker == ClarifyOrAbstainMarker.NONE
+        ):
+            raise PlanContractViolation(
+                "proposed_route=CLARIFY requires clarify_or_abstain_marker != NONE."
+            )
+        # Plans flagged with support_target != NONE must declare grounding,
+        # otherwise the support claim is unbounded (V2 safety check).
+        if (
+            self.support_target
+            in (
+                SupportTarget.CITATION,
+                SupportTarget.DIRECT_SPAN,
+                SupportTarget.EVIDENCE_BUNDLE,
+                SupportTarget.POLICY_CLAUSE,
+            )
+            and not self.grounding_required
+        ):
+            raise PlanContractViolation(
+                f"support_target={self.support_target.value} requires grounding_required=True."
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -451,6 +571,10 @@ class L1PlanContractV2:
             "unresolved_gaps": list(self.unresolved_gaps),
             "published_rationale": self.published_rationale,
             "planner_telemetry": self.planner_telemetry.to_dict(),
+            "support_target": self.support_target.value,
+            "lowest_viable_agency": self.lowest_viable_agency.value,
+            "escalation_hint": self.escalation_hint.value,
+            "clarify_or_abstain_marker": self.clarify_or_abstain_marker.value,
         }
 
     def to_v1(self) -> L1PlanContract:
@@ -516,9 +640,12 @@ class L1PlanContractV2:
 __all__ = [
     "Assumption",
     "AssumptionGrade",
+    "ClarifyOrAbstainMarker",
+    "EscalationHint",
     "ExpectedGroundTruth",
     "L1PlanContract",
     "L1PlanContractV2",
+    "LowestViableAgency",
     "PlanContractViolation",
     "PlanTaskStep",
     "PlannerTelemetry",
@@ -528,4 +655,5 @@ __all__ = [
     "Reversibility",
     "RiskBand",
     "RouteRisk",
+    "SupportTarget",
 ]

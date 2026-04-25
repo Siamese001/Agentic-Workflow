@@ -129,6 +129,15 @@ def _build_contract(
     grounding: bool = True,
     query_spec: QuerySpec | None = None,
 ) -> L1PlanContractV2:
+    # v4 doctrine: CLARIFY route requires a non-NONE clarify_or_abstain_marker.
+    from agentic_core.L1_cognition.types.plan_contract_types import (
+        ClarifyOrAbstainMarker,
+    )
+    marker = (
+        ClarifyOrAbstainMarker.CLARIFY
+        if route == ProposedRoute.CLARIFY
+        else ClarifyOrAbstainMarker.NONE
+    )
     return L1PlanContractV2(
         plan_id=plan_id,
         request_id="req-gold",
@@ -146,6 +155,7 @@ def _build_contract(
         unresolved_gaps=(),
         published_rationale=rationale,
         planner_telemetry=telemetry,
+        clarify_or_abstain_marker=marker,
     )
 
 

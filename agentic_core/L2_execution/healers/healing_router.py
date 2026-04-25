@@ -30,6 +30,19 @@ from agentic_core.L6_observability.heal_router_otel import (  # guardian: allow-
 from .confidence_scorer import ConfidenceScore, HealTier
 from .failure_signal import FailureSignal
 from .routing_gates import RoutingContext, apply_routing_gates
+from .vllm_health_probe import is_qwen_available
+
+# Wave 1 (qwen-confidence-routing-hardening-d4e7b1): cascade-fallback toggle.
+# When set to a truthy value, _dispatch_qwen will NOT fall through to Gemini
+# Flash on Qwen unavailability — preserves prior behavior for callers that
+# manage retries themselves.
+_DISABLE_QWEN_FALLBACK_ENV: str = "DISABLE_QWEN_FALLBACK"
+
+
+def _qwen_fallback_disabled() -> bool:
+    """Read the env-var fallback opt-out (any truthy value disables fallback)."""
+    raw = (os.getenv(_DISABLE_QWEN_FALLBACK_ENV) or "").strip().lower()
+    return raw in ("1", "true", "yes", "on")
 
 
 # Wave 5 P5.1 (2026-04-21): Gate names that demand GEMINI_PRO (high-reasoning).
@@ -280,7 +293,26 @@ class HealingRouter:
         Uses ``asyncio.run()`` which owns the loop lifecycle. The singleton
         deliberately does NOT close on each call — it stays warm until
         ``close_qwen_inference_gateway()`` is invoked at process shutdown.
+
+        Wave 1 (qwen-confidence-routing-hardening-d4e7b1): now does a fast
+        TTL-cached vLLM health preflight; on negative health (or on a real
+        dispatch failure) it cascades to Gemini Flash unless the env var
+        ``DISABLE_QWEN_FALLBACK`` is truthy. The result dict gains optional
+        ``tier_attempted``, ``tier_used``, and ``fallback_reason`` fields so
+        callers can observe and calibrate.
         """
+        fallback_disabled = _qwen_fallback_disabled()
+
+        # --- Preflight: fast cached health probe -----------------------------
+        if not fallback_disabled and not is_qwen_available():
+            return self._fallback_qwen_to_flash(
+                prompt=prompt,
+                app_name=app_name,
+                decision=decision,
+                fallback_reason="qwen_health_probe_failed",
+            )
+
+        # --- Live dispatch ---------------------------------------------------
         try:
             import asyncio  # noqa: PLC0415
 
@@ -302,21 +334,78 @@ class HealingRouter:
 
             response = asyncio.run(_run())
 
+            success = bool(getattr(response, "success", False))
+            if not success and not fallback_disabled:
+                # Live dispatch returned a non-success envelope; demote.
+                err_msg = getattr(response, "error_message", None) or "qwen_unsuccessful"
+                return self._fallback_qwen_to_flash(
+                    prompt=prompt,
+                    app_name=app_name,
+                    decision=decision,
+                    fallback_reason=f"qwen_unsuccessful:{err_msg}",
+                )
+
             return {
                 "executor": "qwen_vllm",
-                "success": bool(getattr(response, "success", False)),
+                "success": success,
                 "response": getattr(response, "response", None),
                 "model_used": getattr(response, "model_used", decision.target_model),
                 "error": getattr(response, "error_message", None),
+                "tier_attempted": "MEDIUM",
+                "tier_used": "MEDIUM",
+                "fallback_reason": "",
             }
         except (ImportError, RuntimeError, ValueError, OSError) as exc:
-            return {
-                "executor": "qwen_vllm",
-                "success": False,
-                "response": None,
-                "model_used": decision.target_model,
-                "error": f"qwen_dispatch_error: {type(exc).__name__}: {exc}",
-            }
+            if fallback_disabled:
+                return {
+                    "executor": "qwen_vllm",
+                    "success": False,
+                    "response": None,
+                    "model_used": decision.target_model,
+                    "error": f"qwen_dispatch_error: {type(exc).__name__}: {exc}",
+                    "tier_attempted": "MEDIUM",
+                    "tier_used": "MEDIUM",
+                    "fallback_reason": "",
+                }
+            return self._fallback_qwen_to_flash(
+                prompt=prompt,
+                app_name=app_name,
+                decision=decision,
+                fallback_reason=f"qwen_dispatch_error:{type(exc).__name__}",
+            )
+
+    def _fallback_qwen_to_flash(
+        self,
+        prompt: str,
+        app_name: str,
+        decision: RoutingDecision,
+        fallback_reason: str,
+    ) -> dict[str, Any]:
+        """Demote a MEDIUM-tier dispatch to Gemini Flash and stamp telemetry.
+
+        Wave 1: synthetic LOW-tier decision constructed inline so we reuse
+        the existing ``_dispatch_gemini`` plumbing and Provider enum without
+        any code duplication. The synthetic decision carries
+        ``gemini_subtier="FLASH"`` because cascade demotion always lands on
+        Flash (Pro is reserved for structural-failure gates).
+        """
+        flash_decision = RoutingDecision(
+            tier=HealTier.LOW,
+            target_model=GEMINI_FLASH_MODEL_ID,
+            timeout_seconds=self.TIER_CONFIG[HealTier.LOW]["timeout"],
+            max_tokens=decision.max_tokens,
+            requires_sandbox=True,
+            reasoning=f"{decision.reasoning} | cascade:{fallback_reason}",
+            gate_applied=decision.gate_applied,
+            gemini_subtier="FLASH",
+            cost_demoted=False,
+        )
+        result = self._dispatch_gemini(prompt, app_name, flash_decision)
+        # Stamp cascade telemetry so callers can attribute the demotion.
+        result["tier_attempted"] = "MEDIUM"
+        result["tier_used"] = "LOW"
+        result["fallback_reason"] = fallback_reason
+        return result
 
     def _dispatch_gemini(
         self,
