@@ -27,9 +27,12 @@ from agentic_core.L1_cognition.reasoning.ml_decision_support.features.grounding_
     classify_work_class,
 )
 from agentic_core.L1_cognition.types.intent_frame_types import (
+    ActionRequirement,
     AmbiguityRegister,
     AmbiguityResolutionStrategy,
+    ArtifactRequirement,
     ConstraintBinding,
+    FreshnessClass,
     IntentFrame,
     OutputTargetKind,
     WorkClass,
@@ -67,6 +70,68 @@ _OUTPUT_KIND_HINTS: tuple[tuple[str, OutputTargetKind], ...] = (
     ("run", OutputTargetKind.ACTION),
 )
 
+# v5 doctrine inference tables.
+_FRESHNESS_HINTS: tuple[tuple[re.Pattern[str], FreshnessClass], ...] = (
+    (re.compile(r"\blive\b|\breal[- ]?time\b|\bstreaming\b", re.IGNORECASE), FreshnessClass.LIVE),
+    (
+        re.compile(r"\b(today|now|currently|right now|present|this conversation)\b", re.IGNORECASE),
+        FreshnessClass.CURRENT,
+    ),
+    (re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\bon \w+ \d{1,2}\b", re.IGNORECASE), FreshnessClass.EXACT_DATE),
+    (
+        re.compile(r"\b(latest|recent|past (week|month|year)|last \d+|yesterday)\b", re.IGNORECASE),
+        FreshnessClass.RECENT,
+    ),
+)
+
+_ACTION_REQUIREMENT_HINTS: tuple[tuple[re.Pattern[str], ActionRequirement], ...] = (
+    (
+        re.compile(
+            r"\b(delete|drop|wipe|purge|deploy to production|launch|fire|publish|send to all|broadcast|charge|wire transfer|terminate)\b",
+            re.IGNORECASE,
+        ),
+        ActionRequirement.HIGH_IMPACT,
+    ),
+    (
+        re.compile(
+            r"\b(commit|merge|approve|finalize|sign off|push to|migrate|persist|store permanently|write to (db|database|disk))\b",
+            re.IGNORECASE,
+        ),
+        ActionRequirement.WRITE_PROPOSAL,
+    ),
+    (
+        re.compile(
+            r"\b(toggle|draft|simulate|preview|dry[- ]?run|stage|disable|enable temporarily)\b", re.IGNORECASE
+        ),
+        ActionRequirement.REVERSIBLE,
+    ),
+    (
+        re.compile(r"\b(read|fetch|retrieve|look up|show me|display|get|find|search)\b", re.IGNORECASE),
+        ActionRequirement.READ_ONLY,
+    ),
+)
+
+_ARTIFACT_HINTS: tuple[tuple[re.Pattern[str], ArtifactRequirement], ...] = (
+    (
+        re.compile(r"\bdiagram\b|\bflowchart\b|\bgraph\b|\bascii art\b", re.IGNORECASE),
+        ArtifactRequirement.DIAGRAM,
+    ),
+    (
+        re.compile(r"\bspreadsheet\b|\bxlsx?\b|\bcsv\b|\btable of\b", re.IGNORECASE),
+        ArtifactRequirement.SPREADSHEET,
+    ),
+    (re.compile(r"\bslide\b|\bdeck\b|\bpresentation\b|\bpptx?\b", re.IGNORECASE), ArtifactRequirement.SLIDE),
+    (
+        re.compile(r"\bcode\b|\bscript\b|\bfunction\b|\bclass\b|\bsnippet\b", re.IGNORECASE),
+        ArtifactRequirement.CODE,
+    ),
+    (
+        re.compile(r"\bdoc(ument)?\b|\bword\b|\bdocx\b|\bmemo\b|\bemail\b", re.IGNORECASE),
+        ArtifactRequirement.DOC,
+    ),
+    (re.compile(r"\bfile\b|\bupload\b|\bdownload\b", re.IGNORECASE), ArtifactRequirement.FILE),
+)
+
 _SEVERITY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bmust\b", re.IGNORECASE), "must"),
     (re.compile(r"\brequired\b", re.IGNORECASE), "must"),
@@ -90,6 +155,41 @@ def _infer_high_risk(text: str) -> bool:
     return any(token in lowered for token in _HIGH_RISK_TOKENS)
 
 
+def _infer_freshness_class(text: str) -> FreshnessClass:
+    """v5 § INTENT FRAME — pick the most specific freshness signal.
+
+    Order in ``_FRESHNESS_HINTS`` is most-specific-first; falls back to STABLE
+    when no temporal signal is present.
+    """
+    for pattern, cls in _FRESHNESS_HINTS:
+        if pattern.search(text):
+            return cls
+    return FreshnessClass.STABLE
+
+
+def _infer_action_requirement(text: str) -> ActionRequirement:
+    """v5 § INTENT FRAME — pick the most severe action class.
+
+    Order is high-to-low so the strongest match wins (deploy beats read).
+    """
+    for pattern, req in _ACTION_REQUIREMENT_HINTS:
+        if pattern.search(text):
+            return req
+    return ActionRequirement.NONE
+
+
+def _infer_artifact_requirement(text: str) -> ArtifactRequirement:
+    """v5 § INTENT FRAME — pick the most specific artifact form.
+
+    Order is most-specific-first; defaults to INLINE so plain answers stay
+    inline rather than auto-promoting to a file.
+    """
+    for pattern, req in _ARTIFACT_HINTS:
+        if pattern.search(text):
+            return req
+    return ArtifactRequirement.INLINE
+
+
 def _extract_constraint_hints(text: str) -> tuple[ConstraintBinding, ...]:
     """Pull rough must/should/avoid anchors. Conservative — no false-positive guard."""
     bindings: list[ConstraintBinding] = []
@@ -104,9 +204,7 @@ def _extract_constraint_hints(text: str) -> tuple[ConstraintBinding, ...]:
                 if key in seen:
                     continue
                 seen.add(key)
-                bindings.append(
-                    ConstraintBinding(statement=s, severity=severity, source="user")
-                )
+                bindings.append(ConstraintBinding(statement=s, severity=severity, source="user"))
                 break
     return tuple(bindings)
 
@@ -127,6 +225,9 @@ def parse_intent(
     assumed: Iterable[str] = (),
     unresolved: Iterable[str] = (),
     resolution_strategy: AmbiguityResolutionStrategy | None = None,
+    freshness_class: FreshnessClass | None = None,
+    action_requirement: ActionRequirement | None = None,
+    artifact_requirement: ArtifactRequirement | None = None,
 ) -> IntentFrame:
     """Build a validated :class:`IntentFrame` from a raw request.
 
@@ -143,14 +244,11 @@ def parse_intent(
 
     resolved_goal = (goal or text or "Respond to the user request").strip()
     resolved_success = (
-        success_condition
-        or "User receives a complete, policy-compliant deliverable."
+        success_condition or "User receives a complete, policy-compliant deliverable."
     ).strip()
 
     # Constraints: caller-supplied first, then auto-extracted.
-    user_constraints: tuple[ConstraintBinding, ...] = (
-        tuple(constraints) if constraints is not None else ()
-    )
+    user_constraints: tuple[ConstraintBinding, ...] = tuple(constraints) if constraints is not None else ()
     inferred = _extract_constraint_hints(text) if not user_constraints else ()
     resolved_constraints: tuple[ConstraintBinding, ...] = user_constraints + inferred
 
@@ -168,18 +266,12 @@ def parse_intent(
     else:
         resolved_work_class = WorkClass(work_class)
 
-    resolved_high_risk: bool = (
-        _infer_high_risk(text) if high_risk is None else bool(high_risk)
-    )
+    resolved_high_risk: bool = _infer_high_risk(text) if high_risk is None else bool(high_risk)
 
     resolved_resolution = (
         resolution_strategy
         if resolution_strategy is not None
-        else (
-            AmbiguityResolutionStrategy.CLARIFY
-            if any(unresolved)
-            else AmbiguityResolutionStrategy.ASSUME
-        )
+        else (AmbiguityResolutionStrategy.CLARIFY if any(unresolved) else AmbiguityResolutionStrategy.ASSUME)
     )
 
     ambiguity = AmbiguityRegister(
@@ -187,6 +279,14 @@ def parse_intent(
         assumed=tuple(assumed),
         unresolved=tuple(unresolved),
         resolution_strategy=resolved_resolution,
+    )
+
+    resolved_freshness = freshness_class if freshness_class is not None else _infer_freshness_class(text)
+    resolved_action_req = (
+        action_requirement if action_requirement is not None else _infer_action_requirement(text)
+    )
+    resolved_artifact_req = (
+        artifact_requirement if artifact_requirement is not None else _infer_artifact_requirement(text)
     )
 
     frame = IntentFrame(
@@ -200,6 +300,9 @@ def parse_intent(
         audience=audience,
         high_risk=resolved_high_risk,
         ambiguity=ambiguity,
+        freshness_class=resolved_freshness,
+        action_requirement=resolved_action_req,
+        artifact_requirement=resolved_artifact_req,
     )
     frame.validate()
     return frame

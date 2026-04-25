@@ -19,10 +19,13 @@ from typing import Any
 from agentic_core.runtime.contracts.routing_features import WorkClass
 
 __all__ = [
+    "ActionRequirement",
     "AmbiguityRegister",
     "AmbiguityResolutionStrategy",
+    "ArtifactRequirement",
     "ConstraintBinding",
     "ConstraintSeverity",
+    "FreshnessClass",
     "IntentFrame",
     "IntentFrameViolation",
     "OutputTargetKind",
@@ -50,6 +53,51 @@ class OutputTargetKind(str, Enum):
     ARTIFACT = "artifact"
     ACTION = "action"
     CLARIFICATION = "clarification"
+
+
+class FreshnessClass(str, Enum):
+    """Doctrine v5 § INTENT FRAME — freshness requirement.
+
+    Maps doc terms ``stable / current / recent / exact-date / live`` to a
+    closed enum so downstream V3A consistency audits can route
+    cache-vs-grounded decisions.
+    """
+
+    STABLE = "stable"  # safe from cache or model memory
+    RECENT = "recent"  # last few days/weeks
+    CURRENT = "current"  # right now, this conversation
+    EXACT_DATE = "exact_date"  # specific calendar date binding
+    LIVE = "live"  # real-time / streaming source
+
+
+class ActionRequirement(str, Enum):
+    """Doctrine v5 § INTENT FRAME — action requirement.
+
+    Maps the doc's action ladder ``no action / read action / reversible
+    action / write proposal / high-impact action`` to a closed enum.
+    """
+
+    NONE = "none"  # purely conversational
+    READ_ONLY = "read_only"  # retrieve / display
+    REVERSIBLE = "reversible"  # toggle, draft, simulation
+    WRITE_PROPOSAL = "write_proposal"  # commit-via-UWG candidate
+    HIGH_IMPACT = "high_impact"  # irreversible / external side-effect
+
+
+class ArtifactRequirement(str, Enum):
+    """Doctrine v5 § INTENT FRAME — artifact requirement.
+
+    Maps doc artifact taxonomy ``inline answer / file / doc / slide /
+    spreadsheet / code / diagram`` for downstream renderer routing.
+    """
+
+    INLINE = "inline"
+    FILE = "file"
+    DOC = "doc"
+    SLIDE = "slide"
+    SPREADSHEET = "spreadsheet"
+    CODE = "code"
+    DIAGRAM = "diagram"
 
 
 class AmbiguityResolutionStrategy(str, Enum):
@@ -149,6 +197,10 @@ class IntentFrame:
     audience: str = "user"  # I1 audience / user need
     high_risk: bool = False  # I4 high-risk vs low-risk
     ambiguity: AmbiguityRegister = field(default_factory=AmbiguityRegister)
+    # v5 doctrine extensions (defaulted for back-compat).
+    freshness_class: FreshnessClass = FreshnessClass.STABLE
+    action_requirement: ActionRequirement = ActionRequirement.NONE
+    artifact_requirement: ArtifactRequirement = ArtifactRequirement.INLINE
 
     _REQUIRED_STRINGS: tuple = field(
         default=("request_id", "goal", "success_condition"),
@@ -181,6 +233,18 @@ class IntentFrame:
                 raise IntentFrameViolation(f"details[{idx}] must be str, got {type(d)}")
         if not isinstance(self.ambiguity, AmbiguityRegister):
             raise IntentFrameViolation(f"ambiguity must be AmbiguityRegister, got {type(self.ambiguity)}")
+        if not isinstance(self.freshness_class, FreshnessClass):
+            raise IntentFrameViolation(
+                f"freshness_class must be FreshnessClass, got {type(self.freshness_class)}"
+            )
+        if not isinstance(self.action_requirement, ActionRequirement):
+            raise IntentFrameViolation(
+                f"action_requirement must be ActionRequirement, got {type(self.action_requirement)}"
+            )
+        if not isinstance(self.artifact_requirement, ArtifactRequirement):
+            raise IntentFrameViolation(
+                f"artifact_requirement must be ArtifactRequirement, got {type(self.artifact_requirement)}"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -194,4 +258,7 @@ class IntentFrame:
             "audience": self.audience,
             "high_risk": self.high_risk,
             "ambiguity": self.ambiguity.to_dict(),
+            "freshness_class": self.freshness_class.value,
+            "action_requirement": self.action_requirement.value,
+            "artifact_requirement": self.artifact_requirement.value,
         }

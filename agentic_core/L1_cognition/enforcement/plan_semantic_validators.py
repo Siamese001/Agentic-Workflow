@@ -25,6 +25,8 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L1_cognition.types.intent_frame_types import (
+    ActionRequirement,
+    FreshnessClass,
     IntentFrame,
     OutputTargetKind,
 )
@@ -36,6 +38,7 @@ from agentic_core.L1_cognition.types.plan_contract_types import (
     LowestViableAgency,
     ProposedRoute,
     Reversibility,
+    SupportTarget,
 )
 
 __all__ = [
@@ -45,6 +48,7 @@ __all__ = [
     "did_we_listen",
     "is_it_safe",
     "does_it_make_sense",
+    "plan_consistency_audit_v3a",
     "can_it_be_simpler",
     "should_we_abstain_or_clarify",
     "validate_plan_semantically",
@@ -127,10 +131,7 @@ def did_we_listen(plan: L1PlanContractV2, intent: IntentFrame) -> GateResult:
     """V1: plan honors the goal, request_id, and explicit constraints."""
     findings: list[str] = []
     if plan.request_id != intent.request_id:
-        findings.append(
-            f"plan.request_id ({plan.request_id!r}) != intent.request_id "
-            f"({intent.request_id!r})"
-        )
+        findings.append(f"plan.request_id ({plan.request_id!r}) != intent.request_id ({intent.request_id!r})")
     # The goal must appear (verbatim or as a substring of the rationale).
     if intent.goal.lower() not in plan.published_rationale.lower():
         findings.append(
@@ -142,17 +143,14 @@ def did_we_listen(plan: L1PlanContractV2, intent: IntentFrame) -> GateResult:
         intent.output_target_kind == OutputTargetKind.CLARIFICATION
         and plan.proposed_route != ProposedRoute.CLARIFY
     ):
-        findings.append(
-            "intent requested CLARIFICATION but proposed_route is not CLARIFY"
-        )
+        findings.append("intent requested CLARIFICATION but proposed_route is not CLARIFY")
     # ACTION output requires non-READ reversibility OR explicit grounding.
     if (
         intent.output_target_kind == OutputTargetKind.ACTION
         and plan.route_risk.reversibility == Reversibility.READ
     ):
         findings.append(
-            "intent requested ACTION but route_risk.reversibility=READ "
-            "(plan would not actually act)"
+            "intent requested ACTION but route_risk.reversibility=READ (plan would not actually act)"
         )
     outcome = GateOutcome.PASS if not findings else GateOutcome.FAIL
     return GateResult(gate_id="V1", outcome=outcome, findings=tuple(findings))
@@ -169,9 +167,7 @@ def is_it_safe(plan: L1PlanContractV2, bundle: PlanBundle) -> GateResult:
     rationale_lc = plan.published_rationale.lower()
     for forbidden in bundle.disallowed_actions:
         if forbidden.lower() in rationale_lc:
-            findings.append(
-                f"published_rationale mentions disallowed action: {forbidden!r}"
-            )
+            findings.append(f"published_rationale mentions disallowed action: {forbidden!r}")
     # Any escalation_hint != NONE is a WARN, not a FAIL — it tells L5 to
     # gate but the plan itself is still proposable.
     escalation_warn = plan.escalation_hint != EscalationHint.NONE
@@ -187,9 +183,7 @@ def is_it_safe(plan: L1PlanContractV2, bundle: PlanBundle) -> GateResult:
             "HITL trigger declared in bundle — potential UWG bypass"
         )
     if findings:
-        return GateResult(
-            gate_id="V2", outcome=GateOutcome.FAIL, findings=tuple(findings)
-        )
+        return GateResult(gate_id="V2", outcome=GateOutcome.FAIL, findings=tuple(findings))
     if escalation_warn:
         return GateResult(
             gate_id="V2",
@@ -220,8 +214,7 @@ def does_it_make_sense(plan: L1PlanContractV2) -> GateResult:
             findings.append(f"task_spec step {sid!r} has empty description")
         if not step.expected_ground_truth.success_predicate.strip():
             findings.append(
-                f"task_spec step {sid!r} has empty success_predicate "
-                "(BP-A4 ground-truth feedback violated)"
+                f"task_spec step {sid!r} has empty success_predicate (BP-A4 ground-truth feedback violated)"
             )
     if plan.grounding_required and plan.query_spec is None:
         findings.append("grounding_required=True but query_spec is None")
@@ -230,6 +223,140 @@ def does_it_make_sense(plan: L1PlanContractV2) -> GateResult:
             findings.append("query_spec.max_results must be positive")
     outcome = GateOutcome.PASS if not findings else GateOutcome.FAIL
     return GateResult(gate_id="V3", outcome=outcome, findings=tuple(findings))
+
+
+# ---------------------------------------------------------------------------
+# V3A — PLAN CONSISTENCY AUDIT (v5 doctrine, 9 sub-checks)
+# ---------------------------------------------------------------------------
+
+
+_CACHE_ROUTES: frozenset[ProposedRoute] = frozenset({ProposedRoute.R1A, ProposedRoute.R1B})
+_GROUNDED_READ_ROUTES: frozenset[ProposedRoute] = frozenset({ProposedRoute.R3})
+_SINGLE_ACTION_ROUTES: frozenset[ProposedRoute] = frozenset({ProposedRoute.R4})
+_MANAGED_WORKFLOW_ROUTES: frozenset[ProposedRoute] = frozenset({ProposedRoute.R3R4_MANAGED_WORKFLOW})
+_FALLBACK_ROUTES: frozenset[ProposedRoute] = frozenset({ProposedRoute.R5})
+
+_FRESH_REQUIRED_CLASSES: frozenset[FreshnessClass] = frozenset(
+    {FreshnessClass.CURRENT, FreshnessClass.RECENT, FreshnessClass.LIVE, FreshnessClass.EXACT_DATE}
+)
+
+_HARD_SUPPORT_TARGETS: frozenset[SupportTarget] = frozenset(
+    {
+        SupportTarget.CITATION,
+        SupportTarget.DIRECT_SPAN,
+        SupportTarget.EVIDENCE_BUNDLE,
+        SupportTarget.POLICY_CLAUSE,
+    }
+)
+
+
+def plan_consistency_audit_v3a(plan: L1PlanContractV2, intent: IntentFrame, bundle: PlanBundle) -> GateResult:
+    """V3A: cross-field consistency between route hint, support, action, freshness.
+
+    Doctrine reference: v5 § V3A PLAN CONSISTENCY AUDIT — 9 sub-checks.
+
+    Outcome:
+      * any inconsistency → FAIL with all findings enumerated.
+      * single soft mismatch (e.g. workflow with one step) → WARN.
+    """
+    findings: list[str] = []
+    soft_findings: list[str] = []
+
+    route = plan.proposed_route
+
+    # 1. Cache route + fresh-evidence support is incoherent.
+    if route in _CACHE_ROUTES and intent.freshness_class in _FRESH_REQUIRED_CLASSES:
+        findings.append(
+            f"cache route ({route.value}) used with freshness_class="
+            f"{intent.freshness_class.value} — cached answer may be stale"
+        )
+
+    # 2. Grounded-read route requires C0 grounding to be marked.
+    if route in _GROUNDED_READ_ROUTES and not plan.grounding_required:
+        findings.append(
+            "R3 grounded-read route declared but grounding_required=False — "
+            "C0 must produce an evidence contract for L2"
+        )
+
+    # 3. Single-action route must be bounded — not multi-step dependency state.
+    if route in _SINGLE_ACTION_ROUTES and len(plan.task_spec) > 1:
+        findings.append(
+            "R4 single-action route used with multi-step task_spec — "
+            "either decompose into R3R4_MANAGED_WORKFLOW or collapse steps"
+        )
+
+    # 4. Managed workflow must have a real reason for L3 multi-step machinery.
+    if route in _MANAGED_WORKFLOW_ROUTES and len(plan.task_spec) <= 1:
+        soft_findings.append("R3R4_MANAGED_WORKFLOW with ≤ 1 task step — simplify to R3 or R4")
+
+    # 5. Fallback route must include a reason in published_rationale.
+    if route in _FALLBACK_ROUTES:
+        rationale_lc = plan.published_rationale.lower()
+        if not any(
+            tok in rationale_lc
+            for tok in (
+                "unsafe",
+                "unsupported",
+                "out of scope",
+                "insufficient",
+                "abstain",
+                "fallback",
+                "weak",
+            )
+        ):
+            findings.append(
+                "R5 fallback route used but published_rationale does not state "
+                "why direct completion is unsafe/unsupported"
+            )
+
+    # 6. Durable mutation ⇒ UWG must be marked downstream.
+    if (
+        plan.route_risk.reversibility == Reversibility.WRITE
+        and not bundle.hitl_triggers
+        and plan.escalation_hint == EscalationHint.NONE
+    ):
+        # Already caught by V2; V3A surfaces it as an additional UWG-coherence note.
+        soft_findings.append(
+            "durable WRITE proposed without HITL trigger or escalation_hint — UWG path will reject"
+        )
+
+    # 7. High-risk action ⇒ HITL marker must be present (escalation_hint or hitl bundle).
+    if (
+        intent.action_requirement == ActionRequirement.HIGH_IMPACT
+        and plan.escalation_hint == EscalationHint.NONE
+        and not bundle.hitl_triggers
+    ):
+        findings.append(
+            "intent.action_requirement=HIGH_IMPACT but no escalation_hint "
+            "and no HITL trigger declared in bundle"
+        )
+
+    # 8. Weak evidence (support_target NONE on a grounding plan) ⇒ don't claim certainty.
+    if plan.grounding_required and plan.support_target == SupportTarget.NONE:
+        findings.append(
+            "grounding_required=True but support_target=NONE — plan would "
+            "claim grounded answer with no support"
+        )
+
+    # 9. "Full overwrite" requests (intent.goal contains 'overwrite') must preserve
+    # structure: rationale should mention 'preserve', 'overwrite', or similar.
+    if "overwrite" in intent.goal.lower():
+        rationale_lc = plan.published_rationale.lower()
+        if not any(tok in rationale_lc for tok in ("preserve", "structure", "overwrite", "in place")):
+            soft_findings.append(
+                "intent goal references 'overwrite' but plan rationale does not "
+                "declare structure preservation — risk of appended notes"
+            )
+
+    if findings:
+        return GateResult(
+            gate_id="V3A",
+            outcome=GateOutcome.FAIL,
+            findings=tuple(findings + soft_findings),
+        )
+    if soft_findings:
+        return GateResult(gate_id="V3A", outcome=GateOutcome.WARN, findings=tuple(soft_findings))
+    return GateResult(gate_id="V3A", outcome=GateOutcome.PASS)
 
 
 # ---------------------------------------------------------------------------
@@ -252,23 +379,11 @@ def can_it_be_simpler(plan: L1PlanContractV2, intent: IntentFrame) -> GateResult
             f"{intent.output_target_kind.value}"
         )
     # Single-step plans should not declare WORKFLOW agency.
-    if (
-        len(plan.task_spec) == 1
-        and plan.lowest_viable_agency == LowestViableAgency.WORKFLOW
-    ):
-        findings.append(
-            "single-step plan declared WORKFLOW agency — consider SINGLE_ACTION "
-            "or GROUNDED_READ"
-        )
+    if len(plan.task_spec) == 1 and plan.lowest_viable_agency == LowestViableAgency.WORKFLOW:
+        findings.append("single-step plan declared WORKFLOW agency — consider SINGLE_ACTION or GROUNDED_READ")
     # Multi-step plan with ANSWER_DIRECTLY agency is incoherent.
-    if (
-        len(plan.task_spec) > 1
-        and plan.lowest_viable_agency == LowestViableAgency.ANSWER_DIRECTLY
-    ):
-        findings.append(
-            "multi-step plan declared ANSWER_DIRECTLY agency — agency-vs-shape "
-            "mismatch"
-        )
+    if len(plan.task_spec) > 1 and plan.lowest_viable_agency == LowestViableAgency.ANSWER_DIRECTLY:
+        findings.append("multi-step plan declared ANSWER_DIRECTLY agency — agency-vs-shape mismatch")
     if not findings:
         return GateResult(gate_id="V4", outcome=GateOutcome.PASS)
     # V4 never hard-fails on its own — the planner's choice is advisory.
@@ -280,9 +395,7 @@ def can_it_be_simpler(plan: L1PlanContractV2, intent: IntentFrame) -> GateResult
 # ---------------------------------------------------------------------------
 
 
-def should_we_abstain_or_clarify(
-    plan: L1PlanContractV2, intent: IntentFrame
-) -> GateResult:
+def should_we_abstain_or_clarify(plan: L1PlanContractV2, intent: IntentFrame) -> GateResult:
     """V5: clarify/abstain marker matches the unresolved-ambiguity reality."""
     findings: list[str] = []
     has_unresolved = intent.ambiguity.has_unresolved()
@@ -290,24 +403,14 @@ def should_we_abstain_or_clarify(
 
     if has_unresolved and marker == ClarifyOrAbstainMarker.NONE:
         findings.append(
-            "intent has unresolved ambiguity but clarify_or_abstain_marker=NONE "
-            "and no fallback declared"
+            "intent has unresolved ambiguity but clarify_or_abstain_marker=NONE and no fallback declared"
         )
     if marker == ClarifyOrAbstainMarker.CLARIFY and plan.proposed_route != ProposedRoute.CLARIFY:
-        findings.append(
-            "clarify_or_abstain_marker=CLARIFY but proposed_route is not CLARIFY"
-        )
+        findings.append("clarify_or_abstain_marker=CLARIFY but proposed_route is not CLARIFY")
     if marker == ClarifyOrAbstainMarker.ABSTAIN and len(plan.task_spec) > 1:
-        findings.append(
-            "clarify_or_abstain_marker=ABSTAIN but task_spec has multiple steps"
-        )
-    if (
-        plan.escalation_hint == EscalationHint.INSUFFICIENT_SUPPORT
-        and marker == ClarifyOrAbstainMarker.NONE
-    ):
-        findings.append(
-            "escalation_hint=INSUFFICIENT_SUPPORT but no clarify/abstain marker set"
-        )
+        findings.append("clarify_or_abstain_marker=ABSTAIN but task_spec has multiple steps")
+    if plan.escalation_hint == EscalationHint.INSUFFICIENT_SUPPORT and marker == ClarifyOrAbstainMarker.NONE:
+        findings.append("escalation_hint=INSUFFICIENT_SUPPORT but no clarify/abstain marker set")
     outcome = GateOutcome.PASS if not findings else GateOutcome.FAIL
     return GateResult(gate_id="V5", outcome=outcome, findings=tuple(findings))
 
@@ -337,6 +440,7 @@ def validate_plan_semantically(
         did_we_listen(plan, intent),
         is_it_safe(plan, bundle),
         does_it_make_sense(plan),
+        plan_consistency_audit_v3a(plan, intent, bundle),
         can_it_be_simpler(plan, intent),
         should_we_abstain_or_clarify(plan, intent),
     )

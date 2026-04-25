@@ -510,10 +510,11 @@ class TestSemanticGateInteractions:
         out = validate_plan_semantically(plan, _intent(), load_plan_bundle())
         assert out.overall == GateOutcome.FAIL
 
-    def test_aggregator_gate_count_is_five(self):
+    def test_aggregator_gate_count_is_six(self):
+        # v5 doctrine added V3A consistency audit between V3 and V4.
         out = validate_plan_semantically(_plan(), _intent(), load_plan_bundle())
-        assert len(out.gates) == 5
-        assert {g.gate_id for g in out.gates} == {"V1", "V2", "V3", "V4", "V5"}
+        assert len(out.gates) == 6
+        assert {g.gate_id for g in out.gates} == {"V1", "V2", "V3", "V3A", "V4", "V5"}
 
 
 # ---------------------------------------------------------------------------

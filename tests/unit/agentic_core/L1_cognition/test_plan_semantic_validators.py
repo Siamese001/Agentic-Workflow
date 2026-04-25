@@ -304,7 +304,7 @@ class TestAggregator:
     def test_overall_pass(self):
         out = validate_plan_semantically(_plan(), _intent(), load_plan_bundle())
         assert out.overall == GateOutcome.PASS
-        assert len(out.gates) == 5
+        assert len(out.gates) == 6  # V1, V2, V3, V3A, V4, V5
 
     def test_overall_fail_when_any_gate_fails(self):
         out = validate_plan_semantically(
@@ -328,5 +328,5 @@ class TestAggregator:
         out = validate_plan_semantically(_plan(), _intent(), load_plan_bundle())
         d = out.to_dict()
         assert d["overall"] == "pass"
-        assert len(d["gates"]) == 5
-        assert {g["gate_id"] for g in d["gates"]} == {"V1", "V2", "V3", "V4", "V5"}
+        assert len(d["gates"]) == 6  # V1, V2, V3, V3A, V4, V5
+        assert {g["gate_id"] for g in d["gates"]} == {"V1", "V2", "V3", "V3A", "V4", "V5"}

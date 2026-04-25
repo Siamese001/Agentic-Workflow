@@ -173,6 +173,30 @@ class ProposedRoute(str, Enum):
     R4 = "R4"
     R5 = "R5"
     CLARIFY = "CLARIFY"
+    # v5 doctrine: explicit managed-workflow route (was implicit via L3 dispatch).
+    R3R4_MANAGED_WORKFLOW = "R3R4_MANAGED_WORKFLOW"
+
+
+class ConfidenceBand(str, Enum):
+    """Doctrine v5 § ROUTE_HINT — discrete confidence bucket.
+
+    Maps to plan's ``confidence_score`` ranges:
+      LOW    — score < 0.55
+      MEDIUM — 0.55 ≤ score < 0.80
+      HIGH   — score ≥ 0.80
+    """
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+    @classmethod
+    def from_score(cls, score: float) -> "ConfidenceBand":
+        if score >= 0.80:
+            return cls.HIGH
+        if score >= 0.55:
+            return cls.MEDIUM
+        return cls.LOW
 
 
 class AssumptionGrade(str, Enum):
@@ -656,6 +680,7 @@ __all__ = [
     "Assumption",
     "AssumptionGrade",
     "ClarifyOrAbstainMarker",
+    "ConfidenceBand",
     "EscalationHint",
     "ExpectedGroundTruth",
     "L1PlanContract",

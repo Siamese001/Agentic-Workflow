@@ -87,7 +87,16 @@ def _valid_v2(**overrides) -> L1PlanContractV2:
 
 class TestEnums:
     def test_proposed_route_values(self):
-        assert {r.value for r in ProposedRoute} == {"R1A", "R1B", "R3", "R4", "R5", "CLARIFY"}
+        # v5 doctrine adds R3R4_MANAGED_WORKFLOW.
+        assert {r.value for r in ProposedRoute} == {
+            "R1A",
+            "R1B",
+            "R3",
+            "R4",
+            "R5",
+            "CLARIFY",
+            "R3R4_MANAGED_WORKFLOW",
+        }
 
     def test_assumption_grade_values(self):
         assert {g.value for g in AssumptionGrade} == {"DIRECTLY_OBSERVED", "DERIVED", "UNRESOLVED"}
