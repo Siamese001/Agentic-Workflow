@@ -161,9 +161,27 @@ class AmbiguityRegister:
     assumed: tuple = ()
     unresolved: tuple = ()
     resolution_strategy: AmbiguityResolutionStrategy = AmbiguityResolutionStrategy.ASSUME
+    # v5 doctrine § AMBIGUITY REGISTER — three additional surfaces beyond
+    # known/unresolved that the planner must be able to record explicitly.
+    mistaken_premise: tuple = ()       # potential mistaken premise from user
+    conflicts: tuple = ()              # conflicting user constraints
+    unstated_likely: tuple = ()        # unstated but likely desired output
 
     def has_unresolved(self) -> bool:
         return bool(self.unresolved)
+
+    def has_any_concern(self) -> bool:
+        """True if any field beyond ``known`` carries content.
+
+        Used by V5 / V6 to decide whether clarify/abstain markers are needed
+        even when ``unresolved`` itself is empty.
+        """
+        return bool(
+            self.unresolved
+            or self.mistaken_premise
+            or self.conflicts
+            or self.unstated_likely
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -171,6 +189,9 @@ class AmbiguityRegister:
             "assumed": list(self.assumed),
             "unresolved": list(self.unresolved),
             "resolution_strategy": self.resolution_strategy.value,
+            "mistaken_premise": list(self.mistaken_premise),
+            "conflicts": list(self.conflicts),
+            "unstated_likely": list(self.unstated_likely),
         }
 
 

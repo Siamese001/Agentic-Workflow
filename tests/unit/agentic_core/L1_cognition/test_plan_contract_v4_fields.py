@@ -98,6 +98,7 @@ class TestEnumValues:
         }
 
     def test_escalation_hint_values(self):
+        # v5 doctrine § P4 ESCALATION MARKERS — 8-row + NONE.
         assert {e.value for e in EscalationHint} == {
             "none",
             "high_impact",
@@ -105,6 +106,9 @@ class TestEnumValues:
             "ambiguous_authority",
             "unsafe",
             "insufficient_support",
+            "policy_conflict",
+            "private_data",
+            "external_egress",
         }
 
     def test_clarify_or_abstain_marker_values(self):

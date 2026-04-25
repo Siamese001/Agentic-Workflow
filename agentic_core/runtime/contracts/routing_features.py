@@ -79,17 +79,28 @@ missing signal fire the gate). Never treat ``NO_SIGNAL`` as a real score.
 class WorkClass(str, Enum):
     """Intent taxonomy emitted by L1 ``I3 DETAILS + WORK CLASS``.
 
-    Values mirror the v33 process map §[2] I3 bullets:
-    *summarize / compare / analyze / act*. ``factual`` and ``generate``
-    are added here because the calibration fixture evidence (W0.P1)
-    and Vertex dynamic-retrieval signal both distinguish them from the
-    baseline four.
+    Values mirror the v33 process map §[2] I3 bullets and the v5 L1
+    doctrine ``§ I4 JOB CLASS`` 12-row enumeration:
+    *summarize / compare / explain / analyze / classify / plan / act /
+    create / edit / retrieve / decide* (escalate is modelled via
+    ``EscalationHint`` rather than a work class).
+
+    ``factual`` and ``generate`` predate the v5 list and remain
+    accepted aliases (factual ≈ retrieve, generate ≈ create).
     """
 
     SUMMARIZE = "summarize"
     COMPARE = "compare"
+    EXPLAIN = "explain"
     ANALYZE = "analyze"
+    CLASSIFY = "classify"
+    PLAN = "plan"
     ACT = "act"
+    CREATE = "create"
+    EDIT = "edit"
+    RETRIEVE = "retrieve"
+    DECIDE = "decide"
+    # Pre-v5 calibration aliases (kept for back-compat).
     FACTUAL = "factual"
     GENERATE = "generate"
     UNKNOWN = "unknown"

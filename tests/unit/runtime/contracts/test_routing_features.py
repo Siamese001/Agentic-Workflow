@@ -28,8 +28,17 @@ class TestWorkClassEnum:
         assert WorkClass.UNKNOWN.value == "unknown"
 
     def test_enum_is_closed(self) -> None:
-        # Exactly 7 members — W3 wiring depends on this cardinality.
-        assert len(list(WorkClass)) == 7
+        # v5 doctrine § I4 JOB CLASS adds 7 work classes beyond the W3
+        # baseline (explain, classify, plan, create, edit, retrieve, decide).
+        # Total: 11 v5 classes + 2 pre-v5 aliases (factual/generate) + UNKNOWN = 14.
+        assert len(list(WorkClass)) == 14
+        # All v5 doctrine values must be present.
+        v5_required = {
+            "summarize", "compare", "explain", "analyze", "classify",
+            "plan", "act", "create", "edit", "retrieve", "decide",
+        }
+        actual = {w.value for w in WorkClass}
+        assert v5_required.issubset(actual), v5_required - actual
 
 
 class TestFreshnessClassParity:

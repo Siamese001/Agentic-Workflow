@@ -278,6 +278,10 @@ class EscalationHint(str, Enum):
     AMBIGUOUS_AUTHORITY = "ambiguous_authority"
     UNSAFE = "unsafe"
     INSUFFICIENT_SUPPORT = "insufficient_support"
+    # v5 doctrine § P4 ESCALATION MARKERS — last 3 from the 8-row table.
+    POLICY_CONFLICT = "policy_conflict"
+    PRIVATE_DATA = "private_data"
+    EXTERNAL_EGRESS = "external_egress"
 
 
 class ClarifyOrAbstainMarker(str, Enum):

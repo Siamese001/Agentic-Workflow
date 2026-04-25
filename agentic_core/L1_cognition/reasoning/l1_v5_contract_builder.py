@@ -37,6 +37,7 @@ This is the JSON Cascade hands to L0 routing.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from agentic_core.L1_cognition.enforcement.first_safety_reading import (
@@ -142,6 +143,120 @@ def _single_step_or_workflow(plan: L1PlanContractV2) -> str:
     if len(plan.task_spec) <= 1:
         return "single_step"
     return "managed_workflow"
+
+
+_DATE_PATTERN = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+_FILE_PATTERN = re.compile(r"\b[\w/-]+\.(?:md|txt|json|yaml|yml|csv|xlsx?|py|js|ts|html|pdf|docx?|pptx?)\b")
+_URL_PATTERN = re.compile(r"\bhttps?://\S+")
+_VERSION_PATTERN = re.compile(r"\bv\d+(?:\.\d+){1,2}\b")
+
+
+def _extract_files_or_sources(intent: IntentFrame) -> list[str]:
+    """v5 § query_spec.files_or_sources — deterministic extraction from
+    intent.goal + details using simple file/URL patterns.
+    """
+    haystacks = [intent.goal] + list(intent.details)
+    seen: list[str] = []
+    for hay in haystacks:
+        for m in _FILE_PATTERN.finditer(hay):
+            if m.group(0) not in seen:
+                seen.append(m.group(0))
+        for m in _URL_PATTERN.finditer(hay):
+            if m.group(0) not in seen:
+                seen.append(m.group(0))
+    return seen
+
+
+def _extract_dates_or_versions(intent: IntentFrame) -> list[str]:
+    """v5 § query_spec.dates_or_versions — ISO dates and v-prefixed versions."""
+    haystacks = [intent.goal] + list(intent.details)
+    seen: list[str] = []
+    for hay in haystacks:
+        for m in _DATE_PATTERN.finditer(hay):
+            if m.group(0) not in seen:
+                seen.append(m.group(0))
+        for m in _VERSION_PATTERN.finditer(hay):
+            if m.group(0) not in seen:
+                seen.append(m.group(0))
+    return seen
+
+
+def _source_expectations(intent: IntentFrame) -> list[str]:
+    """v5 § query_spec.source_expectations — closed enum from doctrine."""
+    text = (intent.goal + " " + " ".join(intent.details)).lower()
+    expectations: list[str] = []
+    if "upload" in text or "uploaded" in text:
+        expectations.append("uploaded file")
+    if "drive" in text or "google drive" in text:
+        expectations.append("drive")
+    if "web" in text or "google" in text or "search" in text:
+        expectations.append("web")
+    if "email" in text or "inbox" in text:
+        expectations.append("email")
+    if "calendar" in text:
+        expectations.append("calendar")
+    if "file library" in text or "my files" in text:
+        expectations.append("file library")
+    return expectations or ["none"]
+
+
+def _implicit_goal(intent: IntentFrame) -> str:
+    """v5 § intent_frame.implicit_goal — best-effort hidden-concern surfacing.
+
+    Heuristic: if any unstated_likely items are recorded, the first one is the
+    implicit goal; otherwise if the planner inferred high_risk, surface a
+    safety-aware variant; otherwise empty.
+    """
+    if intent.ambiguity.unstated_likely:
+        return str(intent.ambiguity.unstated_likely[0])
+    if intent.high_risk:
+        return f"safe execution of: {intent.goal}"
+    return ""
+
+
+def _reason_codes(
+    plan: L1PlanContractV2, intent: IntentFrame, bundle: PlanBundle
+) -> list[str]:
+    """v5 § route_hint.reason_codes — deterministic codes derived from plan + intent.
+
+    Each code is a short stable token L0 / Exit Control can pattern-match.
+    """
+    codes: list[str] = []
+    # Freshness
+    if intent.freshness_class.value in ("current", "live", "recent", "exact_date"):
+        codes.append(f"freshness:{intent.freshness_class.value}")
+    # Action class
+    if intent.action_requirement.value != "none":
+        codes.append(f"action:{intent.action_requirement.value}")
+    # High risk
+    if intent.high_risk:
+        codes.append("high_risk")
+    # Grounding requirement
+    if plan.grounding_required:
+        codes.append("grounding_required")
+    # Escalation
+    if plan.escalation_hint.value != "none":
+        codes.append(f"escalation:{plan.escalation_hint.value}")
+    # Clarify/abstain
+    if plan.clarify_or_abstain_marker.value != "none":
+        codes.append(f"marker:{plan.clarify_or_abstain_marker.value}")
+    # Bundle hitl trigger
+    if bundle.hitl_triggers:
+        codes.append("hitl_trigger_in_bundle")
+    return codes
+
+
+# Deterministic fallback chain by primary route. Doctrine: each route
+# degrades to a strictly safer / more-bounded next attempt.
+_FALLBACK_CHAIN: dict[str, list[str]] = {
+    "R1A": ["R1B", "R3", "R5"],
+    "R1B": ["R3", "R5"],
+    "R3": ["R5"],
+    "R4": ["R3R4_MANAGED_WORKFLOW", "R5"],
+    "R3R4_MANAGED_WORKFLOW": ["R5"],
+    "R5": [],
+    "CLARIFY": [],
+}
 
 
 def _validation_summary_dict(
@@ -293,15 +408,15 @@ def build_l1_v5_contract_dict(
             "hard_constraints": [c.statement for c in intent.constraints if c.severity == "must"],
             "soft_constraints": [c.statement for c in intent.constraints if c.severity == "avoid"],
             "success_condition": intent.success_condition,
-            "implicit_goal": "",
+            "implicit_goal": _implicit_goal(intent),
         },
         # Section 3
         "query_spec": {
             "entities": list(intent.details),
-            "files_or_sources": [],
-            "dates_or_versions": [],
+            "files_or_sources": _extract_files_or_sources(intent),
+            "dates_or_versions": _extract_dates_or_versions(intent),
             "freshness_class": intent.freshness_class.value,
-            "source_expectations": [],
+            "source_expectations": _source_expectations(intent),
             "support_need": plan.support_target.value,
         },
         # Section 4
@@ -318,8 +433,8 @@ def build_l1_v5_contract_dict(
             "proposed_route_hint": plan.proposed_route.value,
             "confidence": confidence.value,
             "route_risk": plan.route_risk.safety_band.value.lower(),
-            "reason_codes": list(),
-            "fallback_chain_hint": [],
+            "reason_codes": _reason_codes(plan, intent, bundle),
+            "fallback_chain_hint": list(_FALLBACK_CHAIN.get(plan.proposed_route.value, [])),
             "single_step_or_workflow": _single_step_or_workflow(plan),
         },
         # Section 6
