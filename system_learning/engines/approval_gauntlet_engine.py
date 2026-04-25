@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -220,6 +220,52 @@ class ApprovalGauntletEngine:
     ) -> None:
         self.min_confidence_for_approval = min_confidence_for_approval or self.DEFAULT_MIN_CONFIDENCE
         self.require_all_gates = require_all_gates
+        # v6 KPI counters (GAUNTLET_FALSE_PROMOTE_RATE).
+        # Callers mark promotions via :meth:`mark_promotion` after UWG ink
+        # and reversions via :meth:`mark_reversion` when a rollback is
+        # applied. Counters are instance-level; publish via
+        # :meth:`publish_kpi_sample`.
+        self._total_promotions: int = 0
+        self._reverted_promotions: int = 0
+
+    # --- v6 KPI surface (GAUNTLET_FALSE_PROMOTE_RATE) -------------------
+
+    def mark_promotion(self) -> None:
+        """Record that an approval result was promoted to UWG ink."""
+        self._total_promotions += 1
+
+    def mark_reversion(self) -> None:
+        """Record that a promoted change was later reverted."""
+        self._reverted_promotions += 1
+
+    @property
+    def promotion_counters(self) -> tuple[int, int]:
+        """Return ``(reverted_promotions, total_promotions)``."""
+        return (self._reverted_promotions, self._total_promotions)
+
+    def reset_promotion_counters(self) -> None:
+        """Reset v6 KPI counters without affecting approval policy."""
+        self._total_promotions = 0
+        self._reverted_promotions = 0
+
+    def publish_kpi_sample(self, board: Any) -> None:
+        """Publish GAUNTLET_FALSE_PROMOTE_RATE to ``board``.
+
+        Lazy imports the producer helper to avoid import-time dependency.
+        Never raises — KPI emission must not break gauntlet operation.
+        """
+        try:
+            from system_learning.engines.v6_kpi_producers import (  # noqa: PLC0415
+                record_gauntlet_false_promote_rate,
+            )
+
+            record_gauntlet_false_promote_rate(
+                board,
+                reverted_promotions=self._reverted_promotions,
+                total_promotions=self._total_promotions,
+            )
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break gauntlet
+            logger.warning("v6_kpi_gauntlet_false_promote_rate_failed: %s", exc)
 
     def run_gauntlet(
         self,
