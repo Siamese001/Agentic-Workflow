@@ -41,6 +41,7 @@ from agentic_core.L2_execution.types.l2_v3_receipts import (
     AttemptReceipt,
     DeterminismBundle,
     DispatchReceipt,
+    DispatchTarget,
     HealOutcomeStamp,
     HealReceipt,
     LineageRoot,
@@ -51,6 +52,9 @@ from agentic_core.L2_execution.types.l2_v3_receipts import (
     ValidationOutcome,
     ValidationReceipt,
     assert_snapshot_match,
+)
+from agentic_core.L2_execution.types.l2_v4_invariants import (
+    derive_dispatch_target,
 )
 
 # ---------------------------------------------------------------------------
@@ -101,7 +105,13 @@ class HealerResult:
 
 @dataclass
 class PipelineConfig:
-    """Static configuration for one L2PhasePipeline run."""
+    """Static configuration for one L2PhasePipeline run.
+
+    v4 additions:
+      - is_l3_managed: drives DispatchTarget.L3_MERGE routing
+      - allow_degraded: permits DEGRADED_SUCCESS terminal stamp
+      - duplicate_cache: optional dict for E1.5 sealed-receipt return
+    """
 
     max_attempts: int = 3
     max_repairs: int = 3
@@ -110,6 +120,10 @@ class PipelineConfig:
     sandbox_envelope_id: str = "sandbox-envelope-default"
     frozen_caps: tuple[str, ...] = ()
     frozen_budget: dict[str, Any] = field(default_factory=dict)
+    # ---- v4 additions ----
+    is_l3_managed: bool = False
+    allow_degraded: bool = True
+    duplicate_cache: dict[str, PipelineRunResult] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -278,6 +292,21 @@ class L2PhasePipeline:
         terminal_stamp: TerminalStamp,
         decisive_reason: str,
     ) -> DispatchReceipt:
+        # v4: derive dispatch_target from terminal class + L3 context.
+        last_attempt = attempts[-1] if attempts else None
+        commit_requested = bool(
+            last_attempt and last_attempt.proposed_state_diff
+        )
+        dispatch_target: DispatchTarget = derive_dispatch_target(
+            is_l3_managed=self._config.is_l3_managed,
+            terminal=terminal_stamp,
+            commit_requested=commit_requested,
+        )
+        # v4: REJECTED is never user-visible safe.
+        user_visible_safe = terminal_stamp is not TerminalStamp.REJECTED
+        downstream_recommendation = self._recommend_downstream(
+            terminal_stamp, decisive_reason
+        )
         return DispatchReceipt(
             dispatch_receipt_id=DispatchReceipt.new_id(),
             sealed_l2_artifact_id=f"sealed-{uuid.uuid4().hex}",
@@ -292,7 +321,26 @@ class L2PhasePipeline:
             heal_receipt_ids=tuple(h.repair_attempt_id for h in heals),
             decisive_reason=decisive_reason,
             has_commit_payload=False,  # invariant
+            dispatch_target=dispatch_target,
+            user_visible_safe=user_visible_safe,
+            commit_requested=commit_requested,
+            downstream_recommendation=downstream_recommendation,
         )
+
+    @staticmethod
+    def _recommend_downstream(
+        terminal: TerminalStamp, decisive: str
+    ) -> str:
+        """v4 §E5.5 downstream_recommendation hint string."""
+        if terminal is TerminalStamp.SUCCESS:
+            return "allow"
+        if terminal is TerminalStamp.DEGRADED_SUCCESS:
+            return "allow_with_caveats"
+        if terminal is TerminalStamp.NEEDS_HELP:
+            return "escalate"
+        if terminal is TerminalStamp.REJECTED:
+            return "deny"
+        return f"deny:{decisive}"
 
     # ---- public entrypoint --------------------------------------------
 
@@ -303,11 +351,24 @@ class L2PhasePipeline:
         determinism: DeterminismBundle,
         lineage: LineageRoot,
     ) -> PipelineRunResult:
-        """Execute the full v3 phase pipeline once.
+        """Execute the full v3/v4 phase pipeline once.
 
         Returns a frozen `PipelineRunResult` carrying every receipt emitted.
         Raises `SnapshotMismatchError` if any phase drifts off PREP's snapshot.
+
+        v4 §E1.5: when a duplicate_cache is configured and the derived
+        idempotency_key already has a sealed prior result, the prior result is
+        returned instead of re-executing.
         """
+        # E1.5 duplicate guard (v4) — derive idempotency_key the same way
+        # _prep() does, then check the cache before doing any work.
+        idempotency_key = (
+            f"idem-{determinism.input_hash}-{determinism.attempt_seed}"
+        )
+        cache = self._config.duplicate_cache
+        if cache is not None and idempotency_key in cache:
+            return cache[idempotency_key]
+
         # E1
         prep = self._prep(route_id, step_id, determinism, lineage)
 
@@ -339,6 +400,15 @@ class L2PhasePipeline:
             if attempt.result_class is ResultClass.SUCCESS:
                 terminal = TerminalStamp.SUCCESS
                 decisive = "attempt_succeeded"
+                break
+            if attempt.result_class is ResultClass.DEGRADED_SUCCESS:
+                # v4 §E3.7: usable partial result with caveats.
+                terminal = (
+                    TerminalStamp.DEGRADED_SUCCESS
+                    if self._config.allow_degraded
+                    else TerminalStamp.NEEDS_HELP
+                )
+                decisive = "attempt_degraded_success"
                 break
             if attempt.result_class is ResultClass.FAIL_TERMINAL:
                 terminal = TerminalStamp.FAILURE
@@ -388,7 +458,7 @@ class L2PhasePipeline:
             decisive,
         )
 
-        return PipelineRunResult(
+        result = PipelineRunResult(
             prep=prep,
             validation=validation,
             attempts=tuple(attempts),
@@ -396,6 +466,12 @@ class L2PhasePipeline:
             dispatch=dispatch,
             terminal_stamp=terminal,
         )
+
+        # E1.5 v4: register sealed result in duplicate cache.
+        if cache is not None:
+            cache[idempotency_key] = result
+
+        return result
 
 
 __all__ = [
