@@ -19,6 +19,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -326,6 +327,38 @@ def reset_dashboard() -> None:
     _dashboard = None
 
 
+# --------------------------------------------------------------------------
+# V6 KPI Board accessor (advisory wiring per plan shadow-eval-v6-gap-d4a9c2 W4)
+# --------------------------------------------------------------------------
+
+_v6_kpi_board: Any = None
+
+
+def get_v6_kpi_board() -> Any:
+    """Return the process-singleton V6 KPI Board.
+
+    Lazily imports ``system_learning.engines.v6_kpi_board.V6KPIBoard`` so the
+    L6 dashboard stays decoupled from the system_learning layer at import
+    time. The returned object is the canonical typed surface for v6 lines
+    231-245 (the 11 KPIs) and v6 lines 34-36 (compound HEALTH definition).
+
+    Producers (telemetry consumer, gauntlet, replay binder, etc.) should
+    publish KPI samples via ``get_v6_kpi_board().record_value(...)``.
+    """
+    global _v6_kpi_board
+    if _v6_kpi_board is None:
+        from system_learning.engines.v6_kpi_board import V6KPIBoard
+
+        _v6_kpi_board = V6KPIBoard()
+    return _v6_kpi_board
+
+
+def reset_v6_kpi_board() -> None:
+    """Reset the v6 KPI board singleton (for testing)."""
+    global _v6_kpi_board
+    _v6_kpi_board = None
+
+
 __all__ = [
     "AlertSeverity",
     "MetricAlert",
@@ -333,4 +366,6 @@ __all__ = [
     "LearningMetricsDashboard",
     "get_dashboard",
     "reset_dashboard",
+    "get_v6_kpi_board",
+    "reset_v6_kpi_board",
 ]
