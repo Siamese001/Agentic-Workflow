@@ -251,6 +251,112 @@ class StandardsFingerprint:
 
 
 @dataclass(frozen=True)
+class HITLDispositionPacket:
+    """Spec R10 OUTPUT (line 543).
+
+    Bounded human-review packet. `re_clearance_required` is always True per
+    spec — any human modification re-enters G2a / R1 / R5 / R6.
+    """
+
+    review_id: str
+    reason: str
+    proposed_action: str
+    risk_summary: str
+    alternatives: tuple[str, ...]
+    decision: str  # APPROVE | MODIFY_DIFF | REJECT | REQUEST_MORE_INFO
+    decision_rationale: str
+    reviewer_id: str
+    review_latency_ms: int
+    re_clearance_required: bool = True
+
+    def __post_init__(self) -> None:
+        if self.decision not in {"APPROVE", "MODIFY_DIFF", "REJECT", "REQUEST_MORE_INFO"}:
+            raise ValueError(
+                f"HITLDispositionPacket: decision must be one of "
+                f"APPROVE|MODIFY_DIFF|REJECT|REQUEST_MORE_INFO, got {self.decision!r}",
+            )
+        if self.review_latency_ms < 0:
+            raise ValueError("HITLDispositionPacket: review_latency_ms must be >= 0")
+        if not self.re_clearance_required:
+            raise ValueError(
+                "HITLDispositionPacket: re_clearance_required must be True "
+                "(spec lines 540-543: human modification becomes untrusted data, "
+                "re-enters G2a/R1/R5/R6)",
+            )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "alternatives": _sorted_strings(self.alternatives),
+            "decision": self.decision,
+            "decision_rationale": self.decision_rationale,
+            "proposed_action": self.proposed_action,
+            "re_clearance_required": self.re_clearance_required,
+            "reason": self.reason,
+            "review_id": self.review_id,
+            "review_latency_ms": self.review_latency_ms,
+            "reviewer_id": self.reviewer_id,
+            "risk_summary": self.risk_summary,
+        }
+
+
+@dataclass(frozen=True)
+class RuntimeRegressionReport:
+    """Spec R11 OUTPUT (lines 547–566).
+
+    Each boolean field answers the corresponding spec check. Composite
+    ``passed`` is True iff every individual check is True.
+    """
+
+    policy_hash_unchanged: bool
+    registry_digest_unchanged: bool
+    provider_version_match: bool
+    prompt_template_stable: bool
+    tool_schema_unchanged: bool
+    connector_grant_unchanged: bool
+    sandbox_envelope_not_broadened: bool
+    retry_loop_within_budget: bool
+    cost_token_budget_within_limit: bool
+    evidence_support_above_threshold: bool
+    route_contract_not_reinterpreted: bool
+    drift_reasons: tuple[str, ...] = field(default_factory=tuple)
+
+    @property
+    def passed(self) -> bool:
+        return all(
+            (
+                self.policy_hash_unchanged,
+                self.registry_digest_unchanged,
+                self.provider_version_match,
+                self.prompt_template_stable,
+                self.tool_schema_unchanged,
+                self.connector_grant_unchanged,
+                self.sandbox_envelope_not_broadened,
+                self.retry_loop_within_budget,
+                self.cost_token_budget_within_limit,
+                self.evidence_support_above_threshold,
+                self.route_contract_not_reinterpreted,
+            )
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "connector_grant_unchanged": self.connector_grant_unchanged,
+            "cost_token_budget_within_limit": self.cost_token_budget_within_limit,
+            "drift_reasons": sorted(self.drift_reasons),
+            "evidence_support_above_threshold": self.evidence_support_above_threshold,
+            "passed": self.passed,
+            "policy_hash_unchanged": self.policy_hash_unchanged,
+            "prompt_template_stable": self.prompt_template_stable,
+            "provider_version_match": self.provider_version_match,
+            "registry_digest_unchanged": self.registry_digest_unchanged,
+            "retry_loop_within_budget": self.retry_loop_within_budget,
+            "route_contract_not_reinterpreted": self.route_contract_not_reinterpreted,
+            "sandbox_envelope_not_broadened": self.sandbox_envelope_not_broadened,
+            "tool_schema_unchanged": self.tool_schema_unchanged,
+        }
+
+
+@dataclass(frozen=True)
 class ReplayEnvelope:
     """Spec R12 + GovernanceResult.replay_envelope (lines 569–584, 699–702).
 
@@ -279,6 +385,8 @@ class ReplayEnvelope:
     human_disposition_hash: str
     decision_verdict: DecisionVerdict
     standards_fingerprint: StandardsFingerprint
+    # Spec line 7: every certification binds principal chain.
+    principal_chain_hash: str = ""
     compliance_hash: str = ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -292,6 +400,7 @@ class ReplayEnvelope:
             "model_invocation_hashes": _sorted_strings(self.model_invocation_hashes),
             "output_schema_hash": self.output_schema_hash,
             "policy_hash": self.policy_hash,
+            "principal_chain_hash": self.principal_chain_hash,
             "prompt_artifact_hash": self.prompt_artifact_hash,
             "registry_digest_set": _sorted_strings(self.registry_digest_set),
             "request_id": self.request_id,
@@ -375,8 +484,10 @@ __all__ = [
     "CapabilityTokenV5",
     "GovernanceResult",
     "GovernanceReviewRequest",
+    "HITLDispositionPacket",
     "OriginTrustManifest",
     "ReplayEnvelope",
+    "RuntimeRegressionReport",
     "SandboxEnvelope",
     "StandardsFingerprint",
     "TriageReport",

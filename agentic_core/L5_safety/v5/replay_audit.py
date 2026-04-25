@@ -47,6 +47,7 @@ def seal_replay_envelope(
     model_invocation_hashes: tuple[str, ...] = (),
     state_diff_hash: str = "",
     human_disposition_hash: str = "",
+    principal_chain_hash: str = "",
 ) -> ReplayEnvelope:
     """Build and seal a v5 replay envelope.
 
@@ -73,6 +74,7 @@ def seal_replay_envelope(
         human_disposition_hash=human_disposition_hash,
         decision_verdict=decision_verdict,
         standards_fingerprint=standards_fingerprint,
+        principal_chain_hash=principal_chain_hash or _sha256(request.principal_chain_id),
         compliance_hash="",
     )
     payload = draft.to_dict()

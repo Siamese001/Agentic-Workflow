@@ -14,6 +14,8 @@ from typing import Any, Iterable, Mapping
 from agentic_core.L5_safety.v5.contracts import (
     CapabilityTokenV5,
     GovernanceResult,
+    HITLDispositionPacket,
+    RuntimeRegressionReport,
     SandboxEnvelope,
     StandardsFingerprint,
 )
@@ -30,6 +32,7 @@ from agentic_core.L5_safety.v5.replay_audit import (
 )
 from agentic_core.L5_safety.v5.types import (
     DecisionVerdict,
+    GovernanceMode,
     ReasonCode,
     RiskTierBandV5,
     StandardsTag,
@@ -56,20 +59,18 @@ def _empty_govresult_for_failed_entry(
     sealed result so the caller has a forensic record.
     """
     # Synthesize a minimal request out of whatever was parseable.
-    from agentic_core.L5_safety.v5.contracts import GovernanceReviewRequest
+    from agentic_core.L5_safety.v5.contracts import (
+        GovernanceReviewRequest,
+        OriginTrustManifest,
+        TriageReport,
+    )
     from agentic_core.L5_safety.v5.types import (
         BoundaryClassification,
-        GovernanceMode,
         NextLane,
-        OriginLabel,  # noqa: F401  (kept for reader)
         PacketKind,
         ReviewDepth,
         SideEffectClass,
         TriageFlag,
-    )
-    from agentic_core.L5_safety.v5.contracts import (
-        OriginTrustManifest,
-        TriageReport,
     )
 
     # If the dict had a recognizable packet_kind/side_effect_class, use it;
@@ -155,11 +156,14 @@ def certify_packet(
     runtime_final_action: str | None = None,
     capability_token: CapabilityTokenV5 | None = None,
     sandbox_envelope: SandboxEnvelope | None = None,
+    hitl_disposition: HITLDispositionPacket | None = None,
+    runtime_regression: RuntimeRegressionReport | None = None,
     actor: str = "L5.governance_plane",
     span_id: str = "root",
     route_id: str = "",
     timestamp_iso: str | None = None,
     additional_reason_codes: tuple[ReasonCode, ...] = (),
+    declared_mode: GovernanceMode | None = None,
 ) -> GovernanceResult:
     """Compose the v5 governance pipeline.
 
@@ -199,6 +203,7 @@ def certify_packet(
         static_only=static_only,
         text_samples=text_samples,
         declared_authority=declared_authority,
+        declared_mode=declared_mode,
     )
 
     # G2a ----------------------------------------------------------
@@ -238,6 +243,50 @@ def certify_packet(
         timestamp_iso=timestamp_iso,
     )
 
+    # Spec lines 731–745: GovernanceResult.governance_reports must surface
+    # every named sub-report. v5 populates the four reports it produces
+    # natively; the rest are placeholders kept in shape so downstream
+    # consumers can pattern-match on a stable wire schema.
+    full_reports = {
+        "triage_report": triage.to_dict(),
+        "origin_boundary_report": origin.to_dict(),
+        "g0_entry_report": {"accepted": True, "failures": []},
+        "authority_context_report": {
+            "policy_hash": request.policy_hash,
+            "blueprint_hash": request.blueprint_hash,
+            "registry_digest_set": list(request.registry_digest_set),
+            "principal_chain_id": request.principal_chain_id,
+        },
+        # Lanes that v4 / external modules own — empty placeholder dicts
+        # preserve the wire shape without falsifying coverage.
+        "static_report": {},
+        "runtime_guardrail_report": {},
+        "route_alignment_report": {},
+        "handoff_report": {},
+        "context_boundary_report": {},
+        "policy_validation_report": {},
+        "token_sandbox_report": {
+            "capability_token": capability_token.to_dict() if capability_token else None,
+            "sandbox_envelope": sandbox_envelope.to_dict() if sandbox_envelope else None,
+        },
+        "egress_report": {},
+        "HITL_report": hitl_disposition.to_dict() if hitl_disposition else {},
+        "runtime_regression_report": runtime_regression.to_dict() if runtime_regression else {},
+        "audit_seal_report": {"compliance_hash": replay.compliance_hash},
+    }
+
+    # Spec R11 — drift detection fold-in: if the regression report failed,
+    # surface DRIFT_DETECTED so the rail can ESCALATE/REJECT appropriately.
+    drift_reason_codes: tuple[ReasonCode, ...] = ()
+    if runtime_regression is not None and not runtime_regression.passed:
+        drift_reason_codes = (ReasonCode.DRIFT_DETECTED,)
+    additional_reason_codes = additional_reason_codes + drift_reason_codes
+
+    # Spec R10 — if the HITL packet exists and the human REJECTED, force
+    # the rail toward REJECT.
+    if hitl_disposition is not None and hitl_disposition.decision == "REJECT":
+        runtime_final_action = "reject"
+
     result = emit_verdict(
         review_request=request,
         triage=triage,
@@ -249,15 +298,21 @@ def certify_packet(
         sandbox_envelope=sandbox_envelope,
         replay_envelope=replay,
         audit_log_event=audit,
-        governance_reports={
-            "triage_report": triage.to_dict(),
-            "origin_boundary_report": origin.to_dict(),
-            "g0_entry_report": {"accepted": True, "failures": []},
-        },
+        governance_reports=full_reports,
         standards_fingerprint=standards,
     )
 
     # Re-seal replay with the final verdict so compliance_hash binds it.
+    import hashlib as _hashlib
+    import json as _json
+
+    human_hash = ""
+    if hitl_disposition is not None:
+        human_hash = _hashlib.sha256(
+            _json.dumps(hitl_disposition.to_dict(), sort_keys=True, separators=(",", ":")).encode(
+                "utf-8"
+            )
+        ).hexdigest()
     final_replay = seal_replay_envelope(
         request=request,
         decision_verdict=result.decision,
@@ -265,6 +320,7 @@ def certify_packet(
         span_id=span_id,
         route_id=route_id,
         capability_token_hash=capability_token.allowed_args_hash if capability_token else "",
+        human_disposition_hash=human_hash,
     )
     final_audit = build_audit_log_event(
         request=request,

@@ -118,6 +118,7 @@ def emit_verdict(
         decision = DecisionVerdict.REJECT
     elif (
         ReasonCode.HITL_REQUIRED in reason_codes_tuple
+        or ReasonCode.DRIFT_DETECTED in reason_codes_tuple
         or triage.review_depth == ReviewDepth.LOCKDOWN
         or triage.risk_tier_band == RiskTierBandV5.CRITICAL
     ):

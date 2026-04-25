@@ -40,6 +40,31 @@ _INJECTION_PATTERNS = (
 )
 
 
+# Spec line 80 — shadow_discovery_probe. Detects attempts to evade governance
+# through alternate tools, "just do it" framing, hidden text, markdown
+# injection, or connector smuggling.
+_SHADOW_DISCOVERY_PATTERNS = (
+    re.compile(r"\bjust\s+do\s+it\b", re.IGNORECASE),
+    re.compile(r"\b(?:bypass|skip|disable|override)\s+(?:the\s+)?(?:guardrail|policy|safety|governance|review)", re.IGNORECASE),
+    re.compile(r"\b(?:use|call|invoke)\s+(?:any|another|alternate|different)\s+tool", re.IGNORECASE),
+    re.compile(r"<!--\s*hidden", re.IGNORECASE),
+    re.compile(r"\[//\]:\s*#"),  # markdown-comment smuggling
+    re.compile(r"\\u200[bcdef]"),  # zero-width chars used for hidden text
+    re.compile(r"\bunregistered\s+(?:tool|connector|mcp|model)\b", re.IGNORECASE),
+)
+
+
+def _scan_shadow_discovery(samples: Iterable[str]) -> bool:
+    """Spec G1 line 80 shadow_discovery_probe."""
+    for s in samples:
+        if not s:
+            continue
+        for pat in _SHADOW_DISCOVERY_PATTERNS:
+            if pat.search(s):
+                return True
+    return False
+
+
 # Mode dispatch by packet kind. Spec lines 24–31 map packet kinds → modes
 # fairly directly; HITL re-entry and Exit-disposition are explicit.
 _PACKET_MODE: Mapping[PacketKind, GovernanceMode] = {
@@ -105,6 +130,7 @@ def triage_request(
     static_only: bool = False,
     text_samples: Iterable[str] = (),
     declared_authority: tuple[str, ...] | None = None,
+    declared_mode: GovernanceMode | None = None,
 ) -> TriageReport:
     """Compute the v5 triage decision for a normalized request.
 
@@ -138,6 +164,16 @@ def triage_request(
     if _scan_for_injection(text_samples):
         flags.append(TriageFlag.INJECTION_SUSPECTED)
         band = _max_band(band, RiskTierBandV5.HIGH)
+
+    # Spec G1 line 80 — shadow_discovery_probe.
+    if _scan_shadow_discovery(text_samples):
+        if TriageFlag.INJECTION_SUSPECTED not in flags:
+            flags.append(TriageFlag.INJECTION_SUSPECTED)
+        band = _max_band(band, RiskTierBandV5.HIGH)
+
+    # Spec G1 line 75 — declared mode must match actual packet content.
+    if declared_mode is not None and declared_mode != mode:
+        flags.append(TriageFlag.SCOPE_MISMATCH)
 
     if request.requested_authority and declared_authority is not None:
         requested_set = set(request.requested_authority)
