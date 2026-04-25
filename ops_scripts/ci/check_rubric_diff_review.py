@@ -65,24 +65,29 @@ def _git(*args: str, cwd: Path | None = None) -> str:
     return result.stdout
 
 
+def _is_rubric_path(line: str) -> bool:
+    """A staged file is a rubric iff it lives in the rubric dir, ends in .yaml/.yml,
+    AND does not begin with `_` (SSOT/config files like ``_versions.yaml`` added
+    2026-04-25 per runtime-gate-coverage-hardening-7e3f1a are not rubrics).
+    """
+    line = line.strip()
+    if not line.startswith(str(RUBRIC_DIR_REL).replace("\\", "/")):
+        return False
+    if not line.endswith((".yaml", ".yml")):
+        return False
+    # Filename (after the rubric dir) must not start with underscore.
+    name = Path(line).name
+    return not name.startswith("_")
+
+
 def _staged_rubric_files() -> list[Path]:
     out = _git("diff", "--cached", "--name-only", "--diff-filter=ACMR")
-    return [
-        REPO_ROOT / line.strip()
-        for line in out.splitlines()
-        if line.strip().startswith(str(RUBRIC_DIR_REL).replace("\\", "/"))
-        and line.strip().endswith((".yaml", ".yml"))
-    ]
+    return [REPO_ROOT / line.strip() for line in out.splitlines() if _is_rubric_path(line)]
 
 
 def _diff_range_rubric_files(rev_range: str) -> list[Path]:
     out = _git("diff", "--name-only", "--diff-filter=ACMR", rev_range)
-    return [
-        REPO_ROOT / line.strip()
-        for line in out.splitlines()
-        if line.strip().startswith(str(RUBRIC_DIR_REL).replace("\\", "/"))
-        and line.strip().endswith((".yaml", ".yml"))
-    ]
+    return [REPO_ROOT / line.strip() for line in out.splitlines() if _is_rubric_path(line)]
 
 
 def _show_at(rev: str, rel_path: str) -> str | None:

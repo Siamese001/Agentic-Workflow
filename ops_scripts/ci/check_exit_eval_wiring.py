@@ -50,6 +50,12 @@ def _load_rubrics() -> tuple[dict[str, Path], list[str]]:
     if not RUBRIC_DIR.exists():
         return gate_to_path, errors
     for path in sorted(RUBRIC_DIR.glob("*.yaml")):
+        # Leading-underscore files are SSOT/config artifacts that live alongside
+        # the rubrics but do not themselves describe a gate (e.g. _versions.yaml
+        # added 2026-04-25 per runtime-gate-coverage-hardening-7e3f1a). Skip them
+        # so the wiring check only operates on real rubric files.
+        if path.name.startswith("_"):
+            continue
         try:
             rubric = load_rubric(path)
         except RubricError as exc:

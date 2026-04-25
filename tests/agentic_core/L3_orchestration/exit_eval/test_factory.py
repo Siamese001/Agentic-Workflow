@@ -53,6 +53,10 @@ class TestBuildPipeline:
         bundle = build_pipeline(
             ["X1F"],
             bus_emitter=emitter,
+            # X1F@v2 (default since 2026-04-25) adds tool_result_faithfulness as
+            # a model-graded soft dim — so a judge_factory is required even
+            # though all *hard* sub-gates remain code-based.
+            judge_factory=lambda: FakeJudge(score=0.9),
             grader_overrides={"bias_fairness": FakeCodeGrader(score=1.0)},
             span_sink=NoOpSpanSink(),
         )
@@ -67,6 +71,8 @@ class TestBuildPipeline:
         bundle = build_pipeline(
             ["X1F"],
             bus_emitter=emitter,
+            # X1F@v2 requires a judge (see test_x1f_wires_concrete_detectors_by_default).
+            judge_factory=lambda: FakeJudge(score=0.9),
             grader_overrides={"bias_fairness": FakeCodeGrader(score=1.0)},
         )
         adversarial_ctx = GateContext(

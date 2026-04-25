@@ -83,16 +83,16 @@ def _resolve_rubric_version(gate_id: str, rubric_dir: Path) -> str:
         return env_val
     versions_path = rubric_dir / _VERSION_FILENAME
     if versions_path.exists():
-        try:
-            import yaml  # noqa: PLC0415
+        import yaml  # noqa: PLC0415
 
+        try:
             data = yaml.safe_load(versions_path.read_text(encoding="utf-8")) or {}
             block = data.get("versions") or {}
             if isinstance(block, dict):
                 v = block.get(gate_id) or block.get(gate_id.upper())
                 if isinstance(v, str) and v.strip():
                     return v.strip()
-        except (OSError, UnicodeDecodeError, ValueError) as exc:
+        except (OSError, UnicodeDecodeError, ValueError, yaml.YAMLError) as exc:
             # Non-fatal — fall through to v1 default. Surface in logs.
             import logging  # noqa: PLC0415
 
@@ -207,7 +207,11 @@ def _build_graders_for_gate(
 
     if gate == "X1F":
         # Every X1F slot has a concrete deterministic detector — no site overrides needed.
-        return {
+        # Wiring covers BOTH X1F@v1 (5 dims) and X1F@v2 (7 dims). The Gate
+        # constructor will only require graders that the loaded rubric declares,
+        # so v1 ignores `indirect_injection_resistance` / `tool_result_faithfulness`
+        # without complaint, and v2 picks them up.
+        wiring: dict[str, Grader] = {
             "prompt_injection_resistance": overrides.get(
                 "prompt_injection_resistance", PromptInjectionGrader()
             ),
@@ -219,7 +223,24 @@ def _build_graders_for_gate(
                 else _llm_grader_or_required("bias_fairness", judge_factory)
             ),
             "robustness": overrides.get("robustness", RobustnessGrader()),
+            # X1F@v2 dimensions — added 2026-04-25 per
+            # runtime-gate-coverage-hardening-7e3f1a (G7 closure).
+            # Defaults reuse PromptInjectionGrader as a placeholder for indirect
+            # injection (same attack family, differs only by surface); production
+            # callers should override with a retrieved-context-aware detector.
+            "indirect_injection_resistance": overrides.get(
+                "indirect_injection_resistance", PromptInjectionGrader()
+            ),
+            "tool_result_faithfulness": (
+                overrides["tool_result_faithfulness"]
+                if "tool_result_faithfulness" in overrides
+                else _llm_grader_or_required("tool_result_faithfulness", judge_factory)
+            ),
         }
+        # Strip dims the loaded rubric does not declare (so v1 callers still pass
+        # the Gate constructor's "no extra graders" invariant). The caller will
+        # always pass us all dims; the Gate filter happens in build_pipeline.
+        return wiring
 
     raise KeyError(f"build_pipeline: unknown gate {gate!r}")
 
@@ -302,6 +323,11 @@ def build_pipeline(
             raise KeyError(f"rubric file missing for {gate_id} (version={version}): {rubric_path}")
         rubric = load_rubric(rubric_path)
         graders = _build_graders_for_gate(gate_id, judge_factory, overrides)
+        # Filter graders to the rubric's declared dim set so v1 rubrics do not
+        # trip the Gate's "extra graders" invariant when the wiring builder
+        # supplies a forward-compat superset (added 2026-04-25 for X1F@v1<->v2).
+        declared = {d.name for d in rubric.dimensions}
+        graders = {name: g for name, g in graders.items() if name in declared}
         gates.append(Gate(rubric, graders))
 
     pipeline = EvaluationPipeline(
