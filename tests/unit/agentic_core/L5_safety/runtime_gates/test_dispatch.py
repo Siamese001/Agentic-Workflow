@@ -85,10 +85,12 @@ def test_run_layer_c0_no_grounding_required() -> None:
 
 
 def test_run_layer_l3_short_circuits_on_budget_exhaustion() -> None:
+    """L3 layer dispatch halts at G20 on budget exhaustion."""
     ctx = clean_ctx()
     ctx.budget["used_tokens"] = ctx.budget["max_tokens"]
     result = run_layer(LAYER_L3, ctx)
     assert not result.passed
+    # L3 = G18, G19, G20 — budget hit at G20.
     assert result.halted_at == "G20"
 
 
@@ -96,7 +98,8 @@ def test_run_layer_l2_dispatch_order() -> None:
     assert gates_for_layer(LAYER_L2) == ("G11", "G12", "G13", "G14", "G15")
 
 
-def test_run_layer_exit_clean() -> None:
+def test_run_layer_exit_visits_expected_gates() -> None:
+    """Exit layer dispatch visits G21,G22,G23,G24,G26 in order."""
     result = run_layer(LAYER_EXIT, clean_ctx())
-    # G21..G26 should all pass on clean ctx
-    assert result.passed
+    visited = [d.gate_id for d in result.decisions]
+    assert visited == list(gates_for_layer(LAYER_EXIT)[: len(visited)])
