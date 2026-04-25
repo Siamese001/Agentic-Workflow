@@ -134,6 +134,95 @@ def _ledger_section(spec) -> str:
     return "\n".join(lines)
 
 
+def _ledger_calibration_summary(spec) -> dict:
+    """W4.1: Compute one row of cross-ledger dashboard data per ledger.
+
+    Returns dict with keys: name, total, predicted, bound, hit_rate (precedent
+    injection rate, NaN when no verdicts captured), miscalibrated_bands (count
+    of bands with sufficient n where CI does not overlap nominal range),
+    sufficient_bands (count of bands with n >= min_band_n).
+    Fail-soft: any error returns sentinel values so the dashboard always renders.
+    """
+    blank = {
+        "name": spec.name,
+        "wave": spec.wave,
+        "total": 0,
+        "predicted": 0,
+        "bound": 0,
+        "verdict_count": 0,
+        "hit_count": 0,
+        "miscalibrated": 0,
+        "sufficient": 0,
+        "available": False,
+    }
+    if not spec.db_path.exists():
+        return blank
+    try:
+        conn = sqlite3.connect(str(spec.db_path), timeout=5)
+        try:
+            total = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+            predicted = conn.execute("SELECT COUNT(*) FROM events WHERE status='predicted'").fetchone()[0]
+            bound = conn.execute("SELECT COUNT(*) FROM events WHERE status='bound'").fetchone()[0]
+            conn.row_factory = sqlite3.Row
+            rows = [dict(r) for r in conn.execute(
+                "SELECT status, score_band, score_numeric, prediction_json, "
+                "outcome_json, metadata_json FROM events"
+            ).fetchall()]
+        finally:
+            conn.close()
+    except sqlite3.Error:
+        return {**blank, "available": False}
+
+    blank.update({"total": total, "predicted": predicted, "bound": bound, "available": True})
+    if total == 0 or bound == 0:
+        return blank
+    try:
+        m = _lib_compute_metrics(rows, EVENTS_ADAPTER, bands=_DEFAULT_BANDS, ledger_name=spec.name)
+    except (ValueError, TypeError, KeyError):
+        return blank
+    blank["verdict_count"] = m.total_rows - m.unknown_precedent
+    blank["hit_count"] = m.precedent_hit_count
+    miscal = sum(1 for b in m.calibration_curve if b.calibrated is False)
+    suff = sum(1 for b in m.calibration_curve if b.sufficient)
+    blank["miscalibrated"] = miscal
+    blank["sufficient"] = suff
+    return blank
+
+
+def _render_dashboard(rollups: list[dict]) -> list[str]:
+    """W4.1: Cross-ledger dashboard section. Renders ✅/⚠️/— at-a-glance."""
+    lines = [
+        "## Cross-Ledger Calibration Dashboard",
+        "",
+        "_One row per ledger. Health column is ✅ if every band with n≥5 is "
+        "calibrated (CI overlaps nominal range), ⚠️ if any band is "
+        "mis-calibrated, and — if no band has yet reached n≥5._",
+        "",
+        "| Ledger | Wave | Rows | Bound | Precedent hit-rate | Bands w/ n≥5 | Mis-cal | Health |",
+        "|---|---|---:|---:|---:|---:|---:|:---:|",
+    ]
+    for r in rollups:
+        if not r["available"]:
+            lines.append(f"| `{r['name']}` | {r['wave']} | — | — | — | — | — | — |")
+            continue
+        if r["verdict_count"] > 0:
+            hit = f"{r['hit_count']}/{r['verdict_count']} = {r['hit_count']/r['verdict_count']:.0%}"
+        else:
+            hit = "—"
+        if r["sufficient"] == 0:
+            health = "—"
+        elif r["miscalibrated"] == 0:
+            health = "✅"
+        else:
+            health = "⚠️"
+        lines.append(
+            f"| `{r['name']}` | {r['wave']} | {r['total']} | {r['bound']} | "
+            f"{hit} | {r['sufficient']} | {r['miscalibrated']} | {health} |"
+        )
+    lines.append("")
+    return lines
+
+
 def _render_report(now: datetime) -> str:
     header = [
         f"# Ledger Weekly Calibration — {_iso_week(now)}",
@@ -142,26 +231,27 @@ def _render_report(now: datetime) -> str:
         f"Ledgers reported: {len(LEDGER_REGISTRY)}  ",
         "Plan: `.windsurf/plans/intelligence-ledgers-ten-a7c3e2.md`",
         "",
-        "## Summary",
+    ]
+
+    # W4.1: Cross-ledger calibration dashboard. Computed once, also reused by
+    # the weekly-summary line that appears below for at-a-glance scanning.
+    rollups = [_ledger_calibration_summary(spec) for spec in LEDGER_REGISTRY]
+    header.extend(_render_dashboard(rollups))
+
+    # Legacy summary table preserved for back-compat with prior consumers.
+    header.extend([
+        "## Row Summary",
         "",
         "| Ledger | Rows | Predicted | Bound | Wave |",
         "|---|---:|---:|---:|---|",
-    ]
-    for spec in LEDGER_REGISTRY:
-        if not spec.db_path.exists():
-            header.append(f"| `{spec.name}` | — | — | — | {spec.wave} |")
+    ])
+    for r in rollups:
+        if not r["available"]:
+            header.append(f"| `{r['name']}` | — | — | — | {r['wave']} |")
             continue
-        try:
-            conn = sqlite3.connect(str(spec.db_path), timeout=5)
-            try:
-                total = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
-                predicted = conn.execute("SELECT COUNT(*) FROM events WHERE status='predicted'").fetchone()[0]
-                bound = conn.execute("SELECT COUNT(*) FROM events WHERE status='bound'").fetchone()[0]
-            finally:
-                conn.close()
-            header.append(f"| `{spec.name}` | {total} | {predicted} | {bound} | {spec.wave} |")
-        except sqlite3.Error:
-            header.append(f"| `{spec.name}` | ERR | — | — | {spec.wave} |")
+        header.append(
+            f"| `{r['name']}` | {r['total']} | {r['predicted']} | {r['bound']} | {r['wave']} |"
+        )
 
     body = ["", "## Per-Ledger Detail", ""]
     for spec in LEDGER_REGISTRY:

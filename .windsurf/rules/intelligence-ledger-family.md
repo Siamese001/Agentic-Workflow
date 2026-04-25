@@ -107,7 +107,34 @@ duration, the ledger retires via the same lifecycle as the
    ledger after `retired_after`.
 3. The entry is removed from `LEDGER_REGISTRY` after one full review cycle.
 
-## 5. Enforcement Layers
+## 5. Calibration Evidence → Threshold Tuning (W5, plan c8f4a2)
+
+Each weekly report at `docs/reports/calibration/<YYYY-Www>.md` includes a
+**Per-Band Calibration Curve** per ledger. When that curve produces actionable
+signal (Wilson 95% CI does not overlap the band's nominal range), follow this
+deterministic ritual:
+
+| Evidence pattern | Action | Author-Gate? |
+|---|---|:---:|
+| Band has `n < 20` | Wait — sample too small to act on | No |
+| Band has `n ≥ 20` AND CI overlaps nominal range | Confirm calibration; no change | No |
+| Band has `n ≥ 20` AND CI miss is `< 0.05` | Auto-tune scorer threshold up to 0.05 | No |
+| Band has `n ≥ 20` AND CI miss is `≥ 0.05` | **STOP — Author-Gate required** | **Yes** |
+| ≥2 bands mis-calibrated in same ledger | **STOP — Author-Gate required** | **Yes** |
+
+**Why this split?** Small adjustments (≤0.05) within a single band fall inside
+normal stochastic drift; auto-tuning preserves momentum. Large miscalibrations
+or systemic miscalibrations (multiple bands in one ledger) reveal the scoring
+formula itself is wrong — that's an architectural decision, not a parameter
+tweak, and must be surfaced via Author-Gate per `author-gate-enforcement.md`.
+
+**Decision-type for the Author-Gate**: `architecture_choice` (re-scoring
+formula) — not `parameter_tune`. Surface the affected band, the empirical
+success rate with CI, and the candidate fixes (re-weight features, change
+band boundaries, retire the metric). Capture under
+`DECISION_CAPTURED: type=architecture_choice, repo_area=tools/calibration/<ledger>, …`.
+
+## 6. Enforcement Layers
 
 | Layer | Mechanism |
 |---|---|
@@ -115,9 +142,12 @@ duration, the ledger retires via the same lifecycle as the
 | Deterministic | `ops_scripts/ci/check_ledger_writer_contract.py` (CI + pre-commit) |
 | Schema drift | `python -m tools.ledgers.apply_schema --check` |
 | Weekly visibility | `ops_scripts/calibration/ledger_weekly_report.py` → `docs/reports/calibration/<YYYY-Www>.md` |
-| Coverage audit | `ops_scripts/ci/check_ledger_coverage.py` (W5.2, future) |
+| Calibration freshness | `ops_scripts/ci/check_weekly_calibration_freshness.py` (8-day window, W4.3) |
+| Notion writeback | `tools/calibration/post_weekly_summary.py` → `artifacts/calibration/weekly_summary_<week>.json` (Cascade-dispatched, W4.2) |
+| Calibration math | `tools/calibration/loop_metrics.py` (Wilson CI, banding, W2 SSOT) |
+| Coverage audit | `ops_scripts/ci/check_ledger_coverage.py` (future) |
 
-## 6. References
+## 7. References
 
 - **Plan**: `.windsurf/plans/intelligence-ledgers-ten-a7c3e2.md`
 - **ADR**: `docs/architecture/adr/ADR-050-intelligence-ledger-family.md`

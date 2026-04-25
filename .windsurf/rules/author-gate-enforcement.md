@@ -109,7 +109,25 @@ Author-Gate skipped ONLY when: fixing typos/whitespace/formatting; single correc
 | dominance_delta | 0.12 |
 | max_surface_options | 4 |
 
+## Calibration-Driven Triggers (meta-learning W5, plan c8f4a2)
+
+Empirical Wilson CI evidence in the weekly report at
+`docs/reports/calibration/<YYYY-Www>.md` MAY require an Author-Gate. Trigger
+when **either** holds:
+
+- A single band has `n ≥ 20`, `confidence` is its label-numeric upper bound,
+  and the success-rate CI miss exceeds **0.05** away from the nominal range
+- **Two or more bands** in the same ledger are mis-calibrated (CI does not
+  overlap nominal range) regardless of individual delta
+
+Action: surface as `decision_type=architecture_choice` (not `parameter_tune`),
+because the scoring formula itself is the artifact under decision. Smaller
+deltas (< 0.05 in a single band) auto-tune silently — momentum preserved.
+
+Full ritual table: see `intelligence-ledger-family.md` §5.
+
 ## Extended Doctrine
 
 Full decision-point triggers, option shape contract (AG-10), scoring guidance, and telemetry format:
 - author-gate-decision-points.md (model_decision trigger)
+- intelligence-ledger-family.md (calibration-evidence ritual)
