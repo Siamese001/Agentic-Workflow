@@ -97,6 +97,11 @@ class EvalFreshnessGate:
 
     def __init__(self, policy: FreshnessPolicy) -> None:
         self._policy = policy
+        # v6 KPI counters (EVAL_FRESHNESS_ON_WRITE). Updated on each
+        # check() invocation; callers flush to the KPI board via
+        # :meth:`publish_kpi_sample`. Counters never raise.
+        self._total_writes: int = 0
+        self._fresh_writes: int = 0
 
     @classmethod
     def from_repo(cls, repo_root: str | Path) -> "EvalFreshnessGate":
@@ -133,7 +138,26 @@ class EvalFreshnessGate:
         """
 
         now = time.time() if now is None else float(now)
+        decision = self._decide(
+            change_class=change_class,
+            eval_record_timestamp=eval_record_timestamp,
+            now=now,
+        )
+        # v6 KPI accounting: every check is one attempted write; fresh
+        # writes are those not blocked by freshness. Guardian-exempt
+        # counter update — must never throw in the hot path.
+        self._total_writes += 1
+        if not decision.blocked:
+            self._fresh_writes += 1
+        return decision
 
+    def _decide(
+        self,
+        *,
+        change_class: str,
+        eval_record_timestamp: float | None,
+        now: float,
+    ) -> FreshnessDecision:
         # Emergency fail-open: loud warning, not blocked. Audit trail survives.
         if self._policy.fail_open:
             return FreshnessDecision(
@@ -220,4 +244,35 @@ class EvalFreshnessGate:
             age_seconds=age,
             ttl_seconds=ttl,
             reason=f"fresh ({age:.0f}s <= {ttl:.0f}s)",
+        )
+
+    # --- v6 KPI surface -------------------------------------------------
+
+    @property
+    def write_counters(self) -> tuple[int, int]:
+        """Return ``(fresh_writes, total_writes)`` since construction/reset."""
+        return (self._fresh_writes, self._total_writes)
+
+    def reset_counters(self) -> None:
+        """Reset the v6 KPI counters. Does not affect policy."""
+        self._fresh_writes = 0
+        self._total_writes = 0
+
+    def publish_kpi_sample(self, board: Any) -> None:
+        """Publish the current EVAL_FRESHNESS_ON_WRITE ratio to ``board``.
+
+        Accepts any object duck-typed as :class:`V6KPIBoard` so this module
+        does not depend on the producer helper module at import time.
+        The helper never raises — failures are logged via the producer
+        module's guardian-exempt logger.
+        """
+        # Lazy import to avoid import-time cycle with v6_kpi_producers.
+        from system_learning.engines.v6_kpi_producers import (  # noqa: PLC0415
+            record_eval_freshness_on_write,
+        )
+
+        record_eval_freshness_on_write(
+            board,
+            fresh_writes=self._fresh_writes,
+            total_writes=self._total_writes,
         )
