@@ -1,6 +1,6 @@
 {
-  "schema_version": "00C.runtime_proof.v1",
-  "generated_at_utc": "2026-04-26T19:27:46.907906+00:00",
+  "schema_version": "00C.runtime_proof.v2",
+  "generated_at_utc": "2026-04-26T23:06:12.984945+00:00",
   "doctrine_files": [
     "00C_Runtime_Gates_Current_Run_Mesh_detailed.md",
     "00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk_detailed.md",
@@ -10,11 +10,12 @@
     "00C.5_Runtime_Gates_G21_G24_Output_Security_Replay_detailed.md",
     "00C.6_Runtime_Gates_G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall_detailed.md",
     "00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix_detailed.md",
-    "00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass_detailed.md"
+    "00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass_detailed.md",
+    "00C.9_RG_Layer_Integration_Invocation_Map.md"
   ],
   "aggregate_status": "PASS",
-  "individual_proof_count": 18,
-  "passed_count": 18,
+  "individual_proof_count": 19,
+  "passed_count": 19,
   "failed_count": 0,
   "proofs": {
     "registry_complete": {
@@ -568,7 +569,90 @@
         "session_id": "sess-proof-001"
       },
       "status": "PASS"
+    },
+    "layer_integration_invocation_map": {
+      "coverage": {
+        "all_gate_ids_count": 29,
+        "covered_count": 29,
+        "coverage_gap": [],
+        "g06_layers": [
+          "CROSS_CUTTING"
+        ]
+      },
+      "l2_e2_e3_tool_egress": {
+        "e2_valid": [
+          "G11",
+          "G12",
+          "G14",
+          "G15",
+          "G17",
+          "G23"
+        ],
+        "e3_before_call": [
+          "G11",
+          "G12",
+          "G14",
+          "G15",
+          "G20"
+        ],
+        "g11_in_e2_and_e3": true,
+        "g12_in_e2_and_e3": true,
+        "g14_in_e3": true,
+        "g15_in_e3": true
+      },
+      "pa_airlock": {
+        "pa3_airlock_gates": [
+          "G13",
+          "G17",
+          "G23"
+        ]
+      },
+      "c0_final_evidence_contract": {
+        "before_final_evidence_contract": [
+          "G09",
+          "G24"
+        ]
+      },
+      "exit_consumption": {
+        "exit_invoked_gates": [
+          "G21",
+          "G22",
+          "G23",
+          "G24",
+          "G25",
+          "G26",
+          "G27",
+          "G28"
+        ],
+        "evaluator_files": {
+          "G21": "g21_output_schema.py",
+          "G22": "g22_output_quality.py",
+          "G23": "g23_security_leakage.py",
+          "G24": "g24_determinism_replay.py",
+          "G25": "g25_runtime_anomaly.py",
+          "G26": "g26_exit_disposition.py",
+          "G27": "g27_durable_write_sovereignty.py",
+          "G28": "g28_audit_trace_completeness.py"
+        },
+        "all_evaluators_present": true
+      },
+      "unknown_material_routing": {
+        "default_policy": "NEEDS_HELP",
+        "fail_terminal_policy": "FAIL_TERMINAL",
+        "neither_is_pass": true
+      },
+      "direct_write_g27": {
+        "g27_layers": [
+          "L2",
+          "Exit",
+          "UWG"
+        ],
+        "fail_before_e3": "REJECTED",
+        "fail_after_e3": "REJECTED",
+        "fail_seal": "REJECTED"
+      },
+      "status": "PASS"
     }
   },
-  "bundle_digest": "sha256:b023147f396074138d8c60426cf39514529d8f27be128d47cdddf3e8cdfddec0"
+  "bundle_digest": "sha256:de271fccf928519b263dd91b4961e14219238e62985a0105d00aa50832bc2e72"
 }

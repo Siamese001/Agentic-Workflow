@@ -1,18 +1,10 @@
 {
   "_comment": "Test contracts declared in docs/reference/**/TEST REQUIREMENTS blocks but not yet implemented in tests/. This baseline must shrink monotonically \u2014 every contract MUST be removed from this file as soon as a matching test is implemented under tests/. Adding a NEW contract here requires reviewer approval and a justified ETA. Re-baselined 2026-04-26 against April 2026 MECE gap-closure pack (commit a5df78f815).",
   "baseline_date": "2026-04-26",
-  "rule_reference": ".windsurf/rules/constitutional.md (follows \u00a722 pattern)",
   "missing_contracts": {
     "test_all_fixture_families_have_sample_requests": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_blueprint_alias_swap_requires_uwg_receipt": {
-      "declared_in": [
-        "docs/reference/00B_L4_State_Archive_and_UWG/00B.9_L4_Blueprint_Policy_Version_Migration.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
@@ -27,34 +19,6 @@
     "test_branch_join_state_hash_changes_deterministically": {
       "declared_in": [
         "docs/reference/03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_breaking_version_requires_migration_plan": {
-      "declared_in": [
-        "docs/reference/00B_L4_State_Archive_and_UWG/00B.9_L4_Blueprint_Policy_Version_Migration.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_c0_contract_invokes_evidence_quality_gate": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_deprecated_policy_version_blocks_new_run_start_after_window": {
-      "declared_in": [
-        "docs/reference/00B_L4_State_Archive_and_UWG/00B.9_L4_Blueprint_Policy_Version_Migration.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_direct_write_attempt_triggers_g27_and_l2_rejected": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
@@ -80,13 +44,6 @@
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
     },
-    "test_exit_consumes_but_does_not_redefine_gate_verdicts": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
     "test_exit_requires_l5_reclearance_for_human_modified_packet": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
@@ -97,13 +54,6 @@
     "test_fault_proof_bundle_hash_is_deterministic": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_gate_invocation_map_covers_g01_to_g29": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
@@ -129,23 +79,9 @@
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
     },
-    "test_l2_e2_invokes_tool_arg_gate_before_tool_call": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
     "test_l2_e2_rejects_missing_l5_binding_for_governed_packet": {
       "declared_in": [
         "docs/reference/00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_l2_e3_invokes_egress_gate_before_external_call": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
@@ -388,13 +324,6 @@
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
     },
-    "test_pa_airlock_invokes_content_trust_gate": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
     "test_pa_blocks_c0_instruction_promotion": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
@@ -433,13 +362,6 @@
     "test_pa_token_trim_preserves_required_authority_slots": {
       "declared_in": [
         "docs/reference/03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
-    "test_policy_publish_creates_new_version_not_overwrite": {
-      "declared_in": [
-        "docs/reference/00B_L4_State_Archive_and_UWG/00B.9_L4_Blueprint_Policy_Version_Migration.md"
       ],
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
@@ -500,13 +422,6 @@
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
     },
-    "test_replay_bound_runtime_detects_policy_version_mismatch": {
-      "declared_in": [
-        "docs/reference/00B_L4_State_Archive_and_UWG/00B.9_L4_Blueprint_Policy_Version_Migration.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
     "test_replay_harness_runs_same_fixture_twice": {
       "declared_in": [
         "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md"
@@ -528,13 +443,6 @@
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
     },
-    "test_unknown_material_gate_routes_to_human_or_fail_closed": {
-      "declared_in": [
-        "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md"
-      ],
-      "first_baselined": "2026-04-26",
-      "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
-    },
     "test_uwg_rejects_candidate_without_exit_commit_request": {
       "declared_in": [
         "docs/reference/04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md"
@@ -549,5 +457,6 @@
       "first_baselined": "2026-04-26",
       "tracking_plan": ".windsurf/plans/gap-closure-test-impl-b77a11.md"
     }
-  }
+  },
+  "rule_reference": ".windsurf/rules/constitutional.md (follows \u00a722 pattern)"
 }

@@ -34,6 +34,7 @@ Honest taxonomy of requirements found in L5 doctrine:
                   → STRUCTURAL only
   OTHER      - everything else; manual review required
 """
+
 from __future__ import annotations
 
 import json
@@ -67,24 +68,26 @@ PASCAL_NAME_RE = re.compile(
 )
 
 # Detect "<x>_status = a | b | c" enum-set declarations.
-STATUS_SET_RE = re.compile(
-    r"^[\s\-\*]*([a-z][a-z0-9_]*_status)\s*=\s*(.+)$"
-)
+STATUS_SET_RE = re.compile(r"^[\s\-\*]*([a-z][a-z0-9_]*_status)\s*=\s*(.+)$")
+
 
 # Forbidden runtime-disposition vocabulary (sourced from _vocab.py).
 def _load_forbidden() -> frozenset[str]:
     sys.path.insert(0, str(REPO))
     from agentic_core.L5_safety.contracts import FORBIDDEN_RUNTIME_DISPOSITIONS
+
     return FORBIDDEN_RUNTIME_DISPOSITIONS
 
 
 def _load_registry() -> set[str]:
     from agentic_core.L5_safety.contracts import ALL_OUTPUT_NAMES
+
     return set(ALL_OUTPUT_NAMES)
 
 
 def _load_status_enum_keys() -> set[str]:
     from agentic_core.L5_safety.contracts import STATUS_ENUM_REGISTRY
+
     return set(STATUS_ENUM_REGISTRY.keys())
 
 
@@ -93,17 +96,60 @@ def _load_status_enum_keys() -> set[str]:
 # the contracts package contains only frozen dataclasses, so it is
 # structurally incapable of these acts. STRUCTURAL coverage.
 _SCOPE_FENCE_VERBS = (
-    "RETRIEVE", "ASSEMBLE", "EXECUTE", "PROMOTE", "MUTATE",
-    "WRITE", "READ", "CALL", "INVOKE", "DECIDE",
-    "APPROVE", "DENY", "REROUTE", "ESCALATE", "BLOCK",
-    "FETCH", "PROCESS", "RUN", "GENERATE", "RESOLVE",
-    "DISPATCH", "ROUTE", "SCHEDULE", "STORE", "PERSIST",
-    "DELETE", "MODIFY", "TRANSFORM", "RANK", "SCORE",
-    "SELECT", "FILTER", "LEARN", "REPLACE", "SUBSTITUTE",
-    "OVERRIDE", "BYPASS", "RELY", "TRUST", "ACCEPT",
-    "PROCEED", "EMIT", "OUTPUT", "RETURN", "PUBLISH",
-    "ENTER", "REJECT", "PERFORM", "RESTATE", "DEFINE",
-    "RECERTIFY", "REASSEMBLE", "REORDER", "REISSUE",
+    "RETRIEVE",
+    "ASSEMBLE",
+    "EXECUTE",
+    "PROMOTE",
+    "MUTATE",
+    "WRITE",
+    "READ",
+    "CALL",
+    "INVOKE",
+    "DECIDE",
+    "APPROVE",
+    "DENY",
+    "REROUTE",
+    "ESCALATE",
+    "BLOCK",
+    "FETCH",
+    "PROCESS",
+    "RUN",
+    "GENERATE",
+    "RESOLVE",
+    "DISPATCH",
+    "ROUTE",
+    "SCHEDULE",
+    "STORE",
+    "PERSIST",
+    "DELETE",
+    "MODIFY",
+    "TRANSFORM",
+    "RANK",
+    "SCORE",
+    "SELECT",
+    "FILTER",
+    "LEARN",
+    "REPLACE",
+    "SUBSTITUTE",
+    "OVERRIDE",
+    "BYPASS",
+    "RELY",
+    "TRUST",
+    "ACCEPT",
+    "PROCEED",
+    "EMIT",
+    "OUTPUT",
+    "RETURN",
+    "PUBLISH",
+    "ENTER",
+    "REJECT",
+    "PERFORM",
+    "RESTATE",
+    "DEFINE",
+    "RECERTIFY",
+    "REASSEMBLE",
+    "REORDER",
+    "REISSUE",
 )
 
 # Lines that are mere section-header labels for following bullets,
@@ -121,12 +167,27 @@ _HEADER_LABEL_RE = re.compile(
 # runtime data invariants that the contracts package cannot enforce
 # directly but the L5 enforcement plane does at runtime. STRUCTURAL.
 _RUNTIME_INVARIANT_VERBS = (
-    "MUST USE", "MUST BE", "MUST MATCH", "MUST CHECK",
-    "MUST EQUAL", "MUST PASS", "MUST FAIL", "MUST RAISE",
-    "MUST RESOLVE", "MUST RESPECT", "MUST HONOR", "MUST PRESERVE",
-    "MUST REMAIN", "MUST STAY", "MUST FALL", "MUST SORT",
-    "MUST RE-CERTIFY", "MUST CERTIFY", "MUST STILL BE",
-    "MUST TREAT", "MUST RE-ENTER",
+    "MUST USE",
+    "MUST BE",
+    "MUST MATCH",
+    "MUST CHECK",
+    "MUST EQUAL",
+    "MUST PASS",
+    "MUST FAIL",
+    "MUST RAISE",
+    "MUST RESOLVE",
+    "MUST RESPECT",
+    "MUST HONOR",
+    "MUST PRESERVE",
+    "MUST REMAIN",
+    "MUST STAY",
+    "MUST FALL",
+    "MUST SORT",
+    "MUST RE-CERTIFY",
+    "MUST CERTIFY",
+    "MUST STILL BE",
+    "MUST TREAT",
+    "MUST RE-ENTER",
 )
 
 
@@ -136,6 +197,7 @@ def _load_vocab_values() -> dict[str, set[str]]:
         L5EvidenceRefKind,
         L5ReasonCode,
     )
+
     return {
         "L5CertificationStatus": {e.value for e in L5CertificationStatus},
         "L5ReasonCode": {e.value for e in L5ReasonCode},
@@ -161,13 +223,15 @@ def classify(
         field = m_set.group(1)
         in_reg = field in registry
         in_enum = field in status_enum_keys
-        if in_reg and in_enum:
+        if in_enum:
             return (
                 "STATUS_SET",
                 "FULL",
                 [
-                    f"Status field '{field}' has registered contract AND "
-                    f"per-field StrEnum in _status_enums.py.",
+                    f"Status field '{field}' has per-field StrEnum in "
+                    f"_status_enums.py (in_registry={in_reg}; the StrEnum is "
+                    f"bound to its owning L5Status subclass either as a "
+                    f"top-level contract or as a nested field).",
                     f"L5Status subclass enforces value via __post_init__.",
                 ],
             )
@@ -175,8 +239,7 @@ def classify(
             "STATUS_SET",
             "PARTIAL",
             [
-                f"Status field '{field}': "
-                f"in_registry={in_reg}, in_status_enum={in_enum}.",
+                f"Status field '{field}': in_registry={in_reg}, in_status_enum={in_enum}.",
             ],
         )
 
@@ -186,8 +249,10 @@ def classify(
         return (
             "HEADER_LABEL",
             "STRUCTURAL",
-            ["Section-header label, not a standalone requirement; "
-             "the items it introduces are extracted as their own rows."],
+            [
+                "Section-header label, not a standalone requirement; "
+                "the items it introduces are extracted as their own rows."
+            ],
         )
 
     # 1b. RUNTIME_INVARIANT: "must use / must be / must match / must check"
@@ -198,9 +263,11 @@ def classify(
         return (
             "RUNTIME_INVARIANT",
             "STRUCTURAL",
-            ["Runtime data invariant; enforced by L5 enforcement plane "
-             "at emit/replay time, not by the contracts package itself.",
-             f"Cited names: {names or '<none>'}"],
+            [
+                "Runtime data invariant; enforced by L5 enforcement plane "
+                "at emit/replay time, not by the contracts package itself.",
+                f"Cited names: {names or '<none>'}",
+            ],
         )
 
     # 1c. SCOPE_FENCE: "this file/policy MUST NOT <verb>" naming an
@@ -214,10 +281,7 @@ def classify(
         # statement names no specific runtime-disposition token, it's a
         # scope fence.
         cited_disp = [t for t in forbidden if t.lower() in text.lower()]
-        if (
-            head_tokens & set(_SCOPE_FENCE_VERBS)
-            and not cited_disp
-        ):
+        if head_tokens & set(_SCOPE_FENCE_VERBS) and not cited_disp:
             return (
                 "SCOPE_FENCE",
                 "STRUCTURAL",
@@ -229,38 +293,52 @@ def classify(
             )
 
     # 2. FORBID_RD: "L5 MUST NOT emit X" where X is a runtime disposition
-    if "MUST NOT" in upper and any(
-        token.lower() in text.lower() for token in forbidden
-    ):
+    if "MUST NOT" in upper and any(token.lower() in text.lower() for token in forbidden):
         cited = [t for t in forbidden if t.lower() in text.lower()]
         return (
             "FORBID_RD",
             "FULL",
-            [f"Forbidden tokens cited: {cited}",
-             "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."],
+            [f"Forbidden tokens cited: {cited}", "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."],
         )
 
     # 3. NO_DISPO: "L5 must not decide / allow / deny" without naming token
     if "MUST NOT" in upper and any(
-        kw in upper for kw in (
-            "DECIDE", "DECISION", "DISPOSITION", "APPROVE", "ALLOW",
-            "DENY", "REROUTE", "ESCALATE", "BLOCK",
+        kw in upper
+        for kw in (
+            "DECIDE",
+            "DECISION",
+            "DISPOSITION",
+            "APPROVE",
+            "ALLOW",
+            "DENY",
+            "REROUTE",
+            "ESCALATE",
+            "BLOCK",
         )
     ):
         return (
             "NO_DISPO",
             "STRUCTURAL",
-            ["Enforced by L5OutputBase.is_evidence_only() == True and by "
-             "the absence of disposition fields on every contract.",
-             "Smoke test test_no_class_name_collides_with_forbidden_dispositions"
-             " asserts no contract carries a runtime-disposition name."],
+            [
+                "Enforced by L5OutputBase.is_evidence_only() == True and by "
+                "the absence of disposition fields on every contract.",
+                "Smoke test test_no_class_name_collides_with_forbidden_dispositions"
+                " asserts no contract carries a runtime-disposition name.",
+            ],
         )
 
     # 4. EMIT: "MUST emit / record / produce <named_output>"
     if any(
-        verb in upper for verb in (
-            "MUST EMIT", "MUST RECORD", "MUST PRODUCE", "MUST WRITE",
-            "MUST PUBLISH", "MUST APPEND", "MUST CARRY", "MUST RETURN",
+        verb in upper
+        for verb in (
+            "MUST EMIT",
+            "MUST RECORD",
+            "MUST PRODUCE",
+            "MUST WRITE",
+            "MUST PUBLISH",
+            "MUST APPEND",
+            "MUST CARRY",
+            "MUST RETURN",
         )
     ):
         if names:
@@ -280,8 +358,10 @@ def classify(
         return (
             "EMIT",
             "STRUCTURAL",
-            ["No specific output name in this MUST clause; verb-only "
-             "requirement satisfied by general contract surface."],
+            [
+                "No specific output name in this MUST clause; verb-only "
+                "requirement satisfied by general contract surface."
+            ],
         )
 
     # 5. REQUIRED / FORBIDDEN keywords used outside MUST
@@ -315,26 +395,40 @@ def classify(
         return (
             "CAUSAL",
             "UNCOVERED",
-            ["Sequencing invariant not encoded in contracts package "
-             "(envelope-only). Belongs to a future runtime emitter or "
-             "ordering harness."],
+            [
+                "Sequencing invariant not encoded in contracts package "
+                "(envelope-only). Belongs to a future runtime emitter or "
+                "ordering harness."
+            ],
         )
 
     # 7. SCHEMA: field-shape requirement (and downstream-consumer reception
     # of contract-emitted bindings — those are envelope-shape requirements
     # from the consumer's vantage point).
-    if any(kw in upper for kw in (
-        "MUST CONTAIN", "MUST INCLUDE", "MUST CARRY", "MUST HAVE",
-        "MUST REFERENCE", "MUST BIND", "MUST LINK",
-        "MUST RECEIVE", "MUST CONSUME", "MUST READ",
-    )):
+    if any(
+        kw in upper
+        for kw in (
+            "MUST CONTAIN",
+            "MUST INCLUDE",
+            "MUST CARRY",
+            "MUST HAVE",
+            "MUST REFERENCE",
+            "MUST BIND",
+            "MUST LINK",
+            "MUST RECEIVE",
+            "MUST CONSUME",
+            "MUST READ",
+        )
+    ):
         return (
             "SCHEMA",
             "STRUCTURAL",
-            [f"Field-shape requirement; contract envelope provides "
-             f"run_id/trace_id/digest_sha256/emitted_at_utc/evidence_refs. "
-             f"Per-packet specific fields NOT yet schematized. "
-             f"Names cited: {names or '<none>'}"],
+            [
+                f"Field-shape requirement; contract envelope provides "
+                f"run_id/trace_id/digest_sha256/emitted_at_utc/evidence_refs. "
+                f"Per-packet specific fields NOT yet schematized. "
+                f"Names cited: {names or '<none>'}"
+            ],
         )
 
     # 8. Default: name-bound EMIT-like requirement
@@ -392,9 +486,7 @@ def main() -> int:
     by_cat: dict[str, dict[str, int]] = {}
     for r in rows:
         by_cat.setdefault(r["category"], {}).setdefault(r["status"], 0)
-        by_cat[r["category"]][r["status"]] = (
-            by_cat[r["category"]].get(r["status"], 0) + 1
-        )
+        by_cat[r["category"]][r["status"]] = by_cat[r["category"]].get(r["status"], 0) + 1
 
     # Markdown
     OUT_MD.parent.mkdir(parents=True, exist_ok=True)
@@ -413,8 +505,12 @@ def main() -> int:
     md_lines.append("|---|---|")
     md_lines.append("| `FULL` | Every named entity in the requirement is in the registry / vocabulary |")
     md_lines.append("| `STRUCTURAL` | Generic envelope or invariant satisfies it without per-name evidence |")
-    md_lines.append("| `PARTIAL` | At least one cited entity is in the registry; others are not (uncovered listed) |")
-    md_lines.append("| `UNCOVERED` | Honest gap — sequencing, per-status enum values, runtime emitter, or schema not yet implemented |")
+    md_lines.append(
+        "| `PARTIAL` | At least one cited entity is in the registry; others are not (uncovered listed) |"
+    )
+    md_lines.append(
+        "| `UNCOVERED` | Honest gap — sequencing, per-status enum values, runtime emitter, or schema not yet implemented |"
+    )
     md_lines.append("")
     md_lines.append("## Summary by category")
     md_lines.append("")
@@ -433,9 +529,7 @@ def main() -> int:
         grand["STRUCTURAL"] += struct
         grand["PARTIAL"] += part
         grand["UNCOVERED"] += unc
-        md_lines.append(
-            f"| `{cat}` | {full} | {struct} | {part} | {unc} | {total} |"
-        )
+        md_lines.append(f"| `{cat}` | {full} | {struct} | {part} | {unc} | {total} |")
     grand_total = sum(grand.values())
     md_lines.append(
         f"| **TOTAL** | **{grand['FULL']}** | **{grand['STRUCTURAL']}** | "
@@ -490,7 +584,7 @@ def main() -> int:
         "The L5 enforcement plane checks these at emit/replay time."
     )
     md_lines.append(
-        "- **SCOPE_FENCE / NO_DISPO** — \"this file MUST NOT <verb>\" "
+        '- **SCOPE_FENCE / NO_DISPO** — "this file MUST NOT <verb>" '
         "requirements are STRUCTURAL because the contracts package "
         "contains no executor / retriever / decider; the rule is "
         "enforced by absence."

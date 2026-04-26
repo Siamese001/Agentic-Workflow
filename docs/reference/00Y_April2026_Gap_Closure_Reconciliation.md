@@ -13,15 +13,15 @@ L2 sequencing, runtime gate integration, proposed_state_diff, PTC v2 sandboxing,
 
 | Review gap | Closure in refreshed zip | Ownership rule |
 |---|---|---|
-| E5 Seal child | `04_L2_Execute/04.6_L2_E5_Seal_Artifact_and_Dispatch_detailed.md` retained and parent map updated | L2 seals only; Exit disposes |
-| L2 sequencer / orchestrator | `04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract_detailed.md` added | L2 parent glue only |
+| E5 Seal child | `04_L2_Execute/04.6_L2_E5_Seal_Artifact_and_Dispatch.md` retained and parent map updated | L2 seals only; Exit disposes |
+| L2 sequencer / orchestrator | `04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract.md` added | L2 parent glue only |
 | Runtime Gates integration | `00C_Runtime_Gates_Current_Run_Mesh/00C.9_RG_Layer_Integration_Invocation_Map.md` added | 00C owns gate law; layers invoke |
-| proposed_state_diff contract | `04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md` added | L2 emits inert candidate only |
-| PTC v2 sandbox spec | `04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md` hardened | L2 sandbox execution only |
+| proposed_state_diff contract | `04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent.md` added | L2 emits inert candidate only |
+| PTC v2 sandbox spec | `04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox.md` hardened | L2 sandbox execution only |
 | L3/L2 step handoff | `03_L0_Route_Decision_and_L3_Orchestration/03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md` added | L3 shapes, L2 executes |
 | L5 certification binding | `00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md` added | L5 certifies evidence only |
 | 99 proof harness details | `99.9` and `99.10` added | 99 proves whole chain |
-| Advanced verify/self-critique | `04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md` added | L2 local same-authority only |
+| Advanced verify/self-critique | `04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique.md` added | L2 local same-authority only |
 | Long-term memory promotion interface | `06.9_L6_Memory_Promotion_Interface.md` added | L6 proposes, UWG commits, L4 stores |
 | PA formal authority tests | `03B_PA_Prompt_Assembly/PA.8_Authority_RedTeam_Slot_Verification.md` added | PA proves slot construction only |
 | Blueprint/policy migration | `00B_L4_State_Archive_and_UWG/00B.9_L4_Blueprint_Policy_Version_Migration.md` added | L4/UWG durable versioning only |

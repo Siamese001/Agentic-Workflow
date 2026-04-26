@@ -1,5 +1,5 @@
 {
-  "00.1_L5_Safety_Enforcement_Plane_detailed.md": [
+  "00A.1_L5_Safety_Enforcement_Plane_detailed.md": [
     "agent_profile_receipt",
     "agent_registry_validation_report",
     "agent_registry_violation_report",
@@ -73,7 +73,7 @@
     "unknown_classification_report",
     "waiver_required_report"
   ],
-  "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md": [
+  "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md": [
     "GovernedValidationContext",
     "HITLReentryPacket",
     "IncidentReviewPacket",
@@ -217,7 +217,7 @@
     "write_intent_smuggling_report",
     "write_scope_receipt"
   ],
-  "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md": [
+  "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md": [
     "OriginTrustManifest",
     "authority_attempt_status",
     "authority_label_map",
@@ -343,7 +343,7 @@
     "user_intent_extraction_ref",
     "user_turn_boundary_receipt"
   ],
-  "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md": [
+  "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md": [
     "HITLAuditReceipt",
     "HITLFreezePacket",
     "HumanInputOriginReceipt",
@@ -436,7 +436,7 @@
     "static_hitl_governance_report",
     "updated_packet_ref"
   ],
-  "00.5_L5_Egress_and_Provider_Governance_detailed.md": [
+  "00A.5_L5_Egress_and_Provider_Governance_detailed.md": [
     "ConnectorEgressReceipt",
     "ConnectorSubstitutionReport",
     "CredentialScopeReceipt",
@@ -577,7 +577,7 @@
     "unauthorized_secret_access_evidence_ref",
     "unauthorized_secret_access_report"
   ],
-  "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md": [
+  "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md": [
     "L5CertificationPacket",
     "L5CertificationResult",
     "affected_consumer_report",
@@ -682,7 +682,7 @@
     "trace_replay_binding_receipt",
     "wall_clock_decision_field_report"
   ],
-  "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md": [
+  "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md": [
     "ADRRequiredReport",
     "ArchitectureDriftReport",
     "ConnectorConfigDriftReport",
@@ -825,7 +825,28 @@
     "wrapper_target_resolution_report",
     "write_path_drift_report"
   ],
-  "00_L5_Governance_Safety_detailed.md": [
+  "00A.8_L5_Runtime_Certification_Binding.md": [
+    "L5SnapshotVerificationReceipt",
+    "PromptEnvelope",
+    "blueprint_evidence_ref",
+    "capability_scope_ref",
+    "egress_cert_ref",
+    "hitl_reclearance_ref",
+    "live_snapshot_ref",
+    "match_status",
+    "origin_trust_ref",
+    "packet_ref",
+    "policy_evidence_ref",
+    "principal_ref",
+    "registry_evidence_ref",
+    "replay_audit_ref",
+    "replay_snapshot_ref",
+    "sandbox_scope_ref",
+    "static_governance_ref",
+    "test_exit_requires_l5_reclearance_for_human_modified_packet",
+    "test_l2_e2_rejects_missing_l5_binding_for_governed_packet"
+  ],
+  "00A_L5_Governance_Safety_detailed.md": [
     "authority_context_evidence_ref",
     "certification_gap_evidence_ref",
     "egress_certification_evidence_ref",

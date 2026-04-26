@@ -40,16 +40,18 @@ def to_enum_class_name(field_name: str) -> str:
     """``classification_status`` -> ``ClassificationStatus``."""
     return "".join(part.capitalize() for part in field_name.split("_"))
 
+
 # Map doc filename → module name in `contracts/`
 DOC_TO_MODULE: dict[str, str] = {
-    "00_L5_Governance_Safety_detailed.md": "parent",
-    "00.1_L5_Safety_Enforcement_Plane_detailed.md": "enforcement",
-    "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md": "authority",
-    "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md": "origin",
-    "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md": "hitl",
-    "00.5_L5_Egress_and_Provider_Governance_detailed.md": "egress",
-    "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md": "replay",
-    "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md": "static",
+    "00A_L5_Governance_Safety_detailed.md": "parent",
+    "00A.1_L5_Safety_Enforcement_Plane_detailed.md": "enforcement",
+    "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md": "authority",
+    "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md": "origin",
+    "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md": "hitl",
+    "00A.5_L5_Egress_and_Provider_Governance_detailed.md": "egress",
+    "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md": "replay",
+    "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md": "static",
+    "00A.8_L5_Runtime_Certification_Binding.md": "runtime_binding",
 }
 
 # Suffix → base class
@@ -535,7 +537,7 @@ from ._base import (
             values = status_enums[canonical]
             values_literal = ", ".join(f'"{v}"' for v in values)
             status_block = textwrap.dedent(
-                f'''
+                f"""
                 allowed_values: ClassVar[tuple[str, ...]] = ({values_literal},)
                 value_enum: ClassVar[type] = {enum_cls}
 
@@ -545,12 +547,10 @@ from ._base import (
                             f"{{type(self).__name__}}.status_value={{self.status_value!r}} "
                             f"not in doctrine value set {{self.allowed_values!r}}"
                         )
-                '''
+                """
             ).rstrip()
             # Indent every line by 4 spaces (inside the class body).
-            status_block = "\n".join(
-                ("    " + line) if line else "" for line in status_block.splitlines()
-            )
+            status_block = "\n".join(("    " + line) if line else "" for line in status_block.splitlines())
 
         body = textwrap.dedent(
             f'''\
@@ -606,12 +606,8 @@ from typing import Final
         enum_cls = to_enum_class_name(field_name)
         all_names.append(enum_cls)
         body_lines = [f"class {enum_cls}(StrEnum):"]
-        body_lines.append(
-            f'    """Doctrine value set for ``{field_name}``.'
-        )
-        body_lines.append(
-            f'    Source: ``docs/reference/00_L5_Policy_Plane/`` ({len(values)} values).'
-        )
+        body_lines.append(f'    """Doctrine value set for ``{field_name}``.')
+        body_lines.append(f"    Source: ``docs/reference/00_L5_Policy_Plane/`` ({len(values)} values).")
         body_lines.append('    """')
         for v in values:
             # Python attr name: uppercase, valid identifier.
@@ -782,17 +778,13 @@ def main() -> None:
 
     (PKG_DIR / "_base.py").write_text(BASE_PY, encoding="utf-8")
     (PKG_DIR / "_vocab.py").write_text(VOCAB_PY, encoding="utf-8")
-    (PKG_DIR / "_status_enums.py").write_text(
-        render_status_enums(status_enums), encoding="utf-8"
-    )
+    (PKG_DIR / "_status_enums.py").write_text(render_status_enums(status_enums), encoding="utf-8")
 
     total_classes = 0
     total_names = 0
     for doc_filename, module_name in DOC_TO_MODULE.items():
         cls_list = per_module_classes[module_name]
-        text = render_module(
-            module_name, doc_filename, cls_list, class_to_names, status_enums
-        )
+        text = render_module(module_name, doc_filename, cls_list, class_to_names, status_enums)
         (PKG_DIR / f"{module_name}.py").write_text(text, encoding="utf-8")
         names_count = sum(len(class_to_names[c]) for c in cls_list)
         total_classes += len(cls_list)

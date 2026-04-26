@@ -1038,6 +1038,183 @@ class AliasRefreshReceipt:
 
 
 # ============================================================================
+# 00B.9 BLUEPRINT / POLICY VERSION MIGRATION
+# Doctrinal source: docs/reference/00B_L4_State_Archive_and_UWG/
+#                   00B.9_L4_Blueprint_Policy_Version_Migration.md
+# ============================================================================
+
+# Allowed values per 00B.9 doctrine
+VERSION_MIGRATION_SURFACES: Tuple[str, ...] = (
+    "policy",
+    "blueprint",
+    "registry",
+    "prompt",
+    "retrieval_profile",
+    "rubric",
+)
+COMPATIBILITY_MODES: Tuple[str, ...] = (
+    "backward_compatible",
+    "forward_compatible",
+    "breaking",
+    "unknown",
+)
+
+
+@dataclass(frozen=True)
+class VersionCompatibilityRecord:
+    """Compatibility metadata between two versions of a versioned surface
+    (00B.9 §VersionCompatibilityRecord).
+
+    Doctrine: when ``compatibility == "breaking"``, ``migration_required``
+    MUST be True. Enforced in ``__post_init__``.
+    """
+
+    compatibility_record_id: str
+    surface: str  # one of VERSION_MIGRATION_SURFACES
+    old_version_ref: str
+    new_version_ref: str
+    old_hash: str
+    new_hash: str
+    compatibility: str  # one of COMPATIBILITY_MODES
+    migration_required: bool
+    activation_policy: str  # immediate | aliased | canary | dark_launch
+    schema_version: str = L4_CONTRACT_SCHEMA_VERSION
+    deterministic_digest: str = ""
+    affected_route_classes: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    affected_contract_schemas: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    replay_impact: str = "none"  # none | partial | full_invalidation
+    rollback_impact: str = "none"  # none | partial | full
+    audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+
+    def __post_init__(self) -> None:
+        if self.surface not in VERSION_MIGRATION_SURFACES:
+            raise ValueError(
+                f"VersionCompatibilityRecord.surface must be one of "
+                f"{VERSION_MIGRATION_SURFACES}; got {self.surface!r}"
+            )
+        if self.compatibility not in COMPATIBILITY_MODES:
+            raise ValueError(
+                f"VersionCompatibilityRecord.compatibility must be one of "
+                f"{COMPATIBILITY_MODES}; got {self.compatibility!r}"
+            )
+        if self.compatibility == "breaking" and not self.migration_required:
+            raise ValueError(
+                "VersionCompatibilityRecord(compatibility='breaking') requires "
+                "migration_required=True per 00B.9 §RULES "
+                "'Breaking changes require replay pack proof and rollback plan "
+                "before activation.'"
+            )
+
+
+@dataclass(frozen=True)
+class PolicyBlueprintMigrationPlan:
+    """Migration plan for moving a versioned surface from source to target
+    (00B.9 §PolicyBlueprintMigrationPlan).
+
+    Doctrine: alias swaps require ``alias_swap_plan_ref`` AND
+    ``UWG_commit_request_ref`` (00B.9 §RULES line 101). Enforced in
+    ``__post_init__`` when ``activation_policy == "aliased"``.
+    """
+
+    migration_plan_id: str
+    target_surface: str  # one of VERSION_MIGRATION_SURFACES
+    source_version_ref: str
+    target_version_ref: str
+    rollback_plan_ref: str
+    owner: str
+    signer_identity: str
+    UWG_commit_request_ref: str
+    activation_policy: str = "aliased"
+    schema_version: str = L4_CONTRACT_SCHEMA_VERSION
+    deterministic_digest: str = ""
+    migration_steps: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    validation_checks: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    replay_pack_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    canary_or_dark_launch_policy: Optional[str] = None
+    alias_swap_plan_ref: Optional[str] = None
+    audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+
+    def __post_init__(self) -> None:
+        if self.target_surface not in VERSION_MIGRATION_SURFACES:
+            raise ValueError(
+                f"PolicyBlueprintMigrationPlan.target_surface must be one of "
+                f"{VERSION_MIGRATION_SURFACES}; got {self.target_surface!r}"
+            )
+        if self.activation_policy == "aliased":
+            if not self.alias_swap_plan_ref:
+                raise ValueError(
+                    "PolicyBlueprintMigrationPlan(activation_policy='aliased') "
+                    "requires alias_swap_plan_ref per 00B.9 §RULES "
+                    "'Alias swaps require UWG commit receipt and audit ledger "
+                    "append.'"
+                )
+            if not self.UWG_commit_request_ref:
+                raise ValueError(
+                    "PolicyBlueprintMigrationPlan(activation_policy='aliased') "
+                    "requires UWG_commit_request_ref per 00B.9 §RULES."
+                )
+
+
+@dataclass(frozen=True)
+class DeprecationWindowRecord:
+    """Deprecation window for a retired version of a versioned surface
+    (00B.9 §DeprecationWindowRecord).
+
+    Provides the run-start enforcement primitive: a new run starting AFTER
+    ``deprecation_end`` MUST NOT use any of ``allowed_legacy_routes`` and
+    MUST be blocked from any of ``blocked_new_routes`` while replaying
+    ``deprecated_version_ref``.
+    """
+
+    deprecation_id: str
+    deprecated_version_ref: str
+    replacement_version_ref: str
+    deprecation_start: str  # ISO 8601
+    deprecation_end: str  # ISO 8601
+    schema_version: str = L4_CONTRACT_SCHEMA_VERSION
+    deterministic_digest: str = ""
+    allowed_legacy_routes: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    blocked_new_routes: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    warning_receipt_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+
+    def is_route_blocked_at(self, route_class: str, run_start_iso: str) -> bool:
+        """Return True iff a run starting at ``run_start_iso`` MUST be blocked
+        from ``route_class`` per 00B.9 §RULES.
+
+        After ``deprecation_end``: route is blocked iff it appears in
+        ``blocked_new_routes`` OR is not in ``allowed_legacy_routes``.
+        Inside the window: only ``blocked_new_routes`` apply.
+        """
+        if route_class in self.blocked_new_routes:
+            return True
+        if run_start_iso > self.deprecation_end:
+            # After window closes, only explicitly-allowed legacy routes survive
+            return route_class not in self.allowed_legacy_routes
+        return False
+
+
+def detect_policy_version_mismatch(
+    *,
+    active_policy_hash: str,
+    replay_snapshot_policy_hash: str,
+) -> Optional[str]:
+    """Return a reason code when a runtime packet bound to a replay snapshot
+    encounters a different active policy hash, else None.
+
+    Used at run_start by the runtime gate mesh to honor 00B.9 §RULES
+    'Runtime packets already bound to a replay snapshot may complete under
+    their bound snapshot unless policy requires fail-closed.'
+
+    The matrix lists this as test 9.T5
+    (``test_replay_bound_runtime_detects_policy_version_mismatch``).
+    """
+    if active_policy_hash != replay_snapshot_policy_hash:
+        return "policy_version_mismatch"
+    return None
+
+
+# ============================================================================
 # Digest helpers exposed on the module surface
 # ============================================================================
 
@@ -1126,4 +1303,11 @@ __all__ = [
     "IndexRefreshReceipt",
     "GraphProjectionRefreshReceipt",
     "AliasRefreshReceipt",
+    # 00B.9 Blueprint / Policy Version Migration
+    "VERSION_MIGRATION_SURFACES",
+    "COMPATIBILITY_MODES",
+    "VersionCompatibilityRecord",
+    "PolicyBlueprintMigrationPlan",
+    "DeprecationWindowRecord",
+    "detect_policy_version_mismatch",
 ]

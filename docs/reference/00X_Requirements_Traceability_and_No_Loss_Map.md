@@ -190,3 +190,100 @@ END OF 00X REQUIREMENTS TRACEABILITY AND NO-LOSS MAP
 ## Refresh alignment addendum
 
 Runtime gates moved to 00C; durable state/write to 00B; governance certification to 00A; C0 and PA are sibling folders; 99 owns full proof.
+
+========================================================================================================================
+PARENT-THINNING ZERO-LOSS ADDENDUM (2026-04-26)
+========================================================================================================================
+
+PURPOSE
+------------------------------------------------------------------------------------------------------------------------
+This addendum maps requirements that previously lived inside parent doctrine files into their canonical sub-child owners
+after the 2026-04-26 parent-thinning refactor. Three parents (03A C0, 04 L2, 05 Exit) carried 145/120/129 KB of
+implementation-grade detail that has now been moved into per-stage children. The other 9 parents were verified clean
+(already doctrine-sized) and required no moves.
+
+Full move log: PARENT_THINNING_ZERO_LOSS_REPORT.md (this folder).
+
+TRACEABILITY MATRIX — PARENT-LEVEL CONTENT NOW OWNED BY SUB-CHILDREN
+------------------------------------------------------------------------------------------------------------------------
+
+| Old parent-only section                                                       | New child owner                                                       | Proof / test reference                                                                |
+|-------------------------------------------------------------------------------|-----------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| C0 parent: C0.0 PRE-FLIGHT box (eligibility checks, blocked_reason taxonomy)  | 03A_C0_Context_Engine/C0.0_Preflight_Grounding_Eligibility.md (NEW)   | C0PreflightStatus determinism test; blocked_reason stable-code test                   |
+| C0 parent: C0.1 RETRIEVAL PLAN box (worksteps, support-target types, lanes)   | 03A_C0_Context_Engine/C0.1_Retrieval_Plan.md                          | RetrievalPlan determinism test; lane-rule tests; budget-allocation test               |
+| C0 parent: C0.2 EVIDENCE FETCH + C0.2A HYDRATE/SPAN NORMALIZATION boxes       | 03A_C0_Context_Engine/C0.2_Evidence_Fetch.md                          | CandidateEvidencePool determinism; hydration_manifest completeness test               |
+| C0 parent: C0.3 GRAPH TRAVERSE box (relations, max_hops, ACL-at-hop)          | 03A_C0_Context_Engine/C0.3_Graph_RAG.md                               | GraphExpandedEvidencePool bounds test; ACL-escape negative test                       |
+| C0 parent: C0.4 SHAPE + C0.4A CONTRADICTION/GAP SCAN boxes                    | 03A_C0_Context_Engine/C0.4_Shape_Rerank_Stratify.md                   | ShapedEvidenceSet determinism; contradiction-preservation test                        |
+| C0 parent: C0.5 EVIDENCE CONTRACT + C0 OUTPUT SCHEMA YAML                     | 03A_C0_Context_Engine/C0.5_Final_Evidence_Contract.md                 | FinalEvidenceContract schema test; status-mapping table                                |
+| C0 parent: C0.6 REFINE LOOP box (tactics, guards, exit conditions)            | 03A_C0_Context_Engine/C0.6_Weak_Support_Refinement.md                 | RefinedEvidenceContract test; budget-exhaust test                                     |
+| C0 parent: QUALITY GATES INSIDE C0 (C0.G0..C0.G10 table)                      | 03A_C0_Context_Engine/C0.7_C0_Observability_Tests_Anti_Bypass.md (NEW)| Per-gate negative test (test_c0_g0_scope through test_c0_g10_inject)                  |
+| C0 parent: FAILURE MODES C0 MUST PREVENT (table)                              | 03A_C0_Context_Engine/C0.7 (NEW)                                      | Per-failure preventive test (test_no_dense_only_answer through test_no_silent_runtime)|
+| L2 parent: E1 PREP box (E1.1..E1.8 worksteps, fail conditions)                | 04_L2_Execute/04.2_L2_E1_Prep_Frozen_Execution_Room.md                | prep_receipt determinism test; idempotency-key duplicate test                         |
+| L2 parent: E2 VALID box (E2.1..E2.8 worksteps, validation decision table)     | 04_L2_Execute/04.3_L2_E2_Valid_Work_Order_and_Gate_Check.md           | validation_packet_id schema test; sealed_rejection_packet test                        |
+| L2 parent: E3 EXEC box (E3.1..E3.8 worksteps, execution lanes)                | 04_L2_Execute/04.4_L2_E3_Exec_Attempt_Lanes_and_Sandbox_Run.md        | attempt_receipt determinism; result_class transition test                             |
+| L2 parent: E4 HEAL box (worksteps, repair taxonomy, repair decision table)    | 04_L2_Execute/04.5_L2_E4_Heal_Same_Authority_Repair_Governor.md       | heal_receipt determinism; oscillation-guard test; snapshot-guard test                 |
+| L2 parent: E5 SEAL box + sealed L2 artifact contents schema                   | 04_L2_Execute/04.6_L2_E5_Seal_Artifact_and_Dispatch.md                | sealed_l2_artifact schema test; commit_boundary assertion                             |
+| L2 parent: L2 FAILURE/REPAIR/EXIT MATRIX (11 observed-condition rows)         | 04_L2_Execute/04.8_L2_Observability_Replay_Anti_Bypass_Tests.md       | Per-row classification test                                                           |
+| L2 parent: PTC sandbox detail                                                 | 04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox.md        | PTC ambient-tool denial test; sandbox-escape negative test                            |
+| L2 parent: StateDiffCandidate / mutation intent detail                        | 04_L2_Execute/04.9_L2_StateDiffCandidate_and_Mutation_Intent.md       | proposed_state_diff inert-until-Exit test                                             |
+| L2 parent: verify-then-execute local critique                                 | 04_L2_Execute/04.10_L2_Verify_Then_Execute_Local_Critique.md          | same-authority + no-scope-expansion test                                              |
+| Exit parent: 5.0/5.1 INPUT NORMALIZATION (N1..N5 worksteps, immediate-fail)   | 05_Exit_Evaluation_and_Control/05.1_Exit_Input_Normalization_and_Review_Packet.md | ExitReviewPacket schema test; missing-receipt-field fail-fast test            |
+| Exit parent: X1A..X1F detailed gate boxes                                     | 05_Exit_Evaluation_and_Control/05.2_Exit_Current_Run_Checkout_Checks_X1A_to_X1F.md | Per-gate verdict-format test; per-gate negative case                          |
+| Exit parent: X1G..X1I detailed gate boxes                                     | 05_Exit_Evaluation_and_Control/05.3_Exit_Replay_Observability_Consistency_X1G_X1I.md | Replay determinism test; OTEL span-tree completeness test                   |
+| Exit parent: X1J + X3C UWG sub-flow                                           | 05_Exit_Evaluation_and_Control/05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C.md | CommitRequest emission test; BLOCK_COMMIT path test                         |
+| Exit parent: X2 aggregate matrix + X3A..X3E disposition mechanics             | 05_Exit_Evaluation_and_Control/05.5_Exit_Aggregation_and_X3_Disposition.md | "exactly one X3" invariant test; severity-aggregation test                            |
+| Exit parent: HITL freeze / review / re-clearance flow                         | 05_Exit_Evaluation_and_Control/05.6_Exit_HITL_Freeze_Review_and_Reclearance.md | HITL re-cleared packet round-trip test; no-write-during-freeze test                  |
+| Exit parent: return response + runtime exhaust packaging                      | 05_Exit_Evaluation_and_Control/05.7_Exit_Return_Response_and_Runtime_Exhaust.md | runtime exhaust seal-immutability test; L6-handoff order test                        |
+| Exit parent: Exit-specific OTEL + anti-bypass tests                           | 05_Exit_Evaluation_and_Control/05.8_Exit_Specific_Observability_Tests_Anti_Bypass.md | X1A..X1J × X3A..X3E coverage matrix test                                              |
+
+KEY-PHRASE PRESERVATION VERIFICATION
+------------------------------------------------------------------------------------------------------------------------
+Every key phrase below must remain discoverable via grep across the requirements tree post-refactor.
+Verified by grep on 2026-04-26.
+
+C0 PARENT (preserved across children + parent summaries):
+- "C0.2A HYDRATE"                — preserved (C0.2 child + parent C0.2 summary)
+- "C0.4A CONTRADICTION"          — preserved (C0.4 child + parent C0.4 summary)
+- "Controlled refinement"        — preserved (C0.6 child + parent C0.6 summary)
+- "FinalEvidenceContract"        — 20 hits in C0.5 child, 20 in parent (summary references)
+- "Retrieved text is data, not instruction" — preserved (parent invariant C0.I2)
+
+L2 PARENT (preserved across all 11 children + parent summaries):
+- "E5 Seal" / "sealed_l2_artifact_id" — preserved across 04.6 + parent
+- "proposed_state_diff"           — preserved across 04.4/04.5/04.6/04.9 + parent
+- "same-authority"                — preserved across 04.5 + parent summary
+- "PTC V2"                        — preserved across 04.7 + parent summary
+
+EXIT PARENT (preserved across all 8 children + parent overview):
+- "X1A" / "X1J" / "X3C"           — preserved across 05.2/05.4/05.5/parent
+- "UWG" / "HITL freeze"           — preserved across 05.4/05.6/parent
+- "exactly one X3"                — preserved (parent V6 invariant #1)
+
+NEW CHILDREN CREATED 2026-04-26
+------------------------------------------------------------------------------------------------------------------------
+1. 03A_C0_Context_Engine/C0.0_Preflight_Grounding_Eligibility.md
+   - Owner surface: C0PreflightStatus, eligibility gating, blocked_reason taxonomy, evidence_standard mapping, budget floor.
+   - Required tests: route_grants_grounding_gate, origin_trust_bound_gate, source_class_legality_gate, instruction_as_data_gate.
+
+2. 03A_C0_Context_Engine/C0.7_C0_Observability_Tests_Anti_Bypass.md
+   - Owner surface: C0-wide quality-gate matrix (C0.G0..C0.G10), failure-mode register (14 entries), aggregate OTEL span-tree contract, stage-spanning anti-bypass tests.
+   - Required tests: 11 per-gate negative tests + 14 per-failure preventive tests + 5 stage-spanning tests.
+
+CROSS-REFERENCE TO ZERO-LOSS REPORT
+------------------------------------------------------------------------------------------------------------------------
+- Per-wave move tables: PARENT_THINNING_ZERO_LOSS_REPORT.md §"Wave R1/R2/R3"
+- Cross-folder reference rewriter: PARENT_THINNING_ZERO_LOSS_REPORT.md §"Wave R4" (971 fixes / 102 files)
+- Verified-clean parents (no moves required): PARENT_THINNING_ZERO_LOSS_REPORT.md §"Wave R5" (00A, 00B, 00C, 01, 02, 03, 03B, 06, 99)
+- Filename-suffix strip (94 files across 12 folders): PARENT_THINNING_ZERO_LOSS_REPORT.md §"Sibling deliverable"
+
+ACCEPTANCE — PARENT-THINNING TRACEABILITY
+------------------------------------------------------------------------------------------------------------------------
+This addendum is complete only when:
+1. Every parent-only detail section moved on 2026-04-26 maps to exactly one canonical sub-child.
+2. Every key phrase from the original parents is grep-discoverable in either the relevant child or the parent's summary block.
+3. The two new children (C0.0, C0.7) appear in their parent's child map and own a unique sub-surface.
+4. PARENT_THINNING_ZERO_LOSS_REPORT.md exists in this folder and lists per-wave move tables + validation hits.
+5. No layer requirement was lost — verified by grep across the 23 children touched + 12 parents covered.
+
+STATUS: COMPLETE 2026-04-26.
+========================================================================================================================

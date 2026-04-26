@@ -5,6 +5,7 @@ Proves: every doctrine `<x>_status = a | b | c` declaration produces a
 corresponding ``L5Status`` subclass rejects values outside the doctrine
 set at construction time.
 """
+
 from __future__ import annotations
 
 import json
@@ -36,9 +37,7 @@ def test_every_doctrine_status_field_has_an_enum(doctrine_payload: dict) -> None
         )
         enum = STATUS_ENUM_REGISTRY[field_name]
         actual = {e.value for e in enum}
-        assert set(values) == actual, (
-            f"{field_name}: doctrine values {values} != enum values {actual}"
-        )
+        assert set(values) == actual, f"{field_name}: doctrine values {values} != enum values {actual}"
 
 
 def test_status_subclass_rejects_value_outside_doctrine() -> None:
@@ -78,4 +77,4 @@ def test_every_status_subclass_has_value_set_classvar() -> None:
 
 def test_registry_size_matches_doctrine_extraction(doctrine_payload: dict) -> None:
     assert len(STATUS_ENUM_REGISTRY) == len(doctrine_payload["enums"])
-    assert len(STATUS_ENUM_REGISTRY) == 51
+    assert len(STATUS_ENUM_REGISTRY) == 53  # 51 prior + certification_status + match_status from 00A.8

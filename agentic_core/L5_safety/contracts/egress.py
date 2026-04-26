@@ -1,6 +1,6 @@
-"""Generated L5 contract dataclasses for ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+"""Generated L5 contract dataclasses for ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
 
-Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.5_L5_Egress_and_Provider_Governance_detailed.md``
+Source doctrine: ``docs/reference/00_L5_Policy_Plane/00A.5_L5_Egress_and_Provider_Governance_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.egress``
 Generated count: 124 contracts
 
@@ -11,6 +11,7 @@ for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -33,6 +34,7 @@ from ._base import (
     L5Token,
 )
 from ._status_enums import (
+    CertificationStatus,
     ConnectorEgressStatus,
     CredentialScopeStatus,
     EgressCertificationStatus,
@@ -48,13 +50,13 @@ from ._status_enums import (
 class ArgumentSchemaRef(L5Ref):
     """L5 doctrine output ``argument_schema_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: argument_schema_ref.
     """
 
     output_name: ClassVar[str] = "argument_schema_ref"
     output_names: ClassVar[tuple[str, ...]] = ("argument_schema_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -62,13 +64,13 @@ class ArgumentSchemaRef(L5Ref):
 class BootEgressGovernanceReport(L5Report):
     """L5 doctrine output ``boot_egress_governance_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: boot_egress_governance_report.
     """
 
     output_name: ClassVar[str] = "boot_egress_governance_report"
     output_names: ClassVar[tuple[str, ...]] = ("boot_egress_governance_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -76,13 +78,13 @@ class BootEgressGovernanceReport(L5Report):
 class BroadNetworkScopeReport(L5Report):
     """L5 doctrine output ``broad_network_scope_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: broad_network_scope_report.
     """
 
     output_name: ClassVar[str] = "broad_network_scope_report"
     output_names: ClassVar[tuple[str, ...]] = ("broad_network_scope_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -90,27 +92,42 @@ class BroadNetworkScopeReport(L5Report):
 class CertificationStatus(L5Status):
     """L5 doctrine output ``certification_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: certification_status.
     """
 
     output_name: ClassVar[str] = "certification_status"
     output_names: ClassVar[tuple[str, ...]] = ("certification_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "L5_CERTIFIED",
+        "L5_NOT_CERTIFIED",
+        "L5_REQUIRES_RECLEARANCE",
+        "L5_REQUIRES_REMEDIATION_EVIDENCE",
+    )
+    value_enum: ClassVar[type] = CertificationStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
 class ConnectorAuditReceipt(L5Receipt):
     """L5 doctrine output ``connector_audit_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_audit_receipt.
     """
 
     output_name: ClassVar[str] = "connector_audit_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("connector_audit_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -118,13 +135,16 @@ class ConnectorAuditReceipt(L5Receipt):
 class ConnectorEgressReceipt(L5Receipt):
     """L5 doctrine output ``ConnectorEgressReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: ConnectorEgressReceipt, connector_egress_receipt.
     """
 
     output_name: ClassVar[str] = "ConnectorEgressReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("ConnectorEgressReceipt", "connector_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "ConnectorEgressReceipt",
+        "connector_egress_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -132,13 +152,13 @@ class ConnectorEgressReceipt(L5Receipt):
 class ConnectorEgressReceiptRef(L5Ref):
     """L5 doctrine output ``connector_egress_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_egress_receipt_ref.
     """
 
     output_name: ClassVar[str] = "connector_egress_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("connector_egress_receipt_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -146,16 +166,23 @@ class ConnectorEgressReceiptRef(L5Ref):
 class ConnectorEgressStatus(L5Status):
     """L5 doctrine output ``connector_egress_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_egress_status.
     """
 
     output_name: ClassVar[str] = "connector_egress_status"
     output_names: ClassVar[tuple[str, ...]] = ("connector_egress_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized", "expired", "substituted", "credential_gap",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "bound",
+        "missing",
+        "unauthorized",
+        "expired",
+        "substituted",
+        "credential_gap",
+    )
     value_enum: ClassVar[type] = ConnectorEgressStatus
 
     def __post_init__(self) -> None:
@@ -170,13 +197,13 @@ class ConnectorEgressStatus(L5Status):
 class ConnectorGrantGapReport(L5Report):
     """L5 doctrine output ``connector_grant_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_grant_gap_report.
     """
 
     output_name: ClassVar[str] = "connector_grant_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("connector_grant_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -184,13 +211,13 @@ class ConnectorGrantGapReport(L5Report):
 class ConnectorGrantRef(L5Ref):
     """L5 doctrine output ``connector_grant_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_grant_ref.
     """
 
     output_name: ClassVar[str] = "connector_grant_ref"
     output_names: ClassVar[tuple[str, ...]] = ("connector_grant_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -198,13 +225,13 @@ class ConnectorGrantRef(L5Ref):
 class ConnectorReplayReceipt(L5Receipt):
     """L5 doctrine output ``connector_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_replay_receipt.
     """
 
     output_name: ClassVar[str] = "connector_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("connector_replay_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -212,13 +239,13 @@ class ConnectorReplayReceipt(L5Receipt):
 class ConnectorRetentionReceipt(L5Receipt):
     """L5 doctrine output ``connector_retention_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_retention_receipt.
     """
 
     output_name: ClassVar[str] = "connector_retention_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("connector_retention_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -226,13 +253,13 @@ class ConnectorRetentionReceipt(L5Receipt):
 class ConnectorScopeStaticReport(L5Report):
     """L5 doctrine output ``connector_scope_static_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: connector_scope_static_report.
     """
 
     output_name: ClassVar[str] = "connector_scope_static_report"
     output_names: ClassVar[tuple[str, ...]] = ("connector_scope_static_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -240,13 +267,13 @@ class ConnectorScopeStaticReport(L5Report):
 class CredentialAuditReceipt(L5Receipt):
     """L5 doctrine output ``credential_audit_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_audit_receipt.
     """
 
     output_name: ClassVar[str] = "credential_audit_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("credential_audit_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -254,13 +281,13 @@ class CredentialAuditReceipt(L5Receipt):
 class CredentialExpirationReceipt(L5Receipt):
     """L5 doctrine output ``credential_expiration_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_expiration_receipt.
     """
 
     output_name: ClassVar[str] = "credential_expiration_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("credential_expiration_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -268,13 +295,13 @@ class CredentialExpirationReceipt(L5Receipt):
 class CredentialExposureRiskReport(L5Report):
     """L5 doctrine output ``credential_exposure_risk_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_exposure_risk_report.
     """
 
     output_name: ClassVar[str] = "credential_exposure_risk_report"
     output_names: ClassVar[tuple[str, ...]] = ("credential_exposure_risk_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -282,13 +309,13 @@ class CredentialExposureRiskReport(L5Report):
 class CredentialIssuerReceipt(L5Receipt):
     """L5 doctrine output ``credential_issuer_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_issuer_receipt.
     """
 
     output_name: ClassVar[str] = "credential_issuer_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("credential_issuer_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -296,13 +323,13 @@ class CredentialIssuerReceipt(L5Receipt):
 class CredentialMinimizationReceipt(L5Receipt):
     """L5 doctrine output ``credential_minimization_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_minimization_receipt.
     """
 
     output_name: ClassVar[str] = "credential_minimization_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("credential_minimization_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -310,13 +337,13 @@ class CredentialMinimizationReceipt(L5Receipt):
 class CredentialPolicyReceipt(L5Receipt):
     """L5 doctrine output ``credential_policy_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_policy_receipt.
     """
 
     output_name: ClassVar[str] = "credential_policy_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("credential_policy_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -324,13 +351,13 @@ class CredentialPolicyReceipt(L5Receipt):
 class CredentialRedactionReceipt(L5Receipt):
     """L5 doctrine output ``credential_redaction_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_redaction_receipt.
     """
 
     output_name: ClassVar[str] = "credential_redaction_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("credential_redaction_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -338,13 +365,16 @@ class CredentialRedactionReceipt(L5Receipt):
 class CredentialScopeReceipt(L5Receipt):
     """L5 doctrine output ``CredentialScopeReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: CredentialScopeReceipt, credential_scope_receipt.
     """
 
     output_name: ClassVar[str] = "CredentialScopeReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("CredentialScopeReceipt", "credential_scope_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "CredentialScopeReceipt",
+        "credential_scope_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -352,13 +382,13 @@ class CredentialScopeReceipt(L5Receipt):
 class CredentialScopeReceiptRef(L5Ref):
     """L5 doctrine output ``credential_scope_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_scope_receipt_ref.
     """
 
     output_name: ClassVar[str] = "credential_scope_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("credential_scope_receipt_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -366,13 +396,13 @@ class CredentialScopeReceiptRef(L5Ref):
 class CredentialScopeRef(L5Ref):
     """L5 doctrine output ``credential_scope_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_scope_ref.
     """
 
     output_name: ClassVar[str] = "credential_scope_ref"
     output_names: ClassVar[tuple[str, ...]] = ("credential_scope_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -380,16 +410,23 @@ class CredentialScopeRef(L5Ref):
 class CredentialScopeStatus(L5Status):
     """L5 doctrine output ``credential_scope_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_scope_status.
     """
 
     output_name: ClassVar[str] = "credential_scope_status"
     output_names: ClassVar[tuple[str, ...]] = ("credential_scope_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("minimal", "missing", "too_broad", "expired", "incompatible", "exposed",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "minimal",
+        "missing",
+        "too_broad",
+        "expired",
+        "incompatible",
+        "exposed",
+    )
     value_enum: ClassVar[type] = CredentialScopeStatus
 
     def __post_init__(self) -> None:
@@ -404,13 +441,13 @@ class CredentialScopeStatus(L5Status):
 class CredentialSubstitutionReport(L5Report):
     """L5 doctrine output ``credential_substitution_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: credential_substitution_report.
     """
 
     output_name: ClassVar[str] = "credential_substitution_report"
     output_names: ClassVar[tuple[str, ...]] = ("credential_substitution_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -418,13 +455,13 @@ class CredentialSubstitutionReport(L5Report):
 class CriticalEgressGapReport(L5Report):
     """L5 doctrine output ``critical_egress_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: critical_egress_gap_report.
     """
 
     output_name: ClassVar[str] = "critical_egress_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("critical_egress_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -432,13 +469,13 @@ class CriticalEgressGapReport(L5Report):
 class DataMinimizationReceipt(L5Receipt):
     """L5 doctrine output ``data_minimization_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: data_minimization_receipt.
     """
 
     output_name: ClassVar[str] = "data_minimization_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("data_minimization_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -446,13 +483,13 @@ class DataMinimizationReceipt(L5Receipt):
 class DirectApiKeyUsageReport(L5Report):
     """L5 doctrine output ``direct_api_key_usage_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: direct_api_key_usage_report.
     """
 
     output_name: ClassVar[str] = "direct_api_key_usage_report"
     output_names: ClassVar[tuple[str, ...]] = ("direct_api_key_usage_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -460,13 +497,13 @@ class DirectApiKeyUsageReport(L5Report):
 class DirectSDKBypassReport(L5Report):
     """L5 doctrine output ``DirectSDKBypassReport`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: DirectSDKBypassReport.
     """
 
     output_name: ClassVar[str] = "DirectSDKBypassReport"
     output_names: ClassVar[tuple[str, ...]] = ("DirectSDKBypassReport",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -474,13 +511,13 @@ class DirectSDKBypassReport(L5Report):
 class DirectSdkBypassEvidenceRef(L5Ref):
     """L5 doctrine output ``direct_sdk_bypass_evidence_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: direct_sdk_bypass_evidence_ref.
     """
 
     output_name: ClassVar[str] = "direct_sdk_bypass_evidence_ref"
     output_names: ClassVar[tuple[str, ...]] = ("direct_sdk_bypass_evidence_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -488,13 +525,13 @@ class DirectSdkBypassEvidenceRef(L5Ref):
 class EgressAuditGapReport(L5Report):
     """L5 doctrine output ``egress_audit_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_audit_gap_report.
     """
 
     output_name: ClassVar[str] = "egress_audit_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("egress_audit_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -502,13 +539,13 @@ class EgressAuditGapReport(L5Report):
 class EgressAuditPolicyReceipt(L5Receipt):
     """L5 doctrine output ``egress_audit_policy_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_audit_policy_receipt.
     """
 
     output_name: ClassVar[str] = "egress_audit_policy_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_audit_policy_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -516,13 +553,16 @@ class EgressAuditPolicyReceipt(L5Receipt):
 class EgressAuditReceipt(L5Receipt):
     """L5 doctrine output ``EgressAuditReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: EgressAuditReceipt, egress_audit_receipt.
     """
 
     output_name: ClassVar[str] = "EgressAuditReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("EgressAuditReceipt", "egress_audit_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "EgressAuditReceipt",
+        "egress_audit_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -530,13 +570,13 @@ class EgressAuditReceipt(L5Receipt):
 class EgressCertificationGapReport(L5Report):
     """L5 doctrine output ``egress_certification_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_certification_gap_report.
     """
 
     output_name: ClassVar[str] = "egress_certification_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("egress_certification_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -544,13 +584,13 @@ class EgressCertificationGapReport(L5Report):
 class EgressCertificationHashReceipt(L5Receipt):
     """L5 doctrine output ``egress_certification_hash_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_certification_hash_receipt.
     """
 
     output_name: ClassVar[str] = "egress_certification_hash_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_certification_hash_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -558,13 +598,16 @@ class EgressCertificationHashReceipt(L5Receipt):
 class EgressCertificationReceipt(L5Receipt):
     """L5 doctrine output ``EgressCertificationReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: EgressCertificationReceipt, egress_certification_receipt.
     """
 
     output_name: ClassVar[str] = "EgressCertificationReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("EgressCertificationReceipt", "egress_certification_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "EgressCertificationReceipt",
+        "egress_certification_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -572,13 +615,13 @@ class EgressCertificationReceipt(L5Receipt):
 class EgressCertificationScopeReceipt(L5Receipt):
     """L5 doctrine output ``egress_certification_scope_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_certification_scope_receipt.
     """
 
     output_name: ClassVar[str] = "egress_certification_scope_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_certification_scope_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -586,16 +629,23 @@ class EgressCertificationScopeReceipt(L5Receipt):
 class EgressCertificationStatus(L5Status):
     """L5 doctrine output ``egress_certification_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_certification_status.
     """
 
     output_name: ClassVar[str] = "egress_certification_status"
     output_names: ClassVar[tuple[str, ...]] = ("egress_certification_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("certified_evidence", "incomplete", "stale", "mismatched", "substituted", "unauthorized",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "certified_evidence",
+        "incomplete",
+        "stale",
+        "mismatched",
+        "substituted",
+        "unauthorized",
+    )
     value_enum: ClassVar[type] = EgressCertificationStatus
 
     def __post_init__(self) -> None:
@@ -610,13 +660,13 @@ class EgressCertificationStatus(L5Status):
 class EgressClassReceipt(L5Receipt):
     """L5 doctrine output ``egress_class_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_class_receipt.
     """
 
     output_name: ClassVar[str] = "egress_class_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_class_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -624,13 +674,13 @@ class EgressClassReceipt(L5Receipt):
 class EgressHashChainReceipt(L5Receipt):
     """L5 doctrine output ``egress_hash_chain_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_hash_chain_receipt.
     """
 
     output_name: ClassVar[str] = "egress_hash_chain_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_hash_chain_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -638,13 +688,13 @@ class EgressHashChainReceipt(L5Receipt):
 class EgressPayloadBoundaryReceipt(L5Receipt):
     """L5 doctrine output ``egress_payload_boundary_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_payload_boundary_receipt.
     """
 
     output_name: ClassVar[str] = "egress_payload_boundary_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_payload_boundary_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -652,13 +702,13 @@ class EgressPayloadBoundaryReceipt(L5Receipt):
 class EgressReconstructionReport(L5Report):
     """L5 doctrine output ``egress_reconstruction_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_reconstruction_report.
     """
 
     output_name: ClassVar[str] = "egress_reconstruction_report"
     output_names: ClassVar[tuple[str, ...]] = ("egress_reconstruction_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -666,13 +716,13 @@ class EgressReconstructionReport(L5Report):
 class EgressReplayGapReport(L5Report):
     """L5 doctrine output ``egress_replay_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_replay_gap_report.
     """
 
     output_name: ClassVar[str] = "egress_replay_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("egress_replay_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -680,13 +730,16 @@ class EgressReplayGapReport(L5Report):
 class EgressReplayReceipt(L5Receipt):
     """L5 doctrine output ``EgressReplayReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: EgressReplayReceipt, egress_replay_receipt.
     """
 
     output_name: ClassVar[str] = "EgressReplayReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("EgressReplayReceipt", "egress_replay_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "EgressReplayReceipt",
+        "egress_replay_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -694,13 +747,13 @@ class EgressReplayReceipt(L5Receipt):
 class EgressRequestGapReport(L5Report):
     """L5 doctrine output ``egress_request_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_request_gap_report.
     """
 
     output_name: ClassVar[str] = "egress_request_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("egress_request_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -708,13 +761,13 @@ class EgressRequestGapReport(L5Report):
 class EgressRequestReceipt(L5Receipt):
     """L5 doctrine output ``egress_request_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_request_receipt.
     """
 
     output_name: ClassVar[str] = "egress_request_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_request_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -722,13 +775,13 @@ class EgressRequestReceipt(L5Receipt):
 class EgressTargetIdentityReceipt(L5Receipt):
     """L5 doctrine output ``egress_target_identity_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_target_identity_receipt.
     """
 
     output_name: ClassVar[str] = "egress_target_identity_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("egress_target_identity_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -736,13 +789,13 @@ class EgressTargetIdentityReceipt(L5Receipt):
 class EgressWrapperBypassEvidenceRef(L5Ref):
     """L5 doctrine output ``egress_wrapper_bypass_evidence_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_wrapper_bypass_evidence_ref.
     """
 
     output_name: ClassVar[str] = "egress_wrapper_bypass_evidence_ref"
     output_names: ClassVar[tuple[str, ...]] = ("egress_wrapper_bypass_evidence_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -750,13 +803,13 @@ class EgressWrapperBypassEvidenceRef(L5Ref):
 class EgressWrapperBypassReport(L5Report):
     """L5 doctrine output ``egress_wrapper_bypass_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: egress_wrapper_bypass_report.
     """
 
     output_name: ClassVar[str] = "egress_wrapper_bypass_report"
     output_names: ClassVar[tuple[str, ...]] = ("egress_wrapper_bypass_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -764,13 +817,13 @@ class EgressWrapperBypassReport(L5Report):
 class ExternalCommitAuditReceipt(L5Receipt):
     """L5 doctrine output ``external_commit_audit_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: external_commit_audit_receipt.
     """
 
     output_name: ClassVar[str] = "external_commit_audit_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("external_commit_audit_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -778,13 +831,13 @@ class ExternalCommitAuditReceipt(L5Receipt):
 class ExternalCommitDownstreamReviewReceipt(L5Receipt):
     """L5 doctrine output ``external_commit_downstream_review_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: external_commit_downstream_review_receipt.
     """
 
     output_name: ClassVar[str] = "external_commit_downstream_review_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("external_commit_downstream_review_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -792,13 +845,13 @@ class ExternalCommitDownstreamReviewReceipt(L5Receipt):
 class ExternalCommitEgressReceipt(L5Receipt):
     """L5 doctrine output ``external_commit_egress_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: external_commit_egress_receipt.
     """
 
     output_name: ClassVar[str] = "external_commit_egress_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("external_commit_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -806,13 +859,13 @@ class ExternalCommitEgressReceipt(L5Receipt):
 class ExternalCommitHumanReviewRequirementReceipt(L5Receipt):
     """L5 doctrine output ``external_commit_human_review_requirement_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: external_commit_human_review_requirement_receipt.
     """
 
     output_name: ClassVar[str] = "external_commit_human_review_requirement_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("external_commit_human_review_requirement_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -820,13 +873,13 @@ class ExternalCommitHumanReviewRequirementReceipt(L5Receipt):
 class ExternalCommitReplayReceipt(L5Receipt):
     """L5 doctrine output ``external_commit_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: external_commit_replay_receipt.
     """
 
     output_name: ClassVar[str] = "external_commit_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("external_commit_replay_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -834,13 +887,13 @@ class ExternalCommitReplayReceipt(L5Receipt):
 class ExternalCommitScopeReceipt(L5Receipt):
     """L5 doctrine output ``external_commit_scope_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: external_commit_scope_receipt.
     """
 
     output_name: ClassVar[str] = "external_commit_scope_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("external_commit_scope_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -848,13 +901,13 @@ class ExternalCommitScopeReceipt(L5Receipt):
 class FallbackCandidateReceipt(L5Receipt):
     """L5 doctrine output ``fallback_candidate_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: fallback_candidate_receipt.
     """
 
     output_name: ClassVar[str] = "fallback_candidate_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("fallback_candidate_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -862,13 +915,13 @@ class FallbackCandidateReceipt(L5Receipt):
 class FallbackPolicyReceipt(L5Receipt):
     """L5 doctrine output ``fallback_policy_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: fallback_policy_receipt.
     """
 
     output_name: ClassVar[str] = "fallback_policy_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("fallback_policy_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -876,13 +929,13 @@ class FallbackPolicyReceipt(L5Receipt):
 class FallbackReceiptRef(L5Ref):
     """L5 doctrine output ``fallback_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: fallback_receipt_ref.
     """
 
     output_name: ClassVar[str] = "fallback_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("fallback_receipt_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -890,13 +943,13 @@ class FallbackReceiptRef(L5Ref):
 class FallbackRecertificationRequiredReport(L5Report):
     """L5 doctrine output ``fallback_recertification_required_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: fallback_recertification_required_report.
     """
 
     output_name: ClassVar[str] = "fallback_recertification_required_report"
     output_names: ClassVar[tuple[str, ...]] = ("fallback_recertification_required_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -904,16 +957,22 @@ class FallbackRecertificationRequiredReport(L5Report):
 class FallbackStatus(L5Status):
     """L5 doctrine output ``fallback_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: fallback_status.
     """
 
     output_name: ClassVar[str] = "fallback_status"
     output_names: ClassVar[tuple[str, ...]] = ("fallback_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("not_required", "certified", "uncertified", "substitution_detected", "recertification_required",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "not_required",
+        "certified",
+        "uncertified",
+        "substitution_detected",
+        "recertification_required",
+    )
     value_enum: ClassVar[type] = FallbackStatus
 
     def __post_init__(self) -> None:
@@ -928,13 +987,13 @@ class FallbackStatus(L5Status):
 class HardcodedModelLiteralReport(L5Report):
     """L5 doctrine output ``hardcoded_model_literal_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: hardcoded_model_literal_report.
     """
 
     output_name: ClassVar[str] = "hardcoded_model_literal_report"
     output_names: ClassVar[tuple[str, ...]] = ("hardcoded_model_literal_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -942,13 +1001,13 @@ class HardcodedModelLiteralReport(L5Report):
 class HiddenEgressCertificationImpactReport(L5Report):
     """L5 doctrine output ``hidden_egress_certification_impact_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: hidden_egress_certification_impact_report.
     """
 
     output_name: ClassVar[str] = "hidden_egress_certification_impact_report"
     output_names: ClassVar[tuple[str, ...]] = ("hidden_egress_certification_impact_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -956,13 +1015,13 @@ class HiddenEgressCertificationImpactReport(L5Report):
 class IrreversibleActionEvidenceReport(L5Report):
     """L5 doctrine output ``irreversible_action_evidence_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: irreversible_action_evidence_report.
     """
 
     output_name: ClassVar[str] = "irreversible_action_evidence_report"
     output_names: ClassVar[tuple[str, ...]] = ("irreversible_action_evidence_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -970,13 +1029,13 @@ class IrreversibleActionEvidenceReport(L5Report):
 class ModelAllowlistReceipt(L5Receipt):
     """L5 doctrine output ``model_allowlist_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_allowlist_receipt.
     """
 
     output_name: ClassVar[str] = "model_allowlist_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("model_allowlist_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -984,13 +1043,13 @@ class ModelAllowlistReceipt(L5Receipt):
 class ModelAuditReceipt(L5Receipt):
     """L5 doctrine output ``model_audit_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_audit_receipt.
     """
 
     output_name: ClassVar[str] = "model_audit_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("model_audit_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -998,13 +1057,13 @@ class ModelAuditReceipt(L5Receipt):
 class ModelCredentialExposureReport(L5Report):
     """L5 doctrine output ``model_credential_exposure_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_credential_exposure_report.
     """
 
     output_name: ClassVar[str] = "model_credential_exposure_report"
     output_names: ClassVar[tuple[str, ...]] = ("model_credential_exposure_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1012,13 +1071,13 @@ class ModelCredentialExposureReport(L5Report):
 class ModelDirectBypassReport(L5Report):
     """L5 doctrine output ``model_direct_bypass_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_direct_bypass_report.
     """
 
     output_name: ClassVar[str] = "model_direct_bypass_report"
     output_names: ClassVar[tuple[str, ...]] = ("model_direct_bypass_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1026,13 +1085,13 @@ class ModelDirectBypassReport(L5Report):
 class ModelEgressReceiptRef(L5Ref):
     """L5 doctrine output ``model_egress_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_egress_receipt_ref.
     """
 
     output_name: ClassVar[str] = "model_egress_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("model_egress_receipt_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1040,16 +1099,23 @@ class ModelEgressReceiptRef(L5Ref):
 class ModelEgressStatus(L5Status):
     """L5 doctrine output ``model_egress_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_egress_status.
     """
 
     output_name: ClassVar[str] = "model_egress_status"
     output_names: ClassVar[tuple[str, ...]] = ("model_egress_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized", "substituted", "replay_gap", "audit_gap",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "bound",
+        "missing",
+        "unauthorized",
+        "substituted",
+        "replay_gap",
+        "audit_gap",
+    )
     value_enum: ClassVar[type] = ModelEgressStatus
 
     def __post_init__(self) -> None:
@@ -1064,13 +1130,13 @@ class ModelEgressStatus(L5Status):
 class ModelReplayReceipt(L5Receipt):
     """L5 doctrine output ``model_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_replay_receipt.
     """
 
     output_name: ClassVar[str] = "model_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("model_replay_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1078,13 +1144,13 @@ class ModelReplayReceipt(L5Receipt):
 class ModelResolutionMapReceipt(L5Receipt):
     """L5 doctrine output ``model_resolution_map_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: model_resolution_map_receipt.
     """
 
     output_name: ClassVar[str] = "model_resolution_map_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("model_resolution_map_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1092,13 +1158,13 @@ class ModelResolutionMapReceipt(L5Receipt):
 class NetworkAuditReceipt(L5Receipt):
     """L5 doctrine output ``network_audit_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_audit_receipt.
     """
 
     output_name: ClassVar[str] = "network_audit_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("network_audit_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1106,13 +1172,13 @@ class NetworkAuditReceipt(L5Receipt):
 class NetworkBroadScopeReport(L5Report):
     """L5 doctrine output ``network_broad_scope_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_broad_scope_report.
     """
 
     output_name: ClassVar[str] = "network_broad_scope_report"
     output_names: ClassVar[tuple[str, ...]] = ("network_broad_scope_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1120,13 +1186,13 @@ class NetworkBroadScopeReport(L5Report):
 class NetworkDestinationReceipt(L5Receipt):
     """L5 doctrine output ``network_destination_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_destination_receipt.
     """
 
     output_name: ClassVar[str] = "network_destination_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("network_destination_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1134,13 +1200,13 @@ class NetworkDestinationReceipt(L5Receipt):
 class NetworkDestinationRef(L5Ref):
     """L5 doctrine output ``network_destination_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_destination_ref.
     """
 
     output_name: ClassVar[str] = "network_destination_ref"
     output_names: ClassVar[tuple[str, ...]] = ("network_destination_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1148,13 +1214,16 @@ class NetworkDestinationRef(L5Ref):
 class NetworkEgressReceipt(L5Receipt):
     """L5 doctrine output ``NetworkEgressReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: NetworkEgressReceipt, network_egress_receipt.
     """
 
     output_name: ClassVar[str] = "NetworkEgressReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("NetworkEgressReceipt", "network_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "NetworkEgressReceipt",
+        "network_egress_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1162,13 +1231,13 @@ class NetworkEgressReceipt(L5Receipt):
 class NetworkEgressReceiptRef(L5Ref):
     """L5 doctrine output ``network_egress_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_egress_receipt_ref.
     """
 
     output_name: ClassVar[str] = "network_egress_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("network_egress_receipt_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1176,16 +1245,22 @@ class NetworkEgressReceiptRef(L5Ref):
 class NetworkEgressStatus(L5Status):
     """L5 doctrine output ``network_egress_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_egress_status.
     """
 
     output_name: ClassVar[str] = "network_egress_status"
     output_names: ClassVar[tuple[str, ...]] = ("network_egress_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized_destination", "broad_scope", "credential_gap",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "bound",
+        "missing",
+        "unauthorized_destination",
+        "broad_scope",
+        "credential_gap",
+    )
     value_enum: ClassVar[type] = NetworkEgressStatus
 
     def __post_init__(self) -> None:
@@ -1200,13 +1275,13 @@ class NetworkEgressStatus(L5Status):
 class NetworkMethodReceipt(L5Receipt):
     """L5 doctrine output ``network_method_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_method_receipt.
     """
 
     output_name: ClassVar[str] = "network_method_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("network_method_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1214,13 +1289,13 @@ class NetworkMethodReceipt(L5Receipt):
 class NetworkRegionReceipt(L5Receipt):
     """L5 doctrine output ``network_region_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_region_receipt.
     """
 
     output_name: ClassVar[str] = "network_region_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("network_region_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1228,13 +1303,13 @@ class NetworkRegionReceipt(L5Receipt):
 class NetworkReplayReceipt(L5Receipt):
     """L5 doctrine output ``network_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_replay_receipt.
     """
 
     output_name: ClassVar[str] = "network_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("network_replay_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1242,13 +1317,13 @@ class NetworkReplayReceipt(L5Receipt):
 class NetworkSubstitutionReport(L5Report):
     """L5 doctrine output ``network_substitution_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: network_substitution_report.
     """
 
     output_name: ClassVar[str] = "network_substitution_report"
     output_names: ClassVar[tuple[str, ...]] = ("network_substitution_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1256,13 +1331,16 @@ class NetworkSubstitutionReport(L5Report):
 class NoSilentFallbackReceipt(L5Receipt):
     """L5 doctrine output ``NoSilentFallbackReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: NoSilentFallbackReceipt, no_silent_fallback_receipt.
     """
 
     output_name: ClassVar[str] = "NoSilentFallbackReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("NoSilentFallbackReceipt", "no_silent_fallback_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "NoSilentFallbackReceipt",
+        "no_silent_fallback_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1270,13 +1348,13 @@ class NoSilentFallbackReceipt(L5Receipt):
 class OldNewEgressTargetDiff(L5Diff):
     """L5 doctrine output ``old_new_egress_target_diff`` (kind=diff).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: old_new_egress_target_diff.
     """
 
     output_name: ClassVar[str] = "old_new_egress_target_diff"
     output_names: ClassVar[tuple[str, ...]] = ("old_new_egress_target_diff",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "diff"
 
 
@@ -1284,13 +1362,13 @@ class OldNewEgressTargetDiff(L5Diff):
 class PayloadCrossPrincipalReport(L5Report):
     """L5 doctrine output ``payload_cross_principal_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: payload_cross_principal_report.
     """
 
     output_name: ClassVar[str] = "payload_cross_principal_report"
     output_names: ClassVar[tuple[str, ...]] = ("payload_cross_principal_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1298,13 +1376,13 @@ class PayloadCrossPrincipalReport(L5Report):
 class PayloadCrossTenantReport(L5Report):
     """L5 doctrine output ``payload_cross_tenant_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: payload_cross_tenant_report.
     """
 
     output_name: ClassVar[str] = "payload_cross_tenant_report"
     output_names: ClassVar[tuple[str, ...]] = ("payload_cross_tenant_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1312,13 +1390,13 @@ class PayloadCrossTenantReport(L5Report):
 class PayloadHashReceipt(L5Receipt):
     """L5 doctrine output ``payload_hash_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: payload_hash_receipt.
     """
 
     output_name: ClassVar[str] = "payload_hash_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("payload_hash_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1326,13 +1404,13 @@ class PayloadHashReceipt(L5Receipt):
 class PayloadScopeReceipt(L5Receipt):
     """L5 doctrine output ``payload_scope_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: payload_scope_receipt.
     """
 
     output_name: ClassVar[str] = "payload_scope_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("payload_scope_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1340,13 +1418,13 @@ class PayloadScopeReceipt(L5Receipt):
 class PayloadSecretExposureReport(L5Report):
     """L5 doctrine output ``payload_secret_exposure_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: payload_secret_exposure_report.
     """
 
     output_name: ClassVar[str] = "payload_secret_exposure_report"
     output_names: ClassVar[tuple[str, ...]] = ("payload_secret_exposure_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1354,13 +1432,13 @@ class PayloadSecretExposureReport(L5Report):
 class PreviousCertificationRef(L5Ref):
     """L5 doctrine output ``previous_certification_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: previous_certification_ref.
     """
 
     output_name: ClassVar[str] = "previous_certification_ref"
     output_names: ClassVar[tuple[str, ...]] = ("previous_certification_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1368,13 +1446,13 @@ class PreviousCertificationRef(L5Ref):
 class PromptArtifactRef(L5Ref):
     """L5 doctrine output ``prompt_artifact_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: prompt_artifact_ref.
     """
 
     output_name: ClassVar[str] = "prompt_artifact_ref"
     output_names: ClassVar[tuple[str, ...]] = ("prompt_artifact_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1382,13 +1460,13 @@ class PromptArtifactRef(L5Ref):
 class ProviderLaneReceiptRef(L5Ref):
     """L5 doctrine output ``provider_lane_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: provider_lane_receipt_ref.
     """
 
     output_name: ClassVar[str] = "provider_lane_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("provider_lane_receipt_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1396,16 +1474,22 @@ class ProviderLaneReceiptRef(L5Ref):
 class ProviderLaneStatus(L5Status):
     """L5 doctrine output ``provider_lane_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: provider_lane_status.
     """
 
     output_name: ClassVar[str] = "provider_lane_status"
     output_names: ClassVar[tuple[str, ...]] = ("provider_lane_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("current", "unavailable", "substituted", "incompatible", "uncertified_fallback",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "current",
+        "unavailable",
+        "substituted",
+        "incompatible",
+        "uncertified_fallback",
+    )
     value_enum: ClassVar[type] = ProviderLaneStatus
 
     def __post_init__(self) -> None:
@@ -1420,13 +1504,13 @@ class ProviderLaneStatus(L5Status):
 class ProviderRegistryReceipt(L5Receipt):
     """L5 doctrine output ``provider_registry_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: provider_registry_receipt.
     """
 
     output_name: ClassVar[str] = "provider_registry_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("provider_registry_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1434,13 +1518,13 @@ class ProviderRegistryReceipt(L5Receipt):
 class ProviderSdkBypassStaticReport(L5Report):
     """L5 doctrine output ``provider_sdk_bypass_static_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: provider_sdk_bypass_static_report.
     """
 
     output_name: ClassVar[str] = "provider_sdk_bypass_static_report"
     output_names: ClassVar[tuple[str, ...]] = ("provider_sdk_bypass_static_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1448,13 +1532,16 @@ class ProviderSdkBypassStaticReport(L5Report):
 class ProviderSubstitutionReport(L5Report):
     """L5 doctrine output ``ProviderSubstitutionReport`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: ProviderSubstitutionReport, provider_substitution_report.
     """
 
     output_name: ClassVar[str] = "ProviderSubstitutionReport"
-    output_names: ClassVar[tuple[str, ...]] = ("ProviderSubstitutionReport", "provider_substitution_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "ProviderSubstitutionReport",
+        "provider_substitution_report",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1462,13 +1549,13 @@ class ProviderSubstitutionReport(L5Report):
 class RegionSubstitutionReport(L5Report):
     """L5 doctrine output ``region_substitution_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: region_substitution_report.
     """
 
     output_name: ClassVar[str] = "region_substitution_report"
     output_names: ClassVar[tuple[str, ...]] = ("region_substitution_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1476,13 +1563,13 @@ class RegionSubstitutionReport(L5Report):
 class RuntimeConnectorEgressReceipt(L5Receipt):
     """L5 doctrine output ``runtime_connector_egress_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_connector_egress_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_connector_egress_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_connector_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1490,13 +1577,13 @@ class RuntimeConnectorEgressReceipt(L5Receipt):
 class RuntimeCredentialScopeReceipt(L5Receipt):
     """L5 doctrine output ``runtime_credential_scope_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_credential_scope_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_credential_scope_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_credential_scope_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1504,13 +1591,13 @@ class RuntimeCredentialScopeReceipt(L5Receipt):
 class RuntimeEgressGapReport(L5Report):
     """L5 doctrine output ``runtime_egress_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_egress_gap_report.
     """
 
     output_name: ClassVar[str] = "runtime_egress_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_egress_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1518,13 +1605,13 @@ class RuntimeEgressGapReport(L5Report):
 class RuntimeEgressGovernanceReceipt(L5Receipt):
     """L5 doctrine output ``runtime_egress_governance_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_egress_governance_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_egress_governance_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_egress_governance_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1532,13 +1619,13 @@ class RuntimeEgressGovernanceReceipt(L5Receipt):
 class RuntimeFallbackReceipt(L5Receipt):
     """L5 doctrine output ``runtime_fallback_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_fallback_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_fallback_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_fallback_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1546,13 +1633,13 @@ class RuntimeFallbackReceipt(L5Receipt):
 class RuntimeModelEgressReceipt(L5Receipt):
     """L5 doctrine output ``runtime_model_egress_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_model_egress_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_model_egress_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_model_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1560,13 +1647,13 @@ class RuntimeModelEgressReceipt(L5Receipt):
 class RuntimeNetworkEgressReceipt(L5Receipt):
     """L5 doctrine output ``runtime_network_egress_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_network_egress_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_network_egress_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_network_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1574,13 +1661,13 @@ class RuntimeNetworkEgressReceipt(L5Receipt):
 class RuntimeToolEgressReceipt(L5Receipt):
     """L5 doctrine output ``runtime_tool_egress_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: runtime_tool_egress_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_tool_egress_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_tool_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1588,13 +1675,13 @@ class RuntimeToolEgressReceipt(L5Receipt):
 class SilentFallbackStaticReport(L5Report):
     """L5 doctrine output ``silent_fallback_static_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: silent_fallback_static_report.
     """
 
     output_name: ClassVar[str] = "silent_fallback_static_report"
     output_names: ClassVar[tuple[str, ...]] = ("silent_fallback_static_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1602,13 +1689,13 @@ class SilentFallbackStaticReport(L5Report):
 class SsrfRiskEvidenceReport(L5Report):
     """L5 doctrine output ``ssrf_risk_evidence_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: ssrf_risk_evidence_report.
     """
 
     output_name: ClassVar[str] = "ssrf_risk_evidence_report"
     output_names: ClassVar[tuple[str, ...]] = ("ssrf_risk_evidence_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1616,13 +1703,13 @@ class SsrfRiskEvidenceReport(L5Report):
 class StaticEgressCertificationReadinessReport(L5Report):
     """L5 doctrine output ``static_egress_certification_readiness_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: static_egress_certification_readiness_report.
     """
 
     output_name: ClassVar[str] = "static_egress_certification_readiness_report"
     output_names: ClassVar[tuple[str, ...]] = ("static_egress_certification_readiness_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1630,13 +1717,13 @@ class StaticEgressCertificationReadinessReport(L5Report):
 class StaticEgressEvidenceIntakeReceipt(L5Receipt):
     """L5 doctrine output ``static_egress_evidence_intake_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: static_egress_evidence_intake_receipt.
     """
 
     output_name: ClassVar[str] = "static_egress_evidence_intake_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("static_egress_evidence_intake_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1644,13 +1731,13 @@ class StaticEgressEvidenceIntakeReceipt(L5Receipt):
 class StaticEgressEvidenceRefMap(L5Map):
     """L5 doctrine output ``static_egress_evidence_ref_map`` (kind=map).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: static_egress_evidence_ref_map.
     """
 
     output_name: ClassVar[str] = "static_egress_evidence_ref_map"
     output_names: ClassVar[tuple[str, ...]] = ("static_egress_evidence_ref_map",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "map"
 
 
@@ -1658,13 +1745,13 @@ class StaticEgressEvidenceRefMap(L5Map):
 class StaticEgressGapReport(L5Report):
     """L5 doctrine output ``static_egress_gap_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: static_egress_gap_report.
     """
 
     output_name: ClassVar[str] = "static_egress_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("static_egress_gap_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1672,13 +1759,13 @@ class StaticEgressGapReport(L5Report):
 class StaticEgressGovernanceReport(L5Report):
     """L5 doctrine output ``static_egress_governance_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: static_egress_governance_report.
     """
 
     output_name: ClassVar[str] = "static_egress_governance_report"
     output_names: ClassVar[tuple[str, ...]] = ("static_egress_governance_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1686,13 +1773,13 @@ class StaticEgressGovernanceReport(L5Report):
 class ToolAuditReceipt(L5Receipt):
     """L5 doctrine output ``tool_audit_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: tool_audit_receipt.
     """
 
     output_name: ClassVar[str] = "tool_audit_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("tool_audit_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1700,13 +1787,13 @@ class ToolAuditReceipt(L5Receipt):
 class ToolBroadScopeReport(L5Report):
     """L5 doctrine output ``tool_broad_scope_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: tool_broad_scope_report.
     """
 
     output_name: ClassVar[str] = "tool_broad_scope_report"
     output_names: ClassVar[tuple[str, ...]] = ("tool_broad_scope_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1714,13 +1801,16 @@ class ToolBroadScopeReport(L5Report):
 class ToolEgressReceipt(L5Receipt):
     """L5 doctrine output ``ToolEgressReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: ToolEgressReceipt, tool_egress_receipt.
     """
 
     output_name: ClassVar[str] = "ToolEgressReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("ToolEgressReceipt", "tool_egress_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "ToolEgressReceipt",
+        "tool_egress_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1728,13 +1818,13 @@ class ToolEgressReceipt(L5Receipt):
 class ToolEgressReceiptRef(L5Ref):
     """L5 doctrine output ``tool_egress_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: tool_egress_receipt_ref.
     """
 
     output_name: ClassVar[str] = "tool_egress_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("tool_egress_receipt_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1742,16 +1832,23 @@ class ToolEgressReceiptRef(L5Ref):
 class ToolEgressStatus(L5Status):
     """L5 doctrine output ``tool_egress_status`` (kind=status).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: tool_egress_status.
     """
 
     output_name: ClassVar[str] = "tool_egress_status"
     output_names: ClassVar[tuple[str, ...]] = ("tool_egress_status",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized", "substituted", "schema_gap", "audit_gap",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "bound",
+        "missing",
+        "unauthorized",
+        "substituted",
+        "schema_gap",
+        "audit_gap",
+    )
     value_enum: ClassVar[type] = ToolEgressStatus
 
     def __post_init__(self) -> None:
@@ -1766,13 +1863,13 @@ class ToolEgressStatus(L5Status):
 class ToolReplayReceipt(L5Receipt):
     """L5 doctrine output ``tool_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: tool_replay_receipt.
     """
 
     output_name: ClassVar[str] = "tool_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("tool_replay_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1780,13 +1877,13 @@ class ToolReplayReceipt(L5Receipt):
 class ToolSchemaBindingReceipt(L5Receipt):
     """L5 doctrine output ``tool_schema_binding_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: tool_schema_binding_receipt.
     """
 
     output_name: ClassVar[str] = "tool_schema_binding_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("tool_schema_binding_receipt",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1794,13 +1891,13 @@ class ToolSchemaBindingReceipt(L5Receipt):
 class UnauthorizedNetworkClientEvidenceRef(L5Ref):
     """L5 doctrine output ``unauthorized_network_client_evidence_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: unauthorized_network_client_evidence_ref.
     """
 
     output_name: ClassVar[str] = "unauthorized_network_client_evidence_ref"
     output_names: ClassVar[tuple[str, ...]] = ("unauthorized_network_client_evidence_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1808,13 +1905,13 @@ class UnauthorizedNetworkClientEvidenceRef(L5Ref):
 class UnauthorizedNetworkClientReport(L5Report):
     """L5 doctrine output ``unauthorized_network_client_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: unauthorized_network_client_report.
     """
 
     output_name: ClassVar[str] = "unauthorized_network_client_report"
     output_names: ClassVar[tuple[str, ...]] = ("unauthorized_network_client_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1822,13 +1919,13 @@ class UnauthorizedNetworkClientReport(L5Report):
 class UnauthorizedNetworkClientStaticReport(L5Report):
     """L5 doctrine output ``unauthorized_network_client_static_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: unauthorized_network_client_static_report.
     """
 
     output_name: ClassVar[str] = "unauthorized_network_client_static_report"
     output_names: ClassVar[tuple[str, ...]] = ("unauthorized_network_client_static_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1836,13 +1933,13 @@ class UnauthorizedNetworkClientStaticReport(L5Report):
 class UnauthorizedSecretAccessEvidenceRef(L5Ref):
     """L5 doctrine output ``unauthorized_secret_access_evidence_ref`` (kind=ref).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: unauthorized_secret_access_evidence_ref.
     """
 
     output_name: ClassVar[str] = "unauthorized_secret_access_evidence_ref"
     output_names: ClassVar[tuple[str, ...]] = ("unauthorized_secret_access_evidence_ref",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1850,13 +1947,13 @@ class UnauthorizedSecretAccessEvidenceRef(L5Ref):
 class UnauthorizedSecretAccessReport(L5Report):
     """L5 doctrine output ``unauthorized_secret_access_report`` (kind=report).
 
-    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Source doctrine: ``00A.5_L5_Egress_and_Provider_Governance_detailed.md``.
     Canonical doctrine names: unauthorized_secret_access_report.
     """
 
     output_name: ClassVar[str] = "unauthorized_secret_access_report"
     output_names: ClassVar[tuple[str, ...]] = ("unauthorized_secret_access_report",)
-    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
 

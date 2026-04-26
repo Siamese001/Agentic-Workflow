@@ -97,6 +97,10 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
+from system_learning.config.embedding_storage_layout import (
+    default_healing_contexts_seed_pack,
+)
+
 _emit_emits_metric_event("embedding_service_factory", "p4obs", "metric_1")
 _emit_emits_metric_event("embedding_service_factory", "p4obs", "metric_2")
 _emit_emits_metric_event("embedding_service_factory", "p4obs", "metric_3")
@@ -289,10 +293,7 @@ class EmbeddingServiceFactory:
                 )
             return _DisabledEmbeddingService()
         return cls.get(
-            pack_base_path
-            or Path(
-                "C:/AgenticEmbeddings/seed_packs/healing_contexts/5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9",
-            ),
+            pack_base_path or default_healing_contexts_seed_pack(),
         )
 
     @classmethod
@@ -380,7 +381,13 @@ class EmbeddingServiceFactory:
             cpu_index.add(cpu_matrix)
             gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
             return gpu_index
-        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- faiss-gpu unavailable: optional GPU acceleration, CPU fallback below
+        except (
+            AttributeError,
+            ImportError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as exc:  # guardian: allow-return-none-swallow -- faiss-gpu unavailable: optional GPU acceleration, CPU fallback below
             logger.warning(f"[EmbeddingServiceFactory] FAISS GPU index unavailable: {exc}")
             return None
 

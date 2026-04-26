@@ -6,7 +6,37 @@ No OS-specific mounting logic; only path construction utilities.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
+
+# Default embedding store root when AGENTIC_EMBEDDING_STORE_ROOT is unset.
+# Preserves the historical Windows layout used by the healing_contexts seed pack.
+_DEFAULT_EMBEDDING_STORE_ROOT = Path("C:/AgenticEmbeddings")
+
+# Canonical seed_index_version_hash for the healing_contexts namespace. This
+# is the deterministic directory name under seed_packs/healing_contexts/ and
+# matches the `seed_index_version_hash` field inside seed_manifest.json.
+HEALING_CONTEXTS_SEED_INDEX_VERSION_HASH = "5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"
+
+
+def default_embedding_store_root() -> Path:
+    """Resolve the base embedding storage root.
+
+    Resolution order:
+      1. ``AGENTIC_EMBEDDING_STORE_ROOT`` environment variable, if set.
+      2. ``C:/AgenticEmbeddings`` (historical default).
+    """
+    env = os.environ.get("AGENTIC_EMBEDDING_STORE_ROOT")
+    if env:
+        return Path(env)
+    return _DEFAULT_EMBEDDING_STORE_ROOT
+
+
+def default_healing_contexts_seed_pack(
+    seed_index_version_hash: str = HEALING_CONTEXTS_SEED_INDEX_VERSION_HASH,
+) -> Path:
+    """Return the absolute path to the default healing_contexts seed pack."""
+    return default_embedding_store_root() / "seed_packs" / "healing_contexts" / seed_index_version_hash
 
 
 class EmbeddingStorageLayout:
@@ -76,4 +106,9 @@ class EmbeddingStorageLayout:
         return self.base_path / "raw_staging"
 
 
-__all__ = ["EmbeddingStorageLayout"]
+__all__ = [
+    "EmbeddingStorageLayout",
+    "HEALING_CONTEXTS_SEED_INDEX_VERSION_HASH",
+    "default_embedding_store_root",
+    "default_healing_contexts_seed_pack",
+]

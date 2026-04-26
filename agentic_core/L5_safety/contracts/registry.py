@@ -5,6 +5,7 @@ doctrine docs, snake_case or PascalCase exactly) to its dataclass type.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
+
 from __future__ import annotations
 
 from typing import Final
@@ -813,6 +814,27 @@ from .static import (
     WrapperAuthorityExpansionReport,
     WrapperTargetResolutionReport,
     WritePathDriftReport,
+)
+from .runtime_binding import (
+    BlueprintEvidenceRef,
+    CapabilityScopeRef,
+    EgressCertRef,
+    HitlReclearanceRef,
+    L5SnapshotVerificationReceipt,
+    LiveSnapshotRef,
+    MatchStatus,
+    OriginTrustRef,
+    PacketRef,
+    PolicyEvidenceRef,
+    PrincipalRef,
+    PromptEnvelope,
+    RegistryEvidenceRef,
+    ReplayAuditRef,
+    ReplaySnapshotRef,
+    SandboxScopeRef,
+    StaticGovernanceRef,
+    TestExitRequiresL5ReclearanceForHumanModifiedPacket,
+    TestL2E2RejectsMissingL5BindingForGovernedPacket,
 )
 
 CONTRACT_REGISTRY: Final[dict[str, type[L5OutputBase]]] = {
@@ -1635,12 +1657,33 @@ CONTRACT_REGISTRY: Final[dict[str, type[L5OutputBase]]] = {
     "wrapper_authority_expansion_report": WrapperAuthorityExpansionReport,
     "wrapper_target_resolution_report": WrapperTargetResolutionReport,
     "write_path_drift_report": WritePathDriftReport,
+    "blueprint_evidence_ref": BlueprintEvidenceRef,
+    "capability_scope_ref": CapabilityScopeRef,
+    "egress_cert_ref": EgressCertRef,
+    "hitl_reclearance_ref": HitlReclearanceRef,
+    "L5SnapshotVerificationReceipt": L5SnapshotVerificationReceipt,
+    "live_snapshot_ref": LiveSnapshotRef,
+    "match_status": MatchStatus,
+    "origin_trust_ref": OriginTrustRef,
+    "packet_ref": PacketRef,
+    "policy_evidence_ref": PolicyEvidenceRef,
+    "principal_ref": PrincipalRef,
+    "PromptEnvelope": PromptEnvelope,
+    "registry_evidence_ref": RegistryEvidenceRef,
+    "replay_audit_ref": ReplayAuditRef,
+    "replay_snapshot_ref": ReplaySnapshotRef,
+    "sandbox_scope_ref": SandboxScopeRef,
+    "static_governance_ref": StaticGovernanceRef,
+    "test_exit_requires_l5_reclearance_for_human_modified_packet": TestExitRequiresL5ReclearanceForHumanModifiedPacket,
+    "test_l2_e2_rejects_missing_l5_binding_for_governed_packet": TestL2E2RejectsMissingL5BindingForGovernedPacket,
 }
 
 ALL_OUTPUT_NAMES: Final[frozenset[str]] = frozenset(CONTRACT_REGISTRY.keys())
 
+
 def get_contract(name: str) -> type[L5OutputBase]:
     """Lookup contract class by canonical doctrine name. Raises KeyError."""
     return CONTRACT_REGISTRY[name]
+
 
 __all__ = ["CONTRACT_REGISTRY", "ALL_OUTPUT_NAMES", "get_contract"]

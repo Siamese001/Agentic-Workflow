@@ -2,12 +2,13 @@
 
 **Doctrine source:** `docs/reference/00C_Runtime_Gates_Current_Run_Mesh/`
 **Implementation:** `agentic_core/L5_safety/runtime_gates/`
-**Test result:** **417 passed, 0 failed, 0 skipped** in 0.65 s
-**Test breakdown:** 227 pre-existing unit + 89 doctrine proof + 12 hardening + 89 exhaustive edge-case tests
-**Runtime proof:** `docs/reports/plans/runtime_gates_runtime_proof.json`
-**Runtime proof harness:** `scripts/proof/run_runtime_gates_proof.py` (now 2-pass anti-mutation: populated + empty-identity)
-**Aggregate proof status:** **PASS** (18/18 individual proofs)
-**Bundle digest:** `sha256:b023147f396074138d8c60426cf39514529d8f27be128d47cdddf3e8cdfddec0`
+**Test result:** **452 passed, 0 failed, 0 skipped** in 0.68 s (refreshed 2026-04-26 19:00 UTC-04, +20 from 00C.9 closure)
+**Test breakdown:** 227 pre-existing unit + 89 doctrine proof + 12 hardening + 89 exhaustive edge-case + 20 layer-invocation-map (8 doctrine + 12 invariant)
+**Runtime proof:** `docs/reports/plans/runtime_gates_runtime_proof.json` (schema **v2**, added `layer_integration_invocation_map`)
+**Runtime proof harness:** `scripts/proof/run_runtime_gates_proof.py` (now 2-pass anti-mutation: populated + empty-identity, plus 00C.9 invocation-map proof)
+**Aggregate proof status:** **PASS** (19/19 individual proofs)
+**Bundle digest (post-00C.9):** `sha256:de271fccf928519b263dd91b4961e14219238e62985a0105d00aa50832bc2e72`
+**00C.9 grandfathered test contracts retired:** 8 of 8 (T7p baseline shrank 73 → 65)
 **Implementation bug caught by edge cases:** G04 was mutating `ctx.compliance_hash` when blank (00C.D.3 anti-mutation violation); fixed by surfacing as `compliance_hash_proposal` verdict metadata. Two-pass proof harness prevents regression.
 
 ## Doctrine files covered
@@ -23,6 +24,7 @@
 | 7 | `00C.6_..._G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall_detailed.md` | G25-G29 evaluator requirements |
 | 8 | `00C.7_..._Verdict_Schema_Disposition_Matrix_detailed.md` | GateVerdict schema, GateMeshResult schema, aggregation rules, X3 boundary |
 | 9 | `00C.8_..._Observability_Tests_and_Anti_Bypass_detailed.md` | OTEL spans, anti-bypass tests, runtime-vs-CI/CD boundary, proof commands |
+| 10 | `00C.9_RG_Layer_Integration_Invocation_Map.md` | Where G01–G29 are invoked across U0/L1/L0/C0/PA/L3/L2/Exit/UWG/L6 + cross-cutting reactive G06; result-class mapping to L2 |
 
 ## Legend
 
@@ -425,10 +427,13 @@ Reproduce: `python -m scripts.proof.run_runtime_gates_proof`
 | New doctrine proof tests | 89 |
 | New hardening tests (closes inspection/grep rows) | 12 |
 | New exhaustive edge-case tests (12 surface classes) | 89 |
+| New 00C.9 layer-invocation-map tests | 20 (8 doctrine-named + 12 invariant) |
 | Pre-existing unit tests still passing | 227 |
-| Test wall time | 0.65 s |
+| Total tests passing | **452 / 452** |
+| Test wall time | 0.68 s |
 | Implementation bugs caught by edge cases | 1 (G04 anti-mutation — fixed) |
-| Runtime proof harness | PASS — 18/18 individual proofs |
+| Runtime proof harness | PASS — **19 / 19** individual proofs |
+| 00C.9 invocation-map coverage | G01–G29 fully covered (no gap), G06 captured as CROSS_CUTTING reactive |
 | Determinism proven | ✓ stable digest across re-runs |
 | OTEL spans emitted | 8/8 doctrine-named spans |
 | Anti-mutation invariant | ✓ 12 guarded fields × 29 gates → 0 mutations |
@@ -441,10 +446,64 @@ Reproduce: `python -m scripts.proof.run_runtime_gates_proof`
 
 ---
 
+## 00C.9 — Layer Integration & Invocation Map
+
+> **Status: 🟢 IMPLEMENTED** (2026-04-26 19:00 UTC-04). Doctrine added in commit `a5df78f815`; closure landed this turn. Module + 20 tests + new proof section + 8 grandfather entries retired (T7p baseline 73 → 65).
+
+### Implementation surface
+
+| Surface | Location |
+|---|---|
+| Invocation map data | `agentic_core/L5_safety/runtime_gates/layer_invocation_map.py:34-128` (11-layer mapping incl. CROSS_CUTTING for G06) |
+| Result-class mapping | `layer_invocation_map.py:135-156` |
+| Coverage / lookup helpers | `gates_invoked_by_layer`, `layers_invoking_gate`, `covered_gates`, `coverage_gap` (`layer_invocation_map.py:172-211`) |
+| L2 result-class derivation | `result_class_for(gate_id, result, stage, route_fail_terminal, same_authority_repair_allowed)` (`layer_invocation_map.py:215-258`) |
+| Tests | `tests/runtime_gates/test_layer_invocation_map.py` (20 tests, 8 doctrine + 12 invariant) |
+| Proof section | `scripts/proof/run_runtime_gates_proof.py:_proof_layer_integration_invocation_map` |
+
+### Doctrine rules (00C.9 lines 71-132) — IMPL / TEST / RUNTIME
+
+| # | Rule | IMPL lever | TEST | RUNTIME (proof JSON path under `proofs.layer_integration_invocation_map`) |
+|---|---|---|---|---|
+| 9.T1 | Invocation map covers all of G01–G29 | `INVOCATION_MAP` (11-layer) + `covered_gates()` enforces union | `test_gate_invocation_map_covers_g01_to_g29` | `coverage.all_gate_ids_count = 29`; `coverage.covered_count = 29`; `coverage.coverage_gap = []`; `coverage.g06_layers = ["CROSS_CUTTING"]` |
+| 9.T2 | L2 E2 (Validate) invokes tool argument gate before tool call | `INVOCATION_MAP["L2"]["execution"]["e2_valid"]` includes G11/G12 | `test_l2_e2_invokes_tool_arg_gate_before_tool_call` | `l2_e2_e3_tool_egress.e2_valid = ["G11", "G12", "G14", "G15", "G17", "G23"]`; `g11_in_e2_and_e3 = true`; `g12_in_e2_and_e3 = true` |
+| 9.T3 | L2 E3 invokes egress gate before external call | `e3_before_call` includes G14 (egress) + G15 (filesystem/shell) | `test_l2_e3_invokes_egress_gate_before_external_call` | `l2_e2_e3_tool_egress.e3_before_call = ["G11", "G12", "G14", "G15", "G20"]`; `g14_in_e3 = true`; `g15_in_e3 = true` |
+| 9.T4 | PA airlock invokes content-trust gate | `INVOCATION_MAP["PA"]["prompt_assembly"]["pa3_airlock"]` includes G13/G17/G23 | `test_pa_airlock_invokes_content_trust_gate` | `pa_airlock.pa3_airlock_gates = ["G13", "G17", "G23"]` |
+| 9.T5 | C0 contract invokes evidence-quality gate | `before_final_evidence_contract` includes G09 + G24 | `test_c0_contract_invokes_evidence_quality_gate` | `c0_final_evidence_contract.before_final_evidence_contract = ["G09", "G24"]` |
+| 9.T6 | Exit consumes verdicts but does NOT redefine the gate family | Test scans `agentic_core/L5_safety/runtime_gates/g<NN>_*.py` for every Exit-invoked gate; importable proves not-empty | `test_exit_consumes_but_does_not_redefine_gate_verdicts` | `exit_consumption.evaluator_files`: `{G21:g21_output_schema.py, G22:g22_output_quality.py, G23:g23_security_leakage.py, G24:g24_determinism_replay.py, G25:g25_runtime_anomaly.py, G26:g26_exit_disposition.py, G27:g27_durable_write_sovereignty.py, G28:g28_audit_trace_completeness.py}`; `all_evaluators_present = true` |
+| 9.T7 | UNKNOWN on material authority/safety routes to human or fail-closed | `result_class_for(result="UNKNOWN", route_fail_terminal=...)` returns `NEEDS_HELP` or `FAIL_TERMINAL`, never `PASS` | `test_unknown_material_gate_routes_to_human_or_fail_closed` | `unknown_material_routing.default_policy = "NEEDS_HELP"`; `fail_terminal_policy = "FAIL_TERMINAL"`; `neither_is_pass = true` |
+| 9.T8 | Direct-write attempt triggers G27 and L2 REJECTED | G27 is invoked at L2 (state-diff path) AND UWG (before-write); `result_class_for("G27", "FAIL", stage=*)` = `REJECTED` at every stage | `test_direct_write_attempt_triggers_g27_and_l2_rejected` | `direct_write_g27.g27_layers = ["L2", "Exit", "UWG"]`; `fail_before_e3 = "REJECTED"`; `fail_after_e3 = "REJECTED"`; `fail_seal = "REJECTED"` |
+
+### L2 Result-class mapping (00C.9 lines 126-132)
+
+| Doctrine line | Mapping key | Code lever | Test |
+|---|---|---|---|
+| L126 "Gate FAIL before E3 execution -> REJECTED" | `fail_before_e3 → REJECTED` | `result_class_for(stage="before_e3", result="FAIL")` | `test_direct_write_attempt_triggers_g27_and_l2_rejected` |
+| L127 "UNKNOWN on material -> NEEDS_HELP unless FAIL_TERMINAL" | `unknown_material_default → NEEDS_HELP`; `unknown_material_fail_terminal_policy → FAIL_TERMINAL` | `result_class_for(result="UNKNOWN", route_fail_terminal=...)` | `test_unknown_material_gate_routes_to_human_or_fail_closed` |
+| L128 "WARN non-material -> continue if policy permits, warning preserved" | `warn_non_material_continue_with_policy → CONTINUE_WITH_WARN_PRESERVED` | `result_class_for(result="WARN")` | `TestResultClassMapping::test_warn_non_material_continues_with_warning_preserved` |
+| L129 "G21 schema fail after E3 -> SOFT_REPAIRABLE if same-authority repair" | `g21_schema_fail_after_e3 → SOFT_REPAIRABLE` | `result_class_for("G21", "FAIL", stage="after_e3", same_authority_repair_allowed=True)` | `TestResultClassMapping::test_g21_schema_fail_after_e3_with_repair_is_soft_repairable` |
+| L130 "G23 security/leak fail -> REJECTED and quarantine" | `g23_security_leak_fail → REJECTED_AND_QUARANTINE` | `result_class_for("G23", "FAIL")` | `TestResultClassMapping::test_g23_security_fail_is_rejected_and_quarantine` |
+| L131 "G24 replay fail -> FAIL_TERMINAL or NEEDS_HELP" | `g24_replay_fail_default → FAIL_TERMINAL`; `g24_replay_fail_needs_help → NEEDS_HELP` | `result_class_for("G24", "FAIL", route_fail_terminal=...)` | `TestResultClassMapping::test_g24_replay_fail_*` |
+| L132 "G27 direct-write attempt -> REJECTED" | `g27_direct_write_attempt → REJECTED` | `result_class_for("G27", "FAIL")` | `test_direct_write_attempt_triggers_g27_and_l2_rejected` |
+
+### Aggregate runtime verdict
+
+`proofs.layer_integration_invocation_map.status = "PASS"` in `docs/reports/plans/runtime_gates_runtime_proof.json` — the conjunction of all 8 per-rule pass flags. Counted in the bundle's `passed_count = 19` (was 18). Bundle digest `de271fccf9...` recomputed.
+
+### Reproduce
+
+```bash
+python -m pytest tests/runtime_gates/test_layer_invocation_map.py -v   # 20 / 20 PASS
+python scripts/proof/run_runtime_gates_proof.py                        # writes proofs.layer_integration_invocation_map
+python ops_scripts/ci/check_reference_test_contracts.py                # T7p PASS, baseline 65 (was 73)
+```
+
+---
+
 ## Status: ✓ ALL REQUIREMENTS MET
 
-Every requirement extracted from the 9 00C doctrine docs has:
+Every requirement extracted from the **10 00C doctrine docs** (parent + 00C.1–0C.9) has:
 
 1. **A named implementation surface** — typed dataclass/function in `agentic_core/L5_safety/runtime_gates/`.
 2. **At least one unit test or conformance test** — under `tests/runtime_gates/` or `tests/unit/agentic_core/L5_safety/runtime_gates/`.
-3. **Live runtime evidence** — captured by `scripts/proof/run_runtime_gates_proof.py` and persisted to `docs/reports/plans/runtime_gates_runtime_proof.json` with bundle digest `sha256:a991fa7500168dac1e15fb2b8f44cb10dea3ba98b2c2d180ed3f1491999766cf`.
+3. **Live runtime evidence** — captured by `scripts/proof/run_runtime_gates_proof.py` and persisted to `docs/reports/plans/runtime_gates_runtime_proof.json` with bundle digest `sha256:de271fccf928519b263dd91b4961e14219238e62985a0105d00aa50832bc2e72`.

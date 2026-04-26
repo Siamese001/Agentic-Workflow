@@ -33,14 +33,14 @@ REFERENCE POINTERS
 
 Included files:
 
-- 00A.1_L5_Safety_Enforcement_Plane_detailed.md
-- 00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md
-- 00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md
-- 00A.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md
-- 00A.5_L5_Egress_and_Provider_Governance_detailed.md
-- 00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md
-- 00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md
-- 00A_L5_Governance_Safety_detailed.md
+- 00A.1_L5_Safety_Enforcement_Plane.md
+- 00A.2_L5_Authority_Context_and_Registry_Binding.md
+- 00A.3_L5_Origin_Trust_and_Content_Boundary.md
+- 00A.4_L5_HITL_Reclearance_and_Human_Input_Governance.md
+- 00A.5_L5_Egress_and_Provider_Governance.md
+- 00A.6_L5_Replay_Audit_and_Certification_Evidence.md
+- 00A.7_L5_Static_Governance_and_Structure_Drift.md
+- 00A_L5_Governance_Safety.md
 - OVERLAP_RECONCILIATION_REPORT.md
 
 Generated from uploaded L5 parent/child files and checked against the available Agentic AI detailed source-file boundaries.

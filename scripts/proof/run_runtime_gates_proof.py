@@ -880,6 +880,123 @@ def _proof_g02_does_not_mutate_baseline() -> dict[str, Any]:
 # ----------------------------------------------------------------------------
 
 
+def _proof_layer_integration_invocation_map() -> dict[str, Any]:
+    """00C.9 Runtime Gates Layer Integration & Invocation Map.
+
+    Live evidence that the canonical invocation map (covers G01-G29)
+    enforces the doctrinal rules from 00C.9 (lines 71-132):
+      - all 29 gates are invoked at SOME layer (with G06 captured under
+        CROSS_CUTTING per its reactive-only nature);
+      - L2 E2/E3 gate the tool-call boundary;
+      - PA airlock includes G13/G17/G23;
+      - C0 final-evidence-contract gates G09/G24;
+      - Exit consumes verdicts whose evaluators live in runtime_gates/;
+      - UNKNOWN on material safety routes to human or fail-closed;
+      - direct-write attempts trigger G27 → REJECTED.
+    """
+    from agentic_core.L5_safety.runtime_gates.layer_invocation_map import (
+        ALL_GATE_IDS,
+        INVOCATION_MAP,
+        covered_gates,
+        coverage_gap,
+        gates_invoked_by_layer,
+        layers_invoking_gate,
+        result_class_for,
+    )
+
+    out: dict[str, Any] = {}
+
+    # 9.T1 coverage
+    out["coverage"] = {
+        "all_gate_ids_count": len(ALL_GATE_IDS),
+        "covered_count": len(covered_gates()),
+        "coverage_gap": list(coverage_gap()),
+        "g06_layers": list(layers_invoking_gate("G06")),
+    }
+
+    # 9.T2 / 9.T3 L2 tool/egress invocation
+    out["l2_e2_e3_tool_egress"] = {
+        "e2_valid": list(INVOCATION_MAP["L2"]["execution"]["e2_valid"]),
+        "e3_before_call": list(INVOCATION_MAP["L2"]["execution"]["e3_before_call"]),
+        "g11_in_e2_and_e3": "G11" in INVOCATION_MAP["L2"]["execution"]["e2_valid"]
+        and "G11" in INVOCATION_MAP["L2"]["execution"]["e3_before_call"],
+        "g12_in_e2_and_e3": "G12" in INVOCATION_MAP["L2"]["execution"]["e2_valid"]
+        and "G12" in INVOCATION_MAP["L2"]["execution"]["e3_before_call"],
+        "g14_in_e3": "G14" in INVOCATION_MAP["L2"]["execution"]["e3_before_call"],
+        "g15_in_e3": "G15" in INVOCATION_MAP["L2"]["execution"]["e3_before_call"],
+    }
+
+    # 9.T4 PA airlock
+    out["pa_airlock"] = {
+        "pa3_airlock_gates": list(INVOCATION_MAP["PA"]["prompt_assembly"]["pa3_airlock"]),
+    }
+
+    # 9.T5 C0 final evidence contract
+    out["c0_final_evidence_contract"] = {
+        "before_final_evidence_contract": list(
+            INVOCATION_MAP["C0"]["retrieval"]["before_final_evidence_contract"]
+        ),
+    }
+
+    # 9.T6 Exit consumes verdicts; evaluators live in runtime_gates/
+    import pathlib
+
+    from agentic_core.L5_safety import runtime_gates as rg_pkg
+
+    rg_dir = pathlib.Path(list(rg_pkg.__path__)[0])
+    exit_gates = INVOCATION_MAP["Exit"]["checkout"]["x1a_x1j_consume_verdicts"]
+    evaluator_files: dict[str, str] = {}
+    for gate_id in exit_gates:
+        n = int(gate_id[1:])
+        match = next(rg_dir.glob(f"g{n:02d}_*.py"), None)
+        evaluator_files[gate_id] = match.name if match else "MISSING"
+    out["exit_consumption"] = {
+        "exit_invoked_gates": list(exit_gates),
+        "evaluator_files": evaluator_files,
+        "all_evaluators_present": all(v != "MISSING" for v in evaluator_files.values()),
+    }
+
+    # 9.T7 UNKNOWN material → human or fail-closed
+    out["unknown_material_routing"] = {
+        "default_policy": result_class_for(gate_id="G02", result="UNKNOWN", route_fail_terminal=False),
+        "fail_terminal_policy": result_class_for(gate_id="G02", result="UNKNOWN", route_fail_terminal=True),
+        "neither_is_pass": (
+            result_class_for(gate_id="G02", result="UNKNOWN", route_fail_terminal=False) != "PASS"
+            and result_class_for(gate_id="G02", result="UNKNOWN", route_fail_terminal=True) != "PASS"
+        ),
+    }
+
+    # 9.T8 G27 direct-write → REJECTED at every stage
+    out["direct_write_g27"] = {
+        "g27_layers": list(layers_invoking_gate("G27")),
+        "fail_before_e3": result_class_for(gate_id="G27", result="FAIL", stage="before_e3"),
+        "fail_after_e3": result_class_for(gate_id="G27", result="FAIL", stage="after_e3"),
+        "fail_seal": result_class_for(gate_id="G27", result="FAIL", stage="seal"),
+    }
+
+    # Aggregate verdict — all 8 rules must be enforced
+    rules_pass = (
+        out["coverage"]["coverage_gap"] == []
+        and out["coverage"]["g06_layers"] == ["CROSS_CUTTING"]
+        and out["l2_e2_e3_tool_egress"]["g11_in_e2_and_e3"]
+        and out["l2_e2_e3_tool_egress"]["g12_in_e2_and_e3"]
+        and out["l2_e2_e3_tool_egress"]["g14_in_e3"]
+        and out["l2_e2_e3_tool_egress"]["g15_in_e3"]
+        and {"G13", "G17", "G23"}.issubset(set(out["pa_airlock"]["pa3_airlock_gates"]))
+        and {"G09", "G24"}.issubset(set(out["c0_final_evidence_contract"]["before_final_evidence_contract"]))
+        and out["exit_consumption"]["all_evaluators_present"]
+        and out["unknown_material_routing"]["default_policy"] == "NEEDS_HELP"
+        and out["unknown_material_routing"]["fail_terminal_policy"] == "FAIL_TERMINAL"
+        and out["unknown_material_routing"]["neither_is_pass"]
+        and {"L2", "UWG"}.issubset(set(out["direct_write_g27"]["g27_layers"]))
+        and out["direct_write_g27"]["fail_before_e3"] == "REJECTED"
+        and out["direct_write_g27"]["fail_after_e3"] == "REJECTED"
+        and out["direct_write_g27"]["fail_seal"] == "REJECTED"
+    )
+    out["status"] = "PASS" if rules_pass else "FAIL"
+    return out
+
+
 def run_all() -> dict[str, Any]:
     proofs: dict[str, Any] = {}
     proofs["registry_complete"] = _proof_registry_complete()
@@ -902,13 +1019,14 @@ def run_all() -> dict[str, Any]:
     proofs["canonical_dispositions"] = _proof_canonical_dispositions()
     proofs["canonical_results"] = _proof_canonical_results()
     proofs["g02_does_not_mutate_baseline"] = _proof_g02_does_not_mutate_baseline()
+    proofs["layer_integration_invocation_map"] = _proof_layer_integration_invocation_map()
 
     # Status roll-up
     statuses = [v.get("status") for v in proofs.values() if isinstance(v, dict) and "status" in v]
     aggregate_status = "PASS" if all(s == "PASS" for s in statuses) else "FAIL"
 
     bundle: dict[str, Any] = {
-        "schema_version": "00C.runtime_proof.v1",
+        "schema_version": "00C.runtime_proof.v2",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "doctrine_files": [
             "00C_Runtime_Gates_Current_Run_Mesh_detailed.md",
@@ -920,6 +1038,7 @@ def run_all() -> dict[str, Any]:
             "00C.6_Runtime_Gates_G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall_detailed.md",
             "00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix_detailed.md",
             "00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass_detailed.md",
+            "00C.9_RG_Layer_Integration_Invocation_Map.md",
         ],
         "aggregate_status": aggregate_status,
         "individual_proof_count": len(statuses),

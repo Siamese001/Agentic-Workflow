@@ -40,10 +40,7 @@ def test_every_doctrine_name_has_a_contract(doctrine_names: set[str]) -> None:
 
 def test_no_orphan_contracts(doctrine_names: set[str]) -> None:
     orphans = sorted(ALL_OUTPUT_NAMES - doctrine_names)
-    assert orphans == [], (
-        f"{len(orphans)} contracts are not referenced in any doctrine doc: "
-        f"{orphans[:10]}"
-    )
+    assert orphans == [], f"{len(orphans)} contracts are not referenced in any doctrine doc: {orphans[:10]}"
 
 
 def test_full_audit_zero_missed_zero_spurious() -> None:
@@ -82,10 +79,6 @@ def test_full_audit_zero_missed_zero_spurious() -> None:
 
     missed = sorted(found - ALL_OUTPUT_NAMES)
     spurious = sorted(ALL_OUTPUT_NAMES - found)
-    assert missed == [], (
-        f"{len(missed)} doctrine tokens have no contract: {missed[:15]}"
-    )
-    assert spurious == [], (
-        f"{len(spurious)} contracts have no doctrine reference: {spurious[:15]}"
-    )
-    assert len(found) == len(ALL_OUTPUT_NAMES) == 819
+    assert missed == [], f"{len(missed)} doctrine tokens have no contract: {missed[:15]}"
+    assert spurious == [], f"{len(spurious)} contracts have no doctrine reference: {spurious[:15]}"
+    assert len(found) == len(ALL_OUTPUT_NAMES) == 838  # 819 prior + 19 from 00A.8

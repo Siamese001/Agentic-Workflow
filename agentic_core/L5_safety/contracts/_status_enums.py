@@ -7,6 +7,7 @@ against ``allowed_values`` (also exposed as a ``ClassVar``).
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
+
 from __future__ import annotations
 
 from enum import StrEnum
@@ -17,6 +18,7 @@ class AdrStatus(StrEnum):
     """Doctrine value set for ``adr_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     NOT_REQUIRED = "not_required"
     REQUIRED = "required"
     PRESENT = "present"
@@ -29,6 +31,7 @@ class AuditBindingStatus(StrEnum):
     """Doctrine value set for ``audit_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
     HASH_GAP = "hash_gap"
@@ -40,6 +43,7 @@ class AuthorityAttemptStatus(StrEnum):
     """Doctrine value set for ``authority_attempt_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     NONE = "none"
     ATTEMPTED = "attempted"
     BLOCKED = "blocked"
@@ -50,6 +54,7 @@ class AuthorityContextStatus(StrEnum):
     """Doctrine value set for ``authority_context_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     BOUND = "bound"
     INCOMPLETE = "incomplete"
     STALE = "stale"
@@ -62,6 +67,7 @@ class BlueprintBindingStatus(StrEnum):
     """Doctrine value set for ``blueprint_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     CURRENT = "current"
     MISSING = "missing"
     STALE = "stale"
@@ -72,6 +78,7 @@ class BypassEvidenceStatus(StrEnum):
     """Doctrine value set for ``bypass_evidence_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     NONE = "none"
     HIDDEN_EGRESS = "hidden_egress"
     DIRECT_WRITE = "direct_write"
@@ -84,6 +91,7 @@ class CapabilityScopeStatus(StrEnum):
     """Doctrine value set for ``capability_scope_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     SUFFICIENT = "sufficient"
     MISSING = "missing"
     TOO_BROAD = "too_broad"
@@ -96,6 +104,7 @@ class CertificationEvidenceStatus(StrEnum):
     """Doctrine value set for ``certification_evidence_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
     STALE = "stale"
@@ -108,6 +117,7 @@ class CertificationScopeStatus(StrEnum):
     """Doctrine value set for ``certification_scope_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     WIDENED = "widened"
@@ -115,10 +125,22 @@ class CertificationScopeStatus(StrEnum):
     MISMATCHED = "mismatched"
 
 
+class CertificationStatus(StrEnum):
+    """Doctrine value set for ``certification_status``.
+    Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
+    """
+
+    L5_CERTIFIED = "L5_CERTIFIED"
+    L5_NOT_CERTIFIED = "L5_NOT_CERTIFIED"
+    L5_REQUIRES_RECLEARANCE = "L5_REQUIRES_RECLEARANCE"
+    L5_REQUIRES_REMEDIATION_EVIDENCE = "L5_REQUIRES_REMEDIATION_EVIDENCE"
+
+
 class ClassificationStatus(StrEnum):
     """Doctrine value set for ``classification_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     CLASSIFIED = "classified"
     UNKNOWN = "unknown"
     CONFLICT_DETECTED = "conflict_detected"
@@ -129,6 +151,7 @@ class ConnectorEgressStatus(StrEnum):
     """Doctrine value set for ``connector_egress_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     UNAUTHORIZED = "unauthorized"
@@ -141,6 +164,7 @@ class ContentBoundaryStatus(StrEnum):
     """Doctrine value set for ``content_boundary_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     INTACT = "intact"
     VIOLATED = "violated"
     UNKNOWN = "unknown"
@@ -151,6 +175,7 @@ class CredentialScopeStatus(StrEnum):
     """Doctrine value set for ``credential_scope_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     MINIMAL = "minimal"
     MISSING = "missing"
     TOO_BROAD = "too_broad"
@@ -163,6 +188,7 @@ class EgressCertificationStatus(StrEnum):
     """Doctrine value set for ``egress_certification_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     CERTIFIED_EVIDENCE = "certified_evidence"
     INCOMPLETE = "incomplete"
     STALE = "stale"
@@ -175,6 +201,7 @@ class EgressEvidenceStatus(StrEnum):
     """Doctrine value set for ``egress_evidence_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     CLEAN = "clean"
     BYPASS_DETECTED = "bypass_detected"
     SUBSTITUTION_DETECTED = "substitution_detected"
@@ -185,6 +212,7 @@ class EnforcementReceiptStatus(StrEnum):
     """Doctrine value set for ``enforcement_receipt_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
     NON_REPLAYABLE = "non_replayable"
@@ -195,6 +223,7 @@ class FallbackStatus(StrEnum):
     """Doctrine value set for ``fallback_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     NOT_REQUIRED = "not_required"
     CERTIFIED = "certified"
     UNCERTIFIED = "uncertified"
@@ -206,6 +235,7 @@ class GatewayStatus(StrEnum):
     """Doctrine value set for ``gateway_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     CERTIFIED_EVIDENCE = "certified_evidence"
     REGISTRY_GAP = "registry_gap"
     INJECTION_EVIDENCE = "injection_evidence"
@@ -217,6 +247,7 @@ class HashBindingStatus(StrEnum):
     """Doctrine value set for ``hash_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     COMPLETE = "complete"
     MISSING_HASH = "missing_hash"
     MISMATCHED_HASH = "mismatched_hash"
@@ -228,6 +259,7 @@ class HitlAuditStatus(StrEnum):
     """Doctrine value set for ``hitl_audit_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (3 values).
     """
+
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
     NON_REPLAYABLE = "non_replayable"
@@ -237,6 +269,7 @@ class HitlPacketStatus(StrEnum):
     """Doctrine value set for ``hitl_packet_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     FROZEN = "frozen"
     INCOMPLETE = "incomplete"
     INVALID = "invalid"
@@ -248,6 +281,7 @@ class HumanInputStatus(StrEnum):
     """Doctrine value set for ``human_input_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     RECEIVED = "received"
     MODIFIED = "modified"
     MISSING = "missing"
@@ -259,6 +293,7 @@ class HumanOriginStatus(StrEnum):
     """Doctrine value set for ``human_origin_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     LABELED = "labeled"
     UNLABELED = "unlabeled"
     MISLABELED = "mislabeled"
@@ -269,6 +304,7 @@ class HumanScopeStatus(StrEnum):
     """Doctrine value set for ``human_scope_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     UNCHANGED = "unchanged"
     NARROWED = "narrowed"
     WIDENED = "widened"
@@ -279,6 +315,7 @@ class InstructionBoundaryStatus(StrEnum):
     """Doctrine value set for ``instruction_boundary_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     TRUSTED_INSTRUCTION = "trusted_instruction"
     UNTRUSTED_DATA = "untrusted_data"
     QUARANTINED = "quarantined"
@@ -286,10 +323,22 @@ class InstructionBoundaryStatus(StrEnum):
     REJECTED_AS_AUTHORITY = "rejected_as_authority"
 
 
+class MatchStatus(StrEnum):
+    """Doctrine value set for ``match_status``.
+    Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
+    """
+
+    MATCH = "MATCH"
+    MISMATCH = "MISMATCH"
+    STALE = "STALE"
+    UNKNOWN = "UNKNOWN"
+
+
 class ModelEgressStatus(StrEnum):
     """Doctrine value set for ``model_egress_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     UNAUTHORIZED = "unauthorized"
@@ -302,6 +351,7 @@ class NetworkEgressStatus(StrEnum):
     """Doctrine value set for ``network_egress_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     UNAUTHORIZED_DESTINATION = "unauthorized_destination"
@@ -313,6 +363,7 @@ class OriginLabelStatus(StrEnum):
     """Doctrine value set for ``origin_label_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     LABELED = "labeled"
     UNLABELED = "unlabeled"
     AMBIGUOUS = "ambiguous"
@@ -323,6 +374,7 @@ class OriginManifestStatus(StrEnum):
     """Doctrine value set for ``origin_manifest_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
     STALE = "stale"
@@ -333,6 +385,7 @@ class PolicyBindingStatus(StrEnum):
     """Doctrine value set for ``policy_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     CURRENT = "current"
     MISSING = "missing"
     STALE = "stale"
@@ -343,6 +396,7 @@ class PolicyDriftStatus(StrEnum):
     """Doctrine value set for ``policy_drift_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     NONE = "none"
     WEAKENED = "weakened"
     STALE = "stale"
@@ -354,6 +408,7 @@ class PrincipalChainStatus(StrEnum):
     """Doctrine value set for ``principal_chain_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     VALID = "valid"
     MISSING = "missing"
     AMBIGUOUS = "ambiguous"
@@ -365,6 +420,7 @@ class ProviderLaneStatus(StrEnum):
     """Doctrine value set for ``provider_lane_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     CURRENT = "current"
     UNAVAILABLE = "unavailable"
     SUBSTITUTED = "substituted"
@@ -376,6 +432,7 @@ class QuarantineStatus(StrEnum):
     """Doctrine value set for ``quarantine_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     NOT_REQUIRED = "not_required"
     REQUIRED = "required"
     APPLIED = "applied"
@@ -386,6 +443,7 @@ class RecertificationStatus(StrEnum):
     """Doctrine value set for ``recertification_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (2 values).
     """
+
     NOT_REQUIRED = "not_required"
     REQUIRED_DUE_TO_AUTHORITY_CHANGE = "required_due_to_authority_change"
 
@@ -394,6 +452,7 @@ class ReclearanceStatus(StrEnum):
     """Doctrine value set for ``reclearance_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     REQUIRED = "required"
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
@@ -404,6 +463,7 @@ class ReconstructionStatus(StrEnum):
     """Doctrine value set for ``reconstruction_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     READY = "ready"
     PARTIAL = "partial"
     BLOCKED_BY_GAP = "blocked_by_gap"
@@ -414,6 +474,7 @@ class RegistryBindingStatus(StrEnum):
     """Doctrine value set for ``registry_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     COMPATIBLE = "compatible"
     MISSING = "missing"
     STALE = "stale"
@@ -425,6 +486,7 @@ class RegistryDriftStatus(StrEnum):
     """Doctrine value set for ``registry_drift_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     NONE = "none"
     STALE = "stale"
     MISSING = "missing"
@@ -437,6 +499,7 @@ class RegistryStatus(StrEnum):
     """Doctrine value set for ``registry_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     VALID = "valid"
     MISSING = "missing"
     STALE = "stale"
@@ -448,6 +511,7 @@ class ReplayBindingStatus(StrEnum):
     """Doctrine value set for ``replay_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     INCOMPLETE = "incomplete"
@@ -459,6 +523,7 @@ class ResumeAuthorityStatus(StrEnum):
     """Doctrine value set for ``resume_authority_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     STALE = "stale"
@@ -470,6 +535,7 @@ class SafeExtractionStatus(StrEnum):
     """Doctrine value set for ``safe_extraction_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     NOT_REQUIRED = "not_required"
     EXTRACTED = "extracted"
     PARTIAL = "partial"
@@ -480,6 +546,7 @@ class SandboxBindingStatus(StrEnum):
     """Doctrine value set for ``sandbox_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     STALE = "stale"
@@ -491,6 +558,7 @@ class StaticGovernanceStatus(StrEnum):
     """Doctrine value set for ``static_governance_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     CLEAN = "clean"
     DRIFT_DETECTED = "drift_detected"
     WEAKENING_DETECTED = "weakening_detected"
@@ -503,6 +571,7 @@ class StaticRegressionStatus(StrEnum):
     """Doctrine value set for ``static_regression_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     CLEAN = "clean"
     REGRESSION_DETECTED = "regression_detected"
     BASELINE_MISSING = "baseline_missing"
@@ -513,6 +582,7 @@ class StructureDriftStatus(StrEnum):
     """Doctrine value set for ``structure_drift_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     NONE = "none"
     DETECTED = "detected"
     UNRESOLVED = "unresolved"
@@ -523,6 +593,7 @@ class StructureStatus(StrEnum):
     """Doctrine value set for ``structure_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (4 values).
     """
+
     CLEAN = "clean"
     VIOLATION_DETECTED = "violation_detected"
     WAIVER_REQUIRED = "waiver_required"
@@ -533,6 +604,7 @@ class ToolEgressStatus(StrEnum):
     """Doctrine value set for ``tool_egress_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     BOUND = "bound"
     MISSING = "missing"
     UNAUTHORIZED = "unauthorized"
@@ -545,6 +617,7 @@ class TraceBindingStatus(StrEnum):
     """Doctrine value set for ``trace_binding_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (5 values).
     """
+
     COMPLETE = "complete"
     MISSING_TRACE = "missing_trace"
     MISSING_SPAN = "missing_span"
@@ -556,12 +629,14 @@ class WaiverStatus(StrEnum):
     """Doctrine value set for ``waiver_status``.
     Source: ``docs/reference/00_L5_Policy_Plane/`` (6 values).
     """
+
     NOT_REQUIRED = "not_required"
     REQUIRED = "required"
     PRESENT = "present"
     MISSING = "missing"
     STALE = "stale"
     INCOMPATIBLE = "incompatible"
+
 
 STATUS_ENUM_REGISTRY: Final[dict[str, type[StrEnum]]] = {
     "adr_status": AdrStatus,
@@ -573,6 +648,7 @@ STATUS_ENUM_REGISTRY: Final[dict[str, type[StrEnum]]] = {
     "capability_scope_status": CapabilityScopeStatus,
     "certification_evidence_status": CertificationEvidenceStatus,
     "certification_scope_status": CertificationScopeStatus,
+    "certification_status": CertificationStatus,
     "classification_status": ClassificationStatus,
     "connector_egress_status": ConnectorEgressStatus,
     "content_boundary_status": ContentBoundaryStatus,
@@ -589,6 +665,7 @@ STATUS_ENUM_REGISTRY: Final[dict[str, type[StrEnum]]] = {
     "human_origin_status": HumanOriginStatus,
     "human_scope_status": HumanScopeStatus,
     "instruction_boundary_status": InstructionBoundaryStatus,
+    "match_status": MatchStatus,
     "model_egress_status": ModelEgressStatus,
     "network_egress_status": NetworkEgressStatus,
     "origin_label_status": OriginLabelStatus,
@@ -627,6 +704,7 @@ __all__ = [
     "CapabilityScopeStatus",
     "CertificationEvidenceStatus",
     "CertificationScopeStatus",
+    "CertificationStatus",
     "ClassificationStatus",
     "ConnectorEgressStatus",
     "ContentBoundaryStatus",
@@ -643,6 +721,7 @@ __all__ = [
     "HumanOriginStatus",
     "HumanScopeStatus",
     "InstructionBoundaryStatus",
+    "MatchStatus",
     "ModelEgressStatus",
     "NetworkEgressStatus",
     "OriginLabelStatus",

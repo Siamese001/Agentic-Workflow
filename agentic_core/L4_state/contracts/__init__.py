@@ -22,6 +22,10 @@ from agentic_core.L4_state.contracts.digests import (
 from agentic_core.L4_state.contracts.records import (
     AliasRefreshReceipt,
     ApprovedExampleRecord,
+    DeprecationWindowRecord,
+    PolicyBlueprintMigrationPlan,
+    VersionCompatibilityRecord,
+    detect_policy_version_mismatch,
     AuditLedgerRecord,
     BlueprintRecord,
     CacheEntry,
@@ -133,6 +137,11 @@ __all__ = [
     "IndexRefreshReceipt",
     "GraphProjectionRefreshReceipt",
     "AliasRefreshReceipt",
+    # 00B.9 Blueprint / Policy Version Migration
+    "VersionCompatibilityRecord",
+    "PolicyBlueprintMigrationPlan",
+    "DeprecationWindowRecord",
+    "detect_policy_version_mismatch",
     # 00.8 Proof packet
     "L4UWGProofPacket",
     # 00.1 §PHASE 2 Lookup API

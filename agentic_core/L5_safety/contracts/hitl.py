@@ -1,6 +1,6 @@
-"""Generated L5 contract dataclasses for ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+"""Generated L5 contract dataclasses for ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
 
-Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``
+Source doctrine: ``docs/reference/00_L5_Policy_Plane/00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``
 Module: ``agentic_core.L5_safety.contracts.hitl``
 Generated count: 88 contracts
 
@@ -11,6 +11,7 @@ for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -47,13 +48,13 @@ from ._status_enums import (
 class AllowedResponseTypeReceipt(L5Receipt):
     """L5 doctrine output ``allowed_response_type_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: allowed_response_type_receipt.
     """
 
     output_name: ClassVar[str] = "allowed_response_type_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("allowed_response_type_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -61,13 +62,13 @@ class AllowedResponseTypeReceipt(L5Receipt):
 class AuthorityFreezeReceipt(L5Receipt):
     """L5 doctrine output ``authority_freeze_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: authority_freeze_receipt.
     """
 
     output_name: ClassVar[str] = "authority_freeze_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("authority_freeze_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -75,13 +76,13 @@ class AuthorityFreezeReceipt(L5Receipt):
 class AuthorityImpactingHumanDiffReport(L5Report):
     """L5 doctrine output ``authority_impacting_human_diff_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: authority_impacting_human_diff_report.
     """
 
     output_name: ClassVar[str] = "authority_impacting_human_diff_report"
     output_names: ClassVar[tuple[str, ...]] = ("authority_impacting_human_diff_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -89,13 +90,13 @@ class AuthorityImpactingHumanDiffReport(L5Report):
 class BootHitlGovernanceReport(L5Report):
     """L5 doctrine output ``boot_hitl_governance_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: boot_hitl_governance_report.
     """
 
     output_name: ClassVar[str] = "boot_hitl_governance_report"
     output_names: ClassVar[tuple[str, ...]] = ("boot_hitl_governance_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -103,13 +104,13 @@ class BootHitlGovernanceReport(L5Report):
 class CertificationScopeRef(L5Ref):
     """L5 doctrine output ``certification_scope_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: certification_scope_ref.
     """
 
     output_name: ClassVar[str] = "certification_scope_ref"
     output_names: ClassVar[tuple[str, ...]] = ("certification_scope_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -117,13 +118,13 @@ class CertificationScopeRef(L5Ref):
 class CriticalHitlGapReport(L5Report):
     """L5 doctrine output ``critical_hitl_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: critical_hitl_gap_report.
     """
 
     output_name: ClassVar[str] = "critical_hitl_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("critical_hitl_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -131,13 +132,13 @@ class CriticalHitlGapReport(L5Report):
 class DirectHumanWritePathReport(L5Report):
     """L5 doctrine output ``direct_human_write_path_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: direct_human_write_path_report.
     """
 
     output_name: ClassVar[str] = "direct_human_write_path_report"
     output_names: ClassVar[tuple[str, ...]] = ("direct_human_write_path_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -145,13 +146,13 @@ class DirectHumanWritePathReport(L5Report):
 class FreezeReplayBindingReceipt(L5Receipt):
     """L5 doctrine output ``freeze_replay_binding_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: freeze_replay_binding_receipt.
     """
 
     output_name: ClassVar[str] = "freeze_replay_binding_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("freeze_replay_binding_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -159,13 +160,13 @@ class FreezeReplayBindingReceipt(L5Receipt):
 class FrozenEvidenceBundleReceipt(L5Receipt):
     """L5 doctrine output ``frozen_evidence_bundle_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: frozen_evidence_bundle_receipt.
     """
 
     output_name: ClassVar[str] = "frozen_evidence_bundle_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("frozen_evidence_bundle_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -173,13 +174,13 @@ class FrozenEvidenceBundleReceipt(L5Receipt):
 class FrozenPacketHashReceipt(L5Receipt):
     """L5 doctrine output ``frozen_packet_hash_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: frozen_packet_hash_receipt.
     """
 
     output_name: ClassVar[str] = "frozen_packet_hash_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("frozen_packet_hash_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -187,13 +188,13 @@ class FrozenPacketHashReceipt(L5Receipt):
 class FrozenPacketRef(L5Ref):
     """L5 doctrine output ``frozen_packet_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: frozen_packet_ref.
     """
 
     output_name: ClassVar[str] = "frozen_packet_ref"
     output_names: ClassVar[tuple[str, ...]] = ("frozen_packet_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -201,13 +202,13 @@ class FrozenPacketRef(L5Ref):
 class HITLAuditReceipt(L5Receipt):
     """L5 doctrine output ``HITLAuditReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: HITLAuditReceipt.
     """
 
     output_name: ClassVar[str] = "HITLAuditReceipt"
     output_names: ClassVar[tuple[str, ...]] = ("HITLAuditReceipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -215,13 +216,13 @@ class HITLAuditReceipt(L5Receipt):
 class HITLFreezePacket(L5Packet):
     """L5 doctrine output ``HITLFreezePacket`` (kind=packet).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: HITLFreezePacket.
     """
 
     output_name: ClassVar[str] = "HITLFreezePacket"
     output_names: ClassVar[tuple[str, ...]] = ("HITLFreezePacket",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "packet"
 
 
@@ -229,13 +230,13 @@ class HITLFreezePacket(L5Packet):
 class HardConstraintHumanOverrideReport(L5Report):
     """L5 doctrine output ``hard_constraint_human_override_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hard_constraint_human_override_report.
     """
 
     output_name: ClassVar[str] = "hard_constraint_human_override_report"
     output_names: ClassVar[tuple[str, ...]] = ("hard_constraint_human_override_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -243,13 +244,13 @@ class HardConstraintHumanOverrideReport(L5Report):
 class HitlAuditGapReport(L5Report):
     """L5 doctrine output ``hitl_audit_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_audit_gap_report.
     """
 
     output_name: ClassVar[str] = "hitl_audit_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_audit_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -257,16 +258,20 @@ class HitlAuditGapReport(L5Report):
 class HitlAuditStatus(L5Status):
     """L5 doctrine output ``hitl_audit_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_audit_status.
     """
 
     output_name: ClassVar[str] = "hitl_audit_status"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_audit_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "incomplete", "non_replayable",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "complete",
+        "incomplete",
+        "non_replayable",
+    )
     value_enum: ClassVar[type] = HitlAuditStatus
 
     def __post_init__(self) -> None:
@@ -281,13 +286,13 @@ class HitlAuditStatus(L5Status):
 class HitlFreezeGapReport(L5Report):
     """L5 doctrine output ``hitl_freeze_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_freeze_gap_report.
     """
 
     output_name: ClassVar[str] = "hitl_freeze_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_freeze_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -295,13 +300,13 @@ class HitlFreezeGapReport(L5Report):
 class HitlFreezeReceipt(L5Receipt):
     """L5 doctrine output ``hitl_freeze_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_freeze_receipt.
     """
 
     output_name: ClassVar[str] = "hitl_freeze_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_freeze_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -309,16 +314,22 @@ class HitlFreezeReceipt(L5Receipt):
 class HitlPacketStatus(L5Status):
     """L5 doctrine output ``hitl_packet_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_packet_status.
     """
 
     output_name: ClassVar[str] = "hitl_packet_status"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_packet_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("frozen", "incomplete", "invalid", "stale", "mismatched",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "frozen",
+        "incomplete",
+        "invalid",
+        "stale",
+        "mismatched",
+    )
     value_enum: ClassVar[type] = HitlPacketStatus
 
     def __post_init__(self) -> None:
@@ -333,13 +344,13 @@ class HitlPacketStatus(L5Status):
 class HitlStaticGapRefMap(L5Map):
     """L5 doctrine output ``hitl_static_gap_ref_map`` (kind=map).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_static_gap_ref_map.
     """
 
     output_name: ClassVar[str] = "hitl_static_gap_ref_map"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_static_gap_ref_map",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "map"
 
 
@@ -347,13 +358,13 @@ class HitlStaticGapRefMap(L5Map):
 class HitlStaticGapReport(L5Report):
     """L5 doctrine output ``hitl_static_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_static_gap_report.
     """
 
     output_name: ClassVar[str] = "hitl_static_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_static_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -361,13 +372,13 @@ class HitlStaticGapReport(L5Report):
 class HitlTemplateGovernanceReadinessReport(L5Report):
     """L5 doctrine output ``hitl_template_governance_readiness_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: hitl_template_governance_readiness_report.
     """
 
     output_name: ClassVar[str] = "hitl_template_governance_readiness_report"
     output_names: ClassVar[tuple[str, ...]] = ("hitl_template_governance_readiness_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -375,13 +386,13 @@ class HitlTemplateGovernanceReadinessReport(L5Report):
 class HumanAddedEvidenceClaimReport(L5Report):
     """L5 doctrine output ``human_added_evidence_claim_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_added_evidence_claim_report.
     """
 
     output_name: ClassVar[str] = "human_added_evidence_claim_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_added_evidence_claim_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -389,13 +400,13 @@ class HumanAddedEvidenceClaimReport(L5Report):
 class HumanAuthorityAttemptReport(L5Report):
     """L5 doctrine output ``human_authority_attempt_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_authority_attempt_report.
     """
 
     output_name: ClassVar[str] = "human_authority_attempt_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_authority_attempt_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -403,13 +414,13 @@ class HumanAuthorityAttemptReport(L5Report):
 class HumanAuthorityWideningAttemptReport(L5Report):
     """L5 doctrine output ``human_authority_widening_attempt_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_authority_widening_attempt_report.
     """
 
     output_name: ClassVar[str] = "human_authority_widening_attempt_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_authority_widening_attempt_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -417,13 +428,13 @@ class HumanAuthorityWideningAttemptReport(L5Report):
 class HumanDiffReceipt(L5Receipt):
     """L5 doctrine output ``human_diff_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_diff_receipt.
     """
 
     output_name: ClassVar[str] = "human_diff_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_diff_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -431,13 +442,13 @@ class HumanDiffReceipt(L5Receipt):
 class HumanDiffRef(L5Ref):
     """L5 doctrine output ``human_diff_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_diff_ref.
     """
 
     output_name: ClassVar[str] = "human_diff_ref"
     output_names: ClassVar[tuple[str, ...]] = ("human_diff_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -445,13 +456,13 @@ class HumanDiffRef(L5Ref):
 class HumanDiffReplayReceipt(L5Receipt):
     """L5 doctrine output ``human_diff_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_diff_replay_receipt.
     """
 
     output_name: ClassVar[str] = "human_diff_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_diff_replay_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -459,13 +470,16 @@ class HumanDiffReplayReceipt(L5Receipt):
 class HumanInputOriginReceipt(L5Receipt):
     """L5 doctrine output ``HumanInputOriginReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: HumanInputOriginReceipt, human_input_origin_receipt.
     """
 
     output_name: ClassVar[str] = "HumanInputOriginReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("HumanInputOriginReceipt", "human_input_origin_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "HumanInputOriginReceipt",
+        "human_input_origin_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -473,16 +487,22 @@ class HumanInputOriginReceipt(L5Receipt):
 class HumanInputStatus(L5Status):
     """L5 doctrine output ``human_input_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_input_status.
     """
 
     output_name: ClassVar[str] = "human_input_status"
     output_names: ClassVar[tuple[str, ...]] = ("human_input_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("received", "modified", "missing", "ambiguous", "out_of_scope",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "received",
+        "modified",
+        "missing",
+        "ambiguous",
+        "out_of_scope",
+    )
     value_enum: ClassVar[type] = HumanInputStatus
 
     def __post_init__(self) -> None:
@@ -497,13 +517,13 @@ class HumanInputStatus(L5Status):
 class HumanModificationDiff(L5Diff):
     """L5 doctrine output ``HumanModificationDiff`` (kind=diff).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: HumanModificationDiff.
     """
 
     output_name: ClassVar[str] = "HumanModificationDiff"
     output_names: ClassVar[tuple[str, ...]] = ("HumanModificationDiff",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "diff"
 
 
@@ -511,13 +531,13 @@ class HumanModificationDiff(L5Diff):
 class HumanModificationDiffReceipt(L5Receipt):
     """L5 doctrine output ``human_modification_diff_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_modification_diff_receipt.
     """
 
     output_name: ClassVar[str] = "human_modification_diff_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_modification_diff_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -525,13 +545,13 @@ class HumanModificationDiffReceipt(L5Receipt):
 class HumanOriginGapReport(L5Report):
     """L5 doctrine output ``human_origin_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_origin_gap_report.
     """
 
     output_name: ClassVar[str] = "human_origin_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_origin_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -539,16 +559,21 @@ class HumanOriginGapReport(L5Report):
 class HumanOriginStatus(L5Status):
     """L5 doctrine output ``human_origin_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_origin_status.
     """
 
     output_name: ClassVar[str] = "human_origin_status"
     output_names: ClassVar[tuple[str, ...]] = ("human_origin_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("labeled", "unlabeled", "mislabeled", "requires_reclearance",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "labeled",
+        "unlabeled",
+        "mislabeled",
+        "requires_reclearance",
+    )
     value_enum: ClassVar[type] = HumanOriginStatus
 
     def __post_init__(self) -> None:
@@ -563,13 +588,13 @@ class HumanOriginStatus(L5Status):
 class HumanOverrideAttemptReport(L5Report):
     """L5 doctrine output ``human_override_attempt_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_override_attempt_report.
     """
 
     output_name: ClassVar[str] = "human_override_attempt_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_override_attempt_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -577,13 +602,13 @@ class HumanOverrideAttemptReport(L5Report):
 class HumanOverrideLimitReceipt(L5Receipt):
     """L5 doctrine output ``human_override_limit_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_override_limit_receipt.
     """
 
     output_name: ClassVar[str] = "human_override_limit_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_override_limit_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -591,13 +616,13 @@ class HumanOverrideLimitReceipt(L5Receipt):
 class HumanPolicyExceptionRequestReport(L5Report):
     """L5 doctrine output ``human_policy_exception_request_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_policy_exception_request_report.
     """
 
     output_name: ClassVar[str] = "human_policy_exception_request_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_policy_exception_request_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -605,13 +630,13 @@ class HumanPolicyExceptionRequestReport(L5Report):
 class HumanPromptLikeContentReport(L5Report):
     """L5 doctrine output ``human_prompt_like_content_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_prompt_like_content_report.
     """
 
     output_name: ClassVar[str] = "human_prompt_like_content_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_prompt_like_content_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -619,13 +644,13 @@ class HumanPromptLikeContentReport(L5Report):
 class HumanProvidedFactReport(L5Report):
     """L5 doctrine output ``human_provided_fact_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_provided_fact_report.
     """
 
     output_name: ClassVar[str] = "human_provided_fact_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_provided_fact_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -633,13 +658,13 @@ class HumanProvidedFactReport(L5Report):
 class HumanProvidedSourceReport(L5Report):
     """L5 doctrine output ``human_provided_source_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_provided_source_report.
     """
 
     output_name: ClassVar[str] = "human_provided_source_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_provided_source_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -647,13 +672,13 @@ class HumanProvidedSourceReport(L5Report):
 class HumanReclearanceReceipt(L5Receipt):
     """L5 doctrine output ``HumanReclearanceReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: HumanReclearanceReceipt.
     """
 
     output_name: ClassVar[str] = "HumanReclearanceReceipt"
     output_names: ClassVar[tuple[str, ...]] = ("HumanReclearanceReceipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -661,13 +686,13 @@ class HumanReclearanceReceipt(L5Receipt):
 class HumanReclearanceTriggerReport(L5Report):
     """L5 doctrine output ``human_reclearance_trigger_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_reclearance_trigger_report.
     """
 
     output_name: ClassVar[str] = "human_reclearance_trigger_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_reclearance_trigger_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -675,13 +700,13 @@ class HumanReclearanceTriggerReport(L5Report):
 class HumanResponseReceipt(L5Receipt):
     """L5 doctrine output ``human_response_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_response_receipt.
     """
 
     output_name: ClassVar[str] = "human_response_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_response_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -689,13 +714,13 @@ class HumanResponseReceipt(L5Receipt):
 class HumanReviewContextBoundaryReport(L5Report):
     """L5 doctrine output ``human_review_context_boundary_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_context_boundary_report.
     """
 
     output_name: ClassVar[str] = "human_review_context_boundary_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_context_boundary_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -703,13 +728,13 @@ class HumanReviewContextBoundaryReport(L5Report):
 class HumanReviewEvidencePacket(L5Packet):
     """L5 doctrine output ``HumanReviewEvidencePacket`` (kind=packet).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: HumanReviewEvidencePacket.
     """
 
     output_name: ClassVar[str] = "HumanReviewEvidencePacket"
     output_names: ClassVar[tuple[str, ...]] = ("HumanReviewEvidencePacket",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "packet"
 
 
@@ -717,13 +742,13 @@ class HumanReviewEvidencePacket(L5Packet):
 class HumanReviewHashChainReceipt(L5Receipt):
     """L5 doctrine output ``human_review_hash_chain_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_hash_chain_receipt.
     """
 
     output_name: ClassVar[str] = "human_review_hash_chain_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_hash_chain_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -731,13 +756,13 @@ class HumanReviewHashChainReceipt(L5Receipt):
 class HumanReviewOriginLabelReport(L5Report):
     """L5 doctrine output ``human_review_origin_label_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_origin_label_report.
     """
 
     output_name: ClassVar[str] = "human_review_origin_label_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_origin_label_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -745,13 +770,13 @@ class HumanReviewOriginLabelReport(L5Report):
 class HumanReviewPacketGapReport(L5Report):
     """L5 doctrine output ``human_review_packet_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_packet_gap_report.
     """
 
     output_name: ClassVar[str] = "human_review_packet_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_packet_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -759,13 +784,13 @@ class HumanReviewPacketGapReport(L5Report):
 class HumanReviewPacketReceipt(L5Receipt):
     """L5 doctrine output ``human_review_packet_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_packet_receipt.
     """
 
     output_name: ClassVar[str] = "human_review_packet_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_packet_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -773,13 +798,13 @@ class HumanReviewPacketReceipt(L5Receipt):
 class HumanReviewPolicyReceipt(L5Receipt):
     """L5 doctrine output ``human_review_policy_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_policy_receipt.
     """
 
     output_name: ClassVar[str] = "human_review_policy_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_policy_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -787,13 +812,13 @@ class HumanReviewPolicyReceipt(L5Receipt):
 class HumanReviewReconstructionReport(L5Report):
     """L5 doctrine output ``human_review_reconstruction_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_reconstruction_report.
     """
 
     output_name: ClassVar[str] = "human_review_reconstruction_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_reconstruction_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -801,13 +826,13 @@ class HumanReviewReconstructionReport(L5Report):
 class HumanReviewReplayReceipt(L5Receipt):
     """L5 doctrine output ``human_review_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_replay_receipt.
     """
 
     output_name: ClassVar[str] = "human_review_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_replay_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -815,13 +840,13 @@ class HumanReviewReplayReceipt(L5Receipt):
 class HumanReviewTemplateBoundaryReport(L5Report):
     """L5 doctrine output ``human_review_template_boundary_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_review_template_boundary_report.
     """
 
     output_name: ClassVar[str] = "human_review_template_boundary_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_review_template_boundary_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -829,13 +854,13 @@ class HumanReviewTemplateBoundaryReport(L5Report):
 class HumanScopeGapReport(L5Report):
     """L5 doctrine output ``human_scope_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_scope_gap_report.
     """
 
     output_name: ClassVar[str] = "human_scope_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_scope_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -843,16 +868,21 @@ class HumanScopeGapReport(L5Report):
 class HumanScopeStatus(L5Status):
     """L5 doctrine output ``human_scope_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_scope_status.
     """
 
     output_name: ClassVar[str] = "human_scope_status"
     output_names: ClassVar[tuple[str, ...]] = ("human_scope_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("unchanged", "narrowed", "widened", "unauthorized",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "unchanged",
+        "narrowed",
+        "widened",
+        "unauthorized",
+    )
     value_enum: ClassVar[type] = HumanScopeStatus
 
     def __post_init__(self) -> None:
@@ -867,13 +897,13 @@ class HumanScopeStatus(L5Status):
 class HumanSourceOriginGapReport(L5Report):
     """L5 doctrine output ``human_source_origin_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_source_origin_gap_report.
     """
 
     output_name: ClassVar[str] = "human_source_origin_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("human_source_origin_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -881,13 +911,13 @@ class HumanSourceOriginGapReport(L5Report):
 class HumanSourceValidationNeededReceipt(L5Receipt):
     """L5 doctrine output ``human_source_validation_needed_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: human_source_validation_needed_receipt.
     """
 
     output_name: ClassVar[str] = "human_source_validation_needed_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("human_source_validation_needed_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -895,13 +925,13 @@ class HumanSourceValidationNeededReceipt(L5Receipt):
 class L5ReclearanceReceipt(L5Receipt):
     """L5 doctrine output ``L5ReclearanceReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: L5ReclearanceReceipt.
     """
 
     output_name: ClassVar[str] = "L5ReclearanceReceipt"
     output_names: ClassVar[tuple[str, ...]] = ("L5ReclearanceReceipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -909,13 +939,13 @@ class L5ReclearanceReceipt(L5Receipt):
 class L5ReclearanceRequiredReceipt(L5Receipt):
     """L5 doctrine output ``L5ReclearanceRequiredReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: L5ReclearanceRequiredReceipt.
     """
 
     output_name: ClassVar[str] = "L5ReclearanceRequiredReceipt"
     output_names: ClassVar[tuple[str, ...]] = ("L5ReclearanceRequiredReceipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -923,13 +953,13 @@ class L5ReclearanceRequiredReceipt(L5Receipt):
 class ModifiedPacketRef(L5Ref):
     """L5 doctrine output ``modified_packet_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: modified_packet_ref.
     """
 
     output_name: ClassVar[str] = "modified_packet_ref"
     output_names: ClassVar[tuple[str, ...]] = ("modified_packet_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -937,13 +967,13 @@ class ModifiedPacketRef(L5Ref):
 class OldNewScopeDiff(L5Diff):
     """L5 doctrine output ``old_new_scope_diff`` (kind=diff).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: old_new_scope_diff.
     """
 
     output_name: ClassVar[str] = "old_new_scope_diff"
     output_names: ClassVar[tuple[str, ...]] = ("old_new_scope_diff",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "diff"
 
 
@@ -951,13 +981,13 @@ class OldNewScopeDiff(L5Diff):
 class OperatorOverridePolicyReport(L5Report):
     """L5 doctrine output ``operator_override_policy_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: operator_override_policy_report.
     """
 
     output_name: ClassVar[str] = "operator_override_policy_report"
     output_names: ClassVar[tuple[str, ...]] = ("operator_override_policy_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -965,13 +995,13 @@ class OperatorOverridePolicyReport(L5Report):
 class ProhibitedResponseTypeReceipt(L5Receipt):
     """L5 doctrine output ``prohibited_response_type_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: prohibited_response_type_receipt.
     """
 
     output_name: ClassVar[str] = "prohibited_response_type_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("prohibited_response_type_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -979,13 +1009,13 @@ class ProhibitedResponseTypeReceipt(L5Receipt):
 class ProposedActionRef(L5Ref):
     """L5 doctrine output ``proposed_action_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: proposed_action_ref.
     """
 
     output_name: ClassVar[str] = "proposed_action_ref"
     output_names: ClassVar[tuple[str, ...]] = ("proposed_action_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -993,13 +1023,13 @@ class ProposedActionRef(L5Ref):
 class ProposedStateDiffRef(L5Ref):
     """L5 doctrine output ``proposed_state_diff_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: proposed_state_diff_ref.
     """
 
     output_name: ClassVar[str] = "proposed_state_diff_ref"
     output_names: ClassVar[tuple[str, ...]] = ("proposed_state_diff_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1007,13 +1037,13 @@ class ProposedStateDiffRef(L5Ref):
 class ReClearanceRequiredReceipt(L5Receipt):
     """L5 doctrine output ``re_clearance_required_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: re_clearance_required_receipt.
     """
 
     output_name: ClassVar[str] = "re_clearance_required_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("re_clearance_required_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1021,13 +1051,13 @@ class ReClearanceRequiredReceipt(L5Receipt):
 class ReClearanceStatus(L5Status):
     """L5 doctrine output ``re_clearance_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: re_clearance_status.
     """
 
     output_name: ClassVar[str] = "re_clearance_status"
     output_names: ClassVar[tuple[str, ...]] = ("re_clearance_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
 
@@ -1035,13 +1065,13 @@ class ReClearanceStatus(L5Status):
 class ReclearanceGapReport(L5Report):
     """L5 doctrine output ``reclearance_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reclearance_gap_report.
     """
 
     output_name: ClassVar[str] = "reclearance_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("reclearance_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1049,13 +1079,13 @@ class ReclearanceGapReport(L5Report):
 class ReclearanceReceiptRef(L5Ref):
     """L5 doctrine output ``reclearance_receipt_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reclearance_receipt_ref.
     """
 
     output_name: ClassVar[str] = "reclearance_receipt_ref"
     output_names: ClassVar[tuple[str, ...]] = ("reclearance_receipt_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1063,13 +1093,13 @@ class ReclearanceReceiptRef(L5Ref):
 class ReclearanceRequiredReceipt(L5Receipt):
     """L5 doctrine output ``reclearance_required_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reclearance_required_receipt.
     """
 
     output_name: ClassVar[str] = "reclearance_required_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("reclearance_required_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1077,13 +1107,13 @@ class ReclearanceRequiredReceipt(L5Receipt):
 class ReclearanceRuleReceipt(L5Receipt):
     """L5 doctrine output ``reclearance_rule_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reclearance_rule_receipt.
     """
 
     output_name: ClassVar[str] = "reclearance_rule_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("reclearance_rule_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1091,16 +1121,21 @@ class ReclearanceRuleReceipt(L5Receipt):
 class ReclearanceStatus(L5Status):
     """L5 doctrine output ``reclearance_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reclearance_status.
     """
 
     output_name: ClassVar[str] = "reclearance_status"
     output_names: ClassVar[tuple[str, ...]] = ("reclearance_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("required", "complete", "incomplete", "failed",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "required",
+        "complete",
+        "incomplete",
+        "failed",
+    )
     value_enum: ClassVar[type] = ReclearanceStatus
 
     def __post_init__(self) -> None:
@@ -1115,13 +1150,13 @@ class ReclearanceStatus(L5Status):
 class ReclearanceStatusReport(L5Report):
     """L5 doctrine output ``reclearance_status_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reclearance_status_report.
     """
 
     output_name: ClassVar[str] = "reclearance_status_report"
     output_names: ClassVar[tuple[str, ...]] = ("reclearance_status_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1129,13 +1164,16 @@ class ReclearanceStatusReport(L5Report):
 class ResumeAuthorityReceipt(L5Receipt):
     """L5 doctrine output ``ResumeAuthorityReceipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: ResumeAuthorityReceipt, resume_authority_receipt.
     """
 
     output_name: ClassVar[str] = "ResumeAuthorityReceipt"
-    output_names: ClassVar[tuple[str, ...]] = ("ResumeAuthorityReceipt", "resume_authority_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_names: ClassVar[tuple[str, ...]] = (
+        "ResumeAuthorityReceipt",
+        "resume_authority_receipt",
+    )
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1143,16 +1181,22 @@ class ResumeAuthorityReceipt(L5Receipt):
 class ResumeAuthorityStatus(L5Status):
     """L5 doctrine output ``resume_authority_status`` (kind=status).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: resume_authority_status.
     """
 
     output_name: ClassVar[str] = "resume_authority_status"
     output_names: ClassVar[tuple[str, ...]] = ("resume_authority_status",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "status"
 
-    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "stale", "mismatched", "widened",)
+    allowed_values: ClassVar[tuple[str, ...]] = (
+        "bound",
+        "missing",
+        "stale",
+        "mismatched",
+        "widened",
+    )
     value_enum: ClassVar[type] = ResumeAuthorityStatus
 
     def __post_init__(self) -> None:
@@ -1167,13 +1211,13 @@ class ResumeAuthorityStatus(L5Status):
 class ResumeGapReport(L5Report):
     """L5 doctrine output ``resume_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: resume_gap_report.
     """
 
     output_name: ClassVar[str] = "resume_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("resume_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1181,13 +1225,13 @@ class ResumeGapReport(L5Report):
 class ResumeReplayReceipt(L5Receipt):
     """L5 doctrine output ``resume_replay_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: resume_replay_receipt.
     """
 
     output_name: ClassVar[str] = "resume_replay_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("resume_replay_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1195,13 +1239,13 @@ class ResumeReplayReceipt(L5Receipt):
 class ResumeScopeReceipt(L5Receipt):
     """L5 doctrine output ``resume_scope_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: resume_scope_receipt.
     """
 
     output_name: ClassVar[str] = "resume_scope_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("resume_scope_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1209,13 +1253,13 @@ class ResumeScopeReceipt(L5Receipt):
 class ResumedPacketRef(L5Ref):
     """L5 doctrine output ``resumed_packet_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: resumed_packet_ref.
     """
 
     output_name: ClassVar[str] = "resumed_packet_ref"
     output_names: ClassVar[tuple[str, ...]] = ("resumed_packet_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1223,13 +1267,13 @@ class ResumedPacketRef(L5Ref):
 class ReviewerRoleMapReceipt(L5Receipt):
     """L5 doctrine output ``reviewer_role_map_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reviewer_role_map_receipt.
     """
 
     output_name: ClassVar[str] = "reviewer_role_map_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("reviewer_role_map_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1237,13 +1281,13 @@ class ReviewerRoleMapReceipt(L5Receipt):
 class ReviewerRoleRef(L5Ref):
     """L5 doctrine output ``reviewer_role_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reviewer_role_ref.
     """
 
     output_name: ClassVar[str] = "reviewer_role_ref"
     output_names: ClassVar[tuple[str, ...]] = ("reviewer_role_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 
@@ -1251,13 +1295,13 @@ class ReviewerRoleRef(L5Ref):
 class ReviewerVisibleScopeReceipt(L5Receipt):
     """L5 doctrine output ``reviewer_visible_scope_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: reviewer_visible_scope_receipt.
     """
 
     output_name: ClassVar[str] = "reviewer_visible_scope_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("reviewer_visible_scope_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1265,13 +1309,13 @@ class ReviewerVisibleScopeReceipt(L5Receipt):
 class RuntimeHitlGapReport(L5Report):
     """L5 doctrine output ``runtime_hitl_gap_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: runtime_hitl_gap_report.
     """
 
     output_name: ClassVar[str] = "runtime_hitl_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_hitl_gap_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1279,13 +1323,13 @@ class RuntimeHitlGapReport(L5Report):
 class RuntimeHitlGovernanceReceipt(L5Receipt):
     """L5 doctrine output ``runtime_hitl_governance_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: runtime_hitl_governance_receipt.
     """
 
     output_name: ClassVar[str] = "runtime_hitl_governance_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("runtime_hitl_governance_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1293,13 +1337,13 @@ class RuntimeHitlGovernanceReceipt(L5Receipt):
 class ScopeImpactingHumanDiffReport(L5Report):
     """L5 doctrine output ``scope_impacting_human_diff_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: scope_impacting_human_diff_report.
     """
 
     output_name: ClassVar[str] = "scope_impacting_human_diff_report"
     output_names: ClassVar[tuple[str, ...]] = ("scope_impacting_human_diff_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1307,13 +1351,13 @@ class ScopeImpactingHumanDiffReport(L5Report):
 class StaticHitlEvidenceIntakeReceipt(L5Receipt):
     """L5 doctrine output ``static_hitl_evidence_intake_receipt`` (kind=receipt).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: static_hitl_evidence_intake_receipt.
     """
 
     output_name: ClassVar[str] = "static_hitl_evidence_intake_receipt"
     output_names: ClassVar[tuple[str, ...]] = ("static_hitl_evidence_intake_receipt",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "receipt"
 
 
@@ -1321,13 +1365,13 @@ class StaticHitlEvidenceIntakeReceipt(L5Receipt):
 class StaticHitlGovernanceReport(L5Report):
     """L5 doctrine output ``static_hitl_governance_report`` (kind=report).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: static_hitl_governance_report.
     """
 
     output_name: ClassVar[str] = "static_hitl_governance_report"
     output_names: ClassVar[tuple[str, ...]] = ("static_hitl_governance_report",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "report"
 
 
@@ -1335,13 +1379,13 @@ class StaticHitlGovernanceReport(L5Report):
 class UpdatedPacketRef(L5Ref):
     """L5 doctrine output ``updated_packet_ref`` (kind=ref).
 
-    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Source doctrine: ``00A.4_L5_HITL_Reclearance_Human_Input_Gov.md``.
     Canonical doctrine names: updated_packet_ref.
     """
 
     output_name: ClassVar[str] = "updated_packet_ref"
     output_names: ClassVar[tuple[str, ...]] = ("updated_packet_ref",)
-    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    source_doc: ClassVar[str] = "00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
     output_kind: ClassVar[str] = "ref"
 
 

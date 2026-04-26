@@ -37,9 +37,11 @@ from agentic_core.L4_state.contracts import (
     CapabilityRegistryRecord,
     CommitRequest,
     DeprecatedEntryError,
+    DeprecationWindowRecord,
     InMemoryL4Store,
     L4UWGProofPacket,
     ModelRegistryRecord,
+    PolicyBlueprintMigrationPlan,
     PolicyManifest,
     ReadSurfaceRefreshPlan,
     RegistrySnapshot,
@@ -50,6 +52,8 @@ from agentic_core.L4_state.contracts import (
     TenantScopeError,
     ToolRegistryRecord,
     UnknownEntryError,
+    VersionCompatibilityRecord,
+    detect_policy_version_mismatch,
 )
 from agentic_core.L4_state.refresh.refresh_coordinator import RefreshCoordinator
 from agentic_core.L4_state.contracts.proof import stamp_proof_digest
@@ -495,7 +499,9 @@ def section_lookup_apis() -> dict:
     )
     store.install_policy(pm, tenant_id="t:proof", route_id="r:proof", risk_tier="medium")
     store.install_blueprint(
-        stamp_digest(BlueprintRecord(blueprint_id="bp:proof", blueprint_hash="bh:proof", blueprint_type="route"))
+        stamp_digest(
+            BlueprintRecord(blueprint_id="bp:proof", blueprint_hash="bh:proof", blueprint_type="route")
+        )
     )
     store.install_registry_snapshot(
         stamp_digest(
@@ -716,6 +722,205 @@ def section_refresh_receipts() -> dict:
     }
 
 
+def section_version_migration() -> dict:
+    """00B.9 Blueprint / Policy Version Migration runtime evidence.
+
+    Exercises every doctrinal rule and records the live record digests +
+    detection-helper outputs for the matrix. One row in the bundle per
+    test contract:
+      - 9.T1 policy_publish_no_overwrite
+      - 9.T2 alias_swap_requires_uwg_receipt
+      - 9.T3 breaking_requires_migration
+      - 9.T4 deprecation_window_blocks_route
+      - 9.T5 replay_bound_policy_version_mismatch
+    """
+    out: dict = {}
+
+    # --- 9.T1: policy publish creates new version, never overwrites ---
+    v1 = stamp_digest(
+        PolicyManifest(
+            policy_manifest_id="pm:proof_v1",
+            policy_version="v1",
+            policy_hash="hash:proof_v1",
+        )
+    )
+    v2 = stamp_digest(
+        PolicyManifest(
+            policy_manifest_id="pm:proof_v2",
+            policy_version="v2",
+            policy_hash="hash:proof_v2",
+            previous_alias_ref="pm:proof_v1",
+        )
+    )
+    out["policy_publish_no_overwrite"] = {
+        "v1_digest": v1.deterministic_digest,
+        "v2_digest": v2.deterministic_digest,
+        "digests_distinct": v1.deterministic_digest != v2.deterministic_digest,
+        "v2_links_v1_via_previous_alias_ref": v2.previous_alias_ref == "pm:proof_v1",
+    }
+
+    # --- 9.T2: aliased migration plan requires both refs ---
+    rejected_no_alias_swap_plan = False
+    try:
+        PolicyBlueprintMigrationPlan(
+            migration_plan_id="mp:proof_no_alias",
+            target_surface="blueprint",
+            source_version_ref="bp:v1",
+            target_version_ref="bp:v2",
+            rollback_plan_ref="rb:1",
+            owner="platform-team",
+            signer_identity="signer:1",
+            UWG_commit_request_ref="cr:1",
+            activation_policy="aliased",
+        )
+    except ValueError:
+        rejected_no_alias_swap_plan = True
+
+    rejected_no_uwg_ref = False
+    try:
+        PolicyBlueprintMigrationPlan(
+            migration_plan_id="mp:proof_no_uwg",
+            target_surface="blueprint",
+            source_version_ref="bp:v1",
+            target_version_ref="bp:v2",
+            rollback_plan_ref="rb:1",
+            owner="platform-team",
+            signer_identity="signer:1",
+            UWG_commit_request_ref="",
+            activation_policy="aliased",
+            alias_swap_plan_ref="alias:1",
+        )
+    except ValueError:
+        rejected_no_uwg_ref = True
+
+    accepted_plan = stamp_digest(
+        PolicyBlueprintMigrationPlan(
+            migration_plan_id="mp:proof_ok",
+            target_surface="blueprint",
+            source_version_ref="bp:v1",
+            target_version_ref="bp:v2",
+            rollback_plan_ref="rb:1",
+            owner="platform-team",
+            signer_identity="signer:1",
+            UWG_commit_request_ref="cr:proof_uwg",
+            activation_policy="aliased",
+            alias_swap_plan_ref="alias:proof_swap",
+        )
+    )
+    out["alias_swap_requires_uwg_receipt"] = {
+        "rejected_when_alias_swap_plan_ref_missing": rejected_no_alias_swap_plan,
+        "rejected_when_UWG_commit_request_ref_missing": rejected_no_uwg_ref,
+        "accepted_plan_digest": accepted_plan.deterministic_digest,
+        "accepted_plan_alias_swap_plan_ref": accepted_plan.alias_swap_plan_ref,
+        "accepted_plan_UWG_commit_request_ref": accepted_plan.UWG_commit_request_ref,
+    }
+
+    # --- 9.T3: breaking requires migration_required=True ---
+    rejected_breaking_no_migration = False
+    try:
+        VersionCompatibilityRecord(
+            compatibility_record_id="vc:proof_bad",
+            surface="policy",
+            old_version_ref="pm:v1",
+            new_version_ref="pm:v2",
+            old_hash="h1",
+            new_hash="h2",
+            compatibility="breaking",
+            migration_required=False,
+            activation_policy="aliased",
+        )
+    except ValueError:
+        rejected_breaking_no_migration = True
+
+    breaking = stamp_digest(
+        VersionCompatibilityRecord(
+            compatibility_record_id="vc:proof_breaking",
+            surface="policy",
+            old_version_ref="pm:proof_v1",
+            new_version_ref="pm:proof_v2",
+            old_hash="hash:proof_v1",
+            new_hash="hash:proof_v2",
+            compatibility="breaking",
+            migration_required=True,
+            activation_policy="aliased",
+            replay_impact="full_invalidation",
+            rollback_impact="full",
+            affected_route_classes=("research", "rfp"),
+        )
+    )
+    out["breaking_requires_migration"] = {
+        "rejected_when_migration_required_false": rejected_breaking_no_migration,
+        "accepted_breaking_record_digest": breaking.deterministic_digest,
+        "replay_impact": breaking.replay_impact,
+        "rollback_impact": breaking.rollback_impact,
+        "affected_route_classes": list(breaking.affected_route_classes),
+    }
+
+    # --- 9.T4: deprecation window blocks routes after end ---
+    dep = stamp_digest(
+        DeprecationWindowRecord(
+            deprecation_id="dep:proof",
+            deprecated_version_ref="pm:proof_v1",
+            replacement_version_ref="pm:proof_v2",
+            deprecation_start="2026-01-01T00:00:00Z",
+            deprecation_end="2026-06-01T00:00:00Z",
+            allowed_legacy_routes=("research_legacy",),
+            blocked_new_routes=("research_v2",),
+        )
+    )
+    out["deprecation_window_blocks_route"] = {
+        "deprecation_record_digest": dep.deterministic_digest,
+        "in_window_blocked_new_route": dep.is_route_blocked_at("research_v2", "2026-03-15T00:00:00Z"),
+        "in_window_allowed_legacy_route": dep.is_route_blocked_at("research_legacy", "2026-03-15T00:00:00Z"),
+        "in_window_other_route_allowed": dep.is_route_blocked_at("rfp", "2026-03-15T00:00:00Z"),
+        "after_window_blocked_other_route": dep.is_route_blocked_at("rfp", "2026-07-01T00:00:00Z"),
+        "after_window_allowed_legacy_route": dep.is_route_blocked_at(
+            "research_legacy", "2026-07-01T00:00:00Z"
+        ),
+        "after_window_blocked_new_route": dep.is_route_blocked_at("research_v2", "2026-07-01T00:00:00Z"),
+    }
+
+    # --- 9.T5: replay-bound policy version mismatch detection ---
+    replay = stamp_digest(
+        ReplaySnapshotRecord(
+            replay_snapshot_id="rs:proof",
+            trace_root="trace:proof",
+            tenant_id="t:proof",
+            policy_hash="hash:proof_v1",
+            blueprint_hash="bh:proof",
+            replay_key="rk:proof",
+            snapshot_id="snap:proof",
+        )
+    )
+    out["replay_bound_policy_version_mismatch"] = {
+        "replay_snapshot_digest": replay.deterministic_digest,
+        "replay_snapshot_policy_hash": replay.policy_hash,
+        "match_reason_when_same": detect_policy_version_mismatch(
+            active_policy_hash=replay.policy_hash,
+            replay_snapshot_policy_hash=replay.policy_hash,
+        ),
+        "mismatch_reason_when_drift": detect_policy_version_mismatch(
+            active_policy_hash="hash:proof_v2",
+            replay_snapshot_policy_hash=replay.policy_hash,
+        ),
+    }
+
+    # Aggregate verdict — all 5 evidence rows must be ✅
+    out["all_rules_enforced"] = (
+        out["policy_publish_no_overwrite"]["digests_distinct"]
+        and out["policy_publish_no_overwrite"]["v2_links_v1_via_previous_alias_ref"]
+        and out["alias_swap_requires_uwg_receipt"]["rejected_when_alias_swap_plan_ref_missing"]
+        and out["alias_swap_requires_uwg_receipt"]["rejected_when_UWG_commit_request_ref_missing"]
+        and out["breaking_requires_migration"]["rejected_when_migration_required_false"]
+        and out["deprecation_window_blocks_route"]["in_window_blocked_new_route"]
+        and out["deprecation_window_blocks_route"]["after_window_blocked_other_route"]
+        and out["replay_bound_policy_version_mismatch"]["match_reason_when_same"] is None
+        and out["replay_bound_policy_version_mismatch"]["mismatch_reason_when_drift"]
+        == "policy_version_mismatch"
+    )
+    return out
+
+
 def section_proof_packet(happy: dict, blocked: dict, anti_bypass: dict, rollback: dict) -> dict:
     packet = stamp_proof_digest(
         L4UWGProofPacket(
@@ -763,10 +968,11 @@ def main() -> int:
     replay = section_replay_reconstruction()
     lookup = section_lookup_apis()
     refresh = section_refresh_receipts()
+    version_migration = section_version_migration()
     proof = section_proof_packet(happy, blocked, anti_bypass, rollback)
 
     payload = {
-        "schema": "L4UWGRuntimeProofBundle@2",
+        "schema": "L4UWGRuntimeProofBundle@3",
         "digests": digests,
         "happy_path": happy,
         "blocked_paths": blocked,
@@ -777,6 +983,7 @@ def main() -> int:
         "replay_reconstruction": replay,
         "lookup_apis": lookup,
         "refresh_receipts": refresh,
+        "version_migration": version_migration,
         "proof_packet": proof,
     }
     out_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
@@ -795,6 +1002,7 @@ def main() -> int:
     print(f"  lookup/resolved_count: {len([k for k in lookup if k.startswith('resolved_')])}")
     print(f"  lookup/fail_closed_modes: {sorted(lookup['fail_closed_modes'].keys())}")
     print(f"  refresh_receipts: {sorted(refresh.keys())}")
+    print(f"  version_migration/all_rules_enforced: {version_migration['all_rules_enforced']}")
     print(f"  proof_packet_digest: {proof['deterministic_digest']}")
     return 0
 

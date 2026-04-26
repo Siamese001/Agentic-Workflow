@@ -27,7 +27,7 @@ from agentic_core.L5_safety.contracts import (
     get_contract,
 )
 
-EXPECTED_CONTRACT_COUNT = 819
+EXPECTED_CONTRACT_COUNT = 838  # 819 prior + 19 from 00A.8 runtime_binding doctrine
 COMMON_KWARGS: dict[str, Any] = {
     "run_id": "smoke-run",
     "trace_id": "smoke-trace",
@@ -105,4 +105,4 @@ def test_module_distribution_matches_doc_count() -> None:
     for cls in CONTRACT_REGISTRY.values():
         by_doc[cls.source_doc] = by_doc.get(cls.source_doc, 0) + 1
     assert sum(by_doc.values()) == EXPECTED_CONTRACT_COUNT
-    assert len(by_doc) == 8
+    assert len(by_doc) == 9  # 00A.1–0A.7 + 00A umbrella + 00A.8 runtime_binding

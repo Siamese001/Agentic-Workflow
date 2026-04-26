@@ -15,8 +15,7 @@
       "STRUCTURAL": 69
     },
     "STATUS_SET": {
-      "FULL": 52,
-      "PARTIAL": 2
+      "FULL": 54
     },
     "RUNTIME_INVARIANT": {
       "STRUCTURAL": 31
@@ -25,17 +24,14 @@
       "STRUCTURAL": 2
     },
     "SCHEMA": {
-      "STRUCTURAL": 10
-    },
-    "OTHER": {
-      "UNCOVERED": 1
+      "STRUCTURAL": 11
     }
   },
   "grand_totals": {
-    "FULL": 60,
-    "STRUCTURAL": 512,
-    "PARTIAL": 2,
-    "UNCOVERED": 1
+    "FULL": 62,
+    "STRUCTURAL": 513,
+    "PARTIAL": 0,
+    "UNCOVERED": 0
   },
   "rows": [
     {
@@ -79,7 +75,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ESCALATE_HITL', 'BLOCK_COMMIT', 'REROUTE', 'DENY', 'COMMIT_REQUEST', 'ALLOW']",
+        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -168,7 +164,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'classification_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'classification_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -180,7 +176,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'structure_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'structure_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -192,7 +188,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'registry_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'registry_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -204,7 +200,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'gateway_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'gateway_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -216,7 +212,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'egress_evidence_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'egress_evidence_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -228,7 +224,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'enforcement_receipt_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'enforcement_receipt_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -693,7 +689,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ESCALATE_HITL', 'BLOCK_COMMIT', 'REROUTE', 'DENY', 'COMMIT_REQUEST', 'ALLOW']",
+        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -793,7 +789,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'authority_context_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'authority_context_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -805,7 +801,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'policy_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'policy_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -817,7 +813,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'blueprint_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'blueprint_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -829,7 +825,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'registry_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'registry_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -841,7 +837,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'principal_chain_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'principal_chain_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -853,7 +849,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'capability_scope_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'capability_scope_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -865,7 +861,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'sandbox_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'sandbox_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -877,7 +873,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'replay_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'replay_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -889,7 +885,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'recertification_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'recertification_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -1739,7 +1735,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ESCALATE_HITL', 'BLOCK_COMMIT', 'REROUTE', 'DENY', 'COMMIT_REQUEST', 'ALLOW']",
+        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -1839,7 +1835,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'origin_label_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'origin_label_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -1851,7 +1847,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'content_boundary_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'content_boundary_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -1863,7 +1859,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'instruction_boundary_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'instruction_boundary_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -1875,7 +1871,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'quarantine_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'quarantine_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -1887,7 +1883,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'safe_extraction_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'safe_extraction_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -1899,7 +1895,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'authority_attempt_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'authority_attempt_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -1911,7 +1907,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'origin_manifest_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'origin_manifest_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -2779,7 +2775,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ESCALATE_HITL', 'BLOCK_COMMIT', 'REROUTE', 'DENY', 'COMMIT_REQUEST', 'ALLOW']",
+        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -2868,7 +2864,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'hitl_packet_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'hitl_packet_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -2880,7 +2876,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'human_input_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'human_input_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -2892,7 +2888,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'human_origin_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'human_origin_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -2904,7 +2900,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'human_scope_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'human_scope_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -2916,7 +2912,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'reclearance_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'reclearance_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -2928,7 +2924,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'resume_authority_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'resume_authority_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -2940,7 +2936,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'hitl_audit_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'hitl_audit_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3572,7 +3568,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ESCALATE_HITL', 'BLOCK_COMMIT', 'REROUTE', 'DENY', 'COMMIT_REQUEST', 'ALLOW']",
+        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -3683,7 +3679,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'egress_certification_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'egress_certification_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3695,7 +3691,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'model_egress_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'model_egress_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3707,7 +3703,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'tool_egress_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'tool_egress_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3719,7 +3715,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'connector_egress_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'connector_egress_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3731,7 +3727,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'network_egress_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'network_egress_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3743,7 +3739,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'provider_lane_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'provider_lane_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3755,7 +3751,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'credential_scope_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'credential_scope_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -3767,7 +3763,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'fallback_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'fallback_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -4373,7 +4369,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ESCALATE_HITL', 'BLOCK_COMMIT', 'REROUTE', 'DENY', 'COMMIT_REQUEST', 'ALLOW']",
+        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -4495,7 +4491,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'certification_evidence_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'certification_evidence_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -4507,7 +4503,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'replay_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'replay_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -4519,7 +4515,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'audit_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'audit_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -4531,7 +4527,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'trace_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'trace_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -4543,7 +4539,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'hash_binding_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'hash_binding_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -4555,7 +4551,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'reconstruction_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'reconstruction_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -4567,7 +4563,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'certification_scope_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'certification_scope_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5429,7 +5425,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ESCALATE_HITL', 'BLOCK_COMMIT', 'REROUTE', 'DENY', 'COMMIT_REQUEST', 'ALLOW']",
+        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -5529,7 +5525,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'static_governance_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'static_governance_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5541,7 +5537,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'structure_drift_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'structure_drift_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5553,7 +5549,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'policy_drift_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'policy_drift_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5565,7 +5561,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'registry_drift_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'registry_drift_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5577,7 +5573,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'bypass_evidence_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'bypass_evidence_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5589,7 +5585,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'static_regression_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'static_regression_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5601,7 +5597,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'waiver_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'waiver_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -5613,7 +5609,7 @@
       "category": "STATUS_SET",
       "status": "FULL",
       "evidence": [
-        "Status field 'adr_status' has registered contract AND per-field StrEnum in _status_enums.py.",
+        "Status field 'adr_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
         "L5Status subclass enforces value via __post_init__."
       ]
     },
@@ -6361,9 +6357,10 @@
       "line": 78,
       "text": "- certification_status = L5_CERTIFIED | L5_NOT_CERTIFIED | L5_REQUIRES_RECLEARANCE | L5_REQUIRES_REMEDIATION_EVIDENCE",
       "category": "STATUS_SET",
-      "status": "PARTIAL",
+      "status": "FULL",
       "evidence": [
-        "Status field 'certification_status': in_registry=True, in_status_enum=False."
+        "Status field 'certification_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
+        "L5Status subclass enforces value via __post_init__."
       ]
     },
     {
@@ -6372,9 +6369,10 @@
       "line": 92,
       "text": "- match_status = MATCH | MISMATCH | STALE | UNKNOWN",
       "category": "STATUS_SET",
-      "status": "PARTIAL",
+      "status": "FULL",
       "evidence": [
-        "Status field 'match_status': in_registry=False, in_status_enum=False."
+        "Status field 'match_status' has per-field StrEnum in _status_enums.py (in_registry=True; the StrEnum is bound to its owning L5Status subclass either as a top-level contract or as a nested field).",
+        "L5Status subclass enforces value via __post_init__."
       ]
     },
     {
@@ -6382,10 +6380,10 @@
       "doc": "00A.8_L5_Runtime_Certification_Binding.md",
       "line": 112,
       "text": "- L2 E1 must receive L5RuntimeCertificationBinding refs or the equivalent policy/capability/sandbox evidence bundle.",
-      "category": "OTHER",
-      "status": "UNCOVERED",
+      "category": "SCHEMA",
+      "status": "STRUCTURAL",
       "evidence": [
-        "No actionable evidence link extracted."
+        "Field-shape requirement; contract envelope provides run_id/trace_id/digest_sha256/emitted_at_utc/evidence_refs. Per-packet specific fields NOT yet schematized. Names cited: <none>"
       ]
     },
     {
@@ -6455,7 +6453,7 @@
       ]
     }
   ],
-  "registry_size": 819,
+  "registry_size": 838,
   "forbidden_token_count": 24,
   "vocab_sizes": {
     "L5CertificationStatus": 10,
