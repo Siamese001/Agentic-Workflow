@@ -47,9 +47,17 @@ class SafetyPolicyGate:
             return deny(self.GATE_ID, "disallowed_transform", transform=transform)
         if risk == "high":
             return escalate(self.GATE_ID, "high_safety_risk_class", risk=risk)
-        # Bind compliance hash to packet (orchestrator picks this up).
-        ctx.compliance_hash = ctx.compliance_hash or f"compliance::{ctx.policy_hash}"
-        return allow(self.GATE_ID, "policy_satisfied")
+        # Doctrine 00C parent FORBIDDEN OUTPUTS: gates emit verdicts only.
+        # Surface the would-be compliance binding as verdict metadata; the
+        # owner layer (U0/L5 policy plane) is responsible for committing it
+        # to ctx. Mirror of G02's caller_scope_baseline_proposal pattern.
+        decision = allow(self.GATE_ID, "policy_satisfied")
+        if not ctx.compliance_hash:
+            decision.metadata.setdefault(
+                "compliance_hash_proposal",
+                f"compliance::{ctx.policy_hash}",
+            )
+        return decision
 
 
 __all__ = ["SafetyPolicyGate"]

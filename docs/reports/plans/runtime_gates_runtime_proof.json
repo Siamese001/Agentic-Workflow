@@ -1,0 +1,574 @@
+{
+  "schema_version": "00C.runtime_proof.v1",
+  "generated_at_utc": "2026-04-26T19:27:46.907906+00:00",
+  "doctrine_files": [
+    "00C_Runtime_Gates_Current_Run_Mesh_detailed.md",
+    "00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk_detailed.md",
+    "00C.2_Runtime_Gates_G06_G10_HITL_Route_Retrieval_Evidence_Prompt_detailed.md",
+    "00C.3_Runtime_Gates_G11_G15_Tool_Model_Args_Egress_Sandbox_detailed.md",
+    "00C.4_Runtime_Gates_G16_G20_Memory_Privacy_Workflow_Loop_Budget_detailed.md",
+    "00C.5_Runtime_Gates_G21_G24_Output_Security_Replay_detailed.md",
+    "00C.6_Runtime_Gates_G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall_detailed.md",
+    "00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix_detailed.md",
+    "00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass_detailed.md"
+  ],
+  "aggregate_status": "PASS",
+  "individual_proof_count": 18,
+  "passed_count": 18,
+  "failed_count": 0,
+  "proofs": {
+    "registry_complete": {
+      "expected_gate_count": 29,
+      "actual_gate_count": 29,
+      "missing": [],
+      "extra": [],
+      "status": "PASS"
+    },
+    "full_mesh_run": {
+      "decisions_emitted": 6,
+      "halted_at": "G06",
+      "halt_reason": "halt_disposition:ESCALATE_HITL",
+      "span_counts": {
+        "runtime_gate.mesh.start": 1,
+        "runtime_gate.evaluate": 6,
+        "runtime_gate.verdict": 6,
+        "runtime_gate.mesh.complete": 1,
+        "runtime_gate.bypass_detected": 0,
+        "runtime_gate.unknown_material": 1,
+        "runtime_gate.warn_material": 0,
+        "runtime_gate.handoff_to_exit": 0
+      },
+      "mesh_start_emitted": true,
+      "mesh_complete_emitted": true,
+      "evaluate_count_matches_decisions": true,
+      "verdict_count_matches_decisions": true,
+      "decisions": [
+        {
+          "gate_id": "G01",
+          "result": "PASS",
+          "disposition": "ALLOW",
+          "severity": "INFO",
+          "reason_codes": [
+            "validated_request"
+          ],
+          "deterministic_digest": "sha256:9b8c558d2fff6a7be75c49058aef381b1bb7f3876d05da69d2fdc1d0bc18c68d"
+        },
+        {
+          "gate_id": "G02",
+          "result": "PASS",
+          "disposition": "ALLOW",
+          "severity": "INFO",
+          "reason_codes": [
+            "identity_bound"
+          ],
+          "deterministic_digest": "sha256:ff820df8e3f37beb4d49fee5c1faacc250c7c08af78e83b24bc8ef6ab41dbc86"
+        },
+        {
+          "gate_id": "G03",
+          "result": "PASS",
+          "disposition": "CLARIFY",
+          "severity": "INFO",
+          "reason_codes": [
+            "missing_objective_or_deliverable"
+          ],
+          "deterministic_digest": "sha256:cfaad4dd5cf1c869eb6851678de64ff4dfad8e200a76ed0c973bdfb838c87d8b"
+        },
+        {
+          "gate_id": "G04",
+          "result": "PASS",
+          "disposition": "ALLOW",
+          "severity": "INFO",
+          "reason_codes": [
+            "policy_satisfied"
+          ],
+          "deterministic_digest": "sha256:1e363b4f8ce89c3a97993baa40c3f584dc406b11c6651a6f7eb2131d3f3787d4"
+        },
+        {
+          "gate_id": "G05",
+          "result": "PASS",
+          "disposition": "ALLOW",
+          "severity": "INFO",
+          "reason_codes": [
+            "risk_tier_acceptable"
+          ],
+          "deterministic_digest": "sha256:b8899100e6780edb47d473bd3c32af568566501a22f3711b9bfd20baf42b9008"
+        },
+        {
+          "gate_id": "G06",
+          "result": "UNKNOWN",
+          "disposition": "ESCALATE_HITL",
+          "severity": "HIGH",
+          "reason_codes": [
+            "no_review_request"
+          ],
+          "deterministic_digest": "sha256:956c4f18363a3944e51e7380363c6e1b3599ae3fefb507cdcd1878d0c5013785"
+        }
+      ]
+    },
+    "full_mesh_no_halt": {
+      "decisions_emitted": 29,
+      "expected": 29,
+      "by_disposition": {
+        "ALLOW": 21,
+        "CLARIFY": 1,
+        "ESCALATE_HITL": 1,
+        "RETRY": 1,
+        "DENY": 2,
+        "MARK_DEGRADED": 3
+      },
+      "by_result": {
+        "PASS": 22,
+        "UNKNOWN": 1,
+        "WARN": 4,
+        "FAIL": 2
+      },
+      "span_counts": {
+        "runtime_gate.mesh.start": 1,
+        "runtime_gate.evaluate": 29,
+        "runtime_gate.verdict": 29,
+        "runtime_gate.mesh.complete": 1,
+        "runtime_gate.bypass_detected": 0,
+        "runtime_gate.unknown_material": 1,
+        "runtime_gate.warn_material": 0,
+        "runtime_gate.handoff_to_exit": 0
+      },
+      "evaluate_count_matches_29": true,
+      "verdict_count_matches_29": true,
+      "status": "PASS"
+    },
+    "verdict_schema_complete": {
+      "required_field_count": 29,
+      "gates_checked": 29,
+      "gates_missing_fields": {},
+      "status": "PASS",
+      "sample_verdicts": [
+        {
+          "gate_id": "G01",
+          "gate_family": "",
+          "gate_surface": "",
+          "primary_layer": "",
+          "evaluated_packet_ref": "packet:proof:001",
+          "request_id": "req-proof-001",
+          "run_id": "run-proof-001",
+          "trace_root": "trace-proof-001",
+          "trace_id": "trace-id-001",
+          "tenant_id": "tenant-A",
+          "policy_hash": "pol-deadbeef",
+          "blueprint_hash": "blue-deadbeef",
+          "replay_key": "rk-deadbeef",
+          "result": "PASS",
+          "disposition": "ALLOW",
+          "severity": "INFO",
+          "reason_codes": [
+            "validated_request"
+          ],
+          "score": null,
+          "threshold": null,
+          "grader_type": "code",
+          "evidence_refs": [],
+          "replay_refs": [],
+          "source_lineage_refs": [],
+          "confidence": 1.0,
+          "abstain_flag": false,
+          "remediation_hint": "",
+          "deterministic_digest": "",
+          "created_at_run_offset": 0.0,
+          "schema_version": "00C-1.0.0"
+        },
+        {
+          "gate_id": "G15",
+          "gate_family": "",
+          "gate_surface": "",
+          "primary_layer": "",
+          "evaluated_packet_ref": "packet:proof:001",
+          "request_id": "req-proof-001",
+          "run_id": "run-proof-001",
+          "trace_root": "trace-proof-001",
+          "trace_id": "trace-id-001",
+          "tenant_id": "tenant-A",
+          "policy_hash": "pol-deadbeef",
+          "blueprint_hash": "blue-deadbeef",
+          "replay_key": "rk-deadbeef",
+          "result": "PASS",
+          "disposition": "DENY",
+          "severity": "INFO",
+          "reason_codes": [
+            "missing_sandbox"
+          ],
+          "score": null,
+          "threshold": null,
+          "grader_type": "code",
+          "evidence_refs": [],
+          "replay_refs": [],
+          "source_lineage_refs": [],
+          "confidence": 1.0,
+          "abstain_flag": false,
+          "remediation_hint": "",
+          "deterministic_digest": "",
+          "created_at_run_offset": 0.0,
+          "schema_version": "00C-1.0.0"
+        },
+        {
+          "gate_id": "G29",
+          "gate_family": "",
+          "gate_surface": "",
+          "primary_layer": "",
+          "evaluated_packet_ref": "packet:proof:001",
+          "request_id": "req-proof-001",
+          "run_id": "run-proof-001",
+          "trace_root": "trace-proof-001",
+          "trace_id": "trace-id-001",
+          "tenant_id": "tenant-A",
+          "policy_hash": "pol-deadbeef",
+          "blueprint_hash": "blue-deadbeef",
+          "replay_key": "rk-deadbeef",
+          "result": "PASS",
+          "disposition": "MARK_DEGRADED",
+          "severity": "INFO",
+          "reason_codes": [
+            "hold_for_post_run_review"
+          ],
+          "score": null,
+          "threshold": null,
+          "grader_type": "code",
+          "evidence_refs": [],
+          "replay_refs": [],
+          "source_lineage_refs": [],
+          "confidence": 1.0,
+          "abstain_flag": false,
+          "remediation_hint": "",
+          "deterministic_digest": "",
+          "created_at_run_offset": 0.0,
+          "schema_version": "00C-1.0.0"
+        }
+      ]
+    },
+    "determinism": {
+      "run_a_digest": "sha256:fca22537ca7585fb741d1f18500f52253c4d209659c1211df9f60edd47fe695d",
+      "run_b_digest": "sha256:fca22537ca7585fb741d1f18500f52253c4d209659c1211df9f60edd47fe695d",
+      "stable": true,
+      "status": "PASS"
+    },
+    "unknown_never_pass": {
+      "result_value": "UNKNOWN",
+      "is_unknown": true,
+      "is_not_pass": true,
+      "status": "PASS"
+    },
+    "mesh_aggregation_rules": {
+      "cases": {
+        "pass_only": {
+          "summary": "ALLOW",
+          "expected": "ALLOW",
+          "ok": true
+        },
+        "missing_required": {
+          "summary": "BLOCK_EXIT",
+          "missing": [
+            "G02"
+          ],
+          "expected": "BLOCK_EXIT",
+          "ok": true
+        },
+        "hard_fail": {
+          "summary": "DENY",
+          "hard_fail_present": true,
+          "expected": "DENY",
+          "ok": true
+        },
+        "unknown_material": {
+          "summary": "ESCALATE_HITL",
+          "unknown_material_present": true,
+          "expected": "ESCALATE_HITL",
+          "ok": true
+        },
+        "warn_material": {
+          "summary": "MARK_DEGRADED",
+          "warn_material_present": true,
+          "expected": "MARK_DEGRADED",
+          "ok": true
+        }
+      },
+      "status": "PASS"
+    },
+    "per_layer_dispatch": {
+      "U0": {
+        "declared": [
+          "G01",
+          "G02"
+        ],
+        "completed": [
+          "G01",
+          "G02"
+        ],
+        "halted_at": null
+      },
+      "L1": {
+        "declared": [
+          "G03"
+        ],
+        "completed": [
+          "G03"
+        ],
+        "halted_at": null
+      },
+      "L0": {
+        "declared": [
+          "G04",
+          "G05",
+          "G06",
+          "G07"
+        ],
+        "completed": [
+          "G04",
+          "G05",
+          "G06"
+        ],
+        "halted_at": "G06"
+      },
+      "C0": {
+        "declared": [
+          "G08",
+          "G09"
+        ],
+        "completed": [
+          "G08",
+          "G09"
+        ],
+        "halted_at": null
+      },
+      "PromptAssembly": {
+        "declared": [
+          "G10"
+        ],
+        "completed": [
+          "G10"
+        ],
+        "halted_at": null
+      },
+      "L2": {
+        "declared": [
+          "G11",
+          "G12",
+          "G13",
+          "G14",
+          "G15"
+        ],
+        "completed": [
+          "G11",
+          "G12",
+          "G13",
+          "G14",
+          "G15"
+        ],
+        "halted_at": "G15"
+      },
+      "L4": {
+        "declared": [
+          "G16",
+          "G17"
+        ],
+        "completed": [
+          "G16",
+          "G17"
+        ],
+        "halted_at": null
+      },
+      "L3": {
+        "declared": [
+          "G18",
+          "G19",
+          "G20"
+        ],
+        "completed": [
+          "G18",
+          "G19",
+          "G20"
+        ],
+        "halted_at": null
+      },
+      "Exit": {
+        "declared": [
+          "G21",
+          "G22",
+          "G23",
+          "G24",
+          "G26"
+        ],
+        "completed": [
+          "G21",
+          "G22",
+          "G23",
+          "G24",
+          "G26"
+        ],
+        "halted_at": "G26"
+      },
+      "UWG": {
+        "declared": [
+          "G27"
+        ],
+        "completed": [
+          "G27"
+        ],
+        "halted_at": null
+      },
+      "L6": {
+        "declared": [
+          "G25",
+          "G28",
+          "G29"
+        ],
+        "completed": [
+          "G25",
+          "G28",
+          "G29"
+        ],
+        "halted_at": null
+      }
+    },
+    "anti_mutation": {
+      "guarded_field_count": 23,
+      "gates_run": 29,
+      "passes_executed": 2,
+      "mutations_detected": {},
+      "status": "PASS"
+    },
+    "envelope_immutability": {
+      "snapshot_match": true,
+      "status": "PASS"
+    },
+    "bypass_detection": {
+      "bypass_span_count": 1,
+      "g02_result": "UNKNOWN",
+      "g02_severity": "HIGH",
+      "g02_disposition": "ESCALATE_HITL",
+      "g02_reason_codes": [
+        "evaluator_exception"
+      ],
+      "status": "PASS"
+    },
+    "runtime_vs_promotion_disjoint": {
+      "runtime_disposition_count": 15,
+      "promotion_vocab_count": 8,
+      "vocab_overlap": [],
+      "rogue_aliases": [],
+      "status": "PASS"
+    },
+    "x3_not_in_runtime": {
+      "exit_x3_vocab": [
+        "X3A",
+        "X3B",
+        "X3C",
+        "X3D",
+        "X3E"
+      ],
+      "leak": [],
+      "status": "PASS"
+    },
+    "g29_blocks_runtime_only_learning": {
+      "disposition": "MARK_DEGRADED",
+      "alias": "HOLD_FOR_REVIEW",
+      "reason_codes": [
+        "hold_for_post_run_review"
+      ],
+      "blocks_live_mutation": true,
+      "status": "PASS"
+    },
+    "g25_runtime_dispositions_only": {
+      "cases": [
+        {
+          "observed": {
+            "tokens": 100,
+            "latency_ms": 100
+          },
+          "disposition": "ALLOW",
+          "in_allowed_set": true
+        },
+        {
+          "observed": {
+            "tokens": 9000,
+            "latency_ms": 9000
+          },
+          "disposition": "ALLOW",
+          "in_allowed_set": true
+        },
+        {
+          "observed": {
+            "tokens": 50000,
+            "latency_ms": 60000
+          },
+          "disposition": "ALLOW",
+          "in_allowed_set": true
+        }
+      ],
+      "status": "PASS"
+    },
+    "required_gates_per_route": {
+      "routes": {
+        "R1_CACHE": {
+          "required_count": 11,
+          "missing": [],
+          "ok": true
+        },
+        "R3R4_MANAGED_WORKFLOW": {
+          "required_count": 22,
+          "missing": [],
+          "ok": true
+        },
+        "R3_GROUNDED_READ": {
+          "required_count": 16,
+          "missing": [],
+          "ok": true
+        },
+        "R4_SINGLE_ACTION": {
+          "required_count": 16,
+          "missing": [],
+          "ok": true
+        },
+        "R5_FALLBACK": {
+          "required_count": 7,
+          "missing": [],
+          "ok": true
+        }
+      },
+      "status": "PASS"
+    },
+    "otel_span_attributes": {
+      "verdict_span_count": 3,
+      "required_attr_count": 6,
+      "missing_per_span": [],
+      "status": "PASS"
+    },
+    "canonical_dispositions": {
+      "expected_count": 15,
+      "actual_count": 15,
+      "missing": [],
+      "extra": [],
+      "status": "PASS"
+    },
+    "canonical_results": {
+      "expected_count": 5,
+      "actual_count": 5,
+      "missing": [],
+      "extra": [],
+      "status": "PASS"
+    },
+    "g02_does_not_mutate_baseline": {
+      "before": {
+        "region": "us-east-1"
+      },
+      "after": {
+        "region": "us-east-1"
+      },
+      "unchanged": true,
+      "verdict_proposal_emitted": true,
+      "proposal_value": {
+        "tenant_id": "tenant-A",
+        "session_id": "sess-proof-001"
+      },
+      "status": "PASS"
+    }
+  },
+  "bundle_digest": "sha256:b023147f396074138d8c60426cf39514529d8f27be128d47cdddf3e8cdfddec0"
+}
