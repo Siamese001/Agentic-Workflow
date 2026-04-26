@@ -65,6 +65,17 @@ from agentic_core.L4_state.contracts.records import (
     VectorIndexManifest,
     WriteLockReceipt,
 )
+from agentic_core.L4_state.contracts.lookup import (
+    AliasResolutionError,
+    DeprecatedEntryError,
+    InMemoryL4Store,
+    L4LookupError,
+    StaleSnapshotError,
+    TenantScopeError,
+    UnknownEntryError,
+    get_default_store,
+    reset_default_store,
+)
 from agentic_core.L4_state.contracts.proof import L4UWGProofPacket
 
 __all__ = [
@@ -124,4 +135,14 @@ __all__ = [
     "AliasRefreshReceipt",
     # 00.8 Proof packet
     "L4UWGProofPacket",
+    # 00.1 §PHASE 2 Lookup API
+    "InMemoryL4Store",
+    "L4LookupError",
+    "UnknownEntryError",
+    "DeprecatedEntryError",
+    "TenantScopeError",
+    "AliasResolutionError",
+    "StaleSnapshotError",
+    "get_default_store",
+    "reset_default_store",
 ]

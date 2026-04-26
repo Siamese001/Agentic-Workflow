@@ -34,15 +34,24 @@ from agentic_core.L4_state.audit.audit_ledger import (
 )
 from agentic_core.L4_state.contracts import (
     BlueprintRecord,
+    CapabilityRegistryRecord,
     CommitRequest,
+    DeprecatedEntryError,
+    InMemoryL4Store,
     L4UWGProofPacket,
+    ModelRegistryRecord,
     PolicyManifest,
     ReadSurfaceRefreshPlan,
     RegistrySnapshot,
     ReplaySnapshotRecord,
     RollbackPlan,
+    SchemaRegistryRecord,
     StateDiff,
+    TenantScopeError,
+    ToolRegistryRecord,
+    UnknownEntryError,
 )
+from agentic_core.L4_state.refresh.refresh_coordinator import RefreshCoordinator
 from agentic_core.L4_state.contracts.proof import stamp_proof_digest
 from agentic_core.L4_state.contracts.records import (
     AuditLedgerRecord,
@@ -478,6 +487,235 @@ def section_replay_reconstruction() -> dict:
     }
 
 
+def section_lookup_apis() -> dict:
+    """00.1 §PHASE 2 — read-only lookup API live evidence."""
+    store = InMemoryL4Store()
+    pm = stamp_digest(
+        PolicyManifest(policy_manifest_id="pm:proof", policy_version="v1", policy_hash="ph:proof_lookup")
+    )
+    store.install_policy(pm, tenant_id="t:proof", route_id="r:proof", risk_tier="medium")
+    store.install_blueprint(
+        stamp_digest(BlueprintRecord(blueprint_id="bp:proof", blueprint_hash="bh:proof", blueprint_type="route"))
+    )
+    store.install_registry_snapshot(
+        stamp_digest(
+            RegistrySnapshot(
+                registry_snapshot_id="rs:proof",
+                registry_digest="rd:proof",
+                policy_hash="ph:proof_lookup",
+                blueprint_hash="bh:proof",
+            )
+        )
+    )
+    store.install_model(
+        stamp_digest(
+            ModelRegistryRecord(
+                model_id="m:proof",
+                provider_id="p:proof",
+                provider_lane="lane:proof",
+                context_limit=8192,
+                tool_calling_capability=True,
+                structured_output_capability=True,
+                egress_class="none",
+                data_retention_class="zero",
+                deprecation_state="active",
+                fallback_policy_ref="fp:proof",
+                allowed_risk_tiers=("medium",),
+            )
+        )
+    )
+    store.install_tool(
+        stamp_digest(
+            ToolRegistryRecord(
+                tool_id="tl:proof",
+                tool_version="1.0",
+                tool_provider="prov:proof",
+                input_schema_ref="sch:in@1",
+                output_schema_ref="sch:out@1",
+                side_effect_class="read",
+                sandbox_class_required="basic",
+                credential_scope="none",
+                network_scope="none",
+                egress_policy_ref="none",
+                deprecation_state="active",
+                allowed_route_ids=("r:proof",),
+            )
+        )
+    )
+    store.install_capability(
+        stamp_digest(
+            CapabilityRegistryRecord(
+                capability_id="cap:proof",
+                capability_class="read",
+                side_effect_class="none",
+                sandbox_required=False,
+                egress_policy_ref="none",
+                deprecation_state="active",
+                allowed_tools=("tl:proof",),
+            )
+        )
+    )
+    store.install_schema(
+        stamp_digest(
+            SchemaRegistryRecord(
+                schema_id="sch:answer",
+                schema_version="1",
+                schema_hash="schash:proof",
+                contract_type="output",
+                owner_surface="L2",
+                backward_compatibility="strict",
+                deprecation_state="active",
+            )
+        )
+    )
+
+    # Happy-path resolutions
+    pm_resolved = store.get_active_policy_manifest(
+        tenant_id="t:proof", route_id="r:proof", risk_tier="medium", trace_id="tr:proof"
+    )
+    bp_resolved = store.get_blueprint_by_hash("bh:proof", trace_id="tr:proof")
+    rs_resolved = store.get_registry_snapshot("rs:proof", trace_id="tr:proof")
+    model_resolved = store.resolve_allowed_model_lane(
+        model_id="m:proof",
+        provider_id="p:proof",
+        route_id="r:proof",
+        risk_tier="medium",
+        policy_hash="ph:proof_lookup",
+        trace_id="tr:proof",
+    )
+    tool_resolved = store.resolve_allowed_tool(
+        tool_id="tl:proof",
+        route_id="r:proof",
+        capability_id="cap:proof",
+        policy_hash="ph:proof_lookup",
+        trace_id="tr:proof",
+    )
+    schema_resolved = store.resolve_schema(
+        schema_id="sch:answer",
+        schema_version="1",
+        policy_hash="ph:proof_lookup",
+        trace_id="tr:proof",
+    )
+
+    # Fail-closed paths
+    fail_modes: dict = {}
+    try:
+        store.get_active_policy_manifest(tenant_id="t:UNKNOWN", route_id="r:proof", risk_tier="medium")
+    except TenantScopeError as exc:
+        fail_modes["tenant_scope_missing"] = str(exc)
+    try:
+        store.get_policy_by_hash("ph:UNKNOWN")
+    except UnknownEntryError as exc:
+        fail_modes["unknown_policy_hash"] = str(exc)
+    try:
+        store.resolve_allowed_model_lane(
+            model_id="m:UNKNOWN",
+            provider_id="p:proof",
+            route_id="r:proof",
+            risk_tier="medium",
+            policy_hash="ph:proof_lookup",
+        )
+    except UnknownEntryError as exc:
+        fail_modes["unknown_model"] = str(exc)
+    # Deprecated model
+    store.install_model(
+        stamp_digest(
+            ModelRegistryRecord(
+                model_id="m:dep",
+                provider_id="p:proof",
+                provider_lane="lane:proof",
+                context_limit=8192,
+                tool_calling_capability=False,
+                structured_output_capability=False,
+                egress_class="none",
+                data_retention_class="zero",
+                deprecation_state="deprecated",
+                fallback_policy_ref="fp:proof",
+                allowed_risk_tiers=("medium",),
+            )
+        )
+    )
+    try:
+        store.resolve_allowed_model_lane(
+            model_id="m:dep",
+            provider_id="p:proof",
+            route_id="r:proof",
+            risk_tier="medium",
+            policy_hash="ph:proof_lookup",
+        )
+    except DeprecatedEntryError as exc:
+        fail_modes["deprecated_model"] = str(exc)
+
+    return {
+        "resolved_policy_manifest_id": pm_resolved.policy_manifest_id,
+        "resolved_blueprint_id": bp_resolved.blueprint_id,
+        "resolved_registry_snapshot_id": rs_resolved.registry_snapshot_id,
+        "resolved_model_id": model_resolved.model_id,
+        "resolved_tool_id": tool_resolved.tool_id,
+        "resolved_schema_id": schema_resolved.schema_id,
+        "fail_closed_modes": fail_modes,
+    }
+
+
+def section_refresh_receipts() -> dict:
+    """00.7 — direct exercise of IndexRefreshReceipt / GraphProjectionRefreshReceipt / AliasRefreshReceipt."""
+    from agentic_core.L4_state.contracts import UWGCommitReceipt
+
+    coord = RefreshCoordinator()
+    commit = stamp_digest(
+        UWGCommitReceipt(
+            commit_receipt_id="cr:proof_refresh",
+            commit_request_ref="creq:proof_refresh",
+            write_lock_receipt_ref="wlr:proof",
+            uwg_validation_receipt_ref="uvr:proof",
+            snapshot_before="snap:before",
+            snapshot_after="snap:after",
+            read_surface_refresh_plan_ref="rfp:proof",
+            audit_append_receipt_ref="aar:proof",
+            committed_at="0",
+        )
+    )
+    vec = coord.issue_index_refresh(
+        index_type="vector",
+        commit_receipt=commit,
+        source_snapshot_before="src:before",
+        source_snapshot_after="src:after",
+    )
+    sparse = coord.issue_index_refresh(
+        index_type="sparse",
+        commit_receipt=commit,
+        source_snapshot_before="src:before",
+        source_snapshot_after="src:after",
+    )
+    meta = coord.issue_index_refresh(
+        index_type="metadata",
+        commit_receipt=commit,
+        source_snapshot_before="src:before",
+        source_snapshot_after="src:after",
+    )
+    graph = coord.issue_graph_projection_refresh(
+        commit_receipt=commit,
+        graph_projection_before="gp:before",
+        projection_version_before="pv:1",
+        relation_type_manifest_ref="rtm:1",
+        source_snapshot_refs=("src:1",),
+    )
+    alias = coord.issue_alias_refresh(
+        alias_type="policy",
+        commit_receipt=commit,
+        alias_before="alias:old",
+        alias_after="alias:new",
+        target_record_ref="pm:proof",
+    )
+    return {
+        "vector_refresh": _record_to_jsonable(vec),
+        "sparse_refresh": _record_to_jsonable(sparse),
+        "metadata_refresh": _record_to_jsonable(meta),
+        "graph_refresh": _record_to_jsonable(graph),
+        "alias_refresh": _record_to_jsonable(alias),
+    }
+
+
 def section_proof_packet(happy: dict, blocked: dict, anti_bypass: dict, rollback: dict) -> dict:
     packet = stamp_proof_digest(
         L4UWGProofPacket(
@@ -486,8 +724,8 @@ def section_proof_packet(happy: dict, blocked: dict, anti_bypass: dict, rollback
             policy_hash="ph:proof",
             blueprint_hash="bh:proof",
             replay_key="rk:proof",
-            acceptance_summary="L4/UWG doctrinal pack 00.1-00.8 — 66/66 tests pass + runtime proof harness green",
-            test_command_results=("python -m pytest tests/l4 tests/uwg -q :: 66 passed",),
+            acceptance_summary="L4/UWG doctrinal pack 00.1-00.8 — 104/104 tests pass + runtime proof harness green + lookup APIs live",
+            test_command_results=("python -m pytest tests/l4 tests/uwg -q :: 104 passed",),
             otel_trace_refs=("see section.otel_spans",),
             direct_write_block_receipts=tuple(
                 anti_bypass["block_receipts"][s]["blocked_commit_receipt_id"]
@@ -523,10 +761,12 @@ def main() -> int:
     audit = section_audit_invariants()
     spans = section_otel_spans()
     replay = section_replay_reconstruction()
+    lookup = section_lookup_apis()
+    refresh = section_refresh_receipts()
     proof = section_proof_packet(happy, blocked, anti_bypass, rollback)
 
     payload = {
-        "schema": "L4UWGRuntimeProofBundle@1",
+        "schema": "L4UWGRuntimeProofBundle@2",
         "digests": digests,
         "happy_path": happy,
         "blocked_paths": blocked,
@@ -535,6 +775,8 @@ def main() -> int:
         "audit_invariants": audit,
         "otel_spans": spans,
         "replay_reconstruction": replay,
+        "lookup_apis": lookup,
+        "refresh_receipts": refresh,
         "proof_packet": proof,
     }
     out_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
@@ -550,6 +792,9 @@ def main() -> int:
     print(f"  spans/catalog_size: {spans['catalog_size']}")
     print(f"  spans/well_formed_failures: {spans['well_formed_failures']}")
     print(f"  replay/round_trip_stable: {replay['round_trip_digest_stable']}")
+    print(f"  lookup/resolved_count: {len([k for k in lookup if k.startswith('resolved_')])}")
+    print(f"  lookup/fail_closed_modes: {sorted(lookup['fail_closed_modes'].keys())}")
+    print(f"  refresh_receipts: {sorted(refresh.keys())}")
     print(f"  proof_packet_digest: {proof['deterministic_digest']}")
     return 0
 

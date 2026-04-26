@@ -264,6 +264,27 @@ class DurableWriteGateway:
             commit_request_id=commit_request.commit_request_id,
             extra={"state_diff_count": len(state_diffs)},
         )
+        # 00.5 §PHASE 3 mandates ``commit_request_received`` as a durable
+        # audit event, distinct from the in-flight span. We append it
+        # before validation runs so the receive-time fact is durable even
+        # if validation later fails closed.
+        if self._audit.is_available():
+            self._audit.append(
+                event_type="commit_request_received",
+                state_surface=",".join(commit_request.affected_state_surfaces) or "-",
+                operation_type="commit_request",
+                tenant_id=commit_request.tenant_id,
+                policy_hash=commit_request.policy_hash or "-",
+                blueprint_hash=commit_request.blueprint_hash or "-",
+                snapshot_before=self._last_snapshot_id,
+                actor_surface=commit_request.source_surface,
+                mutation_source=commit_request.source_surface,
+                request_id=commit_request.request_id,
+                run_id=commit_request.run_id,
+                trace_root=commit_request.trace_root,
+                receipt_refs=(commit_request.commit_request_id,),
+                state_refs=tuple(sd_ref for sd_ref in commit_request.state_diff_refs),
+            )
 
         # Stage 1+2: authority and source
         validation = self._validate(commit_request, state_diffs, rollback_plan, refresh_plan)

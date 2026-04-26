@@ -15,6 +15,44 @@ from enum import Enum
 from typing import Any
 
 
+SCHEMA_VERSION = "00C-1.0.0"
+
+
+class Result(str, Enum):
+    """Canonical gate result vocabulary (00C.7 GateVerdict.result).
+
+    The 5-value result is independent of ``Disposition``. UNKNOWN is never
+    converted to PASS — it remains visible to Exit aggregation and triggers
+    fail-closed handling on safety/policy/evidence/replay/write paths.
+    """
+
+    PASS = "PASS"
+    FAIL = "FAIL"
+    WARN = "WARN"
+    UNKNOWN = "UNKNOWN"
+    NOT_APPLICABLE = "NOT_APPLICABLE"
+
+
+class Severity(str, Enum):
+    """Severity scale for a verdict (00C.7)."""
+
+    INFO = "INFO"
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
+    CRITICAL = "CRITICAL"
+
+
+class GraderType(str, Enum):
+    """How a verdict was produced (00C.7)."""
+
+    CODE = "code"
+    LLM_JUDGE = "LLM_JUDGE"
+    HYBRID = "hybrid"
+    HUMAN_CALIBRATED = "human_calibrated"
+    POLICY_RULE = "policy_rule"
+
+
 class Disposition(str, Enum):
     """The 15 bounded dispositions every runtime gate may emit.
 
@@ -154,7 +192,9 @@ class GateContext:
     # Identity / envelope (G01, G02)
     request_id: str = ""
     session_id: str = ""
+    run_id: str = ""
     trace_root: str = ""
+    trace_id: str = ""
     tenant_id: str = ""
     caller_scope_baseline: dict[str, Any] = field(default_factory=dict)
 
@@ -162,6 +202,10 @@ class GateContext:
     policy_hash: str = ""
     compliance_hash: str = ""
     blueprint_hash: str = ""
+    replay_key: str = ""
+
+    # Spec-aligned packet refs for verdict carry-through (00C.7).
+    evaluated_packet_ref: str = ""
 
     # Intent / risk (G03, G05)
     intent: dict[str, Any] = field(default_factory=dict)
@@ -210,7 +254,13 @@ class GateContext:
 
 @dataclass
 class GateDecision:
-    """The bounded result every runtime gate returns."""
+    """The bounded result every runtime gate returns.
+
+    Canonical 00C.7 ``GateVerdict`` fields are present as defaulted attributes
+    so existing call sites that construct ``GateDecision(gate_id=..., disposition=...)``
+    keep working. Use ``to_verdict()`` to serialize the canonical contract for
+    Exit / OTEL / replay handoff.
+    """
 
     gate_id: str  # e.g. "G01"
     disposition: Disposition
@@ -219,6 +269,73 @@ class GateDecision:
     signals: list[RegressionSignal] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
     stop_condition_violated: bool = False
+
+    # Canonical 00C.7 GateVerdict fields (defaulted; populated by helpers).
+    result: Result = Result.PASS
+    severity: Severity = Severity.INFO
+    score: float | None = None
+    threshold: float | None = None
+    grader_type: GraderType = GraderType.CODE
+    evidence_refs: list[str] = field(default_factory=list)
+    replay_refs: list[str] = field(default_factory=list)
+    source_lineage_refs: list[str] = field(default_factory=list)
+    confidence: float = 1.0
+    abstain_flag: bool = False
+    remediation_hint: str = ""
+    deterministic_digest: str = ""
+    created_at_run_offset: float = 0.0
+    schema_version: str = SCHEMA_VERSION
+    # Carried from GateContext at evaluation time (set by orchestrator).
+    request_id: str = ""
+    run_id: str = ""
+    trace_root: str = ""
+    trace_id: str = ""
+    tenant_id: str = ""
+    policy_hash: str = ""
+    blueprint_hash: str = ""
+    replay_key: str = ""
+    evaluated_packet_ref: str = ""
+    gate_family: str = ""
+    gate_surface: str = ""
+    primary_layer: str = ""
+
+    def to_verdict(self) -> dict[str, Any]:
+        """Serialize the canonical 00C.7 ``GateVerdict`` shape.
+
+        Field names match the doctrine schema in
+        ``00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix_detailed.md``.
+        """
+        return {
+            "gate_id": self.gate_id,
+            "gate_family": self.gate_family,
+            "gate_surface": self.gate_surface,
+            "primary_layer": self.primary_layer,
+            "evaluated_packet_ref": self.evaluated_packet_ref,
+            "request_id": self.request_id,
+            "run_id": self.run_id,
+            "trace_root": self.trace_root,
+            "trace_id": self.trace_id,
+            "tenant_id": self.tenant_id,
+            "policy_hash": self.policy_hash,
+            "blueprint_hash": self.blueprint_hash,
+            "replay_key": self.replay_key,
+            "result": self.result.value,
+            "disposition": self.disposition.value,
+            "severity": self.severity.value,
+            "reason_codes": list(self.reason_codes),
+            "score": self.score,
+            "threshold": self.threshold,
+            "grader_type": self.grader_type.value,
+            "evidence_refs": list(self.evidence_refs),
+            "replay_refs": list(self.replay_refs),
+            "source_lineage_refs": list(self.source_lineage_refs),
+            "confidence": self.confidence,
+            "abstain_flag": self.abstain_flag,
+            "remediation_hint": self.remediation_hint,
+            "deterministic_digest": self.deterministic_digest,
+            "created_at_run_offset": self.created_at_run_offset,
+            "schema_version": self.schema_version,
+        }
 
     @property
     def is_terminal(self) -> bool:
@@ -242,4 +359,8 @@ __all__ = [
     "RegressionSignal",
     "GateContext",
     "GateDecision",
+    "Result",
+    "Severity",
+    "GraderType",
+    "SCHEMA_VERSION",
 ]

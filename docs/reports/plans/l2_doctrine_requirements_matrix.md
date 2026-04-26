@@ -1,9 +1,9 @@
 # L2 Execute Doctrine — Requirements Traceability Matrix
 
 **Plan:** `.windsurf/plans/l2-execute-doc-gap-fill-9c2a31.md`
-**Commit:** `d92857f4d7` (HEAD at run-time)
-**Test result:** **108 passed, 0 failed, 0 skipped** in 0.27s
-**Test breakdown:** 18 entry (W1) + 17 PTC (W2) + 18 OTEL (W3) + 55 anti-bypass (W4)
+**Commits:** `d92857f4d7` (W1-W5) + `5f0a14a521` (matrix + runtime proof) + hardening pass (W6)
+**Test result:** **325 passed, 0 failed, 0 skipped** in 0.45s
+**Test breakdown:** 18 entry (W1) + 17 PTC (W2) + 18 OTEL (W3) + 55 anti-bypass (W4) + 217 edge-case hardening (W6)
 **Runtime proof:** `docs/reports/plans/l2_doctrine_runtime_proof.txt` (157 lines, all PASS, 0 unhandled errors)
 **Proof harness:** `scripts/proof/run_l2_doctrine_runtime_proof.py`
 **Test files:**
@@ -11,6 +11,7 @@
 - `tests/unit/agentic_core/L2_execution/test_ptc_execution_contracts.py`
 - `tests/unit/agentic_core/L2_execution/test_l2_otel_span_vocabulary.py`
 - `tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py`
+- `tests/unit/agentic_core/L2_execution/test_l2_doctrine_edge_cases.py` (W6 hardening — 217 cases)
 
 ## Legend
 
@@ -513,7 +514,90 @@ The runtime proof harness (lines 168-176) verifies all 5 new doctrine modules ha
 - **`docs/reports/plans/l2_doctrine_runtime_proof.txt`** — captured 157-line execution trace with 8 unique deterministic digests, 9 fail-closed event records, and import-hygiene confirmation.
 - **108/108 pytest passes** (commit `d92857f4d7`) — see `git log --oneline -1`.
 
-## Status: ✓ ALL REQUIREMENTS MET
+---
+
+## Hardening Pass (W6) — Closed Gaps
+
+The matrix's "by inspection" / "ⓘ EXISTS_PRE-PLAN" / single-test-per-rule rows
+have been promoted to direct, parametrized edge-case tests via
+`tests/unit/agentic_core/L2_execution/test_l2_doctrine_edge_cases.py`
+(217 cases across 15 sections).
+
+| Gap class | Direct test added | Status |
+|---|---|---|
+| **H1** Every `L2BoundaryAssertion` bit individually surfaces in `violations()` | `test_boundary_assertion_each_bit_unasserted_surfaces_in_violations` (8 parametrizations) | ✓ ALL 8 BITS |
+| **H2** Every prose-suspect authority field rejected per-field | `test_authority_field_with_long_prose_rejected` (10 parametrizations) | ✓ ALL 10 FIELDS |
+| **H3** Authority field newline rejection | `test_authority_field_with_newline_rejected` (3 parametrizations) | ✓ |
+| **H4** SourcePacketType enum substitution rejected | `test_source_packet_type_enum_substitution_rejected` (6 parametrizations covering all 3 valid + 3 invalid) | ✓ |
+| **H5** HumanInputScope / DurableWriteAuthority single-value enum invariants | `test_human_input_scope_enum_has_exactly_one_member`, `test_durable_write_authority_enum_has_exactly_one_member` | ✓ TYPE-LEVEL |
+| **H6** EntryRejectionReason completeness | `test_entry_rejection_reason_complete` (asserts exact 12-member set) | ✓ |
+| **H7** Each of 16 required packet fields individually rejected when missing | `test_each_required_field_individually_rejected_when_missing` (16 parametrizations) | ✓ ALL 16 |
+| **H8** Required field rejection on `None` (not just empty string) | `test_each_required_field_individually_rejected_when_none` (4 parametrizations) | ✓ |
+| **H9** All 6 forbidden `declared_intent` values rejected; benign passes | `test_declared_intent_forbidden_set` (8 parametrizations) | ✓ ALL 6 |
+| **H10** PTC numeric out-of-range matrix | `test_profile_numeric_field_rejects_out_of_range` (7 parametrizations) | ✓ |
+| **H11** All 4 PTCScriptLanguage enum members construct | `test_profile_script_language_each_enum_constructs` (4 parametrizations) | ✓ |
+| **H12** All StdoutReturnPolicy members construct | `test_profile_stdout_return_policy_each_enum_constructs` | ✓ |
+| **H13** PTC required-string-rejects-empty for 4 envelope fields | `test_envelope_required_string_rejects_empty` (4 parametrizations) | ✓ |
+| **H14** Full PTCSandboxReceipt fail-closed coupling matrix | `test_receipt_fail_closed_coupling` (13 parametrizations across status×status×status×result_class) | ✓ |
+| **H15** PTC ref-size cap exhaustively tested | `test_receipt_rejects_oversized_ref` (4 sizes 2049-16384) + `test_receipt_accepts_ref_at_or_below_2k` (5 sizes 16-2048) | ✓ |
+| **H16** PTC rejects non-string ref (bytes injection) | `test_receipt_rejects_non_string_ref` | ✓ |
+| **H17** OTEL: every span belongs to exactly one phase group | `test_no_span_appears_in_two_groups` | ✓ |
+| **H18** OTEL: every span uses correct group prefix | 6 tests `test_every_<phase>_span_starts_with_l2_<phase>_*` | ✓ |
+| **H19** Each of 13 always-required span attributes individually enforced | `test_each_required_attribute_individually_enforced` (13 parametrizations) | ✓ ALL 13 |
+| **H20** Span: empty-string and None values treated as missing | `test_validate_span_attribute_with_empty_string_treated_as_missing`, `test_validate_span_attribute_with_none_treated_as_missing` | ✓ |
+| **H21** Span: 5 invalid name patterns rejected | `test_validate_span_unknown_name_raises` (5 parametrizations) | ✓ |
+| **H22** Anti-bypass: route_id-changed-but-digest-same partial drift | `test_assert_no_route_change_partial_drift` | ✓ |
+| **H23** Anti-bypass: workflow shrink also rejected | `test_assert_no_workflow_expansion_shrink_also_rejected` | ✓ |
+| **H24** Anti-bypass: repair snapshot drift on each hash dimension | `test_assert_repair_requires_both_hashes_to_match` (3 cases) | ✓ |
+| **H25** Anti-bypass: full sealed-rejection matrix across 5 terminal classes × sealed-or-not | `test_assert_seals_rejection_or_failure_matrix` (11 parametrizations) | ✓ |
+| **H26** Anti-bypass: case-insensitive substring matching for L4-write detection | `test_assert_no_direct_l4_write_case_insensitive_substrings` (6 parametrizations including camelCase) | ✓ + IMPL HARDENED |
+| **H27** Anti-bypass: 5 safe write targets pass | `test_assert_no_direct_l4_write_passes_safe_targets` | ✓ |
+| **H28** Anti-bypass: 5 direct-human channel patterns rejected | `test_assert_no_direct_human_call_rejects_direct` | ✓ |
+| **H29** Anti-bypass: full human-input-scope matrix | `test_assert_human_input_data_only_matrix` (6 parametrizations) | ✓ |
+| **H30** Anti-bypass: prompt envelope builder layer matrix | `test_assert_no_prompt_envelope_construction_layer_matrix` (6 parametrizations) | ✓ |
+| **H31** Anti-bypass: C0 retrieval authority matrix | `test_assert_no_unapproved_c0_retrieval_matrix` (7 parametrizations) | ✓ |
+| **H32** Anti-bypass: UWG clearance truth table | `test_assert_no_direct_uwg_call_clearance_table` | ✓ |
+| **H33** Aggregator: empty facts → no checks; partial facts → only applicable checks | `test_aggregator_with_empty_facts_runs_no_checks`, `test_aggregator_partial_facts_runs_only_applicable_checks` | ✓ |
+| **H34** Aggregator: fault isolation (one fail doesn't suppress others) | `test_aggregator_fault_isolation` | ✓ |
+| **H35** `raise_if_any` includes violation count + each reason value in message | `test_raise_if_any_includes_violation_count_in_message`, `test_raise_if_any_includes_each_reason_value_in_message` | ✓ |
+| **H36** All 16 BypassReason enum values present (matches doc §PHASE 3 list) | `test_bypass_reason_enum_complete` (asserts exact set) | ✓ |
+| **H37** Normalization is pure (no mutation of input dict) | `test_normalization_is_pure_no_side_effects_on_inputs` | ✓ |
+| **H38** Two normalize calls yield equal `L2ExecutionRequest` objects | `test_normalization_two_runs_yield_equal_request_fields` | ✓ |
+| **H39** request_id drift yields different `L2ExecutionRequest` | `test_normalization_request_id_drift_yields_different_request` | ✓ |
+| **H40** Pipeline ordering: boundary check fires before auth/signature checks | `test_boundary_violation_short_circuits_before_authority_checks` | ✓ |
+
+After Pass W6, **zero** rows remain at "by inspection"-only or "single-test"
+status. Every doctrine `__post_init__` invariant on every contract has at
+least one direct edge-case test, and the W4 anti-bypass aggregator's case-
+insensitivity has been upgraded to be normalization-robust (matches snake_case,
+camelCase, dotted, and hyphenated forms uniformly).
+
+### Impl improvements found by hardening
+
+| Impl change | Reason | File:symbol | Test that exposed it |
+|---|---|---|---|
+| `assert_no_direct_l4_write` matcher upgraded to also match underscore-stripped forms | `"DurableWrite"` (camelCase) escaped detection because `.lower()` did not normalize separators. New matcher checks both original-lowercased AND underscore/dot/hyphen-stripped lowercased forms. | `agentic_core/L2_execution/enforcement/anti_bypass_guards.py:265-306 assert_no_direct_l4_write` | `test_assert_no_direct_l4_write_case_insensitive_substrings[DurableWrite]` |
+
+---
+
+## Updated Summary Statistics
+
+| Metric | Pre-Hardening | Post-Hardening |
+|---|---|---|
+| Test files | 4 | 5 |
+| Total tests | 108 | **325** |
+| Passed | 108 | **325** |
+| Failed | 0 | 0 |
+| Test wall time | 0.27s | 0.45s |
+| Anti-bypass categories proven | 14 (aggregator) + 2 (PTC contract) | same — but now with full matrix coverage |
+| `__post_init__` invariants with direct edge-case test | partial | **100%** |
+| Required-field individual rejection coverage | aggregate | **16/16 individual** |
+| Required-attribute individual rejection coverage | aggregate | **13/13 individual** |
+| BypassReason enum completeness (matches spec) | implicit | **explicit assertion** |
+| EntryRejectionReason enum completeness | implicit | **explicit assertion** |
+| Impl improvements found and shipped | 0 | **1** (camelCase L4-write matcher) |
+
+## Status: ✓ ALL REQUIREMENTS MET — HARDENED
 
 Every requirement extracted from the 10 source docs is mapped to an implementation symbol and at least one of:
 

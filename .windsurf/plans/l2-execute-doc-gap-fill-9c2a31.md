@@ -1,6 +1,6 @@
 # L2 Execute Doctrine Gap Fill — `.windsurf/plans/l2-execute-doc-gap-fill-9c2a31.md`
 
-**Status:** In Progress
+**Status:** Done — shipped in commits `d92857f4d7` (W1-W5 baseline) + `5f0a14a521` (matrix + runtime proof) + hardening pass (this commit)
 **Owner:** Cascade
 **Source spec:** `docs/reference/04_L2_Execute/04.1` … `04.8` + parent `04_L2_Execute_detailed.md` + executive `04_L2_Execute_exec.md`
 
@@ -52,21 +52,23 @@ already-shipped v3/v4 receipt infrastructure.
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |------|-----------|-------|-------------|--------|
-| W1 | W1.1 | 04.1 Entry contracts + packet normalizer + tests | ~6k | Todo |
-| W2 | W2.1 | 04.7 PTC profile + script envelope + sandbox receipt + tests | ~5k | Todo |
-| W3 | W3.1 | 04.8 OTEL span constants + required-attribute schema + tests | ~3k | Todo |
-| W4 | W4.1 | 04.8 Anti-bypass guards + tests | ~4k | Todo |
-| W5 | W5.1 | Verify (pytest), commit, push | ~1k | Todo |
+| W1 | W1.1 | 04.1 Entry contracts + packet normalizer + tests | ~6k | Done — 18/18 |
+| W2 | W2.1 | 04.7 PTC profile + script envelope + sandbox receipt + tests | ~5k | Done — 17/17 |
+| W3 | W3.1 | 04.8 OTEL span constants + required-attribute schema + tests | ~3k | Done — 18/18 |
+| W4 | W4.1 | 04.8 Anti-bypass guards + tests | ~4k | Done — 55/55 |
+| W5 | W5.1 | Verify (pytest), commit, push | ~1k | Done — commit `d92857f4d7` |
+| W6 | W6.1 | Hardening pass — edge-case test suite + 1 impl improvement (camelCase L4-write detection) | ~4k | Done — 217/217 |
 
 ## Phase-Level Summary
 
 | Phase ID | Title | Scope | Pain Points | Est. Tokens | Status |
 |----------|-------|-------|-------------|-------------|--------|
-| W1.1 | 04.1 Entry contracts | new `types/l2_execution_request.py`, new `entry/__init__.py`, new `entry/packet_normalizer.py`; tests in `tests/unit/agentic_core/L2_execution/test_l2_entry_pipeline.py` | Must compose with existing `WorkOrderInputs`/`PrepOutput`; must reject unsigned/route-mutated packets; must emit `L2BoundaryAssertion` | 6k | Todo |
-| W2.1 | 04.7 PTC contracts | new `types/ptc_execution_profile.py`, `types/ptc_script_envelope.py`, `types/ptc_sandbox_receipt.py`; tests in `tests/unit/agentic_core/L2_execution/test_ptc_execution_contracts.py` | Must isolate raw tool results (`SANDBOX_ONLY`); must enforce `fail_closed_on_untranscripted_io`; must require `script_digest` + `sandbox_profile_ref` | 5k | Todo |
-| W3.1 | 04.8 OTEL spans | new `observability/l2_spans.py`; tests in `tests/unit/agentic_core/L2_execution/test_l2_otel_span_vocabulary.py` | All 6 phase groups + required-attribute set; central registry for downstream emitters | 3k | Todo |
-| W4.1 | 04.8 Anti-bypass | new `enforcement/anti_bypass_guards.py`; tests in `tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py` | Must reject 16 forbidden L2 outputs; functional guard, not just a list | 4k | Todo |
-| W5.1 | Verify + ship | run new tests + adjacent existing L2 tests; commit + push | Existing test surface must remain green; subprocess gate; no PowerShell | 1k | Todo |
+| W1.1 | 04.1 Entry contracts | new `types/l2_execution_request.py`, new `entry/__init__.py`, new `entry/packet_normalizer.py`; tests in `tests/unit/agentic_core/L2_execution/test_l2_entry_pipeline.py` | Must compose with existing `WorkOrderInputs`/`PrepOutput`; must reject unsigned/route-mutated packets; must emit `L2BoundaryAssertion` | 6k | Done — 18/18 |
+| W2.1 | 04.7 PTC contracts | new `types/ptc_execution_profile.py`, `types/ptc_script_envelope.py`, `types/ptc_sandbox_receipt.py`; tests in `tests/unit/agentic_core/L2_execution/test_ptc_execution_contracts.py` | Must isolate raw tool results (`SANDBOX_ONLY`); must enforce `fail_closed_on_untranscripted_io`; must require `script_digest` + `sandbox_profile_ref` | 5k | Done — 17/17 |
+| W3.1 | 04.8 OTEL spans | new `observability/l2_spans.py`; tests in `tests/unit/agentic_core/L2_execution/test_l2_otel_span_vocabulary.py` | All 6 phase groups + required-attribute set; central registry for downstream emitters | 3k | Done — 18/18 |
+| W4.1 | 04.8 Anti-bypass | new `enforcement/anti_bypass_guards.py`; tests in `tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py` | Must reject 16 forbidden L2 outputs; functional guard, not just a list | 4k | Done — 55/55 |
+| W5.1 | Verify + ship | run new tests + adjacent existing L2 tests; commit + push | Existing test surface must remain green; subprocess gate; no PowerShell | 1k | Done — commit `d92857f4d7` |
+| W6.1 | Hardening pass | new `tests/unit/agentic_core/L2_execution/test_l2_doctrine_edge_cases.py` (217 cases). Promotes every `__post_init__` invariant to direct test coverage. Found and fixed: `assert_no_direct_l4_write` missed camelCase variants (`DurableWrite`); upgraded matcher to be normalization-robust. | Coverage rule: every post_init invariant has direct edge-case test; every closed-vocabulary enum rejects raw-string substitution; every numeric field rejects out-of-range; every required string rejects empty; every fail-closed coupling matrix exercised. | 4k | Done — 217/217 |
 
 ## File Manifest
 

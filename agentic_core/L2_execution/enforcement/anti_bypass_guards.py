@@ -263,8 +263,18 @@ def assert_seals_rejection_or_failure(
 
 
 def assert_no_direct_l4_write(*, target: Any) -> BypassCheckResult:
-    """Reject a target that points at L4 / UWG / a durable persistence surface."""
-    sval = str(target or "").lower()
+    """Reject a target that points at L4 / UWG / a durable persistence surface.
+
+    Detection is normalization-robust: the input is lowercased AND underscores,
+    dots, and hyphens are stripped before substring search. This catches
+    snake_case (``durable_write``), camelCase (``DurableWrite``),
+    dotted (``l4.state``), and hyphenated (``uwg-commit``) forms uniformly.
+    """
+    raw = str(target or "")
+    # Match against original (preserves dotted/hyphenated forms) AND normalized
+    # (lowercased + separators stripped) — catches snake/camel/dotted variants.
+    lowered = raw.lower()
+    normalized = lowered.replace("_", "").replace(".", "").replace("-", "")
     forbidden_substrings = (
         "l4_state",
         "l4.state",
@@ -273,12 +283,25 @@ def assert_no_direct_l4_write(*, target: Any) -> BypassCheckResult:
         "durable_write",
         "system_of_record",
     )
+    forbidden_compact = (
+        "l4state",
+        "uwgcommit",
+        "durablewrite",
+        "systemofrecord",
+    )
     for bad in forbidden_substrings:
-        if bad in sval:
+        if bad in lowered:
             return BypassCheckResult(
                 ok=False,
                 reason=BypassReason.DIRECT_L4_WRITE,
-                detail=f"target contains forbidden substring {bad!r}: {sval!r}",
+                detail=f"target contains forbidden substring {bad!r}: {raw!r}",
+            )
+    for bad in forbidden_compact:
+        if bad in normalized:
+            return BypassCheckResult(
+                ok=False,
+                reason=BypassReason.DIRECT_L4_WRITE,
+                detail=f"target contains forbidden token {bad!r} (normalized): {raw!r}",
             )
     return BypassCheckResult(ok=True)
 

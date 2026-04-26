@@ -18,11 +18,15 @@ from agentic_core.L5_safety.runtime_gates.base import (
     register_gate,
 )
 from agentic_core.L5_safety.runtime_gates.types import (
+    SCHEMA_VERSION,
     DecisionAlias,
     Disposition,
     GateContext,
     GateDecision,
+    GraderType,
     RegressionSignal,
+    Result,
+    Severity,
 )
 
 
@@ -92,6 +96,10 @@ __all__ = [
     "RegressionSignal",
     "GateContext",
     "GateDecision",
+    "GraderType",
+    "Result",
+    "Severity",
+    "SCHEMA_VERSION",
     "RuntimeGate",
     "GATE_REGISTRY",
     "register_gate",

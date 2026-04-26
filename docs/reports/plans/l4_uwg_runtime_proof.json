@@ -1,14 +1,21 @@
 {
   "anti_bypass": {
-    "audit_count": 23,
+    "audit_count": 30,
     "audit_event_types": [
+      "commit_request_received",
       "atomic_commit_applied",
       "read_surface_refresh_completed",
+      "commit_request_received",
       "commit_blocked",
+      "commit_request_received",
       "commit_blocked",
+      "commit_request_received",
       "commit_blocked",
+      "commit_request_received",
       "commit_blocked",
+      "commit_request_received",
       "commit_blocked",
+      "commit_request_received",
       "commit_blocked",
       "direct_write_attempt_blocked",
       "direct_write_attempt_blocked",
@@ -28,15 +35,15 @@
     ],
     "block_receipts": {
       "AdHocScript": {
-        "audit_append_receipt_ref": "a79a4ca8-309b-418a-8761-ce2dc55d1b1e",
+        "audit_append_receipt_ref": "618031b4-863b-4af3-9724-14a5bcf6336f",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "602c9eee-143e-4daf-8161-fb461f175152",
+        "blocked_commit_receipt_id": "292429b8-5d7c-4ecb-aa3a-66d2155cb931",
         "blocked_reason_codes": [
           "direct_write_attempt_from_AdHocScript",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::AdHocScript",
-        "deterministic_digest": "6d9fdc87f684b88252bc637a39eebbd861d0521cb2e223c7884df15e378a9b2f",
+        "deterministic_digest": "f211f980ddd6c1b39ba9477a09f39421dfa9171f3cece69ec62c22a8d1d25e50",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -49,15 +56,15 @@
         "uwg_validation_receipt_ref": null
       },
       "BackgroundEvaluator": {
-        "audit_append_receipt_ref": "7c0c36d1-1730-4591-838a-c63f4428e6c5",
+        "audit_append_receipt_ref": "51769831-c39c-45d0-95d9-777952297378",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "aa3432ac-b994-4a11-9acb-23a622a97987",
+        "blocked_commit_receipt_id": "cabb65c6-8cc4-4ade-9428-d0cdd56df99b",
         "blocked_reason_codes": [
           "direct_write_attempt_from_BackgroundEvaluator",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::BackgroundEvaluator",
-        "deterministic_digest": "58f764460520542624cb3c4522830f1d62b7d80b5218db8dce5a424c5917b576",
+        "deterministic_digest": "42ed2ff31078e312dced46e337a6029e2f53905f3880ecb0bb98772e3d45e133",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -70,15 +77,15 @@
         "uwg_validation_receipt_ref": null
       },
       "C0": {
-        "audit_append_receipt_ref": "94882ea2-95d9-43df-86ce-8b7c3a3b0b38",
+        "audit_append_receipt_ref": "bda4f00b-82e7-40b1-9f42-76699193ebb8",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "e6b0da04-0b99-49da-bae8-51a39bff114f",
+        "blocked_commit_receipt_id": "0b6fd60b-6f1f-45f2-87cd-49e3bc6ed2da",
         "blocked_reason_codes": [
           "direct_write_attempt_from_C0",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::C0",
-        "deterministic_digest": "ae31530515a0738d6c344a1146f3cd3c1c0cb0b97accd3348a7c5224c63fe7c3",
+        "deterministic_digest": "b42ad0c667bd5720dfc0c095960513234291afe1c5709eb0584e9b0deee7481f",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -91,15 +98,15 @@
         "uwg_validation_receipt_ref": null
       },
       "Connector": {
-        "audit_append_receipt_ref": "28c575a8-fd21-4165-8c84-08223397fdbf",
+        "audit_append_receipt_ref": "f815991d-7e2e-4dfa-b38b-a12c5248d002",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "00b30d62-8632-4e89-86f5-f7ca443e5f9d",
+        "blocked_commit_receipt_id": "a71e6d9f-b789-41b8-b96c-2b1edbf4c76a",
         "blocked_reason_codes": [
           "direct_write_attempt_from_Connector",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::Connector",
-        "deterministic_digest": "d534eca76189b97a063489dba0eb67ee88617f02b9a41c1c316977ae0b228c12",
+        "deterministic_digest": "34664bdb34f019c856b22633dced42b884107771f3381980fd9ec7653d887f48",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -112,15 +119,15 @@
         "uwg_validation_receipt_ref": null
       },
       "HITL": {
-        "audit_append_receipt_ref": "eae5e6cb-b1ab-4c6f-b023-22e66a2e363c",
+        "audit_append_receipt_ref": "2afdc13f-2650-4072-8bb4-fd245f269c9a",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "ac105f31-0e0b-40fd-a488-d7a0bbc849ab",
+        "blocked_commit_receipt_id": "060f69ac-9b63-4e92-bc1d-a6eaee669f34",
         "blocked_reason_codes": [
           "direct_write_attempt_from_HITL",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::HITL",
-        "deterministic_digest": "c10258149f5be883d73551e118546aae365e59d3cef3dd4ca7164dd413f1a38b",
+        "deterministic_digest": "8016332038635b5e2bfa5283d6ac991b98dcf4cfdc1a0e96886138fac6b6d8da",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -133,15 +140,15 @@
         "uwg_validation_receipt_ref": null
       },
       "L0": {
-        "audit_append_receipt_ref": "4c7ea4ee-26d7-4c40-8daf-481f36d21e46",
+        "audit_append_receipt_ref": "25d49ab7-53ea-46c9-bd35-ee2273527df4",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "8524f660-89e8-4867-a445-d1a3703bdd84",
+        "blocked_commit_receipt_id": "45879e19-c983-416a-b3dd-7543f9eb27bf",
         "blocked_reason_codes": [
           "direct_write_attempt_from_L0",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L0",
-        "deterministic_digest": "1764bdcdc3c6be57f2b3263823d535b617c1d748b1ea9fc91fbc9949562a726e",
+        "deterministic_digest": "c5bfe27e961df8ce61f0e685fd077ffb9c0e745f3f05c2e9abf5891a2fbc6dc4",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -154,15 +161,15 @@
         "uwg_validation_receipt_ref": null
       },
       "L1": {
-        "audit_append_receipt_ref": "a57d091d-6e9e-4498-920a-9e0656df29c2",
+        "audit_append_receipt_ref": "a021eb7e-5f10-4538-872f-c00401c0870f",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "d7b75e52-d9c0-4d82-87e4-b222f736f34a",
+        "blocked_commit_receipt_id": "17f5b33e-f65d-4efb-94d3-d2c8abda5389",
         "blocked_reason_codes": [
           "direct_write_attempt_from_L1",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L1",
-        "deterministic_digest": "34e8872550644389a8e9f1f94dcb6ebcc2869bafcd85d8863c380d63759e3752",
+        "deterministic_digest": "ca9a789c848adad8aea8976e6a4f432c050f819d53220162984d99e65309741b",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -175,15 +182,15 @@
         "uwg_validation_receipt_ref": null
       },
       "L2": {
-        "audit_append_receipt_ref": "e6547732-e078-4b5a-9fc8-31b35d9897aa",
+        "audit_append_receipt_ref": "13e18049-bda2-4ecf-af9f-24e96f5f35f0",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "1ffeb6d2-a681-4f7e-9dc0-a074645bbe38",
+        "blocked_commit_receipt_id": "709a56be-3d71-4684-b20c-1e9e19410c79",
         "blocked_reason_codes": [
           "direct_write_attempt_from_L2",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L2",
-        "deterministic_digest": "e89c5cc4f5d7582f39db6ed9f3325fea75e11cfdfdf826fcdae53c438ca5ba51",
+        "deterministic_digest": "53e8e58347f214527aed4b43ab43e456f7d24d2cc5c6f8857a2a0d10d281c96c",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -196,15 +203,15 @@
         "uwg_validation_receipt_ref": null
       },
       "L3": {
-        "audit_append_receipt_ref": "56b7b2d3-961d-4536-84e9-562f607f1ba0",
+        "audit_append_receipt_ref": "b8f47a86-bb8f-4b2b-8915-0c6970670f3d",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "008aab4d-63b6-47be-aaa6-e9fee90a83e0",
+        "blocked_commit_receipt_id": "7d3e9095-c563-4a00-a4bb-832004ee8f26",
         "blocked_reason_codes": [
           "direct_write_attempt_from_L3",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L3",
-        "deterministic_digest": "a4ee21cabe45b8a54e306fd974f75bc60e69706f0efac85795e12b4e3743eb72",
+        "deterministic_digest": "e44ca57dcbe5d6e9580a67f614f60e6b195af39e275924bfa1f48329dcec8a1d",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -217,15 +224,15 @@
         "uwg_validation_receipt_ref": null
       },
       "L5": {
-        "audit_append_receipt_ref": "585bf1ca-3b4c-425a-816a-155f67643c38",
+        "audit_append_receipt_ref": "511df9a7-bcdf-4422-bbb3-239d4bd9ba12",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "b23cd5f2-d83d-4169-a2c2-e8ccc449c9fc",
+        "blocked_commit_receipt_id": "aa01d9db-6db1-4c9e-b961-60063585ed22",
         "blocked_reason_codes": [
           "direct_write_attempt_from_L5",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L5",
-        "deterministic_digest": "28044f88f5bea6bb00315a1c76eb720857a281dc0344e7002079f7924cf2d521",
+        "deterministic_digest": "aa7c6b935defa0340169b9c9fdb236c41d7582589969c7053f00afe2ce9d02aa",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -238,15 +245,15 @@
         "uwg_validation_receipt_ref": null
       },
       "L6": {
-        "audit_append_receipt_ref": "e2893e4e-d6d8-4e61-8d74-fd7e322e7f76",
+        "audit_append_receipt_ref": "a95e3208-4c1a-4beb-975d-5722f6550713",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "c32cc974-d505-4c24-ac16-9b2e8a27548d",
+        "blocked_commit_receipt_id": "4aa0e2d8-803e-48e6-86bd-3c2be3a8ce6c",
         "blocked_reason_codes": [
           "direct_write_attempt_from_L6",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L6",
-        "deterministic_digest": "533f9fae8c4d5a5e54c7335aa85a62b16f2d3d2e8c2e46232dae123b5a84a8df",
+        "deterministic_digest": "0673b0a988b3cc8284d1165f2c42af0a332d9a5b3b3546de3811859958c2d75d",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -259,15 +266,15 @@
         "uwg_validation_receipt_ref": null
       },
       "Model": {
-        "audit_append_receipt_ref": "f03463ef-6859-462a-8265-350128448b89",
+        "audit_append_receipt_ref": "fb406a30-765e-4359-be6d-15af487be7ca",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "a1886221-13bc-41ec-b4a5-3f489eac699d",
+        "blocked_commit_receipt_id": "bd47a7ca-1584-4fa6-9d74-11c66aa5b44e",
         "blocked_reason_codes": [
           "direct_write_attempt_from_Model",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::Model",
-        "deterministic_digest": "19f9c303686231e0cb98d0349d191c1b61aa085cfca466230bd2b5583b8a38e2",
+        "deterministic_digest": "38012c948c9728fb6a7455d985224502aac73eae5180e0b56a99a7f93e4d38ac",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -280,15 +287,15 @@
         "uwg_validation_receipt_ref": null
       },
       "PTC_Sandbox": {
-        "audit_append_receipt_ref": "090f90e7-14cf-41aa-9045-deea69856b0a",
+        "audit_append_receipt_ref": "9bd8de11-3a8a-4a4c-b55a-61272678d898",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "2378af32-cd3d-4813-b187-7b7680f0d917",
+        "blocked_commit_receipt_id": "09fa1c7f-592f-4aea-8851-0ac70e07e40a",
         "blocked_reason_codes": [
           "direct_write_attempt_from_PTC_Sandbox",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::PTC_Sandbox",
-        "deterministic_digest": "6e60aaffe37665082a6b27f8de682f27d1c7762a48b49bdc3cddd2d2ee78f174",
+        "deterministic_digest": "dd6f0becbc99f222099ce09f6806ea4f7aa2654f0a13acedf3e4e2e4655ea0a3",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -301,15 +308,15 @@
         "uwg_validation_receipt_ref": null
       },
       "PromptAssembly": {
-        "audit_append_receipt_ref": "aa30756d-e7bb-4f7e-b7a6-54f238830c63",
+        "audit_append_receipt_ref": "52421aa5-e382-4fa1-9fee-2caf811edcd0",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "3ca1031c-0f9b-46c2-be4c-04d6f04ca700",
+        "blocked_commit_receipt_id": "547d7590-6933-4590-9b66-28b85649c809",
         "blocked_reason_codes": [
           "direct_write_attempt_from_PromptAssembly",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::PromptAssembly",
-        "deterministic_digest": "39f6d71c37b7a32d2f8ac511aa800b2f8b6ce5390bcac75e66d4f7863443fc0d",
+        "deterministic_digest": "5a7d8406ada672653ed5e025239291590c120f9e222ddc842cb325427aae4176",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -322,15 +329,15 @@
         "uwg_validation_receipt_ref": null
       },
       "Tool": {
-        "audit_append_receipt_ref": "1ef294a3-cd36-4c8e-af57-4e959ed83fef",
+        "audit_append_receipt_ref": "d735cc05-28cf-4f41-bcac-733b082998be",
         "audit_refs": [],
-        "blocked_commit_receipt_id": "063da82d-2a10-4c54-bdf0-56916ecbbba0",
+        "blocked_commit_receipt_id": "b8a40c99-e549-40d1-ba72-61fe7749b35a",
         "blocked_reason_codes": [
           "direct_write_attempt_from_Tool",
           "non_uwg_surface_blocked"
         ],
         "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::Tool",
-        "deterministic_digest": "411dc8f29e220e14a17d6bb925fdac6c6d1c78b92dff03f4bc83ff08c24196f4",
+        "deterministic_digest": "d6e2f339c4e2185cb2a98963a97d52d36d6809458a818988fd5331d19f70b44d",
         "failed_rule_ids": [
           "UWG_AUTHORITY_REQUIRED"
         ],
@@ -374,14 +381,14 @@
   },
   "blocked_paths": {
     "missing_gate_verdicts": {
-      "audit_append_receipt_ref": "b847eb12-fcb5-41f4-973e-3f23bf451f66",
+      "audit_append_receipt_ref": "99db98f8-9aec-4f76-a7ad-dbc4327038ab",
       "audit_refs": [],
-      "blocked_commit_receipt_id": "4589bfa8-bee0-40f4-b73c-277b676c6eb9",
+      "blocked_commit_receipt_id": "8f0d8001-56f8-4aa6-8c28-b5e5958ec511",
       "blocked_reason_codes": [
         "missing::gate_verdict_refs"
       ],
       "commit_request_ref": "cr:proof",
-      "deterministic_digest": "60e3686ba70a556e8da9122046905538e19ac36040418613bb3530d020424032",
+      "deterministic_digest": "7e79e78ca73a29820ca1e88f57d3f35534b582becdbc406be065ece3862d1283",
       "failed_rule_ids": [
         "gate_verdict_refs"
       ],
@@ -391,17 +398,17 @@
       "state_surfaces_requested": [
         "memory"
       ],
-      "uwg_validation_receipt_ref": "b052ffc7-dbab-4aff-ae84-a7ba4df8a988"
+      "uwg_validation_receipt_ref": "fb2728c5-b401-4964-b9fb-206f8e1430f6"
     },
     "missing_policy_hash": {
-      "audit_append_receipt_ref": "4054c04b-e44d-4c07-979f-b2f64e87148a",
+      "audit_append_receipt_ref": "f3561c60-2aab-4837-9591-8955bb642e4d",
       "audit_refs": [],
-      "blocked_commit_receipt_id": "ed3a9e4e-bade-4c72-bcc3-257bc62fe7c5",
+      "blocked_commit_receipt_id": "4b72eeff-1a5e-40a4-bf6b-7264c647a4e4",
       "blocked_reason_codes": [
         "missing::policy_hash"
       ],
       "commit_request_ref": "cr:proof",
-      "deterministic_digest": "2dd2f2fbd75640952b792c09a6e4e66df60cb6b57b505aa3c70b0d8ffbf257e8",
+      "deterministic_digest": "94c328bfb8b9171905f01e67aafdcd6e25c88e3472c5b6148e186c681ace7700",
       "failed_rule_ids": [
         "required_field::policy_hash"
       ],
@@ -411,18 +418,18 @@
       "state_surfaces_requested": [
         "memory"
       ],
-      "uwg_validation_receipt_ref": "beda1bd4-4156-41f0-9ed3-443bd2c16df8"
+      "uwg_validation_receipt_ref": "54e86376-1712-49df-9b42-9793408302ea"
     },
     "missing_replay_key": {
-      "audit_append_receipt_ref": "0526d51f-2bea-4e86-8386-1a719db6b11e",
+      "audit_append_receipt_ref": "e5bb09a0-9f2a-4f9d-8094-446f64cdb938",
       "audit_refs": [],
-      "blocked_commit_receipt_id": "21db427b-4b7d-4bfd-94cb-b444a8c951bd",
+      "blocked_commit_receipt_id": "61295f54-8fbe-4be6-a3ea-a07830a21e42",
       "blocked_reason_codes": [
         "missing::replay_key",
         "missing::replay_key"
       ],
       "commit_request_ref": "cr:proof",
-      "deterministic_digest": "406027768db023ffe78c0ada86d2328d2f4afbed30a19bd4f7c87cf7c7e1743b",
+      "deterministic_digest": "b8cc2d18d47f812a98f998507b0913cd3aeb03b53e37d4d76e735085401616e9",
       "failed_rule_ids": [
         "required_field::replay_key",
         "replay_key_present"
@@ -433,17 +440,17 @@
       "state_surfaces_requested": [
         "memory"
       ],
-      "uwg_validation_receipt_ref": "aa243d08-ae7c-4336-b0b7-05f568328eda"
+      "uwg_validation_receipt_ref": "9bac7292-8ed1-4ca4-bcd3-ecbbba5c47d2"
     },
     "missing_schema_ref": {
-      "audit_append_receipt_ref": "0566460f-17f6-4857-9b58-4a6fc8bbde1e",
+      "audit_append_receipt_ref": "cf10cb01-a34f-4011-be6e-929ba9f3487a",
       "audit_refs": [],
-      "blocked_commit_receipt_id": "c542e309-3354-469b-a607-c160ac7f6cac",
+      "blocked_commit_receipt_id": "dbfcd456-c6b4-4697-82d7-5e8c7ae3b4b3",
       "blocked_reason_codes": [
         "missing_schema_ref::sd:proof"
       ],
       "commit_request_ref": "cr:proof",
-      "deterministic_digest": "034e0bc84e86b9bb47183e92efacdde9a03997fb6a8ac87e9b6bc4a383b6eee7",
+      "deterministic_digest": "1d39db2a788f77981750b258493a76419d94795ce10d96436bb1e8a2da200f5c",
       "failed_rule_ids": [
         "state_diff::sd:proof"
       ],
@@ -453,18 +460,18 @@
       "state_surfaces_requested": [
         "memory"
       ],
-      "uwg_validation_receipt_ref": "ec09079e-cf26-4234-8af0-e4d69636751d"
+      "uwg_validation_receipt_ref": "eea5fb0e-9b19-476b-9211-e8e2258cbda2"
     },
     "non_exit_source": {
-      "audit_append_receipt_ref": "3ed0d3ca-ccec-472f-bbd4-725ae7f0df91",
+      "audit_append_receipt_ref": "aea0eb7d-061d-4088-92db-114f2d098322",
       "audit_refs": [],
-      "blocked_commit_receipt_id": "391e8653-5b3d-4b9a-b50c-0c68368ae389",
+      "blocked_commit_receipt_id": "9d20ce38-fb53-458e-84e4-3c5112801ab3",
       "blocked_reason_codes": [
         "non_exit_source",
         "non_authorized:L2"
       ],
       "commit_request_ref": "cr:proof",
-      "deterministic_digest": "cca2c272016ec5ad6c057396421d97c3bafd86a833e6a477ab35d60a8f6b9c55",
+      "deterministic_digest": "c40ec0dadf0264353dd752f63d1dc0274113209b6246f1baad7c1c32b00f3acc",
       "failed_rule_ids": [
         "source_is_exit",
         "non_authorized_source"
@@ -475,17 +482,17 @@
       "state_surfaces_requested": [
         "memory"
       ],
-      "uwg_validation_receipt_ref": "10e2e9b8-94d7-43a1-8481-3d02f98b55be"
+      "uwg_validation_receipt_ref": "30db1e24-f8bd-42a7-a542-e167886b2a4a"
     },
     "unknown_operation": {
-      "audit_append_receipt_ref": "33e4aa9a-d910-400c-89eb-cb95a1f3dc56",
+      "audit_append_receipt_ref": "4f7e1817-9996-475b-81c9-e2b8a9a4c67c",
       "audit_refs": [],
-      "blocked_commit_receipt_id": "eed6d7a1-3534-45e2-b928-4ae919ac5b19",
+      "blocked_commit_receipt_id": "a09eb051-9f8c-41b4-a544-8b655d91e630",
       "blocked_reason_codes": [
         "unknown_operation::i_made_this_up"
       ],
       "commit_request_ref": "cr:proof",
-      "deterministic_digest": "53ee69c3e8f23abf6e0f74b22e54fdc8ffe614f55b26bc2383fe0c211fa1c8c6",
+      "deterministic_digest": "bb160427b5436a97ca99e70a9ba326cb1db63d49b5a25853fd397614145b5b4d",
       "failed_rule_ids": [
         "state_diff::sd:proof"
       ],
@@ -495,7 +502,7 @@
       "state_surfaces_requested": [
         "memory"
       ],
-      "uwg_validation_receipt_ref": "7c8e5044-5530-49e2-95da-0283ac2cbe87"
+      "uwg_validation_receipt_ref": "2b8a9807-c086-4bb7-bbfe-2f94ea5ba9d9"
     }
   },
   "digests": {
@@ -564,6 +571,7 @@
   },
   "happy_path": {
     "audit_ledger_events": [
+      "commit_request_received",
       "atomic_commit_applied",
       "read_surface_refresh_completed"
     ],
@@ -572,13 +580,13 @@
       "affected_state_surfaces": [
         "memory"
       ],
-      "audit_append_receipt_ref": "2f942172-aff4-49aa-926d-19a5df4d37bd",
+      "audit_append_receipt_ref": "8e48b08d-6bc0-4de1-9cb2-97e426a693b4",
       "audit_refs": [],
-      "commit_receipt_id": "670529d6-3c57-485c-a1ad-6950466fae07",
+      "commit_receipt_id": "6a3224d3-d106-4ef5-af77-2d9b44d16f9c",
       "commit_request_ref": "cr:proof",
-      "committed_at": "1",
+      "committed_at": "2",
       "committed_by_surface": "UWG",
-      "deterministic_digest": "5b1d23a831ae687a5c97be8d3f2b2fa1e25cf544dad2585c95b4b31aebb15a32",
+      "deterministic_digest": "00f286655c721294c0b5b8024b019e1b0b20ebc2936e33cbb521f928c3f0bbe6",
       "read_surface_refresh_plan_ref": "rfp:proof",
       "schema_version": "L4-UWG-1.0.0",
       "snapshot_after": "snapshot:00000002",
@@ -586,25 +594,25 @@
       "state_diff_refs": [
         "sd:proof"
       ],
-      "uwg_validation_receipt_ref": "78b19c30-964a-4a84-a144-e6bd71477570",
-      "write_lock_receipt_ref": "ea19e101-79eb-4ef4-a33c-879f6cf71f42"
+      "uwg_validation_receipt_ref": "e51ac9d1-5574-40dd-87c4-d9bd506b2856",
+      "write_lock_receipt_ref": "0b75a409-892f-46b3-b8e4-3405c8cd0c67"
     },
     "refresh_receipts": [
       {
         "after_snapshot": "snap:after",
         "audit_refs": [],
         "before_snapshot": "snap:before",
-        "completed_at": "1",
-        "deterministic_digest": "84a97a0f19d7a714c73c80ad51164309fa296413c4c13845176c0594e768d8eb",
+        "completed_at": "2",
+        "deterministic_digest": "a3ec42d726a7d94fe8e1ce88b822190f2e2349c1a5c5e14b8a897bbedfe0e055",
         "reason_codes": [],
         "refresh_plan_ref": "rfp:proof",
-        "refresh_receipt_id": "aaa6bf9e-d45f-44bb-bd93-156c9fcc0757",
+        "refresh_receipt_id": "a1b34830-dc21-459e-afeb-038a691bc135",
         "refresh_type": "memory_projection",
         "retry_count": 0,
         "schema_version": "L4-UWG-1.0.0",
-        "source_commit_receipt_ref": "670529d6-3c57-485c-a1ad-6950466fae07",
+        "source_commit_receipt_ref": "6a3224d3-d106-4ef5-af77-2d9b44d16f9c",
         "stale_projection_warning": null,
-        "started_at": "1",
+        "started_at": "2",
         "state_surface": "memory",
         "status": "SUCCESS"
       }
@@ -618,6 +626,20 @@
       "uwg.read_surface.refresh",
       "uwg.write_lock.acquire"
     ]
+  },
+  "lookup_apis": {
+    "fail_closed_modes": {
+      "deprecated_model": "model_id=m:dep is deprecated",
+      "tenant_scope_missing": "no active policy alias for tenant=t:UNKNOWN route=r:proof tier=medium",
+      "unknown_model": "unknown model_id=m:UNKNOWN",
+      "unknown_policy_hash": "unknown policy_hash=ph:UNKNOWN"
+    },
+    "resolved_blueprint_id": "bp:proof",
+    "resolved_model_id": "m:proof",
+    "resolved_policy_manifest_id": "pm:proof",
+    "resolved_registry_snapshot_id": "rs:proof",
+    "resolved_schema_id": "sch:answer",
+    "resolved_tool_id": "tl:proof"
   },
   "otel_spans": {
     "bad_span_failures": [
@@ -675,40 +697,41 @@
     "well_formed_failures": []
   },
   "proof_packet": {
-    "acceptance_summary": "L4/UWG doctrinal pack 00.1-00.8 \u2014 66/66 tests pass + runtime proof harness green",
+    "acceptance_summary": "L4/UWG doctrinal pack 00.1-00.8 \u2014 104/104 tests pass + runtime proof harness green + lookup APIs live",
     "audit_ledger_refs": [
+      "commit_request_received",
       "atomic_commit_applied",
       "read_surface_refresh_completed"
     ],
     "blocked_commit_receipts": [
-      "391e8653-5b3d-4b9a-b50c-0c68368ae389",
-      "ed3a9e4e-bade-4c72-bcc3-257bc62fe7c5",
-      "21db427b-4b7d-4bfd-94cb-b444a8c951bd",
-      "4589bfa8-bee0-40f4-b73c-277b676c6eb9",
-      "eed6d7a1-3534-45e2-b928-4ae919ac5b19",
-      "c542e309-3354-469b-a607-c160ac7f6cac"
+      "9d20ce38-fb53-458e-84e4-3c5112801ab3",
+      "4b72eeff-1a5e-40a4-bf6b-7264c647a4e4",
+      "61295f54-8fbe-4be6-a3ea-a07830a21e42",
+      "8f0d8001-56f8-4aa6-8c28-b5e5958ec511",
+      "a09eb051-9f8c-41b4-a544-8b655d91e630",
+      "dbfcd456-c6b4-4697-82d7-5e8c7ae3b4b3"
     ],
     "blueprint_hash": "bh:proof",
     "commit_request_examples": [
       "cr:proof"
     ],
-    "deterministic_digest": "fd79b9670928e7c4e35565c077b0f6d3671ea33de07aad3f2deeea214a4a3eae",
+    "deterministic_digest": "2e1b537665bfff1f09053561a116a371f746a4cfdb62f7964210e69b02a95233",
     "direct_write_block_receipts": [
-      "602c9eee-143e-4daf-8161-fb461f175152",
-      "aa3432ac-b994-4a11-9acb-23a622a97987",
-      "e6b0da04-0b99-49da-bae8-51a39bff114f",
-      "00b30d62-8632-4e89-86f5-f7ca443e5f9d",
-      "ac105f31-0e0b-40fd-a488-d7a0bbc849ab",
-      "8524f660-89e8-4867-a445-d1a3703bdd84",
-      "d7b75e52-d9c0-4d82-87e4-b222f736f34a",
-      "1ffeb6d2-a681-4f7e-9dc0-a074645bbe38",
-      "008aab4d-63b6-47be-aaa6-e9fee90a83e0",
-      "b23cd5f2-d83d-4169-a2c2-e8ccc449c9fc",
-      "c32cc974-d505-4c24-ac16-9b2e8a27548d",
-      "a1886221-13bc-41ec-b4a5-3f489eac699d",
-      "2378af32-cd3d-4813-b187-7b7680f0d917",
-      "3ca1031c-0f9b-46c2-be4c-04d6f04ca700",
-      "063da82d-2a10-4c54-bdf0-56916ecbbba0"
+      "292429b8-5d7c-4ecb-aa3a-66d2155cb931",
+      "cabb65c6-8cc4-4ade-9428-d0cdd56df99b",
+      "0b6fd60b-6f1f-45f2-87cd-49e3bc6ed2da",
+      "a71e6d9f-b789-41b8-b96c-2b1edbf4c76a",
+      "060f69ac-9b63-4e92-bc1d-a6eaee669f34",
+      "45879e19-c983-416a-b3dd-7543f9eb27bf",
+      "17f5b33e-f65d-4efb-94d3-d2c8abda5389",
+      "709a56be-3d71-4684-b20c-1e9e19410c79",
+      "7d3e9095-c563-4a00-a4bb-832004ee8f26",
+      "aa01d9db-6db1-4c9e-b961-60063585ed22",
+      "4aa0e2d8-803e-48e6-86bd-3c2be3a8ce6c",
+      "bd47a7ca-1584-4fa6-9d74-11c66aa5b44e",
+      "09fa1c7f-592f-4aea-8851-0ac70e07e40a",
+      "547d7590-6933-4590-9b66-28b85649c809",
+      "b8a40c99-e549-40d1-ba72-61fe7749b35a"
     ],
     "known_gaps": [],
     "otel_trace_refs": [
@@ -724,18 +747,95 @@
       "see section.replay_reconstruction"
     ],
     "rollback_receipts": [
-      "0c842d83-ba04-401d-a896-f6744a41fe74"
+      "965a87ec-6122-4166-892d-3a7ba5ecfcf5"
     ],
     "run_id": "",
     "schema_version": "L4-UWG-1.0.0",
     "test_command_results": [
-      "python -m pytest tests/l4 tests/uwg -q :: 66 passed"
+      "python -m pytest tests/l4 tests/uwg -q :: 104 passed"
     ],
     "test_run_id": "",
     "trace_root": "trace:proof",
     "uwg_commit_receipts": [
-      "670529d6-3c57-485c-a1ad-6950466fae07"
+      "6a3224d3-d106-4ef5-af77-2d9b44d16f9c"
     ]
+  },
+  "refresh_receipts": {
+    "alias_refresh": {
+      "alias_after": "alias:new",
+      "alias_before": "alias:old",
+      "alias_refresh_receipt_id": "07269d15-e4ba-4c83-a3bf-d911f4c5f292",
+      "alias_type": "policy",
+      "audit_refs": [],
+      "deterministic_digest": "e5e155c9a1e5dc2960ffd09067df59e3d0d35a87c3309d9e7746396e6b6ecf54",
+      "reason_codes": [],
+      "schema_version": "L4-UWG-1.0.0",
+      "source_commit_receipt_ref": "cr:proof_refresh",
+      "status": "SUCCESS",
+      "target_record_ref": "pm:proof"
+    },
+    "graph_refresh": {
+      "audit_refs": [],
+      "deterministic_digest": "42c0518300e13480d7b754f4d44f8f8b6e2e820d5b887f8ce70953907be31b60",
+      "graph_projection_after": null,
+      "graph_projection_before": "gp:before",
+      "graph_refresh_receipt_id": "e890111f-348d-4ea2-bcbf-f92ab6d1a387",
+      "projection_version_after": null,
+      "projection_version_before": "pv:1",
+      "reason_codes": [],
+      "relation_type_manifest_ref": "rtm:1",
+      "schema_version": "L4-UWG-1.0.0",
+      "source_commit_receipt_ref": "cr:proof_refresh",
+      "source_snapshot_refs": [
+        "src:1"
+      ],
+      "status": "SUCCESS"
+    },
+    "metadata_refresh": {
+      "audit_refs": [],
+      "build_receipt_ref": null,
+      "deterministic_digest": "04065ac0f972d3008b0656aa04f2c696c00fc34e80c784ee2600cebc9bc8cf86",
+      "index_manifest_after": null,
+      "index_manifest_before": null,
+      "index_refresh_receipt_id": "dd3f7c96-e7b3-4fd2-aca5-b17ed52d0e6e",
+      "index_type": "metadata",
+      "reason_codes": [],
+      "schema_version": "L4-UWG-1.0.0",
+      "source_commit_receipt_ref": "cr:proof_refresh",
+      "source_snapshot_after": "src:after",
+      "source_snapshot_before": "src:before",
+      "status": "SUCCESS"
+    },
+    "sparse_refresh": {
+      "audit_refs": [],
+      "build_receipt_ref": null,
+      "deterministic_digest": "2e0210a1c7dba7c16499a5cca3b6587ee054b7a3b39d557844f46ffef1ba7c53",
+      "index_manifest_after": null,
+      "index_manifest_before": null,
+      "index_refresh_receipt_id": "bff4096d-2bb7-459b-9320-64378a0608a9",
+      "index_type": "sparse",
+      "reason_codes": [],
+      "schema_version": "L4-UWG-1.0.0",
+      "source_commit_receipt_ref": "cr:proof_refresh",
+      "source_snapshot_after": "src:after",
+      "source_snapshot_before": "src:before",
+      "status": "SUCCESS"
+    },
+    "vector_refresh": {
+      "audit_refs": [],
+      "build_receipt_ref": null,
+      "deterministic_digest": "d868f66c33ad6526d5b9d4e56bd4f295a4596376e16e4e960e5bf92870531eec",
+      "index_manifest_after": null,
+      "index_manifest_before": null,
+      "index_refresh_receipt_id": "3743250d-be5b-41b6-83af-77d9ce7beb50",
+      "index_type": "vector",
+      "reason_codes": [],
+      "schema_version": "L4-UWG-1.0.0",
+      "source_commit_receipt_ref": "cr:proof_refresh",
+      "source_snapshot_after": "src:after",
+      "source_snapshot_before": "src:before",
+      "status": "SUCCESS"
+    }
   },
   "replay_reconstruction": {
     "replay_record": {
@@ -778,19 +878,19 @@
       "affected_state_surfaces": [
         "memory"
       ],
-      "audit_append_receipt_ref": "4cdf67e3-0b72-44d9-9f9e-79c91f1f8d51",
+      "audit_append_receipt_ref": "f6fedb18-4fd9-4fa4-a57f-8508231cafd1",
       "audit_refs": [],
-      "deterministic_digest": "6e48edc1e611465ec7c88474d5ddef893ab01b0f6758d84f713584dfefd55408",
+      "deterministic_digest": "c4ce10b93d6d0d1d64794d9d3fa51e6127db25c50f0722116ea59f7d4a9549f5",
       "reason_codes": [
         "proof_run"
       ],
       "rollback_plan_ref": "rp:proof",
-      "rollback_receipt_id": "0c842d83-ba04-401d-a896-f6744a41fe74",
+      "rollback_receipt_id": "965a87ec-6122-4166-892d-3a7ba5ecfcf5",
       "schema_version": "L4-UWG-1.0.0",
       "snapshot_after_rollback": "snapshot:00000003",
       "snapshot_before_rollback": "snapshot:00000002",
-      "source_commit_receipt_ref": "8227eb01-ae62-4bb1-ba1c-ab59287afbc7"
+      "source_commit_receipt_ref": "d65abfa8-b378-454b-868b-f4e634b4231d"
     }
   },
-  "schema": "L4UWGRuntimeProofBundle@1"
+  "schema": "L4UWGRuntimeProofBundle@2"
 }

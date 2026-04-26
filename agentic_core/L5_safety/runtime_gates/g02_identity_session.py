@@ -51,10 +51,15 @@ class IdentitySessionGate:
                 signals=signals,
                 metadata={"requested_class": requested_class},
             )
-        # Stamp baseline (idempotent).
-        ctx.caller_scope_baseline.setdefault("tenant_id", ctx.tenant_id)
-        ctx.caller_scope_baseline.setdefault("session_id", ctx.session_id)
-        return allow(self.GATE_ID, "identity_bound", signals=signals)
+        # Doctrine 00C parent FORBIDDEN OUTPUTS: gates emit verdicts only.
+        # Surface the would-be baseline stamp as verdict metadata; the
+        # owner layer (U0/L5) is responsible for committing it to ctx.
+        decision = allow(self.GATE_ID, "identity_bound", signals=signals)
+        decision.metadata.setdefault(
+            "caller_scope_baseline_proposal",
+            {"tenant_id": ctx.tenant_id, "session_id": ctx.session_id},
+        )
+        return decision
 
 
 __all__ = ["IdentitySessionGate"]
