@@ -1,0 +1,144 @@
+"""Tests for C0.0 preflight + C0.1 retrieval plan builder."""
+
+from __future__ import annotations
+
+import pytest
+
+from agentic_core.L1_cognition.c0_context.preflight import (
+    MIN_BUDGET_FLOOR_TOKENS,
+    build_retrieval_plan,
+    preflight,
+)
+from agentic_core.L1_cognition.c0_context.types import (
+    BOUND_PARAMS,
+    RouteContractView,
+    SupportTarget,
+)
+
+
+def _route(**overrides) -> RouteContractView:
+    base: dict = dict(
+        route_id="R3_GROUNDED",
+        grounding_required=True,
+        execution_form="SINGLE_STEP",
+        freshness_class="current",
+        support_target=SupportTarget.SOURCE_SUMMARY,
+        tenant_scope="tenant_a",
+        acl=("read",),
+        region="us",
+        data_class="standard",
+        max_k=10,
+        max_hops=2,
+        max_parent_expansion=2,
+        max_refine_attempts=1,
+        max_latency_ms=2000,
+        token_budget=4000,
+        allowed_sources=frozenset({"docs", "code"}),
+        disallowed_sources=frozenset(),
+        fallback_policy="caveat",
+        route_replay_key="rk1",
+        policy_hash="ph1",
+        blueprint_hash="bh1",
+    )
+    base.update(overrides)
+    return RouteContractView(**base)
+
+
+# ---------- PREFLIGHT ----------
+
+
+def test_preflight_eligible_default() -> None:
+    s = preflight(_route())
+    assert s.eligible is True
+    assert s.allowed_source_classes == frozenset({"docs", "code"})
+    assert s.budget_floor_tokens == MIN_BUDGET_FLOOR_TOKENS
+
+
+def test_preflight_blocked_when_grounding_not_required() -> None:
+    s = preflight(_route(grounding_required=False))
+    assert s.eligible is False
+    assert s.blocked_reason == "grounding_not_required"
+
+
+def test_preflight_blocked_when_route_disallows() -> None:
+    s = preflight(_route(route_id="R1_CACHE"))
+    assert s.eligible is False
+    assert "does not allow" in s.blocked_reason
+
+
+def test_preflight_blocked_when_no_allowed_sources() -> None:
+    s = preflight(_route(allowed_sources=frozenset(), disallowed_sources=frozenset()))
+    assert s.eligible is False
+
+
+def test_preflight_blocked_when_data_class_blocked() -> None:
+    s = preflight(_route(data_class="blocked"))
+    assert s.eligible is False
+
+
+def test_preflight_blocked_when_budget_below_floor() -> None:
+    s = preflight(_route(token_budget=100))
+    assert s.eligible is False
+    assert "token_budget" in s.blocked_reason
+
+
+def test_preflight_strict_for_high_stakes() -> None:
+    s = preflight(_route(support_target=SupportTarget.POLICY_CLAUSE))
+    assert s.evidence_standard == "strict"
+
+
+def test_preflight_default_for_low_stakes() -> None:
+    s = preflight(_route(support_target=SupportTarget.SOURCE_SUMMARY))
+    assert s.evidence_standard == "default"
+
+
+def test_preflight_disallowed_subtracted() -> None:
+    s = preflight(_route(
+        allowed_sources=frozenset({"docs", "code", "logs"}),
+        disallowed_sources=frozenset({"logs"}),
+    ))
+    assert s.eligible is True
+    assert "logs" not in s.allowed_source_classes
+
+
+# ---------- RETRIEVAL PLAN ----------
+
+
+def test_build_plan_default_modes() -> None:
+    s = preflight(_route())
+    plan = build_retrieval_plan(_route(), s)
+    assert plan.retrieval_modes == frozenset({"dense", "sparse", "metadata"})
+    # Every spec'd bound param is populated
+    for param in BOUND_PARAMS:
+        assert param in plan.bounds
+
+
+def test_build_plan_blocks_when_preflight_blocked() -> None:
+    s = preflight(_route(grounding_required=False))
+    with pytest.raises(ValueError, match="preflight blocked"):
+        build_retrieval_plan(_route(grounding_required=False), s)
+
+
+def test_build_plan_rejects_unknown_mode() -> None:
+    s = preflight(_route())
+    with pytest.raises(ValueError, match="unknown retrieval_modes"):
+        build_retrieval_plan(_route(), s, retrieval_modes=frozenset({"telepathy"}))
+
+
+def test_build_plan_replay_metadata_propagated() -> None:
+    s = preflight(_route())
+    plan = build_retrieval_plan(_route(), s)
+    assert plan.replay_metadata["route_replay_key"] == "rk1"
+    assert plan.replay_metadata["policy_hash"] == "ph1"
+    assert plan.replay_metadata["blueprint_hash"] == "bh1"
+
+
+def test_build_plan_intersects_allowed_with_preflight() -> None:
+    route = _route(
+        allowed_sources=frozenset({"docs", "code", "policy"}),
+        disallowed_sources=frozenset({"policy"}),
+    )
+    s = preflight(route)
+    plan = build_retrieval_plan(route, s)
+    assert "policy" not in plan.allowed_sources
+    assert plan.allowed_sources <= s.allowed_source_classes
