@@ -65,6 +65,11 @@ class RouteContract:
     policy_hash: str = ""
     blueprint_hash: str = ""
     origin_trust_manifest: Mapping[str, str] = field(default_factory=dict)
+    hmac_sig: str = ""
+    """Optional HMAC signature minted by L0 v15 selector. Empty when route
+    was constructed without v15 signing (e.g. proof harness, direct caller).
+    Downstream verifiers MUST treat empty as 'unsigned' and apply the
+    appropriate policy."""
 
     def __post_init__(self) -> None:
         if self.max_k <= 0:
