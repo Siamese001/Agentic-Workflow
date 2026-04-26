@@ -316,3 +316,9 @@ This parent is complete only when:
 ========================================================================================================================
 END 00A_L5_Governance_Safety_detailed.md
 ========================================================================================================================
+========================================================================================================================
+GAP-CLOSED PARENT UPDATE | RUNTIME CERTIFICATION BINDING
+========================================================================================================================
+00A.8_L5_Runtime_Certification_Binding.md is now the canonical child for binding policy_hash, blueprint_hash, registry digests,
+capability, sandbox, origin-trust, replay, audit, egress, and HITL re-clearance evidence to runtime packets. L5 still emits
+certification evidence only, not live runtime dispositions.

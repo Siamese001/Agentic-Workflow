@@ -225,3 +225,8 @@ TOP-LEVEL ACCEPTANCE CRITERIA
 
 END OF PARENT
 ========================================================================================================================
+========================================================================================================================================
+GAP-CLOSED PARENT UPDATE | L3-L2 HANDOFF AND CHECKPOINTING
+========================================================================================================================================
+03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md is now the canonical child for workflow step readiness, L3ToL2StepContract,
+checkpoint refs, resume cursors, branch/join metadata, and L2 result merge receipts. L3 still orchestrates only; L2 still executes only.

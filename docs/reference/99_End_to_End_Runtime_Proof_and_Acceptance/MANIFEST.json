@@ -29,6 +29,8 @@
     "99.6_E2E_No_Bypass_and_Sovereignty_Proof_detailed.md",
     "99.7_E2E_Evidence_Prompt_Output_Groundedness_Proof_detailed.md",
     "99.8_E2E_Acceptance_Commands_and_Proof_Bundle_detailed.md",
+    "99.9_E2E_Mutation_Testing_Boundary_Faults.md",
+    "99.10_E2E_Fixtures_Replay_Harness_Commands.md",
     "99_End_to_End_Runtime_Proof_and_Acceptance_detailed.md",
     "README.md"
   ]

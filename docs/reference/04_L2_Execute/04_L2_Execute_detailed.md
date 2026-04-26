@@ -764,3 +764,13 @@ Exit Control decides whether it can leave, reroute, escalate, deny, or request U
 ======================================================================================================================================================
 END OF [4] L2 EXECUTE — v4
 ======================================================================================================================================================
+======================================================================================================================================================
+GAP-CLOSED PARENT UPDATE | APRIL 2026 MECE REVIEW
+======================================================================================================================================================
+This parent now explicitly recognizes the full L2 closure set:
+- 04.0_L2_Sequencer_Orchestrator_Contract_detailed.md owns E1->E2->E3->E4->E5 parent glue.
+- 04.6_L2_E5_Seal_Artifact_and_Dispatch_detailed.md owns SealedL2Artifact and dispatch receipt.
+- 04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md owns PTC V2 sandbox execution controls.
+- 04.9_L2_StateDiffCandidate_and_Mutation_Intent_detailed.md owns inert mutation candidate packaging only.
+- 04.10_L2_Verify_Then_Execute_Local_Critique_detailed.md owns optional same-authority local critique.
+L2 still does not route, retrieve, assemble prompts, approve final egress, write L4, or learn for future runs.

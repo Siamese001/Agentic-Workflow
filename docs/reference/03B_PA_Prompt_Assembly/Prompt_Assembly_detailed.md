@@ -294,3 +294,8 @@ A complete implementation must prove:
 - Provider rendering preserves canonical manifest hash independence.
 - Final artifact is signed and replay-bound.
 - No Prompt Assembly code path retrieves, routes, executes, calls providers, writes L4, or decides final disposition.
+==============================================================================================================================
+GAP-CLOSED PARENT UPDATE | PA AUTHORITY RED-TEAM PROOF
+==============================================================================================================================
+PA.8_Authority_RedTeam_Slot_Verification.md is now the canonical child for Prompt Assembly-specific slot authority proof,
+injection fixtures, provider render equivalence, and R0 schema binding proof. PA still does not retrieve, route, execute, or write.

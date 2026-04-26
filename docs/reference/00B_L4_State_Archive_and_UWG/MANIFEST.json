@@ -19,7 +19,8 @@
     "00.5_L4_Replay_Snapshot_and_Audit_Ledger_detailed.md",
     "00.6_UWG_Durable_Write_Gateway_detailed.md",
     "00.7_L4_Read_Surface_Refresh_and_Projection_detailed.md",
-    "00.8_L4_UWG_Observability_Tests_and_Anti_Bypass_detailed.md"
+    "00.8_L4_UWG_Observability_Tests_and_Anti_Bypass_detailed.md",
+    "00B.9_L4_Blueprint_Policy_Version_Migration.md"
   ],
   "numbering_rationale": "00_ / 00.x prefix used because L4/UWG is a cross-cutting durable state and write-sovereignty plane, not a sequential runtime stage after 06.",
   "source_files_to_treat_as_authority": [
@@ -60,6 +61,7 @@
     "00.6_UWG_Durable_Write_Gateway_detailed.md": "62dc43c24e966311f06edc098140f62a6dfaa24d7470e2d7831ee64e730ddb4e",
     "00.7_L4_Read_Surface_Refresh_and_Projection_detailed.md": "c461f0b5cdd8afe6be3c5e34ba1dcd928363b4e7e315cbb2e032189e2fdab8ec",
     "00.8_L4_UWG_Observability_Tests_and_Anti_Bypass_detailed.md": "136dd9a728abc2bfd508fe0d89f17caba8aaeb7d57c4a897bccfaf77a5f1e6eb",
+    "00B.9_L4_Blueprint_Policy_Version_Migration.md": "f5bdab13a41b6aac3531af8f9d9f86d5b821eebafcc85035adfc56dc577e46e7",
     "00B_L4_State_Archive_and_UWG/00B_L4_State_Archive_and_UWG_detailed.md": "3ef0d172d00df7447370462da0e86e13e65d347578d5803d5124ded817c09dbe"
   }
 }

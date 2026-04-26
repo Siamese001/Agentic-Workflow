@@ -122,3 +122,9 @@ ACCEPTANCE RULE
 ------------------------------------------------------------------------------------------------------------------------
 A run is not proven because the final answer looks correct. A run is proven only when the contracts, traces, gate receipts,
 replay records, evidence links, and authority-boundary assertions all agree.
+========================================================================================================================
+GAP-CLOSED PARENT UPDATE | PROOF HARNESS COMPLETENESS
+========================================================================================================================
+99.9_E2E_Mutation_Testing_Boundary_Faults.md and 99.10_E2E_Fixtures_Replay_Harness_Commands.md close the proof harness gap.
+The 99 pack now owns golden paths, route coverage, contracts, OTEL span-tree proof, deterministic replay, no-bypass proof,
+groundedness proof, commands, boundary fault injection, fixtures, and replay harness proof packets.

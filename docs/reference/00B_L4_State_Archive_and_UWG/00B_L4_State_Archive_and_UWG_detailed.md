@@ -295,3 +295,8 @@ This parent is complete only when:
 ========================================================================================================================
 END OF 00_L4_STATE_ARCHIVE_AND_UWG_DETAILED.md
 ========================================================================================================================
+========================================================================================================================
+GAP-CLOSED PARENT UPDATE | VERSION MIGRATION
+========================================================================================================================
+00B.9_L4_Blueprint_Policy_Version_Migration.md is now the canonical child for durable version migration, compatibility,
+deprecation, alias swaps, and rollback requirements for policy/blueprint/registry-related surfaces. UWG remains the only write path.

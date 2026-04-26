@@ -201,3 +201,8 @@ This L6 pack is complete only when:
 
 END OF PARENT L6 SHADOW EVALUATION -> FUTURE-RUN LEARNING DOCTRINE
 ========================================================================================================================
+========================================================================================================================
+GAP-CLOSED PARENT UPDATE | MEMORY PROMOTION INTERFACE
+========================================================================================================================
+06.9_L6_Memory_Promotion_Interface.md is now the canonical child for evaluated long-term memory promotion proposals. L6 proposes
+future-run updates only. L4 stores durable memory only after UWG admission.

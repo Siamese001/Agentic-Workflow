@@ -257,3 +257,9 @@ PROOF COMMANDS EXPECTED FROM WINDSURF
 ========================================================================================================================
 END 00C_RUNTIME_GATES_CURRENT_RUN_MESH_DETAILED.md
 ========================================================================================================================
+========================================================================================================================
+GAP-CLOSED PARENT UPDATE | RUNTIME GATE INTEGRATION
+========================================================================================================================
+00C.9_RG_Layer_Integration_Invocation_Map.md is now the canonical integration child for where G01-G29 are invoked across
+U0, L1, L0, C0, PA, L3, L2, Exit, UWG, and L6 firewall checks. Layer files may call gates and record verdict refs, but
+00C remains the owner of reusable gate law and GateVerdict schema.
