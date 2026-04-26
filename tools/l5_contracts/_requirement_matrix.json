@@ -64,7 +64,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'DENY', 'REROUTE', 'ALLOW']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'ALLOW', 'REROUTE', 'DENY']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -667,7 +667,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'DENY', 'REROUTE', 'ALLOW']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'ALLOW', 'REROUTE', 'DENY']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -1702,7 +1702,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'DENY', 'REROUTE', 'ALLOW']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'ALLOW', 'REROUTE', 'DENY']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -2731,7 +2731,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'DENY', 'REROUTE', 'ALLOW']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'ALLOW', 'REROUTE', 'DENY']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -3513,7 +3513,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'DENY', 'REROUTE', 'ALLOW']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'ALLOW', 'REROUTE', 'DENY']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -4303,7 +4303,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'DENY', 'REROUTE', 'ALLOW']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'ALLOW', 'REROUTE', 'DENY']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -5348,7 +5348,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'DENY', 'REROUTE', 'ALLOW']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'BLOCK_COMMIT', 'ESCALATE_HITL', 'ALLOW', 'REROUTE', 'DENY']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
