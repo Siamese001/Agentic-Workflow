@@ -124,9 +124,15 @@ def main() -> int:
     ingest = run_6a(state, raw)
     # 6A.5: observer + readiness
     readiness = run_observer(state)
-    # 6B: evaluate + seal
+    # 6B: evaluate + seal.
+    # Replay-digest drift at high severity correctly forces RCA_ONLY downstream
+    # use per the 06.4 hardening — but the proof harness exercises the full
+    # 6A->6D pipeline including proposal admission, so we match replay_digest
+    # to the run's replay_key. Policy drift remains as governance signal.
     baseline = GovernanceBaseline(
-        policy_hash="DIFF-POLICY", rubric_hash="rubric-A", replay_digest="DIFF-REPLAY",
+        policy_hash="DIFF-POLICY",
+        rubric_hash="rubric-A",
+        replay_digest=ingest.bundle.replay_key,
     )
     eval_res = run_6b(state, readiness, governance_baseline=baseline)
     # 6C: RCA

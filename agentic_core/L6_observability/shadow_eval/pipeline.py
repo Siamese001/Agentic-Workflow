@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Callable, Mapping
+from typing import Callable, Iterable, Mapping
 
 from agentic_core.L6_observability.shadow_eval.calibration import (
     build_calibration_record,
@@ -30,6 +30,7 @@ from agentic_core.L6_observability.shadow_eval.contracts import (
     GovernanceRegressionRecord,
     NormalizedEvidenceRecord,
     OutcomeEvalRecord,
+    PatternSynthesisRecord,
     PromotionPacket,
     ProposalAdmissionReceipt,
     RCAPacket,
@@ -74,6 +75,7 @@ from agentic_core.L6_observability.shadow_eval.proposal import (
 from agentic_core.L6_observability.shadow_eval.rca import (
     build_rca_packet,
     fuse_signals,
+    synthesize_patterns,
 )
 
 
@@ -102,6 +104,7 @@ class L6EvalResult:
 class L6RcaResult:
     rca: RCAPacket
     fused_signal_bundle_id: str
+    patterns: list[PatternSynthesisRecord] = field(default_factory=list)
 
 
 @dataclass
@@ -180,6 +183,17 @@ def run_6a(state: L6PipelineState, raw_exhaust: Mapping[str, object]) -> L6Inges
     _emit(state, "l6.ingest.artifact_inventory", bundle=bundle)
     for _ in normalized:
         _emit(state, "l6.normalize.record_emit", bundle=bundle)
+    # Doctrine 06.1 §I3+§I4+§I5: gap report is a first-class artifact when any
+    # gap code surfaces. Emit the canonical span so observability captures the
+    # repair-required signal without inventing data downstream.
+    if gap.gap_codes:
+        _emit(
+            state,
+            "l6.ingest.gap_report_emit",
+            bundle=bundle,
+            reason_codes=list(gap.gap_codes),
+            status="REPAIR_REQUIRED" if gap.repair_required else "GAP_DETECTED",
+        )
     state.ingest = L6IngestResult(bundle=bundle, normalized=normalized)
     return state.ingest
 
@@ -257,6 +271,7 @@ def run_6b(
         trajectory=trajectory,
         governance=governance,
         calibration=calibration,
+        readiness_decision=readiness.readiness_decision,
     )
     seal = seal_eval_record(completed, calibration)
     _emit(
@@ -283,7 +298,20 @@ def run_6b(
 # ---------------------------------------------------------------------------
 
 
-def run_6c(state: L6PipelineState, *, incident_id: str | None = None) -> L6RcaResult:
+def run_6c(
+    state: L6PipelineState,
+    *,
+    incident_id: str | None = None,
+    rca_history: Iterable[RCAPacket] | None = None,
+    minimum_recurrence: int = 2,
+) -> L6RcaResult:
+    """Run 6C signal fusion + RCA, optionally synthesizing patterns.
+
+    Per 06.5 doctrine the pattern record is emitted only when the recurrence
+    threshold across ``rca_history`` (plus the freshly built RCA) is met.
+    Passing ``rca_history`` enables this; omitting it preserves single-incident
+    behavior with no spurious pattern emission.
+    """
     if state.eval is None or state.ingest is None:
         raise RuntimeError("6C requires 6B and ingest results")
     bundle = state.ingest.bundle
@@ -307,7 +335,25 @@ def run_6c(state: L6PipelineState, *, incident_id: str | None = None) -> L6RcaRe
         bundle=bundle,
         completed_eval_record_id=state.eval.completed.completed_eval_record_id,
     )
-    state.rca = L6RcaResult(rca=rca, fused_signal_bundle_id=fused.fused_signal_bundle_id)
+    patterns: list[PatternSynthesisRecord] = []
+    if rca_history is not None:
+        all_rcas = [*list(rca_history), rca]
+        patterns = list(
+            synthesize_patterns(all_rcas, minimum_recurrence=minimum_recurrence)
+        )
+        for _pattern in patterns:
+            _emit(
+                state,
+                "l6.pattern.record_emit",
+                bundle=bundle,
+                completed_eval_record_id=state.eval.completed.completed_eval_record_id,
+                status="RECURRENT",
+            )
+    state.rca = L6RcaResult(
+        rca=rca,
+        fused_signal_bundle_id=fused.fused_signal_bundle_id,
+        patterns=patterns,
+    )
     return state.rca
 
 

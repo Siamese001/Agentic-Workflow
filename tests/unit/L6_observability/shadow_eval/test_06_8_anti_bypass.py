@@ -88,7 +88,14 @@ def test_full_pipeline_ordered_spans(sealed_completed_run):
     state = L6PipelineState()
     run_6a(state, sealed_completed_run)
     readiness = run_observer(state)
-    baseline = GovernanceBaseline(policy_hash="DIFF-POL", rubric_hash="rh", replay_digest="DIFF-REP")
+    # Replay-digest drift at high severity now forces RCA_ONLY downstream
+    # use (06.4 hardening) which would block proposal admission. Match the
+    # run's replay_key so only policy drift fires.
+    baseline = GovernanceBaseline(
+        policy_hash="DIFF-POL",
+        rubric_hash="rh",
+        replay_digest=state.ingest.bundle.replay_key,
+    )
     run_6b(state, readiness, governance_baseline=baseline)
     run_6c(state)
     run_proposal(
@@ -152,7 +159,14 @@ def test_pipeline_does_not_emit_activation_when_gauntlet_fails(sealed_completed_
     state = L6PipelineState()
     run_6a(state, sealed_completed_run)
     readiness = run_observer(state)
-    baseline = GovernanceBaseline(policy_hash="DIFF-POL", rubric_hash="rh", replay_digest="DIFF-REP")
+    # Replay-digest drift at high severity now forces RCA_ONLY downstream
+    # use (06.4 hardening) which would block proposal admission. Match the
+    # run's replay_key so only policy drift fires.
+    baseline = GovernanceBaseline(
+        policy_hash="DIFF-POL",
+        rubric_hash="rh",
+        replay_digest=state.ingest.bundle.replay_key,
+    )
     run_6b(state, readiness, governance_baseline=baseline)
     run_6c(state)
     run_proposal(
@@ -192,7 +206,14 @@ def test_proof_command_artifact_inventory_is_complete(sealed_completed_run):
     state = L6PipelineState()
     run_6a(state, sealed_completed_run)
     readiness = run_observer(state)
-    baseline = GovernanceBaseline(policy_hash="DIFF-POL", rubric_hash="rh", replay_digest="DIFF-REP")
+    # Replay-digest drift at high severity now forces RCA_ONLY downstream
+    # use (06.4 hardening) which would block proposal admission. Match the
+    # run's replay_key so only policy drift fires.
+    baseline = GovernanceBaseline(
+        policy_hash="DIFF-POL",
+        rubric_hash="rh",
+        replay_digest=state.ingest.bundle.replay_key,
+    )
     run_6b(state, readiness, governance_baseline=baseline)
     run_6c(state)
     run_proposal(

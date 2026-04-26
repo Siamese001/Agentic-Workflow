@@ -235,14 +235,35 @@ def _collect_uncertainty(
 def _derive_downstream_use(
     calibration: CalibrationRecord,
     governance: GovernanceRegressionRecord,
+    readiness_decision: str = "READY_FOR_6B",
 ) -> str:
-    """Per 06.4 doctrine, calibration status governs downstream use.
+    """Per 06.4 doctrine, derive ``allowed_downstream_use`` from upstream signals.
 
-    - INSUFFICIENT / CONFLICTED / STALE calibration -> RCA_ONLY (no proposal).
-    - Governance severity is signal for the proposal author but does not
-      auto-restrict downstream use; reviewers may flag for SME at admission.
+    Possible values (per ``ALLOWED_DOWNSTREAM_USE``):
+      * ``NON_EVALUABLE``     - readiness was NON_EVALUABLE_PACKET; sealing
+        should not normally be reached, but this is the defensive value.
+      * ``HOLD_ONLY``         - readiness was HOLD_FOR_MISSING_EVIDENCE; record
+        is preserved for audit but cannot drive RCA or proposal admission.
+      * ``RCA_ONLY``          - calibration is INSUFFICIENT / CONFLICTED /
+        STALE, OR governance has high-severity replay-integrity drift; record
+        may inform RCA/pattern synthesis but cannot back a proposal.
+      * ``RCA_AND_PROPOSAL``  - default for sealed clean evaluations.
     """
+    if readiness_decision == "NON_EVALUABLE_PACKET":
+        return "NON_EVALUABLE"
+    if readiness_decision == "HOLD_FOR_MISSING_EVIDENCE":
+        return "HOLD_ONLY"
     if calibration.calibration_status in {"INSUFFICIENT", "CONFLICTED", "STALE"}:
+        return "RCA_ONLY"
+    # Replay-digest drift at high severity invalidates proposal admission per
+    # 06.4: "Stale rubric is not used for proposal admission" generalized to
+    # replay-integrity loss. The proposal layer may still surface the record
+    # via RCA. Lower-severity governance drift is signal for the admission
+    # gate (REQUIRE_SME_REVIEW), not a downstream-use restriction.
+    if (
+        governance.severity == "high"
+        and getattr(governance, "replay_digest_drift_flags", ())
+    ):
         return "RCA_ONLY"
     return "RCA_AND_PROPOSAL"
 
@@ -259,6 +280,7 @@ def build_completed_eval_record(
     reviewer_override_refs: Iterable[str] = (),
     support_rationale_refs: Iterable[str] = (),
     hmac_sig: str | None = None,
+    readiness_decision: str = "READY_FOR_6B",
 ) -> CompletedEvalRecord:
     snapshot_hash = _evidence_snapshot_hash(outcome, trajectory, governance)
     score_bundle: dict[str, float] = {
@@ -288,7 +310,9 @@ def build_completed_eval_record(
         uncertainty_markers=_collect_uncertainty(outcome, trajectory),
         support_rationale_refs=list(support_rationale_refs),
         reviewer_override_refs=list(reviewer_override_refs),
-        allowed_downstream_use=_derive_downstream_use(calibration, governance),
+        allowed_downstream_use=_derive_downstream_use(
+            calibration, governance, readiness_decision=readiness_decision
+        ),
         hmac_sig=hmac_sig,
     )
     # Compute the seal_hash over the canonical content, then digest.

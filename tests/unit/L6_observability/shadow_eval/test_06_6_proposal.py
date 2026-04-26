@@ -49,7 +49,12 @@ def _eval_and_rca(sealed_completed_run):
     receipt, _m, _n = evaluate_readiness(bundle, obs, normalized)
     outcome = evaluate_outcome(receipt, normalized)
     trajectory = evaluate_trajectory(receipt, normalized)
-    baseline = GovernanceBaseline(policy_hash="DIFF-POL", rubric_hash="rh", replay_digest="DIFF-REP")
+    # Match replay_digest to the run; replay-digest drift at high severity
+    # forces allowed_downstream_use=RCA_ONLY per 06.4 hardening, which would
+    # block proposal admission. Keep policy drift to exercise governance.
+    baseline = GovernanceBaseline(
+        policy_hash="DIFF-POL", rubric_hash="rh", replay_digest=bundle.replay_key,
+    )
     governance = evaluate_governance_regression(receipt, normalized, baseline)
     calibration = build_calibration_record(rubric_hash="rh", rubric_version="1", grader_version="cv1")
     completed = build_completed_eval_record(
