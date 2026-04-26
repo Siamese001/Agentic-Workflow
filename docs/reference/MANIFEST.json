@@ -1,0 +1,781 @@
+{
+  "generated_at": "2026-04-26T20:15:31",
+  "root_folder": null,
+  "purpose": "MECE requirements pack rebuilt for Windows Explorer path safety. No wrapper root. Full folder names retained. Only long file basenames shortened.",
+  "windows_path_policy": {
+    "legacy_MAX_PATH_full_path": 260,
+    "common_component_limit": 255,
+    "archive_relative_target": 130,
+    "renamed_file_basenames_count": 18,
+    "long_wrapper_folder_removed": true
+  },
+  "file_count_excluding_manifest": 138,
+  "max_archive_relative_path_length": 105,
+  "max_component_length": 68,
+  "renamed_paths": [
+    {
+      "from": "00A_L5_Governance_Safety/00A.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md",
+      "to": "00A_L5_Governance_Safety/00A.4_L5_HITL_Reclearance_Human_Input_Gov.md"
+    },
+    {
+      "from": "00C_Runtime_Gates_Current_Run_Mesh/00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk_detailed.md",
+      "to": "00C_Runtime_Gates_Current_Run_Mesh/00C.1_RG_G01_G05_Ingress_Identity_Intent_Safety_Risk.md"
+    },
+    {
+      "from": "00C_Runtime_Gates_Current_Run_Mesh/00C.2_Runtime_Gates_G06_G10_HITL_Route_Retrieval_Evidence_Prompt_detailed.md",
+      "to": "00C_Runtime_Gates_Current_Run_Mesh/00C.2_RG_G06_G10_HITL_Route_Retrieval_Evidence_Prompt.md"
+    },
+    {
+      "from": "00C_Runtime_Gates_Current_Run_Mesh/00C.3_Runtime_Gates_G11_G15_Tool_Model_Args_Egress_Sandbox_detailed.md",
+      "to": "00C_Runtime_Gates_Current_Run_Mesh/00C.3_RG_G11_G15_Tool_Model_Args_Egress_Sandbox.md"
+    },
+    {
+      "from": "00C_Runtime_Gates_Current_Run_Mesh/00C.4_Runtime_Gates_G16_G20_Memory_Privacy_Workflow_Loop_Budget_detailed.md",
+      "to": "00C_Runtime_Gates_Current_Run_Mesh/00C.4_RG_G16_G20_Memory_Privacy_Workflow_Loop_Budget.md"
+    },
+    {
+      "from": "00C_Runtime_Gates_Current_Run_Mesh/00C.6_Runtime_Gates_G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall_detailed.md",
+      "to": "00C_Runtime_Gates_Current_Run_Mesh/00C.6_RG_G25_G29_Anomaly_Exit_Write_Audit_LearnFW.md"
+    },
+    {
+      "from": "00C_Runtime_Gates_Current_Run_Mesh/00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix_detailed.md",
+      "to": "00C_Runtime_Gates_Current_Run_Mesh/00C.7_RG_Verdict_Schema_Disposition_Matrix.md"
+    },
+    {
+      "from": "00C_Runtime_Gates_Current_Run_Mesh/00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass_detailed.md",
+      "to": "00C_Runtime_Gates_Current_Run_Mesh/00C.8_RG_Observability_Tests_Anti_Bypass.md"
+    },
+    {
+      "from": "01_Request_Intake/01.1_Intake_Transport_Envelope_and_Channel_Validation_detailed.md",
+      "to": "01_Request_Intake/01.1_Intake_Transport_Envelope_Channel_Validation.md"
+    },
+    {
+      "from": "01_Request_Intake/01.2_Intake_Identity_Tenant_Session_and_Quota_Baseline_detailed.md",
+      "to": "01_Request_Intake/01.2_Intake_Identity_Tenant_Session_Quota_Baseline.md"
+    },
+    {
+      "from": "01_Request_Intake/01.4_Intake_Origin_Trust_Injection_Triage_and_Data_Labeling_detailed.md",
+      "to": "01_Request_Intake/01.4_Intake_Origin_Trust_Injection_Triage_Data_Labeling.md"
+    },
+    {
+      "from": "01_Request_Intake/01.6_Intake_Observability_Replay_and_Anti_Bypass_Tests_detailed.md",
+      "to": "01_Request_Intake/01.6_Intake_Observability_Replay_Anti_Bypass_Tests.md"
+    },
+    {
+      "from": "03_L0_Route_Decision_and_L3_Orchestration/03.8_L3_Concurrency_Quality_Fallback_Completion_Exit_Package_detailed.md",
+      "to": "03_L0_Route_Decision_and_L3_Orchestration/03.8_L3_Concurrency_Quality_Fallback_Completion_ExitPkg.md"
+    },
+    {
+      "from": "05_Exit_Evaluation_and_Control/05.3_Exit_Replay_Observability_and_Consistency_X1G_to_X1I_detailed.md",
+      "to": "05_Exit_Evaluation_and_Control/05.3_Exit_Replay_Observability_Consistency_X1G_X1I.md"
+    },
+    {
+      "from": "05_Exit_Evaluation_and_Control/05.8_Exit_Specific_Observability_Tests_and_Anti_Bypass_detailed.md",
+      "to": "05_Exit_Evaluation_and_Control/05.8_Exit_Specific_Observability_Tests_Anti_Bypass.md"
+    },
+    {
+      "from": "06_L6_Shadow_Evaluation_System_Learning/06.2_L6_Observer_Law_Surface_Isolation_and_Eval_Readiness_detailed.md",
+      "to": "06_L6_Shadow_Evaluation_System_Learning/06.2_L6_Observer_Law_Isolation_Eval_Readiness.md"
+    },
+    {
+      "from": "06_L6_Shadow_Evaluation_System_Learning/06.3_L6_Outcome_Trajectory_and_Governance_Evaluation_detailed.md",
+      "to": "06_L6_Shadow_Evaluation_System_Learning/06.3_L6_Outcome_Trajectory_Governance_Eval.md"
+    },
+    {
+      "from": "06_L6_Shadow_Evaluation_System_Learning/06.7_L6_Gauntlet_Approval_UWG_Promotion_and_Future_Run_Publish_detailed.md",
+      "to": "06_L6_Shadow_Evaluation_System_Learning/06.7_L6_Gauntlet_Approval_UWG_Promotion_FutureRun.md"
+    }
+  ],
+  "files": [
+    {
+      "path": "00A_L5_Governance_Safety/00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "bytes": 40398,
+      "sha256": "b7ccdc57b6c52291a25c46ab78747dd00de762f035706a904d01a66278211401"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "bytes": 62076,
+      "sha256": "fb459227905956d4848c14193b8b65a5e2f57937ef901bbea96d1e1914735933"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "bytes": 59314,
+      "sha256": "5971d440403f17ff95b912bb85d8df3d55a30ce21b6c29d113731781ddf31565"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/00A.4_L5_HITL_Reclearance_Human_Input_Gov.md",
+      "bytes": 45938,
+      "sha256": "f7eeb8c73b2090d5689adabea657e60e3bfce844321a5fbf74ce2bf1aa9f2516"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "bytes": 54917,
+      "sha256": "fc991fb2c9feaa3e473d78a982706a21cca8ede12e030b72384a479909f8a0d7"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "bytes": 54657,
+      "sha256": "d0b57da124039291ccdca09446375ec4867570c500ebf8a62109d757fa424949"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "bytes": 59423,
+      "sha256": "89734230a83d33891b4c7edb4c473db29fafcf3a6ec862d5782732f62f03af9c"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/00A_L5_Governance_Safety_detailed.md",
+      "bytes": 16522,
+      "sha256": "a234c9a011263827446ce3e3c2edcbd2b1321d9a168a10805a6f273b02d21a25"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/MANIFEST.md",
+      "bytes": 2922,
+      "sha256": "575cac6f958a7a491f2e7c199b596cb28e9ea72166a0824564b7923c2c29a62a"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/calibration_assurance_planes.md",
+      "bytes": 13723,
+      "sha256": "eb9b2240d33322905788b4386a2268ef98022b2c6c039ec5874448b7dfe0f0ae"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/capability_token.schema.md",
+      "bytes": 10714,
+      "sha256": "3ffda04e507c1d3756864a44e3ce3b47d97662b8cfd6e61cb51288f56c90cb6a"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/guardrail_families.md",
+      "bytes": 9381,
+      "sha256": "babc55c31ca0a670b47c080c7e0449859e5df84bb8c30812d7c2fabe9e617bca"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/risk_tier_bands.md",
+      "bytes": 7731,
+      "sha256": "8bdf40076b4fe57034b466b8c3618e236a1c62f19c031894e3af2dee1db67316"
+    },
+    {
+      "path": "00A_L5_Governance_Safety/v5_coverage_matrix.md",
+      "bytes": 19634,
+      "sha256": "9bdbee44d1024df89e2df8c486e4258d2f33ac880d96d2e083aaceb5bdafb9bb"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.1_L4_Policy_Blueprint_and_Registry_State_detailed.md",
+      "bytes": 20933,
+      "sha256": "a4ae403b385ef358e7439594ccce953344d92886fb8a10789149dd943d501850"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.2_L4_Memory_and_Learning_Promotion_State_detailed.md",
+      "bytes": 19434,
+      "sha256": "2ffd2a2303f1da65eff2191c39981188bc4d88ad965e276dad66c2d257b486e5"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.3_L4_Retrieval_Surface_State_detailed.md",
+      "bytes": 19556,
+      "sha256": "8cf77153b4dc1d8a98d5abf7bc39e77d417470ca3545c0789264b4af4e6426ab"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.4_L4_Cache_State_detailed.md",
+      "bytes": 18320,
+      "sha256": "617a0c411226ad1956230dcfface9102fd17c4c19d49dd6fcde1b03578c046bd"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.5_L4_Replay_Snapshot_and_Audit_Ledger_detailed.md",
+      "bytes": 18195,
+      "sha256": "46f8387623ec203c8968181e838013108934698bd401dbbd248162fd50b7a1f2"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.6_UWG_Durable_Write_Gateway_detailed.md",
+      "bytes": 20730,
+      "sha256": "e2e1e2873b49b649105d2c9abe2a081a9d080636bfe79a96e09a68994975d2e4"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.7_L4_Read_Surface_Refresh_and_Projection_detailed.md",
+      "bytes": 17858,
+      "sha256": "10885e5d27524c5dc4bc5562e47089140f094239231ea3a63071d1436eeadca1"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.8_L4_UWG_Observability_Tests_and_Anti_Bypass_detailed.md",
+      "bytes": 15859,
+      "sha256": "1e2c76bd7087ed494f5a00f8bf1c48eee104d209f562b9513744e50710abb0d4"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B_L4_State_Archive_and_UWG_detailed.md",
+      "bytes": 15269,
+      "sha256": "af8f85dbbccf01e491cf1e45e0dfae377f62ddca81f9f47a81d6adac7f0fb7d3"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/MANIFEST.json",
+      "bytes": 4111,
+      "sha256": "39267499d19b14b7195a84ecdb15ce16818f74cb14a9bd6d39499126cd12539f"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.1_RG_G01_G05_Ingress_Identity_Intent_Safety_Risk.md",
+      "bytes": 16918,
+      "sha256": "fea586126376459205522c47015da9fd8223a05798946c39d4d74436d660ba45"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.2_RG_G06_G10_HITL_Route_Retrieval_Evidence_Prompt.md",
+      "bytes": 17446,
+      "sha256": "38187e103a84ebdd727c3e4af7930a21edb7946ac2eff19d4efed27c90066dec"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.3_RG_G11_G15_Tool_Model_Args_Egress_Sandbox.md",
+      "bytes": 16562,
+      "sha256": "4c8adc61e5a6ab5eb6c824921f0a8b366c9e54d849884bf55b7c73a75559477c"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.4_RG_G16_G20_Memory_Privacy_Workflow_Loop_Budget.md",
+      "bytes": 16614,
+      "sha256": "ef0adabb746611fc20a163603c90d7a87adbcba2d57722c3ae31396761cc9ecb"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.5_Runtime_Gates_G21_G24_Output_Security_Replay_detailed.md",
+      "bytes": 15727,
+      "sha256": "a4555a4ad772b1a7d8ac02940b4e44cdf9ca9d8634757c24f4f58b63731ec659"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.6_RG_G25_G29_Anomaly_Exit_Write_Audit_LearnFW.md",
+      "bytes": 17671,
+      "sha256": "cdf2f7b9a6d47db369c232ce7ab7ed792b2a3fd42ef865cb2fbaf48fd2ddbdfe"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.7_RG_Verdict_Schema_Disposition_Matrix.md",
+      "bytes": 28722,
+      "sha256": "b8945c96140393db4da6b5eb9f6cfc3e283a1bfc3343763ea6b42047cc62eabd"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.8_RG_Observability_Tests_Anti_Bypass.md",
+      "bytes": 21986,
+      "sha256": "b970042b16b370fd0ced698a9c840bafae8572de7ea48f8654ecad060ef595f9"
+    },
+    {
+      "path": "00C_Runtime_Gates_Current_Run_Mesh/00C_Runtime_Gates_Current_Run_Mesh_detailed.md",
+      "bytes": 13091,
+      "sha256": "936526f3bedf6744e7ee475c090da226b90b6138dc9ce13c00fbda890d204333"
+    },
+    {
+      "path": "00X_Requirements_Traceability_and_No_Loss_Map.md",
+      "bytes": 12961,
+      "sha256": "bb73286e3cce977486e9735cec3e227bc5212ed378a7e0f3f2bab488d2392b9f"
+    },
+    {
+      "path": "00Z_Source_Alignment_Best_Practices.md",
+      "bytes": 3573,
+      "sha256": "2ffec4cd18569f5abe49197238d074d30edce3fc0389e57f90f73af8b8894673"
+    },
+    {
+      "path": "01_Request_Intake/01.1_Intake_Transport_Envelope_Channel_Validation.md",
+      "bytes": 9668,
+      "sha256": "f3c130056a67605abf37fd76ada68c36ddbf8bba899f3a2aae846fb291e80f7e"
+    },
+    {
+      "path": "01_Request_Intake/01.2_Intake_Identity_Tenant_Session_Quota_Baseline.md",
+      "bytes": 9459,
+      "sha256": "b5fe13d34556c843e3082e5ca474d37975a4a114e9f6acc9f7f1a55da8ea05fe"
+    },
+    {
+      "path": "01_Request_Intake/01.3_Intake_Schema_Normalization_and_Idempotency_detailed.md",
+      "bytes": 9782,
+      "sha256": "90338942e43544ed889eeb830085b928e75cc8337c948d2ad03d714d35191d93"
+    },
+    {
+      "path": "01_Request_Intake/01.4_Intake_Origin_Trust_Injection_Triage_Data_Labeling.md",
+      "bytes": 9499,
+      "sha256": "d26231e2a88c369f3db6b7f1378e1cc1d36bd093a3d902b8aacca8032ea16ce0"
+    },
+    {
+      "path": "01_Request_Intake/01.5_Intake_Rejection_ValidatedRequest_and_Handoff_to_L1_detailed.md",
+      "bytes": 9803,
+      "sha256": "5de02770138a23169288ddb189fdb73ba6a112a0d620e87a692897121fe75146"
+    },
+    {
+      "path": "01_Request_Intake/01.6_Intake_Observability_Replay_Anti_Bypass_Tests.md",
+      "bytes": 9969,
+      "sha256": "e9e57388185766331c3951c6ef0794ef858bfa81f3fc8d790854acd94df05449"
+    },
+    {
+      "path": "01_Request_Intake/01_request_intake_detailed.md",
+      "bytes": 14672,
+      "sha256": "2e733aa5f9e63e340c05b787850cb7bbea0f8e6e064691841107b347252ef321"
+    },
+    {
+      "path": "01_Request_Intake/01_request_intake_exec.md",
+      "bytes": 16004,
+      "sha256": "52ac5e8d71efba759fab28bf4317738b2d7d3f792141b6db31f939184886abfc"
+    },
+    {
+      "path": "02_L1_Reasoning_Plan/02.1_Intent_Frame_and_Ambiguity_Register_detailed.md",
+      "bytes": 16750,
+      "sha256": "b542662429568493528f775be6ad6254cff3e12246604258e8fefb2dc58b6ef6"
+    },
+    {
+      "path": "02_L1_Reasoning_Plan/02.2_Planning_Priors_and_Rule_Bundle_detailed.md",
+      "bytes": 16120,
+      "sha256": "8b501ac658ab72dcdaf8c4f363d481711610bfb2181b9a03ad313dbba9b954a2"
+    },
+    {
+      "path": "02_L1_Reasoning_Plan/02.3_Contextual_Refinement_Reasoning_Loop_detailed.md",
+      "bytes": 15787,
+      "sha256": "2fc879730c65e7214f991d4fd88107181ee587e361606e43a1aa4abb75abffd5"
+    },
+    {
+      "path": "02_L1_Reasoning_Plan/02.4_Draft_Plan_and_Route_Hints_detailed.md",
+      "bytes": 16206,
+      "sha256": "cb0e51c01f8e403249ecbfac19717d08558a4c00889c29c461fd78f5577b10a0"
+    },
+    {
+      "path": "02_L1_Reasoning_Plan/02.5_Plan_Validation_Self_Repair_detailed.md",
+      "bytes": 15931,
+      "sha256": "18e70165613c3d43e72d7eb449c8b3b3691193745a01862d31d510737677ecf7"
+    },
+    {
+      "path": "02_L1_Reasoning_Plan/02.6_L1PlanContract_Handoff_detailed.md",
+      "bytes": 16023,
+      "sha256": "5c0d24b29f13f9a1d0ae7ec57970e9a54f3956843badace1c14e9bf7638a1045"
+    },
+    {
+      "path": "02_L1_Reasoning_Plan/02_L1_Reasoning_Plan_Generation_detailed.md",
+      "bytes": 16967,
+      "sha256": "f1ff479853ee6592eddc4d8310371c169b01774dbe6a2fb5ad36c159168823fd"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.1_L0_Route_Input_and_Preflight_detailed.md",
+      "bytes": 12913,
+      "sha256": "7c6fe6871fa83557c1665e635c378382e95444dfd0c569b19d3e62e86a0df09f"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.2_L0_Deterministic_Route_Selection_detailed.md",
+      "bytes": 12799,
+      "sha256": "e4a68258928c6866f3a19f292c20a423120f3efc60c3bb6c153ab84845c19ed7"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.3_L0_Cache_Fallback_HITL_Routes_detailed.md",
+      "bytes": 11868,
+      "sha256": "174681d3ee04b37ec5e5c7465bacc5f13d6761fd9565d629cb3314a74793f126"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.4_L0_Grounded_and_Action_Route_Handoffs_detailed.md",
+      "bytes": 12610,
+      "sha256": "a26f6743f5662b91c6de9cb12507b71a86f0de762a2cdba124e88dd2b3a63965"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.5_L0_RouteContract_Telemetry_Replay_detailed.md",
+      "bytes": 11641,
+      "sha256": "a9264f8a3ce90a4d762281b46546b5eac88b301eb67b260de78a1647667cb875"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.6_L3_Managed_Workflow_Eligibility_and_DAG_detailed.md",
+      "bytes": 11580,
+      "sha256": "839655a3d3132cbe82e6e07847a778147546a716503138e1b6783a4533fa8a97"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.7_L3_Step_Readiness_State_Ledger_and_Context_Bus_detailed.md",
+      "bytes": 11424,
+      "sha256": "205246cefb206ff8213c3a9640c9776ecf34f21ac372739cb41c094420bc1a71"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03.8_L3_Concurrency_Quality_Fallback_Completion_ExitPkg.md",
+      "bytes": 13217,
+      "sha256": "4f6306f174f024db0a83d9e80fdcb386fc8298d261dc728440e80422009b0967"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03_L0_Route_Decision_Switching_L3 exec.md",
+      "bytes": 42487,
+      "sha256": "e24ff4add5fe35ba0b13565d72f92742216bb72a5df120a68a9a183d89756125"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/03_L0_Route_Decision_Switching_L3_detailed.md",
+      "bytes": 13820,
+      "sha256": "6a52aa593afdf582e7bf40f6f21ce659b4627b72d5007b92645dda79bd05969f"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/GAP_ANALYSIS_v11_vs_best_practices.md",
+      "bytes": 11149,
+      "sha256": "3e258e8ae609389c74b18e4dadbb8d1ba1ee288c52f793124349ec318565e16f"
+    },
+    {
+      "path": "03_L0_Route_Decision_and_L3_Orchestration/R1B Semantic Cache v2.md",
+      "bytes": 13035,
+      "sha256": "bb4812d99ea4323b2f522ece38e859ff4af81e895d5e80bc717240d326f8b4c7"
+    },
+    {
+      "path": "04_L2_Execute/04.1_L2_Execution_Entry_Authority_and_Packet_Intake_detailed.md",
+      "bytes": 22135,
+      "sha256": "0936904cd50630260a76cea1ae714cc2fdf753bd1268086f9f4f2aa5a4dae709"
+    },
+    {
+      "path": "04_L2_Execute/04.2_L2_E1_Prep_Frozen_Execution_Room_detailed.md",
+      "bytes": 29368,
+      "sha256": "46888e47a7be70266747e909f389354a0884e8d029425fb60b59be43b11a37a1"
+    },
+    {
+      "path": "04_L2_Execute/04.3_L2_E2_Valid_Work_Order_and_Gate_Check_detailed.md",
+      "bytes": 34703,
+      "sha256": "13a64a82980576fea2a7dcec624066dbf01204039377ad7a7ba5636927aa4ebd"
+    },
+    {
+      "path": "04_L2_Execute/04.4_L2_E3_Exec_Attempt_Lanes_and_Sandbox_Run_detailed.md",
+      "bytes": 35408,
+      "sha256": "407e71cd8b6d41b573be8dba651d083fb3cb8d02fcdc2c76cd01d7e82ec15266"
+    },
+    {
+      "path": "04_L2_Execute/04.5_L2_E4_Heal_Same_Authority_Repair_Governor_detailed.md",
+      "bytes": 34091,
+      "sha256": "edb7b0a6a11c34f9d8d1b1ed668b0f3a8d64e541669f819a7e411fb31fa0b7a8"
+    },
+    {
+      "path": "04_L2_Execute/04.6_L2_E5_Seal_Artifact_and_Dispatch_detailed.md",
+      "bytes": 40576,
+      "sha256": "0eeaa2d10bc4b32ea2d0dc53f880f3531030187caf998f1d6200ce799a501f39"
+    },
+    {
+      "path": "04_L2_Execute/04.7_L2_Programmatic_Tool_Calling_PTC_Sandbox_detailed.md",
+      "bytes": 20292,
+      "sha256": "928cbedf031f4acb78445d9266f7392f51e5014c8ba55037616cf4ad04c4569b"
+    },
+    {
+      "path": "04_L2_Execute/04.8_L2_Observability_Replay_Anti_Bypass_Tests_detailed.md",
+      "bytes": 21744,
+      "sha256": "f3c91f83916927f2f64f15063d7867f50bc1deac0c5fe705088b8042b5d17117"
+    },
+    {
+      "path": "04_L2_Execute/04_L2_Execute_detailed.md",
+      "bytes": 118735,
+      "sha256": "87e5fabd50a6472c9b97e82686fb9008a2101b418bbb75abaf7b7f317be30fd1"
+    },
+    {
+      "path": "04_L2_Execute/04_L2_Execute_exec.md",
+      "bytes": 19548,
+      "sha256": "e2f3cf3a179e35e43737533ed098d2d79e0c3d8da2ab7513712e6a21ea5a8868"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.1_Exit_Input_Normalization_and_Review_Packet_detailed.md",
+      "bytes": 16595,
+      "sha256": "832f01b0e0deffa2f6a187652271b085a822a3484d28b6e9cafea1ffb11ca5e1"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.2_Exit_Current_Run_Checkout_Checks_X1A_to_X1F_detailed.md",
+      "bytes": 18452,
+      "sha256": "5167d5f689ff7550fd08a604b91b2a0e4c782cd8868e41a13c13d7ef33018445"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.3_Exit_Replay_Observability_Consistency_X1G_X1I.md",
+      "bytes": 14765,
+      "sha256": "27886ce14af11d8ac97618efa45e2de19cd0e0f821535226326d0e0a73736463"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C_detailed.md",
+      "bytes": 14886,
+      "sha256": "c826c7f73f2ec4fc01e425ed5f7df47f56d8e2257ec43352468c04648c9103fc"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.5_Exit_Aggregation_and_X3_Disposition_detailed.md",
+      "bytes": 14985,
+      "sha256": "844d77a4974f6d5a44475a216ca148830525f91dcc8a86549da69efa448cc180"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.6_Exit_HITL_Freeze_Review_and_Reclearance_detailed.md",
+      "bytes": 14543,
+      "sha256": "60c3cb64d7f116b559d2211b72071ec9e8145a269699ffe9d2893f4132b59bab"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.7_Exit_Return_Response_and_Runtime_Exhaust_detailed.md",
+      "bytes": 14563,
+      "sha256": "49318b582a8492b63b7125c86c2e6deb7e2022ecd6eba6a13ba34e9e944e4cd7"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05.8_Exit_Specific_Observability_Tests_Anti_Bypass.md",
+      "bytes": 15144,
+      "sha256": "668aba4fb9437bc21e571632e02d5a01707815e29437b28d7ac70d03fded2ef6"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05_Live_Runtime_Exit_Control_&_Evaluation_detailed.md",
+      "bytes": 129004,
+      "sha256": "1111eef9c336c85eab88f0efa135b8c8c8ebb2ca4588b2229388096398ae7a06"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/05_Live_Runtime_Exit_Control_&_Evaluation_exec.md",
+      "bytes": 25123,
+      "sha256": "8bcbaac2ce6a6ea7001452e82f78d056b242344302b678924186695559deb57c"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/gap_analysis_v3_vs_industry_2026.md",
+      "bytes": 16386,
+      "sha256": "c3d2d53629177a6871aa664432c546ad97fb8403684763eaeff45cd2f9e52fdd"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/grader_composition_spec.md",
+      "bytes": 13555,
+      "sha256": "99170f06b586c5ceb58fc3cc8dc6c51f2c1b32c72b605f99a70918df60609407"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/runtime_to_regression_dataset_flow.md",
+      "bytes": 15010,
+      "sha256": "f36d27d5c8f4d9cee07a2d31bec09a4047ba338e7295feac148ee2a839860ba3"
+    },
+    {
+      "path": "05_Exit_Evaluation_and_Control/v4_hardening_addendum.md",
+      "bytes": 22607,
+      "sha256": "737c560fd9d2e31bcc00eaf85c5f9c425d1efd87c0fea2a82fe88d3d78be37e1"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.1_L6_Runtime_Exhaust_Ingest_and_Normalization_detailed.md",
+      "bytes": 11198,
+      "sha256": "eae1d5826b963bc54fae150143a1abdd342f8925d9cc97a8620087dc2c31b028"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.2_L6_Observer_Law_Isolation_Eval_Readiness.md",
+      "bytes": 9374,
+      "sha256": "320966c008e6207db0b568488a6aae36791c63c7348746b45acfb7d8b8dbf02e"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.3_L6_Outcome_Trajectory_Governance_Eval.md",
+      "bytes": 9317,
+      "sha256": "85b182415ba23d5742445e83009c94ad17ddba58242f80a3740dca7e3818c6e7"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.4_L6_Human_Calibration_and_Eval_Record_Seal_detailed.md",
+      "bytes": 8327,
+      "sha256": "43a05e0314f883a049003577cf5ec35a5ea195c4e964c7bd3db550ecc5d28dcb"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.5_L6_Signal_Fusion_RCA_and_Pattern_Synthesis_detailed.md",
+      "bytes": 8688,
+      "sha256": "ca4feb2a10a865ec0c6f97a383ec519f9d49e33e170144c159e940728556fb05"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.6_L6_Proposal_Drafting_and_Admission_Gate_detailed.md",
+      "bytes": 8364,
+      "sha256": "247ddce93083f7ffc2be1c9996a3de1774ac8e3596437bb320952a07bdb55e01"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.7_L6_Gauntlet_Approval_UWG_Promotion_FutureRun.md",
+      "bytes": 9348,
+      "sha256": "45e41ee3119953a7cdbe23587febebbfe1273ba620ef7308e6af453e822d1e41"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06.8_L6_Observability_KPI_Tests_and_Anti_Bypass_detailed.md",
+      "bytes": 11130,
+      "sha256": "36828689ea7b53a30e055bdcd9fa2d47257c3e4f1315b4bcb1c1c4a167c54a2e"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06_Shadow_Evaluation_System_Learning_detailed.md",
+      "bytes": 12637,
+      "sha256": "591026be095d2d1370d5c4b4c54f9547d9c0dc3546045fd0356d1958bbcd1c0c"
+    },
+    {
+      "path": "06_L6_Shadow_Evaluation_System_Learning/06_Shadow_Evaluation_System_Learning_exec.md",
+      "bytes": 12342,
+      "sha256": "0d04870e538f7c29065006deda3deeb11d7bf5081f5c52315e4f7fd8712f8598"
+    },
+    {
+      "path": "98_Contextual_Refinement_Model_Primers/Contextual Refinement in Transformer Models - Drill Down v7.md",
+      "bytes": 37925,
+      "sha256": "f72c799238c3f8a382df321c546930c52bede2fb6b91cf4f57ba6d518a9c93c0"
+    },
+    {
+      "path": "98_Contextual_Refinement_Model_Primers/Contextual Refinement in Transformer Models v4.md",
+      "bytes": 16810,
+      "sha256": "d7497d5a1e1acf31eb70faf96a518afcc646c8121896e32ede27d6d3e3c0ae29"
+    },
+    {
+      "path": "98_Contextual_Refinement_Model_Primers/README.md",
+      "bytes": 2157,
+      "sha256": "caa1b38c5b386250c77b3c2e34d87bc47e37d2c8419319a844b0b3465b61545a"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.1_E2E_Golden_Path_Runtime_Proof_detailed.md",
+      "bytes": 4944,
+      "sha256": "559b96d9ac63e1239622f47f4a33c3390929b2c2bf9c090119ba843b9db00741"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.2_E2E_Route_Path_Coverage_Proof_detailed.md",
+      "bytes": 4788,
+      "sha256": "f11bcba33324bb13d33a1029b490bc50a8f8906d98632950a65520cfa6c1b6ea"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.3_E2E_Contract_Emission_and_Handoff_Proof_detailed.md",
+      "bytes": 5094,
+      "sha256": "7bc425edc9b4e8864fe26d5c93d51d0cafe842ab289db3c30fcf8a66545fa71e"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.4_E2E_OTEL_Trace_and_Span_Tree_Proof_detailed.md",
+      "bytes": 5114,
+      "sha256": "5c898287617017a0bdef40b70d09da4cb2ec14b6161faf87ea7c97bf7c1bf98c"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.5_E2E_Deterministic_Replay_Proof_detailed.md",
+      "bytes": 5020,
+      "sha256": "ffaa071001d2ce74496c39f84dbd21550a9b33f0d5e82db86607d086f87c983c"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.6_E2E_No_Bypass_and_Sovereignty_Proof_detailed.md",
+      "bytes": 5200,
+      "sha256": "678b772461d33941db2ee6d551dd0c5d35ce27fc27ef0a9187beb520d4c9fece"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.7_E2E_Evidence_Prompt_Output_Groundedness_Proof_detailed.md",
+      "bytes": 5108,
+      "sha256": "84d64c680b61b4c0aa9c22d58d941b7d04da53c5ca72c05f9551cb0b69e1ea21"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.8_E2E_Acceptance_Commands_and_Proof_Bundle_detailed.md",
+      "bytes": 6462,
+      "sha256": "cf7bccd3a9a4711ebe9bf62ee3cb106d593d84d702636164f2f73c51cf68873a"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99_End_to_End_Runtime_Proof_and_Acceptance_detailed.md",
+      "bytes": 6129,
+      "sha256": "ce332c1b0466a00e9d0b587801b5a70444f0da08bcdab16a0e2d462c40c90496"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/MANIFEST.json",
+      "bytes": 1187,
+      "sha256": "1d81202de32551398e2302d5acac88cf697414a16a76d5defec49211be57ed85"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/README.md",
+      "bytes": 2501,
+      "sha256": "86782aa3153821de47ac6aadb7c38b06276ef9497515bcfade80a6c43414da6b"
+    },
+    {
+      "path": "C0_Context_Engine/Anthropic Contextual Retrieval Architecture.md",
+      "bytes": 17449,
+      "sha256": "489ed3fba374f3857af11185662d8f6934a005fb98ac7e64b82ad80bd4d66987"
+    },
+    {
+      "path": "C0_Context_Engine/Anthropic RAG Best Practices.md",
+      "bytes": 15876,
+      "sha256": "0c3848cb3962e9ba6a69fe2a7996e00d959dc8a1427c70c4ab6dbe973d46107a"
+    },
+    {
+      "path": "C0_Context_Engine/C0.1_Retrieval_Plan_detailed.md",
+      "bytes": 16067,
+      "sha256": "48ddced2052374df4bcfb6f73da2bf0c1146fe449489ec8651a1d02908fd47a0"
+    },
+    {
+      "path": "C0_Context_Engine/C0.2_Evidence_Fetch_detailed.md",
+      "bytes": 15614,
+      "sha256": "c7d26df9e71f79c27db47b3ed3f87197646e2a040889236d082d0d65e46eda81"
+    },
+    {
+      "path": "C0_Context_Engine/C0.3_Graph_RAG_detailed.md",
+      "bytes": 37340,
+      "sha256": "e4bf6e5a0f2846925fd6fee8a0dfadd6844318ffc12711bd360689b8de10b538"
+    },
+    {
+      "path": "C0_Context_Engine/C0.4_Shape_Rerank_Stratify_detailed.md",
+      "bytes": 15532,
+      "sha256": "50cd952aa936a064e0e1653d40bfb512b3b198079d9d4494239e1094b9095bde"
+    },
+    {
+      "path": "C0_Context_Engine/C0.5_Final_Evidence_Contract_detailed.md",
+      "bytes": 15357,
+      "sha256": "cdf10a97c52f4acb0a75550e82ed5f38b24027a6131056582637c866c225f5e7"
+    },
+    {
+      "path": "C0_Context_Engine/C0.6_Weak_Support_Refinement_detailed.md",
+      "bytes": 16059,
+      "sha256": "17b21cd870c90441865f066e6d7b2920c89d7e941d215f81f15d9ba901a79e03"
+    },
+    {
+      "path": "C0_Context_Engine/C0_Context_Engine_detailed.md",
+      "bytes": 145115,
+      "sha256": "1fd77bc212bf6be4ac39ef37779a75ec18a17ded39fcd9591e06269e3a5e428d"
+    },
+    {
+      "path": "C0_Context_Engine/C0_Context_Engine_example.md",
+      "bytes": 40462,
+      "sha256": "b27991818d77ebd84c83067529645e31b7dcee8d60155e255bfc9e0fc3af0945"
+    },
+    {
+      "path": "C0_Context_Engine/C0_Context_Engine_exec.md",
+      "bytes": 45868,
+      "sha256": "03b28370487ebbf340970384af35e4ea9c3a0f7a3252deafae886b6ca47b0c4c"
+    },
+    {
+      "path": "C0_Context_Engine/GraphDB/Graph DB vs. Dependency Graph.md",
+      "bytes": 11375,
+      "sha256": "438b39d5f62d98c4884535991d39e08e5a3c9b36365c7bcfd8557bb76ade2242"
+    },
+    {
+      "path": "C0_Context_Engine/GraphDB/GraphDB and ADG Use Cases.md",
+      "bytes": 12614,
+      "sha256": "10306ebdeb3b348d29a959b4b5cb3576ac2594738beb207f394fe732eac0a6da"
+    },
+    {
+      "path": "C0_Context_Engine/GraphRAG/GraphRAG vs. RAG - Semantic Similarity.md",
+      "bytes": 8452,
+      "sha256": "4f9a02115f82e78471b44d366590f86db353b81775dfc47ca8062d29599dc329"
+    },
+    {
+      "path": "C0_Context_Engine/Retrieval Pipeline.md",
+      "bytes": 25287,
+      "sha256": "f024a0d50f47cda3b738893881cfc81cf4ed0301e19863b8a457a8f82ffc9328"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.0_Boundary_Check_detailed.md",
+      "bytes": 10600,
+      "sha256": "c32c16ac42ad72a2d314bb366a418007381d30e31b33b28742b2394e890e6364"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md",
+      "bytes": 10983,
+      "sha256": "caf086b720c2c90195f129fd58c956ff2cbe2d378cad2e9daa003e7b4db08e15"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.2_Slot_Composition_detailed.md",
+      "bytes": 10692,
+      "sha256": "118bdb50fe33ffc0bfafe3b41415283c626b2c76673f90b3184a48e8b52baa57"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.3_Airlock_Security_Pass_detailed.md",
+      "bytes": 11085,
+      "sha256": "21f96aafa533ff1efc337fcc2e36a9d5c05941db51eed05d4e02230bf768bc64"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.4_Validate_Slot_Contract_detailed.md",
+      "bytes": 10598,
+      "sha256": "f1b8469ae3fe785c9068c294e767d3a8cd1868905d0614963fcd610e7e25463f"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.5_Token_Budget_Determinism_detailed.md",
+      "bytes": 10790,
+      "sha256": "4e8d29eff89fb1716dab4d04f3fb8c61b85bf274b568136dac4a7e55db129836"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.6_Provider_Aware_Rendering_detailed.md",
+      "bytes": 11038,
+      "sha256": "c4c836c2fa031531e136b4f73cbd34753978369635c6e388df1e645e39229766"
+    },
+    {
+      "path": "PA_Prompt_Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md",
+      "bytes": 11401,
+      "sha256": "21a113c7dbb46f8d3f4ca7eb7f8eb90b8238713d1b4f18d3e2c7dedb2a976aa4"
+    },
+    {
+      "path": "PA_Prompt_Assembly/Prompt Assembly_exec.md",
+      "bytes": 15409,
+      "sha256": "11bd065480feb85beb9e87c9763be21355284a2af7cbe9ef7af5867a98d72dd5"
+    },
+    {
+      "path": "PA_Prompt_Assembly/Prompt_Assembly_detailed.md",
+      "bytes": 17163,
+      "sha256": "48d31e9c4515ee88ab83f5cc2c431e80f272b1a77bc4d6c2520a0b415f7534c3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 974,
+      "sha256": "b0fc3322970822f3975b75ed7a25dadc6d4657a82ca4ee1e8f13b35022a7a5f7"
+    },
+    {
+      "path": "WINDOWS_EXPLORER_SAFE_TEST_REPORT.md",
+      "bytes": 925,
+      "sha256": "c9798cffb032b97b4cb72f9f4031a0ac53dff3770531e5e581267fbdae536829"
+    },
+    {
+      "path": "WINDOWS_PATH_MAP.md",
+      "bytes": 3988,
+      "sha256": "84716046093f06ac03d7a5ba3d021e81d6127ace325cf388c5be8d035754c05c"
+    }
+  ]
+}

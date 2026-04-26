@@ -1,4 +1,35 @@
 ========================================================================================================================
+MECE ALIGNMENT FULL OVERWRITE HEADER
+Canonical folder: 02_L1_Reasoning_Plan
+Canonical file: 02_L1_Reasoning_Plan_Generation_detailed.md
+Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
+Source refreshed from: 02_L1_Reasoning_Plan_Generation_detailed.md
+Owner summary: L1 planning only. Owns intent frame, ambiguity register, task/query spec, advisory route hints, and L1PlanContract. Does not retrieve, route, execute, or mutate.
+
+GLOBAL NO-OVERLAP LAW
+- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
+- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
+- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
+- 00X owns traceability and no-loss mapping only.
+- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
+- 02 L1 owns advisory interpretation and planning only.
+- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
+- C0 owns retrieval/evidence contracts only.
+- PA owns prompt packet construction only.
+- 04 L2 owns bounded execution and sealing only.
+- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
+- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
+- 99 owns proof harnesses only; it does not own runtime behavior.
+
+REFERENCE POINTERS
+- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
+- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
+- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
+- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
+- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+========================================================================================================================
+
+========================================================================================================================
 02_L1_REASONING_PLAN_GENERATION_DETAILED.md
 PARENT L1 REASONING + PLAN GENERATION DOCTRINE
 NO-OVERLAP FULL OVERWRITE
@@ -73,8 +104,8 @@ SOURCE OWNERS:
 - Prompt_Assembly_detailed.md = prompt slots, PromptBOM, PromptEnvelope, CompiledPromptArtifact, and provider rendering.
 - 04_L2_Execute_detailed.md = bounded execution and sealed artifacts.
 - 05_Live_Runtime_Exit_Control_&_Evaluation_detailed.md = final current-run checkout and sealed-result disposition.
-- Evaluation_Runtime_Gates_detailed.md = G01-G29 runtime gate decisions and live dispositions.
-- 00_L5_Governance_Safety_detailed.md = policy, authority, origin, egress, replay, audit certification evidence.
+- 00C_Runtime_Gates_Current_Run_Mesh/ = G01-G29 runtime gate decisions and live dispositions.
+- 00A_L5_Governance_Safety/00A_L5_Governance_Safety_detailed.md = policy, authority, origin, egress, replay, audit certification evidence.
 - 06_Shadow_Evaluation_System_Learning_detailed.md = completed-run evaluation and future-run learning.
 - UWG/L4 state files = durable write admission and system-of-record mutation.
 

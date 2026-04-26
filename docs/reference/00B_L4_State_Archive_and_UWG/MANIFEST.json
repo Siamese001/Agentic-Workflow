@@ -1,0 +1,65 @@
+{
+  "pack_name": "L4_UWG_parent_and_8_children_MECE_00_prefix_overwrite_pack",
+  "created_utc": "2026-04-26T18:05:49Z",
+  "mode": [
+    "kitchen_sink",
+    "zero_loss",
+    "no_overlap",
+    "implementation_grade",
+    "windsurf_executable",
+    "full_overwrite",
+    "cross_cutting_00_prefix"
+  ],
+  "parent": "00B_L4_State_Archive_and_UWG/00B_L4_State_Archive_and_UWG_detailed.md",
+  "children": [
+    "00.1_L4_Policy_Blueprint_and_Registry_State_detailed.md",
+    "00.2_L4_Memory_and_Learning_Promotion_State_detailed.md",
+    "00.3_L4_Retrieval_Surface_State_detailed.md",
+    "00.4_L4_Cache_State_detailed.md",
+    "00.5_L4_Replay_Snapshot_and_Audit_Ledger_detailed.md",
+    "00.6_UWG_Durable_Write_Gateway_detailed.md",
+    "00.7_L4_Read_Surface_Refresh_and_Projection_detailed.md",
+    "00.8_L4_UWG_Observability_Tests_and_Anti_Bypass_detailed.md"
+  ],
+  "numbering_rationale": "00_ / 00.x prefix used because L4/UWG is a cross-cutting durable state and write-sovereignty plane, not a sequential runtime stage after 06.",
+  "source_files_to_treat_as_authority": [
+    "- docs/reference/agentic_system_process_map_exec.md",
+    "- docs/reference/00A_L5_Governance_Safety/00A_L5_Governance_Safety_detailed.md",
+    "- docs/reference/05_Live_Runtime_Exit_Control_&_Evaluation_detailed.md",
+    "- docs/reference/00C_Runtime_Gates_Current_Run_Mesh/",
+    "- docs/reference/04_L2_Execute_detailed.md",
+    "- docs/reference/C0_Context_Engine_detailed.md",
+    "- docs/reference/Prompt_Assembly_detailed.md",
+    "- docs/reference/06_Shadow_Evaluation_System_Learning_detailed.md",
+    "- docs/reference/01_request_intake_detailed.md",
+    "- docs/reference/02_L1_Reasoning_Plan_Generation_detailed.md",
+    "- docs/reference/03_L0_Route_Decision_Switching_L3_detailed.md",
+    "- docs/reference/Programmatic Tool Calling (PTC) v2.md"
+  ],
+  "global_no_overlap_lock": [
+    "- U0 / Intake owns request envelope validation and request identity stamping.",
+    "- L1 owns intent interpretation, task_spec, query_spec, ambiguity register, and plan recommendation.",
+    "- L0 owns route selection and RouteContract authority.",
+    "- C0 owns evidence retrieval, shaping, verification, support score, and FinalEvidenceContract.",
+    "- Prompt Assembly owns signed provider-ready PromptEnvelope construction.",
+    "- L3 owns managed workflow shaping.",
+    "- L2 owns bounded execution and sealed artifacts, including PTC sandbox execution where applicable.",
+    "- Runtime Gates own G01-G29 gate verdicts.",
+    "- Exit Eval owns current-run disposition and may emit CommitRequest, but does not write L4.",
+    "- L5 owns policy, authority, origin-trust, egress, HITL re-clearance, replay/audit certification evidence.",
+    "- UWG owns durable write admission.",
+    "- L4 owns durable system-of-record state and versioned read surfaces.",
+    "- L6 owns completed-run evaluation, RCA, proposal, and future-run learning promotion attempts."
+  ],
+  "sha256": {
+    "00.1_L4_Policy_Blueprint_and_Registry_State_detailed.md": "d00e6257d32349d6c1cf9c1f1e5e3c450ccae3b4908c3bd53b35009fbdde0615",
+    "00.2_L4_Memory_and_Learning_Promotion_State_detailed.md": "638c22fa5d288a68013cfdc81c22f840d8ecdda7cf002fd2bf6f462243687744",
+    "00.3_L4_Retrieval_Surface_State_detailed.md": "44046caa4057ea139f2f4b28bd14140810a607603d606704720c2c84019c4971",
+    "00.4_L4_Cache_State_detailed.md": "42bdd18f14e8b5520495e2eb01b988348b9377825046904d043a28016d011da0",
+    "00.5_L4_Replay_Snapshot_and_Audit_Ledger_detailed.md": "ca53a34d78a7b7a96b67a111e145e9a56fed94007b7fbdd3292b330edda2a45f",
+    "00.6_UWG_Durable_Write_Gateway_detailed.md": "62dc43c24e966311f06edc098140f62a6dfaa24d7470e2d7831ee64e730ddb4e",
+    "00.7_L4_Read_Surface_Refresh_and_Projection_detailed.md": "c461f0b5cdd8afe6be3c5e34ba1dcd928363b4e7e315cbb2e032189e2fdab8ec",
+    "00.8_L4_UWG_Observability_Tests_and_Anti_Bypass_detailed.md": "136dd9a728abc2bfd508fe0d89f17caba8aaeb7d57c4a897bccfaf77a5f1e6eb",
+    "00B_L4_State_Archive_and_UWG/00B_L4_State_Archive_and_UWG_detailed.md": "3ef0d172d00df7447370462da0e86e13e65d347578d5803d5124ded817c09dbe"
+  }
+}

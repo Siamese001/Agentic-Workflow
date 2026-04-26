@@ -1,4 +1,35 @@
 ========================================================================================================================
+MECE ALIGNMENT FULL OVERWRITE HEADER
+Canonical folder: 01_Request_Intake
+Canonical file: 01_request_intake_detailed.md
+Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
+Source refreshed from: 01_request_intake_detailed.md
+Owner summary: U0 intake only. Owns transport/envelope validation, identity/session/tenant baseline, quota, schema normalization, origin labels, and ValidatedRequest/RejectedRequest handoff.
+
+GLOBAL NO-OVERLAP LAW
+- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
+- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
+- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
+- 00X owns traceability and no-loss mapping only.
+- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
+- 02 L1 owns advisory interpretation and planning only.
+- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
+- C0 owns retrieval/evidence contracts only.
+- PA owns prompt packet construction only.
+- 04 L2 owns bounded execution and sealing only.
+- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
+- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
+- 99 owns proof harnesses only; it does not own runtime behavior.
+
+REFERENCE POINTERS
+- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
+- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
+- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
+- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
+- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+========================================================================================================================
+
+========================================================================================================================
 01_REQUEST_INTAKE_DETAILED.md
 REQUEST INTAKE / U0 — FULL OVERWRITE
 MECE WITH 00A L5, 00B L4/UWG, 00C RUNTIME GATES, AND 02-06 RUNTIME REQUIREMENTS
@@ -102,12 +133,12 @@ They now belong to:
 
 CANONICAL CHILD FILE MAP
 ========================================================================================================================
-01.1_Intake_Transport_Envelope_and_Channel_Validation_detailed.md
+01.1_Intake_Transport_Envelope_Channel_Validation.md
 - Unique surface: accepted ingress channel, raw envelope, payload size, transport metadata, channel trust baseline.
 - Owns: TransportEnvelope, RawIngressEnvelope, ChannelValidationReceipt.
 - Does not own: semantic safety, task ambiguity, route selection, output policy.
 
-01.2_Intake_Identity_Tenant_Session_and_Quota_Baseline_detailed.md
+01.2_Intake_Identity_Tenant_Session_Quota_Baseline.md
 - Unique surface: caller baseline, tenant/session binding, quota envelope, duplicate admission baseline.
 - Owns: CallerScopeBaseline, TenantSessionBinding, QuotaBaselineReceipt.
 - Does not own: deep authorization policy, L5 certification, C0 ACL retrieval filtering, UWG write authority.
@@ -117,7 +148,7 @@ CANONICAL CHILD FILE MAP
 - Owns: NormalizedRequestPayload, IdempotencyReceipt, RequestDigestManifest.
 - Does not own: L1 semantic parsing, L0 route digest, L2 attempt idempotency, replay of downstream artifacts.
 
-01.4_Intake_Origin_Trust_Injection_Triage_and_Data_Labeling_detailed.md
+01.4_Intake_Origin_Trust_Injection_Triage_Data_Labeling.md
 - Unique surface: origin labels, quoted-content labeling, instruction/data boundary pre-labels, obvious injection triage.
 - Owns: OriginTrustLabelSet, IngressDataBoundaryMap, InjectionTriageReceipt.
 - Does not own: Prompt Assembly slot validation, C0 retrieved-content quarantine, L5 origin certification, final adversarial gate.
@@ -127,7 +158,7 @@ CANONICAL CHILD FILE MAP
 - Owns: ValidatedRequestContract, RejectedRequestContract, L1HandoffReceipt.
 - Does not own: L1PlanContract, RouteContract, ExitDisposition, user-facing final response policy.
 
-01.6_Intake_Observability_Replay_and_Anti_Bypass_Tests_detailed.md
+01.6_Intake_Observability_Replay_Anti_Bypass_Tests.md
 - Unique surface: intake-only spans, intake-only replay bindings, intake boundary anti-bypass tests.
 - Owns: IntakeTraceReceipt, IntakeReplayBinding, U0BoundaryTestSuite.
 - Does not own: whole-runtime OTEL, G01-G29 gate mesh, Exit trace completeness, L6 telemetry exhaust.

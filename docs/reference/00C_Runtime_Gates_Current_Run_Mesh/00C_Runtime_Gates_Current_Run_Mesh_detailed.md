@@ -1,4 +1,39 @@
 ========================================================================================================================
+MECE ALIGNMENT FULL OVERWRITE HEADER
+Canonical folder: 00C_Runtime_Gates_Current_Run_Mesh
+Canonical file: 00C_Runtime_Gates_Current_Run_Mesh_detailed.md
+Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
+Source refreshed from: 00C_Runtime_Gates_Current_Run_Mesh_detailed.md
+Owner summary: Cross-cutting current-run gate mesh. Owns G01-G29 live GateVerdict law and proceed/stop dispositions. Does not own Exit X3 aggregation or L5 certification evidence.
+
+
+RUNTIME GATES CORE QUESTION
+- Runtime Gates ask whether this current live run step, packet, tool call, output, escalation, or write proposal may proceed right now.
+
+GLOBAL NO-OVERLAP LAW
+- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
+- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
+- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
+- 00X owns traceability and no-loss mapping only.
+- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
+- 02 L1 owns advisory interpretation and planning only.
+- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
+- C0 owns retrieval/evidence contracts only.
+- PA owns prompt packet construction only.
+- 04 L2 owns bounded execution and sealing only.
+- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
+- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
+- 99 owns proof harnesses only; it does not own runtime behavior.
+
+REFERENCE POINTERS
+- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
+- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
+- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
+- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
+- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+========================================================================================================================
+
+========================================================================================================================
 00C_RUNTIME_GATES_CURRENT_RUN_MESH_DETAILED.md
 PARENT RUNTIME GATES CURRENT-RUN CONTROL MESH
 MECE FULL OVERWRITE
@@ -82,28 +117,28 @@ Runtime Gates may emit GateVerdict records and recommended bounded dispositions.
 
 CHILD FILE MAP
 ------------------------------------------------------------------------------------------------------------------------
-- 00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk_detailed.md
+- 00C.1_RG_G01_G05_Ingress_Identity_Intent_Safety_Risk.md
   Owns G01-G05 only: ingress, identity, intent, safety/policy, and risk-tier gate requirements.
 
-- 00C.2_Runtime_Gates_G06_G10_HITL_Route_Retrieval_Evidence_Prompt_detailed.md
+- 00C.2_RG_G06_G10_HITL_Route_Retrieval_Evidence_Prompt.md
   Owns G06-G10 only: HITL, route selection, retrieval/grounding, evidence quality, prompt assembly gate requirements.
 
-- 00C.3_Runtime_Gates_G11_G15_Tool_Model_Args_Egress_Sandbox_detailed.md
+- 00C.3_RG_G11_G15_Tool_Model_Args_Egress_Sandbox.md
   Owns G11-G15 only: tool/model registry, tool args, tool/retrieved output trust, egress, fs/shell/data access.
 
-- 00C.4_Runtime_Gates_G16_G20_Memory_Privacy_Workflow_Loop_Budget_detailed.md
+- 00C.4_RG_G16_G20_Memory_Privacy_Workflow_Loop_Budget.md
   Owns G16-G20 only: memory access, privacy/cross-context, workflow trajectory, loop/retry/thrash, budget/SLO.
 
 - 00C.5_Runtime_Gates_G21_G24_Output_Security_Replay_detailed.md
   Owns G21-G24 only: output schema, output quality, security/leakage, determinism/replay.
 
-- 00C.6_Runtime_Gates_G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall_detailed.md
+- 00C.6_RG_G25_G29_Anomaly_Exit_Write_Audit_LearnFW.md
   Owns G25-G29 only: runtime anomaly, Exit-disposition eligibility, durable-write sovereignty, audit/trace completeness, learning firewall.
 
-- 00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix_detailed.md
+- 00C.7_RG_Verdict_Schema_Disposition_Matrix.md
   Owns canonical GateVerdict schema, result/disposition vocabularies, aggregation handoff semantics, and how gate verdicts flow to Exit.
 
-- 00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass_detailed.md
+- 00C.8_RG_Observability_Tests_Anti_Bypass.md
   Owns OTEL span names, proof commands, anti-bypass tests, acceptance criteria, and runtime-vs-CI/CD separation tests.
 
 CANONICAL CURRENT-RUN DISPOSITION VOCABULARY

@@ -1,4 +1,35 @@
 ========================================================================================================================
+MECE ALIGNMENT FULL OVERWRITE HEADER
+Canonical folder: 06_L6_Shadow_Evaluation_System_Learning
+Canonical file: 06_Shadow_Evaluation_System_Learning_detailed.md
+Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
+Source refreshed from: 06_Shadow_Evaluation_System_Learning_detailed.md
+Owner summary: L6 after-runtime shadow evaluation and future-run learning only. Owns sealed exhaust ingest, evaluation, calibration, RCA, proposals, gauntlet, and UWG promotion requests.
+
+GLOBAL NO-OVERLAP LAW
+- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
+- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
+- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
+- 00X owns traceability and no-loss mapping only.
+- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
+- 02 L1 owns advisory interpretation and planning only.
+- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
+- C0 owns retrieval/evidence contracts only.
+- PA owns prompt packet construction only.
+- 04 L2 owns bounded execution and sealing only.
+- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
+- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
+- 99 owns proof harnesses only; it does not own runtime behavior.
+
+REFERENCE POINTERS
+- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
+- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
+- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
+- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
+- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+========================================================================================================================
+
+========================================================================================================================
 06_Shadow_Evaluation_System_Learning_detailed.md
 PARENT L6 SHADOW EVALUATION -> FUTURE-RUN LEARNING DOCTRINE
 NO-OVERLAP FULL OVERWRITE
@@ -50,8 +81,8 @@ L6 DOES NOT OWN:
 
 SOURCE FILES TO RESPECT WITHOUT RESTATING THEIR DETAIL:
 - agentic_system_process_map_exec.md: top-level runtime map and cross-cutting planes.
-- 00_L5_Governance_Safety_detailed.md and children: certification evidence, policy/auth/egress/replay evidence.
-- 00_L4_State_Archive_and_UWG_detailed.md and children: durable state, UWG write admission, read-surface refresh.
+- 00A_L5_Governance_Safety/00A_L5_Governance_Safety_detailed.md and children: certification evidence, policy/auth/egress/replay evidence.
+- 00B_L4_State_Archive_and_UWG/00B_L4_State_Archive_and_UWG_detailed.md and children: durable state, UWG write admission, read-surface refresh.
 - 01_request_intake_detailed.md and children: validated request envelope only.
 - 02_L1_Reasoning_Plan_Generation_detailed.md and children: notepad plan only.
 - 03_L0_Route_Decision_Switching_L3_detailed.md and children: route and managed workflow authority.
@@ -59,7 +90,7 @@ SOURCE FILES TO RESPECT WITHOUT RESTATING THEIR DETAIL:
 - Prompt_Assembly_detailed.md and children: signed prompt packet assembly.
 - 04_L2_Execute_detailed.md and children: bounded execution and sealed artifacts.
 - 05_Live_Runtime_Exit_Control_&_Evaluation_detailed.md and children: current-run checkout and X3 disposition.
-- Evaluation_Runtime_Gates_detailed.md: G01-G29 live runtime gate verdicts.
+- 00C_Runtime_Gates_Current_Run_Mesh/: G01-G29 live runtime gate verdicts.
 
 GLOBAL NO-OVERLAP LOCK
 ------------------------------------------------------------------------------------------------------------------------
@@ -85,11 +116,11 @@ CHILD FILE MAP
 - Owns: completed-run exhaust collection, RuntimeExhaustBundle, NormalizedEvidenceRecord, StageMap, ArtifactInventory.
 - Does not own: observer-law enforcement, scoring, RCA, proposal, promotion, UWG commit.
 
-06.2_L6_Observer_Law_Surface_Isolation_and_Eval_Readiness_detailed.md
+06.2_L6_Observer_Law_Isolation_Eval_Readiness.md
 - Owns: ObserverComplianceReceipt, denied-write detection, StageBarrierReceipt, EvalReadinessReceipt.
 - Does not own: evaluation scoring, Exit dispositions, durable write admission, policy publishing.
 
-06.3_L6_Outcome_Trajectory_and_Governance_Evaluation_detailed.md
+06.3_L6_Outcome_Trajectory_Governance_Eval.md
 - Owns: OutcomeEvalRecord, TrajectoryEvalRecord, GovernanceRegressionRecord.
 - Does not own: live X1 gates, Runtime Gate verdicts, proposal drafting, promotion.
 
@@ -105,7 +136,7 @@ CHILD FILE MAP
 - Owns: DraftProposalPacket, ProposedDiffManifest, ProposalAdmissionReceipt.
 - Does not own: approval, committing, publishing, changing runtime behavior.
 
-06.7_L6_Gauntlet_Approval_UWG_Promotion_and_Future_Run_Publish_detailed.md
+06.7_L6_Gauntlet_Approval_UWG_Promotion_FutureRun.md
 - Owns: GauntletReceipt, ApprovalDecisionRecord, PromotionPacket, FutureRunActivationReceipt.
 - Does not own: UWG internal write validation, L4 storage implementation, current-run mutation.
 
