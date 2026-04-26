@@ -25,6 +25,14 @@ from typing import Callable, Mapping
 from .candidate_pool import CandidateEvidencePool
 from .contradiction_gap import scan_conflicts_and_gaps
 from .evidence_contract import EvidenceContract, verify_and_score
+from .evidence_projections import (
+    project_background,
+    project_contradicts,
+    project_definition,
+    project_excluded,
+    project_must_use,
+    project_supporting,
+)
 from .failure_modes import FailureModeReport, detect_all_failure_modes
 from .final_contract import (
     AclReport,
@@ -36,19 +44,23 @@ from .final_contract import (
     PromptBudgetHint,
     ReplayMetadata,
     UnresolvedGapOut,
+    compute_source_manifest_hash,
     seal_final_contract,
 )
 from .gates import GateReport, run_all_gates
-from .graph_traverse import AdjacencyFn, expand_graph
+from .contradiction_gap import ConflictGapReport
+from .graph_traverse import AdjacencyFn, GraphExpandedEvidencePool, expand_graph
 from .hydration import HydratedEvidencePool, normalize_pool
 from .plan import RetrievalPlan, build_retrieval_plan
 from .preflight import C0PreflightStatus, run_preflight
-from .refine_loop import RefinedEvidenceContract, plan_refinement
+from .refine_loop import RefinedEvidenceContract, detect_compound_target, plan_refinement
 from .route_contract import L1PlanContract, RouteContract
 from .shape import ShapedEvidenceSet, shape_pool
 from .verdicts import (
     EvidenceClass,
     RecommendedDisposition,
+    RefineTactic,
+    RetrievalMode,
     SupportStatus,
 )
 
@@ -81,6 +93,13 @@ def _new_contract_id() -> str:
     return f"c0:{uuid.uuid4().hex[:16]}"
 
 
+def _authority_signal():
+    """Resolve at call time so we don't import RerankSignal at module top
+    (avoids circular import; mirrors evidence_contract._authority_key)."""
+    from .shape import RerankSignal
+    return RerankSignal.AUTHORITY
+
+
 def _disposition_from_status(status: SupportStatus) -> RecommendedDisposition:
     return {
         SupportStatus.PASS: RecommendedDisposition.PROCEED,
@@ -103,6 +122,9 @@ def _build_blocked_contract(
     return FinalEvidenceContract(
         contract_id=contract_id,
         route_id=route.route_id,
+        route_replay_key=route.route_replay_key,
+        policy_hash=route.policy_hash,
+        blueprint_hash=route.blueprint_hash,
         status=SupportStatus.BLOCKED,
         support_score=0.0,
         blocked_reason=blocked_reason,
@@ -119,18 +141,21 @@ def _build_blocked_contract(
 def _build_freshness_report(
     hydrated: HydratedEvidencePool, route: RouteContract,
 ) -> FreshnessReport:
+    """Spec lines 1082-1086 — stale_sources holds SOURCE-LEVEL ids, not chunk ids."""
     stale: list[str] = []
     versions: list[str] = []
     for h in hydrated.hydrated:
         if not h.quality.source_version_current:
-            stale.append(h.candidate.chunk_id)
+            # Source-level identity per spec line 1085 (list of stale sources).
+            stale.append(h.canonical_source_path)
         if h.candidate.manifest.version:
             versions.append(h.candidate.manifest.version)
     newest = max(versions, default="")
     return FreshnessReport(
         freshness_class=route.freshness_class.value,
         newest_source_age=newest,
-        stale_sources=tuple(stale),
+        # De-dupe while preserving insertion order.
+        stale_sources=tuple(dict.fromkeys(stale)),
         version_mismatches=(),
     )
 
@@ -138,12 +163,14 @@ def _build_freshness_report(
 def _build_acl_report(
     hydrated: HydratedEvidencePool, route: RouteContract,
 ) -> AclReport:
-    cleared = [h.candidate.chunk_id for h in hydrated.hydrated if h.quality.acl_clear]
+    """Spec lines 1088-1092 — cleared_sources holds SOURCE-LEVEL ids, not chunk ids."""
+    cleared = [h.canonical_source_path for h in hydrated.hydrated if h.quality.acl_clear]
     blocked = sum(1 for h in hydrated.hydrated if not h.quality.acl_clear)
     classes = sorted({h.candidate.manifest.data_class for h in hydrated.hydrated if h.candidate.manifest.data_class})
     return AclReport(
         tenant_scope=route.tenant_scope,
-        cleared_sources=tuple(cleared),
+        # De-dupe while preserving insertion order.
+        cleared_sources=tuple(dict.fromkeys(cleared)),
         blocked_sources_count=blocked,
         data_classes_seen=tuple(classes),
     )
@@ -155,14 +182,23 @@ def _build_budget_report(
     expanded_hops: int,
     latency_ms: int,
     shaped: ShapedEvidenceSet,
+    route: RouteContract,
+    plan: RetrievalPlan,
 ) -> BudgetReport:
+    """Spec lines 1123-1128 — budget_report carries actual usage, not placeholders."""
+    tokens_used = shaped.token_estimate
+    tokens_remaining = max(0, plan.budgets.max_token_context - tokens_used)
+    latency_remaining = max(0, plan.budgets.max_latency_ms - latency_ms)
     return BudgetReport(
         retrieval_passes=retrieval_passes,
         graph_hops_used=expanded_hops,
         latency_ms=latency_ms,
-        cost_tier_used="standard",
-        token_estimate=shaped.token_estimate,
-        budget_remaining="",
+        cost_tier_used=route.max_cost_tier,
+        token_estimate=tokens_used,
+        budget_remaining=(
+            f"tokens={tokens_remaining}/{plan.budgets.max_token_context}, "
+            f"latency_ms={latency_remaining}/{plan.budgets.max_latency_ms}"
+        ),
     )
 
 
@@ -235,6 +271,91 @@ def _project_gaps(conflict_report) -> tuple[UnresolvedGapOut, ...]:
     )
 
 
+# ----- refinement-tactic application -----
+
+
+def _apply_refine_tactic(plan: RetrievalPlan, tactic: RefineTactic) -> RetrievalPlan:
+    """Build a refined plan from a base plan + tactic.
+
+    Spec lines 707-715 — the allowed refinements for a single bounded second
+    pass. We modify only the parameters the tactic governs; everything else
+    (route, ACL, tenant, support_target) is held fixed per spec lines 717-724.
+    """
+    if tactic == RefineTactic.HYBRIDIZE:
+        # Ensure SPARSE present in retrieval modes; spec line 715.
+        if RetrievalMode.SPARSE in plan.retrieval_modes:
+            return plan
+        return _replace_plan(plan, retrieval_modes=plan.retrieval_modes + (RetrievalMode.SPARSE,))
+    if tactic == RefineTactic.GRAPH_HOP:
+        # Bounded one-hop expansion — spec line 714.
+        from .plan import GraphBounds
+        new_bounds = GraphBounds(
+            max_hops=plan.graph_bounds.max_hops + 1,
+            max_parent_expansion=plan.graph_bounds.max_parent_expansion,
+            max_child_expansion=plan.graph_bounds.max_child_expansion,
+            relation_filter=plan.graph_bounds.relation_filter,
+        )
+        return _replace_plan(plan, graph_bounds=new_bounds)
+    if tactic == RefineTactic.BROADEN:
+        # Lower dense similarity_threshold; spec line 711.
+        if plan.dense_query_spec is not None and plan.dense_query_spec.similarity_threshold > 0:
+            from .plan import DenseQuerySpec
+            new_dq = DenseQuerySpec(
+                query_text=plan.dense_query_spec.query_text,
+                embed_model_id=plan.dense_query_spec.embed_model_id,
+                top_k=plan.dense_query_spec.top_k,
+                similarity_threshold=max(0.0, plan.dense_query_spec.similarity_threshold - 0.1),
+            )
+            return _replace_plan(plan, dense_query_spec=new_dq)
+        return plan
+    if tactic == RefineTactic.NARROW:
+        # Tighten dense similarity_threshold; spec line 712.
+        if plan.dense_query_spec is not None:
+            from .plan import DenseQuerySpec
+            new_dq = DenseQuerySpec(
+                query_text=plan.dense_query_spec.query_text,
+                embed_model_id=plan.dense_query_spec.embed_model_id,
+                top_k=plan.dense_query_spec.top_k,
+                similarity_threshold=min(1.0, plan.dense_query_spec.similarity_threshold + 0.1),
+            )
+            return _replace_plan(plan, dense_query_spec=new_dq)
+        return plan
+    if tactic == RefineTactic.FRESHEN:
+        # Drop CACHE if active; force METADATA mode; spec line 711.
+        new_modes = tuple(m for m in plan.retrieval_modes if m != RetrievalMode.CACHE)
+        if RetrievalMode.METADATA not in new_modes:
+            new_modes = new_modes + (RetrievalMode.METADATA,)
+        return _replace_plan(plan, retrieval_modes=new_modes)
+    if tactic == RefineTactic.REWRITE:
+        # No-op for the base wave: REWRITE requires query rewriting which the
+        # caller controls. We still mark refine_attempts so callers can detect.
+        return plan
+    # DECOMPOSE / ABSTAIN — caller-handled / no second pass.
+    return plan
+
+
+def _replace_plan(plan: RetrievalPlan, **kwargs) -> RetrievalPlan:
+    """Frozen-dataclass replace helper that round-trips through the constructor."""
+    fields = {f: getattr(plan, f) for f in plan.__dataclass_fields__}
+    fields.update(kwargs)
+    return RetrievalPlan(**fields)
+
+
+# ----- inner pipeline state container -----
+
+
+@dataclass(frozen=True)
+class _PipelinePass:
+    """Per-pass artifacts. Used by both the first pass and the refinement re-run."""
+
+    candidates: CandidateEvidencePool
+    hydrated: HydratedEvidencePool
+    expanded: GraphExpandedEvidencePool
+    conflict_report: ConflictGapReport
+    shaped: ShapedEvidenceSet
+    intermediate: EvidenceContract
+
+
 # ----- the dispatcher -----
 
 
@@ -244,6 +365,41 @@ class C0Dispatcher:
 
     fetch: FetcherFn
     adjacency: AdjacencyFn
+
+    def _run_pipeline_pass(
+        self, *, plan: RetrievalPlan, route: RouteContract, request_id: str,
+    ) -> _PipelinePass:
+        """Execute fetch -> hydrate -> graph -> conflict -> shape -> verify_and_score
+        for ONE pass. Pure: no I/O outside the injected callbacks.
+        """
+        candidates = self.fetch(plan, route)
+        hydrated = normalize_pool(candidates, tenant=route.tenant_scope)
+        expanded = expand_graph(
+            hydrated, bounds=plan.graph_bounds, adjacency=self.adjacency,
+        )
+        conflict_report = scan_conflicts_and_gaps(
+            expanded, target=plan.support_target,
+        )
+        shaped = shape_pool(
+            expanded,
+            target=plan.support_target,
+            max_token_context=plan.budgets.max_token_context,
+            contradiction_chunk_ids=conflict_report.contradiction_chunk_ids(),
+        )
+        intermediate = verify_and_score(
+            shaped,
+            request_id=request_id,
+            target=plan.support_target,
+            conflict_report=conflict_report,
+        )
+        return _PipelinePass(
+            candidates=candidates,
+            hydrated=hydrated,
+            expanded=expanded,
+            conflict_report=conflict_report,
+            shaped=shaped,
+            intermediate=intermediate,
+        )
 
     def run(
         self,
@@ -258,6 +414,44 @@ class C0Dispatcher:
         notes: list[str] = []
         t_start = time.monotonic()
 
+        try:
+            return self._run_inner(
+                contract_id=contract_id, rid=rid, route=route,
+                plan_contract=plan_contract, plan_id=plan_id,
+                t_start=t_start, notes=notes,
+            )
+        except (ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
+            # C0.I11 — any error inside the pipeline must surface as a sealed
+            # BLOCKED contract. We never propagate exceptions to callers
+            # because doing so would leak retrieval lineage and bypass the
+            # output contract.
+            blocked = _build_blocked_contract(
+                contract_id=contract_id,
+                route=route,
+                blocked_reason=f"dispatcher_error: {type(exc).__name__}: {exc}",
+                notes=tuple(notes) + (f"exception_class={type(exc).__name__}",),
+            )
+            return C0Result(
+                contract=seal_final_contract(blocked),
+                intermediate_contract=None,
+                refined=None,
+                gates=None,
+                failure_modes=None,
+                plan=None,
+                notes=tuple(notes) + (f"raised: {exc}",),
+            )
+
+    def _run_inner(
+        self,
+        *,
+        contract_id: str,
+        rid: str,
+        route: RouteContract,
+        plan_contract: L1PlanContract,
+        plan_id: str | None,
+        t_start: float,
+        notes: list[str],
+    ) -> C0Result:
         # Stage C0.0 — preflight
         pre = run_preflight(route, plan_contract)
         if not pre.eligible:
@@ -285,37 +479,14 @@ class C0Dispatcher:
             plan_id=plan_id or f"plan:{uuid.uuid4().hex[:12]}",
         )
 
-        # Stage C0.2 — fetch (callback)
-        candidates = self.fetch(plan, route)
-
-        # Stage C0.2A — hydrate
-        hydrated = normalize_pool(candidates, tenant=route.tenant_scope)
-
-        # Stage C0.3 — graph expand
-        expanded = expand_graph(
-            hydrated, bounds=plan.graph_bounds, adjacency=self.adjacency,
-        )
-
-        # Stage C0.4A — contradictions + gaps (computed first so shape can flag them)
-        conflict_report = scan_conflicts_and_gaps(
-            expanded, target=plan.support_target,
-        )
-
-        # Stage C0.4 — shape
-        shaped = shape_pool(
-            expanded,
-            target=plan.support_target,
-            max_token_context=plan.budgets.max_token_context,
-            contradiction_chunk_ids=conflict_report.contradiction_chunk_ids(),
-        )
-
-        # Stage C0.5 — verify + score
-        intermediate = verify_and_score(
-            shaped,
-            request_id=rid,
-            target=plan.support_target,
-            conflict_report=conflict_report,
-        )
+        # Stages C0.2 .. C0.5 — first pipeline pass.
+        first_pass = self._run_pipeline_pass(plan=plan, route=route, request_id=rid)
+        candidates = first_pass.candidates
+        hydrated = first_pass.hydrated
+        expanded = first_pass.expanded
+        conflict_report = first_pass.conflict_report
+        shaped = first_pass.shaped
+        intermediate = first_pass.intermediate
 
         # Gates
         gates = run_all_gates(
@@ -358,14 +529,64 @@ class C0Dispatcher:
                 notes=tuple(notes),
             )
 
-        # C0.6 refine — single-pass at most
+        # C0.6 refine — single-pass at most.
+        # Spec lines 700-739: if the first pass returns WEAK / CONFLICTED /
+        # EMPTY and the route allows another attempt, build a refined plan
+        # via the chosen tactic and RUN THE PIPELINE A SECOND TIME with it.
+        compound = detect_compound_target(plan_contract.task_spec)
         refined = plan_refinement(
             intermediate, conflict=conflict_report, plan=plan, attempts_so_far=0,
+            compound_target=compound,
         )
 
-        # Build the final contract. Refinement does NOT re-run the pipeline
-        # in this base wave — it records intent. A wrapper or higher-level
-        # orchestrator may invoke the dispatcher again with a refined plan.
+        # Re-run pipeline if refinement is actionable (not bypassed and not
+        # a no-op tactic like ABSTAIN/DECOMPOSE/REWRITE).
+        actionable_tactics = {
+            RefineTactic.HYBRIDIZE,
+            RefineTactic.GRAPH_HOP,
+            RefineTactic.BROADEN,
+            RefineTactic.NARROW,
+            RefineTactic.FRESHEN,
+        }
+        if (
+            not refined.bypass_reason
+            and refined.refine_tactic in actionable_tactics
+            and refined.refine_attempts > 0
+            and plan.budgets.max_refine_attempts >= 1
+        ):
+            try:
+                refined_plan = _apply_refine_tactic(plan, refined.refine_tactic)
+                second = self._run_pipeline_pass(
+                    plan=refined_plan, route=route, request_id=rid,
+                )
+                # Keep whichever pass produced higher support_score.
+                if second.intermediate.support_score > intermediate.support_score:
+                    delta = second.intermediate.support_score - intermediate.support_score
+                    plan = refined_plan
+                    candidates = second.candidates
+                    hydrated = second.hydrated
+                    expanded = second.expanded
+                    conflict_report = second.conflict_report
+                    shaped = second.shaped
+                    intermediate = second.intermediate
+                    notes.append(f"refine:replaced_first_pass:delta={delta:.3f}")
+                    refined = RefinedEvidenceContract(
+                        base_contract=intermediate,
+                        refine_attempts=refined.refine_attempts,
+                        refine_tactic=refined.refine_tactic,
+                        diagnostic=refined.diagnostic,
+                        refine_delta_score=delta,
+                        remaining_gap_codes=intermediate.unresolved_gap_codes,
+                        bypass_reason="",
+                    )
+                else:
+                    notes.append(
+                        f"refine:second_pass_no_improvement:tactic={refined.refine_tactic.value}"
+                    )
+            except (ValueError, TypeError, KeyError, RuntimeError) as exc:
+                # Refinement failure must NOT poison the first-pass result.
+                notes.append(f"refine:second_pass_error:{type(exc).__name__}:{exc}")
+
         latency_ms = int((time.monotonic() - t_start) * 1000)
         final_status = intermediate.status
 
@@ -404,9 +625,73 @@ class C0Dispatcher:
         ):
             final_status = SupportStatus.WEAK
 
+        # Build typed projections from shaped buckets — spec lines 1041-1080.
+        contradiction_type_by_chunk = {
+            cf.source_a_chunk_id: cf.contradiction_type.value
+            for cf in conflict_report.contradictions
+        }
+        # also map source_b -> type so chunks on either side get a label.
+        for cf in conflict_report.contradictions:
+            contradiction_type_by_chunk.setdefault(
+                cf.source_b_chunk_id, cf.contradiction_type.value,
+            )
+        contradiction_summary_by_chunk = {
+            cf.source_a_chunk_id: cf.summary for cf in conflict_report.contradictions
+        }
+
+        must_use_view = tuple(
+            project_must_use(
+                r.chunk,
+                authority_score=r.signals.get(_authority_signal(), 0.5),
+            )
+            for r in shaped.must_use
+        )
+        supporting_view = tuple(
+            project_supporting(r.chunk, reason=f"score={r.final_score:.2f}")
+            for r in shaped.supporting
+        )
+        contradicts_view = tuple(
+            project_contradicts(
+                r.chunk,
+                conflict_type=contradiction_type_by_chunk.get(
+                    r.chunk.candidate.chunk_id, "semantic",
+                ),
+                conflict_summary=contradiction_summary_by_chunk.get(
+                    r.chunk.candidate.chunk_id, "",
+                ),
+            )
+            for r in shaped.contradicts
+        )
+        background_view = tuple(
+            project_background(r.chunk, reason=f"score={r.final_score:.2f}")
+            for r in shaped.background
+        )
+        definitions_view = tuple(
+            project_definition(r.chunk) for r in shaped.definitions
+        )
+        excluded_view = tuple(
+            project_excluded(r.chunk, reason="shape:excluded")
+            for r in shaped.excluded
+        )
+
+        # Source-manifest hash spans every source actually referenced.
+        source_ids_for_manifest: tuple[str, ...] = tuple(
+            dict.fromkeys(
+                [v.source_id for v in must_use_view]
+                + [v.source_id for v in supporting_view]
+                + [v.source_id for v in contradicts_view]
+                + [v.source_id for v in background_view]
+                + [v.source_id for v in definitions_view]
+            )
+        )
+        source_manifest_hash = compute_source_manifest_hash(source_ids_for_manifest)
+
         contract = FinalEvidenceContract(
             contract_id=contract_id,
             route_id=route.route_id,
+            route_replay_key=route.route_replay_key,
+            policy_hash=route.policy_hash,
+            blueprint_hash=route.blueprint_hash,
             status=final_status,
             support_score=intermediate.support_score,
             score_breakdown=intermediate.score_breakdown,
@@ -417,6 +702,12 @@ class C0Dispatcher:
             definitions=definitions,
             lineage=_build_lineage(shaped),
             excluded=excluded,
+            must_use_view=must_use_view,
+            supporting_view=supporting_view,
+            contradicts_view=contradicts_view,
+            background_view=background_view,
+            definitions_view=definitions_view,
+            excluded_view=excluded_view,
             contradiction_flags=contradiction_flags_out,
             unresolved_gaps=gaps_out,
             freshness_report=_build_freshness_report(hydrated, route),
@@ -426,16 +717,18 @@ class C0Dispatcher:
             ),
             recommended_disposition=_disposition_from_status(final_status),
             budget_report=_build_budget_report(
-                retrieval_passes=1,
+                retrieval_passes=1 + (1 if refined.refine_attempts > 0 else 0),
                 expanded_hops=len(expanded.traverse.hops),
                 latency_ms=latency_ms,
                 shaped=shaped,
+                route=route,
+                plan=plan,
             ),
             replay_metadata=ReplayMetadata(
                 policy_hash=route.policy_hash,
                 blueprint_hash=route.blueprint_hash,
                 route_replay_key=route.route_replay_key,
-                source_manifest_hash="",
+                source_manifest_hash=source_manifest_hash,
             ),
             refine_attempts=refined.refine_attempts,
             refine_tactic=refined.refine_tactic.value,

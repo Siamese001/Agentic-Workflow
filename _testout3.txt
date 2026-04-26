@@ -1,0 +1,102 @@
+============================= test session starts =============================
+created: 24/24 workers
+24 workers [32 items]
+
+scheduling tests via WorkStealingScheduling
+
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_in_doc_has_a_constant
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_direct_path_satisfies_stage_05
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_response_satisfies_stage_11
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l1_reasoning_satisfies_stage_03
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_label_for_stage_resolves_known
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_node_and_edge_registries_non_empty
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_has_at_least_one_span
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_all_span_names_indexable_to_a_stage
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l3_step_satisfies_stage_06
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_tier2_has_14_stages
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l0_route_select_satisfies_stage_04
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_execution_form_enum_complete
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_helpers_fail_open_on_bad_adapter
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_tier2_stage_names_are_ordered
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_disposition_enum_complete
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_intake_satisfies_stage_02
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_empty_snapshot_zero_coverage
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_tier2_emitter_constants_match_semconv
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_signal_threshold_is_two
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_uwg_commit_satisfies_stage_12
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l6_eval_satisfies_stage_13
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_meta_learning_satisfies_stage_14
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_full_emit_coverage_exclusive_of_c0
+tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_prompt_assembly_satisfies_stage_08
+[gw5] [  3%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l1_reasoning_satisfies_stage_03
+[gw23] [  6%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_label_for_stage_resolves_known
+[gw21] [  9%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_execution_form_enum_complete
+[gw0] [ 12%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_tier2_has_14_stages
+[gw2] [ 15%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_signal_threshold_is_two
+[gw8] [ 18%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l3_step_satisfies_stage_06
+[gw18] [ 21%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_all_span_names_indexable_to_a_stage
+[gw7] [ 25%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_direct_path_satisfies_stage_05
+[gw6] [ 28%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l0_route_select_satisfies_stage_04
+[gw12] [ 31%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_l6_eval_satisfies_stage_13
+[gw14] [ 34%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_full_emit_coverage_exclusive_of_c0
+[gw16] [ 37%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_helpers_fail_open_on_bad_adapter
+[gw9] [ 40%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_prompt_assembly_satisfies_stage_08
+[gw19] [ 43%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_node_and_edge_registries_non_empty
+[gw22] [ 46%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_in_doc_has_a_constant
+[gw20] [ 50%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_disposition_enum_complete
+[gw15] [ 53%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_tier2_emitter_constants_match_semconv
+[gw10] [ 56%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_response_satisfies_stage_11
+[gw1] [ 59%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_tier2_stage_names_are_ordered
+[gw4] [ 62%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_intake_satisfies_stage_02
+[gw17] [ 65%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_has_at_least_one_span
+[gw13] [ 68%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_meta_learning_satisfies_stage_14
+[gw11] [ 71%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_emit_uwg_commit_satisfies_stage_12
+[gw3] [ 75%] PASSED tests/unit/system_learning/runtime_adg/test_tier2_contracts.py::test_empty_snapshot_zero_coverage
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_all_span_names_match_aggregated_stage_membership
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_stage_for_span_unknown_returns_none
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_attrs_for_stage_unknown_returns_empty
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_box_has_section_in_doc
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_all_14_stages_present
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_retrieval_mode_enum_complete
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_has_signature_attrs
+[gw22] [ 78%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_box_has_section_in_doc
+[gw18] [ 81%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_all_span_names_match_aggregated_stage_membership
+[gw21] [ 84%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_stage_for_span_unknown_returns_none
+[gw20] [ 87%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_retrieval_mode_enum_complete
+[gw17] [ 90%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_every_stage_has_signature_attrs
+[gw23] [ 93%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_attrs_for_stage_unknown_returns_empty
+[gw16] [ 96%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_all_14_stages_present
+tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_layer_constants_unique
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+[gw19] [100%] PASSED tests/unit/agentic_core/L6_observability/semconv/test_runtime_semconv.py::test_layer_constants_unique
+
+============================== warnings summary ===============================
+agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: 25 warnings
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import get_clock
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 32 passed, 25 warnings in 5.57s =======================

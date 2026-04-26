@@ -19,6 +19,14 @@ from dataclasses import asdict, dataclass, field
 from typing import Mapping
 
 from .evidence_contract import ScoreBreakdown
+from .evidence_projections import (
+    BackgroundEvidence,
+    ContradictsEvidence,
+    DefinitionEntry,
+    ExcludedEntry,
+    MustUseEvidence,
+    SupportingEvidence,
+)
 from .hydration import HydratedChunk
 from .verdicts import (
     EvidenceClass,
@@ -158,14 +166,25 @@ class UnresolvedGapOut:
 
 @dataclass(frozen=True)
 class FinalEvidenceContract:
-    """The C0 output. Read-only. Cannot carry answers, routes, or tools."""
+    """The C0 output. Read-only. Cannot carry answers, routes, or tools.
+
+    Spec: C0 Context Engine_detailed.md OUTPUT SCHEMA (lines 1010-1133).
+    Top-level identity fields (route_replay_key, policy_hash, blueprint_hash)
+    are duplicated into ``replay_metadata`` for downstream consumers that read
+    only one of the two surfaces — they MUST agree.
+    """
 
     contract_id: str
     route_id: str
-    status: SupportStatus
-    support_score: float
+    route_replay_key: str = ""
+    policy_hash: str = ""
+    blueprint_hash: str = ""
+    status: SupportStatus = SupportStatus.EMPTY
+    support_score: float = 0.0
 
     score_breakdown: ScoreBreakdown = field(default_factory=ScoreBreakdown)
+    # Hydrated-chunk views (kept for replay + back-compat). Typed projections
+    # below are the spec-canonical surfaces consumed by Prompt Assembly.
     must_use: tuple[HydratedChunk, ...] = ()
     supporting: tuple[HydratedChunk, ...] = ()
     contradicts: tuple[HydratedChunk, ...] = ()
@@ -173,6 +192,14 @@ class FinalEvidenceContract:
     definitions: tuple[HydratedChunk, ...] = ()
     lineage: tuple[LineageEntry, ...] = ()
     excluded: tuple[tuple[str, str], ...] = ()  # (evidence_id, reason)
+
+    # Spec-canonical typed projections (lines 1041-1080).
+    must_use_view: tuple[MustUseEvidence, ...] = ()
+    supporting_view: tuple[SupportingEvidence, ...] = ()
+    contradicts_view: tuple[ContradictsEvidence, ...] = ()
+    background_view: tuple[BackgroundEvidence, ...] = ()
+    definitions_view: tuple[DefinitionEntry, ...] = ()
+    excluded_view: tuple[ExcludedEntry, ...] = ()
 
     contradiction_flags: tuple[ContradictionFlagOut, ...] = ()
     unresolved_gaps: tuple[UnresolvedGapOut, ...] = ()
@@ -202,6 +229,16 @@ class FinalEvidenceContract:
             raise TypeError("status must be SupportStatus")
         if not isinstance(self.recommended_disposition, RecommendedDisposition):
             raise TypeError("recommended_disposition must be RecommendedDisposition")
+        # Top-level identity fields must agree with replay_metadata (defense-
+        # in-depth: dispatcher always populates both, but we verify in case a
+        # caller constructs the contract by hand).
+        rm = self.replay_metadata
+        if rm.route_replay_key and self.route_replay_key and rm.route_replay_key != self.route_replay_key:
+            raise ValueError("route_replay_key drift between top-level and replay_metadata")
+        if rm.policy_hash and self.policy_hash and rm.policy_hash != self.policy_hash:
+            raise ValueError("policy_hash drift between top-level and replay_metadata")
+        if rm.blueprint_hash and self.blueprint_hash and rm.blueprint_hash != self.blueprint_hash:
+            raise ValueError("blueprint_hash drift between top-level and replay_metadata")
         # BLOCKED status must include a reason (G0/G1/G10).
         if self.status is SupportStatus.BLOCKED and not self.blocked_reason:
             raise ValueError("BLOCKED contract must include blocked_reason")
@@ -282,6 +319,21 @@ def seal_final_contract(
     return FinalEvidenceContract(**fields_dict)
 
 
+def compute_source_manifest_hash(source_ids: tuple[str, ...]) -> str:
+    """Deterministic source_manifest_hash — spec line 1133.
+
+    Hashes the SORTED, DE-DUPED list of source_ids. Empty input -> empty
+    hash. Caller passes whatever set of source identities are in the
+    final contract (canonical_source_path values).
+    """
+    if not source_ids:
+        return ""
+    payload = json.dumps(
+        sorted(set(source_ids)), separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.blake2b(payload, digest_size=12).hexdigest()
+
+
 __all__ = [
     "AclReport",
     "BudgetReport",
@@ -294,5 +346,6 @@ __all__ = [
     "ReplayMetadata",
     "ScoreBreakdown",
     "UnresolvedGapOut",
+    "compute_source_manifest_hash",
     "seal_final_contract",
 ]

@@ -69,9 +69,34 @@ class RefinedEvidenceContract:
             raise ValueError("refine_delta_score must be in [-1,1]")
 
 
+_COMPOUND_TASK_MARKERS: tuple[str, ...] = (
+    " and ", " AND ", " & ", "; and ",
+    " plus ", " also ", " in addition ",
+    " as well as ", " along with ",
+)
+
+
+def detect_compound_target(task_spec: str) -> bool:
+    """Heuristic for spec line 654 (`support_target_compound`).
+
+    A task is "compound" when it asks for two or more orthogonal claims that
+    cannot be answered by a single citation. The cheap signal is conjunctive
+    language plus multiple distinct interrogatives. Callers can override by
+    passing the result to plan_refinement(..., compound_target=...).
+    """
+    if not task_spec:
+        return False
+    lower = task_spec.strip()
+    if lower.count("?") >= 2:
+        return True
+    return any(marker in task_spec for marker in _COMPOUND_TASK_MARKERS)
+
+
 def _diagnose(
     contract: EvidenceContract,
     conflict: ConflictGapReport,
+    *,
+    compound_target: bool = False,
 ) -> RefineDiagnostic:
     gap_codes = {g.gap_type for g in conflict.gaps}
     return RefineDiagnostic(
@@ -85,7 +110,7 @@ def _diagnose(
         exact_phrase_missing=GapType.MISSING_EXACT_QUOTE in gap_codes,
         contradiction_present=bool(contract.contradiction_chunk_pairs),
         acl_blocked=GapType.MISSING_TENANT_PROOF in gap_codes,
-        support_target_compound=False,  # detected upstream via L1 task_spec parsing
+        support_target_compound=compound_target,
     )
 
 
@@ -123,6 +148,7 @@ def plan_refinement(
     conflict: ConflictGapReport,
     plan: RetrievalPlan,
     attempts_so_far: int,
+    compound_target: bool = False,
 ) -> RefinedEvidenceContract:
     """Decide whether/how to refine. Returns a RefinedEvidenceContract.
 
@@ -132,8 +158,13 @@ def plan_refinement(
       - cannot expand tenant / ACL / region
       - cannot ignore contradictions
       - ABSTAIN tactic is sticky once chosen
+
+    `compound_target` (spec line 654): pass True when the upstream task_spec
+    is judged to require multiple distinct citations. When True, DECOMPOSE
+    becomes a candidate tactic. Callers can use ``detect_compound_target``
+    or supply their own classifier.
     """
-    diag = _diagnose(contract, conflict)
+    diag = _diagnose(contract, conflict, compound_target=compound_target)
 
     # Entry conditions (spec lines 700-705)
     if contract.status not in _REFINE_ENTRY_STATUSES:
@@ -187,5 +218,6 @@ def plan_refinement(
 __all__ = [
     "RefineDiagnostic",
     "RefinedEvidenceContract",
+    "detect_compound_target",
     "plan_refinement",
 ]

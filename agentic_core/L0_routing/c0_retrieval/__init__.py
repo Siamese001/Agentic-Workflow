@@ -103,7 +103,19 @@ from .evidence_contract import (
 from .refine_loop import (
     RefineDiagnostic,
     RefinedEvidenceContract,
+    detect_compound_target,
     plan_refinement,
+)
+
+# Typed evidence projections (spec lines 1041-1080)
+from .evidence_projections import (
+    BackgroundEvidence,
+    ContradictsEvidence,
+    DefinitionEntry,
+    ExcludedEntry,
+    MustUseEvidence,
+    SupportingEvidence,
+    estimate_token_cost,
 )
 
 # Final
@@ -114,6 +126,7 @@ from .final_contract import (
     AclReport,
     PromptBudgetHint,
     ReplayMetadata,
+    compute_source_manifest_hash,
     seal_final_contract,
 )
 
@@ -181,11 +194,16 @@ __all__ = [
     # contract
     "EvidenceContract", "ScoreBreakdown", "verify_and_score",
     # refine
-    "RefineDiagnostic", "RefinedEvidenceContract", "plan_refinement",
+    "RefineDiagnostic", "RefinedEvidenceContract",
+    "detect_compound_target", "plan_refinement",
+    # typed projections
+    "BackgroundEvidence", "ContradictsEvidence", "DefinitionEntry",
+    "ExcludedEntry", "MustUseEvidence", "SupportingEvidence",
+    "estimate_token_cost",
     # final
     "BudgetReport", "FinalEvidenceContract", "FreshnessReport",
     "AclReport", "PromptBudgetHint", "ReplayMetadata",
-    "seal_final_contract",
+    "compute_source_manifest_hash", "seal_final_contract",
     # gates
     "GateOutcome", "GateReport", "run_all_gates",
     "G0_scope", "G1_acl", "G2_fresh", "G3_exact", "G4_dense",

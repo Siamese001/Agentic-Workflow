@@ -1,0 +1,145 @@
+
+=== contradiction_gap.py ===
+84:         return True
+86:         return True
+92:     if am.timestamp and bm.timestamp and am.timestamp[:10] != bm.timestamp[:10]:
+94:         return True
+124:     for hop in expanded.traverse.hops:
+126:             flags.append(
+135:             )
+137:             flags.append(
+152:             pair_count += 1
+154:                 break
+156:                 continue
+178:                 )
+180:                 flags.append(
+211:                 )
+213:                 flags.append(
+222:                 )
+224:             break
+277:
+279:         gaps.append(
+311:         c.candidate.source_class == SourceClass.CODE for c in chunks
+313:         gaps.append(
+324:         SupportTarget.ROOT_CAUSE_RANKING,
+326:         gaps.append(
+366:             modes.add("dense_only_hallucination")
+368:             modes.add("quote_distortion")
+=== evidence_contract.py ===
+106:             raise ValueError("EvidenceContract.plan_id required")
+108:             raise ValueError("EvidenceContract.request_id required")
+237:     if aggregate >= 0.40:
+239:     return SupportStatus.WEAK
+=== failure_modes.py ===
+93:     is_policy = SourceClass.POLICY in plan.source_classes
+95:         return None
+101:     if stale > 0:
+103:     return None
+184:     ]
+186:         return f"{len(no_lineage)} chunk(s) missing retrieval lane (C0.I3 violation)"
+192: ) -> str | None:
+194:         return (
+=== shape.py ===
+87:
+89:         return (
+174:     if c.candidate.source_class.value in ("docs",) and "definition" in (c.candidate.text or "").lower()[:120]:
+176:         return EvidenceClass.DEFINITIONS
+179:     if final_score >= 0.40:
+181:     return EvidenceClass.BACKGROUND
+=== plan.py ===
+53:             raise ValueError("max_token_context must be positive")
+55:             raise ValueError("max_latency_ms must be positive")
+57:             raise ValueError("max_refine_attempts must be >= 0")
+59:             raise ValueError("max_source_classes must be positive")
+90:         if not self.terms and not self.must_include:
+93:             raise ValueError("top_k must be positive")
+185:         return (RetrievalMode.HYBRID, RetrievalMode.SPARSE, RetrievalMode.METADATA)
+187:         return (RetrievalMode.HYBRID, RetrievalMode.GRAPH, RetrievalMode.METADATA)
+189:         return (RetrievalMode.HYBRID, RetrievalMode.METADATA)
+230:         max_cache_age_seconds=86400 if route.freshness_class == FreshnessClass.STATIC else 0,
+232:     if dense_query is None:
+234:     return RetrievalPlan(
+=== candidate_pool.py ===
+101:     def __post_init__(self) -> None:
+103:             raise ValueError("CandidateEvidencePool.plan_id required")
+105:             raise ValueError("fetch_latency_ms must be >= 0")
+=== refine_loop.py ===
+110:         return RefineTactic.NARROW
+112:         return RefineTactic.DECOMPOSE
+114:         return RefineTactic.GRAPH_HOP
+116:         return RefineTactic.REWRITE
+117:     return RefineTactic.REWRITE
+=== dispatcher.py ===
+124:     for h in hydrated.hydrated:
+126:             stale.append(h.candidate.chunk_id)
+127:         if h.candidate.manifest.version:
+343:         blockers = gates.blockers()
+345:             block_reason = "; ".join(o.reason for o in blockers)
+346:             blocked = _build_blocked_contract(
+347:                 contract_id=contract_id, route=route,
+348:                 blocked_reason=f"gate(s) failed: {block_reason}",
+349:                 notes=tuple(o.gate.value for o in blockers),
+350:             )
+351:             return C0Result(
+394:         ):
+396:             final_status = SupportStatus.WEAK_WITH_CAVEATS
+403:             and not gaps_out and not contradiction_flags_out
+405:             final_status = SupportStatus.WEAK
+=== gates.py ===
+78:             if o.gate == g:
+80:         return None
+82:     def all_passed(self) -> bool:
+83:         return all(o.passed for o in self.outcomes)
+87:
+89:         return tuple(o for o in self.outcomes if o.severity == "warn" and not o.passed)
+123:             continue
+125:             bad.append(h.candidate.chunk_id)
+126:             continue
+128:             bad.append(h.candidate.chunk_id)
+129:             continue
+131:             bad.append(h.candidate.chunk_id)
+165:         return GateOutcome(C0Gate.G2_FRESH, True, "all chunks current")
+254:     return GateOutcome(
+306:     return GateOutcome(
+=== preflight.py ===
+66:     if route.data_class in ("regulated", "phi", "pii"):
+69:         return EvidenceStandard.HIGH
+72:     return EvidenceStandard.LOW
+138:
+140:         return C0PreflightStatus(
+142:             blocked_reason=BlockedReason.SOURCE_CLASS_FORBIDDEN,
+=== hydration.py ===
+57:     def __post_init__(self) -> None:
+59:             raise ValueError("canonical_source_path required")
+61:             raise ValueError("chunk_version required")
+72:     def __post_init__(self) -> None:
+74:             raise ValueError("HydratedEvidencePool.plan_id required")
+76:     def all_green_chunks(self) -> tuple[HydratedChunk, ...]:
+128:             anchor_candidates.append(f"line:{m.line_range[0]}-{m.line_range[1]}")
+130:             anchor_candidates.append(f"section:{m.section}")
+132:             anchor_candidates.append(f"row:{m.row_key}")
+134:             anchor_candidates.append(f"ts:{m.timestamp}")
+144:                 )
+146:         except ValueError as exc:
+147:             failures.append(f"chunk {c.chunk_id!r}: {exc}")
+148:     return HydratedEvidencePool(
+=== final_contract.py ===
+200:             raise ValueError(f"support_score={self.support_score} must be in [0,1]")
+202:             raise TypeError("status must be SupportStatus")
+204:             raise TypeError("recommended_disposition must be RecommendedDisposition")
+229:
+231:         if cls is EvidenceClass.MUST_USE:
+232:             return self.must_use
+233:         if cls is EvidenceClass.SUPPORTING:
+234:             return self.supporting
+235:         if cls is EvidenceClass.CONTRADICTS:
+236:             return self.contradicts
+237:         if cls is EvidenceClass.BACKGROUND:
+238:             return self.background
+239:         if cls is EvidenceClass.DEFINITIONS:
+240:             return self.definitions
+241:         return ()
+=== route_contract.py ===
+73:             raise ValueError("max_hops must be >= 0")
+75:             raise ValueError("max_refine_attempts must be >= 0")
+77:             raise ValueError("max_token_context must be positive")

@@ -1,0 +1,39 @@
+============================= test session starts =============================
+created: 24/24 workers
+24 workers [270 items]
+
+........................................................................ [ 26%]
+........................................................................ [ 53%]
+........................................................................ [ 80%]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+......................................................                   [100%]
+============================== warnings summary ===============================
+agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: 25 warnings
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import get_clock
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+====================== 270 passed, 25 warnings in 6.05s =======================

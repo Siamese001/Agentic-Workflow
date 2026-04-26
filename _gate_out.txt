@@ -1,0 +1,8 @@
+[runtime-adg-coverage AUDIT] wired=3/3 (100%), threshold=20%
+  [OK ] agentic_core\L6_observability\heal_router_otel.py
+  [OK ] agentic_core\L6_observability\consensus_otel.py
+  [Tier 2 spec audit] import failed: No module named 'system_learning'
+  [OK ] system_learning\_tracing.py
+
+[runtime-adg-coverage semconv SSOT] spans=62 nodes=38 edges=41 stages=14
+  [Tier 2 emitter audit] import failed: No module named 'system_learning'
