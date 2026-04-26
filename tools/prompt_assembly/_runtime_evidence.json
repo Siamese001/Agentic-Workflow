@@ -1,0 +1,2935 @@
+[
+  {
+    "req_id": "STATUS::PA.0::PA_READY",
+    "stage": "PA.0",
+    "category": "STATUS_SET",
+    "requirement": "PA.0 doctrine status `PA_READY` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_READY",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_READY"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.0::PA_INPUT_INCOMPLETE",
+    "stage": "PA.0",
+    "category": "STATUS_SET",
+    "requirement": "PA.0 doctrine status `PA_INPUT_INCOMPLETE` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_INPUT_INCOMPLETE",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_INPUT_INCOMPLETE"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.0::PA_BOUNDARY_MISMATCH",
+    "stage": "PA.0",
+    "category": "STATUS_SET",
+    "requirement": "PA.0 doctrine status `PA_BOUNDARY_MISMATCH` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_BOUNDARY_MISMATCH",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_BOUNDARY_MISMATCH"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.0::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.0",
+    "category": "STATUS_SET",
+    "requirement": "PA.0 doctrine status `PA_REQUIRES_UPSTREAM_REPAIR` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_REQUIRES_UPSTREAM_REPAIR"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.1::PA_BOM_RESOLVED",
+    "stage": "PA.1",
+    "category": "STATUS_SET",
+    "requirement": "PA.1 doctrine status `PA_BOM_RESOLVED` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_BOM_RESOLVED",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_BOM_RESOLVED"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.1::PA_BOM_GAP",
+    "stage": "PA.1",
+    "category": "STATUS_SET",
+    "requirement": "PA.1 doctrine status `PA_BOM_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_BOM_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_BOM_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.1::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.1",
+    "category": "STATUS_SET",
+    "requirement": "PA.1 doctrine status `PA_REQUIRES_UPSTREAM_REPAIR` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_REQUIRES_UPSTREAM_REPAIR"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.2::PA_SLOTS_COMPOSED",
+    "stage": "PA.2",
+    "category": "STATUS_SET",
+    "requirement": "PA.2 doctrine status `PA_SLOTS_COMPOSED` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SLOTS_COMPOSED",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SLOTS_COMPOSED"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.2::PA_SLOT_COMPOSITION_GAP",
+    "stage": "PA.2",
+    "category": "STATUS_SET",
+    "requirement": "PA.2 doctrine status `PA_SLOT_COMPOSITION_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SLOT_COMPOSITION_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SLOT_COMPOSITION_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.2::PA_AUTHORITY_CONFLICT",
+    "stage": "PA.2",
+    "category": "STATUS_SET",
+    "requirement": "PA.2 doctrine status `PA_AUTHORITY_CONFLICT` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_AUTHORITY_CONFLICT",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_AUTHORITY_CONFLICT"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.3::PA_SECURITY_PASS",
+    "stage": "PA.3",
+    "category": "STATUS_SET",
+    "requirement": "PA.3 doctrine status `PA_SECURITY_PASS` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SECURITY_PASS",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SECURITY_PASS"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.3::PA_SECURITY_GAP",
+    "stage": "PA.3",
+    "category": "STATUS_SET",
+    "requirement": "PA.3 doctrine status `PA_SECURITY_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SECURITY_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SECURITY_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.3::PA_SAFE_EXTRACTION_PARTIAL",
+    "stage": "PA.3",
+    "category": "STATUS_SET",
+    "requirement": "PA.3 doctrine status `PA_SAFE_EXTRACTION_PARTIAL` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SAFE_EXTRACTION_PARTIAL",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SAFE_EXTRACTION_PARTIAL"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.3::PA_SLOT_PAYLOAD_REJECTED",
+    "stage": "PA.3",
+    "category": "STATUS_SET",
+    "requirement": "PA.3 doctrine status `PA_SLOT_PAYLOAD_REJECTED` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SLOT_PAYLOAD_REJECTED",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SLOT_PAYLOAD_REJECTED"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.3::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.3",
+    "category": "STATUS_SET",
+    "requirement": "PA.3 doctrine status `PA_REQUIRES_UPSTREAM_REPAIR` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_REQUIRES_UPSTREAM_REPAIR"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.4::PA_SLOT_CONTRACT_VALID",
+    "stage": "PA.4",
+    "category": "STATUS_SET",
+    "requirement": "PA.4 doctrine status `PA_SLOT_CONTRACT_VALID` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SLOT_CONTRACT_VALID",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SLOT_CONTRACT_VALID"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.4::PA_SLOT_CONTRACT_INVALID",
+    "stage": "PA.4",
+    "category": "STATUS_SET",
+    "requirement": "PA.4 doctrine status `PA_SLOT_CONTRACT_INVALID` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SLOT_CONTRACT_INVALID",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SLOT_CONTRACT_INVALID"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.4::PA_CONTEXT_CONTRACT_GAP",
+    "stage": "PA.4",
+    "category": "STATUS_SET",
+    "requirement": "PA.4 doctrine status `PA_CONTEXT_CONTRACT_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_CONTEXT_CONTRACT_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_CONTEXT_CONTRACT_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.4::PA_AUTHORITY_INVERSION_GAP",
+    "stage": "PA.4",
+    "category": "STATUS_SET",
+    "requirement": "PA.4 doctrine status `PA_AUTHORITY_INVERSION_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_AUTHORITY_INVERSION_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_AUTHORITY_INVERSION_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.4::PA_SCHEMA_BINDING_GAP",
+    "stage": "PA.4",
+    "category": "STATUS_SET",
+    "requirement": "PA.4 doctrine status `PA_SCHEMA_BINDING_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SCHEMA_BINDING_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SCHEMA_BINDING_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.4::PA_TOOL_BINDING_GAP",
+    "stage": "PA.4",
+    "category": "STATUS_SET",
+    "requirement": "PA.4 doctrine status `PA_TOOL_BINDING_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_TOOL_BINDING_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_TOOL_BINDING_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.5::PA_BUDGET_FIT",
+    "stage": "PA.5",
+    "category": "STATUS_SET",
+    "requirement": "PA.5 doctrine status `PA_BUDGET_FIT` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_BUDGET_FIT",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_BUDGET_FIT"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.5::PA_BUDGET_TRIMMED",
+    "stage": "PA.5",
+    "category": "STATUS_SET",
+    "requirement": "PA.5 doctrine status `PA_BUDGET_TRIMMED` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_BUDGET_TRIMMED",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_BUDGET_TRIMMED"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.5::PA_BUDGET_OVERFLOW",
+    "stage": "PA.5",
+    "category": "STATUS_SET",
+    "requirement": "PA.5 doctrine status `PA_BUDGET_OVERFLOW` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_BUDGET_OVERFLOW",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_BUDGET_OVERFLOW"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.5::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.5",
+    "category": "STATUS_SET",
+    "requirement": "PA.5 doctrine status `PA_REQUIRES_UPSTREAM_REPAIR` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_REQUIRES_UPSTREAM_REPAIR"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.6::PA_RENDERED",
+    "stage": "PA.6",
+    "category": "STATUS_SET",
+    "requirement": "PA.6 doctrine status `PA_RENDERED` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_RENDERED",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_RENDERED"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.6::PA_RENDER_GAP",
+    "stage": "PA.6",
+    "category": "STATUS_SET",
+    "requirement": "PA.6 doctrine status `PA_RENDER_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_RENDER_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_RENDER_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.6::PA_PROVIDER_FEATURE_GAP",
+    "stage": "PA.6",
+    "category": "STATUS_SET",
+    "requirement": "PA.6 doctrine status `PA_PROVIDER_FEATURE_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_PROVIDER_FEATURE_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_PROVIDER_FEATURE_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.6::PA_SCHEMA_RENDER_GAP",
+    "stage": "PA.6",
+    "category": "STATUS_SET",
+    "requirement": "PA.6 doctrine status `PA_SCHEMA_RENDER_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SCHEMA_RENDER_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SCHEMA_RENDER_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.6::PA_TOOL_RENDER_GAP",
+    "stage": "PA.6",
+    "category": "STATUS_SET",
+    "requirement": "PA.6 doctrine status `PA_TOOL_RENDER_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_TOOL_RENDER_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_TOOL_RENDER_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.7::PA_ARTIFACT_SIGNED",
+    "stage": "PA.7",
+    "category": "STATUS_SET",
+    "requirement": "PA.7 doctrine status `PA_ARTIFACT_SIGNED` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_ARTIFACT_SIGNED",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_ARTIFACT_SIGNED"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.7::PA_ARTIFACT_NOT_SIGNED",
+    "stage": "PA.7",
+    "category": "STATUS_SET",
+    "requirement": "PA.7 doctrine status `PA_ARTIFACT_NOT_SIGNED` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_ARTIFACT_NOT_SIGNED",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_ARTIFACT_NOT_SIGNED"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.7::PA_SIGNATURE_GAP",
+    "stage": "PA.7",
+    "category": "STATUS_SET",
+    "requirement": "PA.7 doctrine status `PA_SIGNATURE_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_SIGNATURE_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_SIGNATURE_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.7::PA_MANIFEST_HASH_GAP",
+    "stage": "PA.7",
+    "category": "STATUS_SET",
+    "requirement": "PA.7 doctrine status `PA_MANIFEST_HASH_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_MANIFEST_HASH_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_MANIFEST_HASH_GAP"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.7::PA_L2_HANDOFF_READY",
+    "stage": "PA.7",
+    "category": "STATUS_SET",
+    "requirement": "PA.7 doctrine status `PA_L2_HANDOFF_READY` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_L2_HANDOFF_READY",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_L2_HANDOFF_READY"
+    }
+  },
+  {
+    "req_id": "STATUS::PA.7::PA_L2_HANDOFF_GAP",
+    "stage": "PA.7",
+    "category": "STATUS_SET",
+    "requirement": "PA.7 doctrine status `PA_L2_HANDOFF_GAP` exists in PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_value": "PA_L2_HANDOFF_GAP",
+      "resolves_to_PAStatus": true,
+      "PAStatus_member_value": "PA_L2_HANDOFF_GAP"
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.0",
+    "stage": "PA.0",
+    "category": "STATUS_SET",
+    "requirement": "PA.0 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 4,
+      "runtime_count": 4,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.1",
+    "stage": "PA.1",
+    "category": "STATUS_SET",
+    "requirement": "PA.1 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 3,
+      "runtime_count": 3,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.2",
+    "stage": "PA.2",
+    "category": "STATUS_SET",
+    "requirement": "PA.2 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 3,
+      "runtime_count": 3,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.3",
+    "stage": "PA.3",
+    "category": "STATUS_SET",
+    "requirement": "PA.3 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 5,
+      "runtime_count": 5,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.4",
+    "stage": "PA.4",
+    "category": "STATUS_SET",
+    "requirement": "PA.4 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 6,
+      "runtime_count": 6,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.5",
+    "stage": "PA.5",
+    "category": "STATUS_SET",
+    "requirement": "PA.5 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 4,
+      "runtime_count": 4,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.6",
+    "stage": "PA.6",
+    "category": "STATUS_SET",
+    "requirement": "PA.6 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 5,
+      "runtime_count": 5,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "PARTITION::PA.7",
+    "stage": "PA.7",
+    "category": "STATUS_SET",
+    "requirement": "PA.7 STAGE_TO_STATUSES contains every doctrine status",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_count": 6,
+      "runtime_count": 6,
+      "missing_in_runtime": [],
+      "extra_in_runtime": []
+    }
+  },
+  {
+    "req_id": "STATUS::CLOSURE",
+    "stage": "ALL",
+    "category": "STATUS_SET",
+    "requirement": "Doctrine status union is a subset of runtime PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_union_size": 33,
+      "runtime_pastatus_size": 33,
+      "missing": []
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::stage",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::doctrine_status",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::boundary_status_receipt",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits `boundary_status_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "boundary_status_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::required_input_inventory",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits `required_input_inventory`",
+    "status": "PASS",
+    "evidence": {
+      "field": "required_input_inventory",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::upstream_reference_map",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits `upstream_reference_map`",
+    "status": "PASS",
+    "evidence": {
+      "field": "upstream_reference_map",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::assembly_gap_report",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits `assembly_gap_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "assembly_gap_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.1::stage",
+    "stage": "PA.1",
+    "category": "MUST_EMIT",
+    "requirement": "PA.1 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.1::doctrine_status",
+    "stage": "PA.1",
+    "category": "MUST_EMIT",
+    "requirement": "PA.1 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.1::bom_resolution_receipt",
+    "stage": "PA.1",
+    "category": "MUST_EMIT",
+    "requirement": "PA.1 receipt emits `bom_resolution_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "bom_resolution_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.1::component_inventory",
+    "stage": "PA.1",
+    "category": "MUST_EMIT",
+    "requirement": "PA.1 receipt emits `component_inventory`",
+    "status": "PASS",
+    "evidence": {
+      "field": "component_inventory",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.1::component_hash_map",
+    "stage": "PA.1",
+    "category": "MUST_EMIT",
+    "requirement": "PA.1 receipt emits `component_hash_map`",
+    "status": "PASS",
+    "evidence": {
+      "field": "component_hash_map",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.1::bom_gap_report",
+    "stage": "PA.1",
+    "category": "MUST_EMIT",
+    "requirement": "PA.1 receipt emits `bom_gap_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "bom_gap_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.1::bom_hash_receipt",
+    "stage": "PA.1",
+    "category": "MUST_EMIT",
+    "requirement": "PA.1 receipt emits `bom_hash_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "bom_hash_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.2::stage",
+    "stage": "PA.2",
+    "category": "MUST_EMIT",
+    "requirement": "PA.2 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.2::doctrine_status",
+    "stage": "PA.2",
+    "category": "MUST_EMIT",
+    "requirement": "PA.2 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.2::slot_composition_receipt",
+    "stage": "PA.2",
+    "category": "MUST_EMIT",
+    "requirement": "PA.2 receipt emits `slot_composition_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "slot_composition_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.2::slot_authority_map",
+    "stage": "PA.2",
+    "category": "MUST_EMIT",
+    "requirement": "PA.2 receipt emits `slot_authority_map`",
+    "status": "PASS",
+    "evidence": {
+      "field": "slot_authority_map",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.2::slot_lineage_map",
+    "stage": "PA.2",
+    "category": "MUST_EMIT",
+    "requirement": "PA.2 receipt emits `slot_lineage_map`",
+    "status": "PASS",
+    "evidence": {
+      "field": "slot_lineage_map",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.2::slot_conflict_map",
+    "stage": "PA.2",
+    "category": "MUST_EMIT",
+    "requirement": "PA.2 receipt emits `slot_conflict_map`",
+    "status": "PASS",
+    "evidence": {
+      "field": "slot_conflict_map",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.2::structured_slots_hash_receipt",
+    "stage": "PA.2",
+    "category": "MUST_EMIT",
+    "requirement": "PA.2 receipt emits `structured_slots_hash_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "structured_slots_hash_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::stage",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::doctrine_status",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::AssemblySecurityPassReceipt",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `AssemblySecurityPassReceipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "AssemblySecurityPassReceipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::safe_slot_payload_map",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `safe_slot_payload_map`",
+    "status": "PASS",
+    "evidence": {
+      "field": "safe_slot_payload_map",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::rejected_slot_payload_report",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `rejected_slot_payload_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "rejected_slot_payload_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::prompt_like_payload_report",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `prompt_like_payload_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "prompt_like_payload_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "list"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::safe_extraction_map",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `safe_extraction_map`",
+    "status": "PASS",
+    "evidence": {
+      "field": "safe_extraction_map",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.3::security_gap_report",
+    "stage": "PA.3",
+    "category": "MUST_EMIT",
+    "requirement": "PA.3 receipt emits `security_gap_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "security_gap_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::stage",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::doctrine_status",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::SlotValidationReceipt",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `SlotValidationReceipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "SlotValidationReceipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::validation_gap_report",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `validation_gap_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "validation_gap_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::authority_order_receipt",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `authority_order_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "authority_order_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::context_contract_receipt",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `context_contract_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "context_contract_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::tool_schema_binding_receipt",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `tool_schema_binding_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "tool_schema_binding_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.4::validation_hash_receipt",
+    "stage": "PA.4",
+    "category": "MUST_EMIT",
+    "requirement": "PA.4 receipt emits `validation_hash_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "validation_hash_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.5::stage",
+    "stage": "PA.5",
+    "category": "MUST_EMIT",
+    "requirement": "PA.5 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.5::doctrine_status",
+    "stage": "PA.5",
+    "category": "MUST_EMIT",
+    "requirement": "PA.5 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.5::TokenBudgetLedger",
+    "stage": "PA.5",
+    "category": "MUST_EMIT",
+    "requirement": "PA.5 receipt emits `TokenBudgetLedger`",
+    "status": "PASS",
+    "evidence": {
+      "field": "TokenBudgetLedger",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.5::deterministic_trimming_receipt",
+    "stage": "PA.5",
+    "category": "MUST_EMIT",
+    "requirement": "PA.5 receipt emits `deterministic_trimming_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "deterministic_trimming_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.5::stable_prefix_receipt",
+    "stage": "PA.5",
+    "category": "MUST_EMIT",
+    "requirement": "PA.5 receipt emits `stable_prefix_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stable_prefix_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.5::overflow_gap_report",
+    "stage": "PA.5",
+    "category": "MUST_EMIT",
+    "requirement": "PA.5 receipt emits `overflow_gap_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "overflow_gap_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.5::canonical_hash_input_manifest",
+    "stage": "PA.5",
+    "category": "MUST_EMIT",
+    "requirement": "PA.5 receipt emits `canonical_hash_input_manifest`",
+    "status": "PASS",
+    "evidence": {
+      "field": "canonical_hash_input_manifest",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::stage",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::doctrine_status",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::ProviderRenderManifest",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits `ProviderRenderManifest`",
+    "status": "PASS",
+    "evidence": {
+      "field": "ProviderRenderManifest",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::provider_field_mapping_receipt",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits `provider_field_mapping_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "provider_field_mapping_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::schema_render_receipt",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits `schema_render_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "schema_render_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::tool_render_receipt",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits `tool_render_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "tool_render_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::provider_feature_gap_report",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits `provider_feature_gap_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "provider_feature_gap_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::stage",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `stage`",
+    "status": "PASS",
+    "evidence": {
+      "field": "stage",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::doctrine_status",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `doctrine_status`",
+    "status": "PASS",
+    "evidence": {
+      "field": "doctrine_status",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "str"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::CompiledPromptArtifact",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `CompiledPromptArtifact`",
+    "status": "PASS",
+    "evidence": {
+      "field": "CompiledPromptArtifact",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::compiled_prompt_artifact_receipt",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `compiled_prompt_artifact_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "compiled_prompt_artifact_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::manifest_hash_receipt",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `manifest_hash_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "manifest_hash_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::hmac_signature_receipt",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `hmac_signature_receipt`",
+    "status": "PASS",
+    "evidence": {
+      "field": "hmac_signature_receipt",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::l2_handoff_envelope",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `l2_handoff_envelope`",
+    "status": "PASS",
+    "evidence": {
+      "field": "l2_handoff_envelope",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.7::final_artifact_gap_report",
+    "stage": "PA.7",
+    "category": "MUST_EMIT",
+    "requirement": "PA.7 receipt emits `final_artifact_gap_report`",
+    "status": "PASS",
+    "evidence": {
+      "field": "final_artifact_gap_report",
+      "present_in_receipt": true,
+      "receipt_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::ABSTAIN",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `ABSTAIN` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "ABSTAIN",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::ALLOW",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `ALLOW` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "ALLOW",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::ALLOW_FINISH",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `ALLOW_FINISH` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "ALLOW_FINISH",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::BLOCK_COMMIT",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `BLOCK_COMMIT` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "BLOCK_COMMIT",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::CLARIFY",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `CLARIFY` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "CLARIFY",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::COMMIT_REQUEST",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `COMMIT_REQUEST` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "COMMIT_REQUEST",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::DENY",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `DENY` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "DENY",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::ESCALATE_HITL",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `ESCALATE_HITL` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "ESCALATE_HITL",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::HEAL",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `HEAL` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "HEAL",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::MARK_DEGRADED",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `MARK_DEGRADED` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "MARK_DEGRADED",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::QUARANTINE",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `QUARANTINE` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "QUARANTINE",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::REDACT",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `REDACT` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "REDACT",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::REROUTE",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `REROUTE` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "REROUTE",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::RETRY",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `RETRY` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "RETRY",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::SAFE_FALLBACK",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `SAFE_FALLBACK` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "SAFE_FALLBACK",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::DISP::SHRINK_SCOPE",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden disposition `SHRINK_SCOPE` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "SHRINK_SCOPE",
+      "kind": "runtime_disposition",
+      "present_in_FORBIDDEN_DISPOSITIONS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::VERB::approve_execution",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden execution verb `approve_execution` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "approve_execution",
+      "kind": "execution_verb",
+      "present_in_FORBIDDEN_EXECUTION_VERBS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::VERB::approve_output",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden execution verb `approve_output` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "approve_output",
+      "kind": "execution_verb",
+      "present_in_FORBIDDEN_EXECUTION_VERBS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::VERB::approve_write",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden execution verb `approve_write` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "approve_write",
+      "kind": "execution_verb",
+      "present_in_FORBIDDEN_EXECUTION_VERBS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::VERB::call_provider",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden execution verb `call_provider` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "call_provider",
+      "kind": "execution_verb",
+      "present_in_FORBIDDEN_EXECUTION_VERBS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::VERB::execute_tool",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden execution verb `execute_tool` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "execute_tool",
+      "kind": "execution_verb",
+      "present_in_FORBIDDEN_EXECUTION_VERBS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::VERB::mutate_l4",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "Forbidden execution verb `mutate_l4` registered",
+    "status": "PASS",
+    "evidence": {
+      "token": "mutate_l4",
+      "kind": "execution_verb",
+      "present_in_FORBIDDEN_EXECUTION_VERBS": true
+    }
+  },
+  {
+    "req_id": "FORBID_RD::GUARD::raises",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "assert_no_forbidden raises when a forbidden token appears under a decision field",
+    "status": "PASS",
+    "evidence": {
+      "payload": {
+        "doctrine_status": "PA_READY",
+        "decision": "ALLOW"
+      },
+      "raised": true,
+      "exception_message": "PA receipt contains forbidden PA output(s): $.decision='ALLOW'"
+    }
+  },
+  {
+    "req_id": "FORBID_RD::GUARD::field_aware",
+    "stage": "PARENT",
+    "category": "FORBID_RD",
+    "requirement": "assert_no_forbidden does NOT flag chunk-level data labels",
+    "status": "PASS",
+    "evidence": {
+      "payload": {
+        "doctrine_status": "PA_SECURITY_PASS",
+        "prompt_like_payload_report": [
+          {
+            "chunk_id": "c1",
+            "disposition": "QUARANTINE"
+          }
+        ]
+      },
+      "raised": false,
+      "rationale": "QUARANTINE inside a chunk record is data passed through, not a PA decision."
+    }
+  },
+  {
+    "req_id": "FENCE::retrieve_evidence",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*retrieve_evidence*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "retrieve_evidence",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::call_provider",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*call_provider*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "call_provider",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::execute_tool",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*execute_tool*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "execute_tool",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::approve_output",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*approve_output*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "approve_output",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::approve_execution",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*approve_execution*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "approve_execution",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::approve_write",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*approve_write*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "approve_write",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::mutate_l4",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*mutate_l4*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "mutate_l4",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::commit_state",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*commit_state*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "commit_state",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::route_request",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*route_request*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "route_request",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::reroute",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "No public callable named `*reroute*` in prompt_assembly surface",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substring": "reroute",
+      "callable_count_scanned": 46,
+      "matches": []
+    }
+  },
+  {
+    "req_id": "FENCE::SURFACE_INVENTORY",
+    "stage": "PARENT",
+    "category": "MUST_NOT_FENCE",
+    "requirement": "Public callables in prompt_assembly surface (informational)",
+    "status": "PASS",
+    "evidence": {
+      "public_callables": [
+        "aggregate_doctrine_status",
+        "assert_no_forbidden",
+        "boundary_check",
+        "build_budget_report",
+        "build_dispatch_outcome",
+        "canonicalize_manifest",
+        "check_invariants",
+        "classify_c0_chunk",
+        "classify_c0_chunks",
+        "compose_slots",
+        "compute_manifest_hash",
+        "compute_replay_key",
+        "detect_authority_violations",
+        "deterministic_trim",
+        "find_forbidden",
+        "pa0_doctrine_receipt",
+        "pa1_doctrine_receipt",
+        "pa2_doctrine_receipt",
+        "pa3_doctrine_receipt",
+        "pa4_doctrine_receipt",
+        "pa5_doctrine_receipt",
+        "pa6_doctrine_receipt",
+        "pa7_doctrine_receipt",
+        "render_anthropic",
+        "render_for_provider",
+        "render_gemini",
+        "render_local",
+        "render_openai_chat",
+        "render_openai_reasoning",
+        "resolve_bom",
+        "run_prompt_assembly_pipeline",
+        "run_u0_airlock",
+        "sign_manifest",
+        "status_for_pa0",
+        "status_for_pa1",
+        "status_for_pa2",
+        "status_for_pa3",
+        "status_for_pa4",
+        "status_for_pa5",
+        "status_for_pa6",
+        "status_for_pa7",
+        "upstream_bundle_from_dicts",
+        "validate_h0_reentry",
+        "validate_l2_handoff",
+        "validate_pa4",
+        "verify_signature"
+      ],
+      "count": 46
+    }
+  },
+  {
+    "req_id": "INV::PA.I1",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I1 — Prompt Assembly composes only (no retrieve/execute/route/call/write).",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_substrings": [
+        "retrieve",
+        "execute_tool",
+        "call_provider",
+        "approve_write",
+        "mutate_l4"
+      ],
+      "callables_matched": []
+    }
+  },
+  {
+    "req_id": "INV::PA.I2",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I2 — PA does not alter C0 evidence (classifier records unchanged across receipt build).",
+    "status": "PASS",
+    "evidence": {
+      "pre_records": [
+        [
+          "",
+          "",
+          "PASS"
+        ]
+      ],
+      "post_records": [
+        [
+          "",
+          "",
+          "PASS"
+        ]
+      ]
+    }
+  },
+  {
+    "req_id": "INV::PA.I3",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I3 — Slot/artifact receipts preserve origin/authority/source/replay refs.",
+    "status": "PASS",
+    "evidence": {
+      "required_refs": [
+        "request_id",
+        "route_id",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "run_id",
+        "trace_id"
+      ],
+      "presence_map": {
+        "request_id": true,
+        "route_id": true,
+        "plan_id": true,
+        "policy_hash": true,
+        "replay_key": true,
+        "run_id": true,
+        "trace_id": true
+      },
+      "resolved_values": {
+        "request_id": "req",
+        "route_id": "r1",
+        "plan_id": "p1",
+        "policy_hash": "h",
+        "replay_key": "rk-1",
+        "run_id": "run-1",
+        "trace_id": "tr-1"
+      },
+      "top_level_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ]
+    }
+  },
+  {
+    "req_id": "INV::PA.I4",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I4 — User text is task intent only (U0 authority=ZERO, rank below mid-tier).",
+    "status": "PASS",
+    "evidence": {
+      "u0_authority_label": "ZERO",
+      "u0_rank": 40
+    }
+  },
+  {
+    "req_id": "INV::PA.I5",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I5 — Retrieved/tool content (C0) is data unless higher authority binds it.",
+    "status": "PASS",
+    "evidence": {
+      "c0": [
+        60,
+        "INFORMATIONAL"
+      ],
+      "higher_authority_slots": {
+        "S0": [
+          100,
+          "ABSOLUTE"
+        ],
+        "D0": [
+          90,
+          "BINDING"
+        ],
+        "I0": [
+          80,
+          "GOVERNED"
+        ]
+      }
+    }
+  },
+  {
+    "req_id": "INV::PA.I6",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I6 — Lower-authority slots cannot override higher (rank order preserved).",
+    "status": "PASS",
+    "evidence": {
+      "stack_codes_in_order": [
+        "S0",
+        "D0",
+        "I0",
+        "E0",
+        "C0",
+        "M0",
+        "U0",
+        "Y0",
+        "H0",
+        "R0"
+      ],
+      "stack_ranks_in_order": [
+        100,
+        90,
+        80,
+        70,
+        60,
+        50,
+        40,
+        30,
+        20,
+        10
+      ],
+      "is_sorted_descending": true
+    }
+  },
+  {
+    "req_id": "INV::PA.I7",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I7 — Tools and schemas have dedicated provider-native receipt slots.",
+    "status": "PASS",
+    "evidence": {
+      "schema_render_receipt_present": true,
+      "tool_render_receipt_present": true,
+      "provider_field_mapping_receipt_present": true,
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ]
+    }
+  },
+  {
+    "req_id": "INV::PA.I8",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I8 — Required content cannot be silently dropped (overflow surfaces PA_BUDGET_OVERFLOW).",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_status_emitted": "PA_BUDGET_OVERFLOW",
+      "expected": "PA_BUDGET_OVERFLOW",
+      "rationale": "Required content overflow surfaces a gap status, never silently drops."
+    }
+  },
+  {
+    "req_id": "INV::PA.I9",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I9 — Canonical structured-slot bytes drive manifest_hash (receipts present).",
+    "status": "PASS",
+    "evidence": {
+      "pa5_has_canonical_hash_input_manifest": true,
+      "pa7_has_manifest_hash_receipt": true
+    }
+  },
+  {
+    "req_id": "INV::PA.I10",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I10 — Determinism: same inputs produce identical budget outputs.",
+    "status": "PASS",
+    "evidence": {
+      "run1_status": "OK",
+      "run2_status": "OK",
+      "run1_input_tokens": 600,
+      "run2_input_tokens": 600,
+      "run1_can_dispatch": true,
+      "run2_can_dispatch": true
+    }
+  },
+  {
+    "req_id": "INV::PA.I11",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I11 — Emit gap evidence when constraints cannot be preserved.",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_status_emitted": "PA_INPUT_INCOMPLETE",
+      "expected": "PA_INPUT_INCOMPLETE",
+      "rationale": "Missing required input must surface gap evidence, never fake completeness."
+    }
+  },
+  {
+    "req_id": "INV::PA.I12",
+    "stage": "PARENT",
+    "category": "INVARIANT",
+    "requirement": "PA.I12 — PA.7 handoff is artifact only; carries no runtime disposition tokens.",
+    "status": "PASS",
+    "evidence": {
+      "raised_forbidden": false,
+      "exception_message": "",
+      "receipt_doctrine_status": "PA_L2_HANDOFF_READY"
+    }
+  },
+  {
+    "req_id": "SLOT::S0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `S0` (auth=ABSOLUTE, rank=100) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "S0",
+      "rank": 100,
+      "doctrine_label": "ABSOLUTE",
+      "constructed_code": "S0",
+      "constructed_rank": 100
+    }
+  },
+  {
+    "req_id": "SLOT::D0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `D0` (auth=BINDING, rank=90) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "D0",
+      "rank": 90,
+      "doctrine_label": "BINDING",
+      "constructed_code": "D0",
+      "constructed_rank": 90
+    }
+  },
+  {
+    "req_id": "SLOT::I0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `I0` (auth=GOVERNED, rank=80) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "I0",
+      "rank": 80,
+      "doctrine_label": "GOVERNED",
+      "constructed_code": "I0",
+      "constructed_rank": 80
+    }
+  },
+  {
+    "req_id": "SLOT::E0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `E0` (auth=GUIDING, rank=70) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "E0",
+      "rank": 70,
+      "doctrine_label": "GUIDING",
+      "constructed_code": "E0",
+      "constructed_rank": 70
+    }
+  },
+  {
+    "req_id": "SLOT::C0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `C0` (auth=INFORMATIONAL, rank=60) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "C0",
+      "rank": 60,
+      "doctrine_label": "INFORMATIONAL",
+      "constructed_code": "C0",
+      "constructed_rank": 60
+    }
+  },
+  {
+    "req_id": "SLOT::M0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `M0` (auth=PRIVATE, rank=50) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "M0",
+      "rank": 50,
+      "doctrine_label": "PRIVATE",
+      "constructed_code": "M0",
+      "constructed_rank": 50
+    }
+  },
+  {
+    "req_id": "SLOT::U0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `U0` (auth=ZERO, rank=40) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "U0",
+      "rank": 40,
+      "doctrine_label": "ZERO",
+      "constructed_code": "U0",
+      "constructed_rank": 40
+    }
+  },
+  {
+    "req_id": "SLOT::Y0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `Y0` (auth=ANALYTIC, rank=30) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "Y0",
+      "rank": 30,
+      "doctrine_label": "ANALYTIC",
+      "constructed_code": "Y0",
+      "constructed_rank": 30
+    }
+  },
+  {
+    "req_id": "SLOT::H0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `H0` (auth=PROPOSED, rank=20) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "H0",
+      "rank": 20,
+      "doctrine_label": "PROPOSED",
+      "constructed_code": "H0",
+      "constructed_rank": 20
+    }
+  },
+  {
+    "req_id": "SLOT::R0",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "Canonical slot `R0` (auth=SCHEMA, rank=10) constructs cleanly",
+    "status": "PASS",
+    "evidence": {
+      "slot": "R0",
+      "rank": 10,
+      "doctrine_label": "SCHEMA",
+      "constructed_code": "R0",
+      "constructed_rank": 10
+    }
+  },
+  {
+    "req_id": "SLOT::AUTHORITY_ORDER",
+    "stage": "PA.2",
+    "category": "SLOT_MAP",
+    "requirement": "AuthorityStack preserves doctrine high->low authority order",
+    "status": "PASS",
+    "evidence": {
+      "codes_in_stack_order": [
+        "S0",
+        "D0",
+        "I0",
+        "E0",
+        "C0",
+        "M0",
+        "U0",
+        "Y0",
+        "H0",
+        "R0"
+      ],
+      "ranks_in_stack_order": [
+        100,
+        90,
+        80,
+        70,
+        60,
+        50,
+        40,
+        30,
+        20,
+        10
+      ],
+      "ranks_descending_expected": [
+        100,
+        90,
+        80,
+        70,
+        60,
+        50,
+        40,
+        30,
+        20,
+        10
+      ]
+    }
+  },
+  {
+    "req_id": "E2E::dispatch_allowed",
+    "stage": "ALL",
+    "category": "E2E",
+    "requirement": "Pipeline PASS path allows dispatch",
+    "status": "PASS",
+    "evidence": {
+      "dispatch_allowed": true,
+      "doctrine_status": "PA_ARTIFACT_NOT_SIGNED"
+    }
+  },
+  {
+    "req_id": "E2E::stages_emitted",
+    "stage": "ALL",
+    "category": "E2E",
+    "requirement": "Pipeline emits at least PA.0 and PA.7 receipts",
+    "status": "PASS",
+    "evidence": {
+      "stages_emitted": [
+        "PA.0",
+        "PA.7"
+      ],
+      "receipt_count": 2
+    }
+  },
+  {
+    "req_id": "E2E::no_forbidden",
+    "stage": "ALL",
+    "category": "E2E",
+    "requirement": "No pipeline receipt carries forbidden tokens under decision fields",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_hits": []
+    }
+  },
+  {
+    "req_id": "E2E::aggregate_status",
+    "stage": "ALL",
+    "category": "E2E",
+    "requirement": "Pipeline aggregate doctrine_status resolves to a PAStatus",
+    "status": "PASS",
+    "evidence": {
+      "aggregate_status": "PA_ARTIFACT_NOT_SIGNED",
+      "result_status": "PA_ARTIFACT_NOT_SIGNED",
+      "match": true
+    }
+  }
+]
