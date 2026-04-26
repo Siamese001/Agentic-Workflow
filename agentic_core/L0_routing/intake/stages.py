@@ -408,12 +408,16 @@ def run_e3_quota(
         "retry_after_seconds": None,
     }
 
-    # 1. envelope size preflight
-    approx_bytes = (
-        len(env.body_text or "")
-        + (len(str(env.body_json)) if env.body_json else 0)
-        + env.attachments.total_bytes
+    # 1. envelope size preflight (BYTES, not codepoints — Unicode-safe).
+    # Multi-byte UTF-8 chars (e.g. emoji = 4 bytes each) must be counted as
+    # bytes so the policy semantically matches its name `max_envelope_bytes`.
+    body_text_bytes = (
+        len(env.body_text.encode("utf-8", errors="replace")) if env.body_text else 0
     )
+    body_json_bytes = (
+        len(str(env.body_json).encode("utf-8", errors="replace")) if env.body_json else 0
+    )
+    approx_bytes = body_text_bytes + body_json_bytes + env.attachments.total_bytes
     if approx_bytes > state.max_envelope_bytes:
         fields["quota_verdict"] = QuotaVerdict.DENIED
         return StageResult(
