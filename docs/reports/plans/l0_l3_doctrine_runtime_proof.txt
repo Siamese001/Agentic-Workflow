@@ -1,0 +1,40 @@
+==============================================================================
+L0/L3 Doctrine Runtime Proof ΓÇö exercising 03.1..03.8 in sequence
+==============================================================================
+[03.1] preflight_status            = ROUTE_READY
+[03.1] candidate_count             = 3
+[03.1] candidate_frame_hash        = rcf:d3ea5c48802c4e6a7ba078a2112dc64e603a13d50929...
+[03.1] discriminators.requires_c0  = True
+[03.1] determinism_check           = PASS (frame hash stable)
+[03.2] selected_route_id           = R1A_EXACT_CACHE
+[03.2] execution_form              = TERMINAL_SHORTCIRCUIT
+[03.2] confidence_class            = EXACT
+[03.2] confidence_score            = 1.000
+[03.2] first_passing_step          = 1_exact_cache
+[03.2] order_hash                  = order:189082d98652d483592c6fbe8d90eb2b77ddee63ab...
+[03.2] route_selection_hash        = sel:df5ab41a1a7527b62eafe17c3053dd77df900dc860ad...
+[03.2] determinism_check           = PASS (selection hash stable)
+[03.5] telemetry.event_hash        = evt:5f7177f83a9772144f241e7ce5ab9b24076323a1eef9...
+[03.5] telemetry determinism_check = PASS (event hash stable)
+[03.5] verify_replay (identical)   = True reasons=()
+[03.6] node_count                  = 4
+[03.6] edge_count                  = 3
+[03.6] graph_hash                  = graph:20e4bf104b517cfaf0818d1ccb1d8235965aa03c86...
+[03.6] determinism_check           = PASS (graph hash stable)
+[03.7] first_ready_node            = n_c0_ground
+[03.7] readiness.ready             = True
+[03.7] readiness_hash              = rdy:6edfa096a62270cff756a8a4e99f8b09c8702f7e5554...
+[03.7] step_contract_id            = stepid:5bd93f1ac57384a74eb9fa5684fc7310231d7d965...
+[03.7] no_durable_commit_authority = True
+[03.7] node_type                   = C0_GROUNDING_STEP
+[03.8] concurrency_plan_hash       = conc:5f05801f77280076d9e9c7f2eee25438008cc5e97a7...
+[03.8] completion_status           = COMPLETE
+[03.8] mutation_proposal_only      = True
+[03.8] sealed_package_id           = pkgid:04c5dc0f2fcad47c9f19734bd8edf9504e3fd5895d...
+[03.8] outcome_class               = CLEAN
+[03.8] exit_review_required        = True
+[03.8] no_durable_commit_assertion = True
+[03.8] package_hash                = pkg:7920090d83e1a3e150c3727837771721d168ab0b80cd...
+==============================================================================
+RUNTIME PROOF: ALL DOCTRINE INVARIANTS UPHELD
+==============================================================================
