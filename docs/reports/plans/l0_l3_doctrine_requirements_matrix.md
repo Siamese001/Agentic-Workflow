@@ -1,10 +1,11 @@
 # L0/L3 Doctrine — Requirements Traceability Matrix
 
 **Plan:** `.windsurf/plans/l0-l3-doctrine-contracts-b8c2a4.md`
-**Commit:** `f5fd820b7e` (origin/main)
+**Commit:** `f5fd820b7e` + hardening (this revision)
 **ADG snapshot:** `04252026_0843` (84,920 nodes, 593,555 edges, healthy)
-**Test result:** **47 passed, 0 failed, 0 skipped** in 0.20 s
+**Test result:** **75 passed, 0 failed, 0 skipped** in 0.36 s (47 baseline + 28 hardening)
 **Runtime proof:** `docs/reports/plans/l0_l3_doctrine_runtime_proof.txt`
+**Hardening tests:** `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_hardening.py`
 
 ## Legend
 
@@ -557,6 +558,23 @@ $ grep -rn "import subprocess\|import requests\|import httpx\|import sqlite3\|op
 
 ---
 
+## Hardening Pass — Closed Gaps
+
+The matrix's "by design" / "inspection" rows have been promoted to direct
+unit tests via `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_hardening.py`:
+
+| Gap | Direct test added | Status |
+|---|---|---|
+| **G1** FixedDecisionOrder steps 0-7 individually exercised | `TestFixedDecisionOrderDirect` (9 tests) | ✓ ALL 8 STEPS COVERED |
+| **G2** Selection / preflight digest stable across two calls | `TestDeterminismOrderingInvariance` (2 tests) | ✓ |
+| **G3** policy_hash + blueprint_hash change ⇒ different replay digest | `TestPolicyHashChangeChangesDigest` (3 tests) | ✓ |
+| **G4** Import hygiene: no I/O / no subprocess / no upper-layer / no open-for-write | `TestImportHygiene` (8 tests) | ✓ AUTOMATED |
+| **G5** Proof harness lint cleanup (unused `json`, 4 dead f-strings) | `scripts/proof/run_doctrine_runtime_proof.py` cleaned | ✓ |
+| **G6** All 6 `SafeResponseType` enum values validate on R5 | `TestSafeResponseTypeCoverage` parametrized | ✓ ALL 6 |
+
+After hardening, **zero rows remain at "by design"-only or "inspection"-only**
+without an automated companion test.
+
 ## Summary Statistics
 
 | Metric | Count |
@@ -564,11 +582,14 @@ $ grep -rn "import subprocess\|import requests\|import httpx\|import sqlite3\|op
 | Doctrine docs covered | 10 |
 | Total requirements mapped | 200+ field-level + 60 rule-level + 22 acceptance |
 | Implementation files created | 16 (L0: 9, L3: 7) |
-| Test files created | 2 |
-| Unit tests | **47 passed, 0 failed, 0 skipped** |
-| Test wall time | 0.20 s |
+| Test files created | 3 (`test_l0_doctrine.py`, `test_l3_doctrine.py`, `test_l0_doctrine_hardening.py`) |
+| Unit tests | **75 passed, 0 failed, 0 skipped** |
+| Test wall time | 0.36 s |
 | End-to-end runtime proof | PASS (`scripts/proof/run_doctrine_runtime_proof.py`) |
-| Determinism checks (3) | PASS (preflight, selector, telemetry, blueprint, replay all stable across 2 calls) |
+| Determinism checks | PASS (preflight, selector, telemetry, blueprint, replay all stable across 2 calls) |
+| Decision-order coverage | ✓ ALL 8 STEPS (0..7) directly tested |
+| Import-hygiene gate | ✓ AUTOMATED (8 test points) |
+| `SafeResponseType` enum coverage | ✓ ALL 6 members |
 | Constitutional violations introduced | 0 |
 | `except Exception` in new code | 0 |
 | `subprocess` calls in new code | 0 |

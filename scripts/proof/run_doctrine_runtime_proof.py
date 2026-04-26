@@ -7,7 +7,6 @@ traceability matrix in docs/reports/plans/.
 
 from __future__ import annotations
 
-import json
 import sys
 
 from agentic_core.L0_routing.doctrine.contracts_l0_1 import (
@@ -76,7 +75,7 @@ def main() -> None:
     # Determinism: re-run preflight; hash must match
     frame2 = run_l0_preflight(decision_input)
     assert frame.candidate_frame_hash == frame2.candidate_frame_hash
-    print(f"[03.1] determinism_check           = PASS (frame hash stable)")
+    print("[03.1] determinism_check           = PASS (frame hash stable)")
 
     # ---- L0.2 selector ----
     receipt = select_route(
@@ -104,7 +103,7 @@ def main() -> None:
         preflight_id="pf-proof-1",
     )
     assert receipt.route_selection_hash == receipt2.route_selection_hash
-    print(f"[03.2] determinism_check           = PASS (selection hash stable)")
+    print("[03.2] determinism_check           = PASS (selection hash stable)")
 
     # ---- L0.5 telemetry ----
     evt = RouteTelemetryEvent(
@@ -132,7 +131,7 @@ def main() -> None:
     print(f"[03.5] telemetry.event_hash        = {evt_hashed.event_hash[:48]}...")
     evt_again = evt.with_hash()
     assert evt_hashed.event_hash == evt_again.event_hash
-    print(f"[03.5] telemetry determinism_check = PASS (event hash stable)")
+    print("[03.5] telemetry determinism_check = PASS (event hash stable)")
 
     # ---- L0.5 replay manifest ----
     manifest_a = RouteReplayManifest(
@@ -202,7 +201,7 @@ def main() -> None:
     print(f"[03.6] graph_hash                  = {blueprint.graph_hash[:48]}...")
     blueprint_2 = build_l3_workflow(wf_input)
     assert blueprint.graph_hash == blueprint_2.graph_hash
-    print(f"[03.6] determinism_check           = PASS (graph hash stable)")
+    print("[03.6] determinism_check           = PASS (graph hash stable)")
 
     # ---- L3.7 state ledger + step contract ----
     ledger = initial_ledger(

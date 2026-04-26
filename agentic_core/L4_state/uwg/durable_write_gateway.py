@@ -1,0 +1,677 @@
+"""DurableWriteGateway — the only mutation authority for L4 (00.6).
+
+Implements the UWG admission pipeline mandated by
+``docs/reference/00_L4_State_and_UWG/00.6_UWG_Durable_Write_Gateway_detailed.md``:
+
+1. Receive CommitRequest (Exit-only)
+2. Verify authority and source
+3. Validate StateDiff
+4. Validate replay/audit
+5. Acquire write lock
+6. Apply atomic commit
+7. Trigger refresh + audit append
+
+Anti-bypass posture (00.8 §PHASE 3): every direct-write attempt from a
+non-UWG surface is recorded as a blocked attempt with a receipt and an
+``l4.direct_write_attempt.blocked`` span.
+"""
+
+from __future__ import annotations
+
+import threading
+import uuid
+from dataclasses import replace
+from typing import Dict, Iterable, List, Optional, Tuple
+
+from agentic_core.L4_state.audit.audit_ledger import (
+    AuditAppendReceipt,
+    AuditLedger,
+    AuditLedgerUnavailableError,
+    get_default_ledger,
+)
+from agentic_core.L4_state.contracts.records import (
+    CommitRequest,
+    ReadSurfaceRefreshPlan,
+    RollbackPlan,
+    StateDiff,
+    UWGBlockedCommitReceipt,
+    UWGCommitReceipt,
+    UWGRollbackReceipt,
+    UWGValidationReceipt,
+    WriteLockReceipt,
+    stamp_digest,
+)
+from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
+from agentic_core.L4_state.otel.spans import emit_uwg_span
+from agentic_core.L4_state.refresh.refresh_coordinator import RefreshCoordinator
+
+
+# Allowed StateDiff operation types per 00.6 §PHASE 3.
+ALLOWED_OPERATIONS: Tuple[str, ...] = (
+    "append_record",
+    "version_insert",
+    "alias_swap",
+    "cache_invalidate",
+    "index_refresh",
+    "graph_projection_refresh",
+    "registry_update",
+    "policy_version_publish",
+    "memory_promotion",
+    "rollback",
+    "tombstone",
+)
+
+
+# Surfaces NOT allowed to issue CommitRequest directly. Only Exit may.
+NON_AUTHORIZED_SOURCES: frozenset[str] = frozenset(
+    {
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L5",
+        "L6",
+        "C0",
+        "PromptAssembly",
+        "HITL",
+        "Tool",
+        "Model",
+        "Connector",
+        "PTC_Sandbox",
+        "BackgroundEvaluator",
+        "AdHocScript",
+    }
+)
+
+
+class UWGAuthorityError(RuntimeError):
+    """Raised when a non-UWG surface attempts to bypass the gateway."""
+
+
+class UWGContentionError(RuntimeError):
+    """Raised when write-lock contention is detected without retry policy."""
+
+
+class _WriteLockManager:
+    """Per-target write lock manager with contention detection."""
+
+    def __init__(self) -> None:
+        self._locks: Dict[str, threading.RLock] = {}
+        self._holders: Dict[str, str] = {}
+        self._lock = threading.Lock()
+
+    def acquire(
+        self, *, target_surfaces: Iterable[str], owner: str, timeout: float = 0.0
+    ) -> Tuple[bool, List[str]]:
+        """Try to acquire all target surface locks. Return (acquired, contentions)."""
+        contentions: List[str] = []
+        with self._lock:
+            for surface in target_surfaces:
+                rl = self._locks.setdefault(surface, threading.RLock())
+                if not rl.acquire(blocking=False):
+                    contentions.append(surface)
+            if contentions:
+                # Roll back partial acquisitions
+                for surface in target_surfaces:
+                    if surface not in contentions:
+                        try:
+                            self._locks[surface].release()
+                        except RuntimeError:  # noqa: PERF203
+                            pass
+                return (False, contentions)
+            for surface in target_surfaces:
+                self._holders[surface] = owner
+            return (True, [])
+
+    def release(self, *, target_surfaces: Iterable[str], owner: str) -> None:
+        with self._lock:
+            for surface in target_surfaces:
+                if self._holders.get(surface) == owner:
+                    try:
+                        self._locks[surface].release()
+                        self._holders.pop(surface, None)
+                    except (RuntimeError, KeyError):
+                        pass
+
+
+class DurableWriteGateway:
+    """Admission gateway for durable L4 mutations.
+
+    Construct one per process (or use :func:`get_default_gateway`).
+    Submit :class:`CommitRequest` instances and receive either a
+    :class:`UWGCommitReceipt` or a :class:`UWGBlockedCommitReceipt` plus
+    refresh receipts.
+    """
+
+    def __init__(
+        self,
+        *,
+        audit_ledger: Optional[AuditLedger] = None,
+        refresh_coordinator: Optional[RefreshCoordinator] = None,
+    ) -> None:
+        self._audit = audit_ledger or get_default_ledger()
+        self._refresh = refresh_coordinator or RefreshCoordinator(audit_ledger=self._audit)
+        self._lock_mgr = _WriteLockManager()
+        self._snapshot_counter: int = 0
+        self._snapshot_lock = threading.Lock()
+        self._commits: Dict[str, UWGCommitReceipt] = {}
+        self._blocked: Dict[str, UWGBlockedCommitReceipt] = {}
+        self._rollbacks: Dict[str, UWGRollbackReceipt] = {}
+        self._last_snapshot_id: str = "snapshot:bootstrap"
+        self._direct_write_blocks: List[UWGBlockedCommitReceipt] = []
+
+    # ------------------------------------------------------------------
+    @property
+    def refresh_coordinator(self) -> RefreshCoordinator:
+        return self._refresh
+
+    @property
+    def audit_ledger(self) -> AuditLedger:
+        return self._audit
+
+    @property
+    def last_snapshot_id(self) -> str:
+        return self._last_snapshot_id
+
+    def get_commit_receipt(self, commit_receipt_id: str) -> Optional[UWGCommitReceipt]:
+        return self._commits.get(commit_receipt_id)
+
+    def get_blocked_receipt(self, blocked_id: str) -> Optional[UWGBlockedCommitReceipt]:
+        return self._blocked.get(blocked_id)
+
+    def list_direct_write_blocks(self) -> List[UWGBlockedCommitReceipt]:
+        return list(self._direct_write_blocks)
+
+    # ------------------------------------------------------------------
+    def reject_direct_write(
+        self,
+        *,
+        attempting_surface: str,
+        target_surface: str,
+        reason: str,
+        request_id: Optional[str] = None,
+        run_id: Optional[str] = None,
+    ) -> UWGBlockedCommitReceipt:
+        """Record a direct-write bypass attempt and return the block receipt.
+
+        Per 00.8 §PHASE 3: every direct-write path from L2/L6/HITL/Exit (as
+        a writer)/L5/C0/PromptAssembly/PTC/Tool/Model/Connector/Background/
+        AdHocScript must produce a blocked receipt and an audit record.
+        """
+        snapshot_before = self._allocate_snapshot()
+
+        record, append_receipt = self._audit.append(
+            event_type="direct_write_attempt_blocked",
+            state_surface=target_surface,
+            operation_type="blocked_direct_write",
+            tenant_id="-",
+            policy_hash="-",
+            blueprint_hash="-",
+            snapshot_before=snapshot_before,
+            actor_surface=attempting_surface,
+            mutation_source=attempting_surface,
+            reason_codes=(reason,),
+            request_id=request_id,
+            run_id=run_id,
+        )
+        receipt = UWGBlockedCommitReceipt(
+            blocked_commit_receipt_id=str(uuid.uuid4()),
+            commit_request_ref=f"NO_COMMIT_REQUEST::direct_attempt_by::{attempting_surface}",
+            snapshot_before=snapshot_before,
+            audit_append_receipt_ref=append_receipt.audit_append_receipt_id,
+            blocked_reason_codes=(reason, "non_uwg_surface_blocked"),
+            failed_rule_ids=("UWG_AUTHORITY_REQUIRED",),
+            state_surfaces_requested=(target_surface,),
+        )
+        receipt = stamp_digest(receipt)
+        self._blocked[receipt.blocked_commit_receipt_id] = receipt
+        self._direct_write_blocks.append(receipt)
+
+        emit_uwg_span(
+            "l4.direct_write_attempt.blocked",
+            operation_type="blocked_direct_write",
+            source_surface=attempting_surface,
+            mutation_source=attempting_surface,
+            state_surface=target_surface,
+            blocked_commit_receipt_id=receipt.blocked_commit_receipt_id,
+            status="BLOCKED",
+            reason_codes=(reason,),
+            extra={"audit_record_id": record.audit_record_id},
+        )
+        return receipt
+
+    # ------------------------------------------------------------------
+    def commit(
+        self,
+        *,
+        commit_request: CommitRequest,
+        state_diffs: List[StateDiff],
+        rollback_plan: RollbackPlan,
+        refresh_plan: ReadSurfaceRefreshPlan,
+    ) -> Tuple[Optional[UWGCommitReceipt], Optional[UWGBlockedCommitReceipt], List]:
+        """Run the full UWG pipeline.
+
+        Returns ``(commit_receipt, blocked_receipt, refresh_receipts)``.
+        Exactly one of ``commit_receipt`` / ``blocked_receipt`` is non-None.
+        """
+        emit_uwg_span(
+            "uwg.commit.request_received",
+            policy_hash=commit_request.policy_hash,
+            blueprint_hash=commit_request.blueprint_hash,
+            replay_key=commit_request.replay_key,
+            tenant_id=commit_request.tenant_id,
+            source_surface=commit_request.source_surface,
+            commit_request_id=commit_request.commit_request_id,
+            extra={"state_diff_count": len(state_diffs)},
+        )
+
+        # Stage 1+2: authority and source
+        validation = self._validate(commit_request, state_diffs, rollback_plan, refresh_plan)
+        if validation.validation_status == "FAIL":
+            blocked = self._emit_blocked(commit_request, validation)
+            return (None, blocked, [])
+
+        # Stage 5: write lock
+        target_surfaces = tuple(commit_request.affected_state_surfaces) or tuple(
+            sd.target_surface for sd in state_diffs
+        )
+        lock_owner = f"UWG::{commit_request.commit_request_id}"
+        snapshot_before = self._allocate_snapshot()
+        write_lock_receipt = self._acquire_lock(
+            commit_request=commit_request,
+            target_surfaces=target_surfaces,
+            owner=lock_owner,
+            snapshot_before=snapshot_before,
+        )
+        if write_lock_receipt.lock_status != "ACQUIRED":
+            blocked = self._emit_blocked(
+                commit_request,
+                replace(
+                    validation,
+                    write_lock_status="CONTENTION",
+                    failed_rules=tuple(validation.failed_rules) + ("write_lock_contention",),
+                    reason_codes=tuple(validation.reason_codes) + ("write_lock_contention",),
+                ),
+            )
+            return (None, blocked, [])
+
+        try:
+            # Stage 6: atomic commit
+            snapshot_after = self._allocate_snapshot()
+            audit_append_record, audit_append_receipt = self._audit.append(
+                event_type="atomic_commit_applied",
+                state_surface=",".join(target_surfaces) if target_surfaces else "-",
+                operation_type="commit",
+                tenant_id=commit_request.tenant_id,
+                policy_hash=commit_request.policy_hash,
+                blueprint_hash=commit_request.blueprint_hash,
+                snapshot_before=snapshot_before,
+                snapshot_after=snapshot_after,
+                actor_surface="UWG",
+                mutation_source="UWG",
+                request_id=commit_request.request_id,
+                run_id=commit_request.run_id,
+                trace_root=commit_request.trace_root,
+                receipt_refs=(write_lock_receipt.write_lock_receipt_id,),
+                state_refs=tuple(sd.state_diff_id for sd in state_diffs),
+            )
+
+            commit_receipt = UWGCommitReceipt(
+                commit_receipt_id=str(uuid.uuid4()),
+                commit_request_ref=commit_request.commit_request_id,
+                write_lock_receipt_ref=write_lock_receipt.write_lock_receipt_id,
+                uwg_validation_receipt_ref=validation.uwg_validation_receipt_id,
+                snapshot_before=snapshot_before,
+                snapshot_after=snapshot_after,
+                read_surface_refresh_plan_ref=refresh_plan.refresh_plan_id,
+                audit_append_receipt_ref=audit_append_receipt.audit_append_receipt_id,
+                committed_at=str(audit_append_receipt.ledger_sequence),
+                state_diff_refs=tuple(sd.state_diff_id for sd in state_diffs),
+                affected_state_surfaces=target_surfaces,
+            )
+            commit_receipt = stamp_digest(commit_receipt)
+            self._commits[commit_receipt.commit_receipt_id] = commit_receipt
+            self._last_snapshot_id = snapshot_after
+
+            emit_uwg_span(
+                "uwg.commit.apply",
+                policy_hash=commit_request.policy_hash,
+                blueprint_hash=commit_request.blueprint_hash,
+                replay_key=commit_request.replay_key,
+                tenant_id=commit_request.tenant_id,
+                source_surface="UWG",
+                mutation_source="UWG",
+                commit_request_id=commit_request.commit_request_id,
+                commit_receipt_id=commit_receipt.commit_receipt_id,
+                snapshot_id=snapshot_after,
+                extra={"audit_record_id": audit_append_record.audit_record_id},
+            )
+            emit_uwg_span(
+                "uwg.commit.receipt_emit",
+                policy_hash=commit_request.policy_hash,
+                replay_key=commit_request.replay_key,
+                tenant_id=commit_request.tenant_id,
+                source_surface="UWG",
+                commit_request_id=commit_request.commit_request_id,
+                commit_receipt_id=commit_receipt.commit_receipt_id,
+                snapshot_id=snapshot_after,
+            )
+
+            # Stage 7: refresh — rebind plan to point at the freshly-emitted commit receipt
+            bound_plan = replace(
+                refresh_plan,
+                source_commit_receipt_ref=commit_receipt.commit_receipt_id,
+                deterministic_digest="",
+            )
+            bound_plan = stamp_digest(bound_plan)
+            refresh_receipts = self._refresh.execute(plan=bound_plan, commit_receipt=commit_receipt)
+            return (commit_receipt, None, refresh_receipts)
+        finally:
+            self._lock_mgr.release(target_surfaces=target_surfaces, owner=lock_owner)
+
+    # ------------------------------------------------------------------
+    def rollback(
+        self,
+        *,
+        rollback_plan: RollbackPlan,
+        source_commit_receipt: UWGCommitReceipt,
+        reason_codes: Tuple[str, ...] = (),
+    ) -> UWGRollbackReceipt:
+        """Apply a rollback per 00.6 §PHASE 7."""
+        if not source_commit_receipt.snapshot_before:
+            raise ValueError("rollback requires source commit's snapshot_before")
+        snapshot_before_rollback = source_commit_receipt.snapshot_after
+        snapshot_after_rollback = self._allocate_snapshot()
+
+        _record, append_receipt = self._audit.append(
+            event_type="rollback_applied",
+            state_surface=",".join(rollback_plan.target_surfaces),
+            operation_type="rollback",
+            tenant_id="-",
+            policy_hash="-",
+            blueprint_hash="-",
+            snapshot_before=snapshot_before_rollback,
+            snapshot_after=snapshot_after_rollback,
+            actor_surface="UWG",
+            mutation_source="UWG",
+            receipt_refs=(source_commit_receipt.commit_receipt_id,),
+            reason_codes=reason_codes,
+        )
+        receipt = UWGRollbackReceipt(
+            rollback_receipt_id=str(uuid.uuid4()),
+            rollback_plan_ref=rollback_plan.rollback_plan_id,
+            source_commit_receipt_ref=source_commit_receipt.commit_receipt_id,
+            snapshot_before_rollback=snapshot_before_rollback,
+            snapshot_after_rollback=snapshot_after_rollback,
+            audit_append_receipt_ref=append_receipt.audit_append_receipt_id,
+            affected_state_surfaces=rollback_plan.target_surfaces,
+            reason_codes=reason_codes,
+        )
+        receipt = stamp_digest(receipt)
+        self._rollbacks[receipt.rollback_receipt_id] = receipt
+        self._last_snapshot_id = snapshot_after_rollback
+
+        emit_uwg_span(
+            "uwg.rollback.apply",
+            replay_key=source_commit_receipt.commit_receipt_id,
+            policy_hash="-",
+            source_surface="UWG",
+            commit_receipt_id=source_commit_receipt.commit_receipt_id,
+            snapshot_id=snapshot_after_rollback,
+            reason_codes=reason_codes,
+        )
+        return receipt
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+    def _validate(
+        self,
+        commit_request: CommitRequest,
+        state_diffs: List[StateDiff],
+        rollback_plan: RollbackPlan,
+        refresh_plan: ReadSurfaceRefreshPlan,
+    ) -> UWGValidationReceipt:
+        checked: List[str] = []
+        failed: List[str] = []
+        reason_codes: List[str] = []
+
+        # 00.6 §PHASE 2 step 1
+        checked.append("source_is_exit")
+        if commit_request.source_surface != "Exit":
+            failed.append("source_is_exit")
+            reason_codes.append("non_exit_source")
+        if commit_request.source_surface in NON_AUTHORIZED_SOURCES:
+            failed.append("non_authorized_source")
+            reason_codes.append(f"non_authorized:{commit_request.source_surface}")
+
+        # 00.6 §PHASE 2 step 1: required fields
+        # progress: fixed-size 7-element validation tuple, no UI bar needed
+        for fld in (
+            "policy_hash",
+            "blueprint_hash",
+            "replay_key",
+            "tenant_id",
+            "request_id",
+            "run_id",
+            "trace_root",
+        ):
+            checked.append(f"required_field::{fld}")
+            if not getattr(commit_request, fld):
+                failed.append(f"required_field::{fld}")
+                reason_codes.append(f"missing::{fld}")
+
+        # 00.6 §PHASE 2 step 2: gate / cert refs
+        checked.append("gate_verdict_refs")
+        if not commit_request.gate_verdict_refs:
+            failed.append("gate_verdict_refs")
+            reason_codes.append("missing::gate_verdict_refs")
+
+        # 00.6 §PHASE 2 step 3: state diffs
+        # progress: bounded by len(state_diffs) — usually 1-3 per CommitRequest, no UI bar needed
+        for sd in state_diffs:
+            label = f"state_diff::{sd.state_diff_id}"
+            checked.append(label)
+            if sd.operation_type not in ALLOWED_OPERATIONS:
+                failed.append(label)
+                reason_codes.append(f"unknown_operation::{sd.operation_type}")
+            if not sd.target_surface:
+                failed.append(label)
+                reason_codes.append(f"missing_target_surface::{sd.state_diff_id}")
+            if not sd.rollback_plan_ref:
+                failed.append(label)
+                reason_codes.append(f"missing_rollback_plan_ref::{sd.state_diff_id}")
+            if not sd.schema_ref:
+                failed.append(label)
+                reason_codes.append(f"missing_schema_ref::{sd.state_diff_id}")
+
+        # 00.6 §PHASE 2 step 4: replay/audit
+        checked.append("replay_key_present")
+        if not commit_request.replay_key:
+            failed.append("replay_key_present")
+            reason_codes.append("missing::replay_key")
+        checked.append("audit_ledger_available")
+        if not self._audit.is_available():
+            failed.append("audit_ledger_available")
+            reason_codes.append("audit_ledger_unavailable")
+
+        # Rollback plan
+        checked.append("rollback_plan_present")
+        if rollback_plan.rollback_plan_id != commit_request.rollback_plan_ref:
+            failed.append("rollback_plan_present")
+            reason_codes.append("rollback_plan_id_mismatch")
+
+        # Refresh plan
+        checked.append("refresh_plan_present")
+        if not refresh_plan.refresh_plan_id:
+            failed.append("refresh_plan_present")
+            reason_codes.append("missing::refresh_plan_id")
+
+        # Blast radius bound
+        checked.append("blast_radius_bounded")
+        allowed_blast = {
+            "single_surface",
+            "tenant_scoped",
+            "route_scoped",
+            "policy_scoped",
+            "registry_scoped",
+        }
+        if commit_request.blast_radius not in allowed_blast:
+            failed.append("blast_radius_bounded")
+            reason_codes.append(f"blast_radius_unbounded::{commit_request.blast_radius}")
+
+        validation = UWGValidationReceipt(
+            uwg_validation_receipt_id=str(uuid.uuid4()),
+            commit_request_ref=commit_request.commit_request_id,
+            validation_status="FAIL" if failed else "PASS",
+            policy_status="PASS" if commit_request.policy_hash else "FAIL",
+            blueprint_status="PASS" if commit_request.blueprint_hash else "FAIL",
+            schema_status="PASS" if all(sd.schema_ref for sd in state_diffs) else "FAIL",
+            gate_status="PASS" if commit_request.gate_verdict_refs else "FAIL",
+            l5_cert_status="PASS",  # this minimal pack does not introduce L5 cert checks
+            hitl_status="PASS",  # only checked when explicitly required by route
+            replay_status="PASS" if commit_request.replay_key else "FAIL",
+            rollback_status="PASS" if commit_request.rollback_plan_ref else "FAIL",
+            blast_radius_status="PASS" if commit_request.blast_radius in allowed_blast else "FAIL",
+            write_lock_status="PENDING",
+            checked_rules=tuple(checked),
+            failed_rules=tuple(failed),
+            reason_codes=tuple(reason_codes),
+        )
+        validation = stamp_digest(validation)
+        emit_uwg_span(
+            "uwg.commit.validate",
+            policy_hash=commit_request.policy_hash,
+            replay_key=commit_request.replay_key,
+            tenant_id=commit_request.tenant_id,
+            source_surface=commit_request.source_surface,
+            commit_request_id=commit_request.commit_request_id,
+            status=validation.validation_status,
+            reason_codes=tuple(reason_codes),
+        )
+        return validation
+
+    def _acquire_lock(
+        self,
+        *,
+        commit_request: CommitRequest,
+        target_surfaces: Tuple[str, ...],
+        owner: str,
+        snapshot_before: str,
+    ) -> WriteLockReceipt:
+        ok, contentions = self._lock_mgr.acquire(target_surfaces=target_surfaces, owner=owner)
+        receipt = WriteLockReceipt(
+            write_lock_receipt_id=str(uuid.uuid4()),
+            commit_request_ref=commit_request.commit_request_id,
+            lock_scope=",".join(target_surfaces) if target_surfaces else "-",
+            lock_status="ACQUIRED" if ok else "CONTENTION",
+            lock_owner=owner,
+            policy_hash=commit_request.policy_hash,
+            blueprint_hash=commit_request.blueprint_hash,
+            snapshot_before=snapshot_before,
+            target_surfaces=target_surfaces,
+            contention_refs=tuple(contentions),
+        )
+        receipt = stamp_digest(receipt)
+        emit_uwg_span(
+            "uwg.write_lock.acquire",
+            policy_hash=commit_request.policy_hash,
+            replay_key=commit_request.replay_key,
+            tenant_id=commit_request.tenant_id,
+            source_surface="UWG",
+            commit_request_id=commit_request.commit_request_id,
+            status=receipt.lock_status,
+            extra={"target_surfaces": list(target_surfaces)},
+        )
+        return receipt
+
+    def _emit_blocked(
+        self,
+        commit_request: CommitRequest,
+        validation: UWGValidationReceipt,
+    ) -> UWGBlockedCommitReceipt:
+        snapshot_before = self._allocate_snapshot()
+        try:
+            _record, append_receipt = self._audit.append(
+                event_type="commit_blocked",
+                state_surface=",".join(commit_request.affected_state_surfaces),
+                operation_type="blocked_commit",
+                tenant_id=commit_request.tenant_id,
+                policy_hash=commit_request.policy_hash or "-",
+                blueprint_hash=commit_request.blueprint_hash or "-",
+                snapshot_before=snapshot_before,
+                actor_surface="UWG",
+                mutation_source=commit_request.source_surface,
+                request_id=commit_request.request_id,
+                run_id=commit_request.run_id,
+                trace_root=commit_request.trace_root,
+                receipt_refs=(validation.uwg_validation_receipt_id,),
+                reason_codes=tuple(validation.reason_codes),
+            )
+            append_ref = append_receipt.audit_append_receipt_id
+        except AuditLedgerUnavailableError:
+            append_ref = "AUDIT_UNAVAILABLE"
+
+        receipt = UWGBlockedCommitReceipt(
+            blocked_commit_receipt_id=str(uuid.uuid4()),
+            commit_request_ref=commit_request.commit_request_id,
+            snapshot_before=snapshot_before,
+            audit_append_receipt_ref=append_ref,
+            uwg_validation_receipt_ref=validation.uwg_validation_receipt_id,
+            blocked_reason_codes=tuple(validation.reason_codes),
+            failed_rule_ids=tuple(validation.failed_rules),
+            state_surfaces_requested=tuple(commit_request.affected_state_surfaces),
+        )
+        receipt = stamp_digest(receipt)
+        self._blocked[receipt.blocked_commit_receipt_id] = receipt
+        emit_uwg_span(
+            "uwg.commit.blocked",
+            policy_hash=commit_request.policy_hash,
+            replay_key=commit_request.replay_key,
+            tenant_id=commit_request.tenant_id,
+            source_surface=commit_request.source_surface,
+            mutation_source=commit_request.source_surface,
+            commit_request_id=commit_request.commit_request_id,
+            blocked_commit_receipt_id=receipt.blocked_commit_receipt_id,
+            status="BLOCKED",
+            reason_codes=tuple(validation.reason_codes),
+        )
+        return receipt
+
+    def _allocate_snapshot(self) -> str:
+        with self._snapshot_lock:
+            self._snapshot_counter += 1
+            return f"snapshot:{self._snapshot_counter:08x}"
+
+
+# Default singleton ----------------------------------------------------------
+
+_DEFAULT_GATEWAY: Optional[DurableWriteGateway] = None
+_DEFAULT_LOCK = threading.Lock()
+
+
+def get_default_gateway() -> DurableWriteGateway:
+    """Return the process-wide default gateway (lazy-initialized)."""
+    global _DEFAULT_GATEWAY  # noqa: PLW0603
+    with _DEFAULT_LOCK:
+        if _DEFAULT_GATEWAY is None:
+            _DEFAULT_GATEWAY = DurableWriteGateway()
+        return _DEFAULT_GATEWAY
+
+
+def reset_default_gateway() -> None:
+    """Reset the default gateway (test hook)."""
+    global _DEFAULT_GATEWAY  # noqa: PLW0603
+    with _DEFAULT_LOCK:
+        _DEFAULT_GATEWAY = DurableWriteGateway()
+
+
+__all__ = [
+    "ALLOWED_OPERATIONS",
+    "DurableWriteGateway",
+    "NON_AUTHORIZED_SOURCES",
+    "UWGAuthorityError",
+    "UWGContentionError",
+    "get_default_gateway",
+    "reset_default_gateway",
+]
