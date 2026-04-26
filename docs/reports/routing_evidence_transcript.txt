@@ -1,0 +1,244 @@
+
+================================================================================
+  LAYER  0  Foundation — persistent decision_events store + provenance
+================================================================================
+   schema rows in sqlite_master                         = 1
+   provenance.policy_hash                               = sha256:policy@v3
+   provenance.snapshot_id                               = adg_indexed_04262026_0500
+   provenance.calibration_version                       = cal-v7
+   provenance.judge_version                             = judge-rubric-v2
+   provenance digest (32-hex)                           = 5d274e30bd5bd7b4f21435a4d7da210d
+
+================================================================================
+  LAYER  1  L0 R1B/R3 — Per-namespace Thompson bandit
+================================================================================
+
+[STEP] seed decisions into persistent store, per (app_name, route) cell
+   rows in decision_events (layer=L0_routing)           = 480
+   rows with non-null outcome_success                   = 480
+
+[STEP] rebuild Beta(α,β) posteriors from persistent store
+   rows replayed into bandit                            = 480
+   market_news/R1B α=46 β=76                            = mean=0.3770  empirical=0.3750  posterior_var=0.00191
+   market_news/R3 α=82 β=40                             = mean=0.6721  empirical=0.6750  posterior_var=0.00179
+   resume_kb/R1B α=98 β=24                              = mean=0.8033  empirical=0.8083  posterior_var=0.00128
+   resume_kb/R3 α=43 β=79                               = mean=0.3525  empirical=0.3500  posterior_var=0.00186
+
+[STEP] eval gate — Thompson choose 5000× per namespace
+   choose-rate market_news/R3                           = 100.000%
+   choose-rate resume_kb/R1B                            = 100.000%
+
+[STEP] router feedback — namespace × route winner table
+   resume_kb   ⇒ recommended route = R1B
+   market_news ⇒ recommended route = R3
+
+================================================================================
+  LAYER  2  L0 R5 — Reason-code Brier calibration & auto-demote
+================================================================================
+
+[STEP] seed R5 abstain-route decisions (R5 predicts failure -> high failure rate = good calibration)
+
+[STEP] eval gate — analyze_r5_reasons() computes per-reason Brier
+   reason=low_confidence         n= 80 succ_rate=0.087  = brier=0.0875  demoted=False
+   reason=ood_score              n= 80 succ_rate=0.225  = brier=0.2250  demoted=True
+   reason=toxicity_flagged       n= 80 succ_rate=0.450  = brier=0.4500  demoted=True
+   # demoted reasons                                    = 2
+   # insufficient-data reasons                          = 0
+
+[STEP] router feedback — demoted reasons stripped from R5 trigger set
+   demoted ⇒ ['ood_score', 'toxicity_flagged']
+
+================================================================================
+  LAYER  3  L1 / C0 — Retrieval-mode bandit + adaptive-k + citation coverage
+================================================================================
+
+[STEP] retrieval-mode bandit on intent_class=doc_qa (4 modes, 400 epochs)
+   posterior doc_qa/dense  α=222 β=180                  = mean=0.5522  (truth p=0.55)
+   posterior doc_qa/sparse α=177 β=225                  = mean=0.4403  (truth p=0.40)
+   posterior doc_qa/hybrid α=316 β=86                   = mean=0.7861  (truth p=0.78)
+   posterior doc_qa/graph  α=119 β=283                  = mean=0.2960  (truth p=0.30)
+
+[STEP] eval gate — bandit.choose 5000× from admissible modes
+   choose-rate doc_qa/hybrid                            = 100.000%
+
+[STEP] adaptive-k cutoff on cosine score curve
+   scores                                               = [0.92, 0.91, 0.88, 0.61, 0.55, 0.2]
+   Δᵢ = score[i-1]-score[i]                             = [0.01, 0.03, 0.27, 0.06, 0.35]
+   first i with Δᵢ ≥ 0.20  ⇒  k                         = 3
+
+[STEP] citation coverage on a 5-claim answer
+   |claims|=5; anchored-and-returned=4                  = coverage = 0.8000  (=4/5)
+
+[STEP] router feedback — winning mode + k_cutoff + coverage drive C0
+   doc_qa ⇒ retrieval mode = hybrid | k_cutoff = 3 | citation_coverage = 0.80
+
+================================================================================
+  LAYER  4  L2 — Cost-aware tier cascade + provider Brier + fingerprint gate
+================================================================================
+
+[STEP] expected-utility decision: should_escalate()
+   high conf              conf=0.95 gain=0.40 cost=0.10 margin=+0.30 = escalate=True
+   gain > cost            conf=0.70 gain=0.40 cost=0.10 margin=+0.30 = escalate=True
+   below safety floor     conf=0.30 gain=0.40 cost=0.10 margin=+0.30 = escalate=True
+   gain < cost            conf=0.80 gain=0.05 cost=0.10 margin=-0.05 = escalate=False
+
+[STEP] provider Brier calibrator — 200 obs each across 3 providers
+   provider=gpt-4o     n_obs=200                        = brier=0.1504  demoted=True
+   provider=claude-3   n_obs=200                        = brier=0.3580  demoted=True
+   provider=llama-3.1  n_obs=200                        = brier=0.2500  demoted=True
+   demoted set (brier > 0.15)                           = {'claude-3', 'gpt-4o', 'llama-3.1'}
+
+[STEP] provider fingerprint gate — bind v3, verify v3 (ok) vs v4 (block)
+   verify(claude-3, v3)                                 = OK
+   verify(claude-3, v4)                                 = BLOCKED: ProviderFingerprintMismatchError
+
+[STEP] router feedback — demoted providers + fingerprint blocks gate cascade
+   cascade tier excludes ⇒ {'claude-3', 'gpt-4o', 'llama-3.1'}
+
+================================================================================
+  LAYER  5  L3 — Workflow-shape calibration (max-iter, oscillation, cascade skip)
+================================================================================
+
+[STEP] convergence histograms — iterations to PASS, per task class
+   draft_resume     n= 60                               = p95_iter=3  recommended_max=3  confident=True
+   research_brief   n= 60                               = p95_iter=7  recommended_max=7  confident=True
+   rfp_proposal     n= 60                               = p95_iter=5  recommended_max=5  confident=True
+
+[STEP] oscillation amplitude — pairwise 1-cosine across iteration embeddings
+   near-identical embeddings                            = per-step distances=[0.9948]  (low ⇒ converging)
+   ping-pong embeddings                                 = per-step distances=[1.0]  (high ⇒ oscillating)
+
+[STEP] cascade skip rate over 20 runs
+   skip-rate (any tier omitted)                         = 0.0000  (12/20 paths skip a tier)
+   path distribution                                    = {'t1→t2→t3': 8, 't1→t3': 8, 't1→t2': 4}
+
+[STEP] router feedback — per-class max-iter caps, oscillation kill-switch
+   draft_resume     max_iter cap → 3
+   research_brief   max_iter cap → 7
+   rfp_proposal     max_iter cap → 5
+
+================================================================================
+  LAYER  6  L3 — Exit-Eval reroute governance (ceiling + judge disagreement + replay-cert)
+================================================================================
+
+[STEP] reroute ceiling = 2; record reroutes until ceiling fires
+   attempt #1                                           = OK  reroute_count=1
+   attempt #2                                           = OK  reroute_count=2
+   attempt #3                                           = BLOCKED: RerouteCeilingExceededError
+   ceiling fired at attempt                             = 3
+
+[STEP] judge disagreement — rubric vs span-grader booleans
+   n_rows                                               = 10
+   disagree count (manual)                              = 3
+   rate                                                 = 0.3000  (=3/10)
+   alarm_threshold                                      = 0.15
+   alarm fired                                          = True
+
+[STEP] replay-cert blocks — expected vs observed digests
+   blocked decision_ids                                 = ['d2', 'd4']
+
+[STEP] router feedback — alarm + blocks gate Exit-Eval promotion path
+   judge alarm=True  cert_blocks=['d2', 'd4'] ⇒ promote=False
+
+================================================================================
+  LAYER  7  L4 — UWG write-class severity + invalidation coverage + alias atomicity
+================================================================================
+
+[STEP] classify_write across 4 (op, target) pairs
+   PUT     uwg.cache.session.user42                     = class=reversible  requires_2nd_judge=False
+   DELETE  uwg.canonical.identity                       = class=irreversible  requires_2nd_judge=True
+   ALTER   uwg.schema.sender_kb                         = class=schema_change  requires_2nd_judge=True
+   PATCH   uwg.policy.guardrail_v3                      = class=reversible  requires_2nd_judge=False
+
+[STEP] invalidation coverage gate — 2 proposals, 1 stale read observed
+   # proposals tracked                                  = 2
+   # stale reads observed                               = 2
+   miss_rate (stale-reads not covered / total stale-reads) = 0.5000  (1 miss / 2 stale = 0.5 expected)
+
+[STEP] alias swap atomicity proof — gap must be >= swap_window_seconds (hold period)
+   gap=1.2s, required>=1.5s                             = VIOLATION: alias swap not atomic: gap=1.200000s < required 1.500000s
+   gap=4.0s, required>=1.5s                             = ATOMIC (no exception)
+
+[STEP] router feedback — only IRREVERSIBLE+SCHEMA fire 2nd-judge gate
+   2nd-judge gate fires on 2/4 writes ⇒ stricter UWG path
+
+================================================================================
+  LAYER  8  L5 — HITL false-positive ledger + adversarial probe suite
+================================================================================
+
+[STEP] seed 50 HITL events; approved-after-fire = false positive
+   # events stored                                      = 50
+   overall FP rate                                      = 0.1400
+     per-reason FP [low_confidence]                     = 0.1333  (truth_block_rate=0.60)
+     per-reason FP [pii_leak]                           = 0.2000  (truth_block_rate=0.80)
+     per-reason FP [policy_violation]                   = 0.1000  (truth_block_rate=0.30)
+
+[STEP] adversarial probes — 4 registered, score nightly
+   escape rate                                          = 0.5000  (=2/4)
+   escaped probes                                       = ['data_exfil_002', 'jailbreak_004']
+
+[STEP] router feedback — high-FP reason demoted; escapes raise L5 strictness
+   worst-FP reason ⇒ pii_leak  (rate=20.00%) demoted from triggers
+   escape rate 50% ⇒ raise judge_strict_mode 24h
+
+================================================================================
+  LAYER  9  L6 — Wilson-CI promotion gate + auto-rollback + counterfactual uplift
+================================================================================
+
+[STEP] candidate=142/200 vs baseline=110/200 — promotion verdict
+   candidate point=142/200=0.7100  Wilson-95            = [0.6436, 0.7685]  n=200
+   baseline  point=110/200=0.5500  Wilson-95            = [0.4808, 0.6174]  n=200
+   candidate.lower vs baseline.upper                    = 0.6436 > 0.6174 ⇒ True
+   promotion verdict                                    = promote=True  reason=candidate lower=0.6436 > baseline upper=0.6174
+
+[STEP] auto-rollback trigger — canary regression vs baseline
+     metric=exit_eval_pass_rate                         = z-score=-4.69
+     metric=latency_p95_ms                              = z-score=+1.02
+     metric=cost_usd_per_decision                       = z-score=+0.35
+   triggered (sigma > 1.5 on any metric)                = True
+   breach reasons                                       = ['exit_eval_pass_rate']
+
+[STEP] counterfactual uplift — shadow vs prod outcomes
+   shadow_rate                                          = 0.800
+   prod_rate                                            = 0.400
+   uplift = shadow - prod                               = +0.400
+
+[STEP] router feedback — promotion_bus
+   PROMOTE=True | ROLLBACK=True | UPLIFT=+0.400
+
+================================================================================
+  LAYER 10  L6 — Cross-layer regret accounting (per-decision + by-layer)
+================================================================================
+
+[STEP] per-decision regret = best_alternative_reward - chosen_reward
+   d1 layer=L0_routing                                  = chosen=0.70 best_alt=0.90  regret=0.2000
+   d2 layer=L0_routing                                  = chosen=0.80 best_alt=0.85  regret=0.0500
+   d3 layer=L1_reasoning                                = chosen=0.60 best_alt=0.95  regret=0.3500
+   d4 layer=L2_execution                                = chosen=0.50 best_alt=0.55  regret=0.0500
+   d5 layer=L1_reasoning                                = chosen=0.40 best_alt=0.90  regret=0.5000
+   d6 layer=L3_orchestration                            = chosen=0.70 best_alt=0.70  regret=0.0000
+
+[STEP] aggregate by layer + RegretLedger
+   layer=L0_routing                                     = n=2  sum_regret=0.2500  mean=0.1250
+   layer=L1_reasoning                                   = n=2  sum_regret=0.8500  mean=0.4250
+   layer=L2_execution                                   = n=1  sum_regret=0.0500  mean=0.0500
+   layer=L3_orchestration                               = n=1  sum_regret=0.0000  mean=0.0000
+   ledger.total_regret()                                = 1.1500
+   top-2 layers by sum_regret                           = [('L1_reasoning', 0.85, 2), ('L0_routing', 0.25, 2)]
+
+[STEP] router feedback — top-offending layer flagged for next calibration cycle
+   highest-regret layer ⇒ L1_reasoning  (next cycle prioritizes its calibrator)
+
+================================================================================
+  LAYER 11  Foundation closing — outcome backfill lag SLO across all layers
+================================================================================
+   samples observed                                     = 720
+   sum_seconds                                          = 3600.0000
+   mean lag (s)                                         = 5.0000
+   histogram buckets (sec → count)                      = {1.0: 0, 5.0: 720, 10.0: 0, 30.0: 0, 60.0: 0, 300.0: 0, 1800.0: 0}
+   overflow (> top bucket)                              = 0
+   SLO: 100% within 30 s                                = PASS
+
+================================================================================
+  ALL 10 ROUTING LAYERS DEMONSTRATED IN 0.08s — closed loop verified.
+================================================================================
