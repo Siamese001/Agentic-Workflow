@@ -12,9 +12,7 @@ from agentic_core.L1_cognition.planning import (
 
 
 def test_pipeline_produces_l1_plan_contract(basic_parsed_input, span_sink, static_reader):
-    packet = run_l1_planning(
-        basic_parsed_input, prior_reader=static_reader, span_sink=span_sink
-    )
+    packet = run_l1_planning(basic_parsed_input, prior_reader=static_reader, span_sink=span_sink)
     assert isinstance(packet, L1PlanHandoffPacket)
     assert isinstance(packet.l1_plan_contract, L1PlanContract)
     assert packet.l1_plan_contract.layer == "L1_REASONING_PLAN_GENERATION"
@@ -30,9 +28,7 @@ def test_pipeline_produces_l1_plan_contract(basic_parsed_input, span_sink, stati
     assert naa.no_uwg_commit is True
 
 
-def test_pipeline_emits_18_spans_across_six_stages(
-    basic_parsed_input, span_sink, static_reader
-):
+def test_pipeline_emits_18_spans_across_six_stages(basic_parsed_input, span_sink, static_reader):
     run_l1_planning(basic_parsed_input, prior_reader=static_reader, span_sink=span_sink)
     assert len(span_sink.events) == 18  # 3 per stage * 6 stages
     by_stage = {s: len(span_sink.by_stage(s)) for s in ("02.1", "02.2", "02.3", "02.4", "02.5", "02.6")}
@@ -64,9 +60,7 @@ def test_pipeline_is_deterministic_under_replay(basic_parsed_input, static_reade
     assert a.l1_plan_contract.task_spec == b.l1_plan_contract.task_spec
 
 
-def test_high_risk_input_routes_to_workflow_or_action_with_hitl(
-    high_risk_parsed_input, static_reader
-):
+def test_high_risk_input_routes_to_workflow_or_action_with_hitl(high_risk_parsed_input, static_reader):
     packet = run_l1_planning(high_risk_parsed_input, prior_reader=static_reader)
     route = packet.l1_plan_contract.route_hint["proposed_route_hint"]
     assert route in (
@@ -76,7 +70,11 @@ def test_high_risk_input_routes_to_workflow_or_action_with_hitl(
     )
     # HITL or UWG hint must fire because the request is high-impact.
     action = packet.l1_plan_contract.action_expectation
-    assert action["hitl_hint"] is True or action["uwg_hint"] is True or action["irreversible_action_marker"] is True
+    assert (
+        action["hitl_hint"] is True
+        or action["uwg_hint"] is True
+        or action["irreversible_action_marker"] is True
+    )
 
 
 def test_refusal_input_routes_to_fallback(refusal_parsed_input, static_reader):
@@ -87,9 +85,7 @@ def test_refusal_input_routes_to_fallback(refusal_parsed_input, static_reader):
     assert marker in ("abstain", "fallback", "policy_review", "clarify"), marker
 
 
-def test_route_hint_block_does_not_carry_authoritative_fields(
-    basic_parsed_input, static_reader
-):
+def test_route_hint_block_does_not_carry_authoritative_fields(basic_parsed_input, static_reader):
     packet = run_l1_planning(basic_parsed_input, prior_reader=static_reader)
     rh = packet.l1_plan_contract.route_hint
     # Authoritative fields owned by L0 must not appear in the L1 route hint.

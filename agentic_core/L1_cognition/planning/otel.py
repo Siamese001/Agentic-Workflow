@@ -92,9 +92,7 @@ class InMemorySpanSink:
 
 def _validate_stage(stage: str) -> None:
     if stage not in STAGE_IDS:
-        raise ValueError(
-            f"l1_stage must be one of {STAGE_IDS!r}, got {stage!r}"
-        )
+        raise ValueError(f"l1_stage must be one of {STAGE_IDS!r}, got {stage!r}")
 
 
 def make_span_event(

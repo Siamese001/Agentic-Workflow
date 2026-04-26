@@ -48,9 +48,9 @@ __all__ = ["validate_and_repair_l1_plan"]
 # ---------------------------------------------------------------------------
 
 
-def _validate(draft: DraftPlan, input_: PlanValidationInput) -> tuple[
-    PlanValidationReport, PlanConsistencyAudit
-]:
+def _validate(
+    draft: DraftPlan, input_: PlanValidationInput
+) -> tuple[PlanValidationReport, PlanConsistencyAudit]:
     intent = input_.intent_frame
     safety = input_.first_safety_authority_reading
     failures: list[str] = []
@@ -85,10 +85,11 @@ def _validate(draft: DraftPlan, input_: PlanValidationInput) -> tuple[
 
     # 5. Safety — unsafe markers, refusal, injection.
     safety_status = ValidationStatus.PASS
-    if safety.direct_refusal_may_be_needed and draft.route_hint_set.proposed_route_hint != ProposedRouteHint.R5_FALLBACK:
-        failures.append(
-            "direct refusal may be needed but route_hint != R5_FALLBACK"
-        )
+    if (
+        safety.direct_refusal_may_be_needed
+        and draft.route_hint_set.proposed_route_hint != ProposedRouteHint.R5_FALLBACK
+    ):
+        failures.append("direct refusal may be needed but route_hint != R5_FALLBACK")
         safety_status = ValidationStatus.FAIL
     if safety.authority_override_attempt:
         warnings.append("authority_override_attempt detected — keep route advisory")
@@ -104,7 +105,9 @@ def _validate(draft: DraftPlan, input_: PlanValidationInput) -> tuple[
                 coherent_status = ValidationStatus.FAIL
 
     # 7. Route hint consistency.
-    route_hint_status = _validate_route_hint(draft.route_hint_set, draft.support_expectation, failures, warnings)
+    route_hint_status = _validate_route_hint(
+        draft.route_hint_set, draft.support_expectation, failures, warnings
+    )
 
     # 8. Support expectation consistency.
     support_status = ValidationStatus.PASS
@@ -112,32 +115,21 @@ def _validate(draft: DraftPlan, input_: PlanValidationInput) -> tuple[
         draft.support_expectation.support_target != "none"
         and not draft.support_expectation.grounding_required
     ):
-        failures.append(
-            "support_target requested but grounding_required=False"
-        )
+        failures.append("support_target requested but grounding_required=False")
         support_status = ValidationStatus.FAIL
 
     # 9. Action expectation consistency.
     action_status = ValidationStatus.PASS
-    if (
-        draft.action_expectation.irreversible_action_marker
-        and not draft.action_expectation.hitl_hint
-    ):
-        warnings.append(
-            "irreversible action proposed without hitl_hint=True"
-        )
+    if draft.action_expectation.irreversible_action_marker and not draft.action_expectation.hitl_hint:
+        warnings.append("irreversible action proposed without hitl_hint=True")
         action_status = ValidationStatus.WARN
 
     # 10. Lowest viable agency.
     lva_status = ValidationStatus.PASS
-    if (
-        safety.safe_direct_response_possible
-        and draft.route_hint_set.proposed_route_hint
-        in (ProposedRouteHint.R3R4_MANAGED_WORKFLOW,)
+    if safety.safe_direct_response_possible and draft.route_hint_set.proposed_route_hint in (
+        ProposedRouteHint.R3R4_MANAGED_WORKFLOW,
     ):
-        warnings.append(
-            "managed workflow proposed but direct response is safe — consider simplification"
-        )
+        warnings.append("managed workflow proposed but direct response is safe — consider simplification")
         lva_status = ValidationStatus.WARN
 
     # Consistency audit (PHASE 1.3).
@@ -167,7 +159,8 @@ def _validate(draft: DraftPlan, input_: PlanValidationInput) -> tuple[
             or bool(draft.route_hint_set.reason_codes)
         ),
         durable_mutation_marks_uwg=(
-            draft.action_expectation.side_effect_class not in ("write_proposal", "high_impact", "durable_write")
+            draft.action_expectation.side_effect_class
+            not in ("write_proposal", "high_impact", "durable_write")
             or draft.action_expectation.uwg_hint
             or draft.route_hint_set.uwg_hint
         ),
@@ -244,9 +237,7 @@ def _validate_route_hint(
 # ---------------------------------------------------------------------------
 
 
-def _repair_once(
-    draft: DraftPlan, report: PlanValidationReport
-) -> tuple[DraftPlan, RepairAction]:
+def _repair_once(draft: DraftPlan, report: PlanValidationReport) -> tuple[DraftPlan, RepairAction]:
     findings = list(report.validation_failures) + list(report.validation_warnings)
     if not findings:
         return draft, RepairAction.NO_ACTION
@@ -316,9 +307,7 @@ def _repair_once(
     return draft, RepairAction.NO_ACTION
 
 
-def _lva_receipt(
-    draft: DraftPlan, input_: PlanValidationInput
-) -> LowestViableAgencyReceipt:
+def _lva_receipt(draft: DraftPlan, input_: PlanValidationInput) -> LowestViableAgencyReceipt:
     safety = input_.first_safety_authority_reading
     proposed = draft.route_hint_set.proposed_route_hint
     direct_possible = safety.safe_direct_response_possible
@@ -341,11 +330,7 @@ def _lva_receipt(
 
     return LowestViableAgencyReceipt(
         receipt_id=f"lva::{input_.request_id}",
-        original_complexity_class=(
-            "workflow"
-            if len(draft.work_unit_set.units) > 2
-            else "single_step"
-        ),
+        original_complexity_class=("workflow" if len(draft.work_unit_set.units) > 2 else "single_step"),
         reduced_complexity_class=draft.route_hint_set.single_step_or_workflow,
         direct_answer_possible=direct_possible,
         grounded_read_needed=draft.support_expectation.grounding_required,
@@ -355,12 +340,9 @@ def _lva_receipt(
             and len(draft.work_unit_set.units) <= 3
         ),
         managed_workflow_justified=(
-            proposed == ProposedRouteHint.R3R4_MANAGED_WORKFLOW
-            and len(draft.work_unit_set.units) >= 2
+            proposed == ProposedRouteHint.R3R4_MANAGED_WORKFLOW and len(draft.work_unit_set.units) >= 2
         ),
-        workflow_removed_reason=(
-            "direct_response_safe" if direct_possible else ""
-        ),
+        workflow_removed_reason=("direct_response_safe" if direct_possible else ""),
         tool_use_removed_reason="" if draft.action_expectation.action_required else "no_action_required",
         clarification_removed_reason="",
         final_agency_recommendation=recommendation,
@@ -377,20 +359,13 @@ def _clarify_marker(
     unresolved = list(input_.ambiguity_register.get("unresolved", []))
     clarify = bool(unresolved) and not repair_used and not safety.direct_refusal_may_be_needed
     abstain = safety.direct_refusal_may_be_needed
-    fallback = (
-        draft.route_hint_set.proposed_route_hint == ProposedRouteHint.R5_FALLBACK
-        and not abstain
-    )
+    fallback = draft.route_hint_set.proposed_route_hint == ProposedRouteHint.R5_FALLBACK and not abstain
     policy_review = safety.authority_override_attempt or safety.prompt_injection_like_text_present
 
     return ClarifyAbstainFallbackMarker(
         marker_id=f"cafm::{input_.request_id}",
         clarify_recommended=clarify,
-        clarify_question=(
-            unresolved[0]
-            if clarify and unresolved
-            else ""
-        ),
+        clarify_question=(unresolved[0] if clarify and unresolved else ""),
         abstain_recommended=abstain,
         fallback_recommended=fallback,
         policy_review_recommended=policy_review,
@@ -412,9 +387,7 @@ def validate_and_repair_l1_plan(
 ) -> ValidatedPlanPacket:
     """02.5 entrypoint — validate, audit, repair, finalise."""
     if not isinstance(input_, PlanValidationInput):
-        raise L1ContractViolation(
-            f"input_ must be PlanValidationInput, got {type(input_)}"
-        )
+        raise L1ContractViolation(f"input_ must be PlanValidationInput, got {type(input_)}")
 
     draft = input_.draft_plan
     repairs_attempted: list[RepairAction] = []
@@ -460,11 +433,7 @@ def validate_and_repair_l1_plan(
     lva = _lva_receipt(draft, input_)
     marker = _clarify_marker(draft, report, input_, repair_used=bool(repairs_accepted))
 
-    ready = (
-        report.is_pass()
-        and not marker.abstain_recommended
-        and not marker.policy_review_recommended
-    )
+    ready = report.is_pass() and not marker.abstain_recommended and not marker.policy_review_recommended
     final_status = (
         "ready"
         if ready

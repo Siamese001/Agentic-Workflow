@@ -57,10 +57,7 @@ def _initial_state(input_: PlanningReasoningInput) -> InternalPlanState:
 
     support_summary = (
         "grounding_required"
-        if any(
-            t in intent.work_class
-            for t in ("retrieve", "explain", "compare", "factual", "summarize")
-        )
+        if any(t in intent.work_class for t in ("retrieve", "explain", "compare", "factual", "summarize"))
         and not intent.action_requirement == "none"
         else "support_optional"
     )
@@ -71,11 +68,7 @@ def _initial_state(input_: PlanningReasoningInput) -> InternalPlanState:
         else (
             "durable_write"
             if safety.durable_write_request
-            else (
-                "reversible"
-                if safety.reversible_action_request
-                else "read_only"
-            )
+            else ("reversible" if safety.reversible_action_request else "read_only")
         )
     )
 
@@ -275,9 +268,7 @@ def _refine_for_simplification(
             overreach_removed.append("validate_output")
 
     # Only keep validate_output for high-impact / durable-write actions.
-    new_units = tuple(
-        u for u in state.preliminary_work_units if u not in overreach_removed
-    )
+    new_units = tuple(u for u in state.preliminary_work_units if u not in overreach_removed)
 
     new_state = InternalPlanState(
         internal_plan_state_id=f"{state.internal_plan_state_id}::pass{pass_index}",
@@ -324,14 +315,8 @@ def _quality_signals(
     constraints_score = 1.0 if state.constraint_bindings else 0.7
     deliverable_score = 1.0 if state.deliverable_summary else 0.5
     safety_score = 1.0 if not state.unsafe_or_unsupported_markers else 0.6
-    simplification_score = (
-        1.0
-        if any(p.refinement_focus == "lowest_viable_agency" for p in passes)
-        else 0.7
-    )
-    avg = (
-        constraints_score + deliverable_score + safety_score + simplification_score
-    ) / 4.0
+    simplification_score = 1.0 if any(p.refinement_focus == "lowest_viable_agency" for p in passes) else 0.7
+    avg = (constraints_score + deliverable_score + safety_score + simplification_score) / 4.0
     band = "high" if avg >= 0.85 else ("medium" if avg >= 0.6 else "low")
     return ReasoningQualitySignals(
         constraints_preserved_score=constraints_score,
@@ -358,9 +343,7 @@ def run_l1_reasoning_loop(
         :class:`PlanningReasoningPacket`.
     """
     if not isinstance(input_, PlanningReasoningInput):
-        raise L1ContractViolation(
-            f"input_ must be PlanningReasoningInput, got {type(input_)}"
-        )
+        raise L1ContractViolation(f"input_ must be PlanningReasoningInput, got {type(input_)}")
 
     initial_state = _initial_state(input_)
     initial_digest = initial_state.state_digest

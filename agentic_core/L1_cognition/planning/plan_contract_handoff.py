@@ -49,14 +49,10 @@ __all__ = ["emit_l1_plan_contract"]
 # ---------------------------------------------------------------------------
 
 
-def _build_replay_manifest(
-    input_: L1PlanContractInput, l1_plan_id: str
-) -> PlanReplayManifest:
+def _build_replay_manifest(input_: L1PlanContractInput, l1_plan_id: str) -> PlanReplayManifest:
     intent_dict = input_.intent_frame.to_dict()
     plan_bundle_dict = input_.validated_plan_packet.final_draft_plan.to_dict()
-    internal_state_dict = (
-        input_.validated_plan_packet.final_draft_plan.work_unit_set.to_dict()
-    )
+    internal_state_dict = input_.validated_plan_packet.final_draft_plan.work_unit_set.to_dict()
     draft_plan_dict = input_.validated_plan_packet.final_draft_plan.to_dict()
     validation_dict = input_.validated_plan_packet.plan_validation_report.to_dict()
 
@@ -68,9 +64,7 @@ def _build_replay_manifest(
         visible_context_hash=stable_digest(intent_dict, prefix="visible_context"),
         intent_frame_hash=stable_digest(intent_dict, prefix="intent_frame"),
         plan_bundle_hash=stable_digest(plan_bundle_dict, prefix="plan_bundle"),
-        internal_plan_state_hash=stable_digest(
-            internal_state_dict, prefix="internal_plan_state"
-        ),
+        internal_plan_state_hash=stable_digest(internal_state_dict, prefix="internal_plan_state"),
         draft_plan_hash=stable_digest(draft_plan_dict, prefix="draft_plan"),
         validation_report_hash=stable_digest(validation_dict, prefix="validation_report"),
         policy_hash=input_.policy_hash_observed,
@@ -102,9 +96,7 @@ def _intent_frame_block(input_: L1PlanContractInput) -> dict:
         "one_shot_or_iterative_need": "one_shot",
         "requested_output_format": intent.artifact_requirement,
         "artifact_requirement": intent.artifact_requirement,
-        "support_requirement_hint": (
-            "yes" if input_.support_expectation.grounding_required else "no"
-        ),
+        "support_requirement_hint": ("yes" if input_.support_expectation.grounding_required else "no"),
         "freshness_requirement_hint": intent.freshness_class,
         "action_requirement_hint": intent.action_requirement,
         "external_egress_hint": input_.action_expectation.external_egress_hint,
@@ -140,17 +132,13 @@ def emit_l1_plan_contract(
 ) -> L1PlanHandoffPacket:
     """02.6 entrypoint — freeze and emit the canonical L1PlanContract."""
     if not isinstance(input_, L1PlanContractInput):
-        raise L1ContractViolation(
-            f"input_ must be L1PlanContractInput, got {type(input_)}"
-        )
+        raise L1ContractViolation(f"input_ must be L1PlanContractInput, got {type(input_)}")
     if not isinstance(input_.task_spec, TaskSpec):
         raise L1ContractViolation("input_.task_spec must be TaskSpec")
     if input_.query_spec is not None and not isinstance(input_.query_spec, QuerySpec):
         raise L1ContractViolation("input_.query_spec must be QuerySpec or None")
     if not isinstance(input_.downstream_notes, DownstreamPlanningNotes):
-        raise L1ContractViolation(
-            "input_.downstream_notes must be DownstreamPlanningNotes"
-        )
+        raise L1ContractViolation("input_.downstream_notes must be DownstreamPlanningNotes")
 
     l1_plan_id = f"l1plan::{input_.request_id}"
 

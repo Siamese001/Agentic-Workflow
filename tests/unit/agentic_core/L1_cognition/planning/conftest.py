@@ -36,9 +36,7 @@ def high_risk_parsed_input() -> ParsedRequestInput:
         session_id="sess-002",
         trace_root="trace-002",
         caller_scope_baseline="tenant=test;scope=read",
-        normalized_user_payload=(
-            "Deploy the build to production and force-push to main now"
-        ),
+        normalized_user_payload=("Deploy the build to production and force-push to main now"),
         policy_hash_observed="policy-hash-test",
         instruction_hash_observed="instr-hash-test",
         source_envelope_id="env-test",

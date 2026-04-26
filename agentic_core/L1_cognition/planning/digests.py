@@ -69,9 +69,7 @@ def stable_digest(payload: Any, *, prefix: str = "") -> str:
         ``"sha256:<hexdigest>"``.
     """
     canonical = canonical_payload(payload)
-    serialized = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    serialized = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode("utf-8")
     h = hashlib.sha256()
     if prefix:
         h.update(prefix.encode("utf-8"))

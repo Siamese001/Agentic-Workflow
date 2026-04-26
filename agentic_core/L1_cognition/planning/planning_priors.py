@@ -65,20 +65,14 @@ class PlanningPriorReader(abc.ABC):
     """
 
     @abc.abstractmethod
-    def list_available_reference_classes(
-        self, scope: str
-    ) -> tuple[ReferenceClass, ...]:
+    def list_available_reference_classes(self, scope: str) -> tuple[ReferenceClass, ...]:
         """Return the classes that the caller's scope is allowed to read."""
 
     @abc.abstractmethod
-    def read_planning_references(
-        self, read_plan: PlanningPriorReadPlan
-    ) -> PlanningReferenceManifest:
+    def read_planning_references(self, read_plan: PlanningPriorReadPlan) -> PlanningReferenceManifest:
         """Read approved planning references for the given plan."""
 
-    def validate_reference_scope(
-        self, reference: str, scope: str
-    ) -> bool:
+    def validate_reference_scope(self, reference: str, scope: str) -> bool:
         """Default: any reference is allowed; subclasses tighten as needed."""
         del reference, scope
         return True
@@ -114,15 +108,11 @@ class StaticPlanningPriorReader(PlanningPriorReader):
         self._max_steps = int(max_steps)
         self._max_wallclock_ms = int(max_wallclock_ms)
 
-    def list_available_reference_classes(
-        self, scope: str
-    ) -> tuple[ReferenceClass, ...]:
+    def list_available_reference_classes(self, scope: str) -> tuple[ReferenceClass, ...]:
         del scope
         return tuple(self._refs.keys())
 
-    def read_planning_references(
-        self, read_plan: PlanningPriorReadPlan
-    ) -> PlanningReferenceManifest:
+    def read_planning_references(self, read_plan: PlanningPriorReadPlan) -> PlanningReferenceManifest:
         loaded: list[str] = []
         blocked: list[str] = []
         labels: list[str] = []
@@ -130,11 +120,7 @@ class StaticPlanningPriorReader(PlanningPriorReader):
         missing: list[str] = []
 
         for raw_cls in read_plan.reference_classes_requested:
-            cls = (
-                raw_cls
-                if isinstance(raw_cls, ReferenceClass)
-                else ReferenceClass(raw_cls)
-            )
+            cls = raw_cls if isinstance(raw_cls, ReferenceClass) else ReferenceClass(raw_cls)
             items = self._refs.get(cls, ())
             if not items:
                 missing.append(cls.value)
@@ -201,8 +187,7 @@ def _build_read_plan(input_: PlanningPriorReadInput) -> PlanningPriorReadPlan:
         else _DEFAULT_REQUESTED_CLASSES
     )
     blocked = set(
-        c.value if isinstance(c, ReferenceClass) else c
-        for c in input_.blocked_planning_reference_classes
+        c.value if isinstance(c, ReferenceClass) else c for c in input_.blocked_planning_reference_classes
     )
     final = tuple(
         (c if isinstance(c, ReferenceClass) else ReferenceClass(c))
@@ -256,13 +241,9 @@ def build_plan_bundle(
         span_sink: Optional sink for OTEL span events.
     """
     if not isinstance(input_, PlanningPriorReadInput):
-        raise L1ContractViolation(
-            f"input_ must be PlanningPriorReadInput, got {type(input_)}"
-        )
+        raise L1ContractViolation(f"input_ must be PlanningPriorReadInput, got {type(input_)}")
     if not isinstance(prior_reader, PlanningPriorReader):
-        raise L1ContractViolation(
-            f"prior_reader must be PlanningPriorReader, got {type(prior_reader)}"
-        )
+        raise L1ContractViolation(f"prior_reader must be PlanningPriorReader, got {type(prior_reader)}")
 
     read_plan = _build_read_plan(input_)
     manifest = prior_reader.read_planning_references(read_plan)

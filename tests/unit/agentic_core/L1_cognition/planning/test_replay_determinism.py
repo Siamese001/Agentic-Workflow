@@ -78,9 +78,7 @@ def test_pipeline_digest_changes_with_payload(basic_parsed_input, static_reader)
     assert a.plan_digest.digest != b.plan_digest.digest
 
 
-def test_replay_manifest_carries_excluded_volatile_fields_list(
-    basic_parsed_input, static_reader
-):
+def test_replay_manifest_carries_excluded_volatile_fields_list(basic_parsed_input, static_reader):
     packet = run_l1_planning(basic_parsed_input, prior_reader=static_reader)
     excluded = packet.l1_plan_contract.plan_replay_manifest["excluded_volatile_fields"]
     assert "wall_clock_time" in excluded
@@ -146,6 +144,8 @@ def test_per_stage_chain_matches_pipeline(basic_parsed_input, static_reader):
     pipeline_packet = run_l1_planning(basic_parsed_input, prior_reader=static_reader)
     # The manually-driven validated draft and the pipeline's validated draft
     # must match digests.
-    assert vpacket.output_digest == pipeline_packet.l1_plan_contract.plan_replay_manifest[
-        "validation_report_hash"
-    ] or vpacket.plan_validation_report.report_digest
+    assert (
+        vpacket.output_digest
+        == pipeline_packet.l1_plan_contract.plan_replay_manifest["validation_report_hash"]
+        or vpacket.plan_validation_report.report_digest
+    )

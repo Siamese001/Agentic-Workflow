@@ -94,9 +94,7 @@ def test_non_authority_assertion_construction_requires_all_flags_true():
     assert all(v is True for v in d.values()), d
 
 
-def test_pipeline_does_not_call_c0_or_l3_or_l2_modules(
-    basic_parsed_input, static_reader
-):
+def test_pipeline_does_not_call_c0_or_l3_or_l2_modules(basic_parsed_input, static_reader):
     """Smoke test: forbid imports of C0/L3/L2 from inside the pipeline run.
 
     We snapshot ``sys.modules`` before the run and verify that no

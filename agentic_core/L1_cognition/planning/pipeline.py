@@ -65,9 +65,7 @@ def _build_query_spec(parsed_packet, draft_plan) -> QuerySpec | None:
         source_expectations=tuple(support.source_expectations),
         support_need=support.support_target,
         currentness_mandatory=intent.freshness_class in ("current", "live"),
-        citation_or_exact_span_may_be_required=(
-            inv.citation_needed or inv.direct_quote_needed
-        ),
+        citation_or_exact_span_may_be_required=(inv.citation_needed or inv.direct_quote_needed),
     )
 
 
@@ -80,15 +78,9 @@ def _build_task_spec(parsed_packet, draft_plan) -> TaskSpec:
         output_format=intent.artifact_requirement,
         structure_requirements=tuple(),
         style_constraints=tuple(
-            c.get("statement", "")
-            for c in intent.constraints
-            if c.get("severity") == "should"
+            c.get("statement", "") for c in intent.constraints if c.get("severity") == "should"
         ),
-        acceptance_criteria=tuple(
-            ac
-            for u in draft_plan.work_unit_set.units
-            for ac in u.acceptance_criteria
-        ),
+        acceptance_criteria=tuple(ac for u in draft_plan.work_unit_set.units for ac in u.acceptance_criteria),
         stop_condition=intent.success_condition,
         expected_length_or_depth="",
         artifact_packaging_requirement=intent.artifact_requirement,
@@ -123,22 +115,16 @@ def _build_assumptions_and_gaps(parsed_packet, validated_packet) -> dict:
 def _build_validation_summary(validated_packet) -> dict:
     report = validated_packet.plan_validation_report
     return {
-        "listened_to_user": report.listened_to_user_status.value
-        != "fail",
-        "constraints_preserved": report.constraints_preserved_status.value
-        != "fail",
+        "listened_to_user": report.listened_to_user_status.value != "fail",
+        "constraints_preserved": report.constraints_preserved_status.value != "fail",
         "deliverable_fit": report.deliverable_fit_status.value != "fail",
         "style_format_fit": report.style_format_fit_status.value != "fail",
         "safety_checked": report.safety_checked_status.value != "fail",
         "coherent_plan": report.coherent_plan_status.value != "fail",
-        "route_hint_consistency": report.route_hint_consistency_status.value
-        != "fail",
-        "support_expectation_consistency": report.support_expectation_status.value
-        != "fail",
-        "action_expectation_consistency": report.action_expectation_status.value
-        != "fail",
-        "lowest_viable_agency_applied": report.lowest_viable_agency_status.value
-        != "fail",
+        "route_hint_consistency": report.route_hint_consistency_status.value != "fail",
+        "support_expectation_consistency": report.support_expectation_status.value != "fail",
+        "action_expectation_consistency": report.action_expectation_status.value != "fail",
+        "lowest_viable_agency_applied": report.lowest_viable_agency_status.value != "fail",
         "no_retrieval_performed": True,
         "no_execution_performed": True,
         "no_write_performed": True,

@@ -67,9 +67,7 @@ _NUMBER_RE = re.compile(r"\b\d+(?:\.\d+)?\b")
 _QUOTED_RE = re.compile(r"\"([^\"]+)\"")
 
 
-def _extract_inventory(
-    text: str, parsed_input: ParsedRequestInput
-) -> RequestDetailInventory:
+def _extract_inventory(text: str, parsed_input: ParsedRequestInput) -> RequestDetailInventory:
     files: list[str] = []
     urls: list[str] = []
     dates: list[str] = []
@@ -153,9 +151,7 @@ def _project_safety(reading_record: Any, request_id: str) -> FirstSafetyAuthorit
         external_side_effect_request=bool(reading_record.has_external_side_effects),
         high_impact_domain_hint=high_impact_domain,
         authority_override_attempt=bool(reading_record.attempts_authority_override),
-        prompt_injection_like_text_present=bool(
-            reading_record.has_prompt_injection_signal
-        ),
+        prompt_injection_like_text_present=bool(reading_record.has_prompt_injection_signal),
         retrieved_content_quoted_by_user=False,
         human_or_tool_output_embedded_by_user=False,
         hitl_may_be_needed=bool(reading_record.requires_hitl_later),
@@ -187,9 +183,7 @@ def parse_intent_frame(
         :class:`ParsedIntentPacket`.
     """
     if not isinstance(parsed_input, ParsedRequestInput):
-        raise L1ContractViolation(
-            f"parsed_input must be ParsedRequestInput, got {type(parsed_input)}"
-        )
+        raise L1ContractViolation(f"parsed_input must be ParsedRequestInput, got {type(parsed_input)}")
 
     request_text = parsed_input.normalized_user_payload or ""
 
@@ -219,9 +213,7 @@ def parse_intent_frame(
     )
 
     # Snapshot the IntentFrame for hash stability.
-    intent_snapshot = freeze_intent_frame_snapshot(
-        intent, intent_frame_id=f"if::{parsed_input.request_id}"
-    )
+    intent_snapshot = freeze_intent_frame_snapshot(intent, intent_frame_id=f"if::{parsed_input.request_id}")
 
     # Compute deterministic digests.
     input_digest = stable_digest(parsed_input.to_dict(), prefix="l1.02.1.input")

@@ -141,9 +141,7 @@ def _require_tuple_of_str(value: Any, name: str) -> tuple[str, ...]:
     out: list[str] = []
     for idx, item in enumerate(value):
         if not isinstance(item, str):
-            raise L1ContractViolation(
-                f"{name}[{idx}] must be str, got {type(item).__name__}"
-            )
+            raise L1ContractViolation(f"{name}[{idx}] must be str, got {type(item).__name__}")
         out.append(item)
     return tuple(out)
 
@@ -189,8 +187,7 @@ class ParsedRequestInput:
         _require_str(self.normalized_user_payload, "normalized_user_payload", allow_empty=True)
         if self.validated_request is None and self.rejected_request_summary is None:
             raise L1ContractViolation(
-                "ParsedRequestInput requires validated_request or "
-                "rejected_request_summary to be present."
+                "ParsedRequestInput requires validated_request or rejected_request_summary to be present."
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -324,8 +321,7 @@ class JobClassFrame:
         _require_str(self.work_class, "work_class")
         if self.work_class not in self._ALLOWED_WORK_CLASSES:
             raise L1ContractViolation(
-                f"work_class must be one of {sorted(self._ALLOWED_WORK_CLASSES)}, "
-                f"got {self.work_class!r}"
+                f"work_class must be one of {sorted(self._ALLOWED_WORK_CLASSES)}, got {self.work_class!r}"
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -505,9 +501,7 @@ class ParsedIntentPacket:
             "ambiguity_register": dict(self.ambiguity_register),
             "first_safety_authority_reading": self.first_safety_authority_reading.to_dict(),
             "parsed_request_receipt": self.parsed_request_receipt.to_dict(),
-            "user_intent_authority_separation_receipt": dict(
-                self.user_intent_authority_separation_receipt
-            ),
+            "user_intent_authority_separation_receipt": dict(self.user_intent_authority_separation_receipt),
             "policy_hash_observed": self.policy_hash_observed,
             "instruction_hash_observed": self.instruction_hash_observed,
             "source_envelope_id": self.source_envelope_id,
@@ -559,13 +553,9 @@ class PlanningPriorReadInput:
         _require_str(self.request_id, "request_id")
         _require_str(self.trace_root, "trace_root")
         if not isinstance(self.allowed_planning_reference_classes, tuple):
-            raise L1ContractViolation(
-                "allowed_planning_reference_classes must be a tuple"
-            )
+            raise L1ContractViolation("allowed_planning_reference_classes must be a tuple")
         if not isinstance(self.blocked_planning_reference_classes, tuple):
-            raise L1ContractViolation(
-                "blocked_planning_reference_classes must be a tuple"
-            )
+            raise L1ContractViolation("blocked_planning_reference_classes must be a tuple")
         if self.planning_prior_budget < 0:
             raise L1ContractViolation("planning_prior_budget must be non-negative")
 
@@ -614,8 +604,7 @@ class PlanningPriorReadPlan:
         return {
             "read_plan_id": self.read_plan_id,
             "reference_classes_requested": [
-                c.value if isinstance(c, ReferenceClass) else c
-                for c in self.reference_classes_requested
+                c.value if isinstance(c, ReferenceClass) else c for c in self.reference_classes_requested
             ],
             "lookup_keys": list(self.lookup_keys),
             "policy_filters": list(self.policy_filters),
@@ -960,9 +949,7 @@ class PlanningLoopBudgetReceipt:
 
     def __post_init__(self) -> None:
         if self.passes_used > self.max_refinement_passes:
-            raise L1ContractViolation(
-                "passes_used must not exceed max_refinement_passes"
-            )
+            raise L1ContractViolation("passes_used must not exceed max_refinement_passes")
         if self.reasoning_budget_remaining < 0:
             raise L1ContractViolation("reasoning_budget_remaining must be non-negative")
 
@@ -1003,9 +990,7 @@ class ReasoningQualitySignals:
             if not (0.0 <= float(v) <= 1.0):
                 raise L1ContractViolation(f"{fname} must be in [0.0, 1.0]")
         if self.overall_quality_band not in ("low", "medium", "high"):
-            raise L1ContractViolation(
-                "overall_quality_band must be one of low/medium/high"
-            )
+            raise L1ContractViolation("overall_quality_band must be one of low/medium/high")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -1045,9 +1030,7 @@ class PlanningReasoningTraceSummary:
             "initial_state_digest": self.initial_state_digest,
             "final_state_digest": self.final_state_digest,
             "pass_receipts": [p.to_dict() for p in self.pass_receipts],
-            "quality_signals": self.quality_signals.to_dict()
-            if self.quality_signals is not None
-            else None,
+            "quality_signals": self.quality_signals.to_dict() if self.quality_signals is not None else None,
             "non_authority_assertions": dict(self.non_authority_assertions),
         }
 
@@ -1127,9 +1110,7 @@ class WorkUnit:
         _require_str(self.work_unit_id, "work_unit_id")
         _require_str(self.description, "description")
         if not isinstance(self.work_unit_type, WorkUnitType):
-            raise L1ContractViolation(
-                f"work_unit_type must be WorkUnitType, got {type(self.work_unit_type)}"
-            )
+            raise L1ContractViolation(f"work_unit_type must be WorkUnitType, got {type(self.work_unit_type)}")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -1169,9 +1150,7 @@ class WorkUnitSet:
         seen_ids: set = set()
         for u in self.units:
             if u.work_unit_id in seen_ids:
-                raise L1ContractViolation(
-                    f"duplicate work_unit_id: {u.work_unit_id!r}"
-                )
+                raise L1ContractViolation(f"duplicate work_unit_id: {u.work_unit_id!r}")
             seen_ids.add(u.work_unit_id)
 
     def to_dict(self) -> dict[str, Any]:
@@ -1227,15 +1206,12 @@ class RouteHintSet:
 
     def __post_init__(self) -> None:
         if not isinstance(self.proposed_route_hint, ProposedRouteHint):
-            raise L1ContractViolation(
-                "proposed_route_hint must be ProposedRouteHint enum"
-            )
+            raise L1ContractViolation("proposed_route_hint must be ProposedRouteHint enum")
         if not (0.0 <= float(self.confidence) <= 1.0):
             raise L1ContractViolation("confidence must be in [0.0, 1.0]")
         if self.route_authority_assertion != "advisory_only":
             raise L1ContractViolation(
-                "route_authority_assertion must be 'advisory_only' (L1 cannot "
-                "claim route authority)"
+                "route_authority_assertion must be 'advisory_only' (L1 cannot claim route authority)"
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -1653,16 +1629,13 @@ class L1SelfRepairLedger:
             "max_passes": self.max_passes,
             "passes_used": self.passes_used,
             "repairs_attempted": [
-                a.value if isinstance(a, RepairAction) else a
-                for a in self.repairs_attempted
+                a.value if isinstance(a, RepairAction) else a for a in self.repairs_attempted
             ],
             "repairs_accepted": [
-                a.value if isinstance(a, RepairAction) else a
-                for a in self.repairs_accepted
+                a.value if isinstance(a, RepairAction) else a for a in self.repairs_accepted
             ],
             "repairs_rejected": [
-                a.value if isinstance(a, RepairAction) else a
-                for a in self.repairs_rejected
+                a.value if isinstance(a, RepairAction) else a for a in self.repairs_rejected
             ],
             "unresolved_failures": list(self.unresolved_failures),
             "stop_reason": self.stop_reason,
@@ -1906,9 +1879,7 @@ class NonAuthorityAssertion:
             "no_learning_promotion",
         ):
             if not getattr(self, fname):
-                raise L1ContractViolation(
-                    f"NonAuthorityAssertion.{fname} must be True for L1 handoff"
-                )
+                raise L1ContractViolation(f"NonAuthorityAssertion.{fname} must be True for L1 handoff")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -1962,9 +1933,7 @@ class L1HandoffReceipt:
 
     def __post_init__(self) -> None:
         if self.target_layer != "L0_ROUTE_DECISION":
-            raise L1ContractViolation(
-                "target_layer must be 'L0_ROUTE_DECISION' for the L1 handoff"
-            )
+            raise L1ContractViolation("target_layer must be 'L0_ROUTE_DECISION' for the L1 handoff")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -2067,13 +2036,9 @@ class L1PlanContract:
 
     def __post_init__(self) -> None:
         if self.layer != "L1_REASONING_PLAN_GENERATION":
-            raise L1ContractViolation(
-                "layer must be 'L1_REASONING_PLAN_GENERATION'"
-            )
+            raise L1ContractViolation("layer must be 'L1_REASONING_PLAN_GENERATION'")
         if self.authority != "advisory_plan_only":
-            raise L1ContractViolation(
-                "authority must be 'advisory_plan_only'"
-            )
+            raise L1ContractViolation("authority must be 'advisory_plan_only'")
         # validation_summary must positively assert L1's invariants.
         for fname in (
             "no_retrieval_performed",
@@ -2081,13 +2046,10 @@ class L1PlanContract:
             "no_write_performed",
         ):
             if not self.validation_summary.get(fname):
-                raise L1ContractViolation(
-                    f"validation_summary.{fname} must be True on the v6 contract"
-                )
+                raise L1ContractViolation(f"validation_summary.{fname} must be True on the v6 contract")
         if "route_digest" in self.route_hint or "hmac_sig" in self.route_hint:
             raise L1ContractViolation(
-                "route_hint must not contain route_digest or hmac_sig "
-                "(L0 owns route authority)"
+                "route_hint must not contain route_digest or hmac_sig (L0 owns route authority)"
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -2150,9 +2112,7 @@ __all__ += ["stable_digest", "DETERMINISTIC_DIGEST_ALGORITHM"]
 def project_v2_contract(v2: L1PlanContractV2) -> dict[str, Any]:
     """Render a v2 L1PlanContract as a dict for the v6 ``v2_projection``."""
     if not isinstance(v2, L1PlanContractV2):
-        raise L1ContractViolation(
-            f"project_v2_contract expects L1PlanContractV2, got {type(v2)}"
-        )
+        raise L1ContractViolation(f"project_v2_contract expects L1PlanContractV2, got {type(v2)}")
     return v2.to_dict()
 
 

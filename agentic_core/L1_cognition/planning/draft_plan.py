@@ -67,9 +67,7 @@ def _build_work_unit_set(input_: DraftPlanInput) -> WorkUnitSet:
     state = input_.internal_plan_state
     safety = input_.first_safety_authority_reading
 
-    primary_type = _WORK_CLASS_TO_UNIT_TYPE.get(
-        intent.work_class, WorkUnitType.INTERPRET
-    )
+    primary_type = _WORK_CLASS_TO_UNIT_TYPE.get(intent.work_class, WorkUnitType.INTERPRET)
 
     primary = WorkUnit(
         work_unit_id="wu::primary",
@@ -172,11 +170,7 @@ def _build_dependency_sketch(units: WorkUnitSet) -> DependencySketch:
         prerequisite_checks=(),
         stopping_points=(units.units[-1].work_unit_id,),
         retry_or_repair_posture="advisory_only",
-        l3_may_be_needed_reason=(
-            "multi_step_with_join"
-            if len(units.units) >= 3 and edges
-            else ""
-        ),
+        l3_may_be_needed_reason=("multi_step_with_join" if len(units.units) >= 3 and edges else ""),
         l3_not_needed_reason=("single_step" if len(units.units) == 1 else ""),
     )
 
@@ -205,9 +199,7 @@ def _proposed_route(input_: DraftPlanInput) -> ProposedRouteHint:
     return ProposedRouteHint.R3_GROUNDED_READ
 
 
-def _build_route_hint_set(
-    input_: DraftPlanInput, work_unit_set: WorkUnitSet
-) -> RouteHintSet:
+def _build_route_hint_set(input_: DraftPlanInput, work_unit_set: WorkUnitSet) -> RouteHintSet:
     state = input_.internal_plan_state
     safety = input_.first_safety_authority_reading
     intent = input_.intent_frame
@@ -248,8 +240,7 @@ def _build_route_hint_set(
         fallback_chain_hint=fallback_chain[proposed],
         single_step_or_workflow=(
             "managed_workflow"
-            if proposed == ProposedRouteHint.R3R4_MANAGED_WORKFLOW
-            or len(work_unit_set.units) > 2
+            if proposed == ProposedRouteHint.R3R4_MANAGED_WORKFLOW or len(work_unit_set.units) > 2
             else "single_step"
         ),
         cache_eligibility_hint=proposed
@@ -286,9 +277,7 @@ def _build_support_expectation(input_: DraftPlanInput) -> SupportExpectation:
         freshness_class=intent.freshness_class,
         source_expectations=tuple(inv.source_names) or ("none",),
         citation_mode_hint="inline" if grounding and inv.citation_needed else "none",
-        contradiction_policy=(
-            "surface_conflict" if grounding else "abstain_if_unresolved"
-        ),
+        contradiction_policy=("surface_conflict" if grounding else "abstain_if_unresolved"),
         weak_support_policy="caveat" if grounding else "no_op",
         cite_or_abstain_posture="cite_or_abstain" if inv.citation_needed else "caveat",
         exact_span_needed=inv.direct_quote_needed,
@@ -393,9 +382,7 @@ def write_draft_plan(
 ) -> DraftPlanPacket:
     """02.4 entrypoint — convert internal plan state into a DraftPlan."""
     if not isinstance(input_, DraftPlanInput):
-        raise L1ContractViolation(
-            f"input_ must be DraftPlanInput, got {type(input_)}"
-        )
+        raise L1ContractViolation(f"input_ must be DraftPlanInput, got {type(input_)}")
 
     work_unit_set = _build_work_unit_set(input_)
     dep_sketch = _build_dependency_sketch(work_unit_set)
