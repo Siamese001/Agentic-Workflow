@@ -1,0 +1,796 @@
+{
+  "anti_bypass": {
+    "audit_count": 23,
+    "audit_event_types": [
+      "atomic_commit_applied",
+      "read_surface_refresh_completed",
+      "commit_blocked",
+      "commit_blocked",
+      "commit_blocked",
+      "commit_blocked",
+      "commit_blocked",
+      "commit_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked",
+      "direct_write_attempt_blocked"
+    ],
+    "block_receipts": {
+      "AdHocScript": {
+        "audit_append_receipt_ref": "a79a4ca8-309b-418a-8761-ce2dc55d1b1e",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "602c9eee-143e-4daf-8161-fb461f175152",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_AdHocScript",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::AdHocScript",
+        "deterministic_digest": "6d9fdc87f684b88252bc637a39eebbd861d0521cb2e223c7884df15e378a9b2f",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000001",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "BackgroundEvaluator": {
+        "audit_append_receipt_ref": "7c0c36d1-1730-4591-838a-c63f4428e6c5",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "aa3432ac-b994-4a11-9acb-23a622a97987",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_BackgroundEvaluator",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::BackgroundEvaluator",
+        "deterministic_digest": "58f764460520542624cb3c4522830f1d62b7d80b5218db8dce5a424c5917b576",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000002",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "C0": {
+        "audit_append_receipt_ref": "94882ea2-95d9-43df-86ce-8b7c3a3b0b38",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "e6b0da04-0b99-49da-bae8-51a39bff114f",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_C0",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::C0",
+        "deterministic_digest": "ae31530515a0738d6c344a1146f3cd3c1c0cb0b97accd3348a7c5224c63fe7c3",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000003",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "Connector": {
+        "audit_append_receipt_ref": "28c575a8-fd21-4165-8c84-08223397fdbf",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "00b30d62-8632-4e89-86f5-f7ca443e5f9d",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_Connector",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::Connector",
+        "deterministic_digest": "d534eca76189b97a063489dba0eb67ee88617f02b9a41c1c316977ae0b228c12",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000004",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "HITL": {
+        "audit_append_receipt_ref": "eae5e6cb-b1ab-4c6f-b023-22e66a2e363c",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "ac105f31-0e0b-40fd-a488-d7a0bbc849ab",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_HITL",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::HITL",
+        "deterministic_digest": "c10258149f5be883d73551e118546aae365e59d3cef3dd4ca7164dd413f1a38b",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000005",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "L0": {
+        "audit_append_receipt_ref": "4c7ea4ee-26d7-4c40-8daf-481f36d21e46",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "8524f660-89e8-4867-a445-d1a3703bdd84",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_L0",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L0",
+        "deterministic_digest": "1764bdcdc3c6be57f2b3263823d535b617c1d748b1ea9fc91fbc9949562a726e",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000006",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "L1": {
+        "audit_append_receipt_ref": "a57d091d-6e9e-4498-920a-9e0656df29c2",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "d7b75e52-d9c0-4d82-87e4-b222f736f34a",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_L1",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L1",
+        "deterministic_digest": "34e8872550644389a8e9f1f94dcb6ebcc2869bafcd85d8863c380d63759e3752",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000007",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "L2": {
+        "audit_append_receipt_ref": "e6547732-e078-4b5a-9fc8-31b35d9897aa",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "1ffeb6d2-a681-4f7e-9dc0-a074645bbe38",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_L2",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L2",
+        "deterministic_digest": "e89c5cc4f5d7582f39db6ed9f3325fea75e11cfdfdf826fcdae53c438ca5ba51",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000008",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "L3": {
+        "audit_append_receipt_ref": "56b7b2d3-961d-4536-84e9-562f607f1ba0",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "008aab4d-63b6-47be-aaa6-e9fee90a83e0",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_L3",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L3",
+        "deterministic_digest": "a4ee21cabe45b8a54e306fd974f75bc60e69706f0efac85795e12b4e3743eb72",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:00000009",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "L5": {
+        "audit_append_receipt_ref": "585bf1ca-3b4c-425a-816a-155f67643c38",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "b23cd5f2-d83d-4169-a2c2-e8ccc449c9fc",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_L5",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L5",
+        "deterministic_digest": "28044f88f5bea6bb00315a1c76eb720857a281dc0344e7002079f7924cf2d521",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:0000000a",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "L6": {
+        "audit_append_receipt_ref": "e2893e4e-d6d8-4e61-8d74-fd7e322e7f76",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "c32cc974-d505-4c24-ac16-9b2e8a27548d",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_L6",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L6",
+        "deterministic_digest": "533f9fae8c4d5a5e54c7335aa85a62b16f2d3d2e8c2e46232dae123b5a84a8df",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:0000000b",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "Model": {
+        "audit_append_receipt_ref": "f03463ef-6859-462a-8265-350128448b89",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "a1886221-13bc-41ec-b4a5-3f489eac699d",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_Model",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::Model",
+        "deterministic_digest": "19f9c303686231e0cb98d0349d191c1b61aa085cfca466230bd2b5583b8a38e2",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:0000000c",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "PTC_Sandbox": {
+        "audit_append_receipt_ref": "090f90e7-14cf-41aa-9045-deea69856b0a",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "2378af32-cd3d-4813-b187-7b7680f0d917",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_PTC_Sandbox",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::PTC_Sandbox",
+        "deterministic_digest": "6e60aaffe37665082a6b27f8de682f27d1c7762a48b49bdc3cddd2d2ee78f174",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:0000000d",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "PromptAssembly": {
+        "audit_append_receipt_ref": "aa30756d-e7bb-4f7e-b7a6-54f238830c63",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "3ca1031c-0f9b-46c2-be4c-04d6f04ca700",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_PromptAssembly",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::PromptAssembly",
+        "deterministic_digest": "39f6d71c37b7a32d2f8ac511aa800b2f8b6ce5390bcac75e66d4f7863443fc0d",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:0000000e",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      },
+      "Tool": {
+        "audit_append_receipt_ref": "1ef294a3-cd36-4c8e-af57-4e959ed83fef",
+        "audit_refs": [],
+        "blocked_commit_receipt_id": "063da82d-2a10-4c54-bdf0-56916ecbbba0",
+        "blocked_reason_codes": [
+          "direct_write_attempt_from_Tool",
+          "non_uwg_surface_blocked"
+        ],
+        "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::Tool",
+        "deterministic_digest": "411dc8f29e220e14a17d6bb925fdac6c6d1c78b92dff03f4bc83ff08c24196f4",
+        "failed_rule_ids": [
+          "UWG_AUTHORITY_REQUIRED"
+        ],
+        "no_mutation_assertion": "NO_MUTATION_APPLIED",
+        "schema_version": "L4-UWG-1.0.0",
+        "snapshot_before": "snapshot:0000000f",
+        "state_surfaces_requested": [
+          "memory"
+        ],
+        "uwg_validation_receipt_ref": null
+      }
+    },
+    "non_authorized_surfaces": [
+      "AdHocScript",
+      "BackgroundEvaluator",
+      "C0",
+      "Connector",
+      "HITL",
+      "L0",
+      "L1",
+      "L2",
+      "L3",
+      "L5",
+      "L6",
+      "Model",
+      "PTC_Sandbox",
+      "PromptAssembly",
+      "Tool"
+    ]
+  },
+  "audit_invariants": {
+    "append_only_total_records_after_correction": 2,
+    "correction_supersedes": true,
+    "gap_detected": true,
+    "gap_error_message": "ledger gap: position 3 has sequence 999, expected 4",
+    "monotonic_sequences": [
+      1,
+      2,
+      3
+    ]
+  },
+  "blocked_paths": {
+    "missing_gate_verdicts": {
+      "audit_append_receipt_ref": "b847eb12-fcb5-41f4-973e-3f23bf451f66",
+      "audit_refs": [],
+      "blocked_commit_receipt_id": "4589bfa8-bee0-40f4-b73c-277b676c6eb9",
+      "blocked_reason_codes": [
+        "missing::gate_verdict_refs"
+      ],
+      "commit_request_ref": "cr:proof",
+      "deterministic_digest": "60e3686ba70a556e8da9122046905538e19ac36040418613bb3530d020424032",
+      "failed_rule_ids": [
+        "gate_verdict_refs"
+      ],
+      "no_mutation_assertion": "NO_MUTATION_APPLIED",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_before": "snapshot:00000004",
+      "state_surfaces_requested": [
+        "memory"
+      ],
+      "uwg_validation_receipt_ref": "b052ffc7-dbab-4aff-ae84-a7ba4df8a988"
+    },
+    "missing_policy_hash": {
+      "audit_append_receipt_ref": "4054c04b-e44d-4c07-979f-b2f64e87148a",
+      "audit_refs": [],
+      "blocked_commit_receipt_id": "ed3a9e4e-bade-4c72-bcc3-257bc62fe7c5",
+      "blocked_reason_codes": [
+        "missing::policy_hash"
+      ],
+      "commit_request_ref": "cr:proof",
+      "deterministic_digest": "2dd2f2fbd75640952b792c09a6e4e66df60cb6b57b505aa3c70b0d8ffbf257e8",
+      "failed_rule_ids": [
+        "required_field::policy_hash"
+      ],
+      "no_mutation_assertion": "NO_MUTATION_APPLIED",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_before": "snapshot:00000002",
+      "state_surfaces_requested": [
+        "memory"
+      ],
+      "uwg_validation_receipt_ref": "beda1bd4-4156-41f0-9ed3-443bd2c16df8"
+    },
+    "missing_replay_key": {
+      "audit_append_receipt_ref": "0526d51f-2bea-4e86-8386-1a719db6b11e",
+      "audit_refs": [],
+      "blocked_commit_receipt_id": "21db427b-4b7d-4bfd-94cb-b444a8c951bd",
+      "blocked_reason_codes": [
+        "missing::replay_key",
+        "missing::replay_key"
+      ],
+      "commit_request_ref": "cr:proof",
+      "deterministic_digest": "406027768db023ffe78c0ada86d2328d2f4afbed30a19bd4f7c87cf7c7e1743b",
+      "failed_rule_ids": [
+        "required_field::replay_key",
+        "replay_key_present"
+      ],
+      "no_mutation_assertion": "NO_MUTATION_APPLIED",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_before": "snapshot:00000003",
+      "state_surfaces_requested": [
+        "memory"
+      ],
+      "uwg_validation_receipt_ref": "aa243d08-ae7c-4336-b0b7-05f568328eda"
+    },
+    "missing_schema_ref": {
+      "audit_append_receipt_ref": "0566460f-17f6-4857-9b58-4a6fc8bbde1e",
+      "audit_refs": [],
+      "blocked_commit_receipt_id": "c542e309-3354-469b-a607-c160ac7f6cac",
+      "blocked_reason_codes": [
+        "missing_schema_ref::sd:proof"
+      ],
+      "commit_request_ref": "cr:proof",
+      "deterministic_digest": "034e0bc84e86b9bb47183e92efacdde9a03997fb6a8ac87e9b6bc4a383b6eee7",
+      "failed_rule_ids": [
+        "state_diff::sd:proof"
+      ],
+      "no_mutation_assertion": "NO_MUTATION_APPLIED",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_before": "snapshot:00000006",
+      "state_surfaces_requested": [
+        "memory"
+      ],
+      "uwg_validation_receipt_ref": "ec09079e-cf26-4234-8af0-e4d69636751d"
+    },
+    "non_exit_source": {
+      "audit_append_receipt_ref": "3ed0d3ca-ccec-472f-bbd4-725ae7f0df91",
+      "audit_refs": [],
+      "blocked_commit_receipt_id": "391e8653-5b3d-4b9a-b50c-0c68368ae389",
+      "blocked_reason_codes": [
+        "non_exit_source",
+        "non_authorized:L2"
+      ],
+      "commit_request_ref": "cr:proof",
+      "deterministic_digest": "cca2c272016ec5ad6c057396421d97c3bafd86a833e6a477ab35d60a8f6b9c55",
+      "failed_rule_ids": [
+        "source_is_exit",
+        "non_authorized_source"
+      ],
+      "no_mutation_assertion": "NO_MUTATION_APPLIED",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_before": "snapshot:00000001",
+      "state_surfaces_requested": [
+        "memory"
+      ],
+      "uwg_validation_receipt_ref": "10e2e9b8-94d7-43a1-8481-3d02f98b55be"
+    },
+    "unknown_operation": {
+      "audit_append_receipt_ref": "33e4aa9a-d910-400c-89eb-cb95a1f3dc56",
+      "audit_refs": [],
+      "blocked_commit_receipt_id": "eed6d7a1-3534-45e2-b928-4ae919ac5b19",
+      "blocked_reason_codes": [
+        "unknown_operation::i_made_this_up"
+      ],
+      "commit_request_ref": "cr:proof",
+      "deterministic_digest": "53ee69c3e8f23abf6e0f74b22e54fdc8ffe614f55b26bc2383fe0c211fa1c8c6",
+      "failed_rule_ids": [
+        "state_diff::sd:proof"
+      ],
+      "no_mutation_assertion": "NO_MUTATION_APPLIED",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_before": "snapshot:00000005",
+      "state_surfaces_requested": [
+        "memory"
+      ],
+      "uwg_validation_receipt_ref": "7c8e5044-5530-49e2-95da-0283ac2cbe87"
+    }
+  },
+  "digests": {
+    "blueprint_record": {
+      "audit_refs": [],
+      "blueprint_hash": "bh:1",
+      "blueprint_id": "bp:1",
+      "blueprint_type": "route",
+      "c0_retrieval_profile_refs": [],
+      "deterministic_digest": "b48cc0abf70cee382e4ce73b82c8cce322f257c9583c133f6ec4372dd8affa4f",
+      "execution_blueprint_refs": [],
+      "exit_gate_blueprint_refs": [],
+      "l2_sandbox_blueprint_refs": [],
+      "l6_promotion_blueprint_refs": [],
+      "layer_contract_refs": [],
+      "prompt_assembly_blueprint_refs": [],
+      "route_schema_refs": [],
+      "schema_version": "L4-UWG-1.0.0",
+      "workflow_blueprint_refs": []
+    },
+    "different_content_different_digest": true,
+    "policy_manifest": {
+      "abstain_policy_refs": [],
+      "active_alias_state": "active",
+      "audit_refs": [],
+      "created_at": "",
+      "created_by_surface": "UWG",
+      "deterministic_digest": "3c59c19d0d031503bc7c2eeae61941c790901a699dca43b950b4f22bd042481c",
+      "egress_policy_refs": [],
+      "hitl_thresholds": [],
+      "mutation_policy_refs": [],
+      "next_alias_ref": null,
+      "policy_hash": "ph:1",
+      "policy_manifest_id": "pm:1",
+      "policy_version": "v1",
+      "previous_alias_ref": null,
+      "refusal_policy_refs": [],
+      "risk_tier_rules": [],
+      "rollback_requirements": [],
+      "route_overlays": [],
+      "schema_version": "L4-UWG-1.0.0",
+      "tenant_overlays": []
+    },
+    "registry_snapshot": {
+      "audit_refs": [],
+      "blueprint_hash": "bh:1",
+      "capability_registry_refs": [],
+      "connector_registry_refs": [],
+      "deprecation_manifest_ref": null,
+      "deterministic_digest": "6f5070f9ff615a2ae326b881e878153e700b21df69e7249c82baf19317a41730",
+      "execution_profile_registry_refs": [],
+      "grader_registry_refs": [],
+      "model_registry_refs": [],
+      "policy_hash": "ph:1",
+      "prompt_slot_registry_refs": [],
+      "provider_registry_refs": [],
+      "registry_digest": "rd:1",
+      "registry_snapshot_id": "rs:1",
+      "route_registry_refs": [],
+      "sandbox_registry_refs": [],
+      "schema_registry_refs": [],
+      "schema_version": "L4-UWG-1.0.0",
+      "tool_registry_refs": []
+    },
+    "stamp_idempotent": true
+  },
+  "happy_path": {
+    "audit_ledger_events": [
+      "atomic_commit_applied",
+      "read_surface_refresh_completed"
+    ],
+    "blocked_receipt": null,
+    "commit_receipt": {
+      "affected_state_surfaces": [
+        "memory"
+      ],
+      "audit_append_receipt_ref": "2f942172-aff4-49aa-926d-19a5df4d37bd",
+      "audit_refs": [],
+      "commit_receipt_id": "670529d6-3c57-485c-a1ad-6950466fae07",
+      "commit_request_ref": "cr:proof",
+      "committed_at": "1",
+      "committed_by_surface": "UWG",
+      "deterministic_digest": "5b1d23a831ae687a5c97be8d3f2b2fa1e25cf544dad2585c95b4b31aebb15a32",
+      "read_surface_refresh_plan_ref": "rfp:proof",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_after": "snapshot:00000002",
+      "snapshot_before": "snapshot:00000001",
+      "state_diff_refs": [
+        "sd:proof"
+      ],
+      "uwg_validation_receipt_ref": "78b19c30-964a-4a84-a144-e6bd71477570",
+      "write_lock_receipt_ref": "ea19e101-79eb-4ef4-a33c-879f6cf71f42"
+    },
+    "refresh_receipts": [
+      {
+        "after_snapshot": "snap:after",
+        "audit_refs": [],
+        "before_snapshot": "snap:before",
+        "completed_at": "1",
+        "deterministic_digest": "84a97a0f19d7a714c73c80ad51164309fa296413c4c13845176c0594e768d8eb",
+        "reason_codes": [],
+        "refresh_plan_ref": "rfp:proof",
+        "refresh_receipt_id": "aaa6bf9e-d45f-44bb-bd93-156c9fcc0757",
+        "refresh_type": "memory_projection",
+        "retry_count": 0,
+        "schema_version": "L4-UWG-1.0.0",
+        "source_commit_receipt_ref": "670529d6-3c57-485c-a1ad-6950466fae07",
+        "stale_projection_warning": null,
+        "started_at": "1",
+        "state_surface": "memory",
+        "status": "SUCCESS"
+      }
+    ],
+    "snapshot_after": "snapshot:00000002",
+    "spans_emitted": [
+      "uwg.commit.apply",
+      "uwg.commit.receipt_emit",
+      "uwg.commit.request_received",
+      "uwg.commit.validate",
+      "uwg.read_surface.refresh",
+      "uwg.write_lock.acquire"
+    ]
+  },
+  "otel_spans": {
+    "bad_span_failures": [
+      "missing_policy_hash_on_write",
+      "missing_replay_key_on_commit"
+    ],
+    "bad_span_status": "OBSERVABILITY_FAILURE",
+    "catalog_emitted": [
+      "l4.alias.refresh",
+      "l4.audit.append",
+      "l4.audit.read",
+      "l4.audit.sequence_check",
+      "l4.cache.invalidate",
+      "l4.cache.lookup",
+      "l4.cache.lookup_exact",
+      "l4.cache.lookup_semantic",
+      "l4.cache.resolve_entry",
+      "l4.direct_write_attempt.blocked",
+      "l4.direct_write_attempt.detected",
+      "l4.graph_projection.refresh",
+      "l4.index.metadata.refresh",
+      "l4.index.sparse.refresh",
+      "l4.index.vector.refresh",
+      "l4.memory_projection.refresh",
+      "l4.prompt_bom_cache.refresh",
+      "l4.read.approved_examples",
+      "l4.read.blueprint_record",
+      "l4.read.citation_anchor",
+      "l4.read.graph_projection_manifest",
+      "l4.read.memory_surface",
+      "l4.read.metadata_index_manifest",
+      "l4.read.policy_manifest",
+      "l4.read.policy_version",
+      "l4.read.registry_record",
+      "l4.read.registry_snapshot",
+      "l4.read.retrieval_surface",
+      "l4.read.rubric",
+      "l4.read.source_manifest",
+      "l4.read.sparse_index_manifest",
+      "l4.read.threshold_profile",
+      "l4.read.vector_index_manifest",
+      "l4.replay.reconstruct",
+      "l4.replay.snapshot.read",
+      "l4.route_baseline.refresh",
+      "uwg.commit.apply",
+      "uwg.commit.blocked",
+      "uwg.commit.receipt_emit",
+      "uwg.commit.request_received",
+      "uwg.commit.validate",
+      "uwg.read_surface.refresh",
+      "uwg.rollback.apply",
+      "uwg.write_lock.acquire"
+    ],
+    "catalog_size": 44,
+    "well_formed_failures": []
+  },
+  "proof_packet": {
+    "acceptance_summary": "L4/UWG doctrinal pack 00.1-00.8 \u2014 66/66 tests pass + runtime proof harness green",
+    "audit_ledger_refs": [
+      "atomic_commit_applied",
+      "read_surface_refresh_completed"
+    ],
+    "blocked_commit_receipts": [
+      "391e8653-5b3d-4b9a-b50c-0c68368ae389",
+      "ed3a9e4e-bade-4c72-bcc3-257bc62fe7c5",
+      "21db427b-4b7d-4bfd-94cb-b444a8c951bd",
+      "4589bfa8-bee0-40f4-b73c-277b676c6eb9",
+      "eed6d7a1-3534-45e2-b928-4ae919ac5b19",
+      "c542e309-3354-469b-a607-c160ac7f6cac"
+    ],
+    "blueprint_hash": "bh:proof",
+    "commit_request_examples": [
+      "cr:proof"
+    ],
+    "deterministic_digest": "fd79b9670928e7c4e35565c077b0f6d3671ea33de07aad3f2deeea214a4a3eae",
+    "direct_write_block_receipts": [
+      "602c9eee-143e-4daf-8161-fb461f175152",
+      "aa3432ac-b994-4a11-9acb-23a622a97987",
+      "e6b0da04-0b99-49da-bae8-51a39bff114f",
+      "00b30d62-8632-4e89-86f5-f7ca443e5f9d",
+      "ac105f31-0e0b-40fd-a488-d7a0bbc849ab",
+      "8524f660-89e8-4867-a445-d1a3703bdd84",
+      "d7b75e52-d9c0-4d82-87e4-b222f736f34a",
+      "1ffeb6d2-a681-4f7e-9dc0-a074645bbe38",
+      "008aab4d-63b6-47be-aaa6-e9fee90a83e0",
+      "b23cd5f2-d83d-4169-a2c2-e8ccc449c9fc",
+      "c32cc974-d505-4c24-ac16-9b2e8a27548d",
+      "a1886221-13bc-41ec-b4a5-3f489eac699d",
+      "2378af32-cd3d-4813-b187-7b7680f0d917",
+      "3ca1031c-0f9b-46c2-be4c-04d6f04ca700",
+      "063da82d-2a10-4c54-bdf0-56916ecbbba0"
+    ],
+    "known_gaps": [],
+    "otel_trace_refs": [
+      "see section.otel_spans"
+    ],
+    "policy_hash": "ph:proof",
+    "proof_packet_id": "pp:proof_run",
+    "read_scope_test_refs": [
+      "tests/l4/test_read_scope_and_otel.py"
+    ],
+    "replay_key": "rk:proof",
+    "replay_reconstruction_receipts": [
+      "see section.replay_reconstruction"
+    ],
+    "rollback_receipts": [
+      "0c842d83-ba04-401d-a896-f6744a41fe74"
+    ],
+    "run_id": "",
+    "schema_version": "L4-UWG-1.0.0",
+    "test_command_results": [
+      "python -m pytest tests/l4 tests/uwg -q :: 66 passed"
+    ],
+    "test_run_id": "",
+    "trace_root": "trace:proof",
+    "uwg_commit_receipts": [
+      "670529d6-3c57-485c-a1ad-6950466fae07"
+    ]
+  },
+  "replay_reconstruction": {
+    "replay_record": {
+      "audit_refs": [],
+      "blueprint_hash": "bh:1",
+      "commit_receipt_hash": "crh:1",
+      "deterministic_digest": "a7dc831a9b8e8ea2efb2b1cd1567f9edbf56e0fc297252b44b04ceff6d5ae2ca",
+      "environment_digest_refs": [
+        "ed:1"
+      ],
+      "evidence_contract_hash": "ech:1",
+      "exit_disposition_hash": "eh:1",
+      "gate_verdict_hashes": [
+        "g:1",
+        "g:2"
+      ],
+      "input_hash": "ih:1",
+      "normalized_request_hash": null,
+      "policy_hash": "ph:1",
+      "prompt_hash": "prh:1",
+      "replay_key": "rk:1",
+      "replay_snapshot_id": "rsn:proof",
+      "request_id": null,
+      "route_digest": "rd:1",
+      "run_id": null,
+      "schema_version": "L4-UWG-1.0.0",
+      "sealed_artifact_hash": "sah:1",
+      "snapshot_id": "snap:after",
+      "tenant_id": "t:1",
+      "trace_root": "trace:proof"
+    },
+    "round_trip_digest_stable": true,
+    "stable_hash_inputs_present": true
+  },
+  "rollback": {
+    "rollback_audit_events": [
+      "rollback_applied"
+    ],
+    "rollback_receipt": {
+      "affected_state_surfaces": [
+        "memory"
+      ],
+      "audit_append_receipt_ref": "4cdf67e3-0b72-44d9-9f9e-79c91f1f8d51",
+      "audit_refs": [],
+      "deterministic_digest": "6e48edc1e611465ec7c88474d5ddef893ab01b0f6758d84f713584dfefd55408",
+      "reason_codes": [
+        "proof_run"
+      ],
+      "rollback_plan_ref": "rp:proof",
+      "rollback_receipt_id": "0c842d83-ba04-401d-a896-f6744a41fe74",
+      "schema_version": "L4-UWG-1.0.0",
+      "snapshot_after_rollback": "snapshot:00000003",
+      "snapshot_before_rollback": "snapshot:00000002",
+      "source_commit_receipt_ref": "8227eb01-ae62-4bb1-ba1c-ab59287afbc7"
+    }
+  },
+  "schema": "L4UWGRuntimeProofBundle@1"
+}
