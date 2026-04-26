@@ -7,8 +7,13 @@ Output: docs/reports/calibration/routers/L1_c0/<YYYY-Www>.md
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
-from ops_scripts.calibration._router_calibration_base import (
+_REPO_ROOT_BOOTSTRAP = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT_BOOTSTRAP) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT_BOOTSTRAP))
+
+from ops_scripts.calibration._router_calibration_base import (  # noqa: E402
     RouterCalibrationSpec,
     cli,
 )

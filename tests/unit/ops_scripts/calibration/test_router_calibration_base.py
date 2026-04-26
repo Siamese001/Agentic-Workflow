@@ -77,7 +77,8 @@ class TestIsoWeek:
         dt = datetime(2026, 12, 28, tzinfo=timezone.utc)  # ISO week 53
         result = base.iso_week(dt)
         assert result.startswith("2026-W")
-        assert len(result) == 9
+        # Format YYYY-Www → 8 chars (e.g. "2026-W53")
+        assert len(result) == 8
 
     def test_default_uses_now(self) -> None:
         result = base.iso_week()
