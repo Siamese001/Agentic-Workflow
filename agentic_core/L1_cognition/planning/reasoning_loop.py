@@ -25,6 +25,7 @@ loop terminates early. The stop signals are derived from the
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Sequence
 
 from agentic_core.L1_cognition.planning.contracts import (
@@ -112,28 +113,17 @@ def _initial_state(input_: PlanningReasoningInput) -> InternalPlanState:
 
 
 def _attach_state_digest(state: InternalPlanState) -> InternalPlanState:
-    """Compute and attach the deterministic state_digest."""
+    """Compute and attach the deterministic state_digest using dataclasses.replace.
+
+    The digest is computed over the state's ``to_dict()`` projection with
+    ``state_digest`` blanked, so the digest itself is excluded from its own
+    computation (otherwise the value would be self-referential and could
+    never be stable).
+    """
     payload = state.to_dict()
     payload["state_digest"] = ""
     digest = stable_digest(payload, prefix="l1.02.3.state")
-    return InternalPlanState(
-        internal_plan_state_id=state.internal_plan_state_id,
-        normalized_goal_summary=state.normalized_goal_summary,
-        deliverable_summary=state.deliverable_summary,
-        constraint_bindings=state.constraint_bindings,
-        source_expectation_summary=state.source_expectation_summary,
-        support_need_summary=state.support_need_summary,
-        action_risk_summary=state.action_risk_summary,
-        artifact_need_summary=state.artifact_need_summary,
-        preliminary_work_units=state.preliminary_work_units,
-        dependency_candidates=state.dependency_candidates,
-        route_discriminator_candidates=state.route_discriminator_candidates,
-        uncertainty_markers=state.uncertainty_markers,
-        unsafe_or_unsupported_markers=state.unsafe_or_unsupported_markers,
-        simplification_candidates=state.simplification_candidates,
-        stop_state_candidates=state.stop_state_candidates,
-        state_digest=digest,
-    )
+    return replace(state, state_digest=digest)
 
 
 def _refine_for_constraints(

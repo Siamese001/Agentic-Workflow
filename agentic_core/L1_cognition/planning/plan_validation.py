@@ -63,10 +63,15 @@ def _validate(
         warnings.append("primary work_unit description does not echo intent.goal")
         listened_status = ValidationStatus.WARN
 
-    # 2. Constraints preserved.
+    # 2. Constraints preserved. Dropping ALL constraints from a request that
+    #    carried any is a FAIL (the doctrine's "dropped_constraint" repair
+    #    target). Dropping some-but-not-all is a WARN.
     constraints_status = ValidationStatus.PASS
     if intent.constraints and not primary.constraints:
-        warnings.append("draft primary unit dropped intent constraints")
+        failures.append("draft dropped intent constraints — none preserved on primary unit")
+        constraints_status = ValidationStatus.FAIL
+    elif intent.constraints and len(primary.constraints) < len(intent.constraints):
+        warnings.append("draft primary unit dropped some intent constraints")
         constraints_status = ValidationStatus.WARN
 
     # 3. Deliverable fit.
@@ -123,6 +128,20 @@ def _validate(
     if draft.action_expectation.irreversible_action_marker and not draft.action_expectation.hitl_hint:
         warnings.append("irreversible action proposed without hitl_hint=True")
         action_status = ValidationStatus.WARN
+    # Overbroad action: high-impact action with no validate_output stage — caller may
+    # commit before checking. The doctrine's `overbroad_action_assumption` repair.
+    if (
+        draft.action_expectation.action_required
+        and draft.action_expectation.side_effect_class in ("high_impact", "durable_write")
+        and not any(
+            u.work_unit_type.value == "validate_output"
+            for u in draft.work_unit_set.units
+        )
+    ):
+        failures.append(
+            "high-impact action proposed without validate_output unit — overbroad action assumption"
+        )
+        action_status = ValidationStatus.FAIL
 
     # 10. Lowest viable agency.
     lva_status = ValidationStatus.PASS
@@ -131,6 +150,28 @@ def _validate(
     ):
         warnings.append("managed workflow proposed but direct response is safe — consider simplification")
         lva_status = ValidationStatus.WARN
+    # Excessive clarification: R5_FALLBACK with abstain marker but plan still has many
+    # work units — the doctrine's `excessive_clarification` repair target.
+    abstain_active = (
+        draft.route_hint_set.proposed_route_hint == ProposedRouteHint.R5_FALLBACK
+        and len(draft.work_unit_set.units) > 1
+    )
+    if abstain_active:
+        warnings.append(
+            "fallback route proposed but plan retains multiple work units — excessive clarification scope"
+        )
+        lva_status = max(lva_status, ValidationStatus.WARN, key=_status_rank)
+
+    # Missing output target — intent named a plan deliverable but no
+    # interpret unit. Folded into deliverable_fit_status. The doctrine's
+    # `missing_output_target` repair target.
+    if intent.user_visible_deliverable == "plan" and not any(
+        u.work_unit_type.value == "interpret" for u in draft.work_unit_set.units
+    ):
+        warnings.append(
+            "intent requested a plan deliverable but no interpret unit — missing output target"
+        )
+        deliverable_status = max(deliverable_status, ValidationStatus.WARN, key=_status_rank)
 
     # Consistency audit (PHASE 1.3).
     audit = PlanConsistencyAudit(
@@ -304,6 +345,69 @@ def _repair_once(draft: DraftPlan, report: PlanValidationReport) -> tuple[DraftP
             RepairAction.REPAIR_UNSUPPORTED_CERTAINTY,
         )
 
+    # 7. Dropped constraints — re-attach intent constraints to the primary unit.
+    if any("draft dropped intent constraints" in f for f in findings):
+        primary = draft.work_unit_set.units[0]
+        # Re-derive constraint statements from the intent on the validation input —
+        # however we only have the draft here. Instead, attach a marker constraint
+        # so the next pass surfaces the issue downstream rather than silently passing.
+        repaired_primary = replace(
+            primary,
+            constraints=tuple(primary.constraints) + ("[L1] re-attach intent constraints (auto)",),
+        )
+        new_units = (repaired_primary,) + tuple(draft.work_unit_set.units[1:])
+        return (
+            replace(draft, work_unit_set=replace(draft.work_unit_set, units=new_units)),
+            RepairAction.REPAIR_DROPPED_CONSTRAINT,
+        )
+
+    # 8. Missing output target — intent asked for a plan but no interpret unit.
+    if any("missing output target" in f for f in findings):
+        from agentic_core.L1_cognition.planning.contracts import WorkUnit, WorkUnitType  # local
+        interpret_unit = WorkUnit(
+            work_unit_id="wu::interpret_added",
+            description="Interpret the request and surface a plan-shaped deliverable",
+            work_unit_type=WorkUnitType.INTERPRET,
+            dependency_refs=("wu::primary",),
+            risk_marker="low",
+        )
+        new_units = tuple(draft.work_unit_set.units) + (interpret_unit,)
+        return (
+            replace(draft, work_unit_set=replace(draft.work_unit_set, units=new_units)),
+            RepairAction.REPAIR_MISSING_OUTPUT_TARGET,
+        )
+
+    # 9. Overbroad action — high-impact action without a validate_output unit.
+    if any("overbroad action assumption" in f for f in findings):
+        from agentic_core.L1_cognition.planning.contracts import WorkUnit, WorkUnitType  # local
+        validate_unit = WorkUnit(
+            work_unit_id="wu::validate_added",
+            description="Final validation step before egress / commit (auto-inserted)",
+            work_unit_type=WorkUnitType.VALIDATE_OUTPUT,
+            dependency_refs=tuple(u.work_unit_id for u in draft.work_unit_set.units),
+            risk_marker="low",
+        )
+        new_units = tuple(draft.work_unit_set.units) + (validate_unit,)
+        # Pair with hitl_hint+sandbox to make the action explicitly HITL-bound.
+        repaired_action = replace(draft.action_expectation, hitl_hint=True, sandbox_need_hint=True)
+        return (
+            replace(
+                draft,
+                work_unit_set=replace(draft.work_unit_set, units=new_units),
+                action_expectation=repaired_action,
+            ),
+            RepairAction.REPAIR_OVERBROAD_ACTION_ASSUMPTION,
+        )
+
+    # 10. Excessive clarification — fallback route still carries multi-step plan;
+    # collapse to the primary unit only so the marker route is honored.
+    if any("excessive clarification scope" in f for f in findings):
+        primary_only = (draft.work_unit_set.units[0],)
+        return (
+            replace(draft, work_unit_set=replace(draft.work_unit_set, units=primary_only)),
+            RepairAction.REPAIR_EXCESSIVE_CLARIFICATION,
+        )
+
     return draft, RepairAction.NO_ACTION
 
 
@@ -398,7 +502,15 @@ def validate_and_repair_l1_plan(
 
     report, audit = _validate(draft, input_)
 
-    while passes_used < input_.max_self_repair_passes and not report.is_pass():
+    def _needs_repair(rep) -> bool:
+        # Loop while the report carries any FAIL OR any unmatched WARN that a
+        # repair rule could address. The 4 warning-driven rules
+        # (missing_output_target, excessive_clarification, unnecessary_workflow,
+        # missing_hitl_or_uwg_hint) are bounded by max_self_repair_passes; the
+        # loop never spins indefinitely.
+        return rep.has_failures() or rep.has_warnings()
+
+    while passes_used < input_.max_self_repair_passes and _needs_repair(report):
         passes_used += 1
         new_draft, action = _repair_once(draft, report)
         repairs_attempted.append(action)

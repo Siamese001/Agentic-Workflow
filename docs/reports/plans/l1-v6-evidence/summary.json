@@ -5,8 +5,10 @@
     "docs\\reports\\plans\\l1-v6-evidence\\digests.json",
     "docs\\reports\\plans\\l1-v6-evidence\\import_isolation.json",
     "docs\\reports\\plans\\l1-v6-evidence\\negative_boundary_scan.json",
+    "docs\\reports\\plans\\l1-v6-evidence\\REQUIREMENTS_MATRIX.md",
     "docs\\reports\\plans\\l1-v6-evidence\\runtime_evidence.json",
-    "docs\\reports\\plans\\l1-v6-evidence\\spans.json"
+    "docs\\reports\\plans\\l1-v6-evidence\\spans.json",
+    "docs\\reports\\plans\\l1-v6-evidence\\summary.json"
   ],
   "import_isolation_clean": true,
   "negative_boundary_clean": true,

@@ -1508,8 +1508,8 @@ class PlanValidationReport:
             "report_digest": self.report_digest,
         }
 
-    def is_pass(self) -> bool:
-        for s in (
+    def _all_statuses(self) -> tuple:
+        return (
             self.listened_to_user_status,
             self.constraints_preserved_status,
             self.deliverable_fit_status,
@@ -1520,10 +1520,42 @@ class PlanValidationReport:
             self.support_expectation_status,
             self.action_expectation_status,
             self.lowest_viable_agency_status,
-        ):
-            if s == ValidationStatus.FAIL:
+        )
+
+    def is_pass(self) -> bool:
+        """True only when every status is PASS or WARN.
+
+        ``NOT_RUN`` counts as a failure: it means a check was never executed,
+        which is not the same as having executed and passed. ``FAIL`` is
+        always a failure.
+        """
+        for s in self._all_statuses():
+            if s in (ValidationStatus.FAIL, ValidationStatus.NOT_RUN):
                 return False
         return True
+
+    def has_failures(self) -> bool:
+        """True when at least one status is FAIL or NOT_RUN, OR a failure
+        finding string is present.
+
+        ``NOT_RUN`` is treated as a failure so that an unexecuted check
+        cannot silently pass through the self-repair loop.
+        """
+        if self.validation_failures:
+            return True
+        for s in self._all_statuses():
+            if s in (ValidationStatus.FAIL, ValidationStatus.NOT_RUN):
+                return True
+        return False
+
+    def has_warnings(self) -> bool:
+        """True when at least one status is WARN, OR a warning finding is present."""
+        if self.validation_warnings:
+            return True
+        for s in self._all_statuses():
+            if s == ValidationStatus.WARN:
+                return True
+        return False
 
 
 @dataclass(frozen=True)

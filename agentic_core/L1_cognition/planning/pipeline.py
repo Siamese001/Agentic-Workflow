@@ -113,18 +113,28 @@ def _build_assumptions_and_gaps(parsed_packet, validated_packet) -> dict:
 
 
 def _build_validation_summary(validated_packet) -> dict:
+    """Project the typed PlanValidationReport into the v6 contract dict.
+
+    Each status maps to True only when the check executed and did not fail —
+    i.e. status ∈ {PASS, WARN}. ``NOT_RUN`` counts as False because the
+    check was never executed; ``FAIL`` is always False.
+    """
     report = validated_packet.plan_validation_report
+
+    def _ok(status) -> bool:
+        return status.value not in ("fail", "not_run")
+
     return {
-        "listened_to_user": report.listened_to_user_status.value != "fail",
-        "constraints_preserved": report.constraints_preserved_status.value != "fail",
-        "deliverable_fit": report.deliverable_fit_status.value != "fail",
-        "style_format_fit": report.style_format_fit_status.value != "fail",
-        "safety_checked": report.safety_checked_status.value != "fail",
-        "coherent_plan": report.coherent_plan_status.value != "fail",
-        "route_hint_consistency": report.route_hint_consistency_status.value != "fail",
-        "support_expectation_consistency": report.support_expectation_status.value != "fail",
-        "action_expectation_consistency": report.action_expectation_status.value != "fail",
-        "lowest_viable_agency_applied": report.lowest_viable_agency_status.value != "fail",
+        "listened_to_user": _ok(report.listened_to_user_status),
+        "constraints_preserved": _ok(report.constraints_preserved_status),
+        "deliverable_fit": _ok(report.deliverable_fit_status),
+        "style_format_fit": _ok(report.style_format_fit_status),
+        "safety_checked": _ok(report.safety_checked_status),
+        "coherent_plan": _ok(report.coherent_plan_status),
+        "route_hint_consistency": _ok(report.route_hint_consistency_status),
+        "support_expectation_consistency": _ok(report.support_expectation_status),
+        "action_expectation_consistency": _ok(report.action_expectation_status),
+        "lowest_viable_agency_applied": _ok(report.lowest_viable_agency_status),
         "no_retrieval_performed": True,
         "no_execution_performed": True,
         "no_write_performed": True,
