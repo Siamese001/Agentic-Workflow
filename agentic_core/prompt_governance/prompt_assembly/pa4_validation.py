@@ -202,21 +202,38 @@ def _authority_c0_no_override(stack: AuthorityStack) -> ValidationCheckResult:
     return ValidationCheckResult("no_c0_attempts_to_override_system", "authority", True)
 
 
+_H0_OVERRIDE_PHRASES: tuple[str, ...] = (
+    "ignore developer fences",
+    "override fences",
+    "ignore the fences",
+    "ignore d0",
+    "bypass developer fences",
+    "disregard developer fences",
+)
+
+
 def _authority_h0_no_fence_override(stack: AuthorityStack, bom: PromptBOMResolved) -> ValidationCheckResult:
     h0 = stack.slot("H0")
     d0 = stack.slot("D0")
-    if h0 and d0:
-        h0_lower = h0.content.lower()
-        for fence in bom.d0.fences_applied:
-            if fence and fence.lower().startswith("must not") and fence.lower() in h0_lower:
-                continue  # H0 quoting fence is fine
-            if "ignore developer fences" in h0_lower or "override fences" in h0_lower:
-                return ValidationCheckResult(
-                    "no_h0_overrides_d0_fences",
-                    "authority",
-                    False,
-                    "H0 attempts to override D0 fences",
-                )
+    if not (h0 and d0):
+        return ValidationCheckResult("no_h0_overrides_d0_fences", "authority", True)
+    # Strip any verbatim quotation of D0 fences first (legitimate context),
+    # then test the residual H0 text for genuine override language. The old
+    # loop interleaved both checks per-fence-iteration, producing inconsistent
+    # results when the H0 quoted one fence verbatim and discussed others.
+    residual = h0.content.lower()
+    for fence in bom.d0.fences_applied:
+        f_lower = (fence or "").lower()
+        if f_lower and f_lower in residual:
+            residual = residual.replace(f_lower, " ")
+    for phrase in _H0_OVERRIDE_PHRASES:
+        if phrase in residual:
+            return ValidationCheckResult(
+                "no_h0_overrides_d0_fences",
+                "authority",
+                False,
+                f"H0 attempts override: {phrase!r}",
+            )
     return ValidationCheckResult("no_h0_overrides_d0_fences", "authority", True)
 
 

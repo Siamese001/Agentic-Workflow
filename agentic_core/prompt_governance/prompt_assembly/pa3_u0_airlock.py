@@ -87,15 +87,23 @@ def run_u0_airlock(
         disposition = "clean"
         neutralized = result.sanitized_prompt or raw_user_task
 
-    raw_lower = (raw_user_task or "").lower()
-    neutral_lower = neutralized.lower()
+    # B4 hardening: be precise. Only emit stripped_segments when the
+    # neutralizer's edit was a clean prefix / suffix trim. If the edit is
+    # internal we cannot reliably attribute a segment, so we return ().
+    # Reject disposition emits the entire raw input so audit logs see what
+    # was suppressed.
     stripped_segments: list[str] = []
-    if patterns and disposition == "sanitized":
-        # Best-effort segment extraction: anything in raw not in neutralized.
-        if neutral_lower != raw_lower and len(raw_lower) > len(neutral_lower):
-            stripped_segments.append(
-                raw_user_task[len(neutralized) :] if raw_user_task.startswith(neutralized) else raw_user_task
-            )
+    if disposition == "reject":
+        if raw_user_task:
+            stripped_segments.append(raw_user_task)
+    elif disposition == "sanitized" and patterns:
+        raw_str = raw_user_task or ""
+        if raw_str and neutralized and raw_str != neutralized and len(raw_str) > len(neutralized):
+            if raw_str.startswith(neutralized):
+                stripped_segments.append(raw_str[len(neutralized) :])
+            elif raw_str.endswith(neutralized):
+                stripped_segments.append(raw_str[: -len(neutralized)])
+            # else: an internal edit — do NOT fabricate a whole-text marker.
 
     return U0AirlockResult(
         raw_text=raw_user_task or "",

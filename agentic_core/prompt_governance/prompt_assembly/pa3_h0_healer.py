@@ -15,6 +15,10 @@ from dataclasses import dataclass
 
 DEFAULT_MAX_RETRIES: int = 2
 
+DEFAULT_SCOPE_WIDENING_TOLERANCE: int = 1
+"""Default number of brand-new task keywords an H0 hint may introduce before
+the system flags scope widening. Set to 0 for strict mode (no new keywords)."""
+
 
 @dataclass(frozen=True)
 class H0ReentryResult:
@@ -39,16 +43,21 @@ def validate_h0_reentry(
     max_retries: int = DEFAULT_MAX_RETRIES,
     original_task_keywords: tuple[str, ...] = (),
     h0_task_keywords: tuple[str, ...] = (),
+    scope_widening_tolerance: int = DEFAULT_SCOPE_WIDENING_TOLERANCE,
 ) -> H0ReentryResult:
-    """Validate a healer-proposed H0 hint per spec re-entry rules."""
+    """Validate a healer-proposed H0 hint per spec re-entry rules.
+
+    ``scope_widening_tolerance`` is the maximum number of brand-new keywords
+    the H0 hint may introduce relative to ``original_task_keywords``. Set to
+    0 for strict mode; the default of 1 absorbs incidental synonyms.
+    """
     same_policy = bool(h0_policy_hash) and h0_policy_hash == current_policy_hash
     same_blueprint = bool(h0_blueprint_hash) and h0_blueprint_hash == current_blueprint_hash
 
     no_widening = True
     if original_task_keywords and h0_task_keywords:
         new_keywords = set(h0_task_keywords) - set(original_task_keywords)
-        # If the H0 introduces concepts absent from the original task it has widened scope.
-        no_widening = len(new_keywords) <= 1
+        no_widening = len(new_keywords) <= max(0, scope_widening_tolerance)
 
     within_retry = retry_count <= max_retries
 
@@ -77,4 +86,9 @@ def validate_h0_reentry(
     )
 
 
-__all__ = ["DEFAULT_MAX_RETRIES", "H0ReentryResult", "validate_h0_reentry"]
+__all__ = [
+    "DEFAULT_MAX_RETRIES",
+    "DEFAULT_SCOPE_WIDENING_TOLERANCE",
+    "H0ReentryResult",
+    "validate_h0_reentry",
+]

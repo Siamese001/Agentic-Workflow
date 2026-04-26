@@ -21,6 +21,17 @@ from typing import Any, Mapping
 SIGNATURE_VERSION: str = "PA7-HMAC-SHA256-v1"
 
 
+class NonCanonicalManifestError(TypeError):
+    """Raised when a manifest contains a non-deterministically-serializable
+    type. Canonical signing requires set-free, datetime-free, callable-free
+    inputs because such types either have undefined iteration order or
+    string representations that drift between Python versions and locales.
+    """
+
+
+_CANONICAL_TYPES: tuple[type, ...] = (str, int, float, bool, type(None))
+
+
 @dataclass(frozen=True)
 class SignedManifest:
     """Spec PA.7 signed-manifest literal."""
@@ -33,6 +44,47 @@ class SignedManifest:
     signing_key_reference: str
 
 
+_CANONICAL_SCALARS: tuple[type, ...] = (str, int, float, type(None))
+
+
+def _validate_canonical(value: Any, path: str = "$") -> Any:
+    """Walk the value tree, rejecting types whose JSON encoding is not
+    deterministic, and converting tuples -> lists for clean json.dumps.
+
+    Forbidden types:
+      * set / frozenset       (iteration order undefined)
+      * bytes / bytearray     (encoding ambiguity)
+      * any callable          (repr is unstable across runs)
+      * any object whose class is outside the canonical scalar / Mapping /
+        list / tuple / None universe
+
+    Allowed types: str, int, float (incl bool), None, Mapping, list, tuple.
+    """
+    # bool is a subclass of int; accept either as a canonical scalar.
+    if isinstance(value, bool) or isinstance(value, _CANONICAL_SCALARS):
+        return value
+    if isinstance(value, (bytes, bytearray)):
+        raise NonCanonicalManifestError(
+            f"non-canonical bytes/bytearray at {path}; encode as a string upstream"
+        )
+    if isinstance(value, (set, frozenset)):
+        raise NonCanonicalManifestError(
+            f"non-canonical set at {path}; sets have no stable order — pass a sorted list"
+        )
+    if callable(value):
+        raise NonCanonicalManifestError(f"non-canonical callable at {path}; callables are not serializable")
+    if isinstance(value, Mapping):
+        out: dict[str, Any] = {}
+        for k, v in value.items():
+            if not isinstance(k, str):
+                raise NonCanonicalManifestError(f"non-string mapping key at {path}: {type(k).__name__}")
+            out[k] = _validate_canonical(v, f"{path}.{k}")
+        return out
+    if isinstance(value, (list, tuple)):
+        return [_validate_canonical(v, f"{path}[{i}]") for i, v in enumerate(value)]
+    raise NonCanonicalManifestError(f"non-canonical value of type {type(value).__name__} at {path}")
+
+
 def canonicalize_manifest(manifest_inputs: Mapping[str, Any]) -> bytes:
     """Convert the manifest input dict to canonical JSON bytes.
 
@@ -41,14 +93,17 @@ def canonicalize_manifest(manifest_inputs: Mapping[str, Any]) -> bytes:
       * sort_keys=True     -> stable key order
       * separators=(',', ':') -> no whitespace
       * ensure_ascii=False -> preserve unicode without escaping
-      * default=str        -> non-JSON types get string-coerced
+      * Tuples normalize to lists (B6 hardening — both serialize identically)
+
+    Raises :class:`NonCanonicalManifestError` for any non-deterministic type
+    (sets, bytes, callables, non-string mapping keys, custom objects).
     """
+    safe = _validate_canonical(manifest_inputs)
     return json.dumps(
-        manifest_inputs,
+        safe,
         sort_keys=True,
         separators=(",", ":"),
         ensure_ascii=False,
-        default=str,
     ).encode("utf-8")
 
 
@@ -89,7 +144,14 @@ def verify_signature(
     *,
     secret_key: bytes,
 ) -> bool:
-    """Constant-time signature verification."""
+    """Constant-time signature verification.
+
+    Defensive: if either argument is the wrong type or the comparison itself
+    raises, return False rather than propagating. This keeps the signature
+    contract a clean boolean for callers in the hot path.
+    """
+    if not isinstance(signature_hex, str) or not isinstance(canonical_bytes, (bytes, bytearray)):
+        return False
     try:
         expected = hmac.new(secret_key, canonical_bytes, hashlib.sha256).hexdigest()
         return hmac.compare_digest(expected, signature_hex)
@@ -99,6 +161,7 @@ def verify_signature(
 
 __all__ = [
     "SIGNATURE_VERSION",
+    "NonCanonicalManifestError",
     "SignedManifest",
     "canonicalize_manifest",
     "compute_manifest_hash",

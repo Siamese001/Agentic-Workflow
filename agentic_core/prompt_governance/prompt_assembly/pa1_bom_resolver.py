@@ -244,7 +244,20 @@ def _resolve_d0(
         risk in {"low", "medium", "high"} or posture in {"none", "read_only", "limited", "full"}
     )
     rc_controls_required = has_c0
-    rc_present = any("retrieved" in f.lower() or "context" in f.lower() for f in fences)
+    # B2 hardening: a fence saying merely "in this context" is NOT a
+    # retrieved-content control. Require an anchored phrase that mentions
+    # "retrieved" content / context / data / chunks. The bare word "context"
+    # is too common in normal English to count.
+    _rc_anchors = (
+        "retrieved content",
+        "retrieved-content",
+        "retrieved context",
+        "retrieved data",
+        "retrieved chunk",
+        "retrieved chunks",
+        "treat retrieved",
+    )
+    rc_present = any(any(anchor in f.lower() for anchor in _rc_anchors) for f in fences)
     if not fences:
         return D0FenceBlock("", (), False, False, valid=False, reason="d0_empty")
     if rc_controls_required and not rc_present:
@@ -292,9 +305,22 @@ def _resolve_c0(bundle: UpstreamInputBundle) -> C0GroundedContextBlock:
     """PA.1E — grounded retrieved context. Five chunk classes preserved."""
     classes = bundle.evidence.evidence_classes or {}
 
+    def _coerce(item: Any) -> dict[str, Any]:
+        if isinstance(item, Mapping):
+            return dict(item)
+        # str / int / anything atomic becomes an {id: ...} singleton.
+        return {"id": str(item)}
+
     def _to_dicts(key: str) -> tuple[dict[str, Any], ...]:
         items = classes.get(key, ())
-        return tuple({"id": str(x)} if isinstance(x, str) else dict(x) for x in items)
+        # G1 hardening: a bare string like "chunk-abc" was previously iterated
+        # per-character (yielding {"id":"c"}, {"id":"h"}, ...). Treat strings
+        # and non-iterables as a single-element collection.
+        if isinstance(items, (str, bytes)) or isinstance(items, Mapping):
+            items = (items,)
+        elif not hasattr(items, "__iter__"):
+            items = (items,)
+        return tuple(_coerce(x) for x in items)
 
     must_use = _to_dicts("must_use")
     supporting = _to_dicts("supporting")
@@ -400,14 +426,62 @@ def _resolve_h0(sources: Mapping[str, Any]) -> H0HealingHintBlock:
     return H0HealingHintBlock(content, same_policy, same_blueprint, no_scope_widen, retry, accepted, reason)
 
 
+def _schema_has_field(schema: Mapping[str, Any], field_keywords: tuple[str, ...]) -> bool:
+    """Return True iff ``schema`` *structurally* declares a field whose key
+    matches any of ``field_keywords``.
+
+    Walks JSON-Schema-shaped dicts:
+
+      * top-level keys
+      * ``properties`` (object schemas)
+      * ``items.properties`` (array-of-object schemas)
+      * ``oneOf`` / ``anyOf`` / ``allOf`` branches
+
+    This avoids the substring-match fragility of ``str(schema)`` — a narrative
+    ``description`` containing the word "abstain" will no longer be confused
+    with an actual ``abstained`` field.
+    """
+    if not isinstance(schema, Mapping):
+        return False
+
+    def _names(node: Any) -> set[str]:
+        out: set[str] = set()
+        if isinstance(node, Mapping):
+            props = node.get("properties")
+            if isinstance(props, Mapping):
+                out.update(str(k) for k in props.keys())
+            items = node.get("items")
+            if isinstance(items, Mapping):
+                out |= _names(items)
+            for combinator in ("oneOf", "anyOf", "allOf"):
+                branches = node.get(combinator)
+                if isinstance(branches, (list, tuple)):
+                    for b in branches:
+                        out |= _names(b)
+        return out
+
+    field_names = _names(schema) | {str(k) for k in schema.keys()}
+    field_names_lower = {n.lower() for n in field_names}
+    for kw in field_keywords:
+        kw_l = kw.lower()
+        if any(kw_l in name for name in field_names_lower):
+            return True
+    return False
+
+
 def _resolve_r0(bundle: UpstreamInputBundle, sources: Mapping[str, Any]) -> R0SchemaBinding:
     """PA.1J — response schema. Parseable + provider-compatible."""
     schema = dict(sources.get("r0_schema") or bundle.governance.response_schema_contract or {})
     schema_version = str(sources.get("r0_schema_version", "")) or str(schema.get("version", ""))
     parseable = isinstance(schema, dict) and len(schema) > 0
     provider_compatible = parseable and bool(sources.get("r0_provider_compatible", True))
-    can_abstain = parseable and "abstain" in str(schema).lower() or bool(schema.get("can_abstain", False))
-    can_cite = parseable and "citation" in str(schema).lower() or bool(schema.get("can_cite", False))
+    # Prefer explicit boolean flags on the schema; fall back to structural
+    # field detection. NEVER do substring-match on the dict's repr — that
+    # caused false positives when ``description`` contained the word.
+    explicit_abstain = bool(schema.get("can_abstain", False))
+    explicit_cite = bool(schema.get("can_cite", False))
+    can_abstain = parseable and (explicit_abstain or _schema_has_field(schema, ("abstain", "refuse")))
+    can_cite = parseable and (explicit_cite or _schema_has_field(schema, ("citation", "source", "reference")))
     valid = parseable and provider_compatible
     reason = ""
     if not parseable:

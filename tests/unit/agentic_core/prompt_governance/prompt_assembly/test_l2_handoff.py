@@ -58,13 +58,16 @@ def test_signature_skip_flagged():
 def test_provider_swap_flagged():
     res = validate_l2_handoff(**_ok_kwargs(provider_lane_used="openai_chat"))
     assert res.valid is False
-    assert "swap_provider_or_model" in res.violations
+    # Sub-typed tokens (":provider" / ":model") let callers see WHICH dimension drifted.
+    assert any(v.startswith("swap_provider_or_model") for v in res.violations)
+    assert "swap_provider_or_model" not in res.must_not_satisfied
 
 
 def test_model_swap_flagged():
     res = validate_l2_handoff(**_ok_kwargs(model_id_used="other-model"))
     assert res.valid is False
-    assert "swap_provider_or_model" in res.violations
+    assert "swap_provider_or_model:model" in res.violations
+    assert "swap_provider_or_model" not in res.must_not_satisfied
 
 
 def test_unauthorized_tool_flagged():
@@ -82,6 +85,9 @@ def test_schema_drift_flagged():
 def test_token_overrun_flagged():
     res = validate_l2_handoff(**_ok_kwargs(budget_ceiling=1000, tokens_emitted=2000))
     assert res.valid is False
+    # Budget overrun emits its own canonical token rather than abusing
+    # 'exceed_temperature_or_thinking_level'.
+    assert "token_budget_overrun" in res.violations
 
 
 def test_grounding_required_no_grounded_output_flagged():

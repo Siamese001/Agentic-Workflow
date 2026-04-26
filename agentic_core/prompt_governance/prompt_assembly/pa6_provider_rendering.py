@@ -175,12 +175,19 @@ def render_local(bom: PromptBOMResolved, comp: CompositionResult) -> RenderedPay
         payload["temperature"] = bom.execution_metadata.temperature
     if bom.r0.valid and bom.r0.schema:
         payload["response_format"] = {"type": "json_schema", "json_schema": bom.r0.schema}
+    # Local lane carries tools as a structured manifest field so the dispatcher
+    # can route function-calling to a local adapter (llama.cpp grammar, vLLM
+    # function-call wrapper, etc.). Reporting tools_bound=False when tools are
+    # present would lie to the L2 handoff validator.
+    tools_present = bool(bom.tool_binding_manifest.tools)
+    if tools_present:
+        payload["tools"] = _tools_payload(bom)
     return RenderedPayload(
         provider_lane="local",
         model_id=bom.execution_metadata.model_id,
         payload=payload,
         schema_bound=bom.r0.valid,
-        tools_bound=False,
+        tools_bound=tools_present,
     )
 
 

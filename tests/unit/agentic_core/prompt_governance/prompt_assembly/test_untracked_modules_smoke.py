@@ -587,7 +587,8 @@ class TestL2Handoff:
 
     def test_provider_swap_violates(self):
         r = validate_l2_handoff(**_l2_kwargs(provider_lane_used="openai_chat"))
-        assert "swap_provider_or_model" in r.violations
+        # B7 hardening sub-typed the swap token; accept both forms.
+        assert any(v in {"swap_provider_or_model", "swap_provider_or_model:provider"} for v in r.violations)
 
     def test_extra_tool_violates(self):
         r = validate_l2_handoff(**_l2_kwargs(tools_used=("t1", "t-NEW")))
