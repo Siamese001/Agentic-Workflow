@@ -113,6 +113,26 @@ def run_gauntlet(
 # ---------------------------------------------------------------------------
 
 
+_APPROVAL_PRIORITY: dict[str, int] = {
+    # Lowest = most permissive. The highest priority across all surfaced
+    # reason codes wins the decision. Doctrine 06.7: REJECT is terminal;
+    # HOLD blocks progress until more evidence; REQUIRE_* are actionable
+    # human-loop asks; APPROVE is the only "go" state.
+    "APPROVE": 0,
+    "REQUIRE_SME_REVIEW": 1,
+    "REQUIRE_ROLLBACK_PLAN": 2,
+    "REQUIRE_NARROWER_SCOPE": 3,
+    "REQUIRE_ADR_EXCEPTION": 4,
+    "HOLD_FOR_MORE_EVIDENCE": 5,
+    "REJECT": 6,
+}
+
+
+def _select_decision(*candidates: str) -> str:
+    """Return the highest-priority decision among the candidates."""
+    return max(candidates, key=lambda d: _APPROVAL_PRIORITY.get(d, -1))
+
+
 def decide_approval(
     proposal: DraftProposalPacket,
     *,
@@ -125,41 +145,54 @@ def decide_approval(
     signer_authority_ok: bool,
     rollback_verified: bool,
     blast_radius_accepted: bool,
+    adr_required: bool = False,
+    adr_ref: str | None = None,
 ) -> ApprovalDecisionRecord:
-    """Make the canonical APPROVE / REJECT / HOLD decision for a proposal.
+    """Make the canonical APPROVE / REJECT / HOLD / REQUIRE_* decision.
 
-    All fields are required; doctrine forbids approving without each gate
+    Decision priority (highest wins): REJECT > HOLD > REQUIRE_ADR_EXCEPTION >
+    REQUIRE_NARROWER_SCOPE > REQUIRE_ROLLBACK_PLAN > REQUIRE_SME_REVIEW >
+    APPROVE. All gates are evaluated and surfaced as reason codes regardless
+    of which one wins. Doctrine 06.7 forbids approving without each gate
     explicitly evaluated.
+
+    ``adr_required`` and ``adr_ref`` enable the REQUIRE_ADR_EXCEPTION path
+    per 06.7: an architectural change that touches policy/rubric/guardrail
+    surfaces requires an ADR exception ref; missing one yields the dedicated
+    decision so the user knows precisely what is missing.
     """
     reasons: list[str] = []
     decision = "APPROVE"
 
     if admission.decision != "ADMIT_TO_GAUNTLET":
         reasons.append("PROPOSAL_NOT_ADMITTED")
-        decision = "REJECT"
+        decision = _select_decision(decision, "REJECT")
     if gauntlet.pass_fail_hold_verdict != GAUNTLET_PASS:
         reasons.append("GAUNTLET_FAIL")
-        decision = "REJECT"
+        decision = _select_decision(decision, "REJECT")
     if not eval_freshness_ok:
         reasons.append("STALE_EVAL")
-        decision = "HOLD_FOR_MORE_EVIDENCE"
+        decision = _select_decision(decision, "HOLD_FOR_MORE_EVIDENCE")
     if not calibration_freshness_ok:
         reasons.append("STALE_CALIBRATION")
-        decision = "HOLD_FOR_MORE_EVIDENCE"
+        decision = _select_decision(decision, "HOLD_FOR_MORE_EVIDENCE")
     if not signer_authority_ok:
         reasons.append("INSUFFICIENT_SIGNER_AUTHORITY")
-        decision = "REQUIRE_SME_REVIEW"
+        decision = _select_decision(decision, "REQUIRE_SME_REVIEW")
     if not rollback_verified:
         reasons.append("ROLLBACK_NOT_VERIFIED")
-        decision = "REQUIRE_ROLLBACK_PLAN"
+        decision = _select_decision(decision, "REQUIRE_ROLLBACK_PLAN")
     if not blast_radius_accepted:
         reasons.append("BLAST_RADIUS_NOT_ACCEPTED")
-        decision = "REQUIRE_NARROWER_SCOPE"
+        decision = _select_decision(decision, "REQUIRE_NARROWER_SCOPE")
+    if adr_required and not adr_ref:
+        reasons.append("ADR_EXCEPTION_REQUIRED")
+        decision = _select_decision(decision, "REQUIRE_ADR_EXCEPTION")
     # Content-hash binding: the gauntlet receipt MUST cover the same content
     # the approval decision is being made about. Doctrine 06.8 anti-bypass.
     if gauntlet.proposal_content_hash != proposal_content_hash(proposal):
         reasons.append("CONTENT_HASH_MISMATCH")
-        decision = "REJECT"
+        decision = _select_decision(decision, "REJECT")
     if decision not in APPROVAL_DECISIONS:
         raise GauntletError(f"invalid decision: {decision}")
 
