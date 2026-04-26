@@ -14,7 +14,6 @@ Generated and re-runnable. Do not hand-edit individual contract modules
 (parent.py, enforcement.py, ..., static.py) — re-run
 ``python tools/l5_contracts/generate_contracts.py`` instead.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

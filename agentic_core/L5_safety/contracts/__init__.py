@@ -21,7 +21,6 @@ Sub-modules:
 * ``static`` — outputs from ``00.7`` Static Governance & Structure Drift
 * ``registry`` — name lookup table
 """
-
 from __future__ import annotations
 
 from ._base import (

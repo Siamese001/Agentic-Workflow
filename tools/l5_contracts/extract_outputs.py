@@ -17,21 +17,29 @@ import re
 REPO = pathlib.Path(__file__).resolve().parents[2]
 DOC_ROOT = REPO / "docs" / "reference" / "00_L5_Policy_Plane"
 
-# snake_case suffix pattern (e.g., classification_report, prompt_hash_receipt)
-OUTPUT_SUFFIX_RE = re.compile(
-    r"^[\s]*[\-\*]\s+"
-    r"([a-z][a-z0-9_]*_(?:"
-    r"report|receipt|packet|manifest|log|diff|envelope|result|map|status|ref"
-    r"))\s*$"
+# snake_case suffix pattern, ANYWHERE on a line (not just bullets).
+# Catches names appearing in tables, prose ("emits foo_report"), code
+# fences, payload field references, etc.
+SNAKE_RE = re.compile(
+    r"\b("
+    r"[a-z][a-z0-9_]*_"
+    r"(?:report|receipt|packet|manifest|log|diff|envelope|result|map|status|ref)"
+    r")\b"
 )
 
-# PascalCase pattern (e.g., HITLFreezePacket, OriginTrustManifest)
+# PascalCase pattern, ANYWHERE on a line.
 PASCAL_RE = re.compile(
-    r"^[\s]*[\-\*]\s+"
-    r"([A-Z][A-Za-z0-9]*"
+    r"\b("
+    r"[A-Z][A-Za-z0-9]*"
     r"(?:Packet|Receipt|Report|Manifest|Result|Diff|Envelope|Map|Log|Context|Token)"
-    r")\s*$"
+    r")\b"
 )
+
+# Names to skip even though they shape-match — these are documentation
+# artifacts, not doctrine outputs. Add sparingly and explain each.
+EXCLUDED: frozenset[str] = frozenset({
+    # No exclusions yet — every shape-match is treated as a doctrine name.
+})
 
 
 def extract() -> dict[str, list[str]]:
@@ -39,17 +47,26 @@ def extract() -> dict[str, list[str]]:
 
     docs = sorted(DOC_ROOT.glob("00*.md"))
     out: dict[str, list[str]] = {}
+    # Track first-seen doc for each name to give it a stable home.
+    first_seen: dict[str, str] = {}
+    per_doc: dict[str, set[str]] = {d.name: set() for d in docs}
     for doc in tqdm(docs, desc="Extracting L5 doctrine outputs", unit="doc"):
         text = doc.read_text(encoding="utf-8", errors="replace")
-        names: set[str] = set()
         for line in text.splitlines():
-            m = OUTPUT_SUFFIX_RE.match(line)
-            if m:
-                names.add(m.group(1))
-            m2 = PASCAL_RE.match(line)
-            if m2:
-                names.add(m2.group(1))
-        out[doc.name] = sorted(names)
+            for m in SNAKE_RE.finditer(line):
+                name = m.group(1)
+                if name in EXCLUDED:
+                    continue
+                first_seen.setdefault(name, doc.name)
+                per_doc[first_seen[name]].add(name)
+            for m in PASCAL_RE.finditer(line):
+                name = m.group(1)
+                if name in EXCLUDED:
+                    continue
+                first_seen.setdefault(name, doc.name)
+                per_doc[first_seen[name]].add(name)
+    for d in per_doc:
+        out[d] = sorted(per_doc[d])
     return out
 
 

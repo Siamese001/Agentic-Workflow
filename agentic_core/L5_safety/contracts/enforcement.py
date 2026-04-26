@@ -2,7 +2,7 @@
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.1_L5_Safety_Enforcement_Plane_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.enforcement``
-Generated count: 58 contracts
+Generated count: 72 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
 not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
@@ -10,7 +10,6 @@ and ``_vocab.py`` for the controlled vocabularies.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -189,6 +188,20 @@ class ClassificationReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class ClassificationStatus(L5Status):
+    """L5 doctrine output ``classification_status`` (kind=status).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: classification_status.
+    """
+
+    output_name: ClassVar[str] = "classification_status"
+    output_names: ClassVar[tuple[str, ...]] = ("classification_status",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class ClassifierErrorReport(L5Report):
     """L5 doctrine output ``classifier_error_report`` (kind=report).
 
@@ -245,6 +258,20 @@ class ConfigWithLogicReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class ConnectorScopeViolationReport(L5Report):
+    """L5 doctrine output ``connector_scope_violation_report`` (kind=report).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: connector_scope_violation_report.
+    """
+
+    output_name: ClassVar[str] = "connector_scope_violation_report"
+    output_names: ClassVar[tuple[str, ...]] = ("connector_scope_violation_report",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
 class CriticalRegistryGapReport(L5Report):
     """L5 doctrine output ``critical_registry_gap_report`` (kind=report).
 
@@ -254,6 +281,20 @@ class CriticalRegistryGapReport(L5Report):
 
     output_name: ClassVar[str] = "critical_registry_gap_report"
     output_names: ClassVar[tuple[str, ...]] = ("critical_registry_gap_report",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class DelegationDepthViolationReport(L5Report):
+    """L5 doctrine output ``delegation_depth_violation_report`` (kind=report).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: delegation_depth_violation_report.
+    """
+
+    output_name: ClassVar[str] = "delegation_depth_violation_report"
+    output_names: ClassVar[tuple[str, ...]] = ("delegation_depth_violation_report",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -329,6 +370,34 @@ class DualTagConflictReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class EgressEvidenceStatus(L5Status):
+    """L5 doctrine output ``egress_evidence_status`` (kind=status).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: egress_evidence_status.
+    """
+
+    output_name: ClassVar[str] = "egress_evidence_status"
+    output_names: ClassVar[tuple[str, ...]] = ("egress_evidence_status",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
+class EnforcementReceiptStatus(L5Status):
+    """L5 doctrine output ``enforcement_receipt_status`` (kind=status).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: enforcement_receipt_status.
+    """
+
+    output_name: ClassVar[str] = "enforcement_receipt_status"
+    output_names: ClassVar[tuple[str, ...]] = ("enforcement_receipt_status",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class ExecutionModeReceipt(L5Receipt):
     """L5 doctrine output ``execution_mode_receipt`` (kind=receipt).
 
@@ -340,6 +409,20 @@ class ExecutionModeReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("execution_mode_receipt",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ExecutionModeViolationReport(L5Report):
+    """L5 doctrine output ``execution_mode_violation_report`` (kind=report).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: execution_mode_violation_report.
+    """
+
+    output_name: ClassVar[str] = "execution_mode_violation_report"
+    output_names: ClassVar[tuple[str, ...]] = ("execution_mode_violation_report",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "report"
 
 
 @dataclass(frozen=True, slots=True)
@@ -371,6 +454,20 @@ class GatewayInitReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class GatewayStatus(L5Status):
+    """L5 doctrine output ``gateway_status`` (kind=status).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: gateway_status.
+    """
+
+    output_name: ClassVar[str] = "gateway_status"
+    output_names: ClassVar[tuple[str, ...]] = ("gateway_status",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class HiddenEgressPathReport(L5Report):
     """L5 doctrine output ``HiddenEgressPathReport`` (kind=report).
 
@@ -379,10 +476,7 @@ class HiddenEgressPathReport(L5Report):
     """
 
     output_name: ClassVar[str] = "HiddenEgressPathReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "HiddenEgressPathReport",
-        "hidden_egress_path_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("HiddenEgressPathReport", "hidden_egress_path_report",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -466,10 +560,7 @@ class ModelEgressReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "ModelEgressReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ModelEgressReceipt",
-        "model_egress_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ModelEgressReceipt", "model_egress_receipt",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
@@ -503,6 +594,20 @@ class ModelScopeReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class ModelScopeViolationReport(L5Report):
+    """L5 doctrine output ``model_scope_violation_report`` (kind=report).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: model_scope_violation_report.
+    """
+
+    output_name: ClassVar[str] = "model_scope_violation_report"
+    output_names: ClassVar[tuple[str, ...]] = ("model_scope_violation_report",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
 class ModelSubstitutionReport(L5Report):
     """L5 doctrine output ``ModelSubstitutionReport`` (kind=report).
 
@@ -511,10 +616,7 @@ class ModelSubstitutionReport(L5Report):
     """
 
     output_name: ClassVar[str] = "ModelSubstitutionReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ModelSubstitutionReport",
-        "model_substitution_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ModelSubstitutionReport", "model_substitution_report",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -598,10 +700,7 @@ class ProviderLaneReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "ProviderLaneReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ProviderLaneReceipt",
-        "provider_lane_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ProviderLaneReceipt", "provider_lane_receipt",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
@@ -646,6 +745,34 @@ class RegistryFreezeReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("registry_freeze_receipt",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class RegistryIntegrityViolationReport(L5Report):
+    """L5 doctrine output ``registry_integrity_violation_report`` (kind=report).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: registry_integrity_violation_report.
+    """
+
+    output_name: ClassVar[str] = "registry_integrity_violation_report"
+    output_names: ClassVar[tuple[str, ...]] = ("registry_integrity_violation_report",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class RegistryStatus(L5Status):
+    """L5 doctrine output ``registry_status`` (kind=status).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: registry_status.
+    """
+
+    output_name: ClassVar[str] = "registry_status"
+    output_names: ClassVar[tuple[str, ...]] = ("registry_status",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -747,6 +874,20 @@ class RuntimeL5EnforcementReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class SafeExtractionReceipt(L5Receipt):
+    """L5 doctrine output ``safe_extraction_receipt`` (kind=receipt).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: safe_extraction_receipt.
+    """
+
+    output_name: ClassVar[str] = "safe_extraction_receipt"
+    output_names: ClassVar[tuple[str, ...]] = ("safe_extraction_receipt",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
 class SandboxEnvelope(L5Envelope):
     """L5 doctrine output ``sandbox_envelope`` (kind=envelope).
 
@@ -775,6 +916,20 @@ class SandboxScopeReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class SanitizedPromptRef(L5Ref):
+    """L5 doctrine output ``sanitized_prompt_ref`` (kind=ref).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: sanitized_prompt_ref.
+    """
+
+    output_name: ClassVar[str] = "sanitized_prompt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("sanitized_prompt_ref",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class SovereignKernelIntegrityReport(L5Report):
     """L5 doctrine output ``sovereign_kernel_integrity_report`` (kind=report).
 
@@ -786,6 +941,20 @@ class SovereignKernelIntegrityReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("sovereign_kernel_integrity_report",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class StructureStatus(L5Status):
+    """L5 doctrine output ``structure_status`` (kind=status).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: structure_status.
+    """
+
+    output_name: ClassVar[str] = "structure_status"
+    output_names: ClassVar[tuple[str, ...]] = ("structure_status",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -812,6 +981,20 @@ class TestPlacementReport(L5Report):
 
     output_name: ClassVar[str] = "test_placement_report"
     output_names: ClassVar[tuple[str, ...]] = ("test_placement_report",)
+    source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
+    output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class ToolScopeViolationReport(L5Report):
+    """L5 doctrine output ``tool_scope_violation_report`` (kind=report).
+
+    Source doctrine: ``00.1_L5_Safety_Enforcement_Plane_detailed.md``.
+    Canonical doctrine names: tool_scope_violation_report.
+    """
+
+    output_name: ClassVar[str] = "tool_scope_violation_report"
+    output_names: ClassVar[tuple[str, ...]] = ("tool_scope_violation_report",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -853,10 +1036,7 @@ class WaiverRequiredReport(L5Report):
     """
 
     output_name: ClassVar[str] = "WaiverRequiredReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "WaiverRequiredReport",
-        "waiver_required_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("WaiverRequiredReport", "waiver_required_report",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -873,19 +1053,26 @@ __all__ = [
     "CapabilityScopeReceipt",
     "ClassificationCacheReport",
     "ClassificationReport",
+    "ClassificationStatus",
     "ClassifierErrorReport",
     "CompileTimeL5EnforcementReport",
     "ComponentStaticRegressionReport",
     "ConfigWithLogicReport",
+    "ConnectorScopeViolationReport",
     "CriticalRegistryGapReport",
+    "DelegationDepthViolationReport",
     "DelegationScopeReceipt",
     "DirectBypassAbsenceReceipt",
     "DirectSdkBypassReport",
     "DirectWritePathReport",
     "DualTagConflictReport",
+    "EgressEvidenceStatus",
+    "EnforcementReceiptStatus",
     "ExecutionModeReceipt",
+    "ExecutionModeViolationReport",
     "GatewayAuditLog",
     "GatewayInitReceipt",
+    "GatewayStatus",
     "HiddenEgressPathReport",
     "HybridAuthoritySmellReport",
     "ImportBoundaryReport",
@@ -895,6 +1082,7 @@ __all__ = [
     "ModelEgressReceipt",
     "ModelResolutionReceipt",
     "ModelScopeReceipt",
+    "ModelScopeViolationReport",
     "ModelSubstitutionReport",
     "PathValidationReport",
     "PromptHashReceipt",
@@ -905,6 +1093,8 @@ __all__ = [
     "ProviderResolutionMapReceipt",
     "RegistryDigestReceipt",
     "RegistryFreezeReceipt",
+    "RegistryIntegrityViolationReport",
+    "RegistryStatus",
     "RegistrySubstitutionReport",
     "RegistryValidationReport",
     "ReplayBindingReceipt",
@@ -912,11 +1102,15 @@ __all__ = [
     "ReplayModeReceipt",
     "RootProtectionReport",
     "RuntimeL5EnforcementReceipt",
+    "SafeExtractionReceipt",
     "SandboxEnvelope",
     "SandboxScopeReceipt",
+    "SanitizedPromptRef",
     "SovereignKernelIntegrityReport",
+    "StructureStatus",
     "StructureValidationReport",
     "TestPlacementReport",
+    "ToolScopeViolationReport",
     "TypeSsotReport",
     "UnknownClassificationReport",
     "WaiverRequiredReport",

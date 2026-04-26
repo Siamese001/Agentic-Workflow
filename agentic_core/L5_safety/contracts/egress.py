@@ -2,7 +2,7 @@
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.5_L5_Egress_and_Provider_Governance_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.egress``
-Generated count: 108 contracts
+Generated count: 124 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
 not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
@@ -10,7 +10,6 @@ and ``_vocab.py`` for the controlled vocabularies.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -113,12 +112,37 @@ class ConnectorEgressReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "ConnectorEgressReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ConnectorEgressReceipt",
-        "connector_egress_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ConnectorEgressReceipt", "connector_egress_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ConnectorEgressReceiptRef(L5Ref):
+    """L5 doctrine output ``connector_egress_receipt_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: connector_egress_receipt_ref.
+    """
+
+    output_name: ClassVar[str] = "connector_egress_receipt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("connector_egress_receipt_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ConnectorEgressStatus(L5Status):
+    """L5 doctrine output ``connector_egress_status`` (kind=status).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: connector_egress_status.
+    """
+
+    output_name: ClassVar[str] = "connector_egress_status"
+    output_names: ClassVar[tuple[str, ...]] = ("connector_egress_status",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -298,12 +322,23 @@ class CredentialScopeReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "CredentialScopeReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "CredentialScopeReceipt",
-        "credential_scope_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("CredentialScopeReceipt", "credential_scope_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class CredentialScopeReceiptRef(L5Ref):
+    """L5 doctrine output ``credential_scope_receipt_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: credential_scope_receipt_ref.
+    """
+
+    output_name: ClassVar[str] = "credential_scope_receipt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("credential_scope_receipt_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
 
 
 @dataclass(frozen=True, slots=True)
@@ -318,6 +353,20 @@ class CredentialScopeRef(L5Ref):
     output_names: ClassVar[tuple[str, ...]] = ("credential_scope_ref",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class CredentialScopeStatus(L5Status):
+    """L5 doctrine output ``credential_scope_status`` (kind=status).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: credential_scope_status.
+    """
+
+    output_name: ClassVar[str] = "credential_scope_status"
+    output_names: ClassVar[tuple[str, ...]] = ("credential_scope_status",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -441,10 +490,7 @@ class EgressAuditReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "EgressAuditReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "EgressAuditReceipt",
-        "egress_audit_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("EgressAuditReceipt", "egress_audit_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
@@ -486,10 +532,7 @@ class EgressCertificationReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "EgressCertificationReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "EgressCertificationReceipt",
-        "egress_certification_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("EgressCertificationReceipt", "egress_certification_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
@@ -601,10 +644,7 @@ class EgressReplayReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "EgressReplayReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "EgressReplayReceipt",
-        "egress_replay_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("EgressReplayReceipt", "egress_replay_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
@@ -792,6 +832,20 @@ class FallbackPolicyReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class FallbackReceiptRef(L5Ref):
+    """L5 doctrine output ``fallback_receipt_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: fallback_receipt_ref.
+    """
+
+    output_name: ClassVar[str] = "fallback_receipt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("fallback_receipt_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class FallbackRecertificationRequiredReport(L5Report):
     """L5 doctrine output ``fallback_recertification_required_report`` (kind=report).
 
@@ -803,6 +857,20 @@ class FallbackRecertificationRequiredReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("fallback_recertification_required_report",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class FallbackStatus(L5Status):
+    """L5 doctrine output ``fallback_status`` (kind=status).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: fallback_status.
+    """
+
+    output_name: ClassVar[str] = "fallback_status"
+    output_names: ClassVar[tuple[str, ...]] = ("fallback_status",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -904,6 +972,34 @@ class ModelDirectBypassReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class ModelEgressReceiptRef(L5Ref):
+    """L5 doctrine output ``model_egress_receipt_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: model_egress_receipt_ref.
+    """
+
+    output_name: ClassVar[str] = "model_egress_receipt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("model_egress_receipt_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ModelEgressStatus(L5Status):
+    """L5 doctrine output ``model_egress_status`` (kind=status).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: model_egress_status.
+    """
+
+    output_name: ClassVar[str] = "model_egress_status"
+    output_names: ClassVar[tuple[str, ...]] = ("model_egress_status",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class ModelReplayReceipt(L5Receipt):
     """L5 doctrine output ``model_replay_receipt`` (kind=receipt).
 
@@ -974,6 +1070,20 @@ class NetworkDestinationReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class NetworkDestinationRef(L5Ref):
+    """L5 doctrine output ``network_destination_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: network_destination_ref.
+    """
+
+    output_name: ClassVar[str] = "network_destination_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("network_destination_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class NetworkEgressReceipt(L5Receipt):
     """L5 doctrine output ``NetworkEgressReceipt`` (kind=receipt).
 
@@ -982,12 +1092,37 @@ class NetworkEgressReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "NetworkEgressReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "NetworkEgressReceipt",
-        "network_egress_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("NetworkEgressReceipt", "network_egress_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class NetworkEgressReceiptRef(L5Ref):
+    """L5 doctrine output ``network_egress_receipt_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: network_egress_receipt_ref.
+    """
+
+    output_name: ClassVar[str] = "network_egress_receipt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("network_egress_receipt_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class NetworkEgressStatus(L5Status):
+    """L5 doctrine output ``network_egress_status`` (kind=status).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: network_egress_status.
+    """
+
+    output_name: ClassVar[str] = "network_egress_status"
+    output_names: ClassVar[tuple[str, ...]] = ("network_egress_status",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1055,10 +1190,7 @@ class NoSilentFallbackReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "NoSilentFallbackReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "NoSilentFallbackReceipt",
-        "no_silent_fallback_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("NoSilentFallbackReceipt", "no_silent_fallback_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
@@ -1148,6 +1280,20 @@ class PayloadSecretExposureReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class PreviousCertificationRef(L5Ref):
+    """L5 doctrine output ``previous_certification_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: previous_certification_ref.
+    """
+
+    output_name: ClassVar[str] = "previous_certification_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("previous_certification_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class PromptArtifactRef(L5Ref):
     """L5 doctrine output ``prompt_artifact_ref`` (kind=ref).
 
@@ -1159,6 +1305,34 @@ class PromptArtifactRef(L5Ref):
     output_names: ClassVar[tuple[str, ...]] = ("prompt_artifact_ref",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ProviderLaneReceiptRef(L5Ref):
+    """L5 doctrine output ``provider_lane_receipt_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: provider_lane_receipt_ref.
+    """
+
+    output_name: ClassVar[str] = "provider_lane_receipt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("provider_lane_receipt_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ProviderLaneStatus(L5Status):
+    """L5 doctrine output ``provider_lane_status`` (kind=status).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: provider_lane_status.
+    """
+
+    output_name: ClassVar[str] = "provider_lane_status"
+    output_names: ClassVar[tuple[str, ...]] = ("provider_lane_status",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1198,10 +1372,7 @@ class ProviderSubstitutionReport(L5Report):
     """
 
     output_name: ClassVar[str] = "ProviderSubstitutionReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ProviderSubstitutionReport",
-        "provider_substitution_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ProviderSubstitutionReport", "provider_substitution_report",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -1467,12 +1638,37 @@ class ToolEgressReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "ToolEgressReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ToolEgressReceipt",
-        "tool_egress_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ToolEgressReceipt", "tool_egress_receipt",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ToolEgressReceiptRef(L5Ref):
+    """L5 doctrine output ``tool_egress_receipt_ref`` (kind=ref).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: tool_egress_receipt_ref.
+    """
+
+    output_name: ClassVar[str] = "tool_egress_receipt_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("tool_egress_receipt_ref",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ToolEgressStatus(L5Status):
+    """L5 doctrine output ``tool_egress_status`` (kind=status).
+
+    Source doctrine: ``00.5_L5_Egress_and_Provider_Governance_detailed.md``.
+    Canonical doctrine names: tool_egress_status.
+    """
+
+    output_name: ClassVar[str] = "tool_egress_status"
+    output_names: ClassVar[tuple[str, ...]] = ("tool_egress_status",)
+    source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1580,6 +1776,8 @@ __all__ = [
     "CertificationStatus",
     "ConnectorAuditReceipt",
     "ConnectorEgressReceipt",
+    "ConnectorEgressReceiptRef",
+    "ConnectorEgressStatus",
     "ConnectorGrantGapReport",
     "ConnectorGrantRef",
     "ConnectorReplayReceipt",
@@ -1593,7 +1791,9 @@ __all__ = [
     "CredentialPolicyReceipt",
     "CredentialRedactionReceipt",
     "CredentialScopeReceipt",
+    "CredentialScopeReceiptRef",
     "CredentialScopeRef",
+    "CredentialScopeStatus",
     "CredentialSubstitutionReport",
     "CriticalEgressGapReport",
     "DataMinimizationReceipt",
@@ -1627,7 +1827,9 @@ __all__ = [
     "ExternalCommitScopeReceipt",
     "FallbackCandidateReceipt",
     "FallbackPolicyReceipt",
+    "FallbackReceiptRef",
     "FallbackRecertificationRequiredReport",
+    "FallbackStatus",
     "HardcodedModelLiteralReport",
     "HiddenEgressCertificationImpactReport",
     "IrreversibleActionEvidenceReport",
@@ -1635,12 +1837,17 @@ __all__ = [
     "ModelAuditReceipt",
     "ModelCredentialExposureReport",
     "ModelDirectBypassReport",
+    "ModelEgressReceiptRef",
+    "ModelEgressStatus",
     "ModelReplayReceipt",
     "ModelResolutionMapReceipt",
     "NetworkAuditReceipt",
     "NetworkBroadScopeReport",
     "NetworkDestinationReceipt",
+    "NetworkDestinationRef",
     "NetworkEgressReceipt",
+    "NetworkEgressReceiptRef",
+    "NetworkEgressStatus",
     "NetworkMethodReceipt",
     "NetworkRegionReceipt",
     "NetworkReplayReceipt",
@@ -1652,7 +1859,10 @@ __all__ = [
     "PayloadHashReceipt",
     "PayloadScopeReceipt",
     "PayloadSecretExposureReport",
+    "PreviousCertificationRef",
     "PromptArtifactRef",
+    "ProviderLaneReceiptRef",
+    "ProviderLaneStatus",
     "ProviderRegistryReceipt",
     "ProviderSdkBypassStaticReport",
     "ProviderSubstitutionReport",
@@ -1675,6 +1885,8 @@ __all__ = [
     "ToolAuditReceipt",
     "ToolBroadScopeReport",
     "ToolEgressReceipt",
+    "ToolEgressReceiptRef",
+    "ToolEgressStatus",
     "ToolReplayReceipt",
     "ToolSchemaBindingReceipt",
     "UnauthorizedNetworkClientEvidenceRef",

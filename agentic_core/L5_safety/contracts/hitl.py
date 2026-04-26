@@ -2,7 +2,7 @@
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.hitl``
-Generated count: 75 contracts
+Generated count: 88 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
 not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
@@ -10,7 +10,6 @@ and ``_vocab.py`` for the controlled vocabularies.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -88,6 +87,20 @@ class BootHitlGovernanceReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("boot_hitl_governance_report",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class CertificationScopeRef(L5Ref):
+    """L5 doctrine output ``certification_scope_ref`` (kind=ref).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: certification_scope_ref.
+    """
+
+    output_name: ClassVar[str] = "certification_scope_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("certification_scope_ref",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
 
 
 @dataclass(frozen=True, slots=True)
@@ -231,6 +244,20 @@ class HitlAuditGapReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class HitlAuditStatus(L5Status):
+    """L5 doctrine output ``hitl_audit_status`` (kind=status).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: hitl_audit_status.
+    """
+
+    output_name: ClassVar[str] = "hitl_audit_status"
+    output_names: ClassVar[tuple[str, ...]] = ("hitl_audit_status",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class HitlFreezeGapReport(L5Report):
     """L5 doctrine output ``hitl_freeze_gap_report`` (kind=report).
 
@@ -256,6 +283,20 @@ class HitlFreezeReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("hitl_freeze_receipt",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class HitlPacketStatus(L5Status):
+    """L5 doctrine output ``hitl_packet_status`` (kind=status).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: hitl_packet_status.
+    """
+
+    output_name: ClassVar[str] = "hitl_packet_status"
+    output_names: ClassVar[tuple[str, ...]] = ("hitl_packet_status",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -393,12 +434,23 @@ class HumanInputOriginReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "HumanInputOriginReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "HumanInputOriginReceipt",
-        "human_input_origin_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("HumanInputOriginReceipt", "human_input_origin_receipt",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class HumanInputStatus(L5Status):
+    """L5 doctrine output ``human_input_status`` (kind=status).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: human_input_status.
+    """
+
+    output_name: ClassVar[str] = "human_input_status"
+    output_names: ClassVar[tuple[str, ...]] = ("human_input_status",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -441,6 +493,20 @@ class HumanOriginGapReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("human_origin_gap_report",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class HumanOriginStatus(L5Status):
+    """L5 doctrine output ``human_origin_status`` (kind=status).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: human_origin_status.
+    """
+
+    output_name: ClassVar[str] = "human_origin_status"
+    output_names: ClassVar[tuple[str, ...]] = ("human_origin_status",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -724,6 +790,20 @@ class HumanScopeGapReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class HumanScopeStatus(L5Status):
+    """L5 doctrine output ``human_scope_status`` (kind=status).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: human_scope_status.
+    """
+
+    output_name: ClassVar[str] = "human_scope_status"
+    output_names: ClassVar[tuple[str, ...]] = ("human_scope_status",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class HumanSourceOriginGapReport(L5Report):
     """L5 doctrine output ``human_source_origin_gap_report`` (kind=report).
 
@@ -780,6 +860,20 @@ class L5ReclearanceRequiredReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class ModifiedPacketRef(L5Ref):
+    """L5 doctrine output ``modified_packet_ref`` (kind=ref).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: modified_packet_ref.
+    """
+
+    output_name: ClassVar[str] = "modified_packet_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("modified_packet_ref",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class OldNewScopeDiff(L5Diff):
     """L5 doctrine output ``old_new_scope_diff`` (kind=diff).
 
@@ -819,6 +913,34 @@ class ProhibitedResponseTypeReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("prohibited_response_type_receipt",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ProposedActionRef(L5Ref):
+    """L5 doctrine output ``proposed_action_ref`` (kind=ref).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: proposed_action_ref.
+    """
+
+    output_name: ClassVar[str] = "proposed_action_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("proposed_action_ref",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ProposedStateDiffRef(L5Ref):
+    """L5 doctrine output ``proposed_state_diff_ref`` (kind=ref).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: proposed_state_diff_ref.
+    """
+
+    output_name: ClassVar[str] = "proposed_state_diff_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("proposed_state_diff_ref",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
 
 
 @dataclass(frozen=True, slots=True)
@@ -906,6 +1028,20 @@ class ReclearanceRuleReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class ReclearanceStatus(L5Status):
+    """L5 doctrine output ``reclearance_status`` (kind=status).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: reclearance_status.
+    """
+
+    output_name: ClassVar[str] = "reclearance_status"
+    output_names: ClassVar[tuple[str, ...]] = ("reclearance_status",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class ReclearanceStatusReport(L5Report):
     """L5 doctrine output ``reclearance_status_report`` (kind=report).
 
@@ -928,12 +1064,23 @@ class ResumeAuthorityReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "ResumeAuthorityReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ResumeAuthorityReceipt",
-        "resume_authority_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ResumeAuthorityReceipt", "resume_authority_receipt",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ResumeAuthorityStatus(L5Status):
+    """L5 doctrine output ``resume_authority_status`` (kind=status).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: resume_authority_status.
+    """
+
+    output_name: ClassVar[str] = "resume_authority_status"
+    output_names: ClassVar[tuple[str, ...]] = ("resume_authority_status",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1004,6 +1151,20 @@ class ReviewerRoleMapReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("reviewer_role_map_receipt",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ReviewerRoleRef(L5Ref):
+    """L5 doctrine output ``reviewer_role_ref`` (kind=ref).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: reviewer_role_ref.
+    """
+
+    output_name: ClassVar[str] = "reviewer_role_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("reviewer_role_ref",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1090,11 +1251,26 @@ class StaticHitlGovernanceReport(L5Report):
     output_kind: ClassVar[str] = "report"
 
 
+@dataclass(frozen=True, slots=True)
+class UpdatedPacketRef(L5Ref):
+    """L5 doctrine output ``updated_packet_ref`` (kind=ref).
+
+    Source doctrine: ``00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md``.
+    Canonical doctrine names: updated_packet_ref.
+    """
+
+    output_name: ClassVar[str] = "updated_packet_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("updated_packet_ref",)
+    source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
 __all__ = [
     "AllowedResponseTypeReceipt",
     "AuthorityFreezeReceipt",
     "AuthorityImpactingHumanDiffReport",
     "BootHitlGovernanceReport",
+    "CertificationScopeRef",
     "CriticalHitlGapReport",
     "DirectHumanWritePathReport",
     "FreezeReplayBindingReceipt",
@@ -1105,8 +1281,10 @@ __all__ = [
     "HITLFreezePacket",
     "HardConstraintHumanOverrideReport",
     "HitlAuditGapReport",
+    "HitlAuditStatus",
     "HitlFreezeGapReport",
     "HitlFreezeReceipt",
+    "HitlPacketStatus",
     "HitlStaticGapRefMap",
     "HitlStaticGapReport",
     "HitlTemplateGovernanceReadinessReport",
@@ -1117,9 +1295,11 @@ __all__ = [
     "HumanDiffRef",
     "HumanDiffReplayReceipt",
     "HumanInputOriginReceipt",
+    "HumanInputStatus",
     "HumanModificationDiff",
     "HumanModificationDiffReceipt",
     "HumanOriginGapReport",
+    "HumanOriginStatus",
     "HumanOverrideAttemptReport",
     "HumanOverrideLimitReceipt",
     "HumanPolicyExceptionRequestReport",
@@ -1140,30 +1320,38 @@ __all__ = [
     "HumanReviewReplayReceipt",
     "HumanReviewTemplateBoundaryReport",
     "HumanScopeGapReport",
+    "HumanScopeStatus",
     "HumanSourceOriginGapReport",
     "HumanSourceValidationNeededReceipt",
     "L5ReclearanceReceipt",
     "L5ReclearanceRequiredReceipt",
+    "ModifiedPacketRef",
     "OldNewScopeDiff",
     "OperatorOverridePolicyReport",
     "ProhibitedResponseTypeReceipt",
+    "ProposedActionRef",
+    "ProposedStateDiffRef",
     "ReClearanceRequiredReceipt",
     "ReClearanceStatus",
     "ReclearanceGapReport",
     "ReclearanceReceiptRef",
     "ReclearanceRequiredReceipt",
     "ReclearanceRuleReceipt",
+    "ReclearanceStatus",
     "ReclearanceStatusReport",
     "ResumeAuthorityReceipt",
+    "ResumeAuthorityStatus",
     "ResumeGapReport",
     "ResumeReplayReceipt",
     "ResumeScopeReceipt",
     "ResumedPacketRef",
     "ReviewerRoleMapReceipt",
+    "ReviewerRoleRef",
     "ReviewerVisibleScopeReceipt",
     "RuntimeHitlGapReport",
     "RuntimeHitlGovernanceReceipt",
     "ScopeImpactingHumanDiffReport",
     "StaticHitlEvidenceIntakeReceipt",
     "StaticHitlGovernanceReport",
+    "UpdatedPacketRef",
 ]

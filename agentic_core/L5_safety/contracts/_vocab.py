@@ -3,7 +3,6 @@
 These are evidence/certification terms only. They never represent runtime
 dispositions (per parent ``00_L5_Governance_Safety_detailed.md``).
 """
-
 from __future__ import annotations
 
 from enum import Enum

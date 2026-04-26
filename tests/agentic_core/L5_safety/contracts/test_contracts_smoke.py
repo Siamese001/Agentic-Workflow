@@ -27,7 +27,7 @@ from agentic_core.L5_safety.contracts import (
     get_contract,
 )
 
-EXPECTED_CONTRACT_COUNT = 736
+EXPECTED_CONTRACT_COUNT = 819
 COMMON_KWARGS: dict[str, Any] = {
     "run_id": "smoke-run",
     "trace_id": "smoke-trace",

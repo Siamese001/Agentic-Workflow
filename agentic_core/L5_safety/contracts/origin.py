@@ -2,7 +2,7 @@
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.origin``
-Generated count: 113 contracts
+Generated count: 123 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
 not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
@@ -10,7 +10,6 @@ and ``_vocab.py`` for the controlled vocabularies.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -32,6 +31,20 @@ from ._base import (
     L5Context,
     L5Token,
 )
+
+
+@dataclass(frozen=True, slots=True)
+class AuthorityAttemptStatus(L5Status):
+    """L5 doctrine output ``authority_attempt_status`` (kind=status).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: authority_attempt_status.
+    """
+
+    output_name: ClassVar[str] = "authority_attempt_status"
+    output_names: ClassVar[tuple[str, ...]] = ("authority_attempt_status",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -119,6 +132,20 @@ class BoundaryTransitionReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class CitationOrSpanRef(L5Ref):
+    """L5 doctrine output ``citation_or_span_ref`` (kind=ref).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: citation_or_span_ref.
+    """
+
+    output_name: ClassVar[str] = "citation_or_span_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("citation_or_span_ref",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class ConnectorOriginPolicyReport(L5Report):
     """L5 doctrine output ``connector_origin_policy_report`` (kind=report).
 
@@ -158,6 +185,20 @@ class ContentAuthorityIntegrityReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("content_authority_integrity_report",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class ContentBoundaryStatus(L5Status):
+    """L5 doctrine output ``content_boundary_status`` (kind=status).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: content_boundary_status.
+    """
+
+    output_name: ClassVar[str] = "content_boundary_status"
+    output_names: ClassVar[tuple[str, ...]] = ("content_boundary_status",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -399,6 +440,34 @@ class HumanReviewOriginGapReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class HumanReviewRef(L5Ref):
+    """L5 doctrine output ``human_review_ref`` (kind=ref).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: human_review_ref.
+    """
+
+    output_name: ClassVar[str] = "human_review_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("human_review_ref",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class InstructionBoundaryStatus(L5Status):
+    """L5 doctrine output ``instruction_boundary_status`` (kind=status).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: instruction_boundary_status.
+    """
+
+    output_name: ClassVar[str] = "instruction_boundary_status"
+    output_names: ClassVar[tuple[str, ...]] = ("instruction_boundary_status",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class InstructionDataBoundaryReceipt(L5Receipt):
     """L5 doctrine output ``instruction_data_boundary_receipt`` (kind=receipt).
 
@@ -452,6 +521,20 @@ class ModelOutputBoundaryReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("model_output_boundary_receipt",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ModelOutputRef(L5Ref):
+    """L5 doctrine output ``model_output_ref`` (kind=ref).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: model_output_ref.
+    """
+
+    output_name: ClassVar[str] = "model_output_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("model_output_ref",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "ref"
 
 
 @dataclass(frozen=True, slots=True)
@@ -553,6 +636,20 @@ class OriginLabelMap(L5Map):
 
 
 @dataclass(frozen=True, slots=True)
+class OriginLabelStatus(L5Status):
+    """L5 doctrine output ``origin_label_status`` (kind=status).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: origin_label_status.
+    """
+
+    output_name: ClassVar[str] = "origin_label_status"
+    output_names: ClassVar[tuple[str, ...]] = ("origin_label_status",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class OriginManifestGapReport(L5Report):
     """L5 doctrine output ``origin_manifest_gap_report`` (kind=report).
 
@@ -595,20 +692,17 @@ class OriginManifestReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
-class OriginTrustManifest(L5Manifest):
-    """L5 doctrine output ``OriginTrustManifest`` (kind=manifest).
+class OriginManifestStatus(L5Status):
+    """L5 doctrine output ``origin_manifest_status`` (kind=status).
 
     Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
-    Canonical doctrine names: OriginTrustManifest, origin_trust_manifest.
+    Canonical doctrine names: origin_manifest_status.
     """
 
-    output_name: ClassVar[str] = "OriginTrustManifest"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "OriginTrustManifest",
-        "origin_trust_manifest",
-    )
+    output_name: ClassVar[str] = "origin_manifest_status"
+    output_names: ClassVar[tuple[str, ...]] = ("origin_manifest_status",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
-    output_kind: ClassVar[str] = "manifest"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -635,6 +729,20 @@ class OutputSchemaRef(L5Ref):
 
     output_name: ClassVar[str] = "output_schema_ref"
     output_names: ClassVar[tuple[str, ...]] = ("output_schema_ref",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ParentArtifactRef(L5Ref):
+    """L5 doctrine output ``parent_artifact_ref`` (kind=ref).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: parent_artifact_ref.
+    """
+
+    output_name: ClassVar[str] = "parent_artifact_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("parent_artifact_ref",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
@@ -763,6 +871,34 @@ class PromptTemplateBoundaryReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("prompt_template_boundary_report",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class ProposedDiffRef(L5Ref):
+    """L5 doctrine output ``proposed_diff_ref`` (kind=ref).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: proposed_diff_ref.
+    """
+
+    output_name: ClassVar[str] = "proposed_diff_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("proposed_diff_ref",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ProposedStateDiff(L5Diff):
+    """L5 doctrine output ``proposed_state_diff`` (kind=diff).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: proposed_state_diff.
+    """
+
+    output_name: ClassVar[str] = "proposed_state_diff"
+    output_names: ClassVar[tuple[str, ...]] = ("proposed_state_diff",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "diff"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1088,20 +1224,6 @@ class SafeExtractionPolicyReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
-class SafeExtractionReceipt(L5Receipt):
-    """L5 doctrine output ``safe_extraction_receipt`` (kind=receipt).
-
-    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
-    Canonical doctrine names: safe_extraction_receipt.
-    """
-
-    output_name: ClassVar[str] = "safe_extraction_receipt"
-    output_names: ClassVar[tuple[str, ...]] = ("safe_extraction_receipt",)
-    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
-    output_kind: ClassVar[str] = "receipt"
-
-
-@dataclass(frozen=True, slots=True)
 class SafeExtractionReceiptRef(L5Ref):
     """L5 doctrine output ``safe_extraction_receipt_ref`` (kind=ref).
 
@@ -1349,6 +1471,20 @@ class SupportTargetRef(L5Ref):
 
     output_name: ClassVar[str] = "support_target_ref"
     output_names: ClassVar[tuple[str, ...]] = ("support_target_ref",)
+    source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class ToolInvocationRef(L5Ref):
+    """L5 doctrine output ``tool_invocation_ref`` (kind=ref).
+
+    Source doctrine: ``00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md``.
+    Canonical doctrine names: tool_invocation_ref.
+    """
+
+    output_name: ClassVar[str] = "tool_invocation_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("tool_invocation_ref",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "ref"
 
@@ -1620,15 +1756,18 @@ class UserTurnBoundaryReceipt(L5Receipt):
 
 
 __all__ = [
+    "AuthorityAttemptStatus",
     "AuthorityLabelMap",
     "AuthorityOverrideAttemptReport",
     "AuthoritySmugglingReport",
     "BootOriginTrustReport",
     "BoundaryRuleReceipt",
     "BoundaryTransitionReport",
+    "CitationOrSpanRef",
     "ConnectorOriginPolicyReport",
     "ContentAuthorityHierarchyReceipt",
     "ContentAuthorityIntegrityReport",
+    "ContentBoundaryStatus",
     "CredentialLikePayloadReport",
     "CriticalOriginTrustGapReport",
     "CrossPrincipalContentBoundaryReport",
@@ -1646,10 +1785,13 @@ __all__ = [
     "HumanReclearanceRequiredReceipt",
     "HumanReviewBoundaryReceipt",
     "HumanReviewOriginGapReport",
+    "HumanReviewRef",
+    "InstructionBoundaryStatus",
     "InstructionDataBoundaryReceipt",
     "LowerAuthorityOverwriteReport",
     "ModelAuthorityAttemptReport",
     "ModelOutputBoundaryReceipt",
+    "ModelOutputRef",
     "ModelToolProposalBoundaryReport",
     "ModelWriteProposalBoundaryReport",
     "NoUntrustedAuthorityReceipt",
@@ -1657,12 +1799,14 @@ __all__ = [
     "OriginLabelCatalogReceipt",
     "OriginLabelConflictReport",
     "OriginLabelMap",
+    "OriginLabelStatus",
     "OriginManifestGapReport",
     "OriginManifestHashReceipt",
     "OriginManifestReceipt",
-    "OriginTrustManifest",
+    "OriginManifestStatus",
     "OriginTrustStaticReadinessReport",
     "OutputSchemaRef",
+    "ParentArtifactRef",
     "PolicyCompatibilityStatus",
     "PrincipalChainRef",
     "PriorArtifactBoundaryReceipt",
@@ -1672,6 +1816,8 @@ __all__ = [
     "PriorPacketRef",
     "PromptLikeContentReport",
     "PromptTemplateBoundaryReport",
+    "ProposedDiffRef",
+    "ProposedStateDiff",
     "QuarantineFailureReport",
     "QuarantineMap",
     "QuarantinePolicyReceipt",
@@ -1695,7 +1841,6 @@ __all__ = [
     "SafeExtractionFailureReport",
     "SafeExtractionMap",
     "SafeExtractionPolicyReceipt",
-    "SafeExtractionReceipt",
     "SafeExtractionReceiptRef",
     "SafeExtractionStatus",
     "SandboxEnvelopeRef",
@@ -1714,6 +1859,7 @@ __all__ = [
     "StaticOriginTrustGapRefMap",
     "StaticOriginTrustReport",
     "SupportTargetRef",
+    "ToolInvocationRef",
     "ToolOutputBoundaryReceipt",
     "ToolOutputInstructionAttemptReport",
     "ToolOutputQuarantineReport",

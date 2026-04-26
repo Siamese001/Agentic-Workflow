@@ -2,7 +2,7 @@
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.authority``
-Generated count: 130 contracts
+Generated count: 142 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
 not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
@@ -10,7 +10,6 @@ and ``_vocab.py`` for the controlled vocabularies.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -203,6 +202,20 @@ class AuthoritySourceMap(L5Map):
 
 
 @dataclass(frozen=True, slots=True)
+class BlueprintBindingStatus(L5Status):
+    """L5 doctrine output ``blueprint_binding_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: blueprint_binding_status.
+    """
+
+    output_name: ClassVar[str] = "blueprint_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("blueprint_binding_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class BlueprintHashReceipt(L5Receipt):
     """L5 doctrine output ``blueprint_hash_receipt`` (kind=receipt).
 
@@ -312,6 +325,20 @@ class CapabilityGapReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("capability_gap_report",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class CapabilityScopeStatus(L5Status):
+    """L5 doctrine output ``capability_scope_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: capability_scope_status.
+    """
+
+    output_name: ClassVar[str] = "capability_scope_status"
+    output_names: ClassVar[tuple[str, ...]] = ("capability_scope_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -491,10 +518,7 @@ class ConnectorSubstitutionReport(L5Report):
     """
 
     output_name: ClassVar[str] = "ConnectorSubstitutionReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ConnectorSubstitutionReport",
-        "connector_substitution_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ConnectorSubstitutionReport", "connector_substitution_report",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -738,6 +762,20 @@ class HitlAuthorityBindingReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class HumanActorReceipt(L5Receipt):
+    """L5 doctrine output ``human_actor_receipt`` (kind=receipt).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: human_actor_receipt.
+    """
+
+    output_name: ClassVar[str] = "human_actor_receipt"
+    output_names: ClassVar[tuple[str, ...]] = ("human_actor_receipt",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
 class HumanAuthorityGapReport(L5Report):
     """L5 doctrine output ``human_authority_gap_report`` (kind=report).
 
@@ -788,10 +826,7 @@ class HumanReviewScopeReceipt(L5Receipt):
     """
 
     output_name: ClassVar[str] = "HumanReviewScopeReceipt"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "HumanReviewScopeReceipt",
-        "human_review_scope_receipt",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("HumanReviewScopeReceipt", "human_review_scope_receipt",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "receipt"
 
@@ -979,6 +1014,20 @@ class OldNewAuthorityBindingDiff(L5Diff):
 
 
 @dataclass(frozen=True, slots=True)
+class OriginTrustManifest(L5Manifest):
+    """L5 doctrine output ``OriginTrustManifest`` (kind=manifest).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: OriginTrustManifest, origin_trust_manifest.
+    """
+
+    output_name: ClassVar[str] = "OriginTrustManifest"
+    output_names: ClassVar[tuple[str, ...]] = ("OriginTrustManifest", "origin_trust_manifest",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "manifest"
+
+
+@dataclass(frozen=True, slots=True)
 class OriginTrustManifestRef(L5Ref):
     """L5 doctrine output ``origin_trust_manifest_ref`` (kind=ref).
 
@@ -1046,6 +1095,20 @@ class PolicyBindingGapReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("policy_binding_gap_report",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class PolicyBindingStatus(L5Status):
+    """L5 doctrine output ``policy_binding_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: policy_binding_status.
+    """
+
+    output_name: ClassVar[str] = "policy_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("policy_binding_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1172,6 +1235,20 @@ class PrincipalChainReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("principal_chain_receipt",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class PrincipalChainStatus(L5Status):
+    """L5 doctrine output ``principal_chain_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: principal_chain_status.
+    """
+
+    output_name: ClassVar[str] = "principal_chain_status"
+    output_names: ClassVar[tuple[str, ...]] = ("principal_chain_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1329,6 +1406,20 @@ class ReadScopeReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class RecertificationStatus(L5Status):
+    """L5 doctrine output ``recertification_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: recertification_status.
+    """
+
+    output_name: ClassVar[str] = "recertification_status"
+    output_names: ClassVar[tuple[str, ...]] = ("recertification_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class RecertificationTriggerReport(L5Report):
     """L5 doctrine output ``recertification_trigger_report`` (kind=report).
 
@@ -1340,6 +1431,20 @@ class RecertificationTriggerReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("recertification_trigger_report",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class RegistryBindingStatus(L5Status):
+    """L5 doctrine output ``registry_binding_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: registry_binding_status.
+    """
+
+    output_name: ClassVar[str] = "registry_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("registry_binding_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1441,6 +1546,20 @@ class ReplayAuthorityMismatchReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class ReplayBindingStatus(L5Status):
+    """L5 doctrine output ``replay_binding_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: replay_binding_status.
+    """
+
+    output_name: ClassVar[str] = "replay_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("replay_binding_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class ReplayEnvelope(L5Envelope):
     """L5 doctrine output ``replay_envelope`` (kind=envelope).
 
@@ -1466,6 +1585,20 @@ class ReplayKeyReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("replay_key_receipt",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class RequestEnvelope(L5Envelope):
+    """L5 doctrine output ``RequestEnvelope`` (kind=envelope).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: RequestEnvelope.
+    """
+
+    output_name: ClassVar[str] = "RequestEnvelope"
+    output_names: ClassVar[tuple[str, ...]] = ("RequestEnvelope",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "envelope"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1522,6 +1655,20 @@ class RuntimeL5AuthorityReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("runtime_l5_authority_receipt",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxBindingStatus(L5Status):
+    """L5 doctrine output ``sandbox_binding_status`` (kind=status).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: sandbox_binding_status.
+    """
+
+    output_name: ClassVar[str] = "sandbox_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("sandbox_binding_status",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1785,10 +1932,7 @@ class ToolSubstitutionReport(L5Report):
     """
 
     output_name: ClassVar[str] = "ToolSubstitutionReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ToolSubstitutionReport",
-        "tool_substitution_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ToolSubstitutionReport", "tool_substitution_report",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -1805,6 +1949,20 @@ class TranscriptBindingReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("transcript_binding_receipt",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class TranscriptRef(L5Ref):
+    """L5 doctrine output ``transcript_ref`` (kind=ref).
+
+    Source doctrine: ``00.2_L5_Authority_Context_and_Registry_Binding_detailed.md``.
+    Canonical doctrine names: transcript_ref.
+    """
+
+    output_name: ClassVar[str] = "transcript_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("transcript_ref",)
+    source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
+    output_kind: ClassVar[str] = "ref"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1876,6 +2034,7 @@ __all__ = [
     "AuthorityGapReport",
     "AuthorityIssuerReceipt",
     "AuthoritySourceMap",
+    "BlueprintBindingStatus",
     "BlueprintHashReceipt",
     "BlueprintLoadReceipt",
     "BlueprintMismatchReport",
@@ -1884,6 +2043,7 @@ __all__ = [
     "BroadScopeReport",
     "CapabilityExpirationReceipt",
     "CapabilityGapReport",
+    "CapabilityScopeStatus",
     "CapabilityTokenRef",
     "CapabilityWideningReport",
     "ChangedAuthorityFieldReport",
@@ -1914,6 +2074,7 @@ __all__ = [
     "HardConstraintMapRef",
     "HashBindingReport",
     "HitlAuthorityBindingReceipt",
+    "HumanActorReceipt",
     "HumanAuthorityGapReport",
     "HumanDiffBindingReceipt",
     "HumanReentryReplayReceipt",
@@ -1931,11 +2092,13 @@ __all__ = [
     "NoImpliedAuthorityReceipt",
     "NonReplayableGapReport",
     "OldNewAuthorityBindingDiff",
+    "OriginTrustManifest",
     "OriginTrustManifestRef",
     "OriginalPrincipalReceipt",
     "PacketAuthorityContextReceipt",
     "PacketAuthorityGapReport",
     "PolicyBindingGapReport",
+    "PolicyBindingStatus",
     "PolicyBundleReceipt",
     "PolicyEffectiveTimeReceipt",
     "PolicyHashReceipt",
@@ -1945,6 +2108,7 @@ __all__ = [
     "PolicyStalenessReport",
     "PrincipalChainGapReport",
     "PrincipalChainReceipt",
+    "PrincipalChainStatus",
     "PrincipalScopeWideningReport",
     "PromptPolicyCompatibilityReceipt",
     "PromptRegistryGapReport",
@@ -1956,7 +2120,9 @@ __all__ = [
     "ReCertificationRequiredReceipt",
     "ReCertificationRequiredReport",
     "ReadScopeReceipt",
+    "RecertificationStatus",
     "RecertificationTriggerReport",
+    "RegistryBindingStatus",
     "RegistryCompatibilityReport",
     "RegistryCompatibilityStatus",
     "RegistryDigestSetReceipt",
@@ -1964,12 +2130,15 @@ __all__ = [
     "RegistryGapReport",
     "RegistryIntegrityReport",
     "ReplayAuthorityMismatchReport",
+    "ReplayBindingStatus",
     "ReplayEnvelope",
     "ReplayKeyReceipt",
+    "RequestEnvelope",
     "RequiredFieldGapReport",
     "RouteTopologyMismatchReport",
     "RouteTopologyReceipt",
     "RuntimeL5AuthorityReceipt",
+    "SandboxBindingStatus",
     "SandboxGapReport",
     "SandboxWideningReport",
     "ScopeCeilingReceipt",
@@ -1990,6 +2159,7 @@ __all__ = [
     "ToolSideEffectReceipt",
     "ToolSubstitutionReport",
     "TranscriptBindingReceipt",
+    "TranscriptRef",
     "UnderstatedAuthorityReport",
     "UntrustedAuthorityAttemptReport",
     "WriteIntentSmugglingReport",

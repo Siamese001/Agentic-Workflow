@@ -2,7 +2,7 @@
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.static``
-Generated count: 118 contracts
+Generated count: 128 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
 not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
@@ -10,7 +10,6 @@ and ``_vocab.py`` for the controlled vocabularies.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -49,6 +48,20 @@ class ADRRequiredReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class AdgSnapshotRef(L5Ref):
+    """L5 doctrine output ``adg_snapshot_ref`` (kind=ref).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: adg_snapshot_ref.
+    """
+
+    output_name: ClassVar[str] = "adg_snapshot_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("adg_snapshot_ref",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class AdrRequiredReport(L5Report):
     """L5 doctrine output ``adr_required_report`` (kind=report).
 
@@ -60,6 +73,20 @@ class AdrRequiredReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("adr_required_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class AdrStatus(L5Status):
+    """L5 doctrine output ``adr_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: adr_status.
+    """
+
+    output_name: ClassVar[str] = "adr_status"
+    output_names: ClassVar[tuple[str, ...]] = ("adr_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,10 +140,7 @@ class ArchitectureDriftReport(L5Report):
     """
 
     output_name: ClassVar[str] = "ArchitectureDriftReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ArchitectureDriftReport",
-        "architecture_drift_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ArchitectureDriftReport", "architecture_drift_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -133,6 +157,20 @@ class BranchOrCommitRef(L5Ref):
     output_names: ClassVar[tuple[str, ...]] = ("branch_or_commit_ref",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class BypassEvidenceStatus(L5Status):
+    """L5 doctrine output ``bypass_evidence_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: bypass_evidence_status.
+    """
+
+    output_name: ClassVar[str] = "bypass_evidence_status"
+    output_names: ClassVar[tuple[str, ...]] = ("bypass_evidence_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -186,10 +224,7 @@ class ConnectorConfigDriftReport(L5Report):
     """
 
     output_name: ClassVar[str] = "ConnectorConfigDriftReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "ConnectorConfigDriftReport",
-        "connector_config_drift_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("ConnectorConfigDriftReport", "connector_config_drift_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -279,6 +314,20 @@ class ConnectorScopeWideningReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class CurrentAdgSnapshotRef(L5Ref):
+    """L5 doctrine output ``current_adg_snapshot_ref`` (kind=ref).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: current_adg_snapshot_ref.
+    """
+
+    output_name: ClassVar[str] = "current_adg_snapshot_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("current_adg_snapshot_ref",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class DeletedGateStaticReport(L5Report):
     """L5 doctrine output ``deleted_gate_static_report`` (kind=report).
 
@@ -343,10 +392,7 @@ class DirectWritePathStaticReport(L5Report):
     """
 
     output_name: ClassVar[str] = "DirectWritePathStaticReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "DirectWritePathStaticReport",
-        "direct_write_path_static_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("DirectWritePathStaticReport", "direct_write_path_static_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -570,10 +616,7 @@ class GoldenSnapshotComparisonReport(L5Report):
     """
 
     output_name: ClassVar[str] = "GoldenSnapshotComparisonReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "GoldenSnapshotComparisonReport",
-        "golden_snapshot_comparison_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("GoldenSnapshotComparisonReport", "golden_snapshot_comparison_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -643,10 +686,7 @@ class HiddenEgressStaticReport(L5Report):
     """
 
     output_name: ClassVar[str] = "HiddenEgressStaticReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "HiddenEgressStaticReport",
-        "hidden_egress_static_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("HiddenEgressStaticReport", "hidden_egress_static_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -834,6 +874,20 @@ class OrphanRegistryReferenceReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class PolicyDriftStatus(L5Status):
+    """L5 doctrine output ``policy_drift_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: policy_drift_status.
+    """
+
+    output_name: ClassVar[str] = "policy_drift_status"
+    output_names: ClassVar[tuple[str, ...]] = ("policy_drift_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class PolicyWeakeningReport(L5Report):
     """L5 doctrine output ``PolicyWeakeningReport`` (kind=report).
 
@@ -842,10 +896,7 @@ class PolicyWeakeningReport(L5Report):
     """
 
     output_name: ClassVar[str] = "PolicyWeakeningReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "PolicyWeakeningReport",
-        "policy_weakening_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("PolicyWeakeningReport", "policy_weakening_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -901,10 +952,7 @@ class PromptDriftReport(L5Report):
     """
 
     output_name: ClassVar[str] = "PromptDriftReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "PromptDriftReport",
-        "prompt_drift_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("PromptDriftReport", "prompt_drift_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -1044,12 +1092,23 @@ class RegistryDriftReport(L5Report):
     """
 
     output_name: ClassVar[str] = "RegistryDriftReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "RegistryDriftReport",
-        "registry_drift_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("RegistryDriftReport", "registry_drift_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class RegistryDriftStatus(L5Status):
+    """L5 doctrine output ``registry_drift_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: registry_drift_status.
+    """
+
+    output_name: ClassVar[str] = "registry_drift_status"
+    output_names: ClassVar[tuple[str, ...]] = ("registry_drift_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1201,10 +1260,7 @@ class RouteWorkflowDriftReport(L5Report):
     """
 
     output_name: ClassVar[str] = "RouteWorkflowDriftReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "RouteWorkflowDriftReport",
-        "route_workflow_drift_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("RouteWorkflowDriftReport", "route_workflow_drift_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -1288,10 +1344,7 @@ class StaticBypassWrapperReport(L5Report):
     """
 
     output_name: ClassVar[str] = "StaticBypassWrapperReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "StaticBypassWrapperReport",
-        "static_bypass_wrapper_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("StaticBypassWrapperReport", "static_bypass_wrapper_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -1305,10 +1358,7 @@ class StaticCertificationReadinessReport(L5Report):
     """
 
     output_name: ClassVar[str] = "StaticCertificationReadinessReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "StaticCertificationReadinessReport",
-        "static_certification_readiness_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("StaticCertificationReadinessReport", "static_certification_readiness_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -1398,6 +1448,20 @@ class StaticGovernanceReviewPacket(L5Packet):
 
 
 @dataclass(frozen=True, slots=True)
+class StaticGovernanceStatus(L5Status):
+    """L5 doctrine output ``static_governance_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: static_governance_status.
+    """
+
+    output_name: ClassVar[str] = "static_governance_status"
+    output_names: ClassVar[tuple[str, ...]] = ("static_governance_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class StaticReadinessStatusReceipt(L5Receipt):
     """L5 doctrine output ``static_readiness_status_receipt`` (kind=receipt).
 
@@ -1434,10 +1498,7 @@ class StaticRegressionEvidenceReport(L5Report):
     """
 
     output_name: ClassVar[str] = "StaticRegressionEvidenceReport"
-    output_names: ClassVar[tuple[str, ...]] = (
-        "StaticRegressionEvidenceReport",
-        "static_regression_evidence_report",
-    )
+    output_names: ClassVar[tuple[str, ...]] = ("StaticRegressionEvidenceReport", "static_regression_evidence_report",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "report"
 
@@ -1468,6 +1529,20 @@ class StaticRegressionHashReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("static_regression_hash_receipt",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class StaticRegressionStatus(L5Status):
+    """L5 doctrine output ``static_regression_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: static_regression_status.
+    """
+
+    output_name: ClassVar[str] = "static_regression_status"
+    output_names: ClassVar[tuple[str, ...]] = ("static_regression_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1538,6 +1613,20 @@ class StaticReviewPacketReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("static_review_packet_receipt",)
     source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class StructureDriftStatus(L5Status):
+    """L5 doctrine output ``structure_drift_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: structure_drift_status.
+    """
+
+    output_name: ClassVar[str] = "structure_drift_status"
+    output_names: ClassVar[tuple[str, ...]] = ("structure_drift_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1653,6 +1742,20 @@ class WaiverScopeMismatchReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class WaiverStatus(L5Status):
+    """L5 doctrine output ``waiver_status`` (kind=status).
+
+    Source doctrine: ``00.7_L5_Static_Governance_and_Structure_Drift_detailed.md``.
+    Canonical doctrine names: waiver_status.
+    """
+
+    output_name: ClassVar[str] = "waiver_status"
+    output_names: ClassVar[tuple[str, ...]] = ("waiver_status",)
+    source_doc: ClassVar[str] = "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class WeakenedDefaultReport(L5Report):
     """L5 doctrine output ``weakened_default_report`` (kind=report).
 
@@ -1724,12 +1827,15 @@ class WritePathDriftReport(L5Report):
 
 __all__ = [
     "ADRRequiredReport",
+    "AdgSnapshotRef",
     "AdrRequiredReport",
+    "AdrStatus",
     "AffectedAuthoritySurfaceMap",
     "AgentRegistryDriftReport",
     "ArchitectureDriftGapReport",
     "ArchitectureDriftReport",
     "BranchOrCommitRef",
+    "BypassEvidenceStatus",
     "BypassWrapperWaiverReport",
     "ConfigWithLogicStaticReport",
     "ConnectorAuditRequirementDriftReport",
@@ -1740,6 +1846,7 @@ __all__ = [
     "ConnectorRegistryDriftReport",
     "ConnectorRetentionDriftReport",
     "ConnectorScopeWideningReport",
+    "CurrentAdgSnapshotRef",
     "DeletedGateStaticReport",
     "DependencyDirectionDriftReport",
     "DirectExternalWriteStaticReport",
@@ -1779,6 +1886,7 @@ __all__ = [
     "NewlyIntroducedBypassReport",
     "OrphanRegistryRef",
     "OrphanRegistryReferenceReport",
+    "PolicyDriftStatus",
     "PolicyWeakeningReport",
     "PolicyWeakeningWaiverReport",
     "PromptAssemblyBoundaryDriftReport",
@@ -1794,6 +1902,7 @@ __all__ = [
     "RefusalTaxonomyDriftReport",
     "RegistryDigestDriftReport",
     "RegistryDriftReport",
+    "RegistryDriftStatus",
     "RegistryScopeWideningReport",
     "RegistrySubstitutionStaticReport",
     "RelaxedScopeReport",
@@ -1818,16 +1927,19 @@ __all__ = [
     "StaticGovernanceAuditReceipt",
     "StaticGovernanceReplayReceipt",
     "StaticGovernanceReviewPacket",
+    "StaticGovernanceStatus",
     "StaticReadinessStatusReceipt",
     "StaticReconstructionPacket",
     "StaticRegressionEvidenceReport",
     "StaticRegressionGapReport",
     "StaticRegressionHashReceipt",
+    "StaticRegressionStatus",
     "StaticReplayGapReport",
     "StaticReportHashChainReceipt",
     "StaticReviewGapReport",
     "StaticReviewPacketHashReceipt",
     "StaticReviewPacketReceipt",
+    "StructureDriftStatus",
     "ToolRegistryDriftReport",
     "UnauthorizedConnectorClientReport",
     "UnauthorizedHttpClientReport",
@@ -1836,6 +1948,7 @@ __all__ = [
     "WaiverCompatibilityReport",
     "WaiverPresenceReport",
     "WaiverScopeMismatchReport",
+    "WaiverStatus",
     "WeakenedDefaultReport",
     "WorkflowBoundaryDriftReport",
     "WrapperAuthorityExpansionReport",

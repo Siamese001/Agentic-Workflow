@@ -2,7 +2,7 @@
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``
 Module: ``agentic_core.L5_safety.contracts.replay``
-Generated count: 95 contracts
+Generated count: 103 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
 not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
@@ -10,7 +10,6 @@ and ``_vocab.py`` for the controlled vocabularies.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -46,6 +45,20 @@ class AffectedConsumerReport(L5Report):
     output_names: ClassVar[tuple[str, ...]] = ("affected_consumer_report",)
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "report"
+
+
+@dataclass(frozen=True, slots=True)
+class AuditBindingStatus(L5Status):
+    """L5 doctrine output ``audit_binding_status`` (kind=status).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: audit_binding_status.
+    """
+
+    output_name: ClassVar[str] = "audit_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("audit_binding_status",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -259,6 +272,20 @@ class CanonicalSerializationReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class CertificationEvidenceStatus(L5Status):
+    """L5 doctrine output ``certification_evidence_status`` (kind=status).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: certification_evidence_status.
+    """
+
+    output_name: ClassVar[str] = "certification_evidence_status"
+    output_names: ClassVar[tuple[str, ...]] = ("certification_evidence_status",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class CertificationGapReport(L5Report):
     """L5 doctrine output ``certification_gap_report`` (kind=report).
 
@@ -469,6 +496,20 @@ class CertificationScopeReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class CertificationScopeStatus(L5Status):
+    """L5 doctrine output ``certification_scope_status`` (kind=status).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: certification_scope_status.
+    """
+
+    output_name: ClassVar[str] = "certification_scope_status"
+    output_names: ClassVar[tuple[str, ...]] = ("certification_scope_status",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class CertificationScopeWideningReport(L5Report):
     """L5 doctrine output ``certification_scope_widening_report`` (kind=report).
 
@@ -567,6 +608,20 @@ class EvidenceContractHashReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class EvidenceContractRef(L5Ref):
+    """L5 doctrine output ``evidence_contract_ref`` (kind=ref).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: evidence_contract_ref.
+    """
+
+    output_name: ClassVar[str] = "evidence_contract_ref"
+    output_names: ClassVar[tuple[str, ...]] = ("evidence_contract_ref",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
 class ExpectedRef(L5Ref):
     """L5 doctrine output ``expected_ref`` (kind=ref).
 
@@ -648,6 +703,20 @@ class HashBindingReportRef(L5Ref):
     output_names: ClassVar[tuple[str, ...]] = ("hash_binding_report_ref",)
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "ref"
+
+
+@dataclass(frozen=True, slots=True)
+class HashBindingStatus(L5Status):
+    """L5 doctrine output ``hash_binding_status`` (kind=status).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: hash_binding_status.
+    """
+
+    output_name: ClassVar[str] = "hash_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("hash_binding_status",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -903,6 +972,20 @@ class ReceiptCrossPrincipalReport(L5Report):
 
 
 @dataclass(frozen=True, slots=True)
+class ReclearanceReceipt(L5Receipt):
+    """L5 doctrine output ``reclearance_receipt`` (kind=receipt).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: reclearance_receipt.
+    """
+
+    output_name: ClassVar[str] = "reclearance_receipt"
+    output_names: ClassVar[tuple[str, ...]] = ("reclearance_receipt",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
 class ReconstructionGapReport(L5Report):
     """L5 doctrine output ``reconstruction_gap_report`` (kind=report).
 
@@ -942,6 +1025,20 @@ class ReconstructionPacketReceipt(L5Receipt):
     output_names: ClassVar[tuple[str, ...]] = ("reconstruction_packet_receipt",)
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "receipt"
+
+
+@dataclass(frozen=True, slots=True)
+class ReconstructionStatus(L5Status):
+    """L5 doctrine output ``reconstruction_status`` (kind=status).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: reconstruction_status.
+    """
+
+    output_name: ClassVar[str] = "reconstruction_status"
+    output_names: ClassVar[tuple[str, ...]] = ("reconstruction_status",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "status"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1281,6 +1378,20 @@ class TraceAuditBindingReceipt(L5Receipt):
 
 
 @dataclass(frozen=True, slots=True)
+class TraceBindingStatus(L5Status):
+    """L5 doctrine output ``trace_binding_status`` (kind=status).
+
+    Source doctrine: ``00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md``.
+    Canonical doctrine names: trace_binding_status.
+    """
+
+    output_name: ClassVar[str] = "trace_binding_status"
+    output_names: ClassVar[tuple[str, ...]] = ("trace_binding_status",)
+    source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
+    output_kind: ClassVar[str] = "status"
+
+
+@dataclass(frozen=True, slots=True)
 class TraceCompletenessReport(L5Report):
     """L5 doctrine output ``trace_completeness_report`` (kind=report).
 
@@ -1366,6 +1477,7 @@ class WallClockDecisionFieldReport(L5Report):
 
 __all__ = [
     "AffectedConsumerReport",
+    "AuditBindingStatus",
     "AuditGapReport",
     "AuditHashChainReceipt",
     "AuditLogEventRef",
@@ -1381,6 +1493,7 @@ __all__ = [
     "AuthorityReconstructionPacket",
     "BootReplayAuditGovernanceReport",
     "CanonicalSerializationReceipt",
+    "CertificationEvidenceStatus",
     "CertificationGapReport",
     "CertificationPacketGapReport",
     "CertificationPacketHashReceipt",
@@ -1396,6 +1509,7 @@ __all__ = [
     "CertificationScopeGapReport",
     "CertificationScopeHashReceipt",
     "CertificationScopeReceipt",
+    "CertificationScopeStatus",
     "CertificationScopeWideningReport",
     "ComplianceHashGapReport",
     "ComplianceHashReceipt",
@@ -1403,12 +1517,14 @@ __all__ = [
     "CriticalReplayAuditGapReport",
     "DownstreamReviewEvidenceRef",
     "EvidenceContractHashReceipt",
+    "EvidenceContractRef",
     "ExpectedRef",
     "ForbiddenDispositionAbsenceReceipt",
     "ForbiddenDispositionFieldReport",
     "HardConstraintMap",
     "HashAlgorithmReceipt",
     "HashBindingReportRef",
+    "HashBindingStatus",
     "HashMismatchReport",
     "HmacConfigReceipt",
     "HmacSignatureReceipt",
@@ -1427,9 +1543,11 @@ __all__ = [
     "ReceiptChainReport",
     "ReceiptChainReportRef",
     "ReceiptCrossPrincipalReport",
+    "ReclearanceReceipt",
     "ReconstructionGapReport",
     "ReconstructionPacketHashReceipt",
     "ReconstructionPacketReceipt",
+    "ReconstructionStatus",
     "RedactionPolicyRef",
     "ReplayEnvelopeReceipt",
     "ReplayEnvelopeRef",
@@ -1454,6 +1572,7 @@ __all__ = [
     "StaticReplayAuditGovernanceReport",
     "TamperEvidenceReport",
     "TraceAuditBindingReceipt",
+    "TraceBindingStatus",
     "TraceCompletenessReport",
     "TraceCompletenessReportRef",
     "TraceCorrelationReceipt",
