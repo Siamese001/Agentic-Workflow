@@ -1,0 +1,35 @@
+{
+  "basic_grounded_read": {
+    "forbidden_prefixes": [
+      "agentic_core.L0_routing.c0_retrieval",
+      "agentic_core.L2_execution",
+      "agentic_core.L3_orchestration"
+    ],
+    "isolation_clean": true,
+    "new_modules_total": 0,
+    "new_modules_under_forbidden_prefixes": [],
+    "scenario": "basic_grounded_read"
+  },
+  "high_risk_action": {
+    "forbidden_prefixes": [
+      "agentic_core.L0_routing.c0_retrieval",
+      "agentic_core.L2_execution",
+      "agentic_core.L3_orchestration"
+    ],
+    "isolation_clean": true,
+    "new_modules_total": 0,
+    "new_modules_under_forbidden_prefixes": [],
+    "scenario": "high_risk_action"
+  },
+  "refusal_request": {
+    "forbidden_prefixes": [
+      "agentic_core.L0_routing.c0_retrieval",
+      "agentic_core.L2_execution",
+      "agentic_core.L3_orchestration"
+    ],
+    "isolation_clean": true,
+    "new_modules_total": 0,
+    "new_modules_under_forbidden_prefixes": [],
+    "scenario": "refusal_request"
+  }
+}

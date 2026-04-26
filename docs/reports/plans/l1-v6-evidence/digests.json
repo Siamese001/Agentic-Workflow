@@ -1,0 +1,20 @@
+{
+  "basic_grounded_read": {
+    "first_plan_digest": "sha256:40230a6d58b5636c16217790f5cfd435dd5d5e550e7ab8b6210c4e36ba8cf356",
+    "identical": true,
+    "scenario": "basic_grounded_read",
+    "second_plan_digest": "sha256:40230a6d58b5636c16217790f5cfd435dd5d5e550e7ab8b6210c4e36ba8cf356"
+  },
+  "high_risk_action": {
+    "first_plan_digest": "sha256:ca6b869e2bdafcb47a6fae14e852dcd925507f4f70eb2999a310919b99ec5ff4",
+    "identical": true,
+    "scenario": "high_risk_action",
+    "second_plan_digest": "sha256:ca6b869e2bdafcb47a6fae14e852dcd925507f4f70eb2999a310919b99ec5ff4"
+  },
+  "refusal_request": {
+    "first_plan_digest": "sha256:1a59fe78a46a3f06f906e2daeb0b37bce1d0865de511db3fb538eff7486b411f",
+    "identical": true,
+    "scenario": "refusal_request",
+    "second_plan_digest": "sha256:1a59fe78a46a3f06f906e2daeb0b37bce1d0865de511db3fb538eff7486b411f"
+  }
+}

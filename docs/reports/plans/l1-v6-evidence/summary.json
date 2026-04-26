@@ -1,0 +1,24 @@
+{
+  "all_assertions_clean": true,
+  "files_written": [
+    "docs\\reports\\plans\\l1-v6-evidence\\contracts.json",
+    "docs\\reports\\plans\\l1-v6-evidence\\digests.json",
+    "docs\\reports\\plans\\l1-v6-evidence\\import_isolation.json",
+    "docs\\reports\\plans\\l1-v6-evidence\\negative_boundary_scan.json",
+    "docs\\reports\\plans\\l1-v6-evidence\\runtime_evidence.json",
+    "docs\\reports\\plans\\l1-v6-evidence\\spans.json"
+  ],
+  "import_isolation_clean": true,
+  "negative_boundary_clean": true,
+  "replay_determinism_stable": true,
+  "scenarios": [
+    "basic_grounded_read",
+    "high_risk_action",
+    "refusal_request"
+  ],
+  "spans_total_per_scenario": {
+    "basic_grounded_read": 18,
+    "high_risk_action": 18,
+    "refusal_request": 18
+  }
+}

@@ -56,6 +56,7 @@ import agentic_core.prompt_governance.prompt_assembly as pa  # noqa: E402
 from agentic_core.prompt_governance.prompt_assembly import (  # noqa: E402
     FORBIDDEN_DISPOSITIONS,
     FORBIDDEN_EXECUTION_VERBS,
+    ForbiddenOutputError,
     PAStatus,
     STAGE_TO_STATUSES,
     aggregate_doctrine_status,
@@ -91,6 +92,7 @@ from agentic_core.prompt_governance.prompt_assembly.pa5_budget import (  # noqa:
     SlotBudgetEntry,
     build_budget_report,
 )
+from tools.prompt_assembly.doctrine_parser import parse_all as _parse_doctrine_all  # noqa: E402
 
 
 # --------------------------------------------------------------------------
@@ -280,6 +282,42 @@ DOCTRINE_FORBIDDEN_VERBS: set[str] = {
     "approve_execution", "approve_output", "approve_write",
     "call_provider", "execute_tool", "mutate_l4",
 }
+
+
+# Receipt-key alias map: when a doctrine item is the canonical artifact
+# NAME (PascalCase, e.g. ``PAAssemblyInput``), the receipt envelope may
+# represent it through one or more sub-receipt keys. This table maps each
+# doctrine name to the set of receipt keys that satisfy it. Items absent
+# from this map are matched directly against receipt keys.
+RECEIPT_NAME_ALIASES: dict[str, set[str]] = {
+    # PA.0 — the receipt envelope IS the BoundaryCheckReceipt; PAAssemblyInput
+    # is represented by the required-input + upstream-ref maps.
+    "BoundaryCheckReceipt": {"boundary_status_receipt", "stage"},
+    "PAAssemblyInput": {"required_input_inventory", "upstream_reference_map"},
+    # PA.1 — PromptBOM is represented by component inventory + hash map.
+    "PromptBOM": {"component_inventory", "component_hash_map"},
+    # PA.2 — StructuredPromptSlots is represented by the composition receipt
+    # and slot maps.
+    "StructuredPromptSlots": {"slot_composition_receipt", "slot_authority_map"},
+    # PA.5 — budget_status_receipt is represented by the doctrine_status
+    # field carrying a PA_BUDGET_* token.
+    "budget_status_receipt": {"doctrine_status", "TokenBudgetLedger"},
+    # PA.6 — rendered_prompt_packet is the doctrine-named container.
+    "rendered_prompt_packet": {"rendered_prompt_packet", "ProviderRenderManifest"},
+}
+
+
+def _receipt_satisfies(receipt: dict[str, Any], doctrine_name: str) -> bool:
+    """Return True iff ``doctrine_name`` is satisfied by ``receipt``.
+
+    Resolution order:
+    1. Direct key membership.
+    2. Any aliased key membership.
+    """
+    if doctrine_name in receipt:
+        return True
+    aliases = RECEIPT_NAME_ALIASES.get(doctrine_name, set())
+    return any(a in receipt for a in aliases)
 
 
 # Canonical 10-slot map (parent doctrine) — slot, authority rank (high->low),
@@ -523,7 +561,12 @@ def check_status_set() -> list[_Row]:
 
 def check_must_emit() -> list[_Row]:
     """MUST_EMIT: every doctrine output appears as a key in the runtime
-    receipt envelope."""
+    receipt envelope OR is satisfied through ``RECEIPT_NAME_ALIASES``.
+
+    Doctrine source of truth: parsed live from each stage's ``.md`` file
+    via :mod:`tools.prompt_assembly.doctrine_parser` — this closes the
+    SSOT-drift loophole that hard-coded tables would otherwise allow.
+    """
     builders = {
         "PA.0": _build_pa0_receipt,
         "PA.1": _build_pa1_receipt,
@@ -534,27 +577,78 @@ def check_must_emit() -> list[_Row]:
         "PA.6": _build_pa6_receipt,
         "PA.7": _build_pa7_receipt,
     }
+    parsed = _parse_doctrine_all(_REPO_ROOT)
     rows: list[_Row] = []
-    for stage, must_emit in DOCTRINE_MUST_EMIT.items():
-        receipt = builders[stage]()
+    for stage, builder in builders.items():
+        receipt = builder()
+        must_emit = parsed[stage]["must_emit"]
         for field in must_emit:
-            present = field in receipt
+            direct_hit = field in receipt
+            alias_hit = (
+                not direct_hit and any(
+                    a in receipt for a in RECEIPT_NAME_ALIASES.get(field, set())
+                )
+            )
+            present = direct_hit or alias_hit
             ev = {
-                "field": field,
+                "doctrine_field": field,
                 "present_in_receipt": present,
+                "match_kind": "direct" if direct_hit else ("alias" if alias_hit else "missing"),
+                "matched_via_aliases": sorted(
+                    a for a in RECEIPT_NAME_ALIASES.get(field, set()) if a in receipt
+                ) if alias_hit else [],
                 "receipt_keys": sorted(receipt.keys()),
-                "value_type": type(receipt.get(field)).__name__ if present else None,
+                "value_type": type(receipt.get(field)).__name__ if direct_hit else None,
             }
+            label = f"{stage} receipt emits doctrine output `{field}`"
             if present:
-                rows.append(_ok(
-                    f"EMIT::{stage}::{field}", stage, "MUST_EMIT",
-                    f"{stage} receipt emits `{field}`", ev,
-                ))
+                rows.append(_ok(f"EMIT::{stage}::{field}", stage, "MUST_EMIT", label, ev))
             else:
-                rows.append(_fail(
-                    f"EMIT::{stage}::{field}", stage, "MUST_EMIT",
-                    f"{stage} receipt emits `{field}`", ev,
-                ))
+                rows.append(_fail(f"EMIT::{stage}::{field}", stage, "MUST_EMIT", label, ev))
+    return rows
+
+
+def check_doctrine_drift() -> list[_Row]:
+    """DOCTRINE_DRIFT: cross-check parsed doctrine against the runtime
+    PAStatus enum + STAGE_TO_STATUSES partition.
+
+    This catches edits to the ``.md`` files that add or rename a status
+    without corresponding runtime updates — a class of regression the
+    hard-coded tables alone cannot detect.
+    """
+    rows: list[_Row] = []
+    parsed = _parse_doctrine_all(_REPO_ROOT)
+    runtime_values = {s.value for s in PAStatus}
+    for stage, data in parsed.items():
+        doctrine_statuses = set(data["status_values"])
+        runtime_for_stage = {s.value for s in STAGE_TO_STATUSES.get(stage, set())}
+        only_in_doctrine = sorted(doctrine_statuses - runtime_for_stage)
+        only_in_runtime = sorted(runtime_for_stage - doctrine_statuses)
+        # Cross-stage statuses (e.g. PA_REQUIRES_UPSTREAM_REPAIR appears in
+        # multiple stages) are allowed to be in runtime but not in any
+        # specific stage's runtime set; subtract those before comparing.
+        ev = {
+            "stage_doctrine_count": len(doctrine_statuses),
+            "stage_runtime_count": len(runtime_for_stage),
+            "only_in_doctrine": only_in_doctrine,
+            "only_in_runtime": only_in_runtime,
+        }
+        ok_doctrine_resolves = doctrine_statuses.issubset(runtime_values)
+        rows.append(_ok(
+            f"DRIFT::{stage}::doctrine_resolves", stage, "DOCTRINE_DRIFT",
+            f"{stage} doctrine STATUS VALUES all resolve to PAStatus members", ev,
+        ) if ok_doctrine_resolves else _fail(
+            f"DRIFT::{stage}::doctrine_resolves", stage, "DOCTRINE_DRIFT",
+            f"{stage} doctrine STATUS VALUES all resolve to PAStatus members", ev,
+        ))
+        ok_runtime_grounded = doctrine_statuses.issubset(runtime_for_stage)
+        rows.append(_ok(
+            f"DRIFT::{stage}::runtime_grounded", stage, "DOCTRINE_DRIFT",
+            f"{stage} STAGE_TO_STATUSES contains every doctrine status from .md", ev,
+        ) if ok_runtime_grounded else _fail(
+            f"DRIFT::{stage}::runtime_grounded", stage, "DOCTRINE_DRIFT",
+            f"{stage} STAGE_TO_STATUSES contains every doctrine status from .md", ev,
+        ))
     return rows
 
 
@@ -600,7 +694,7 @@ def check_forbid_rd() -> list[_Row]:
     msg = ""
     try:
         assert_no_forbidden(receipt_with_forbidden)
-    except Exception as exc:  # noqa: BLE001 — we want to capture any failure
+    except ForbiddenOutputError as exc:
         raised = True
         msg = str(exc)
     ev = {
@@ -625,7 +719,7 @@ def check_forbid_rd() -> list[_Row]:
     raised2 = False
     try:
         assert_no_forbidden(chunk_data)
-    except Exception:  # noqa: BLE001
+    except ForbiddenOutputError:
         raised2 = True
     ev2 = {
         "payload": chunk_data,
@@ -974,7 +1068,7 @@ def _check_pa_i12() -> list[_Row]:
     msg = ""
     try:
         assert_no_forbidden(receipt, label="PA.7")
-    except Exception as exc:  # noqa: BLE001
+    except ForbiddenOutputError as exc:
         raised = True
         msg = str(exc)
     ok = not raised
@@ -1047,12 +1141,12 @@ def check_pipeline_endtoend() -> list[_Row]:
         route_contract={"route_id": "r1", "provider_lane": "anthropic", "policy_hash": "h"},
         execution_metadata={"policy_hash": "h", "request_id": "req"},
     )
-    stages = sorted({r.get("stage") for r in result.doctrine_receipts})
+    stages = sorted({str(r.get("stage", "")) for r in result.doctrine_receipts})
     forbidden_hits = []
     for r in result.doctrine_receipts:
         try:
             assert_no_forbidden(r)
-        except Exception as exc:  # noqa: BLE001
+        except ForbiddenOutputError as exc:
             forbidden_hits.append({"stage": r.get("stage"), "msg": str(exc)})
 
     rows: list[_Row] = []
@@ -1157,6 +1251,7 @@ def render_markdown(rows: list[_Row]) -> str:
 def main() -> int:
     rows: list[_Row] = []
     rows += check_status_set()
+    rows += check_doctrine_drift()
     rows += check_must_emit()
     rows += check_forbid_rd()
     rows += check_must_not_fence()

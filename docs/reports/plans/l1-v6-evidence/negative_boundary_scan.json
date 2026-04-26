@@ -1,0 +1,22 @@
+{
+  "all_clear": true,
+  "findings_per_module": {
+    "agentic_core.L1_cognition.planning.draft_plan": [],
+    "agentic_core.L1_cognition.planning.intent_frame": [],
+    "agentic_core.L1_cognition.planning.pipeline": [],
+    "agentic_core.L1_cognition.planning.plan_contract_handoff": [],
+    "agentic_core.L1_cognition.planning.plan_validation": [],
+    "agentic_core.L1_cognition.planning.planning_priors": [],
+    "agentic_core.L1_cognition.planning.reasoning_loop": []
+  },
+  "forbidden_symbols_pattern": "\\b(RouteContract|FinalEvidenceContract|PromptEnvelope|CompiledPromptArtifact|L3WorkflowContract|L3StepContract|L2ExecutionRequest|SealedL2Artifact|ExitReviewPacket|ExitDisposition|GateDisposition|CommitRequest|UWGCommitReceipt)\\b",
+  "scanned_modules": [
+    "agentic_core.L1_cognition.planning.intent_frame",
+    "agentic_core.L1_cognition.planning.planning_priors",
+    "agentic_core.L1_cognition.planning.reasoning_loop",
+    "agentic_core.L1_cognition.planning.draft_plan",
+    "agentic_core.L1_cognition.planning.plan_validation",
+    "agentic_core.L1_cognition.planning.plan_contract_handoff",
+    "agentic_core.L1_cognition.planning.pipeline"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "basic_grounded_read": {
+    "all_carry_no_authority_assertions": true,
+    "by_stage": {
+      "02.1": 3,
+      "02.2": 3,
+      "02.3": 3,
+      "02.4": 3,
+      "02.5": 3,
+      "02.6": 3
+    },
+    "span_count": 18,
+    "span_names_sample": [
+      "l1.02.1.input.accepted",
+      "l1.02.1.core.completed",
+      "l1.02.1.output.emitted",
+      "l1.02.2.input.accepted",
+      "l1.02.2.core.completed",
+      "l1.02.2.output.emitted",
+      "l1.02.3.input.accepted",
+      "l1.02.3.core.completed",
+      "l1.02.3.output.emitted",
+      "l1.02.4.input.accepted",
+      "l1.02.4.core.completed",
+      "l1.02.4.output.emitted",
+      "l1.02.5.input.accepted",
+      "l1.02.5.core.completed",
+      "l1.02.5.output.emitted",
+      "l1.02.6.input.accepted",
+      "l1.02.6.core.completed",
+      "l1.02.6.output.emitted"
+    ]
+  },
+  "high_risk_action": {
+    "all_carry_no_authority_assertions": true,
+    "by_stage": {
+      "02.1": 3,
+      "02.2": 3,
+      "02.3": 3,
+      "02.4": 3,
+      "02.5": 3,
+      "02.6": 3
+    },
+    "span_count": 18,
+    "span_names_sample": [
+      "l1.02.1.input.accepted",
+      "l1.02.1.core.completed",
+      "l1.02.1.output.emitted",
+      "l1.02.2.input.accepted",
+      "l1.02.2.core.completed",
+      "l1.02.2.output.emitted",
+      "l1.02.3.input.accepted",
+      "l1.02.3.core.completed",
+      "l1.02.3.output.emitted",
+      "l1.02.4.input.accepted",
+      "l1.02.4.core.completed",
+      "l1.02.4.output.emitted",
+      "l1.02.5.input.accepted",
+      "l1.02.5.core.completed",
+      "l1.02.5.output.emitted",
+      "l1.02.6.input.accepted",
+      "l1.02.6.core.completed",
+      "l1.02.6.output.emitted"
+    ]
+  },
+  "refusal_request": {
+    "all_carry_no_authority_assertions": true,
+    "by_stage": {
+      "02.1": 3,
+      "02.2": 3,
+      "02.3": 3,
+      "02.4": 3,
+      "02.5": 3,
+      "02.6": 3
+    },
+    "span_count": 18,
+    "span_names_sample": [
+      "l1.02.1.input.accepted",
+      "l1.02.1.core.completed",
+      "l1.02.1.output.emitted",
+      "l1.02.2.input.accepted",
+      "l1.02.2.core.completed",
+      "l1.02.2.output.emitted",
+      "l1.02.3.input.accepted",
+      "l1.02.3.core.completed",
+      "l1.02.3.output.emitted",
+      "l1.02.4.input.accepted",
+      "l1.02.4.core.completed",
+      "l1.02.4.output.emitted",
+      "l1.02.5.input.accepted",
+      "l1.02.5.core.completed",
+      "l1.02.5.output.emitted",
+      "l1.02.6.input.accepted",
+      "l1.02.6.core.completed",
+      "l1.02.6.output.emitted"
+    ]
+  }
+}

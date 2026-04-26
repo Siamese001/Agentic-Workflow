@@ -548,68 +548,227 @@
     }
   },
   {
-    "req_id": "EMIT::PA.0::stage",
+    "req_id": "DRIFT::PA.0::doctrine_resolves",
     "stage": "PA.0",
-    "category": "MUST_EMIT",
-    "requirement": "PA.0 receipt emits `stage`",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.0 doctrine STATUS VALUES all resolve to PAStatus members",
     "status": "PASS",
     "evidence": {
-      "field": "stage",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "assembly_gap_report",
-        "boundary_status_receipt",
-        "doctrine_status",
-        "plan_id",
-        "policy_hash",
-        "replay_key",
-        "request_id",
-        "required_input_inventory",
-        "route_id",
-        "run_id",
-        "stage",
-        "trace_id",
-        "upstream_reference_map"
-      ],
-      "value_type": "str"
+      "stage_doctrine_count": 4,
+      "stage_runtime_count": 4,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
     }
   },
   {
-    "req_id": "EMIT::PA.0::doctrine_status",
+    "req_id": "DRIFT::PA.0::runtime_grounded",
     "stage": "PA.0",
-    "category": "MUST_EMIT",
-    "requirement": "PA.0 receipt emits `doctrine_status`",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.0 STAGE_TO_STATUSES contains every doctrine status from .md",
     "status": "PASS",
     "evidence": {
-      "field": "doctrine_status",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "assembly_gap_report",
-        "boundary_status_receipt",
-        "doctrine_status",
-        "plan_id",
-        "policy_hash",
-        "replay_key",
-        "request_id",
-        "required_input_inventory",
-        "route_id",
-        "run_id",
-        "stage",
-        "trace_id",
-        "upstream_reference_map"
-      ],
-      "value_type": "str"
+      "stage_doctrine_count": 4,
+      "stage_runtime_count": 4,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
     }
   },
   {
-    "req_id": "EMIT::PA.0::boundary_status_receipt",
-    "stage": "PA.0",
-    "category": "MUST_EMIT",
-    "requirement": "PA.0 receipt emits `boundary_status_receipt`",
+    "req_id": "DRIFT::PA.1::doctrine_resolves",
+    "stage": "PA.1",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.1 doctrine STATUS VALUES all resolve to PAStatus members",
     "status": "PASS",
     "evidence": {
-      "field": "boundary_status_receipt",
+      "stage_doctrine_count": 3,
+      "stage_runtime_count": 3,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.1::runtime_grounded",
+    "stage": "PA.1",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.1 STAGE_TO_STATUSES contains every doctrine status from .md",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 3,
+      "stage_runtime_count": 3,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.2::doctrine_resolves",
+    "stage": "PA.2",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.2 doctrine STATUS VALUES all resolve to PAStatus members",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 3,
+      "stage_runtime_count": 3,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.2::runtime_grounded",
+    "stage": "PA.2",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.2 STAGE_TO_STATUSES contains every doctrine status from .md",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 3,
+      "stage_runtime_count": 3,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.3::doctrine_resolves",
+    "stage": "PA.3",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.3 doctrine STATUS VALUES all resolve to PAStatus members",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 5,
+      "stage_runtime_count": 5,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.3::runtime_grounded",
+    "stage": "PA.3",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.3 STAGE_TO_STATUSES contains every doctrine status from .md",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 5,
+      "stage_runtime_count": 5,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.4::doctrine_resolves",
+    "stage": "PA.4",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.4 doctrine STATUS VALUES all resolve to PAStatus members",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 6,
+      "stage_runtime_count": 6,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.4::runtime_grounded",
+    "stage": "PA.4",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.4 STAGE_TO_STATUSES contains every doctrine status from .md",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 6,
+      "stage_runtime_count": 6,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.5::doctrine_resolves",
+    "stage": "PA.5",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.5 doctrine STATUS VALUES all resolve to PAStatus members",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 4,
+      "stage_runtime_count": 4,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.5::runtime_grounded",
+    "stage": "PA.5",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.5 STAGE_TO_STATUSES contains every doctrine status from .md",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 4,
+      "stage_runtime_count": 4,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.6::doctrine_resolves",
+    "stage": "PA.6",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.6 doctrine STATUS VALUES all resolve to PAStatus members",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 5,
+      "stage_runtime_count": 5,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.6::runtime_grounded",
+    "stage": "PA.6",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.6 STAGE_TO_STATUSES contains every doctrine status from .md",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 5,
+      "stage_runtime_count": 5,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.7::doctrine_resolves",
+    "stage": "PA.7",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.7 doctrine STATUS VALUES all resolve to PAStatus members",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 6,
+      "stage_runtime_count": 6,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "DRIFT::PA.7::runtime_grounded",
+    "stage": "PA.7",
+    "category": "DOCTRINE_DRIFT",
+    "requirement": "PA.7 STAGE_TO_STATUSES contains every doctrine status from .md",
+    "status": "PASS",
+    "evidence": {
+      "stage_doctrine_count": 6,
+      "stage_runtime_count": 6,
+      "only_in_doctrine": [],
+      "only_in_runtime": []
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::PAAssemblyInput",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits doctrine output `PAAssemblyInput`",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_field": "PAAssemblyInput",
       "present_in_receipt": true,
+      "match_kind": "alias",
+      "matched_via_aliases": [
+        "required_input_inventory",
+        "upstream_reference_map"
+      ],
       "receipt_keys": [
         "assembly_gap_report",
         "boundary_status_receipt",
@@ -625,18 +784,52 @@
         "trace_id",
         "upstream_reference_map"
       ],
-      "value_type": "dict"
+      "value_type": null
+    }
+  },
+  {
+    "req_id": "EMIT::PA.0::BoundaryCheckReceipt",
+    "stage": "PA.0",
+    "category": "MUST_EMIT",
+    "requirement": "PA.0 receipt emits doctrine output `BoundaryCheckReceipt`",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_field": "BoundaryCheckReceipt",
+      "present_in_receipt": true,
+      "match_kind": "alias",
+      "matched_via_aliases": [
+        "boundary_status_receipt",
+        "stage"
+      ],
+      "receipt_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ],
+      "value_type": null
     }
   },
   {
     "req_id": "EMIT::PA.0::required_input_inventory",
     "stage": "PA.0",
     "category": "MUST_EMIT",
-    "requirement": "PA.0 receipt emits `required_input_inventory`",
+    "requirement": "PA.0 receipt emits doctrine output `required_input_inventory`",
     "status": "PASS",
     "evidence": {
-      "field": "required_input_inventory",
+      "doctrine_field": "required_input_inventory",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "assembly_gap_report",
         "boundary_status_receipt",
@@ -659,11 +852,13 @@
     "req_id": "EMIT::PA.0::upstream_reference_map",
     "stage": "PA.0",
     "category": "MUST_EMIT",
-    "requirement": "PA.0 receipt emits `upstream_reference_map`",
+    "requirement": "PA.0 receipt emits doctrine output `upstream_reference_map`",
     "status": "PASS",
     "evidence": {
-      "field": "upstream_reference_map",
+      "doctrine_field": "upstream_reference_map",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "assembly_gap_report",
         "boundary_status_receipt",
@@ -686,11 +881,13 @@
     "req_id": "EMIT::PA.0::assembly_gap_report",
     "stage": "PA.0",
     "category": "MUST_EMIT",
-    "requirement": "PA.0 receipt emits `assembly_gap_report`",
+    "requirement": "PA.0 receipt emits doctrine output `assembly_gap_report`",
     "status": "PASS",
     "evidence": {
-      "field": "assembly_gap_report",
+      "doctrine_field": "assembly_gap_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "assembly_gap_report",
         "boundary_status_receipt",
@@ -710,39 +907,48 @@
     }
   },
   {
-    "req_id": "EMIT::PA.1::stage",
-    "stage": "PA.1",
+    "req_id": "EMIT::PA.0::boundary_status_receipt",
+    "stage": "PA.0",
     "category": "MUST_EMIT",
-    "requirement": "PA.1 receipt emits `stage`",
+    "requirement": "PA.0 receipt emits doctrine output `boundary_status_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "stage",
+      "doctrine_field": "boundary_status_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
-        "bom_gap_report",
-        "bom_hash_receipt",
-        "bom_resolution_receipt",
-        "component_hash_map",
-        "component_inventory",
+        "assembly_gap_report",
+        "boundary_status_receipt",
         "doctrine_status",
+        "plan_id",
         "policy_hash",
-        "prompt_bom_id",
         "replay_key",
         "request_id",
-        "stage"
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
       ],
-      "value_type": "str"
+      "value_type": "dict"
     }
   },
   {
-    "req_id": "EMIT::PA.1::doctrine_status",
+    "req_id": "EMIT::PA.1::PromptBOM",
     "stage": "PA.1",
     "category": "MUST_EMIT",
-    "requirement": "PA.1 receipt emits `doctrine_status`",
+    "requirement": "PA.1 receipt emits doctrine output `PromptBOM`",
     "status": "PASS",
     "evidence": {
-      "field": "doctrine_status",
+      "doctrine_field": "PromptBOM",
       "present_in_receipt": true,
+      "match_kind": "alias",
+      "matched_via_aliases": [
+        "component_hash_map",
+        "component_inventory"
+      ],
       "receipt_keys": [
         "bom_gap_report",
         "bom_hash_receipt",
@@ -756,18 +962,20 @@
         "request_id",
         "stage"
       ],
-      "value_type": "str"
+      "value_type": null
     }
   },
   {
     "req_id": "EMIT::PA.1::bom_resolution_receipt",
     "stage": "PA.1",
     "category": "MUST_EMIT",
-    "requirement": "PA.1 receipt emits `bom_resolution_receipt`",
+    "requirement": "PA.1 receipt emits doctrine output `bom_resolution_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "bom_resolution_receipt",
+      "doctrine_field": "bom_resolution_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "bom_gap_report",
         "bom_hash_receipt",
@@ -788,11 +996,13 @@
     "req_id": "EMIT::PA.1::component_inventory",
     "stage": "PA.1",
     "category": "MUST_EMIT",
-    "requirement": "PA.1 receipt emits `component_inventory`",
+    "requirement": "PA.1 receipt emits doctrine output `component_inventory`",
     "status": "PASS",
     "evidence": {
-      "field": "component_inventory",
+      "doctrine_field": "component_inventory",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "bom_gap_report",
         "bom_hash_receipt",
@@ -813,11 +1023,13 @@
     "req_id": "EMIT::PA.1::component_hash_map",
     "stage": "PA.1",
     "category": "MUST_EMIT",
-    "requirement": "PA.1 receipt emits `component_hash_map`",
+    "requirement": "PA.1 receipt emits doctrine output `component_hash_map`",
     "status": "PASS",
     "evidence": {
-      "field": "component_hash_map",
+      "doctrine_field": "component_hash_map",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "bom_gap_report",
         "bom_hash_receipt",
@@ -838,11 +1050,13 @@
     "req_id": "EMIT::PA.1::bom_gap_report",
     "stage": "PA.1",
     "category": "MUST_EMIT",
-    "requirement": "PA.1 receipt emits `bom_gap_report`",
+    "requirement": "PA.1 receipt emits doctrine output `bom_gap_report`",
     "status": "PASS",
     "evidence": {
-      "field": "bom_gap_report",
+      "doctrine_field": "bom_gap_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "bom_gap_report",
         "bom_hash_receipt",
@@ -863,11 +1077,13 @@
     "req_id": "EMIT::PA.1::bom_hash_receipt",
     "stage": "PA.1",
     "category": "MUST_EMIT",
-    "requirement": "PA.1 receipt emits `bom_hash_receipt`",
+    "requirement": "PA.1 receipt emits doctrine output `bom_hash_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "bom_hash_receipt",
+      "doctrine_field": "bom_hash_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "bom_gap_report",
         "bom_hash_receipt",
@@ -885,14 +1101,19 @@
     }
   },
   {
-    "req_id": "EMIT::PA.2::stage",
+    "req_id": "EMIT::PA.2::StructuredPromptSlots",
     "stage": "PA.2",
     "category": "MUST_EMIT",
-    "requirement": "PA.2 receipt emits `stage`",
+    "requirement": "PA.2 receipt emits doctrine output `StructuredPromptSlots`",
     "status": "PASS",
     "evidence": {
-      "field": "stage",
+      "doctrine_field": "StructuredPromptSlots",
       "present_in_receipt": true,
+      "match_kind": "alias",
+      "matched_via_aliases": [
+        "slot_authority_map",
+        "slot_composition_receipt"
+      ],
       "receipt_keys": [
         "doctrine_status",
         "policy_hash",
@@ -905,42 +1126,20 @@
         "stage",
         "structured_slots_hash_receipt"
       ],
-      "value_type": "str"
-    }
-  },
-  {
-    "req_id": "EMIT::PA.2::doctrine_status",
-    "stage": "PA.2",
-    "category": "MUST_EMIT",
-    "requirement": "PA.2 receipt emits `doctrine_status`",
-    "status": "PASS",
-    "evidence": {
-      "field": "doctrine_status",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "doctrine_status",
-        "policy_hash",
-        "replay_key",
-        "request_id",
-        "slot_authority_map",
-        "slot_composition_receipt",
-        "slot_conflict_map",
-        "slot_lineage_map",
-        "stage",
-        "structured_slots_hash_receipt"
-      ],
-      "value_type": "str"
+      "value_type": null
     }
   },
   {
     "req_id": "EMIT::PA.2::slot_composition_receipt",
     "stage": "PA.2",
     "category": "MUST_EMIT",
-    "requirement": "PA.2 receipt emits `slot_composition_receipt`",
+    "requirement": "PA.2 receipt emits doctrine output `slot_composition_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "slot_composition_receipt",
+      "doctrine_field": "slot_composition_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "doctrine_status",
         "policy_hash",
@@ -960,11 +1159,13 @@
     "req_id": "EMIT::PA.2::slot_authority_map",
     "stage": "PA.2",
     "category": "MUST_EMIT",
-    "requirement": "PA.2 receipt emits `slot_authority_map`",
+    "requirement": "PA.2 receipt emits doctrine output `slot_authority_map`",
     "status": "PASS",
     "evidence": {
-      "field": "slot_authority_map",
+      "doctrine_field": "slot_authority_map",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "doctrine_status",
         "policy_hash",
@@ -984,11 +1185,13 @@
     "req_id": "EMIT::PA.2::slot_lineage_map",
     "stage": "PA.2",
     "category": "MUST_EMIT",
-    "requirement": "PA.2 receipt emits `slot_lineage_map`",
+    "requirement": "PA.2 receipt emits doctrine output `slot_lineage_map`",
     "status": "PASS",
     "evidence": {
-      "field": "slot_lineage_map",
+      "doctrine_field": "slot_lineage_map",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "doctrine_status",
         "policy_hash",
@@ -1008,11 +1211,13 @@
     "req_id": "EMIT::PA.2::slot_conflict_map",
     "stage": "PA.2",
     "category": "MUST_EMIT",
-    "requirement": "PA.2 receipt emits `slot_conflict_map`",
+    "requirement": "PA.2 receipt emits doctrine output `slot_conflict_map`",
     "status": "PASS",
     "evidence": {
-      "field": "slot_conflict_map",
+      "doctrine_field": "slot_conflict_map",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "doctrine_status",
         "policy_hash",
@@ -1032,11 +1237,13 @@
     "req_id": "EMIT::PA.2::structured_slots_hash_receipt",
     "stage": "PA.2",
     "category": "MUST_EMIT",
-    "requirement": "PA.2 receipt emits `structured_slots_hash_receipt`",
+    "requirement": "PA.2 receipt emits doctrine output `structured_slots_hash_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "structured_slots_hash_receipt",
+      "doctrine_field": "structured_slots_hash_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "doctrine_status",
         "policy_hash",
@@ -1053,64 +1260,16 @@
     }
   },
   {
-    "req_id": "EMIT::PA.3::stage",
-    "stage": "PA.3",
-    "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `stage`",
-    "status": "PASS",
-    "evidence": {
-      "field": "stage",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "AssemblySecurityPassReceipt",
-        "doctrine_status",
-        "policy_hash",
-        "prompt_like_payload_report",
-        "rejected_slot_payload_report",
-        "replay_key",
-        "request_id",
-        "safe_extraction_map",
-        "safe_slot_payload_map",
-        "security_gap_report",
-        "stage"
-      ],
-      "value_type": "str"
-    }
-  },
-  {
-    "req_id": "EMIT::PA.3::doctrine_status",
-    "stage": "PA.3",
-    "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `doctrine_status`",
-    "status": "PASS",
-    "evidence": {
-      "field": "doctrine_status",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "AssemblySecurityPassReceipt",
-        "doctrine_status",
-        "policy_hash",
-        "prompt_like_payload_report",
-        "rejected_slot_payload_report",
-        "replay_key",
-        "request_id",
-        "safe_extraction_map",
-        "safe_slot_payload_map",
-        "security_gap_report",
-        "stage"
-      ],
-      "value_type": "str"
-    }
-  },
-  {
     "req_id": "EMIT::PA.3::AssemblySecurityPassReceipt",
     "stage": "PA.3",
     "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `AssemblySecurityPassReceipt`",
+    "requirement": "PA.3 receipt emits doctrine output `AssemblySecurityPassReceipt`",
     "status": "PASS",
     "evidence": {
-      "field": "AssemblySecurityPassReceipt",
+      "doctrine_field": "AssemblySecurityPassReceipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "AssemblySecurityPassReceipt",
         "doctrine_status",
@@ -1131,11 +1290,13 @@
     "req_id": "EMIT::PA.3::safe_slot_payload_map",
     "stage": "PA.3",
     "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `safe_slot_payload_map`",
+    "requirement": "PA.3 receipt emits doctrine output `safe_slot_payload_map`",
     "status": "PASS",
     "evidence": {
-      "field": "safe_slot_payload_map",
+      "doctrine_field": "safe_slot_payload_map",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "AssemblySecurityPassReceipt",
         "doctrine_status",
@@ -1156,11 +1317,13 @@
     "req_id": "EMIT::PA.3::rejected_slot_payload_report",
     "stage": "PA.3",
     "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `rejected_slot_payload_report`",
+    "requirement": "PA.3 receipt emits doctrine output `rejected_slot_payload_report`",
     "status": "PASS",
     "evidence": {
-      "field": "rejected_slot_payload_report",
+      "doctrine_field": "rejected_slot_payload_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "AssemblySecurityPassReceipt",
         "doctrine_status",
@@ -1181,11 +1344,13 @@
     "req_id": "EMIT::PA.3::prompt_like_payload_report",
     "stage": "PA.3",
     "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `prompt_like_payload_report`",
+    "requirement": "PA.3 receipt emits doctrine output `prompt_like_payload_report`",
     "status": "PASS",
     "evidence": {
-      "field": "prompt_like_payload_report",
+      "doctrine_field": "prompt_like_payload_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "AssemblySecurityPassReceipt",
         "doctrine_status",
@@ -1206,11 +1371,13 @@
     "req_id": "EMIT::PA.3::safe_extraction_map",
     "stage": "PA.3",
     "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `safe_extraction_map`",
+    "requirement": "PA.3 receipt emits doctrine output `safe_extraction_map`",
     "status": "PASS",
     "evidence": {
-      "field": "safe_extraction_map",
+      "doctrine_field": "safe_extraction_map",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "AssemblySecurityPassReceipt",
         "doctrine_status",
@@ -1231,11 +1398,13 @@
     "req_id": "EMIT::PA.3::security_gap_report",
     "stage": "PA.3",
     "category": "MUST_EMIT",
-    "requirement": "PA.3 receipt emits `security_gap_report`",
+    "requirement": "PA.3 receipt emits doctrine output `security_gap_report`",
     "status": "PASS",
     "evidence": {
-      "field": "security_gap_report",
+      "doctrine_field": "security_gap_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "AssemblySecurityPassReceipt",
         "doctrine_status",
@@ -1253,64 +1422,16 @@
     }
   },
   {
-    "req_id": "EMIT::PA.4::stage",
-    "stage": "PA.4",
-    "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `stage`",
-    "status": "PASS",
-    "evidence": {
-      "field": "stage",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "SlotValidationReceipt",
-        "authority_order_receipt",
-        "context_contract_receipt",
-        "doctrine_status",
-        "policy_hash",
-        "replay_key",
-        "request_id",
-        "stage",
-        "tool_schema_binding_receipt",
-        "validation_gap_report",
-        "validation_hash_receipt"
-      ],
-      "value_type": "str"
-    }
-  },
-  {
-    "req_id": "EMIT::PA.4::doctrine_status",
-    "stage": "PA.4",
-    "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `doctrine_status`",
-    "status": "PASS",
-    "evidence": {
-      "field": "doctrine_status",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "SlotValidationReceipt",
-        "authority_order_receipt",
-        "context_contract_receipt",
-        "doctrine_status",
-        "policy_hash",
-        "replay_key",
-        "request_id",
-        "stage",
-        "tool_schema_binding_receipt",
-        "validation_gap_report",
-        "validation_hash_receipt"
-      ],
-      "value_type": "str"
-    }
-  },
-  {
     "req_id": "EMIT::PA.4::SlotValidationReceipt",
     "stage": "PA.4",
     "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `SlotValidationReceipt`",
+    "requirement": "PA.4 receipt emits doctrine output `SlotValidationReceipt`",
     "status": "PASS",
     "evidence": {
-      "field": "SlotValidationReceipt",
+      "doctrine_field": "SlotValidationReceipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "SlotValidationReceipt",
         "authority_order_receipt",
@@ -1331,11 +1452,13 @@
     "req_id": "EMIT::PA.4::validation_gap_report",
     "stage": "PA.4",
     "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `validation_gap_report`",
+    "requirement": "PA.4 receipt emits doctrine output `validation_gap_report`",
     "status": "PASS",
     "evidence": {
-      "field": "validation_gap_report",
+      "doctrine_field": "validation_gap_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "SlotValidationReceipt",
         "authority_order_receipt",
@@ -1356,11 +1479,13 @@
     "req_id": "EMIT::PA.4::authority_order_receipt",
     "stage": "PA.4",
     "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `authority_order_receipt`",
+    "requirement": "PA.4 receipt emits doctrine output `authority_order_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "authority_order_receipt",
+      "doctrine_field": "authority_order_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "SlotValidationReceipt",
         "authority_order_receipt",
@@ -1381,11 +1506,13 @@
     "req_id": "EMIT::PA.4::context_contract_receipt",
     "stage": "PA.4",
     "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `context_contract_receipt`",
+    "requirement": "PA.4 receipt emits doctrine output `context_contract_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "context_contract_receipt",
+      "doctrine_field": "context_contract_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "SlotValidationReceipt",
         "authority_order_receipt",
@@ -1406,11 +1533,13 @@
     "req_id": "EMIT::PA.4::tool_schema_binding_receipt",
     "stage": "PA.4",
     "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `tool_schema_binding_receipt`",
+    "requirement": "PA.4 receipt emits doctrine output `tool_schema_binding_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "tool_schema_binding_receipt",
+      "doctrine_field": "tool_schema_binding_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "SlotValidationReceipt",
         "authority_order_receipt",
@@ -1431,11 +1560,13 @@
     "req_id": "EMIT::PA.4::validation_hash_receipt",
     "stage": "PA.4",
     "category": "MUST_EMIT",
-    "requirement": "PA.4 receipt emits `validation_hash_receipt`",
+    "requirement": "PA.4 receipt emits doctrine output `validation_hash_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "validation_hash_receipt",
+      "doctrine_field": "validation_hash_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "SlotValidationReceipt",
         "authority_order_receipt",
@@ -1453,64 +1584,16 @@
     }
   },
   {
-    "req_id": "EMIT::PA.5::stage",
-    "stage": "PA.5",
-    "category": "MUST_EMIT",
-    "requirement": "PA.5 receipt emits `stage`",
-    "status": "PASS",
-    "evidence": {
-      "field": "stage",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "TokenBudgetLedger",
-        "budget_status_receipt",
-        "canonical_hash_input_manifest",
-        "deterministic_trimming_receipt",
-        "doctrine_status",
-        "overflow_gap_report",
-        "policy_hash",
-        "replay_key",
-        "request_id",
-        "stable_prefix_receipt",
-        "stage"
-      ],
-      "value_type": "str"
-    }
-  },
-  {
-    "req_id": "EMIT::PA.5::doctrine_status",
-    "stage": "PA.5",
-    "category": "MUST_EMIT",
-    "requirement": "PA.5 receipt emits `doctrine_status`",
-    "status": "PASS",
-    "evidence": {
-      "field": "doctrine_status",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "TokenBudgetLedger",
-        "budget_status_receipt",
-        "canonical_hash_input_manifest",
-        "deterministic_trimming_receipt",
-        "doctrine_status",
-        "overflow_gap_report",
-        "policy_hash",
-        "replay_key",
-        "request_id",
-        "stable_prefix_receipt",
-        "stage"
-      ],
-      "value_type": "str"
-    }
-  },
-  {
     "req_id": "EMIT::PA.5::TokenBudgetLedger",
     "stage": "PA.5",
     "category": "MUST_EMIT",
-    "requirement": "PA.5 receipt emits `TokenBudgetLedger`",
+    "requirement": "PA.5 receipt emits doctrine output `TokenBudgetLedger`",
     "status": "PASS",
     "evidence": {
-      "field": "TokenBudgetLedger",
+      "doctrine_field": "TokenBudgetLedger",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "TokenBudgetLedger",
         "budget_status_receipt",
@@ -1531,11 +1614,13 @@
     "req_id": "EMIT::PA.5::deterministic_trimming_receipt",
     "stage": "PA.5",
     "category": "MUST_EMIT",
-    "requirement": "PA.5 receipt emits `deterministic_trimming_receipt`",
+    "requirement": "PA.5 receipt emits doctrine output `deterministic_trimming_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "deterministic_trimming_receipt",
+      "doctrine_field": "deterministic_trimming_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "TokenBudgetLedger",
         "budget_status_receipt",
@@ -1556,11 +1641,13 @@
     "req_id": "EMIT::PA.5::stable_prefix_receipt",
     "stage": "PA.5",
     "category": "MUST_EMIT",
-    "requirement": "PA.5 receipt emits `stable_prefix_receipt`",
+    "requirement": "PA.5 receipt emits doctrine output `stable_prefix_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "stable_prefix_receipt",
+      "doctrine_field": "stable_prefix_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "TokenBudgetLedger",
         "budget_status_receipt",
@@ -1581,11 +1668,13 @@
     "req_id": "EMIT::PA.5::overflow_gap_report",
     "stage": "PA.5",
     "category": "MUST_EMIT",
-    "requirement": "PA.5 receipt emits `overflow_gap_report`",
+    "requirement": "PA.5 receipt emits doctrine output `overflow_gap_report`",
     "status": "PASS",
     "evidence": {
-      "field": "overflow_gap_report",
+      "doctrine_field": "overflow_gap_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "TokenBudgetLedger",
         "budget_status_receipt",
@@ -1606,11 +1695,13 @@
     "req_id": "EMIT::PA.5::canonical_hash_input_manifest",
     "stage": "PA.5",
     "category": "MUST_EMIT",
-    "requirement": "PA.5 receipt emits `canonical_hash_input_manifest`",
+    "requirement": "PA.5 receipt emits doctrine output `canonical_hash_input_manifest`",
     "status": "PASS",
     "evidence": {
-      "field": "canonical_hash_input_manifest",
+      "doctrine_field": "canonical_hash_input_manifest",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "TokenBudgetLedger",
         "budget_status_receipt",
@@ -1628,64 +1719,70 @@
     }
   },
   {
-    "req_id": "EMIT::PA.6::stage",
-    "stage": "PA.6",
+    "req_id": "EMIT::PA.5::budget_status_receipt",
+    "stage": "PA.5",
     "category": "MUST_EMIT",
-    "requirement": "PA.6 receipt emits `stage`",
+    "requirement": "PA.5 receipt emits doctrine output `budget_status_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "stage",
+      "doctrine_field": "budget_status_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
-        "ProviderRenderManifest",
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
         "doctrine_status",
+        "overflow_gap_report",
         "policy_hash",
-        "provider_feature_gap_report",
-        "provider_field_mapping_receipt",
-        "rendered_prompt_packet",
         "replay_key",
         "request_id",
-        "schema_render_receipt",
-        "stage",
-        "tool_render_receipt"
+        "stable_prefix_receipt",
+        "stage"
       ],
-      "value_type": "str"
-    }
-  },
-  {
-    "req_id": "EMIT::PA.6::doctrine_status",
-    "stage": "PA.6",
-    "category": "MUST_EMIT",
-    "requirement": "PA.6 receipt emits `doctrine_status`",
-    "status": "PASS",
-    "evidence": {
-      "field": "doctrine_status",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "ProviderRenderManifest",
-        "doctrine_status",
-        "policy_hash",
-        "provider_feature_gap_report",
-        "provider_field_mapping_receipt",
-        "rendered_prompt_packet",
-        "replay_key",
-        "request_id",
-        "schema_render_receipt",
-        "stage",
-        "tool_render_receipt"
-      ],
-      "value_type": "str"
+      "value_type": "dict"
     }
   },
   {
     "req_id": "EMIT::PA.6::ProviderRenderManifest",
     "stage": "PA.6",
     "category": "MUST_EMIT",
-    "requirement": "PA.6 receipt emits `ProviderRenderManifest`",
+    "requirement": "PA.6 receipt emits doctrine output `ProviderRenderManifest`",
     "status": "PASS",
     "evidence": {
-      "field": "ProviderRenderManifest",
+      "doctrine_field": "ProviderRenderManifest",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
+      "receipt_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ],
+      "value_type": "dict"
+    }
+  },
+  {
+    "req_id": "EMIT::PA.6::rendered_prompt_packet",
+    "stage": "PA.6",
+    "category": "MUST_EMIT",
+    "requirement": "PA.6 receipt emits doctrine output `rendered_prompt_packet`",
+    "status": "PASS",
+    "evidence": {
+      "doctrine_field": "rendered_prompt_packet",
+      "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "ProviderRenderManifest",
         "doctrine_status",
@@ -1706,61 +1803,13 @@
     "req_id": "EMIT::PA.6::provider_field_mapping_receipt",
     "stage": "PA.6",
     "category": "MUST_EMIT",
-    "requirement": "PA.6 receipt emits `provider_field_mapping_receipt`",
+    "requirement": "PA.6 receipt emits doctrine output `provider_field_mapping_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "provider_field_mapping_receipt",
+      "doctrine_field": "provider_field_mapping_receipt",
       "present_in_receipt": true,
-      "receipt_keys": [
-        "ProviderRenderManifest",
-        "doctrine_status",
-        "policy_hash",
-        "provider_feature_gap_report",
-        "provider_field_mapping_receipt",
-        "rendered_prompt_packet",
-        "replay_key",
-        "request_id",
-        "schema_render_receipt",
-        "stage",
-        "tool_render_receipt"
-      ],
-      "value_type": "dict"
-    }
-  },
-  {
-    "req_id": "EMIT::PA.6::schema_render_receipt",
-    "stage": "PA.6",
-    "category": "MUST_EMIT",
-    "requirement": "PA.6 receipt emits `schema_render_receipt`",
-    "status": "PASS",
-    "evidence": {
-      "field": "schema_render_receipt",
-      "present_in_receipt": true,
-      "receipt_keys": [
-        "ProviderRenderManifest",
-        "doctrine_status",
-        "policy_hash",
-        "provider_feature_gap_report",
-        "provider_field_mapping_receipt",
-        "rendered_prompt_packet",
-        "replay_key",
-        "request_id",
-        "schema_render_receipt",
-        "stage",
-        "tool_render_receipt"
-      ],
-      "value_type": "dict"
-    }
-  },
-  {
-    "req_id": "EMIT::PA.6::tool_render_receipt",
-    "stage": "PA.6",
-    "category": "MUST_EMIT",
-    "requirement": "PA.6 receipt emits `tool_render_receipt`",
-    "status": "PASS",
-    "evidence": {
-      "field": "tool_render_receipt",
-      "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "ProviderRenderManifest",
         "doctrine_status",
@@ -1781,11 +1830,13 @@
     "req_id": "EMIT::PA.6::provider_feature_gap_report",
     "stage": "PA.6",
     "category": "MUST_EMIT",
-    "requirement": "PA.6 receipt emits `provider_feature_gap_report`",
+    "requirement": "PA.6 receipt emits doctrine output `provider_feature_gap_report`",
     "status": "PASS",
     "evidence": {
-      "field": "provider_feature_gap_report",
+      "doctrine_field": "provider_feature_gap_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "ProviderRenderManifest",
         "doctrine_status",
@@ -1803,58 +1854,70 @@
     }
   },
   {
-    "req_id": "EMIT::PA.7::stage",
-    "stage": "PA.7",
+    "req_id": "EMIT::PA.6::schema_render_receipt",
+    "stage": "PA.6",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `stage`",
+    "requirement": "PA.6 receipt emits doctrine output `schema_render_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "stage",
+      "doctrine_field": "schema_render_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
-        "CompiledPromptArtifact",
-        "compiled_prompt_artifact_receipt",
+        "ProviderRenderManifest",
         "doctrine_status",
-        "final_artifact_gap_report",
-        "hmac_signature_receipt",
-        "l2_handoff_envelope",
-        "manifest_hash_receipt",
-        "stage"
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
       ],
-      "value_type": "str"
+      "value_type": "dict"
     }
   },
   {
-    "req_id": "EMIT::PA.7::doctrine_status",
-    "stage": "PA.7",
+    "req_id": "EMIT::PA.6::tool_render_receipt",
+    "stage": "PA.6",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `doctrine_status`",
+    "requirement": "PA.6 receipt emits doctrine output `tool_render_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "doctrine_status",
+      "doctrine_field": "tool_render_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
-        "CompiledPromptArtifact",
-        "compiled_prompt_artifact_receipt",
+        "ProviderRenderManifest",
         "doctrine_status",
-        "final_artifact_gap_report",
-        "hmac_signature_receipt",
-        "l2_handoff_envelope",
-        "manifest_hash_receipt",
-        "stage"
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
       ],
-      "value_type": "str"
+      "value_type": "dict"
     }
   },
   {
     "req_id": "EMIT::PA.7::CompiledPromptArtifact",
     "stage": "PA.7",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `CompiledPromptArtifact`",
+    "requirement": "PA.7 receipt emits doctrine output `CompiledPromptArtifact`",
     "status": "PASS",
     "evidence": {
-      "field": "CompiledPromptArtifact",
+      "doctrine_field": "CompiledPromptArtifact",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "CompiledPromptArtifact",
         "compiled_prompt_artifact_receipt",
@@ -1872,11 +1935,13 @@
     "req_id": "EMIT::PA.7::compiled_prompt_artifact_receipt",
     "stage": "PA.7",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `compiled_prompt_artifact_receipt`",
+    "requirement": "PA.7 receipt emits doctrine output `compiled_prompt_artifact_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "compiled_prompt_artifact_receipt",
+      "doctrine_field": "compiled_prompt_artifact_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "CompiledPromptArtifact",
         "compiled_prompt_artifact_receipt",
@@ -1894,11 +1959,13 @@
     "req_id": "EMIT::PA.7::manifest_hash_receipt",
     "stage": "PA.7",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `manifest_hash_receipt`",
+    "requirement": "PA.7 receipt emits doctrine output `manifest_hash_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "manifest_hash_receipt",
+      "doctrine_field": "manifest_hash_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "CompiledPromptArtifact",
         "compiled_prompt_artifact_receipt",
@@ -1916,11 +1983,13 @@
     "req_id": "EMIT::PA.7::hmac_signature_receipt",
     "stage": "PA.7",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `hmac_signature_receipt`",
+    "requirement": "PA.7 receipt emits doctrine output `hmac_signature_receipt`",
     "status": "PASS",
     "evidence": {
-      "field": "hmac_signature_receipt",
+      "doctrine_field": "hmac_signature_receipt",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "CompiledPromptArtifact",
         "compiled_prompt_artifact_receipt",
@@ -1938,11 +2007,13 @@
     "req_id": "EMIT::PA.7::l2_handoff_envelope",
     "stage": "PA.7",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `l2_handoff_envelope`",
+    "requirement": "PA.7 receipt emits doctrine output `l2_handoff_envelope`",
     "status": "PASS",
     "evidence": {
-      "field": "l2_handoff_envelope",
+      "doctrine_field": "l2_handoff_envelope",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "CompiledPromptArtifact",
         "compiled_prompt_artifact_receipt",
@@ -1960,11 +2031,13 @@
     "req_id": "EMIT::PA.7::final_artifact_gap_report",
     "stage": "PA.7",
     "category": "MUST_EMIT",
-    "requirement": "PA.7 receipt emits `final_artifact_gap_report`",
+    "requirement": "PA.7 receipt emits doctrine output `final_artifact_gap_report`",
     "status": "PASS",
     "evidence": {
-      "field": "final_artifact_gap_report",
+      "doctrine_field": "final_artifact_gap_report",
       "present_in_receipt": true,
+      "match_kind": "direct",
+      "matched_via_aliases": [],
       "receipt_keys": [
         "CompiledPromptArtifact",
         "compiled_prompt_artifact_receipt",
