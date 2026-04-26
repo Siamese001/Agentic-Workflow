@@ -1,0 +1,169 @@
+
+================================================================================
+  apps_shared.ModelRouter — tier routing + cost telemetry
+================================================================================
+
+[STEP] get_model_config(task_type, complexity_score) for every TaskType
+   task=simple     complexity=1                           = {'model': 'default', 'tier': 'standard'}
+   task=simple     complexity=5                           = {'model': 'default', 'tier': 'standard'}
+   task=simple     complexity=9                           = {'model': 'default', 'tier': 'standard'}
+   task=complex    complexity=1                           = {'model': 'default', 'tier': 'standard'}
+   task=complex    complexity=5                           = {'model': 'default', 'tier': 'standard'}
+   task=complex    complexity=9                           = {'model': 'default', 'tier': 'standard'}
+   task=creative   complexity=1                           = {'model': 'default', 'tier': 'standard'}
+   task=creative   complexity=5                           = {'model': 'default', 'tier': 'standard'}
+   task=creative   complexity=9                           = {'model': 'default', 'tier': 'standard'}
+   task=analytical complexity=1                           = {'model': 'default', 'tier': 'standard'}
+   task=analytical complexity=5                           = {'model': 'default', 'tier': 'standard'}
+   task=analytical complexity=9                           = {'model': 'default', 'tier': 'standard'}
+
+[STEP] record_usage simulates 4 LLM calls; get_stats aggregates cost
+   aggregate stats                                        = {'budget_info': {'daily_budget': 100.0, 'spent': 0.048, 'remaining': 99.952}}
+
+[STEP] router feedback — budget_info.spent feeds the cost-aware cascade in L2
+   spent = 0.0480  → cost_aware_cascade should_escalate gate
+
+================================================================================
+  apps_shared.AdaptiveThresholds — quality feedback closed loop
+================================================================================
+
+[STEP] AdaptiveThresholds.adjust_thresholds — acceptance_rate drives delta
+   initial thresholds                                     = {'excellent': 0.9, 'high': 0.75, 'good': 0.6, 'marginal': 0.45}
+   acceptance=0.40 (target 0.75) → eased thresholds       = {'excellent': 0.935, 'high': 0.785, 'good': 0.635, 'marginal': 0.485}
+   acceptance=0.95 (target 0.75) → tightened thresholds   = {'excellent': 0.88, 'high': 0.73, 'good': 0.58, 'marginal': 0.43}
+
+[STEP] router feedback — adapted thresholds replace static gate constants
+   delta on 'excellent' = +0.0350 (eased) vs -0.0200 (tightened)
+
+================================================================================
+  apps_shared.FeedbackLoopOrchestrator — regenerate-with-feedback
+================================================================================
+
+[STEP] synthetic generator that fails twice then succeeds; validator scores content length
+   attempts taken                                         = 5
+   success                                                = False
+   final content length                                   = 0
+   checkpoints recorded                                   = 0
+   reverted / exhausted                                   = False / True
+
+[STEP] router feedback — failure report into healing ledger
+   failure_report excerpt:
+REGENERATION FAILURE REPORT: rg.experience.gen
+============================================================
+Status: EXHAUSTED
+Total Attempts: 5
+Max Attempts: 5
+
+ATTEMPT HISTORY:
+
+RECOMMENDATIONS:
+- Review constraint conflicts
+- Adjust gener
+
+================================================================================
+  apps_shared.CircuitBreaker — failure threshold gate
+================================================================================
+
+[STEP] CircuitBreaker config: failure_threshold=3, recovery_timeout=0.5s
+   initial state                                          = CircuitState.CLOSED
+   call #1 (flaky)                                        = RuntimeError  state=CircuitState.CLOSED
+   call #2 (flaky)                                        = RuntimeError  state=CircuitState.CLOSED
+   call #3 (flaky)                                        = RuntimeError  state=CircuitState.OPEN
+   call #4 (flaky)                                        = CircuitOpenError  state=CircuitState.OPEN
+   stats after open                                       = {'name': 'downstream-llm', 'state': 'OPEN', 'failure_count': 3, 'success_count': 0, 'last_failure_time': 1777197427.230122, 'total_calls': 4, 'successful_calls': 0, 'failed_calls': 3, 'timeout_calls': 0, 'circuit_opens': 2, 'circuit_closes': 0}
+
+[STEP] wait recovery_timeout, then success closes the circuit
+   SKIP — TypeError: object str can't be used in 'await' expression
+
+================================================================================
+  apps_shared.AdaptiveRetrievalGate — should_retrieve gate
+================================================================================
+
+[STEP] classify 7 queries through should_retrieve()
+   query='What is 2 + 2?'                                 = retrieve=True  type=FACTUAL  conf=0.90  reason=Factual question requiring external know
+   query='Summarize the latest 10-K filing for ACM'       = retrieve=True  type=COMPLEX  conf=0.85  reason=Complex query requiring retrieval
+   query='Hi'                                             = retrieve=False  type=CONVERSATIONAL  conf=0.95  reason=Conversational query - no retrieval need
+   query='Compare carbon-capture policy across the'       = retrieve=True  type=COMPLEX  conf=0.85  reason=Complex query requiring retrieval
+   query='thx'                                            = retrieve=False  type=COMPLEX  conf=0.70  reason=Short query likely a clarification
+   query='Find the contract clause about liability'       = retrieve=True  type=COMPLEX  conf=0.85  reason=Complex query requiring retrieval
+   query='ok'                                             = retrieve=False  type=CONVERSATIONAL  conf=0.95  reason=Conversational query - no retrieval need
+
+[STEP] aggregate statistics across decision list
+   statistics                                             = {'total_queries': 7, 'retrieval_rate': 0.5714285714285714, 'type_distribution': {'FACTUAL': 0.14285714285714285, 'COMPLEX': 0.5714285714285714, 'CONVERSATIONAL': 0.2857142857142857}, 'avg_confidence': 0.8642857142857142}
+
+[STEP] router feedback — should_retrieve=False short-circuits C0 retrieval plan
+   3/7 queries skip retrieval ⇒ token + latency saved
+
+================================================================================
+  apps_rg ConfidenceMetrics + EarlyStopping + PathPruning
+================================================================================
+
+[STEP] synthetic reasoning chain — 6 steps with rising confidence
+   SKIP — NameError: name '_emit_records_execution_trace' is not defined
+
+================================================================================
+  apps_lic OutreachSignalRouterAgent — signal-driven strategy
+================================================================================
+
+[STEP] determine_strategy(cycle, signals, modified_sections) over 5 scenarios
+   cycle=0 signals=∅                                      = strategy=verification_only  critical=False  agents=[]
+   cycle=1 signals=['low_quality_score']                  = strategy=full_diagnostic  critical=False  agents=[]
+   cycle=2 signals=['compliance_violation', 'pii_leak']   = strategy=surgical_strike  critical=False  agents=[]
+   cycle=3 signals=['low_quality_score', 'low_relevance'] = strategy=surgical_strike  critical=False  agents=[]
+   cycle=4 signals=['convergence_signal']                 = strategy=surgical_strike  critical=False  agents=[]
+
+[STEP] router feedback — strategy enum drives next OutreachHealingCycle.execute()
+   available strategies: ['FULL_DIAGNOSTIC', 'VERIFICATION_ONLY', 'QUALITY_FOCUS', 'COMPLIANCE_FOCUS', 'SURGICAL_STRIKE']
+
+================================================================================
+  apps_eval EvalGateValidator — gate over scorecards + regressions
+================================================================================
+
+[STEP] build synthetic eval inputs — 1 healthy suite + 1 regression
+   overall_score (Σ weighted)                             = 0.7350
+
+[STEP] validate(min=0.7, fail_on_regression=True)
+   result.passed                                          = False
+   result.overall_score                                   = 0.7350
+     violation [BLOCK]                                    = EVAL_REGRESSION_DETECTED: Regression detected in dimensions: ['completeness']
+
+[STEP] router feedback — passed=False blocks promotion in L6 promotion_gates
+   eval-gate verdict ⇒ promote=False; REGRESSION dimension routes to repair queue
+
+================================================================================
+  apps_underwriting_ai IntakeRouter — file-type ingestion
+================================================================================
+
+[STEP] ingest_json(strict=False) on three payloads
+   sample request loaded from                             = sample_underwriting_request.json
+     request_id / amount / term                           = UW-2024-001234 / 2500000.0 / 60
+   payload=well-formed                                    = ok=True  warns=1 errs=0
+     warnings[0:2]                                        = ["Mapped field 'financials' to 'financial_statements'"]
+   payload=missing submission_ts                          = ok=False  warns=1 errs=1
+     warnings[0:2]                                        = ["Mapped field 'financials' to 'financial_statements'"]
+     errors[0:2]                                          = ['Failed to build UnderwritingRequest: 1 validation error for UnderwritingRequest\nsubmission_ts\n  Input should be a valid string [type=string_type, input_value=False, input_type=bool]\n    For further information visit https://errors.pydantic.dev/2.12/v/string_type']
+   payload=out-of-range values                            = ok=False  warns=1 errs=1
+     warnings[0:2]                                        = ["Mapped field 'financials' to 'financial_statements'"]
+     errors[0:2]                                          = ['Failed to build UnderwritingRequest: 2 validation errors for UnderwritingRequest\nrequested_amount\n  Input should be greater than 0 [type=greater_than, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.12/v/greater_than\nrequested_term_months\n  Input should be greater than 0 [type=greater_than, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.12/v/greater_than']
+
+[STEP] router feedback — provenance dict + errors gate downstream policy_adapter
+   IngestionResult.provenance flows to L4 UWG canonical store
+
+================================================================================
+  apps_exec/apps_research/apps_rfp — shared ModelRouter consumers
+================================================================================
+
+[STEP] the 3 brief-style apps reuse apps_shared.ModelRouter — 1 stats ledger
+   apps_exec/exec_brief             tt=analytical cx=4    = cfg={'model': 'default', 'tier': 'standard'}  cost=0.018
+   apps_research/brief              tt=complex    cx=7    = cfg={'model': 'default', 'tier': 'standard'}  cost=0.034
+   apps_research/brief_redo         tt=complex    cx=8    = cfg={'model': 'default', 'tier': 'standard'}  cost=0.041
+   apps_rfp/proposal_section        tt=creative   cx=6    = cfg={'model': 'default', 'tier': 'standard'}  cost=0.027
+   apps_rfp/proposal_polish         tt=simple     cx=2    = cfg={'model': 'default', 'tier': 'standard'}  cost=0.004
+   aggregate stats across 3 apps                          = {'budget_info': {'daily_budget': 100.0, 'spent': 0.124, 'remaining': 99.87599999999999}}
+
+[STEP] router feedback — shared cost ledger feeds L6 promotion + cost cascade
+   spent = 0.1240 / daily_budget 100.00  (remaining = 99.8760)
+
+================================================================================
+  10 apps_* surfaces exercised in 1.26s
+================================================================================
