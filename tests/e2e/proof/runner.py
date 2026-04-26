@@ -70,8 +70,13 @@ def run_scenario(scenario: Scenario) -> ScenarioOutcome:
         evidence_digest_match="evidence_contract_hash mismatch on replay" not in replay_fail,
         prompt_digest_match="prompt_hash mismatch on replay" not in replay_fail,
         execution_digest_match="execution_digest mismatch on replay" not in replay_fail,
-        exit_digest_match=True,
-        commit_digest_match=None if "CommitRequest" not in run.contracts else True,
+        # 99.5 mode 5 + 6: actual cross-run digest comparison (not hard-coded).
+        exit_digest_match="exit_packet digest mismatch on replay" not in replay_fail,
+        commit_digest_match=(
+            None
+            if "CommitRequest" not in run.contracts
+            else "commit_request digest mismatch on replay" not in replay_fail
+        ),
         nondeterminism_flags=[] if scenario.expect_replay_variance is False else ["semantic_cache_variance"],
         accepted_variance=[] if scenario.expect_replay_variance is False else ["calibrated_similarity"],
         replay_status=replay_status,

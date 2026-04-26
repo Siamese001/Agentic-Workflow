@@ -186,6 +186,11 @@ def _check_l2_exec_attributes(scenario: Scenario, span: Any, failures: list[str]
                 failures.append(f"l2.e3.exec side-effect span missing {se_missing}")
     if span.name == "uwg.commit" and not span.attributes.get("commit_request_id"):
         failures.append("uwg.commit span missing commit_request_id")
+    if span.name == "uwg.validate" and not span.attributes.get("commit_request_id"):
+        failures.append("uwg.validate span missing commit_request_id")
+    # 99.4: grounded answer spans must include evidence_contract_ref
+    if span.name == "c0.contract" and not span.attributes.get("evidence_contract_ref"):
+        failures.append("c0.contract span missing evidence_contract_ref")
 
 
 # ---------------------------------------------------------------------------
@@ -214,6 +219,17 @@ def validate_replay(scenario: Scenario, run: RunArtifacts) -> tuple[ProofStatus,
     same_prompt = run.replay_inputs.get("prompt_hash") == second.replay_inputs.get("prompt_hash")
     same_exec = run.replay_inputs.get("execution_digest") == second.replay_inputs.get("execution_digest")
 
+    # 99.5 mode 5 (Exit replay) and mode 6 (Commit replay) — actually compare
+    # the sealed Exit packet digest and CommitRequest digest across runs. These
+    # were previously hard-coded to True at the receipt layer.
+    def _contract_digest(run_obj: Any, name: str) -> str | None:
+        c = run_obj.contracts.get(name)
+        return c.get("digest") if isinstance(c, dict) else None
+
+    same_exit = _contract_digest(run, "ExitReviewPacket") == _contract_digest(second, "ExitReviewPacket")
+    same_sealed = _contract_digest(run, "SealedL2Artifact") == _contract_digest(second, "SealedL2Artifact")
+    same_commit = _contract_digest(run, "CommitRequest") == _contract_digest(second, "CommitRequest")
+
     if not same_route:
         failures.append("route_digest mismatch on replay")
     if (
@@ -237,6 +253,12 @@ def validate_replay(scenario: Scenario, run: RunArtifacts) -> tuple[ProofStatus,
         failures.append("prompt_hash mismatch on replay")
     if not same_exec:
         failures.append("execution_digest mismatch on replay")
+    if not same_exit:
+        failures.append("exit_packet digest mismatch on replay")
+    if not same_sealed:
+        failures.append("sealed_l2_artifact digest mismatch on replay")
+    if scenario.route_id == RouteId.UWG_COMMIT_PATH and not same_commit:
+        failures.append("commit_request digest mismatch on replay")
 
     if scenario.expect_replay_variance:
         # Variance is acceptable; harness itself is deterministic, so we mark this PASS.
@@ -296,7 +318,9 @@ def validate_no_bypass(scenario: Scenario, run: RunArtifacts) -> tuple[ProofStat
         if declared != recomputed:
             failures.append(f"{name}: declared digest does not match recomputed (tamper detected)")
 
-    # CommitRequest only valid when X3 disposition is X3C_COMMIT_ELIGIBLE
+    # CommitRequest only valid when X3 disposition is X3C_COMMIT_ELIGIBLE.
+    # Also: state_diff must be non-empty (otherwise the commit is a silent no-op
+    # write that would still touch L4 — 99.3 FAIL "CommitRequest without StateDiff").
     commit_req = run.contracts.get("CommitRequest")
     disposition = run.contracts.get("X3DispositionReceipt")
     if commit_req is not None:
@@ -305,6 +329,12 @@ def validate_no_bypass(scenario: Scenario, run: RunArtifacts) -> tuple[ProofStat
             or disposition.get("disposition") != XDisposition.X3C_COMMIT_ELIGIBLE.value
         ):
             failures.append("CommitRequest emitted without X3C_COMMIT_ELIGIBLE disposition")
+        if isinstance(commit_req, dict):
+            state_diff = commit_req.get("state_diff")
+            if not isinstance(state_diff, dict) or not state_diff:
+                failures.append("CommitRequest emitted with empty/missing state_diff")
+            if commit_req.get("upstream_ref") != (disposition or {}).get("digest"):
+                failures.append("CommitRequest.upstream_ref does not match X3DispositionReceipt.digest")
 
     # 99 owns no runtime side effects: nothing to check on this side because
     # the harness emits inert dataclasses only.
@@ -346,18 +376,30 @@ def validate_groundedness(scenario: Scenario, run: RunArtifacts) -> tuple[ProofS
     if not run.claim_support_map:
         failures.append("claim_support_map empty on grounded route")
 
+    has_contradictions = False
     for cs in run.claim_support_map:
-        if cs.support_level == SupportLevel.UNSUPPORTED and cs.output_action == OutputAction.INCLUDE:
-            failures.append(f"unsupported claim {cs.claim_id!r} would be INCLUDEd")
-        if cs.citation_anchor_status not in {"RESOLVED", "NOT_REQUIRED"}:
-            failures.append(f"claim {cs.claim_id!r} citation anchor unresolved")
+        has_contradictions = _check_one_claim(cs, failures) or has_contradictions
 
-    # Prompt evidence references match C0 evidence (data boundary check)
+    # Prompt evidence references match C0 evidence (data boundary check) and
+    # schema_bound MUST be True for grounded routes (99.7 prompt safety).
     if isinstance(prompt, dict) and isinstance(evidence, dict):
         if prompt.get("upstream_evidence_ref") != evidence.get("digest"):
             failures.append(
                 "PromptEnvelope.upstream_evidence_ref does not match FinalEvidenceContract.digest"
             )
+        if prompt.get("schema_bound") is not True:
+            failures.append("PromptEnvelope.schema_bound must be True on grounded routes")
+
+    # 99.7 FAIL "Contradiction flag hidden": if any claim has contradiction_refs,
+    # the receipt-level contradiction_handling_status MUST be MARKED or ESCALATED,
+    # never NONE. The runner-level invariant: an emitter that hides contradictions
+    # is exactly an emitter that emits contradictions but reports NONE.
+    if has_contradictions:
+        # The runner currently always emits "NONE" — this is correct only when
+        # claim_support_map.contradiction_refs is also empty. Catching the lie:
+        failures.append(
+            "claim_support_map has contradictions but receipt does not surface contradiction handling"
+        )
 
     return (ProofStatus.PASS if not failures else ProofStatus.FAIL, failures)
 
@@ -383,6 +425,17 @@ def validate_route_coverage(
     if missing:
         failures.append(f"missing route coverage for: {sorted(m.value for m in missing)}")
     return (ProofStatus.PASS if not failures else ProofStatus.FAIL, failures)
+
+
+def _check_one_claim(cs: Any, failures: list[str]) -> bool:
+    """Per-claim 99.7 invariants. Returns True if claim has contradictions."""
+    if cs.support_level == SupportLevel.UNSUPPORTED and cs.output_action == OutputAction.INCLUDE:
+        failures.append(f"unsupported claim {cs.claim_id!r} would be INCLUDEd")
+    if cs.citation_anchor_status not in {"RESOLVED", "NOT_REQUIRED"}:
+        failures.append(f"claim {cs.claim_id!r} citation anchor unresolved")
+    if cs.support_level == SupportLevel.DIRECT and not cs.cited_span_refs:
+        failures.append(f"claim {cs.claim_id!r} marked DIRECT but has no cited_span_refs")
+    return bool(cs.contradiction_refs)
 
 
 def _check_authority_root(

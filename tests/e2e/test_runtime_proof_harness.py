@@ -528,6 +528,193 @@ def test_proof_bundle_contains_99_1_required_artifacts(tmp_path):
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Edge-case hardening — exhaustive coverage of every spec FAIL clause
+# ---------------------------------------------------------------------------
+
+
+def test_99_3_commit_request_with_empty_state_diff_fails():
+    """99.3 FAIL: CommitRequest without StateDiff is a silent no-op write."""
+    sc = get("RC-UWG")
+    run = emit_run(sc)
+    run.contracts["CommitRequest"]["state_diff"] = {}
+    status, failures = validate_no_bypass(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("empty/missing state_diff" in f for f in failures)
+
+
+def test_99_3_commit_request_upstream_ref_must_match_disposition():
+    sc = get("RC-UWG")
+    run = emit_run(sc)
+    run.contracts["CommitRequest"]["upstream_ref"] = "blake2b:00000000000000000000000000000000"
+    status, failures = validate_no_bypass(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("CommitRequest.upstream_ref does not match" in f for f in failures)
+
+
+def test_99_3_commit_request_with_non_x3c_disposition_fails():
+    """99.6 FAIL: CommitRequest only valid when disposition is X3C_COMMIT_ELIGIBLE."""
+    sc = get("RC-UWG")
+    run = emit_run(sc)
+    run.contracts["X3DispositionReceipt"]["disposition"] = XDisposition.X3A_APPROVE.value
+    status, failures = validate_no_bypass(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("X3C_COMMIT_ELIGIBLE" in f for f in failures)
+
+
+def test_99_4_uwg_validate_span_must_carry_commit_request_id():
+    """99.4 commit-path attrs: uwg.validate must carry commit_request_id."""
+    sc = get("RC-UWG")
+    run = emit_run(sc)
+    validate_span = next(s for s in run.spans if s.name == "uwg.validate")
+    validate_span.attributes.pop("commit_request_id")
+    status, failures = validate_trace(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("uwg.validate span missing commit_request_id" in f for f in failures)
+
+
+def test_99_4_c0_contract_span_must_carry_evidence_contract_ref():
+    """99.4: grounded answer spans must include evidence_contract_ref."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    c0_span = next(s for s in run.spans if s.name == "c0.contract")
+    c0_span.attributes.pop("evidence_contract_ref")
+    status, failures = validate_trace(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("c0.contract span missing evidence_contract_ref" in f for f in failures)
+
+
+def test_99_5_exit_packet_digest_tamper_detected_on_replay():
+    """99.5 mode 5: exit packet digest mismatch across runs must be caught."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc, seed=0)
+    # Tamper the exit packet so its declared digest no longer represents the run
+    run.contracts["ExitReviewPacket"]["digest"] = "blake2b:tampered00000000000000000000"
+    status, failures = validate_replay(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("exit_packet digest mismatch" in f for f in failures)
+
+
+def test_99_5_sealed_artifact_digest_tamper_detected_on_replay():
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc, seed=0)
+    run.contracts["SealedL2Artifact"]["digest"] = "blake2b:tampered00000000000000000000"
+    status, failures = validate_replay(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("sealed_l2_artifact digest mismatch" in f for f in failures)
+
+
+def test_99_5_commit_request_digest_tamper_detected_on_replay():
+    """99.5 mode 6: CommitRequest digest mismatch on UWG path must FAIL replay."""
+    sc = get("RC-UWG")
+    run = emit_run(sc, seed=0)
+    run.contracts["CommitRequest"]["digest"] = "blake2b:tampered00000000000000000000"
+    status, failures = validate_replay(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("commit_request digest mismatch" in f for f in failures)
+
+
+def test_99_7_prompt_evidence_ref_mismatch_detected():
+    """99.7 prompt safety: PromptEnvelope.upstream_evidence_ref must match C0."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    run.contracts["PromptEnvelope"]["upstream_evidence_ref"] = "blake2b:wrong00000000000000000000"
+    status, failures = validate_groundedness(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("upstream_evidence_ref does not match" in f for f in failures)
+
+
+def test_99_7_schema_bound_must_be_true_on_grounded_route():
+    """99.7 prompt safety: schema_bound=False on grounded route is a boundary breach."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    run.contracts["PromptEnvelope"]["schema_bound"] = False
+    status, failures = validate_groundedness(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("schema_bound must be True" in f for f in failures)
+
+
+def test_99_7_unresolved_citation_anchor_detected():
+    """99.7 FAIL: citation anchor that does not resolve."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    run.claim_support_map[0].citation_anchor_status = "UNRESOLVED"
+    status, failures = validate_groundedness(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("citation anchor unresolved" in f for f in failures)
+
+
+def test_99_7_direct_support_without_cited_span_fails():
+    """99.3 HANDOFF 5 / 99.7: DIRECT support but no cited_span_refs is unanchored."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    run.claim_support_map[0].cited_span_refs = []
+    status, failures = validate_groundedness(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("DIRECT but has no cited_span_refs" in f for f in failures)
+
+
+def test_99_7_contradiction_flag_hidden_detected():
+    """99.7 FAIL: claim has contradiction_refs but receipt-level handling is NONE."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    run.claim_support_map[0].contradiction_refs = ["ev-conflicting"]
+    status, failures = validate_groundedness(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("contradiction" in f for f in failures)
+
+
+def test_99_7_sealed_artifact_with_zero_citations_on_grounded_route_fails():
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    run.contracts["SealedL2Artifact"]["cited_evidence_refs"] = []
+    status, failures = validate_groundedness(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("cites zero evidence" in f for f in failures)
+
+
+def test_99_bundle_integrity_verifies_disk_digest(tmp_path):
+    """99 bundle schema: digest field on disk must match recomputed payload."""
+    from tests.e2e.proof.bundle import verify_bundle_integrity
+
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+    ok, reason = verify_bundle_integrity(bundle_dir)
+    assert ok, reason
+
+
+def test_99_bundle_integrity_detects_disk_tamper(tmp_path):
+    from tests.e2e.proof.bundle import verify_bundle_integrity
+
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+
+    def mutate(p):
+        p["scenarios"][0]["scenario_id"] = "TAMPERED-001"
+
+    _tamper_bundle(bundle_dir, mutate)
+    ok, reason = verify_bundle_integrity(bundle_dir)
+    assert not ok
+    assert "recomputed" in reason
+
+
+def test_replay_validator_catches_digest_tamper_via_cli_run(tmp_path):
+    """End-to-end: tampered SealedL2Artifact in bundle → CLI strict replay returns 1."""
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+
+    def mutate(p):
+        # Mutate the route_digest_match flag in receipt → CLI strict must fail
+        p["scenarios"][0]["replay_receipts"][0]["route_digest_match"] = False
+        p["scenarios"][0]["replay_receipts"][0]["replay_status"] = "FAIL"
+
+    _tamper_bundle(bundle_dir, mutate)
+    result = _run_cli("tests.e2e.validate_replay", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT)
+    assert result.returncode == 1
+
+
+# ---------------------------------------------------------------------------
+# Idempotency / determinism across separate processes
+# ---------------------------------------------------------------------------
+
+
 def test_two_independent_runs_produce_identical_bundles(tmp_path):
     a = tmp_path / "a"
     b = tmp_path / "b"

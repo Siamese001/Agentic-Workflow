@@ -154,6 +154,22 @@ def read_bundle(src_dir: Path) -> dict[str, Any]:
     return data
 
 
+def verify_bundle_integrity(src_dir: Path) -> tuple[bool, str]:
+    """Re-compute the bundle digest from disk and compare to the declared field.
+
+    Returns ``(ok, reason)`` — used by tests and CI to detect on-disk tamper of
+    a previously-emitted proof bundle.
+    """
+    data = read_bundle(src_dir)
+    declared = data.pop("digest", None)
+    if not declared:
+        return (False, "bundle.json has no declared digest field")
+    recomputed = digest(data)
+    if declared != recomputed:
+        return (False, f"declared {declared!r} != recomputed {recomputed!r}")
+    return (True, "ok")
+
+
 def now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 

@@ -136,7 +136,8 @@ def emit_run(scenario: Scenario, *, seed: int = 0) -> RunArtifacts:
         final_evidence = _emit_final_evidence(scenario, root, route)
         artifacts.add_contract("FinalEvidenceContract", final_evidence)
         for span_name in ("c0.plan", "c0.fetch", "c0.shape", "c0.contract"):
-            _add_span(artifacts, span_name, root, parent="l0.route.emit_contract")
+            extra = {"evidence_contract_ref": final_evidence.digest} if span_name == "c0.contract" else None
+            _add_span(artifacts, span_name, root, parent="l0.route.emit_contract", attributes=extra)
         artifacts.observed_path.append("c0.contract")
 
     # 5. L3 managed workflow
