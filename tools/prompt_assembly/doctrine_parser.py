@@ -40,14 +40,14 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 DOCTRINE_FILES: dict[str, str] = {
-    "PA.0": "docs/reference/03_L0_Routing/Prompt Assembly/PA.0_Boundary_Check_detailed.md",
-    "PA.1": "docs/reference/03_L0_Routing/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md",
-    "PA.2": "docs/reference/03_L0_Routing/Prompt Assembly/PA.2_Slot_Composition_detailed.md",
-    "PA.3": "docs/reference/03_L0_Routing/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md",
-    "PA.4": "docs/reference/03_L0_Routing/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md",
-    "PA.5": "docs/reference/03_L0_Routing/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md",
-    "PA.6": "docs/reference/03_L0_Routing/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md",
-    "PA.7": "docs/reference/03_L0_Routing/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md",
+    "PA.0": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.0_Boundary_Check_detailed.md",
+    "PA.1": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md",
+    "PA.2": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.2_Slot_Composition_detailed.md",
+    "PA.3": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md",
+    "PA.4": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md",
+    "PA.5": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md",
+    "PA.6": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md",
+    "PA.7": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md",
 }
 
 # Section headings recognised by the parser. We anchor on the heading

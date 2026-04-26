@@ -2,15 +2,15 @@
 
 Source-of-truth doctrine files:
 
-- **PARENT** — `docs/reference/03_L0_Routing/Prompt Assembly/Prompt_Assembly_detailed.md`
-- **PA.0** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.0_Boundary_Check_detailed.md`
-- **PA.1** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md`
-- **PA.2** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.2_Slot_Composition_detailed.md`
-- **PA.3** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md`
-- **PA.4** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md`
-- **PA.5** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md`
-- **PA.6** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md`
-- **PA.7** — `docs/reference/03_L0_Routing/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md`
+- **PARENT** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/Prompt_Assembly_detailed.md`
+- **PA.0** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.0_Boundary_Check_detailed.md`
+- **PA.1** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md`
+- **PA.2** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.2_Slot_Composition_detailed.md`
+- **PA.3** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md`
+- **PA.4** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md`
+- **PA.5** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md`
+- **PA.6** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md`
+- **PA.7** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md`
 
 Runtime artifacts being verified:
 
@@ -19,22 +19,53 @@ Runtime artifacts being verified:
 - `agentic_core/prompt_governance/prompt_assembly/doctrine_receipts.py`
 - `agentic_core/prompt_governance/prompt_assembly/pipeline.py`
 
-**Tally:** 171 PASS / 0 FAIL (of 171 requirements)
+**Tally:** 240 PASS / 0 FAIL (of 240 requirements)
 
-**Generated:** 2026-04-26T18:22:57.970523+00:00
+**Generated:** 2026-04-26T18:42:20.988111+00:00
 
 ## Category roll-up
 
 | Category | Total | PASS | FAIL |
 |---|---:|---:|---:|
+| AGGREGATION | 5 | 5 | 0 |
+| DETERMINISM | 8 | 8 | 0 |
 | DOCTRINE_DRIFT | 16 | 16 | 0 |
 | E2E | 4 | 4 | 0 |
+| FORBID_DEEP | 5 | 5 | 0 |
+| FORBID_FALSE_POSITIVE | 5 | 5 | 0 |
 | FORBID_RD | 24 | 24 | 0 |
 | INVARIANT | 12 | 12 | 0 |
 | MUST_EMIT | 48 | 48 | 0 |
 | MUST_NOT_FENCE | 11 | 11 | 0 |
+| NEGATIVE_PATH | 36 | 36 | 0 |
+| PARSER_ROBUSTNESS | 5 | 5 | 0 |
+| PIPELINE_NEG | 3 | 3 | 0 |
 | SLOT_MAP | 11 | 11 | 0 |
+| STATUS_PARTITION_COMPLETE | 2 | 2 | 0 |
 | STATUS_SET | 45 | 45 | 0 |
+
+## AGGREGATION
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PARENT | `AGG::empty` | Empty receipt list aggregates to PA_READY (neutral) | **PASS** | `{"input": [], "result": "PA_READY"}` |
+| 2 | PARENT | `AGG::single` | Single-receipt input round-trips through aggregator | **PASS** | `{"result": "PA_BUDGET_OVERFLOW"}` |
+| 3 | PARENT | `AGG::all_ready` | All-PA_READY receipt list aggregates to PA_READY | **PASS** | `{"result": "PA_READY"}` |
+| 4 | PARENT | `AGG::worst_wins` | Mixed-status input does NOT aggregate to PA_READY | **PASS** | `{"result": "PA_BUDGET_OVERFLOW", "non_ready": true}` |
+| 5 | PARENT | `AGG::deterministic` | Aggregator is deterministic on identical input | **PASS** | `{"first": "PA_BUDGET_TRIMMED", "second": "PA_BUDGET_TRIMMED"}` |
+
+## DETERMINISM
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PA.0 | `DET::PA.0` | PA.0 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.0", "first_byte_count": 804, "second_byte_count": 804, "byte_identical": true, "first_keys": ["assembly_gap_report", "bound…` |
+| 2 | PA.1 | `DET::PA.1` | PA.1 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.1", "first_byte_count": 449, "second_byte_count": 449, "byte_identical": true, "first_keys": ["bom_gap_report", "bom_hash_r…` |
+| 3 | PA.2 | `DET::PA.2` | PA.2 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.2", "first_byte_count": 696, "second_byte_count": 696, "byte_identical": true, "first_keys": ["doctrine_status", "policy_ha…` |
+| 4 | PA.3 | `DET::PA.3` | PA.3 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.3", "first_byte_count": 691, "second_byte_count": 691, "byte_identical": true, "first_keys": ["AssemblySecurityPassReceipt"…` |
+| 5 | PA.4 | `DET::PA.4` | PA.4 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.4", "first_byte_count": 630, "second_byte_count": 630, "byte_identical": true, "first_keys": ["SlotValidationReceipt", "aut…` |
+| 6 | PA.5 | `DET::PA.5` | PA.5 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.5", "first_byte_count": 691, "second_byte_count": 691, "byte_identical": true, "first_keys": ["TokenBudgetLedger", "budget_…` |
+| 7 | PA.6 | `DET::PA.6` | PA.6 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.6", "first_byte_count": 549, "second_byte_count": 549, "byte_identical": true, "first_keys": ["ProviderRenderManifest", "do…` |
+| 8 | PA.7 | `DET::PA.7` | PA.7 receipt builder is byte-deterministic | **PASS** | `{"stage": "PA.7", "first_byte_count": 808, "second_byte_count": 808, "byte_identical": true, "first_keys": ["CompiledPromptArtifact", "co…` |
 
 ## DOCTRINE_DRIFT
 
@@ -65,6 +96,26 @@ Runtime artifacts being verified:
 | 2 | ALL | `E2E::stages_emitted` | Pipeline emits at least PA.0 and PA.7 receipts | **PASS** | `{"stages_emitted": ["PA.0", "PA.7"], "receipt_count": 2}` |
 | 3 | ALL | `E2E::no_forbidden` | No pipeline receipt carries forbidden tokens under decision fields | **PASS** | `{"forbidden_hits": []}` |
 | 4 | ALL | `E2E::aggregate_status` | Pipeline aggregate doctrine_status resolves to a PAStatus | **PASS** | `{"aggregate_status": "PA_ARTIFACT_NOT_SIGNED", "result_status": "PA_ARTIFACT_NOT_SIGNED", "match": true}` |
+
+## FORBID_DEEP
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PARENT | `FORBID_DEEP::depth1` | FORBID_DEEP/depth1: Top-level decision field with forbidden token | **PASS** | `{"topology": "depth1", "expected_raise": true, "actually_raised": true, "message": "PA receipt contains forbidden PA output(s): $.decisio…` |
+| 2 | PARENT | `FORBID_DEEP::depth2` | FORBID_DEEP/depth2: Forbidden token nested one level deep under decision field | **PASS** | `{"topology": "depth2", "expected_raise": true, "actually_raised": true, "message": "PA receipt contains forbidden PA output(s): $.compile…` |
+| 3 | PARENT | `FORBID_DEEP::depth3` | FORBID_DEEP/depth3: Forbidden token nested three levels deep | **PASS** | `{"topology": "depth3", "expected_raise": true, "actually_raised": true, "message": "PA receipt contains forbidden PA output(s): $.wrapper…` |
+| 4 | PARENT | `FORBID_DEEP::in_list` | FORBID_DEEP/in_list: Forbidden token inside list of dicts under decision-shaped key | **PASS** | `{"topology": "in_list", "expected_raise": true, "actually_raised": true, "message": "PA receipt contains forbidden PA output(s): $.decisi…` |
+| 5 | PARENT | `FORBID_DEEP::list_of_lists` | FORBID_DEEP/list_of_lists: Forbidden token inside doubly-nested list | **PASS** | `{"topology": "list_of_lists", "expected_raise": true, "actually_raised": true, "message": "PA receipt contains forbidden PA output(s): $.…` |
+
+## FORBID_FALSE_POSITIVE
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PARENT | `FORBID_FP::substring_allow` | FORBID_FALSE_POSITIVE/substring_allow: scanner does NOT flag legitimate use | **PASS** | `{"topology": "substring_allow", "expected_raise": false, "actually_raised": false, "message": "", "rationale": "Forbidden tokens must mat…` |
+| 2 | PARENT | `FORBID_FP::substring_deny` | FORBID_FALSE_POSITIVE/substring_deny: scanner does NOT flag legitimate use | **PASS** | `{"topology": "substring_deny", "expected_raise": false, "actually_raised": false, "message": "", "rationale": "Forbidden tokens must matc…` |
+| 3 | PARENT | `FORBID_FP::chunk_disposition` | FORBID_FALSE_POSITIVE/chunk_disposition: scanner does NOT flag legitimate use | **PASS** | `{"topology": "chunk_disposition", "expected_raise": false, "actually_raised": false, "message": "", "rationale": "Forbidden tokens must m…` |
+| 4 | PARENT | `FORBID_FP::chunk_extraction_label` | FORBID_FALSE_POSITIVE/chunk_extraction_label: scanner does NOT flag legitimate use | **PASS** | `{"topology": "chunk_extraction_label", "expected_raise": false, "actually_raised": false, "message": "", "rationale": "Forbidden tokens m…` |
+| 5 | PARENT | `FORBID_FP::metadata_string` | FORBID_FALSE_POSITIVE/metadata_string: scanner does NOT flag legitimate use | **PASS** | `{"topology": "metadata_string", "expected_raise": false, "actually_raised": false, "message": "", "rationale": "Forbidden tokens must mat…` |
 
 ## FORBID_RD
 
@@ -181,6 +232,65 @@ Runtime artifacts being verified:
 | 10 | PARENT | `FENCE::reroute` | No public callable named `*reroute*` in prompt_assembly surface | **PASS** | `{"forbidden_substring": "reroute", "callable_count_scanned": 46, "matches": []}` |
 | 11 | PARENT | `FENCE::SURFACE_INVENTORY` | Public callables in prompt_assembly surface (informational) | **PASS** | `{"public_callables": ["aggregate_doctrine_status", "assert_no_forbidden", "boundary_check", "build_budget_report", "build_dispatch_outcom…` |
 
+## NEGATIVE_PATH
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PA.0 | `NEG::PA.0::PA_BOUNDARY_MISMATCH` | PA.0 aggregator round-trips PA_BOUNDARY_MISMATCH | **PASS** | `{"stage": "PA.0", "input_status": "PA_BOUNDARY_MISMATCH", "aggregated_status": "PA_BOUNDARY_MISMATCH", "round_trip": true}` |
+| 2 | PA.0 | `NEG::PA.0::PA_INPUT_INCOMPLETE` | PA.0 aggregator round-trips PA_INPUT_INCOMPLETE | **PASS** | `{"stage": "PA.0", "input_status": "PA_INPUT_INCOMPLETE", "aggregated_status": "PA_INPUT_INCOMPLETE", "round_trip": true}` |
+| 3 | PA.0 | `NEG::PA.0::PA_READY` | PA.0 aggregator round-trips PA_READY | **PASS** | `{"stage": "PA.0", "input_status": "PA_READY", "aggregated_status": "PA_READY", "round_trip": true}` |
+| 4 | PA.0 | `NEG::PA.0::PA_REQUIRES_UPSTREAM_REPAIR` | PA.0 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR | **PASS** | `{"stage": "PA.0", "input_status": "PA_REQUIRES_UPSTREAM_REPAIR", "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR", "round_trip": true}` |
+| 5 | PA.1 | `NEG::PA.1::PA_BOM_GAP` | PA.1 aggregator round-trips PA_BOM_GAP | **PASS** | `{"stage": "PA.1", "input_status": "PA_BOM_GAP", "aggregated_status": "PA_BOM_GAP", "round_trip": true}` |
+| 6 | PA.1 | `NEG::PA.1::PA_BOM_RESOLVED` | PA.1 aggregator round-trips PA_BOM_RESOLVED | **PASS** | `{"stage": "PA.1", "input_status": "PA_BOM_RESOLVED", "aggregated_status": "PA_BOM_RESOLVED", "round_trip": true}` |
+| 7 | PA.1 | `NEG::PA.1::PA_REQUIRES_UPSTREAM_REPAIR` | PA.1 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR | **PASS** | `{"stage": "PA.1", "input_status": "PA_REQUIRES_UPSTREAM_REPAIR", "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR", "round_trip": true}` |
+| 8 | PA.2 | `NEG::PA.2::PA_AUTHORITY_CONFLICT` | PA.2 aggregator round-trips PA_AUTHORITY_CONFLICT | **PASS** | `{"stage": "PA.2", "input_status": "PA_AUTHORITY_CONFLICT", "aggregated_status": "PA_AUTHORITY_CONFLICT", "round_trip": true}` |
+| 9 | PA.2 | `NEG::PA.2::PA_SLOTS_COMPOSED` | PA.2 aggregator round-trips PA_SLOTS_COMPOSED | **PASS** | `{"stage": "PA.2", "input_status": "PA_SLOTS_COMPOSED", "aggregated_status": "PA_SLOTS_COMPOSED", "round_trip": true}` |
+| 10 | PA.2 | `NEG::PA.2::PA_SLOT_COMPOSITION_GAP` | PA.2 aggregator round-trips PA_SLOT_COMPOSITION_GAP | **PASS** | `{"stage": "PA.2", "input_status": "PA_SLOT_COMPOSITION_GAP", "aggregated_status": "PA_SLOT_COMPOSITION_GAP", "round_trip": true}` |
+| 11 | PA.3 | `NEG::PA.3::PA_REQUIRES_UPSTREAM_REPAIR` | PA.3 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR | **PASS** | `{"stage": "PA.3", "input_status": "PA_REQUIRES_UPSTREAM_REPAIR", "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR", "round_trip": true}` |
+| 12 | PA.3 | `NEG::PA.3::PA_SAFE_EXTRACTION_PARTIAL` | PA.3 aggregator round-trips PA_SAFE_EXTRACTION_PARTIAL | **PASS** | `{"stage": "PA.3", "input_status": "PA_SAFE_EXTRACTION_PARTIAL", "aggregated_status": "PA_SAFE_EXTRACTION_PARTIAL", "round_trip": true}` |
+| 13 | PA.3 | `NEG::PA.3::PA_SECURITY_GAP` | PA.3 aggregator round-trips PA_SECURITY_GAP | **PASS** | `{"stage": "PA.3", "input_status": "PA_SECURITY_GAP", "aggregated_status": "PA_SECURITY_GAP", "round_trip": true}` |
+| 14 | PA.3 | `NEG::PA.3::PA_SECURITY_PASS` | PA.3 aggregator round-trips PA_SECURITY_PASS | **PASS** | `{"stage": "PA.3", "input_status": "PA_SECURITY_PASS", "aggregated_status": "PA_SECURITY_PASS", "round_trip": true}` |
+| 15 | PA.3 | `NEG::PA.3::PA_SLOT_PAYLOAD_REJECTED` | PA.3 aggregator round-trips PA_SLOT_PAYLOAD_REJECTED | **PASS** | `{"stage": "PA.3", "input_status": "PA_SLOT_PAYLOAD_REJECTED", "aggregated_status": "PA_SLOT_PAYLOAD_REJECTED", "round_trip": true}` |
+| 16 | PA.4 | `NEG::PA.4::PA_AUTHORITY_INVERSION_GAP` | PA.4 aggregator round-trips PA_AUTHORITY_INVERSION_GAP | **PASS** | `{"stage": "PA.4", "input_status": "PA_AUTHORITY_INVERSION_GAP", "aggregated_status": "PA_AUTHORITY_INVERSION_GAP", "round_trip": true}` |
+| 17 | PA.4 | `NEG::PA.4::PA_CONTEXT_CONTRACT_GAP` | PA.4 aggregator round-trips PA_CONTEXT_CONTRACT_GAP | **PASS** | `{"stage": "PA.4", "input_status": "PA_CONTEXT_CONTRACT_GAP", "aggregated_status": "PA_CONTEXT_CONTRACT_GAP", "round_trip": true}` |
+| 18 | PA.4 | `NEG::PA.4::PA_SCHEMA_BINDING_GAP` | PA.4 aggregator round-trips PA_SCHEMA_BINDING_GAP | **PASS** | `{"stage": "PA.4", "input_status": "PA_SCHEMA_BINDING_GAP", "aggregated_status": "PA_SCHEMA_BINDING_GAP", "round_trip": true}` |
+| 19 | PA.4 | `NEG::PA.4::PA_SLOT_CONTRACT_INVALID` | PA.4 aggregator round-trips PA_SLOT_CONTRACT_INVALID | **PASS** | `{"stage": "PA.4", "input_status": "PA_SLOT_CONTRACT_INVALID", "aggregated_status": "PA_SLOT_CONTRACT_INVALID", "round_trip": true}` |
+| 20 | PA.4 | `NEG::PA.4::PA_SLOT_CONTRACT_VALID` | PA.4 aggregator round-trips PA_SLOT_CONTRACT_VALID | **PASS** | `{"stage": "PA.4", "input_status": "PA_SLOT_CONTRACT_VALID", "aggregated_status": "PA_SLOT_CONTRACT_VALID", "round_trip": true}` |
+| 21 | PA.4 | `NEG::PA.4::PA_TOOL_BINDING_GAP` | PA.4 aggregator round-trips PA_TOOL_BINDING_GAP | **PASS** | `{"stage": "PA.4", "input_status": "PA_TOOL_BINDING_GAP", "aggregated_status": "PA_TOOL_BINDING_GAP", "round_trip": true}` |
+| 22 | PA.5 | `NEG::PA.5::PA_BUDGET_FIT` | PA.5 aggregator round-trips PA_BUDGET_FIT | **PASS** | `{"stage": "PA.5", "input_status": "PA_BUDGET_FIT", "aggregated_status": "PA_BUDGET_FIT", "round_trip": true}` |
+| 23 | PA.5 | `NEG::PA.5::PA_BUDGET_OVERFLOW` | PA.5 aggregator round-trips PA_BUDGET_OVERFLOW | **PASS** | `{"stage": "PA.5", "input_status": "PA_BUDGET_OVERFLOW", "aggregated_status": "PA_BUDGET_OVERFLOW", "round_trip": true}` |
+| 24 | PA.5 | `NEG::PA.5::PA_BUDGET_TRIMMED` | PA.5 aggregator round-trips PA_BUDGET_TRIMMED | **PASS** | `{"stage": "PA.5", "input_status": "PA_BUDGET_TRIMMED", "aggregated_status": "PA_BUDGET_TRIMMED", "round_trip": true}` |
+| 25 | PA.5 | `NEG::PA.5::PA_REQUIRES_UPSTREAM_REPAIR` | PA.5 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR | **PASS** | `{"stage": "PA.5", "input_status": "PA_REQUIRES_UPSTREAM_REPAIR", "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR", "round_trip": true}` |
+| 26 | PA.6 | `NEG::PA.6::PA_PROVIDER_FEATURE_GAP` | PA.6 aggregator round-trips PA_PROVIDER_FEATURE_GAP | **PASS** | `{"stage": "PA.6", "input_status": "PA_PROVIDER_FEATURE_GAP", "aggregated_status": "PA_PROVIDER_FEATURE_GAP", "round_trip": true}` |
+| 27 | PA.6 | `NEG::PA.6::PA_RENDERED` | PA.6 aggregator round-trips PA_RENDERED | **PASS** | `{"stage": "PA.6", "input_status": "PA_RENDERED", "aggregated_status": "PA_RENDERED", "round_trip": true}` |
+| 28 | PA.6 | `NEG::PA.6::PA_RENDER_GAP` | PA.6 aggregator round-trips PA_RENDER_GAP | **PASS** | `{"stage": "PA.6", "input_status": "PA_RENDER_GAP", "aggregated_status": "PA_RENDER_GAP", "round_trip": true}` |
+| 29 | PA.6 | `NEG::PA.6::PA_SCHEMA_RENDER_GAP` | PA.6 aggregator round-trips PA_SCHEMA_RENDER_GAP | **PASS** | `{"stage": "PA.6", "input_status": "PA_SCHEMA_RENDER_GAP", "aggregated_status": "PA_SCHEMA_RENDER_GAP", "round_trip": true}` |
+| 30 | PA.6 | `NEG::PA.6::PA_TOOL_RENDER_GAP` | PA.6 aggregator round-trips PA_TOOL_RENDER_GAP | **PASS** | `{"stage": "PA.6", "input_status": "PA_TOOL_RENDER_GAP", "aggregated_status": "PA_TOOL_RENDER_GAP", "round_trip": true}` |
+| 31 | PA.7 | `NEG::PA.7::PA_ARTIFACT_NOT_SIGNED` | PA.7 aggregator round-trips PA_ARTIFACT_NOT_SIGNED | **PASS** | `{"stage": "PA.7", "input_status": "PA_ARTIFACT_NOT_SIGNED", "aggregated_status": "PA_ARTIFACT_NOT_SIGNED", "round_trip": true}` |
+| 32 | PA.7 | `NEG::PA.7::PA_ARTIFACT_SIGNED` | PA.7 aggregator round-trips PA_ARTIFACT_SIGNED | **PASS** | `{"stage": "PA.7", "input_status": "PA_ARTIFACT_SIGNED", "aggregated_status": "PA_ARTIFACT_SIGNED", "round_trip": true}` |
+| 33 | PA.7 | `NEG::PA.7::PA_L2_HANDOFF_GAP` | PA.7 aggregator round-trips PA_L2_HANDOFF_GAP | **PASS** | `{"stage": "PA.7", "input_status": "PA_L2_HANDOFF_GAP", "aggregated_status": "PA_L2_HANDOFF_GAP", "round_trip": true}` |
+| 34 | PA.7 | `NEG::PA.7::PA_L2_HANDOFF_READY` | PA.7 aggregator round-trips PA_L2_HANDOFF_READY | **PASS** | `{"stage": "PA.7", "input_status": "PA_L2_HANDOFF_READY", "aggregated_status": "PA_L2_HANDOFF_READY", "round_trip": true}` |
+| 35 | PA.7 | `NEG::PA.7::PA_MANIFEST_HASH_GAP` | PA.7 aggregator round-trips PA_MANIFEST_HASH_GAP | **PASS** | `{"stage": "PA.7", "input_status": "PA_MANIFEST_HASH_GAP", "aggregated_status": "PA_MANIFEST_HASH_GAP", "round_trip": true}` |
+| 36 | PA.7 | `NEG::PA.7::PA_SIGNATURE_GAP` | PA.7 aggregator round-trips PA_SIGNATURE_GAP | **PASS** | `{"stage": "PA.7", "input_status": "PA_SIGNATURE_GAP", "aggregated_status": "PA_SIGNATURE_GAP", "round_trip": true}` |
+
+## PARSER_ROBUSTNESS
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PARENT | `PARSER::missing_section` | PARSER/missing_section: Section absent from doc returns empty list | **PASS** | `{"case": "missing_section", "section": "STATUS VALUES", "expected": [], "actual": [], "description": "Section absent from doc returns emp…` |
+| 2 | PARENT | `PARSER::blank_file` | PARSER/blank_file: Empty doc returns empty list | **PASS** | `{"case": "blank_file", "section": "STATUS VALUES", "expected": [], "actual": [], "description": "Empty doc returns empty list"}` |
+| 3 | PARENT | `PARSER::repeated_heading` | PARSER/repeated_heading: Parser stops at first blank line after items, ignoring later repeats | **PASS** | `{"case": "repeated_heading", "section": "STATUS VALUES", "expected": ["A", "B"], "actual": ["A", "B"], "description": "Parser stops at fi…` |
+| 4 | PARENT | `PARSER::non_bullet_noise` | PARSER/non_bullet_noise: Parser stops at first non-bullet, non-empty line | **PASS** | `{"case": "non_bullet_noise", "section": "STATUS VALUES", "expected": ["One"], "actual": ["One"], "description": "Parser stops at first no…` |
+| 5 | PARENT | `PARSER::section_terminated_by_next_heading` | PARSER/section_terminated_by_next_heading: Section is terminated by the next recognised heading | **PASS** | `{"case": "section_terminated_by_next_heading", "section": "STATUS VALUES", "expected": ["One", "Two"], "actual": ["One", "Two"], "descrip…` |
+
+## PIPELINE_NEG
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | ALL | `PIPE_NEG::missing_plan_contract` | Pipeline with missing plan_contract publishes PA_INPUT_INCOMPLETE | **PASS** | `{"dispatch_allowed": false, "doctrine_status": "PA_INPUT_INCOMPLETE"}` |
+| 2 | ALL | `PIPE_NEG::missing_route_contract` | Pipeline with missing route_contract refuses dispatch | **PASS** | `{"dispatch_allowed": false, "doctrine_status": "PA_INPUT_INCOMPLETE"}` |
+| 3 | ALL | `PIPE_NEG::no_forbidden_in_failure_path` | Pipeline negative-path receipts contain zero forbidden tokens | **PASS** | `{"forbidden_hits": []}` |
+
 ## SLOT_MAP
 
 | # | Stage | ID | Requirement | Status | Evidence (truncated) |
@@ -196,6 +306,13 @@ Runtime artifacts being verified:
 | 9 | PA.2 | `SLOT::H0` | Canonical slot `H0` (auth=PROPOSED, rank=20) constructs cleanly | **PASS** | `{"slot": "H0", "rank": 20, "doctrine_label": "PROPOSED", "constructed_code": "H0", "constructed_rank": 20}` |
 | 10 | PA.2 | `SLOT::R0` | Canonical slot `R0` (auth=SCHEMA, rank=10) constructs cleanly | **PASS** | `{"slot": "R0", "rank": 10, "doctrine_label": "SCHEMA", "constructed_code": "R0", "constructed_rank": 10}` |
 | 11 | PA.2 | `SLOT::AUTHORITY_ORDER` | AuthorityStack preserves doctrine high->low authority order | **PASS** | `{"codes_in_stack_order": ["S0", "D0", "I0", "E0", "C0", "M0", "U0", "Y0", "H0", "R0"], "ranks_in_stack_order": [100, 90, 80, 70, 60, 50, …` |
+
+## STATUS_PARTITION_COMPLETE
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | ALL | `STATUS::no_orphans` | Every PAStatus member is claimed by at least one stage | **PASS** | `{"runtime_count": 33, "claimed_count": 33, "orphans": []}` |
+| 2 | ALL | `STATUS::cross_stage_documented` | Cross-stage statuses match the documented set | **PASS** | `{"observed": {"PA_REQUIRES_UPSTREAM_REPAIR": ["PA.0", "PA.1", "PA.3", "PA.5"]}, "expected_keys": ["PA_REQUIRES_UPSTREAM_REPAIR"]}` |
 
 ## STATUS_SET
 

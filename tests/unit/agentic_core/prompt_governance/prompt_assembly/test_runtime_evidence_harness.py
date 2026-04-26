@@ -14,13 +14,21 @@ from __future__ import annotations
 import pytest
 
 from tools.prompt_assembly.runtime_evidence import (
+    check_aggregation,
+    check_determinism,
     check_doctrine_drift,
+    check_forbid_deep,
+    check_forbid_false_positive,
     check_forbid_rd,
     check_invariants,
     check_must_emit,
     check_must_not_fence,
+    check_negative_paths,
+    check_parser_robustness,
     check_pipeline_endtoend,
+    check_pipeline_negative_paths,
     check_slot_map,
+    check_status_partition_complete,
     check_status_set,
 )
 from tools.prompt_assembly.doctrine_parser import parse_all
@@ -35,16 +43,27 @@ _REPO_ROOT = Path(__file__).resolve().parents[5]
     [
         ("STATUS_SET", check_status_set),
         ("DOCTRINE_DRIFT", check_doctrine_drift),
+        ("STATUS_PARTITION_COMPLETE", check_status_partition_complete),
         ("MUST_EMIT", check_must_emit),
         ("FORBID_RD", check_forbid_rd),
+        ("FORBID_DEEP", check_forbid_deep),
+        ("FORBID_FALSE_POSITIVE", check_forbid_false_positive),
         ("MUST_NOT_FENCE", check_must_not_fence),
         ("INVARIANT", check_invariants),
         ("SLOT_MAP", check_slot_map),
+        ("NEGATIVE_PATH", check_negative_paths),
+        ("DETERMINISM", check_determinism),
+        ("AGGREGATION", check_aggregation),
+        ("PARSER_ROBUSTNESS", check_parser_robustness),
         ("E2E", check_pipeline_endtoend),
+        ("PIPELINE_NEG", check_pipeline_negative_paths),
     ],
     ids=[
-        "status_set", "doctrine_drift", "must_emit", "forbid_rd",
-        "must_not_fence", "invariant", "slot_map", "e2e",
+        "status_set", "doctrine_drift", "status_partition_complete",
+        "must_emit", "forbid_rd", "forbid_deep", "forbid_false_positive",
+        "must_not_fence", "invariant", "slot_map",
+        "negative_path", "determinism", "aggregation", "parser_robustness",
+        "e2e", "pipeline_neg",
     ],
 )
 def test_runtime_evidence_category_all_pass(category: str, fn) -> None:

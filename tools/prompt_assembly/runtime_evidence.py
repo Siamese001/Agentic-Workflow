@@ -1,7 +1,7 @@
 """Prompt Assembly Runtime-Evidence Harness.
 
 Walks every requirement extracted from
-``docs/reference/03_L0_Routing/Prompt Assembly/*.md`` and emits a
+``docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/*.md`` and emits a
 PASS/FAIL evidence object proving each one against the actually-loaded
 runtime objects in ``agentic_core.prompt_governance.prompt_assembly``.
 
@@ -44,6 +44,7 @@ import inspect
 import json
 import sys
 from pathlib import Path
+from collections.abc import Mapping
 from typing import Any
 
 # Make repo importable when invoked as a script.
@@ -103,15 +104,15 @@ from tools.prompt_assembly.doctrine_parser import parse_all as _parse_doctrine_a
 
 
 DOCTRINE_FILES = {
-    "PARENT": "docs/reference/03_L0_Routing/Prompt Assembly/Prompt_Assembly_detailed.md",
-    "PA.0": "docs/reference/03_L0_Routing/Prompt Assembly/PA.0_Boundary_Check_detailed.md",
-    "PA.1": "docs/reference/03_L0_Routing/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md",
-    "PA.2": "docs/reference/03_L0_Routing/Prompt Assembly/PA.2_Slot_Composition_detailed.md",
-    "PA.3": "docs/reference/03_L0_Routing/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md",
-    "PA.4": "docs/reference/03_L0_Routing/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md",
-    "PA.5": "docs/reference/03_L0_Routing/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md",
-    "PA.6": "docs/reference/03_L0_Routing/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md",
-    "PA.7": "docs/reference/03_L0_Routing/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md",
+    "PARENT": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/Prompt_Assembly_detailed.md",
+    "PA.0": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.0_Boundary_Check_detailed.md",
+    "PA.1": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md",
+    "PA.2": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.2_Slot_Composition_detailed.md",
+    "PA.3": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md",
+    "PA.4": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md",
+    "PA.5": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md",
+    "PA.6": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md",
+    "PA.7": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md",
 }
 
 
@@ -1199,6 +1200,441 @@ def _to_dict(row: _Row) -> dict[str, Any]:
     return dataclasses.asdict(row)
 
 
+# --------------------------------------------------------------------------
+# Edge-case categories (added for exhaustive coverage of every requirement)
+# --------------------------------------------------------------------------
+
+
+def check_negative_paths() -> list[_Row]:
+    """NEGATIVE_PATH: every PAStatus value flows correctly through
+    ``aggregate_doctrine_status`` with the correct stage attribution.
+
+    The happy-path category (``MUST_EMIT``) only constructs receipts that
+    produce one canonical status per stage. This category proves that EVERY
+    status enum value (success, gap, conflict, overflow, etc.) is recognised
+    by the aggregator AND the ``STAGE_TO_STATUSES`` partition assigns it to
+    the correct stage. Coverage: 8 stages * 3-6 statuses each = ~36 rows.
+    """
+    rows: list[_Row] = []
+    for stage, statuses in sorted(STAGE_TO_STATUSES.items()):
+        for status in sorted(statuses, key=lambda s: s.value):
+            synthetic = {"stage": stage, "doctrine_status": status.value}
+            try:
+                aggregated = aggregate_doctrine_status([synthetic])
+            except (KeyError, ValueError, TypeError) as exc:
+                rows.append(_fail(
+                    f"NEG::{stage}::{status.value}", stage, "NEGATIVE_PATH",
+                    f"{stage} aggregator accepts {status.value}",
+                    {"error": str(exc)},
+                ))
+                continue
+            ok = aggregated == status
+            ev = {
+                "stage": stage,
+                "input_status": status.value,
+                "aggregated_status": aggregated.value,
+                "round_trip": ok,
+            }
+            label = f"{stage} aggregator round-trips {status.value}"
+            rows.append(_ok(
+                f"NEG::{stage}::{status.value}", stage, "NEGATIVE_PATH", label, ev,
+            ) if ok else _fail(
+                f"NEG::{stage}::{status.value}", stage, "NEGATIVE_PATH", label, ev,
+            ))
+    return rows
+
+
+def check_forbid_deep() -> list[_Row]:
+    """FORBID_DEEP: ``assert_no_forbidden`` detects forbidden tokens at
+    arbitrary nesting depth in receipts.
+
+    Failure precedent: an early implementation only scanned top-level keys,
+    so a forbidden token nested under ``compiled_prompt_artifact_receipt``
+    would have escaped the scanner. This category exercises the recursive
+    walker against 5 nesting topologies.
+    """
+    rows: list[_Row] = []
+    cases = [
+        ("depth1",
+         {"doctrine_status": "PA_READY", "decision": "ALLOW"},
+         True, "Top-level decision field with forbidden token"),
+        ("depth2",
+         {"doctrine_status": "PA_READY",
+          "compiled_prompt_artifact_receipt": {"decision": "DENY"}},
+         True, "Forbidden token nested one level deep under decision field"),
+        ("depth3",
+         {"doctrine_status": "PA_READY",
+          "wrapper": {"inner": {"decision": "ESCALATE_HITL"}}},
+         True, "Forbidden token nested three levels deep"),
+        ("in_list",
+         {"doctrine_status": "PA_READY",
+          "decisions": [{"verdict": "ABSTAIN"}]},
+         True, "Forbidden token inside list of dicts under decision-shaped key"),
+        ("list_of_lists",
+         {"doctrine_status": "PA_READY",
+          "history": [[{"decision": "BLOCK_COMMIT"}]]},
+         True, "Forbidden token inside doubly-nested list"),
+    ]
+    for name, payload, expect_raise, desc in cases:
+        raised = False
+        msg = ""
+        try:
+            assert_no_forbidden(payload)
+        except ForbiddenOutputError as exc:
+            raised = True
+            msg = str(exc)
+        ok = raised == expect_raise
+        ev = {
+            "topology": name,
+            "expected_raise": expect_raise,
+            "actually_raised": raised,
+            "message": msg[:100],
+            "description": desc,
+        }
+        label = f"FORBID_DEEP/{name}: {desc}"
+        rows.append(_ok(
+            f"FORBID_DEEP::{name}", "PARENT", "FORBID_DEEP", label, ev,
+        ) if ok else _fail(
+            f"FORBID_DEEP::{name}", "PARENT", "FORBID_DEEP", label, ev,
+        ))
+    return rows
+
+
+def check_forbid_false_positive() -> list[_Row]:
+    """FORBID_FALSE_POSITIVE: substring matches that should NOT trigger.
+
+    Forbidden tokens like ``ALLOW`` and ``DENY`` may appear as substrings
+    of legitimate identifiers (``ALLOW_LIST_VERSION``, ``DENY_REASON_CODE``).
+    The scanner must use exact-token equality, not substring matching.
+    """
+    rows: list[_Row] = []
+    cases = [
+        ("substring_allow",
+         {"doctrine_status": "PA_READY", "config_name": "ALLOW_LIST_VERSION"}),
+        ("substring_deny",
+         {"doctrine_status": "PA_READY", "policy_label": "DENY_REASON_CODE"}),
+        ("chunk_disposition",
+         {"doctrine_status": "PA_SECURITY_PASS",
+          "prompt_like_payload_report": [{"chunk_id": "c1", "disposition": "QUARANTINE"}]}),
+        ("chunk_extraction_label",
+         {"doctrine_status": "PA_SECURITY_PASS",
+          "safe_extraction_map": {"s1": {"label": "REDACT"}}}),
+        ("metadata_string",
+         {"doctrine_status": "PA_READY",
+          "notes": "This receipt does not BLOCK_COMMITS_DAILY"}),
+    ]
+    for name, payload in cases:
+        raised = False
+        msg = ""
+        try:
+            assert_no_forbidden(payload)
+        except ForbiddenOutputError as exc:
+            raised = True
+            msg = str(exc)
+        ok = not raised
+        ev = {
+            "topology": name,
+            "expected_raise": False,
+            "actually_raised": raised,
+            "message": msg[:100] if raised else "",
+            "rationale": (
+                "Forbidden tokens must match the decision-field value exactly, "
+                "not as a substring of an identifier or chunk-data label."
+            ),
+        }
+        label = f"FORBID_FALSE_POSITIVE/{name}: scanner does NOT flag legitimate use"
+        rows.append(_ok(
+            f"FORBID_FP::{name}", "PARENT", "FORBID_FALSE_POSITIVE", label, ev,
+        ) if ok else _fail(
+            f"FORBID_FP::{name}", "PARENT", "FORBID_FALSE_POSITIVE", label, ev,
+        ))
+    return rows
+
+
+def _canonical_bytes(d: Mapping[str, Any]) -> bytes:
+    """Local canonical-bytes implementation used for determinism checks."""
+    return json.dumps(d, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")
+
+
+def check_determinism() -> list[_Row]:
+    """DETERMINISM: every stage's receipt-builder produces byte-identical
+    output for byte-identical inputs.
+
+    Extends invariant PA.I9 (originally PA.5-only) to all eight stages.
+    Determinism is the foundation of replay/audit and signature stability.
+    """
+    builders = {
+        "PA.0": _build_pa0_receipt, "PA.1": _build_pa1_receipt,
+        "PA.2": _build_pa2_receipt, "PA.3": _build_pa3_receipt,
+        "PA.4": _build_pa4_receipt, "PA.5": _build_pa5_receipt,
+        "PA.6": _build_pa6_receipt, "PA.7": _build_pa7_receipt,
+    }
+    rows: list[_Row] = []
+    for stage, builder in builders.items():
+        first = builder()
+        second = builder()
+        first_bytes = _canonical_bytes(first)
+        second_bytes = _canonical_bytes(second)
+        ok = first_bytes == second_bytes
+        ev = {
+            "stage": stage,
+            "first_byte_count": len(first_bytes),
+            "second_byte_count": len(second_bytes),
+            "byte_identical": ok,
+            "first_keys": sorted(first.keys()),
+        }
+        label = f"{stage} receipt builder is byte-deterministic"
+        rows.append(_ok(
+            f"DET::{stage}", stage, "DETERMINISM", label, ev,
+        ) if ok else _fail(
+            f"DET::{stage}", stage, "DETERMINISM", label, ev,
+        ))
+    return rows
+
+
+def check_aggregation() -> list[_Row]:
+    """AGGREGATION: ``aggregate_doctrine_status`` edge cases.
+
+    Proves: empty input yields PA_READY; single-status input round-trips;
+    all-PA_READY yields PA_READY; mixed input never collapses to PA_READY;
+    aggregator is deterministic on identical input.
+    """
+    rows: list[_Row] = []
+
+    empty_result = aggregate_doctrine_status([])
+    rows.append(_ok(
+        "AGG::empty", "PARENT", "AGGREGATION",
+        "Empty receipt list aggregates to PA_READY (neutral)",
+        {"input": [], "result": empty_result.value},
+    ) if empty_result == PAStatus.PA_READY else _fail(
+        "AGG::empty", "PARENT", "AGGREGATION",
+        "Empty receipt list aggregates to PA_READY (neutral)",
+        {"input": [], "result": empty_result.value},
+    ))
+
+    single = aggregate_doctrine_status(
+        [{"stage": "PA.5", "doctrine_status": "PA_BUDGET_OVERFLOW"}]
+    )
+    rows.append(_ok(
+        "AGG::single", "PARENT", "AGGREGATION",
+        "Single-receipt input round-trips through aggregator",
+        {"result": single.value},
+    ) if single == PAStatus.PA_BUDGET_OVERFLOW else _fail(
+        "AGG::single", "PARENT", "AGGREGATION",
+        "Single-receipt input round-trips through aggregator",
+        {"result": single.value},
+    ))
+
+    all_ready = aggregate_doctrine_status(
+        [{"stage": s, "doctrine_status": "PA_READY"}
+         for s in ("PA.0", "PA.1", "PA.2", "PA.3", "PA.4", "PA.5", "PA.6", "PA.7")]
+    )
+    rows.append(_ok(
+        "AGG::all_ready", "PARENT", "AGGREGATION",
+        "All-PA_READY receipt list aggregates to PA_READY",
+        {"result": all_ready.value},
+    ) if all_ready == PAStatus.PA_READY else _fail(
+        "AGG::all_ready", "PARENT", "AGGREGATION",
+        "All-PA_READY receipt list aggregates to PA_READY",
+        {"result": all_ready.value},
+    ))
+
+    worst = aggregate_doctrine_status([
+        {"stage": "PA.0", "doctrine_status": "PA_READY"},
+        {"stage": "PA.1", "doctrine_status": "PA_BOM_RESOLVED"},
+        {"stage": "PA.5", "doctrine_status": "PA_BUDGET_OVERFLOW"},
+        {"stage": "PA.7", "doctrine_status": "PA_ARTIFACT_NOT_SIGNED"},
+    ])
+    ok_worst = worst != PAStatus.PA_READY
+    rows.append(_ok(
+        "AGG::worst_wins", "PARENT", "AGGREGATION",
+        "Mixed-status input does NOT aggregate to PA_READY",
+        {"result": worst.value, "non_ready": ok_worst},
+    ) if ok_worst else _fail(
+        "AGG::worst_wins", "PARENT", "AGGREGATION",
+        "Mixed-status input does NOT aggregate to PA_READY",
+        {"result": worst.value, "non_ready": ok_worst},
+    ))
+
+    receipts = [{"stage": "PA.5", "doctrine_status": "PA_BUDGET_TRIMMED"}]
+    a = aggregate_doctrine_status(receipts)
+    b = aggregate_doctrine_status(receipts)
+    rows.append(_ok(
+        "AGG::deterministic", "PARENT", "AGGREGATION",
+        "Aggregator is deterministic on identical input",
+        {"first": a.value, "second": b.value},
+    ) if a == b else _fail(
+        "AGG::deterministic", "PARENT", "AGGREGATION",
+        "Aggregator is deterministic on identical input",
+        {"first": a.value, "second": b.value},
+    ))
+    return rows
+
+
+def check_status_partition_complete() -> list[_Row]:
+    """STATUS_PARTITION_COMPLETE: every PAStatus member is reachable
+    from at least one stage's STAGE_TO_STATUSES set.
+
+    No orphan statuses - if an enum value exists, it must be claimed by
+    a stage. Cross-stage statuses (intentionally shared) match the
+    documented set.
+    """
+    rows: list[_Row] = []
+    runtime_values = set(PAStatus)
+    union = set().union(*STAGE_TO_STATUSES.values())
+    orphans = sorted(s.value for s in (runtime_values - union))
+    ok = not orphans
+    rows.append(_ok(
+        "STATUS::no_orphans", "ALL", "STATUS_PARTITION_COMPLETE",
+        "Every PAStatus member is claimed by at least one stage",
+        {"runtime_count": len(runtime_values),
+         "claimed_count": len(union),
+         "orphans": orphans},
+    ) if ok else _fail(
+        "STATUS::no_orphans", "ALL", "STATUS_PARTITION_COMPLETE",
+        "Every PAStatus member is claimed by at least one stage",
+        {"runtime_count": len(runtime_values),
+         "claimed_count": len(union),
+         "orphans": orphans},
+    ))
+
+    cross_stage: dict[str, list[str]] = {}
+    for stage, statuses in STAGE_TO_STATUSES.items():
+        for st in statuses:
+            cross_stage.setdefault(st.value, []).append(stage)
+    multi = {k: sorted(v) for k, v in cross_stage.items() if len(v) > 1}
+    expected_multi_keys = {"PA_REQUIRES_UPSTREAM_REPAIR"}
+    ok2 = set(multi.keys()) == expected_multi_keys
+    rows.append(_ok(
+        "STATUS::cross_stage_documented", "ALL", "STATUS_PARTITION_COMPLETE",
+        "Cross-stage statuses match the documented set",
+        {"observed": multi, "expected_keys": sorted(expected_multi_keys)},
+    ) if ok2 else _fail(
+        "STATUS::cross_stage_documented", "ALL", "STATUS_PARTITION_COMPLETE",
+        "Cross-stage statuses match the documented set",
+        {"observed": multi, "expected_keys": sorted(expected_multi_keys)},
+    ))
+    return rows
+
+
+def check_parser_robustness() -> list[_Row]:
+    """PARSER_ROBUSTNESS: doctrine parser handles edge-case inputs.
+
+    Synthetic .md content covers: missing section, blank file, repeated
+    headings, non-bullet noise lines, section terminated by next heading.
+    """
+    from tools.prompt_assembly.doctrine_parser import _extract_section
+    rows: list[_Row] = []
+
+    cases = [
+        ("missing_section",
+         ["MUST EMIT", "----------", "- Foo", "- Bar"],
+         "STATUS VALUES", [],
+         "Section absent from doc returns empty list"),
+        ("blank_file", [], "STATUS VALUES", [],
+         "Empty doc returns empty list"),
+        ("repeated_heading",
+         ["STATUS VALUES", "-----------", "- A", "- B", "",
+          "STATUS VALUES", "-----------", "- C"],
+         "STATUS VALUES", ["A", "B"],
+         "Parser stops at first blank line after items, ignoring later repeats"),
+        ("non_bullet_noise",
+         ["STATUS VALUES", "-----", "- One", "Some prose paragraph", "- Two"],
+         "STATUS VALUES", ["One"],
+         "Parser stops at first non-bullet, non-empty line"),
+        ("section_terminated_by_next_heading",
+         ["STATUS VALUES", "-----", "- One", "- Two",
+          "MUST EMIT", "-----", "- foo"],
+         "STATUS VALUES", ["One", "Two"],
+         "Section is terminated by the next recognised heading"),
+    ]
+
+    for name, lines, section, expected, desc in cases:
+        actual = _extract_section(lines, section)
+        ok = actual == expected
+        ev = {
+            "case": name, "section": section,
+            "expected": expected, "actual": actual,
+            "description": desc,
+        }
+        label = f"PARSER/{name}: {desc}"
+        rows.append(_ok(
+            f"PARSER::{name}", "PARENT", "PARSER_ROBUSTNESS", label, ev,
+        ) if ok else _fail(
+            f"PARSER::{name}", "PARENT", "PARSER_ROBUSTNESS", label, ev,
+        ))
+    return rows
+
+
+def check_pipeline_negative_paths() -> list[_Row]:
+    """PIPELINE_NEG: end-to-end pipeline negative paths.
+
+    Currently the E2E category only covers the PASS path. This category
+    exercises failure scenarios proving the pipeline correctly publishes
+    a non-PA_READY aggregate doctrine_status and refuses dispatch when
+    input is incomplete - and that negative-path receipts contain ZERO
+    forbidden tokens.
+    """
+    rows: list[_Row] = []
+
+    r1 = run_prompt_assembly_pipeline(
+        plan_contract=None,  # type: ignore[arg-type]
+        route_contract={"route_id": "r1", "policy_hash": "h"},
+        execution_metadata={"policy_hash": "h"},
+    )
+    ok1 = (not r1.dispatch_allowed
+           and r1.doctrine_status == PAStatus.PA_INPUT_INCOMPLETE)
+    rows.append(_ok(
+        "PIPE_NEG::missing_plan_contract", "ALL", "PIPELINE_NEG",
+        "Pipeline with missing plan_contract publishes PA_INPUT_INCOMPLETE",
+        {"dispatch_allowed": r1.dispatch_allowed,
+         "doctrine_status": r1.doctrine_status.value},
+    ) if ok1 else _fail(
+        "PIPE_NEG::missing_plan_contract", "ALL", "PIPELINE_NEG",
+        "Pipeline with missing plan_contract publishes PA_INPUT_INCOMPLETE",
+        {"dispatch_allowed": r1.dispatch_allowed,
+         "doctrine_status": r1.doctrine_status.value},
+    ))
+
+    r2 = run_prompt_assembly_pipeline(
+        plan_contract={"plan_id": "p1", "policy_hash": "h"},
+        route_contract=None,  # type: ignore[arg-type]
+        execution_metadata={"policy_hash": "h"},
+    )
+    ok2 = not r2.dispatch_allowed
+    rows.append(_ok(
+        "PIPE_NEG::missing_route_contract", "ALL", "PIPELINE_NEG",
+        "Pipeline with missing route_contract refuses dispatch",
+        {"dispatch_allowed": r2.dispatch_allowed,
+         "doctrine_status": r2.doctrine_status.value},
+    ) if ok2 else _fail(
+        "PIPE_NEG::missing_route_contract", "ALL", "PIPELINE_NEG",
+        "Pipeline with missing route_contract refuses dispatch",
+        {"dispatch_allowed": r2.dispatch_allowed,
+         "doctrine_status": r2.doctrine_status.value},
+    ))
+
+    forbidden_in_neg = []
+    for r in (r1, r2):
+        for receipt in r.doctrine_receipts:
+            try:
+                assert_no_forbidden(receipt)
+            except ForbiddenOutputError as exc:
+                forbidden_in_neg.append({"stage": receipt.get("stage"),
+                                         "msg": str(exc)})
+    ok3 = not forbidden_in_neg
+    rows.append(_ok(
+        "PIPE_NEG::no_forbidden_in_failure_path", "ALL", "PIPELINE_NEG",
+        "Pipeline negative-path receipts contain zero forbidden tokens",
+        {"forbidden_hits": forbidden_in_neg},
+    ) if ok3 else _fail(
+        "PIPE_NEG::no_forbidden_in_failure_path", "ALL", "PIPELINE_NEG",
+        "Pipeline negative-path receipts contain zero forbidden tokens",
+        {"forbidden_hits": forbidden_in_neg},
+    ))
+    return rows
+
+
 def render_markdown(rows: list[_Row]) -> str:
     total = len(rows)
     passes = sum(1 for r in rows if r.status == "PASS")
@@ -1252,12 +1688,20 @@ def main() -> int:
     rows: list[_Row] = []
     rows += check_status_set()
     rows += check_doctrine_drift()
+    rows += check_status_partition_complete()
     rows += check_must_emit()
     rows += check_forbid_rd()
+    rows += check_forbid_deep()
+    rows += check_forbid_false_positive()
     rows += check_must_not_fence()
     rows += check_invariants()
     rows += check_slot_map()
+    rows += check_negative_paths()
+    rows += check_determinism()
+    rows += check_aggregation()
+    rows += check_parser_robustness()
     rows += check_pipeline_endtoend()
+    rows += check_pipeline_negative_paths()
 
     md_path = _REPO_ROOT / "docs" / "reports" / "prompt-assembly" / "runtime_evidence.md"
     json_path = _REPO_ROOT / "tools" / "prompt_assembly" / "_runtime_evidence.json"

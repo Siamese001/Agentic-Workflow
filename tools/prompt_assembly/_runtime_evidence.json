@@ -756,6 +756,38 @@
     }
   },
   {
+    "req_id": "STATUS::no_orphans",
+    "stage": "ALL",
+    "category": "STATUS_PARTITION_COMPLETE",
+    "requirement": "Every PAStatus member is claimed by at least one stage",
+    "status": "PASS",
+    "evidence": {
+      "runtime_count": 33,
+      "claimed_count": 33,
+      "orphans": []
+    }
+  },
+  {
+    "req_id": "STATUS::cross_stage_documented",
+    "stage": "ALL",
+    "category": "STATUS_PARTITION_COMPLETE",
+    "requirement": "Cross-stage statuses match the documented set",
+    "status": "PASS",
+    "evidence": {
+      "observed": {
+        "PA_REQUIRES_UPSTREAM_REPAIR": [
+          "PA.0",
+          "PA.1",
+          "PA.3",
+          "PA.5"
+        ]
+      },
+      "expected_keys": [
+        "PA_REQUIRES_UPSTREAM_REPAIR"
+      ]
+    }
+  },
+  {
     "req_id": "EMIT::PA.0::PAAssemblyInput",
     "stage": "PA.0",
     "category": "MUST_EMIT",
@@ -2351,6 +2383,146 @@
     }
   },
   {
+    "req_id": "FORBID_DEEP::depth1",
+    "stage": "PARENT",
+    "category": "FORBID_DEEP",
+    "requirement": "FORBID_DEEP/depth1: Top-level decision field with forbidden token",
+    "status": "PASS",
+    "evidence": {
+      "topology": "depth1",
+      "expected_raise": true,
+      "actually_raised": true,
+      "message": "PA receipt contains forbidden PA output(s): $.decision='ALLOW'",
+      "description": "Top-level decision field with forbidden token"
+    }
+  },
+  {
+    "req_id": "FORBID_DEEP::depth2",
+    "stage": "PARENT",
+    "category": "FORBID_DEEP",
+    "requirement": "FORBID_DEEP/depth2: Forbidden token nested one level deep under decision field",
+    "status": "PASS",
+    "evidence": {
+      "topology": "depth2",
+      "expected_raise": true,
+      "actually_raised": true,
+      "message": "PA receipt contains forbidden PA output(s): $.compiled_prompt_artifact_receipt.decision='DENY'",
+      "description": "Forbidden token nested one level deep under decision field"
+    }
+  },
+  {
+    "req_id": "FORBID_DEEP::depth3",
+    "stage": "PARENT",
+    "category": "FORBID_DEEP",
+    "requirement": "FORBID_DEEP/depth3: Forbidden token nested three levels deep",
+    "status": "PASS",
+    "evidence": {
+      "topology": "depth3",
+      "expected_raise": true,
+      "actually_raised": true,
+      "message": "PA receipt contains forbidden PA output(s): $.wrapper.inner.decision='ESCALATE_HITL'",
+      "description": "Forbidden token nested three levels deep"
+    }
+  },
+  {
+    "req_id": "FORBID_DEEP::in_list",
+    "stage": "PARENT",
+    "category": "FORBID_DEEP",
+    "requirement": "FORBID_DEEP/in_list: Forbidden token inside list of dicts under decision-shaped key",
+    "status": "PASS",
+    "evidence": {
+      "topology": "in_list",
+      "expected_raise": true,
+      "actually_raised": true,
+      "message": "PA receipt contains forbidden PA output(s): $.decisions[0].verdict='ABSTAIN'",
+      "description": "Forbidden token inside list of dicts under decision-shaped key"
+    }
+  },
+  {
+    "req_id": "FORBID_DEEP::list_of_lists",
+    "stage": "PARENT",
+    "category": "FORBID_DEEP",
+    "requirement": "FORBID_DEEP/list_of_lists: Forbidden token inside doubly-nested list",
+    "status": "PASS",
+    "evidence": {
+      "topology": "list_of_lists",
+      "expected_raise": true,
+      "actually_raised": true,
+      "message": "PA receipt contains forbidden PA output(s): $.history[0][0].decision='BLOCK_COMMIT'",
+      "description": "Forbidden token inside doubly-nested list"
+    }
+  },
+  {
+    "req_id": "FORBID_FP::substring_allow",
+    "stage": "PARENT",
+    "category": "FORBID_FALSE_POSITIVE",
+    "requirement": "FORBID_FALSE_POSITIVE/substring_allow: scanner does NOT flag legitimate use",
+    "status": "PASS",
+    "evidence": {
+      "topology": "substring_allow",
+      "expected_raise": false,
+      "actually_raised": false,
+      "message": "",
+      "rationale": "Forbidden tokens must match the decision-field value exactly, not as a substring of an identifier or chunk-data label."
+    }
+  },
+  {
+    "req_id": "FORBID_FP::substring_deny",
+    "stage": "PARENT",
+    "category": "FORBID_FALSE_POSITIVE",
+    "requirement": "FORBID_FALSE_POSITIVE/substring_deny: scanner does NOT flag legitimate use",
+    "status": "PASS",
+    "evidence": {
+      "topology": "substring_deny",
+      "expected_raise": false,
+      "actually_raised": false,
+      "message": "",
+      "rationale": "Forbidden tokens must match the decision-field value exactly, not as a substring of an identifier or chunk-data label."
+    }
+  },
+  {
+    "req_id": "FORBID_FP::chunk_disposition",
+    "stage": "PARENT",
+    "category": "FORBID_FALSE_POSITIVE",
+    "requirement": "FORBID_FALSE_POSITIVE/chunk_disposition: scanner does NOT flag legitimate use",
+    "status": "PASS",
+    "evidence": {
+      "topology": "chunk_disposition",
+      "expected_raise": false,
+      "actually_raised": false,
+      "message": "",
+      "rationale": "Forbidden tokens must match the decision-field value exactly, not as a substring of an identifier or chunk-data label."
+    }
+  },
+  {
+    "req_id": "FORBID_FP::chunk_extraction_label",
+    "stage": "PARENT",
+    "category": "FORBID_FALSE_POSITIVE",
+    "requirement": "FORBID_FALSE_POSITIVE/chunk_extraction_label: scanner does NOT flag legitimate use",
+    "status": "PASS",
+    "evidence": {
+      "topology": "chunk_extraction_label",
+      "expected_raise": false,
+      "actually_raised": false,
+      "message": "",
+      "rationale": "Forbidden tokens must match the decision-field value exactly, not as a substring of an identifier or chunk-data label."
+    }
+  },
+  {
+    "req_id": "FORBID_FP::metadata_string",
+    "stage": "PARENT",
+    "category": "FORBID_FALSE_POSITIVE",
+    "requirement": "FORBID_FALSE_POSITIVE/metadata_string: scanner does NOT flag legitimate use",
+    "status": "PASS",
+    "evidence": {
+      "topology": "metadata_string",
+      "expected_raise": false,
+      "actually_raised": false,
+      "message": "",
+      "rationale": "Forbidden tokens must match the decision-field value exactly, not as a substring of an identifier or chunk-data label."
+    }
+  },
+  {
     "req_id": "FENCE::retrieve_evidence",
     "stage": "PARENT",
     "category": "MUST_NOT_FENCE",
@@ -2959,6 +3131,819 @@
     }
   },
   {
+    "req_id": "NEG::PA.0::PA_BOUNDARY_MISMATCH",
+    "stage": "PA.0",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.0 aggregator round-trips PA_BOUNDARY_MISMATCH",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.0",
+      "input_status": "PA_BOUNDARY_MISMATCH",
+      "aggregated_status": "PA_BOUNDARY_MISMATCH",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.0::PA_INPUT_INCOMPLETE",
+    "stage": "PA.0",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.0 aggregator round-trips PA_INPUT_INCOMPLETE",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.0",
+      "input_status": "PA_INPUT_INCOMPLETE",
+      "aggregated_status": "PA_INPUT_INCOMPLETE",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.0::PA_READY",
+    "stage": "PA.0",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.0 aggregator round-trips PA_READY",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.0",
+      "input_status": "PA_READY",
+      "aggregated_status": "PA_READY",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.0::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.0",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.0 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.0",
+      "input_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.1::PA_BOM_GAP",
+    "stage": "PA.1",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.1 aggregator round-trips PA_BOM_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.1",
+      "input_status": "PA_BOM_GAP",
+      "aggregated_status": "PA_BOM_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.1::PA_BOM_RESOLVED",
+    "stage": "PA.1",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.1 aggregator round-trips PA_BOM_RESOLVED",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.1",
+      "input_status": "PA_BOM_RESOLVED",
+      "aggregated_status": "PA_BOM_RESOLVED",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.1::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.1",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.1 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.1",
+      "input_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.2::PA_AUTHORITY_CONFLICT",
+    "stage": "PA.2",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.2 aggregator round-trips PA_AUTHORITY_CONFLICT",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.2",
+      "input_status": "PA_AUTHORITY_CONFLICT",
+      "aggregated_status": "PA_AUTHORITY_CONFLICT",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.2::PA_SLOTS_COMPOSED",
+    "stage": "PA.2",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.2 aggregator round-trips PA_SLOTS_COMPOSED",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.2",
+      "input_status": "PA_SLOTS_COMPOSED",
+      "aggregated_status": "PA_SLOTS_COMPOSED",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.2::PA_SLOT_COMPOSITION_GAP",
+    "stage": "PA.2",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.2 aggregator round-trips PA_SLOT_COMPOSITION_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.2",
+      "input_status": "PA_SLOT_COMPOSITION_GAP",
+      "aggregated_status": "PA_SLOT_COMPOSITION_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.3::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.3",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.3 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.3",
+      "input_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.3::PA_SAFE_EXTRACTION_PARTIAL",
+    "stage": "PA.3",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.3 aggregator round-trips PA_SAFE_EXTRACTION_PARTIAL",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.3",
+      "input_status": "PA_SAFE_EXTRACTION_PARTIAL",
+      "aggregated_status": "PA_SAFE_EXTRACTION_PARTIAL",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.3::PA_SECURITY_GAP",
+    "stage": "PA.3",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.3 aggregator round-trips PA_SECURITY_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.3",
+      "input_status": "PA_SECURITY_GAP",
+      "aggregated_status": "PA_SECURITY_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.3::PA_SECURITY_PASS",
+    "stage": "PA.3",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.3 aggregator round-trips PA_SECURITY_PASS",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.3",
+      "input_status": "PA_SECURITY_PASS",
+      "aggregated_status": "PA_SECURITY_PASS",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.3::PA_SLOT_PAYLOAD_REJECTED",
+    "stage": "PA.3",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.3 aggregator round-trips PA_SLOT_PAYLOAD_REJECTED",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.3",
+      "input_status": "PA_SLOT_PAYLOAD_REJECTED",
+      "aggregated_status": "PA_SLOT_PAYLOAD_REJECTED",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.4::PA_AUTHORITY_INVERSION_GAP",
+    "stage": "PA.4",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.4 aggregator round-trips PA_AUTHORITY_INVERSION_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.4",
+      "input_status": "PA_AUTHORITY_INVERSION_GAP",
+      "aggregated_status": "PA_AUTHORITY_INVERSION_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.4::PA_CONTEXT_CONTRACT_GAP",
+    "stage": "PA.4",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.4 aggregator round-trips PA_CONTEXT_CONTRACT_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.4",
+      "input_status": "PA_CONTEXT_CONTRACT_GAP",
+      "aggregated_status": "PA_CONTEXT_CONTRACT_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.4::PA_SCHEMA_BINDING_GAP",
+    "stage": "PA.4",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.4 aggregator round-trips PA_SCHEMA_BINDING_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.4",
+      "input_status": "PA_SCHEMA_BINDING_GAP",
+      "aggregated_status": "PA_SCHEMA_BINDING_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.4::PA_SLOT_CONTRACT_INVALID",
+    "stage": "PA.4",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.4 aggregator round-trips PA_SLOT_CONTRACT_INVALID",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.4",
+      "input_status": "PA_SLOT_CONTRACT_INVALID",
+      "aggregated_status": "PA_SLOT_CONTRACT_INVALID",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.4::PA_SLOT_CONTRACT_VALID",
+    "stage": "PA.4",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.4 aggregator round-trips PA_SLOT_CONTRACT_VALID",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.4",
+      "input_status": "PA_SLOT_CONTRACT_VALID",
+      "aggregated_status": "PA_SLOT_CONTRACT_VALID",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.4::PA_TOOL_BINDING_GAP",
+    "stage": "PA.4",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.4 aggregator round-trips PA_TOOL_BINDING_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.4",
+      "input_status": "PA_TOOL_BINDING_GAP",
+      "aggregated_status": "PA_TOOL_BINDING_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.5::PA_BUDGET_FIT",
+    "stage": "PA.5",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.5 aggregator round-trips PA_BUDGET_FIT",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.5",
+      "input_status": "PA_BUDGET_FIT",
+      "aggregated_status": "PA_BUDGET_FIT",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.5::PA_BUDGET_OVERFLOW",
+    "stage": "PA.5",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.5 aggregator round-trips PA_BUDGET_OVERFLOW",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.5",
+      "input_status": "PA_BUDGET_OVERFLOW",
+      "aggregated_status": "PA_BUDGET_OVERFLOW",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.5::PA_BUDGET_TRIMMED",
+    "stage": "PA.5",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.5 aggregator round-trips PA_BUDGET_TRIMMED",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.5",
+      "input_status": "PA_BUDGET_TRIMMED",
+      "aggregated_status": "PA_BUDGET_TRIMMED",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.5::PA_REQUIRES_UPSTREAM_REPAIR",
+    "stage": "PA.5",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.5 aggregator round-trips PA_REQUIRES_UPSTREAM_REPAIR",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.5",
+      "input_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "aggregated_status": "PA_REQUIRES_UPSTREAM_REPAIR",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.6::PA_PROVIDER_FEATURE_GAP",
+    "stage": "PA.6",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.6 aggregator round-trips PA_PROVIDER_FEATURE_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.6",
+      "input_status": "PA_PROVIDER_FEATURE_GAP",
+      "aggregated_status": "PA_PROVIDER_FEATURE_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.6::PA_RENDERED",
+    "stage": "PA.6",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.6 aggregator round-trips PA_RENDERED",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.6",
+      "input_status": "PA_RENDERED",
+      "aggregated_status": "PA_RENDERED",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.6::PA_RENDER_GAP",
+    "stage": "PA.6",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.6 aggregator round-trips PA_RENDER_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.6",
+      "input_status": "PA_RENDER_GAP",
+      "aggregated_status": "PA_RENDER_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.6::PA_SCHEMA_RENDER_GAP",
+    "stage": "PA.6",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.6 aggregator round-trips PA_SCHEMA_RENDER_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.6",
+      "input_status": "PA_SCHEMA_RENDER_GAP",
+      "aggregated_status": "PA_SCHEMA_RENDER_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.6::PA_TOOL_RENDER_GAP",
+    "stage": "PA.6",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.6 aggregator round-trips PA_TOOL_RENDER_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.6",
+      "input_status": "PA_TOOL_RENDER_GAP",
+      "aggregated_status": "PA_TOOL_RENDER_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.7::PA_ARTIFACT_NOT_SIGNED",
+    "stage": "PA.7",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.7 aggregator round-trips PA_ARTIFACT_NOT_SIGNED",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.7",
+      "input_status": "PA_ARTIFACT_NOT_SIGNED",
+      "aggregated_status": "PA_ARTIFACT_NOT_SIGNED",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.7::PA_ARTIFACT_SIGNED",
+    "stage": "PA.7",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.7 aggregator round-trips PA_ARTIFACT_SIGNED",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.7",
+      "input_status": "PA_ARTIFACT_SIGNED",
+      "aggregated_status": "PA_ARTIFACT_SIGNED",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.7::PA_L2_HANDOFF_GAP",
+    "stage": "PA.7",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.7 aggregator round-trips PA_L2_HANDOFF_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.7",
+      "input_status": "PA_L2_HANDOFF_GAP",
+      "aggregated_status": "PA_L2_HANDOFF_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.7::PA_L2_HANDOFF_READY",
+    "stage": "PA.7",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.7 aggregator round-trips PA_L2_HANDOFF_READY",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.7",
+      "input_status": "PA_L2_HANDOFF_READY",
+      "aggregated_status": "PA_L2_HANDOFF_READY",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.7::PA_MANIFEST_HASH_GAP",
+    "stage": "PA.7",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.7 aggregator round-trips PA_MANIFEST_HASH_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.7",
+      "input_status": "PA_MANIFEST_HASH_GAP",
+      "aggregated_status": "PA_MANIFEST_HASH_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "NEG::PA.7::PA_SIGNATURE_GAP",
+    "stage": "PA.7",
+    "category": "NEGATIVE_PATH",
+    "requirement": "PA.7 aggregator round-trips PA_SIGNATURE_GAP",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.7",
+      "input_status": "PA_SIGNATURE_GAP",
+      "aggregated_status": "PA_SIGNATURE_GAP",
+      "round_trip": true
+    }
+  },
+  {
+    "req_id": "DET::PA.0",
+    "stage": "PA.0",
+    "category": "DETERMINISM",
+    "requirement": "PA.0 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.0",
+      "first_byte_count": 804,
+      "second_byte_count": 804,
+      "byte_identical": true,
+      "first_keys": [
+        "assembly_gap_report",
+        "boundary_status_receipt",
+        "doctrine_status",
+        "plan_id",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "required_input_inventory",
+        "route_id",
+        "run_id",
+        "stage",
+        "trace_id",
+        "upstream_reference_map"
+      ]
+    }
+  },
+  {
+    "req_id": "DET::PA.1",
+    "stage": "PA.1",
+    "category": "DETERMINISM",
+    "requirement": "PA.1 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.1",
+      "first_byte_count": 449,
+      "second_byte_count": 449,
+      "byte_identical": true,
+      "first_keys": [
+        "bom_gap_report",
+        "bom_hash_receipt",
+        "bom_resolution_receipt",
+        "component_hash_map",
+        "component_inventory",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_bom_id",
+        "replay_key",
+        "request_id",
+        "stage"
+      ]
+    }
+  },
+  {
+    "req_id": "DET::PA.2",
+    "stage": "PA.2",
+    "category": "DETERMINISM",
+    "requirement": "PA.2 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.2",
+      "first_byte_count": 696,
+      "second_byte_count": 696,
+      "byte_identical": true,
+      "first_keys": [
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "slot_authority_map",
+        "slot_composition_receipt",
+        "slot_conflict_map",
+        "slot_lineage_map",
+        "stage",
+        "structured_slots_hash_receipt"
+      ]
+    }
+  },
+  {
+    "req_id": "DET::PA.3",
+    "stage": "PA.3",
+    "category": "DETERMINISM",
+    "requirement": "PA.3 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.3",
+      "first_byte_count": 691,
+      "second_byte_count": 691,
+      "byte_identical": true,
+      "first_keys": [
+        "AssemblySecurityPassReceipt",
+        "doctrine_status",
+        "policy_hash",
+        "prompt_like_payload_report",
+        "rejected_slot_payload_report",
+        "replay_key",
+        "request_id",
+        "safe_extraction_map",
+        "safe_slot_payload_map",
+        "security_gap_report",
+        "stage"
+      ]
+    }
+  },
+  {
+    "req_id": "DET::PA.4",
+    "stage": "PA.4",
+    "category": "DETERMINISM",
+    "requirement": "PA.4 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.4",
+      "first_byte_count": 630,
+      "second_byte_count": 630,
+      "byte_identical": true,
+      "first_keys": [
+        "SlotValidationReceipt",
+        "authority_order_receipt",
+        "context_contract_receipt",
+        "doctrine_status",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stage",
+        "tool_schema_binding_receipt",
+        "validation_gap_report",
+        "validation_hash_receipt"
+      ]
+    }
+  },
+  {
+    "req_id": "DET::PA.5",
+    "stage": "PA.5",
+    "category": "DETERMINISM",
+    "requirement": "PA.5 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.5",
+      "first_byte_count": 691,
+      "second_byte_count": 691,
+      "byte_identical": true,
+      "first_keys": [
+        "TokenBudgetLedger",
+        "budget_status_receipt",
+        "canonical_hash_input_manifest",
+        "deterministic_trimming_receipt",
+        "doctrine_status",
+        "overflow_gap_report",
+        "policy_hash",
+        "replay_key",
+        "request_id",
+        "stable_prefix_receipt",
+        "stage"
+      ]
+    }
+  },
+  {
+    "req_id": "DET::PA.6",
+    "stage": "PA.6",
+    "category": "DETERMINISM",
+    "requirement": "PA.6 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.6",
+      "first_byte_count": 549,
+      "second_byte_count": 549,
+      "byte_identical": true,
+      "first_keys": [
+        "ProviderRenderManifest",
+        "doctrine_status",
+        "policy_hash",
+        "provider_feature_gap_report",
+        "provider_field_mapping_receipt",
+        "rendered_prompt_packet",
+        "replay_key",
+        "request_id",
+        "schema_render_receipt",
+        "stage",
+        "tool_render_receipt"
+      ]
+    }
+  },
+  {
+    "req_id": "DET::PA.7",
+    "stage": "PA.7",
+    "category": "DETERMINISM",
+    "requirement": "PA.7 receipt builder is byte-deterministic",
+    "status": "PASS",
+    "evidence": {
+      "stage": "PA.7",
+      "first_byte_count": 808,
+      "second_byte_count": 808,
+      "byte_identical": true,
+      "first_keys": [
+        "CompiledPromptArtifact",
+        "compiled_prompt_artifact_receipt",
+        "doctrine_status",
+        "final_artifact_gap_report",
+        "hmac_signature_receipt",
+        "l2_handoff_envelope",
+        "manifest_hash_receipt",
+        "stage"
+      ]
+    }
+  },
+  {
+    "req_id": "AGG::empty",
+    "stage": "PARENT",
+    "category": "AGGREGATION",
+    "requirement": "Empty receipt list aggregates to PA_READY (neutral)",
+    "status": "PASS",
+    "evidence": {
+      "input": [],
+      "result": "PA_READY"
+    }
+  },
+  {
+    "req_id": "AGG::single",
+    "stage": "PARENT",
+    "category": "AGGREGATION",
+    "requirement": "Single-receipt input round-trips through aggregator",
+    "status": "PASS",
+    "evidence": {
+      "result": "PA_BUDGET_OVERFLOW"
+    }
+  },
+  {
+    "req_id": "AGG::all_ready",
+    "stage": "PARENT",
+    "category": "AGGREGATION",
+    "requirement": "All-PA_READY receipt list aggregates to PA_READY",
+    "status": "PASS",
+    "evidence": {
+      "result": "PA_READY"
+    }
+  },
+  {
+    "req_id": "AGG::worst_wins",
+    "stage": "PARENT",
+    "category": "AGGREGATION",
+    "requirement": "Mixed-status input does NOT aggregate to PA_READY",
+    "status": "PASS",
+    "evidence": {
+      "result": "PA_BUDGET_OVERFLOW",
+      "non_ready": true
+    }
+  },
+  {
+    "req_id": "AGG::deterministic",
+    "stage": "PARENT",
+    "category": "AGGREGATION",
+    "requirement": "Aggregator is deterministic on identical input",
+    "status": "PASS",
+    "evidence": {
+      "first": "PA_BUDGET_TRIMMED",
+      "second": "PA_BUDGET_TRIMMED"
+    }
+  },
+  {
+    "req_id": "PARSER::missing_section",
+    "stage": "PARENT",
+    "category": "PARSER_ROBUSTNESS",
+    "requirement": "PARSER/missing_section: Section absent from doc returns empty list",
+    "status": "PASS",
+    "evidence": {
+      "case": "missing_section",
+      "section": "STATUS VALUES",
+      "expected": [],
+      "actual": [],
+      "description": "Section absent from doc returns empty list"
+    }
+  },
+  {
+    "req_id": "PARSER::blank_file",
+    "stage": "PARENT",
+    "category": "PARSER_ROBUSTNESS",
+    "requirement": "PARSER/blank_file: Empty doc returns empty list",
+    "status": "PASS",
+    "evidence": {
+      "case": "blank_file",
+      "section": "STATUS VALUES",
+      "expected": [],
+      "actual": [],
+      "description": "Empty doc returns empty list"
+    }
+  },
+  {
+    "req_id": "PARSER::repeated_heading",
+    "stage": "PARENT",
+    "category": "PARSER_ROBUSTNESS",
+    "requirement": "PARSER/repeated_heading: Parser stops at first blank line after items, ignoring later repeats",
+    "status": "PASS",
+    "evidence": {
+      "case": "repeated_heading",
+      "section": "STATUS VALUES",
+      "expected": [
+        "A",
+        "B"
+      ],
+      "actual": [
+        "A",
+        "B"
+      ],
+      "description": "Parser stops at first blank line after items, ignoring later repeats"
+    }
+  },
+  {
+    "req_id": "PARSER::non_bullet_noise",
+    "stage": "PARENT",
+    "category": "PARSER_ROBUSTNESS",
+    "requirement": "PARSER/non_bullet_noise: Parser stops at first non-bullet, non-empty line",
+    "status": "PASS",
+    "evidence": {
+      "case": "non_bullet_noise",
+      "section": "STATUS VALUES",
+      "expected": [
+        "One"
+      ],
+      "actual": [
+        "One"
+      ],
+      "description": "Parser stops at first non-bullet, non-empty line"
+    }
+  },
+  {
+    "req_id": "PARSER::section_terminated_by_next_heading",
+    "stage": "PARENT",
+    "category": "PARSER_ROBUSTNESS",
+    "requirement": "PARSER/section_terminated_by_next_heading: Section is terminated by the next recognised heading",
+    "status": "PASS",
+    "evidence": {
+      "case": "section_terminated_by_next_heading",
+      "section": "STATUS VALUES",
+      "expected": [
+        "One",
+        "Two"
+      ],
+      "actual": [
+        "One",
+        "Two"
+      ],
+      "description": "Section is terminated by the next recognised heading"
+    }
+  },
+  {
     "req_id": "E2E::dispatch_allowed",
     "stage": "ALL",
     "category": "E2E",
@@ -3003,6 +3988,38 @@
       "aggregate_status": "PA_ARTIFACT_NOT_SIGNED",
       "result_status": "PA_ARTIFACT_NOT_SIGNED",
       "match": true
+    }
+  },
+  {
+    "req_id": "PIPE_NEG::missing_plan_contract",
+    "stage": "ALL",
+    "category": "PIPELINE_NEG",
+    "requirement": "Pipeline with missing plan_contract publishes PA_INPUT_INCOMPLETE",
+    "status": "PASS",
+    "evidence": {
+      "dispatch_allowed": false,
+      "doctrine_status": "PA_INPUT_INCOMPLETE"
+    }
+  },
+  {
+    "req_id": "PIPE_NEG::missing_route_contract",
+    "stage": "ALL",
+    "category": "PIPELINE_NEG",
+    "requirement": "Pipeline with missing route_contract refuses dispatch",
+    "status": "PASS",
+    "evidence": {
+      "dispatch_allowed": false,
+      "doctrine_status": "PA_INPUT_INCOMPLETE"
+    }
+  },
+  {
+    "req_id": "PIPE_NEG::no_forbidden_in_failure_path",
+    "stage": "ALL",
+    "category": "PIPELINE_NEG",
+    "requirement": "Pipeline negative-path receipts contain zero forbidden tokens",
+    "status": "PASS",
+    "evidence": {
+      "forbidden_hits": []
     }
   }
 ]
