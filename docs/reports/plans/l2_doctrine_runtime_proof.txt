@@ -1,0 +1,157 @@
+============================================================
+  L2 EXECUTE DOCTRINE ΓÇö RUNTIME PROOF HARNESS
+  Plan:    .windsurf/plans/l2-execute-doc-gap-fill-9c2a31.md
+  Commit:  d92857f4d7 (HEAD at run-time)
+  Goal:    exercise every contract; emit deterministic digests;
+           prove behavioral invariants under fail-closed conditions.
+============================================================
+
+==============================================================================
+  04.1  L2 Execution Entry / Authority / Packet Intake
+==============================================================================
+  [STEP] happy-path normalization (L0 single-step)
+  [EVID] L2ExecutionRequest digest                        = 'l2req:e50523bf139a95a8'
+  [EVID] issuer_surface                                   = 'L0'
+  [EVID] human_input_scope                                = 'DATA_ONLY'
+  [EVID] durable_write_authority                          = 'NONE'
+  [EVID] boundary_all_clean                               = True
+  [PASS] PHASE 1 ┬º1 ΓÇö required fields populated
+  [PASS] PHASE 1 ┬º2 ΓÇö ExecutionAuthorityContext.human_input_scope=DATA_ONLY
+  [PASS] PHASE 1 ┬º3 ΓÇö L2BoundaryAssertion.all_clean()=True
+  [STEP] L3 current-step + grounded route normalization
+  [EVID] L3-step lineage refs preserved                   = {'prompt_envelope_ref': 'pe-proof-1', 'final_evidence_contract_ref': 'fec-proof-1', 'l3_step_contract_ref': 'step-proof-1'}
+  [PASS] PHASE 4 ΓÇö entry receipt preserves route/plan/prompt/evidence/step refs
+  [STEP] PTC marker normalization (no execution)
+  [EVID] PTC request normalized but NOT executed          = True
+  [PASS] PHASE 4 ΓÇö PTC marker does not execute during entry
+  [STEP] FAIL-CLOSED: unsigned packet
+  [EVID] rejection.reason                                 = 'unsigned_packet'
+  [PASS] PHASE 3 ΓÇö unsigned packet rejected
+  [STEP] FAIL-CLOSED: human prose in authority field
+  [EVID] rejection.reason                                 = 'human_text_in_authority'
+  [PASS] PHASE 3 ΓÇö human text cannot become authority
+  [STEP] FAIL-CLOSED: route_digest mismatch
+  [EVID] rejection.reason                                 = 'route_digest_mismatch'
+  [PASS] PHASE 3 ΓÇö route_digest drift rejected
+  [STEP] FAIL-CLOSED: declared_intent asks L2 to reroute
+  [EVID] rejection.reason                                 = 'asks_l2_to_retrieve_or_route'
+  [PASS] PHASE 3 ΓÇö packet asks L2 to retrieve/route ΓåÆ rejected
+  [STEP] FAIL-CLOSED: boundary assertion violation
+  [EVID] boundary_violations                              = ('no_direct_l4_write_asserted',)
+  [PASS] PHASE 1 ┬º3 ΓÇö boundary violations short-circuit normalization
+  [STEP] DETERMINISM: two identical packets ΓåÆ identical request digest
+  [EVID] digest run-1                                     = 'rep:6db7797a63847f59'
+  [EVID] digest run-2                                     = 'rep:6db7797a63847f59'
+  [PASS] DETERMINISM ΓÇö same request ΓåÆ same digest across two runs
+
+==============================================================================
+  04.7  PTC Programmatic Tool Calling / Sandbox
+==============================================================================
+  [STEP] happy-path PTCExecutionProfile construction
+  [EVID] PTCExecutionProfile digest                       = 'ptcprof:01bf4d3f2abac474'
+  [EVID] raw_result_context_policy                        = 'SANDBOX_ONLY'
+  [EVID] context_freeze_required                          = True
+  [EVID] fail_closed_on_untranscripted_io                 = True
+  [EVID] l5_reclearance_required_on_modify                = True
+  [EVID] tool_is_allowed('query_database')                = True
+  [EVID] tool_is_allowed('execute_shell')                 = False
+  [PASS] PHASE 1 ┬º1 ΓÇö context isolation defaults are SANDBOX_ONLY
+  [PASS] PHASE 1 ┬º1 ΓÇö fail-closed default is True
+  [STEP] happy-path PTCScriptEnvelope construction
+  [EVID] PTCScriptEnvelope digest                         = 'ptcenv:0453a0e90b34edb7'
+  [PASS] PHASE 1 ┬º2 ΓÇö script_digest + replay_key bound at construction
+  [STEP] happy-path clean PTCSandboxReceipt (3 tool calls / one sandbox)
+  [EVID] PTCSandboxReceipt digest                         = 'ptcrcpt:874b4a365a06483f'
+  [EVID] is_clean()                                       = True
+  [EVID] tool_call_count                                  = 3
+  [EVID] raw_result_refs are short URLs                   = True
+  [PASS] PHASE 6 ΓÇö three allowed tool calls run inside one sandbox attempt
+  [PASS] PHASE 4 ΓÇö raw results stay in sandbox (refs only, Γëñ2KB each)
+  [PASS] PHASE 6 ΓÇö receipt returns stdout summary by ref, not bulk content
+  [STEP] FAIL-CLOSED: untranscripted IO detected ΓåÆ must be REJECTED
+  [FAIL-CLOSED] untranscripted_io DETECTED requires REJECTED | PTCContractError: untranscripted_io_status=DETECTED requires result_class=REJECTED (fail-closed)
+  [STEP] FAIL-CLOSED: capability_violation DETECTED ΓåÆ must be REJECTED
+  [FAIL-CLOSED] capability_violation DETECTED requires REJECTED | PTCContractError: capability_violation_status=DETECTED requires result_class=REJECTED
+  [STEP] FAIL-CLOSED: sandbox_escape DETECTED ΓåÆ must be REJECTED
+  [FAIL-CLOSED] sandbox_escape DETECTED requires REJECTED | PTCContractError: sandbox_escape_status=DETECTED requires result_class=REJECTED
+  [STEP] FAIL-CLOSED: bulk payload as raw_result_ref (>2KB)
+  [FAIL-CLOSED] bulk payload inlined as ref ΓåÆ blocked    | PTCContractError: raw_result_refs_sandbox_only[0] is too large to be a ref (len=4096 > 2048); raw payload must NOT inline into the receipt
+  [STEP] FAIL-CLOSED: empty allowed_tool_calls
+  [FAIL-CLOSED] empty allowed_tool_calls ΓåÆ blocked       | PTCContractError: allowed_tool_calls must not be empty
+  [STEP] FAIL-CLOSED: context_freeze_required=False
+  [FAIL-CLOSED] context_freeze_required must be True     | PTCContractError: context_freeze_required must be True per 04.7 ┬ºPHASE 1.1
+  [STEP] Enum invariant: RawResultContextPolicy is SANDBOX_ONLY only
+  [EVID] RawResultContextPolicy members                   = ['SANDBOX_ONLY']
+  [PASS] PHASE 4 ΓÇö raw_result_context_policy enum has only SANDBOX_ONLY
+  [STEP] HumanReviewThreshold defaults push borderline to review
+  [EVID] confidence_below                                 = 0.6
+  [EVID] risk_above                                       = 0.7
+  [EVID] policy_ambiguity_above                           = 0.4
+  [PASS] PHASE 3 ΓÇö human review thresholds default to safe
+
+==============================================================================
+  04.8  OTEL Span Vocabulary
+==============================================================================
+  [EVID] E1 span count                                    = 8
+  [EVID] E2 span count                                    = 8
+  [EVID] E3 span count                                    = 12
+  [EVID] E4 span count                                    = 7
+  [EVID] E5 span count                                    = 8
+  [EVID] PTC span count                                   = 9
+  [EVID] total L2 span count                              = 52
+  [PASS] PHASE 1 ΓÇö span registry is duplicate-free
+  [PASS] PHASE 1 ΓÇö every span uses 'l2.' prefix
+  [STEP] registry digest (stable across runs)
+  [EVID] span registry digest                             = 'spans:082f3040147621b1'
+  [STEP] required-attribute schema enforcement
+  [EVID] required attrs                                   = ['trace_id', 'span_id', 'parent_span_id', 'request_id', 'run_id', 'route_id', 'policy_hash', 'blueprint_hash', 'replay_key', 'capability_token_ref', 'sandbox_envelope_ref', 'side_effect_class', 'latency_ms']
+  [EVID] clean attrs missing[]                            = ()
+  [PASS] PHASE 1 ΓÇö every required attribute present ΓåÆ 0 violations
+  [EVID] incomplete missing                               = ('replay_key', 'latency_ms')
+  [PASS] PHASE 1 ΓÇö missing attrs surfaced by name
+  [STEP] conditional schema: workflow / attempt / invocation / terminal / artifacts
+  [EVID] all-conditions-true missing                      = ('workflow_id', 'step_id', 'attempt_id', 'invocation_kind', 'terminal_class', 'reason_codes', 'artifact_refs')
+  [PASS] PHASE 1 ΓÇö all conditional attributes correctly demanded
+  [STEP] FAIL-CLOSED: unknown span name
+  [FAIL-CLOSED] unknown span name ΓåÆ reject               | L2SpanAttributeViolation: unknown L2 span name: 'l2.unknown.foo'; not in canonical registry
+
+==============================================================================
+  04.8  Anti-Bypass Guards
+==============================================================================
+  [STEP] clean facts ΓåÆ all checks pass
+  [EVID] clean facts checks                               = 14
+  [EVID] clean facts violations                           = 0
+  [PASS] PHASE 3 ΓÇö well-formed L2 surface passes all 16 guards
+  [STEP] dirty facts ΓåÆ multiple violations collected
+  [EVID] dirty checks                                     = 14
+  [EVID] dirty violations                                 = 14
+  [EVID] expected reasons covered                         = ['asks_human_directly', 'builds_prompt_envelope', 'changes_route_id_or_digest', 'direct_l4_write', 'direct_uwg_call', 'emits_final_exit_disposition', 'expands_workflow', 'missing_capability_token', 'missing_sandbox_envelope', 'repair_under_changed_snapshot', 'silent_provider_or_tool_switch', 'treats_human_input_as_authority', 'unapproved_c0_retrieval', 'unsealed_rejection_or_failure']
+  [PASS] PHASE 3 ΓÇö every forbidden L2 behavior detected when active
+  [STEP] raise_if_any() escalates dirty results
+  [EVID] L2BypassViolation count                          = '14'
+  [FAIL-CLOSED] aggregator escalates ΓëÑ1 violation        | L2BypassViolation: L2 bypass detected (14 violation(s)): missing_capability_token: capability_token_ref is empty/missing; missing_sandbox_envelope: sandbox_envelope_ref is empty/missing; changes_route_id_or_digest: route_id changed: original='r1' new='r2'; expands_workflow: step_count changed: 5 -> 7; silent_provider_or_tool_switch: provider mismatch: declared='anthropic' actual='openai'; repair_under_changed_snapshot: blueprint_hash changed during heal: original='bp1' repair='bp2'; unsealed_rejection_or_failure: terminal_class='REJECTED' requires a sealed artifact reference; direct_l4_write: target contains forbidden substring 'uwg.commit': 'uwg.commit'; asks_human_directly: channel 'hitl_chat_inline' is a direct-human path; treats_human_input_as_authority: human_input_scope must be DATA_ONLY, got 'AUTHORITATIVE'; builds_prompt_envelope: L2 cannot construct PromptEnvelope; Prompt Assembly owns this; unapproved_c0_retrieval: retrieval_authority 'OPPORTUNISTIC' is not approved for L2; direct_uwg_call: L2 cannot call UWG without Exit clearance; emits_final_exit_disposition: forbidden L2 final disposition: 'ALLOW_FINISH'
+
+==============================================================================
+  Cross-cutting  Determinism / Replay
+==============================================================================
+  [EVID] run-1 digest                                     = 'fullreq:dd67652d8787efe9'
+  [EVID] run-2 digest                                     = 'fullreq:dd67652d8787efe9'
+  [PASS] REPLAY ΓÇö identical input ΓçÆ identical request digest
+  [EVID] policy_hash-changed digest                       = 'fullreq:97d681d96d11ea09'
+  [PASS] REPLAY ΓÇö policy_hash drift ΓçÆ different digest
+
+==============================================================================
+  Import Hygiene  (no I/O / no upper-layer / no PowerShell)
+==============================================================================
+  [EVID] agentic_core.L2_execution.types.l2_execution_request forbidden imports = []
+  [EVID] agentic_core.L2_execution.types.ptc_execution_profile forbidden imports = []
+  [EVID] agentic_core.L2_execution.entry.packet_normalizer forbidden imports = []
+  [EVID] agentic_core.L2_execution.observability.l2_spans forbidden imports = []
+  [EVID] agentic_core.L2_execution.enforcement.anti_bypass_guards forbidden imports = []
+  [PASS] All 5 doctrine modules have zero I/O imports
+  [PASS] All 5 doctrine modules have zero shell/PowerShell invocations
+
+==============================================================================
+  ALL SECTIONS COMPLETED
+==============================================================================
+  Status: ALL DOCTRINE INVARIANTS PROVEN AT RUNTIME
