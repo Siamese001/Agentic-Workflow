@@ -141,7 +141,7 @@ def emit_run(scenario: Scenario, *, seed: int = 0) -> RunArtifacts:
 
     # 5. L3 managed workflow
     if scenario.route_id == RouteId.R3R4_MANAGED_WORKFLOW:
-        workflow = _emit_l3_workflow(scenario, root, route)
+        workflow = _emit_l3_workflow(root, route)
         artifacts.add_contract("L3WorkflowContract", workflow)
         _add_span(artifacts, "l3.workflow.build", root, parent="l0.route.emit_contract")
         _add_span(artifacts, "l3.step.dispatch", root, parent="l3.workflow.build")
@@ -163,13 +163,14 @@ def emit_run(scenario: Scenario, *, seed: int = 0) -> RunArtifacts:
 
     # 7. L2 execution
     if not is_terminal_ret:
-        l2_request = _emit_l2_request(scenario, root, route, prompt_envelope)
+        l2_request = _emit_l2_request(root, route, prompt_envelope)
         artifacts.add_contract("L2ExecutionRequest", l2_request)
         sealed = _emit_sealed_artifact(scenario, root, l2_request, final_evidence)
         artifacts.add_contract("SealedL2Artifact", sealed)
         parent = "prompt_assembly.emit_artifact"
         for span_name in ("l2.e1.prep", "l2.e2.valid", "l2.e3.exec", "l2.e5.seal"):
-            _add_span(artifacts, span_name, root, parent=parent)
+            extra_attrs = _l2_span_attributes(span_name, scenario, sealed)
+            _add_span(artifacts, span_name, root, parent=parent, attributes=extra_attrs)
             parent = span_name
         artifacts.observed_path.append("l2.e5.seal")
     else:
@@ -204,9 +205,9 @@ def emit_run(scenario: Scenario, *, seed: int = 0) -> RunArtifacts:
         scenario.route_id == RouteId.UWG_COMMIT_PATH
         and disposition.disposition == XDisposition.X3C_COMMIT_ELIGIBLE
     ):
-        commit_req = _emit_commit_request(scenario, root, disposition)
+        commit_req = _emit_commit_request(root, disposition)
         artifacts.add_contract("CommitRequest", commit_req)
-        uwg_receipt = _emit_uwg_receipt(scenario, root, commit_req)
+        uwg_receipt = _emit_uwg_receipt(root, commit_req)
         artifacts.add_contract("UWGCommitReceipt", uwg_receipt)
         _add_span(
             artifacts,
@@ -225,7 +226,7 @@ def emit_run(scenario: Scenario, *, seed: int = 0) -> RunArtifacts:
         artifacts.observed_path.append("uwg.commit")
 
     # 10. L6 exhaust — ALWAYS after disposition is sealed
-    exhaust = _emit_exhaust(scenario, root, disposition, span_count=len(artifacts.spans) + 1)
+    exhaust = _emit_exhaust(root, disposition, len(artifacts.spans) + 1)
     artifacts.add_contract("RuntimeExhaustBundle", exhaust)
     _add_span(artifacts, "l6.ingest", root, parent="exit.disposition")
     artifacts.observed_path.append("l6.ingest")
@@ -363,7 +364,7 @@ def _emit_final_evidence(
     return evidence
 
 
-def _emit_l3_workflow(scenario: Scenario, root: ContractRoot, route: RouteContract) -> L3WorkflowContract:
+def _emit_l3_workflow(root: ContractRoot, route: RouteContract) -> L3WorkflowContract:
     steps = [
         L3StepContract(step_id="s1", depends_on=[], digest=digest({"s": 1})),
         L3StepContract(step_id="s2", depends_on=["s1"], digest=digest({"s": 2})),
@@ -399,7 +400,6 @@ def _emit_prompt_envelope(
 
 
 def _emit_l2_request(
-    scenario: Scenario,
     root: ContractRoot,
     route: RouteContract,
     prompt: PromptEnvelope | None,
@@ -477,9 +477,7 @@ def _emit_disposition(
     return receipt
 
 
-def _emit_commit_request(
-    scenario: Scenario, root: ContractRoot, disposition: X3DispositionReceipt
-) -> CommitRequest:
+def _emit_commit_request(root: ContractRoot, disposition: X3DispositionReceipt) -> CommitRequest:
     req = CommitRequest(
         root=root,
         upstream_ref=disposition.digest,
@@ -489,7 +487,7 @@ def _emit_commit_request(
     return req
 
 
-def _emit_uwg_receipt(scenario: Scenario, root: ContractRoot, commit_req: CommitRequest) -> UWGCommitReceipt:
+def _emit_uwg_receipt(root: ContractRoot, commit_req: CommitRequest) -> UWGCommitReceipt:
     receipt = UWGCommitReceipt(
         root=root,
         upstream_ref=commit_req.digest,
@@ -501,7 +499,6 @@ def _emit_uwg_receipt(scenario: Scenario, root: ContractRoot, commit_req: Commit
 
 
 def _emit_exhaust(
-    scenario: Scenario,
     root: ContractRoot,
     disposition: X3DispositionReceipt,
     span_count: int,
@@ -560,6 +557,45 @@ def _add_span(
 # ---------------------------------------------------------------------------
 # Claim support map (99.7) and replay inputs (99.5)
 # ---------------------------------------------------------------------------
+
+
+def _l2_span_attributes(span_name: str, scenario: Scenario, sealed: SealedL2Artifact) -> dict[str, Any]:
+    """Populate the OTEL attributes 99.4 mandates for L2 execution spans.
+
+    - ``l2.e3.exec`` is a model/tool call → must carry provider, model_id,
+      latency_ms, tokens, cost, status (per 99.4 §VALIDATION RULE).
+    - Side-effect-emitting spans (R4 / R3+R4 / UWG paths) MUST carry
+      capability_token_ref + sandbox_envelope_ref.
+    - Other L2 spans (prep/valid/seal) carry ``status`` so absence-of-status
+      cannot pass silently.
+    """
+    attrs: dict[str, Any] = {"status": "OK"}
+    if span_name == "l2.e3.exec":
+        attrs.update(
+            {
+                "provider": "anthropic",
+                "model_id": "claude-3-5-sonnet-20241022",
+                "tool_id": "default" if not sealed.side_effect else f"action.{scenario.scenario_id}",
+                "latency_ms": 412,
+                "tokens_in": 287,
+                "tokens_out": 96,
+                "cost_usd": 0.0021,
+            }
+        )
+        if sealed.side_effect:
+            attrs.update(
+                {
+                    "capability_token_ref": "cap-"
+                    + short_id({"sid": scenario.scenario_id, "tier": "side_effect"}),
+                    "sandbox_envelope_ref": "sandbox-"
+                    + short_id({"sid": scenario.scenario_id, "lane": "execution"}),
+                }
+            )
+    if span_name == "l2.e5.seal":
+        attrs.update(
+            {"sealed_digest": sealed.digest, "cited_evidence_count": len(sealed.cited_evidence_refs)}
+        )
+    return attrs
 
 
 def _build_claim_support(

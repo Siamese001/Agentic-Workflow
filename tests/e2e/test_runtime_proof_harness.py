@@ -21,6 +21,7 @@ import pytest
 
 from tests.e2e.proof.bundle import _artifact_filename, read_bundle
 from tests.e2e.proof.contracts import ProofStatus, RouteId, XDisposition
+from tests.e2e.proof.digests import sign, verify
 from tests.e2e.proof.harness import emit_run
 from tests.e2e.proof.runner import run_scenario
 from tests.e2e.proof.scenarios import GOLDEN_PATH_ID, all_scenarios, get
@@ -176,8 +177,48 @@ def test_trace_detects_forbidden_span():
             attributes=dict(run.spans[0].attributes),
         )
     )
+    status, trace_failures = validate_trace(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("forbidden" in f.lower() or "uwg.commit" in f for f in trace_failures)
+
+
+def test_l2_exec_span_carries_99_4_model_attributes():
+    """99.4 §VALIDATION RULE — l2.e3.exec must carry provider/model/latency/tokens/cost/status."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    exec_span = next(s for s in run.spans if s.name == "l2.e3.exec")
+    for k in ("provider", "model_id", "latency_ms", "tokens_in", "tokens_out", "cost_usd", "status"):
+        assert exec_span.attributes.get(k) not in (None, ""), f"l2.e3.exec missing {k}"
+
+
+def test_side_effect_route_emits_capability_and_sandbox_refs():
+    """99.4 — side-effect-emitting L2 must carry capability_token_ref + sandbox_envelope_ref."""
+    sc = get("RC-R4")
+    run = emit_run(sc)
+    exec_span = next(s for s in run.spans if s.name == "l2.e3.exec")
+    assert exec_span.attributes.get("capability_token_ref")
+    assert exec_span.attributes.get("sandbox_envelope_ref")
+
+
+def test_trace_validator_detects_missing_model_attributes():
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    exec_span = next(s for s in run.spans if s.name == "l2.e3.exec")
+    exec_span.attributes.pop("provider")
+    exec_span.attributes.pop("model_id")
     status, failures = validate_trace(sc, run)
     assert status == ProofStatus.FAIL
+    assert any("missing model attrs" in f for f in failures)
+
+
+def test_trace_validator_detects_missing_capability_token_on_side_effect():
+    sc = get("RC-R4")
+    run = emit_run(sc)
+    exec_span = next(s for s in run.spans if s.name == "l2.e3.exec")
+    exec_span.attributes.pop("capability_token_ref")
+    status, failures = validate_trace(sc, run)
+    assert status == ProofStatus.FAIL
+    assert any("side-effect" in f for f in failures)
 
 
 def test_replay_passes_with_fixed_seed():
@@ -219,6 +260,32 @@ def test_route_coverage_fails_when_route_family_absent():
 # ---------------------------------------------------------------------------
 # Bundle filename mapping (99.1 verbatim names)
 # ---------------------------------------------------------------------------
+
+
+def test_hmac_sign_verify_roundtrip():
+    """99.3 CHECK 3 — schema slot for HMAC signature works end-to-end."""
+    sc = get(GOLDEN_PATH_ID)
+    run = emit_run(sc)
+    route_digest = run.contracts["RouteContract"]["digest"]
+    key = b"production-signing-key-32-bytes!!"
+    signature = sign(route_digest, key)
+    assert signature.startswith("hmacblake2b:")
+    assert verify(route_digest, signature, key)
+    # Tamper detection
+    assert not verify(route_digest + "X", signature, key)
+    # Wrong key rejected
+    assert not verify(route_digest, signature, b"different-key-of-correct-length!")
+    # Malformed prefix rejected
+    assert not verify(route_digest, "blake2b:" + signature.split(":", 1)[1], key)
+
+
+def test_contract_root_carries_signature_slot():
+    """ContractRoot exposes the optional 99.3 signature field for live signers."""
+    run = emit_run(get(GOLDEN_PATH_ID))
+    payload = run.contracts["RouteContract"]
+    assert "signature" in payload["root"]
+    # Synthetic harness leaves it empty (unsigned reference emitter).
+    assert payload["root"]["signature"] == ""
 
 
 def test_artifact_filename_matches_99_1_spec():
@@ -304,6 +371,104 @@ def test_validate_axis_runners_pass_on_clean_bundle(tmp_path, module):
     result = _run_cli(module, ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT)
     assert result.returncode == 0, result.stderr + result.stdout
     assert "[PASS]" in result.stdout
+
+
+def _seed_bundle(tmp_path: Path, scope: str = "all") -> Path:
+    bundle_dir = tmp_path / scope
+    seed = _run_cli(
+        "tests.e2e.run_agentic_runtime_proof",
+        ["--scenario-set", scope, "--emit-proof-bundle", str(bundle_dir), "--strict"],
+        REPO_ROOT,
+    )
+    assert seed.returncode == 0, seed.stderr
+    return bundle_dir
+
+
+def _tamper_bundle(bundle_dir: Path, mutate) -> None:
+    bundle_path = bundle_dir / "bundle.json"
+    payload = json.loads(bundle_path.read_text(encoding="utf-8"))
+    mutate(payload)
+    bundle_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def test_validate_trace_tree_strict_fails_on_missing_attribute(tmp_path):
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+
+    def mutate(p):
+        p["scenarios"][0]["traces"][0]["attributes"].pop("policy_hash", None)
+
+    _tamper_bundle(bundle_dir, mutate)
+    result = _run_cli(
+        "tests.e2e.validate_trace_tree", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "policy_hash" in result.stderr
+
+
+def test_validate_trace_tree_strict_fails_on_missing_model_attrs(tmp_path):
+    """99.4 §VALIDATION RULE — l2.e3.exec must carry provider/model_id at trace-tree level."""
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+
+    def mutate(p):
+        for span in p["scenarios"][0]["traces"]:
+            if span["name"] == "l2.e3.exec":
+                span["attributes"].pop("provider", None)
+                span["attributes"].pop("model_id", None)
+
+    _tamper_bundle(bundle_dir, mutate)
+    result = _run_cli(
+        "tests.e2e.validate_trace_tree", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "missing model attrs" in result.stderr
+
+
+def test_validate_replay_strict_fails_on_digest_mismatch_receipt(tmp_path):
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+
+    def mutate(p):
+        receipt = p["scenarios"][0]["replay_receipts"][0]
+        receipt["replay_status"] = "FAIL"
+        receipt["route_digest_match"] = False
+
+    _tamper_bundle(bundle_dir, mutate)
+    result = _run_cli("tests.e2e.validate_replay", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT)
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "route_digest_match=False" in result.stderr
+
+
+def test_validate_grounded_output_strict_fails_on_unsupported_claim(tmp_path):
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+
+    def mutate(p):
+        receipt = p["scenarios"][0]["groundedness_receipts"][0]
+        receipt["unsupported_claims"] = ["c1"]
+        receipt["proof_status"] = "FAIL"
+
+    _tamper_bundle(bundle_dir, mutate)
+    result = _run_cli(
+        "tests.e2e.validate_grounded_output",
+        ["--proof-bundle", str(bundle_dir), "--strict"],
+        REPO_ROOT,
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "unsupported_claims" in result.stderr
+
+
+def test_validate_grounded_output_strict_fails_on_boundary_violation(tmp_path):
+    bundle_dir = _seed_bundle(tmp_path, "golden")
+
+    def mutate(p):
+        p["scenarios"][0]["groundedness_receipts"][0]["prompt_data_boundary_status"] = "BREACHED"
+
+    _tamper_bundle(bundle_dir, mutate)
+    result = _run_cli(
+        "tests.e2e.validate_grounded_output",
+        ["--proof-bundle", str(bundle_dir), "--strict"],
+        REPO_ROOT,
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "prompt_data_boundary" in result.stderr
 
 
 def test_validate_no_bypass_strict_fails_on_violation_injection(tmp_path):

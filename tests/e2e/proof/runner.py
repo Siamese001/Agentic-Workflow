@@ -143,10 +143,15 @@ def _span_to_dict(span: Any) -> dict[str, Any]:
 
 
 def _dataclass_to_dict(obj: Any) -> dict[str, Any]:
+    """Serialize a dataclass instance to a JSON-friendly dict, normalizing enums."""
     if _dc.is_dataclass(obj) and not isinstance(obj, type):
         d = asdict(obj)
-        return _normalize_enums(d)
-    return obj
+        result = _normalize_enums(d)
+        if isinstance(result, dict):
+            return result
+    if isinstance(obj, dict):
+        return obj
+    raise TypeError(f"_dataclass_to_dict: cannot serialize {type(obj).__name__}")
 
 
 def _normalize_enums(value: Any) -> Any:

@@ -54,4 +54,29 @@ def _default(value: Any) -> Any:
     return repr(value)
 
 
-__all__ = ["canonical_json", "digest", "short_id"]
+def sign(payload_digest: str, key: bytes) -> str:
+    """Produce an HMAC-style signature of ``payload_digest`` keyed by ``key``.
+
+    99.3 CHECK 3 mandates a signature/HMAC layer over the canonical contract
+    digest. We use keyed blake2b (RFC 7693) which is HMAC-equivalent for this
+    purpose, deterministic, and zero-dependency.
+    """
+    h = hashlib.blake2b(payload_digest.encode("utf-8"), key=key, digest_size=16)
+    return f"hmacblake2b:{h.hexdigest()}"
+
+
+def verify(payload_digest: str, signature: str, key: bytes) -> bool:
+    """Constant-time verify of a ``sign()`` output."""
+    if not signature.startswith("hmacblake2b:"):
+        return False
+    expected = sign(payload_digest, key)
+    # constant-time compare
+    if len(expected) != len(signature):
+        return False
+    accum = 0
+    for a, b in zip(expected, signature):
+        accum |= ord(a) ^ ord(b)
+    return accum == 0
+
+
+__all__ = ["canonical_json", "digest", "short_id", "sign", "verify"]

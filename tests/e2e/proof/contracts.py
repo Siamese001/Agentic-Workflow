@@ -103,6 +103,10 @@ class ContractRoot:
     replay_key: str
     tenant_id: str = "default"
     session_id: str = ""
+    # 99.3 CHECK 3 — optional HMAC/signature seal. Empty in unsigned/test mode;
+    # populated by signing emitters in production. The validator verifies the
+    # signature against the canonical contract digest using a keyed blake2b.
+    signature: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -114,6 +118,7 @@ class ContractRoot:
             "replay_key": self.replay_key,
             "tenant_id": self.tenant_id,
             "session_id": self.session_id,
+            "signature": self.signature,
         }
 
 

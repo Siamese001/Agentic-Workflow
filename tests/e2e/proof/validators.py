@@ -160,7 +160,32 @@ def validate_trace(scenario: Scenario, run: RunArtifacts) -> tuple[ProofStatus, 
     if "uwg.commit" in span_names and scenario.route_id != RouteId.UWG_COMMIT_PATH:
         failures.append("uwg.commit span emitted on non-commit route")
 
+    # 99.4 §VALIDATION RULE: tool/model spans must carry provider, model/tool id,
+    # latency, tokens, cost, status. Side-effect spans must carry capability_token_ref
+    # and sandbox_envelope_ref.
+    for span in run.spans:
+        _check_l2_exec_attributes(scenario, span, failures)
+
     return (ProofStatus.PASS if not failures else ProofStatus.FAIL, failures)
+
+
+_MODEL_SPAN_REQUIRED = ("provider", "model_id", "latency_ms", "tokens_in", "tokens_out", "cost_usd", "status")
+_SIDE_EFFECT_REQUIRED = ("capability_token_ref", "sandbox_envelope_ref")
+_SIDE_EFFECT_ROUTES = {RouteId.R4_SINGLE_ACTION, RouteId.R3_PLUS_R4_SINGLE_STEP, RouteId.UWG_COMMIT_PATH}
+
+
+def _check_l2_exec_attributes(scenario: Scenario, span: Any, failures: list[str]) -> None:
+    """Per-span 99.4 attribute enforcement. Helper keeps validate_trace tight."""
+    if span.name == "l2.e3.exec":
+        missing = [k for k in _MODEL_SPAN_REQUIRED if span.attributes.get(k) in (None, "")]
+        if missing:
+            failures.append(f"l2.e3.exec span missing model attrs {missing}")
+        if scenario.route_id in _SIDE_EFFECT_ROUTES:
+            se_missing = [k for k in _SIDE_EFFECT_REQUIRED if not span.attributes.get(k)]
+            if se_missing:
+                failures.append(f"l2.e3.exec side-effect span missing {se_missing}")
+    if span.name == "uwg.commit" and not span.attributes.get("commit_request_id"):
+        failures.append("uwg.commit span missing commit_request_id")
 
 
 # ---------------------------------------------------------------------------
@@ -368,10 +393,11 @@ def _check_authority_root(
     failures: list[str],
 ) -> dict[str, Any] | None:
     """Validate the authority root of one contract; return updated canonical root."""
-    root = payload.get("root") if isinstance(payload, dict) else None
-    if root is None:
+    raw_root = payload.get("root") if isinstance(payload, dict) else None
+    if not isinstance(raw_root, dict):
         failures.append(f"{cname}: missing root authority block")
         return canonical
+    root: dict[str, Any] = raw_root
     missing = [k for k in expected_keys if not root.get(k)]
     if missing:
         failures.append(f"{cname}: empty authority field(s) {missing}")
