@@ -1,11 +1,17 @@
 # L0/L3 Doctrine — Requirements Traceability Matrix
 
 **Plan:** `.windsurf/plans/l0-l3-doctrine-contracts-b8c2a4.md`
-**Commit:** `f5fd820b7e` + hardening (this revision)
+**Commit:** `f5fd820b7e` + hardening + exhaustive edge cases (this revision)
 **ADG snapshot:** `04252026_0843` (84,920 nodes, 593,555 edges, healthy)
-**Test result:** **75 passed, 0 failed, 0 skipped** in 0.36 s (47 baseline + 28 hardening)
+**Test result:** **363 passed, 0 failed, 0 skipped** in 0.55 s
+**Test breakdown:** 47 baseline + 28 hardening + 170 L0 edge cases + 118 L3 edge cases
 **Runtime proof:** `docs/reports/plans/l0_l3_doctrine_runtime_proof.txt`
-**Hardening tests:** `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_hardening.py`
+**Test files:**
+- `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine.py` (baseline)
+- `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_hardening.py` (gap closure)
+- `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_edge_cases.py` (exhaustive)
+- `tests/agentic_core/L3_orchestration/doctrine/test_l3_doctrine.py` (baseline)
+- `tests/agentic_core/L3_orchestration/doctrine/test_l3_doctrine_edge_cases.py` (exhaustive)
 
 ## Legend
 

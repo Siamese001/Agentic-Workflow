@@ -8,6 +8,8 @@ the modified packet.
 
 from __future__ import annotations
 
+import hashlib
+import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -200,12 +202,262 @@ def run_l5_reclearance(
     )
 
 
+# ---- §5.6 spec-named contract receipts ----------------------------------
+#
+# These dataclasses match the receipt shapes spelled out in
+# 05.6_Exit_HITL_Freeze_Review_and_Reclearance_detailed.md.
+# They wrap the existing ``HITLPacket`` / ``HITLDecision`` / ``L5ReclearanceResult``
+# without breaking back-compat: the original types remain the runtime shapes;
+# these names are the canonical 5.6 ledger-grade receipts.
+
+
+@dataclass(slots=True)
+class FreezeReceipt:
+    """Spec §5.6 H1 — FreezeReceipt."""
+
+    freeze_id: str
+    exit_review_packet_id: str
+    request_id: str
+    run_id: str
+    trace_root: str
+    reason_codes: list[str] = field(default_factory=list)
+    frozen_artifact_refs: list[str] = field(default_factory=list)
+    pending_state_diff_refs: list[str] = field(default_factory=list)
+    suspended_capability_refs: list[str] = field(default_factory=list)
+    policy_hash: str = ""
+    blueprint_hash: str = ""
+    replay_key: str = ""
+    freeze_digest: str = ""
+
+
+@dataclass(slots=True)
+class HumanReviewPacket:
+    """Spec §5.6 H2 — HumanReviewPacket (canonical receipt shape).
+
+    Distinct from runtime ``HITLPacket``: this carries the final receipt for
+    L5 / audit, with sensitive_data_manifest separated, allowed/prohibited
+    actions enumerated, and ``packet_hash`` deterministically derived.
+    """
+
+    review_packet_id: str
+    freeze_id: str
+    escalation_reason_codes: list[str] = field(default_factory=list)
+    human_decision_options: list[str] = field(default_factory=list)
+    minimal_context_refs: list[str] = field(default_factory=list)
+    evidence_map_refs: list[str] = field(default_factory=list)
+    proposed_diff_refs: list[str] = field(default_factory=list)
+    policy_threshold_refs: list[str] = field(default_factory=list)
+    replay_refs: list[str] = field(default_factory=list)
+    trace_refs: list[str] = field(default_factory=list)
+    sensitive_data_manifest: dict[str, Any] = field(default_factory=dict)
+    allowed_actions: list[str] = field(default_factory=list)
+    prohibited_actions: list[str] = field(default_factory=list)
+    packet_hash: str = ""
+
+
+@dataclass(slots=True)
+class HumanDecisionReceipt:
+    """Spec §5.6 H4 — HumanDecisionReceipt."""
+
+    human_decision_id: str
+    review_packet_id: str
+    reviewer_id_ref: str
+    decision: str  # APPROVE | MODIFY_DIFF | REJECT | RETURN_TO_L1 | REQUEST_*
+    rationale_ref: str = ""
+    modification_diff_ref: str = ""
+    requested_reentry_target: str = ""
+    timestamp: int = 0
+    data_not_authority_assertion: bool = True
+    digest: str = ""
+
+
+@dataclass(slots=True)
+class L5ReclearanceRequest:
+    """Spec §5.6 L5 RECLEARANCE REQUEST — required for any human-touched outcome."""
+
+    reclearance_request_id: str
+    human_decision_receipt_ref: str
+    original_exit_review_packet_ref: str
+    policy_hash: str
+    blueprint_hash: str
+    replay_key: str
+    modified_packet_ref: str = ""
+    modified_diff_ref: str = ""
+    authority_label_manifest: dict[str, Any] = field(default_factory=dict)
+    origin_trust_manifest: dict[str, Any] = field(default_factory=dict)
+    scope_delta_report: dict[str, Any] = field(default_factory=dict)
+    required_rechecks: list[str] = field(default_factory=list)
+    digest: str = ""
+
+
+# ---- spec-named builders --------------------------------------------------
+
+
+def _digest(*parts: str) -> str:
+    raw = "|".join(parts).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()[:16]
+
+
+def build_freeze_receipt(
+    packet: ExitReviewPacket,
+    *,
+    reason_codes: list[str],
+    frozen_artifact_refs: list[str] | None = None,
+    pending_state_diff_refs: list[str] | None = None,
+    suspended_capability_refs: list[str] | None = None,
+) -> FreezeReceipt:
+    """Spec §5.6 H1 — produce a ``FreezeReceipt`` for a packet entering review."""
+    freeze_id = f"frz-{_digest(packet.replay_key, packet.run_id, 'freeze')}"
+    digest = _digest(freeze_id, packet.policy_hash, packet.blueprint_hash, packet.replay_key)
+    return FreezeReceipt(
+        freeze_id=freeze_id,
+        exit_review_packet_id=f"erp-{_digest(packet.replay_key, packet.run_id)}",
+        request_id=packet.request_id,
+        run_id=packet.run_id,
+        trace_root=packet.trace_root,
+        reason_codes=list(reason_codes),
+        frozen_artifact_refs=list(frozen_artifact_refs or []),
+        pending_state_diff_refs=list(pending_state_diff_refs or []),
+        suspended_capability_refs=list(suspended_capability_refs or []),
+        policy_hash=packet.policy_hash,
+        blueprint_hash=packet.blueprint_hash,
+        replay_key=packet.replay_key,
+        freeze_digest=digest,
+    )
+
+
+def build_human_review_packet(
+    packet: ExitReviewPacket,
+    freeze: FreezeReceipt,
+    *,
+    review_packet_id: str,
+    escalation_reason_codes: list[str],
+    minimal_context_refs: list[str] | None = None,
+    evidence_map_refs: list[str] | None = None,
+    proposed_diff_refs: list[str] | None = None,
+    sensitive_data_manifest: dict[str, Any] | None = None,
+) -> HumanReviewPacket:
+    """Spec §5.6 H2 — produce a bounded ``HumanReviewPacket`` for L5/audit.
+
+    Decision options are fixed by the spec — the H4 verdict enum.
+    """
+    options = [v.value for v in HITLVerdict]
+    prohibited = [
+        "L4_DIRECT_WRITE",
+        "POLICY_OVERRIDE",
+        "SCOPE_WIDENING",
+        "SECRET_LEAK",
+        "AUTHORITY_CLAIM_ON_RETRIEVED_TEXT",
+        "BYPASS_L5",
+        "FORCE_UNSUPPORTED_FACT",
+    ]
+    digest = _digest(
+        freeze.freeze_id,
+        review_packet_id,
+        ",".join(escalation_reason_codes),
+        packet.replay_key,
+    )
+    return HumanReviewPacket(
+        review_packet_id=review_packet_id,
+        freeze_id=freeze.freeze_id,
+        escalation_reason_codes=list(escalation_reason_codes),
+        human_decision_options=options,
+        minimal_context_refs=list(minimal_context_refs or []),
+        evidence_map_refs=list(evidence_map_refs or []),
+        proposed_diff_refs=list(proposed_diff_refs or []),
+        policy_threshold_refs=[packet.policy_hash, packet.blueprint_hash],
+        replay_refs=[packet.replay_key] if packet.replay_key else [],
+        trace_refs=[packet.trace_root] if packet.trace_root else [],
+        sensitive_data_manifest=dict(sensitive_data_manifest or {}),
+        allowed_actions=options,
+        prohibited_actions=prohibited,
+        packet_hash=digest,
+    )
+
+
+def build_human_decision_receipt(
+    review_packet_id: str,
+    decision: HITLDecision,
+    *,
+    reviewer_id_ref: str = "",
+) -> HumanDecisionReceipt:
+    """Spec §5.6 H4 — convert a runtime ``HITLDecision`` to a ledger-grade receipt."""
+    ts = decision.decision_at_ms or int(time.time() * 1000)
+    digest_id = _digest(
+        review_packet_id, decision.verdict.value, str(ts), decision.reviewer_id or reviewer_id_ref
+    )
+    return HumanDecisionReceipt(
+        human_decision_id=f"hd-{digest_id}",
+        review_packet_id=review_packet_id,
+        reviewer_id_ref=reviewer_id_ref or decision.reviewer_id,
+        decision=decision.verdict.value,
+        rationale_ref=decision.rationale,
+        modification_diff_ref=("modified" if decision.modified_packet else ""),
+        requested_reentry_target=("L1" if decision.verdict is HITLVerdict.RETURN_TO_L1 else ""),
+        timestamp=ts,
+        data_not_authority_assertion=True,
+        digest=digest_id,
+    )
+
+
+def build_l5_reclearance_request(
+    packet: ExitReviewPacket,
+    decision_receipt: HumanDecisionReceipt,
+    *,
+    required_rechecks: list[str] | None = None,
+) -> L5ReclearanceRequest:
+    """Spec §5.6 L5 RECLEARANCE REQUEST — produced before any modified-packet outcome."""
+    rec_id = _digest(
+        decision_receipt.human_decision_id,
+        packet.replay_key,
+        packet.policy_hash,
+    )
+    digest = _digest(
+        rec_id,
+        decision_receipt.decision,
+        ",".join(required_rechecks or []),
+    )
+    return L5ReclearanceRequest(
+        reclearance_request_id=f"recl-{rec_id}",
+        human_decision_receipt_ref=decision_receipt.human_decision_id,
+        original_exit_review_packet_ref=f"erp-{_digest(packet.replay_key, packet.run_id)}",
+        policy_hash=packet.policy_hash,
+        blueprint_hash=packet.blueprint_hash,
+        replay_key=packet.replay_key,
+        modified_packet_ref=decision_receipt.modification_diff_ref,
+        modified_diff_ref=decision_receipt.modification_diff_ref,
+        authority_label_manifest={
+            "human_review_data": "data_not_authority",
+            "retrieved_text": "data_not_authority",
+            "policy_evidence_ref": packet.policy_hash,
+        },
+        origin_trust_manifest={
+            "reviewer_id_ref": decision_receipt.reviewer_id_ref,
+            "data_not_authority_assertion": True,
+        },
+        scope_delta_report={
+            "decision": decision_receipt.decision,
+            "modified": bool(decision_receipt.modification_diff_ref),
+        },
+        required_rechecks=list(required_rechecks or []),
+        digest=digest,
+    )
+
+
 __all__ = [
+    "FreezeReceipt",
     "H1_FREEZE_FIELDS",
     "HITLDecision",
     "HITLPacket",
     "HITLVerdict",
+    "HumanDecisionReceipt",
+    "HumanReviewPacket",
+    "L5ReclearanceRequest",
     "L5ReclearanceResult",
+    "build_freeze_receipt",
+    "build_human_decision_receipt",
+    "build_human_review_packet",
+    "build_l5_reclearance_request",
     "materialize_review_packet",
     "run_l5_reclearance",
 ]
