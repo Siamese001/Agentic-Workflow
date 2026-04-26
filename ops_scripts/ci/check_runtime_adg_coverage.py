@@ -30,7 +30,6 @@ Usage
 from __future__ import annotations
 
 import argparse
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -109,6 +108,16 @@ def _print_tier2_spec_audit() -> None:
         print(f"  [REGISTERED] {n}")
 
 
+# Stages that are emitted by Tier 1 helpers (runtime_span_emitter), so they
+# don't need a Tier 2 helper. Keep in sync with constitution in
+# `tests/unit/system_learning/runtime_adg/test_tier2_contracts.py`.
+_TIER1_COVERED_STAGES: tuple[str, ...] = (
+    "stage_01_trace_root",
+    "stage_09_L2_execution",
+    "stage_10_exit_eval",
+)
+
+
 def _print_tier2_emitter_audit() -> None:
     """Print which Tier 2 stages have an emit helper available."""
     try:
@@ -118,10 +127,54 @@ def _print_tier2_emitter_audit() -> None:
         return
     print(
         f"[runtime-adg-coverage Tier 2 emitters] available={len(TIER2_EMITTERS)} "
-        "(Tier 1 emitters cover stage_01/09/10 separately)"
+        f"(Tier 1 covers {', '.join(_TIER1_COVERED_STAGES)})"
     )
     for stage_key, span_name in sorted(TIER2_EMITTERS.items()):
         print(f"  [HELPER] {stage_key} -> {span_name}")
+
+
+def _check_tier2_ssot_integrity() -> tuple[bool, list[str]]:
+    """Verify Tier 2 SSOT integrity. Returns (ok, problem_list).
+
+    Checks:
+      1. ``span_contracts`` registers exactly 14 stages.
+      2. Every stage has either a Tier 2 helper or a Tier 1 producer.
+      3. Every Tier 2 helper span name exists in the semconv SSOT.
+    """
+    problems: list[str] = []
+    try:
+        from agentic_core.L6_observability.semconv import runtime as R
+        from system_learning.runtime_adg import runtime_span_emitter_tier2 as T2
+        from system_learning.runtime_adg.span_contracts import (
+            tier2_stage_count,
+            tier2_stage_names,
+        )
+    except ImportError as exc:
+        problems.append(f"import failed during integrity check: {exc}")
+        return False, problems
+
+    if tier2_stage_count() != 14:
+        problems.append(
+            f"span_contracts._TIER2_CONTRACTS has {tier2_stage_count()} stages "
+            "(expected 14)"
+        )
+
+    all_stages = set(tier2_stage_names())
+    tier1_set = set(_TIER1_COVERED_STAGES)
+    tier2_set = set(T2.TIER2_EMITTERS.keys())
+    uncovered = all_stages - tier1_set - tier2_set
+    if uncovered:
+        problems.append(
+            f"stages without producer or helper: {sorted(uncovered)}"
+        )
+
+    out_of_ssot = T2.ALL_TIER2_SPAN_NAMES - R.ALL_SPAN_NAMES
+    if out_of_ssot:
+        problems.append(
+            f"Tier 2 helper span names missing from semconv SSOT: {sorted(out_of_ssot)}"
+        )
+
+    return not problems, problems
 
 
 def _print_semconv_ssot_audit() -> None:
@@ -184,6 +237,13 @@ def main() -> int:
         _print_tier2_spec_audit()
         _print_tier2_emitter_audit()
 
+    # SSOT integrity is always checked (cheap, deterministic). Failures are
+    # reported but only fail the gate when --enforce is set.
+    integrity_ok, integrity_problems = _check_tier2_ssot_integrity()
+    if not integrity_ok:
+        for p in integrity_problems:
+            print(f"  [SSOT integrity] {p}", file=sys.stderr)
+
     if pct < args.threshold:
         if args.enforce:
             print(
@@ -196,6 +256,15 @@ def main() -> int:
             f"{args.threshold}% (gate not yet enforced).",
             file=sys.stderr,
         )
+
+    if args.enforce and not integrity_ok:
+        print(
+            "ERROR: Tier 2 SSOT integrity failed (see above). "
+            "Fix span_contracts / semconv / runtime_span_emitter_tier2 alignment.",
+            file=sys.stderr,
+        )
+        return 1
+
     return 0
 
 

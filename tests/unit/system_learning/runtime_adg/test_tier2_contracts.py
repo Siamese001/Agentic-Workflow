@@ -211,14 +211,11 @@ def test_emit_c0_retrieval_coerces_invalid_mode(adapter: _FakeAdapter) -> None:
         vector_store_id="vs-1",
         index_version="idx-v1",
     )
+    # `_append_span` always writes the dict at key 'attributes' (no JSON
+    # roundtrip until the snapshot materializer); read from there directly.
     assert len(adapter._completed_spans) == 1
-    span = adapter._completed_spans[0]
-    attrs_json = span.get("attributes_json")
-    if isinstance(attrs_json, str):
-        attrs = json.loads(attrs_json)
-    else:
-        attrs = span.get("attributes", {})
-    assert attrs.get("retrieval_mode") == "hybrid"
+    attrs = adapter._completed_spans[0]["attributes"]
+    assert attrs["retrieval_mode"] == "hybrid"
 
 
 def test_emit_prompt_assembly_satisfies_stage_08(adapter: _FakeAdapter) -> None:
