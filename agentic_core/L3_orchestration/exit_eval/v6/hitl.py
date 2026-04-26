@@ -192,9 +192,17 @@ def run_l5_reclearance(
     target_packet = decision.modified_packet or packet
     gates_to_run = _RECLEAR_GATES.get(decision.verdict, ())
     re_run = [GATE_EVALUATORS[g](target_packet) for g in gates_to_run]
-    # Caller routes via aggregate_decision on the re-run verdicts; we only
-    # surface them. Default placeholder disposition is ESCALATE (still in
-    # review) — caller MUST run the matrix to finalize.
+    # By design (spec §5.6 H4): this function does NOT re-disposition. It
+    # surfaces the re-run gate verdicts and the conservative ESCALATE marker
+    # so the *caller* (the runtime/orchestrator that received the human
+    # decision) can re-run ``aggregate_decision`` against the full
+    # (re-cleared) packet. This separation keeps the X2 matrix as the single
+    # source of disposition truth — never bypassed by HITL flow.
+    #
+    # The companion preflight rule (``preflight.py`` §5.6 H4 hard law)
+    # blocks any HITL_RECLEARED_PACKET that re-enters the runtime without
+    # ``hitl_packet.l5_cleared=True``, so a "modified-but-not-re-cleared"
+    # packet can never reach the X1 stack in the first place.
     return L5ReclearanceResult(
         next_disposition=V6Disposition.ESCALATE,
         re_run_verdicts=re_run,

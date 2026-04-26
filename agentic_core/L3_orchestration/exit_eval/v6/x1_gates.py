@@ -444,11 +444,16 @@ def eval_x1i(packet: ExitReviewPacket) -> GateVerdict:
         "action",
     }
     if missing and is_high_impact:
+        # Spec §5.3 materiality matrix: missing required spans on a high-impact
+        # path is *material* — route to ESCALATE (X3B), not DENY. Emit the
+        # spec-named TRACE_GAP_MATERIAL alongside the granular codes so
+        # x2_matrix._ESCALATE_CODES picks it up while audit retains the
+        # specific failure surface (TRACE_MISSING / SPAN_COVERAGE_GAP).
         return _verdict(
             "X1I",
             GateResult.FAIL,
             severity="warn",
-            reason_codes=["TRACE_MISSING", "SPAN_COVERAGE_GAP"],
+            reason_codes=["TRACE_GAP_MATERIAL", "TRACE_MISSING", "SPAN_COVERAGE_GAP"],
             metadata={"missing_spans": missing},
         )
     if missing:

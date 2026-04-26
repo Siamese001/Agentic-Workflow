@@ -98,7 +98,13 @@ def test_l2_write_attempt_detected_routes_to_x3a():
 
 
 def test_l6_rescue_attempt_detected_blocks_disposition():
-    """Spec §5.8: live learning mutation signal pre-X3 must hard-fail or escalate."""
+    """Spec §5.8: live learning-bus mutation pre-X3 is a hard fail (ENV_CONTAMINATED).
+
+    Tightened 2026-04-26: ENV_CONTAMINATED is in ``_HARD_FAIL_CODES`` so the
+    disposition is deterministically X3A DENY. The earlier loose
+    ``in {DENY, ESCALATE}`` allowed a silent regression in which the hard-
+    fail bucket stopped catching this signal.
+    """
     receipts = base_receipts(
         exec_trace={
             "tool_calls": [],
@@ -109,31 +115,51 @@ def test_l6_rescue_attempt_detected_blocks_disposition():
         },
     )
     result = ExitEvalPipeline().run(receipts)
-    # ENV_CONTAMINATED is in _HARD_FAIL_CODES → X3A DENY
-    assert result.disposition in {V6Disposition.DENY, V6Disposition.ESCALATE}
+    assert result.disposition is V6Disposition.DENY
+    x1c = next((v for v in result.verdicts if v.gate_id == "X1C"), None)
+    assert x1c is not None
+    assert "ENV_CONTAMINATED" in x1c.reason_codes
 
 
 def test_hitl_modification_requires_reclearance():
-    """Spec §5.8: human MODIFY_DIFF without L5 re-clearance cannot reach X3D/X3C.
+    """Spec §5.6 H4 hard law: HITL_RECLEARED_PACKET re-entry requires l5_cleared=True.
 
-    We construct a HITL_RECLEARED_PACKET path where the HITL packet has a
-    modification but no re-clearance evidence, and verify the disposition
-    is escalation/deny, not direct allow/commit.
+    Tightened 2026-04-26: a modified HITL packet that re-enters runtime
+    without ``hitl_packet.l5_cleared=True`` is rejected at preflight with
+    ``RECLEARANCE_MISSING`` and routes deterministically to X3A DENY. The
+    earlier weak assertion (`if return_payload is not None: ...`) allowed
+    the test to pass vacuously when the implementation produced X3D.
     """
     receipts = base_receipts(
         source_type="HITL_RECLEARED_PACKET",
         hitl_recleared=True,
-        # Modified packet but missing re-clearance refs/L5 cert
+        # Modified packet but missing re-clearance evidence
         hitl_packet={"modified": True, "l5_cleared": False},
     )
     result = ExitEvalPipeline().run(receipts)
-    # The pipeline does not auto-disposition modified packets to allow/commit
-    # without explicit re-clearance running through aggregate_decision again.
-    # In our impl, an unmodified-but-cleared HITL packet may pass; here the
-    # modification flag is informational and the packet is data-only.
-    # We assert the path does NOT reference uncommitted artifacts.
-    if result.return_payload is not None:
-        assert "FINAL_RESPONSE_REFERENCES_UNCOMMITTED_ARTIFACT" not in (result.return_payload_failures or [])
+    # Hard law: must NEVER reach X3D (allow) or X3C (commit) without re-clearance.
+    assert result.disposition is V6Disposition.DENY
+    assert result.disposition is not V6Disposition.ALLOW
+    assert result.disposition is not V6Disposition.COMMIT_REQUEST
+    codes = {f.reason_code for f in result.preflight_failures}
+    assert "RECLEARANCE_MISSING" in codes
+
+
+def test_hitl_modification_with_l5_cleared_passes_preflight():
+    """Companion to ``test_hitl_modification_requires_reclearance``: a
+    re-cleared HITL packet (l5_cleared=True) clears preflight and is allowed
+    to reach the X1 gate stack. Without this companion test, a regression
+    that hard-fails *every* HITL_RECLEARED_PACKET (including legitimately
+    re-cleared ones) would go undetected.
+    """
+    receipts = base_receipts(
+        source_type="HITL_RECLEARED_PACKET",
+        hitl_recleared=True,
+        hitl_packet={"modified": True, "l5_cleared": True, "verdict": "APPROVE"},
+    )
+    result = ExitEvalPipeline().run(receipts)
+    codes = {f.reason_code for f in result.preflight_failures}
+    assert "RECLEARANCE_MISSING" not in codes
 
 
 def test_retrieved_content_not_instruction():
@@ -181,20 +207,48 @@ def test_exactly_one_disposition():
 
 
 def test_no_silent_fallback_emits_trajectory_fail():
-    """Spec §5.8: fallback_depth>0 without explicit reason_codes triggers X1E fail."""
+    """Spec §5.8: silent fallback (wrong-tool selection without explicit reason)
+    triggers X1E ``WRONG_TOOL``.
+
+    The X1E gate emits ``WRONG_TOOL`` whenever the executor selected a tool
+    not authorized by the route contract — the canonical "silent fallback"
+    surface. The earlier comment called this a "surrogate"; tightening
+    2026-04-26 confirms ``WRONG_TOOL`` *is* the spec signal.
+    """
     receipts = base_receipts(
         exec_trace={
             "tool_calls": [],
             "model_calls": [{"model_id": "m1"}],
             "replay_receipts_present": True,
             "wall_clock_used": False,
-            "wrong_tool": True,  # surrogate for silent fallback signal
+            "wrong_tool": True,
         },
     )
     result = ExitEvalPipeline().run(receipts)
     x1e = next((v for v in result.verdicts if v.gate_id == "X1E"), None)
     assert x1e is not None
     assert "WRONG_TOOL" in x1e.reason_codes
+
+
+def test_silent_fallback_via_unauthorized_step_expansion_fails_x1e():
+    """Sibling to ``test_no_silent_fallback_emits_trajectory_fail``: covers the
+    other canonical "silent fallback" surface — a single-step plan that
+    silently expanded into a multi-step workflow without authorization. X1E
+    must emit ``TRAJECTORY_INVALID``.
+    """
+    receipts = base_receipts(
+        exec_trace={
+            "tool_calls": [],
+            "model_calls": [{"model_id": "m1"}],
+            "replay_receipts_present": True,
+            "wall_clock_used": False,
+            "single_step_expanded_to_workflow": True,
+        },
+    )
+    result = ExitEvalPipeline().run(receipts)
+    x1e = next((v for v in result.verdicts if v.gate_id == "X1E"), None)
+    assert x1e is not None
+    assert "TRAJECTORY_INVALID" in x1e.reason_codes
 
 
 def test_no_uncommitted_artifact_reference():
@@ -213,7 +267,14 @@ def test_no_uncommitted_artifact_reference():
 
 
 def test_material_trace_gap_escalates_high_impact_commit():
-    """Spec §5.8: high-impact commit with missing trace span -> X3B escalate."""
+    """Spec §5.3 materiality matrix: high-impact commit with missing required
+    spans → X3B ESCALATE (NOT X3A DENY).
+
+    Tightened 2026-04-26: X1I now emits ``TRACE_GAP_MATERIAL`` (an entry in
+    ``_ESCALATE_CODES``) alongside the granular ``TRACE_MISSING`` /
+    ``SPAN_COVERAGE_GAP`` codes whenever the trace gap is on a high-impact
+    path. Disposition must be deterministically X3B.
+    """
     receipts = base_receipts(
         terminal_class="with_state_diff",
         write_intent_class="memory_promotion",
@@ -230,11 +291,14 @@ def test_material_trace_gap_escalates_high_impact_commit():
             "threshold_profile": "production_v1",
             "consistency": {"pass_power_estimate": 0.99, "theta": 0.95, "sample_quality": "ok"},
         },
-        otel_spans={"spans": {}},  # no spans → X1I gap
+        otel_spans={"spans": {}},  # no spans → X1I material gap
+        hitl_packet={"verdict": "APPROVE", "l5_cleared": True},
     )
     result = ExitEvalPipeline().run(receipts)
-    # High-impact + missing trace + no HITL packet -> X3B (or X3A for hard fail).
-    assert result.disposition in {V6Disposition.ESCALATE, V6Disposition.DENY}
+    assert result.disposition is V6Disposition.ESCALATE
+    x1i = next((v for v in result.verdicts if v.gate_id == "X1I"), None)
+    assert x1i is not None
+    assert "TRACE_GAP_MATERIAL" in x1i.reason_codes
 
 
 # ---------------------------------------------------------------------------
@@ -274,7 +338,12 @@ def test_case_b_grounded_answer_weak_support_caveated():
 
 
 def test_case_c_grounded_answer_unsupported_claim():
-    """Case C — material claim lacks citation/support → X3A or X3B."""
+    """Case C — material claim lacks citation/support → X3A DENY.
+
+    Tightened 2026-04-26: ``UNGROUNDED`` is in ``_HARD_FAIL_CODES`` so a
+    material unsupported claim deterministically routes to X3A. The earlier
+    ``in {DENY, ESCALATE}`` allowed a silent move out of the hard-fail bucket.
+    """
     receipts = base_receipts(
         evidence_bundle={"e": 1},
         final_evidence_contract={"c0_status": "PASS"},
@@ -291,7 +360,10 @@ def test_case_c_grounded_answer_unsupported_claim():
         },
     )
     result = ExitEvalPipeline().run(receipts)
-    assert result.disposition in {V6Disposition.DENY, V6Disposition.ESCALATE}
+    assert result.disposition is V6Disposition.DENY
+    x1d = next((v for v in result.verdicts if v.gate_id == "X1D"), None)
+    assert x1d is not None
+    assert "UNGROUNDED" in x1d.reason_codes
 
 
 def test_case_d_direct_write_attempt():
@@ -384,7 +456,14 @@ def test_case_h_ret_exact_cache_valid():
 
 
 def test_case_i_ret_semantic_cache_below_threshold():
-    """Case I — RET semantic cache below threshold → X3A/X3E."""
+    """Case I — RET semantic cache below threshold → X3A DENY.
+
+    Tightened 2026-04-26: X1B emits ``SEMANTIC_THRESHOLD_BELOW_CALIBRATION``
+    which is not a hard-fail code but is a non-escalate FAIL, so priority
+    band 4 ("Other FAIL → X3A") fires. Disposition is deterministically X3A.
+    The earlier ``in {DENY, SAFE_ABSTAIN}`` admitted X3E which never happens
+    on this path in the current implementation.
+    """
     receipts = base_receipts(
         source_type="RET_CACHE_SEMANTIC",
         cache_hit_kind="semantic",
@@ -403,11 +482,21 @@ def test_case_i_ret_semantic_cache_below_threshold():
         },
     )
     result = ExitEvalPipeline().run(receipts)
-    assert result.disposition in {V6Disposition.DENY, V6Disposition.SAFE_ABSTAIN}
+    assert result.disposition is V6Disposition.DENY
+    x1b = next((v for v in result.verdicts if v.gate_id == "X1B"), None)
+    assert x1b is not None
+    assert "SEMANTIC_THRESHOLD_BELOW_CALIBRATION" in x1b.reason_codes
 
 
 def test_case_j_observability_material_gap_high_impact():
-    """Case J — observability material gap on high-impact commit → X3B."""
+    """Case J — observability material gap on high-impact commit → X3B ESCALATE.
+
+    Tightened 2026-04-26: with ``TRACE_GAP_MATERIAL`` now in the X1I reason
+    codes for high-impact paths (and present in ``_ESCALATE_CODES``), this
+    case routes deterministically to X3B. The earlier ``in {ESCALATE, DENY}``
+    masked the §5.3 materiality regression where the gap silently fell
+    through to band-4 ``Other FAIL → X3A``.
+    """
     receipts = base_receipts(
         terminal_class="with_state_diff",
         write_intent_class="memory_promotion",
@@ -428,4 +517,33 @@ def test_case_j_observability_material_gap_high_impact():
         hitl_packet={"verdict": "APPROVE", "l5_cleared": True},
     )
     result = ExitEvalPipeline().run(receipts)
-    assert result.disposition in {V6Disposition.ESCALATE, V6Disposition.DENY}
+    assert result.disposition is V6Disposition.ESCALATE
+
+
+def test_prompt_assembly_receipt_required_when_track_specifies():
+    """Spec §5.8 anti-bypass test #6: when a route requires a prompt-assembly
+    receipt and one is missing, the disposition must NOT be X3D ALLOW.
+
+    Added 2026-04-26 to fill the previously claimed-but-untested coverage
+    listed in the §5.8 12-test suite. This exercises the X1A path where the
+    route declares ``prompt_assembly_required=True`` but the packet's
+    ``prompt_assembly_status`` is empty/falsy — X1A FAILS with
+    ``PROMPT_ASSEMBLY_MISSING`` and the disposition routes to X3A DENY.
+    """
+    receipts = base_receipts(
+        # Route insists on a prompt-assembly receipt …
+        route_contract={
+            "route_id": "r-1",
+            "prompt_assembly_required": True,
+            "policy_hash": "p-1",
+            "blueprint_hash": "b-1",
+            "prompt_hash": "prompt-h-1",
+        },
+        prompt_hash="prompt-h-1",
+        # … but the packet does not carry one.
+        prompt_assembly_status={},
+    )
+    result = ExitEvalPipeline().run(receipts)
+    # Must never reach X3D ALLOW or X3C COMMIT_REQUEST without the receipt.
+    assert result.disposition is not V6Disposition.ALLOW
+    assert result.disposition is not V6Disposition.COMMIT_REQUEST

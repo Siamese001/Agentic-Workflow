@@ -147,6 +147,25 @@ def validate_required_receipts(receipts: dict[str, Any]) -> list[PreflightFailur
             )
         )
 
+    # Spec §5.6 H4 hard law: a HITL_RECLEARED_PACKET re-entering the runtime
+    # MUST carry positive L5 re-clearance evidence. A modified packet that
+    # arrives without ``hitl_packet.l5_cleared = True`` is treated as
+    # smuggled-authority and fails closed before grading. This closes the
+    # "human modification slips into X3D/X3C without re-clearance" bypass.
+    declared_source = receipts.get("source_type") or ""
+    if str(declared_source).upper() == "HITL_RECLEARED_PACKET" or receipts.get("hitl_recleared"):
+        hitl = receipts.get("hitl_packet") or {}
+        if not hitl.get("l5_cleared"):
+            failures.append(
+                PreflightFailure(
+                    field="hitl_packet.l5_cleared",
+                    reason_code="RECLEARANCE_MISSING",
+                    detail=(
+                        "HITL_RECLEARED_PACKET re-entry requires hitl_packet.l5_cleared=True per §5.6 H4"
+                    ),
+                )
+            )
+
     return failures
 
 
