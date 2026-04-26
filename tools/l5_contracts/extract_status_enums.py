@@ -17,7 +17,7 @@ import pathlib
 import re
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-DOC_ROOT = REPO / "docs" / "reference" / "00_L5_Policy_Plane"
+DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_&_Safety"
 OUT = REPO / "tools" / "l5_contracts" / "_l5_status_enums.json"
 
 STATUS_SET_RE = re.compile(
