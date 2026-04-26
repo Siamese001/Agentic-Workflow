@@ -15,10 +15,11 @@ defined in ``docs/reference/Runtime ADG and OTEL Spans.md``:
     Stage 13 — emit_l6_eval (telemetry.ingest / outcome.evaluate / trajectory.evaluate / replay.verify / metrics.seal)
     Stage 14 — emit_meta_learning (signal.fuse / rca.create / pattern.extract / promotion.propose / promotion.commit)
 
-C0 retrieval (Stage 07) and L2 execution (Stage 09) already have richer
-producers (rag.py + heal_router_otel + consensus_otel + step.seal); this
-module adds thin universal emit helpers for any caller that needs to land a
-stage span without an existing producer (testing, replay, scaffolding).
+L2 execution (Stage 09) already has rich producers via Tier 1 step.seal
++ heal_router_otel + consensus_otel; this module does not add a duplicate
+helper for it. C0 retrieval (Stage 07) gets a thin universal helper here
+so every spec stage that lacks a Tier 1 producer has at least one
+default emitter — useful for tests, replay, and scaffolding.
 
 Design rules (mirror ``runtime_span_emitter``):
 
@@ -46,6 +47,15 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Span name constants — MUST stay in sync with semconv.runtime.
 # ---------------------------------------------------------------------------
+
+# Stage 07 — C0 retrieval
+SPAN_C0_RETRIEVAL_PLAN = "C0.retrieval.plan"
+SPAN_C0_QUERY_EMBED = "C0.query.embed"
+SPAN_C0_EVIDENCE_FETCH_DENSE = "C0.evidence.fetch_dense"
+SPAN_C0_EVIDENCE_FETCH_SPARSE = "C0.evidence.fetch_sparse"
+SPAN_C0_GRAPH_TRAVERSE = "C0.graph.traverse"
+SPAN_C0_EVIDENCE_RERANK = "C0.evidence.rerank"
+SPAN_C0_EVIDENCE_CONTRACT = "C0.evidence.contract"
 
 # Stage 02 — intake / U0
 SPAN_INTAKE_VALIDATE = "U0.intake.validate"
@@ -397,6 +407,68 @@ def emit_l3_step(
 
 
 # ===========================================================================
+# Stage 07 — C0 retrieval (universal scaffolding helper)
+# ===========================================================================
+
+
+def emit_c0_retrieval(
+    adapter: Any,
+    trace_id: str,
+    *,
+    retrieval_mode: str,
+    evidence_ids: Sequence[str] = (),
+    vector_store_id: str = "",
+    index_version: str = "",
+    query_vec_id: str = "",
+    support_score: float = 0.0,
+    parent_span_id: str = "",
+) -> None:
+    """Emit a default C0.evidence.contract span — Stage 07 universal helper.
+
+    Production C0 retrieval is normally instrumented by ``rag.py`` producers
+    which carry full GenAI semconv (operation.name, model_id, fetch latency,
+    rerank scores). This helper is intentionally thin: it lets test and
+    scaffolding code land a single Stage 07 span that satisfies the Tier 2
+    contract (kind=retrieval, layer=L1, attrs include retrieval_mode +
+    vector_store_id + index_version) without pulling in the full RAG stack.
+
+    For real production traces, prefer the rag.py emitters which fan out into
+    ``C0.retrieval.plan`` -> ``C0.query.embed`` -> ``C0.evidence.fetch_*``
+    -> ``C0.evidence.rerank`` -> ``C0.evidence.contract``.
+    """
+    if retrieval_mode not in {"dense", "sparse", "hybrid", "graph"}:
+        # Fail-open with debug log: invalid mode is a caller bug, not an
+        # observability outage. Coerce to ``hybrid`` so downstream
+        # validators still see a well-formed span.
+        logger.debug(
+            "emit_c0_retrieval: invalid retrieval_mode=%r, coercing to 'hybrid'",
+            retrieval_mode,
+        )
+        retrieval_mode = "hybrid"
+    attrs = {
+        "retrieval_mode": retrieval_mode,
+        "evidence_ids": list(evidence_ids),
+        "vector_store_id": vector_store_id,
+        "index_version": index_version,
+        "query_vec_id": query_vec_id,
+        "support_score": support_score,
+        "parent_span_id": parent_span_id,
+    }
+    _append_span(
+        adapter,
+        name=SPAN_C0_EVIDENCE_CONTRACT,
+        kind="retrieval",
+        layer=_LAYER_L1,
+        component="C0Retriever",
+        attributes=attrs,
+        started_at=_now(),
+        duration_ms=0.0,
+        trace_id=trace_id,
+        parent_span_id=parent_span_id,
+    )
+
+
+# ===========================================================================
 # Stage 08 — Prompt Assembly
 # ===========================================================================
 
@@ -663,6 +735,7 @@ TIER2_EMITTERS: dict[str, str] = {
     "stage_04_L0_routing": SPAN_L0_ROUTE_SELECT,
     "stage_05_direct_path": SPAN_L0_DIRECT_PACKAGE,
     "stage_06_L3_orchestration": SPAN_L3_STEP_DISPATCH,
+    "stage_07_C0_retrieval": SPAN_C0_EVIDENCE_CONTRACT,
     "stage_08_prompt_assembly": SPAN_PA_PROMPT_CONTRACT,
     "stage_11_response": SPAN_RESPONSE_EMIT,
     "stage_12_uwg_l4_commit": SPAN_UWG_COMMIT_APPEND_LEDGER,
@@ -672,6 +745,13 @@ TIER2_EMITTERS: dict[str, str] = {
 
 ALL_TIER2_SPAN_NAMES: frozenset[str] = frozenset(
     {
+        SPAN_C0_RETRIEVAL_PLAN,
+        SPAN_C0_QUERY_EMBED,
+        SPAN_C0_EVIDENCE_FETCH_DENSE,
+        SPAN_C0_EVIDENCE_FETCH_SPARSE,
+        SPAN_C0_GRAPH_TRAVERSE,
+        SPAN_C0_EVIDENCE_RERANK,
+        SPAN_C0_EVIDENCE_CONTRACT,
         SPAN_INTAKE_VALIDATE,
         SPAN_INTAKE_NORMALIZE,
         SPAN_INTAKE_STAMP_TRACE,
@@ -721,6 +801,13 @@ ALL_TIER2_SPAN_NAMES: frozenset[str] = frozenset(
 
 __all__ = [
     # Span name constants
+    "SPAN_C0_RETRIEVAL_PLAN",
+    "SPAN_C0_QUERY_EMBED",
+    "SPAN_C0_EVIDENCE_FETCH_DENSE",
+    "SPAN_C0_EVIDENCE_FETCH_SPARSE",
+    "SPAN_C0_GRAPH_TRAVERSE",
+    "SPAN_C0_EVIDENCE_RERANK",
+    "SPAN_C0_EVIDENCE_CONTRACT",
     "SPAN_INTAKE_VALIDATE",
     "SPAN_INTAKE_NORMALIZE",
     "SPAN_INTAKE_STAMP_TRACE",
@@ -775,6 +862,7 @@ __all__ = [
     "emit_l0_route_select",
     "emit_direct_path",
     "emit_l3_step",
+    "emit_c0_retrieval",
     "emit_prompt_assembly",
     "emit_response",
     "emit_uwg_commit",

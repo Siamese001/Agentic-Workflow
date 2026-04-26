@@ -188,6 +188,39 @@ def test_emit_l3_step_satisfies_stage_06(adapter: _FakeAdapter) -> None:
     assert cov.stage_with_attrs["stage_06_L3_orchestration"], cov.to_dict()
 
 
+def test_emit_c0_retrieval_satisfies_stage_07(adapter: _FakeAdapter) -> None:
+    T2.emit_c0_retrieval(
+        adapter,
+        trace_id="t-1",
+        retrieval_mode="hybrid",
+        evidence_ids=["ev-1", "ev-2"],
+        vector_store_id="vs-1",
+        index_version="idx-v1",
+    )
+    snap = _build_snapshot(adapter._completed_spans)
+    cov = validate_tier2_coverage(snap)
+    assert cov.stage_with_attrs["stage_07_C0_retrieval"], cov.to_dict()
+
+
+def test_emit_c0_retrieval_coerces_invalid_mode(adapter: _FakeAdapter) -> None:
+    """Invalid retrieval_mode should be coerced to 'hybrid' fail-open."""
+    T2.emit_c0_retrieval(
+        adapter,
+        trace_id="t-1",
+        retrieval_mode="telepathy",  # not in {dense, sparse, hybrid, graph}
+        vector_store_id="vs-1",
+        index_version="idx-v1",
+    )
+    assert len(adapter._completed_spans) == 1
+    span = adapter._completed_spans[0]
+    attrs_json = span.get("attributes_json")
+    if isinstance(attrs_json, str):
+        attrs = json.loads(attrs_json)
+    else:
+        attrs = span.get("attributes", {})
+    assert attrs.get("retrieval_mode") == "hybrid"
+
+
 def test_emit_prompt_assembly_satisfies_stage_08(adapter: _FakeAdapter) -> None:
     T2.emit_prompt_assembly(
         adapter,
@@ -267,7 +300,7 @@ def test_emit_meta_learning_satisfies_stage_14(adapter: _FakeAdapter) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_full_emit_coverage_exclusive_of_c0(adapter: _FakeAdapter) -> None:
+def test_full_emit_coverage_includes_c0_excludes_l2(adapter: _FakeAdapter) -> None:
     # Tier 1 emitters
     tid = emit_trace_root(adapter, mission="test", trace_id="t-full")
     assert tid == "t-full"
@@ -310,6 +343,13 @@ def test_full_emit_coverage_exclusive_of_c0(adapter: _FakeAdapter) -> None:
         prompt_hash="phh",
         system_template_hash="sth",
     )
+    T2.emit_c0_retrieval(
+        adapter,
+        trace_id=tid,
+        retrieval_mode="hybrid",
+        vector_store_id="vs",
+        index_version="idx",
+    )
     T2.emit_response(adapter, trace_id=tid, final_output_hash="foh")
     T2.emit_uwg_commit(
         adapter,
@@ -333,10 +373,11 @@ def test_full_emit_coverage_exclusive_of_c0(adapter: _FakeAdapter) -> None:
 
     snap = _build_snapshot(adapter._completed_spans)
     cov = validate_tier2_coverage(snap)
-    # All stages except C0 retrieval (Stage 07) should be satisfied.
+    # All 14 stages should be satisfied: Tier 2 helpers cover 13 stages
+    # directly, and Tier 1 ``seal_step`` covers Stage 09 (L2 execution).
     satisfied = {k for k, v in cov.stage_with_attrs.items() if v}
-    assert "stage_07_C0_retrieval" not in satisfied
-    assert len(satisfied) == 13, cov.to_dict()
+    assert len(satisfied) == 14, cov.to_dict()
+    assert cov.coverage_pct == 1.0, cov.to_dict()
 
     # Tier 1 must also remain satisfied.
     t1 = validate_tier1_coverage(snap)
@@ -357,6 +398,25 @@ def test_tier2_emitter_constants_match_semconv():
     assert not missing, f"Tier 2 emitter has spans not in semconv SSOT: {missing}"
 
 
+def test_every_tier2_stage_has_helper_or_tier1_producer():
+    """Every Tier 2 stage MUST have either a Tier 2 emit helper or a Tier 1
+    producer. This is the closure guarantee: no stage is left without a
+    callable emitter path.
+
+    Stages 01, 09, 10 are produced by Tier 1
+    (``emit_trace_root`` / ``seal_step`` / ``emit_exit_disposition``).
+    All other stages MUST appear in ``TIER2_EMITTERS``.
+    """
+    tier1_covered = {"stage_01_trace_root", "stage_09_L2_execution", "stage_10_exit_eval"}
+    tier2_covered = set(T2.TIER2_EMITTERS.keys())
+    all_stages = set(tier2_stage_names())
+    uncovered = all_stages - tier1_covered - tier2_covered
+    assert not uncovered, (
+        f"Stages without a producer or helper: {uncovered}. "
+        "Add a Tier 2 emit helper or document a Tier 1 path."
+    )
+
+
 def test_emit_helpers_fail_open_on_bad_adapter() -> None:
     """Passing an adapter without `_completed_spans` must NOT raise."""
 
@@ -370,6 +430,7 @@ def test_emit_helpers_fail_open_on_bad_adapter() -> None:
     T2.emit_l0_route_select(bad, trace_id="t", selected_route="R")
     T2.emit_direct_path(bad, trace_id="t", direct_step_id="d", selected_route="R", packet_hash="p")
     T2.emit_l3_step(bad, trace_id="t", workflow_id="w", dag_hash="d", current_step_id="s")
+    T2.emit_c0_retrieval(bad, trace_id="t", retrieval_mode="hybrid")
     T2.emit_prompt_assembly(bad, trace_id="t", prompt_envelope_hash="p", prompt_hash="h", system_template_hash="s")
     T2.emit_response(bad, trace_id="t", final_output_hash="f")
     T2.emit_uwg_commit(
