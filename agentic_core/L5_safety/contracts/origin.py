@@ -5,14 +5,15 @@ Module: ``agentic_core.L5_safety.contracts.origin``
 Generated count: 123 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (
@@ -31,6 +32,15 @@ from ._base import (
     L5Context,
     L5Token,
 )
+from ._status_enums import (
+    AuthorityAttemptStatus,
+    ContentBoundaryStatus,
+    InstructionBoundaryStatus,
+    OriginLabelStatus,
+    OriginManifestStatus,
+    QuarantineStatus,
+    SafeExtractionStatus,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,6 +55,16 @@ class AuthorityAttemptStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("authority_attempt_status",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("none", "attempted", "blocked", "unresolved",)
+    value_enum: ClassVar[type] = AuthorityAttemptStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -199,6 +219,16 @@ class ContentBoundaryStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("content_boundary_status",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("intact", "violated", "unknown", "requires_safe_extraction",)
+    value_enum: ClassVar[type] = ContentBoundaryStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -466,6 +496,16 @@ class InstructionBoundaryStatus(L5Status):
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("trusted_instruction", "untrusted_data", "quarantined", "stripped", "rejected_as_authority",)
+    value_enum: ClassVar[type] = InstructionBoundaryStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class InstructionDataBoundaryReceipt(L5Receipt):
@@ -648,6 +688,16 @@ class OriginLabelStatus(L5Status):
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("labeled", "unlabeled", "ambiguous", "invalid",)
+    value_enum: ClassVar[type] = OriginLabelStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class OriginManifestGapReport(L5Report):
@@ -703,6 +753,16 @@ class OriginManifestStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("origin_manifest_status",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "incomplete", "stale", "mismatched",)
+    value_enum: ClassVar[type] = OriginManifestStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -998,6 +1058,16 @@ class QuarantineStatus(L5Status):
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("not_required", "required", "applied", "failed",)
+    value_enum: ClassVar[type] = QuarantineStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class QuotedContentOriginReport(L5Report):
@@ -1249,6 +1319,16 @@ class SafeExtractionStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("safe_extraction_status",)
     source_doc: ClassVar[str] = "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("not_required", "extracted", "partial", "failed",)
+    value_enum: ClassVar[type] = SafeExtractionStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)

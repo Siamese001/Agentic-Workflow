@@ -50,6 +50,7 @@ from .registry import (
     ALL_OUTPUT_NAMES,
     get_contract,
 )
+from ._status_enums import STATUS_ENUM_REGISTRY
 
 __all__ = [
     "L5OutputBase",
@@ -73,4 +74,5 @@ __all__ = [
     "CONTRACT_REGISTRY",
     "ALL_OUTPUT_NAMES",
     "get_contract",
+    "STATUS_ENUM_REGISTRY",
 ]

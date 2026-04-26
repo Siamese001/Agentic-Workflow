@@ -5,14 +5,15 @@ Module: ``agentic_core.L5_safety.contracts.enforcement``
 Generated count: 72 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (
@@ -30,6 +31,14 @@ from ._base import (
     L5Ref,
     L5Context,
     L5Token,
+)
+from ._status_enums import (
+    ClassificationStatus,
+    EgressEvidenceStatus,
+    EnforcementReceiptStatus,
+    GatewayStatus,
+    RegistryStatus,
+    StructureStatus,
 )
 
 
@@ -199,6 +208,16 @@ class ClassificationStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("classification_status",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("classified", "unknown", "conflict_detected", "violation_detected",)
+    value_enum: ClassVar[type] = ClassificationStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -382,6 +401,16 @@ class EgressEvidenceStatus(L5Status):
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("clean", "bypass_detected", "substitution_detected", "unsupported",)
+    value_enum: ClassVar[type] = EgressEvidenceStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class EnforcementReceiptStatus(L5Status):
@@ -395,6 +424,16 @@ class EnforcementReceiptStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("enforcement_receipt_status",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "incomplete", "non_replayable", "audit_gap",)
+    value_enum: ClassVar[type] = EnforcementReceiptStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -465,6 +504,16 @@ class GatewayStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("gateway_status",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("certified_evidence", "registry_gap", "injection_evidence", "replay_gap", "audit_gap",)
+    value_enum: ClassVar[type] = GatewayStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -774,6 +823,16 @@ class RegistryStatus(L5Status):
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("valid", "missing", "stale", "mismatched", "substituted",)
+    value_enum: ClassVar[type] = RegistryStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class RegistrySubstitutionReport(L5Report):
@@ -955,6 +1014,16 @@ class StructureStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("structure_status",)
     source_doc: ClassVar[str] = "00.1_L5_Safety_Enforcement_Plane_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("clean", "violation_detected", "waiver_required", "unresolved",)
+    value_enum: ClassVar[type] = StructureStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)

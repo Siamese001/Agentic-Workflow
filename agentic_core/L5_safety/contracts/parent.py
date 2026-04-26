@@ -5,14 +5,15 @@ Module: ``agentic_core.L5_safety.contracts.parent``
 Generated count: 7 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (

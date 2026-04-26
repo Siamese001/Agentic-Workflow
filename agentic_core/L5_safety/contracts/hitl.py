@@ -5,14 +5,15 @@ Module: ``agentic_core.L5_safety.contracts.hitl``
 Generated count: 88 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (
@@ -30,6 +31,15 @@ from ._base import (
     L5Ref,
     L5Context,
     L5Token,
+)
+from ._status_enums import (
+    HitlAuditStatus,
+    HitlPacketStatus,
+    HumanInputStatus,
+    HumanOriginStatus,
+    HumanScopeStatus,
+    ReclearanceStatus,
+    ResumeAuthorityStatus,
 )
 
 
@@ -256,6 +266,16 @@ class HitlAuditStatus(L5Status):
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "incomplete", "non_replayable",)
+    value_enum: ClassVar[type] = HitlAuditStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class HitlFreezeGapReport(L5Report):
@@ -297,6 +317,16 @@ class HitlPacketStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("hitl_packet_status",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("frozen", "incomplete", "invalid", "stale", "mismatched",)
+    value_enum: ClassVar[type] = HitlPacketStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -452,6 +482,16 @@ class HumanInputStatus(L5Status):
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("received", "modified", "missing", "ambiguous", "out_of_scope",)
+    value_enum: ClassVar[type] = HumanInputStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class HumanModificationDiff(L5Diff):
@@ -507,6 +547,16 @@ class HumanOriginStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("human_origin_status",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("labeled", "unlabeled", "mislabeled", "requires_reclearance",)
+    value_enum: ClassVar[type] = HumanOriginStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -802,6 +852,16 @@ class HumanScopeStatus(L5Status):
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("unchanged", "narrowed", "widened", "unauthorized",)
+    value_enum: ClassVar[type] = HumanScopeStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class HumanSourceOriginGapReport(L5Report):
@@ -1040,6 +1100,16 @@ class ReclearanceStatus(L5Status):
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("required", "complete", "incomplete", "failed",)
+    value_enum: ClassVar[type] = ReclearanceStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class ReclearanceStatusReport(L5Report):
@@ -1081,6 +1151,16 @@ class ResumeAuthorityStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("resume_authority_status",)
     source_doc: ClassVar[str] = "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "stale", "mismatched", "widened",)
+    value_enum: ClassVar[type] = ResumeAuthorityStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,0 +1,404 @@
+{
+  "enums": {
+    "adr_status": [
+      "not_required",
+      "required",
+      "present",
+      "missing",
+      "stale",
+      "incompatible"
+    ],
+    "audit_binding_status": [
+      "complete",
+      "incomplete",
+      "hash_gap",
+      "trace_gap",
+      "receipt_gap"
+    ],
+    "authority_attempt_status": [
+      "none",
+      "attempted",
+      "blocked",
+      "unresolved"
+    ],
+    "authority_context_status": [
+      "bound",
+      "incomplete",
+      "stale",
+      "mismatched",
+      "substituted",
+      "unauthorized"
+    ],
+    "blueprint_binding_status": [
+      "current",
+      "missing",
+      "stale",
+      "mismatched"
+    ],
+    "bypass_evidence_status": [
+      "none",
+      "hidden_egress",
+      "direct_write",
+      "direct_provider",
+      "direct_connector",
+      "direct_memory_mutation"
+    ],
+    "capability_scope_status": [
+      "sufficient",
+      "missing",
+      "too_broad",
+      "too_narrow",
+      "expired",
+      "forged"
+    ],
+    "certification_evidence_status": [
+      "complete",
+      "incomplete",
+      "stale",
+      "mismatched",
+      "non_replayable",
+      "audit_gap"
+    ],
+    "certification_scope_status": [
+      "bound",
+      "missing",
+      "widened",
+      "stale",
+      "mismatched"
+    ],
+    "classification_status": [
+      "classified",
+      "unknown",
+      "conflict_detected",
+      "violation_detected"
+    ],
+    "connector_egress_status": [
+      "bound",
+      "missing",
+      "unauthorized",
+      "expired",
+      "substituted",
+      "credential_gap"
+    ],
+    "content_boundary_status": [
+      "intact",
+      "violated",
+      "unknown",
+      "requires_safe_extraction"
+    ],
+    "credential_scope_status": [
+      "minimal",
+      "missing",
+      "too_broad",
+      "expired",
+      "incompatible",
+      "exposed"
+    ],
+    "egress_certification_status": [
+      "certified_evidence",
+      "incomplete",
+      "stale",
+      "mismatched",
+      "substituted",
+      "unauthorized"
+    ],
+    "egress_evidence_status": [
+      "clean",
+      "bypass_detected",
+      "substitution_detected",
+      "unsupported"
+    ],
+    "enforcement_receipt_status": [
+      "complete",
+      "incomplete",
+      "non_replayable",
+      "audit_gap"
+    ],
+    "fallback_status": [
+      "not_required",
+      "certified",
+      "uncertified",
+      "substitution_detected",
+      "recertification_required"
+    ],
+    "gateway_status": [
+      "certified_evidence",
+      "registry_gap",
+      "injection_evidence",
+      "replay_gap",
+      "audit_gap"
+    ],
+    "hash_binding_status": [
+      "complete",
+      "missing_hash",
+      "mismatched_hash",
+      "unsealed",
+      "tamper_evidence"
+    ],
+    "hitl_audit_status": [
+      "complete",
+      "incomplete",
+      "non_replayable"
+    ],
+    "hitl_packet_status": [
+      "frozen",
+      "incomplete",
+      "invalid",
+      "stale",
+      "mismatched"
+    ],
+    "human_input_status": [
+      "received",
+      "modified",
+      "missing",
+      "ambiguous",
+      "out_of_scope"
+    ],
+    "human_origin_status": [
+      "labeled",
+      "unlabeled",
+      "mislabeled",
+      "requires_reclearance"
+    ],
+    "human_scope_status": [
+      "unchanged",
+      "narrowed",
+      "widened",
+      "unauthorized"
+    ],
+    "instruction_boundary_status": [
+      "trusted_instruction",
+      "untrusted_data",
+      "quarantined",
+      "stripped",
+      "rejected_as_authority"
+    ],
+    "model_egress_status": [
+      "bound",
+      "missing",
+      "unauthorized",
+      "substituted",
+      "replay_gap",
+      "audit_gap"
+    ],
+    "network_egress_status": [
+      "bound",
+      "missing",
+      "unauthorized_destination",
+      "broad_scope",
+      "credential_gap"
+    ],
+    "origin_label_status": [
+      "labeled",
+      "unlabeled",
+      "ambiguous",
+      "invalid"
+    ],
+    "origin_manifest_status": [
+      "complete",
+      "incomplete",
+      "stale",
+      "mismatched"
+    ],
+    "policy_binding_status": [
+      "current",
+      "missing",
+      "stale",
+      "mismatched"
+    ],
+    "policy_drift_status": [
+      "none",
+      "weakened",
+      "stale",
+      "missing",
+      "mismatched"
+    ],
+    "principal_chain_status": [
+      "valid",
+      "missing",
+      "ambiguous",
+      "cross_principal_bleed",
+      "cross_tenant_bleed"
+    ],
+    "provider_lane_status": [
+      "current",
+      "unavailable",
+      "substituted",
+      "incompatible",
+      "uncertified_fallback"
+    ],
+    "quarantine_status": [
+      "not_required",
+      "required",
+      "applied",
+      "failed"
+    ],
+    "recertification_status": [
+      "not_required",
+      "required_due_to_authority_change"
+    ],
+    "reclearance_status": [
+      "required",
+      "complete",
+      "incomplete",
+      "failed"
+    ],
+    "reconstruction_status": [
+      "ready",
+      "partial",
+      "blocked_by_gap",
+      "non_reconstructable"
+    ],
+    "registry_binding_status": [
+      "compatible",
+      "missing",
+      "stale",
+      "mismatched",
+      "substituted"
+    ],
+    "registry_drift_status": [
+      "none",
+      "stale",
+      "missing",
+      "widened",
+      "substituted",
+      "orphaned"
+    ],
+    "registry_status": [
+      "valid",
+      "missing",
+      "stale",
+      "mismatched",
+      "substituted"
+    ],
+    "replay_binding_status": [
+      "bound",
+      "missing",
+      "incomplete",
+      "non_replayable",
+      "mismatched"
+    ],
+    "resume_authority_status": [
+      "bound",
+      "missing",
+      "stale",
+      "mismatched",
+      "widened"
+    ],
+    "safe_extraction_status": [
+      "not_required",
+      "extracted",
+      "partial",
+      "failed"
+    ],
+    "sandbox_binding_status": [
+      "bound",
+      "missing",
+      "stale",
+      "incompatible",
+      "widened"
+    ],
+    "static_governance_status": [
+      "clean",
+      "drift_detected",
+      "weakening_detected",
+      "waiver_required",
+      "adr_required",
+      "unresolved"
+    ],
+    "static_regression_status": [
+      "clean",
+      "regression_detected",
+      "baseline_missing",
+      "comparison_incomplete"
+    ],
+    "structure_drift_status": [
+      "none",
+      "detected",
+      "unresolved",
+      "waiver_required"
+    ],
+    "structure_status": [
+      "clean",
+      "violation_detected",
+      "waiver_required",
+      "unresolved"
+    ],
+    "tool_egress_status": [
+      "bound",
+      "missing",
+      "unauthorized",
+      "substituted",
+      "schema_gap",
+      "audit_gap"
+    ],
+    "trace_binding_status": [
+      "complete",
+      "missing_trace",
+      "missing_span",
+      "orphan_span",
+      "parent_gap"
+    ],
+    "waiver_status": [
+      "not_required",
+      "required",
+      "present",
+      "missing",
+      "stale",
+      "incompatible"
+    ]
+  },
+  "sources": {
+    "adr_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:185",
+    "audit_binding_status": "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md:170",
+    "authority_attempt_status": "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md:165",
+    "authority_context_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:155",
+    "blueprint_binding_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:157",
+    "bypass_evidence_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:182",
+    "capability_scope_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:160",
+    "certification_evidence_status": "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md:168",
+    "certification_scope_status": "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md:174",
+    "classification_status": "00.1_L5_Safety_Enforcement_Plane_detailed.md:142",
+    "connector_egress_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:174",
+    "content_boundary_status": "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md:161",
+    "credential_scope_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:177",
+    "egress_certification_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:171",
+    "egress_evidence_status": "00.1_L5_Safety_Enforcement_Plane_detailed.md:146",
+    "enforcement_receipt_status": "00.1_L5_Safety_Enforcement_Plane_detailed.md:147",
+    "fallback_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:178",
+    "gateway_status": "00.1_L5_Safety_Enforcement_Plane_detailed.md:145",
+    "hash_binding_status": "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md:172",
+    "hitl_audit_status": "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md:159",
+    "hitl_packet_status": "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md:153",
+    "human_input_status": "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md:154",
+    "human_origin_status": "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md:155",
+    "human_scope_status": "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md:156",
+    "instruction_boundary_status": "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md:162",
+    "model_egress_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:172",
+    "network_egress_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:175",
+    "origin_label_status": "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md:160",
+    "origin_manifest_status": "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md:166",
+    "policy_binding_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:156",
+    "policy_drift_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:180",
+    "principal_chain_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:159",
+    "provider_lane_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:176",
+    "quarantine_status": "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md:163",
+    "recertification_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:163",
+    "reclearance_status": "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md:157",
+    "reconstruction_status": "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md:173",
+    "registry_binding_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:158",
+    "registry_drift_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:181",
+    "registry_status": "00.1_L5_Safety_Enforcement_Plane_detailed.md:144",
+    "replay_binding_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:162; 00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md:169",
+    "resume_authority_status": "00.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md:158",
+    "safe_extraction_status": "00.3_L5_Origin_Trust_and_Content_Boundary_detailed.md:164",
+    "sandbox_binding_status": "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md:161",
+    "static_governance_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:178",
+    "static_regression_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:183",
+    "structure_drift_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:179",
+    "structure_status": "00.1_L5_Safety_Enforcement_Plane_detailed.md:143",
+    "tool_egress_status": "00.5_L5_Egress_and_Provider_Governance_detailed.md:173",
+    "trace_binding_status": "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md:171",
+    "waiver_status": "00.7_L5_Static_Governance_and_Structure_Drift_detailed.md:184"
+  }
+}

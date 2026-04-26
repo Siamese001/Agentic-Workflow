@@ -5,14 +5,15 @@ Module: ``agentic_core.L5_safety.contracts.authority``
 Generated count: 142 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (
@@ -30,6 +31,17 @@ from ._base import (
     L5Ref,
     L5Context,
     L5Token,
+)
+from ._status_enums import (
+    AuthorityContextStatus,
+    BlueprintBindingStatus,
+    CapabilityScopeStatus,
+    PolicyBindingStatus,
+    PrincipalChainStatus,
+    RecertificationStatus,
+    RegistryBindingStatus,
+    ReplayBindingStatus,
+    SandboxBindingStatus,
 )
 
 
@@ -144,6 +156,16 @@ class AuthorityContextStatus(L5Status):
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "incomplete", "stale", "mismatched", "substituted", "unauthorized",)
+    value_enum: ClassVar[type] = AuthorityContextStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class AuthorityFieldIntegrityReport(L5Report):
@@ -213,6 +235,16 @@ class BlueprintBindingStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("blueprint_binding_status",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("current", "missing", "stale", "mismatched",)
+    value_enum: ClassVar[type] = BlueprintBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -339,6 +371,16 @@ class CapabilityScopeStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("capability_scope_status",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("sufficient", "missing", "too_broad", "too_narrow", "expired", "forged",)
+    value_enum: ClassVar[type] = CapabilityScopeStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1110,6 +1152,16 @@ class PolicyBindingStatus(L5Status):
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("current", "missing", "stale", "mismatched",)
+    value_enum: ClassVar[type] = PolicyBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class PolicyBundleReceipt(L5Receipt):
@@ -1249,6 +1301,16 @@ class PrincipalChainStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("principal_chain_status",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("valid", "missing", "ambiguous", "cross_principal_bleed", "cross_tenant_bleed",)
+    value_enum: ClassVar[type] = PrincipalChainStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1418,6 +1480,16 @@ class RecertificationStatus(L5Status):
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("not_required", "required_due_to_authority_change",)
+    value_enum: ClassVar[type] = RecertificationStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class RecertificationTriggerReport(L5Report):
@@ -1445,6 +1517,16 @@ class RegistryBindingStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("registry_binding_status",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("compatible", "missing", "stale", "mismatched", "substituted",)
+    value_enum: ClassVar[type] = RegistryBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1558,6 +1640,16 @@ class ReplayBindingStatus(L5Status):
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "incomplete", "non_replayable", "mismatched",)
+    value_enum: ClassVar[type] = ReplayBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class ReplayEnvelope(L5Envelope):
@@ -1669,6 +1761,16 @@ class SandboxBindingStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("sandbox_binding_status",)
     source_doc: ClassVar[str] = "00.2_L5_Authority_Context_and_Registry_Binding_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "stale", "incompatible", "widened",)
+    value_enum: ClassVar[type] = SandboxBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)

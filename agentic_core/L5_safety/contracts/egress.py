@@ -5,14 +5,15 @@ Module: ``agentic_core.L5_safety.contracts.egress``
 Generated count: 124 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (
@@ -30,6 +31,16 @@ from ._base import (
     L5Ref,
     L5Context,
     L5Token,
+)
+from ._status_enums import (
+    ConnectorEgressStatus,
+    CredentialScopeStatus,
+    EgressCertificationStatus,
+    FallbackStatus,
+    ModelEgressStatus,
+    NetworkEgressStatus,
+    ProviderLaneStatus,
+    ToolEgressStatus,
 )
 
 
@@ -143,6 +154,16 @@ class ConnectorEgressStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("connector_egress_status",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized", "expired", "substituted", "credential_gap",)
+    value_enum: ClassVar[type] = ConnectorEgressStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -368,6 +389,16 @@ class CredentialScopeStatus(L5Status):
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("minimal", "missing", "too_broad", "expired", "incompatible", "exposed",)
+    value_enum: ClassVar[type] = CredentialScopeStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class CredentialSubstitutionReport(L5Report):
@@ -563,6 +594,16 @@ class EgressCertificationStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("egress_certification_status",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("certified_evidence", "incomplete", "stale", "mismatched", "substituted", "unauthorized",)
+    value_enum: ClassVar[type] = EgressCertificationStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -872,6 +913,16 @@ class FallbackStatus(L5Status):
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("not_required", "certified", "uncertified", "substitution_detected", "recertification_required",)
+    value_enum: ClassVar[type] = FallbackStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class HardcodedModelLiteralReport(L5Report):
@@ -998,6 +1049,16 @@ class ModelEgressStatus(L5Status):
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized", "substituted", "replay_gap", "audit_gap",)
+    value_enum: ClassVar[type] = ModelEgressStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class ModelReplayReceipt(L5Receipt):
@@ -1123,6 +1184,16 @@ class NetworkEgressStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("network_egress_status",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized_destination", "broad_scope", "credential_gap",)
+    value_enum: ClassVar[type] = NetworkEgressStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1333,6 +1404,16 @@ class ProviderLaneStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("provider_lane_status",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("current", "unavailable", "substituted", "incompatible", "uncertified_fallback",)
+    value_enum: ClassVar[type] = ProviderLaneStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1669,6 +1750,16 @@ class ToolEgressStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("tool_egress_status",)
     source_doc: ClassVar[str] = "00.5_L5_Egress_and_Provider_Governance_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "unauthorized", "substituted", "schema_gap", "audit_gap",)
+    value_enum: ClassVar[type] = ToolEgressStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)

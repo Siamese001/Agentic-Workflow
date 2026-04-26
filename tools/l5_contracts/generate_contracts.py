@@ -32,7 +32,13 @@ from typing import Any
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 JSON_PATH = REPO / "tools" / "l5_contracts" / "_l5_outputs.json"
+STATUS_ENUMS_JSON = REPO / "tools" / "l5_contracts" / "_l5_status_enums.json"
 PKG_DIR = REPO / "agentic_core" / "L5_safety" / "contracts"
+
+
+def to_enum_class_name(field_name: str) -> str:
+    """``classification_status`` -> ``ClassificationStatus``."""
+    return "".join(part.capitalize() for part in field_name.split("_"))
 
 # Map doc filename → module name in `contracts/`
 DOC_TO_MODULE: dict[str, str] = {
@@ -451,8 +457,25 @@ def render_module(
     doc_filename: str,
     class_names: list[str],
     class_to_names: dict[str, list[str]],
+    status_enums: dict[str, list[str]],
 ) -> str:
     """Render a single contracts module."""
+    # Find which status enum imports this module needs (only L5Status
+    # subclasses whose canonical doctrine name has a value set).
+    needed_enums: list[str] = []
+    for cls_name in class_names:
+        names = class_to_names[cls_name]
+        canonical = cls_name if cls_name in names else names[0]
+        if base_for(canonical) == "L5Status" and canonical in status_enums:
+            needed_enums.append(to_enum_class_name(canonical))
+    enum_import = ""
+    if needed_enums:
+        enum_import = (
+            "from ._status_enums import (\n"
+            + "".join(f"    {e},\n" for e in sorted(set(needed_enums)))
+            + ")\n"
+        )
+
     header = f'''"""Generated L5 contract dataclasses for ``{doc_filename}``.
 
 Source doctrine: ``docs/reference/00_L5_Policy_Plane/{doc_filename}``
@@ -460,14 +483,15 @@ Module: ``agentic_core.L5_safety.contracts.{module_name}``
 Generated count: {len(class_names)} contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (
@@ -486,7 +510,7 @@ from ._base import (
     L5Context,
     L5Token,
 )
-
+{enum_import}
 
 '''
     from tqdm import tqdm  # progress per Constitutional §16
@@ -502,6 +526,32 @@ from ._base import (
         base = base_for(canonical)
         kind = kind_for(canonical)
         names_literal = ", ".join(f'"{n}"' for n in names)
+
+        # Status subclass with a doctrine value set: bind the enum and
+        # expose it as a ClassVar for matrix tooling.
+        status_block = ""
+        if base == "L5Status" and canonical in status_enums:
+            enum_cls = to_enum_class_name(canonical)
+            values = status_enums[canonical]
+            values_literal = ", ".join(f'"{v}"' for v in values)
+            status_block = textwrap.dedent(
+                f'''
+                allowed_values: ClassVar[tuple[str, ...]] = ({values_literal},)
+                value_enum: ClassVar[type] = {enum_cls}
+
+                def __post_init__(self) -> None:
+                    if self.status_value and self.status_value not in self.allowed_values:
+                        raise ValueError(
+                            f"{{type(self).__name__}}.status_value={{self.status_value!r}} "
+                            f"not in doctrine value set {{self.allowed_values!r}}"
+                        )
+                '''
+            ).rstrip()
+            # Indent every line by 4 spaces (inside the class body).
+            status_block = "\n".join(
+                ("    " + line) if line else "" for line in status_block.splitlines()
+            )
+
         body = textwrap.dedent(
             f'''\
             @dataclass(frozen=True, slots=True)
@@ -516,14 +566,74 @@ from ._base import (
                 output_names: ClassVar[tuple[str, ...]] = ({names_literal},)
                 source_doc: ClassVar[str] = "{doc_filename}"
                 output_kind: ClassVar[str] = "{kind}"
-
-
             '''
         )
+        if status_block:
+            body = body + status_block + "\n\n\n"
+        else:
+            body = body + "\n\n"
         bodies.append(body)
 
     all_block = "__all__ = [\n" + "".join(f'    "{n}",\n' for n in class_names) + "]\n"
     return header + "".join(bodies) + all_block
+
+
+def render_status_enums(status_enums: dict[str, list[str]]) -> str:
+    """Render ``_status_enums.py`` — one ``StrEnum`` per doctrine status
+    field, plus a ``STATUS_ENUM_REGISTRY`` mapping field name -> enum.
+    """
+    header = '''"""Generated per-status enum value sets from L5 doctrine.
+
+Each `<x>_status = a | b | c` declaration in `docs/reference/00_L5_Policy_Plane/`
+becomes a ``StrEnum`` here. The corresponding ``L5Status`` subclass in
+``parent.py`` / ``enforcement.py`` / ... validates ``status_value``
+against ``allowed_values`` (also exposed as a ``ClassVar``).
+
+Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
+"""
+from __future__ import annotations
+
+from enum import StrEnum
+from typing import Final
+
+
+'''
+    bodies: list[str] = []
+    registry_entries: list[str] = []
+    all_names: list[str] = []
+    for field_name in sorted(status_enums):
+        values = status_enums[field_name]
+        enum_cls = to_enum_class_name(field_name)
+        all_names.append(enum_cls)
+        body_lines = [f"class {enum_cls}(StrEnum):"]
+        body_lines.append(
+            f'    """Doctrine value set for ``{field_name}``.'
+        )
+        body_lines.append(
+            f'    Source: ``docs/reference/00_L5_Policy_Plane/`` ({len(values)} values).'
+        )
+        body_lines.append('    """')
+        for v in values:
+            # Python attr name: uppercase, valid identifier.
+            attr = v.upper()
+            body_lines.append(f'    {attr} = "{v}"')
+        body_lines.append("")
+        body_lines.append("")
+        bodies.append("\n".join(body_lines))
+        registry_entries.append(f'    "{field_name}": {enum_cls},')
+
+    registry_block = (
+        "STATUS_ENUM_REGISTRY: Final[dict[str, type[StrEnum]]] = {\n"
+        + "\n".join(registry_entries)
+        + "\n}\n\n"
+    )
+    all_block = (
+        "__all__ = [\n"
+        + "".join(f'    "{n}",\n' for n in all_names)
+        + '    "STATUS_ENUM_REGISTRY",\n'
+        + "]\n"
+    )
+    return header + "\n".join(bodies) + registry_block + all_block
 
 
 def render_registry(
@@ -624,6 +734,7 @@ from .registry import (
     ALL_OUTPUT_NAMES,
     get_contract,
 )
+from ._status_enums import STATUS_ENUM_REGISTRY
 
 __all__ = [
     "L5OutputBase",
@@ -647,6 +758,7 @@ __all__ = [
     "CONTRACT_REGISTRY",
     "ALL_OUTPUT_NAMES",
     "get_contract",
+    "STATUS_ENUM_REGISTRY",
 ]
 '''
 
@@ -656,14 +768,31 @@ def main() -> None:
     per_module_classes, class_to_names = build_assignment_map(mapping)
     PKG_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Load doctrine status enums (run extract_status_enums.py first if missing).
+    status_enums: dict[str, list[str]] = {}
+    if STATUS_ENUMS_JSON.exists():
+        payload = json.loads(STATUS_ENUMS_JSON.read_text(encoding="utf-8"))
+        status_enums = payload.get("enums", {})
+        print(f"  Loaded {len(status_enums)} per-status enum value sets.")
+    else:
+        print(
+            f"  WARNING: {STATUS_ENUMS_JSON.relative_to(REPO)} missing; "
+            f"run extract_status_enums.py to enable per-field validation."
+        )
+
     (PKG_DIR / "_base.py").write_text(BASE_PY, encoding="utf-8")
     (PKG_DIR / "_vocab.py").write_text(VOCAB_PY, encoding="utf-8")
+    (PKG_DIR / "_status_enums.py").write_text(
+        render_status_enums(status_enums), encoding="utf-8"
+    )
 
     total_classes = 0
     total_names = 0
     for doc_filename, module_name in DOC_TO_MODULE.items():
         cls_list = per_module_classes[module_name]
-        text = render_module(module_name, doc_filename, cls_list, class_to_names)
+        text = render_module(
+            module_name, doc_filename, cls_list, class_to_names, status_enums
+        )
         (PKG_DIR / f"{module_name}.py").write_text(text, encoding="utf-8")
         names_count = sum(len(class_to_names[c]) for c in cls_list)
         total_classes += len(cls_list)
@@ -676,7 +805,8 @@ def main() -> None:
     (PKG_DIR / "__init__.py").write_text(render_init(), encoding="utf-8")
     print(
         f"Wrote {PKG_DIR.relative_to(REPO)} \u2014 "
-        f"{total_classes} classes covering {total_names} doctrine names"
+        f"{total_classes} classes covering {total_names} doctrine names "
+        f"with {len(status_enums)} bound status enums"
     )
 
 

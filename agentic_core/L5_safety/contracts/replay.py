@@ -5,14 +5,15 @@ Module: ``agentic_core.L5_safety.contracts.replay``
 Generated count: 103 contracts
 
 Every class below is an evidence-only frozen dataclass. L5 contracts must
-not emit runtime dispositions. See ``_base.py`` for the kind hierarchy
-and ``_vocab.py`` for the controlled vocabularies.
+not emit runtime dispositions. See ``_base.py`` for the kind hierarchy,
+``_vocab.py`` for the controlled vocabularies, and ``_status_enums.py``
+for per-status field value sets.
 
 Re-run ``python tools/l5_contracts/generate_contracts.py`` to regenerate.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from ._base import (
@@ -30,6 +31,14 @@ from ._base import (
     L5Ref,
     L5Context,
     L5Token,
+)
+from ._status_enums import (
+    AuditBindingStatus,
+    CertificationEvidenceStatus,
+    CertificationScopeStatus,
+    HashBindingStatus,
+    ReconstructionStatus,
+    TraceBindingStatus,
 )
 
 
@@ -59,6 +68,16 @@ class AuditBindingStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("audit_binding_status",)
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "incomplete", "hash_gap", "trace_gap", "receipt_gap",)
+    value_enum: ClassVar[type] = AuditBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -284,6 +303,16 @@ class CertificationEvidenceStatus(L5Status):
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "incomplete", "stale", "mismatched", "non_replayable", "audit_gap",)
+    value_enum: ClassVar[type] = CertificationEvidenceStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class CertificationGapReport(L5Report):
@@ -508,6 +537,16 @@ class CertificationScopeStatus(L5Status):
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "status"
 
+    allowed_values: ClassVar[tuple[str, ...]] = ("bound", "missing", "widened", "stale", "mismatched",)
+    value_enum: ClassVar[type] = CertificationScopeStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class CertificationScopeWideningReport(L5Report):
@@ -717,6 +756,16 @@ class HashBindingStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("hash_binding_status",)
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "missing_hash", "mismatched_hash", "unsealed", "tamper_evidence",)
+    value_enum: ClassVar[type] = HashBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1039,6 +1088,16 @@ class ReconstructionStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("reconstruction_status",)
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("ready", "partial", "blocked_by_gap", "non_reconstructable",)
+    value_enum: ClassVar[type] = ReconstructionStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1389,6 +1448,16 @@ class TraceBindingStatus(L5Status):
     output_names: ClassVar[tuple[str, ...]] = ("trace_binding_status",)
     source_doc: ClassVar[str] = "00.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md"
     output_kind: ClassVar[str] = "status"
+
+    allowed_values: ClassVar[tuple[str, ...]] = ("complete", "missing_trace", "missing_span", "orphan_span", "parent_gap",)
+    value_enum: ClassVar[type] = TraceBindingStatus
+
+    def __post_init__(self) -> None:
+        if self.status_value and self.status_value not in self.allowed_values:
+            raise ValueError(
+                f"{type(self).__name__}.status_value={self.status_value!r} "
+                f"not in doctrine value set {self.allowed_values!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
