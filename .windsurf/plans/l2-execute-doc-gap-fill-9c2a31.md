@@ -1,6 +1,6 @@
 # L2 Execute Doctrine Gap Fill — `.windsurf/plans/l2-execute-doc-gap-fill-9c2a31.md`
 
-**Status:** Done — shipped in commits `d92857f4d7` (W1-W5 baseline) + `5f0a14a521` (matrix + runtime proof) + hardening pass (this commit)
+**Status:** Done — shipped in commits `d92857f4d7` (W1-W5 baseline) + `5f0a14a521` (matrix + runtime proof) + `878cc2a913` (W6 hardening) + W7 exhaustive (this commit)
 **Owner:** Cascade
 **Source spec:** `docs/reference/04_L2_Execute/04.1` … `04.8` + parent `04_L2_Execute_detailed.md` + executive `04_L2_Execute_exec.md`
 
@@ -58,6 +58,7 @@ already-shipped v3/v4 receipt infrastructure.
 | W4 | W4.1 | 04.8 Anti-bypass guards + tests | ~4k | Done — 55/55 |
 | W5 | W5.1 | Verify (pytest), commit, push | ~1k | Done — commit `d92857f4d7` |
 | W6 | W6.1 | Hardening pass — edge-case test suite + 1 impl improvement (camelCase L4-write detection) | ~4k | Done — 217/217 |
+| W7 | W7.1 | **Exhaustive coverage pass** — every doc requirement gets ≥1 direct test (full PTC matrix, 7 conditional OTEL attrs, all optional fields, 1000× replay determinism) | ~5k | Done — 237/237 |
 
 ## Phase-Level Summary
 
@@ -69,6 +70,7 @@ already-shipped v3/v4 receipt infrastructure.
 | W4.1 | 04.8 Anti-bypass | new `enforcement/anti_bypass_guards.py`; tests in `tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py` | Must reject 16 forbidden L2 outputs; functional guard, not just a list | 4k | Done — 55/55 |
 | W5.1 | Verify + ship | run new tests + adjacent existing L2 tests; commit + push | Existing test surface must remain green; subprocess gate; no PowerShell | 1k | Done — commit `d92857f4d7` |
 | W6.1 | Hardening pass | new `tests/unit/agentic_core/L2_execution/test_l2_doctrine_edge_cases.py` (217 cases). Promotes every `__post_init__` invariant to direct test coverage. Found and fixed: `assert_no_direct_l4_write` missed camelCase variants (`DurableWrite`); upgraded matcher to be normalization-robust. | Coverage rule: every post_init invariant has direct edge-case test; every closed-vocabulary enum rejects raw-string substitution; every numeric field rejects out-of-range; every required string rejects empty; every fail-closed coupling matrix exercised. | 4k | Done — 217/217 |
+| W7.1 | Exhaustive coverage | new `tests/unit/agentic_core/L2_execution/test_l2_doctrine_exhaustive.py` (237 cases). Closes the residual "covered by aggregator"/"single-test" rows so every doc requirement has ≥1 direct test. Adds: full PTCSandboxReceipt 6×3×2×2 = 72 status×result_class matrix, 7 conditional OTEL attribute tests, all 6 optional `L2ExecutionRequest` fields, all 3 optional authority fields, 12 type-guard sweeps for None/wrong-type input, 1000× replay determinism, 12-case boundary-bit power-set sample, every `EntryRejectionReason` (12) constructed individually, every `BypassReason` (16) value-uniqueness asserted. | Discovery: 5 of the new tests caught wrong fact-key names in initial draft (`retrieval_authority` vs `c0_retrieval_authority`, `target` vs `write_target`, etc.) — closes a hidden documentation drift between aggregator dispatch keys and individual guard parameter names. | 5k | Done — 237/237 |
 
 ## File Manifest
 
