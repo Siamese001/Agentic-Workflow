@@ -196,7 +196,7 @@ def run_prompt_assembly_pipeline(
     # PA.1 BOM resolution is delegated to the existing PromptBOMBuilder.
     # We emit an event marker here so the spec's observability list is
     # complete without re-implementing BOM resolution.
-    requested = tuple(sorted(set((route.get("required_slots") or ()))))
+    requested = tuple(sorted(set(route.get("required_slots") or ())))
     available = requested  # caller is expected to pass already-resolved BOM
     buf.emit(
         PromptBOMResolved(

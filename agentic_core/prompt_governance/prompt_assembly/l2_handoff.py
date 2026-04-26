@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
 L2_MUST: tuple[str, ...] = (
     "preserve_artifact_byte_for_byte",
     "verify_signature_against_manifest_inputs",

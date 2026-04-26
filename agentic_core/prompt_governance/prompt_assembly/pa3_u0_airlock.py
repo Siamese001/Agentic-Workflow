@@ -21,7 +21,6 @@ from agentic_core.prompt_governance.security.assembly_injection_neutralizer impo
     NeutralizationResult,
 )
 
-
 REJECT_THRESHOLD: float = 0.85
 """Above this injection score, the U0 task is REJECTED rather than sanitized."""
 

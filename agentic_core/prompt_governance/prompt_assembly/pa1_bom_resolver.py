@@ -32,7 +32,6 @@ from typing import Any, Mapping
 
 from .input_contracts import UpstreamInputBundle
 
-
 # ---------------------------------------------------------------------------
 # Slot-block dataclasses (spec literal names)
 # ---------------------------------------------------------------------------

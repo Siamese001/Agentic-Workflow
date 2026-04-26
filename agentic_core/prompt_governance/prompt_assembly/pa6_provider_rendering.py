@@ -13,7 +13,6 @@ from typing import Any, Mapping
 from .pa1_bom_resolver import PromptBOMResolved
 from .pa2_slot_composition import CompositionResult
 
-
 PROVIDER_LANES: tuple[str, ...] = (
     "anthropic",
     "openai_chat",

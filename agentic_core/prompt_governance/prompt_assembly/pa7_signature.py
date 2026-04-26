@@ -18,7 +18,6 @@ import json
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-
 SIGNATURE_VERSION: str = "PA7-HMAC-SHA256-v1"
 
 

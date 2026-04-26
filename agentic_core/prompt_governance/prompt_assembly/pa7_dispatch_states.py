@@ -46,7 +46,7 @@ class DispatchBlockReason(str, Enum):
     HITL_REVIEW_REQUIRED = "hitl_review_required"
 
     @staticmethod
-    def expected_disposition(reason: "DispatchBlockReason") -> DispatchDisposition:
+    def expected_disposition(reason: DispatchBlockReason) -> DispatchDisposition:
         """Map a reason code back to its canonical block disposition."""
         if reason in {
             DispatchBlockReason.POLICY_HASH_MISMATCH,

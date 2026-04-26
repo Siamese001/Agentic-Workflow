@@ -18,7 +18,6 @@ from typing import Iterable
 
 from .pa1_bom_resolver import PromptBOMResolved
 
-
 SLOT_ORDER: tuple[str, ...] = ("S0", "D0", "I0", "E0", "C0", "Y0", "M0", "U0", "H0")
 """Canonical composition order. Higher slot code may override lower content."""
 

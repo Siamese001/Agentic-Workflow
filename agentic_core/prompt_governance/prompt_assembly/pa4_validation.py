@@ -37,7 +37,7 @@ GOVERNANCE (2):
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Iterable
 
 from .input_contracts import UpstreamInputBundle
@@ -62,7 +62,7 @@ class PA4ValidationReport:
     overall_passed: bool
 
     @classmethod
-    def from_checks(cls, checks: Iterable[ValidationCheckResult]) -> "PA4ValidationReport":
+    def from_checks(cls, checks: Iterable[ValidationCheckResult]) -> PA4ValidationReport:
         items = tuple(checks)
         passed = sum(1 for c in items if c.passed)
         failed = len(items) - passed

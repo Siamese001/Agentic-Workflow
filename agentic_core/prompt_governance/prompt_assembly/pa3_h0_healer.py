@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
 DEFAULT_MAX_RETRIES: int = 2
 
 
