@@ -94,9 +94,7 @@ def test_validated_request_has_no_forbidden_fields() -> None:
 
 def test_downstream_authority_is_pinned_to_none() -> None:
     """Spec line 481: downstream_authority = none."""
-    out = IntakePipeline(IntakePolicy()).run(
-        RawIngressEnvelope(transport="chat", body_text="hi")
-    )
+    out = IntakePipeline(IntakePolicy()).run(RawIngressEnvelope(transport="chat", body_text="hi"))
     vr = out.validated
     assert vr is not None
     assert vr.downstream_authority == "none"
@@ -104,9 +102,7 @@ def test_downstream_authority_is_pinned_to_none() -> None:
 
 def test_permitted_next_layer_is_pinned_to_l1() -> None:
     """Spec line 482: permitted_next_layer = L1 only if pass."""
-    out = IntakePipeline(IntakePolicy()).run(
-        RawIngressEnvelope(transport="chat", body_text="hi")
-    )
+    out = IntakePipeline(IntakePolicy()).run(RawIngressEnvelope(transport="chat", body_text="hi"))
     vr = out.validated
     assert vr is not None
     assert vr.permitted_next_layer == "L1"
@@ -114,9 +110,7 @@ def test_permitted_next_layer_is_pinned_to_l1() -> None:
 
 def test_validated_request_rejects_authority_tampering() -> None:
     """Constructor refuses any non-'none' / non-'L1' value."""
-    out = IntakePipeline(IntakePolicy()).run(
-        RawIngressEnvelope(transport="chat", body_text="hi")
-    )
+    out = IntakePipeline(IntakePolicy()).run(RawIngressEnvelope(transport="chat", body_text="hi"))
     base = out.validated
     assert base is not None
     with pytest.raises(ValueError):
@@ -198,17 +192,13 @@ def test_e5_does_not_summarize_or_rewrite() -> None:
 
 def test_pipeline_returns_validated_xor_rejected() -> None:
     """A pass produces validated_request, a fail produces rejected_request_notice — never both."""
-    out = IntakePipeline(IntakePolicy()).run(
-        RawIngressEnvelope(transport="chat", body_text="hi")
-    )
+    out = IntakePipeline(IntakePolicy()).run(RawIngressEnvelope(transport="chat", body_text="hi"))
     assert (out.validated is None) != (out.rejected is None)
 
 
 def test_pipeline_does_not_run_downstream_stages_on_e1_failure() -> None:
     """When E1 fails, E2..E6 fields are not stamped."""
-    out = IntakePipeline(IntakePolicy()).run(
-        RawIngressEnvelope(transport="smtp", body_text="x")
-    )
+    out = IntakePipeline(IntakePolicy()).run(RawIngressEnvelope(transport="smtp", body_text="x"))
     assert out.rejected is not None
     assert out.rejected.rejection_stage == "E1"
     # No auth/quota/schema/normalization verdicts on E1-rejection audit
@@ -218,9 +208,7 @@ def test_pipeline_does_not_run_downstream_stages_on_e1_failure() -> None:
 
 def test_pipeline_only_emits_intake_events() -> None:
     """No non-intake event types emitted (e.g., RouteSelected, ToolInvoked)."""
-    out = IntakePipeline(IntakePolicy()).run(
-        RawIngressEnvelope(transport="chat", body_text="hi")
-    )
+    out = IntakePipeline(IntakePolicy()).run(RawIngressEnvelope(transport="chat", body_text="hi"))
     for evt in out.events:
         assert isinstance(evt.event, IngressEvent)
 

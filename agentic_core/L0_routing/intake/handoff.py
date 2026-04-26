@@ -86,9 +86,7 @@ class IntakeAuditReceipt:
         payload = {
             "intake_status": self.intake_status.value,
             "first_failure_stage": self.first_failure_stage,
-            "decisive_reason_code": (
-                self.decisive_reason_code.value if self.decisive_reason_code else None
-            ),
+            "decisive_reason_code": (self.decisive_reason_code.value if self.decisive_reason_code else None),
             "raw_payload_hash": self.raw_payload_hash,
             "normalized_request_hash": self.normalized_request_hash,
             "intake_manifest_hash": self.intake_manifest_hash,
@@ -181,17 +179,11 @@ class L1HandoffEnvelope:
 
     def __post_init__(self) -> None:
         if self.handoff_target != "L1_REASONING_PLAN":
-            raise ValueError(
-                "L1HandoffEnvelope.handoff_target must be 'L1_REASONING_PLAN'."
-            )
+            raise ValueError("L1HandoffEnvelope.handoff_target must be 'L1_REASONING_PLAN'.")
         if not self.no_raw_bypass_assertion:
-            raise ValueError(
-                "L1HandoffEnvelope.no_raw_bypass_assertion must be True."
-            )
+            raise ValueError("L1HandoffEnvelope.no_raw_bypass_assertion must be True.")
         if not self.downstream_read_only_assertion:
-            raise ValueError(
-                "L1HandoffEnvelope.downstream_read_only_assertion must be True."
-            )
+            raise ValueError("L1HandoffEnvelope.downstream_read_only_assertion must be True.")
 
     def with_hash(self) -> "L1HandoffEnvelope":
         payload = {
@@ -200,9 +192,7 @@ class L1HandoffEnvelope:
             "request_id": self.validated_request.request_id,
             "session_id": self.validated_request.session_id,
             "trace_root": self.validated_request.trace_root,
-            "intake_manifest_hash": getattr(
-                self.validated_request, "intake_manifest_hash", ""
-            ) or "",
+            "intake_manifest_hash": getattr(self.validated_request, "intake_manifest_hash", "") or "",
             "no_raw_bypass_assertion": self.no_raw_bypass_assertion,
             "downstream_read_only_assertion": self.downstream_read_only_assertion,
         }
@@ -323,9 +313,15 @@ class IntakeFinalResult:
 
 
 def _safe_user_summary_for(
-    stage: str, reason: IngressReasonCode, fallback: str  # noqa: ARG001 (stage reserved for future per-stage messaging)
+    reason: IngressReasonCode, fallback: str
 ) -> str:
-    """Build a non-leaky user-visible summary for the rejection."""
+    """Build a non-leaky user-visible summary for the rejection.
+
+    Uses a bounded reason->copy catalog. The rejection_stage is captured
+    separately on `IngressRejectionReport.rejection_stage` and on the
+    `IntakeAuditReceipt.first_failure_stage` field, so it doesn't need to
+    leak into user-visible text.
+    """
     catalog: dict[IngressReasonCode, str] = {
         IngressReasonCode.UNSUPPORTED_TRANSPORT: "Your request was received on a channel we do not support.",
         IngressReasonCode.EMPTY_PAYLOAD: "Your request did not include any content for us to process.",
@@ -346,7 +342,7 @@ def _safe_user_summary_for(
         IngressReasonCode.TRACE_BINDING_FAILED: "We could not bind a trace identifier to your request.",
         IngressReasonCode.INTERNAL_INGRESS_ERROR: "An internal error occurred during request intake.",
     }
-    return catalog.get(reason, fallback)
+    return catalog.get(reason, fallback) or "Your request could not be accepted."
 
 
 def finalize_intake_handoff(
@@ -365,13 +361,8 @@ def finalize_intake_handoff(
     # ---- failure path ----
     if stage_results.first_failure_stage or stage_results.validated_request_candidate is None:
         stage = stage_results.first_failure_stage or "01.6"
-        rejection_status = STAGE_TO_REJECTION_STATUS.get(
-            stage, IntakeStatus.REJECTED_AT_HANDOFF_COMPLETENESS
-        )
-        reason = (
-            stage_results.decisive_reason_code
-            or IngressReasonCode.INTERNAL_INGRESS_ERROR
-        )
+        rejection_status = STAGE_TO_REJECTION_STATUS.get(stage, IntakeStatus.REJECTED_AT_HANDOFF_COMPLETENESS)
+        reason = stage_results.decisive_reason_code or IngressReasonCode.INTERNAL_INGRESS_ERROR
         audit = IntakeAuditReceipt(
             audit_receipt_id=f"audit:{uuid.uuid4().hex}",
             request_id=stage_results.request_id,
@@ -404,7 +395,7 @@ def finalize_intake_handoff(
             rejection_status=rejection_status,
             decisive_reason_code=reason,
             safe_user_visible_summary=_safe_user_summary_for(
-                stage, reason, stage_results.decisive_reason_message
+                reason, stage_results.decisive_reason_message
             ),
             audit_receipt_refs=(audit.audit_receipt_id,),
             raw_payload_hash=stage_results.raw_payload_hash,
@@ -464,8 +455,7 @@ def finalize_intake_handoff(
             rejection_status=IntakeStatus.REJECTED_AT_HANDOFF_COMPLETENESS,
             decisive_reason_code=IngressReasonCode.INTERNAL_INGRESS_ERROR,
             safe_user_visible_summary=(
-                "An internal error occurred while finalizing your request. "
-                "Please retry."
+                "An internal error occurred while finalizing your request. Please retry."
             ),
             audit_receipt_refs=(audit.audit_receipt_id,),
             raw_payload_hash=stage_results.raw_payload_hash,

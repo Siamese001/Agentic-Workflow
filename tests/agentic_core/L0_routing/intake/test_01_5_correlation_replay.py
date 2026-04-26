@@ -77,10 +77,7 @@ def test_intake_manifest_hash_deterministic_across_runs() -> None:
     assert a.accepted and b.accepted
     assert a.validated is not None and b.validated is not None
     assert a.validated.intake_manifest_hash == b.validated.intake_manifest_hash
-    assert (
-        a.validated.normalized_request_hash
-        == b.validated.normalized_request_hash
-    )
+    assert a.validated.normalized_request_hash == b.validated.normalized_request_hash
 
 
 def test_intake_manifest_hash_changes_when_tenant_changes() -> None:
@@ -93,14 +90,12 @@ def test_intake_manifest_hash_changes_when_tenant_changes() -> None:
             session_id_hint="sess-stable",
             claimed_tenant_id=tenant,
         )
+
     a = _pipe().run(_build("tenant-A"))
     b = _pipe().run(_build("tenant-B"))
     assert a.accepted and b.accepted
     assert a.validated is not None and b.validated is not None
-    assert (
-        a.validated.normalized_request_hash
-        != b.validated.normalized_request_hash
-    )
+    assert a.validated.normalized_request_hash != b.validated.normalized_request_hash
 
 
 def test_volatile_observed_fields_do_not_perturb_manifest_hash() -> None:
@@ -129,9 +124,7 @@ def test_volatile_observed_fields_do_not_perturb_manifest_hash() -> None:
     assert a.accepted and b.accepted
     assert a.validated is not None and b.validated is not None
     # Same logical input → same manifest hash regardless of request_id.
-    assert (
-        a.validated.intake_manifest_hash == b.validated.intake_manifest_hash
-    )
+    assert a.validated.intake_manifest_hash == b.validated.intake_manifest_hash
 
 
 def test_no_route_or_prompt_hashes_emitted() -> None:

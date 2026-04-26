@@ -86,9 +86,7 @@ def test_session_binding_receipt_creates_or_resumes() -> None:
 
     # Resumed path
     out2 = _pipe().run(
-        RawIngressEnvelope(
-            transport="chat", body_text="hi", session_id_hint="sess-existing"
-        ),
+        RawIngressEnvelope(transport="chat", body_text="hi", session_id_hint="sess-existing"),
     )
     sbr2 = out2.receipt_bundle.session_binding_receipt
     assert sbr2 is not None

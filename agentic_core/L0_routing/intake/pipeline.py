@@ -137,9 +137,7 @@ class IntakeOutcome:
 
     def __post_init__(self) -> None:
         if (self.validated is None) == (self.rejected is None):
-            raise ValueError(
-                "IntakeOutcome must carry exactly one of validated / rejected."
-            )
+            raise ValueError("IntakeOutcome must carry exactly one of validated / rejected.")
 
 
 class IntakePipeline:
@@ -594,7 +592,7 @@ class IntakePipeline:
         outcome: "IntakeOutcome",
         *,
         env: RawIngressEnvelope,
-        source_class: SourceClass | None,  # noqa: ARG002 (reserved for source-aware receipts)
+        source_class: SourceClass | None,
         stage_fields: Mapping[str, Mapping],
         failure_stage: str | None,
         decisive_reason: IngressReasonCode | None,
@@ -632,9 +630,7 @@ class IntakePipeline:
                 content_type_allowed=True,
                 encoding_allowed=True,
                 body_size_status=("ok" if env.has_payload() else "absent"),
-                attachment_inventory_status=(
-                    "ok" if env.attachments.count >= 0 else "bad_handle"
-                ),
+                attachment_inventory_status=("ok" if env.attachments.count >= 0 else "bad_handle"),
                 raw_capture_status=("ok" if e1.get("raw_payload_ref") else "missing"),
                 transport_policy_ref="policy:intake:transport:v1",
                 rejection_reason_codes=tep_rejection_codes,
@@ -647,9 +643,7 @@ class IntakePipeline:
         if e2:
             principal_id = e2.get("principal_id")
             principal_id_hash = (
-                hashlib.sha256(str(principal_id).encode("utf-8")).hexdigest()
-                if principal_id
-                else None
+                hashlib.sha256(str(principal_id).encode("utf-8")).hexdigest() if principal_id else None
             )
             scope_baseline = CallerScopeBaseline(
                 caller_scope_baseline_id=f"csb:{uuid.uuid4().hex}",
@@ -661,10 +655,7 @@ class IntakePipeline:
                 region=e2.get("region_scope_baseline") or env.region,
                 data_residency_hint=env.region,
                 account_status=(
-                    "active"
-                    if e2.get("auth_verdict")
-                    not in (None, AuthVerdict.REJECTED)
-                    else "unknown"
+                    "active" if e2.get("auth_verdict") not in (None, AuthVerdict.REJECTED) else "unknown"
                 ),
                 baseline_acl_tags=tuple(e2.get("baseline_entitlements", ())),
                 allowed_intake_surfaces=("intake_default",),
@@ -675,18 +666,26 @@ class IntakePipeline:
             bundle.caller_scope_baseline = scope_baseline
 
             tenant_resolved = bool(e2.get("tenant_bind"))
-            tenant_conflict = (
-                failure_stage == "E2"
-                and decisive_reason is IngressReasonCode.TENANT_MISMATCH
-            )
+            tenant_conflict = failure_stage == "E2" and decisive_reason is IngressReasonCode.TENANT_MISMATCH
             tbr_codes: tuple[IngressReasonCode, ...] = ()
             if failure_stage == "E2" and decisive_reason is not None:
                 tbr_codes = (decisive_reason,)
+            # tenant_source is "claim" (envelope), "credential" (auth token),
+            # "header" (transport metadata for webhook/alert), or "inferred"
+            # (fallback). We choose based on where the binding came from.
+            if env.claimed_tenant_id:
+                tenant_source = "claim"
+            elif source_class in (SourceClass.WEBHOOK, SourceClass.ALERT):
+                tenant_source = "header"
+            elif e2.get("tenant_bind"):
+                tenant_source = "credential"
+            else:
+                tenant_source = "none"
             bundle.tenant_boundary_receipt = TenantBoundaryReceipt(
                 receipt_id=f"tbr:{uuid.uuid4().hex}",
                 tenant_id=e2.get("tenant_bind"),
                 tenant_resolved=tenant_resolved,
-                tenant_source=("claim" if env.claimed_tenant_id else "credential"),
+                tenant_source=tenant_source,
                 tenant_allowed=tenant_resolved and not tenant_conflict,
                 tenant_conflict_detected=tenant_conflict,
                 conflicting_tenant_refs=(),
@@ -695,19 +694,14 @@ class IntakePipeline:
                 reason_codes=tbr_codes,
             ).with_hash()
 
-            session_valid = (
-                failure_stage not in ("E1", "E2")
-                or e1.get("session_id") is not None
-            )
+            session_valid = failure_stage not in ("E1", "E2") or e1.get("session_id") is not None
             sbr_codes: tuple[IngressReasonCode, ...] = ()
             if failure_stage == "E2" and decisive_reason is not None:
                 sbr_codes = (decisive_reason,)
             bundle.session_binding_receipt = SessionBindingReceipt(
                 receipt_id=f"sbr:{uuid.uuid4().hex}",
                 session_id=e1.get("session_id"),
-                session_created_or_resumed=(
-                    "resumed" if env.session_id_hint else "created"
-                ),
+                session_created_or_resumed=("resumed" if env.session_id_hint else "created"),
                 session_scope=("session:active" if session_valid else None),
                 session_valid=session_valid,
                 session_expiry_status="ok",
@@ -732,23 +726,16 @@ class IntakePipeline:
                 session_id=e1.get("session_id"),
                 quota_policy_ref="policy:intake:quota:v1",
                 request_size_status=(
-                    "too_large"
-                    if decisive_reason is IngressReasonCode.PAYLOAD_TOO_LARGE
-                    else "ok"
+                    "too_large" if decisive_reason is IngressReasonCode.PAYLOAD_TOO_LARGE else "ok"
                 ),
                 attachment_count_status="ok",
-                rate_limit_status=(
-                    "throttled"
-                    if qv is QuotaVerdict.THROTTLED
-                    else "ok"
-                ),
+                rate_limit_status=("throttled" if qv is QuotaVerdict.THROTTLED else "ok"),
                 daily_limit_status="unknown",
                 concurrent_request_status="unknown",
                 allowed_to_continue_intake=(failure_stage != "E3"),
                 reason_codes=qr_codes,
                 quota_snapshot_ref=(
-                    f"quota:{e3.get('quota_bucket', 'unknown')}:"
-                    f"{e3.get('rate_window_state', 'ok')}"
+                    f"quota:{e3.get('quota_bucket', 'unknown')}:{e3.get('rate_window_state', 'ok')}"
                 ),
             ).with_hash()
             bundle.quota_receipt = qr
@@ -790,9 +777,7 @@ class IntakePipeline:
                 schema_version=str(e4.get("envelope_version", "1")),
                 schema_valid=schema_valid,
                 missing_fields=tuple(),
-                malformed_fields=tuple(
-                    str(x) for x in e4.get("field_validation_report", ())
-                ),
+                malformed_fields=tuple(str(x) for x in e4.get("field_validation_report", ())),
                 unknown_fields=tuple(),
                 coercions_applied=tuple(),
                 structural_risk_flags=tuple(),
@@ -887,9 +872,7 @@ class IntakePipeline:
                 ingress_replay_seed_ref=binding_result.ingress_replay_seed.replay_seed_id,
                 transport_receipt_ref=tep.receipt_id,
                 identity_receipt_ref=(
-                    bundle.tenant_boundary_receipt.receipt_id
-                    if bundle.tenant_boundary_receipt
-                    else ""
+                    bundle.tenant_boundary_receipt.receipt_id if bundle.tenant_boundary_receipt else ""
                 ),
                 quota_receipt_ref=qr.receipt_id,
                 schema_validation_receipt_ref=ssv.receipt_id,
@@ -922,15 +905,9 @@ class IntakePipeline:
                 if outcome.validated
                 else (e3.get("raw_payload_hash") or e5.get("raw_payload_hash") or None)
             ),
-            request_id=(
-                outcome.validated.request_id if outcome.validated else e1.get("request_id")
-            ),
-            session_id=(
-                outcome.validated.session_id if outcome.validated else e1.get("session_id")
-            ),
-            trace_root=(
-                outcome.validated.trace_root if outcome.validated else e1.get("trace_root")
-            ),
+            request_id=(outcome.validated.request_id if outcome.validated else e1.get("request_id")),
+            session_id=(outcome.validated.session_id if outcome.validated else e1.get("session_id")),
+            trace_root=(outcome.validated.trace_root if outcome.validated else e1.get("trace_root")),
             tenant_id=e2.get("tenant_bind"),
             principal_id_hash=principal_id_hash,
             rejected_notice=outcome.rejected,
@@ -959,10 +936,36 @@ class IntakePipeline:
             self._event_sink(record)
 
 
+def run_request_intake(
+    raw_input: RawIngressEnvelope,
+    intake_config: IntakePolicy | None = None,
+    *,
+    identity_resolver: "IdentityResolver | None" = None,
+    event_sink: EventEmitter | None = None,
+) -> IntakeOutcome:
+    """Public composite entrypoint matching 01.6 §Phase 4 spec verbatim.
+
+    Equivalent to constructing IntakePipeline(intake_config) and calling
+    run(raw_input). Provided as a top-level function so callers can adopt
+    the spec wording without binding to the pipeline class.
+
+    Returns the IntakeOutcome; the only object L1 may read is
+    `outcome.handoff_envelope`. On rejection `outcome.handoff_envelope is
+    None` and `outcome.rejection_report` is set.
+    """
+    pipeline = IntakePipeline(
+        intake_config,
+        identity_resolver=identity_resolver,
+        event_sink=event_sink,
+    )
+    return pipeline.run(raw_input)
+
+
 __all__ = [
     "EventEmitter",
     "IntakeOutcome",
     "IntakePipeline",
     "IntakePolicy",
     "IntakeReceiptBundle",
+    "run_request_intake",
 ]

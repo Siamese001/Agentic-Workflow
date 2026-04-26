@@ -37,6 +37,7 @@ from agentic_core.L0_routing.intake.events import (
     INGRESS_METRIC_NAMES,
     IngressEvent,
     IngressEventRecord,
+    to_otel_attributes,
 )
 from agentic_core.L0_routing.intake.handoff import (
     IngressRejectionReport,
@@ -59,6 +60,7 @@ from agentic_core.L0_routing.intake.pipeline import (
     IntakePipeline,
     IntakePolicy,
     IntakeReceiptBundle,
+    run_request_intake,
 )
 from agentic_core.L0_routing.intake.reason_codes import IngressReasonCode
 from agentic_core.L0_routing.intake.receipts import (
@@ -155,4 +157,6 @@ __all__ = [
     "bind_trace_and_replay",
     "build_origin_label_manifest",
     "finalize_intake_handoff",
+    "run_request_intake",
+    "to_otel_attributes",
 ]

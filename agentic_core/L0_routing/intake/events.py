@@ -37,8 +37,8 @@ class IngressEvent(str, Enum):
 
 # Metric names (spec lines 634-645). Names are stable so dashboards bind to them.
 INGRESS_METRIC_NAMES: tuple[str, ...] = (
-    "ingress_count",                 # by source_class
-    "ingress_reject_rate",           # by reason_code
+    "ingress_count",  # by source_class
+    "ingress_reject_rate",  # by reason_code
     "auth_reject_rate",
     "quota_throttle_rate",
     "duplicate_rate",
@@ -78,7 +78,7 @@ FORBIDDEN_EVENT_FIELDS: frozenset[str] = frozenset(
         "oauth_token",
         "session_cookie",
         "raw_payload",  # full raw body text
-        "body_text",    # full raw body text
+        "body_text",  # full raw body text
         "secret",
         "password",
     }
@@ -99,9 +99,50 @@ class IngressEventRecord:
         # is enforced at construction time so a bad caller cannot bypass it.
         bad = FORBIDDEN_EVENT_FIELDS.intersection(self.fields.keys())
         if bad:
-            raise ValueError(
-                f"IngressEventRecord must not include forbidden fields: {sorted(bad)}"
-            )
+            raise ValueError(f"IngressEventRecord must not include forbidden fields: {sorted(bad)}")
+
+
+def to_otel_attributes(record: IngressEventRecord) -> dict[str, Any]:
+    """Render an IngressEventRecord as a flat OTEL-attribute dict.
+
+    Closes the U0 / Intake OTEL deferred-scope binding gap. Use this helper
+    as the bridge between the in-process IngressEventRecord and any OTLP
+    exporter (e.g. tools/otel/otel_mcp_server.py). The shape is:
+
+        {
+          "intake.event": "<IngressEvent value>",
+          "intake.request_id": "<request_id>",
+          "intake.trace_root": "<trace_root>",
+          "intake.<field>": <scalar value for each non-forbidden field>,
+        }
+
+    Forbidden fields (credentials, raw payloads) are dropped at construction
+    time by IngressEventRecord.__post_init__, so no additional filter is
+    needed here. Non-scalar fields are JSON-stringified so they fit OTEL's
+    AttributeValue contract.
+
+    Wiring example (one-liner):
+        from agentic_core.L0_routing.intake.events import to_otel_attributes
+        pipeline = IntakePipeline(IntakePolicy(), event_sink=lambda r:
+            tracer.start_span("u0.intake", attributes=to_otel_attributes(r)).end())
+    """
+    import json as _json
+    attrs: dict[str, Any] = {
+        "intake.event": record.event.value,
+        "intake.request_id": record.request_id,
+        "intake.trace_root": record.trace_root,
+    }
+    for k, v in record.fields.items():
+        if v is None or isinstance(v, (str, int, float, bool)):
+            attrs[f"intake.{k}"] = v
+        else:
+            try:
+                attrs[f"intake.{k}"] = _json.dumps(
+                    v, default=str, sort_keys=True, separators=(",", ":")
+                )
+            except (TypeError, ValueError):
+                attrs[f"intake.{k}"] = repr(v)
+    return attrs
 
 
 __all__ = [
@@ -110,4 +151,5 @@ __all__ = [
     "INGRESS_TRACE_FIELDS",
     "IngressEvent",
     "IngressEventRecord",
+    "to_otel_attributes",
 ]

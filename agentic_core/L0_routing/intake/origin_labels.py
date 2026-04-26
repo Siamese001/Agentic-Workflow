@@ -27,36 +27,42 @@ from agentic_core.L0_routing.intake.envelope import RawIngressEnvelope
 # Label constants — spec line 261-276 of 01.4
 # ---------------------------------------------------------------------------
 
-ORIGIN_LABELS: frozenset[str] = frozenset({
-    "user_turn",
-    "user_supplied_quote",
-    "user_supplied_code",
-    "user_supplied_url",
-    "user_supplied_attachment_ref",
-    "transport_metadata",
-    "unknown_untrusted",
-})
+ORIGIN_LABELS: frozenset[str] = frozenset(
+    {
+        "user_turn",
+        "user_supplied_quote",
+        "user_supplied_code",
+        "user_supplied_url",
+        "user_supplied_attachment_ref",
+        "transport_metadata",
+        "unknown_untrusted",
+    }
+)
 
-AUTHORITY_LABELS: frozenset[str] = frozenset({
-    "user_intent_only",
-    "data_only",
-    "quoted_untrusted",
-    "executable_untrusted",
-    "metadata_only",
-    "no_authority",
-})
+AUTHORITY_LABELS: frozenset[str] = frozenset(
+    {
+        "user_intent_only",
+        "data_only",
+        "quoted_untrusted",
+        "executable_untrusted",
+        "metadata_only",
+        "no_authority",
+    }
+)
 
-SECURITY_FINDING_CLASSES: frozenset[str] = frozenset({
-    "prompt_injection_like_text",
-    "system_override_claim",
-    "credential_or_secret_pattern",
-    "executable_payload",
-    "cross_tenant_hint",
-    "suspicious_url",
-    "malformed_serialized_object",
-    "html_or_markdown_control_payload",
-    "oversized_embedded_blob",
-})
+SECURITY_FINDING_CLASSES: frozenset[str] = frozenset(
+    {
+        "prompt_injection_like_text",
+        "system_override_claim",
+        "credential_or_secret_pattern",
+        "executable_payload",
+        "cross_tenant_hint",
+        "suspicious_url",
+        "malformed_serialized_object",
+        "html_or_markdown_control_payload",
+        "oversized_embedded_blob",
+    }
+)
 
 
 # ---------------------------------------------------------------------------
@@ -102,6 +108,29 @@ class IngressOriginLabelManifest:
     executable_payload_refs: tuple[str, ...] = ()
     user_data_only_refs: tuple[str, ...] = ()
     manifest_hash: str = ""
+
+    def __post_init__(self) -> None:
+        # Shape invariant: parallel arrays must align with segment refs.
+        n = len(self.payload_segment_refs)
+        if len(self.segment_origin_labels) != n:
+            raise ValueError(
+                "IngressOriginLabelManifest.segment_origin_labels length "
+                f"({len(self.segment_origin_labels)}) must equal "
+                f"payload_segment_refs length ({n})."
+            )
+        if len(self.segment_authority_labels) != n:
+            raise ValueError(
+                "IngressOriginLabelManifest.segment_authority_labels length "
+                f"({len(self.segment_authority_labels)}) must equal "
+                f"payload_segment_refs length ({n})."
+            )
+        # Membership invariant: every label must be from the canonical set.
+        for o in self.segment_origin_labels:
+            if o not in ORIGIN_LABELS:
+                raise ValueError(f"Unknown origin label: {o!r}")
+        for a in self.segment_authority_labels:
+            if a not in AUTHORITY_LABELS:
+                raise ValueError(f"Unknown authority label: {a!r}")
 
     def with_hash(self) -> "IngressOriginLabelManifest":
         payload = json.dumps(
@@ -158,6 +187,23 @@ _CRED_RE = re.compile(
 _URL_RE = re.compile(r"https?://[^\s<>\"]+", re.IGNORECASE)
 _SUSPICIOUS_URL_HINTS = ("@", "%00", "javascript:", "data:text/html")
 _HTML_CONTROL_RE = re.compile(r"</?\s*(script|iframe|object|embed)\b", re.IGNORECASE)
+
+# Cross-tenant hint: text claims to operate against another tenant/account/org id.
+_CROSS_TENANT_RE = re.compile(
+    r"(?i)\b(?:tenant|account|org|workspace|customer)[\s_\-]?id\b\s*[:=]\s*['\"]?([A-Za-z0-9_\-]{2,64})",
+)
+# Markers in user text that look like a request to act on a different tenant.
+_CROSS_TENANT_HINT_RE = re.compile(
+    r"(?i)\b(?:as|on behalf of|impersonate|switch to|act as)\s+(?:tenant|account|org|workspace|user)\b",
+)
+
+# Malformed serialized object markers — pickle, base64-blob preludes, java
+# serialization headers, msgpack control bytes embedded in text. We detect
+# only obvious markers; deep parse is intentionally out of scope.
+_PICKLE_RE = re.compile(r"\\x80\\x04")  # protocol-4 pickle prefix as text-escaped
+_JAVA_SER_RE = re.compile(r"\bac\s*ed\s*00\s*05\b", re.IGNORECASE)  # java magic
+_BASE64_BLOB_RE = re.compile(r"^(?:[A-Za-z0-9+/]{80,}={0,2})$", re.MULTILINE)
+_BAD_JSON_HINT_RE = re.compile(r"^\s*[\{\[][^\n]{0,80}[,:][^\n]*$", re.MULTILINE)
 
 
 # Reasonable upper bound for a single embedded blob (5 MiB) before flagging.
@@ -327,9 +373,7 @@ def _findings_for_segment(
         )
 
     # 4. executable payload markers
-    if _EXECUTABLE_RE.search(text) or (
-        segment.kind == "code" and _EXECUTABLE_RE.search(text or "")
-    ):
+    if _EXECUTABLE_RE.search(text) or (segment.kind == "code" and _EXECUTABLE_RE.search(text or "")):
         findings.append(
             PayloadSecurityFinding(
                 finding_id=f"finding:{segment.segment_ref}:exec",
@@ -390,6 +434,51 @@ def _findings_for_segment(
             )
         )
 
+    # 8. cross-tenant hint: payload references another tenant/account/org id
+    #    or asks to act-as another tenant. Flag as evidence; never authority.
+    if _CROSS_TENANT_RE.search(text) or _CROSS_TENANT_HINT_RE.search(text):
+        findings.append(
+            PayloadSecurityFinding(
+                finding_id=f"finding:{segment.segment_ref}:xtenant",
+                finding_class="cross_tenant_hint",
+                segment_ref=segment.segment_ref,
+                severity="medium",
+                safe_summary=(
+                    "Payload references a tenant/account id or asks to act as "
+                    "another tenant. Intake never honors cross-tenant requests."
+                ),
+                quarantine_candidate=False,
+                redaction_candidate=False,
+                downstream_attention_hint="L5 must reject any cross-tenant action.",
+            )
+        )
+
+    # 9. malformed serialized object: pickle / java-ser / base64 blob / bad JSON
+    is_malformed_ser = (
+        _PICKLE_RE.search(text)
+        or _JAVA_SER_RE.search(text)
+        or _BASE64_BLOB_RE.search(text)
+    )
+    if is_malformed_ser:
+        findings.append(
+            PayloadSecurityFinding(
+                finding_id=f"finding:{segment.segment_ref}:malser",
+                finding_class="malformed_serialized_object",
+                segment_ref=segment.segment_ref,
+                severity="high",
+                safe_summary=(
+                    "Payload looks like an embedded serialized object "
+                    "(pickle / java-ser / base64 blob)."
+                ),
+                quarantine_candidate=True,
+                redaction_candidate=False,
+                downstream_attention_hint=(
+                    "Never deserialize. Treat as opaque bytes; route to "
+                    "attachment handling if needed."
+                ),
+            )
+        )
+
     return findings
 
 
@@ -405,8 +494,9 @@ def build_origin_label_manifest(
     Pure function — no I/O, no mutation. Deterministic given the same input.
     """
     attachment_refs = tuple(a.ref for a in env.attachments.entries)
-    metadata_keys = tuple(k for k in ("upstream_traceparent", "client_version", "platform")
-                          if getattr(env, k, None))
+    metadata_keys = tuple(
+        k for k in ("upstream_traceparent", "client_version", "platform") if getattr(env, k, None)
+    )
 
     segments = segment_payload(
         normalized_text,

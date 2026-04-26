@@ -273,11 +273,7 @@ def default_identity_resolver(
 
     # tenant claim consistency
     cred_tenant = cred.get("tenant_id")
-    if (
-        cred_tenant is not None
-        and env.claimed_tenant_id is not None
-        and cred_tenant != env.claimed_tenant_id
-    ):
+    if cred_tenant is not None and env.claimed_tenant_id is not None and cred_tenant != env.claimed_tenant_id:
         return IdentityResolution(
             auth_verdict=AuthVerdict.REJECTED,
             principal_type=PrincipalType.UNKNOWN,
@@ -457,9 +453,7 @@ def run_e3_quota(
                 reason_codes=[IngressReasonCode.DUPLICATE_REQUEST],
                 fields=fields,
             )
-        state._seen_idempotency_keys[env.idempotency_key] = e1_fields.get(
-            "request_id", "unknown"
-        )
+        state._seen_idempotency_keys[env.idempotency_key] = e1_fields.get("request_id", "unknown")
         fields["idempotency_status"] = IdempotencyStatus.NEW
 
     # 4. payload-hash dedupe (within rate window)
@@ -674,7 +668,7 @@ def run_e4_schema(
 
     # 8. URL syntactic check (no fetch — spec line 342)
     if env.body_json:
-        for k, v in (env.body_json.items() if hasattr(env.body_json, "items") else []):
+        for k, v in env.body_json.items() if hasattr(env.body_json, "items") else []:
             if isinstance(v, str) and (k.lower().endswith("url") or k.lower() == "callback"):
                 if not _URL_RE.match(v):
                     return StageResult(
@@ -839,11 +833,7 @@ def run_e5_normalize(
     normalized_payload_hash = hash_text(normalized_text)
     request_id = e1_fields.get("request_id", "unknown")
 
-    verdict = (
-        NormalizationVerdict.NORMALIZED
-        if report
-        else NormalizationVerdict.PRESERVED
-    )
+    verdict = NormalizationVerdict.NORMALIZED if report else NormalizationVerdict.PRESERVED
 
     fields.update(
         {

@@ -160,8 +160,7 @@ class ValidatedRequest:
             )
         if self.permitted_next_layer != "L1":
             raise ValueError(
-                "ValidatedRequest.permitted_next_layer MUST be 'L1' "
-                "(intake hands off to L1 only)."
+                "ValidatedRequest.permitted_next_layer MUST be 'L1' (intake hands off to L1 only)."
             )
 
 

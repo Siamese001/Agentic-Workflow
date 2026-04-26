@@ -31,9 +31,7 @@ def test_quota_receipt_emitted_when_allowed() -> None:
 
 def test_quota_receipt_marks_too_large_when_payload_oversize() -> None:
     state = QuotaState(max_envelope_bytes=10)
-    out = _pipe(state).run(
-        RawIngressEnvelope(transport="chat", body_text="x" * 1000)
-    )
+    out = _pipe(state).run(RawIngressEnvelope(transport="chat", body_text="x" * 1000))
     assert not out.accepted
     qr = out.receipt_bundle.quota_receipt
     assert qr is not None

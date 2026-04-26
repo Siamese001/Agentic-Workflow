@@ -74,9 +74,7 @@ def test_attachment_only_payload_passes() -> None:
     """Spec line 37: attachments are valid payload presence."""
     manifest = AttachmentManifestShell(
         entries=(
-            AttachmentManifestEntry(
-                filename="x.pdf", mime_type="application/pdf", size_bytes=10, ref="r:1"
-            ),
+            AttachmentManifestEntry(filename="x.pdf", mime_type="application/pdf", size_bytes=10, ref="r:1"),
         ),
         total_bytes=10,
     )

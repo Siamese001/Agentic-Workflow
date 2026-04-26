@@ -58,7 +58,9 @@ def test_oversized_envelope_rejects() -> None:
 def test_too_many_attachments_rejects() -> None:
     state = QuotaState(max_attachment_count=2)
     entries = tuple(
-        AttachmentManifestEntry(filename=f"f{i}.bin", mime_type="application/octet-stream", size_bytes=1, ref=f"r{i}")
+        AttachmentManifestEntry(
+            filename=f"f{i}.bin", mime_type="application/octet-stream", size_bytes=1, ref=f"r{i}"
+        )
         for i in range(5)
     )
     env = RawIngressEnvelope(
@@ -96,17 +98,13 @@ def test_webhook_replay_rejected() -> None:
 
 def test_idempotency_replay_rejected() -> None:
     state = QuotaState()
-    env = RawIngressEnvelope(
-        transport="api", body_json={"a": 1}, idempotency_key="idem-1"
-    )
+    env = RawIngressEnvelope(transport="api", body_json={"a": 1}, idempotency_key="idem-1")
     e1, e2 = _e1_e2()
     first = run_e3_quota(env, SourceClass.SERVICE, e1, e2, state=state)
     assert first.passed
     assert first.fields["idempotency_status"] is IdempotencyStatus.NEW
     # different request_id, same idempotency key, different payload
-    env2 = RawIngressEnvelope(
-        transport="api", body_json={"a": 2}, idempotency_key="idem-1"
-    )
+    env2 = RawIngressEnvelope(transport="api", body_json={"a": 2}, idempotency_key="idem-1")
     e1b, _ = _e1_e2(request_id="req-y")
     second = run_e3_quota(env2, SourceClass.SERVICE, e1b, e2, state=state)
     assert not second.passed

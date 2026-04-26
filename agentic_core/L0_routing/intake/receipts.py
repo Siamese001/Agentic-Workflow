@@ -36,6 +36,7 @@ from agentic_core.L0_routing.intake.verdicts import (
 # Hashing helper
 # ---------------------------------------------------------------------------
 
+
 def _stable_hash(parts: Sequence[Any]) -> str:
     """Deterministic SHA-256 hex over a sequence of stable values.
 
@@ -43,9 +44,7 @@ def _stable_hash(parts: Sequence[Any]) -> str:
     so dict order or non-string types do not perturb the digest. Volatile
     inputs (wall-clock, random IDs) MUST NOT appear in `parts`.
     """
-    payload = "\n".join(
-        json.dumps(p, sort_keys=True, separators=(",", ":"), default=str) for p in parts
-    )
+    payload = "\n".join(json.dumps(p, sort_keys=True, separators=(",", ":"), default=str) for p in parts)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -87,20 +86,22 @@ class TransportEnvelopeReceipt:
         is established by transport+channel+raw_capture_status, not by the
         per-run envelope id.
         """
-        h = _stable_hash([
-            self.transport,
-            self.channel,
-            self.accepted_transport,
-            self.frame_parse_status,
-            self.method_allowed,
-            self.content_type_allowed,
-            self.encoding_allowed,
-            self.body_size_status,
-            self.attachment_inventory_status,
-            self.raw_capture_status,
-            self.transport_policy_ref,
-            [c.value for c in self.rejection_reason_codes],
-        ])
+        h = _stable_hash(
+            [
+                self.transport,
+                self.channel,
+                self.accepted_transport,
+                self.frame_parse_status,
+                self.method_allowed,
+                self.content_type_allowed,
+                self.encoding_allowed,
+                self.body_size_status,
+                self.attachment_inventory_status,
+                self.raw_capture_status,
+                self.transport_policy_ref,
+                [c.value for c in self.rejection_reason_codes],
+            ]
+        )
         return TransportEnvelopeReceipt(
             receipt_id=self.receipt_id,
             raw_envelope_id=self.raw_envelope_id,
@@ -136,15 +137,17 @@ class MalformedEnvelopeReport:
     deterministic_report_hash: str = ""
 
     def with_hash(self) -> "MalformedEnvelopeReport":
-        h = _stable_hash([
-            self.raw_envelope_id,
-            self.malformed_class,
-            self.decisive_reason.value,
-            self.parse_error_summary,
-            self.recoverable_by_user,
-            self.safe_user_visible_summary,
-            list(self.audit_refs),
-        ])
+        h = _stable_hash(
+            [
+                self.raw_envelope_id,
+                self.malformed_class,
+                self.decisive_reason.value,
+                self.parse_error_summary,
+                self.recoverable_by_user,
+                self.safe_user_visible_summary,
+                list(self.audit_refs),
+            ]
+        )
         return MalformedEnvelopeReport(
             report_id=self.report_id,
             raw_envelope_id=self.raw_envelope_id,
@@ -206,20 +209,22 @@ class CallerScopeBaseline:
         # caller_claim_id is excluded because it is a volatile per-run uuid.
         # The deterministic identity of the scope is the (tenant, session,
         # region, scope tag) tuple.
-        h = _stable_hash([
-            self.tenant_id,
-            self.tenant_scope,
-            self.session_id,
-            self.session_scope,
-            self.region,
-            self.data_residency_hint,
-            self.account_status,
-            list(self.baseline_acl_tags),
-            list(self.allowed_intake_surfaces),
-            list(self.restricted_intake_surfaces),
-            self.cross_tenant_risk,
-            self.cross_session_risk,
-        ])
+        h = _stable_hash(
+            [
+                self.tenant_id,
+                self.tenant_scope,
+                self.session_id,
+                self.session_scope,
+                self.region,
+                self.data_residency_hint,
+                self.account_status,
+                list(self.baseline_acl_tags),
+                list(self.allowed_intake_surfaces),
+                list(self.restricted_intake_surfaces),
+                self.cross_tenant_risk,
+                self.cross_session_risk,
+            ]
+        )
         return CallerScopeBaseline(
             caller_scope_baseline_id=self.caller_scope_baseline_id,
             caller_claim_id=self.caller_claim_id,
@@ -256,17 +261,19 @@ class TenantBoundaryReceipt:
     deterministic_receipt_hash: str = ""
 
     def with_hash(self) -> "TenantBoundaryReceipt":
-        h = _stable_hash([
-            self.tenant_id,
-            self.tenant_resolved,
-            self.tenant_source,
-            self.tenant_allowed,
-            self.tenant_conflict_detected,
-            list(self.conflicting_tenant_refs),
-            self.region_allowed,
-            self.data_residency_status,
-            [c.value for c in self.reason_codes],
-        ])
+        h = _stable_hash(
+            [
+                self.tenant_id,
+                self.tenant_resolved,
+                self.tenant_source,
+                self.tenant_allowed,
+                self.tenant_conflict_detected,
+                list(self.conflicting_tenant_refs),
+                self.region_allowed,
+                self.data_residency_status,
+                [c.value for c in self.reason_codes],
+            ]
+        )
         return TenantBoundaryReceipt(
             receipt_id=self.receipt_id,
             tenant_id=self.tenant_id,
@@ -298,16 +305,18 @@ class SessionBindingReceipt:
     deterministic_receipt_hash: str = ""
 
     def with_hash(self) -> "SessionBindingReceipt":
-        h = _stable_hash([
-            self.session_id,
-            self.session_created_or_resumed,
-            self.session_scope,
-            self.session_valid,
-            self.session_expiry_status,
-            self.conversation_context_allowed,
-            self.prior_context_access_baseline,
-            [c.value for c in self.reason_codes],
-        ])
+        h = _stable_hash(
+            [
+                self.session_id,
+                self.session_created_or_resumed,
+                self.session_scope,
+                self.session_valid,
+                self.session_expiry_status,
+                self.conversation_context_allowed,
+                self.prior_context_access_baseline,
+                [c.value for c in self.reason_codes],
+            ]
+        )
         return SessionBindingReceipt(
             receipt_id=self.receipt_id,
             session_id=self.session_id,
@@ -347,20 +356,22 @@ class QuotaReceipt:
     deterministic_receipt_hash: str = ""
 
     def with_hash(self) -> "QuotaReceipt":
-        h = _stable_hash([
-            self.tenant_id,
-            self.principal_id_hash,
-            self.session_id,
-            self.quota_policy_ref,
-            self.request_size_status,
-            self.attachment_count_status,
-            self.rate_limit_status,
-            self.daily_limit_status,
-            self.concurrent_request_status,
-            self.allowed_to_continue_intake,
-            [c.value for c in self.reason_codes],
-            self.quota_snapshot_ref,
-        ])
+        h = _stable_hash(
+            [
+                self.tenant_id,
+                self.principal_id_hash,
+                self.session_id,
+                self.quota_policy_ref,
+                self.request_size_status,
+                self.attachment_count_status,
+                self.rate_limit_status,
+                self.daily_limit_status,
+                self.concurrent_request_status,
+                self.allowed_to_continue_intake,
+                [c.value for c in self.reason_codes],
+                self.quota_snapshot_ref,
+            ]
+        )
         return QuotaReceipt(
             receipt_id=self.receipt_id,
             tenant_id=self.tenant_id,
@@ -396,16 +407,18 @@ class DuplicateRequestFingerprint:
     duplicate_candidate_refs: tuple[str, ...] = ()
 
     def with_hash(self) -> "DuplicateRequestFingerprint":
-        h = _stable_hash([
-            self.raw_payload_hash,
-            self.normalized_payload_pre_hash,
-            self.principal_id_hash,
-            self.tenant_id,
-            self.session_id,
-            self.transport,
-            self.idempotency_key,
-            self.dedupe_window,
-        ])
+        h = _stable_hash(
+            [
+                self.raw_payload_hash,
+                self.normalized_payload_pre_hash,
+                self.principal_id_hash,
+                self.tenant_id,
+                self.session_id,
+                self.transport,
+                self.idempotency_key,
+                self.dedupe_window,
+            ]
+        )
         return DuplicateRequestFingerprint(
             fingerprint_id=self.fingerprint_id,
             raw_payload_hash=self.raw_payload_hash,
@@ -434,13 +447,15 @@ class DuplicateSuppressionReceipt:
     deterministic_receipt_hash: str = ""
 
     def with_hash(self) -> "DuplicateSuppressionReceipt":
-        h = _stable_hash([
-            self.duplicate_detected,
-            self.duplicate_class,
-            self.prior_request_ref,
-            self.suppress_or_continue,
-            [c.value for c in self.reason_codes],
-        ])
+        h = _stable_hash(
+            [
+                self.duplicate_detected,
+                self.duplicate_class,
+                self.prior_request_ref,
+                self.suppress_or_continue,
+                [c.value for c in self.reason_codes],
+            ]
+        )
         return DuplicateSuppressionReceipt(
             receipt_id=self.receipt_id,
             duplicate_detected=self.duplicate_detected,
@@ -453,14 +468,16 @@ class DuplicateSuppressionReceipt:
 
 
 # Duplicate class label set per spec line 259-265
-DUPLICATE_CLASSES: frozenset[str] = frozenset({
-    "exact_replay_same_idempotency_key",
-    "exact_replay_same_payload",
-    "near_duplicate_transport_retry",
-    "double_submit",
-    "suspicious_replay",
-    "not_duplicate",
-})
+DUPLICATE_CLASSES: frozenset[str] = frozenset(
+    {
+        "exact_replay_same_idempotency_key",
+        "exact_replay_same_payload",
+        "near_duplicate_transport_retry",
+        "double_submit",
+        "suspicious_replay",
+        "not_duplicate",
+    }
+)
 
 
 # ===========================================================================
@@ -485,17 +502,19 @@ class RequestSchemaValidationReceipt:
     deterministic_receipt_hash: str = ""
 
     def with_hash(self) -> "RequestSchemaValidationReceipt":
-        h = _stable_hash([
-            self.request_schema_ref,
-            self.schema_version,
-            self.schema_valid,
-            list(self.missing_fields),
-            list(self.malformed_fields),
-            list(self.unknown_fields),
-            list(self.coercions_applied),
-            list(self.structural_risk_flags),
-            [c.value for c in self.reason_codes],
-        ])
+        h = _stable_hash(
+            [
+                self.request_schema_ref,
+                self.schema_version,
+                self.schema_valid,
+                list(self.missing_fields),
+                list(self.malformed_fields),
+                list(self.unknown_fields),
+                list(self.coercions_applied),
+                list(self.structural_risk_flags),
+                [c.value for c in self.reason_codes],
+            ]
+        )
         return RequestSchemaValidationReceipt(
             receipt_id=self.receipt_id,
             request_schema_ref=self.request_schema_ref,
@@ -561,12 +580,14 @@ class RequestCorrelationReceipt:
         # parent_trace_ref, provisional_span_refs — all volatile per-run.
         # Stable correlation identity is (session, tenant, principal,
         # correlation_source).
-        h = _stable_hash([
-            self.session_id,
-            self.tenant_id,
-            self.principal_id_hash,
-            self.correlation_source,
-        ])
+        h = _stable_hash(
+            [
+                self.session_id,
+                self.tenant_id,
+                self.principal_id_hash,
+                self.correlation_source,
+            ]
+        )
         return RequestCorrelationReceipt(
             receipt_id=self.receipt_id,
             request_id=self.request_id,
@@ -601,17 +622,19 @@ class IngressReplaySeed:
     replay_seed_hash: str = ""
 
     def with_hash(self) -> "IngressReplaySeed":
-        h = _stable_hash([
-            self.session_id,
-            self.tenant_id,
-            self.principal_id_hash,
-            self.transport,
-            self.raw_payload_hash,
-            self.normalized_payload_hash,
-            self.schema_version,
-            self.intake_policy_ref,
-            self.replay_key_seed,
-        ])
+        h = _stable_hash(
+            [
+                self.session_id,
+                self.tenant_id,
+                self.principal_id_hash,
+                self.transport,
+                self.raw_payload_hash,
+                self.normalized_payload_hash,
+                self.schema_version,
+                self.intake_policy_ref,
+                self.replay_key_seed,
+            ]
+        )
         return IngressReplaySeed(
             replay_seed_id=self.replay_seed_id,
             request_id=self.request_id,
@@ -641,13 +664,15 @@ class NormalizedRequestHash:
     normalized_request_hash: str = ""
 
     def with_hash(self) -> "NormalizedRequestHash":
-        h = _stable_hash([
-            self.normalized_payload_hash,
-            self.caller_scope_baseline_hash,
-            self.schema_version,
-            self.origin_label_manifest_hash,
-            list(self.entry_policy_refs),
-        ])
+        h = _stable_hash(
+            [
+                self.normalized_payload_hash,
+                self.caller_scope_baseline_hash,
+                self.schema_version,
+                self.origin_label_manifest_hash,
+                list(self.entry_policy_refs),
+            ]
+        )
         return NormalizedRequestHash(
             hash_id=self.hash_id,
             normalized_payload_hash=self.normalized_payload_hash,
@@ -674,15 +699,17 @@ class IntakeManifestHash:
     intake_manifest_hash: str = ""
 
     def with_hash(self) -> "IntakeManifestHash":
-        h = _stable_hash([
-            self.transport_receipt_hash,
-            self.caller_scope_baseline_hash,
-            self.quota_receipt_hash,
-            self.schema_validation_receipt_hash,
-            self.origin_label_manifest_hash,
-            self.normalized_request_hash,
-            self.replay_seed_hash,
-        ])
+        h = _stable_hash(
+            [
+                self.transport_receipt_hash,
+                self.caller_scope_baseline_hash,
+                self.quota_receipt_hash,
+                self.schema_validation_receipt_hash,
+                self.origin_label_manifest_hash,
+                self.normalized_request_hash,
+                self.replay_seed_hash,
+            ]
+        )
         return IntakeManifestHash(
             manifest_hash_id=self.manifest_hash_id,
             transport_receipt_hash=self.transport_receipt_hash,

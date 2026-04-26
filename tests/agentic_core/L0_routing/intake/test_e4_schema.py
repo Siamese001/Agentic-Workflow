@@ -24,9 +24,7 @@ def test_basic_chat_text_passes() -> None:
 
 
 def test_unknown_envelope_version_rejects() -> None:
-    env = RawIngressEnvelope(
-        transport="api", body_json={"x": 1}, extras={"envelope_version": "9.9"}
-    )
+    env = RawIngressEnvelope(transport="api", body_json={"x": 1}, extras={"envelope_version": "9.9"})
     res = run_e4_schema(env, SourceClass.SERVICE, state=QuotaState())
     assert not res.passed
     assert IngressReasonCode.MALFORMED_ENVELOPE in res.reason_codes

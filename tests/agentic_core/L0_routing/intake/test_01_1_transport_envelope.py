@@ -62,12 +62,8 @@ def test_transport_receipt_excludes_volatile_observed_fields() -> None:
     Use two SEPARATE pipelines so the in-process consumed-frames guard
     in E1 doesn't reject the second run as a duplicate transport frame.
     """
-    out_a = _pipe().run(
-        RawIngressEnvelope(transport="chat", body_text="hi", request_id_hint="r2")
-    )
-    out_b = _pipe().run(
-        RawIngressEnvelope(transport="chat", body_text="hi", request_id_hint="r2")
-    )
+    out_a = _pipe().run(RawIngressEnvelope(transport="chat", body_text="hi", request_id_hint="r2"))
+    out_b = _pipe().run(RawIngressEnvelope(transport="chat", body_text="hi", request_id_hint="r2"))
     a = out_a.receipt_bundle.transport_receipt
     b = out_b.receipt_bundle.transport_receipt
     assert a is not None and b is not None
