@@ -1,0 +1,24 @@
+{
+  "pack_name": "00A_L5_Governance_Safety_MECE_overwrite_pack",
+  "created_at": "2026-04-26",
+  "mode": "full-overwrite, MECE, implementation-grade, Windsurf-executable",
+  "folder": "00A_L5_Governance_Safety/",
+  "rationale": "Regenerate L5 as a cross-cutting 00A foundation folder and align ownership with 00B L4/UWG and 00C Runtime Gates.",
+  "owners": {
+    "00A_L5": "governance certification evidence only",
+    "00B_L4_UWG": "durable state and write admission",
+    "00C_Runtime_Gates": "G01-G29 current-run gate verdict law",
+    "05_Exit": "X1/X2/X3 final current-run disposition"
+  },
+  "files": [
+    "00A_L5_Governance_Safety_detailed.md",
+    "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+    "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+    "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+    "00A.4_L5_HITL_Reclearance_and_Human_Input_Governance_detailed.md",
+    "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+    "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+    "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+    "README.md"
+  ]
+}

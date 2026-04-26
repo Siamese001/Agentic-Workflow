@@ -1,0 +1,35 @@
+{
+  "folder": "99_End_to_End_Runtime_Proof_and_Acceptance",
+  "purpose": "Cross-layer acceptance proof harness for the governed agentic runtime.",
+  "owns": [
+    "scenario proof definitions",
+    "route path coverage proof",
+    "contract emission proof",
+    "OTEL trace tree proof",
+    "deterministic replay proof",
+    "no-bypass proof",
+    "groundedness proof",
+    "proof bundle schema and commands"
+  ],
+  "does_not_own": [
+    "runtime gate law",
+    "final disposition",
+    "durable write admission",
+    "governance certification",
+    "retrieval",
+    "execution",
+    "future-run learning"
+  ],
+  "files": [
+    "99.1_E2E_Golden_Path_Runtime_Proof_detailed.md",
+    "99.2_E2E_Route_Path_Coverage_Proof_detailed.md",
+    "99.3_E2E_Contract_Emission_and_Handoff_Proof_detailed.md",
+    "99.4_E2E_OTEL_Trace_and_Span_Tree_Proof_detailed.md",
+    "99.5_E2E_Deterministic_Replay_Proof_detailed.md",
+    "99.6_E2E_No_Bypass_and_Sovereignty_Proof_detailed.md",
+    "99.7_E2E_Evidence_Prompt_Output_Groundedness_Proof_detailed.md",
+    "99.8_E2E_Acceptance_Commands_and_Proof_Bundle_detailed.md",
+    "99_End_to_End_Runtime_Proof_and_Acceptance_detailed.md",
+    "README.md"
+  ]
+}
