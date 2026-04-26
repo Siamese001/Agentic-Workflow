@@ -136,6 +136,22 @@ class ValidatedRequest:
     # permitted_next_layer MUST always be "L1" on a passing slip.
     permitted_next_layer: str = "L1"
 
+    # --- 01.5 / 01.6 extended fields (added 2026-04-26) ---
+    # All optional with defaults so existing positional construction sites
+    # remain compatible.
+    intake_status: str = "VALIDATED_FOR_L1"
+    intake_manifest_hash: str = ""
+    normalized_request_hash: str = ""
+    ingress_replay_seed_ref: str = ""
+    transport_receipt_ref: str = ""
+    identity_receipt_ref: str = ""
+    quota_receipt_ref: str = ""
+    schema_validation_receipt_ref: str = ""
+    correlation_receipt_ref: str = ""
+    origin_label_manifest_ref: str = ""
+    intake_warnings: tuple[str, ...] = ()
+    handoff_created_at_observed: str = ""
+
     def __post_init__(self) -> None:
         if self.downstream_authority != "none":
             raise ValueError(
