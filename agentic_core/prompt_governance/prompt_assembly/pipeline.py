@@ -22,6 +22,19 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
+from .assembly_statuses import (
+    PAStatus,
+    status_for_pa0,
+    status_for_pa3,
+    status_for_pa5,
+)
+from .doctrine_receipts import (
+    aggregate_doctrine_status,
+    pa0_doctrine_receipt,
+    pa3_doctrine_receipt,
+    pa5_doctrine_receipt,
+    pa7_doctrine_receipt,
+)
 from .observability_events import (
     EventBuffer,
     PromptAssemblyBlocked,
@@ -59,7 +72,14 @@ from .pa7_dispatch_states import (
 
 @dataclass(frozen=True)
 class PromptAssemblyPipelineResult:
-    """Bundle returned by :func:`run_prompt_assembly_pipeline`."""
+    """Bundle returned by :func:`run_prompt_assembly_pipeline`.
+
+    The ``doctrine_status`` and ``doctrine_receipts`` fields surface the
+    canonical PA_* status vocabulary mandated by the Prompt Assembly
+    doctrine. They are derived deterministically from the rich internal
+    result objects (boundary, classifier, budget, dispatch) so the
+    pipeline emits both representations without duplication.
+    """
 
     boundary: BoundaryCheckResult
     classifier: C0ClassifierResult | None
@@ -67,6 +87,8 @@ class PromptAssemblyPipelineResult:
     dispatch: DispatchOutcome
     events: tuple[PromptAssemblyEvent, ...]
     kept_budget_entries: tuple[SlotBudgetEntry, ...] = field(default_factory=tuple)
+    doctrine_status: PAStatus = PAStatus.PA_READY
+    doctrine_receipts: tuple[Mapping[str, Any], ...] = field(default_factory=tuple)
 
     @property
     def dispatch_allowed(self) -> bool:
@@ -127,6 +149,13 @@ def run_prompt_assembly_pipeline(
     policy_hash = str((execution_metadata or {}).get("policy_hash", "") or plan.get("policy_hash", ""))
     provider_lane = str(route.get("provider_lane", ""))
     request_id = str((execution_metadata or {}).get("request_id", ""))
+    run_id = str((execution_metadata or {}).get("run_id", ""))
+    trace_id = str((execution_metadata or {}).get("trace_id", ""))
+    replay_key = str((execution_metadata or {}).get("replay_key", ""))
+    doctrine_receipts: list[Mapping[str, Any]] = []
+
+    def _doctrine_status() -> PAStatus:
+        return aggregate_doctrine_status(doctrine_receipts) if doctrine_receipts else PAStatus.PA_READY
 
     buf.emit(
         PromptAssemblyStarted(
@@ -146,6 +175,17 @@ def run_prompt_assembly_pipeline(
         governance=governance,
         execution_metadata=execution_metadata,
     )
+    pa0_receipt = pa0_doctrine_receipt(
+        boundary,
+        request_id=request_id,
+        run_id=run_id,
+        trace_id=trace_id,
+        route_id=route_id,
+        plan_id=plan_id,
+        policy_hash=policy_hash,
+        replay_key=replay_key,
+    )
+    doctrine_receipts.append(pa0_receipt)
     if boundary.status is BoundaryStatus.FAIL:
         assert boundary.fail_reason is not None
         disposition, block_reason = _map_boundary_to_dispatch(boundary.fail_reason)
@@ -169,6 +209,8 @@ def run_prompt_assembly_pipeline(
             budget=None,
             dispatch=outcome,
             events=tuple(buf.events),
+            doctrine_status=_doctrine_status(),
+            doctrine_receipts=tuple(doctrine_receipts),
         )
 
     if boundary.status is BoundaryStatus.SKIP:
@@ -191,6 +233,8 @@ def run_prompt_assembly_pipeline(
             budget=None,
             dispatch=outcome,
             events=tuple(buf.events),
+            doctrine_status=_doctrine_status(),
+            doctrine_receipts=tuple(doctrine_receipts),
         )
 
     # PA.1 BOM resolution is delegated to the existing PromptBOMBuilder.
@@ -211,6 +255,14 @@ def run_prompt_assembly_pipeline(
     classifier: C0ClassifierResult | None = None
     if c0_chunks:
         classifier = classify_c0_chunks(c0_chunks)
+        doctrine_receipts.append(
+            pa3_doctrine_receipt(
+                classifier=classifier,
+                request_id=request_id,
+                policy_hash=policy_hash,
+                replay_key=replay_key,
+            )
+        )
         buf.emit(
             PromptSecurityPassCompleted(
                 u0_disposition="neutralized",
@@ -243,6 +295,8 @@ def run_prompt_assembly_pipeline(
                 budget=None,
                 dispatch=outcome,
                 events=tuple(buf.events),
+                doctrine_status=_doctrine_status(),
+                doctrine_receipts=tuple(doctrine_receipts),
             )
 
     # ----- PA.5 Budget -----
@@ -255,6 +309,14 @@ def run_prompt_assembly_pipeline(
             reserved_schema_tokens=reserved_schema_tokens,
             reserved_tool_tokens=reserved_tool_tokens,
             entries=budget_entries,
+        )
+        doctrine_receipts.append(
+            pa5_doctrine_receipt(
+                budget_report,
+                request_id=request_id,
+                policy_hash=policy_hash,
+                replay_key=replay_key,
+            )
         )
         buf.emit(
             PromptBudgetCompleted(
@@ -291,6 +353,8 @@ def run_prompt_assembly_pipeline(
                 dispatch=outcome,
                 events=tuple(buf.events),
                 kept_budget_entries=tuple(kept),
+                doctrine_status=_doctrine_status(),
+                doctrine_receipts=tuple(doctrine_receipts),
             )
 
     # ----- PA.7 Final emit (PASS) -----
@@ -298,9 +362,28 @@ def run_prompt_assembly_pipeline(
         disposition=DispatchDisposition.PASS,
         detail="prompt_assembly_pipeline_pass",
     )
+    artifact_id = str((execution_metadata or {}).get("artifact_id", ""))
+    manifest_hash = str((execution_metadata or {}).get("manifest_hash", "")) or "pipeline_pass"
+    hmac_sig = str((execution_metadata or {}).get("hmac_sig", "")) or ""
+    doctrine_receipts.append(
+        pa7_doctrine_receipt(
+            artifact_id=artifact_id,
+            manifest_hash=manifest_hash,
+            hmac_sig=hmac_sig,
+            signed=bool(hmac_sig),
+            handoff_ready=bool(hmac_sig),
+            request_id=request_id,
+            run_id=run_id,
+            trace_id=trace_id,
+            route_id=route_id,
+            plan_id=plan_id,
+            policy_hash=policy_hash,
+            replay_key=replay_key,
+        )
+    )
     buf.emit(
         PromptAssemblyDispatched(
-            artifact_id=str((execution_metadata or {}).get("artifact_id", "")),
+            artifact_id=artifact_id,
             l2_target="sovereign_llm_gateway",
             trace_root=request_id,
         )
@@ -312,6 +395,8 @@ def run_prompt_assembly_pipeline(
         dispatch=outcome,
         events=tuple(buf.events),
         kept_budget_entries=tuple(kept),
+        doctrine_status=_doctrine_status(),
+        doctrine_receipts=tuple(doctrine_receipts),
     )
 
 
@@ -326,6 +411,7 @@ def _summarize_c0(result: C0ClassifierResult) -> str:
 
 
 __all__ = [
+    "PAStatus",
     "PromptAssemblyPipelineResult",
     "run_prompt_assembly_pipeline",
 ]

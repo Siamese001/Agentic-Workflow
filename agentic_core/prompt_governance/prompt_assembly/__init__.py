@@ -13,6 +13,38 @@ classifier, events, pipeline orchestrator).
 
 from __future__ import annotations
 
+from .assembly_statuses import (
+    PAStatus,
+    STAGE_TO_STATUSES,
+    status_for_pa0,
+    status_for_pa1,
+    status_for_pa2,
+    status_for_pa3,
+    status_for_pa4,
+    status_for_pa5,
+    status_for_pa6,
+    status_for_pa7,
+)
+from .doctrine_receipts import (
+    aggregate_doctrine_status,
+    pa0_doctrine_receipt,
+    pa1_doctrine_receipt,
+    pa2_doctrine_receipt,
+    pa3_doctrine_receipt,
+    pa4_doctrine_receipt,
+    pa5_doctrine_receipt,
+    pa6_doctrine_receipt,
+    pa7_doctrine_receipt,
+)
+from .forbidden_outputs import (
+    FORBIDDEN_DISPOSITIONS,
+    FORBIDDEN_EXECUTION_VERBS,
+    PA_DECISION_FIELDS,
+    PA_STATUS_FIELDS,
+    ForbiddenOutputError,
+    assert_no_forbidden,
+    find_forbidden,
+)
 from .input_contracts import (
     C0EvidenceContract,
     GovernanceArtifacts,
@@ -158,6 +190,35 @@ from .trace_spans import (
 )
 
 __all__ = [
+    # Doctrine status vocabulary
+    "PAStatus",
+    "STAGE_TO_STATUSES",
+    "status_for_pa0",
+    "status_for_pa1",
+    "status_for_pa2",
+    "status_for_pa3",
+    "status_for_pa4",
+    "status_for_pa5",
+    "status_for_pa6",
+    "status_for_pa7",
+    # Doctrine receipts
+    "aggregate_doctrine_status",
+    "pa0_doctrine_receipt",
+    "pa1_doctrine_receipt",
+    "pa2_doctrine_receipt",
+    "pa3_doctrine_receipt",
+    "pa4_doctrine_receipt",
+    "pa5_doctrine_receipt",
+    "pa6_doctrine_receipt",
+    "pa7_doctrine_receipt",
+    # Forbidden-output discipline
+    "FORBIDDEN_DISPOSITIONS",
+    "FORBIDDEN_EXECUTION_VERBS",
+    "PA_DECISION_FIELDS",
+    "PA_STATUS_FIELDS",
+    "ForbiddenOutputError",
+    "assert_no_forbidden",
+    "find_forbidden",
     # PA.0
     "BoundaryCheckResult",
     "BoundaryFailReason",
