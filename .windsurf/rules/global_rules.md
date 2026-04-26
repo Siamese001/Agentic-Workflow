@@ -44,10 +44,21 @@ Dependency analysis MUST use ADG MCP tools - NOT grep or text search.
 | Incoming deps | `adg_edge_fanin` |
 | Node details | `adg_node` |
 | Health check (before fallback) | `adg_health` |
-| Degraded fallback | grep allowed ONLY after health red — emit `DEGRADED_FALLBACK: reason=<...>` |
+| **MCP-down fallback (REQUIRED first)** | **Direct SQLite read of `artifacts/adg/adg_indexed_<ts>.sqlite`** — `nodes`/`edges`/`mv_*`/`v_p*` tables expose the same surface as MCP. NEVER skip this tier. |
+| Degraded fallback (last resort) | grep allowed ONLY after BOTH MCP and SQLite are unreachable AND `DEGRADED_FALLBACK: reason=<mcp_err>+<sqlite_err>` is emitted |
 
 `grep_search` for dependency analysis is FORBIDDEN. Use it only to confirm literals.
 Silent degraded fallback (grep without health check + reason code) = `severity: critical` violation.
+
+**MCP serialization (§25) is NEVER an excuse for grep.** When you cannot make a second `mcp1_adg_*` call due to the one-MCP-per-response rule, the canonical path is direct SQLite, not grep. The fallback hierarchy is:
+
+```
+1. mcp1_adg_*           ← preferred when MCP healthy AND no other MCP call in flight
+2. sqlite3 (direct)     ← REQUIRED when (1) blocked for ANY reason
+3. grep_search          ← FORBIDDEN for dep analysis regardless of (1) and (2) state
+```
+
+See `mcp-serialization.md` §"Hard Rule — SQLite-Direct Fallback Supersedes Grep" for the full snippet.
 
 **Why this matters**: `grep_search` is a native Cascade tool with NO pre-execution hook.
 Windsurf cannot programmatically block it. Enforcement relies on:

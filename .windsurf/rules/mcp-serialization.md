@@ -46,6 +46,46 @@ Prefer direct on-disk reads over MCP round-trips when the equivalent data is ava
 
 Rule of thumb: if the data lives in `artifacts/`, `.windsurf/`, or the working tree, read it directly. If it lives behind a remote API or a persistent service (Notion, memory graph, live Redis), then — and only then — issue an MCP call in its own isolated response.
 
+## Hard Rule — SQLite-Direct Fallback Supersedes Grep (added 2026-04-26)
+
+> ⛔ **MCP serialization is NEVER an excuse to fall back to `grep_search` for dependency analysis.** The canonical fallback hierarchy is:
+
+```
+1. ADG MCP (mcp1_adg_*)              ← preferred when MCP is healthy AND no other MCP call is in flight
+2. Direct SQLite (sqlite3 module)     ← REQUIRED fallback when (1) is blocked for ANY reason
+3. grep_search                        ← FORBIDDEN for dependency analysis, regardless of (1) and (2) state
+```
+
+Rationale: the ADG SQLite snapshot at `artifacts/adg/adg_indexed_<timestamp>.sqlite` is local, deterministic, and serves the same `nodes`/`edges`/materialized-view surface that `mcp1_adg_*` exposes. Grep cannot answer dependency questions correctly (false positives, false negatives, no transitive closure, no layer awareness — see `global_rules.md` ADG-First Retrieval-Tool Decision Tree).
+
+If MCP is down OR you cannot make a second MCP call in the current response due to §25 serialization, you MUST use direct SQLite. Specifically:
+
+```python
+import sqlite3
+from pathlib import Path
+
+snapshot = sorted(Path("artifacts/adg").glob("adg_indexed_*.sqlite"))[-1]
+con = sqlite3.connect(snapshot)
+cur = con.cursor()
+# Imports of agentic_core.X by apps_eval files:
+cur.execute("""
+  SELECT COUNT(*) FROM edges e
+  WHERE e.relation_type = 'imports'
+    AND e.source_file LIKE 'apps_eval/%'
+    AND EXISTS (SELECT 1 FROM nodes n WHERE n.id = e.dst_id AND n.resolved_path LIKE 'agentic_core/X/%')
+""")
+```
+
+Falling back from MCP to grep when SQLite is reachable is a **`severity: critical`** violation logged by `post_cascade_adg_audit.py`. The DEGRADED_FALLBACK reason code is invalid if it cites only "MCP serialization" — the SQLite tier was not exhausted.
+
+Acceptable DEGRADED_FALLBACK reasons (must include all of these conditions):
+
+- ADG MCP unhealthy (verified by `mcp1_adg_health` showing red OR sentinel marks Redis cold), AND
+- ADG SQLite snapshot file does not exist OR is locked OR schema query failed with explicit error, AND
+- Reason code names BOTH the MCP failure mode AND the SQLite failure mode.
+
+Anything else is a silent fallback.
+
 ## Escape Hatch
 
 `MCP_SERIAL_BYPASS=1` in the environment — logs a bypass row to the violations log and treats that response as compliant. Use only for:

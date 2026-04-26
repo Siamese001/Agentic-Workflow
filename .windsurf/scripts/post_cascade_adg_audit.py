@@ -115,6 +115,33 @@ _adg_health_call_re = re.compile(r"mcp1_adg_health", re.IGNORECASE)
 # Check if a DEGRADED_FALLBACK reason was emitted (required when falling back from adg_sqlite)
 _degraded_fallback_re = re.compile(r"DEGRADED_FALLBACK\s*:", re.IGNORECASE)
 
+# Constitutional §28 — SQLite-direct fallback supersedes grep.
+# Detect compliant SQLite-direct queries against the ADG snapshot in the same response.
+_sqlite_direct_adg_re = re.compile(
+    r"sqlite3\.connect\([^)]*adg_indexed[^)]*\)|adg_indexed_\d+_\d+\.sqlite",
+    re.IGNORECASE,
+)
+# Bypass envvar — same shape as other audits in this hook chain.
+_BYPASS_ENV = "ADG_SQLITE_FALLBACK_BYPASS"
+
+
+def _adg_snapshot_available() -> bool:
+    """Return True if an adg_indexed_*.sqlite snapshot is locally reachable.
+
+    Implements constitutional §28: when this returns True, grep-for-deps
+    cannot be excused by 'MCP unavailable' — direct SQLite is the required tier.
+    """
+    try:
+        adg_dir = repo_root / "artifacts" / "adg"
+        if not adg_dir.is_dir():
+            return False
+        for entry in adg_dir.glob("adg_indexed_*.sqlite"):
+            if entry.is_file() and entry.stat().st_size > 0:
+                return True
+        return False
+    except OSError:  # guardian: allow-silent-swallow -- best-effort detection
+        return False
+
 
 def _is_dep_analysis_query(query: str) -> bool:
     """Return True if the query looks like dependency analysis, not literal confirmation."""
@@ -148,7 +175,11 @@ def _build_remediation(violation_type: str, context: str) -> str:
     return (
         "REQUIRED: Use ADG MCP (adg_nodes_by_file → adg_edge_fanin/fanout) "
         "instead of grep_search for dependency analysis. "
-        "If ADG is unhealthy, call mcp1_adg_health first and emit DEGRADED_FALLBACK."
+        "If MCP is unavailable for ANY reason (unhealthy, §25 serialization), "
+        "the REQUIRED fallback is direct sqlite3 query of "
+        "artifacts/adg/adg_indexed_<ts>.sqlite — NOT grep_search. "
+        "Constitutional §28: SQLite-direct fallback supersedes grep. "
+        "Emit DEGRADED_FALLBACK only after BOTH MCP and SQLite fail."
     )
 
 
@@ -170,6 +201,10 @@ def detect_violations(response_text: str) -> list[dict]:
     adg_mcp_used = bool(_adg_mcp_call_re.search(response_text))
     adg_health_checked = bool(_adg_health_call_re.search(response_text))
     degraded_fallback_declared = bool(_degraded_fallback_re.search(response_text))
+    # Constitutional §28: SQLite-direct fallback supersedes grep
+    sqlite_direct_used = bool(_sqlite_direct_adg_re.search(response_text))
+    adg_snapshot_present = _adg_snapshot_available()
+    bypass_set = bool(__import__("os").environ.get(_BYPASS_ENV))
 
     # Heuristic detection: grep_search near dependency-analysis terms
     # Check all patterns; deduplicate by start position
@@ -196,12 +231,26 @@ def detect_violations(response_text: str) -> list[dict]:
         # protocol was followed.
         is_silent_fallback = not adg_mcp_used and not adg_health_checked and not degraded_fallback_declared
 
-        if adg_mcp_used:
-            sev = "warning"  # ADG was also used — grep may have been supplementary
+        # Constitutional §28: when an ADG SQLite snapshot is locally reachable,
+        # grep-for-deps cannot be excused by 'MCP unavailable' or §25 serialization.
+        # Direct sqlite3 query is the required fallback. Override severity accordingly.
+        if bypass_set:
+            sev = "info"  # ADG_SQLITE_FALLBACK_BYPASS set — log but do not flag
+        elif sqlite_direct_used and adg_mcp_used:
+            sev = "info"  # ADG MCP + direct SQLite both used — fully compliant
+        elif sqlite_direct_used:
+            sev = "info"  # direct SQLite used — compliant per §28
+        elif adg_mcp_used:
+            sev = "warning"  # ADG MCP used; grep may have been supplementary
+        elif adg_snapshot_present:
+            # §28 violation: SQLite was reachable but grep was used instead.
+            # Upgraded to critical regardless of DEGRADED_FALLBACK reason —
+            # the SQLite tier was not exhausted.
+            sev = "critical"
         elif adg_health_checked and degraded_fallback_declared:
-            sev = "info"  # proper protocol: health checked, reason emitted — compliant fallback
+            sev = "info"  # proper legacy protocol: health checked, reason emitted
         elif adg_health_checked or degraded_fallback_declared:
-            sev = "error"  # partial compliance: health checked or reason emitted but not both
+            sev = "error"  # partial compliance
         else:
             sev = "critical"  # silent fallback: no ADG, no health check, no reason code
 
@@ -209,13 +258,20 @@ def detect_violations(response_text: str) -> list[dict]:
 
         violation = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "violation_type": "grep_for_dependency_analysis",
+            "violation_type": (
+                "grep_when_sqlite_available"
+                if (adg_snapshot_present and not sqlite_direct_used and not adg_mcp_used)
+                else "grep_for_dependency_analysis"
+            ),
             "severity": sev,
             "silent_fallback": is_silent_fallback,
             "context_snippet": context[:300],
             "adg_mcp_also_used": adg_mcp_used,
             "adg_health_checked": adg_health_checked,
             "degraded_fallback_declared": degraded_fallback_declared,
+            "sqlite_direct_used": sqlite_direct_used,
+            "adg_snapshot_present": adg_snapshot_present,
+            "bypass_set": bypass_set,
             "pre_fallback_gate": (
                 "COMPLIANT"
                 if (adg_health_checked and degraded_fallback_declared)
@@ -237,7 +293,7 @@ def detect_violations(response_text: str) -> list[dict]:
                     )
                 )
             ),
-            "rule": "constitutional.md §ADG-First, global_rules.md §ADG-First Analysis",
+            "rule": "constitutional.md §22, §23, §28, global_rules.md §ADG-First Analysis, mcp-serialization.md §SQLite-Direct Fallback",
         }
         violations.append(violation)
 
@@ -314,13 +370,16 @@ def main() -> int:
         # positive (no violations) and negative (grep-for-deps) outcomes.
         try:
             from tools.ledgers.hook_helpers import emit_ledger_event
+
             emit_ledger_event(
                 ledger="tool_routing",
                 event_kind="routing_violation" if violations else "retrieval_scan_clean",
                 prediction={
                     "chosen_tool": "grep_search" if violations else "unknown",
                     "violation_count": len(violations),
-                    "violation_types": sorted({v.get("pattern", "") for v in violations}) if violations else [],
+                    "violation_types": sorted({v.get("pattern", "") for v in violations})
+                    if violations
+                    else [],
                 },
                 outcome={
                     "backend_used": "degraded_grep" if violations else "unknown",
