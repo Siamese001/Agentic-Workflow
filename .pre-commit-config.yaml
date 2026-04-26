@@ -310,6 +310,34 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7o: Reference Pack Integrity (docs/reference/MANIFEST.json) ----------------
+      # Verifies docs/reference/MANIFEST.json against disk: every listed file exists,
+      # size matches, sha256 matches; sub-MANIFEST children[] resolve to real files.
+      # Triggers when any file under docs/reference/ changes.
+      - id: reference-pack-integrity
+        name: "T7o: Reference Pack Integrity"
+        entry: py ops_scripts/ci/check_reference_pack_integrity.py
+        language: system
+        pass_filenames: false
+        files: ^docs/reference/.*$
+        always_run: false
+        require_serial: true
+
+      # -- T7p: Reference Test Contracts (no-drift gate for declared tests) ------------
+      # Walks docs/reference/**/TEST REQUIREMENTS blocks; every declared
+      # test_<name> contract must have a matching `def test_<name>(...)` in tests/
+      # OR be in ops_scripts/ci/baselines/reference_test_contract_baseline.json.
+      # Baseline must shrink monotonically. Adding a new contract without an
+      # implementation fails the gate.
+      - id: reference-test-contracts
+        name: "T7p: Reference Test Contracts"
+        entry: py ops_scripts/ci/check_reference_test_contracts.py
+        language: system
+        pass_filenames: false
+        files: ^(docs/reference/.*\.md|tests/.*\.py|ops_scripts/ci/baselines/reference_test_contract_baseline\.json|ops_scripts/ci/check_reference_test_contracts\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T7d: Query Progress Bar (§16) ------------------------------------------------
       # Enforces Constitutional §16 (progress bars on operations >30s, proxied
       # by loop/function body >50 lines). All 8 pre-existing violations triaged

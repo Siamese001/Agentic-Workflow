@@ -17,7 +17,7 @@ import pathlib
 import re
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_&_Safety"
+DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_Safety"
 OUT = REPO / "tools" / "l5_contracts" / "_l5_status_enums.json"
 
 STATUS_SET_RE = re.compile(
@@ -25,7 +25,7 @@ STATUS_SET_RE = re.compile(
 )
 # Strip trailing prose like " (per-step)" or stray markdown bold.
 TRAILING_NOTE_RE = re.compile(r"\s*[\(\[].*$")
-VALUE_TOKEN_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+VALUE_TOKEN_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 
 
 def main() -> None:

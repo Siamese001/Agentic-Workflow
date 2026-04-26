@@ -17,7 +17,7 @@ import re
 import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_&_Safety"
+DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_Safety"
 
 SNAKE_SUFFIXES = (
     "report", "receipt", "packet", "manifest", "log", "diff", "envelope",

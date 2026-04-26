@@ -15,7 +15,7 @@ import pathlib
 import re
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_&_Safety"
+DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_Safety"
 
 # snake_case suffix pattern, ANYWHERE on a line (not just bullets).
 # Catches names appearing in tables, prose ("emits foo_report"), code

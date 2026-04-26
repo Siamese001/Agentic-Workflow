@@ -52,8 +52,8 @@
     },
     {
       "path": "00A_L5_Governance_Safety/MANIFEST.md",
-      "size": 2922,
-      "sha256": "575cac6f958a7a491f2e7c199b596cb28e9ea72166a0824564b7923c2c29a62a"
+      "size": 2904,
+      "sha256": "a095d47d3815dfd0e871d69b6dedb44fc497be9440766238553302379219d56d"
     },
     {
       "path": "00A_L5_Governance_Safety/calibration_assurance_planes.md",
@@ -132,8 +132,8 @@
     },
     {
       "path": "00B_L4_State_Archive_and_UWG/MANIFEST.json",
-      "size": 4288,
-      "sha256": "d91f8388b126eea4c36e695a0a67981d078b142eb2d18a1408a056162d2381bb"
+      "size": 4304,
+      "sha256": "f2fef107233ac29746f981c322b5150c7da1e81d41d26bb5b5215f784565b46a"
     },
     {
       "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.1_RG_G01_G05_Ingress_Identity_Intent_Safety_Risk.md",

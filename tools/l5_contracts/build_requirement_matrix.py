@@ -42,7 +42,7 @@ import re
 import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_&_Safety"
+DOC_ROOT = REPO / "docs" / "reference" / "00A_L5_Governance_Safety"
 OUT_MD = REPO / "docs" / "reports" / "l5-contracts" / "coverage_matrix.md"
 OUT_JSON = REPO / "tools" / "l5_contracts" / "_requirement_matrix.json"
 
@@ -320,10 +320,13 @@ def classify(
              "ordering harness."],
         )
 
-    # 7. SCHEMA: field-shape requirement
+    # 7. SCHEMA: field-shape requirement (and downstream-consumer reception
+    # of contract-emitted bindings — those are envelope-shape requirements
+    # from the consumer's vantage point).
     if any(kw in upper for kw in (
         "MUST CONTAIN", "MUST INCLUDE", "MUST CARRY", "MUST HAVE",
         "MUST REFERENCE", "MUST BIND", "MUST LINK",
+        "MUST RECEIVE", "MUST CONSUME", "MUST READ",
     )):
         return (
             "SCHEMA",
