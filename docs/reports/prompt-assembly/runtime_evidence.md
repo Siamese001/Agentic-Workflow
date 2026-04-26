@@ -21,7 +21,7 @@ Runtime artifacts being verified:
 
 **Tally:** 171 PASS / 0 FAIL (of 171 requirements)
 
-**Generated:** 2026-04-26T18:22:05.826764+00:00
+**Generated:** 2026-04-26T18:22:57.970523+00:00
 
 ## Category roll-up
 
