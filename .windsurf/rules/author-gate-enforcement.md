@@ -101,13 +101,35 @@ Author-Gate skipped ONLY when: fixing typos/whitespace/formatting; single correc
 
 ## Thresholds (SSOT)
 
-| Parameter | Value |
-|-----------|-------|
-| surface_threshold | 0.72 |
-| high_confidence_band | 0.85 |
-| dominance_score_threshold | 0.85 |
-| dominance_delta | 0.12 |
-| max_surface_options | 4 |
+Two regimes — **Bootstrap** while the ledger is data-thin, **Production** after a band has accumulated enough samples for Wilson CI calibration to be meaningful.
+
+| Parameter | Bootstrap (n_band < 30) | Production (n_band ≥ 30) |
+|-----------|:----------------------:|:------------------------:|
+| surface_threshold | **0.60** | 0.72 |
+| high_confidence_band | 0.85 | 0.85 |
+| dominance_score_threshold | **0.95** (rarely fires) | 0.85 |
+| dominance_delta | **0.25** (rarely fires) | 0.12 |
+| max_surface_options | 5 | 4 |
+
+`n_band` is the count of `decisions` rows in `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` for the matching `decision_type`. Each band (architecture_choice, refactor_scope, anti_pattern, deletion_strategy, dependency_addition, test_strategy, error_handling) graduates to Production thresholds **independently** when its row count crosses 30.
+
+Rationale: bootstrap thresholds intentionally over-surface to accumulate calibration data faster. Once the meta-learner has ≥30 samples per band, Wilson-CI feedback in `docs/reports/calibration/<YYYY-Www>.md` (per `intelligence-ledger-family.md` §5) can re-tune to optimal thresholds.
+
+## Silent-Marker Invariant (added 2026-04-27)
+
+> ⛔ **Cascade emits a `DECISION_CAPTURED:` marker for EVERY refactor-class decision** — even when no options are surfaced via `ask_user_question`.
+
+This widens capture from "after surfacing only" to "on every decision matching one of the seven refactor-class trigger types". The silent-marker form omits surfacing-derived fields:
+
+```
+DECISION_CAPTURED: type=<type>, repo_area=<path>, selected=<chosen>, outcome=executed, principle=<short>, precedent=<verdict>
+```
+
+Allowed when: decision was deterministic (single correct path), bypass-condition applied (typo/syntax/explicit-directive), OR scoring filtered all options below `surface_threshold`. Required v1 fields (`type`/`repo_area`/`selected`/`outcome`) MUST still be present. Optional v2 fields (`confidence`/`gap`/`override`/`latency_ms`) are NULL when no surfacing happened — that is intended; outcome/lineage data still feeds the binder and the regret accounting.
+
+Forbidden: emitting the marker when there was no decision at all (e.g. plain question-answering, code-reading). The seven trigger types remain the gatekeeper.
+
+The capture hook (`post_cascade_author_gate_capture.py`) already accepts standalone markers — no code change required. The miss-detector (`post_cascade_author_gate_miss_detector.py`) is updated to allow marker-without-packet-header without flagging a violation.
 
 ## Calibration-Driven Triggers (meta-learning W5, plan c8f4a2)
 

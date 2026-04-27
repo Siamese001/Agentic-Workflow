@@ -15,6 +15,8 @@ GraphMemoryBridge can use it as a drop-in replacement for mcp11 calls.
 
 from __future__ import annotations
 
+import datetime as _dt
+import logging as _logging
 import math
 import os
 import sqlite3
@@ -22,6 +24,53 @@ import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
+
+_logger = _logging.getLogger(__name__)
+
+
+def _safe_epoch(value: Any, fallback: float) -> float:
+    """Defensively convert a stored ``last_reinforced`` value to a unix-epoch float.
+
+    Schema declares ``last_reinforced REAL`` but SQLite manifest typing accepts
+    arbitrary types. If a maintenance script or external writer ever stores an
+    ISO-8601 timestamp string, ``float()`` raises ``ValueError`` and crashes
+    every read path that uses ``effective_confidence``. This helper handles
+    all observed-in-the-wild shapes:
+
+    - ``None``                       → fallback
+    - ``int``/``float``              → direct cast
+    - numeric string ('1.7e9')       → ``float()``
+    - ISO-8601 string                → ``datetime.fromisoformat().timestamp()``
+    - anything else                  → fallback (with WARNING log)
+
+    The first time a coercion fails for a row, we log a single WARNING with
+    the raw value so the corruption can be traced. Returns ``fallback`` on
+    any failure so the read path stays available.
+    """
+    if value is None:
+        return fallback
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        s = value.strip()
+        if not s:
+            return fallback
+        try:
+            return float(s)
+        except ValueError:
+            pass
+        try:
+            return _dt.datetime.fromisoformat(s.replace("Z", "+00:00")).timestamp()
+        except ValueError:
+            pass
+    _logger.warning(
+        "memory_store: unparseable last_reinforced value %r (type=%s); using fallback=%s",
+        value,
+        type(value).__name__,
+        fallback,
+    )
+    return fallback
+
 
 try:
     from tqdm import tqdm
@@ -175,7 +224,7 @@ class SqliteMemoryStore:
             return
         new_conf = reinforced_confidence(
             float(row["confidence"]),
-            float(row["last_reinforced"] or now),
+            _safe_epoch(row["last_reinforced"], now),
             str(row["entity_type"]),
             now=now,
         )
@@ -251,7 +300,7 @@ class SqliteMemoryStore:
         touches last_reinforced. Shared by exact-match and Jaccard paths."""
         new_conf = reinforced_confidence(
             float(row["confidence"]),
-            float(row["last_reinforced"] or now),
+            _safe_epoch(row["last_reinforced"], now),
             etype,
             now=now,
         )
@@ -420,7 +469,7 @@ class SqliteMemoryStore:
             for row in ent_rows:
                 eff = effective_confidence(
                     float(row["confidence"]),
-                    float(row["last_reinforced"] or now),
+                    _safe_epoch(row["last_reinforced"], now),
                     str(row["entity_type"]),
                     now=now,
                 )
@@ -523,7 +572,7 @@ class SqliteMemoryStore:
             etype = str(row["entity_type"])
             eff = effective_confidence(
                 float(row["confidence"]),
-                float(row["last_reinforced"] or now),
+                _safe_epoch(row["last_reinforced"], now),
                 etype,
                 now=now,
             )
@@ -684,7 +733,7 @@ class SqliteMemoryStore:
                 return False
             new_conf = reinforced_confidence(
                 float(row["confidence"]),
-                float(row["last_reinforced"] or now),
+                _safe_epoch(row["last_reinforced"], now),
                 str(row["entity_type"]),
                 now=now,
             )

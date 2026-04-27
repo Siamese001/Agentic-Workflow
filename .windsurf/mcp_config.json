@@ -135,13 +135,12 @@
       }
     },
     "io.windsurf/mcp-playwright": {
-      "_note": "Official Microsoft Playwright MCP (@playwright/mcp). Thin npx wrapper, no custom server file. Server name preserved as 'io.windsurf/mcp-playwright' to match Windsurf's registry-installed binding so existing tool prefix (mcp*_browser_*) stays stable. Browser session output (snapshots, console logs) lands in repo-root .playwright-mcp/ which is gitignored.",
+      "_note": "Official Microsoft Playwright MCP (@playwright/mcp). Thin npx wrapper, no custom server file. Server name preserved as 'io.windsurf/mcp-playwright' to match Windsurf's registry-installed binding so existing tool prefix (mcp*_browser_*) stays stable. Browser session output (snapshots, console logs) lands in repo-root .playwright-mcp/ which is gitignored. The 'registry' field was removed 2026-04-27 (constitutional §27 violation — schema-rejected, was silently disabling the entry).",
       "command": "npx",
       "args": [
         "-y",
         "@playwright/mcp@latest"
       ],
-      "registry": "io.windsurf/mcp-playwright",
       "disabled": false
     },
     "notion": {

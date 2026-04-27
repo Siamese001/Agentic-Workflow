@@ -304,6 +304,77 @@ def delete_relations(relations: list[dict]) -> dict[str, Any]:
 
 
 @mcp.tool()
+def mem_health_check() -> dict[str, Any]:
+    """Health probe — exercises every read path that touches `last_reinforced`.
+
+    Surfaces the kind of data corruption (e.g. ISO-string in REAL column) that
+    silently broke ``mem_recall_session_start`` for ~24h on 2026-04-26. Returns
+    a structured report instead of crashing so the caller can act on it.
+
+    Schema validation:
+      - count rows where ``typeof(last_reinforced)`` is not in {real, integer, null}
+      - count rows where ``typeof(confidence)`` is not in {real, integer}
+
+    Read-path validation:
+      - exercise ``get_entities_by_type`` for every protected entity type
+      - exercise ``get_entity`` on the first entity of each type
+      - report number of entities returned and any exception encountered
+
+    Returns ``status='ok'`` only when both schema and read paths pass.
+    """
+    _register_lifecycle_traces_once()
+    report: dict[str, Any] = {
+        "status": "ok",
+        "schema_violations": {},
+        "read_paths": {},
+        "errors": [],
+    }
+    import sqlite3 as _sqlite3  # noqa: PLC0415
+
+    try:
+        con = _sqlite3.connect(_store.db_path)
+        cur = con.cursor()
+        for table in ("entities", "observations"):
+            for col in ("last_reinforced", "confidence"):
+                allowed = ("real", "integer", "null") if col == "last_reinforced" else ("real", "integer")
+                placeholders = ",".join("?" for _ in allowed)
+                cur.execute(
+                    f"SELECT COUNT(*) FROM {table} WHERE typeof({col}) NOT IN ({placeholders})",
+                    allowed,
+                )
+                bad = cur.fetchone()[0]
+                if bad:
+                    report["schema_violations"][f"{table}.{col}"] = bad
+                    report["status"] = "schema_drift"
+        con.close()
+    except (
+        _sqlite3.Error,
+        OSError,
+    ) as exc:  # guardian: allow-specific-multi -- health check must never raise
+        report["errors"].append(f"schema_probe: {exc}")
+        report["status"] = "error"
+
+    for etype in _SESSION_RECALL_TYPES:
+        try:
+            entities = _store.get_entities_by_type((etype,))
+            count = len(entities)
+            first = entities[0]["name"] if entities else None
+            entry: dict[str, Any] = {"count": count, "first": first}
+            if entities:
+                # Exercise the single-row read path that uses last_reinforced too.
+                opened = _store.open_nodes([entities[0]["name"]])
+                opened_count = len(opened.get("entities", [])) if isinstance(opened, dict) else 0
+                entry["open_nodes_first"] = "ok" if opened_count > 0 else "empty"
+            report["read_paths"][etype] = entry
+        except Exception as exc:  # guardian: allow-broad-exception -- health check captures any read-path failure as a structured field
+            report["read_paths"][etype] = {"error": f"{type(exc).__name__}: {exc}"}
+            report["status"] = "read_path_error"
+            report["errors"].append(f"{etype}: {type(exc).__name__}: {exc}")
+
+    return report
+
+
+@mcp.tool()
 def mem_recall_session_start() -> dict[str, Any]:
     """Return all persistent project context — call this at the start of every session.
 
