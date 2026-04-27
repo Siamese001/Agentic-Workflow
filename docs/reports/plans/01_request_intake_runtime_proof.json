@@ -1,0 +1,511 @@
+{
+  "validated_sample": {
+    "label": "validated_user_chat_with_attachment",
+    "accepted": true,
+    "events_emitted": [
+      "IngressReceived",
+      "RequestIdAssigned",
+      "TraceRootBound",
+      "SourceClassified",
+      "AuthBaselineEvaluated",
+      "QuotaEvaluated",
+      "SchemaEvaluated",
+      "PayloadNormalized",
+      "AttachmentManifestCaptured",
+      "IngressAccepted"
+    ],
+    "audit": {
+      "intake_status": "VALIDATED_FOR_L1",
+      "first_failure_stage": null,
+      "decisive_reason_code": null,
+      "completeness_score": 1.0,
+      "audit_hash": "41142141cc7197053720b13b38541ff5d06d80c00a35222be7236d09df98eee2"
+    },
+    "handoff_envelope": {
+      "handoff_target": "L1_REASONING_PLAN",
+      "handoff_status": "ready_for_l1",
+      "handoff_receipt_hash": "7b735b7751490d3c42bebd80086db6da2a5811070b2f3535e280ffdc562cf952",
+      "no_raw_bypass_assertion": true,
+      "downstream_read_only_assertion": true
+    },
+    "rejection_report": null,
+    "validated": {
+      "request_id": "req-c75e8ccc920b49dcaa136e098b1f3eb6",
+      "session_id": "sess-demo",
+      "trace_root": "trace-f7dc8be7e18d4a4e805aec13bcaf3ddf",
+      "intake_status": "VALIDATED_FOR_L1",
+      "intake_manifest_hash": "9385586b2326bec020cad19bce04a4a765145d94e71f0938edc837bac7b3711a",
+      "normalized_request_hash": "eda8f383fac117ef2e652ca95ec0af7256d5d4c850443192ea732d9b4701544a",
+      "ingress_replay_seed_ref": "seed:ae57fc9a8628402d8eb900cbd8ec9c73",
+      "transport_receipt_ref": "tep:1686a52b93704b15be7db78aab322501",
+      "identity_receipt_ref": "tbr:630c13b9aae94dfb83684766d3be32cf",
+      "quota_receipt_ref": "qr:0e4c69d1e8c0407b888a974b7e6e9c8e",
+      "schema_validation_receipt_ref": "ssv:6181931ada994ad8902dfae2f4b2a702",
+      "correlation_receipt_ref": "corr:77b0b5edc86346ea81ebb8cca7c5f2f2",
+      "origin_label_manifest_ref": "manifest:req-c75e8ccc920b49dcaa136e098b1f3eb6",
+      "raw_payload_hash": "daaeb55fc9e3a53b0c33f96ed37cb1816592c6af8e7aa83a52bf25e435337b14",
+      "normalized_payload_hash": "148d36ea847fbfc1336e9a8cc9efdb8ae3a986608ee209dd06df39689e5cf18b",
+      "downstream_authority": "none",
+      "permitted_next_layer": "L1"
+    },
+    "receipt_bundle": {
+      "transport_receipt_hash": "bd6ddfc847358644066ea0d3bcd10582fdaca432d20748a926a9822bd73bb0df",
+      "caller_scope_baseline_hash": "224a6e1f013194a25f4e3edc00c1821d46bf038f4ce73490fb2147d9f4879efc",
+      "tenant_boundary_receipt_hash": "eef04f0864d28e9fb0c6694b1a0d6f3f15f9e1641761acbdc2a32a5b5cbb9763",
+      "session_binding_receipt_hash": "0b933d8af6a87e2a116a81d53aa277334d949c7d608000e00114b276aeb1f32c",
+      "quota_receipt_hash": "1e3b55082c6ffadfc78ca9d9678529e3511aa2fc845cafb0e6794b8b31743eca",
+      "duplicate_suppression_receipt_hash": "f4e7a86ef86abbfe6538ba4084d3b80526cf452a1bd993eed176d56d04ed03df",
+      "schema_validation_receipt_hash": "ae3a52d4f2a8911d7128c28e963dc2105f1d34ea18fe56326ee53b59eee01f6c",
+      "origin_label_manifest_hash": "07034233c7522445227f10908dd7f6820f8ca99fa8d0799b5f7454d444564a9e",
+      "security_finding_classes": []
+    }
+  },
+  "rejected_at_transport": {
+    "label": "reject_E1_unsupported_transport",
+    "accepted": false,
+    "events_emitted": [
+      "IngressReceived",
+      "RequestIdAssigned",
+      "TraceRootBound",
+      "IngressRejected"
+    ],
+    "audit": {
+      "intake_status": "REJECTED_AT_TRANSPORT",
+      "first_failure_stage": "E1",
+      "decisive_reason_code": "UNSUPPORTED_TRANSPORT",
+      "completeness_score": 0.09090909090909091,
+      "audit_hash": "ee34647df7f9293c54a72765030ce325f43b3fe371322f65a011a37f570d1f68"
+    },
+    "handoff_envelope": null,
+    "rejection_report": {
+      "rejection_status": "REJECTED_AT_TRANSPORT",
+      "rejection_stage": "E1",
+      "decisive_reason_code": "UNSUPPORTED_TRANSPORT",
+      "safe_user_visible_summary": "Your request was received on a channel we do not support.",
+      "recoverable_by_user": true,
+      "retry_hint": null
+    },
+    "validated": null,
+    "receipt_bundle": {
+      "transport_receipt_hash": "3eea3317871933d94516a4844fa3ac66a276714eca3afabb0e39e9c553cd9023",
+      "caller_scope_baseline_hash": null,
+      "tenant_boundary_receipt_hash": null,
+      "session_binding_receipt_hash": null,
+      "quota_receipt_hash": null,
+      "duplicate_suppression_receipt_hash": null,
+      "schema_validation_receipt_hash": null,
+      "origin_label_manifest_hash": "8cc0f578d0d31fefdfdc0bc685e8b3023977c8f2a70049f4281cdee2ba3ccdf8",
+      "security_finding_classes": []
+    }
+  },
+  "rejected_at_identity": {
+    "label": "reject_E2_tenant_mismatch",
+    "accepted": false,
+    "events_emitted": [
+      "IngressReceived",
+      "RequestIdAssigned",
+      "TraceRootBound",
+      "SourceClassified",
+      "AuthBaselineEvaluated",
+      "IngressRejected"
+    ],
+    "audit": {
+      "intake_status": "REJECTED_AT_IDENTITY_BASELINE",
+      "first_failure_stage": "E2",
+      "decisive_reason_code": "TENANT_MISMATCH",
+      "completeness_score": 0.36363636363636365,
+      "audit_hash": "0f0f9ca086cecd1c28179ede2941c9d85a5c6d8e78ac2c6a01c1b83b51704ce4"
+    },
+    "handoff_envelope": null,
+    "rejection_report": {
+      "rejection_status": "REJECTED_AT_IDENTITY_BASELINE",
+      "rejection_stage": "E2",
+      "decisive_reason_code": "TENANT_MISMATCH",
+      "safe_user_visible_summary": "Your request and your credential point to different tenants.",
+      "recoverable_by_user": true,
+      "retry_hint": null
+    },
+    "validated": null,
+    "receipt_bundle": {
+      "transport_receipt_hash": "dfeaeb4ad06dae40a7a51abb9027ab6ae6cea5c3bb094545f1df5e026b1b2c27",
+      "caller_scope_baseline_hash": "ab8bdebafd5f5542a151a983eacf676fabdd3232236a59cd3196993a8ee2a86b",
+      "tenant_boundary_receipt_hash": "de69df99d6a0fac629358acf1e4e86c3898eb16aa53e86a9cc67997a6c2a1482",
+      "session_binding_receipt_hash": "1b4cabc7ec836f69bd9d84e1cc2fe8686ad5d43f11998a3cde9c0ade42fdfc1f",
+      "quota_receipt_hash": null,
+      "duplicate_suppression_receipt_hash": null,
+      "schema_validation_receipt_hash": null,
+      "origin_label_manifest_hash": "329a0b761e9535bb1c5135fe0b5f4c347c5632535a635a01225404098605effb",
+      "security_finding_classes": []
+    }
+  },
+  "rejected_at_quota": {
+    "label": "reject_E3_payload_too_large",
+    "accepted": false,
+    "events_emitted": [
+      "IngressReceived",
+      "RequestIdAssigned",
+      "TraceRootBound",
+      "SourceClassified",
+      "AuthBaselineEvaluated",
+      "QuotaEvaluated",
+      "IngressRejected"
+    ],
+    "audit": {
+      "intake_status": "REJECTED_AT_QUOTA",
+      "first_failure_stage": "E3",
+      "decisive_reason_code": "PAYLOAD_TOO_LARGE",
+      "completeness_score": 0.5454545454545454,
+      "audit_hash": "5823b9c0aeaa524a40ac09c7dd82ec486475ce8c4b3a971334197cd3f53db468"
+    },
+    "handoff_envelope": null,
+    "rejection_report": {
+      "rejection_status": "REJECTED_AT_QUOTA",
+      "rejection_stage": "E3",
+      "decisive_reason_code": "PAYLOAD_TOO_LARGE",
+      "safe_user_visible_summary": "Your request is too large for this entry surface.",
+      "recoverable_by_user": true,
+      "retry_hint": null
+    },
+    "validated": null,
+    "receipt_bundle": {
+      "transport_receipt_hash": "bd6ddfc847358644066ea0d3bcd10582fdaca432d20748a926a9822bd73bb0df",
+      "caller_scope_baseline_hash": "e0341071826d568b138596e0ba65449a485154e17d1a80931c824ab7d9407292",
+      "tenant_boundary_receipt_hash": "d263fd16657506877be091611030462e41fbbb057d3d1a532419d7b41e1b3cd8",
+      "session_binding_receipt_hash": "d55b50d429dfab346f0c7391bb0d9bfdb0d7446edd19796ce4feaabbebfadd66",
+      "quota_receipt_hash": "ce9b34e89ac852acd4ccc7c09d37dc8d19f23c5ad5855f60ca66bc9f3509cfad",
+      "duplicate_suppression_receipt_hash": "f4e7a86ef86abbfe6538ba4084d3b80526cf452a1bd993eed176d56d04ed03df",
+      "schema_validation_receipt_hash": null,
+      "origin_label_manifest_hash": "33798a3d87712ecc2a0c2f555fb966eac52b2ae713be054b47df7242fe37116d",
+      "security_finding_classes": [
+        "malformed_serialized_object"
+      ]
+    }
+  },
+  "rejected_at_schema": {
+    "label": "reject_E4_malformed_batch",
+    "accepted": false,
+    "events_emitted": [
+      "IngressReceived",
+      "RequestIdAssigned",
+      "TraceRootBound",
+      "SourceClassified",
+      "AuthBaselineEvaluated",
+      "QuotaEvaluated",
+      "SchemaEvaluated",
+      "IngressRejected"
+    ],
+    "audit": {
+      "intake_status": "REJECTED_AT_SCHEMA",
+      "first_failure_stage": "E4",
+      "decisive_reason_code": "MALFORMED_ENVELOPE",
+      "completeness_score": 0.6363636363636364,
+      "audit_hash": "8ba2826921a87dad39dde635f3796fbd13492bf270132624d56a403ae232ff24"
+    },
+    "handoff_envelope": null,
+    "rejection_report": {
+      "rejection_status": "REJECTED_AT_SCHEMA",
+      "rejection_stage": "E4",
+      "decisive_reason_code": "MALFORMED_ENVELOPE",
+      "safe_user_visible_summary": "We could not read the structure of your request. Please retry with a valid request shape.",
+      "recoverable_by_user": true,
+      "retry_hint": null
+    },
+    "validated": null,
+    "receipt_bundle": {
+      "transport_receipt_hash": "96b3e1580b3761712c7fc3d4b9a8a4f4718c9a1a05cde1e88c9e98abd906c275",
+      "caller_scope_baseline_hash": "e7702b2764428eb7a6a4f1f0845e0218f0027ce4e51eac08cf5c2aa345f59a31",
+      "tenant_boundary_receipt_hash": "d263fd16657506877be091611030462e41fbbb057d3d1a532419d7b41e1b3cd8",
+      "session_binding_receipt_hash": "e5a19522683f370a8100c5acb13cc46c2026eddcd084a85dfc55054eea150ef1",
+      "quota_receipt_hash": "7a57b821f6900b58fa79443a64d28ee9cf37216aeefe15e0d99c4de1578fbd01",
+      "duplicate_suppression_receipt_hash": "f4e7a86ef86abbfe6538ba4084d3b80526cf452a1bd993eed176d56d04ed03df",
+      "schema_validation_receipt_hash": "df9372b4dfc34f084411a3033759de22c82826e9f9f7df395c88f793cfc7b49d",
+      "origin_label_manifest_hash": "329a0b761e9535bb1c5135fe0b5f4c347c5632535a635a01225404098605effb",
+      "security_finding_classes": []
+    }
+  },
+  "security_findings_sample": {
+    "label": "validated_with_security_findings",
+    "accepted": true,
+    "events_emitted": [
+      "IngressReceived",
+      "RequestIdAssigned",
+      "TraceRootBound",
+      "SourceClassified",
+      "AuthBaselineEvaluated",
+      "QuotaEvaluated",
+      "SchemaEvaluated",
+      "PayloadNormalized",
+      "IngressAccepted"
+    ],
+    "audit": {
+      "intake_status": "VALIDATED_FOR_L1",
+      "first_failure_stage": null,
+      "decisive_reason_code": null,
+      "completeness_score": 1.0,
+      "audit_hash": "c0b29e1eca90e4debcd0fd2e838d017e6b231df50fa5ed67dc3036d162038c0a"
+    },
+    "handoff_envelope": {
+      "handoff_target": "L1_REASONING_PLAN",
+      "handoff_status": "ready_for_l1",
+      "handoff_receipt_hash": "53345a95874922f83e82a96206fb388b625837cf4d537caa0bb0b93b62de4b8c",
+      "no_raw_bypass_assertion": true,
+      "downstream_read_only_assertion": true
+    },
+    "rejection_report": null,
+    "validated": {
+      "request_id": "req-20cedd6a514c4626a511f5865cff4c43",
+      "session_id": "sess-e714d0154df044769bf1ba1f6902f2a4",
+      "trace_root": "trace-215718e342da484b81c67f1a4bfb5867",
+      "intake_status": "VALIDATED_FOR_L1",
+      "intake_manifest_hash": "468dc63d6f9286cf286e53e98e1ba1c2ca4fc508d26141df929e10508da457ef",
+      "normalized_request_hash": "950c004dbd3c6e66c7409f3ebb7797731e4f48ab61531f7077f4b376bfe555ea",
+      "ingress_replay_seed_ref": "seed:11b2969b8e7d48ca9df73ad5c03d7499",
+      "transport_receipt_ref": "tep:4945ddddd16e4d999bdcec03c8cbe8e0",
+      "identity_receipt_ref": "tbr:3748fdbbb4e54a4586ef5f63dc01d6d4",
+      "quota_receipt_ref": "qr:d6eb3309a2034bbd9819eb71f15892e5",
+      "schema_validation_receipt_ref": "ssv:c5b832935beb4a3ca24c0c0994edc2b0",
+      "correlation_receipt_ref": "corr:018b8f1f35b94fbd89c645a79e3d423b",
+      "origin_label_manifest_ref": "manifest:req-20cedd6a514c4626a511f5865cff4c43",
+      "raw_payload_hash": "507e3e2cbfbc0efeffec3d44dda376ff4fc014e5fe01d4914c8910afcb1db098",
+      "normalized_payload_hash": "5a3ac71986050ad8e15bfa79e26fc12b9c5cc279c292ea911aec123144a88ee7",
+      "downstream_authority": "none",
+      "permitted_next_layer": "L1"
+    },
+    "receipt_bundle": {
+      "transport_receipt_hash": "bd6ddfc847358644066ea0d3bcd10582fdaca432d20748a926a9822bd73bb0df",
+      "caller_scope_baseline_hash": "75dc853d4913882279cccdceecddabaf250f072c47fa39cb19a1e5d4a2666b33",
+      "tenant_boundary_receipt_hash": "d263fd16657506877be091611030462e41fbbb057d3d1a532419d7b41e1b3cd8",
+      "session_binding_receipt_hash": "6ba29c675d0ec55b9b15b60a277d17c6cafc0dfa872bb53f75bbd02b39cffd17",
+      "quota_receipt_hash": "1dc9e8bd5c12abc185fecd65dd047e37f368384f3cc77cf55b05a0678966b94f",
+      "duplicate_suppression_receipt_hash": "f4e7a86ef86abbfe6538ba4084d3b80526cf452a1bd993eed176d56d04ed03df",
+      "schema_validation_receipt_hash": "ae3a52d4f2a8911d7128c28e963dc2105f1d34ea18fe56326ee53b59eee01f6c",
+      "origin_label_manifest_hash": "451aeebbe300c3b765b54daf4be0a8f6186ffd437dd3467d4f5ab658ee77eb6d",
+      "security_finding_classes": [
+        "prompt_injection_like_text",
+        "credential_or_secret_pattern"
+      ]
+    }
+  },
+  "replay_determinism": {
+    "input_label": "same logical input, two separate pipelines",
+    "run_a": {
+      "request_id": "req-ddbb2e777d5e4b5588745b368c57ac36",
+      "intake_manifest_hash": "1940b20920868f44a657a8612784f49387d709cc695217c2442572e0a562f469",
+      "normalized_request_hash": "595ebf79686d7ee583c4bfa7734a124aaa40e049f741fcf6f78768efb21fe9ef",
+      "audit_hash": "7402124454fafc5608e67970dbfe78fbd6c71b28412be9d2f568210069d3ed25"
+    },
+    "run_b": {
+      "request_id": "req-a21f2cf1cbae47468e400608a3e90c66",
+      "intake_manifest_hash": "1940b20920868f44a657a8612784f49387d709cc695217c2442572e0a562f469",
+      "normalized_request_hash": "595ebf79686d7ee583c4bfa7734a124aaa40e049f741fcf6f78768efb21fe9ef",
+      "audit_hash": "7402124454fafc5608e67970dbfe78fbd6c71b28412be9d2f568210069d3ed25"
+    },
+    "manifest_hash_matches": true,
+    "normalized_request_hash_matches": true,
+    "audit_hash_matches": true,
+    "request_id_differs": true
+  },
+  "tenant_isolation": {
+    "tenant_A_hash": "f2e9a4d27ab62bceca27dc020fbbc59a96cab5c2270f5541701f202134823bac",
+    "tenant_B_hash": "54ff7c48f67847f8c1f2b2cd3d42ea4dcfc4461df2e5464c6040e4516c8521cd",
+    "hashes_differ": true
+  },
+  "volatile_noise_isolated": {
+    "request_id_a": "req-A",
+    "request_id_b": "req-B",
+    "intake_manifest_hash_matches": true
+  },
+  "doctrine_contracts": {
+    "schema_version": 2,
+    "doctrine_files_covered": [
+      "01.1_Intake_Transport_Envelope_Channel_Validation.md",
+      "01.2_Intake_Identity_Tenant_Session_Quota_Baseline.md",
+      "01.3_Intake_Schema_Normalization_and_Idempotency.md",
+      "01.4_Intake_Origin_Trust_Injection_Triage_Data_Labeling.md",
+      "01.5_Intake_Rejection_ValidatedRequest_and_Handoff_to_L1.md",
+      "01.6_Intake_Observability_Replay_Anti_Bypass_Tests.md"
+    ],
+    "validated_run": {
+      "label": "validated_user_chat_with_attachment",
+      "idempotency_receipt": {
+        "idempotency_key_prefix": "eda8f383fac117ef",
+        "idempotency_status": "NEW",
+        "tenant_scope_hash_prefix": "0a96abb33b07ff0e",
+        "deterministic_receipt_hash_prefix": "c494642d4cfe2473"
+      },
+      "data_boundary_map": {
+        "user_task_span_count": 1,
+        "quoted_data_span_count": 0,
+        "code_block_span_count": 0,
+        "url_span_count": 0,
+        "attachment_count": 1,
+        "instruction_like_span_count": 0,
+        "downstream_handling_hints": [],
+        "map_digest_prefix": "a6eb75c0184d4df8"
+      },
+      "user_authority_receipt": {
+        "max_authority_observed": "user_intent_only",
+        "user_intent_cap_respected": true,
+        "authority_claim_count": 0,
+        "deterministic_receipt_hash_prefix": "83f31ccd96576ae9"
+      },
+      "injection_triage_receipt": {
+        "triage_status": "CLEAR",
+        "obvious_hijack_count": 0,
+        "credential_marker_count": 0,
+        "role_override_count": 0,
+        "reason_codes": [],
+        "deterministic_receipt_hash_prefix": "b36c94c8f4d6fef8"
+      },
+      "quoted_content_label_receipt": {
+        "label": "QUOTED_USER_PROVIDED_DATA",
+        "quoted_segment_count": 0,
+        "deterministic_receipt_hash_prefix": "1881030d0f4e6500"
+      },
+      "trace_receipt": {
+        "trace_status": "COMPLETE",
+        "span_coverage": [
+          "TRANSPORT",
+          "IDENTITY",
+          "QUOTA",
+          "SCHEMA",
+          "ORIGIN_LABELS",
+          "ADMISSION",
+          "HANDOFF"
+        ],
+        "spans_observed": [
+          "u0.transport.receive",
+          "u0.transport.validate_envelope",
+          "u0.identity.classify",
+          "u0.tenant.bind",
+          "u0.session.bind",
+          "u0.quota.check",
+          "u0.schema.validate",
+          "u0.payload.normalize",
+          "u0.digest.compute",
+          "u0.origin.label",
+          "u0.injection.triage",
+          "u0.admission.decide",
+          "u0.handoff.l1"
+        ],
+        "missing_spans": [],
+        "trace_digest_prefix": "a21d2693d3643b72"
+      }
+    },
+    "validated_with_security_findings": {
+      "label": "validated_with_prompt_injection_and_credential_pattern",
+      "idempotency_receipt": {
+        "idempotency_key_prefix": "950c004dbd3c6e66",
+        "idempotency_status": "NEW",
+        "tenant_scope_hash_prefix": "",
+        "deterministic_receipt_hash_prefix": "71c648b8492efdc8"
+      },
+      "data_boundary_map": {
+        "user_task_span_count": 1,
+        "quoted_data_span_count": 0,
+        "code_block_span_count": 0,
+        "url_span_count": 0,
+        "attachment_count": 0,
+        "instruction_like_span_count": 1,
+        "downstream_handling_hints": [
+          "treat_as_user_data_only_never_authority"
+        ],
+        "map_digest_prefix": "57f86eb3ca25bb17"
+      },
+      "user_authority_receipt": {
+        "max_authority_observed": "quoted_untrusted",
+        "user_intent_cap_respected": true,
+        "authority_claim_count": 0,
+        "deterministic_receipt_hash_prefix": "b0eaa4f7f29fa8aa"
+      },
+      "injection_triage_receipt": {
+        "triage_status": "LABELED_SUSPICIOUS",
+        "obvious_hijack_count": 1,
+        "credential_marker_count": 1,
+        "role_override_count": 0,
+        "reason_codes": [
+          "prompt_injection_like_text",
+          "credential_or_secret_pattern"
+        ],
+        "deterministic_receipt_hash_prefix": "5e0e241534af0965"
+      },
+      "quoted_content_label_receipt": {
+        "label": "QUOTED_USER_PROVIDED_DATA",
+        "quoted_segment_count": 0,
+        "deterministic_receipt_hash_prefix": "1881030d0f4e6500"
+      },
+      "trace_receipt": {
+        "trace_status": "COMPLETE",
+        "span_coverage": [
+          "TRANSPORT",
+          "IDENTITY",
+          "QUOTA",
+          "SCHEMA",
+          "ORIGIN_LABELS",
+          "ADMISSION",
+          "HANDOFF"
+        ],
+        "spans_observed": [
+          "u0.transport.receive",
+          "u0.transport.validate_envelope",
+          "u0.identity.classify",
+          "u0.tenant.bind",
+          "u0.session.bind",
+          "u0.quota.check",
+          "u0.schema.validate",
+          "u0.payload.normalize",
+          "u0.digest.compute",
+          "u0.origin.label",
+          "u0.injection.triage",
+          "u0.admission.decide",
+          "u0.handoff.l1"
+        ],
+        "missing_spans": [],
+        "trace_digest_prefix": "a21d2693d3643b72"
+      }
+    },
+    "rejected_run": {
+      "label": "rejected_E1_unsupported_transport",
+      "idempotency_receipt": null,
+      "data_boundary_map": null,
+      "user_authority_receipt": null,
+      "injection_triage_receipt": {
+        "triage_status": "CLEAR",
+        "obvious_hijack_count": 0,
+        "credential_marker_count": 0,
+        "role_override_count": 0,
+        "reason_codes": [],
+        "deterministic_receipt_hash_prefix": "b36c94c8f4d6fef8"
+      },
+      "quoted_content_label_receipt": null,
+      "trace_receipt": {
+        "trace_status": "PARTIAL",
+        "span_coverage": [
+          "TRANSPORT",
+          "ADMISSION"
+        ],
+        "spans_observed": [
+          "u0.transport.receive",
+          "u0.transport.validate_envelope",
+          "u0.admission.decide"
+        ],
+        "missing_spans": [
+          "u0.identity.classify",
+          "u0.tenant.bind",
+          "u0.session.bind",
+          "u0.quota.check",
+          "u0.schema.validate",
+          "u0.payload.normalize",
+          "u0.digest.compute",
+          "u0.origin.label",
+          "u0.injection.triage",
+          "u0.handoff.l1"
+        ],
+        "trace_digest_prefix": "b9d73cdc3b358a2a"
+      }
+    },
+    "all_contracts_present_on_validated": true,
+    "trace_receipt_present_on_rejection": true,
+    "user_intent_cap_respected_under_injection": true
+  }
+}

@@ -1350,7 +1350,7 @@
           "no_retrieval_performed": true,
           "no_route_authority": true,
           "no_write_performed": true,
-          "output_digest": "sha256:862c50bfbd32c7c95b9c8d51edcbd1aeaf217f0ca170125361b09e6be97b2f7e",
+          "output_digest": "sha256:c6551baeca25ea57fd253d77f5f92742324de376f1bbfd5eb1dc61035c188378",
           "policy_hash_observed": "policy-proof-x",
           "request_id": "proof-high-001",
           "span_name": "l1.02.1.input.accepted",
@@ -1367,7 +1367,7 @@
           "no_retrieval_performed": true,
           "no_route_authority": true,
           "no_write_performed": true,
-          "output_digest": "sha256:862c50bfbd32c7c95b9c8d51edcbd1aeaf217f0ca170125361b09e6be97b2f7e",
+          "output_digest": "sha256:c6551baeca25ea57fd253d77f5f92742324de376f1bbfd5eb1dc61035c188378",
           "policy_hash_observed": "policy-proof-x",
           "request_id": "proof-high-001",
           "span_name": "l1.02.1.core.completed",
@@ -1384,7 +1384,7 @@
           "no_retrieval_performed": true,
           "no_route_authority": true,
           "no_write_performed": true,
-          "output_digest": "sha256:862c50bfbd32c7c95b9c8d51edcbd1aeaf217f0ca170125361b09e6be97b2f7e",
+          "output_digest": "sha256:c6551baeca25ea57fd253d77f5f92742324de376f1bbfd5eb1dc61035c188378",
           "policy_hash_observed": "policy-proof-x",
           "request_id": "proof-high-001",
           "span_name": "l1.02.1.output.emitted",
@@ -1394,7 +1394,7 @@
           "extra": {
             "bundle_digest": "sha256:46413c6abd2a0b7876283751865110a574b6461caf82e1d86d203dd3a92bf395"
           },
-          "input_digest": "sha256:0e81dbc68dc191c998fd509b7f8f3dd5b0d7348dd4b8509e0f7a928703813b7c",
+          "input_digest": "sha256:9ee3e26faeab50f26b81bb41c1ce33df1ec07916add5dfc25b4733531d0ecf93",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.2",
           "no_execution_performed": true,
@@ -1411,7 +1411,7 @@
           "extra": {
             "bundle_digest": "sha256:46413c6abd2a0b7876283751865110a574b6461caf82e1d86d203dd3a92bf395"
           },
-          "input_digest": "sha256:0e81dbc68dc191c998fd509b7f8f3dd5b0d7348dd4b8509e0f7a928703813b7c",
+          "input_digest": "sha256:9ee3e26faeab50f26b81bb41c1ce33df1ec07916add5dfc25b4733531d0ecf93",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.2",
           "no_execution_performed": true,
@@ -1428,7 +1428,7 @@
           "extra": {
             "bundle_digest": "sha256:46413c6abd2a0b7876283751865110a574b6461caf82e1d86d203dd3a92bf395"
           },
-          "input_digest": "sha256:0e81dbc68dc191c998fd509b7f8f3dd5b0d7348dd4b8509e0f7a928703813b7c",
+          "input_digest": "sha256:9ee3e26faeab50f26b81bb41c1ce33df1ec07916add5dfc25b4733531d0ecf93",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.2",
           "no_execution_performed": true,
@@ -1447,14 +1447,14 @@
             "quality_band": "high",
             "stopped_reason": "max_passes_reached_or_stable"
           },
-          "input_digest": "sha256:501c6cd36be24b1be17ab3e36ca5495765c9532a38f2c83b85800d617033050e",
+          "input_digest": "sha256:0cc3f32a29e9c8b9693c3703f27cb3f8f6a6d97b9fd2a36792e386b97eee064c",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.3",
           "no_execution_performed": true,
           "no_retrieval_performed": true,
           "no_route_authority": true,
           "no_write_performed": true,
-          "output_digest": "sha256:9f9fa87f1ebc7e92e1fff3c1da9f4ff07c6f4e94a9ee94272f7f86cc8f21bf38",
+          "output_digest": "sha256:b932082d1db99619eeef671702f9be527ddbfc7163bc283da1818d7482d15a47",
           "policy_hash_observed": "policy-proof-x",
           "request_id": "proof-high-001",
           "span_name": "l1.02.3.input.accepted",
@@ -1466,14 +1466,14 @@
             "quality_band": "high",
             "stopped_reason": "max_passes_reached_or_stable"
           },
-          "input_digest": "sha256:501c6cd36be24b1be17ab3e36ca5495765c9532a38f2c83b85800d617033050e",
+          "input_digest": "sha256:0cc3f32a29e9c8b9693c3703f27cb3f8f6a6d97b9fd2a36792e386b97eee064c",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.3",
           "no_execution_performed": true,
           "no_retrieval_performed": true,
           "no_route_authority": true,
           "no_write_performed": true,
-          "output_digest": "sha256:9f9fa87f1ebc7e92e1fff3c1da9f4ff07c6f4e94a9ee94272f7f86cc8f21bf38",
+          "output_digest": "sha256:b932082d1db99619eeef671702f9be527ddbfc7163bc283da1818d7482d15a47",
           "policy_hash_observed": "policy-proof-x",
           "request_id": "proof-high-001",
           "span_name": "l1.02.3.core.completed",
@@ -1485,14 +1485,14 @@
             "quality_band": "high",
             "stopped_reason": "max_passes_reached_or_stable"
           },
-          "input_digest": "sha256:501c6cd36be24b1be17ab3e36ca5495765c9532a38f2c83b85800d617033050e",
+          "input_digest": "sha256:0cc3f32a29e9c8b9693c3703f27cb3f8f6a6d97b9fd2a36792e386b97eee064c",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.3",
           "no_execution_performed": true,
           "no_retrieval_performed": true,
           "no_route_authority": true,
           "no_write_performed": true,
-          "output_digest": "sha256:9f9fa87f1ebc7e92e1fff3c1da9f4ff07c6f4e94a9ee94272f7f86cc8f21bf38",
+          "output_digest": "sha256:b932082d1db99619eeef671702f9be527ddbfc7163bc283da1818d7482d15a47",
           "policy_hash_observed": "policy-proof-x",
           "request_id": "proof-high-001",
           "span_name": "l1.02.3.output.emitted",
@@ -1503,7 +1503,7 @@
             "proposed_route_hint": "R4_SINGLE_ACTION",
             "work_units": 3
           },
-          "input_digest": "sha256:7ad6c2ca3b34a685b46adb7a7709cfb324e2416c0e4134ed391582353bf301f1",
+          "input_digest": "sha256:b0c37d4f8794d24f20649f01ebcadca67c7236e1771781d2d94e82ebc69e334a",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.4",
           "no_execution_performed": true,
@@ -1521,7 +1521,7 @@
             "proposed_route_hint": "R4_SINGLE_ACTION",
             "work_units": 3
           },
-          "input_digest": "sha256:7ad6c2ca3b34a685b46adb7a7709cfb324e2416c0e4134ed391582353bf301f1",
+          "input_digest": "sha256:b0c37d4f8794d24f20649f01ebcadca67c7236e1771781d2d94e82ebc69e334a",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.4",
           "no_execution_performed": true,
@@ -1539,7 +1539,7 @@
             "proposed_route_hint": "R4_SINGLE_ACTION",
             "work_units": 3
           },
-          "input_digest": "sha256:7ad6c2ca3b34a685b46adb7a7709cfb324e2416c0e4134ed391582353bf301f1",
+          "input_digest": "sha256:b0c37d4f8794d24f20649f01ebcadca67c7236e1771781d2d94e82ebc69e334a",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.4",
           "no_execution_performed": true,
@@ -1558,7 +1558,7 @@
             "passes_used": 0,
             "ready_for_handoff": true
           },
-          "input_digest": "sha256:abf3b5415d6ef66c9b7ec86f77717bfc3ba32280dc5d25d1bf3d226088fbaa32",
+          "input_digest": "sha256:1d23a308b10f5834f5ba40d40be79ead8b81ec035976ebcb67af847fc5d42a87",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.5",
           "no_execution_performed": true,
@@ -1577,7 +1577,7 @@
             "passes_used": 0,
             "ready_for_handoff": true
           },
-          "input_digest": "sha256:abf3b5415d6ef66c9b7ec86f77717bfc3ba32280dc5d25d1bf3d226088fbaa32",
+          "input_digest": "sha256:1d23a308b10f5834f5ba40d40be79ead8b81ec035976ebcb67af847fc5d42a87",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.5",
           "no_execution_performed": true,
@@ -1596,7 +1596,7 @@
             "passes_used": 0,
             "ready_for_handoff": true
           },
-          "input_digest": "sha256:abf3b5415d6ef66c9b7ec86f77717bfc3ba32280dc5d25d1bf3d226088fbaa32",
+          "input_digest": "sha256:1d23a308b10f5834f5ba40d40be79ead8b81ec035976ebcb67af847fc5d42a87",
           "instruction_hash_observed": "instr-proof-x",
           "l1_stage": "02.5",
           "no_execution_performed": true,
@@ -1688,8 +1688,8 @@
           "retrieved_content_quoted_by_user": false,
           "reversible_action_request": false,
           "risk_notes": [
-            "hitl:production",
-            "hitl:deploy"
+            "hitl:deploy",
+            "hitl:production"
           ],
           "safe_direct_response_possible": false,
           "uwg_may_be_needed": true
@@ -1728,7 +1728,7 @@
         "parsed_request_receipt": {
           "digest_algorithm": "sha256-canonical-json-v1",
           "input_digest": "sha256:5cc9bfea689b88644d3cdebc235d931d33cf5aea56e6ff299deff8356da433f0",
-          "output_digest": "sha256:862c50bfbd32c7c95b9c8d51edcbd1aeaf217f0ca170125361b09e6be97b2f7e",
+          "output_digest": "sha256:c6551baeca25ea57fd253d77f5f92742324de376f1bbfd5eb1dc61035c188378",
           "receipt_id": "prr::proof-high-001",
           "request_id": "proof-high-001",
           "trace_root": "proof-trace-2"
@@ -1988,7 +1988,7 @@
           "uncertainty_markers": [],
           "unsafe_or_unsupported_markers": []
         },
-        "output_digest": "sha256:9f9fa87f1ebc7e92e1fff3c1da9f4ff07c6f4e94a9ee94272f7f86cc8f21bf38",
+        "output_digest": "sha256:b932082d1db99619eeef671702f9be527ddbfc7163bc283da1818d7482d15a47",
         "planning_loop_budget_receipt": {
           "loop_not_spinning_assertion": true,
           "max_refinement_passes": 3,
@@ -2070,7 +2070,7 @@
             "simplification_score": 1.0
           },
           "summary_id": "prts::proof-high-001",
-          "visible_inputs_hash": "sha256:a71766f42df5bded357941baf22f58b340399e51dce6e8f28dd3f7838b3bb96f"
+          "visible_inputs_hash": "sha256:f6eb123426737fa07df4f4f0d377d6982891821774794a1576e83dd80eec207c"
         },
         "request_id": "proof-high-001",
         "trace_root": "proof-trace-2"

@@ -108,14 +108,10 @@ def _summarize(out: Any, label: str) -> dict[str, Any]:
         ),
         "receipt_bundle": {
             "transport_receipt_hash": (
-                bundle.transport_receipt.deterministic_receipt_hash
-                if bundle.transport_receipt
-                else None
+                bundle.transport_receipt.deterministic_receipt_hash if bundle.transport_receipt else None
             ),
             "caller_scope_baseline_hash": (
-                bundle.caller_scope_baseline.baseline_hash
-                if bundle.caller_scope_baseline
-                else None
+                bundle.caller_scope_baseline.baseline_hash if bundle.caller_scope_baseline else None
             ),
             "tenant_boundary_receipt_hash": (
                 bundle.tenant_boundary_receipt.deterministic_receipt_hash
@@ -128,9 +124,7 @@ def _summarize(out: Any, label: str) -> dict[str, Any]:
                 else None
             ),
             "quota_receipt_hash": (
-                bundle.quota_receipt.deterministic_receipt_hash
-                if bundle.quota_receipt
-                else None
+                bundle.quota_receipt.deterministic_receipt_hash if bundle.quota_receipt else None
             ),
             "duplicate_suppression_receipt_hash": (
                 bundle.duplicate_suppression_receipt.deterministic_receipt_hash
@@ -143,13 +137,9 @@ def _summarize(out: Any, label: str) -> dict[str, Any]:
                 else None
             ),
             "origin_label_manifest_hash": (
-                bundle.origin_label_manifest.manifest_hash
-                if bundle.origin_label_manifest
-                else None
+                bundle.origin_label_manifest.manifest_hash if bundle.origin_label_manifest else None
             ),
-            "security_finding_classes": [
-                f.finding_class for f in bundle.payload_security_findings
-            ],
+            "security_finding_classes": [f.finding_class for f in bundle.payload_security_findings],
         },
     }
     return summary
@@ -178,9 +168,7 @@ def main() -> None:
     proofs["validated_sample"] = _summarize(out_ok, "validated_user_chat_with_attachment")
 
     # ---- 2. Reject at E1 (unsupported transport) ----
-    out_e1 = IntakePipeline(IntakePolicy()).run(
-        RawIngressEnvelope(transport="smtp", body_text="x")
-    )
+    out_e1 = IntakePipeline(IntakePolicy()).run(RawIngressEnvelope(transport="smtp", body_text="x"))
     proofs["rejected_at_transport"] = _summarize(out_e1, "reject_E1_unsupported_transport")
 
     # ---- 3. Reject at E2 (tenant mismatch) ----
@@ -273,8 +261,7 @@ def main() -> None:
     proofs["tenant_isolation"] = {
         "tenant_A_hash": ta.validated.normalized_request_hash,
         "tenant_B_hash": tb.validated.normalized_request_hash,
-        "hashes_differ": ta.validated.normalized_request_hash
-        != tb.validated.normalized_request_hash,
+        "hashes_differ": ta.validated.normalized_request_hash != tb.validated.normalized_request_hash,
     }
 
     # ---- 9. Volatile-noise: different request_id_hint -> same hash ----
@@ -295,6 +282,127 @@ def main() -> None:
         "request_id_b": rb.validated.request_id,
         "intake_manifest_hash_matches": (
             ra.validated.intake_manifest_hash == rb.validated.intake_manifest_hash
+        ),
+    }
+
+    # ---- 10. Doctrine-canonical contracts (rewritten 01.x docs) ----
+    # Live evidence that every doctrine-named contract is materially
+    # populated on a real run. Mirrors the 00B.9 / 00C.9 closure pattern.
+    from agentic_core.L0_routing.intake.doctrine_contracts import (
+        DoctrineContractBundle,
+    )
+
+    bundle_validated = DoctrineContractBundle.from_outcome(out_ok)
+    bundle_security = DoctrineContractBundle.from_outcome(out_sec)
+    bundle_rejected = DoctrineContractBundle.from_outcome(out_e1)
+
+    def _bundle_summary(label: str, b: DoctrineContractBundle) -> dict[str, Any]:
+        return {
+            "label": label,
+            "idempotency_receipt": (
+                {
+                    "idempotency_key_prefix": b.idempotency_receipt.idempotency_key[:16],
+                    "idempotency_status": b.idempotency_receipt.idempotency_status,
+                    "tenant_scope_hash_prefix": b.idempotency_receipt.tenant_scope_hash[:16],
+                    "deterministic_receipt_hash_prefix": (
+                        b.idempotency_receipt.deterministic_receipt_hash[:16]
+                    ),
+                }
+                if b.idempotency_receipt
+                else None
+            ),
+            "data_boundary_map": (
+                {
+                    "user_task_span_count": len(b.data_boundary_map.user_task_span_refs),
+                    "quoted_data_span_count": len(b.data_boundary_map.quoted_data_span_refs),
+                    "code_block_span_count": len(b.data_boundary_map.code_block_span_refs),
+                    "url_span_count": len(b.data_boundary_map.url_span_refs),
+                    "attachment_count": len(b.data_boundary_map.attachment_ref_boundaries),
+                    "instruction_like_span_count": len(
+                        b.data_boundary_map.possible_instruction_like_data_spans
+                    ),
+                    "downstream_handling_hints": list(b.data_boundary_map.downstream_handling_hints),
+                    "map_digest_prefix": b.data_boundary_map.map_digest[:16],
+                }
+                if b.data_boundary_map
+                else None
+            ),
+            "user_authority_receipt": (
+                {
+                    "max_authority_observed": b.user_authority_receipt.max_authority_observed,
+                    "user_intent_cap_respected": b.user_authority_receipt.user_intent_cap_respected,
+                    "authority_claim_count": len(b.user_authority_receipt.authority_claim_refs),
+                    "deterministic_receipt_hash_prefix": (
+                        b.user_authority_receipt.deterministic_receipt_hash[:16]
+                    ),
+                }
+                if b.user_authority_receipt
+                else None
+            ),
+            "injection_triage_receipt": (
+                {
+                    "triage_status": b.injection_triage_receipt.triage_status,
+                    "obvious_hijack_count": len(b.injection_triage_receipt.obvious_hijack_patterns),
+                    "credential_marker_count": len(b.injection_triage_receipt.credential_request_markers),
+                    "role_override_count": len(b.injection_triage_receipt.role_override_attempts),
+                    "reason_codes": list(b.injection_triage_receipt.reason_codes),
+                    "deterministic_receipt_hash_prefix": (
+                        b.injection_triage_receipt.deterministic_receipt_hash[:16]
+                    ),
+                }
+                if b.injection_triage_receipt
+                else None
+            ),
+            "quoted_content_label_receipt": (
+                {
+                    "label": b.quoted_content_label_receipt.label,
+                    "quoted_segment_count": len(b.quoted_content_label_receipt.quoted_segment_refs),
+                    "deterministic_receipt_hash_prefix": (
+                        b.quoted_content_label_receipt.deterministic_receipt_hash[:16]
+                    ),
+                }
+                if b.quoted_content_label_receipt
+                else None
+            ),
+            "trace_receipt": {
+                "trace_status": b.trace_receipt.trace_status,
+                "span_coverage": list(b.trace_receipt.span_coverage),
+                "spans_observed": list(b.trace_receipt.spans),
+                "missing_spans": list(b.trace_receipt.missing_spans),
+                "trace_digest_prefix": b.trace_receipt.trace_digest[:16],
+            },
+        }
+
+    proofs["doctrine_contracts"] = {
+        "schema_version": 2,
+        "doctrine_files_covered": [
+            "01.1_Intake_Transport_Envelope_Channel_Validation.md",
+            "01.2_Intake_Identity_Tenant_Session_Quota_Baseline.md",
+            "01.3_Intake_Schema_Normalization_and_Idempotency.md",
+            "01.4_Intake_Origin_Trust_Injection_Triage_Data_Labeling.md",
+            "01.5_Intake_Rejection_ValidatedRequest_and_Handoff_to_L1.md",
+            "01.6_Intake_Observability_Replay_Anti_Bypass_Tests.md",
+        ],
+        "validated_run": _bundle_summary("validated_user_chat_with_attachment", bundle_validated),
+        "validated_with_security_findings": _bundle_summary(
+            "validated_with_prompt_injection_and_credential_pattern", bundle_security
+        ),
+        "rejected_run": _bundle_summary("rejected_E1_unsupported_transport", bundle_rejected),
+        "all_contracts_present_on_validated": all(
+            c is not None
+            for c in (
+                bundle_validated.idempotency_receipt,
+                bundle_validated.data_boundary_map,
+                bundle_validated.user_authority_receipt,
+                bundle_validated.injection_triage_receipt,
+                bundle_validated.quoted_content_label_receipt,
+                bundle_validated.trace_receipt,
+            )
+        ),
+        "trace_receipt_present_on_rejection": bundle_rejected.trace_receipt is not None,
+        "user_intent_cap_respected_under_injection": (
+            bundle_security.user_authority_receipt is not None
+            and bundle_security.user_authority_receipt.user_intent_cap_respected
         ),
     }
 

@@ -1,11 +1,12 @@
 # L0/L3 Doctrine — Requirements Traceability Matrix
 
 **Plan:** `.windsurf/plans/l0-l3-doctrine-contracts-b8c2a4.md`
-**Commit:** `f5fd820b7e` + hardening + exhaustive edge cases (this revision)
+**Commit:** `f5fd820b7e` + hardening + exhaustive edge cases (revision); 2026-04-26 closure pass refreshed path drift + flagged 03.9 gap
+**Doctrine source:** `docs/reference/03_L0_Route_Decision_and_L3_Orchestration/` (10 files: parent + 03.1..03.9)
 **ADG snapshot:** `04252026_0843` (84,920 nodes, 593,555 edges, healthy)
-**Test result:** **363 passed, 0 failed, 0 skipped** in 0.55 s
+**Test result (2026-04-26 refresh):** **363 passed, 0 failed, 0 skipped** in 0.63 s
 **Test breakdown:** 47 baseline + 28 hardening + 170 L0 edge cases + 118 L3 edge cases
-**Runtime proof:** `docs/reports/plans/l0_l3_doctrine_runtime_proof.txt`
+**Runtime proof:** `docs/reports/plans/l0_l3_doctrine_runtime_proof.txt` (regenerated 2026-04-26; exercises 03.1..03.8, 03.9 NOT YET COVERED — see §03.9 below)
 **Test files:**
 - `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine.py` (baseline)
 - `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_hardening.py` (gap closure)
@@ -581,18 +582,57 @@ unit tests via `tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_hardenin
 After hardening, **zero rows remain at "by design"-only or "inspection"-only**
 without an automated companion test.
 
-## Summary Statistics
+---
 
-| Metric | Count |
+## 03.9 — L3→L2 Step Handoff, Checkpoint, and Resume Contract (**NOT YET IMPLEMENTED**)
+
+⚠ **PARTIAL — doctrine declared, implementation pending.**
+
+The `03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md` file is a **gap-closed** addition from the April 2026 doctrine review (see its header: "GAP-CLOSED FULL OVERWRITE | MECE | IMPLEMENTATION-GRADE"). The file defines the L3↔L2 step-handoff boundary with 5 new contracts. None of them are implemented yet.
+
+### 03.9 contracts declared but NOT yet implemented
+
+| REQ | Contract | Declared in | Implementation | Test | Runtime evidence |
+|---|---|---|---|---|---|
+| 03.9.1 | `L3StepReadinessReceipt` | 03.9 §CONTRACTS TO IMPLEMENT | ❌ absent — grep across `agentic_core/` returns 0 hits | ❌ absent | ❌ absent |
+| 03.9.2 | `L3ToL2StepContract` | 03.9 §CONTRACTS TO IMPLEMENT | ❌ absent — 0 hits | ❌ absent | ❌ absent |
+| 03.9.3 | `WorkflowCheckpointRef` | 03.9 §CONTRACTS TO IMPLEMENT | ❌ absent — 0 hits | ❌ absent | ❌ absent |
+| 03.9.4 | `StepResumeCursor` | 03.9 §CONTRACTS TO IMPLEMENT | ❌ absent — 0 hits | ❌ absent | ❌ absent |
+| 03.9.5 | `L2StepResultMergeReceipt` | 03.9 §CONTRACTS TO IMPLEMENT | ❌ absent — 0 hits | ❌ absent | ❌ absent |
+
+**Evidence the gap is real:**
+
+- `Get-ChildItem agentic_core/L3_orchestration/doctrine *.py` returns: `contracts_l3_6.py`, `contracts_l3_7.py`, `contracts_l3_8.py` — **no `contracts_l3_9.py`**.
+- `grep -r "L3ToL2StepContract\|L3StepReadinessReceipt\|WorkflowCheckpointRef\|StepResumeCursor\|L2StepResultMergeReceipt" agentic_core/ tests/` returns **0 hits**.
+- `scripts/proof/run_doctrine_runtime_proof.py` header reads "exercising 03.1..03.8 in sequence" — explicitly scoped to exclude 03.9.
+
+### What this closure pass did NOT do (honesty floor)
+
+This pass did not:
+- Create `agentic_core/L3_orchestration/doctrine/contracts_l3_9.py`.
+- Extend the proof harness to exercise 03.9.
+- Add 03.9 unit tests.
+
+Those are **deferred scope** and captured below.
+
+---
+
+## Summary Statistics (2026-04-26 refresh)
+
+| Metric | Value |
 |---|---|
-| Doctrine docs covered | 10 |
-| Total requirements mapped | 200+ field-level + 60 rule-level + 22 acceptance |
-| Implementation files created | 16 (L0: 9, L3: 7) |
-| Test files created | 3 (`test_l0_doctrine.py`, `test_l3_doctrine.py`, `test_l0_doctrine_hardening.py`) |
-| Unit tests | **75 passed, 0 failed, 0 skipped** |
-| Test wall time | 0.36 s |
-| End-to-end runtime proof | PASS (`scripts/proof/run_doctrine_runtime_proof.py`) |
-| Determinism checks | PASS (preflight, selector, telemetry, blueprint, replay all stable across 2 calls) |
+| Doctrine docs in folder | **10** (parent + 03.1..03.9) |
+| Doctrine docs fully covered | **9** (parent + 03.1..03.8) |
+| Doctrine docs with declared-but-unimplemented contracts | **1** (03.9) |
+| Total requirements mapped (03.1..03.8) | 200+ field-level + 60 rule-level + 22 acceptance |
+| Total requirements declared but UNIMPLEMENTED (03.9) | 5 contracts + boundary rules |
+| Implementation files for 03.1..03.8 | 16 (L0: 9, L3: 7) |
+| Implementation files for 03.9 | **0** |
+| Test files | 5 (`test_l0_doctrine.py`, `test_l0_doctrine_hardening.py`, `test_l0_doctrine_edge_cases.py`, `test_l3_doctrine.py`, `test_l3_doctrine_edge_cases.py`) |
+| Unit tests (`tests/agentic_core/L*/doctrine/`) | **363 passed, 0 failed, 0 skipped** |
+| Test wall time | 0.63 s |
+| End-to-end runtime proof (03.1..03.8) | PASS (regenerated 2026-04-26, 8 deterministic digests stable) |
+| Determinism checks | PASS (preflight, selector, telemetry, blueprint, readiness, step_contract, concurrency_plan, sealed_package all stable across 2 calls) |
 | Decision-order coverage | ✓ ALL 8 STEPS (0..7) directly tested |
 | Import-hygiene gate | ✓ AUTOMATED (8 test points) |
 | `SafeResponseType` enum coverage | ✓ ALL 6 members |
@@ -603,14 +643,42 @@ without an automated companion test.
 
 ## Runtime Evidence Bundle
 
-Full live execution trace captured in:
+- `docs/reports/plans/l0_l3_doctrine_runtime_proof.txt` — end-to-end pipeline output with 8 unique deterministic digests (candidate_frame, order, route_selection, telemetry_event, graph, readiness, step_contract, concurrency_plan, sealed_package). Regenerated 2026-04-26; all determinism checks PASS.
+- `scripts/proof/run_doctrine_runtime_proof.py` — reproducible proof harness; currently scoped 03.1..03.8.
 
-- `docs/reports/plans/l0_l3_doctrine_runtime_proof.txt` — end-to-end pipeline output with 8 unique deterministic digests (frame, order, selection, event, graph, readiness, step_contract, concurrency_plan, sealed_package).
-- `scripts/proof/run_doctrine_runtime_proof.py` — reproducible proof harness.
-- pytest output (47/47 PASS) — see git log for `f5fd820b7e`.
+---
 
-## Status: ✓ ALL REQUIREMENTS MET
+## 2026-04-26 Closure Pass
 
-Every requirement extracted from the 10 doctrine docs has a named implementation
-surface, at least one unit test, and (for behavioral requirements) live runtime
-evidence captured during the proof harness execution.
+Same closure pattern as `00A_L5_Governance_Safety`, `00B_L4_State_Archive_and_UWG`, `00C_Runtime_Gates_Current_Run_Mesh`, `01_Request_Intake`, and `02_L1_Reasoning_Plan`.
+
+**Scope of this pass:**
+
+| Item | Status |
+|---|---|
+| Duplicate doctrine files to delete | **0** (folder already canonical — no `_and_` duplicates, no version drift) |
+| Stale header fields to correct | ✅ doctrine-source path added, 2026-04-26 test refresh timestamp, 03.9 caveat on runtime-proof line |
+| 03.9 coverage honestly documented | ✅ new `## 03.9` section flags contracts as declared-but-unimplemented with specific evidence (absent files, zero grep hits, proof-harness header scope) |
+| Runtime proof refresh | ✅ `scripts/proof/run_doctrine_runtime_proof.py` reran clean (03.1..03.8 still PASS, 8 digests stable) |
+| Test refresh | ✅ 363 / 363 pass in 0.63 s (baseline + hardening + edge cases) |
+| DEFERRED_SCOPE emitted | ✅ for 03.9 contracts-l3-9 implementation (see main response) |
+
+**Why this closure exposed a genuine gap (unlike 02):**
+
+The `03_L0_Route_Decision_and_L3_Orchestration/` folder had a recent additive file `03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md` labeled "GAP-CLOSED FULL OVERWRITE" (April 2026) that declared 5 new contracts (`L3StepReadinessReceipt`, `L3ToL2StepContract`, `WorkflowCheckpointRef`, `StepResumeCursor`, `L2StepResultMergeReceipt`) without their corresponding `contracts_l3_9.py` implementation. The existing matrix claimed "10 / 10 doctrine docs covered" but in fact only 9 / 10 are implemented. This closure pass corrects that claim to an honest "9 covered + 1 declared-but-pending" status and captures the implementation work as durable deferred scope.
+
+**Contrast:**
+- `01_Request_Intake` closure: introduced 6 new aggregator contract types + 20 tests (significant additive work).
+- `02_L1_Reasoning_Plan` closure: zero new types, zero new tests — doctrine rewrite was MECE-header-only.
+- `03_L0_Route_Decision_and_L3_Orchestration` closure (this one): zero new types in this pass, but **exposes 5 unimplemented contracts** that 02 did not have.
+
+**Files changed in this pass:**
+
+| Path | Change |
+|---|---|
+| `docs/reports/plans/l0_l3_doctrine_requirements_matrix.md` | **UPDATED** — header refreshed, 03.9 PARTIAL section added, summary stats refreshed, closure pass section added |
+| `docs/reports/plans/l0_l3_doctrine_runtime_proof.txt` | **REGENERATED** by `run_doctrine_runtime_proof.py` |
+
+## Status: ✓ 9 / 10 REQUIREMENTS MET · ⚠ 1 / 10 DECLARED-BUT-PENDING (03.9)
+
+Requirements extracted from 9 of the 10 doctrine docs (parent + 03.1..03.8) each have a named implementation surface, at least one unit test, and (for behavioral requirements) live runtime evidence captured during the proof harness execution. The 10th doc (03.9) declares 5 contracts that are not yet implemented; see `## 03.9` section for the specific gap evidence and the DEFERRED_SCOPE marker in the closing Cascade response for the tracked follow-up work.
