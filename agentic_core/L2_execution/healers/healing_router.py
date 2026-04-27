@@ -12,7 +12,10 @@ Wave 2 (plans/routing-unification-qwen-abe735.md) extensions:
 
 from __future__ import annotations
 
+import logging
 import os
+import time
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
@@ -27,10 +30,21 @@ from agentic_core.L6_observability.heal_router_otel import (  # guardian: allow-
     get_default_emitter as _get_default_heal_router_emitter,
 )
 
+from .cascade_calibrator import (
+    DecisionEvidence,
+    brier_component,
+    compute_decision_evidence,
+    score_band_for,
+)
 from .confidence_scorer import ConfidenceScore, HealTier
 from .failure_signal import FailureSignal
 from .routing_gates import RoutingContext, apply_routing_gates
-from .vllm_health_probe import is_qwen_available
+from .vllm_health_probe import is_qwen_available, probe as _vllm_probe
+
+_LOGGER = logging.getLogger(__name__)
+
+# Constitutional §29: closed-loop router enforcement marker name.
+_ROUTER_LEDGER_NAME: str = "router_l2_cascade"
 
 # Wave 1 (qwen-confidence-routing-hardening-d4e7b1): cascade-fallback toggle.
 # When set to a truthy value, _dispatch_qwen will NOT fall through to Gemini
@@ -73,7 +87,19 @@ COST_DEMOTE_FLASH_USD: float = float(os.getenv("ROUTING_COST_DEMOTE_FLASH_USD", 
 
 @dataclass
 class RoutingDecision:
-    """Healing routing decision."""
+    """Healing routing decision.
+
+    Constitutional §29 fields (W5.1 — l2-cascade-router-closed-loop-wiring):
+      - ``decision_id`` is the canonical id binding a prediction row to its
+        late-arriving outcome row in ``artifacts/ledgers/router_l2_cascade.sqlite``.
+        Empty string when ledger emission was suppressed (bypass / write failed).
+      - ``predicted_p_success`` is the calibrated prior the router used to
+        choose this tier. Defaults to ``ConfidenceScore.score`` (the heuristic
+        bootstrap prior) until a learned posterior replaces it.
+      - ``eu_score`` is the Expected Utility used to break ties between tiers.
+      - ``ledger_event_id`` is the deterministic SHA-256 prefix returned by the
+        ledger writer; used by ``dispatch_to_executor`` to bind outcomes.
+    """
 
     tier: HealTier
     target_model: str
@@ -84,6 +110,12 @@ class RoutingDecision:
     gate_applied: str = "NO_OVERRIDE"
     gemini_subtier: str = ""  # "" | "FLASH" | "PRO" — populated for LOW tier only
     cost_demoted: bool = False  # Wave 6 P6.2: True when budget pressure forced a tier downgrade
+    # Constitutional §29 fields — all default to empty/zero so legacy callers
+    # constructing `RoutingDecision` directly are unaffected.
+    decision_id: str = ""
+    predicted_p_success: float = 0.0
+    eu_score: float = 0.0
+    ledger_event_id: str = ""
 
 
 class HealingRouter:
@@ -196,6 +228,35 @@ class HealingRouter:
             + (f" | {demotion_reason}" if cost_demoted else "")
         )
 
+        # Constitutional §29 — closed-loop router evidence. Compute the
+        # decision evidence bundle BEFORE constructing RoutingDecision so the
+        # decision can carry its own decision_id / predicted_p_success / eu_score.
+        # Failure of the evidence path must NEVER break routing — fall back to
+        # zero-valued fields so legacy callers continue to work.
+        evidence: DecisionEvidence | None = None
+        try:
+            evidence = compute_decision_evidence(
+                tier=final_tier,
+                gemini_subtier=gemini_subtier,
+                target_model=target_model,
+                confidence_input=getattr(score, "score", 0.0),
+                failure_class=getattr(getattr(signal, "failure_class", None), "name", "UNKNOWN"),
+                source_layer=getattr(signal, "source_layer", "") or "unknown",
+                error_code=getattr(signal, "error_code", "") or "unknown",
+                retry_count=getattr(signal, "retry_count", 0),
+            )
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+        ):  # guardian: allow-log-and-swallow -- evidence is best-effort; routing must never break
+            _LOGGER.debug("cascade_calibrator.compute_decision_evidence failed", exc_info=True)
+            evidence = None
+
+        decision_id = uuid.uuid4().hex if evidence is not None else ""
+        predicted_p = evidence.predicted_p_success if evidence is not None else 0.0
+        eu_score = evidence.eu_score if evidence is not None else 0.0
+
         decision = RoutingDecision(
             tier=final_tier,
             target_model=target_model,
@@ -206,6 +267,9 @@ class HealingRouter:
             gate_applied=gate_applied,
             gemini_subtier=gemini_subtier,
             cost_demoted=cost_demoted,
+            decision_id=decision_id,
+            predicted_p_success=predicted_p,
+            eu_score=eu_score,
         )
 
         # Wave F2 M2 (ADR-025): emit unified heal_router.v1.route span.
@@ -224,7 +288,178 @@ class HealingRouter:
         ):  # guardian: allow-silent-swallow -- telemetry emission is best-effort; must never break the heal-router hot path
             pass
 
+        # Constitutional §29 — emit ROUTER_DECISION marker + ledger row.
+        # Both calls are wrapped in fail-soft helpers below.
+        if evidence is not None:
+            ledger_event_id = self._emit_router_decision(
+                decision=decision,
+                evidence=evidence,
+                signal=signal,
+                cost_budget_remaining_usd=budget,
+                app_name="healing_router",
+            )
+            decision.ledger_event_id = ledger_event_id
+
         return decision
+
+    # ------------------------------------------------------------------ #
+    # Constitutional §29 — closed-loop router emission helpers
+    # ------------------------------------------------------------------ #
+    def _emit_router_decision(
+        self,
+        *,
+        decision: RoutingDecision,
+        evidence: DecisionEvidence,
+        signal: FailureSignal,
+        cost_budget_remaining_usd: float | None,
+        app_name: str,
+    ) -> str:
+        """Write the ``route_decision`` row + emit the ``ROUTER_DECISION:`` marker.
+
+        Both operations are fail-soft: any error path returns an empty event_id
+        and the routing continues. This satisfies the §29 contract:
+
+            ROUTER_DECISION: layer=L2 router=cascade decision_id=<uuid>
+                trace_id=<id> route_id=<id> selected=<model> tier=<TIER>
+                provider=<provider> eu_score=<float> brier_score=<float>
+
+        The Brier score on a *prediction-only* row is the best-case 0.0 — the
+        true Brier is only computable once outcome is bound. We log a sentinel
+        ``brier_score=pending`` until ``_bind_router_outcome`` updates the row.
+        """
+        # Optional vLLM probe state — best-effort only.
+        vllm_healthy: bool | None = None
+        try:
+            if decision.tier == HealTier.MEDIUM:
+                vllm_healthy = bool(_vllm_probe().is_healthy)
+        except (RuntimeError, OSError):  # guardian: allow-log-and-swallow -- probe is best-effort; routing must not break on network errors
+            vllm_healthy = None
+
+        prediction = evidence.to_prediction_dict(
+            decision_id=decision.decision_id,
+            tier=decision.tier,
+            target_model=decision.target_model,
+            gate_applied=decision.gate_applied,
+            gemini_subtier=decision.gemini_subtier,
+            cost_demoted=decision.cost_demoted,
+            confidence_input=evidence.predicted_p_success,
+            cost_budget_remaining_usd=cost_budget_remaining_usd,
+            app_name=app_name,
+            vllm_healthy=vllm_healthy,
+        )
+
+        # Emit the §29 marker FIRST so the audit trail exists even if the
+        # ledger write fails on this turn.
+        _LOGGER.info(
+            "ROUTER_DECISION: layer=L2 router=cascade decision_id=%s "
+            "trace_id=%s route_id=%s selected=%s tier=%s provider=%s "
+            "eu_score=%.4f brier_score=pending gate=%s confidence=%.4f",
+            decision.decision_id,
+            getattr(signal, "signal_hash", "") or decision.decision_id,
+            app_name,
+            decision.target_model,
+            decision.tier.name,
+            evidence.provider,
+            evidence.eu_score,
+            decision.gate_applied,
+            evidence.predicted_p_success,
+        )
+
+        # Write the durable ledger row.
+        try:
+            from tools.ledgers.hook_helpers import emit_ledger_event  # noqa: PLC0415  # guardian: allow-layer-violation -- L2 healer writes to repo-level ledger SSOT (additive only)
+
+            event_id = emit_ledger_event(
+                ledger=_ROUTER_LEDGER_NAME,
+                event_kind="route_decision",
+                prediction=prediction,
+                outcome=None,
+                score_band="unbound",
+                score_numeric=None,
+                repo_area="agentic_core/L2_execution/healers/healing_router.py",
+                metadata={
+                    "router": "L2/cascade",
+                    "constitutional_rule": "§29",
+                    "signal_hash": getattr(signal, "signal_hash", ""),
+                    "retry_count": int(getattr(signal, "retry_count", 0)),
+                },
+            )
+            return event_id or ""
+        except (
+            ImportError,
+            AttributeError,
+            TypeError,
+            ValueError,
+            RuntimeError,
+            OSError,
+        ):  # guardian: allow-log-and-swallow -- ledger write is best-effort; routing must never break
+            _LOGGER.debug("router_l2_cascade ledger emit failed", exc_info=True)
+            return ""
+
+    def _bind_router_outcome(
+        self,
+        decision: RoutingDecision,
+        result: dict[str, Any],
+        *,
+        latency_ms: int,
+    ) -> None:
+        """Bind a dispatch result to its predicted ledger row.
+
+        Computes Brier component and TP/FP/TN/FN band. Fail-soft: any error
+        leaves the prediction row in ``status='predicted'`` for later sweeps.
+        """
+        if not decision.ledger_event_id:
+            return
+        success = bool(result.get("success", False))
+        outcome = {
+            "success": success,
+            "tier_attempted": result.get("tier_attempted") or decision.tier.name,
+            "tier_used": result.get("tier_used") or decision.tier.name,
+            "fallback_reason": result.get("fallback_reason", "") or "",
+            "model_used": result.get("model_used") or decision.target_model,
+            "latency_ms": int(latency_ms),
+            "cost_usd_observed": None,
+            "error_code": result.get("error"),
+            "response_len_bytes": (
+                len(result["response"]) if isinstance(result.get("response"), str) else None
+            ),
+            "downstream_judge_score": None,
+        }
+        try:
+            brier = brier_component(decision.predicted_p_success, success)
+            band = score_band_for(decision.predicted_p_success, success)
+        except (TypeError, ValueError):
+            brier = None
+            band = None
+
+        try:
+            from tools.ledgers.hook_helpers import bind_ledger_outcome  # noqa: PLC0415  # guardian: allow-layer-violation -- L2 healer binds outcome on repo-level ledger SSOT
+
+            bind_ledger_outcome(
+                ledger=_ROUTER_LEDGER_NAME,
+                event_id=decision.ledger_event_id,
+                outcome=outcome,
+                score_band=band,
+                score_numeric=brier,
+                latency_ms=int(latency_ms),
+            )
+            _LOGGER.info(
+                "ROUTER_OUTCOME: decision_id=%s success=%s band=%s brier=%s latency_ms=%d",
+                decision.decision_id,
+                success,
+                band,
+                f"{brier:.4f}" if brier is not None else "n/a",
+                int(latency_ms),
+            )
+        except (
+            ImportError,
+            AttributeError,
+            TypeError,
+            ValueError,
+            RuntimeError,
+            OSError,
+        ):  # guardian: allow-log-and-swallow -- outcome binding is best-effort; dispatch must not fail because of telemetry
+            _LOGGER.debug("router_l2_cascade outcome bind failed", exc_info=True)
 
     def dispatch_to_executor(
         self,
@@ -260,21 +495,27 @@ class HealingRouter:
             "error": None,
         }
 
+        # Constitutional §29: time the dispatch and bind the outcome row.
+        t_start = time.time()
+
         if decision.tier == HealTier.HIGH:
             base["executor"] = "deterministic"
             base["success"] = True
-            return base
+            result = base
+        elif decision.tier == HealTier.MEDIUM:
+            result = {**base, **self._dispatch_qwen(prompt, app_name, decision)}
+        elif decision.tier == HealTier.LOW:
+            result = {**base, **self._dispatch_gemini(prompt, app_name, decision)}
+        else:
+            # HITL
+            base["executor"] = "hitl"
+            base["error"] = "human_review_required"
+            result = base
 
-        if decision.tier == HealTier.MEDIUM:
-            return {**base, **self._dispatch_qwen(prompt, app_name, decision)}
-
-        if decision.tier == HealTier.LOW:
-            return {**base, **self._dispatch_gemini(prompt, app_name, decision)}
-
-        # HITL
-        base["executor"] = "hitl"
-        base["error"] = "human_review_required"
-        return base
+        latency_ms = int((time.time() - t_start) * 1000)
+        # Bind outcome row to its prediction. Fail-soft inside the helper.
+        self._bind_router_outcome(decision, result, latency_ms=latency_ms)
+        return result
 
     def _dispatch_qwen(
         self,

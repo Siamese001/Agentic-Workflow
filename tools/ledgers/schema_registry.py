@@ -139,6 +139,21 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         wave="W4.4",
         sunset_criterion="triage recall ≥0.95 for 2 consecutive quarters",
     ),
+    LedgerSpec(
+        name="router_l2_cascade",
+        purpose=(
+            "L2/cascade router (HealingRouter) decisions and outcomes — "
+            "tier/provider/EU/Brier per constitutional §29 row #4."
+        ),
+        schema_file="router_l2_cascade_ledger.schema.sql",
+        writer_hook="agentic_core/L2_execution/healers/healing_router.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l2-cascade/SKILL.md",
+        wave="W5.1",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
 )
 
 
