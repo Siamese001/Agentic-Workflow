@@ -67,9 +67,27 @@ def load_queue(path: Path) -> list[dict]:
 
 
 def drain(queue_path: Path, *, dry_run: bool = False) -> dict[str, int]:
-    """Drain the queue. Returns counts: total, captured (new), skipped (dup), failed."""
+    """Drain the queue. Returns counts by disposition.
+
+    Dispositions:
+      total            total rows read from queue
+      captured         new DECISION_CAPTURED rows written to ledger
+      skipped_dup      DECISION_CAPTURED rows already in ledger (decision_id match)
+      deferred_scope   DEFERRED_SCOPE markers recognized; forwarding to Notion
+                       is a separate pipeline not yet wired into this drain.
+                       Markers are preserved in the rotated ``.processed.jsonl``.
+      next_step        NEXT_STEP markers, same handling as deferred_scope.
+      failed           rows where ledger write raised an exception.
+    """
     rows = load_queue(queue_path)
-    counts = {"total": len(rows), "captured": 0, "skipped_dup": 0, "failed": 0}
+    counts = {
+        "total": len(rows),
+        "captured": 0,
+        "skipped_dup": 0,
+        "deferred_scope": 0,
+        "next_step": 0,
+        "failed": 0,
+    }
     if not rows:
         return counts
 
@@ -89,6 +107,21 @@ def drain(queue_path: Path, *, dry_run: bool = False) -> dict[str, int]:
         emit_progress = len(rows) > 10
         for i, r in enumerate(rows, start=1):
             raw = r["raw"]
+            mtype = r.get("marker_type", "")
+
+            # Non-DECISION_CAPTURED markers are tracked but not forwarded to the
+            # SQLite ledger by this drain. DEFERRED_SCOPE / NEXT_STEP have their
+            # own Notion pipelines (post_cascade_deferred_scope_capture.py /
+            # post_cascade_next_step_capture.py) that this drain does not yet
+            # invoke. Markers remain in the rotated .processed.jsonl so the data
+            # is preserved; a later drain extension can forward them.
+            if mtype == "DEFERRED_SCOPE":
+                counts["deferred_scope"] += 1
+                continue
+            if mtype == "NEXT_STEP":
+                counts["next_step"] += 1
+                continue
+
             try:
                 captured = detect_and_capture(raw, conn)
             except (sqlite3.Error, ValueError) as exc:
@@ -119,10 +152,28 @@ def drain(queue_path: Path, *, dry_run: bool = False) -> dict[str, int]:
     finally:
         conn.close()
 
-    # Rotate the queue file so future runs don't re-process.
-    if counts["captured"] + counts["skipped_dup"] == counts["total"] and counts["failed"] == 0:
-        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    # Rotate the queue file so future runs don't re-process. All non-failed
+    # dispositions count as "handled" for rotation purposes — deferred_scope
+    # and next_step markers are preserved in the rotated file for later
+    # forwarding to Notion.
+    handled = (
+        counts["captured"]
+        + counts["skipped_dup"]
+        + counts["deferred_scope"]
+        + counts["next_step"]
+    )
+    if handled == counts["total"] and counts["failed"] == 0:
+        # Microsecond precision plus a collision counter so rapid successive
+        # drains (e.g., two invocations in the same second during tests) do
+        # not race on the rotation target filename.
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S_%fZ")
         rotated = queue_path.with_name(f"{queue_path.stem}.{ts}.processed.jsonl")
+        counter = 0
+        while rotated.exists():
+            counter += 1
+            rotated = queue_path.with_name(
+                f"{queue_path.stem}.{ts}-{counter}.processed.jsonl"
+            )
         queue_path.rename(rotated)
         print(f"[queue_to_ledger] queue rotated to: {rotated.name}")
     elif counts["failed"] > 0:
@@ -146,6 +197,8 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"[queue_to_ledger] total={counts['total']} "
         f"captured={counts['captured']} skipped_dup={counts['skipped_dup']} "
+        f"deferred_scope={counts['deferred_scope']} "
+        f"next_step={counts['next_step']} "
         f"failed={counts['failed']}"
     )
     return 0 if counts["failed"] == 0 else 1
