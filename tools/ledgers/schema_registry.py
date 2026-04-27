@@ -185,6 +185,21 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="router_l3_sovereign_mcp",
+        purpose=(
+            "L3/sovereign_mcp router (SovereignMcpRouter.resolve_violation) canon-key dispatches — "
+            "L0/L1/L2/L3/L4/L5 layer routing decisions per constitutional §29 non-matrix."
+        ),
+        schema_file="router_l3_sovereign_mcp_ledger.schema.sql",
+        writer_hook="agentic_core/L3_orchestration/reasoning/engines/sovereign_mcp_router.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l3-sovereign-mcp/SKILL.md",
+        wave="W5.9",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
         name="router_l3_reroute",
         purpose=(
             "L3/reroute router (RerouteCeiling.attempt_reroute) ceiling decisions — "

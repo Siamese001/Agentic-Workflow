@@ -234,7 +234,30 @@ class SovereignMcpRouter(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     async def resolve_violation(self, key_id: int, file_path: str, violation_desc: str) -> dict[str, Any]:
-        """Route canon key Violation to hardened MCP tool — L5 shielded"""
+        """Route canon key Violation to hardened MCP tool — L5 shielded.
+
+        W5.9 (closed-loop-router-fleet-rollout-d8f2a3 final): thin wrapper
+        that captures the inner result and emits durable §29 telemetry to
+        router_l3_sovereign_mcp ledger. Fail-soft.
+        """
+        import time as _time  # noqa: PLC0415
+
+        _t_start = _time.time()
+        result = await self._resolve_violation_inner(key_id, file_path, violation_desc)
+        _record_sovereign_mcp_decision(
+            key_id=key_id,
+            file_path=file_path,
+            violation_desc=violation_desc,
+            result=result,
+            latency_ms=int((_time.time() - _t_start) * 1000.0),
+            authorized=get_mcp_authority().is_authorized(),
+            initialized=bool(self.initialized and self.manager),
+        )
+        return result
+
+    # guardian: allow-type-erasure
+    async def _resolve_violation_inner(self, key_id: int, file_path: str, violation_desc: str) -> dict[str, Any]:
+        """Inner dispatch logic (W5.9 — separated for closed-loop wrapper)."""
         if not get_mcp_authority().is_authorized():
             return {"status": "blocked", "reason": "MCP sovereignty compromised"}
         if not self.initialized or not self.manager:
@@ -502,3 +525,125 @@ def _run_self_tests(self) -> dict:  # review: AssertionError should be handled w
         results["failed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results
+
+
+# =====================================================================
+# Constitutional §29 — closed-loop wiring (W5.9 — final fleet rollout)
+# =====================================================================
+import logging as _smcp_logging  # noqa: E402
+
+_SMCP_LOGGER = _smcp_logging.getLogger(__name__)
+_SMCP_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_sovereign_mcp_helper():
+    """Lazy singleton for the L3/sovereign_mcp RouterClosedLoopHelper.
+
+    Lazy-init avoids breaking SovereignBaseAgent bootstrap order when
+    `tools.ledgers` is not yet importable.
+    """
+    global _SMCP_HELPER  # noqa: PLW0603
+    if _SMCP_HELPER is not None:
+        return _SMCP_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _SMCP_HELPER = RouterClosedLoopHelper(
+            layer="L3",
+            router="sovereign_mcp",
+            ledger_name="router_l3_sovereign_mcp",
+            repo_area="agentic_core/L3_orchestration/reasoning/engines/sovereign_mcp_router.py",
+        )
+        return _SMCP_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break SovereignMcpRouter
+        _SMCP_LOGGER.debug("RouterClosedLoopHelper unavailable for L3/sovereign_mcp", exc_info=True)
+        return None
+
+
+def _key_id_band(key_id: int) -> str:
+    """Map canon key_id to a layer-band label for cell aggregation."""
+    if key_id in {19, 50}:
+        return "L5"
+    if key_id in {21, 13}:
+        return "L4"
+    if key_id == 18:
+        return "L3"
+    if key_id in {40, 41, 42, 49}:
+        return "L2"
+    return "other"
+
+
+def _violation_class(violation_desc: str) -> str:
+    """Coarse-grained violation classifier for cell aggregation."""
+    desc = (violation_desc or "").lower()
+    if "prompt" in desc:
+        return "prompt_injection"
+    if "ui" in desc:
+        return "ui_violation"
+    if "logic" in desc or "bypass" in desc:
+        return "logic_bypass"
+    return "generic"
+
+
+def _record_sovereign_mcp_decision(
+    *,
+    key_id: int,
+    file_path: str,
+    violation_desc: str,
+    result: dict,
+    latency_ms: int,
+    authorized: bool,
+    initialized: bool,
+) -> None:
+    """Record SovereignMcpRouter dispatch + bind outcome.
+
+    Decision-and-outcome-in-one-shot. The "success" semantic is:
+    - status starting with "l5_"|"l4_"|"l3_"|"l2_"|"l1_"|"l0_" with no
+      "_unavailable"/"_blocked"/"error" suffix → success
+    - "blocked" / "error" / "*_unavailable" / "fallback" / "no_route" → failure
+
+    Fail-soft: any helper failure swallowed.
+    """
+    helper = _get_sovereign_mcp_helper()
+    if helper is None:
+        return
+    try:
+        status = str(result.get("status", "unknown") if isinstance(result, dict) else "unknown")
+        tool = str(result.get("tool") or "") if isinstance(result, dict) else ""
+        # Success heuristic: positive status (lN_*, no error/unavailable/blocked/fallback/no_route)
+        bad_markers = ("_unavailable", "_blocked", "error", "fallback", "no_route", "blocked")
+        success = (
+            authorized
+            and initialized
+            and not any(m in status for m in bad_markers)
+            and status != "unknown"
+        )
+        # Predicted prior: 1.0 if authorized+initialized at entry, else degraded
+        predicted_p = 1.0 if (authorized and initialized) else (0.0 if not authorized else 0.3)
+        eu_score = 1.0 if success else 0.0
+
+        handle = helper.record_decision(
+            selected=status,
+            cell={
+                "key_id_band": _key_id_band(key_id),
+                "violation_class": _violation_class(violation_desc),
+            },
+            predicted_p_success=predicted_p,
+            eu_score=eu_score,
+            prediction_extras={
+                "key_id": int(key_id),
+                "file_path": str(file_path)[:200],
+                "violation_desc": str(violation_desc)[:200],
+                "tool": tool,
+                "authorized": bool(authorized),
+                "initialized": bool(initialized),
+            },
+        )
+        helper.bind_outcome(
+            handle,
+            success=success,
+            latency_ms=int(latency_ms),
+            outcome_extras={"status": status, "tool": tool},
+        )
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; SovereignMcpRouter must never break
+        _SMCP_LOGGER.debug("sovereign_mcp_router ledger emit failed", exc_info=True)
