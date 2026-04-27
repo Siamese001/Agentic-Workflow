@@ -177,11 +177,19 @@ def test_dispatch_hitl_tier_returns_human_review_sentinel():
     assert result["error"] == "human_review_required"
 
 
-def test_dispatch_medium_degrades_gracefully_without_live_vllm():
+def test_dispatch_medium_degrades_gracefully_without_live_vllm(monkeypatch):
     """When vLLM is not running, dispatch must return a well-formed error
     instead of raising. The Qwen gateway converts errors to a failed
     QwenInferenceResponse, which we surface as success=False + error text.
+
+    Pinned to ``DISABLE_QWEN_FALLBACK=1`` so this test is deterministic
+    regardless of suite ordering: with the cascade-fallback disabled,
+    a Qwen dispatch error returns ``executor='qwen_vllm'`` directly
+    instead of cascading to Gemini Flash. Without the pin, suite-level
+    state from neighboring tests (vllm_health_probe cache + asyncio
+    event-loop teardown) can flip the executor to ``gemini_flash``.
     """
+    monkeypatch.setenv("DISABLE_QWEN_FALLBACK", "1")
     router = HealingRouter()
     decision = router.route(_score(HealTier.MEDIUM), _signal())
     result = router.dispatch_to_executor(decision, prompt="do a thing")

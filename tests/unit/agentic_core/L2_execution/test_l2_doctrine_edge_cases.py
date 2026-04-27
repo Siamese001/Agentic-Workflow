@@ -69,7 +69,11 @@ from agentic_core.L2_execution.observability.l2_spans import (
     L2_E3_SPANS,
     L2_E4_SPANS,
     L2_E5_SPANS,
+    L2_LOCAL_CRITIQUE_SPANS,
+    L2_MUTATION_SPANS,
     L2_PTC_SPANS,
+    L2_RESOLUTION_SPANS,
+    L2_SEQUENCER_SPANS,
     L2_REQUIRED_SPAN_ATTRIBUTES,
     L2SpanAttributeViolation,
     all_l2_span_names,
@@ -625,23 +629,101 @@ def test_envelope_disallowed_patterns_default_empty() -> None:
     "untrans,cap,esc,result,should_raise",
     [
         # CLEAN/CLEAN/CLEAN with any non-REJECTED is fine
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.SUCCESS, False),
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.DEGRADED_SUCCESS, False),
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.SOFT_REPAIRABLE, False),
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.NEEDS_HELP, False),
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.REJECTED, False),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.SUCCESS,
+            False,
+        ),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.DEGRADED_SUCCESS,
+            False,
+        ),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.SOFT_REPAIRABLE,
+            False,
+        ),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.NEEDS_HELP,
+            False,
+        ),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.REJECTED,
+            False,
+        ),
         # Untranscripted DETECTED requires REJECTED
-        (UntranscriptedIOStatus.DETECTED, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.SUCCESS, True),
-        (UntranscriptedIOStatus.DETECTED, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.SOFT_REPAIRABLE, True),
-        (UntranscriptedIOStatus.DETECTED, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.CLEAN, PTCResultClass.REJECTED, False),
+        (
+            UntranscriptedIOStatus.DETECTED,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.SUCCESS,
+            True,
+        ),
+        (
+            UntranscriptedIOStatus.DETECTED,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.SOFT_REPAIRABLE,
+            True,
+        ),
+        (
+            UntranscriptedIOStatus.DETECTED,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.REJECTED,
+            False,
+        ),
         # Capability DETECTED requires REJECTED
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.DETECTED, SandboxEscapeStatus.CLEAN, PTCResultClass.SUCCESS, True),
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.DETECTED, SandboxEscapeStatus.CLEAN, PTCResultClass.REJECTED, False),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.DETECTED,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.SUCCESS,
+            True,
+        ),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.DETECTED,
+            SandboxEscapeStatus.CLEAN,
+            PTCResultClass.REJECTED,
+            False,
+        ),
         # Sandbox-escape DETECTED requires REJECTED
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.DETECTED, PTCResultClass.SUCCESS, True),
-        (UntranscriptedIOStatus.CLEAN, CapabilityViolationStatus.CLEAN, SandboxEscapeStatus.DETECTED, PTCResultClass.REJECTED, False),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.DETECTED,
+            PTCResultClass.SUCCESS,
+            True,
+        ),
+        (
+            UntranscriptedIOStatus.CLEAN,
+            CapabilityViolationStatus.CLEAN,
+            SandboxEscapeStatus.DETECTED,
+            PTCResultClass.REJECTED,
+            False,
+        ),
         # Multiple DETECTED + REJECTED is allowed
-        (UntranscriptedIOStatus.DETECTED, CapabilityViolationStatus.DETECTED, SandboxEscapeStatus.DETECTED, PTCResultClass.REJECTED, False),
+        (
+            UntranscriptedIOStatus.DETECTED,
+            CapabilityViolationStatus.DETECTED,
+            SandboxEscapeStatus.DETECTED,
+            PTCResultClass.REJECTED,
+            False,
+        ),
     ],
 )
 def test_receipt_fail_closed_coupling(
@@ -757,8 +839,12 @@ def test_span_registry_total_is_sum_of_groups() -> None:
         + len(L2_E2_SPANS)
         + len(L2_E3_SPANS)
         + len(L2_E4_SPANS)
+        + len(L2_RESOLUTION_SPANS)
         + len(L2_E5_SPANS)
         + len(L2_PTC_SPANS)
+        + len(L2_SEQUENCER_SPANS)
+        + len(L2_MUTATION_SPANS)
+        + len(L2_LOCAL_CRITIQUE_SPANS)
     )
     assert len(all_l2_span_names()) == total
 
@@ -771,7 +857,11 @@ def test_no_span_appears_in_two_groups() -> None:
         "E3": L2_E3_SPANS,
         "E4": L2_E4_SPANS,
         "E5": L2_E5_SPANS,
+        "RESOLUTION": L2_RESOLUTION_SPANS,
         "PTC": L2_PTC_SPANS,
+        "SEQUENCER": L2_SEQUENCER_SPANS,
+        "MUTATION": L2_MUTATION_SPANS,
+        "LOCAL_CRITIQUE": L2_LOCAL_CRITIQUE_SPANS,
     }
     seen: dict[str, str] = {}
     for label, names in groups.items():
@@ -827,7 +917,9 @@ def test_validate_span_returns_empty_tuple_when_clean() -> None:
     assert validate_span_attributes(span_name="l2.e1.prep.receive", attrs=full) == ()
 
 
-@pytest.mark.parametrize("bad_name", ["l2.UNKNOWN", "L2.e1.prep.receive", "e1.prep.receive", "", "l3.exec.foo"])
+@pytest.mark.parametrize(
+    "bad_name", ["l2.UNKNOWN", "L2.e1.prep.receive", "e1.prep.receive", "", "l3.exec.foo"]
+)
 def test_validate_span_unknown_name_raises(bad_name: str) -> None:
     full = {a: f"v-{a}" for a in L2_REQUIRED_SPAN_ATTRIBUTES}
     full["latency_ms"] = 42
