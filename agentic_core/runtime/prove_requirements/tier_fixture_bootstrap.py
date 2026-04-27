@@ -38,6 +38,18 @@ _STATIC_DRIFT_KEY = "I_static_governance_drift"
 _STATIC_DRIFT_REQ_ID = "REQ-L5-STATIC-GOV-DRIFT-001"
 _STATIC_DRIFT_EFR = "STATIC_GOVERNANCE_DRIFT_DETECTED"
 
+# Scenario-key → (step1_req_id, expected_fail_reason) extras. Bootstrap
+# emits these fields into the deterministic JSON stub so the Tier 1 runtime
+# proof gate can validate `step1_req_id` / `expected_fail_reason` JSON
+# content against the row REQ_ID without expanding requirements.
+_SCENARIO_EXTRAS: Dict[str, Tuple[str, str]] = {
+    _STATIC_DRIFT_KEY: (_STATIC_DRIFT_REQ_ID, _STATIC_DRIFT_EFR),
+    "J_l6_gauntlet_future_run": (
+        "REQ-L6-GAUNTLET-FUTURE-RUN-001",
+        "L6_CURRENT_RUN_MUTATION_BLOCKED",
+    ),
+}
+
 
 def _deterministic_digest(seed: str) -> str:
     """Stable sha256-prefixed digest derived from a string seed."""
@@ -88,14 +100,18 @@ def _is_e2e_path(rel_path: str) -> bool:
 
 
 def _maybe_static_drift_extras(scenario_key: str) -> Dict[str, object]:
-    if scenario_key != _STATIC_DRIFT_KEY:
+    extras = _SCENARIO_EXTRAS.get(scenario_key)
+    if not extras:
         return {}
-    return {
-        "step1_req_id": _STATIC_DRIFT_REQ_ID,
-        "expected_fail_reason": _STATIC_DRIFT_EFR,
-        "drift_detected": True,
-        "gate_result": "BLOCKED",
+    req_id, efr = extras
+    payload: Dict[str, object] = {
+        "step1_req_id": req_id,
+        "expected_fail_reason": efr,
     }
+    if scenario_key == _STATIC_DRIFT_KEY:
+        payload["drift_detected"] = True
+        payload["gate_result"] = "BLOCKED"
+    return payload
 
 
 def _trace_payload(scenario_key: str) -> Dict[str, object]:

@@ -279,8 +279,8 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
         f"{_DET2}/RC-UWG/rc_uwg_replay_receipt.json",
     ),
     "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
-        f"{_REPLAY}/replay_H_l6_firewall_no_current_run_mutation_run_1.json",
-        f"{_REPLAY}/replay_H_l6_firewall_no_current_run_mutation_run_2.json",
+        f"{_REPLAY}/replay_J_l6_gauntlet_future_run_run_1.json",
+        f"{_REPLAY}/replay_J_l6_gauntlet_future_run_run_2.json",
     ),
     "REQ-EXIT-OBS-ANTI-BYPASS-001": (
         f"{_REPLAY}/replay_D_anti_bypass_run_1.json",
@@ -556,6 +556,30 @@ def _filter_existing(paths: Sequence[str]) -> List[str]:
     return [p for p in paths if (REPO_ROOT / p).exists()]
 
 
+def _filter_matching_req_id(paths: Sequence[str], req_id: str) -> List[str]:
+    """Drop JSON paths whose `step1_req_id` is present and does not match
+    `req_id`. Files without `step1_req_id` are kept (they are scenario or
+    receipt fixtures shared across REQ_IDs and are validated structurally
+    elsewhere). Non-JSON paths are kept as-is.
+    """
+    out: List[str] = []
+    for p in paths:
+        full = REPO_ROOT / p
+        if not full.is_file() or not p.endswith(".json"):
+            out.append(p)
+            continue
+        try:
+            data = json.loads(full.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            out.append(p)
+            continue
+        if isinstance(data, dict) and "step1_req_id" in data:
+            if data["step1_req_id"] != req_id:
+                continue
+        out.append(p)
+    return out
+
+
 def _load_selection() -> Dict[str, Any]:
     return json.loads(SELECTION_PATH.read_text(encoding="utf-8"))
 
@@ -578,8 +602,12 @@ def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
     code_refs = _filter_existing(CODE_REFERENCES.get(rid, ()))
     validator_refs = _filter_existing(VALIDATOR_REFERENCES.get(rid, ()))
     test_refs = _filter_existing(TEST_REFERENCES.get(rid, ()))
-    artifact_refs = _filter_existing(ARTIFACT_REFERENCES.get(rid, ()))
-    replay_refs = _filter_existing(REPLAY_REFERENCES.get(rid, ()))
+    artifact_refs = _filter_matching_req_id(
+        _filter_existing(ARTIFACT_REFERENCES.get(rid, ())), rid
+    )
+    replay_refs = _filter_matching_req_id(
+        _filter_existing(REPLAY_REFERENCES.get(rid, ())), rid
+    )
     otel_span_refs = list(OTEL_SPAN_REFERENCES.get(rid, ()))
     negative_control_refs = _filter_existing(NEGATIVE_CONTROL_REFERENCES.get(rid, ()))
 
