@@ -212,6 +212,9 @@ ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
         f"{_E2E}/RC-R3/rc_r3_no_bypass_receipt.json",
         f"{_PROOF}/anti_bypass_results.json",
     ),
+    "REQ-L5-STATIC-GOV-DRIFT-001": (
+        f"{_TRACES}/scenario_I_static_governance_drift.json",
+    ),
 }
 _DET1 = "artifacts/e2e/det1/scenarios"
 _DET2 = "artifacts/e2e/det2/scenarios"
@@ -284,6 +287,10 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
         f"{_REPLAY}/replay_D_anti_bypass_run_2.json",
         f"{_DET1}/RC-R3/rc_r3_replay_receipt.json",
         f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
+    ),
+    "REQ-L5-STATIC-GOV-DRIFT-001": (
+        f"{_REPLAY}/replay_I_static_governance_drift_run_1.json",
+        f"{_REPLAY}/replay_I_static_governance_drift_run_2.json",
     ),
 }
 _AB_NEG_MOD = "agentic_core/runtime/prove_requirements/anti_bypass_negatives.py"
