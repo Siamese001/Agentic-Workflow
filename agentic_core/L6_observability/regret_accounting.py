@@ -24,9 +24,67 @@ Pure functions / data structures; persistence is the caller's choice
 
 from __future__ import annotations
 
+import logging
 import threading
 from collections import defaultdict
 from dataclasses import dataclass, field
+
+_LOGGER = logging.getLogger(__name__)
+
+# Constitutional §29 closed-loop wiring (W5.3). Lazy singleton so this module
+# stays importable when `tools.ledgers` is absent.
+_REGRET_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_regret_helper():
+    global _REGRET_HELPER  # noqa: PLW0603
+    if _REGRET_HELPER is not None:
+        return _REGRET_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _REGRET_HELPER = RouterClosedLoopHelper(
+            layer="L6",
+            router="regret",
+            ledger_name="router_l6_regret",
+            repo_area="agentic_core/L6_observability/regret_accounting.py",
+        )
+        return _REGRET_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break regret accounting
+        _LOGGER.debug("RouterClosedLoopHelper unavailable for L6/regret", exc_info=True)
+        return None
+
+
+def _record_regret_sample(sample: "DecisionRegretSample") -> None:
+    """Constitutional §29 — durable write of one regret sample.
+
+    Records the sample with its decision_layer as the ``selected`` field so
+    posterior aggregation by layer comes for free. ``predicted_p_success``
+    uses the chosen reward clamped to [0, 1]; ``eu_score`` carries -regret
+    (more negative = worse decision in expectation).
+
+    Fail-soft: any helper failure is swallowed.
+    """
+    helper = _get_regret_helper()
+    if helper is None:
+        return
+    try:
+        chosen = float(sample.chosen_reward)
+        regret = float(sample.regret)
+        helper.record_decision(
+            selected=str(sample.decision_layer),
+            cell={"decision_layer": str(sample.decision_layer)},
+            predicted_p_success=max(0.0, min(1.0, chosen)),
+            eu_score=-regret,
+            decision_id=str(sample.decision_id),
+            prediction_extras={
+                "chosen_reward": chosen,
+                "best_alternative_reward": float(sample.best_alternative_reward),
+                "regret": regret,
+            },
+        )
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; regret accounting must never break
+        _LOGGER.debug("regret_accounting ledger emit failed", exc_info=True)
 
 from agentic_core.L6_observability.decision_events_schema import DECISION_LAYERS
 
@@ -104,7 +162,13 @@ def aggregate_regret_by_layer(
 
 @dataclass
 class RegretLedger:
-    """Thread-safe accumulator over a session / window."""
+    """Thread-safe accumulator over a session / window.
+
+    W5.3 (closed-loop-l6-promo-regret-wiring-e3c5b9): every ``record`` call
+    now ALSO writes a durable row to ``router_l6_regret`` ledger via the
+    `RouterClosedLoopHelper` so meta-learning can attribute regret across
+    process restarts. The in-memory list is preserved for fast aggregation.
+    """
 
     _samples: list[DecisionRegretSample] = field(default_factory=list)
     _lock: threading.Lock = field(default_factory=threading.Lock)
@@ -112,6 +176,8 @@ class RegretLedger:
     def record(self, sample: DecisionRegretSample) -> None:
         with self._lock:
             self._samples.append(sample)
+        # Constitutional §29 — fail-soft durable write
+        _record_regret_sample(sample)
 
     def total_regret(self) -> float:
         with self._lock:

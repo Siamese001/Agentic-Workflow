@@ -20,8 +20,36 @@ Three pure-function surfaces:
 
 from __future__ import annotations
 
+import logging
 import math
 from dataclasses import dataclass
+
+_LOGGER = logging.getLogger(__name__)
+
+# Constitutional §29 closed-loop wiring (W5.3). The helper is imported lazily
+# inside `promotion_decision` so this module stays importable when
+# `tools.ledgers` is absent (e.g. isolated unit tests).
+_PROMO_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_promo_helper():
+    """Lazy singleton for the L6/promo RouterClosedLoopHelper."""
+    global _PROMO_HELPER  # noqa: PLW0603
+    if _PROMO_HELPER is not None:
+        return _PROMO_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _PROMO_HELPER = RouterClosedLoopHelper(
+            layer="L6",
+            router="promo",
+            ledger_name="router_l6_promo",
+            repo_area="agentic_core/L6_observability/promotion_gates.py",
+        )
+        return _PROMO_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break promotion gating
+        _LOGGER.debug("RouterClosedLoopHelper unavailable for L6/promo", exc_info=True)
+        return None
 
 
 @dataclass(frozen=True)
@@ -93,7 +121,7 @@ def promotion_decision(
     candidate = wilson_interval(candidate_successes, candidate_n, z=z)
     baseline = wilson_interval(baseline_successes, baseline_n, z=z)
     if candidate.n < min_n_each_arm or baseline.n < min_n_each_arm:
-        return PromotionVerdict(
+        verdict = PromotionVerdict(
             promote=False,
             reason=(
                 f"insufficient sample (need {min_n_each_arm} per arm; "
@@ -102,8 +130,19 @@ def promotion_decision(
             candidate=candidate,
             baseline=baseline,
         )
+        _record_promo_decision(
+            verdict=verdict,
+            candidate_successes=candidate_successes,
+            candidate_n=candidate_n,
+            baseline_successes=baseline_successes,
+            baseline_n=baseline_n,
+            min_n_each_arm=min_n_each_arm,
+            z=z,
+        )
+        return verdict
+    verdict: PromotionVerdict
     if candidate.lower > baseline.upper:
-        return PromotionVerdict(
+        verdict = PromotionVerdict(
             promote=True,
             reason=(
                 f"candidate lower={candidate.lower:.4f} > "
@@ -112,7 +151,17 @@ def promotion_decision(
             candidate=candidate,
             baseline=baseline,
         )
-    return PromotionVerdict(
+        _record_promo_decision(
+            verdict=verdict,
+            candidate_successes=candidate_successes,
+            candidate_n=candidate_n,
+            baseline_successes=baseline_successes,
+            baseline_n=baseline_n,
+            min_n_each_arm=min_n_each_arm,
+            z=z,
+        )
+        return verdict
+    verdict = PromotionVerdict(
         promote=False,
         reason=(
             f"CIs overlap (candidate=[{candidate.lower:.4f}, {candidate.upper:.4f}], "
@@ -121,6 +170,58 @@ def promotion_decision(
         candidate=candidate,
         baseline=baseline,
     )
+    _record_promo_decision(
+        verdict=verdict,
+        candidate_successes=candidate_successes,
+        candidate_n=candidate_n,
+        baseline_successes=baseline_successes,
+        baseline_n=baseline_n,
+        min_n_each_arm=min_n_each_arm,
+        z=z,
+    )
+    return verdict
+
+
+def _record_promo_decision(
+    *,
+    verdict: PromotionVerdict,
+    candidate_successes: int,
+    candidate_n: int,
+    baseline_successes: int,
+    baseline_n: int,
+    min_n_each_arm: int,
+    z: float,
+) -> None:
+    """Constitutional §29 — emit ROUTER_DECISION + write durable ledger row.
+
+    Fail-soft: any helper failure is swallowed so promotion gating is never
+    broken by telemetry. Records the FULL Wilson interval evidence so
+    downstream calibration can audit each verdict.
+    """
+    helper = _get_promo_helper()
+    if helper is None:
+        return
+    try:
+        helper.record_decision(
+            selected="promote" if verdict.promote else "reject",
+            cell={"min_n_each_arm": int(min_n_each_arm), "z": float(z)},
+            predicted_p_success=float(verdict.candidate.lower),
+            eu_score=float(verdict.candidate.lower - verdict.baseline.upper),
+            prediction_extras={
+                "candidate_successes": int(candidate_successes),
+                "candidate_n": int(candidate_n),
+                "baseline_successes": int(baseline_successes),
+                "baseline_n": int(baseline_n),
+                "candidate_lower": float(verdict.candidate.lower),
+                "candidate_upper": float(verdict.candidate.upper),
+                "baseline_lower": float(verdict.baseline.lower),
+                "baseline_upper": float(verdict.baseline.upper),
+                "promote": bool(verdict.promote),
+                "verdict_reason": str(verdict.reason),
+            },
+        )
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; promotion must never break
+        _LOGGER.debug("promotion_decision ledger emit failed", exc_info=True)
 
 
 @dataclass(frozen=True)

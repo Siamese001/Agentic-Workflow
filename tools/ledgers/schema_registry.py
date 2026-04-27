@@ -169,6 +169,36 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
             "AND 4 consecutive in-band weekly calibration reports"
         ),
     ),
+    LedgerSpec(
+        name="router_l6_promo",
+        purpose=(
+            "L6/promo router (promotion_decision) verdicts — Wilson CI floors "
+            "+ candidate vs baseline (k, n) per constitutional §29 row #9."
+        ),
+        schema_file="router_l6_promo_ledger.schema.sql",
+        writer_hook="agentic_core/L6_observability/promotion_gates.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l6-promo/SKILL.md",
+        wave="W5.3",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
+        name="router_l6_regret",
+        purpose=(
+            "L6/regret router (RegretLedger.record) per-decision regret samples "
+            "— top-offender layer attribution per constitutional §29 row #10."
+        ),
+        schema_file="router_l6_regret_ledger.schema.sql",
+        writer_hook="agentic_core/L6_observability/regret_accounting.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l6-regret/SKILL.md",
+        wave="W5.3",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
 )
 
 
