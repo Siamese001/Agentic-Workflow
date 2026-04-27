@@ -46,13 +46,17 @@ class ResultClass(str, Enum):
 
 
 class TerminalStamp(str, Enum):
-    """E5.5 terminal stamp — v3 spec literal + v4 DEGRADED_SUCCESS."""
+    """E5.5 terminal stamp — v3 spec literal + v4 DEGRADED_SUCCESS + v5 RC."""
 
     SUCCESS = "SUCCESS"
     FAILURE = "FAILURE"
     NEEDS_HELP = "NEEDS_HELP"
     REJECTED = "REJECTED"
     DEGRADED_SUCCESS = "DEGRADED_SUCCESS"  # v4
+    # v5 (04.5a INV-RC-4): validator-side and heal-side L2ResolutionContext
+    # digests did not match. Sealed REJECTED with this terminal class blocks
+    # heal entirely — no model/tool/agent invocation, no proposed_state_diff.
+    VALIDATOR_AGENT_RESOLUTION_MISMATCH = "VALIDATOR_AGENT_RESOLUTION_MISMATCH"
 
 
 class RepairStatus(str, Enum):

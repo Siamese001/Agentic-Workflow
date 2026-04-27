@@ -51,10 +51,7 @@ _NON_CALLSITE_FILES = frozenset(
 
 
 def _iter_l2_python_files() -> list[Path]:
-    return [
-        p for p in L2_PROD_ROOT.rglob("*.py")
-        if "__pycache__" not in p.parts
-    ]
+    return [p for p in L2_PROD_ROOT.rglob("*.py") if "__pycache__" not in p.parts]
 
 
 def _extract_span_call_literals(path: Path) -> list[tuple[str, int]]:

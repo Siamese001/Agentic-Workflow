@@ -490,9 +490,7 @@ class L2PhasePipeline:
     ) -> DispatchReceipt:
         # v4: derive dispatch_target from terminal class + L3 context.
         last_attempt = attempts[-1] if attempts else None
-        commit_requested = bool(
-            last_attempt and last_attempt.proposed_state_diff
-        )
+        commit_requested = bool(last_attempt and last_attempt.proposed_state_diff)
         dispatch_target: DispatchTarget = derive_dispatch_target(
             is_l3_managed=self._config.is_l3_managed,
             terminal=terminal_stamp,
@@ -505,9 +503,7 @@ class L2PhasePipeline:
             TerminalStamp.REJECTED,
             TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH,
         )
-        downstream_recommendation = self._recommend_downstream(
-            terminal_stamp, decisive_reason
-        )
+        downstream_recommendation = self._recommend_downstream(terminal_stamp, decisive_reason)
         return DispatchReceipt(
             dispatch_receipt_id=DispatchReceipt.new_id(),
             sealed_l2_artifact_id=f"sealed-{uuid.uuid4().hex}",
@@ -515,9 +511,7 @@ class L2PhasePipeline:
             determinism=prep.determinism,
             lineage=prep.lineage,
             prep_receipt_id=prep.prep_receipt_id,
-            validation_packet_id=(
-                validation.validation_packet_id if validation else None
-            ),
+            validation_packet_id=(validation.validation_packet_id if validation else None),
             attempt_receipt_ids=tuple(a.attempt_receipt_id for a in attempts),
             heal_receipt_ids=tuple(h.repair_attempt_id for h in heals),
             decisive_reason=decisive_reason,
@@ -529,9 +523,7 @@ class L2PhasePipeline:
         )
 
     @staticmethod
-    def _recommend_downstream(
-        terminal: TerminalStamp, decisive: str
-    ) -> str:
+    def _recommend_downstream(terminal: TerminalStamp, decisive: str) -> str:
         """v4 §E5.5 downstream_recommendation hint string."""
         if terminal is TerminalStamp.SUCCESS:
             return "allow"
@@ -565,9 +557,7 @@ class L2PhasePipeline:
         """
         # E1.5 duplicate guard (v4) — derive idempotency_key the same way
         # _prep() does, then check the cache before doing any work.
-        idempotency_key = (
-            f"idem-{determinism.input_hash}-{determinism.attempt_seed}"
-        )
+        idempotency_key = f"idem-{determinism.input_hash}-{determinism.attempt_seed}"
         cache = self._config.duplicate_cache
         if cache is not None and idempotency_key in cache:
             return cache[idempotency_key]
@@ -606,9 +596,7 @@ class L2PhasePipeline:
             rejection_reason=v_raw.rejection_reason,
             classified_side_effect=v_raw.classified_side_effect,
         )
-        validator_ctx: L2ResolutionContext | None = (
-            v_raw.validator_resolution_context
-        )
+        validator_ctx: L2ResolutionContext | None = v_raw.validator_resolution_context
         validator_dig: str = v_raw.validator_resolution_digest
 
         e2_attrs = self._phase_attrs(
@@ -637,11 +625,7 @@ class L2PhasePipeline:
 
         # 04.5a — emit l2.resolution.validate when the validator surfaced
         # a complete resolution context + digest AND enforcement is on.
-        if (
-            self._config.enforce_resolution_consistency
-            and validator_ctx is not None
-            and validator_dig != ""
-        ):
+        if self._config.enforce_resolution_consistency and validator_ctx is not None and validator_dig != "":
             emit_validate_span(
                 validator_resolution_digest=validator_dig,
                 request_id=validator_ctx.request_id,
@@ -668,9 +652,7 @@ class L2PhasePipeline:
             # Sealed rejection — no E3 work performed (v3 §E2 fail path).
             # Emit the E5 seal spans even on rejection so the trace is
             # complete (rejection is still a sealed terminal class).
-            seal_attrs = self._phase_attrs(
-                prep, extra={"terminal_class": TerminalStamp.REJECTED.value}
-            )
+            seal_attrs = self._phase_attrs(prep, extra={"terminal_class": TerminalStamp.REJECTED.value})
             for span_name in (
                 "l2.e5.seal.payload_package",
                 "l2.e5.seal.evidence_package",
@@ -778,10 +760,7 @@ class L2PhasePipeline:
                 # because INV-RC-5 forbids counting blocked attempts).
                 repair_count -= 1
                 terminal = TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
-                decisive = (
-                    f"validator_agent_resolution_mismatch:"
-                    f"{exc.evidence.first_mismatched_field}"
-                )
+                decisive = f"validator_agent_resolution_mismatch:{exc.evidence.first_mismatched_field}"
                 # Build dispatch first to get sealed_l2_artifact_id, then
                 # emit l2.heal.blocked with that id so observability can
                 # tie the blocked event to the sealed artifact.
