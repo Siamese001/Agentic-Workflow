@@ -301,20 +301,12 @@ class L2PhasePipeline:
         )
 
     # ---- E2 VALID ------------------------------------------------------
-
-    def _validate(self, prep: PrepReceipt) -> ValidationReceipt:
-        v = self._validator(prep)
-        return ValidationReceipt(
-            validation_packet_id=ValidationReceipt.new_id(),
-            prep_receipt_id=prep.prep_receipt_id,
-            outcome=v.outcome,
-            determinism=prep.determinism,
-            lineage=prep.lineage,
-            rules_passed=v.rules_passed,
-            failed_rule=v.failed_rule,
-            rejection_reason=v.rejection_reason,
-            classified_side_effect=v.classified_side_effect,
-        )
+    # NOTE (audit 2026-04-26): the previous private helper ``_validate``
+    # was removed because the v5 resolution-context capture path required
+    # validation to be inlined in ``run()`` so that the validator-side
+    # ``L2ResolutionContext`` and digest can be threaded directly into
+    # ``_heal()``. The unreferenced helper was a dead-code hazard — any
+    # caller restoring it would silently bypass the v5 resolution surface.
 
     # ---- E3 EXEC -------------------------------------------------------
 
@@ -755,10 +747,15 @@ class L2PhasePipeline:
                 )
             except ResolutionMismatchError as exc:
                 # 04.5a Phase 5 — sealed REJECTED with terminal class
-                # VALIDATOR_AGENT_RESOLUTION_MISMATCH. No heal recorded
-                # (repair_count was just incremented; we DECREMENT it back
-                # because INV-RC-5 forbids counting blocked attempts).
-                repair_count -= 1
+                # VALIDATOR_AGENT_RESOLUTION_MISMATCH. INV-RC-5 forbids
+                # counting blocked attempts: ``heals.append(heal)`` is
+                # never reached on this path, so ``len(heals)`` (used by
+                # ``_dispatch`` to derive ``heal_receipt_ids``) already
+                # excludes the blocked attempt. We do NOT decrement
+                # ``repair_count`` here because (a) it is local to the
+                # repair loop, (b) we ``return`` immediately so no later
+                # iteration reads it, and (c) ``_dispatch`` does not
+                # consume it. Audit 2026-04-26.
                 terminal = TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
                 decisive = f"validator_agent_resolution_mismatch:{exc.evidence.first_mismatched_field}"
                 # Build dispatch first to get sealed_l2_artifact_id, then
@@ -811,30 +808,40 @@ class L2PhasePipeline:
                 "l2.e4.heal.oscillation_guard",
                 "l2.e4.heal.revalidate",
                 "l2.e4.heal.receipt_emit",
-                # Spec-04.5 additions — same-authority resolution checks.
-                # These spans MUST fire before l2.heal.executed so the
-                # trace records the validator-side / heal-side digest
-                # comparison; if the comparison fails the heal is blocked
-                # at the policy plane, not silently retried.
-                "l2.resolution.validate",
-                "l2.resolution.heal",
-                "l2.resolution.compare",
             ):
                 with self._emitter.span(span_name, attrs=e4_attrs):
                     pass
-            # Per spec 04.5a, ``l2.heal.executed`` fires whenever the
-            # heal runs (regardless of whether the heal outcome is PASS,
-            # NEEDS_HELP, ESCALATE_ARTIFACT, or FAIL_TERMINAL). Its
-            # counterpart ``l2.heal.blocked`` is owned by the resolution
-            # consistency gate (``resolution_consistency_gate.py``) which
-            # raises BEFORE the heal is dispatched when the validator and
-            # heal-side resolution digests disagree. Emitting
-            # ``l2.heal.blocked`` here on a NEEDS_HELP outcome would
-            # mis-report a successful-but-inconclusive heal as a policy
-            # block, polluting the meta-learning signal that distinguishes
-            # "heal couldn't fix it" from "heal was forbidden".
-            with self._emitter.span("l2.heal.executed", attrs=e4_attrs):
-                pass
+            # 04.5a resolution spans (l2.resolution.validate / .heal /
+            # .compare) are emitted by ``_heal()`` and ``run()`` via the
+            # ``l2_resolution_spans`` helper module with the doctrine-
+            # required attribute set (validator_resolution_digest,
+            # heal_resolution_digest, resolution_match, etc.). They are
+            # NOT emitted here through L2SpanEmitter because ``e4_attrs``
+            # carries the per-iteration repair attrs, not the canonical
+            # resolution-context attrs the doctrine specifies. Emitting
+            # them in both places caused double-emission on the OTel
+            # wire (audit 2026-04-26).
+            #
+            # ``l2.heal.executed`` fires whenever heal runs regardless of
+            # outcome (PASS / NEEDS_HELP / ESCALATE_ARTIFACT /
+            # FAIL_TERMINAL). The blocked counterpart is emitted by the
+            # resolution consistency gate path above when the validator
+            # and heal-side digests disagree. ``sealed_artifact_id`` is
+            # left empty on a per-iteration emission because the sealed
+            # artifact is constructed once post-loop in ``_dispatch``;
+            # the L6 trace correlator binds spans to sealed artifacts
+            # via ``trace_id``.
+            emit_executed_span(
+                # When enforcement is off (legacy callers) validator_ctx
+                # is None and there is no doctrine-bound trace_id; fall
+                # back to "" so observability still records the event
+                # without inventing a synthetic trace.
+                trace_id=(validator_ctx.trace_id if validator_ctx is not None else ""),
+                sealed_artifact_id="",
+                repair_count=repair_count,
+                max_repair_count=self._config.max_repairs,
+                terminal_class=heal.outcome.value,
+            )
 
             if heal.outcome is HealOutcomeStamp.PASS:
                 # Loop back to E3 with another attempt.

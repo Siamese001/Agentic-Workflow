@@ -44,6 +44,10 @@ L2_E2_SPANS: tuple[str, ...] = (
     "l2.e2.valid.safety_sanity",
     "l2.e2.valid.executability",
     "l2.e2.valid.receipt_emit",
+    # Spec-04.3 additions: agent resolution spans bind validator identity
+    # to the trace so heal-side resolution can be cross-checked.
+    "l2.e2.valid.resolve_agent",
+    "l2.e2.valid.resolution_digest_emit",
 )
 
 
@@ -74,6 +78,21 @@ L2_E4_SPANS: tuple[str, ...] = (
 )
 
 
+# Spec-04.5 additions: same-authority resolution-context spans.
+# Cross-check that the validator-side and heal-side L2ResolutionContext
+# agree before any repair runs. Mismatch fires l2.heal.blocked; match
+# fires l2.heal.executed. These belong to E4 phase scope but use a
+# distinct prefix because they describe the resolution-context comparison
+# layer (not the per-step repair pipeline).
+L2_RESOLUTION_SPANS: tuple[str, ...] = (
+    "l2.resolution.validate",
+    "l2.resolution.heal",
+    "l2.resolution.compare",
+    "l2.heal.blocked",
+    "l2.heal.executed",
+)
+
+
 L2_E5_SPANS: tuple[str, ...] = (
     "l2.e5.seal.payload_package",
     "l2.e5.seal.evidence_package",
@@ -99,8 +118,42 @@ L2_PTC_SPANS: tuple[str, ...] = (
 )
 
 
+# Sequencer spans (spec 04.0 §OTEL SPANS).
+L2_SEQUENCER_SPANS: tuple[str, ...] = (
+    "l2.sequencer.receive",
+    "l2.sequencer.state_transition",
+    "l2.sequencer.call_e1_prep",
+    "l2.sequencer.call_e2_valid",
+    "l2.sequencer.call_e3_exec",
+    "l2.sequencer.call_e4_heal",
+    "l2.sequencer.call_e5_seal",
+    "l2.sequencer.receipt_emit",
+)
+
+
+# Mutation-intent / state-diff candidate spans (spec 04.9 §OTEL SPANS).
+L2_MUTATION_SPANS: tuple[str, ...] = (
+    "l2.mutation.detect",
+    "l2.state_diff_candidate.build",
+    "l2.state_diff_candidate.local_validate",
+    "l2.state_diff_candidate.manifest_emit",
+)
+
+
+# Local-critique spans (spec 04.10 — observability requirement).
+L2_LOCAL_CRITIQUE_SPANS: tuple[str, ...] = (
+    "l2.local_critique.pre_invocation",
+    "l2.local_critique.post_invocation",
+    "l2.local_critique.schema_sanity",
+    "l2.local_critique.tool_args_sanity",
+    "l2.local_critique.script_safety_sanity",
+    "l2.local_critique.artifact_sanity",
+    "l2.local_critique.receipt_emit",
+)
+
+
 def all_l2_span_names() -> tuple[str, ...]:
-    """Return every canonical L2 span name (E1..E5 + PTC).
+    """Return every canonical L2 span name (E1..E5 + PTC + Sequencer + Mutation + LocalCritique).
 
     Used by anti-bypass tests to assert that every emitted span is
     well-known and that no rogue span name leaks into telemetry.
@@ -110,8 +163,12 @@ def all_l2_span_names() -> tuple[str, ...]:
         *L2_E2_SPANS,
         *L2_E3_SPANS,
         *L2_E4_SPANS,
+        *L2_RESOLUTION_SPANS,
         *L2_E5_SPANS,
         *L2_PTC_SPANS,
+        *L2_SEQUENCER_SPANS,
+        *L2_MUTATION_SPANS,
+        *L2_LOCAL_CRITIQUE_SPANS,
     )
 
 
@@ -220,8 +277,12 @@ __all__ = [
     "L2_E3_SPANS",
     "L2_E4_SPANS",
     "L2_E5_SPANS",
+    "L2_LOCAL_CRITIQUE_SPANS",
+    "L2_MUTATION_SPANS",
     "L2_PTC_SPANS",
     "L2_REQUIRED_SPAN_ATTRIBUTES",
+    "L2_RESOLUTION_SPANS",
+    "L2_SEQUENCER_SPANS",
     "L2SpanAttributeViolation",
     "all_l2_span_names",
     "validate_span_attributes",

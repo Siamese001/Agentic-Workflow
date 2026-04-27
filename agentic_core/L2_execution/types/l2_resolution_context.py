@@ -210,10 +210,9 @@ class L2ResolutionContext:
                 canonical[name] = list(value)
             else:
                 canonical[name] = value
-        # asdict() converts enum to the enum's str value already if Enum
-        # subclasses str, but be defensive:
-        if isinstance(canonical.get("repair_authority_class"), RepairAuthorityClass):
-            canonical["repair_authority_class"] = canonical["repair_authority_class"].value
+        # The loop above already coerces every RepairAuthorityClass via
+        # ``value.value``. The previous "be defensive" follow-up block
+        # was dead code (audit 2026-04-26) and has been removed.
         return canonical
 
     def digest(self) -> str:
