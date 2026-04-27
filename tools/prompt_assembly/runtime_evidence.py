@@ -1,7 +1,7 @@
 """Prompt Assembly Runtime-Evidence Harness.
 
 Walks every requirement extracted from
-``docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/*.md`` and emits a
+``docs/reference/03B_PA_Prompt_Assembly/*.md`` and emits a
 PASS/FAIL evidence object proving each one against the actually-loaded
 runtime objects in ``agentic_core.prompt_governance.prompt_assembly``.
 
@@ -109,15 +109,15 @@ from tools.prompt_assembly.doctrine_parser import (  # noqa: E402
 
 
 DOCTRINE_FILES = {
-    "PARENT": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/Prompt_Assembly_detailed.md",
-    "PA.0": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.0_Boundary_Check_detailed.md",
-    "PA.1": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md",
-    "PA.2": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.2_Slot_Composition_detailed.md",
-    "PA.3": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md",
-    "PA.4": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md",
-    "PA.5": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md",
-    "PA.6": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md",
-    "PA.7": "docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md",
+    "PARENT": "docs/reference/03B_PA_Prompt_Assembly/Prompt_Assembly.md",
+    "PA.0": "docs/reference/03B_PA_Prompt_Assembly/PA.0_Boundary_Check.md",
+    "PA.1": "docs/reference/03B_PA_Prompt_Assembly/PA.1_Load_Resolve_Prompt_BOM.md",
+    "PA.2": "docs/reference/03B_PA_Prompt_Assembly/PA.2_Slot_Composition.md",
+    "PA.3": "docs/reference/03B_PA_Prompt_Assembly/PA.3_Airlock_Security_Pass.md",
+    "PA.4": "docs/reference/03B_PA_Prompt_Assembly/PA.4_Validate_Slot_Contract.md",
+    "PA.5": "docs/reference/03B_PA_Prompt_Assembly/PA.5_Token_Budget_Determinism.md",
+    "PA.6": "docs/reference/03B_PA_Prompt_Assembly/PA.6_Provider_Aware_Rendering.md",
+    "PA.7": "docs/reference/03B_PA_Prompt_Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact.md",
 }
 
 
@@ -1934,8 +1934,6 @@ def check_parser_robustness() -> list[_Row]:
     Synthetic .md content covers: missing section, blank file, repeated
     headings, non-bullet noise lines, section terminated by next heading.
     """
-    from tools.prompt_assembly.doctrine_parser import _extract_section
-
     rows: list[_Row] = []
 
     cases = [
@@ -2089,14 +2087,16 @@ def check_pipeline_negative_paths() -> list[_Row]:
 
 
 # ----------------------------------------------------------------------
-# Hardening categories — close open scope around PA.8, parent doctrine,
-# per-child forbidden blocks, child MUST NOT clauses, and parser edges.
+# Hardening categories — added by the harden-pass to close the open
+# scope around PA.8, parent doctrine, per-child forbidden blocks,
+# child MUST NOT clauses, and parser edge hardening.
 # ----------------------------------------------------------------------
 
 
 def check_parent_status_vocabulary() -> list[_Row]:
-    """PARENT_VOCAB: every status in the parent doctrine STATUS
-    VOCABULARY block resolves to PAStatus AND is claimed by some stage.
+    """PARENT_VOCAB: every status name in the parent doctrine's
+    ``STATUS VOCABULARY`` block resolves to a member of :class:`PAStatus`
+    AND is claimed by at least one stage in :data:`STAGE_TO_STATUSES`.
     """
     rows: list[_Row] = []
     extra = _parse_doctrine_extra(_REPO_ROOT)
@@ -2108,7 +2108,7 @@ def check_parent_status_vocabulary() -> list[_Row]:
                 "PARENT",
                 "PARENT_VOCAB",
                 "Parent doctrine STATUS VOCABULARY parsed at least one entry",
-                {"parsed_count": 0},
+                {"parsed_count": 0, "hint": "check section heading and bullet syntax"},
             )
         )
         return rows
@@ -2150,9 +2150,10 @@ def check_parent_status_vocabulary() -> list[_Row]:
 
 
 def check_child_forbidden_doctrine() -> list[_Row]:
-    """CHILD_FORBID_DOCTRINE: every PA.0..PA.7 child's FORBIDDEN OUTPUTS
-    block (a) parses non-empty, (b) is subset of parent master,
-    (c) inherits every parent forbidden token (no silent drop).
+    """CHILD_FORBID_DOCTRINE: every PA.0..PA.7 child's ``FORBIDDEN
+    OUTPUTS FROM THIS CHILD`` block (a) parses non-empty, (b) is a
+    subset of the parent master forbidden set, (c) inherits every
+    parent forbidden token (no silent drop).
     """
     rows: list[_Row] = []
     parsed = _parse_doctrine_all(_REPO_ROOT)
@@ -2218,6 +2219,9 @@ def check_child_forbidden_doctrine() -> list[_Row]:
     return rows
 
 
+# Each PA.0..PA.7 doctrine MUST NOT block lists abbreviated verb
+# keywords. This map records which verb keyword corresponds to which
+# member(s) of the parent master forbidden set.
 _MUST_NOT_KEYWORD_TO_FORBIDDEN: dict[str, set[str]] = {
     "retrieve": {"call_provider", "execute_tool"},
     "route": {"REROUTE"},
@@ -2225,14 +2229,23 @@ _MUST_NOT_KEYWORD_TO_FORBIDDEN: dict[str, set[str]] = {
     "execute": {"execute_tool", "approve_execution"},
     "approve": {"approve_execution", "approve_output", "approve_write"},
     "commit": {"COMMIT_REQUEST", "approve_write", "mutate_l4"},
-    "emit": {"ALLOW", "DENY", "REROUTE", "ESCALATE_HITL", "COMMIT_REQUEST", "BLOCK_COMMIT", "ALLOW_FINISH"},
+    "emit": {
+        "ALLOW",
+        "DENY",
+        "REROUTE",
+        "ESCALATE_HITL",
+        "COMMIT_REQUEST",
+        "BLOCK_COMMIT",
+        "ALLOW_FINISH",
+    },
     "silently": {"MARK_DEGRADED", "SAFE_FALLBACK"},
 }
 
 
 def check_child_must_not_doctrine() -> list[_Row]:
-    """MUST_NOT_DOCTRINE: every keyword in each PA.0..PA.7 MUST NOT
-    section maps to >=1 member of the parent forbidden set.
+    """MUST_NOT_DOCTRINE: every keyword in each PA.0..PA.7 child's
+    ``MUST NOT`` section maps to at least one member of the parent's
+    forbidden disposition + execution-verb set.
     """
     rows: list[_Row] = []
     parsed = _parse_doctrine_all(_REPO_ROOT)
@@ -2284,15 +2297,21 @@ def check_child_must_not_doctrine() -> list[_Row]:
 
 
 _PA8_RULE_CHECKS: list[tuple[str, str, str]] = [
-    ("C0", "C0/tool/human text are data-only slots", "detect_authority_violations"),
-    ("R0", "R0 schema is bound to provider-native fields", "R0SchemaBinding"),
+    (
+        "C0",
+        "C0/tool/human text are data-only slots (instructions never promoted)",
+        "detect_authority_violations",
+    ),
+    ("R0", "R0 schema is bound to provider-native fields, not merely prose", "R0SchemaBinding"),
     ("Provider", "Provider rendering must not silently reorder authority slots", "render_for_provider"),
-    ("Token", "Token trimming must never drop S0/D0/required policy refs/R0", "BUDGET_TRIM_ORDER"),
+    ("Token", "Token trimming must never drop S0/D0/required policy refs/R0 binding", "BUDGET_TRIM_ORDER"),
 ]
 
 
 def check_pa8_rules() -> list[_Row]:
-    """PA8_RULES: every PA.8 rule keyword has a runtime artefact."""
+    """PA8_RULES: every PA.8 rule keyword has a corresponding runtime
+    artefact (function or type) that enforces the rule.
+    """
     rows: list[_Row] = []
     extra = _parse_doctrine_extra(_REPO_ROOT)
     pa8 = extra.get("PA.8", {})
@@ -2367,8 +2386,9 @@ _PA8_TEST_EQUIVALENTS: dict[str, list[str]] = {
 
 
 def check_pa8_test_coverage() -> list[_Row]:
-    """PA8_TESTS: every PA.8 TEST REQUIREMENTS test name is covered
-    (literal or documented functional equivalent in PA test corpus).
+    """PA8_TESTS: every PA.8 ``TEST REQUIREMENTS`` test name is present
+    in the test corpus, either by literal function name OR by a
+    documented functional equivalent.
     """
     rows: list[_Row] = []
     extra = _parse_doctrine_extra(_REPO_ROOT)
@@ -2449,8 +2469,9 @@ _PA8_CONTRACT_FIELD_COVERAGE: dict[str, str] = {
 
 
 def check_pa8_contracts() -> list[_Row]:
-    """PA8_CONTRACTS: every PA.8 CONTRACTS TO IMPLEMENT field token is
-    absorbed by a PA package symbol or a recursively-walked receipt key.
+    """PA8_CONTRACTS: every PA.8 ``SlotAuthorityProof`` /
+    ``PromptInjectionFixture`` field token has a corresponding runtime
+    symbol or canonical receipt key (recursively walked).
     """
     rows: list[_Row] = []
     extra = _parse_doctrine_extra(_REPO_ROOT)
@@ -2534,7 +2555,9 @@ def check_pa8_contracts() -> list[_Row]:
 
 
 def check_parser_edge_hardening() -> list[_Row]:
-    """PARSER_EDGE_HARDENING: parser handles 7 additional edge cases."""
+    """PARSER_EDGE_HARDENING: parser handles encoding/whitespace/marker
+    edge cases not covered by the original PARSER_ROBUSTNESS suite.
+    """
     rows: list[_Row] = []
     cases = [
         (
@@ -2559,7 +2582,7 @@ def check_parser_edge_hardening() -> list[_Row]:
             _extract_section,
             ("STATUS VALUES",),
             ["Star1", "Star2"],
-            "Asterisk-style bullets are captured",
+            "Asterisk-style bullets are captured (mixed marker tolerance)",
         ),
         (
             "unicode_bullet_marker",
@@ -2690,7 +2713,7 @@ def main() -> int:
     rows += check_parser_robustness()
     rows += check_pipeline_endtoend()
     rows += check_pipeline_negative_paths()
-    # Hardening categories.
+    # --- Hardening categories (added by the harden-pass) -----
     rows += check_parent_status_vocabulary()
     rows += check_child_forbidden_doctrine()
     rows += check_child_must_not_doctrine()
