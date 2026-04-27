@@ -1,302 +1,154 @@
 ========================================================================================================================
 MECE ALIGNMENT FULL OVERWRITE HEADER
-Canonical folder: 00B_L4_State_Archive_and_UWG
-Canonical file: 00_L4_State_Archive_and_UWG.md
-Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
-Source refreshed from: 00_L4_State_Archive_and_UWG.md
-Owner summary: Cross-cutting durable state and Universal Write Gateway plane. L4 owns system-of-record read surfaces; UWG is the only durable write admission path.
-
-GLOBAL NO-OVERLAP LAW
-- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
-- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
-- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
-- 00X owns traceability and no-loss mapping only.
-- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
-- 02 L1 owns advisory interpretation and planning only.
-- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
-- 04 L2 owns bounded execution and sealing only.
-- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
-- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
-- 99 owns proof harnesses only; it does not own runtime behavior.
-
-REFERENCE POINTERS
-- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
-- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
-- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
-- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
-- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+Canonical filename: 00B_L4_State_Archive_and_UWG.md
+Layer / subsystem: 00B — L4 State, Archive, and UWG (parent)
+Parent file: docs/reference/README.md
+Ownership surface: Durable system-of-record state (policy/blueprint/registry, memory and learning promotion, retrieval surface, cache, replay snapshot/audit ledger, read surface refresh, blueprint/policy migration) AND the Universal Write Gateway (sole durable-write admission).
+Overwrite mode: full-file, no-overlap, executable contract
+No-overlap boundary: 00B owns L4 state and UWG admission. It does not own planning (02), routing (03), retrieval (03A), prompt assembly (03B), execution (04), Exit disposition (05), or L6 learning mechanics (06). Live gate verdicts are 00C; certification is 00A; E2E proof is 99.
+Source authority notes: Anchored on `00X` REQ_ID registry; aligned with constitutional §22, §23, §24.
+Predecessor preserved at: `00B_L4_State_Archive_and_UWG.md.pre-reqid-rewrite.bak`
 ========================================================================================================================
 
-========================================================================================================================
-00_L4_STATE_ARCHIVE_AND_UWG_DETAILED.md
-PARENT L4 STATE / ARCHIVE + UWG DOCTRINE
-NO-OVERLAP FULL OVERWRITE
-========================================================================================================================
-
-PURPOSE
+1. PURPOSE
 ------------------------------------------------------------------------------------------------------------------------
-This parent file defines L4 State / Archive and UWG durable write admission at doctrine level only.
+This parent uniquely owns:
+- the durable system-of-record state contract
+- the **Universal Write Gateway** sole-admission invariant for durable writes
+- the read surface refresh / projection rule
+- the per-state-domain parent REQ_IDs
 
-L4 is the durable system-of-record layer for policies, registries, memory, snapshots, caches, retrieval surfaces,
-audit ledgers, replay surfaces, and committed state. L4 is the permanent archive and read-surface authority.
+It does **not** own:
+- per-domain detail (lives in `00B.1`..`00B.9`)
+- live gate decisions (00C)
+- certification evidence (00A)
+- runtime planning, routing, retrieval, prompt assembly, execution, Exit, or L6 mechanics
 
-UWG is the only durable write gateway into L4. UWG admits durable mutations only after a cleared Exit packet produces a
-CommitRequest and the write passes schema, policy, replay, audit, lock, blast-radius, rollback, and read-surface refresh
-validation.
-
-PARENT ROLE
+2. AUTHORITY BOUNDARY
 ------------------------------------------------------------------------------------------------------------------------
-- Define L4 durable state doctrine.
-- Define UWG only-write doctrine.
-- Define no-overlap law.
-- Define source ownership boundaries.
-- Define the child file map.
-- Define canonical L4/UWG outputs and anti-bypass laws.
-- Define traceability expectations across children.
+**Upstream inputs**:
+- `CommitRequest` from Exit (the only path to durable writes)
+- L4 read requests from any layer
+- Snapshot/audit refresh triggers
 
-PARENT DOES NOT OWN CHILD IMPLEMENTATION DETAIL
+**Downstream outputs**:
+- `UWGCommitReceipt` per accepted commit
+- L4 read projections (cache state, retrieval surface, registry/policy/blueprint state)
+
+**Forbidden behaviors**:
+- 00B MUST NOT make routing or final-response decisions.
+- 00B MUST NOT skip UWG; every durable write goes through UWG.
+- 00B MUST NOT issue certifications (00A only).
+- 00B MUST NOT mutate state on a non-cleared `CommitRequest`.
+
+**Allowed outputs only**: durable state, read projections, UWG commit receipts, snapshot/audit ledger entries.
+
+3. REQ_ID NAMESPACE
 ------------------------------------------------------------------------------------------------------------------------
-The child files own implementation-grade detail. This parent should not restate their full contracts.
+This pack owns rows under `REQ-L4-*` and `REQ-UWG-*`.
 
-Child details are intentionally moved into:
-- 00.1 through 00.8 below.
-
-SOURCE FILES TO TREAT AS AUTHORITY
+4. ATOMIC REQUIREMENTS TABLE (PARENT-LEVEL INVARIANTS)
 ------------------------------------------------------------------------------------------------------------------------
-- docs/reference/agentic_system_process_map_exec.md
-- docs/reference/00A_L5_Governance_Safety/00A_L5_Governance_Safety.md
-- docs/reference/05_Live_Runtime_Exit_Control_&_Evaluation.md
-- docs/reference/00C_Runtime_Gates_Current_Run_Mesh/
-- docs/reference/04_L2_Execute.md
-- docs/reference/C0_Context_Engine.md
-- docs/reference/Prompt_Assembly.md
-- docs/reference/06_Shadow_Evaluation_System_Learning.md
-- docs/reference/01_request_intake.md
-- docs/reference/02_L1_Reasoning_Plan_Generation.md
-- docs/reference/03_L0_Route_Decision_Switching_L3.md
-- docs/reference/Programmatic Tool Calling (PTC) v2.md
 
-WHY THIS PARENT EXISTS
+| REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-UWG-SOLE-DURABLE-WRITE-001` | UWG MUST be the sole durable-write admission gateway into L4. Direct writes from L0, L1, C0, PA, L3, L2, HITL, L5, or L6 are FORBIDDEN. | 00B.6 | `CommitRequest` | `UWGCommitReceipt` | every L4 mutation has a matching `UWGCommitReceipt`; no orphan mutations | `uwg.commit` parent span | `uwg_commit_receipt_<commit_id>.json` | `validator: uwg_sole_admission_validator` (release-gate) | `NC-UWG-DIRECT-WRITE-001`: any layer mutates L4 without UWG | `direct_l4_write_attempt` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-UWG-CLEARED-COMMIT-001` | UWG MUST accept only cleared `CommitRequest` (cleared by Exit X1J/X3C). Uncleared requests are rejected with `BLOCK_COMMIT`. | 00B.6 | `CommitRequest` | `UWGCommitReceipt` or `UWGRejection` | receipt carries `clearance_proof_id`; rejection carries reason | `uwg.commit` span; `uwg.reject` span | `uwg_commit_receipt.json` or `uwg_rejection.json` | `validator: uwg_clearance_validator` (release-gate) | `NC-UWG-UNCLEARED-001`: bypass clearance proof | `uwg_uncleared_commit_attempt` | `byte_identical` | DOC_ONLY |
+| `REQ-UWG-LOCK-RECEIPT-AUDIT-001` | Every accepted commit MUST produce: write lock acquisition, atomic commit, receipt with `commit_id`, audit-ledger append, rollback metadata. | 00B.6 | `CommitRequest` | `UWGCommitReceipt` | receipt fields complete; audit ledger append confirmed | `uwg.commit` span events: `lock_acquired`, `commit_atomic`, `receipt_emit`, `audit_appended` | `uwg_commit_receipt.json`, `audit_ledger.append` | `validator: uwg_commit_completeness_validator` (release-gate) | `NC-UWG-PARTIAL-COMMIT-001`: receipt without audit append | `audit_append_missing` | `byte_identical` | DOC_ONLY |
+| `REQ-UWG-VALIDATE-PRE-COMMIT-001` | UWG MUST run validation against `policy_hash`, `blueprint_hash`, `registry_digest_set`, capability_token, and the staged diff before commit. Validation failure produces `UWGRejection`. | 00B.6 | `CommitRequest` | validation result | validation receipt links commit_id | `uwg.validate` span | `uwg_validation_receipt.json` | `validator: uwg_validation_validator` (release-gate) | `NC-UWG-VALIDATE-SKIP-001`: commit without validation | `uwg_validation_skipped` | `byte_identical` | DOC_ONLY |
+| `REQ-L4-DURABLE-STATE-001` | L4 MUST be the sole durable system-of-record for: policy/blueprint/registry state, memory and learning promotions, retrieval surface, cache, replay snapshots, audit ledger. Other layers hold ephemeral copies only. | 00B.1..00B.5 | post-UWG state | (read projections) | every read of canonical state resolves through L4 | `l4.read_projection` span | `l4_read_projection_<domain>.json` | `validator: l4_canonical_read_validator` (CI) | `NC-L4-SHADOW-WRITE-001`: a layer keeps a divergent shadow copy as canonical | `l4_shadow_canonical_violation` | `byte_identical` | DOC_ONLY |
+| `REQ-L4-POLICY-BLUEPRINT-MIGRATION-001` | Policy/blueprint migrations MUST be additive and versioned; in-flight runs use the `policy_hash`/`blueprint_hash` bound at run start. | 00B.9 | migration plan | new versions | migration receipt links old/new hashes | `l4.migration` span | `l4_policy_blueprint_migration.json` | `validator: l4_migration_validator` (release-gate) | `NC-L4-MIGRATION-MID-RUN-001`: in-flight run sees new policy_hash | `policy_hash_drift_mid_run` | `byte_identical` | DOC_ONLY |
+| `REQ-L4-READ-PROJECTION-001` | L4 read projections MUST present a deterministic snapshot tied to the run's `policy_hash` and `blueprint_hash`. | 00B.7 | read request | projection | each projection carries `snapshot_id`, `policy_hash`, `blueprint_hash` | `l4.read_projection` span | `l4_read_projection.json` | `validator: l4_read_projection_validator` (release-gate) | `NC-L4-PROJECTION-DRIFT-001`: projection emits stale snapshot for current run | `l4_projection_snapshot_drift` | `byte_identical` | DOC_ONLY |
+| `REQ-L4-REPLAY-SNAPSHOT-001` | The replay snapshot manifest MUST be reproducible for any sealed run from the audit ledger and policy/blueprint state. | 00B.5 | run id | replay manifest | manifest links `run_id`, snapshot ids, policy_hash, blueprint_hash | `l4.replay_manifest` span | `replay_snapshot_manifest.json` | `validator: l4_replay_snapshot_validator` (release-gate) | `NC-L4-REPLAY-MISMATCH-001`: replay manifest disagrees with audit ledger | `replay_manifest_audit_mismatch` | `byte_identical` | DOC_ONLY |
+| `REQ-L4-AUDIT-LEDGER-CHAIN-001` | The audit ledger MUST be hash-chained; every commit append carries `prev_chain_hash` and `chain_hash`. Chain breaks are FAIL. | 00B.5 | commit events | audit ledger | every entry has `prev_chain_hash`+`chain_hash` | `l4.audit_append` span | `audit_ledger_append.json` | `validator: l4_audit_chain_validator` (release-gate) | `NC-L4-CHAIN-FORGE-001`: chain hash forged | `audit_chain_forgery` | `byte_identical` | DOC_ONLY |
+| `REQ-UWG-OBSERVABILITY-001` | UWG MUST emit observability and anti-bypass signals on every admission attempt (accepted or rejected). | 00B.8 | admission attempts | observability stream | every attempt logged with `commit_id` or `reject_id` | `uwg.observability` span | `uwg_observability.json` | `validator: uwg_observability_validator` (release-gate) | `NC-UWG-DARK-ATTEMPT-001`: write attempt not logged | `uwg_dark_admission` | `byte_identical` | DOC_ONLY |
+| `REQ-UWG-CONTEXT-INVARIANT-001` | UWG MUST preserve a durable-write context invariant: identical inputs produce identical commit_id and receipt content_hash for accepted commits. | 00B.7a | commit set | (durability) | replay produces identical receipt content_hash | `uwg.context_invariant` span | `uwg_context_invariant_receipt.json` | `validator: uwg_context_invariant_validator` (release-gate) | `NC-UWG-CTX-DRIFT-001`: identical inputs produce different content_hash | `uwg_context_drift` | `byte_identical` | DOC_ONLY |
+| `REQ-UWG-STATE-AUDIT-REPLAY-CONSISTENCY-001` | Cross-store consistency: state, audit ledger, and replay snapshot MUST agree for every committed run. | 00B.8a | committed run | (cross-check) | three-way digest agreement | `uwg.state_audit_replay_check` span | `uwg_state_audit_replay_consistency.json` | `validator: uwg_state_audit_replay_consistency_validator` (release-gate) | `NC-UWG-3WAY-DRIFT-001`: state stored but audit ledger missing entry | `state_audit_replay_inconsistency` | `byte_identical` | DOC_ONLY |
+
+5. RUNTIME EVIDENCE CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
-The wider source set already assigns L4 and UWG ownership, but those responsibilities span too many surfaces for one
-implementation file. A parent + child pack prevents L4 from becoming a dumping ground and keeps UWG distinct from Exit,
-Runtime Gates, L5, L2, C0, Prompt Assembly, and L6.
+Every UWG commit receipt MUST carry: `commit_id`, `request_id`, `run_id`, `trace_id`, `span_id`, `policy_hash`, `blueprint_hash`, `registry_digest_set`, `clearance_proof_id`, `staged_diff_hash`, `prev_chain_hash`, `chain_hash`, `content_hash`, `replay_key`, `validator_receipt_id`.
 
+Every L4 projection / snapshot / audit append MUST carry: `req_id`, `domain`, `snapshot_id`, `policy_hash`, `blueprint_hash`, `chain_hash`, `replay_key`.
+
+6. OTEL SPAN CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Required spans:
+- `uwg.commit` (parent), with events `lock_acquired`, `commit_atomic`, `receipt_emit`, `audit_appended`
+- `uwg.reject` for rejected commits
+- `uwg.validate`
+- `uwg.observability`
+- `uwg.context_invariant`
+- `uwg.state_audit_replay_check`
+- `l4.read_projection`, `l4.replay_manifest`, `l4.audit_append`, `l4.migration`
+
+Required attributes: `req_id`, `policy_hash`, `blueprint_hash`, `replay_key`. For UWG: `commit_id` or `reject_id`. For L4: `domain`, `snapshot_id`, `chain_hash`.
+
+7. VALIDATOR CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+- `uwg_sole_admission_validator` (release-gate)
+- `uwg_clearance_validator` (release-gate)
+- `uwg_commit_completeness_validator` (release-gate)
+- `uwg_validation_validator` (release-gate)
+- `uwg_observability_validator` (release-gate)
+- `uwg_context_invariant_validator` (release-gate)
+- `uwg_state_audit_replay_consistency_validator` (release-gate)
+- `l4_canonical_read_validator` (CI)
+- `l4_migration_validator` (release-gate)
+- `l4_read_projection_validator` (release-gate)
+- `l4_replay_snapshot_validator` (release-gate)
+- `l4_audit_chain_validator` (release-gate)
+
+8. NEGATIVE CONTROL CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Every `NC-UWG-*` and `NC-L4-*` listed in §4 has a target REQ_ID, tamper kind, expected validator, and `Expected Fail Reason` matching the row. Two cross-pack invariants:
+- Any `NC-*-DIRECT-WRITE-*` from upstream packs (e.g. `NC-L2-DIRECT-L4-WRITE-*`, `NC-EXIT-DIRECT-WRITE-*`, `NC-L6-DIRECT-WRITE-*`) MUST trip `REQ-UWG-SOLE-DURABLE-WRITE-001`.
+- A successful commit's audit append MUST be inseparable from the receipt; receipt-without-append is `audit_append_missing`.
+
+9. REPLAY CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Every UWG commit receipt and L4 projection MUST replay byte-identical for the same `(domain, policy_hash, blueprint_hash, registry_digest_set, input)`. Allowed nondeterminism: only `commit_id` (uuid4) for receipts and `snapshot_id` for projections; receipt `content_hash` MUST match.
+
+10. RELEASE GATE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+A 00B row's `Release Gate` is `PASS` only when:
+- UWG is the sole admission path (no orphan mutations)
+- Every commit has receipt + audit append + validation receipt
+- Every L4 projection carries the run's policy_hash/blueprint_hash
+- All cross-store consistency checks pass
+
+11. NO-OVERLAP LOCK
+------------------------------------------------------------------------------------------------------------------------
+**This file owns**: L4 durable state and UWG sole admission.
+
+**Related files own**: per-domain detail in `00B.1`..`00B.9` and `00B.6_UWG_Durable_Write_Gateway.md`.
+
+**Forbidden duplicated ownership**: 00B MUST NOT make runtime gate decisions (00C) or final-response decisions (05). 00C/05 MUST NOT redefine UWG admission rules. 00A MUST NOT issue durable writes.
+
+**Forbidden output vocabulary**: `ALLOW_FINISH`, `DENY`, `REROUTE`, `ESCALATE_HITL`, `SAFE_FALLBACK`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`, `policy_certified`. The token `durable_write_committed` is allowed only inside a `UWGCommitReceipt`.
+
+12. CHILD FILE MAP
+------------------------------------------------------------------------------------------------------------------------
+- `00B.1_L4_Policy_Blueprint_and_Registry_State.md` — `REQ-L4-POLICY-*`, `REQ-L4-BLUEPRINT-*`, `REQ-L4-REGISTRY-*`
+- `00B.2_L4_Memory_and_Learning_Promotion_State.md` — `REQ-L4-MEMORY-*`, `REQ-L4-LEARNING-*`
+- `00B.3_L4_Retrieval_Surface_State.md` — `REQ-L4-RETRIEVAL-SURFACE-*`
+- `00B.4_L4_Cache_State.md` — `REQ-L4-CACHE-*`
+- `00B.5_L4_Replay_Snapshot_and_Audit_Ledger.md` — `REQ-L4-REPLAY-*`, `REQ-L4-AUDIT-*`
+- `00B.6_UWG_Durable_Write_Gateway.md` — `REQ-UWG-*`
+- `00B.7_L4_Read_Surface_Refresh_and_Projection.md` — `REQ-L4-PROJECTION-*`
+- `00B.7a_L4_UWG_Durable_Write_Context_Invariant.md` — `REQ-UWG-CONTEXT-*`
+- `00B.8_L4_UWG_Observability_Tests_and_Anti_Bypass.md` — `REQ-UWG-OBSERVABILITY-*`
+- `00B.8a_L4_UWG_State_Audit_Replay_Consistency_Tests.md` — `REQ-UWG-STATE-AUDIT-REPLAY-*`
+- `00B.9_L4_Blueprint_Policy_Version_Migration.md` — `REQ-L4-MIGRATION-*`
+
+13. ACCEPTANCE CRITERIA
+------------------------------------------------------------------------------------------------------------------------
+- Every parent invariant row in §4 has all 13 cells filled.
+- The UWG sole-admission rule is binding and validated.
+- Every L4 store has a child file with its own atomic table (deferred — see deferred scope).
+- The audit-chain rule is fail-closed.
+- The cross-store consistency rule is fail-closed.
+- Forbidden output vocabulary in §11 reproduces the global ban list.
+
+END OF 00B — L4 STATE ARCHIVE AND UWG PARENT
 ========================================================================================================================
-SOURCE OWNERSHIP BOUNDARY
-========================================================================================================================
-
-L4 OWNS DURABLE STATE AND READ SURFACES:
-- policy manifests and policy_hash records
-- blueprint records and blueprint_hash records
-- registry snapshots and registry_digest records
-- tool / model / provider / connector / capability / sandbox / schema / grader / route / prompt-slot registries
-- memory stores, approved examples, rubrics, threshold profiles, feedback records, and promoted patterns
-- exact cache and semantic cache entries with evidence lineage
-- canonical source chunks, source manifests, dense vectors, sparse / BM25 indexes, metadata indexes, graph projections,
-  ADG snapshots, runtime graph snapshots, citation anchors, ACL tags, and freshness metadata
-- replay snapshots, environment digests, deterministic hash records, audit ledgers, commit receipts, rollback records,
-  alias swap receipts, index refresh receipts, and read-surface refresh receipts
-
-UWG OWNS DURABLE MUTATION ADMISSION INTO L4:
-- CommitRequest validation
-- StateDiff validation
-- write lock acquisition
-- atomic commit
-- blocked commit receipt
-- rollback admission and rollback receipt
-- read-surface refresh declaration
-- audit ledger append receipt
-
-L4 / UWG DO NOT OWN:
-- request ingress validation
-- user intent interpretation
-- route selection
-- evidence retrieval/scoring
-- prompt assembly
-- workflow orchestration
-- bounded execution
-- live runtime gate verdicts
-- final current-run disposition
-- L5 certification evidence mechanics
-- completed-run RCA or learning proposal generation
-- final user answers
-
-========================================================================================================================
-GLOBAL NO-OVERLAP LOCK
-========================================================================================================================
-
-- U0 / Intake owns request envelope validation and request identity stamping.
-- L1 owns intent interpretation, task_spec, query_spec, ambiguity register, and plan recommendation.
-- L0 owns route selection and RouteContract authority.
-- C0 owns evidence retrieval, shaping, verification, support score, and FinalEvidenceContract.
-- Prompt Assembly owns signed provider-ready PromptEnvelope construction.
-- L3 owns managed workflow shaping.
-- L2 owns bounded execution and sealed artifacts, including PTC sandbox execution where applicable.
-- Runtime Gates own G01-G29 gate verdicts.
-- Exit Eval owns current-run disposition and may emit CommitRequest, but does not write L4.
-- L5 owns policy, authority, origin-trust, egress, HITL re-clearance, replay/audit certification evidence.
-- UWG owns durable write admission.
-- L4 owns durable system-of-record state and versioned read surfaces.
-- L6 owns completed-run evaluation, RCA, proposal, and future-run learning promotion attempts.
-
-SPECIAL MECE BOUNDARY FOR PTC:
-- PTC is not owned by L4/UWG.
-- PTC script authoring may be model-side plan/workflow shaping, and execution is L2 sandbox-owned.
-- L4 stores only durable registries, receipts, traces, audit records, and approved future-run policy/memory changes related
-  to PTC after UWG approval.
-- UWG only commits approved durable state changes that result from a PTC path. UWG never executes PTC scripts.
-
-========================================================================================================================
-HARD WRITE LAW
-========================================================================================================================
-
-No direct writes to L4 from:
-- U0 / Intake
-- L1
-- L0
-- C0
-- Prompt Assembly
-- L3
-- L2
-- Exit Eval
-- HITL
-- L5
-- L6
-- tools
-- models
-- connectors
-- background evaluators
-- ad hoc scripts
-- PTC sandbox code
-
-Only UWG may write to L4.
-
-Every durable mutation must pass through this sequence:
-
-  Exit cleared packet
-      -> CommitRequest
-      -> UWG validation
-      -> write lock
-      -> atomic commit
-      -> commit receipt
-      -> read-surface refresh
-      -> audit ledger append
-
-No layer may replace this sequence with a direct file write, direct database write, direct cache promotion, direct memory
-promotion, direct policy alias swap, direct registry update, or direct graph/index rebuild.
-
-========================================================================================================================
-CANONICAL CHILD FILE MAP
-========================================================================================================================
-
-00.1_L4_Policy_Blueprint_and_Registry_State.md
-- Unique surface: Durable policy, blueprint, and registry records.
-- Owns: policy manifests, policy versions, blueprint records, registry snapshots, tool/model/provider/capability/schema
-  registries, aliases, digests, deprecation state, fail-closed lookup behavior.
-- Does not own: live gate decisions, L5 certification mechanics, Exit dispositions, L2 execution, C0 retrieval, or L6 RCA.
-
-00.2_L4_Memory_and_Learning_Promotion_State.md
-- Unique surface: Durable memory and approved learning state.
-- Owns: MemoryRecord, approved examples, rubrics, threshold profiles, feedback records, LearningPromotionRecord, promoted
-  patterns, and raw/evaluated/approved/promoted separation.
-- Does not own: L6 completed-run evaluation, RCA, proposal drafting, or current-run learning.
-
-00.3_L4_Retrieval_Surface_State.md
-- Unique surface: Durable retrieval substrates and manifests.
-- Owns: canonical chunks, source manifests, dense vector manifests, sparse/BM25 manifests, metadata indexes, graph
-  projection manifests, ADG/runtime graph snapshot refs, citation anchors, ACL/freshness metadata.
-- Does not own: C0 retrieval planning, fetching, shaping, support scoring, or FinalEvidenceContract.
-
-00.4_L4_Cache_State.md
-- Unique surface: Exact and semantic cache state.
-- Owns: CacheEntry, normalized_request_hash, semantic embedding refs, answer refs, evidence contract refs, policy/freshness
-  compatibility, cache invalidation receipts.
-- Does not own: L0 route selection, C0 support scoring, Exit allow/deny decisions, or answer generation.
-
-00.5_L4_Replay_Snapshot_and_Audit_Ledger.md
-- Unique surface: Replay reconstruction and append-only audit state.
-- Owns: replay snapshots, snapshot manifests, environment digest refs, deterministic hash records, AuditLedgerRecord,
-  commit/blocked/rollback/alias/index/policy/registry/memory receipts.
-- Does not own: L2 sealing mechanics, live replay gate verdicts, or L6 RCA.
-
-00.6_UWG_Durable_Write_Gateway.md
-- Unique surface: Durable write admission and atomic mutation.
-- Owns: CommitRequest validation, StateDiff validation, write lock, atomic commit, blocked commit, rollback, commit receipt,
-  and audit append handoff.
-- Does not own: Exit disposition decision, Runtime Gate verdict design, L5 certification production, or durable state models
-  that belong to child 00.1-00.5.
-
-00.7_L4_Read_Surface_Refresh_and_Projection.md
-- Unique surface: Post-commit read-surface refresh and projection rebuilds.
-- Owns: policy alias refresh, registry alias refresh, cache invalidation, vector rebuild, sparse rebuild, metadata refresh,
-  graph projection refresh, memory projection refresh, prompt BOM cache refresh, route baseline refresh.
-- Does not own: C0 runtime retrieval, L0 routing, Prompt Assembly composition, or UWG write validation.
-
-00.8_L4_UWG_Observability_Tests_and_Anti_Bypass.md
-- Unique surface: Cross-pack OTEL, tests, proof commands, anti-bypass detection.
-- Owns: required spans, span fields, direct-write tests, replay proof tests, read-scope tests, anti-bypass acceptance criteria.
-- Does not own: source-specific implementation logic already owned by 00.1-00.7.
-
-========================================================================================================================
-CANONICAL OUTPUT VOCABULARY
-========================================================================================================================
-
-L4 / UWG may emit:
-- L4StateRef
-- L4SnapshotManifest
-- PolicyManifest
-- PolicyVersionRecord
-- BlueprintRecord
-- RegistrySnapshot
-- MemoryRecord
-- LearningPromotionRecord
-- RetrievalSurfaceManifest
-- CacheEntry
-- CacheInvalidationReceipt
-- ReplaySnapshotRecord
-- AuditLedgerRecord
-- CommitRequestReceipt
-- StateDiffValidationReceipt
-- WriteLockReceipt
-- UWGValidationReceipt
-- UWGCommitReceipt
-- UWGBlockedCommitReceipt
-- UWGRollbackReceipt
-- ReadSurfaceRefreshReceipt
-- AuditLedgerAppendReceipt
-
-L4 / UWG must not emit:
-- runtime gate dispositions
-- final user answers
-- route decisions
-- model/tool outputs
-- C0 evidence judgments
-- PromptEnvelope objects
-- L5 certification verdicts
-- L6 RCA narratives
-
-========================================================================================================================
-PARENT ACCEPTANCE CRITERIA
-========================================================================================================================
-
-This parent is complete only when:
-- It defines L4 as durable state authority.
-- It defines UWG as the only durable write authority.
-- It separates L4 state from L5 certification.
-- It separates UWG commit from Exit disposition.
-- It separates durable memory from raw L6 telemetry.
-- It assigns policy, registry, cache, retrieval, memory, replay, audit, write, refresh, and anti-bypass surfaces to children.
-- It does not duplicate Runtime Gates, Exit Eval, C0, Prompt Assembly, L2, L5 child details, PTC execution mechanics, or L6
-  learning mechanics.
-
-========================================================================================================================
-END OF 00_L4_STATE_ARCHIVE_AND_UWG_DETAILED.md
-========================================================================================================================
-========================================================================================================================
-GAP-CLOSED PARENT UPDATE | VERSION MIGRATION
-========================================================================================================================
-00B.9_L4_Blueprint_Policy_Version_Migration.md is now the canonical child for durable version migration, compatibility,
-deprecation, alias swaps, and rollback requirements for policy/blueprint/registry-related surfaces. UWG remains the only write path.

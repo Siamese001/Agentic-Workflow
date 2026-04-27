@@ -31,7 +31,19 @@
     "99.8_E2E_Acceptance_Commands_and_Proof_Bundle.md",
     "99.9_E2E_Mutation_Testing_Boundary_Faults.md",
     "99.10_E2E_Fixtures_Replay_Harness_Commands.md",
+    "99.11_E2E_Requirements_To_Runtime_Evidence_Compiler.md",
     "99_End_to_End_Runtime_Proof_and_Acceptance.md",
     "README.md"
-  ]
+  ],
+  "reqid_overhaul_2026_04_26": {
+    "added_files": [
+      "99.11_E2E_Requirements_To_Runtime_Evidence_Compiler.md"
+    ],
+    "rewritten_files": [
+      "99_End_to_End_Runtime_Proof_and_Acceptance.md"
+    ],
+    "namespaces": ["REQ-E2E-*", "REQ-TRACE-*", "REQ-COMPILER-*"],
+    "rule_source": "../00X_Requirements_Traceability_and_No_Loss_Map.md",
+    "compiler_contract": "99.11_E2E_Requirements_To_Runtime_Evidence_Compiler.md"
+  }
 }

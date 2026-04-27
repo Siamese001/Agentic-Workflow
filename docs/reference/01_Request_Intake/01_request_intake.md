@@ -1,340 +1,120 @@
 ========================================================================================================================
 MECE ALIGNMENT FULL OVERWRITE HEADER
-Canonical folder: 01_Request_Intake
-Canonical file: 01_request_intake.md
-Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
-Source refreshed from: 01_request_intake.md
-Owner summary: U0 intake only. Owns transport/envelope validation, identity/session/tenant baseline, quota, schema normalization, origin labels, and ValidatedRequest/RejectedRequest handoff.
-
-GLOBAL NO-OVERLAP LAW
-- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
-- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
-- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
-- 00X owns traceability and no-loss mapping only.
-- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
-- 02 L1 owns advisory interpretation and planning only.
-- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
-- 04 L2 owns bounded execution and sealing only.
-- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
-- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
-- 99 owns proof harnesses only; it does not own runtime behavior.
-
-REFERENCE POINTERS
-- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
-- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
-- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
-- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
-- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+Canonical filename: 01_request_intake.md
+Layer / subsystem: 01 — Request Intake / U0 (parent)
+Parent file: docs/reference/README.md
+Ownership surface: Request envelope validation; identity/tenant/session/quota baseline; schema normalization and idempotency; origin-trust injection triage and data labeling; rejection vs ValidatedRequest emission; intake observability and anti-bypass.
+Overwrite mode: full-file, no-overlap, executable contract
+No-overlap boundary: Intake validates and stamps. It does not reason (L1), retrieve (C0), route (L0), execute (L2), mutate (L4 / UWG), approve (L5), evaluate (L6), or decide final disposition (Exit).
+Source authority notes: Anchored on `00X` REQ_ID registry; aligned with constitutional §22, §23, §24.
+Predecessor preserved at: `01_request_intake.md.pre-reqid-rewrite.bak`
 ========================================================================================================================
 
+1. PURPOSE
+------------------------------------------------------------------------------------------------------------------------
+This parent uniquely owns:
+- the envelope-validation contract (`ValidatedRequest` vs `RejectedRequest`)
+- the request_id/session_id/trace_root stamping invariant
+- the identity/tenant/quota baseline contract
+- the schema normalization & idempotency rules
+- the origin-trust labeling at intake
+- the intake observability/anti-bypass invariants
+
+It does **not** own:
+- planning, routing, retrieval, execution, durable writes, gates, certification, or learning
+
+2. AUTHORITY BOUNDARY
+------------------------------------------------------------------------------------------------------------------------
+**Upstream inputs**: raw transport request (HTTP/grpc/queue).
+
+**Downstream outputs**: `ValidatedRequest` (handed to L1) OR `RejectedRequest` (terminal).
+
+**Forbidden behaviors**: any reasoning, retrieval, routing, execution, mutation, approval; the only allowed verbs are `validate`, `stamp`, `normalize`, `label`, `emit`, `reject`.
+
+**Allowed outputs only**: `ValidatedRequest`, `RejectedRequest`, intake observability stream.
+
+3. REQ_ID NAMESPACE
+------------------------------------------------------------------------------------------------------------------------
+This pack owns rows under `REQ-U0-*`.
+
+4. ATOMIC REQUIREMENTS TABLE (PARENT-LEVEL INVARIANTS)
+------------------------------------------------------------------------------------------------------------------------
+
+| REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-U0-INGRESS-ENVELOPE-001` | Intake MUST validate the request envelope (transport, schema, headers, payload type) before any downstream processing. | 01.1 | raw request | `ValidatedRequest` or `RejectedRequest` | `ValidatedRequest.envelope_validated=true` with envelope schema hash | `u0.envelope_validate` parent span | `validated_request_<request_id>.json` or `rejected_request_<request_id>.json` | `validator: u0_envelope_validator` (release-gate) | `NC-U0-MALFORMED-ENVELOPE-001`: send malformed payload | `envelope_schema_violation` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-U0-IDENTITY-STAMP-001` | Intake MUST stamp `request_id`, `session_id`, `trace_root`, `caller_scope_baseline` on the validated request. | 01.2 | validated envelope | `ValidatedRequest` | all 4 fields present and uuid-valid | `u0.identity_stamp` span | `validated_request.json` carries fields | `validator: u0_identity_stamp_validator` (release-gate) | `NC-U0-MISSING-STAMP-001`: missing `trace_root` | `intake_stamp_missing` | `byte_identical` | DOC_ONLY |
+| `REQ-U0-QUOTA-BASELINE-001` | Intake MUST enforce per-tenant/per-caller quota at baseline; over-quota requests emit `RejectedRequest` with `reason_code=quota_exceeded`. | 01.2 | validated envelope + tenant ledger | `ValidatedRequest` or `RejectedRequest` | quota check receipt linked to `caller_scope_baseline` | `u0.quota_check` span | `quota_check_receipt.json` | `validator: u0_quota_validator` (release-gate) | `NC-U0-QUOTA-BYPASS-001`: over-quota request admitted | `quota_bypass` | `byte_identical` | DOC_ONLY |
+| `REQ-U0-SCHEMA-NORMALIZE-001` | Intake MUST normalize the request payload to the canonical schema before emitting `ValidatedRequest`; normalization is deterministic. | 01.3 | validated envelope | normalized payload | `validated_request.payload_schema_hash` matches canonical schema | `u0.schema_normalize` span | `validated_request.json` | `validator: u0_schema_normalize_validator` (release-gate) | `NC-U0-SCHEMA-DRIFT-001`: payload not normalized | `schema_normalize_skipped` | `byte_identical` | DOC_ONLY |
+| `REQ-U0-IDEMPOTENCY-001` | Intake MUST detect duplicate requests by canonical `idempotency_key` and emit a `RejectedRequest` (or replay receipt) for duplicates. | 01.3 | normalized payload | `RejectedRequest` or replay | duplicate detection receipt | `u0.idempotency_check` span | `idempotency_receipt.json` | `validator: u0_idempotency_validator` (release-gate) | `NC-U0-DUP-ADMIT-001`: duplicate request runs twice | `duplicate_request_admitted` | `byte_identical` | DOC_ONLY |
+| `REQ-U0-ORIGIN-TRIAGE-001` | Intake MUST inject an origin-trust label and triage data labeling before handoff. | 01.4 | validated payload | labeled payload | `validated_request.origin_trust_class` and `data_labels[]` populated | `u0.origin_triage` span | `validated_request.json` | `validator: u0_origin_triage_validator` (release-gate) | `NC-U0-MISLABEL-001`: untrusted origin labeled trusted | `origin_trust_mislabel_at_intake` | `byte_identical` | DOC_ONLY |
+| `REQ-U0-REJECTION-TERMINAL-001` | A `RejectedRequest` MUST be terminal: it MUST NOT be forwarded to L1; it MUST emit a sealed rejection receipt. | 01.5 | rejection decision | `RejectedRequest` | rejection sealed; no L1 invocation in trace | `u0.reject` span | `rejected_request.json` | `validator: u0_rejection_terminal_validator` (release-gate) | `NC-U0-REJECT-FORWARD-001`: rejected request reaches L1 | `rejected_request_forwarded` | `byte_identical` | DOC_ONLY |
+| `REQ-U0-VALIDATED-HANDOFF-001` | A `ValidatedRequest` MUST be the sole entry into L1; L1 MUST refuse any input that is not a `ValidatedRequest`. | 01.5 | `ValidatedRequest` | (handoff to L1) | L1 plan span has `parent_contract_id` = validated_request id | `u0.handoff_to_l1` span | `validated_request.json` | `validator: u0_handoff_validator` (release-gate) | `NC-U0-RAW-TO-L1-001`: raw request reaches L1 | `l1_received_unvalidated_input` | `byte_identical` | DOC_ONLY |
+| `REQ-U0-OBSERVABILITY-001` | Intake MUST emit observability and anti-bypass signals on every request (admitted or rejected). | 01.6 | every request | observability stream | every request logged with `request_id` and outcome | `u0.observability` span | `intake_observability.json` | `validator: u0_observability_validator` (release-gate) | `NC-U0-DARK-INTAKE-001`: request silently dropped without observability entry | `intake_dark_drop` | `byte_identical` | DOC_ONLY |
+
+5. RUNTIME EVIDENCE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+`ValidatedRequest` MUST carry: `request_id`, `session_id`, `trace_root`, `caller_scope_baseline`, `payload_schema_hash`, `idempotency_key`, `origin_trust_class`, `data_labels[]`, `envelope_validated=true`, `received_at_utc`, `policy_hash`, `blueprint_hash`, `replay_key`.
+
+`RejectedRequest` MUST carry: `request_id`, `trace_root`, `reason_code`, `evidence_refs[]`, `received_at_utc`.
+
+6. OTEL SPAN CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Span tree: `u0.intake [trace_root]` → {`u0.envelope_validate`, `u0.identity_stamp`, `u0.quota_check`, `u0.schema_normalize`, `u0.idempotency_check`, `u0.origin_triage`, `u0.handoff_to_l1` | `u0.reject`, `u0.observability`}.
+
+Required attributes: `req_id`, `request_id`, `trace_root`, `caller_scope_baseline`, `policy_hash`, `blueprint_hash`, `replay_key`. Status code: `OK` for admitted, `ERROR` for rejected with `attributes.fail_reason_code`.
+
+7. VALIDATOR CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+- `u0_envelope_validator` (release-gate)
+- `u0_identity_stamp_validator` (release-gate)
+- `u0_quota_validator` (release-gate)
+- `u0_schema_normalize_validator` (release-gate)
+- `u0_idempotency_validator` (release-gate)
+- `u0_origin_triage_validator` (release-gate)
+- `u0_rejection_terminal_validator` (release-gate)
+- `u0_handoff_validator` (release-gate)
+- `u0_observability_validator` (release-gate)
+
+8. NEGATIVE CONTROL CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Each `NC-U0-*` row in §4 is mandatory; each MUST trip the matching validator with `reason_code` equal to the row's `Expected Fail Reason`.
+
+9. REPLAY CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+For fixed input, `ValidatedRequest` content MUST replay byte-identical (modulo `request_id`, `received_at_utc`). The `payload_schema_hash`, `idempotency_key`, `origin_trust_class`, and `data_labels[]` MUST be deterministic.
+
+10. RELEASE GATE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+A 01 row's `Release Gate` is `PASS` only when intake validates, stamps, normalizes, labels, and routes correctly with all negative controls tripping with matching reason codes.
+
+11. NO-OVERLAP LOCK
+------------------------------------------------------------------------------------------------------------------------
+**This file owns**: U0 envelope validation, identity stamping, schema normalization, idempotency, origin labeling, rejection emission, intake observability.
+
+**Related files own**: per-stage detail in `01.1`..`01.6`.
+
+**Forbidden duplicated ownership**: Intake MUST NOT plan (L1), route (L0), retrieve (C0), execute (L2), mutate (UWG), approve (L5), or evaluate (L6).
+
+**Forbidden output vocabulary**: `ALLOW_FINISH`, `DENY`, `REROUTE`, `ESCALATE_HITL`, `COMMIT_REQUEST_TO_UWG`, `SAFE_FALLBACK`, `durable_write_committed`, `policy_certified`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`.
+
+12. CHILD FILE MAP
+------------------------------------------------------------------------------------------------------------------------
+- `01.1_Intake_Transport_Envelope_Channel_Validation.md` — `REQ-U0-ENVELOPE-*`
+- `01.2_Intake_Identity_Tenant_Session_Quota_Baseline.md` — `REQ-U0-IDENTITY-*`, `REQ-U0-QUOTA-*`
+- `01.3_Intake_Schema_Normalization_and_Idempotency.md` — `REQ-U0-SCHEMA-*`, `REQ-U0-IDEMPOTENCY-*`
+- `01.4_Intake_Origin_Trust_Injection_Triage_Data_Labeling.md` — `REQ-U0-ORIGIN-*`
+- `01.5_Intake_Rejection_ValidatedRequest_and_Handoff_to_L1.md` — `REQ-U0-REJECT-*`, `REQ-U0-HANDOFF-*`
+- `01.6_Intake_Observability_Replay_Anti_Bypass_Tests.md` — `REQ-U0-OBS-*`, `REQ-U0-REPLAY-*`, `REQ-U0-ANTIBYPASS-*`
+
+NOTE: Duplicate filenames `01.1_Intake_Transport_Envelope_and_Channel_Validation.md`, `01.2_Intake_Identity_Tenant_Session_and_Quota_Baseline.md`, `01.4_Intake_Origin_Trust_Injection_Triage_and_Data_Labeling.md`, `01.6_Intake_Observability_Replay_and_Anti_Bypass_Tests.md` are deduped: the canonical files are the ones listed above (no `_and_` infix). The duplicates are flagged for archive in `00X §13 superseded ledger`.
+
+13. ACCEPTANCE CRITERIA
+------------------------------------------------------------------------------------------------------------------------
+- Every parent invariant row in §4 has all 13 cells filled.
+- The 6 child files own their per-stage REQ_IDs (deferred for full conversion).
+- The duplicate filename pairs are de-duplicated.
+- Forbidden output vocabulary in §11 reproduces the global ban list.
+
+END OF 01 — REQUEST INTAKE / U0 PARENT
 ========================================================================================================================
-01_REQUEST_INTAKE_DETAILED.md
-REQUEST INTAKE / U0 — FULL OVERWRITE
-MECE WITH 00A L5, 00B L4/UWG, 00C RUNTIME GATES, AND 02-06 RUNTIME REQUIREMENTS
-========================================================================================================================
-
-PURPOSE
-========================================================================================================================
-This parent file defines Request Intake as the structural ingress and identity-stamping layer for the governed runtime.
-
-Request Intake answers one narrow question:
-
-"Is this inbound request structurally valid, attributable, bounded, quota-safe, traceable, and safe to hand to L1 for
-semantic interpretation?"
-
-The source invariant is strict:
-- U0 validates transport, identity baseline, quotas, schema, and envelope.
-- U0 emits validated_request or rejected_request.
-- U0 assigns request_id, session_id, and trace_root.
-- U0 does not reason, retrieve, route, call tools, call models, execute, or mutate.
-
-This file intentionally removes whole-runtime responsibilities that belong to 00C Runtime Gates, 05 Exit, 00B L4/UWG,
-00A L5, L2, C0, Prompt Assembly, and L6.
-
-GLOBAL NO-OVERLAP LOCK
-========================================================================================================================
-- 00A_L5_Governance_Safety owns policy, authority, origin-trust, egress, HITL re-clearance, replay/audit certification evidence.
-- 00B_L4_State_Archive_and_UWG owns durable state, read surfaces, and the only durable write admission path.
-- 00C_Runtime_Gates_Current_Run_Mesh owns G01-G29 live current-run GateVerdict requirements and gate disposition vocabulary.
-- U0 / 01 Request Intake owns request envelope validation, baseline identity/session/tenant stamping, structural schema normalization, quota/size limits, origin labels, and the ValidatedRequest or RejectedRequest handoff.
-- 02_L1_Reasoning_Plan owns intent interpretation, task_spec, query_spec, ambiguity register, support expectation, and plan recommendation.
-- 03_L0_Route_Decision_and_L3_Orchestration owns route selection, RouteContract authority, and managed workflow shaping.
-- C0_Context_Engine owns evidence retrieval, shaping, verification, support score, and FinalEvidenceContract.
-- PA_Prompt_Assembly owns signed provider-ready PromptEnvelope / CompiledPromptArtifact construction.
-- 04_L2_Execute owns bounded execution, local repair, sealed artifacts, and proposed_state_diff only.
-- 05_Exit_Eval_and_Control owns sealed-result checkout, X1/X2/X3 current-run disposition, HITL review flow, and CommitRequest handoff.
-- 06_L6_Shadow_Evaluation_System_Learning owns completed-run evaluation, RCA, proposal drafting, gauntlet, and future-run learning promotion attempts.
-
-U0 / 01 DOES NOT OWN:
-- semantic planning
-- route authority
-- retrieval
-- prompt assembly
-- tool/model execution
-- workflow expansion
-- final output approval
-- runtime GateVerdict schema
-- L5 certification evidence
-- UWG durable write admission
-- L6 learning
-
-
-U0 HARD BOUNDARY
-========================================================================================================================
-U0 / Request Intake validates whether a request is structurally admissible into the governed runtime.
-
-U0 MAY:
-- accept a transport envelope
-- authenticate or classify caller baseline where available
-- bind request_id, session_id, tenant_id, trace_root, and ingress_timestamp
-- enforce channel, size, quota, duplicate, and envelope schema controls
-- normalize raw payload into a structurally valid request object
-- label origin_trust and data_boundary metadata
-- emit ValidatedRequest or RejectedRequest
-- emit local intake receipts and intake spans
-- hand off to L1 only after the request is structurally valid
-
-U0 MUST NOT:
-- reason about the user's goal
-- infer a route
-- retrieve evidence
-- assemble prompts
-- call tools, models, browsers, connectors, scripts, or humans
-- mutate durable state
-- emit RouteContract
-- emit FinalEvidenceContract
-- emit PromptEnvelope
-- emit SealedL2Artifact
-- emit ExitDisposition
-- emit LearningProposal
-- directly write L4
-
-
-WHY THIS OVERWRITE EXISTS
-========================================================================================================================
-Earlier 01 intake material carried whole-runtime implementation language:
-- G01-G29 runtime gates
-- full deterministic replay across every layer
-- full OTEL proof across every layer
-- evidence packet for the whole system
-- anti-bypass checks for all layers
-
-Those are valid requirements, but they are not U0 ownership.
-They now belong to:
-- 00C_Runtime_Gates_Current_Run_Mesh for G01-G29 and gate verdicts.
-- 00B_L4_State_Archive_and_UWG for durable state and write sovereignty.
-- 05_Exit_Eval_and_Control for X1/X2/X3 disposition.
-- 06_L6_Shadow_Evaluation_System_Learning for completed-run evaluation and future learning.
-- An optional E2E Proof Pack if a single sample run must prove all layers.
-
-01 now owns only the intake surface.
-
-CANONICAL CHILD FILE MAP
-========================================================================================================================
-01.1_Intake_Transport_Envelope_Channel_Validation.md
-- Unique surface: accepted ingress channel, raw envelope, payload size, transport metadata, channel trust baseline.
-- Owns: TransportEnvelope, RawIngressEnvelope, ChannelValidationReceipt.
-- Does not own: semantic safety, task ambiguity, route selection, output policy.
-
-01.2_Intake_Identity_Tenant_Session_Quota_Baseline.md
-- Unique surface: caller baseline, tenant/session binding, quota envelope, duplicate admission baseline.
-- Owns: CallerScopeBaseline, TenantSessionBinding, QuotaBaselineReceipt.
-- Does not own: deep authorization policy, L5 certification, C0 ACL retrieval filtering, UWG write authority.
-
-01.3_Intake_Schema_Normalization_and_Idempotency.md
-- Unique surface: structural schema validation, canonical payload normalization, idempotency and request hash.
-- Owns: NormalizedRequestPayload, IdempotencyReceipt, RequestDigestManifest.
-- Does not own: L1 semantic parsing, L0 route digest, L2 attempt idempotency, replay of downstream artifacts.
-
-01.4_Intake_Origin_Trust_Injection_Triage_Data_Labeling.md
-- Unique surface: origin labels, quoted-content labeling, instruction/data boundary pre-labels, obvious injection triage.
-- Owns: OriginTrustLabelSet, IngressDataBoundaryMap, InjectionTriageReceipt.
-- Does not own: Prompt Assembly slot validation, C0 retrieved-content quarantine, L5 origin certification, final adversarial gate.
-
-01.5_Intake_Rejection_ValidatedRequest_and_Handoff_to_L1.md
-- Unique surface: ValidatedRequest, RejectedRequest, L1 handoff, fail-closed admission result.
-- Owns: ValidatedRequestContract, RejectedRequestContract, L1HandoffReceipt.
-- Does not own: L1PlanContract, RouteContract, ExitDisposition, user-facing final response policy.
-
-01.6_Intake_Observability_Replay_Anti_Bypass_Tests.md
-- Unique surface: intake-only spans, intake-only replay bindings, intake boundary anti-bypass tests.
-- Owns: IntakeTraceReceipt, IntakeReplayBinding, U0BoundaryTestSuite.
-- Does not own: whole-runtime OTEL, G01-G29 gate mesh, Exit trace completeness, L6 telemetry exhaust.
-
-TOP-LEVEL FLOW
-========================================================================================================================
-[ inbound request ]
-        |
-        v
-+-----------------------------+
-| 01.1 TRANSPORT / ENVELOPE   |
-| channel, size, envelope     |
-+-------------+---------------+
-              |
-              v
-+-----------------------------+
-| 01.2 IDENTITY / QUOTA       |
-| caller, tenant, session     |
-+-------------+---------------+
-              |
-              v
-+-----------------------------+
-| 01.3 SCHEMA / NORMALIZE     |
-| canonical request payload   |
-+-------------+---------------+
-              |
-              v
-+-----------------------------+
-| 01.4 ORIGIN / DATA LABELS   |
-| origin trust, intent-as-data|
-+-------------+---------------+
-              |
-              v
-+-----------------------------+
-| 01.5 ADMISSION / HANDOFF    |
-| ValidatedRequest or reject  |
-+-------------+---------------+
-              |
-              v
-[ 02 L1 Reasoning + Plan ]
-
-If any required structural admission check fails:
-[ RejectedRequest ] -> caller-safe rejection path
-No L1, L0, C0, PA, L3, L2, Exit, UWG, or L6 runtime work may run from an invalid envelope.
-
-PARENT CONTRACT SUMMARY
-========================================================================================================================
-RequestEnvelope
-- request_id optional before U0, required after U0
-- raw_channel
-- raw_payload_ref
-- received_at
-- caller_presenting_identity optional
-- client_metadata
-- transport_metadata
-- content_length
-- attachment_refs
-- connector_refs
-- declared_operation if explicit
-- channel_security_context
-
-ValidatedRequest
-- request_id
-- session_id
-- trace_root
-- tenant_id or tenant_unknown marker
-- caller_scope_baseline
-- normalized_payload
-- origin_trust_labels
-- data_boundary_map
-- quota_receipt
-- schema_receipt
-- idempotency_key
-- normalized_request_hash
-- intake_policy_snapshot_ref
-- handoff_allowed = true
-- target_next_surface = 02_L1_REASONING_PLAN
-
-RejectedRequest
-- request_id if available
-- trace_root if available
-- rejection_id
-- rejection_stage
-- rejection_reason_code
-- structural_detail
-- safe_user_message
-- retryable
-- missing_fields
-- quota_status
-- schema_status
-- security_status
-- handoff_allowed = false
-
-U0 FORBIDDEN OUTPUTS
-========================================================================================================================
-U0 must not emit:
-- L1PlanContract
-- RouteContract
-- RetrievalPlan
-- FinalEvidenceContract
-- PromptEnvelope
-- L3WorkflowContract
-- L2ExecutionRequest
-- SealedL2Artifact
-- ExitReviewPacket
-- ExitDisposition
-- CommitRequest
-- UWGCommitReceipt
-- RuntimeExhaustBundle
-- ShadowEvalRecord
-- LearningProposal
-
-U0 may emit only:
-- local intake receipts
-- ValidatedRequest
-- RejectedRequest
-- L1HandoffReceipt
-- intake spans
-- intake replay binding
-
-IMPLEMENTATION TARGETS
-========================================================================================================================
-Preferred logical module layout, adjust to existing repo conventions:
-
-src/
-  request_intake/
-    contracts.py
-    transport.py
-    identity.py
-    quota.py
-    schema.py
-    normalization.py
-    origin_labels.py
-    handoff.py
-    otel.py
-    replay.py
-
-tests/
-  request_intake/
-    test_u0_transport_envelope.py
-    test_u0_identity_quota.py
-    test_u0_schema_normalization.py
-    test_u0_origin_labels.py
-    test_u0_handoff.py
-    test_u0_replay_and_otel.py
-    test_u0_negative_boundaries.py
-
-DISCOVERY REQUIREMENT FOR WINDSURF
-========================================================================================================================
-Before editing code:
-1. Inspect existing request/intake/router/app entrypoint code.
-2. Identify current request envelope, session, auth, quota, and schema utilities.
-3. Identify whether existing runtime gates already implement G01-G05 in 00C.
-4. Identify OTEL helpers and replay/hash helpers.
-5. Identify current tests that accidentally let L1/L0/L2 run from malformed input.
-6. Produce a short implementation plan.
-7. Implement the smallest coherent changes needed to make U0 enforceable and testable.
-
-No broad refactors.
-No unrelated renames.
-No duplicate gate mesh.
-No whole-runtime proof logic inside 01.
-
-ACCEPTANCE CRITERIA
-========================================================================================================================
-This parent and its children are complete only when:
-- malformed transport never reaches L1
-- unbound identity/tenant/session state is explicitly marked or rejected
-- quota and size failures fail closed
-- schema normalization is deterministic
-- idempotency key and normalized_request_hash are stable
-- user content is labeled as intent/data, not authority
-- injection-like content is labeled for downstream treatment, not executed or obeyed by U0
-- ValidatedRequest contains the fields L1 expects
-- RejectedRequest is safe, structured, and non-leaky
-- U0 spans and replay bindings cover intake only
-- tests fail if U0 reasons, routes, retrieves, calls tools/models, executes, mutates, or writes L4
-
-END OF 01_REQUEST_INTAKE_DETAILED.md

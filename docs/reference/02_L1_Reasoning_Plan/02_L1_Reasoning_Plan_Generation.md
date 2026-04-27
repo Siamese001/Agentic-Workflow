@@ -1,307 +1,112 @@
 ========================================================================================================================
 MECE ALIGNMENT FULL OVERWRITE HEADER
-Canonical folder: 02_L1_Reasoning_Plan
-Canonical file: 02_L1_Reasoning_Plan_Generation.md
-Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
-Source refreshed from: 02_L1_Reasoning_Plan_Generation.md
-Owner summary: L1 planning only. Owns intent frame, ambiguity register, task/query spec, advisory route hints, and L1PlanContract. Does not retrieve, route, execute, or mutate.
-
-GLOBAL NO-OVERLAP LAW
-- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
-- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
-- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
-- 00X owns traceability and no-loss mapping only.
-- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
-- 02 L1 owns advisory interpretation and planning only.
-- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
-- 04 L2 owns bounded execution and sealing only.
-- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
-- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
-- 99 owns proof harnesses only; it does not own runtime behavior.
-
-REFERENCE POINTERS
-- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
-- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
-- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
-- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
-- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+Canonical filename: 02_L1_Reasoning_Plan_Generation.md
+Layer / subsystem: 02 — L1 Reasoning Plan (parent)
+Parent file: docs/reference/README.md
+Ownership surface: Intent interpretation, ambiguity register, query_spec, task_spec, planning priors, contextual refinement, draft plan with route hints, plan validation/self-repair, L1PlanContract handoff.
+Overwrite mode: full-file, no-overlap, executable contract
+No-overlap boundary: L1 owns advisory plan only. It does not route with authority (L0), retrieve final evidence (C0), execute (L2), mutate (UWG), approve (L5), or evaluate (L6).
+Source authority notes: Anchored on `00X` REQ_ID registry; aligned with constitutional §22, §23, §24.
+Predecessor preserved at: `02_L1_Reasoning_Plan_Generation.md.pre-reqid-rewrite.bak`
 ========================================================================================================================
 
-========================================================================================================================
-02_L1_REASONING_PLAN_GENERATION_DETAILED.md
-PARENT L1 REASONING + PLAN GENERATION DOCTRINE
-NO-OVERLAP FULL OVERWRITE
-========================================================================================================================
-
-PURPOSE
+1. PURPOSE
 ------------------------------------------------------------------------------------------------------------------------
-This parent file defines L1 Reasoning + Plan Generation at doctrine level only.
+This parent uniquely owns:
+- the L1PlanContract schema invariants
+- the rule that L1 emits route _hints_ only, not RouteContracts
+- the rule that L1 does not perform final retrieval or execution
+- the support-expectation contract bound to grounding need
 
-L1 is the governed Research Desk. It reads a structurally valid ValidatedRequest from Intake, understands the user goal,
-separates user intent from system authority, loads approved planning references from L4 read surfaces, and emits a bounded,
-replayable L1PlanContract that L0 may use for routing.
+It does **not** own:
+- per-stage detail (lives in `02.1`..`02.6`)
+- routing authority (L0)
+- retrieval (C0)
+- prompt assembly (PA)
 
-L1 does not retrieve final evidence, route with authority, execute tools, call external providers for work, mutate durable
-state, approve egress, approve HITL, commit through UWG, or learn into the current run.
-
-PARENT ROLE
+2. AUTHORITY BOUNDARY
 ------------------------------------------------------------------------------------------------------------------------
-- Define L1 authority doctrine.
-- Define L1-owned planning language.
-- Define no-overlap law.
-- Define source ownership boundaries.
-- Define canonical child file map.
-- Define the high-level L1 flow.
-- Define the canonical L1PlanContract vocabulary.
-- Define traceability and replay expectations.
+**Upstream inputs**: `ValidatedRequest` from U0.
+**Downstream outputs**: `L1PlanContract` (handed to L0).
+**Forbidden behaviors**: routing with authority, final retrieval, execution, durable mutation, approval.
+**Allowed outputs only**: `L1PlanContract`, optional `AmbiguityRegister`, route hints (advisory).
 
-PARENT DOES NOT OWN IMPLEMENTATION DETAIL
+3. REQ_ID NAMESPACE
 ------------------------------------------------------------------------------------------------------------------------
-The child files own implementation-grade detail. This parent should not restate their full contracts.
+This pack owns rows under `REQ-L1-*`.
 
-Child details are intentionally moved into:
-- 02.1 through 02.6 below.
-
-========================================================================================================================
-SOURCE OWNERSHIP BOUNDARY
-========================================================================================================================
-
-L1 OWNS AT DOCTRINE LEVEL:
-- semantic intent interpretation over a ValidatedRequest
-- constraint extraction and deliverable framing
-- ambiguity and assumptions register
-- approved planning-prior reads from L4
-- rule-aware planning frame
-- internal contextual refinement for planning only
-- advisory decomposition into work units
-- advisory route hints, never route authority
-- support expectation and grounding need marker
-- action expectation, HITL hint, UWG hint, sandbox/capability hints
-- validation of the plan as a plan
-- lowest viable agency recommendation
-- L1PlanContract emission
-
-L1 DOES NOT OWN:
-- transport/envelope validation
-- identity/tenant/session baseline binding
-- quota and ingress duplicate controls
-- route authority
-- retrieval or evidence scoring
-- prompt slot assembly
-- managed workflow execution plan authority after route selection
-- tool/model execution
-- live runtime gate dispositions
-- governance certification evidence
-- durable writes
-- completed-run learning
-
-SOURCE OWNERS:
-- 01_Request_Intake.md = ValidatedRequest / RejectedRequest and ingress trace_root.
-- 03_L0_Route_Decision_Switching_L3.md = authoritative RouteContract and selected route.
-- C0_Context_Engine.md = retrieval, evidence verification, weak-support refinement, and FinalEvidenceContract.
-- Prompt_Assembly.md = prompt slots, PromptBOM, PromptEnvelope, CompiledPromptArtifact, and provider rendering.
-- 04_L2_Execute.md = bounded execution and sealed artifacts.
-- 05_Live_Runtime_Exit_Control_&_Evaluation.md = final current-run checkout and sealed-result disposition.
-- 00C_Runtime_Gates_Current_Run_Mesh/ = G01-G29 runtime gate decisions and live dispositions.
-- 00A_L5_Governance_Safety/00A_L5_Governance_Safety.md = policy, authority, origin, egress, replay, audit certification evidence.
-- 06_Shadow_Evaluation_System_Learning.md = completed-run evaluation and future-run learning.
-- UWG/L4 state files = durable write admission and system-of-record mutation.
-
-========================================================================================================================
-CANONICAL CHILD FILE MAP
-========================================================================================================================
-
-02.1_Intent_Frame_and_Ambiguity_Register.md
-- Unique surface: parse the patron slip into intent, constraints, details, job class, ambiguity, assumptions, and first
-  safety/authority reading.
-- Owns: IntentFrame, AmbiguityRegister, FirstSafetyAuthorityReading, ParsedRequestReceipt.
-- Does not own: planning priors, route decision, retrieval, execution, final answer, or durable write.
-
-02.2_Planning_Priors_and_Rule_Bundle.md
-- Unique surface: read approved planning references from L4 and build a rule-aware planning bundle.
-- Owns: PlanningPriorReadPlan, PlanBundle, PlanningReferenceManifest, RuleAwarePlanningFrame.
-- Does not own: answer evidence retrieval, C0 source retrieval, L5 certification, or runtime gate disposition.
-
-02.3_Contextual_Refinement_Reasoning_Loop.md
-- Unique surface: internal planning-only contextual refinement and bounded reasoning loop.
-- Owns: PlanningReasoningTraceSummary, RefinementPassReceipt, InternalPlanState, PlanningLoopBudgetReceipt.
-- Does not own: chain-of-thought exposure, external model calls, retrieval, route authority, execution, or durable learning.
-
-02.4_Draft_Plan_and_Route_Hints.md
-- Unique surface: convert interpreted intent into advisory work units, sequencing, route hints, support expectations, and
-  action expectations.
-- Owns: DraftPlan, WorkUnitSet, DependencySketch, RouteHintSet, SupportExpectation, ActionExpectation.
-- Does not own: RouteContract, C0 RetrievalPlan, L3WorkflowContract, L2ExecutionRequest, or final disposition.
-
-02.5_Plan_Validation_Self_Repair.md
-- Unique surface: validate the plan as a plan, apply lowest viable agency, and run bounded self-repair or abstain/clarify markers.
-- Owns: PlanValidationReport, PlanConsistencyAudit, LowestViableAgencyReceipt, L1SelfRepairLedger.
-- Does not own: runtime retry/HEAL, Exit disposition, C0 weak-support refinement, or L2 repair.
-
-02.6_L1PlanContract_Handoff.md
-- Unique surface: freeze and emit the canonical L1PlanContract to L0.
-- Owns: L1PlanContract, PlanDigest, L1HandoffReceipt, PlanTelemetryKeys, NonAuthorityAssertion.
-- Does not own: downstream route, retrieval, prompt, execution, checkout, commit, or learning artifacts.
-
-========================================================================================================================
-CANONICAL L1 FLOW
-========================================================================================================================
-
- [ ValidatedRequest from U0 ]
-          │
-          ▼
- ┌────────────────────────────────────┐
- │ 02.1 INTENT FRAME / AMBIGUITY      │
- │ parse goal, deliverable, constraints│
- │ details, job class, gaps, risk hints│
- └──────────────┬─────────────────────┘
-                ▼
- ┌────────────────────────────────────┐
- │ 02.2 PLANNING PRIORS / RULE BUNDLE │
- │ read L4 planning references only;   │
- │ build rule-aware plan frame         │
- └──────────────┬─────────────────────┘
-                ▼
- ┌────────────────────────────────────┐
- │ 02.3 CONTEXTUAL REFINEMENT LOOP    │
- │ planning-only refinement; no tools, │
- │ no C0, no route commitment          │
- └──────────────┬─────────────────────┘
-                ▼
- ┌────────────────────────────────────┐
- │ 02.4 DRAFT PLAN / ROUTE HINTS      │
- │ work units, order, support target,  │
- │ action expectation, advisory route  │
- └──────────────┬─────────────────────┘
-                ▼
- ┌────────────────────────────────────┐
- │ 02.5 VALIDATE / SELF-REPAIR        │
- │ did we listen, safe, coherent, low- │
- │ agency, clarify/abstain if needed  │
- └──────────────┬─────────────────────┘
-                ▼
- ┌────────────────────────────────────┐
- │ 02.6 CONTRACT / HANDOFF            │
- │ freeze L1PlanContract and hand to   │
- │ L0 as advisory input only           │
- └──────────────┬─────────────────────┘
-                ▼
-          [ L0 reads L1PlanContract ]
-
-========================================================================================================================
-CANONICAL OUTPUT VOCABULARY
-========================================================================================================================
-
-L1PlanContract carries:
-- identity
-- intent_frame
-- query_spec
-- task_spec
-- route_hint
-- support_expectation
-- action_expectation
-- assumptions_and_gaps
-- validation_summary
-- downstream_notes
-- plan_digest
-- replay metadata
-- non-authority assertion
-
-L1 status vocabulary:
-- L1_PLAN_READY
-- L1_PLAN_CLARIFY_RECOMMENDED
-- L1_PLAN_ABSTAIN_RECOMMENDED
-- L1_PLAN_SAFE_FALLBACK_RECOMMENDED
-- L1_PLAN_POLICY_REVIEW_NEEDED
-- L1_PLAN_INVALID_INPUT_REFERENCE
-- L1_PLAN_UNSUPPORTED_DELIVERABLE
-
-These are plan statuses and recommendations only. They are not runtime dispositions.
-
-========================================================================================================================
-GLOBAL NO-OVERLAP LOCK
+4. ATOMIC REQUIREMENTS TABLE (PARENT-LEVEL INVARIANTS)
 ------------------------------------------------------------------------------------------------------------------------
-- U0 / Request Intake owns transport, envelope, identity baseline, quota, duplicate, structural schema, request IDs,
-  trace_root assignment, and ValidatedRequest / RejectedRequest emission.
-- L1 owns semantic interpretation, advisory planning, ambiguity register, support expectation, risk hints, route hints,
-  and the L1PlanContract only.
-- L0 owns authoritative route selection, RouteContract, route_digest, hmac_sig, grounding_required as route authority,
-  execution_form, fallback_chain, and route telemetry.
-- C0 owns retrieval planning, evidence fetch, graph expansion, shaping, verification, scoring, weak-support refinement,
-  cited spans, source lineage, and FinalEvidenceContract.
-- Prompt Assembly owns authority-tiered slot construction, PromptBOM, PromptEnvelope / CompiledPromptArtifact,
-  provider-aware rendering, response schema binding, and prompt signature.
-- L3 owns managed workflow expansion, step DAG, joins, retries, pause/resume, and L3StepContract emission when L0
-  selected a managed workflow route.
-- L2 owns bounded execution, model/tool invocation inside granted capability, E1-E5 lifecycle, proposed_state_diff,
-  and SealedL2Artifact.
-- Exit Eval and Runtime Gates own current-run dispositions, final checkout, egress decision, escalation decision,
-  and commit-request decision.
-- L5 owns governance certification evidence, authority context, origin trust, policy/registry/capability/sandbox/egress,
-  replay/audit certification, HITL reclearance evidence, and static governance drift evidence.
-- UWG / L4 owns durable write admission, commit receipt, system-of-record mutation, archive surfaces, cache promotion,
-  and durable state.
-- L6 owns completed-run exhaust ingestion, evaluation, calibration, RCA, learning proposals, replay proof for future-run
-  changes, and promotion requests through UWG only.
 
-FORBIDDEN AUTHORITATIVE OUTPUTS FROM L1
+| REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-L1-PLAN-NO-EXECUTE-001` | L1 MUST NOT execute tools, models, or scripts; L1 MUST NOT make durable writes; L1 MUST NOT issue a final answer. | 02 | `ValidatedRequest` | `L1PlanContract` | trace contains no `l2.*`, no `uwg.commit`, no terminal output spans under `l1.*` | `l1.plan` parent span | `l1_plan_contract_<request_id>.json` | `validator: l1_no_execute_validator` (release-gate) | `NC-L1-EXECUTE-LEAK-001`: L1 invokes a tool | `l1_executed_tool` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-L1-INTENT-FRAME-001` | L1 MUST emit `intent_frame`, `task_spec`, `query_spec`, and `support_expectation` in the plan contract. | 02.1, 02.4 | `ValidatedRequest` | `L1PlanContract` | all 4 fields present and schema-valid | `l1.intent_frame` span | `l1_plan_contract.json` | `validator: l1_intent_frame_validator` (release-gate) | `NC-L1-INTENT-MISSING-001`: emit plan without `intent_frame` | `intent_frame_missing` | `byte_identical` | DOC_ONLY |
+| `REQ-L1-AMBIGUITY-REGISTER-001` | When ambiguity is detected, L1 MUST emit an `AmbiguityRegister` with concrete clarification candidates and a non-empty `clarify_or_proceed_decision`. | 02.1 | `ValidatedRequest` | `L1PlanContract.ambiguity_register` | register present when ambiguity detected | `l1.ambiguity` span | `l1_plan_contract.json` | `validator: l1_ambiguity_validator` (release-gate) | `NC-L1-HIDDEN-AMBIGUITY-001`: ambiguous request emits plan without register | `ambiguity_suppressed` | `byte_identical` | DOC_ONLY |
+| `REQ-L1-PLAN-PRIORS-001` | L1 MUST bind a versioned planning priors / rule-bundle id to the plan contract. | 02.2 | priors source | plan contract | `plan_priors_id` and `rule_bundle_id` fields populated | `l1.plan_priors` span | `l1_plan_contract.json` | `validator: l1_priors_validator` (release-gate) | `NC-L1-PRIORS-DRIFT-001`: plan emitted without priors id | `plan_priors_missing` | `byte_identical` | DOC_ONLY |
+| `REQ-L1-REFINE-LOOP-BOUND-001` | The L1 contextual-refinement loop MUST be bounded; iterations MUST NOT exceed the configured max; exit conditions MUST be enumerated. | 02.3 | refinement state | plan contract | `refine_iterations`, `refine_exit_reason` populated | `l1.refine_loop` span with iteration events | `l1_plan_contract.json` | `validator: l1_refine_loop_validator` (release-gate) | `NC-L1-REFINE-OSCILLATE-001`: refinement loops indefinitely | `refine_loop_exceeded_max` | `byte_identical` per fixed seed | DOC_ONLY |
+| `REQ-L1-ROUTE-HINTS-ADVISORY-001` | L1 MAY emit `route_hints[]` only; route hints are advisory, never authoritative. L0 owns the deterministic route. | 02.4 | plan state | plan contract | `route_hints[]` present, `route_authority=false` | `l1.route_hints` span | `l1_plan_contract.json` | `validator: l1_route_hints_advisory_validator` (release-gate) | `NC-L1-ROUTE-AUTHORITY-001`: L1 emits a `RouteContract` | `l1_emitted_route_contract` | `byte_identical` | DOC_ONLY |
+| `REQ-L1-PLAN-VALIDATION-001` | L1 MUST run plan validation (schema + safety + risk preview) before emitting `L1PlanContract`; failed validation triggers self-repair or rejection. | 02.5 | draft plan | plan contract or rejection | `validation_receipt_id`, `self_repair_attempts` | `l1.plan_validation` span | `l1_plan_contract.json` or `l1_rejection.json` | `validator: l1_plan_validation_validator` (release-gate) | `NC-L1-VALIDATION-SKIP-001`: plan emitted with validation skipped | `plan_validation_skipped` | `byte_identical` | DOC_ONLY |
+| `REQ-L1-HANDOFF-CONTRACT-001` | L1 MUST emit exactly one `L1PlanContract` per request; L0 MUST refuse any non-`L1PlanContract` input. | 02.6 | validated plan | `L1PlanContract` | one and only one plan_id per request_id | `l1.handoff_to_l0` span | `l1_plan_contract.json` | `validator: l1_handoff_validator` (release-gate) | `NC-L1-DUAL-PLAN-001`: emit two plans for one request | `dual_plan_emitted` | `byte_identical` | DOC_ONLY |
+
+5. RUNTIME EVIDENCE CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
-L1 must not emit or claim authority over:
-- RouteContract
-- route_digest
-- hmac_sig
-- FinalEvidenceContract
-- PromptEnvelope
-- CompiledPromptArtifact
-- L3WorkflowContract
-- L3StepContract
-- L2ExecutionRequest
-- SealedL2Artifact
-- ExitReviewPacket
-- ExitDisposition
-- GateDisposition
-- CommitRequest
-- UWGCommitReceipt
-- durable memory update
-- final answer approval
-- tool/model execution approval
-- current-run learning promotion
+`L1PlanContract` MUST carry: `plan_id`, `request_id`, `trace_root`, `trace_id`, `span_id`, `intent_frame`, `task_spec`, `query_spec`, `support_expectation`, `ambiguity_register?`, `route_hints[]`, `route_authority=false`, `plan_priors_id`, `rule_bundle_id`, `refine_iterations`, `refine_exit_reason`, `validation_receipt_id`, `self_repair_attempts`, `policy_hash`, `blueprint_hash`, `replay_key`, `content_hash`, `lineage`.
 
-ALLOWED L1 OUTPUT STYLE
+6. OTEL SPAN CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
-L1 may emit only:
-- intent frames
-- ambiguity registers
-- task specs
-- query specs
-- support expectations
-- action expectations
-- advisory route hints
-- risk markers
-- assumptions and gaps
-- validation summaries
-- downstream notes
-- L1PlanContract receipts, hashes, and trace metadata
+Span tree under `u0.intake → l1.plan`:
+- `l1.intent_frame`, `l1.ambiguity`, `l1.plan_priors`, `l1.refine_loop`, `l1.route_hints`, `l1.plan_validation`, `l1.handoff_to_l0`
 
-========================================================================================================================
-ACCEPTANCE CRITERIA
-========================================================================================================================
+Required attributes: `req_id`, `request_id`, `plan_id`, `policy_hash`, `blueprint_hash`, `replay_key`, `parent_contract_id` (= validated_request_id).
 
-A compliant implementation proves:
-- L1 consumes only ValidatedRequest or an explicit RejectedRequest summary.
-- L1 emits an L1PlanContract, not an answer and not a RouteContract.
-- L1 preserves request_id, trace_root, policy_hash, instruction_hash, and source_envelope_id.
-- L1 separates user intent from authority.
-- L1 marks grounding need when citations, files, code, policy, freshness, or evidence-backed claims are required.
-- L1 marks action and write risk without executing.
-- L1 marks HITL and UWG hints without approving or committing.
-- L1 can choose direct-answer recommendation when safe, avoiding fake workflow complexity.
-- L1 self-repair is bounded and cannot call tools or retrieve evidence.
-- L1 OTEL spans prove parse -> priors -> reason -> draft -> validate -> handoff.
-- L1 deterministic digest proves replay of the same input produces the same plan fields, except allowed volatile metadata.
+7. VALIDATOR CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+- `l1_no_execute_validator` (release-gate)
+- `l1_intent_frame_validator` (release-gate)
+- `l1_ambiguity_validator` (release-gate)
+- `l1_priors_validator` (release-gate)
+- `l1_refine_loop_validator` (release-gate)
+- `l1_route_hints_advisory_validator` (release-gate)
+- `l1_plan_validation_validator` (release-gate)
+- `l1_handoff_validator` (release-gate)
 
-========================================================================================================================
-END OF PARENT L1 REASONING + PLAN GENERATION DOCTRINE
+8. NEGATIVE CONTROL CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Each `NC-L1-*` row in §4 is mandatory; the `NC-L1-EXECUTE-LEAK-001` and `NC-L1-ROUTE-AUTHORITY-001` are critical-severity (L1 must not violate L0/L2 authority).
+
+9. REPLAY CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+For fixed `(ValidatedRequest, plan_priors_id, rule_bundle_id, policy_hash, blueprint_hash, seed)`, `L1PlanContract.content_hash` MUST be byte-identical. Allowed nondeterminism: `plan_id`, `span_id`, `trace_id`, `created_at_utc`.
+
+10. RELEASE GATE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+A 02 row's `Release Gate` is `PASS` only when L1 validates plan, emits a single contract, never executes, never claims route authority, and all negative controls trip correctly.
+
+11. NO-OVERLAP LOCK
+------------------------------------------------------------------------------------------------------------------------
+**This file owns**: L1 plan generation invariants.
+
+**Related files own**: per-stage detail in `02.1`..`02.6`.
+
+**Forbidden duplicated ownership**: L1 MUST NOT route (L0), retrieve final evidence (C0), execute (L2), mutate (UWG), or approve (L5).
+
+**Forbidden output vocabulary**: `ALLOW_FINISH`, `DENY`, `REROUTE`, `ESCALATE_HITL`, `COMMIT_REQUEST_TO_UWG`, `SAFE_FALLBACK`, `durable_write_committed`, `policy_certified`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`. The phrase `route_committed` is forbidden; L1 produces only `route_hints[]`.
+
+12. CHILD FILE MAP
+------------------------------------------------------------------------------------------------------------------------
+- `02.1_Intent_Frame_and_Ambiguity_Register.md` — `REQ-L1-INTENT-*`, `REQ-L1-AMBIGUITY-*`
+- `02.2_Planning_Priors_and_Rule_Bundle.md` — `REQ-L1-PRIORS-*`
+- `02.3_Contextual_Refinement_Reasoning_Loop.md` — `REQ-L1-REFINE-*`
+- `02.4_Draft_Plan_and_Route_Hints.md` — `REQ-L1-DRAFT-*`, `REQ-L1-ROUTE-HINTS-*`
+- `02.5_Plan_Validation_Self_Repair.md` — `REQ-L1-VALIDATION-*`
+- `02.6_L1PlanContract_Handoff.md` — `REQ-L1-HANDOFF-*`
+
+13. ACCEPTANCE CRITERIA
+------------------------------------------------------------------------------------------------------------------------
+- Every parent invariant row in §4 has all 13 cells filled.
+- L1 forbidden vocabulary in §11 reproduces the global ban.
+- The 6 child files own per-stage REQ_IDs (deferred for full conversion).
+
+END OF 02 — L1 REASONING PLAN PARENT
 ========================================================================================================================

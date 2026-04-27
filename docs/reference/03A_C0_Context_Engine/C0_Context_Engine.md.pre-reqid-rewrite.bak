@@ -1,0 +1,340 @@
+========================================================================================================================
+MECE ALIGNMENT FULL OVERWRITE HEADER
+Canonical folder: 03A_C0_Context_Engine
+Canonical file: C0_Context_Engine.md
+Overwrite mode: parent-thinned doctrine, no-overlap, child-owned implementation
+Source refreshed from: C0_Context_Engine.md (parent-thinning refactor 2026-04-26 — implementation detail moved to C0.0..C0.7 children, zero-loss)
+Owner summary: C0 retrieval/evidence engine. Owns retrieval planning, fetch/hydration, graph expansion, shaping, verification, evidence contract, and weak-support refinement. Does not answer or assemble prompts.
+
+GLOBAL NO-OVERLAP LAW
+- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
+- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
+- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
+- 00X owns traceability and no-loss mapping only.
+- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
+- 02 L1 owns advisory interpretation and planning only.
+- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
+- C0 owns retrieval/evidence contracts only.
+- PA owns prompt packet construction only.
+- 04 L2 owns bounded execution and sealing only.
+- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
+- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
+- 99 owns proof harnesses only; it does not own runtime behavior.
+
+REFERENCE POINTERS
+- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
+- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
+- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
+- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
+- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+========================================================================================================================
+
+======================================================================================================================================================
+C0 CONTEXT ENGINE / REF DESK — PARENT DOCTRINE (CHILD-OWNED IMPLEMENTATION)
+======================================================================================================================================================
+
+ROLE
+- C0 retrieves, expands, shapes, verifies, scores, and contracts evidence for downstream Prompt Assembly.
+- C0 is a READ-ONLY evidence engine over L4 shelves and approved retrieval substrates.
+- C0 does NOT answer, route, execute, mutate, approve, commit, call tools for actions, or decide final disposition.
+- C0 emits a FinalEvidenceContract that tells Prompt Assembly exactly what context may be packed, how strong it is,
+  where it came from, what contradicts it, what is missing, and what should happen if support is weak.
+
+HARD AUTHORITY BOUNDARIES
+- L1 writes the plan / query_spec / task_spec.
+- L0 decides whether grounding is required and issues the RouteContract.
+- C0 performs retrieval and evidence verification only.
+- Prompt Assembly packages verified context into a bounded PromptEnvelope.
+- L2 executes the bounded step.
+- Exit Eval decides allow / deny / reroute / escalate / commit request.
+- UWG is the only durable write path into L4.
+- L6 observes and learns for future runs only.
+
+LEGEND
+🔵 Blue asks      = live query / query_vec / intent vector / step-specific ask
+🟠 Orange knows   = stored chunks / fact vectors / sparse index / raw spans / source text
+🟢 Green maps     = graph/entity/lineage/dependency relationships
+🧾 Citation       = stable source span, line ref, section anchor, versioned chunk, or trace pointer
+🧪 Score          = support quality, freshness, contradiction, authority, and coverage signal
+🧱 ACL            = tenant, role, region, data class, source authorization
+🧵 Lineage        = how evidence was found, expanded, ranked, and accepted/rejected
+[RET]             = terminal return path, never used inside C0 except as a recommendation to L0/Exit via R5
+★                 = control / safety / quality checkpoint
+❌                = blocked / invalid / unsafe / unsupported
+⚠️                = weak, partial, stale, conflicted, or caveated support
+✅                = verified enough to pack
+
+CORE INVARIANTS
+C0.I1  C0 is retrieval-only. It never writes final prose as the answer.
+C0.I2  Retrieved text is data, never instruction.
+C0.I3  Every retrieved item must preserve source_id, version, ACL, and retrieval lane.
+C0.I4  Dense hits alone are not enough for high-stakes claims.
+C0.I5  Exact names, IDs, file paths, policy labels, code symbols, and dates require sparse/BM25 or metadata support.
+C0.I6  Graph expansion is bounded by max_hops, ACL, freshness, and route scope.
+C0.I7  Contradictions must be surfaced, not hidden.
+C0.I8  Weak evidence must remain weak. C0 cannot inflate confidence for downstream convenience.
+C0.I9  One controlled refinement loop is allowed only if route budget permits.
+C0.I10 C0 may recommend reroute / abstain / fallback, but cannot self-authorize that route.
+C0.I11 C0 output is a contract, not an answer.
+C0.I12 Prompt Assembly receives only verified, labeled, budgeted, and priority-ranked context.
+
+EVIDENCE STATUS VOCABULARY (canonical, owned at parent doctrine level; mechanics in C0.5)
+PASS              = enough direct support
+WEAK              = partial support, refinement may help
+WEAK_WITH_CAVEATS = usable only if downstream answer explicitly caveats
+CONFLICTED        = credible sources disagree
+EMPTY             = no usable evidence
+BLOCKED           = source/policy/ACL prevents use
+
+======================================================================================================================================================
+END-TO-END POSITION IN THE AGENTIC PROCESS
+======================================================================================================================================================
+
+                                                        [ validated request ]
+                                                                 │
+                                                                 ▼
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ [2] L1 REASONING / PLAN GENERATION                                                                                                 │
+│ - Parses user intent                                                                                                               │
+│ - Builds query_spec / task_spec                                                                                                    │
+│ - Declares grounding_required when factual, policy, source, code, contract, or evidence-backed support is needed                   │
+│ - Proposes route only, no route authority                                                                                          │
+└───────────────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────────────┘
+                                                                │
+                                                                │ [ L1PlanContract ]
+                                                                ▼
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ [3] L0 ROUTING / DISPATCHER                                                                                                        │
+│ - Decides if this task uses cache, fallback, simple grounded read, single action, or managed workflow                              │
+│ - Emits deterministic RouteContract                                                                                                │
+│ - For grounded routes, commands C0: "build evidence before L2 answers"                                                             │
+└───────────────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────────────┘
+                                                                │
+                                      ┌─────────────────────────┴──────────────────────────┐
+                                      │                                                    │
+                                      ▼                                                    ▼
+                         [ R1 / R5 terminal path ]                           [ R3 / R3-R4 grounded path ]
+                         exact cache / semantic cache / fallback              simple grounded read or grounded workflow step
+                                      │                                                    │
+                                      ▼                                                    ▼
+                                  [RET]                                           ┌──────────────────────┐
+                                      │                                            │ C0 CONTEXT ENGINE     │
+                                      │                                            │ Ref Desk / Research   │
+                                      │                                            └──────────┬───────────┘
+                                      │                                                       │
+                                      │                                                       ▼
+                                      │                                            [ FinalEvidenceContract ]
+                                      │                                                       │
+                                      │                                                       ▼
+                                      │                                            ┌──────────────────────┐
+                                      │                                            │ PROMPT ASSEMBLY       │
+                                      │                                            │ Packet Builder        │
+                                      │                                            └──────────┬───────────┘
+                                      │                                                       │
+                                      │                                                       ▼
+                                      │                                            [ bounded PromptEnvelope ]
+                                      │                                                       │
+                                      │                                                       ▼
+                                      │                                            ┌──────────────────────┐
+                                      │                                            │ L2 EXECUTE            │
+                                      │                                            │ bounded step only     │
+                                      │                                            └──────────┬───────────┘
+                                      │                                                       │
+                                      └─────────────────────────────┬─────────────────────────┘
+                                                                    ▼
+                                                        [ EXIT EVAL & CONTROL ]
+                                                                    │
+                                                                    ▼
+                                                          [ response / reroute /
+                                                            escalation / commit request ]
+
+======================================================================================================================================================
+C0 INPUT CONTRACT (overview only — full input/validation in C0.0 and C0.1 children)
+======================================================================================================================================================
+
+L0 RouteContract carries: route_id (R3 grounded or R3/R4 workflow step), grounding_required, execution_form, freshness_class, support_target, tenant_scope / ACL / region / data_class, max_k / max_hops / max_parent_expansion, max_refine_attempts / latency_slo / token_budget, allowed_sources / disallowed_sources, fallback_policy, route_replay_key / policy_hash / blueprint_hash. C0 receives the command "ground this before L2 answers" and runs read-only research over L4 shelves, vector stores, sparse indexes, metadata stores, graph stores, and approved traces. Hard law: retrieve + verify support, never generate the answer.
+
+======================================================================================================================================================
+CHILD MAP — STAGE OWNERSHIP
+======================================================================================================================================================
+
+C0.0  Pre-flight / grounding eligibility               -> C0.0_Preflight_Grounding_Eligibility.md
+C0.1  Retrieval plan                                   -> C0.1_Retrieval_Plan.md
+C0.2  Evidence fetch + hydration / span normalization  -> C0.2_Evidence_Fetch.md
+C0.3  Graph traverse                                   -> C0.3_Graph_RAG.md
+C0.4  Shape / rerank / stratify + contradiction & gap  -> C0.4_Shape_Rerank_Stratify.md
+C0.5  Evidence contract (verification + scoring)       -> C0.5_Final_Evidence_Contract.md
+C0.6  Controlled refinement loop                       -> C0.6_Weak_Support_Refinement.md
+C0.7  Observability / tests / anti-bypass              -> C0.7_C0_Observability_Tests_Anti_Bypass.md
+
+======================================================================================================================================================
+ONE-PARAGRAPH STAGE SUMMARIES (parent doctrine level — implementation in children)
+======================================================================================================================================================
+
+C0.0 PRE-FLIGHT / GROUNDING ELIGIBILITY
+"Should C0 run, and is the request safe to ground?" C0.0 evaluates RouteContract grounding flags, origin-trust binding, tenant/ACL/region/data-class scope, support-target sensitivity, and budget floor. It emits C0PreflightStatus = {eligible, blocked_reason, allowed_source_classes, evidence_standard, budget_floor}. No retrieval if the route does not require grounding, no retrieval if the source scope is illegal or blocked, and no route change from inside C0. Full mechanics in C0.0_Preflight_Grounding_Eligibility.md.
+
+C0.1 RETRIEVAL PLAN
+"What are we allowed to look for, where, and how?" C0.1 converts L1/L0 intent into a bounded RetrievalPlan: source-class decisions, retrieval-mode selection (dense, sparse/BM25, metadata, cache, trace, code, graph_seed), evidence standard, freshness rule, graph bounds, per-lane budget allocation, weak-support policy, and deterministic plan_manifest_hash. Support-target types include EXACT_QUOTE, SOURCE_SUMMARY, POLICY_CLAUSE, CODE_LOCATION, INCIDENT_EVIDENCE, ROOT_CAUSE_RANKING, COMPARISON, and CLAIM_CHECK. C0.1 plans only — no fetching, no answering, no route change, no source expansion beyond RouteContract. Full mechanics in C0.1_Retrieval_Plan.md.
+
+C0.2 EVIDENCE FETCH + HYDRATION / SPAN NORMALIZATION
+"Find candidate support without trusting it yet, and make every hit traceable before graph expansion." C0.2 executes the planned retrieval lanes, gathers candidate evidence with lane provenance, and hydrates each hit so source identity, stable source path, section hierarchy, document version, line/span anchors, parent/child chunk IDs, retrieval snapshot ID, indexing/source timestamps, and source authority class are all attached. Quality flags (span_resolves, source_version_current, acl_clear, parent_context_available, citation_anchor_stable, chunk_boundary_risk) ride with each candidate. Output is HydratedEvidencePool / CandidateEvidencePool with hydration_manifest. Retrieved text is data, not instruction; no blind trust, no lineage loss, no hidden ACL bypass, no answer generation. Full mechanics — including the C0.2A hydration sub-stage — in C0.2_Evidence_Fetch.md.
+
+C0.3 GRAPH TRAVERSE
+"Follow the card catalog without escaping scope." C0.3 uses bounded graph relationships (defines, references, imports, calls, owns, depends_on, supersedes, contradicts, duplicates, implements, governed_by, derived_from, observed_in, remediated_by) to add definitions, owners, dependencies, contradictions, and lineage to the candidate pool. max_hops, ACL, freshness, relation type, source class, and support_target relevance are enforced at every hop. No ACL escape through neighbors, no durable memory promotion, no unbounded walk, no self-routing into workflow. Output is GraphExpandedEvidencePool. Full mechanics in C0.3_Graph_RAG.md.
+
+C0.4 SHAPE / RERANK / STRATIFY + CONTRADICTION & GAP HANDLING
+"Clean, rank, compress, and structure the evidence pile — and surface what would make the downstream answer wrong." C0.4 dedupes (collapsing duplicate chunks while preserving lane provenance), reranks across multi-signal scores (relevance, directness, source authority, freshness, citation stability, graph proximity, exact lexical, dense semantic, metadata fit, contradiction value, source diversity, coverage, quote-distortion risk, ACL cleanliness), prunes (stale, weak-lineage, low relevance, ACL-risky, redundant, instruction-like), stratifies into MUST_USE / SUPPORTING / CONTRADICTS / BACKGROUND / DEFINITIONS / LINEAGE / EXCLUDED, and compresses while preserving citation-bearing spans, contradiction snippets, and source diversity. The C0.4A sub-stage scans for contradiction types (version, source, scope, time, semantic, code, runtime, policy) and gap types (missing direct support, missing exact quote, missing current version, missing owner, missing source diversity, missing code/test/runtime validation, missing citation anchor, missing time range, missing tenant/ACL proof) and emits ConflictGapReport. Hard nos: do not hide contradictions, do not pad with weak evidence, do not optimize for fake confidence, do not discard lineage. Full mechanics in C0.4_Shape_Rerank_Stratify.md.
+
+C0.5 EVIDENCE CONTRACT (VERIFICATION + SCORING)
+"Verify spans and score whether support is good enough." C0.5 verifies that source_id resolves, cited spans resolve to stable anchors, document version matches retrieval snapshot, source is ACL-cleared and within tenant/region/data class, retrieved content remains classified as data not instruction, graph lineage is bounded and valid, and any cache source includes original lineage. It scores across direct_support, coverage, source_authority, freshness, contradiction_risk, unsupported_inference_risk, citation_stability, lineage_quality, source_diversity, exactness, and ACL_confidence. Output is the FinalEvidenceContract carrying status (PASS / WEAK / WEAK_WITH_CAVEATS / CONFLICTED / EMPTY / BLOCKED), score breakdown, verified_chunks, cited_spans, source_ids, evidence classes, contradiction_flags, unresolved_gaps, freshness_report, ACL_report, lineage_manifest, prompt_budget_hint (pack_order, must_keep_evidence_ids, trim_first_evidence_ids, max_context_tokens), recommended_disposition (proceed / proceed_with_caveat / abstain / reroute / fallback_R5 / human_review), budget_report, and replay_metadata. Hard nos: no vibes-based answering, no overstating weak support, no hiding unresolved gaps, no fabricated citation anchors. Full mechanics and full FinalEvidenceContract schema in C0.5_Final_Evidence_Contract.md.
+
+C0.6 CONTROLLED REFINEMENT LOOP
+"Fix the search, not the facts." When C0.5 status is WEAK / CONFLICTED / EMPTY and RouteContract permits one refinement attempt, C0.6 diagnoses the cause (wrong terms, query too narrow/broad, stale sources, missing graph neighbor, omitted source class, missing exact phrase, contradiction, ACL blocked, compound target) and chooses one bounded tactic: REWRITE, BROADEN, NARROW, DECOMPOSE, GRAPH_HOP, HYBRIDIZE, FRESHEN, or ABSTAIN. Disallowed: changing the user task, changing the route, expanding tenant/ACL/region, ignoring contradictions, inventing source authority, turning a read into an action, modifying durable memory. Exit conditions: PASS / WEAK_WITH_CAVEATS / CONFLICTED / EMPTY / BLOCKED / budget_exhausted / unsafe_to_continue. Full mechanics in C0.6_Weak_Support_Refinement.md.
+
+C0.7 OBSERVABILITY / TESTS / ANTI-BYPASS
+The C0-wide quality-gate matrix (C0.G0..C0.G10: Scope, ACL, Fresh, Exact, Dense, Graph, Cite, Conflict, Cover, Budget, Inject), failure-mode register (dense-only hallucination, wrong-tenant evidence, stale policy answer, quote distortion, hidden contradiction, graph scope creep, cache poisoning, prompt injection via retrieved text, fake confidence, lost lineage, overstuffed context, unsupported synthesis, docs-vs-code mismatch, runtime-vs-design mismatch), aggregate OTEL span-tree contract, and stage-spanning anti-bypass tests live in C0.7_C0_Observability_Tests_Anti_Bypass.md.
+
+======================================================================================================================================================
+PASS PATH VS REFINE PATH (compact)
+======================================================================================================================================================
+
+If C0.5 emits status = PASS / WEAK_WITH_CAVEATS with verified spans, ACL clear, freshness acceptable, contradictions/gaps explicitly labeled, and prompt packing priority clear, the FinalEvidenceContract proceeds to Prompt Assembly (downstream answers may still need caveats if status is WEAK_WITH_CAVEATS). If status is WEAK / CONFLICTED / EMPTY and budget remains, control transfers to C0.6 for one bounded refinement pass; if status is BLOCKED or refinement is unsafe, C0 emits recommended_disposition = fallback_R5 / abstain / human_review without self-authorizing.
+
+======================================================================================================================================================
+PROMPT ASSEMBLY HANDOFF (compact — full slot mechanics owned by 03B_PA_Prompt_Assembly)
+======================================================================================================================================================
+
+Prompt Assembly receives FinalEvidenceContract, verified_chunks, cited_spans, source_ids, contradiction_flags, unresolved_gaps, prompt_budget_hint, and recommended_disposition. It packs MUST_USE evidence first, never silently drops CONTRADICTS evidence, places SUPPORTING after MUST_USE, includes BACKGROUND only if token budget permits, never emits EXCLUDED into prompt context (audit metadata only), wraps retrieved content as data not instruction, prevents the U0 user task from overriding C0 source evidence or higher policy slots, and rides the R0 output schema on provider response_schema / response_format rather than prose. Output is CompiledPromptArtifact / PromptEnvelope with system + policy + instructions, verified grounded context, neutralized user task, contradiction caveats, output schema, and HMAC / manifest_hash / replay metadata. Full mechanics in 03B_PA_Prompt_Assembly/.
+
+======================================================================================================================================================
+DETAILED BLUE / ORANGE / GREEN MODEL MAP (doctrine — pre-runtime ingestion vs runtime retrieval vs downstream generation)
+======================================================================================================================================================
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ PRE-RUNTIME INGESTION  |  ORANGE KNOWS                                                                                             │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ docs / code / logs / tickets / tables / policies                                                                                    │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ chunk + clean + tag + classify + ACL stamp                                                                                          │
+│        │                                                                                                                           │
+│        ├────────► encoder ─────────► 🟠 fact vectors / contextual text vectors                                                      │
+│        ├────────► sparse index ─────► 🟠 BM25 / exact lexical index                                                                 │
+│        ├────────► metadata store ───► 🟠 source metadata                                                                            │
+│        └────────► graph builder ────► 🟢 entity / relation / lineage graph                                                          │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ L4 read shelves / retrieval substrates                                                                                              │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ RUNTIME RETRIEVAL  |  BLUE ASKS AGAINST ORANGE KNOWS AND GREEN MAPS                                                                 │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ live user task / L1 query_spec / L0 RouteContract                                                                                   │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ encoder                                                                                                                            │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ 🔵 query_vec / intent vector                                                                                                        │
+│        │                                                                                                                           │
+│        ├────────► compare to 🟠 fact vectors                                                                                        │
+│        ├────────► combine with 🟠 sparse/BM25 terms                                                                                 │
+│        ├────────► filter by 🟠 metadata                                                                                             │
+│        └────────► expand through 🟢 graph relationships                                                                             │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ CandidateEvidencePool -> GraphExpandedEvidencePool -> ShapedEvidenceSet -> EvidenceContract                                         │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ DOWNSTREAM GENERATION  |  C0 DOES NOT GENERATE                                                                                      │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ FinalEvidenceContract                                                                                                               │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ Prompt Assembly packs context                                                                                                       │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ L2 model/tool execution                                                                                                             │
+│        │                                                                                                                           │
+│        ▼                                                                                                                           │
+│ Exit Eval verifies output before response / commit                                                                                  │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+======================================================================================================================================================
+QUALITY GATES AND FAILURE MODES (pointer — full matrix and register in C0.7)
+======================================================================================================================================================
+
+The C0-wide quality-gate matrix (C0.G0 Scope, C0.G1 ACL, C0.G2 Fresh, C0.G3 Exact, C0.G4 Dense, C0.G5 Graph, C0.G6 Cite, C0.G7 Conflict, C0.G8 Cover, C0.G9 Budget, C0.G10 Inject) and the canonical FAILURE MODES C0 MUST PREVENT register (dense-only hallucination, wrong tenant evidence, stale policy answer, quote distortion, hidden contradiction, graph scope creep, cache poisoning, prompt injection via retrieved text, fake confidence, lost lineage, overstuffed context, unsupported synthesis, docs-vs-code mismatch, runtime-vs-design mismatch) are defined and tested in C0.7_C0_Observability_Tests_Anti_Bypass.md. Every gate has at least one negative test; every failure mode has at least one preventive test.
+
+======================================================================================================================================================
+CONCRETE EXAMPLE FLOW (illustrative)
+======================================================================================================================================================
+
+USER ASK:
+"What does C5 say about prompt assembly, and is C0 allowed to answer directly?"
+
+L1:
+- task_spec = answer question about C5 / C0 / prompt assembly
+- query_spec = prompt assembly responsibilities, C0 responsibilities, boundaries
+- grounding_required = true
+
+L0:
+- route_id = R3_SIMPLE_GROUNDED_READ
+- support_target = source-backed summary
+- allowed_sources = project docs
+- max_refine_attempts = 1
+- freshness_class = static/project-current
+
+C0.1 PLAN:
+- search docs for "C5 prompt assembly", "C0 retrieves only", "Prompt Assembly packages only"
+- dense + sparse + metadata lanes
+- graph hop to related C0 Context Engine and Prompt Assembly doc
+
+C0.2 FETCH:
+- dense finds conceptual prompt assembly material
+- sparse finds exact "Prompt Assembly packages only" and "C0 retrieves only"
+- metadata confirms project docs and current uploaded files
+
+C0.3 GRAPH:
+- link C5 to C0 Context Engine and Prompt Assembly compact view
+- identify boundary: C0 retrieves, PA packages, L2 executes
+
+C0.4 SHAPE:
+- MUST_USE: C5 mandate, C0 role boundary, Prompt Assembly handoff
+- SUPPORTING: L0 route notes
+- CONTRADICTS: none found
+- EXCLUDED: unrelated transformer refinement docs
+
+C0.5 CONTRACT:
+- status = PASS
+- support_score = high
+- recommendation = proceed
+
+PROMPT ASSEMBLY:
+- packs verified snippets and citation anchors
+- marks retrieved docs as data
+- sends bounded packet to L2
+
+L2:
+- answers from evidence
+
+EXIT:
+- checks groundedness and citation support
+
+======================================================================================================================================================
+ONE-LINE MENTAL MODEL
+======================================================================================================================================================
+
+L0 says "ground this" -> C0 finds and verifies the evidence -> Prompt Assembly packs only verified context -> L2 answers or acts under guard -> Exit decides whether the result can leave.
+
+======================================================================================================================================================
+FINAL INVARIANT
+======================================================================================================================================================
+
+C0 is the reference desk, not the author, not the dispatcher, not the executor, not the judge, and not the clerk with the pen.
+
+Its only job is to make downstream generation safer by turning messy shelves into a verified, scored, citeable, contradiction-aware FinalEvidenceContract.
+======================================================================================================================================================

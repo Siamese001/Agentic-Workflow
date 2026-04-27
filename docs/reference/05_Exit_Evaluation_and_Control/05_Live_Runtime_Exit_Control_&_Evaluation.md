@@ -1,205 +1,118 @@
 ========================================================================================================================
 MECE ALIGNMENT FULL OVERWRITE HEADER
-Canonical folder: 05_Exit_Evaluation_and_Control
-Canonical file: 05_Live_Runtime_Exit_Control_&_Evaluation.md
-Overwrite mode: parent-thinned doctrine, no-overlap, child-owned implementation
-Source refreshed from: 05_Live_Runtime_Exit_Control_&_Evaluation.md (parent-thinning refactor 2026-04-26 — 5.0/5.1 input normalization, X1A-X1J checkout checks, X2 aggregation, X3A-X3E disposition mechanics, HITL freeze/review/reclear flow, UWG sub-flow, response return, and Exit-specific observability moved to 05.1..05.8 children, zero-loss)
-Owner summary: Exit checkout and disposition. Owns ExitReviewPacket normalization, X1 checkout checks, X2 aggregation, exactly one X3 disposition, HITL freeze/reclear, UWG handoff, response return, and runtime exhaust.
-
-GLOBAL NO-OVERLAP LAW
-- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
-- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
-- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
-- 00X owns traceability and no-loss mapping only.
-- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
-- 02 L1 owns advisory interpretation and planning only.
-- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
-- 04 L2 owns bounded execution and sealing only.
-- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
-- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
-- 99 owns proof harnesses only; it does not own runtime behavior.
-
-REFERENCE POINTERS
-- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
-- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
-- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
-- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
-- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+Canonical filename: 05_Live_Runtime_Exit_Control_&_Evaluation.md
+Layer / subsystem: 05 — Exit Evaluation and Control (parent)
+Parent file: docs/reference/README.md
+Ownership surface: ExitReviewPacket normalization; X1A..X1J current-run checkout checks; X2 aggregation; X3A..X3E disposition (exactly one X3); HITL freeze/review/reclearance flow; CommitRequest emission to UWG; runtime exhaust packaging; Exit-specific observability and anti-bypass.
+Overwrite mode: full-file, no-overlap, executable contract
+No-overlap boundary: Exit aggregates and disposes — exactly one disposition per run. It does not execute (L2), retrieve (C0), mutate L4 directly (UWG owns admission), let L6 rescue (L6 fires after boundary), or own G01–G29 gate definitions (00C).
+Source authority notes: Anchored on `00X` REQ_ID registry; aligned with constitutional §22, §23, §24.
+Predecessor preserved at: `05_Live_Runtime_Exit_Control_&_Evaluation.md.pre-reqid-rewrite.bak`
 ========================================================================================================================
 
-│ [ Sealed L2 Artifacts ] OR [RET] Short-Circuit from L0       │ [ Cross-Cutting L5 Policy Plane ]
-│ [ Optional sealed workflow package from L3 ]                 │ [ C1 Replay Guard + C2 Bell Tower + C4 UWG + C6 Night Board ]
-                                ▼                                                              │
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐ │
-│ 5. EXIT EVAL & CONTROL — v6 — PARENT DOCTRINE (CHILD-OWNED IMPLEMENTATION)                  │ │
-│ [ THE CHECKOUT DESK FOR SEALED FOLDERS, SHORT-CIRCUITS, HUMAN REVIEW, AND REAL INK ]         │ │
-│                                                                                              │ │
-│ PURPOSE                                                                                      │ │
-│ - This is the live runtime disposition layer.                                                │ │
-│ - It judges whether the current run can leave the system, be denied, be rerouted,            │ │
-│   be escalated to human review, or request a durable commit through UWG.                     │ │
-│ - It does not execute tools.                                                                 │ │
-│ - It does not retrieve evidence.                                                             │ │
-│ - It does not mutate L4.                                                                     │ │
-│ - It does not let L6 learning rescue the current run.                                        │ │
-│ - It turns sealed work into exactly one explicit runtime disposition.                        │ │
-│                                                                                              │ │
-│ LIBRARY PERSONA                                                                              │ │
-│ - Checkout Reviewer: checks whether the sealed folder can leave the desk.                    │ │
-│ - Commandant: enforces policy, safety, and authority boundaries.                             │ │
-│ - Secure Reading Room: freezes risky work for bounded human review.                          │ │
-│ - Master Clerk handoff: sends real ink requests only to UWG.                                 │ │
-│ - Bell Tower listener: consumes live anomaly signals but does not learn live.                │ │
-│                                                                                              │ │
-│ HARD AUTHORITY BOUNDARY                                                                      │ │
-│ - L2 may produce work but cannot approve it.                                                 │ │
-│ - L0 may route but cannot approve final output.                                              │ │
-│ - L3 may orchestrate but cannot approve final output.                                        │ │
-│ - HITL may advise, approve, reject, or modify as data, but cannot write directly.            │ │
-│ - L6 may observe and grade, but cannot mutate or rescue the current run.                     │ │
-│ - UWG is the only durable write path into L4.                                                │ │
-└──────────────────────────────────────────────────────────────────────────────────────────────┘ │
+1. PURPOSE
+------------------------------------------------------------------------------------------------------------------------
+This parent uniquely owns:
+- the ExitReviewPacket schema invariant
+- the rule that Exit emits **exactly one** X3 disposition per run
+- the rule that Exit emits CommitRequest to UWG (UWG owns admission)
+- the HITL freeze/review/reclearance flow invariants
 
-======================================================================================================================================================
-SOURCE INPUT TYPES (overview only — full input/normalization mechanics in 05.1)
-======================================================================================================================================================
+It does **not** own:
+- per-check detail (X1A..X1J in `05.2`..`05.4`)
+- aggregation/disposition mechanics detail (`05.5`)
+- HITL flow detail (`05.6`)
+- runtime exhaust packaging detail (`05.7`)
+- Exit observability detail (`05.8`)
 
-Runtime source options into Exit:
-- Sealed L2 artifact from single-step execution
-- Sealed L3 workflow package containing multiple L2 step artifacts
-- [RET] exact cache short-circuit from L0
-- [RET] semantic cache short-circuit from L0
-- [RET] fallback / abstain / clarify packet from L0
-- Re-cleared human-review packet from X3B after L5 re-clearance
+2. AUTHORITY BOUNDARY
+------------------------------------------------------------------------------------------------------------------------
+**Upstream inputs**: `sealed_l2_artifact` OR completed `L3WorkflowContract` package OR L0 RET (route-terminal) packet.
+**Downstream outputs**: exactly one X3 disposition per run; `CommitRequest` to UWG when durable mutation requested; `RuntimeExhaustBundle` to L6 after boundary; HITL packet when freeze required.
+**Forbidden behaviors**: executing tools, retrieving evidence, mutating L4 directly, allowing L6 to rescue current run, owning G01–G29 definitions.
+**Allowed outputs only**: `ExitReviewPacket`, X1 verdicts, X3 disposition, `CommitRequest`, HITL freeze packet, `RuntimeExhaustBundle`, sealed return response.
 
-Required receipt fields (ExitReviewPacket): run_id, request_id, session_id, trace_root, route_contract / route_id / execution_form / reason_codes, policy_hash / blueprint_hash / prompt_hash / replay_key, compliance_hash / manifest_hash / hmac_sig, sandbox_envelope / capability_token / provider_lane, cost_tier / SLO slice / timeout / budget counters, terminal classification from L2/L3/[RET], ExecTrace / tool calls / model calls / provider receipts, StateDiff / proposed mutation set / write intent class, evidence bundle / citations / support spans / source lineage, C0 FinalEvidenceContract if grounding was required, PromptAssemblyStatus / CompiledPromptArtifact receipts, validation/retry/repair counters, trajectory snapshot for process grading, grader composition vector + rubric weights, track label (capability | regression | production | shadow-candidate), support_score / confidence / abstain flags / contradiction flags, OTel span set / timing offsets / anomaly flags, HITL packet if prior human review occurred.
+3. REQ_ID NAMESPACE
+------------------------------------------------------------------------------------------------------------------------
+This pack owns rows under `REQ-EXIT-*`.
 
-Immediate fail before grading if missing: POLICY_HASH_MISSING, REPLAY_KEY_MISSING, ROUTE_CONTRACT_MISSING, TERMINAL_CLASS_MISSING, SANDBOX_SCOPE_MISSING, CAPABILITY_TOKEN_MISSING, EVIDENCE_CONTRACT_MISSING.
+4. ATOMIC REQUIREMENTS TABLE (PARENT-LEVEL INVARIANTS)
+------------------------------------------------------------------------------------------------------------------------
 
-Full input/normalization mechanics — including N1 source classification, N2 artifact normalization to ExitReviewPacket, N3 run-identity binding, N4 disposition-candidate declaration, N5 live control-signal attachment — in 05.1_Exit_Input_Normalization_and_Review_Packet.md.
+| REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-EXIT-INPUT-NORMALIZATION-001` | Exit MUST normalize the input artifact (sealed_l2_artifact, L3 package, or RET packet) into a single canonical `ExitReviewPacket` before running checks. | 05.1 | upstream artifact | `ExitReviewPacket` | every Exit run reads exactly one ExitReviewPacket | `exit.normalize` parent span | `exit_review_packet_<run_id>.json` | `validator: exit_input_normalization_validator` (release-gate) | `NC-EXIT-MISSING-RECEIPT-FIELD-001`: input missing required receipt field | `exit_review_packet_field_missing` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-EXIT-X1A-X1F-CHECKS-001` | Exit MUST run X1A..X1F current-run checkout checks; each emits a per-check verdict bundled into `ExitReviewPacket.x1_verdicts[]`. | 05.2 | ExitReviewPacket | x1_verdicts | each x1_<id> verdict carries result, reason_codes | `exit.x1.<id>` spans | `x1_verdict_bundle.json` | `validator: exit_x1a_x1f_validator` (release-gate) | `NC-EXIT-X1-SKIP-001`: skip a required X1 check | `x1_check_skipped` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-X1G-X1I-REPLAY-OBS-001` | Exit MUST run X1G..X1I (replay determinism, observability/trace consistency); each emits its verdict. | 05.3 | ExitReviewPacket | x1_verdicts | `replay_verdict.match_type`, `trace_completeness_verdict.missing_spans[]` | `exit.x1.G`, `exit.x1.H`, `exit.x1.I` spans | `x1_verdict_bundle.json` | `validator: exit_replay_obs_validator` (release-gate) | `NC-EXIT-REPLAY-MISMATCH-PASS-001`: replay drift passes through | `replay_drift_passed_at_exit` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-X1J-WRITE-ELIGIBILITY-001` | Exit MUST run X1J write-eligibility before allowing CommitRequest emission to UWG; ineligible diffs trigger BLOCK_COMMIT. | 05.4 | ExitReviewPacket | x1J verdict + CommitRequest or BLOCK_COMMIT | `x1J_verdict.eligibility_codes[]` | `exit.x1.J` span | `x1J_verdict.json` | `validator: exit_x1j_validator` (release-gate) | `NC-EXIT-INELIGIBLE-COMMIT-001`: ineligible diff committed | `ineligible_commit_emitted` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-EXACTLY-ONE-DISPOSITION-001` | Exit MUST emit **exactly one** X3 disposition per run; multiple X3 dispositions are FAIL. | 05.5 | x1 verdicts | X3 disposition | one `x3_disposition.json` per `run_id` | `exit.x3_disposition` span | `x3_disposition.json` | `validator: exit_one_disposition_validator` (release-gate) | `NC-EXIT-DUAL-DISPOSITION-001`: emit X3A and X3B for same run | `dual_x3_disposition` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-EXIT-DISPOSITION-VOCAB-001` | The X3 disposition MUST be one of {`X3A_ALLOW_FINISH`, `X3B_DENY`, `X3C_COMMIT_REQUEST_TO_UWG`, `X3D_ESCALATE_HITL`, `X3E_SAFE_FALLBACK`}. | 05.5 | x1 verdicts | X3 disposition | `x3_disposition.kind` ∈ allowed set | `exit.x3_disposition` event | `x3_disposition.json` | `validator: exit_x3_vocabulary_validator` (release-gate) | `NC-EXIT-CUSTOM-DISPOSITION-001`: emit unknown disposition | `unknown_x3_disposition` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-AGGREGATION-MATRIX-001` | The X2 aggregation MUST be deterministic for a fixed set of x1 verdicts; severity escalation rules are enumerated. | 05.5 | x1 verdicts | X2 aggregate | `x2_aggregate.json` carries `severity`, `aggregate_class` | `exit.x2_aggregate` span | `x2_aggregate.json` | `validator: exit_aggregation_validator` (release-gate) | `NC-EXIT-AGG-DRIFT-001`: same x1 verdicts produce different X2 | `x2_aggregation_drift` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-COMMIT-REQUEST-001` | When disposition = `X3C_COMMIT_REQUEST_TO_UWG`, Exit MUST emit a `CommitRequest` carrying `clearance_proof_id`, `staged_diff`, `policy_hash`, `blueprint_hash`, `replay_key`. | 05.4, 05.5 | proposed_state_diff + clearance | `CommitRequest` | all 5 fields present | `exit.commit_request` span | `commit_request_<run_id>.json` | `validator: exit_commit_request_validator` (release-gate) | `NC-EXIT-COMMIT-NO-CLEARANCE-001`: emit CommitRequest without clearance proof | `commit_request_unclear` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-NO-DIRECT-L4-WRITE-001` | Exit MUST NOT mutate L4 directly; UWG is the sole admission path. | 05 | (governance) | (none) | trace shows no `l4.write` originating from Exit | NOT_APPLICABLE: anti-pattern detection | `compiler_anti_cheat_findings.json` | `validator: exit_no_direct_l4_write_validator` (release-gate) | `NC-EXIT-DIRECT-L4-WRITE-001`: Exit mutates L4 directly | `direct_l4_write_attempt` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-HITL-FREEZE-001` | When disposition = `X3D_ESCALATE_HITL`, Exit MUST freeze the run (no writes, no further execution), emit a HITL packet, and resume only after L5 reclearance. | 05.6 | escalation trigger | HITL packet | freeze receipt issued; `human_text_treated_as_data=true` | `exit.hitl_freeze` span | `hitl_freeze_packet.json` | `validator: exit_hitl_freeze_validator` (release-gate) | `NC-EXIT-FREEZE-WRITE-001`: write occurs during freeze | `write_during_hitl_freeze` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-HITL-RECLEAR-ROUNDTRIP-001` | After HITL response, Exit MUST round-trip through L5 reclearance before resuming; resume produces a single new X3 disposition for the same run_id. | 05.6 | HITL reply + L5 reclear | resumed X3 | resume preserves `run_id`; new X3 has `is_post_hitl=true` | `exit.hitl_resume` span | `x3_disposition.json` (post-HITL) | `validator: exit_hitl_reclear_validator` (release-gate) | `NC-EXIT-HITL-NO-RECLEAR-001`: resume without L5 reclear | `hitl_resume_without_reclear` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-RUNTIME-EXHAUST-001` | After every run, Exit MUST package a `RuntimeExhaustBundle` for L6 after boundary; the bundle is sealed and immutable. | 05.7 | completed run | `RuntimeExhaustBundle` | bundle has `sealed=true`, `content_hash` | `exit.runtime_exhaust` span | `runtime_exhaust_bundle.json` | `validator: exit_runtime_exhaust_validator` (release-gate) | `NC-EXIT-EXHAUST-MUTATE-001`: bundle mutated post-seal | `exhaust_bundle_mutated` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-RETURN-RESPONSE-001` | Exit MUST emit the sealed return response only after X3 disposition is finalized; pre-disposition responses are FAIL. | 05.7 | finalized X3 | return response | response carries `x3_disposition_id` | `exit.return_response` span | `return_response.json` | `validator: exit_return_response_validator` (release-gate) | `NC-EXIT-EARLY-RESPONSE-001`: response emitted before X3 | `response_before_disposition` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-OBSERVABILITY-001` | Exit MUST emit observability and anti-bypass signals on every X1A..X1J × X3A..X3E coverage cell. | 05.8 | every Exit transition | observability stream | every transition logged | `exit.observability` span | `exit_observability.json` | `validator: exit_observability_validator` (release-gate) | `NC-EXIT-DARK-DISPOSITION-001`: disposition not logged | `exit_dark_disposition` | `byte_identical` | DOC_ONLY |
+| `REQ-EXIT-NO-L6-RESCUE-001` | Exit MUST NOT allow L6 to rescue the current run; L6 only fires after boundary on sealed exhaust. | 05 | (governance) | (none) | no `l6.*` spans inside `exit.*` parent | NOT_APPLICABLE: span ordering | `compiler_anti_cheat_findings.json` | `validator: exit_no_l6_rescue_validator` (release-gate) | `NC-EXIT-L6-RESCUE-001`: L6 mutates state mid-run | `l6_live_mutation_attempt` | `byte_identical` | DOC_ONLY |
 
-======================================================================================================================================================
-X1 / X2 / X3 OVERVIEW (canonical vocabulary — full mechanics in children)
-======================================================================================================================================================
+5. RUNTIME EVIDENCE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+`ExitReviewPacket` MUST carry: `exit_review_packet_id`, `request_id`, `run_id`, `trace_root`, `trace_id`, `span_id`, `input_kind` ∈ {`sealed_l2_artifact`, `l3_workflow_package`, `l0_ret_packet`}, `input_id`, `policy_hash`, `blueprint_hash`, `replay_key`, `content_hash`, `lineage`.
 
-X1 CURRENT-RUN EVALUATION  — gate set evaluating outcome + process + safety + consistency + authority + evidence + replay
-X1 GATE FAMILY              — X1A (Today's Rules — policy manifest + threshold + grader roster), X1B (Answered It — task completion + format + instruction-follow), X1C (Safe to Leave — sandbox + mutation authority + side-effect + egress), X1D (Answer Good — groundedness + faithfulness + citation + support), X1E (Trajectory OK — process quality + tool choice + retry + handoff), X1F (Story Adds Up — internal consistency + cross-step coherence), X1G (Replay Eligible — replay-guard + idempotency + manifest integrity), X1H (Observable — OTEL span tree + counter completeness + audit-trail), X1I (Consistency Across Runs — pass^k where activated + drift + variance), X1J (Write Eligibility — pre-UWG admission readiness)
+`X3 disposition` MUST carry: `x3_disposition_id`, `run_id`, `kind` ∈ {`X3A_ALLOW_FINISH`, `X3B_DENY`, `X3C_COMMIT_REQUEST_TO_UWG`, `X3D_ESCALATE_HITL`, `X3E_SAFE_FALLBACK`}, `severity`, `reason_codes[]`, `evidence_refs[]`, `replay_refs[]`, `is_post_hitl=bool`, `commit_request_id?`, `hitl_packet_id?`, `policy_hash`, `blueprint_hash`, `replay_key`, `content_hash`.
 
-GATE VERDICT FORMAT (uniform across X1A–X1J):
-{gate_id, result, severity, reason_codes[], score, threshold, grader_type, evidence_refs[], replay_refs[], confidence, abstain_flag, remediation_hint}
+6. OTEL SPAN CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Required spans (children of `exit.run`): `exit.normalize`, `exit.x1.A`..`exit.x1.J` (10 spans), `exit.x2_aggregate`, `exit.x3_disposition`, `exit.commit_request` (when X3C), `exit.hitl_freeze` / `exit.hitl_resume` (when X3D), `exit.runtime_exhaust`, `exit.return_response`, `exit.observability`.
 
-RESULT ENUM:
-- PASS            = clears the gate
-- FAIL            = must deny, reroute, or escalate
-- WARN            = may proceed only if aggregate policy allows
-- UNKNOWN         = grader abstained or evidence insufficient (never fake pass)
-- NOT_APPLICABLE  = gate not relevant for this disposition candidate
+Required attributes: `req_id`, `request_id`, `run_id`, `exit_review_packet_id`, `x3_disposition_id`, `policy_hash`, `blueprint_hash`, `replay_key`.
 
-X2 AGGREGATION — combines X1A–X1J verdicts under policy weights and threshold profiles, applies pass^k θ/k policy where activated, computes aggregate severity, and produces a single disposition recommendation feeding X3.
+7. VALIDATOR CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+- `exit_input_normalization_validator`, `exit_x1a_x1f_validator`, `exit_replay_obs_validator`, `exit_x1j_validator`, `exit_one_disposition_validator`, `exit_x3_vocabulary_validator`, `exit_aggregation_validator`, `exit_commit_request_validator`, `exit_no_direct_l4_write_validator`, `exit_hitl_freeze_validator`, `exit_hitl_reclear_validator`, `exit_runtime_exhaust_validator`, `exit_return_response_validator`, `exit_observability_validator`, `exit_no_l6_rescue_validator` (all release-gate)
 
-X3 DISPOSITION — exactly one of:
-- X3A  DENY / REROUTE              (policy break, safety break, unrecoverable failure)
-- X3B  ESCALATE_HITL               (ambiguous, low-confidence, judge-abstained, high-impact, freeze for human review)
-- X3C  COMMIT_REQUEST_TO_UWG       (durable mutation requested and gates pass)
-- X3D  ALLOW / FINISH              (answer-only; all gates pass; user-visible-safe)
-- X3E  SAFE ABSTAIN                (no answer can be returned; safe-bounded refusal)
+8. NEGATIVE CONTROL CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Each `NC-EXIT-*` row in §4 is mandatory. Critical-severity controls: `NC-EXIT-DUAL-DISPOSITION-001`, `NC-EXIT-DIRECT-L4-WRITE-001`, `NC-EXIT-FREEZE-WRITE-001`, `NC-EXIT-HITL-NO-RECLEAR-001`, `NC-EXIT-L6-RESCUE-001`, `NC-EXIT-INELIGIBLE-COMMIT-001`.
 
-CANONICAL DISPOSITION VOCABULARY (used across the entire system):
-ALLOW, DENY, REROUTE, ESCALATE_HITL, COMMIT_REQUEST, BLOCK_COMMIT, ALLOW_FINISH, SAFE_FALLBACK, SAFE_ABSTAIN, RECLEARED, QUARANTINE, MARK_DEGRADED.
+9. REPLAY CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+For fixed `(input artifact, policy_hash, blueprint_hash, replay_key)`, X1 verdict bundle, X2 aggregate, and X3 disposition `content_hash` MUST replay byte-identical. Allowed nondeterminism: ids, span_id, trace_id, timestamps.
 
-THE NON-NEGOTIABLE EXIT RULE: every run exits exactly one X3 disposition. No silent fallbacks. No two-faced exits. No L6 rescue of the current run.
+10. RELEASE GATE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+A 05 row's `Release Gate` is `PASS` only when: input normalized; all X1 checks emitted; X2 deterministic; exactly one X3; vocabulary respected; CommitRequest only with clearance; no direct L4 write; HITL freeze enforced; reclearance round-trip preserved; runtime exhaust sealed; return response post-disposition only; observability complete; no L6 rescue.
 
-======================================================================================================================================================
-CHILD MAP — STAGE OWNERSHIP
-======================================================================================================================================================
+11. NO-OVERLAP LOCK
+------------------------------------------------------------------------------------------------------------------------
+**This file owns**: Exit aggregation and X3 disposition invariants.
 
-05.1  Input normalization + ExitReviewPacket                       -> 05.1_Exit_Input_Normalization_and_Review_Packet.md
-05.2  X1A..X1F current-run checkout checks                         -> 05.2_Exit_Current_Run_Checkout_Checks_X1A_to_X1F.md
-05.3  X1G..X1I replay / observability / consistency                -> 05.3_Exit_Replay_Observability_Consistency_X1G_X1I.md
-05.4  X1J write eligibility + X3C UWG handoff                      -> 05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C.md
-05.5  X2 aggregation + X3 disposition                              -> 05.5_Exit_Aggregation_and_X3_Disposition.md
-05.6  HITL freeze / review / re-clearance (X3B path)               -> 05.6_Exit_HITL_Freeze_Review_and_Reclearance.md
-05.7  Return response + runtime exhaust packaging                  -> 05.7_Exit_Return_Response_and_Runtime_Exhaust.md
-05.8  Exit-specific observability / tests / anti-bypass            -> 05.8_Exit_Specific_Observability_Tests_Anti_Bypass.md
+**Related files own**: per-stage detail in `05.1`..`05.8`; supporting `gap_analysis_v3_vs_industry_2026.md`, `grader_composition_spec.md`, `runtime_to_regression_dataset_flow.md`, `v4_hardening_addendum.md` are advisory and do not own runtime authority.
 
-======================================================================================================================================================
-ONE-PARAGRAPH STAGE SUMMARIES (parent doctrine level — implementation in children)
-======================================================================================================================================================
+**Forbidden duplicated ownership**: Exit MUST NOT execute (L2), retrieve (C0), assemble prompts (PA), mutate L4 directly (UWG), or own G01–G29 (00C).
 
-5.0 / 5.1 — INPUT NORMALIZATION AND EXIT REVIEW PACKET
-"Convert every legal Exit-input source into one ExitReviewPacket without flattening lineage." 5.1 receives sealed L2 artifacts, sealed L3 workflow packages, [RET] exact / semantic / fallback short-circuits from L0, and re-cleared HITL packets returning from X3B. It performs N1 source classification (L2_SEALED_ARTIFACT, L3_WORKFLOW_PACKAGE, RET_CACHE_EXACT, RET_CACHE_SEMANTIC, RET_FALLBACK, HITL_RECLEARED_PACKET), N2 artifact normalization to ExitReviewPacket (preserving original source_type, source authority labels, retrieved-content-as-data, human-review-as-data — never as sovereign authority), N3 run-identity binding (request_id / trace_root / run_id / route_id / replay_key agreement; policy_hash and blueprint_hash match the route/execution snapshot; no hidden reroute occurred after L0 contract emission), N4 disposition-candidate declaration (X3D / X3A / X3B / X3C / X3E shortlist), and N5 live control-signal attachment (BUS D / BUS E live bell signals from L6 verification spine, replay-guard violations, isolation anomalies, drift / unusual-trajectory warnings — these signals can deny / reroute / escalate the current run, but cannot promote future learning during the current run). Immediate-fail before grading on missing fields. Full mechanics in 05.1_Exit_Input_Normalization_and_Review_Packet.md.
+**Forbidden output vocabulary**: `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`. The tokens `ALLOW_FINISH`, `DENY`, `REROUTE`, `ESCALATE_HITL`, `COMMIT_REQUEST_TO_UWG`, `SAFE_FALLBACK`, `durable_write_committed`, `policy_certified` are allowed only inside an `X3 disposition.kind` field.
 
-X1A..X1F — CURRENT-RUN CHECKOUT CHECKS
-"Did the run follow today's rules, answer it, leave safely, ground the answer, take a clean trajectory, and tell a consistent story?" X1A verifies policy_hash / blueprint_hash / prompt_hash, grader roster + versions, threshold profile per track (capability | regression | production | shadow-candidate), pass^k θ/k policy for commit-path, no silent provider/model/tool fallback, no expired capability/sandbox token. X1B verifies task completion vs the actual user task, format/schema/artifact/level-of-detail match, required-field presence, prohibited-field absence, refusal/abstain/clarify/caveat fitness, no overclaim of completion, no override of higher-priority instructions, [RET] cache freshness/threshold/reuse-safe class. X1C verifies sandbox isolation intact, no hidden file/network/process/provider egress, capability scope covers every invocation, side-effect class matches route_contract + sandbox_envelope, StateDiff stays proposal-only unless UWG completed, no direct L2/HITL/L6 write to L4, no mutation during human-review freeze, no cross-trial state bleed, no same-run contamination from learning buses, no hidden retry that changed policy/snapshot/provider lane. X1D verifies groundedness + faithfulness + citation + support — claims grounded in supplied evidence or explicitly marked reasoning, citations resolve to source_ids/spans/lines/anchors, C0 support_score clears threshold, no unsupported factual claims, no evidence distortion/cherry-pick/over-generalization, contradiction flags handled explicitly, weak evidence yields caveat / abstain / reroute (never fake certainty), source freshness satisfies freshness_class, LLM-judge abstain returns UNKNOWN (never fake pass), judge calibration profile valid; C0 status handling — PASS may proceed if other gates pass, WEAK_WITH_CAVEATS allows only with caveats or safe partial, CONFLICTED requires explicit handling or escalate, EMPTY / BLOCKED denies / reroutes / abstains. X1E verifies process quality (tool choice, retry behavior, repair behavior, handoff cleanliness, no oscillation thrash). X1F verifies internal-consistency and cross-step coherence for L3 workflow packages. Full mechanics for X1A..X1F in 05.2_Exit_Current_Run_Checkout_Checks_X1A_to_X1F.md.
+12. CHILD FILE MAP
+------------------------------------------------------------------------------------------------------------------------
+- `05.1_Exit_Input_Normalization_and_Review_Packet.md` — `REQ-EXIT-NORMALIZE-*`
+- `05.2_Exit_Current_Run_Checkout_Checks_X1A_to_X1F.md` — `REQ-EXIT-X1A-*`..`REQ-EXIT-X1F-*`
+- `05.3_Exit_Replay_Observability_Consistency_X1G_X1I.md` — `REQ-EXIT-X1G-*`..`REQ-EXIT-X1I-*`
+- `05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C.md` — `REQ-EXIT-X1J-*`, `REQ-EXIT-X3C-*`
+- `05.5_Exit_Aggregation_and_X3_Disposition.md` — `REQ-EXIT-X2-*`, `REQ-EXIT-X3-*`
+- `05.6_Exit_HITL_Freeze_Review_and_Reclearance.md` — `REQ-EXIT-HITL-*`
+- `05.7_Exit_Return_Response_and_Runtime_Exhaust.md` — `REQ-EXIT-RETURN-*`, `REQ-EXIT-EXHAUST-*`
+- `05.8_Exit_Specific_Observability_Tests_Anti_Bypass.md` — `REQ-EXIT-OBS-*`, `REQ-EXIT-ANTIBYPASS-*`
 
-X1G..X1I — REPLAY / OBSERVABILITY / CONSISTENCY
-X1G (Replay Eligible) verifies replay-guard, idempotency, manifest integrity, deterministic-receipt completeness, and snapshot freezes. X1H (Observable) verifies OTEL span tree shape, counter completeness, audit trail, latency / token / cost / retry / repair / circuit-breaker counters, route/workflow join keys present for L6 correlation. X1I (Consistency Across Runs) verifies pass^k where activated, drift, variance, and shadow-candidate stability. Full mechanics in 05.3_Exit_Replay_Observability_Consistency_X1G_X1I.md.
+13. ACCEPTANCE CRITERIA
+------------------------------------------------------------------------------------------------------------------------
+- Every parent invariant row in §4 has all 13 cells filled.
+- Forbidden output vocabulary in §11 reproduces the global ban.
+- The 8 child files own per-stage REQ_IDs (deferred for full conversion).
+- "Exactly one X3 disposition" rule is binding.
+- "No L6 rescue" rule is binding.
 
-X1J + X3C — WRITE ELIGIBILITY AND UWG HANDOFF
-X1J pre-UWG admission gate: confirms commit_requested == true, all upstream gates passed, StateDiffCandidate is well-formed and inert, capability scope covers the proposed mutation, no two-step write hidden inside L2, replay-bundle fully attached, write intent class matches sandbox/route/policy, and no concurrent runs hold a stale write lock. X3C UWG handoff: emits a CommitRequest to UWG carrying the StateDiffCandidate, ancestry chain, evidence + replay receipts, and authorization lineage. Exit never writes; UWG either ALLOWs the commit, BLOCKs it (BLOCK_COMMIT), or returns it for re-clearance. Full mechanics in 05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C.md.
-
-X2 + X3 — AGGREGATION AND DISPOSITION
-X2 aggregates X1A..X1J verdicts under policy weights and threshold profiles, applies pass^k θ/k policy where activated, computes aggregate severity, and resolves to one X3 candidate. X3 emits exactly one disposition: X3A (DENY / REROUTE), X3B (ESCALATE_HITL — freeze for bounded human review), X3C (COMMIT_REQUEST_TO_UWG — see 05.4), X3D (ALLOW / FINISH — user-visible-safe answer-only), X3E (SAFE ABSTAIN — no answer can be returned safely). Severity, reason codes, evidence_refs, replay_refs, abstain flags, and remediation hints ride with the disposition. Full aggregation table, X3 decision rules, severity matrix, and disposition-output contracts in 05.5_Exit_Aggregation_and_X3_Disposition.md.
-
-X3B — HITL FREEZE / REVIEW / RECLEARANCE
-"Risky work goes into the secure reading room." X3B freezes the current run, packages a HITLReviewPacket (with evidence, gate verdicts, abstain reasons, freshness/source authority, and the proposed disposition), routes to the appropriate human-review tier under L5 authority binding, accepts human input as data (never sovereign authority), and on re-clearance returns the packet to 5.1 as HITL_RECLEARED_PACKET so it re-enters X1 evaluation with HITL evidence attached. No mutation occurs during freeze. No L4 write occurs from HITL. Full freeze / review / re-clearance mechanics in 05.6_Exit_HITL_Freeze_Review_and_Reclearance.md.
-
-X3D + X3E + RUNTIME EXHAUST RETURN
-On X3D ALLOW, Exit returns the user-visible payload through the response channel (with caveats / contradiction flags / abstain notes preserved when the route contract requires them). On X3E SAFE ABSTAIN, Exit returns a safe-bounded refusal carrying the abstain reason and any L0-permitted next-step hints. After every disposition (X3A / X3B / X3C / X3D / X3E), Exit emits the runtime exhaust bundle to L6 — sealed, immutable, and tagged with the final disposition + all gate verdicts + replay metadata + lineage. L6 begins evaluation only after Exit has finalized the disposition; the boundary is absolute. Full mechanics in 05.7_Exit_Return_Response_and_Runtime_Exhaust.md.
-
-EXIT-SPECIFIC OBSERVABILITY / TESTS / ANTI-BYPASS
-The Exit-wide OTEL span tree contract (`5.exit.review`, `x1.<gate>`, `x2.aggregate`, `x3.<disposition>`, `hitl.freeze`, `uwg.commit_request`), replay invariants for every disposition path, anti-bypass tests (no silent fallback, no ungated human change, no L6 rescue of current run, no direct L4 write from Exit / HITL / L6, no two-faced exits, every run exits exactly one X3 disposition), and the X1A..X1J × X3A..X3E coverage matrix live in 05.8_Exit_Specific_Observability_Tests_Anti_Bypass.md.
-
-======================================================================================================================================================
-V6 DISPOSITION QUICK MAP
-======================================================================================================================================================
-INPUT TYPE                         MAIN EXIT PATH                 NOTES
-────────────────────────────────  ─────────────────────────────  ─────────────────────────────────────────────────────────────
-L2 answer-only artifact            X1A-F,H,I -> X3D               no durable write
-L2 mutation artifact               X1A-J -> X3C -> UWG            UWG is sole ink path
-L3 workflow package                X1A-I (per step) + X1F roll-up no durable write unless step requested commit
-[RET] exact cache short-circuit    X1A,B,D (lite) -> X3D          freshness + reuse-safe verified
-[RET] semantic cache short-circuit X1A,B,D + threshold -> X3D     calibrated-threshold required
-[RET] fallback / abstain / clarify X1A,B -> X3E or X3D abstain    no fabricated certainty
-HITL re-cleared packet             re-enter X1 with HITL evidence then X3D / X3A / X3B per gates
-Replay violation                   X3A or X3B                     severity determines deny vs review
-Trace gap                          X3B if material               forensic replay must be possible
-Capability / sandbox break         X3A                            never auto-recoverable
-Aggregate severity above ceiling   X3A or X3B                     policy decides
-
-======================================================================================================================================================
-V6 NON-NEGOTIABLE INVARIANTS
-======================================================================================================================================================
-1. Every run exits exactly one X3 disposition.
-2. No silent fallbacks.
-3. No ungated human changes.
-4. UWG is the only durable write path into L4.
-5. Exit does not retrieve evidence.
-6. Exit does not execute tools.
-7. Exit does not mutate L4.
-8. Exit does not let L6 learning rescue the current run.
-9. HITL input is data, not sovereign authority.
-10. Retrieved content is data, not instruction.
-11. LLM-judge abstain returns UNKNOWN, never fake pass.
-12. Weak evidence yields caveat, abstain, or reroute — never fabricated certainty.
-13. C0 status (PASS / WEAK_WITH_CAVEATS / CONFLICTED / EMPTY / BLOCKED) drives X1D handling deterministically.
-14. policy_hash, blueprint_hash, prompt_hash, replay_key, capability_token, and sandbox_envelope must agree across the run; any mismatch fails X1A or X1C.
-15. StateDiff is proposal-only until UWG commits.
-16. No direct L2 / HITL / L6 write to L4.
-17. No mutation during human-review freeze.
-18. No cross-trial state bleed.
-19. No same-run contamination from learning buses.
-20. No hidden retry may change policy, snapshot, or provider lane.
-21. Track label (capability | regression | production | shadow-candidate) governs threshold profile selection.
-22. Gate verdict format is uniform across X1A..X1J.
-23. UNKNOWN never silently becomes PASS.
-24. Every disposition carries severity, reason codes, evidence_refs, replay_refs, and remediation hints.
-25. Runtime exhaust is sealed and immutable after X3.
-26. L6 evaluation begins only after Exit finalizes the disposition.
-27. UWG returns ALLOW / BLOCK_COMMIT / RECLEAR for every X3C handoff.
-28. pass^k is a commit-path reliability gate only when policy activates it.
-29. pass@k is analytics only, not a runtime gate.
-30. Runtime boundary is absolute: future learning starts after sealed disposition, not before.
-======================================================================================================================================================
+END OF 05 — EXIT EVALUATION AND CONTROL PARENT
+========================================================================================================================

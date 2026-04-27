@@ -1,232 +1,119 @@
 ========================================================================================================================
 MECE ALIGNMENT FULL OVERWRITE HEADER
-Canonical folder: 03_L0_Route_Decision_and_L3_Orchestration
-Canonical file: 03_L0_Route_Decision_Switching_L3.md
-Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
-Source refreshed from: 03_L0_Route_Decision_Switching_L3.md
-Owner summary: L0 routing plus optional L3 orchestration. L0 emits exactly one deterministic RouteContract; L3 expands managed workflows only when execution_form requires it.
-
-GLOBAL NO-OVERLAP LAW
-- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
-- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
-- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
-- 00X owns traceability and no-loss mapping only.
-- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
-- 02 L1 owns advisory interpretation and planning only.
-- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
-- 04 L2 owns bounded execution and sealing only.
-- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
-- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
-- 99 owns proof harnesses only; it does not own runtime behavior.
-
-REFERENCE POINTERS
-- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
-- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
-- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
-- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
-- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+Canonical filename: 03_L0_Route_Decision_Switching_L3.md
+Layer / subsystem: 03 — L0 Route Decision and L3 Orchestration (parent)
+Parent file: docs/reference/README.md
+Ownership surface: L0 deterministic RouteContract emission AND L3 managed-workflow shaping (steps, dependencies, joins, retries, pause/resume, checkpoints).
+Overwrite mode: full-file, no-overlap, executable contract
+No-overlap boundary: L0 routes; L3 shapes managed workflows. Neither retrieves (C0), assembles prompts (PA), executes (L2), mutates (UWG), approves (L5), or evaluates (L6).
+Source authority notes: Anchored on `00X` REQ_ID registry; aligned with constitutional §22, §23, §24.
+Predecessor preserved at: `03_L0_Route_Decision_Switching_L3.md.pre-reqid-rewrite.bak`
 ========================================================================================================================
 
+1. PURPOSE
+------------------------------------------------------------------------------------------------------------------------
+This parent uniquely owns:
+- the rule that L0 emits **exactly one** deterministic `RouteContract` per `L1PlanContract`
+- the rule that L3 only runs when `RouteContract.execution_form = managed_workflow`
+- the route_digest determinism contract
+- the L3WorkflowContract / L3StepContract handoff invariants
+
+It does **not** own:
+- per-stage detail (lives in `03.1`..`03.9`)
+- retrieval (C0), prompt assembly (PA), execution (L2)
+- managed-workflow internal step execution (those are L2 inside L3 shape)
+
+2. AUTHORITY BOUNDARY
+------------------------------------------------------------------------------------------------------------------------
+**Upstream inputs**: `L1PlanContract` (advisory route hints).
+**Downstream outputs**: exactly one `RouteContract` per request; if `execution_form=managed_workflow`, then a `L3WorkflowContract` plus current `L3StepContract`.
+**Forbidden behaviors**: retrieve, execute models or tools, mutate, approve, promote learning, change route mid-run, hide workflow expansion when not managed_workflow.
+**Allowed outputs only**: `RouteContract`, `L3WorkflowContract`, `L3StepContract`, route telemetry, checkpoint receipts.
+
+3. REQ_ID NAMESPACE
+------------------------------------------------------------------------------------------------------------------------
+This pack owns rows under `REQ-L0-*` and `REQ-L3-*`.
+
+4. ATOMIC REQUIREMENTS TABLE (PARENT-LEVEL INVARIANTS)
+------------------------------------------------------------------------------------------------------------------------
+
+| REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-L0-ROUTE-EXACTLY-ONE-001` | L0 MUST emit exactly one `RouteContract` per accepted `L1PlanContract`. Dual-route or zero-route emissions are FAIL. | 03.2, 03.5 | `L1PlanContract` | `RouteContract` | `route_id` count = 1 per `request_id` | `l0.route_decision` parent span | `route_contract_<request_id>.json` | `validator: l0_one_route_validator` (release-gate) | `NC-L0-DUAL-ROUTE-001`: emit two `RouteContract` for one request | `dual_route_emitted` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-L0-DETERMINISTIC-DIGEST-001` | The `route_digest` MUST be deterministic for a fixed `(L1PlanContract, policy_hash, blueprint_hash, registry_digest_set)`. | 03.5 | plan + governance | `RouteContract` | replay shows identical `route_digest` | `l0.route_decision` attribute `route_digest` | `route_contract.json` | `validator: l0_route_digest_validator` (release-gate) | `NC-L0-DIGEST-DRIFT-001`: route_digest differs across replay | `route_digest_drift` | `byte_identical` | DOC_ONLY |
+| `REQ-L0-EXECUTION-FORM-001` | `RouteContract.execution_form` MUST be one of {`exact_cache`, `semantic_cache`, `fallback`, `grounded_read`, `single_action`, `managed_workflow`, `hitl`}. | 03.2..03.4 | route input | `RouteContract` | `execution_form` ∈ allowed set | `l0.execution_form` event | `route_contract.json` | `validator: l0_execution_form_validator` (release-gate) | `NC-L0-UNKNOWN-FORM-001`: emit unknown execution_form | `unknown_execution_form` | `byte_identical` | DOC_ONLY |
+| `REQ-L0-NO-RETRIEVE-EXECUTE-001` | L0 MUST NOT retrieve evidence, call models, execute tools, or mutate state. | 03 | (governance) | (none) | trace under `l0.*` contains no `c0.*`, `pa.*`, `l2.*`, `uwg.*` children | NOT_APPLICABLE: anti-pattern detection in compiler | `compiler_anti_cheat_findings.json` | `validator: l0_no_side_effect_validator` (release-gate) | `NC-L0-RETRIEVE-LEAK-001`: L0 invokes retrieval | `l0_side_effect_violation` | `byte_identical` | DOC_ONLY |
+| `REQ-L0-HMAC-SIGNED-001` | L0 MUST sign every `RouteContract` with an HMAC tied to `policy_hash` and `blueprint_hash`. | 03.5 | route | `RouteContract` | `hmac_sig` field present and verifiable | `l0.route_sign` event | `route_contract.json` | `validator: l0_hmac_validator` (release-gate) | `NC-L0-HMAC-FORGE-001`: forge route_digest without valid hmac | `route_hmac_invalid` | `byte_identical` | DOC_ONLY |
+| `REQ-L0-CACHE-FALLBACK-001` | When `execution_form ∈ {exact_cache, semantic_cache, fallback}`, L0 MUST emit a terminal route packet without invoking C0/PA/L2. | 03.3 | cache hit / fallback | terminal route packet | downstream layer spans absent | `l0.cache_terminal` span | `route_contract.json` | `validator: l0_cache_terminal_validator` (release-gate) | `NC-L0-CACHE-LEAK-001`: cache hit still invokes C0 | `cache_terminal_violation` | `byte_identical` | DOC_ONLY |
+| `REQ-L0-GROUNDED-HANDOFF-001` | When `execution_form ∈ {grounded_read, single_action, managed_workflow}`, L0 MUST hand off to C0 (when grounding required), PA, and the appropriate execution path. | 03.4 | route | handoff event | downstream span lineage intact | `l0.handoff` span | `route_contract.json` | `validator: l0_handoff_validator` (release-gate) | `NC-L0-HIDDEN-HANDOFF-001`: route claims grounded but skips C0 | `grounded_route_skipped_c0` | `byte_identical` | DOC_ONLY |
+| `REQ-L3-MANAGED-WORKFLOW-ELIGIBLE-001` | L3 MUST run only when `RouteContract.execution_form=managed_workflow`. Otherwise L3 MUST NOT expand a workflow. | 03.6 | RouteContract | `L3WorkflowContract` or no-op | absence of `l3.*` spans for non-workflow routes | `l3.eligibility_check` span | `l3_workflow_contract.json` | `validator: l3_eligibility_validator` (release-gate) | `NC-L3-HIDDEN-EXPANSION-001`: L3 expands a single-action route | `hidden_workflow_expansion` | `byte_identical` | DOC_ONLY |
+| `REQ-L3-DAG-BOUNDED-001` | The L3 workflow DAG MUST be bounded (max depth, max breadth, no cycles); cycles are FAIL. | 03.6 | workflow plan | `L3WorkflowContract` | `dag_metrics` populated; cycle_count=0 | `l3.dag_validate` span | `l3_workflow_contract.json` | `validator: l3_dag_validator` (release-gate) | `NC-L3-CYCLE-001`: introduce cycle in DAG | `l3_dag_cycle_detected` | `byte_identical` | DOC_ONLY |
+| `REQ-L3-STEP-LEDGER-001` | L3 MUST maintain a step ledger with readiness, dependencies, retries, joins, and checkpoint state for each step. | 03.7 | DAG state | step ledger | per-step `state ∈ {pending, ready, in_progress, done, failed, skipped}` | `l3.step_ledger` events | `l3_step_ledger_<workflow_id>.json` | `validator: l3_step_ledger_validator` (release-gate) | `NC-L3-LEDGER-DRIFT-001`: step ledger inconsistent with span trace | `l3_ledger_trace_mismatch` | `byte_identical` | DOC_ONLY |
+| `REQ-L3-CONCURRENCY-COMPLETION-001` | L3 MUST manage concurrency, quality fallback, and completion ExitPkg emission. | 03.8 | workflow exec | ExitPkg | `concurrency_metrics` recorded; ExitPkg emitted on completion | `l3.completion` span | `l3_completion_exit_pkg.json` | `validator: l3_completion_validator` (release-gate) | `NC-L3-DOUBLE-COMPLETE-001`: workflow emits two ExitPkg | `l3_dual_completion` | `byte_identical` | DOC_ONLY |
+| `REQ-L3-L2-HANDOFF-001` | L3 MUST hand off the current `L3StepContract` to L2 with checkpoint context; resume MUST be idempotent. | 03.9 | step ready | `L3StepContract` | step contract carries `checkpoint_id`, `idempotency_key` | `l3.l2_handoff` span | `l3_step_contract.json` | `validator: l3_l2_handoff_validator` (release-gate) | `NC-L3-RESUME-NONIDEMPOTENT-001`: resume executes step twice | `l3_resume_double_execute` | `byte_identical` | DOC_ONLY |
+| `REQ-L0-NO-REROUTE-MID-RUN-001` | L0 MUST NOT re-decide route mid-run. Once `RouteContract` is emitted, the run's route is sealed. | 03.5 | (governance) | (none) | trace shows single route_decision span per request | NOT_APPLICABLE: span uniqueness | `route_contract.json` | `validator: l0_no_reroute_mid_run_validator` (release-gate) | `NC-L0-REROUTE-MID-001`: emit second route mid-run | `route_changed_mid_run` | `byte_identical` | DOC_ONLY |
+
+5. RUNTIME EVIDENCE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+`RouteContract` MUST carry: `route_id`, `request_id`, `plan_id`, `trace_root`, `trace_id`, `span_id`, `route_digest`, `hmac_sig`, `execution_form`, `policy_hash`, `blueprint_hash`, `registry_digest_set`, `replay_key`, `content_hash`, `lineage`, `terminal=bool`.
+
+`L3WorkflowContract` MUST carry: `workflow_id`, `route_id`, `dag_metrics`, `step_count`, `policy_hash`, `blueprint_hash`, `replay_key`, `content_hash`, `lineage`.
+
+`L3StepContract` MUST carry: `step_id`, `workflow_id`, `parent_contract_id` (= `route_id` or upstream step), `checkpoint_id`, `idempotency_key`, `policy_hash`, `blueprint_hash`, `replay_key`, `content_hash`.
+
+6. OTEL SPAN CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Required spans:
+- `l0.route_input_preflight`, `l0.route_decision` (parent), `l0.execution_form`, `l0.route_sign`, `l0.cache_terminal` | `l0.handoff`
+- `l3.eligibility_check`, `l3.dag_validate`, `l3.step_ledger`, `l3.completion`, `l3.l2_handoff`
+
+Required attributes: `req_id`, `route_id`, `route_digest`, `execution_form`, `policy_hash`, `blueprint_hash`, `replay_key`, `parent_contract_id`.
+
+7. VALIDATOR CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+- `l0_one_route_validator`, `l0_route_digest_validator`, `l0_execution_form_validator`, `l0_no_side_effect_validator`, `l0_hmac_validator`, `l0_cache_terminal_validator`, `l0_handoff_validator`, `l0_no_reroute_mid_run_validator` (all release-gate)
+- `l3_eligibility_validator`, `l3_dag_validator`, `l3_step_ledger_validator`, `l3_completion_validator`, `l3_l2_handoff_validator` (all release-gate)
+
+8. NEGATIVE CONTROL CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Each `NC-L0-*` and `NC-L3-*` row in §4 is mandatory. `NC-L0-DUAL-ROUTE-001`, `NC-L0-RETRIEVE-LEAK-001`, `NC-L3-HIDDEN-EXPANSION-001`, and `NC-L0-REROUTE-MID-001` are critical-severity.
+
+9. REPLAY CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+For fixed `(L1PlanContract, policy_hash, blueprint_hash, registry_digest_set)`, `route_digest`, `RouteContract.content_hash`, and (when applicable) `L3WorkflowContract.content_hash` MUST replay byte-identical. Allowed nondeterminism: `route_id`, `workflow_id`, `step_id`, `span_id`, `trace_id`, `created_at_utc`.
+
+10. RELEASE GATE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+A 03 row's `Release Gate` is `PASS` only when: exactly one route, deterministic digest, no hidden side effects, no mid-run reroute, L3 only on workflow routes, bounded DAG, idempotent resume.
+
+11. NO-OVERLAP LOCK
+------------------------------------------------------------------------------------------------------------------------
+**This file owns**: L0 RouteContract authority and L3 managed-workflow shaping.
+
+**Related files own**: per-stage detail in `03.1`..`03.9`; the cache file `R1B Semantic Cache v2.md`; the gap analysis file is historical only.
+
+**Forbidden duplicated ownership**: L0/L3 MUST NOT retrieve (C0), assemble prompts (PA), execute (L2), mutate (UWG), approve (L5), or evaluate (L6).
+
+**Forbidden output vocabulary**: `ALLOW_FINISH`, `DENY`, `SAFE_FALLBACK`, `COMMIT_REQUEST_TO_UWG`, `durable_write_committed`, `policy_certified`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`. The token `route_changed` is forbidden mid-run.
+
+12. CHILD FILE MAP
+------------------------------------------------------------------------------------------------------------------------
+- `03.1_L0_Route_Input_and_Preflight.md` — `REQ-L0-PREFLIGHT-*`
+- `03.2_L0_Deterministic_Route_Selection.md` — `REQ-L0-SELECT-*`
+- `03.3_L0_Cache_Fallback_HITL_Routes.md` — `REQ-L0-CACHE-*`, `REQ-L0-FALLBACK-*`, `REQ-L0-HITL-*`
+- `03.4_L0_Grounded_and_Action_Route_Handoffs.md` — `REQ-L0-GROUNDED-*`, `REQ-L0-ACTION-*`
+- `03.5_L0_RouteContract_Telemetry_Replay.md` — `REQ-L0-DIGEST-*`, `REQ-L0-HMAC-*`, `REQ-L0-TELEMETRY-*`
+- `03.6_L3_Managed_Workflow_Eligibility_and_DAG.md` — `REQ-L3-ELIG-*`, `REQ-L3-DAG-*`
+- `03.7_L3_Step_Readiness_State_Ledger_and_Context_Bus.md` — `REQ-L3-LEDGER-*`
+- `03.8_L3_Concurrency_Quality_Fallback_Completion_ExitPkg.md` — `REQ-L3-COMPLETION-*`, `REQ-L3-CONCURRENCY-*`
+- `03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md` — `REQ-L3-HANDOFF-*`, `REQ-L3-RESUME-*`
+
+13. ACCEPTANCE CRITERIA
+------------------------------------------------------------------------------------------------------------------------
+- Every parent invariant row in §4 has all 13 cells filled.
+- Forbidden output vocabulary in §11 reproduces the global ban.
+- The 9 child files own per-stage REQ_IDs (deferred for full conversion).
+- The orphan file `03_L0_Route_Decision_Switching_L3 exec.md` (with embedded space) is flagged for archive in `00X` superseded ledger.
+
+END OF 03 — L0/L3 PARENT
 ========================================================================================================================
-03_L0_Route_Decision_Switching_L3.md
-PARENT L0 ROUTE DECISION + OPTIONAL L3 ORCHESTRATION DOCTRINE
-NO-OVERLAP FULL OVERWRITE
-========================================================================================================================
-
-PURPOSE
-------------------------------------------------------------------------------------------------------------------------
-This parent file defines the L0 routing and L3 orchestration surface at doctrine level only.
-
-L0 is the deterministic dispatcher. It consumes the L1PlanContract and emits exactly one RouteContract. It decides whether
-the request should short-circuit through cache/fallback, enter a single grounded read, perform one bounded action, enter a
-managed workflow, or adopt a HITL posture.
-
-L3 is optional. It runs only when the RouteContract execution_form is MANAGED_WORKFLOW. L3 expands one approved managed route
-into bounded step contracts, checkpoints, branch/join state, retry policy, and sealed workflow packages for Exit.
-
-This parent does not own child-level implementation mechanics. It assigns ownership, preserves the high-level process map,
-and points each detail surface to the correct child file.
-
-PARENT ROLE
-------------------------------------------------------------------------------------------------------------------------
-- Define the L0/L3 doctrine.
-- Define RouteContract and workflow handoff language at a high level.
-- Define no-overlap law.
-- Define the canonical child file map.
-- Define terminal vs single-step vs managed-workflow distinctions.
-- Define how PTC is referenced without moving PTC execution into L0/L3.
-- Preserve the existing v15 invariant that cheapest safe route wins.
-
-SOURCE-ANCHOR SUMMARY
-------------------------------------------------------------------------------------------------------------------------
-The source v15 file establishes that:
-- L0 decides the path, but does not retrieve, think deeply, execute tools, call models, mutate state, approve egress, or
-  promote learning.
-- L0 emits exactly one deterministic RouteContract.
-- L3 is optional and runs only when the selected route must be expanded into managed steps.
-- Terminal [RET] routes bypass L3 and go to Exit.
-- Single-step routes bypass L3 and go to one bounded L2 step.
-- Managed workflow routes enter L3 only when dependency order, branching, joins, retries, parallel-safe shards, staged
-  evidence, HITL pause/resume, or resumable workflow state are genuinely required.
-
-CANONICAL PROCESS POSITION
-------------------------------------------------------------------------------------------------------------------------
-
-[ U0 Intake ]
-      │ validated_request
-      ▼
-[ L1 Plan ]
-      │ L1PlanContract only
-      ▼
-[ L0 Route Decision ]
-      │ emits exactly one RouteContract
-      ├── R1A_EXACT_CACHE ------------------------► [RET] ► Exit
-      ├── R1B_SEMANTIC_CACHE ---------------------► [RET] ► Exit
-      ├── R5_FALLBACK ----------------------------► [RET] ► Exit
-      ├── R3_SIMPLE_GROUNDED_READ ----------------► C0 ► Prompt Assembly ► L2 ► Exit
-      ├── R4_SINGLE_ACTION -----------------------► L2 ► Exit
-      └── R3R4_MANAGED_WORKFLOW ------------------► L3 ► L2 step loop ► sealed workflow package ► Exit
-
-L0 ROUTE IDS
-------------------------------------------------------------------------------------------------------------------------
-- R1A_EXACT_CACHE
-- R1B_SEMANTIC_CACHE
-- R3_SIMPLE_GROUNDED_READ
-- R4_SINGLE_ACTION
-- R3R4_MANAGED_WORKFLOW
-- R5_FALLBACK
-- HITL_POSTURE as posture/guarding annotation, not a separate durable write authority
-
-EXECUTION FORMS
-------------------------------------------------------------------------------------------------------------------------
-- TERMINAL_SHORTCIRCUIT: R1A, R1B, R5. Returns [RET] to Exit.
-- SINGLE_STEP: R3 simple grounded read, R4 single action, or R3+R4 action argument grounding. Bypasses L3.
-- MANAGED_WORKFLOW: R3/R4 multi-step workflow. Enters L3.
-
-PTC PLACEMENT RULE
-------------------------------------------------------------------------------------------------------------------------
-Programmatic Tool Calling is not owned by L0 or L3.
-
-- L0 may select a route where PTC is a permissible downstream execution pattern.
-- L3 may package a current step where PTC is the bounded execution method.
-- L5 must certify policy, capability, sandbox, egress, and HITL re-clearance evidence.
-- L2 executes the actual script/tool batch inside the PTC sandbox.
-- Exit reviews the sealed PTC result.
-- L6 learns from completed PTC traces later.
-
-Therefore this file may say:
-"PTC-capable step" or "programmatic tool batch permitted by capability_token."
-
-This file must not say:
-"L0 runs the script", "L3 executes the tool batch", or "PTC bypasses L2."
-
-========================================================================================================================
-GLOBAL NO-OVERLAP LOCK
-========================================================================================================================
-
-- U0 / Intake owns transport, envelope validity, identity/session baseline, quota, request_id/session_id/trace_root.
-- L1 owns intent interpretation, task_spec, query_spec, ambiguity register, support expectation, action expectation, and route hints only.
-- L0 owns deterministic route selection and RouteContract emission only.
-- L0 does not retrieve, execute, call models, call tools, mutate state, approve output, or promote learning.
-- C0 owns retrieval planning, fetch, graph expansion, shaping, evidence verification, support scoring, and FinalEvidenceContract only.
-- Prompt Assembly owns authority-tiered prompt slots, token budgeting, provider rendering, and signed CompiledPromptArtifact only.
-- L3 owns managed-workflow orchestration only after L0 selected MANAGED_WORKFLOW.
-- L3 does not re-decide the L0 route, retrieve directly, execute tools, call models, mutate L4, approve final output, or promote learning.
-- L2 owns bounded execution of the current packet or current workflow step, including model/tool/script/PTC sandbox execution.
-- Programmatic Tool Calling (PTC) is L2 execution-owned; L0/L3 may only route/package a PTC-capable step with capability and sandbox requirements.
-- Exit Eval and Runtime Gates own current-run dispositions, live gate verdicts, egress approval, denial, reroute, escalation, and commit-request decisions.
-- L5 owns certification evidence for authority, policy, registry, sandbox, origin trust, egress, replay/audit, HITL re-clearance, and static governance drift.
-- L4/UWG owns durable write admission and system-of-record mutation.
-- L6 owns completed-run evaluation, RCA, learning proposals, regression proof, and future-run promotion only.
-
-FORBIDDEN OUTPUTS FROM L0/L3 DETAIL FILES UNLESS SPECIFICALLY SCOPED AS NON-AUTHORITATIVE SIGNALS
-------------------------------------------------------------------------------------------------------------------------
-- ALLOW_FINISH
-- final user answer
-- direct durable write
-- final evidence contract
-- compiled prompt artifact
-- model/tool execution result
-- UWG commit receipt
-- learning promotion
-- final safety certification
-
-ALLOWED OUTPUT STYLE
-------------------------------------------------------------------------------------------------------------------------
-- RouteContract
-- route reason codes
-- route telemetry receipts
-- workflow blueprint
-- L3StepContract
-- workflow checkpoint receipt
-- branch/join manifests
-- fallback/retry state
-- sealed workflow package for Exit
-- non-authoritative downstream notes
-
-
-CANONICAL CHILD FILE MAP
-------------------------------------------------------------------------------------------------------------------------
-
-03.1_L0_Route_Input_and_Preflight.md
-- Unique surface: Route eligibility, input normalization, and prefiltering from L1PlanContract into route-ready facts.
-- Owns: L0 input contract, route preflight, route discriminators, tenant/ACL/source availability precheck, route candidate frame.
-- Does not own: L1 interpretation, C0 retrieval, prompt assembly, L2 execution, Exit disposition, L5 certification detail.
-
-03.2_L0_Deterministic_Route_Selection.md
-- Unique surface: deterministic route selection algorithm and fixed decision order.
-- Owns: route choice among R1A/R1B/R3/R4/R3R4/R5/HITL posture, route scoring, cheapest-safe-route logic.
-- Does not own: execution of any route, final egress approval, or workflow expansion mechanics.
-
-03.3_L0_Cache_Fallback_HITL_Routes.md
-- Unique surface: terminal route families and HITL posture selection.
-- Owns: R1A exact cache, R1B semantic cache, R5 fallback, HITL posture as route annotation.
-- Does not own: cache storage internals, final Exit decisions, or human-review lifecycle implementation.
-
-03.4_L0_Grounded_and_Action_Route_Handoffs.md
-- Unique surface: single-step handoff contracts for grounded read and bounded action routes.
-- Owns: R3 simple grounded read route handoff, R4 single action handoff, R3+R4 action-argument grounding shape.
-- Does not own: C0 evidence mechanics, Prompt Assembly slot construction, L2 execution, or PTC execution.
-
-03.5_L0_RouteContract_Telemetry_Replay.md
-- Unique surface: RouteContract schema, digest/signature, route telemetry, deterministic replay proof.
-- Owns: route_digest, manifest_hash, hmac_sig, route telemetry event, replay-bound route invariants.
-- Does not own: L2 replay execution, C0 evidence hashes, prompt hashes beyond references.
-
-03.6_L3_Managed_Workflow_Eligibility_and_DAG.md
-- Unique surface: deciding whether the already-selected managed route expands into a direct step package or a workflow graph.
-- Owns: L3 execution shape classification, DAG/HTN/AST runner, workflow blueprint, dependency graph.
-- Does not own: L0 route decision or L2 execution.
-
-03.7_L3_Step_Readiness_State_Ledger_and_Context_Bus.md
-- Unique surface: workflow state, ready-node selection, checkpoints, context/evidence bus, step contracts to L2.
-- Owns: workflow ledger, readiness control, node status, branch state, L3StepContract, evidence/graph refs as carried data.
-- Does not own: direct retrieval, prompt assembly, or tool/model execution.
-
-03.8_L3_Concurrency_Quality_Fallback_Completion_ExitPkg.md
-- Unique surface: fan-out/join, bounded quality loops, fallback/cascade control, completion test, sealed workflow package.
-- Owns: concurrency governor, quality loop governor, fallback controller, completion/exit package.
-- Does not own: Exit disposition or durable write admission.
-
-TOP-LEVEL ACCEPTANCE CRITERIA
-------------------------------------------------------------------------------------------------------------------------
-- Parent contains doctrine only.
-- Each child owns one unique implementation surface.
-- No child restates another layer's implementation details.
-- L0 emits one deterministic RouteContract.
-- L3 runs only for MANAGED_WORKFLOW.
-- PTC is referenced only as downstream L2-owned execution.
-- Terminal [RET] paths bypass C0, Prompt Assembly, L3, and L2 unless a sealed prior artifact is explicitly referenced.
-- Single-step routes bypass L3.
-- Managed workflow routes enter L3 but still execute each bounded step through L2.
-- All route and workflow artifacts are traceable, replayable, policy-bound, and observable.
-
-END OF PARENT
-========================================================================================================================
-========================================================================================================================================
-GAP-CLOSED PARENT UPDATE | L3-L2 HANDOFF AND CHECKPOINTING
-========================================================================================================================================
-03.9_L3_L2_Step_Handoff_Checkpoint_Resume.md is now the canonical child for workflow step readiness, L3ToL2StepContract,
-checkpoint refs, resume cursors, branch/join metadata, and L2 result merge receipts. L3 still orchestrates only; L2 still executes only.

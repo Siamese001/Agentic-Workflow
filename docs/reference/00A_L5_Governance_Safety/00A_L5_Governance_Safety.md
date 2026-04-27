@@ -1,324 +1,146 @@
 ========================================================================================================================
 MECE ALIGNMENT FULL OVERWRITE HEADER
-Canonical folder: 00A_L5_Governance_Safety
-Canonical file: 00A_L5_Governance_Safety.md
-Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
-Source refreshed from: 00A_L5_Governance_Safety.md
-Owner summary: Cross-cutting L5 governance and certification evidence plane. Owns authority, policy, registry, capability, origin-trust, egress, HITL re-clearance, replay/audit certification evidence. Does not own live GateVerdict dispositions or durable write admission.
-
-GLOBAL NO-OVERLAP LAW
-- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
-- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
-- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
-- 00X owns traceability and no-loss mapping only.
-- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
-- 02 L1 owns advisory interpretation and planning only.
-- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
-- 04 L2 owns bounded execution and sealing only.
-- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
-- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
-- 99 owns proof harnesses only; it does not own runtime behavior.
-
-REFERENCE POINTERS
-- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
-- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
-- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
-- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
-- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+Canonical filename: 00A_L5_Governance_Safety.md
+Layer / subsystem: 00A — L5 Governance Safety (parent)
+Parent file: docs/reference/README.md
+Ownership surface: L5 governance certification evidence: authority, policy, registry, identity, capability, sandbox, origin trust, egress, HITL re-clearance, replay/audit certification, static governance/structure drift, and runtime certification binding.
+Overwrite mode: full-file, no-overlap, executable contract
+No-overlap boundary: 00A owns governance certification evidence only. It does not emit live runtime dispositions (those belong to `00C` runtime gates and `05` Exit), it does not commit durable writes (UWG/`00B.6`), and it does not own end-to-end scenario proof (`99`).
+Source authority notes: Anchored on `00X` REQ_ID registry; aligned with constitutional §22, §23, §24.
+Predecessor preserved at: `00A_L5_Governance_Safety.md.pre-reqid-rewrite.bak`
 ========================================================================================================================
 
-========================================================================================================================
-00A CROSS-CUTTING PREFIX RECONCILIATION
-========================================================================================================================
-Canonical folder: 00A_L5_Governance_Safety/
-Mode: full-overwrite, MECE, implementation-grade, Windsurf-executable
-Reason for 00A prefix: L5 is a cross-cutting governance and safety certification plane, not a sequential runtime step.
-
-MECE alignment with current requirements set:
-- 00A_L5 owns governance certification evidence only.
-- 00B_L4_State_Archive_and_UWG owns durable state and durable write admission.
-- 00C_Runtime_Gates_Current_Run_Mesh owns G01-G29 current-run gate verdict law.
-- 01_Request_Intake owns request envelope validation and identity stamping only.
-- 02_L1_Reasoning_Plan owns advisory plan generation only.
-- 03_L0_Route_Decision_and_L3_Orchestration owns route authority and managed workflow shaping only.
-- C0_Context_Engine owns retrieval, evidence shaping, verification, and FinalEvidenceContract only.
-- PA_Prompt_Assembly owns signed provider-ready prompt construction only.
-- 04_L2_Execute owns bounded execution and sealed artifacts only.
-- 05_Exit_Eval_and_Control owns X1/X2/X3 final current-run disposition only.
-- 06_L6_Shadow_Evaluation_System_Learning owns completed-run evaluation, RCA, proposals, and future-run learning only.
-
-Forbidden ownership in this 00A pack:
-- Do not define G01-G29 gate law here. Reference 00C instead.
-- Do not emit live runtime dispositions here. Runtime Gates and Exit own those.
-- Do not commit durable state here. 00B/UWG owns durable write admission.
-- Do not retrieve, assemble prompts, execute tools, route, or learn from completed runs here.
-
-END 00A RECONCILIATION
-========================================================================================================================
-
-========================================================================================================================
-00A_L5_Governance_Safety.md
-PARENT L5 GOVERNANCE & SAFETY DOCTRINE
-NO-OVERLAP FULL OVERWRITE
-========================================================================================================================
-
-PURPOSE
+1. PURPOSE
 ------------------------------------------------------------------------------------------------------------------------
-This parent file defines the L5 Governance & Safety plane at doctrine level only.
+This parent uniquely owns:
+- the L5 certification evidence contract (the verb is "certify", never "approve a live run")
+- per-domain parent REQ_IDs across the 8 L5 sub-domains
+- the rule that certification evidence is consumed by 00C/05 at runtime but L5 does not itself decide the live disposition
+- the runtime-certification binding contract (`00A.8`)
 
-L5 is the cross-cutting authority and safety certification plane. It certifies whether a packet has valid authority,
-policy, registry, identity, capability, sandbox, origin-trust, egress, HITL re-clearance, replay, audit, and static
-governance evidence.
+It does **not** own:
+- per-domain detail (lives in `00A.1`..`00A.7a`, `00A.8`, `00A.8a`)
+- live runtime dispositions (those are 00C / 05)
+- durable write admission (00B.6 UWG)
+- end-to-end scenario proof (99)
 
-This parent does not implement child mechanics. It assigns ownership, names the canonical L5 outputs, defines the
-non-overlap law, and points each implementation-grade detail surface to the correct child file.
-
-PARENT ROLE
+2. AUTHORITY BOUNDARY
 ------------------------------------------------------------------------------------------------------------------------
-- Define L5 authority doctrine.
-- Define L5-owned certification language.
-- Define no-overlap law.
-- Define source ownership boundaries.
-- Define the child file map.
-- Define the L5CertificationResult vocabulary.
-- Define traceability expectations.
+**Upstream inputs**: policy versions, blueprint versions, registry digests, capability_token specs, sandbox envelopes, identity claims, egress policies, HITL re-clearance requests, replay/audit ledger snapshots, static-governance source.
 
-PARENT DOES NOT OWN IMPLEMENTATION DETAIL
+**Downstream outputs**: `L5CertificationResult` artifacts and certification evidence packets — consumed by 00C (gate verdicts) and 05 (Exit checks).
+
+**Forbidden behaviors**:
+- 00A MUST NOT emit live `ALLOW`/`DENY` dispositions as its canonical output.
+- 00A MUST NOT mutate L4 directly (UWG only).
+- 00A MUST NOT replace 00C runtime gate verdicts.
+- 00A MUST NOT make routing, retrieval, or execution decisions.
+
+**Allowed outputs only**: certification statuses (`certified`, `not_certified`, `expired`, `mismatched`, `pending_reclearance`), evidence bundles, and binding receipts.
+
+3. REQ_ID NAMESPACE
 ------------------------------------------------------------------------------------------------------------------------
-The child files own implementation-grade detail. This parent should not restate their full contracts.
+This pack owns rows under `REQ-L5-*`. Per-domain children own their own sub-namespaces (e.g. `REQ-L5-AUTHORITY-*`, `REQ-L5-ORIGIN-TRUST-*`, `REQ-L5-EGRESS-*`).
 
-Child details are intentionally moved into:
-- 00A.1 through 00A.7 below.
+4. ATOMIC REQUIREMENTS TABLE (PARENT-LEVEL INVARIANTS)
+------------------------------------------------------------------------------------------------------------------------
 
+| REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-L5-CERTIFICATION-NOT-DISPOSITION-001` | L5 MUST emit certification statuses only; it MUST NOT emit a live runtime disposition (`ALLOW`/`DENY` etc.) as its top-level output. | 00A | governance source | `L5CertificationResult` | output set ⊆ {`certified`, `not_certified`, `expired`, `mismatched`, `pending_reclearance`} | `l5.certify` parent span; status_code OK | `l5_certification_<domain>.json` | `validator: l5_output_vocabulary_validator` (release-gate) | `NC-L5-LIVE-DISPOSITION-LEAK-001`: emit `ALLOW_FINISH` from a 00A.x file | `l5_runtime_disposition_leak` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-L5-AUTHORITY-BINDING-001` | Every L5 certification MUST bind a `policy_hash`, `blueprint_hash`, `registry_digest_set`, and `capability_token_id` to the certification result. | 00A.2 | policy/blueprint/registry/capability | `L5CertificationResult` | result carries the 4 binding fields | `l5.authority_bind` span | `l5_certification_authority.json` | `validator: l5_authority_binding_validator` (release-gate) | `NC-L5-DRIFT-001`: certify with stale policy_hash | `l5_stale_policy_hash` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-ORIGIN-TRUST-001` | L5 MUST classify origin trust per source class and bind the classification to certification evidence. | 00A.3 | origin metadata | `L5CertificationResult` | result carries `origin_trust_class`, `content_boundary` | `l5.origin_trust` span | `l5_certification_origin_trust.json` | `validator: l5_origin_trust_validator` (release-gate) | `NC-L5-ORIGIN-MISLABEL-001`: untrusted source labeled trusted | `origin_trust_mislabel` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-HITL-RECLEAR-001` | When a run requires HITL re-clearance, L5 MUST emit a re-clearance certification before Exit can resume. | 00A.4 | HITL response | `L5HITLReclearanceResult` | result carries `human_response_hash`, `human_text_treated_as_data=true` | `l5.hitl_reclear` span | `l5_hitl_reclearance.json` | `validator: l5_hitl_reclearance_validator` (release-gate) | `NC-L5-HITL-INSTRUCTION-LEAK-001`: human reply elevated to instruction tier | `human_text_promoted_to_instruction` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-EGRESS-CERT-001` | L5 MUST certify egress class and provider governance binding before any external call. | 00A.5 | egress request | `L5EgressCertification` | result carries `egress_class`, `provider_id`, `provider_governance_hash` | `l5.egress_cert` span | `l5_egress_certification.json` | `validator: l5_egress_validator` (release-gate) | `NC-L5-DARK-PROVIDER-001`: provider with no governance hash certified | `provider_governance_hash_missing` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-REPLAY-AUDIT-CERT-001` | L5 MUST certify the replay snapshot manifest and the audit ledger pointer for every release-eligible run. | 00A.6 | replay manifest + audit ptr | `L5ReplayAuditCertification` | result carries `snapshot_manifest_hash`, `audit_ledger_ptr`, `audit_chain_hash` | `l5.replay_audit_cert` span | `l5_replay_audit_certification.json` | `validator: l5_replay_audit_validator` (release-gate) | `NC-L5-AUDIT-CHAIN-BREAK-001`: certify with broken audit chain | `audit_chain_break_certified` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-STATIC-DRIFT-001` | L5 MUST certify static governance source against expected structure-drift baselines. | 00A.7 | source repo state | `L5StaticDriftCertification` | result carries `repo_drift_findings[]`, `baseline_hash` | `l5.static_drift` span | `l5_static_drift.json` | `validator: l5_static_drift_validator` (release-gate + CI) | `NC-L5-DRIFT-MASKED-001`: drift present but findings list empty | `static_drift_findings_suppressed` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-CONTEXT-INVARIANT-001` | L5 governance context invariant MUST hold: certification context cannot be mutated post-issuance; only superseded by a new certification with monotonic version. | 00A.7a | certification artifact | (immutability) | `L5CertificationResult.context_locked=true`; supersession via new artifact only | `l5.context_lock` span | `l5_context_invariant.json` | `validator: l5_context_invariant_validator` (release-gate) | `NC-L5-CONTEXT-EDIT-001`: in-place edit of issued certification | `l5_certification_mutated_in_place` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-RUNTIME-BIND-001` | At run start, L5 MUST emit a `RuntimeCertificationBinding` linking `request_id`, `run_id`, `policy_hash`, `blueprint_hash`, `registry_digest_set`, `capability_token_id`, and `origin_trust_class`. Downstream layers consume this binding. | 00A.8 | run start | `RuntimeCertificationBinding` | binding carries the 7 linkage fields | `l5.runtime_bind` span | `runtime_certification_binding_<run_id>.json` | `validator: l5_runtime_bind_validator` (release-gate) | `NC-L5-BIND-MISSING-001`: run starts without binding | `runtime_bind_missing` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-CROSS-CHILD-CONSISTENCY-001` | All 00A child certifications MUST present mutually-consistent `policy_hash` and `blueprint_hash`; mismatch is FAIL. | 00A.8a | all 00A.x certs | (cross-check) | every certification artifact for the run carries identical `policy_hash`, `blueprint_hash` | `l5.cross_child_check` span | `l5_cross_child_consistency.json` | `validator: l5_cross_child_consistency_validator` (release-gate) | `NC-L5-MIXED-HASH-001`: 00A.3 cert uses a different policy_hash than 00A.5 cert | `cross_child_hash_drift` | `byte_identical` | DOC_ONLY |
+| `REQ-L5-NO-WRITE-001` | L5 MUST NOT issue durable writes; it MAY only emit certification artifacts and consumes the UWG receipt as evidence (not as authority). | 00A | (governance) | (none) | absence of L5-originated writes in `audit_ledger` | NOT_APPLICABLE: anti-pattern detection in compiler | `compiler_anti_cheat_findings.json` | `validator: l5_no_write_validator` (release-gate) | `NC-L5-DIRECT-WRITE-001`: L5 module writes to L4 | `l5_attempted_durable_write` | `byte_identical` | DOC_ONLY |
+
+5. RUNTIME EVIDENCE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Every L5 certification artifact MUST carry:
+- `req_id` (a `REQ-L5-*`)
+- `request_id`, `run_id`, `trace_id`, `span_id`
+- `policy_hash`, `blueprint_hash`, `registry_digest_set`
+- `capability_token_id`
+- `origin_trust_class`
+- `cert_status` ∈ {`certified`, `not_certified`, `expired`, `mismatched`, `pending_reclearance`}
+- `cert_evidence_refs[]`
+- `replay_key`
+- `validator_receipt_id`
+
+6. OTEL SPAN CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Required spans (children of `l5.certify` parent):
+- `l5.authority_bind`, `l5.origin_trust`, `l5.hitl_reclear`, `l5.egress_cert`, `l5.replay_audit_cert`, `l5.static_drift`, `l5.context_lock`, `l5.runtime_bind`, `l5.cross_child_check`
+
+Required attributes on every L5 span: `req_id`, `cert_status`, `policy_hash`, `blueprint_hash`, `replay_key`. Status code: `OK` for `certified`/`pending_reclearance`; `ERROR` (with `attributes.fail_reason_code`) for `not_certified`/`expired`/`mismatched`.
+
+7. VALIDATOR CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+- `l5_output_vocabulary_validator` (release-gate)
+- `l5_authority_binding_validator` (release-gate)
+- `l5_origin_trust_validator` (release-gate)
+- `l5_hitl_reclearance_validator` (release-gate)
+- `l5_egress_validator` (release-gate)
+- `l5_replay_audit_validator` (release-gate)
+- `l5_static_drift_validator` (release-gate + CI)
+- `l5_context_invariant_validator` (release-gate)
+- `l5_runtime_bind_validator` (release-gate)
+- `l5_cross_child_consistency_validator` (release-gate)
+- `l5_no_write_validator` (release-gate)
+
+8. NEGATIVE CONTROL CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Every `NC-L5-*` listed in §4 has a target REQ_ID, tamper kind, expected validator, and `Expected Fail Reason` matching the row. Cross-pack invariants:
+- L5 MUST NOT redirect a runtime decision; tamper attempts that bypass 00C/05 are routed to `NC-GATE-*` / `NC-EXIT-*`.
+
+9. REPLAY CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+Every L5 certification artifact MUST replay byte-identical for the same `(domain, policy_hash, blueprint_hash, registry_digest_set, input)`. Allowed nondeterminism: only `span_id`, `trace_id`, `cert_issued_at_utc`. Any other diff is release-blocking.
+
+10. RELEASE GATE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+A 00A row's `Release Gate` is `PASS` only when:
+- L5 emits no live runtime dispositions
+- All cross-child consistency checks pass
+- No anti-cheat detector triggers
+- Negative controls trip with the matching `Expected Fail Reason`
+
+11. NO-OVERLAP LOCK
+------------------------------------------------------------------------------------------------------------------------
+**This file owns**: L5 certification evidence parent invariants.
+
+**Related files own**: per-domain detail in `00A.1`..`00A.8a`; the calibration / assurance / capability / guardrail / risk supporting docs.
+
+**Forbidden duplicated ownership**: 00A MUST NOT redefine `GateVerdict` (00C) or `X3 disposition` (05). 00C/05 MUST NOT redefine certification status vocabulary.
+
+**Forbidden output vocabulary**: `ALLOW_FINISH`, `DENY`, `REROUTE`, `COMMIT_REQUEST_TO_UWG`, `SAFE_FALLBACK`, `durable_write_committed`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`. The token `policy_certified` is allowed only inside an `L5CertificationResult.cert_status` field.
+
+12. CHILD FILE MAP
+------------------------------------------------------------------------------------------------------------------------
+- `00A.1_L5_Safety_Enforcement_Plane.md` — `REQ-L5-SAFETY-*`
+- `00A.2_L5_Authority_Context_and_Registry_Binding.md` — `REQ-L5-AUTHORITY-*`
+- `00A.3_L5_Origin_Trust_and_Content_Boundary.md` — `REQ-L5-ORIGIN-TRUST-*`
+- `00A.4_L5_HITL_Reclearance_Human_Input_Gov.md` — `REQ-L5-HITL-*`
+- `00A.5_L5_Egress_and_Provider_Governance.md` — `REQ-L5-EGRESS-*`
+- `00A.6_L5_Replay_Audit_and_Certification_Evidence.md` — `REQ-L5-REPLAY-AUDIT-*`
+- `00A.7_L5_Static_Governance_and_Structure_Drift.md` — `REQ-L5-STATIC-*`
+- `00A.7a_L5_Governance_Context_Invariant.md` — `REQ-L5-CONTEXT-*`
+- `00A.8_L5_Runtime_Certification_Binding.md` — `REQ-L5-BIND-*`
+- `00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md` — `REQ-L5-CROSS-*`
+
+13. ACCEPTANCE CRITERIA
+------------------------------------------------------------------------------------------------------------------------
+- Every parent invariant row in §4 has all 13 cells filled.
+- The 8 L5 sub-domains each have a parent row pointing to their child.
+- The certification status vocabulary in §2/§5 has exactly 5 tokens.
+- The OTEL span contract in §6 names every L5 span and required attribute.
+- The forbidden output vocabulary in §11 reproduces the global ban list.
+- Release gate is fail-closed.
+
+END OF 00A — L5 GOVERNANCE SAFETY PARENT
 ========================================================================================================================
-SOURCE OWNERSHIP BOUNDARY
-========================================================================================================================
-
-L5 OWNS AT DOCTRINE LEVEL:
-- governance entry contract
-- governance mode selection
-- risk-tier band evidence
-- authority context certification
-- policy / blueprint / registry / principal / capability / sandbox / replay binding expectations
-- origin-trust and content-boundary expectations
-- egress certification expectations
-- HITL re-clearance expectations
-- replay/audit/certification expectations
-- static governance drift expectations
-- L5CertificationResult vocabulary
-
-L5 DOES NOT OWN:
-- runtime gate decision vocabulary
-- G01-G29 runtime gate requirements
-- final current-run checkout
-- L2 execution lifecycle
-- C0 retrieval and evidence scoring
-- Prompt Assembly slot construction
-- L6 completed-run learning and promotion
-- UWG durable write admission
-
-SOURCE OWNERS:
-- 00C_Runtime_Gates_Current_Run_Mesh/ = live gate dispositions and G01-G29 runtime decisions
-- 05_Live_Runtime_Exit_Control_&_Evaluation.md = final current-run checkout and sealed-result disposition
-- 04_L2_Execute.md = execution lifecycle, sandbox execution mechanics, E1-E5 and sealing implementation
-- C0_Context_Engine.md = retrieval, evidence scoring, hydration, support status, and source lineage
-- C0.3_Graph_RAG.md = graph traversal and GraphRAG mechanics
-- Prompt_Assembly.md = signed prompt construction and slot assembly
-- 06_Shadow_Evaluation_System_Learning.md = completed-run RCA, learning proposals, promotion, and future-run updates
-- 00B_L4_State_Archive_and_UWG/ = durable write admission and system-of-record mutation
-
-
-========================================================================================================================
-FORBIDDEN OVERLAP TERMS AS L5 OUTPUTS
-========================================================================================================================
-
-Do not use these as L5 outputs:
-- ALLOW
-- DENY
-- CLARIFY
-- ABSTAIN
-- REROUTE
-- SHRINK_SCOPE
-- RETRY
-- HEAL
-- ESCALATE_HITL
-- QUARANTINE
-- REDACT
-- SAFE_FALLBACK
-- MARK_DEGRADED
-- COMMIT_REQUEST
-- BLOCK_COMMIT
-- ALLOW_FINISH
-- downstream_disposition
-- allow_l2_execution
-- allow_model_call
-- allow_tool_call
-- allow_connector_call
-- require_HITL
-- require_UWG_commit_review
-- incident_lockdown
-
-Use L5 certification/evidence terms instead:
-- L5_CERTIFIED
-- L5_NOT_CERTIFIED
-- L5_REQUIRES_RECLEARANCE
-- L5_REQUIRES_REMEDIATION_EVIDENCE
-- L5_REQUIRES_HUMAN_REVIEW_PACKET
-- L5_INCIDENT_EVIDENCE_REQUIRED
-- L5_STATIC_VIOLATION_EVIDENCE
-- L5_AUTHORITY_GAP_EVIDENCE
-- L5_EGRESS_GAP_EVIDENCE
-- L5_REPLAY_AUDIT_GAP_EVIDENCE
-
-These are certification/evidence statuses, not runtime dispositions.
-Runtime Gates and Exit decide live outcomes.
-
-========================================================================================================================
-CANONICAL CHILD FILE MAP
-========================================================================================================================
-
-00A.1_L5_Safety_Enforcement_Plane.md
-- Unique surface: Concrete enforcement substrate.
-- Owns: Classification Kernel, Structure Blueprint, Agent Execution Profile Registry, Sovereign LLM Gateway substrate, compile/boot/runtime enforcement receipts.
-- Does not own: Runtime dispositions, Exit checkout, L2 execution, C0 retrieval, Prompt Assembly, UWG, L6 learning, full authority binding, full origin/HITL/egress/replay/static drift children.
-
-00A.2_L5_Authority_Context_and_Registry_Binding.md
-- Unique surface: Authority context and registry binding evidence.
-- Owns: GovernedValidationContext, policy/blueprint/registry/principal/capability/sandbox/replay/side-effect binding evidence.
-- Does not own: Concrete scanners/gateway, origin sanitization, HITL lifecycle, egress invocation/certification, replay certification packet, static drift scanning, Runtime Gates, Exit, L2, C0, PA, UWG, L6.
-
-00A.3_L5_Origin_Trust_and_Content_Boundary.md
-- Unique surface: Origin-trust and content-boundary evidence.
-- Owns: OriginTrustManifest, instruction/data boundary, quarantine evidence, safe extraction evidence, sanitized payload maps, untrusted authority attempt reports.
-- Does not own: C0 retrieval/scoring, Prompt Assembly slot build, HITL lifecycle, Egress certification, Replay certification, Runtime Gates, Exit, L2 execution, UWG, L6.
-
-00A.4_L5_HITL_Reclearance_Human_Input_Gov.md
-- Unique surface: HITL re-clearance and human-input governance evidence.
-- Owns: HITLFreezePacket, HumanReviewEvidencePacket, HumanModificationDiff, reclearance and resume authority receipts, HITL audit refs.
-- Does not own: Runtime decision to escalate/continue, Exit escalation workflow, L2 pause/resume execution mechanics, C0 retrieval, Prompt Assembly, UWG commit, L6 calibration.
-
-00A.5_L5_Egress_and_Provider_Governance.md
-- Unique surface: Egress/provider certification evidence.
-- Owns: EgressCertificationRequest/Receipt, model/tool/connector/network/provider/credential/fallback evidence, egress audit/replay refs.
-- Does not own: Sovereign LLM Gateway implementation, direct static scanner implementation, actual model/tool/connector/network invocation, Tool arg gate, Exit output egress, UWG commit, L6 drift learning.
-
-00A.6_L5_Replay_Audit_and_Certification_Evidence.md
-- Unique surface: Replay, audit, certification, and reconstruction evidence.
-- Owns: L5CertificationPacket/Result, certification scope, replay envelope binding, audit manifest, receipt chain, hash/trace/compliance/reconstruction reports.
-- Does not own: L2 seal mechanics, replay execution/comparison, Runtime Gate replay decision, Exit final checkout, UWG commit record, L6 RCA/learning.
-
-00A.7_L5_Static_Governance_and_Structure_Drift.md
-- Unique surface: Static governance and structure drift evidence.
-- Owns: StaticGovernanceReviewPacket, StaticDriftEvidencePacket, architecture/policy/registry/prompt/connector/route/bypass/write/waiver/snapshot/static regression reports.
-- Does not own: Concrete classification/blueprint/gateway scanner implementation, Runtime Gates anomaly containment, L2 validation, C0 retrieval, Prompt Assembly, UWG, L6 promotion.
-
-========================================================================================================================
-L5 CERTIFICATION RESULT CONTRACT
-========================================================================================================================
-
-L5CertificationResult:
-  certification_status:
-    - L5_CERTIFIED
-    - L5_NOT_CERTIFIED
-    - L5_REQUIRES_RECLEARANCE
-    - L5_REQUIRES_REMEDIATION_EVIDENCE
-    - L5_REQUIRES_HUMAN_REVIEW_PACKET
-    - L5_INCIDENT_EVIDENCE_REQUIRED
-
-  reason_codes:
-    - policy_violation_evidence
-    - hard_constraint_breach_evidence
-    - missing_authority_evidence
-    - registry_mismatch_evidence
-    - route_mismatch_evidence
-    - injection_evidence
-    - context_bleed_evidence
-    - cross_tenant_risk_evidence
-    - data_sensitivity_risk_evidence
-    - evidence_weak_signal
-    - groundedness_required_signal
-    - human_review_required_signal
-    - sandbox_insufficient_evidence
-    - replay_incomplete_evidence
-    - provider_mismatch_evidence
-    - tool_schema_mismatch_evidence
-    - connector_scope_mismatch_evidence
-    - budget_risk_evidence
-    - drift_evidence
-
-  evidence_refs:
-    - authority_context_evidence_ref
-    - origin_trust_evidence_ref
-    - static_governance_evidence_ref
-    - egress_certification_evidence_ref
-    - human_reclearance_evidence_ref
-    - replay_audit_evidence_ref
-    - certification_gap_evidence_ref
-
-  non_authority:
-    - This result does not approve final output egress.
-    - This result does not approve durable write.
-    - This result does not bypass Runtime Gates.
-    - This result does not bypass Exit Eval.
-    - This result does not bypass UWG.
-    - This result does not let L6 mutate the current run.
-
-========================================================================================================================
-PARENT TO CHILD DRILL-DOWN RULE
-========================================================================================================================
-
-Parent L5 answers:
-"What is the L5 governance doctrine and which L5 evidence surface owns this concern?"
-
-Children answer one narrow implementation question each.
-Children must not restate the full parent.
-Children must not define runtime decisions.
-Children must not define execution, retrieval, prompt assembly, durable write, or learning mechanics.
-
-========================================================================================================================
-DOWNSTREAM SOURCE BOUNDARY RULES
-========================================================================================================================
-
-Runtime Gates answer:
-"What should the live system do right now with this evidence?"
-
-Exit Eval answers:
-"Can the sealed result leave, deny, reroute, escalate, or request commit?"
-
-L2 answers:
-"Can this bounded packet execute safely and how is execution sealed?"
-
-C0 answers:
-"What evidence supports the answer, and how strong is that evidence?"
-
-Prompt Assembly answers:
-"What signed prompt artifact should be dispatched?"
-
-UWG answers:
-"Can a cleared proposed mutation become durable truth?"
-
-L6 answers:
-"What should future runs learn after this run is complete?"
-
-========================================================================================================================
-ACCEPTANCE CRITERIA FOR THIS PARENT
-========================================================================================================================
-
-This parent is complete only when:
-1. It defines L5 doctrine without duplicating child implementation detail.
-2. It names every child file and its unique ownership surface.
-3. It forbids Runtime Gates / Exit / L2 / C0 / Prompt Assembly / UWG / L6 overlap.
-4. It defines L5CertificationResult as evidence/certification only.
-5. It keeps all implementation-grade requirements in child files.
-
-========================================================================================================================
-END 00A_L5_Governance_Safety.md
-========================================================================================================================
-========================================================================================================================
-GAP-CLOSED PARENT UPDATE | RUNTIME CERTIFICATION BINDING
-========================================================================================================================
-00A.8_L5_Runtime_Certification_Binding.md is now the canonical child for binding policy_hash, blueprint_hash, registry digests,
-capability, sandbox, origin-trust, replay, audit, egress, and HITL re-clearance evidence to runtime packets. L5 still emits
-certification evidence only, not live runtime dispositions.

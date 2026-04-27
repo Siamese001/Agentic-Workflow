@@ -1,265 +1,184 @@
 ========================================================================================================================
 MECE ALIGNMENT FULL OVERWRITE HEADER
-Canonical folder: 00C_Runtime_Gates_Current_Run_Mesh
-Canonical file: 00C_Runtime_Gates_Current_Run_Mesh.md
-Overwrite mode: full-file, no-overlap, implementation-grade, source-refreshed
-Source refreshed from: 00C_Runtime_Gates_Current_Run_Mesh.md
-Owner summary: Cross-cutting current-run gate mesh. Owns G01-G29 live GateVerdict law and proceed/stop dispositions. Does not own Exit X3 aggregation or L5 certification evidence.
-
-
-RUNTIME GATES CORE QUESTION
-- Runtime Gates ask whether this current live run step, packet, tool call, output, escalation, or write proposal may proceed right now.
-
-GLOBAL NO-OVERLAP LAW
-- 00A L5 owns governance certification evidence, not live runtime dispositions and not durable write admission.
-- 00B L4/UWG owns durable system-of-record state and durable write admission, not planning, routing, retrieval, execution, Exit disposition, or L6 learning mechanics.
-- 00C Runtime Gates owns G01-G29 current-run GateVerdict law, not final Exit X3 aggregation and not L5 certification evidence.
-- 00X owns traceability and no-loss mapping only.
-- 01 Intake owns request envelope validation and identity/session/tenant baseline only.
-- 02 L1 owns advisory interpretation and planning only.
-- 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
-- 04 L2 owns bounded execution and sealing only.
-- 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
-- 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
-- 99 owns proof harnesses only; it does not own runtime behavior.
-
-REFERENCE POINTERS
-- Cross-cutting governance/certification evidence: 00A_L5_Governance_Safety/
-- Durable state and Universal Write Gateway: 00B_L4_State_Archive_and_UWG/
-- Current-run reusable gate mesh: 00C_Runtime_Gates_Current_Run_Mesh/
-- Traceability and zero-loss proof: 00X_Requirements_Traceability_and_No_Loss_Map.md
-- End-to-end runtime proof harness: 99_End_to_End_Runtime_Proof_and_Acceptance/
+Canonical filename: 00C_Runtime_Gates_Current_Run_Mesh.md
+Layer / subsystem: 00C — Runtime Gates Current-Run Mesh (parent)
+Parent file: docs/reference/README.md
+Ownership surface: G01–G29 GateVerdict law and the gate observability/anti-bypass surface. Parent owns the GateVerdict schema invariants and the per-gate parent REQ_ID. Per-gate detail (G01..G29) lives in `00C.1`..`00C.6`. The gate-to-layer invocation map lives in `00C.9`.
+Overwrite mode: full-file, no-overlap, executable contract
+No-overlap boundary: 00C owns gate verdict law only. It does not own Exit X3 aggregation (that is `05`), L5 certification evidence (that is `00A`), durable write admission (that is `00B.6`), or end-to-end scenario proof (that is `99`).
+Source authority notes: Anchored on `00X` REQ_ID registry; aligned with constitutional §22, §23, §24.
+Predecessor preserved at: `00C_Runtime_Gates_Current_Run_Mesh.md.pre-reqid-rewrite.bak`
 ========================================================================================================================
 
-========================================================================================================================
-00C_RUNTIME_GATES_CURRENT_RUN_MESH_DETAILED.md
-PARENT RUNTIME GATES CURRENT-RUN CONTROL MESH
-MECE FULL OVERWRITE
-========================================================================================================================
-
-PURPOSE
+1. PURPOSE
 ------------------------------------------------------------------------------------------------------------------------
-This parent file defines Runtime Gates as a cross-cutting current-run control mesh.
+This parent uniquely owns:
+- the GateVerdict schema invariants (one binding contract every G01..G29 verdict MUST satisfy)
+- the parent REQ_ID per gate (`REQ-GATE-G01-*` through `REQ-GATE-G29-*`)
+- the UNKNOWN/NOT_APPLICABLE handling rule
+- the gate-to-disposition matrix invariants (per-gate detail in `00C.7`)
+- the anti-bypass parent invariants
 
-Runtime Gates decide whether a specific live packet, request, route, retrieval packet, prompt packet, tool call,
-workflow step, model invocation, output, escalation, or write proposal is allowed to continue inside the CURRENT RUN.
+It does **not** own:
+- the per-gate body of evidence (lives in `00C.1`..`00C.6` per gate band)
+- the Exit aggregation logic (lives in `05`)
+- L5 certification evidence (lives in `00A`)
+- durable write admission (lives in `00B.6`)
 
-Runtime Gates are not a sequential layer. They are a 00C foundation folder because they operate across U0, L1, L0, C0,
-Prompt Assembly, L3, L2, Exit, UWG/L4, and the L6 learning firewall.
-
-PARENT ROLE
+2. AUTHORITY BOUNDARY
 ------------------------------------------------------------------------------------------------------------------------
-- Define the G01-G29 runtime gate mesh at doctrine level.
-- Define the canonical GateVerdict contract.
-- Define the allowed bounded runtime dispositions emitted by gates.
-- Define the no-overlap boundary with L5, L4/UWG, Exit, L2, C0, Prompt Assembly, L0/L3, L1, U0, and L6.
-- Define child ownership map.
-- Define implementation acceptance criteria and proof commands.
+**Upstream inputs**: layer events that invoke a gate (per `00C.9` invocation map).
 
-PARENT DOES NOT OWN IMPLEMENTATION DETAIL
+**Downstream outputs**: a `GateVerdict` per gate invocation; consumed by 05 Exit aggregation.
+
+**Forbidden behaviors**:
+- 00C MUST NOT make final disposition decisions (Exit owns X3).
+- 00C MUST NOT mutate L4 directly (UWG owns durable write admission).
+- 00C MUST NOT issue certification evidence (L5 owns this).
+- 00C MUST NOT silently treat UNKNOWN as PASS.
+
+**Allowed outputs only**: `GateVerdict` artifacts conformant to §5.
+
+3. REQ_ID NAMESPACE
 ------------------------------------------------------------------------------------------------------------------------
-The child files own implementation-grade gate mechanics. This parent is the map, vocabulary, and authority boundary.
+This parent owns rows under `REQ-GATE-G01-*` through `REQ-GATE-G29-*` and the cross-gate invariants `REQ-GATE-VERDICT-*`.
 
-SOURCE OWNERSHIP BOUNDARY
+Per-gate detail rows (e.g. `REQ-GATE-G06-HITL-INVOKE-001`) live in the matching `00C.x` child file.
+
+4. ATOMIC REQUIREMENTS TABLE (PARENT-LEVEL INVARIANTS)
 ------------------------------------------------------------------------------------------------------------------------
-Runtime Gates own current-run gate verdict requirements only.
 
-Runtime Gates do not own:
-- U0 envelope construction or request identity stamping;
-- L1 intent interpretation or plan construction;
-- L0 route selection authority;
-- C0 retrieval and evidence-contract construction;
-- Prompt Assembly slot construction;
-- L3 workflow expansion;
-- L2 execution, PTC sandbox execution, local repair, or artifact sealing;
-- Exit's final X3 disposition;
-- L5 certification evidence;
-- UWG durable write admission;
-- L4 durable state;
-- L6 completed-run evaluation, RCA, or future-run learning promotion.
+| REQ_ID | Requirement | Owner | Inputs | Outputs | Runtime Evidence | OTEL Span | Artifact / Receipt | Validator | Negative Control | Expected Fail Reason | Replay Check | Release Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `REQ-GATE-VERDICT-SCHEMA-001` | Every G01–G29 invocation MUST emit a GateVerdict with: `gate_id` ∈ {G01..G29}, `result` ∈ {`PASS`, `FAIL`, `UNKNOWN`, `NOT_APPLICABLE`}, `disposition` ∈ {`ALLOW`, `DENY`, `REROUTE_HINT`, `ESCALATE_HINT`, `BLOCK_COMMIT`, `NA`}, `severity` ∈ {`info`, `low`, `medium`, `high`, `critical`}, `reason_codes[]`, `score`, `threshold`, `evidence_refs[]`, `replay_refs[]`, `confidence`, `abstain_flag`, `remediation_hint`. | 00C | gate input | `gate_verdict.json` | every required field non-null per row's applicability | `gate.<gate_id>` span with `attributes.gate_id`, `attributes.result`, `attributes.disposition`, `attributes.severity`, `attributes.reason_codes`, `attributes.score` | `gate_verdict_<gate_id>.json` | `validator: gate_verdict_schema_validator` (release-gate) | `NC-GATE-MISSING-FIELD-001`: emit verdict missing `reason_codes` | `gate_verdict_field_missing` | `byte_identical` per fixture | DOC_ONLY |
+| `REQ-GATE-VERDICT-UNKNOWN-NOT-PASS-001` | UNKNOWN MUST NEVER be treated as PASS by any consumer; the verdict consumer (Exit aggregation) MUST treat UNKNOWN as a release-blocking distinct state. | 00C | gate verdict | (consumer behavior) | `gate_verdict.result=UNKNOWN` produces `gate_verdict.disposition` ∈ {`ESCALATE_HINT`, `DENY`} per gate-class; never `ALLOW` | `gate.<gate_id>` event `unknown_emitted` | `gate_verdict.json` | `validator: gate_unknown_handling_validator` (release-gate) | `NC-GATE-UNKNOWN-AS-PASS-001`: pipeline maps UNKNOWN→ALLOW | `unknown_treated_as_pass` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-VERDICT-NA-JUSTIFY-001` | A `NOT_APPLICABLE` verdict MUST carry `reason_codes` containing a justification token; empty justification escalates to UNKNOWN. | 00C | gate input | gate verdict | `result=NOT_APPLICABLE` always paired with `reason_codes` non-empty | `gate.<gate_id>` attribute `na_reason` | `gate_verdict.json` | `validator: gate_na_justification_validator` (release-gate) | `NC-GATE-NA-EMPTY-001`: emit NA with empty reason | `na_missing_reason_escalated_to_unknown` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-VERDICT-NO-INFER-PASS-001` | A consumer MUST NOT infer PASS from missing evidence; absence of a verdict is `UNKNOWN`, not `PASS`. | 00C | (consumer behavior) | (consumer behavior) | absence of `gate_verdict_<gate_id>.json` for an applicable gate is treated as UNKNOWN | NOT_APPLICABLE: missing-span detection in compiler | `compiler missing_artifacts.json` | `validator: gate_presence_validator` (release-gate) | `NC-GATE-MISSING-VERDICT-001`: omit a required gate verdict | `gate_verdict_missing_for_applicable_gate` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G01-INGRESS-001` | G01 (Ingress) MUST emit a verdict for every ValidatedRequest before L1 receives the request. | 00C.1 | ValidatedRequest | gate_verdict | verdict bound to `request_id` and `trace_root` | `gate.G01.ingress` span child of intake | `gate_verdict_G01.json` | `validator: g01_ingress_validator` (release-gate) | `NC-GATE-G01-SKIP-001`: L1 receives without G01 verdict | `g01_ingress_skipped` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G02-IDENTITY-001` | G02 (Identity) MUST verify caller scope and emit verdict before any retrieval, execution, or write. | 00C.1 | ValidatedRequest | gate_verdict | verdict bound to `caller_scope_baseline` | `gate.G02.identity` span | `gate_verdict_G02.json` | `validator: g02_identity_validator` (release-gate) | `NC-GATE-G02-SCOPE-DRIFT-001`: scope changes mid-run | `caller_scope_drift_detected` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G03-INTENT-001` | G03 (Intent) MUST emit a verdict during L1 plan generation. | 00C.1 | L1PlanContract | gate_verdict | verdict bound to `plan_id` | `gate.G03.intent` span | `gate_verdict_G03.json` | `validator: g03_intent_validator` (release-gate) | `NC-GATE-G03-SKIP-001`: L1 emits plan without G03 | `g03_intent_skipped` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G04-SAFETY-001` | G04 (Safety) MUST emit a verdict at L1 plan finalization and reject unsafe plans. | 00C.1 | L1PlanContract | gate_verdict | verdict carries `safety_class` | `gate.G04.safety` span | `gate_verdict_G04.json` | `validator: g04_safety_validator` (release-gate) | `NC-GATE-G04-UNSAFE-PASS-001`: unsafe plan emits PASS | `unsafe_plan_passed_g04` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G05-RISK-001` | G05 (Risk) MUST emit a risk-tier verdict tied to the planned route. | 00C.1 | L1PlanContract+route hint | gate_verdict | verdict carries `risk_tier_band` | `gate.G05.risk` span | `gate_verdict_G05.json` | `validator: g05_risk_validator` (release-gate) | `NC-GATE-G05-MISLABEL-001`: high-risk plan labeled low | `risk_tier_mislabel` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G06-HITL-001` | G06 (HITL invoke) MUST emit a verdict whenever route requires human input. | 00C.2 | RouteContract | gate_verdict | verdict carries `hitl_reason` | `gate.G06.hitl` span | `gate_verdict_G06.json` | `validator: g06_hitl_validator` (release-gate) | `NC-GATE-G06-AUTO-PROCEED-001`: HITL-required route proceeds without human | `hitl_required_but_auto_proceeded` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G07-ROUTE-001` | G07 (Route) MUST emit a verdict for the deterministic route_digest. | 00C.2 | RouteContract | gate_verdict | verdict carries `route_digest` | `gate.G07.route` span | `gate_verdict_G07.json` | `validator: g07_route_validator` (release-gate) | `NC-GATE-G07-DUAL-ROUTE-001`: emit two RouteContracts in one run | `dual_route_emitted` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G08-RETRIEVAL-001` | G08 (Retrieval) MUST emit a verdict for any C0 retrieval. | 00C.2 | RetrievalPlan | gate_verdict | verdict carries `retrieval_plan_hash` | `gate.G08.retrieval` span | `gate_verdict_G08.json` | `validator: g08_retrieval_validator` (release-gate) | `NC-GATE-G08-HIDDEN-RETRIEVAL-001`: layer retrieves outside C0 without G08 | `hidden_retrieval_no_verdict` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G09-EVIDENCE-001` | G09 (Evidence) MUST emit a verdict on FinalEvidenceContract. | 00C.2 | FinalEvidenceContract | gate_verdict | verdict carries `support_score`, `contradiction_flag`, `evidence_contract_hash` | `gate.G09.evidence` span | `gate_verdict_G09.json` | `validator: g09_evidence_validator` (release-gate) | `NC-GATE-G09-WEAK-PASS-001`: weak evidence labeled PASS | `weak_evidence_passed_g09` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G10-PROMPT-001` | G10 (Prompt) MUST emit a verdict on every PromptEnvelope. | 00C.2 | PromptEnvelope | gate_verdict | verdict carries `prompt_hash`, `authority_order_intact`, `injection_findings` | `gate.G10.prompt` span | `gate_verdict_G10.json` | `validator: g10_prompt_validator` (release-gate) | `NC-GATE-G10-INJECT-001`: prompt admits retrieved instruction as system instruction | `prompt_authority_violation` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G11-TOOL-001` | G11 (Tool) MUST emit a verdict for every L2 tool invocation. | 00C.3 | ToolInvocation | gate_verdict | verdict carries `tool_id`, `capability_token` | `gate.G11.tool` span | `gate_verdict_G11.json` | `validator: g11_tool_validator` (release-gate) | `NC-GATE-G11-AMBIENT-001`: tool invoked outside capability_token scope | `ambient_tool_use` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G12-MODEL-001` | G12 (Model) MUST emit a verdict for every model call. | 00C.3 | ModelInvocation | gate_verdict | verdict carries `provider_id`, `model_id`, `egress_class` | `gate.G12.model` span | `gate_verdict_G12.json` | `validator: g12_model_validator` (release-gate) | `NC-GATE-G12-PROVIDER-FALLBACK-001`: silent provider switch | `silent_provider_fallback` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G13-ARGS-001` | G13 (Args) MUST validate tool/model arguments against schema and policy. | 00C.3 | tool_args | gate_verdict | verdict carries `args_schema_hash`, `policy_violations[]` | `gate.G13.args` span | `gate_verdict_G13.json` | `validator: g13_args_validator` (release-gate) | `NC-GATE-G13-INJECTION-ARG-001`: arg contains injected directive | `arg_injection_detected` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G14-EGRESS-001` | G14 (Egress) MUST emit a verdict for every external call leaving sandbox. | 00C.3 | egress request | gate_verdict | verdict carries `destination`, `egress_class`, `provider_governance_hash` | `gate.G14.egress` span | `gate_verdict_G14.json` | `validator: g14_egress_validator` (release-gate) | `NC-GATE-G14-DARK-EGRESS-001`: external call without verdict | `dark_egress` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G15-SANDBOX-001` | G15 (Sandbox) MUST emit a verdict on every sandbox boundary cross. | 00C.3 | sandbox event | gate_verdict | verdict carries `sandbox_envelope_hash`, `breach_signals[]` | `gate.G15.sandbox` span | `gate_verdict_G15.json` | `validator: g15_sandbox_validator` (release-gate) | `NC-GATE-G15-ESCAPE-001`: sandbox escape attempt | `sandbox_escape_attempt` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G16-MEMORY-001` | G16 (Memory) MUST emit a verdict on memory reads/writes per allowed scope. | 00C.4 | memory op | gate_verdict | verdict carries `memory_scope`, `acl_class` | `gate.G16.memory` span | `gate_verdict_G16.json` | `validator: g16_memory_validator` (release-gate) | `NC-GATE-G16-CROSS-TENANT-001`: cross-tenant memory read | `cross_tenant_memory_access` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G17-PRIVACY-001` | G17 (Privacy) MUST emit a verdict on PII/PHI handling. | 00C.4 | data event | gate_verdict | verdict carries `pii_class`, `redaction_status` | `gate.G17.privacy` span | `gate_verdict_G17.json` | `validator: g17_privacy_validator` (release-gate) | `NC-GATE-G17-PII-LEAK-001`: PII present in egress payload | `pii_egress_leak` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G18-WORKFLOW-001` | G18 (Workflow) MUST emit a verdict at every L3 workflow step boundary. | 00C.4 | step event | gate_verdict | verdict carries `step_id`, `workflow_id` | `gate.G18.workflow` span | `gate_verdict_G18.json` | `validator: g18_workflow_validator` (release-gate) | `NC-GATE-G18-HIDDEN-STEP-001`: workflow expansion without G18 | `hidden_workflow_expansion` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G19-LOOP-001` | G19 (Loop) MUST emit a verdict on iteration / repair loop boundaries. | 00C.4 | loop event | gate_verdict | verdict carries `loop_id`, `iteration_count`, `oscillation_signal` | `gate.G19.loop` span | `gate_verdict_G19.json` | `validator: g19_loop_validator` (release-gate) | `NC-GATE-G19-OSCILLATE-001`: oscillation passes through | `loop_oscillation_unflagged` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G20-BUDGET-001` | G20 (Budget) MUST emit a verdict on cost/time/token budgets at every consume point. | 00C.4 | budget event | gate_verdict | verdict carries `budget_kind`, `consumed`, `limit` | `gate.G20.budget` span | `gate_verdict_G20.json` | `validator: g20_budget_validator` (release-gate) | `NC-GATE-G20-OVERSPEND-001`: budget exhausted but allowed | `budget_exhausted_allowed` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G21-OUTPUT-001` | G21 (Output) MUST emit a verdict on the final output payload. | 00C.5 | output payload | gate_verdict | verdict carries `output_hash`, `safety_findings[]` | `gate.G21.output` span | `gate_verdict_G21.json` | `validator: g21_output_validator` (release-gate) | `NC-GATE-G21-UNSAFE-OUTPUT-001`: unsafe output passes | `unsafe_output_passed` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G22-SECURITY-001` | G22 (Security) MUST emit a verdict on security posture (auth, integrity, freshness). | 00C.5 | security event | gate_verdict | verdict carries `security_findings[]` | `gate.G22.security` span | `gate_verdict_G22.json` | `validator: g22_security_validator` (release-gate) | `NC-GATE-G22-STALE-CRED-001`: stale credential admitted | `stale_credential_admitted` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G23-REPLAY-001` | G23 (Replay) MUST emit a verdict on replay digest comparison. | 00C.5 | replay event | gate_verdict | verdict carries `replay_match_type` | `gate.G23.replay` span | `gate_verdict_G23.json` | `validator: g23_replay_validator` (release-gate) | `NC-GATE-G23-DRIFT-001`: replay digest mismatch passes | `replay_drift_passed` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G24-AUDIT-001` | G24 (Audit) MUST emit a verdict on audit completeness. | 00C.5 | audit ledger event | gate_verdict | verdict carries `audit_chain_hash`, `gaps[]` | `gate.G24.audit` span | `gate_verdict_G24.json` | `validator: g24_audit_validator` (release-gate) | `NC-GATE-G24-CHAIN-BREAK-001`: audit chain break passes | `audit_chain_break` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G25-ANOMALY-001` | G25 (Anomaly) MUST emit a verdict on anomaly signals. | 00C.6 | anomaly signal | gate_verdict | verdict carries `anomaly_class`, `score` | `gate.G25.anomaly` span | `gate_verdict_G25.json` | `validator: g25_anomaly_validator` (release-gate) | `NC-GATE-G25-IGNORE-ANOMALY-001`: high-score anomaly ignored | `anomaly_ignored` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G26-EXIT-001` | G26 (Exit) MUST emit a verdict at the Exit boundary precondition (Exit X1 entry). | 00C.6 | ExitReviewPacket | gate_verdict | verdict carries `exit_packet_id` | `gate.G26.exit` span | `gate_verdict_G26.json` | `validator: g26_exit_validator` (release-gate) | `NC-GATE-G26-EXIT-SKIP-001`: Exit reached without G26 | `exit_precondition_skipped` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G27-WRITE-001` | G27 (Write) MUST emit a verdict on UWG commit eligibility. | 00C.6 | CommitRequest | gate_verdict | verdict carries `commit_request_id`, `eligibility_codes[]` | `gate.G27.write` span | `gate_verdict_G27.json` | `validator: g27_write_validator` (release-gate) | `NC-GATE-G27-DIRECT-WRITE-001`: durable write without G27 | `direct_l4_write_attempt` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G28-TRACE-COMPLETE-001` | G28 (Trace Completeness) MUST emit a verdict on the OTEL span tree completeness for the run. | 00C.6 | trace export | gate_verdict | verdict carries `trace_root`, `expected_spans[]`, `missing_spans[]` | `gate.G28.trace` span | `gate_verdict_G28.json` | `validator: g28_trace_completeness_validator` (release-gate) | `NC-GATE-G28-MISSING-SPAN-001`: required span absent | `required_span_missing` | `byte_identical` | DOC_ONLY |
+| `REQ-GATE-G29-LEARNING-FIREWALL-001` | G29 (Learning Firewall) MUST emit a verdict on any L6 promotion attempt. | 00C.6 | L6 proposal | gate_verdict | verdict carries `proposal_id`, `gauntlet_status` | `gate.G29.firewall` span | `gate_verdict_G29.json` | `validator: g29_learning_firewall_validator` (release-gate) | `NC-GATE-G29-LIVE-MUTATE-001`: L6 mutates current run | `l6_live_mutation_attempt` | `byte_identical` | DOC_ONLY |
 
-Runtime Gates feed Exit, L5, L2, L3, C0, Prompt Assembly, L0, L1, U0, UWG, and L6 with structured verdict evidence.
-Those surfaces consume the verdicts inside their own authority boundaries.
-
-GLOBAL NO-OVERLAP LOCK
+5. RUNTIME EVIDENCE CONTRACT (GATE VERDICT SCHEMA — BINDING)
 ------------------------------------------------------------------------------------------------------------------------
-- U0 / Intake owns request envelope validation and request identity stamping.
-- L1 owns intent interpretation, task_spec, query_spec, ambiguity register, and plan recommendation.
-- L0 owns route selection and RouteContract authority.
-- C0 owns evidence retrieval, shaping, verification, support score, and FinalEvidenceContract.
-- Prompt Assembly owns signed provider-ready PromptEnvelope / CompiledPromptArtifact construction.
-- L3 owns managed workflow shaping, DAG state, readiness, joins, retries, and bounded orchestration.
-- L2 owns bounded execution, PTC sandbox execution, local repair, and sealed artifacts.
-- Runtime Gates own G01-G29 current-run gate verdict requirements only.
-- Exit Eval owns aggregate current-run disposition and X3 outcome selection.
-- L5 owns policy, authority, origin-trust, egress, HITL re-clearance, replay/audit certification evidence.
-- UWG owns durable write admission.
-- L4 owns durable system-of-record state.
-- L6 owns completed-run evaluation, RCA, proposal, and future-run learning promotion attempts.
+Every `GateVerdict` artifact MUST be a JSON object with these fields:
 
-
-FORBIDDEN OUTPUTS FROM THIS FOLDER
-------------------------------------------------------------------------------------------------------------------------
-Runtime Gates may emit GateVerdict records and recommended bounded dispositions. Runtime Gates must not:
-- route with L0 authority;
-- retrieve or score final evidence as C0;
-- assemble prompts;
-- execute tools, models, scripts, or PTC payloads;
-- orchestrate workflow steps;
-- approve final response release;
-- commit durable state;
-- certify L5 evidence as its own output;
-- promote learning or mutate future-run surfaces;
-- silently bypass, silently pass UNKNOWN, or expand its own authority.
-
-
-CHILD FILE MAP
-------------------------------------------------------------------------------------------------------------------------
-- 00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk.md
-  Owns G01-G05 only: ingress, identity, intent, safety/policy, and risk-tier gate requirements.
-
-- 00C.2_Runtime_Gates_G06_G10_HITL_Route_Retrieval_Evidence_Prompt.md
-  Owns G06-G10 only: HITL, route selection, retrieval/grounding, evidence quality, prompt assembly gate requirements.
-
-- 00C.3_Runtime_Gates_G11_G15_Tool_Model_Args_Egress_Sandbox.md
-  Owns G11-G15 only: tool/model registry, tool args, tool/retrieved output trust, egress, fs/shell/data access.
-
-- 00C.4_Runtime_Gates_G16_G20_Memory_Privacy_Workflow_Loop_Budget.md
-  Owns G16-G20 only: memory access, privacy/cross-context, workflow trajectory, loop/retry/thrash, budget/SLO.
-
-- 00C.5_Runtime_Gates_G21_G24_Output_Security_Replay.md
-  Owns G21-G24 only: output schema, output quality, security/leakage, determinism/replay.
-
-- 00C.6_Runtime_Gates_G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall.md
-  Owns G25-G29 only: runtime anomaly, Exit-disposition eligibility, durable-write sovereignty, audit/trace completeness, learning firewall.
-
-- 00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix.md
-  Owns canonical GateVerdict schema, result/disposition vocabularies, aggregation handoff semantics, and how gate verdicts flow to Exit.
-
-- 00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass.md
-  Owns OTEL span names, proof commands, anti-bypass tests, acceptance criteria, and runtime-vs-CI/CD separation tests.
-
-CANONICAL CURRENT-RUN DISPOSITION VOCABULARY
-------------------------------------------------------------------------------------------------------------------------
-Every runtime gate may recommend one bounded disposition:
-- ALLOW
-- DENY
-- CLARIFY
-- ABSTAIN
-- REROUTE
-- SHRINK_SCOPE
-- RETRY
-- HEAL
-- ESCALATE_HITL
-- QUARANTINE
-- REDACT
-- SAFE_FALLBACK
-- MARK_DEGRADED
-- COMMIT_REQUEST
-- BLOCK_COMMIT
-
-Hard invariant:
-- A gate disposition is a bounded recommendation/verdict.
-- Exit owns final X3 disposition.
-- UWG owns durable mutation admission.
-- No runtime gate may silently bypass, mutate durable state, or expand its own authority.
-
-CANONICAL GATE VERDICT CONTRACT
-------------------------------------------------------------------------------------------------------------------------
-GateVerdict {
-  gate_id: G01..G29,
-  gate_family,
-  gate_surface,
-  primary_layer,
-  evaluated_packet_ref,
-  request_id,
-  run_id,
-  trace_root,
-  trace_id,
-  tenant_id,
-  policy_hash,
-  blueprint_hash,
-  replay_key,
-  result: PASS | FAIL | WARN | UNKNOWN | NOT_APPLICABLE,
-  disposition: ALLOW | DENY | CLARIFY | ABSTAIN | REROUTE | SHRINK_SCOPE | RETRY | HEAL |
-               ESCALATE_HITL | QUARANTINE | REDACT | SAFE_FALLBACK | MARK_DEGRADED |
-               COMMIT_REQUEST | BLOCK_COMMIT,
-  severity: INFO | LOW | MEDIUM | HIGH | CRITICAL,
-  reason_codes: string[],
-  score,
-  threshold,
-  grader_type: code | LLM_JUDGE | hybrid | human_calibrated | policy_rule,
-  evidence_refs: string[],
-  replay_refs: string[],
-  source_lineage_refs: string[],
-  confidence,
-  abstain_flag,
-  remediation_hint,
-  deterministic_digest,
-  created_at_run_offset,
-  schema_version
+```
+{
+  "gate_id": "G01" | ... | "G29",
+  "result": "PASS" | "FAIL" | "UNKNOWN" | "NOT_APPLICABLE",
+  "disposition": "ALLOW" | "DENY" | "REROUTE_HINT" | "ESCALATE_HINT" | "BLOCK_COMMIT" | "NA",
+  "severity": "info" | "low" | "medium" | "high" | "critical",
+  "reason_codes": [str, ...],
+  "score": float | null,
+  "threshold": float | null,
+  "evidence_refs": [str, ...],
+  "replay_refs": [str, ...],
+  "confidence": float in [0.0, 1.0],
+  "abstain_flag": bool,
+  "remediation_hint": str | null,
+  "req_id": "REQ-GATE-G##-...",
+  "trace_id": str,
+  "span_id": str,
+  "policy_hash": str,
+  "blueprint_hash": str,
+  "replay_key": str
 }
+```
 
-Hard rules:
-- UNKNOWN is never converted to PASS.
-- WARN may continue only where policy permits and must remain visible to Exit.
-- GateVerdict is evidence for Exit and audit. It is not the final ExitDisposition.
-- COMMIT_REQUEST means submit proposed mutation to UWG only. It is not a write.
+`reason_codes` MUST be non-empty when `result` ∈ {`FAIL`, `UNKNOWN`, `NOT_APPLICABLE`}. Empty `reason_codes` for these states is `FAKE` per `00X` §11.
 
-
-TOP-LEVEL FLOW
+6. OTEL SPAN CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
-U0 Intake emits a validated request or rejection.
-L1 emits a plan and support/action expectations.
-L0 emits exactly one RouteContract.
-C0, Prompt Assembly, L3, and L2 produce governed packets and sealed artifacts.
-Runtime Gates evaluate each live packet at its appropriate surface.
-Exit consumes gate verdicts and emits exactly one X3 disposition.
-UWG accepts only cleared commit requests from Exit.
-L6 consumes sealed exhaust after runtime boundary only.
+Every gate emits one span `gate.<gate_id>` whose parent is the layer span that invoked the gate per `00C.9` invocation map. Required attributes:
+- `gate_id`, `result`, `disposition`, `severity`, `score`, `threshold`, `confidence`, `abstain_flag`
+- `req_id`, `policy_hash`, `blueprint_hash`, `replay_key`
+- `attributes.fail_reason_code` when `result=FAIL` or `result=UNKNOWN` (must match `reason_codes[0]`)
 
-ASCII CONTROL VIEW
+Status code rule: `OK` for `PASS`/`NOT_APPLICABLE` with reason; `ERROR` for `FAIL` and `UNKNOWN`.
+
+7. VALIDATOR CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
-[U0] -> G01/G02/G03/G04
-  -> [L1] -> G03/G04/G05/G18
-  -> [L0] -> G07/G08/G20
-  -> [C0] -> G08/G09/G13/G16/G17/G23
-  -> [PA] -> G10/G13/G17/G23
-  -> [L3] -> G18/G19/G20/G25
-  -> [L2] -> G11/G12/G14/G15/G21/G24
-  -> [EXIT] -> G22/G23/G26/G28 + aggregate all prior verdicts
-  -> [UWG/L4 if commit] -> G27
-  -> [L6 after runtime] -> G25 evidence + G29 firewall
+- `gate_verdict_schema_validator` (release-gate): structural verification per §5.
+- `gate_unknown_handling_validator` (release-gate): UNKNOWN never maps to ALLOW.
+- `gate_na_justification_validator` (release-gate): NOT_APPLICABLE always paired with non-empty `reason_codes`.
+- `gate_presence_validator` (release-gate): every applicable gate per `00C.9` invocation map has a verdict.
+- Per-gate validators (G01..G29) each live in their child file but receive the same release-gate scope.
 
-IMPLEMENTATION ACCEPTANCE CRITERIA
+8. NEGATIVE CONTROL CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
-This 00C folder is complete only when:
-- Each G01-G29 gate has a typed evaluator, deterministic input contract, and GateVerdict output.
-- Every gate can return PASS / FAIL / WARN / UNKNOWN / NOT_APPLICABLE.
-- UNKNOWN never becomes PASS.
-- Every gate emits reason_codes, evidence_refs, replay_refs, confidence, threshold, and remediation_hint.
-- Gate verdicts are visible to Exit and L6 exhaust.
-- Gates do not duplicate owner-layer implementation details.
-- Runtime regression protection is implemented as live anomaly containment only.
-- CI/CD promotion gates remain out of scope.
-- Anti-bypass tests prove no layer can skip required gates.
+Each `NC-GATE-*` listed in §4 has a target REQ_ID, tamper kind, expected validator, and `Expected Fail Reason` matching the row. The 4 cross-gate negative controls (`MISSING-FIELD`, `UNKNOWN-AS-PASS`, `NA-EMPTY`, `MISSING-VERDICT`) are mandatory at the parent level.
 
-PROOF COMMANDS EXPECTED FROM WINDSURF
+9. REPLAY CONTRACT
 ------------------------------------------------------------------------------------------------------------------------
-- python -m pytest tests/runtime_gates -q
-- python -m pytest tests/runtime_gates/test_gate_verdict_schema.py -q
-- python -m pytest tests/runtime_gates/test_gate_mesh_no_bypass.py -q
-- python -m pytest tests/runtime_gates/test_runtime_vs_cicd_regression_boundary.py -q
-- python -m pytest tests/runtime_gates/test_gate_otel_trace_coverage.py -q
+Every gate verdict artifact MUST replay byte-identical for the same `(gate_id, request_id, policy_hash, blueprint_hash, replay_key, input)`. Allowed nondeterminism: only `span_id`, `trace_id` (which are run-scoped). Any field-level diff is release-blocking.
 
+10. RELEASE GATE CONTRACT
+------------------------------------------------------------------------------------------------------------------------
+A 00C row's `Release Gate` is `PASS` only when:
+- Gate verdict shape conforms to §5
+- UNKNOWN never mapped to ALLOW
+- NOT_APPLICABLE rows carry a justification
+- The compiler `99.11` reports no anti-cheat finding for this gate
+- The gate's negative control trips with the matching `Expected Fail Reason`
+
+11. NO-OVERLAP LOCK
+------------------------------------------------------------------------------------------------------------------------
+**This file owns**: GateVerdict schema invariants and per-gate parent REQ_IDs.
+
+**Related files own**: per-gate detail in `00C.1`..`00C.6`; the disposition matrix in `00C.7`; the gate observability/anti-bypass tests in `00C.8`; the gate-to-layer invocation map in `00C.9`.
+
+**Forbidden duplicated ownership**: 00C MUST NOT define final dispositions (Exit X3); 00C MUST NOT issue certification (L5); 00C MUST NOT mutate L4 (UWG). 05/00A/00B MUST NOT redefine GateVerdict schema.
+
+**Forbidden output vocabulary**: `ALLOW_FINISH`, `durable_write_committed`, `policy_certified`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learning_promoted`. 00C may emit `ALLOW`/`DENY`/`REROUTE_HINT`/`ESCALATE_HINT`/`BLOCK_COMMIT`/`NA` only inside a `GateVerdict.disposition` field — never as a top-level pack output.
+
+12. CHILD FILE MAP
+------------------------------------------------------------------------------------------------------------------------
+- `00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk.md` — `REQ-GATE-G01-*`..`REQ-GATE-G05-*`
+- `00C.2_Runtime_Gates_G06_G10_HITL_Route_Retrieval_Evidence_Prompt.md` — `REQ-GATE-G06-*`..`REQ-GATE-G10-*`
+- `00C.3_Runtime_Gates_G11_G15_Tool_Model_Args_Egress_Sandbox.md` — `REQ-GATE-G11-*`..`REQ-GATE-G15-*`
+- `00C.4_Runtime_Gates_G16_G20_Memory_Privacy_Workflow_Loop_Budget.md` — `REQ-GATE-G16-*`..`REQ-GATE-G20-*`
+- `00C.5_Runtime_Gates_G21_G24_Output_Security_Replay.md` — `REQ-GATE-G21-*`..`REQ-GATE-G24-*` (note: covers G21..G24)
+- `00C.6_Runtime_Gates_G25_G29_Anomaly_Exit_Write_Audit_Learning_Firewall.md` — `REQ-GATE-G25-*`..`REQ-GATE-G29-*`
+- `00C.7_Runtime_Gates_Verdict_Schema_Disposition_Matrix.md` — disposition-matrix REQ_IDs
+- `00C.8_Runtime_Gates_Observability_Tests_and_Anti_Bypass.md` — anti-bypass / observability REQ_IDs
+- `00C.9_RG_Layer_Integration_Invocation_Map.md` — gate-to-layer invocation map REQ_IDs
+
+13. ACCEPTANCE CRITERIA
+------------------------------------------------------------------------------------------------------------------------
+- Every cross-gate invariant row in §4 has all 13 cells filled.
+- Every G01..G29 has at least one parent-level row in §4 with non-blank evidence cells.
+- The GateVerdict schema in §5 enumerates every required field and its allowed values.
+- The OTEL span contract in §6 names `gate.<gate_id>` with required attributes.
+- The 4 cross-gate negative controls in §8 are listed.
+- The replay contract in §9 is byte-identical for fixed inputs.
+- The release-gate rule in §10 is fail-closed.
+- The no-overlap lock in §11 forbids cross-pack vocabulary leaks.
+
+END OF 00C — RUNTIME GATES CURRENT-RUN MESH PARENT
 ========================================================================================================================
-END 00C_RUNTIME_GATES_CURRENT_RUN_MESH_DETAILED.md
-========================================================================================================================
-========================================================================================================================
-GAP-CLOSED PARENT UPDATE | RUNTIME GATE INTEGRATION
-========================================================================================================================
-00C.9_RG_Layer_Integration_Invocation_Map.md is now the canonical integration child for where G01-G29 are invoked across
-U0, L1, L0, C0, PA, L3, L2, Exit, UWG, and L6 firewall checks. Layer files may call gates and record verdict refs, but
-00C remains the owner of reusable gate law and GateVerdict schema.
