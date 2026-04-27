@@ -213,10 +213,78 @@ ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
         f"{_PROOF}/anti_bypass_results.json",
     ),
 }
+_DET1 = "artifacts/e2e/det1/scenarios"
+_DET2 = "artifacts/e2e/det2/scenarios"
+
 REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": _ANTI_BYPASS_REPLAY,
     "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": _ANTI_BYPASS_REPLAY,
     "REQ-UWG-OBS-ANTI-BYPASS-001": _ANTI_BYPASS_REPLAY,
+    "REQ-GATE-OBS-ANTI-BYPASS-001": (
+        f"{_REPLAY}/replay_F_gate_schema_unknown_not_pass_run_1.json",
+        f"{_REPLAY}/replay_F_gate_schema_unknown_not_pass_run_2.json",
+        f"{_REPLAY}/replay_G_gate_schema_na_requires_reason_run_1.json",
+        f"{_REPLAY}/replay_G_gate_schema_na_requires_reason_run_2.json",
+        f"{_REPLAY}/replay_D_anti_bypass_run_1.json",
+        f"{_REPLAY}/replay_D_anti_bypass_run_2.json",
+    ),
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": (
+        f"{_DET1}/GP-001/gp_001_replay_receipt.json",
+        f"{_DET2}/GP-001/gp_001_replay_receipt.json",
+    ),
+    "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": (
+        f"{_DET1}/GP-001/gp_001_replay_receipt.json",
+        f"{_DET2}/GP-001/gp_001_replay_receipt.json",
+        f"{_DET1}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
+    ),
+    "REQ-PA-AUTHORITY-REDTEAM-001": (
+        f"{_DET1}/GP-001/gp_001_replay_receipt.json",
+        f"{_DET2}/GP-001/gp_001_replay_receipt.json",
+    ),
+    "REQ-C0-OBS-ANTI-BYPASS-001": (
+        f"{_REPLAY}/replay_C_weak_evidence_run_1.json",
+        f"{_REPLAY}/replay_C_weak_evidence_run_2.json",
+        f"{_REPLAY}/replay_D_anti_bypass_run_1.json",
+        f"{_REPLAY}/replay_D_anti_bypass_run_2.json",
+        f"{_DET1}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
+    ),
+    "REQ-L2-OBS-ANTI-BYPASS-001": (
+        f"{_REPLAY}/replay_D_anti_bypass_run_1.json",
+        f"{_REPLAY}/replay_D_anti_bypass_run_2.json",
+        f"{_DET1}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
+    ),
+    "REQ-PA-FINAL-EMIT-ARTIFACT-001": (
+        f"{_DET1}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_DET1}/RC-HITL/rc_hitl_replay_receipt.json",
+        f"{_DET2}/RC-HITL/rc_hitl_replay_receipt.json",
+    ),
+    "REQ-EXIT-X1G-X1I-REPLAY-001": (
+        f"{_REPLAY}/replay_comparison.json",
+        f"{_REPLAY}/replay_A_grounded_read_run_1.json",
+        f"{_REPLAY}/replay_A_grounded_read_run_2.json",
+        f"{_DET1}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
+    ),
+    "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": (
+        f"{_REPLAY}/replay_E_authorized_commit_run_1.json",
+        f"{_REPLAY}/replay_E_authorized_commit_run_2.json",
+        f"{_DET1}/RC-UWG/rc_uwg_replay_receipt.json",
+        f"{_DET2}/RC-UWG/rc_uwg_replay_receipt.json",
+    ),
+    "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
+        f"{_REPLAY}/replay_H_l6_firewall_no_current_run_mutation_run_1.json",
+        f"{_REPLAY}/replay_H_l6_firewall_no_current_run_mutation_run_2.json",
+    ),
+    "REQ-EXIT-OBS-ANTI-BYPASS-001": (
+        f"{_REPLAY}/replay_D_anti_bypass_run_1.json",
+        f"{_REPLAY}/replay_D_anti_bypass_run_2.json",
+        f"{_DET1}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
+    ),
 }
 NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": _ANTI_BYPASS_NEGATIVE_CONTROLS,
@@ -507,6 +575,7 @@ def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
         "artifact_refs": artifact_refs,
         "artifact_verified": False,
         "replay_refs": replay_refs,
+        "replay_executed": False,
         "otel_span_refs": otel_span_refs,
         "negative_control_refs": negative_control_refs,
     }
