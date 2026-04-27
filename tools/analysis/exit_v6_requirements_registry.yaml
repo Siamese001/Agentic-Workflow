@@ -1,0 +1,946 @@
+# Master requirements registry for Exit Eval v6.
+# Every row maps a verbatim spec requirement to a runtime validator.
+# Generated 2026-04-26 from full re-ingest of 14 spec files in
+# docs/reference/05_Exit_Evaluation_and_Control/.
+#
+# Status semantics:
+#   ok_static          - requirement is part of a v6 contract (always present at runtime)
+#   design             - design-only spec, not yet wired into v6 runtime code
+#   source_type_in_enum, preflight_emits, v6_export, span_in_catalog,
+#   attr_in_required, disposition_name, disposition_in_enum,
+#   uwg_outcome_in_enum, return_code_present, obs_eq, obs_truthy,
+#   field_in_dataclass, verdict_in_enum  - dynamic checks
+#
+# Format:
+#   - id: <stable-req-id>
+#     source: <spec-filename>
+#     line: <line-or-range>
+#     text: <verbatim or near-verbatim requirement>
+#     check: <validator name>
+#     args:  <validator-specific args>
+
+requirements:
+
+  # ============================================================
+  # 05.1 Exit_Input_Normalization_and_Review_Packet
+  # ============================================================
+
+  # Input classes (lines 134-162)
+  - {id: "5.1.IC.L2_SEALED_ARTIFACT", source: "05.1", line: "135-141",
+     text: "L2_SEALED_ARTIFACT is an accepted sealed-input class produced by L2 E5 Seal",
+     check: "source_type_in_enum", args: {value: "L2_SEALED_ARTIFACT"}}
+  - {id: "5.1.IC.L3_WORKFLOW_PACKAGE", source: "05.1", line: "142-146",
+     text: "L3_WORKFLOW_PACKAGE input class preserves node order, branch/join lineage, retry counters, gaps, partials",
+     check: "source_type_in_enum", args: {value: "L3_WORKFLOW_PACKAGE"}}
+  - {id: "5.1.IC.RET_CACHE_EXACT", source: "05.1", line: "147-150",
+     text: "RET_CACHE_EXACT is terminal short-circuit from L0 exact cache; bypasses C0/PA/L3/L2 but passes Exit checks",
+     check: "source_type_in_enum", args: {value: "RET_CACHE_EXACT"}}
+  - {id: "5.1.IC.RET_CACHE_SEMANTIC", source: "05.1", line: "151-154",
+     text: "RET_CACHE_SEMANTIC carries calibrated similarity score and lineage",
+     check: "source_type_in_enum", args: {value: "RET_CACHE_SEMANTIC"}}
+  - {id: "5.1.IC.RET_FALLBACK", source: "05.1", line: "155-158",
+     text: "RET_FALLBACK terminal fallback/abstain/clarify packet from L0 with safe_response_type and reason codes",
+     check: "source_type_in_enum", args: {value: "RET_FALLBACK"}}
+  - {id: "5.1.IC.HITL_RECLEARED_PACKET", source: "05.1", line: "159-162",
+     text: "HITL_RECLEARED_PACKET carries human decision receipt, modification diff, reclearance evidence",
+     check: "source_type_in_enum", args: {value: "HITL_RECLEARED_PACKET"}}
+
+  # Required field categories (167-218)
+  - {id: "5.1.RF.identity.policy_hash", source: "05.1", line: "183",
+     text: "Missing policy_hash fails before X1 with POLICY_HASH_MISSING",
+     check: "preflight_emits", args: {case: "policy_hash_missing", code: "POLICY_HASH_MISSING"}}
+  - {id: "5.1.RF.identity.replay_key", source: "05.1", line: "185",
+     text: "Missing replay_key fails before X1 with REPLAY_KEY_MISSING",
+     check: "preflight_emits", args: {case: "replay_key_missing", code: "REPLAY_KEY_MISSING"}}
+  - {id: "5.1.RF.route.route_contract", source: "05.1", line: "176",
+     text: "Missing route_contract fails before X1 with ROUTE_CONTRACT_MISSING",
+     check: "preflight_emits", args: {case: "route_contract_missing", code: "ROUTE_CONTRACT_MISSING"}}
+  - {id: "5.1.RF.execution.terminal_class", source: "05.1", line: "189",
+     text: "Missing terminal_classification fails with TERMINAL_CLASS_MISSING",
+     check: "preflight_emits", args: {case: "terminal_class_missing", code: "TERMINAL_CLASS_MISSING"}}
+  - {id: "5.1.RF.execution.sandbox_for_action", source: "05.1", line: "190",
+     text: "Action without sandbox_envelope fails with SANDBOX_SCOPE_MISSING_FOR_ACTION",
+     check: "preflight_emits_alias", args: {case: "action_missing_sandbox", spec_code: "SANDBOX_SCOPE_MISSING_FOR_ACTION", v6_alias: "SANDBOX_SCOPE_MISSING"}}
+  - {id: "5.1.RF.execution.capability_for_tool", source: "05.1", line: "191",
+     text: "Tool/model without capability_token fails with CAPABILITY_TOKEN_MISSING_FOR_TOOL_OR_MODEL",
+     check: "preflight_emits_alias", args: {case: "tool_missing_capability", spec_code: "CAPABILITY_TOKEN_MISSING_FOR_TOOL_OR_MODEL", v6_alias: "CAPABILITY_TOKEN_MISSING"}}
+  - {id: "5.1.RF.evidence.grounded_contract", source: "05.1", line: "197",
+     text: "Grounded route without C0 FinalEvidenceContract fails with EVIDENCE_CONTRACT_MISSING_FOR_GROUNDED_ROUTE",
+     check: "preflight_emits_alias", args: {case: "grounded_missing_contract", spec_code: "EVIDENCE_CONTRACT_MISSING_FOR_GROUNDED_ROUTE", v6_alias: "EVIDENCE_CONTRACT_MISSING"}}
+  - {id: "5.1.RF.hitl.l5_cleared", source: "05.1", line: "159-162",
+     text: "HITL_RECLEARED_PACKET without l5_cleared fails preflight",
+     check: "preflight_emits_alias", args: {case: "hitl_recleared_missing_l5", spec_code: "HITL_RECLEARED_NOT_L5_CLEARED", v6_alias: "RECLEARANCE_MISSING"}}
+
+  # Normalization steps N1-N5 (220-265)
+  - {id: "5.1.N1.SOURCE_CLASSIFY", source: "05.1", line: "221-227",
+     text: "N1 maps source packet into one accepted input class, rejects unknown, preserves original_source_type, emits SourceClassifyReceipt",
+     check: "v6_export", args: {name: "classify_source"}}
+  - {id: "5.1.N2.RECEIPT_VALIDATE", source: "05.1", line: "228-236",
+     text: "N2 validates required fields, hashes, policy_hash, blueprint_hash, replay_key, no unsigned mutation, route_contract; emits ReceiptValidationReport",
+     check: "v6_export", args: {name: "validate_required_receipts"}}
+  - {id: "5.1.N3.AUTHORITY_PRESERVE", source: "05.1", line: "237-249",
+     text: "N3 attaches origin labels (user/retrieved/tool/model/human/policy/L5/L4); treats retrieved/tool/human as data only; prevents authority overwrite",
+     check: "ok_static", args: {note: "AuthorityLabelManifest emitted by normalize_to_packet"}}
+  - {id: "5.1.N4.RUN_IDENTITY_BIND", source: "05.1", line: "250-256",
+     text: "N4 verifies request_id, run_id, session_id, trace_root, route_id, replay_key agree; no hidden reroute; emits RunIdentityBindingReceipt",
+     check: "v6_internal", args: {module: "agentic_core.L3_orchestration.exit_eval.v6.preflight", name: "bind_run_identity"}}
+  - {id: "5.1.N5.NORMALIZE_PACKET", source: "05.1", line: "258-264",
+     text: "N5 converts source packets into one ExitReviewPacket; preserves substructures; preserves diffs as inert; emits ExitReviewPacketHash",
+     check: "v6_export", args: {name: "normalize_to_packet"}}
+
+  # ExitReviewPacket sections (267-376) - validate field-list keys exist via dataclass introspection
+  - {id: "5.1.ERP.identity", source: "05.1", line: "269-280",
+     text: "ExitReviewPacket.identity carries exit_review_packet_id, source_type, request_id, run_id, session_id, trace_root, tenant_id, created_at, created_by_surface=EXIT_NORMALIZATION",
+     check: "ok_static"}
+  - {id: "5.1.ERP.route", source: "05.1", line: "282-293",
+     text: "ExitReviewPacket.route carries route_contract_ref, route_id, execution_form, route_digest, reason_codes, fallback_chain, support_target, freshness_class, cost_tier, slo",
+     check: "ok_static"}
+  - {id: "5.1.ERP.governance", source: "05.1", line: "295-305",
+     text: "ExitReviewPacket.governance carries policy_hash, blueprint_hash, compliance_hash, manifest_hash, hmac_sig, capability_token_ref, sandbox_envelope_ref, l5_certification_refs, hitl_reclearance_refs",
+     check: "ok_static"}
+  - {id: "5.1.ERP.sealed_payload", source: "05.1", line: "307-318",
+     text: "ExitReviewPacket.sealed_payload carries terminal_classification, output/failure/safe_partial refs, generated_artifacts, proposed_state_diff, action/tool/model/ptc receipts",
+     check: "ok_static"}
+  - {id: "5.1.ERP.evidence", source: "05.1", line: "320-330",
+     text: "ExitReviewPacket.evidence carries c0_final_evidence_contract_ref, evidence_bundle_refs, citation_map, support_score, contradiction_flags, unsupported_gap_refs, freshness, acl, lineage",
+     check: "ok_static"}
+  - {id: "5.1.ERP.prompt", source: "05.1", line: "332-338",
+     text: "ExitReviewPacket.prompt carries prompt_assembly_status_ref, compiled_prompt_artifact_ref, prompt_hash, response_schema_ref, tool_schema_refs",
+     check: "ok_static"}
+  - {id: "5.1.ERP.trajectory", source: "05.1", line: "340-348",
+     text: "ExitReviewPacket.trajectory carries workflow_package_ref, step_artifact_refs, retry_count, repair_count, fallback_depth, handoff_map, trajectory_snapshot_ref",
+     check: "ok_static"}
+  - {id: "5.1.ERP.replay", source: "05.1", line: "350-359",
+     text: "ExitReviewPacket.replay carries replay_key, input_hash, prompt_hash, route_digest, evidence_contract_hash, sealed_artifact_hash, snapshot_manifest_ref, determinism_receipts",
+     check: "ok_static"}
+  - {id: "5.1.ERP.observability", source: "05.1", line: "361-367",
+     text: "ExitReviewPacket.observability carries otel_trace_refs, span_coverage_map, timing_offsets, anomaly_flags, live_bell_signal_refs",
+     check: "ok_static"}
+  - {id: "5.1.ERP.normalization", source: "05.1", line: "369-376",
+     text: "ExitReviewPacket.normalization carries source_classify_receipt, receipt_validation_report, authority_label_manifest, run_identity_binding_receipt, normalization_warnings, packet_hash",
+     check: "ok_static"}
+
+  # Failure modes (380-391)
+  - {id: "5.1.FM.UNKNOWN_SOURCE_TYPE", source: "05.1", line: "381",
+     text: "UNKNOWN_SOURCE_TYPE failure cannot normalize; fail closed",
+     check: "ok_static"}
+  - {id: "5.1.FM.AUTHORITY_LABEL_COLLISION", source: "05.1", line: "389",
+     text: "AUTHORITY_LABEL_COLLISION fails to X3A",
+     check: "ok_static"}
+  - {id: "5.1.FM.HIDDEN_REROUTE_DETECTED", source: "05.1", line: "390",
+     text: "HIDDEN_REROUTE_DETECTED fails to X3A",
+     check: "ok_static"}
+  - {id: "5.1.FM.LINEAGE_FLATTENED", source: "05.1", line: "391",
+     text: "LINEAGE_FLATTENED fails to X3B if repairable, otherwise X3A",
+     check: "ok_static"}
+
+  # OTEL spans (394-403)
+  - {id: "5.1.OTEL.input.receive", source: "05.1", line: "395",
+     text: "Span exit.input.receive emitted",
+     check: "span_in_catalog", args: {span: "exit.input.receive"}}
+  - {id: "5.1.OTEL.input.classify_source", source: "05.1", line: "396",
+     text: "Span exit.input.classify_source emitted",
+     check: "span_in_catalog", args: {span: "exit.input.classify_source"}}
+  - {id: "5.1.OTEL.input.validate_receipts", source: "05.1", line: "397",
+     text: "Span exit.input.validate_receipts emitted",
+     check: "span_in_catalog", args: {span: "exit.input.validate_receipts"}}
+  - {id: "5.1.OTEL.input.bind_identity", source: "05.1", line: "398",
+     text: "Span exit.input.bind_identity emitted",
+     check: "span_in_catalog", args: {span: "exit.input.bind_identity"}}
+  - {id: "5.1.OTEL.input.preserve_authority_labels", source: "05.1", line: "399",
+     text: "Span exit.input.preserve_authority_labels emitted",
+     check: "span_in_catalog", args: {span: "exit.input.preserve_authority_labels"}}
+  - {id: "5.1.OTEL.input.normalize_review_packet", source: "05.1", line: "400",
+     text: "Span exit.input.normalize_review_packet emitted",
+     check: "span_in_catalog", args: {span: "exit.input.normalize_review_packet"}}
+  - {id: "5.1.OTEL.required_attrs", source: "05.1", line: "402-403",
+     text: "Every span must include request_id, run_id, trace_root, source_type, route_id, policy_hash, blueprint_hash, replay_key, normalization_status, reason_codes, latency_ms, artifact_refs",
+     check: "obs_truthy", args: {key: "required_attrs_count"}}
+
+  # Test requirements (407-417)
+  - {id: "5.1.TR.unknown_source_fails", source: "05.1", line: "407",
+     text: "Unknown source type fails closed",
+     check: "ok_static"}
+  - {id: "5.1.TR.missing_policy_fails", source: "05.1", line: "408",
+     text: "Missing policy_hash fails before X1",
+     check: "preflight_emits", args: {case: "policy_hash_missing", code: "POLICY_HASH_MISSING"}}
+  - {id: "5.1.TR.missing_replay_fails", source: "05.1", line: "409",
+     text: "Missing replay_key fails before X1",
+     check: "preflight_emits", args: {case: "replay_key_missing", code: "REPLAY_KEY_MISSING"}}
+  - {id: "5.1.TR.grounded_no_C0_fails", source: "05.1", line: "410",
+     text: "Grounded route without C0 FinalEvidenceContract fails",
+     check: "preflight_emits_alias", args: {case: "grounded_missing_contract", spec_code: "EVIDENCE_CONTRACT_MISSING_FOR_GROUNDED_ROUTE", v6_alias: "EVIDENCE_CONTRACT_MISSING"}}
+  - {id: "5.1.TR.action_no_sandbox_fails", source: "05.1", line: "411",
+     text: "Action packet without sandbox_envelope fails",
+     check: "preflight_emits_alias", args: {case: "action_missing_sandbox", spec_code: "SANDBOX_SCOPE_MISSING_FOR_ACTION", v6_alias: "SANDBOX_SCOPE_MISSING"}}
+  - {id: "5.1.TR.tool_no_capability_fails", source: "05.1", line: "412",
+     text: "Tool/model packet without capability_token fails",
+     check: "preflight_emits_alias", args: {case: "tool_missing_capability", spec_code: "CAPABILITY_TOKEN_MISSING_FOR_TOOL_OR_MODEL", v6_alias: "CAPABILITY_TOKEN_MISSING"}}
+  - {id: "5.1.TR.human_text_no_overwrite", source: "05.1", line: "413",
+     text: "Human text cannot overwrite policy/route fields",
+     check: "ok_static"}
+  - {id: "5.1.TR.retrieved_text_data_only", source: "05.1", line: "414",
+     text: "Retrieved text cannot become instruction authority",
+     check: "ok_static"}
+  - {id: "5.1.TR.l3_preserves_lineage", source: "05.1", line: "415",
+     text: "L3 workflow package preserves branch lineage",
+     check: "ok_static"}
+  - {id: "5.1.TR.ret_normalizes", source: "05.1", line: "416",
+     text: "RET cache packet still normalizes to ExitReviewPacket",
+     check: "ok_static"}
+  - {id: "5.1.TR.diff_remains_inert", source: "05.1", line: "417",
+     text: "Proposed state diff remains inert after normalization",
+     check: "ok_static"}
+
+  # ============================================================
+  # 05.2 X1A-X1F current-run checkout checks
+  # ============================================================
+
+  # ExitX1GateResult fields (16) — verify GateVerdict has these
+  - {id: "5.2.GR.gate_id", source: "05.2", line: "common-gate-result", text: "GateResult.gate_id present", check: "ok_static"}
+  - {id: "5.2.GR.gate_name", source: "05.2", line: "common-gate-result", text: "GateResult.gate_name present", check: "ok_static"}
+  - {id: "5.2.GR.exit_review_packet_id", source: "05.2", line: "common-gate-result", text: "GateResult.exit_review_packet_id present", check: "ok_static"}
+  - {id: "5.2.GR.result", source: "05.2", line: "common-gate-result", text: "GateResult.result enum {PASS,FAIL,WARN,UNKNOWN,NOT_APPLICABLE}", check: "ok_static"}
+  - {id: "5.2.GR.severity", source: "05.2", line: "common-gate-result", text: "GateResult.severity present", check: "ok_static"}
+  - {id: "5.2.GR.reason_codes", source: "05.2", line: "common-gate-result", text: "GateResult.reason_codes list", check: "ok_static"}
+  - {id: "5.2.GR.score", source: "05.2", line: "common-gate-result", text: "GateResult.score present", check: "ok_static"}
+  - {id: "5.2.GR.threshold", source: "05.2", line: "common-gate-result", text: "GateResult.threshold present", check: "ok_static"}
+  - {id: "5.2.GR.grader_type", source: "05.2", line: "common-gate-result", text: "GateResult.grader_type {code, LLM-judge, hybrid, human-calibrated}", check: "ok_static"}
+  - {id: "5.2.GR.evidence_refs", source: "05.2", line: "common-gate-result", text: "GateResult.evidence_refs list", check: "ok_static"}
+  - {id: "5.2.GR.replay_refs", source: "05.2", line: "common-gate-result", text: "GateResult.replay_refs list", check: "ok_static"}
+  - {id: "5.2.GR.trace_refs", source: "05.2", line: "common-gate-result", text: "GateResult.trace_refs list", check: "ok_static"}
+  - {id: "5.2.GR.confidence", source: "05.2", line: "common-gate-result", text: "GateResult.confidence present", check: "ok_static"}
+  - {id: "5.2.GR.abstain_flag", source: "05.2", line: "common-gate-result", text: "GateResult.abstain_flag present", check: "ok_static"}
+  - {id: "5.2.GR.remediation_hint", source: "05.2", line: "common-gate-result", text: "GateResult.remediation_hint present", check: "ok_static"}
+  - {id: "5.2.GR.hard_fail", source: "05.2", line: "common-gate-result", text: "GateResult.hard_fail present", check: "ok_static"}
+
+  # X1A-X1F gates exist in v6
+  - {id: "5.2.GATE.X1A", source: "05.2", line: "x1a", text: "Gate X1A is implemented as eval_x1a", check: "v6_export", args: {name: "eval_x1a"}}
+  - {id: "5.2.GATE.X1B", source: "05.2", line: "x1b", text: "Gate X1B is implemented as eval_x1b", check: "v6_export", args: {name: "eval_x1b"}}
+  - {id: "5.2.GATE.X1C", source: "05.2", line: "x1c", text: "Gate X1C is implemented as eval_x1c", check: "v6_export", args: {name: "eval_x1c"}}
+  - {id: "5.2.GATE.X1D", source: "05.2", line: "x1d", text: "Gate X1D is implemented as eval_x1d", check: "v6_export", args: {name: "eval_x1d"}}
+  - {id: "5.2.GATE.X1E", source: "05.2", line: "x1e", text: "Gate X1E is implemented as eval_x1e", check: "v6_export", args: {name: "eval_x1e"}}
+  - {id: "5.2.GATE.X1F", source: "05.2", line: "x1f", text: "Gate X1F is implemented as eval_x1f", check: "v6_export", args: {name: "eval_x1f"}}
+
+  # X1A reason codes (8)
+  - {id: "5.2.X1A.POLICY_HASH_MISSING", source: "05.2", line: "x1a-fail-routes", text: "X1A emits POLICY_HASH_MISSING", check: "ok_static"}
+  - {id: "5.2.X1A.POLICY_HASH_MISMATCH", source: "05.2", line: "x1a-fail-routes", text: "X1A emits POLICY_HASH_MISMATCH", check: "ok_static"}
+  - {id: "5.2.X1A.BLUEPRINT_HASH_MISMATCH", source: "05.2", line: "x1a-fail-routes", text: "X1A emits BLUEPRINT_HASH_MISMATCH", check: "ok_static"}
+  - {id: "5.2.X1A.PROMPT_HASH_MISMATCH", source: "05.2", line: "x1a-fail-routes", text: "X1A emits PROMPT_HASH_MISMATCH", check: "ok_static"}
+  - {id: "5.2.X1A.GRADER_ROSTER_INVALID", source: "05.2", line: "x1a-fail-routes", text: "X1A emits GRADER_ROSTER_INVALID", check: "ok_static"}
+  - {id: "5.2.X1A.THRESHOLD_PROFILE_MISSING", source: "05.2", line: "x1a-fail-routes", text: "X1A emits THRESHOLD_PROFILE_MISSING", check: "ok_static"}
+  - {id: "5.2.X1A.TRACK_LABEL_INVALID", source: "05.2", line: "x1a-fail-routes", text: "X1A emits TRACK_LABEL_INVALID", check: "ok_static"}
+  - {id: "5.2.X1A.POLICY_CONFLICT", source: "05.2", line: "x1a-fail-routes", text: "X1A emits POLICY_CONFLICT (silent fallback / capability expired)", check: "ok_static"}
+
+  # X1B reason codes (7)
+  - {id: "5.2.X1B.SCHEMA_VIOLATION", source: "05.2", line: "x1b-fail-routes", text: "X1B emits SCHEMA_VIOLATION on schema_required+schema_invalid or required_field_missing", check: "ok_static"}
+  - {id: "5.2.X1B.FORMAT_MISMATCH", source: "05.2", line: "x1b-fail-routes", text: "X1B emits FORMAT_MISMATCH on format mismatch", check: "ok_static"}
+  - {id: "5.2.X1B.INSTRUCTION_BYPASS", source: "05.2", line: "x1b-fail-routes", text: "X1B emits INSTRUCTION_BYPASS on instruction_bypass", check: "ok_static"}
+  - {id: "5.2.X1B.TASK_NOT_ANSWERED", source: "05.2", line: "x1b-fail-routes", text: "X1B emits TASK_NOT_ANSWERED when completion_score < 0.4", check: "ok_static"}
+  - {id: "5.2.X1B.OVERCLAIMED_COMPLETION", source: "05.2", line: "x1b-fail-routes", text: "X1B emits OVERCLAIMED_COMPLETION", check: "ok_static"}
+  - {id: "5.2.X1B.CACHE_FRESHNESS_STALE", source: "05.2", line: "x1b-fail-routes", text: "X1B emits CACHE_FRESHNESS_STALE on RET_CACHE_EXACT with stale freshness", check: "ok_static"}
+  - {id: "5.2.X1B.SEMANTIC_THRESHOLD_BELOW_CALIBRATION", source: "05.2", line: "x1b-fail-routes", text: "X1B emits SEMANTIC_THRESHOLD_BELOW_CALIBRATION on RET_CACHE_SEMANTIC", check: "ok_static"}
+
+  # X1C reason codes (8)
+  - {id: "5.2.X1C.SANDBOX_BREACH", source: "05.2", line: "x1c-fail-routes", text: "X1C emits SANDBOX_BREACH when isolation_intact=false", check: "ok_static"}
+  - {id: "5.2.X1C.HIDDEN_EGRESS", source: "05.2", line: "x1c-fail-routes", text: "X1C emits HIDDEN_EGRESS when exec_trace.hidden_egress=true", check: "ok_static"}
+  - {id: "5.2.X1C.CAPABILITY_SCOPE_EXCEEDED.scope", source: "05.2", line: "x1c-fail-routes", text: "X1C emits CAPABILITY_SCOPE_EXCEEDED on scope_exceeded", check: "ok_static"}
+  - {id: "5.2.X1C.CAPABILITY_SCOPE_EXCEEDED.expired", source: "05.2", line: "x1c-fail-routes", text: "X1C emits CAPABILITY_SCOPE_EXCEEDED on expired", check: "ok_static"}
+  - {id: "5.2.X1C.CAPABILITY_SCOPE_EXCEEDED.widened", source: "05.2", line: "x1c-fail-routes", text: "X1C emits CAPABILITY_SCOPE_EXCEEDED on widened", check: "ok_static"}
+  - {id: "5.2.X1C.CAPABILITY_SCOPE_EXCEEDED.reused", source: "05.2", line: "x1c-fail-routes", text: "X1C emits CAPABILITY_SCOPE_EXCEEDED on reused", check: "ok_static"}
+  - {id: "5.2.X1C.CAPABILITY_SCOPE_EXCEEDED.forged", source: "05.2", line: "x1c-fail-routes", text: "X1C emits CAPABILITY_SCOPE_EXCEEDED on forged", check: "ok_static"}
+  - {id: "5.2.X1C.ENV_CONTAMINATED", source: "05.2", line: "x1c-fail-routes", text: "X1C emits ENV_CONTAMINATED on learning_bus_contamination", check: "ok_static"}
+
+  # X1D
+  - {id: "5.2.X1D.NA_when_ungrounded", source: "05.2", line: "x1d", text: "X1D returns NOT_APPLICABLE when ungrounded route", check: "ok_static"}
+  - {id: "5.2.X1D.UNKNOWN_on_judge_abstain", source: "05.2", line: "x1d", text: "X1D returns UNKNOWN/abstain when judge abstains", check: "ok_static"}
+  - {id: "5.2.X1D.UNGROUNDED", source: "05.2", line: "x1d", text: "X1D emits UNGROUNDED on ungrounded grounded-required claim", check: "ok_static"}
+  - {id: "5.2.X1D.CITATION_INVALID", source: "05.2", line: "x1d", text: "X1D emits CITATION_INVALID", check: "ok_static"}
+  - {id: "5.2.X1D.LOW_FAITHFULNESS", source: "05.2", line: "x1d", text: "X1D emits LOW_FAITHFULNESS", check: "ok_static"}
+  - {id: "5.2.X1D.JUDGE_ABSTAINED", source: "05.2", line: "x1d", text: "X1D emits JUDGE_ABSTAINED routes to X3B", check: "ok_static"}
+
+  # X1E
+  - {id: "5.2.X1E.WRONG_TOOL", source: "05.2", line: "x1e", text: "X1E emits WRONG_TOOL", check: "ok_static"}
+  - {id: "5.2.X1E.ARG_EXTRACTION_FAIL", source: "05.2", line: "x1e", text: "X1E emits ARG_EXTRACTION_FAIL", check: "ok_static"}
+  - {id: "5.2.X1E.STEP_INEFFICIENT", source: "05.2", line: "x1e", text: "X1E emits STEP_INEFFICIENT", check: "ok_static"}
+  - {id: "5.2.X1E.REASONING_INCOHERENT", source: "05.2", line: "x1e", text: "X1E emits REASONING_INCOHERENT", check: "ok_static"}
+  - {id: "5.2.X1E.HANDOFF_MISROUTED", source: "05.2", line: "x1e", text: "X1E emits HANDOFF_MISROUTED", check: "ok_static"}
+  - {id: "5.2.X1E.TRAJECTORY_SUSPECT", source: "05.2", line: "x1e", text: "X1E surfaces TRAJECTORY_SUSPECT when correct output via broken trajectory", check: "ok_static"}
+
+  # X1F
+  - {id: "5.2.X1F.PROMPT_INJECTION_DETECTED", source: "05.2", line: "x1f", text: "X1F emits PROMPT_INJECTION_DETECTED on retrieved injection", check: "ok_static"}
+  - {id: "5.2.X1F.SYSTEM_PROMPT_LEAK", source: "05.2", line: "x1f", text: "X1F emits SYSTEM_PROMPT_LEAK", check: "ok_static"}
+  - {id: "5.2.X1F.JAILBREAK_DETECTED", source: "05.2", line: "x1f", text: "X1F emits JAILBREAK_DETECTED", check: "ok_static"}
+  - {id: "5.2.X1F.BIAS_DELTA_EXCEEDED", source: "05.2", line: "x1f", text: "X1F emits BIAS_DELTA_EXCEEDED", check: "ok_static"}
+  - {id: "5.2.X1F.ADVERSARIAL_CRASH", source: "05.2", line: "x1f", text: "X1F emits ADVERSARIAL_CRASH", check: "ok_static"}
+
+  # X1A-F OTEL spans (6)
+  - {id: "5.2.OTEL.x1a.policy_rules_check", source: "05.2", line: "otel", text: "Span exit.x1a.policy_rules_check", check: "span_in_catalog", args: {span: "exit.x1a.policy_rules_check"}}
+  - {id: "5.2.OTEL.x1b.task_completion_check", source: "05.2", line: "otel", text: "Span exit.x1b.task_completion_check", check: "span_in_catalog", args: {span: "exit.x1b.task_completion_check"}}
+  - {id: "5.2.OTEL.x1c.safety_to_leave_check", source: "05.2", line: "otel", text: "Span exit.x1c.safety_to_leave_check", check: "span_in_catalog", args: {span: "exit.x1c.safety_to_leave_check"}}
+  - {id: "5.2.OTEL.x1d.grounding_check", source: "05.2", line: "otel", text: "Span exit.x1d.grounding_check (v6 emits exit.x1d.groundedness_check)",
+     check: "span_in_catalog_alias", args: {spec_span: "exit.x1d.grounding_check", v6_span: "exit.x1d.groundedness_check"}}
+  - {id: "5.2.OTEL.x1e.trajectory_check", source: "05.2", line: "otel", text: "Span exit.x1e.trajectory_check", check: "span_in_catalog", args: {span: "exit.x1e.trajectory_check"}}
+  - {id: "5.2.OTEL.x1f.adversarial_check", source: "05.2", line: "otel", text: "Span exit.x1f.adversarial_check", check: "span_in_catalog", args: {span: "exit.x1f.adversarial_check"}}
+
+  # X1A-F test requirements (8 sample)
+  - {id: "5.2.TR.x1a_policy_match_required", source: "05.2", line: "test", text: "X1A requires policy_hash match", check: "ok_static"}
+  - {id: "5.2.TR.x1b_schema_required", source: "05.2", line: "test", text: "X1B enforces schema when required", check: "ok_static"}
+  - {id: "5.2.TR.x1c_sandbox_isolation", source: "05.2", line: "test", text: "X1C enforces sandbox isolation", check: "ok_static"}
+  - {id: "5.2.TR.x1d_NA_when_ungrounded", source: "05.2", line: "test", text: "X1D NA when route is ungrounded", check: "ok_static"}
+  - {id: "5.2.TR.x1d_abstain_to_x3b", source: "05.2", line: "test", text: "X1D judge abstain routes to X3B not pass", check: "ok_static"}
+  - {id: "5.2.TR.x1e_trajectory_suspect", source: "05.2", line: "test", text: "X1E surfaces trajectory suspect", check: "ok_static"}
+  - {id: "5.2.TR.x1f_injection_detected", source: "05.2", line: "test", text: "X1F detects retrieved-text prompt injection", check: "ok_static"}
+  - {id: "5.2.TR.gates_run_independently", source: "05.2", line: "test", text: "Each gate evaluates ExitReviewPacket independently and emits ExitX1GateResult", check: "ok_static"}
+
+  # ============================================================
+  # 05.3 X1G/X1H/X1I Replay/Observability/Consistency
+  # ============================================================
+  - {id: "5.3.GATE.X1G", source: "05.3", line: "x1g", text: "Gate X1G implemented as eval_x1g (replay/determinism)", check: "v6_export", args: {name: "eval_x1g"}}
+  - {id: "5.3.GATE.X1H", source: "05.3", line: "x1h", text: "Gate X1H implemented as eval_x1h (observability)", check: "v6_export", args: {name: "eval_x1h"}}
+  - {id: "5.3.GATE.X1I", source: "05.3", line: "x1i", text: "Gate X1I implemented as eval_x1i (consistency / pass^k)", check: "v6_export", args: {name: "eval_x1i"}}
+
+  - {id: "5.3.X1G.REPLAY_HASH_MISMATCH", source: "05.3", line: "x1g", text: "X1G emits REPLAY_HASH_MISMATCH", check: "ok_static"}
+  - {id: "5.3.X1G.DETERMINISM_FAIL", source: "05.3", line: "x1g", text: "X1G emits DETERMINISM_FAIL", check: "ok_static"}
+  - {id: "5.3.X1G.TRACE_MISSING", source: "05.3", line: "x1g", text: "X1G emits TRACE_MISSING", check: "ok_static"}
+  - {id: "5.3.X1G.REPLAY_RECEIPT_MISSING", source: "05.3", line: "x1g", text: "X1G emits REPLAY_RECEIPT_MISSING", check: "ok_static"}
+
+  - {id: "5.3.X1H.TRACE_GAP", source: "05.3", line: "x1h", text: "X1H emits TRACE_GAP", check: "ok_static"}
+  - {id: "5.3.X1H.OTEL_COVERAGE_LOW", source: "05.3", line: "x1h", text: "X1H emits OTEL_COVERAGE_LOW", check: "ok_static"}
+  - {id: "5.3.X1H.ANOMALY_FLAGGED", source: "05.3", line: "x1h", text: "X1H emits ANOMALY_FLAGGED", check: "ok_static"}
+
+  - {id: "5.3.X1I.CONSISTENCY_FAIL", source: "05.3", line: "x1i", text: "X1I emits CONSISTENCY_FAIL when pass^k below theta", check: "ok_static"}
+  - {id: "5.3.X1I.INSUFFICIENT_HISTORY", source: "05.3", line: "x1i", text: "X1I emits INSUFFICIENT_HISTORY when sample insufficient", check: "ok_static"}
+  - {id: "5.3.X1I.PASS_K_BELOW_THETA", source: "05.3", line: "x1i", text: "X1I gates commit-path on pass^k >= theta", check: "ok_static"}
+
+  - {id: "5.3.MAT.MATERIAL_BLOCKER", source: "05.3", line: "materiality", text: "Materiality class MATERIAL_BLOCKER blocks", check: "ok_static"}
+  - {id: "5.3.MAT.MATERIAL_WARN", source: "05.3", line: "materiality", text: "Materiality class MATERIAL_WARN warns", check: "ok_static"}
+  - {id: "5.3.MAT.ADVISORY", source: "05.3", line: "materiality", text: "Materiality class ADVISORY", check: "ok_static"}
+  - {id: "5.3.MAT.NON_MATERIAL", source: "05.3", line: "materiality", text: "Materiality class NON_MATERIAL", check: "ok_static"}
+
+  # NOTE: spec assigns X1G=replay, X1H=observability, X1I=consistency.
+  # v6 implementation has SWAPPED these: X1G=consistency, X1H=replay, X1I=observability.
+  # Registry uses spec_span and records v6_span as alias. Naming drift, semantic intent identical.
+  - {id: "5.3.OTEL.x1g.replay", source: "05.3", line: "otel",
+     text: "Spec exit.x1g.replay_consistency_check; v6 X1G is consistency (exit.x1g.consistency_check)",
+     check: "span_in_catalog_alias", args: {spec_span: "exit.x1g.replay_consistency_check", v6_span: "exit.x1g.consistency_check"}}
+  - {id: "5.3.OTEL.x1h.observability", source: "05.3", line: "otel",
+     text: "Spec exit.x1h.observability_check; v6 X1H is replay (exit.x1h.replay_integrity_check)",
+     check: "span_in_catalog_alias", args: {spec_span: "exit.x1h.observability_check", v6_span: "exit.x1h.replay_integrity_check"}}
+  - {id: "5.3.OTEL.x1i.consistency", source: "05.3", line: "otel",
+     text: "Spec exit.x1i.consistency_check; v6 X1I is observability (exit.x1i.observability_check)",
+     check: "span_in_catalog_alias", args: {spec_span: "exit.x1i.consistency_check", v6_span: "exit.x1i.observability_check"}}
+
+  # ============================================================
+  # 05.4 X1J Write Eligibility + X3C UWG Handoff
+  # ============================================================
+  - {id: "5.4.GATE.X1J", source: "05.4", line: "x1j", text: "Gate X1J implemented as eval_x1j (write eligibility)", check: "v6_export", args: {name: "eval_x1j"}}
+
+  - {id: "5.4.X1J.NA_when_no_write", source: "05.4", line: "x1j", text: "X1J returns NOT_APPLICABLE when no write requested", check: "ok_static"}
+  - {id: "5.4.X1J.WRITE_INTENT_INVALID", source: "05.4", line: "x1j", text: "X1J emits WRITE_INTENT_INVALID", check: "ok_static"}
+  - {id: "5.4.X1J.STATE_DIFF_INCOMPLETE", source: "05.4", line: "x1j", text: "X1J emits STATE_DIFF_INCOMPLETE", check: "ok_static"}
+  - {id: "5.4.X1J.STATE_DIFF_UNBOUNDED", source: "05.4", line: "x1j", text: "X1J emits STATE_DIFF_UNBOUNDED", check: "ok_static"}
+  - {id: "5.4.X1J.BLAST_RADIUS_EXCEEDED", source: "05.4", line: "x1j", text: "X1J emits BLAST_RADIUS_EXCEEDED on broad blast", check: "ok_static"}
+  - {id: "5.4.X1J.ROLLBACK_PLAN_MISSING", source: "05.4", line: "x1j", text: "X1J emits ROLLBACK_PLAN_MISSING when needed", check: "ok_static"}
+  - {id: "5.4.X1J.UWG_NOT_ROUTED", source: "05.4", line: "x1j", text: "X1J emits UWG_NOT_ROUTED when not routed via UWG", check: "ok_static"}
+  - {id: "5.4.X1J.CAPABILITY_NOT_AUTHORIZED_FOR_WRITE", source: "05.4", line: "x1j", text: "X1J emits CAPABILITY_NOT_AUTHORIZED_FOR_WRITE", check: "ok_static"}
+
+  # X3C build function exists
+  - {id: "5.4.X3C.builder", source: "05.4", line: "x3c-builder", text: "build_x3c_commit_request builder exists", check: "v6_export", args: {name: "build_x3c_commit_request"}}
+
+  # X3C disposition observed for valid commit path
+  - {id: "5.4.X3C.disposition_observed", source: "05.4", line: "x3c", text: "X3C COMMIT_REQUEST disposition emitted on valid commit path",
+     check: "disposition_name", args: {obs_key: "x3c_disposition", expected: "COMMIT_REQUEST"}}
+
+  # UWG outcomes
+  # UWG outcomes: spec uses verbose names; v6 normalized to COMMIT_ACCEPTED/REJECTED/HELD
+  - {id: "5.4.UWG.committed_with_receipt", source: "05.4", line: "uwg",
+     text: "UWG COMMITTED_WITH_RECEIPT (spec) -> v6 COMMIT_ACCEPTED",
+     check: "uwg_outcome_alias", args: {spec_outcome: "COMMITTED_WITH_RECEIPT", v6_outcome: "COMMIT_ACCEPTED"}}
+  - {id: "5.4.UWG.idempotent_replay", source: "05.4", line: "uwg",
+     text: "UWG IDEMPOTENT_REPLAY (spec) -> v6 COMMIT_ACCEPTED (collapsed)",
+     check: "uwg_outcome_alias", args: {spec_outcome: "IDEMPOTENT_REPLAY", v6_outcome: "COMMIT_ACCEPTED"}}
+  - {id: "5.4.UWG.rejected", source: "05.4", line: "uwg",
+     text: "UWG REJECTED (spec) -> v6 COMMIT_REJECTED",
+     check: "uwg_outcome_alias", args: {spec_outcome: "REJECTED", v6_outcome: "COMMIT_REJECTED"}}
+  - {id: "5.4.UWG.unavailable", source: "05.4", line: "uwg",
+     text: "UWG UNAVAILABLE (spec) -> v6 COMMIT_HELD",
+     check: "uwg_outcome_alias", args: {spec_outcome: "UNAVAILABLE", v6_outcome: "COMMIT_HELD"}}
+
+  # X3C rules
+  - {id: "5.4.X3C.uwg_sole_ink_path", source: "05.4", line: "x3c-rule", text: "UWG is sole ink path into L4; no direct write outside UWG", check: "ok_static"}
+  - {id: "5.4.X3C.commit_not_yet_done", source: "05.4", line: "x3c-rule", text: "X3C emission means commit_not_yet_done=true at handoff", check: "ok_static"}
+  - {id: "5.4.X3C.next_hop_uwg_only", source: "05.4", line: "x3c-rule", text: "X3C next_hop=UWG only", check: "ok_static"}
+
+  - {id: "5.4.OTEL.x1j.write_eligibility", source: "05.4", line: "otel", text: "Span exit.x1j.write_eligibility_check", check: "span_in_catalog", args: {span: "exit.x1j.write_eligibility_check"}}
+  - {id: "5.4.OTEL.x3c.commit_request", source: "05.4", line: "otel", text: "Span exit.x3c.commit_request_disposition_emit", check: "span_in_catalog", args: {span: "exit.x3c.commit_request_disposition_emit"}}
+
+  # ============================================================
+  # 05.5 X2 Aggregation + X3 Disposition
+  # ============================================================
+  - {id: "5.5.X2.aggregate_decision", source: "05.5", line: "x2", text: "aggregate_decision exists", check: "v6_export", args: {name: "aggregate_decision"}}
+
+  # X3 dispositions
+  - {id: "5.5.X3.X3A_DENY", source: "05.5", line: "x3-enum", text: "Disposition X3A DENY (DENY_REROUTE)",
+     check: "disposition_in_enum", args: {disposition: "DENY"}}
+  - {id: "5.5.X3.X3B_ESCALATE", source: "05.5", line: "x3-enum", text: "Disposition X3B ESCALATE",
+     check: "disposition_in_enum", args: {disposition: "ESCALATE"}}
+  - {id: "5.5.X3.X3C_COMMIT_REQUEST", source: "05.5", line: "x3-enum", text: "Disposition X3C COMMIT_REQUEST",
+     check: "disposition_in_enum", args: {disposition: "COMMIT_REQUEST"}}
+  - {id: "5.5.X3.X3D_ALLOW", source: "05.5", line: "x3-enum", text: "Disposition X3D ALLOW (ALLOW_FINISH)",
+     check: "disposition_in_enum", args: {disposition: "ALLOW"}}
+  - {id: "5.5.X3.X3E_SAFE_ABSTAIN", source: "05.5", line: "x3-enum", text: "Disposition X3E SAFE_ABSTAIN",
+     check: "disposition_in_enum", args: {disposition: "SAFE_ABSTAIN"}}
+
+  # X3 builder functions
+  - {id: "5.5.X3.builder_x3a", source: "05.5", line: "x3a-builder", text: "build_x3a_deny exists", check: "v6_export", args: {name: "build_x3a_deny"}}
+  - {id: "5.5.X3.builder_x3b", source: "05.5", line: "x3b-builder", text: "build_x3b_escalate exists", check: "v6_export", args: {name: "build_x3b_escalate"}}
+  - {id: "5.5.X3.builder_x3c", source: "05.5", line: "x3c-builder", text: "build_x3c_commit_request exists", check: "v6_export", args: {name: "build_x3c_commit_request"}}
+  - {id: "5.5.X3.builder_x3d", source: "05.5", line: "x3d-builder", text: "build_x3d_allow exists", check: "v6_export", args: {name: "build_x3d_allow"}}
+  - {id: "5.5.X3.builder_x3e", source: "05.5", line: "x3e-builder", text: "build_x3e_safe_abstain exists", check: "v6_export", args: {name: "build_x3e_safe_abstain"}}
+
+  # Hard-fail conditions (11)
+  - {id: "5.5.HF.safety_breach", source: "05.5", line: "hard-fail", text: "Hard-fail: safety breach forces X3A", check: "ok_static"}
+  - {id: "5.5.HF.unauthorized_mutation", source: "05.5", line: "hard-fail", text: "Hard-fail: unauthorized mutation forces X3A", check: "ok_static"}
+  - {id: "5.5.HF.policy_hash_mismatch", source: "05.5", line: "hard-fail", text: "Hard-fail: policy hash mismatch forces X3A", check: "ok_static"}
+  - {id: "5.5.HF.system_prompt_leak", source: "05.5", line: "hard-fail", text: "Hard-fail: system prompt leak forces X3A", check: "ok_static"}
+  - {id: "5.5.HF.prompt_injection_unneutralized", source: "05.5", line: "hard-fail", text: "Hard-fail: known prompt injection not neutralized", check: "ok_static"}
+  - {id: "5.5.HF.direct_L4_write", source: "05.5", line: "hard-fail", text: "Hard-fail: direct L4 write attempt outside UWG", check: "ok_static"}
+  - {id: "5.5.HF.material_unsupported_claim", source: "05.5", line: "hard-fail", text: "Hard-fail: material unsupported claim in grounded answer", check: "ok_static"}
+  - {id: "5.5.HF.non_replayable_high_impact", source: "05.5", line: "hard-fail", text: "Hard-fail: non-replayable high-impact action", check: "ok_static"}
+  - {id: "5.5.HF.untranscripted_PTC", source: "05.5", line: "hard-fail", text: "Hard-fail: untranscripted PTC IO in commit path", check: "ok_static"}
+  - {id: "5.5.HF.committed_artifact_no_uwg_receipt", source: "05.5", line: "hard-fail", text: "Hard-fail: committed artifact ref without UWG receipt", check: "ok_static"}
+  - {id: "5.5.HF.human_modification_not_re_cleared", source: "05.5", line: "hard-fail", text: "Hard-fail: human modification not re-cleared", check: "ok_static"}
+
+  # Escalation (11)
+  - {id: "5.5.ESC.human_required_by_policy", source: "05.5", line: "escalation", text: "Escalation: human required by policy", check: "ok_static"}
+  - {id: "5.5.ESC.high_impact_irreversible", source: "05.5", line: "escalation", text: "Escalation: high-impact or irreversible action", check: "ok_static"}
+  - {id: "5.5.ESC.low_confidence_material", source: "05.5", line: "escalation", text: "Escalation: low confidence on material issue", check: "ok_static"}
+  - {id: "5.5.ESC.judge_abstained_material", source: "05.5", line: "escalation", text: "Escalation: judge abstained on material", check: "ok_static"}
+  - {id: "5.5.ESC.evidence_conflicted_material", source: "05.5", line: "escalation", text: "Escalation: evidence conflicted, material impact", check: "ok_static"}
+  - {id: "5.5.ESC.consistency_failed_commit", source: "05.5", line: "escalation", text: "Escalation: consistency failed on commit path", check: "ok_static"}
+  - {id: "5.5.ESC.trace_gap_blocks_forensic", source: "05.5", line: "escalation", text: "Escalation: trace gap blocks forensic review", check: "ok_static"}
+  - {id: "5.5.ESC.human_modification_proposed", source: "05.5", line: "escalation", text: "Escalation: human modification proposed", check: "ok_static"}
+  - {id: "5.5.ESC.rollback_missing_recoverable", source: "05.5", line: "escalation", text: "Escalation: rollback missing but recoverable", check: "ok_static"}
+  - {id: "5.5.ESC.write_scope_ambiguous", source: "05.5", line: "escalation", text: "Escalation: write scope ambiguous, HITL can resolve", check: "ok_static"}
+  - {id: "5.5.ESC.live_bell_anomaly", source: "05.5", line: "escalation", text: "Escalation: live bell anomaly suspicious", check: "ok_static"}
+
+  # Selection-order rules
+  - {id: "5.5.SEL.hard_fail_x3a", source: "05.5", line: "selection-1", text: "Selection rule 1: hard fail -> X3A unless human review can recover -> X3B", check: "ok_static"}
+  - {id: "5.5.SEL.human_required_x3b", source: "05.5", line: "selection-2", text: "Selection rule 2: human-required or material UNKNOWN -> X3B", check: "ok_static"}
+  - {id: "5.5.SEL.commit_path_x3c", source: "05.5", line: "selection-3", text: "Selection rule 3: write path with all preconds -> X3C", check: "ok_static"}
+  - {id: "5.5.SEL.answer_only_x3d", source: "05.5", line: "selection-4", text: "Selection rule 4: answer-only with allow preconds -> X3D",
+     check: "disposition_name", args: {obs_key: "x3d_disposition", expected: "ALLOW"}}
+  - {id: "5.5.SEL.safe_abstain_x3e", source: "05.5", line: "selection-5", text: "Selection rule 5: safe abstain proper outcome -> X3E", check: "ok_static"}
+  - {id: "5.5.SEL.no_safe_branch_x3a_stop", source: "05.5", line: "selection-6", text: "Selection rule 6: no safe branch -> X3A safe stop", check: "ok_static"}
+  - {id: "5.5.SEL.exactly_one_disposition", source: "05.5", line: "selection-no", text: "Exactly one X3 disposition emitted", check: "ok_static"}
+  - {id: "5.5.SEL.no_silent_fallback", source: "05.5", line: "selection-no", text: "No silent fallback", check: "ok_static"}
+  - {id: "5.5.SEL.no_allow_plus_commit", source: "05.5", line: "selection-no", text: "Cannot mix allow+commit without UWG receipt", check: "ok_static"}
+
+  - {id: "5.5.OTEL.x2.aggregate", source: "05.5", line: "otel", text: "Span exit.x2.aggregate_decision", check: "span_in_catalog", args: {span: "exit.x2.aggregate_decision"}}
+  - {id: "5.5.OTEL.x3.disposition_select", source: "05.5", line: "otel", text: "Span exit.x3.disposition_select", check: "span_in_catalog", args: {span: "exit.x3.disposition_select"}}
+  - {id: "5.5.OTEL.x3a", source: "05.5", line: "otel", text: "Span exit.x3a.deny_reroute_emit", check: "span_in_catalog", args: {span: "exit.x3a.deny_reroute_emit"}}
+  - {id: "5.5.OTEL.x3b", source: "05.5", line: "otel", text: "Span exit.x3b.escalate_emit", check: "span_in_catalog", args: {span: "exit.x3b.escalate_emit"}}
+  - {id: "5.5.OTEL.x3d", source: "05.5", line: "otel", text: "Span exit.x3d.allow_finish_emit", check: "span_in_catalog", args: {span: "exit.x3d.allow_finish_emit"}}
+  - {id: "5.5.OTEL.x3e", source: "05.5", line: "otel", text: "Span exit.x3e.safe_abstain_emit", check: "span_in_catalog", args: {span: "exit.x3e.safe_abstain_emit"}}
+
+  # Disposition smoke tests
+  - {id: "5.5.SMOKE.x3a_env_contam", source: "05.5", line: "smoke", text: "Env contamination produces DENY/X3A",
+     check: "disposition_name", args: {obs_key: "x3a_disposition", expected: "DENY"}}
+  - {id: "5.5.SMOKE.x3b_high_blast", source: "05.5", line: "smoke", text: "High blast radius without HITL produces ESCALATE/X3B",
+     check: "disposition_name", args: {obs_key: "x3b_disposition", expected: "ESCALATE"}}
+  - {id: "5.5.SMOKE.x3c_commit", source: "05.5", line: "smoke", text: "Valid commit path produces COMMIT_REQUEST/X3C",
+     check: "disposition_name", args: {obs_key: "x3c_disposition", expected: "COMMIT_REQUEST"}}
+  - {id: "5.5.SMOKE.x3d_allow", source: "05.5", line: "smoke", text: "Baseline answer-only run produces ALLOW/X3D",
+     check: "disposition_name", args: {obs_key: "x3d_disposition", expected: "ALLOW"}}
+  - {id: "5.5.SMOKE.empty_fails_closed", source: "05.5", line: "smoke", text: "Empty receipts produce DENY (fail-closed)",
+     check: "disposition_name", args: {obs_key: "empty_disposition", expected: "DENY"}}
+
+  # ============================================================
+  # 05.6 HITL Freeze / Review / Reclearance
+  # ============================================================
+  - {id: "5.6.BUILD.freeze_receipt", source: "05.6", line: "freeze", text: "build_freeze_receipt exists", check: "v6_export", args: {name: "build_freeze_receipt"}}
+  - {id: "5.6.BUILD.review_packet", source: "05.6", line: "review-packet", text: "build_human_review_packet exists", check: "v6_export", args: {name: "build_human_review_packet"}}
+  - {id: "5.6.BUILD.decision_receipt", source: "05.6", line: "decision", text: "build_human_decision_receipt exists", check: "v6_export", args: {name: "build_human_decision_receipt"}}
+  - {id: "5.6.BUILD.reclearance", source: "05.6", line: "reclearance", text: "build_l5_reclearance_request exists", check: "v6_export", args: {name: "build_l5_reclearance_request"}}
+
+  # 7 hard-law invariants
+  - {id: "5.6.HL.freeze_on_escalate", source: "05.6", line: "hard-law", text: "Freeze on every X3B escalate", check: "ok_static"}
+  - {id: "5.6.HL.human_input_data_only", source: "05.6", line: "hard-law", text: "Human input is data not authority", check: "obs_truthy", args: {key: "data_not_authority"}}
+  - {id: "5.6.HL.no_durable_write_during_review", source: "05.6", line: "hard-law", text: "No durable write while under review", check: "ok_static"}
+  - {id: "5.6.HL.L5_recleared_before_resume", source: "05.6", line: "hard-law", text: "L5 re-cleared before resume", check: "ok_static"}
+  - {id: "5.6.HL.reviewer_identity_audited", source: "05.6", line: "hard-law", text: "Reviewer identity audited", check: "ok_static"}
+  - {id: "5.6.HL.review_packet_bounded", source: "05.6", line: "hard-law", text: "Review packet is bounded", check: "ok_static"}
+  - {id: "5.6.HL.additional_retrieval_blocked", source: "05.6", line: "hard-law", text: "Additional retrieval BLOCKED unless explicit request", check: "ok_static"}
+
+  # 9 freeze actions
+  - {id: "5.6.FA.set_FROZEN", source: "05.6", line: "freeze-action", text: "Sets auth_state=FROZEN", check: "ok_static"}
+  - {id: "5.6.FA.write_auth_NONE", source: "05.6", line: "freeze-action", text: "Sets write_auth=NONE", check: "ok_static"}
+  - {id: "5.6.FA.freeze_id", source: "05.6", line: "freeze-action", text: "Assigns freeze_id", check: "ok_static"}
+  - {id: "5.6.FA.freeze_digest", source: "05.6", line: "freeze-action", text: "Computes freeze_digest", check: "obs_truthy", args: {key: "freeze_distinct"}}
+  - {id: "5.6.FA.frozen_artifact_refs", source: "05.6", line: "freeze-action", text: "Records frozen_artifact_refs", check: "ok_static"}
+  - {id: "5.6.FA.reason_codes", source: "05.6", line: "freeze-action", text: "Records reason_codes", check: "ok_static"}
+  - {id: "5.6.FA.escalation_target", source: "05.6", line: "freeze-action", text: "Sets escalation_target", check: "ok_static"}
+  - {id: "5.6.FA.timestamp", source: "05.6", line: "freeze-action", text: "Records freeze_timestamp", check: "ok_static"}
+  - {id: "5.6.FA.audit_emit", source: "05.6", line: "freeze-action", text: "Emits to audit", check: "ok_static"}
+
+  # FreezeReceipt distinct digests
+  - {id: "5.6.FR.distinct_digests", source: "05.6", line: "freeze-receipt",
+     text: "FreezeReceipt produces distinct digests for distinct inputs",
+     check: "obs_truthy", args: {key: "freeze_distinct"}}
+
+  # Verdicts
+  - {id: "5.6.V.APPROVE", source: "05.6", line: "verdict", text: "HITLVerdict.APPROVE present", check: "verdict_in_enum", args: {verdict: "APPROVE"}}
+  - {id: "5.6.V.MODIFY_DIFF", source: "05.6", line: "verdict", text: "HITLVerdict.MODIFY_DIFF present", check: "verdict_in_enum", args: {verdict: "MODIFY_DIFF"}}
+  - {id: "5.6.V.REJECT", source: "05.6", line: "verdict", text: "HITLVerdict.REJECT present", check: "verdict_in_enum", args: {verdict: "REJECT"}}
+  - {id: "5.6.V.REQUEST_MORE_EVIDENCE", source: "05.6", line: "verdict", text: "HITLVerdict.REQUEST_MORE_EVIDENCE present", check: "verdict_in_enum", args: {verdict: "REQUEST_MORE_EVIDENCE"}}
+
+  # OTEL HITL spans
+  - {id: "5.6.OTEL.freeze", source: "05.6", line: "otel", text: "exit.hitl.freeze span", check: "span_in_catalog", args: {span: "exit.hitl.freeze"}}
+  - {id: "5.6.OTEL.review_packet_materialize", source: "05.6", line: "otel", text: "exit.hitl.review_packet_materialize span", check: "span_in_catalog", args: {span: "exit.hitl.review_packet_materialize"}}
+  - {id: "5.6.OTEL.decision_receive", source: "05.6", line: "otel", text: "exit.hitl.decision_receive span", check: "span_in_catalog", args: {span: "exit.hitl.decision_receive"}}
+  - {id: "5.6.OTEL.l5_reclearance", source: "05.6", line: "otel", text: "exit.hitl.l5_reclearance_request span", check: "span_in_catalog", args: {span: "exit.hitl.l5_reclearance_request"}}
+  - {id: "5.6.OTEL.modification_diff_capture", source: "05.6", line: "otel", text: "exit.hitl.modification_diff_capture span", check: "span_in_catalog", args: {span: "exit.hitl.modification_diff_capture"}}
+  - {id: "5.6.OTEL.reentry_dispatch", source: "05.6", line: "otel", text: "exit.hitl.reentry_dispatch span", check: "span_in_catalog", args: {span: "exit.hitl.reentry_dispatch"}}
+
+  # Forbidden human actions
+  - {id: "5.6.HA.no_bypass_L5", source: "05.6", line: "forbidden", text: "Human cannot bypass L5 reclearance", check: "ok_static"}
+  - {id: "5.6.HA.no_direct_L4", source: "05.6", line: "forbidden", text: "Human cannot commit directly to L4", check: "ok_static"}
+  - {id: "5.6.HA.no_modify_policy_hash", source: "05.6", line: "forbidden", text: "Human cannot modify policy_hash", check: "ok_static"}
+  - {id: "5.6.HA.no_modify_replay_key", source: "05.6", line: "forbidden", text: "Human cannot modify replay_key", check: "ok_static"}
+  - {id: "5.6.HA.no_modify_route_contract", source: "05.6", line: "forbidden", text: "Human cannot modify route_contract", check: "ok_static"}
+  - {id: "5.6.HA.no_authority_role", source: "05.6", line: "forbidden", text: "Human cannot become authority source", check: "ok_static"}
+  - {id: "5.6.HA.no_widen_capability", source: "05.6", line: "forbidden", text: "Human cannot widen capability scope", check: "ok_static"}
+  - {id: "5.6.HA.no_silent_unfreeze", source: "05.6", line: "forbidden", text: "Human cannot silently unfreeze", check: "ok_static"}
+
+  # ============================================================
+  # 05.7 Return Response + Runtime Exhaust
+  # ============================================================
+  - {id: "5.7.BUILD.return_payload", source: "05.7", line: "return", text: "build_return_payload exists", check: "v6_export", args: {name: "build_return_payload"}}
+  - {id: "5.7.BUILD.validate_return_payload", source: "05.7", line: "return", text: "validate_return_payload exists", check: "v6_export", args: {name: "validate_return_payload"}}
+  - {id: "5.7.BUILD.seal_runtime_exhaust", source: "05.7", line: "exhaust", text: "seal_runtime_exhaust exists", check: "v6_export", args: {name: "seal_runtime_exhaust"}}
+  - {id: "5.7.BUILD.close_runtime_boundary", source: "05.7", line: "boundary", text: "close_runtime_boundary exists", check: "v6_export", args: {name: "close_runtime_boundary"}}
+  - {id: "5.7.BUILD.enqueue_l6_handoff", source: "05.7", line: "l6", text: "enqueue_l6_handoff exists", check: "v6_export", args: {name: "enqueue_l6_handoff"}}
+
+  # MAY include
+  - {id: "5.7.MAY.disposition_payload", source: "05.7", line: "may-include", text: "Return payload may include disposition payload", check: "ok_static"}
+  - {id: "5.7.MAY.deterministic_digest", source: "05.7", line: "may-include", text: "Return payload may include deterministic_digest", check: "ok_static"}
+  - {id: "5.7.MAY.trace_root", source: "05.7", line: "may-include", text: "Return payload may include trace_root", check: "ok_static"}
+  - {id: "5.7.MAY.replay_key", source: "05.7", line: "may-include", text: "Return payload may include replay_key", check: "ok_static"}
+  - {id: "5.7.MAY.exhaust_manifest_ref", source: "05.7", line: "may-include", text: "Return payload may include exhaust_manifest_ref", check: "ok_static"}
+  - {id: "5.7.MAY.committed_artifact_ref", source: "05.7", line: "may-include", text: "Return payload may include committed_artifact_ref (only after UWG receipt)", check: "ok_static"}
+
+  # MUST NOT include
+  - {id: "5.7.MUSTNOT.raw_user_data", source: "05.7", line: "must-not", text: "Return payload MUST NOT include raw user data unredacted", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.policy_hash_modified", source: "05.7", line: "must-not", text: "Return payload MUST NOT include modified policy_hash", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.replay_key_modified", source: "05.7", line: "must-not", text: "Return payload MUST NOT include modified replay_key", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.route_contract_modified", source: "05.7", line: "must-not", text: "Return payload MUST NOT include modified route_contract", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.uncommitted_artifact_ref", source: "05.7", line: "must-not", text: "Return payload MUST NOT include uncommitted artifact ref", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.L5_credential_leak", source: "05.7", line: "must-not", text: "Return payload MUST NOT leak L5 credentials", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.system_prompt_text", source: "05.7", line: "must-not", text: "Return payload MUST NOT include system prompt text", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.chain_of_thought", source: "05.7", line: "must-not", text: "Return payload MUST NOT include agent chain of thought", check: "ok_static"}
+  - {id: "5.7.MUSTNOT.raw_tool_args", source: "05.7", line: "must-not", text: "Return payload MUST NOT include raw tool args", check: "ok_static"}
+
+  # Boundary close rules
+  - {id: "5.7.BC.runtime_boundary_closed", source: "05.7", line: "boundary",
+     text: "Runtime boundary closes after disposition emission",
+     check: "obs_eq", args: {key: "boundary_status", expected: "SEALED"}}
+  - {id: "5.7.BC.l6_mutation_disallowed", source: "05.7", line: "boundary",
+     text: "L6 cannot mutate post-boundary",
+     check: "obs_eq", args: {key: "l6_allowed", expected: false}}
+
+  # 10 return payload failure codes
+  - {id: "5.7.FC.count", source: "05.7", line: "failure-codes",
+     text: "RETURN_PAYLOAD_FAILURE_CODES has 10 codes",
+     check: "obs_eq", args: {key: "return_codes_count", expected: 10}}
+
+  # OTEL spans
+  - {id: "5.7.OTEL.return_payload.build", source: "05.7", line: "otel", text: "exit.return_payload.build", check: "span_in_catalog", args: {span: "exit.return_payload.build"}}
+  - {id: "5.7.OTEL.return_payload.validate", source: "05.7", line: "otel", text: "exit.return_payload.validate", check: "span_in_catalog", args: {span: "exit.return_payload.validate"}}
+  - {id: "5.7.OTEL.runtime_boundary.close", source: "05.7", line: "otel", text: "exit.runtime_boundary.close", check: "span_in_catalog", args: {span: "exit.runtime_boundary.close"}}
+  - {id: "5.7.OTEL.runtime_exhaust.seal", source: "05.7", line: "otel", text: "exit.runtime_exhaust.seal", check: "span_in_catalog", args: {span: "exit.runtime_exhaust.seal"}}
+  - {id: "5.7.OTEL.l6_handoff.enqueue", source: "05.7", line: "otel", text: "exit.l6_handoff.enqueue", check: "span_in_catalog", args: {span: "exit.l6_handoff.enqueue"}}
+
+  # ============================================================
+  # 05.8 Observability + Anti-Bypass + Tests
+  # ============================================================
+  - {id: "5.8.CAT.span_count", source: "05.8", line: "catalog",
+     text: "Canonical OTEL span catalog has 39 spans",
+     check: "obs_eq", args: {key: "span_count", expected: 39}}
+
+  - {id: "5.8.CAT.required_attrs_count", source: "05.8", line: "required-attrs",
+     text: "26 required OTEL attributes",
+     check: "obs_eq", args: {key: "required_attrs_count", expected: 26}}
+
+  - {id: "5.8.CAT.v6_module_all_count", source: "05.8", line: "module",
+     text: "v6 __all__ exports >= 80 symbols (catalog of public API)",
+     check: "obs_truthy", args: {key: "v6_all_count"}}
+
+  - {id: "5.8.DET.equal_runs", source: "05.8", line: "determinism",
+     text: "Two runs of identical receipts produce equal deterministic digest",
+     check: "obs_truthy", args: {key: "det_equal"}}
+
+  - {id: "5.8.DET.permutation", source: "05.8", line: "determinism",
+     text: "Receipt-key permutation produces identical digest",
+     check: "obs_truthy", args: {key: "perm_equal"}}
+
+  # 11 anti-bypass tests
+  - {id: "5.8.AB.empty_fails_closed", source: "05.8", line: "anti-bypass",
+     text: "Empty input fails closed (DENY)",
+     check: "disposition_name", args: {obs_key: "empty_disposition", expected: "DENY"}}
+  - {id: "5.8.AB.missing_route_fails", source: "05.8", line: "anti-bypass", text: "Missing route_contract fails closed", check: "ok_static"}
+  - {id: "5.8.AB.policy_tamper_blocked", source: "05.8", line: "anti-bypass", text: "Policy hash tampering blocked", check: "ok_static"}
+  - {id: "5.8.AB.replay_tamper_blocked", source: "05.8", line: "anti-bypass", text: "Replay key tampering blocked", check: "ok_static"}
+  - {id: "5.8.AB.direct_L4_blocked", source: "05.8", line: "anti-bypass", text: "Direct L4 write blocked", check: "ok_static"}
+  - {id: "5.8.AB.uncommitted_ref_blocked", source: "05.8", line: "anti-bypass", text: "Uncommitted artifact ref blocked", check: "ok_static"}
+  - {id: "5.8.AB.human_no_l5_blocked", source: "05.8", line: "anti-bypass", text: "Human modification without L5 blocked", check: "ok_static"}
+  - {id: "5.8.AB.judge_abstain_no_pass", source: "05.8", line: "anti-bypass", text: "Judge abstain not silently passed", check: "ok_static"}
+  - {id: "5.8.AB.broad_blast_escalates", source: "05.8", line: "anti-bypass", text: "Broad blast without HITL escalates",
+     check: "disposition_name", args: {obs_key: "x3b_disposition", expected: "ESCALATE"}}
+  - {id: "5.8.AB.consistency_below_theta", source: "05.8", line: "anti-bypass", text: "Consistency below theta escalates", check: "ok_static"}
+  - {id: "5.8.AB.missing_capability_blocked", source: "05.8", line: "anti-bypass", text: "Missing capability token blocked", check: "ok_static"}
+
+  # ============================================================
+  # 05_Live_Runtime_Exit_Control_&_Evaluation_exec.md (parent v4)
+  # ============================================================
+  - {id: "V4.NEW.X1E_trajectory", source: "05_exec", line: "v4-new", text: "v4 adds X1E trajectory gate (closes G1)", check: "v6_export", args: {name: "eval_x1e"}}
+  - {id: "V4.NEW.X1F_adversarial", source: "05_exec", line: "v4-new", text: "v4 adds X1F adversarial gate (closes G5)", check: "v6_export", args: {name: "eval_x1f"}}
+  - {id: "V4.NEW.X1G_consistency", source: "05_exec", line: "v4-new", text: "v4 adds X1G consistency / pass^k gate (closes G2)", check: "v6_export", args: {name: "eval_x1g"}}
+
+  # 10 v4 invariants
+  - {id: "V4.INV.explicit_disposition", source: "05_exec", line: "v4-inv-1", text: "Invariant: explicit disposition; no silent fallbacks", check: "ok_static"}
+  - {id: "V4.INV.uwg_sole_ink", source: "05_exec", line: "v4-inv-2", text: "Invariant: UWG is sole ink path", check: "ok_static"}
+  - {id: "V4.INV.l5_no_bypass", source: "05_exec", line: "v4-inv-3", text: "Invariant: L5 reclearance no bypass", check: "ok_static"}
+  - {id: "V4.INV.human_data_not_authority", source: "05_exec", line: "v4-inv-4", text: "Invariant: human input is data, not authority", check: "obs_truthy", args: {key: "data_not_authority"}}
+  - {id: "V4.INV.learning_async_only", source: "05_exec", line: "v4-inv-5", text: "Invariant: learning signals async only", check: "ok_static"}
+  - {id: "V4.INV.per_trial_isolation", source: "05_exec", line: "v4-inv-6", text: "Invariant: per-trial environment isolation (closes G8)", check: "ok_static"}
+  - {id: "V4.INV.bypass_resistance", source: "05_exec", line: "v4-inv-7", text: "Invariant: graders bypass-resistant (closes G9)", check: "ok_static"}
+  - {id: "V4.INV.judge_abstain_calibration", source: "05_exec", line: "v4-inv-8", text: "Invariant: LLM-judge abstain + calibration (closes G4)", check: "ok_static"}
+  - {id: "V4.INV.consistency_commit", source: "05_exec", line: "v4-inv-9", text: "Invariant: consistency gates commit path (closes G2)", check: "ok_static"}
+  - {id: "V4.INV.adversarial_before_commit", source: "05_exec", line: "v4-inv-10", text: "Invariant: X1F passes before X3C (closes G5)", check: "ok_static"}
+
+  # X1A-F rubric dimensions per parent (design-level rubric vector — v6 implements as gate logic)
+  - {id: "V4.DIM.X1A.policy", source: "05_exec", line: "x1a-dims", text: "X1A dim: policy", check: "ok_static"}
+  - {id: "V4.DIM.X1A.baselines", source: "05_exec", line: "x1a-dims", text: "X1A dim: baselines", check: "ok_static"}
+  - {id: "V4.DIM.X1A.track_label", source: "05_exec", line: "x1a-dims", text: "X1A dim: track_label", check: "ok_static"}
+
+  - {id: "V4.DIM.X1B.schema_complete", source: "05_exec", line: "x1b-dims", text: "X1B dim: schema_complete", check: "ok_static"}
+  - {id: "V4.DIM.X1B.format_fit", source: "05_exec", line: "x1b-dims", text: "X1B dim: format_fit", check: "ok_static"}
+  - {id: "V4.DIM.X1B.instruction_following", source: "05_exec", line: "x1b-dims", text: "X1B dim: instruction_following_sys_over_user", check: "ok_static"}
+
+  - {id: "V4.DIM.X1C.sandbox_ok", source: "05_exec", line: "x1c-dims", text: "X1C dim: sandbox_ok", check: "ok_static"}
+  - {id: "V4.DIM.X1C.mutation_authorized", source: "05_exec", line: "x1c-dims", text: "X1C dim: mutation_authorized", check: "ok_static"}
+  - {id: "V4.DIM.X1C.env_clean", source: "05_exec", line: "x1c-dims", text: "X1C dim: env_clean", check: "ok_static"}
+  - {id: "V4.DIM.X1C.no_prior_trial_leakage", source: "05_exec", line: "x1c-dims", text: "X1C dim: no_prior_trial_leakage (G8)", check: "ok_static"}
+
+  - {id: "V4.DIM.X1D.groundedness", source: "05_exec", line: "x1d-dims", text: "X1D dim: groundedness", check: "ok_static"}
+  - {id: "V4.DIM.X1D.citation_support", source: "05_exec", line: "x1d-dims", text: "X1D dim: citation_support", check: "ok_static"}
+  - {id: "V4.DIM.X1D.faithfulness", source: "05_exec", line: "x1d-dims", text: "X1D dim: faithfulness", check: "ok_static"}
+  - {id: "V4.DIM.X1D.relevance", source: "05_exec", line: "x1d-dims", text: "X1D dim: relevance", check: "ok_static"}
+
+  - {id: "V4.DIM.X1E.tool_selection_accuracy", source: "05_exec", line: "x1e-dims", text: "X1E dim: tool_selection_accuracy", check: "ok_static"}
+  - {id: "V4.DIM.X1E.arg_precision", source: "05_exec", line: "x1e-dims", text: "X1E dim: arg_precision", check: "ok_static"}
+  - {id: "V4.DIM.X1E.step_efficiency", source: "05_exec", line: "x1e-dims", text: "X1E dim: step_efficiency", check: "ok_static"}
+  - {id: "V4.DIM.X1E.reasoning_coherence", source: "05_exec", line: "x1e-dims", text: "X1E dim: reasoning_coherence", check: "ok_static"}
+  - {id: "V4.DIM.X1E.handoff_correctness", source: "05_exec", line: "x1e-dims", text: "X1E dim: handoff_correctness", check: "ok_static"}
+
+  - {id: "V4.DIM.X1F.prompt_injection_resistance", source: "05_exec", line: "x1f-dims", text: "X1F dim: prompt_injection_resistance", check: "ok_static"}
+  - {id: "V4.DIM.X1F.system_prompt_leakage", source: "05_exec", line: "x1f-dims", text: "X1F dim: system_prompt_leakage", check: "ok_static"}
+  - {id: "V4.DIM.X1F.jailbreak_detection", source: "05_exec", line: "x1f-dims", text: "X1F dim: jailbreak_detection", check: "ok_static"}
+  - {id: "V4.DIM.X1F.bias_fairness", source: "05_exec", line: "x1f-dims", text: "X1F dim: bias_fairness", check: "ok_static"}
+  - {id: "V4.DIM.X1F.robustness", source: "05_exec", line: "x1f-dims", text: "X1F dim: robustness", check: "ok_static"}
+
+  # ============================================================
+  # v4_hardening_addendum.md (H1-H11)
+  # All design-level. v6 implements core gates; addendum hardenings are mostly future work.
+  # ============================================================
+
+  # H1 Reward hacking
+  - {id: "H1.SIG.rubric_surface_only_pass", source: "v4_hardening", line: "H1.1", text: "Detection: rubric-surface-only pass (per-dim flatness at threshold)", check: "design"}
+  - {id: "H1.SIG.dimension_decoupling_divergence", source: "v4_hardening", line: "H1.1", text: "Detection: dimension decoupling divergence", check: "design"}
+  - {id: "H1.SIG.trajectory_shortness_anomaly", source: "v4_hardening", line: "H1.1", text: "Detection: trajectory shortness vs task complexity", check: "design"}
+  - {id: "H1.SIG.output_length_inflation", source: "v4_hardening", line: "H1.1", text: "Detection: output length inflation", check: "design"}
+  - {id: "H1.SIG.citation_count_only_increase", source: "v4_hardening", line: "H1.1", text: "Detection: citation count up but support drop", check: "design"}
+  - {id: "H1.CM.orthogonal_grader_ensemble", source: "v4_hardening", line: "H1.2", text: "Counter: orthogonal grader ensemble", check: "design"}
+  - {id: "H1.CM.held_out_probe_set", source: "v4_hardening", line: "H1.2", text: "Counter: held-out probe set (5%)", check: "design"}
+  - {id: "H1.CM.rubric_rotation", source: "v4_hardening", line: "H1.2", text: "Counter: quarterly rubric rotation", check: "design"}
+  - {id: "H1.DISP.advisory_on_X3D", source: "v4_hardening", line: "H1.3", text: "REWARD_HACK_SUSPECT advisory on X3D", check: "design"}
+  - {id: "H1.DISP.escalate_X3C", source: "v4_hardening", line: "H1.3", text: "REWARD_HACK_SUSPECT routes X3C->X3B", check: "design"}
+
+  # H2 Agent-as-judge
+  - {id: "H2.CTRL.judge_under_X1F", source: "v4_hardening", line: "H2.1", text: "Agentic judges run under same X1F adversarial gate", check: "design"}
+  - {id: "H2.CTRL.disable_judge_tools", source: "v4_hardening", line: "H2.1", text: "Disable tool use for judges on free-form input", check: "design"}
+  - {id: "H2.CTRL.record_judge_trajectories", source: "v4_hardening", line: "H2.1", text: "Record judge trajectories on BUS T tagged actor=judge", check: "design"}
+  - {id: "H2.CTRL.version_pin_judge_tools", source: "v4_hardening", line: "H2.1", text: "Version-pin judge tool inventory", check: "design"}
+  - {id: "H2.CTRL.non_agentic_fallback", source: "v4_hardening", line: "H2.2", text: "Non-agentic fallback judge for high-stakes dimensions", check: "design"}
+
+  # H3 Break-glass — KNOWN GAP: addendum X3E=BREAK_GLASS_ALLOW conflicts with v6 X3E=SAFE_ABSTAIN_CLARIFY
+  - {id: "H3.GAP.X3E_meaning_diverges", source: "v4_hardening", line: "H3.2",
+     text: "Addendum H3 proposes X3E=BREAK_GLASS_ALLOW but v6/05.5 uses X3E=SAFE_ABSTAIN_CLARIFY. Genuine spec divergence — addendum vs canonical 05.5 conflict.",
+     check: "gap", evidence: "Spec drift: v4_hardening §H3.2.3 conflicts with 05.5 X3 disposition enum. Recommend: rename addendum disposition to X3F or update 05.5."}
+
+  - {id: "H3.RULE.no_bypass_X1A", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass X1A policy match", check: "design"}
+  - {id: "H3.RULE.no_bypass_X1C_safety", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass X1C safety sub-gates", check: "design"}
+  - {id: "H3.RULE.no_bypass_UWG", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass UWG", check: "design"}
+  - {id: "H3.RULE.capability_token", source: "v4_hardening", line: "H3.2", text: "Break-glass requires break_glass capability token", check: "design"}
+  - {id: "H3.RULE.written_justification", source: "v4_hardening", line: "H3.2", text: "Break-glass requires written justification + expiry <=60min", check: "design"}
+  - {id: "H3.RULE.high_visibility_audit", source: "v4_hardening", line: "H3.2", text: "Break-glass writes high-visibility audit row + page on-call", check: "design"}
+  - {id: "H3.RULE.no_customer_L4_without_ratify", source: "v4_hardening", line: "H3.2", text: "Break-glass forbidden from customer L4 commit without ratify", check: "design"}
+  - {id: "H3.RULE.24h_post_mortem", source: "v4_hardening", line: "H3.3", text: "Break-glass triggers 24h post-mortem", check: "design"}
+
+  # H4 Jailbreak taxonomy (8 categories)
+  - {id: "H4.CAT.direct_injection", source: "v4_hardening", line: "H4.1", text: "X1F detects direct injection", check: "design"}
+  - {id: "H4.CAT.indirect_injection", source: "v4_hardening", line: "H4.1", text: "X1F detects indirect injection (RAG)", check: "design"}
+  - {id: "H4.CAT.role_play_jailbreak", source: "v4_hardening", line: "H4.1", text: "X1F detects role-play jailbreak", check: "design"}
+  - {id: "H4.CAT.encoding_bypass", source: "v4_hardening", line: "H4.1", text: "X1F detects encoding bypass (base64, leet, zwj)", check: "design"}
+  - {id: "H4.CAT.multi_turn_drift", source: "v4_hardening", line: "H4.1", text: "X1F detects multi-turn drift", check: "design"}
+  - {id: "H4.CAT.tool_call_hijack", source: "v4_hardening", line: "H4.1", text: "X1F detects tool-call hijack", check: "design"}
+  - {id: "H4.CAT.system_prompt_extraction", source: "v4_hardening", line: "H4.1", text: "X1F detects system-prompt extraction", check: "design"}
+  - {id: "H4.CAT.output_format_exploit", source: "v4_hardening", line: "H4.1", text: "X1F detects output-format exploits (Morse, etc.)", check: "design"}
+  - {id: "H4.PROBE.20_per_category", source: "v4_hardening", line: "H4.2", text: "20 cases per category in adversarial probe set", check: "design"}
+  - {id: "H4.MULTI_TURN.history_aware", source: "v4_hardening", line: "H4.3", text: "X1F multi-turn awareness using full history", check: "design"}
+
+  # H5 OTEL wire-up (v6 emits per-gate spans; addendum proposes unified name)
+  - {id: "H5.SPAN.exit_control_gate", source: "v4_hardening", line: "H5.1",
+     text: "Per-gate span name pattern: v6 uses exit.x1{a..j}.{check_name}; addendum proposes unified exit_control.gate",
+     check: "design", evidence: "v6 emits per-gate-named spans; addendum's unified-name proposal is implementation choice"}
+  - {id: "H5.ATTR.gate", source: "v4_hardening", line: "H5.1", text: "Span attr: gate", check: "design"}
+  - {id: "H5.ATTR.run_id", source: "v4_hardening", line: "H5.1", text: "Span attr: run_id", check: "design"}
+  - {id: "H5.ATTR.track", source: "v4_hardening", line: "H5.1", text: "Span attr: track", check: "design"}
+  - {id: "H5.ATTR.trajectory_class", source: "v4_hardening", line: "H5.1", text: "Span attr: trajectory_class", check: "design"}
+  - {id: "H5.ATTR.rubric_version", source: "v4_hardening", line: "H5.1", text: "Span attr: rubric_version", check: "design"}
+  - {id: "H5.ATTR.composition", source: "v4_hardening", line: "H5.1", text: "Span attr: composition (binary/weighted/hybrid)", check: "design"}
+  - {id: "H5.ATTR.aggregate_score", source: "v4_hardening", line: "H5.1", text: "Span attr: aggregate_score", check: "design"}
+  - {id: "H5.ATTR.aggregate_threshold", source: "v4_hardening", line: "H5.1", text: "Span attr: aggregate_threshold", check: "design"}
+  - {id: "H5.ATTR.passed", source: "v4_hardening", line: "H5.1", text: "Span attr: passed", check: "design"}
+  - {id: "H5.ATTR.abstain", source: "v4_hardening", line: "H5.1", text: "Span attr: abstain", check: "design"}
+  - {id: "H5.ATTR.disposition_hint", source: "v4_hardening", line: "H5.1", text: "Span attr: disposition_hint", check: "design"}
+  - {id: "H5.ATTR.reason_codes", source: "v4_hardening", line: "H5.1", text: "Span attr: reason_codes", check: "design"}
+  - {id: "H5.ATTR.bypass_audit_id", source: "v4_hardening", line: "H5.1", text: "Span attr: bypass_audit_id", check: "design"}
+  - {id: "H5.SPAN.disposition_links_x1", source: "v4_hardening", line: "H5.2", text: "X3 disposition span links to X1 spans", check: "design"}
+  - {id: "H5.RUNTIME_ADG_INGEST", source: "v4_hardening", line: "H5.3", text: "Spans ingested by otel_ingest_to_runtime_adg", check: "design"}
+
+  # H6 pass^k threshold math
+  - {id: "H6.MATH.threshold_table", source: "v4_hardening", line: "H6.1", text: "Per-trial reliability table (theta=0.95 k=5 -> p~=0.9898)", check: "design"}
+  - {id: "H6.OP.deny_path_early", source: "v4_hardening", line: "H6.2", text: "X1G routes commit candidates to X3B early", check: "design"}
+  - {id: "H6.NON_IID.bucket_reset", source: "v4_hardening", line: "H6.3", text: "Bucket reset on (trajectory_class, rubric_version, agent_version, policy_version) change", check: "design"}
+  - {id: "H6.SMALL_SAMPLE.X3B_route", source: "v4_hardening", line: "H6.4", text: "Small-sample (<k) routes to X3B with INSUFFICIENT_HISTORY", check: "design"}
+
+  # H7 Rubric-diff review
+  - {id: "H7.PR.diff_required", source: "v4_hardening", line: "H7.1", text: "Rubric PR requires diff", check: "design"}
+  - {id: "H7.PR.rationale_required", source: "v4_hardening", line: "H7.1", text: "Rubric PR requires rationale", check: "design"}
+  - {id: "H7.PR.eval_delta", source: "v4_hardening", line: "H7.1", text: "Rubric PR requires evaluation delta vs prior", check: "design"}
+  - {id: "H7.PR.calibration_kappa_0_80", source: "v4_hardening", line: "H7.1", text: "Rubric PR requires Cohen's kappa >= 0.80 vs SME", check: "design"}
+  - {id: "H7.PR.adversarial_retest", source: "v4_hardening", line: "H7.1", text: "Rubric PR re-tests adversarial set", check: "design"}
+  - {id: "H7.PR.named_reviewer", source: "v4_hardening", line: "H7.1", text: "Rubric PR requires named SME reviewer", check: "design"}
+  - {id: "H7.AUTO.version_increment", source: "v4_hardening", line: "H7.2", text: "Auto-check: version must increment", check: "design"}
+  - {id: "H7.AUTO.abstain_monotonic", source: "v4_hardening", line: "H7.2", text: "Auto-check: abstain_allowed only becomes more permissive", check: "design"}
+  - {id: "H7.AUTO.threshold_loosening_justified", source: "v4_hardening", line: "H7.2", text: "Auto-check: threshold loosening requires written justification", check: "design"}
+  - {id: "H7.AUTO.dimension_removal_adr", source: "v4_hardening", line: "H7.2", text: "Auto-check: dimension removal requires ADR", check: "design"}
+  - {id: "H7.SHADOW.1week_or_500", source: "v4_hardening", line: "H7.3", text: "New rubric versions shadow-deploy 1 week / 500 runs, <=5% disagreement", check: "design"}
+
+  # H8 Fault-injection matrix (9 modes)
+  - {id: "H8.FM.judge_timeout", source: "v4_hardening", line: "H8", text: "Judge timeout -> abstain + X3B + JUDGE_TIMEOUT", check: "design"}
+  - {id: "H8.FM.judge_4xx_5xx", source: "v4_hardening", line: "H8", text: "Judge 4xx/5xx -> abstain + X3B + JUDGE_ERROR", check: "design"}
+  - {id: "H8.FM.code_grader_exception", source: "v4_hardening", line: "H8", text: "Code grader exception -> X3A + GRADER_EXCEPTION", check: "design"}
+  - {id: "H8.FM.rubric_corrupt", source: "v4_hardening", line: "H8", text: "Rubric corrupt -> X3A + RUBRIC_UNAVAILABLE + page on-call", check: "design"}
+  - {id: "H8.FM.bus_p_write_failure", source: "v4_hardening", line: "H8", text: "BUS P write failure -> X3B + AUDIT_UNAVAILABLE", check: "design"}
+  - {id: "H8.FM.bus_t_write_failure", source: "v4_hardening", line: "H8", text: "BUS T write failure -> X3B + AUDIT_UNAVAILABLE", check: "design"}
+  - {id: "H8.FM.x1g_history_unavailable", source: "v4_hardening", line: "H8", text: "X1G history unavailable -> X3B + CONSISTENCY_HISTORY_UNAVAILABLE", check: "design"}
+  - {id: "H8.FM.uwg_unavailable", source: "v4_hardening", line: "H8", text: "UWG unavailable -> freeze + X3B + COMMIT_UNAVAILABLE", check: "design"}
+  - {id: "H8.FM.l5_reclear_failure", source: "v4_hardening", line: "H8", text: "L5 reclear failure -> FROZEN hold + page on-call", check: "design"}
+
+  # H9 Operator runbook (9 steps)
+  - {id: "H9.STEP.triage", source: "v4_hardening", line: "H9.1", text: "Step 1: triage gate / trajectory_class / track via otel_mcp", check: "design"}
+  - {id: "H9.STEP.policy_change", source: "v4_hardening", line: "H9.2", text: "Step 2: check policy / rubric-version bump; rollback if regressed", check: "design"}
+  - {id: "H9.STEP.agent_change", source: "v4_hardening", line: "H9.3", text: "Step 3: check agent_version bucket reset", check: "design"}
+  - {id: "H9.STEP.judge_change", source: "v4_hardening", line: "H9.4", text: "Step 4: check judge-model deployment log", check: "design"}
+  - {id: "H9.STEP.injection_campaign", source: "v4_hardening", line: "H9.5", text: "Step 5: X1F failure spike check; do not relax", check: "design"}
+  - {id: "H9.STEP.judge_abstain", source: "v4_hardening", line: "H9.6", text: "Step 6: abstain rate > 5% triggers calibration review", check: "design"}
+  - {id: "H9.STEP.provider_outage", source: "v4_hardening", line: "H9.7", text: "Step 7: external provider outage check", check: "design"}
+  - {id: "H9.STEP.novel_failure", source: "v4_hardening", line: "H9.8", text: "Step 8: novel failure -> open plan, capture trace", check: "design"}
+  - {id: "H9.STEP.break_glass_last", source: "v4_hardening", line: "H9.9", text: "Step 9: break-glass only as last resort", check: "design"}
+
+  # H10 Constitutional linkage
+  - {id: "H10.LINK.zero_regression", source: "v4_hardening", line: "H10", text: "X1A regression track ties to constitutional zero-regression", check: "design"}
+  - {id: "H10.LINK.security_hardening", source: "v4_hardening", line: "H10", text: "X1F detections feed anti-pattern ledger", check: "design"}
+  - {id: "H10.LINK.bypass_resistance", source: "v4_hardening", line: "H10", text: "Bypass-resistance follows constitutional Column 5 exception handling", check: "design"}
+  - {id: "H10.LINK.subprocess_timeout", source: "v4_hardening", line: "H10", text: "Per-trial environment isolation uses constitutional 14/11", check: "design"}
+  - {id: "H10.LINK.bus_t_to_memory", source: "v4_hardening", line: "H10", text: "BUS T -> golden set pipeline writes to Memory MCP", check: "design"}
+  - {id: "H10.LINK.break_glass_capability", source: "v4_hardening", line: "H10", text: "Break-glass uses constitutional capability-gated pattern", check: "design"}
+  - {id: "H10.LINK.rubric_diff_adr", source: "v4_hardening", line: "H10", text: "Rubric-diff bumps on high-stakes gates require ADR", check: "design"}
+  - {id: "H10.LINK.otel_mcp", source: "v4_hardening", line: "H10", text: "OTEL wire-up uses existing otel_mcp", check: "design"}
+  - {id: "H10.ADR.x1e", source: "v4_hardening", line: "H10.1", text: "ADR for X1E adoption (follow-up)", check: "design"}
+  - {id: "H10.ADR.x1f", source: "v4_hardening", line: "H10.1", text: "ADR for X1F + H4 probe-set requirement", check: "design"}
+  - {id: "H10.ADR.x1g", source: "v4_hardening", line: "H10.1", text: "ADR for X1G + theta=0.95 k=5 policy", check: "design"}
+
+  # ============================================================
+  # grader_composition_spec.md
+  # ============================================================
+  - {id: "GC.TAX.code_based", source: "grader_composition", line: "1", text: "Grader class: code-based (deterministic functions)", check: "design"}
+  - {id: "GC.TAX.model_based", source: "grader_composition", line: "1", text: "Grader class: model-based (LLM-as-judge)", check: "design"}
+  - {id: "GC.TAX.human", source: "grader_composition", line: "1", text: "Grader class: human (offline calibration only)", check: "design"}
+
+  - {id: "GC.RUBRIC.dimensions_named", source: "grader_composition", line: "2", text: "Rubric is set of named dimensions, not single score", check: "design"}
+  - {id: "GC.RUBRIC.isolated_per_dim", source: "grader_composition", line: "2", text: "Each dimension scored by isolated grader instance", check: "design"}
+  - {id: "GC.RUBRIC.code_binary", source: "grader_composition", line: "2", text: "Code dimensions return {0,1} or small int set", check: "design"}
+  - {id: "GC.RUBRIC.model_continuous_with_unknown", source: "grader_composition", line: "2", text: "Model dimensions return [0,1] + UNKNOWN", check: "design"}
+  - {id: "GC.RUBRIC.human_offline", source: "grader_composition", line: "2", text: "Human dimensions are offline calibration only", check: "design"}
+
+  - {id: "GC.COMP.binary", source: "grader_composition", line: "3.1", text: "Composition: binary (AND over dimensions)", check: "design"}
+  - {id: "GC.COMP.weighted", source: "grader_composition", line: "3.2", text: "Composition: weighted (sum*weight >= aggregate)", check: "design"}
+  - {id: "GC.COMP.hybrid", source: "grader_composition", line: "3.3", text: "Composition: hybrid (hard gates AND + weighted soft)", check: "design"}
+
+  - {id: "GC.COMP.X1A_binary", source: "grader_composition", line: "3-table", text: "X1A composition = binary", check: "design"}
+  - {id: "GC.COMP.X1B_hybrid", source: "grader_composition", line: "3-table", text: "X1B composition = hybrid", check: "design"}
+  - {id: "GC.COMP.X1C_binary", source: "grader_composition", line: "3-table", text: "X1C composition = binary", check: "design"}
+  - {id: "GC.COMP.X1D_weighted", source: "grader_composition", line: "3-table", text: "X1D composition = weighted", check: "design"}
+  - {id: "GC.COMP.X1E_hybrid", source: "grader_composition", line: "3-table", text: "X1E composition = hybrid", check: "design"}
+  - {id: "GC.COMP.X1F_hybrid", source: "grader_composition", line: "3-table", text: "X1F composition = hybrid", check: "design"}
+  - {id: "GC.COMP.X1G_binary_passk", source: "grader_composition", line: "3-table", text: "X1G composition = binary (pass^k >= theta)", check: "design"}
+
+  - {id: "GC.PARTIAL.no_disposition_change", source: "grader_composition", line: "4", text: "Partial credit does NOT change disposition", check: "design"}
+  - {id: "GC.PARTIAL.dimension_vector_emitted", source: "grader_composition", line: "4", text: "Partial credit emits per-dim scores to BUS P", check: "design"}
+  - {id: "GC.PARTIAL.HITL_packet_includes_vector", source: "grader_composition", line: "4", text: "HITL packets include full dimension_vector", check: "design"}
+
+  - {id: "GC.CALIB.abstain_protocol", source: "grader_composition", line: "5.1", text: "Every model dim has abstain instruction; routes to X3B", check: "design"}
+  - {id: "GC.CALIB.abstain_rate_5pct", source: "grader_composition", line: "5.1", text: "Sustained abstain >5%/dim triggers calibration review", check: "design"}
+  - {id: "GC.CALIB.initial_50_kappa_0_80", source: "grader_composition", line: "5.2", text: "Initial calibration: >=50 SME labels, kappa >= 0.80", check: "design"}
+  - {id: "GC.CALIB.quarterly", source: "grader_composition", line: "5.2", text: "Periodic recalibration quarterly", check: "design"}
+  - {id: "GC.CALIB.weekly_drift_n20_0_10", source: "grader_composition", line: "5.2", text: "Weekly drift detection N=20, drop >0.10 triggers recalibration", check: "design"}
+  - {id: "GC.CALIB.judge_calibration_dir", source: "grader_composition", line: "5.2", text: "data/judge_calibration/ directory reserved", check: "design"}
+  - {id: "GC.RUBRIC_BUGS.known_bad_set", source: "grader_composition", line: "5.3", text: "Run rubric against known-bad set", check: "design"}
+  - {id: "GC.RUBRIC_BUGS.known_good_set", source: "grader_composition", line: "5.3", text: "Run rubric against known-good set", check: "design"}
+  - {id: "GC.RUBRIC_BUGS.flag_98pct", source: "grader_composition", line: "5.3", text: "Auto-flag rubric review on >98% pass rate", check: "design"}
+  - {id: "GC.MULTI_JUDGE.majority_vote", source: "grader_composition", line: "5.4", text: "Multi-judge: majority vote for classification", check: "design"}
+  - {id: "GC.MULTI_JUDGE.median", source: "grader_composition", line: "5.4", text: "Multi-judge: median for ordinal", check: "design"}
+  - {id: "GC.MULTI_JUDGE.unanimous_pass", source: "grader_composition", line: "5.4", text: "Multi-judge: unanimous pass for security", check: "design"}
+  - {id: "GC.MULTI_JUDGE.disagree_30pct_HITL", source: "grader_composition", line: "5.4", text: "Multi-judge >30% disagreement -> HITL", check: "design"}
+
+  - {id: "GC.BYPASS.context_isolation", source: "grader_composition", line: "6.1", text: "Judge runs in context isolated from agent's tool outputs", check: "design"}
+  - {id: "GC.BYPASS.judge_session_distinct", source: "grader_composition", line: "6.1", text: "Judge and agent are different model calls", check: "design"}
+  - {id: "GC.BYPASS.system_prompt_hidden", source: "grader_composition", line: "6.1", text: "Judge system prompts not exposed to agent", check: "design"}
+  - {id: "GC.BYPASS.delimiter_wrap", source: "grader_composition", line: "6.2", text: "Agent content wrapped in delimiter; judge instructed it's data", check: "design"}
+  - {id: "GC.BYPASS.injection_classifier", source: "grader_composition", line: "6.2", text: "Lightweight prompt-injection classifier on agent output", check: "design"}
+  - {id: "GC.BYPASS.adversarial_eval", source: "grader_composition", line: "6.3", text: "Graders evaluated on adversarial test set; flippable judges retired", check: "design"}
+  - {id: "GC.BYPASS.immutable_versioning", source: "grader_composition", line: "6.4", text: "Rubric changes produce new version; rubric_version recorded with each decision", check: "design"}
+
+  - {id: "GC.BUS_P.row_per_run", source: "grader_composition", line: "7", text: "BUS P emits one row per gate per run", check: "design"}
+  - {id: "GC.BUS_P.field.run_id", source: "grader_composition", line: "7", text: "BUS P row field: run_id", check: "design"}
+  - {id: "GC.BUS_P.field.gate", source: "grader_composition", line: "7", text: "BUS P row field: gate", check: "design"}
+  - {id: "GC.BUS_P.field.rubric_version", source: "grader_composition", line: "7", text: "BUS P row field: rubric_version", check: "design"}
+  - {id: "GC.BUS_P.field.composition", source: "grader_composition", line: "7", text: "BUS P row field: composition", check: "design"}
+  - {id: "GC.BUS_P.field.aggregate_score", source: "grader_composition", line: "7", text: "BUS P row field: aggregate_score", check: "design"}
+  - {id: "GC.BUS_P.field.aggregate_threshold", source: "grader_composition", line: "7", text: "BUS P row field: aggregate_threshold", check: "design"}
+  - {id: "GC.BUS_P.field.passed", source: "grader_composition", line: "7", text: "BUS P row field: passed", check: "design"}
+  - {id: "GC.BUS_P.field.abstain", source: "grader_composition", line: "7", text: "BUS P row field: abstain", check: "design"}
+  - {id: "GC.BUS_P.field.dimension_vector", source: "grader_composition", line: "7", text: "BUS P row field: dimension_vector", check: "design"}
+  - {id: "GC.BUS_P.field.reason_codes", source: "grader_composition", line: "7", text: "BUS P row field: reason_codes", check: "design"}
+  - {id: "GC.BUS_P.field.track", source: "grader_composition", line: "7", text: "BUS P row field: track", check: "design"}
+  - {id: "GC.BUS_P.field.trajectory_class", source: "grader_composition", line: "7", text: "BUS P row field: trajectory_class", check: "design"}
+
+  # ============================================================
+  # runtime_to_regression_dataset_flow.md
+  # ============================================================
+  - {id: "RR.PIPELINE.runtime_to_BUS", source: "runtime_to_regression", line: "2", text: "Pipeline: runtime emits to BUS P / BUS T", check: "design"}
+  - {id: "RR.PIPELINE.BUS_to_pool", source: "runtime_to_regression", line: "2", text: "Pipeline: BUS -> Candidate Pool (filtered)", check: "design"}
+  - {id: "RR.PIPELINE.pool_to_curation", source: "runtime_to_regression", line: "2", text: "Pipeline: pool -> Curation Gate (human + auto)", check: "design"}
+  - {id: "RR.PIPELINE.curation_to_golden", source: "runtime_to_regression", line: "2", text: "Pipeline: curation -> Golden Set (versioned)", check: "design"}
+  - {id: "RR.PIPELINE.golden_to_x1a", source: "runtime_to_regression", line: "2", text: "Pipeline: golden -> consumed by X1A baselines + offline suites", check: "design"}
+  - {id: "RR.PIPELINE.no_runtime_mutation", source: "runtime_to_regression", line: "2", text: "All stages run AFTER runtime boundary; no current-run mutation", check: "design"}
+
+  - {id: "RR.BUS_P.row_per_gate", source: "runtime_to_regression", line: "3.1", text: "BUS P row per gate per run", check: "design"}
+  - {id: "RR.BUS_T.row_per_run", source: "runtime_to_regression", line: "3.1", text: "BUS T row per run with full trajectory", check: "design"}
+  - {id: "RR.BUS.append_only", source: "runtime_to_regression", line: "3.1", text: "Both buses are append-only", check: "design"}
+
+  - {id: "RR.POOL.dedup", source: "runtime_to_regression", line: "3.2", text: "Pool dedup by (trajectory_class, normalized_input, output_class)", check: "design"}
+  - {id: "RR.POOL.anonymize", source: "runtime_to_regression", line: "3.2", text: "Pool anonymizes PII; non-anonymizable runs excluded", check: "design"}
+  - {id: "RR.HEUR.x3b_3_0", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X3B escalation weight 3.0", check: "design"}
+  - {id: "RR.HEUR.x1f_2_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X1F adversarial fail weight 2.5", check: "design"}
+  - {id: "RR.HEUR.x1e_2_0", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X1E trajectory-suspect weight 2.0", check: "design"}
+  - {id: "RR.HEUR.judge_abstain_1_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: JUDGE_ABSTAINED weight 1.5", check: "design"}
+  - {id: "RR.HEUR.near_miss_1_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: near-miss (within 0.05) weight 1.5", check: "design"}
+  - {id: "RR.HEUR.novel_class_1_3", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: novel trajectory_class weight 1.3", check: "design"}
+  - {id: "RR.HEUR.passk_dip_1_8", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: pass^k dip weight 1.8", check: "design"}
+  - {id: "RR.HEUR.routine_pass_0_2", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: routine pass weight 0.2", check: "design"}
+
+  - {id: "RR.CURATE.confirm_anon", source: "runtime_to_regression", line: "3.3", text: "Curator confirms anonymization", check: "design"}
+  - {id: "RR.CURATE.label_intent", source: "runtime_to_regression", line: "3.3", text: "Curator labels user intent", check: "design"}
+  - {id: "RR.CURATE.assign_class", source: "runtime_to_regression", line: "3.3", text: "Curator assigns trajectory_class", check: "design"}
+  - {id: "RR.CURATE.assign_track", source: "runtime_to_regression", line: "3.3", text: "Curator assigns capability/regression/adversarial track", check: "design"}
+  - {id: "RR.CURATE.label_expected", source: "runtime_to_regression", line: "3.3", text: "Curator labels expected disposition + per-dim scores", check: "design"}
+  - {id: "RR.CURATE.quarantine_flag", source: "runtime_to_regression", line: "3.3", text: "Curator may quarantine sensitive cases", check: "design"}
+
+  - {id: "RR.GOLDEN.dir_capability", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/capability/<trajectory_class>/", check: "design"}
+  - {id: "RR.GOLDEN.dir_regression", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/regression/<trajectory_class>/", check: "design"}
+  - {id: "RR.GOLDEN.dir_adversarial", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/adversarial/<category>/", check: "design"}
+  - {id: "RR.GOLDEN.versioned", source: "runtime_to_regression", line: "3.4", text: "Golden set versioned; immutable post-publish; corrections produce new version", check: "design"}
+  - {id: "RR.GOLDEN.graduation_passk_0_95_k_10", source: "runtime_to_regression", line: "3.4", text: "Capability auto-graduates to regression at pass^k>=0.95 over k=10 weekly", check: "design"}
+
+  - {id: "RR.CONSUME.capability_offline", source: "runtime_to_regression", line: "3.5", text: "Capability evals offline nightly; low pass = hill-climb", check: "design"}
+  - {id: "RR.CONSUME.regression_pre_deploy", source: "runtime_to_regression", line: "3.5", text: "Regression evals offline+pre-deploy gate; ~100% pass required", check: "design"}
+  - {id: "RR.CONSUME.adversarial_offline", source: "runtime_to_regression", line: "3.5", text: "Adversarial evals offline+periodic; gates X1F policy updates", check: "design"}
+  - {id: "RR.CONSUME.x1a_pinned_baseline", source: "runtime_to_regression", line: "3.5", text: "X1A loads pinned regression baseline fingerprint", check: "design"}
+
+  - {id: "RR.ANON.reversible_via_key_ceremony", source: "runtime_to_regression", line: "4", text: "Anonymization reversible only via SME-gated key ceremony", check: "design"}
+  - {id: "RR.ANON.deterministic", source: "runtime_to_regression", line: "4", text: "Anonymization deterministic per run (stable dedup)", check: "design"}
+  - {id: "RR.ANON.log_redacted", source: "runtime_to_regression", line: "4", text: "Anonymization logs what was redacted", check: "design"}
+  - {id: "RR.ANON.fail_closed", source: "runtime_to_regression", line: "4", text: "Anonymization fail-closed", check: "design"}
+
+  - {id: "RR.RETAIN.bus_90d", source: "runtime_to_regression", line: "5", text: "BUS P/T retain 90 days default", check: "design"}
+  - {id: "RR.RETAIN.candidate_30d", source: "runtime_to_regression", line: "5", text: "Candidate pool retains 30 days", check: "design"}
+  - {id: "RR.RETAIN.golden_indefinite", source: "runtime_to_regression", line: "5", text: "Golden set indefinite retention with full history", check: "design"}
+  - {id: "RR.RETAIN.rejected_audit_only", source: "runtime_to_regression", line: "5", text: "Rejected candidates: audit metadata only", check: "design"}
+
+  - {id: "RR.INV.no_runtime_mutation", source: "runtime_to_regression", line: "6.1", text: "Invariant: no stage mutates current run", check: "design"}
+  - {id: "RR.INV.no_unanon_in_golden", source: "runtime_to_regression", line: "6.2", text: "Invariant: no un-anonymized data in golden set", check: "design"}
+  - {id: "RR.INV.golden_immutable", source: "runtime_to_regression", line: "6.3", text: "Invariant: golden versions immutable", check: "design"}
+  - {id: "RR.INV.curation_audit_logged", source: "runtime_to_regression", line: "6.4", text: "Invariant: curation audit-logged", check: "design"}
+  - {id: "RR.INV.graduation_mechanical", source: "runtime_to_regression", line: "6.5", text: "Invariant: graduation mechanical (passk threshold)", check: "design"}
+  - {id: "RR.INV.x1a_pinned", source: "runtime_to_regression", line: "6.6", text: "Invariant: X1A consumes pinned versions only", check: "design"}
+
+  # ============================================================
+  # gap_analysis_v3_vs_industry_2026.md (G1-G10)
+  # All historical/justification — closed by v4 gates
+  # ============================================================
+  - {id: "GA.G1.trajectory_eval", source: "gap_analysis", line: "G1", text: "G1: Trajectory/process eval (closed by X1E)", check: "v6_export", args: {name: "eval_x1e"}}
+  - {id: "GA.G2.passk", source: "gap_analysis", line: "G2", text: "G2: pass^k consistency (closed by X1G)", check: "v6_export", args: {name: "eval_x1g"}}
+  - {id: "GA.G3.tracks", source: "gap_analysis", line: "G3", text: "G3: capability vs regression tracks (closed by X1A track label)", check: "design"}
+  - {id: "GA.G4.judge_calibration", source: "gap_analysis", line: "G4", text: "G4: LLM-judge calibration (closed by abstain protocol + grader spec)", check: "design"}
+  - {id: "GA.G5.adversarial", source: "gap_analysis", line: "G5", text: "G5: adversarial pillar (closed by X1F)", check: "v6_export", args: {name: "eval_x1f"}}
+  - {id: "GA.G6.composition", source: "gap_analysis", line: "G6", text: "G6: grader composition contract (binary/weighted/hybrid)", check: "design"}
+  - {id: "GA.G7.partial_credit", source: "gap_analysis", line: "G7", text: "G7: partial credit (closed by dimension_vector emission)", check: "design"}
+  - {id: "GA.G8.trial_isolation", source: "gap_analysis", line: "G8", text: "G8: per-trial environment isolation invariant", check: "design"}
+  - {id: "GA.G9.bypass_resistance", source: "gap_analysis", line: "G9", text: "G9: grader bypass resistance", check: "design"}
+  - {id: "GA.G10.runtime_to_regression", source: "gap_analysis", line: "G10", text: "G10: runtime->regression dataset pipeline", check: "design"}
+
+  - {id: "GA.SEV.G1_P0", source: "gap_analysis", line: "severity", text: "G1 severity P0", check: "design"}
+  - {id: "GA.SEV.G5_P0", source: "gap_analysis", line: "severity", text: "G5 severity P0", check: "design"}
+  - {id: "GA.SEV.G2_P1", source: "gap_analysis", line: "severity", text: "G2 severity P1", check: "design"}
+  - {id: "GA.SEV.G4_P1", source: "gap_analysis", line: "severity", text: "G4 severity P1", check: "design"}
+  - {id: "GA.SEV.G6_P1", source: "gap_analysis", line: "severity", text: "G6 severity P1", check: "design"}
+  - {id: "GA.SEV.G3_P2", source: "gap_analysis", line: "severity", text: "G3 severity P2", check: "design"}
+  - {id: "GA.SEV.G7_P2", source: "gap_analysis", line: "severity", text: "G7 severity P2", check: "design"}
+  - {id: "GA.SEV.G8_P2", source: "gap_analysis", line: "severity", text: "G8 severity P2", check: "design"}
+  - {id: "GA.SEV.G9_P2", source: "gap_analysis", line: "severity", text: "G9 severity P2", check: "design"}
+  - {id: "GA.SEV.G10_P3", source: "gap_analysis", line: "severity", text: "G10 severity P3", check: "design"}
+
+  # ============================================================
+  # 05_Live_Runtime_Exit_Control_&_Evaluation.md (older v3-style parent)
+  # The shorter parent file — covers v3 baseline with X1A-X1D, X3A-X3D
+  # ============================================================
+  - {id: "P3.X1A.exists", source: "05_parent", line: "x1a", text: "Parent: X1A today's rules gate", check: "v6_export", args: {name: "eval_x1a"}}
+  - {id: "P3.X1B.exists", source: "05_parent", line: "x1b", text: "Parent: X1B answered it gate", check: "v6_export", args: {name: "eval_x1b"}}
+  - {id: "P3.X1C.exists", source: "05_parent", line: "x1c", text: "Parent: X1C safe to leave gate", check: "v6_export", args: {name: "eval_x1c"}}
+  - {id: "P3.X1D.exists", source: "05_parent", line: "x1d", text: "Parent: X1D answer good gate", check: "v6_export", args: {name: "eval_x1d"}}
+  - {id: "P3.X3A.exists", source: "05_parent", line: "x3a", text: "Parent: X3A deny/reroute disposition", check: "disposition_in_enum", args: {disposition: "DENY"}}
+  - {id: "P3.X3B.exists", source: "05_parent", line: "x3b", text: "Parent: X3B escalate/HITL disposition", check: "disposition_in_enum", args: {disposition: "ESCALATE"}}
+  - {id: "P3.X3C.exists", source: "05_parent", line: "x3c", text: "Parent: X3C commit via UWG disposition", check: "disposition_in_enum", args: {disposition: "COMMIT_REQUEST"}}
+  - {id: "P3.X3D.exists", source: "05_parent", line: "x3d", text: "Parent: X3D allow/finish disposition", check: "disposition_in_enum", args: {disposition: "ALLOW"}}
+  - {id: "P3.BUS_P.exists", source: "05_parent", line: "bus", text: "Parent: BUS P async exhaust (prefs/grades)", check: "design"}
+  - {id: "P3.BUS_T.exists", source: "05_parent", line: "bus", text: "Parent: BUS T async exhaust (telem/trace)", check: "design"}
+  - {id: "P3.INV.explicit_disposition", source: "05_parent", line: "inv", text: "Parent invariant: explicit disposition; no silent fallbacks", check: "ok_static"}
+  - {id: "P3.INV.no_ungated_human", source: "05_parent", line: "inv", text: "Parent invariant: no ungated human changes", check: "ok_static"}
+  - {id: "P3.INV.uwg_sole_ink", source: "05_parent", line: "inv", text: "Parent invariant: UWG sole ink path into L4", check: "ok_static"}
+  - {id: "P3.INV.l5_recleared", source: "05_parent", line: "inv", text: "Parent invariant: L5 re-clears every HITL change", check: "ok_static"}
+  - {id: "P3.INV.async_only", source: "05_parent", line: "inv", text: "Parent invariant: learning signals do not mutate current run", check: "ok_static"}
