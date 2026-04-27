@@ -17,6 +17,17 @@ One-sentence summary of what this plan accomplishes.
 
 ---
 
+## Context (SCQA)
+
+> **Pyramid Principle / SCQA scaffold.** Use this 4-paragraph block to give any reader (next-session Cascade, reviewer, future you) the minimum context to act. Keep each section to 1–4 sentences. Delete this guidance line before saving.
+
+- **Situation** — current state. What exists, what works, what the baseline metrics are. Cite ADG snapshot ID, current burndown counts, or relevant prior plans.
+- **Complication** — what disrupts the situation. The defect, the gap, the new requirement, the regression, or the ratchet ceiling that forces action.
+- **Question** — the single question this plan answers. Phrase as "How do we …?" or "Should we …?". One question, not a list.
+- **Answer** — the one-line thesis of the plan. The remaining sections are the proof.
+
+---
+
 
 ## Evidence Sources
 

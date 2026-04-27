@@ -20,7 +20,7 @@ explicit authority assignment.
 | Capability | Authoritative MCP | Fallback MCP | Notes |
 |------------|-------------------|--------------|-------|
 | File reads (local) | `filesystem` | — | Use for all local file reads/writes |
-| HTTP GET/POST/PUT/DELETE | `enhanced_http` | — | `fetch` removed; `enhanced_http` is sole HTTP authority |
+| HTTP GET/POST/PUT/DELETE | (no MCP — see decision tree) | — | `enhanced_http` removed 2026-04-27. Route content extraction → `tavily`; library docs → `context7`; GitHub repo Q&A → `deepwiki`; JS-rendered pages → `playwright`; local/internal HTTP → direct `httpx` in code |
 | Project structure (ADG) | `adg_sqlite` | — | Primary structural analysis |
 | Episodic memory | `memory` | — | Session-to-session context persistence |
 | Vector storage | `vector_db` | — | Semantic search, embedding generation |
@@ -31,6 +31,8 @@ explicit authority assignment.
 | Test execution | `pytest_mcp` | — | Test discovery, coverage, execution |
 | Deep repo Q&A | `deepwiki` | — | AI-powered repo documentation queries |
 | Notion workspace | `notion` | — | Notion read/write via local stdio MCP |
+| Web search & extraction | `tavily` | — | Sole authority for web search. AI-optimized results, site crawl, sitemap |
+| External library docs | `context7` | — | Up-to-date, versioned docs for external Python/JS libraries |
 
 ---
 
@@ -70,11 +72,6 @@ explicit authority assignment.
 - **Capability (write/mutate — BLOCKED by gate)**: `write_file`, `edit_file`, `move_file` — redirected to Cascade native tools (`write_to_file`, `edit`, `multi_edit`) which fire `pre_write_code` constitutional gates
 - **Scope**: Locked to repo root (`C:/Git/Agentic-Workflow`) only — enforced both by server and by gate
 - **Operator note**: `docs/guides/filesystem_mcp_operations.md`
-
-### `enhanced_http` — HTTP Client
-- **Transport**: Python (local subprocess)
-- **Authority**: Primary HTTP client for all API calls
-- **Capability**: `http_get`, `http_post`, `http_put`, `http_delete`, `batch_requests`
 
 ### `vector_db` — Vector Database
 - **Transport**: Python (local subprocess)
@@ -120,6 +117,23 @@ explicit authority assignment.
   - Query/Search: `API-post-search`, `API-query-data-source`, `API-list-data-source-templates`
 - **Note**: Auth via `NOTION_TOKEN` OS environment variable (format `ntn_...` or `secret_...`). `pre_mcp_gate` blocks with an actionable message when token is absent. Legacy aliases (`notion-fetch`, `notion-create-pages`, etc.) are stale — use `API-*` names above.
 
+### `tavily` — AI-optimized Web Search
+- **Transport**: Local stdio (`npx tavily-mcp@latest`)
+- **Authority**: Sole web-search authority. AI-optimized search results, page extraction, site crawl, sitemap generation
+- **Capability**: `tavily-search`, `tavily-extract`, `tavily-crawl`, `tavily-map`
+- **Scope**: External web content only. Do NOT use for this repo's own code (use `adg_sqlite`), GitHub repo Q&A (use `deepwiki`), or semantic code search (use `vector_db`).
+- **Auth**: `TAVILY_API_KEY` OS environment variable (format `tvly-...`). Free tier: 1000 credits/month. Create key at https://app.tavily.com/home. `pre_mcp_gate` blocks with an actionable message when key is absent (same pattern as Notion).
+- **Why installed (2026-04-27)**: No prior web-search primitive existed in the fleet. `deepwiki` only covers GitHub repos; `enhanced_http` requires a pre-known URL. Tavily fills the ADR-research / upstream-issue-hunting / domain-research gap.
+
+### `context7` — External Library Documentation
+- **Transport**: Local stdio (`npx @upstash/context7-mcp`)
+- **Authority**: Up-to-date, versioned official documentation for external libraries (chromadb, FastMCP, sentence-transformers, playwright, pytorch, redis-py, etc.)
+- **Capability**: `resolve-library-id`, `get-library-docs`
+- **Usage pattern**: Two-step — call `resolve-library-id(libraryName="...")` first to obtain a Context7-compatible ID, then call `get-library-docs(context7CompatibleLibraryID=..., topic=..., tokens=5000)`.
+- **Scope**: External packages only. Distinct from `deepwiki` (GitHub repo wiki/Q&A, not package docs) and `adg_sqlite` (this repo's own code).
+- **Auth**: No API key required on free tier. Optional `CONTEXT7_API_KEY` from https://context7.com/dashboard raises rate limits.
+- **Why installed (2026-04-27)**: Repo's memory graph is full of RCAs caused by misreading external-library behavior (vector_db zombie, FastMCP threadpool deadlock, DeferredLoader race). Context7 pulls live upstream docs into context to prevent that class of bug.
+
 ---
 
 ## Removed Servers
@@ -130,10 +144,11 @@ Preserved here for audit history. Do not re-add without HITL approval.
 | Server | Reason Removed | Former Capability |
 |--------|---------------|-------------------|
 | `github` | Planned entry — never deployed in config | Remote repo file access, PR/issue REST API |
-| `fetch` | Removed; `enhanced_http` is sole HTTP authority | Simple URL fetch fallback |
+| `fetch` | Removed; `enhanced_http` was sole HTTP authority (now also removed) | Simple URL fetch fallback |
 | `brave-search` | Removed during Wave 4/5 cleanup — no ADR | Web search |
-| `playwright` | Removed during cleanup | Browser automation, UI testing |
+| `playwright` (Wave 4/5) | Removed during cleanup; readded 2026-04 as `io.windsurf/mcp-playwright` | Browser automation, UI testing |
 | `figma` | Removed during cleanup | Figma file access, design assets |
+| `enhanced_http` | Removed 2026-04-27 — ADG review showed zero production callers; better-fit alternatives now exist for every concrete HTTP need (see authority table). Implementation file `tools/mcp/enhanced_http_server.py` and tests retained on disk pending separate cleanup decision. | `http_get`, `http_post`, `http_put`, `http_delete`, `batch_requests`, `test_connectivity`, `http_auth_preview` |
 
 ---
 
@@ -141,7 +156,7 @@ Preserved here for audit history. Do not re-add without HITL approval.
 
 | Overlap | Resolution |
 |---------|-----------|
-| `enhanced_http` vs (removed) `fetch` | `enhanced_http` is sole authority; `fetch` removed |
+| HTTP MCPs (all removed) | Both `fetch` and `enhanced_http` retired. HTTP routing is now split by source type — see Authority Table HTTP row for the decision tree. |
 | `filesystem` vs (removed) `github` | `filesystem` for local; `github` never deployed — use GitKraken for remote git ops |
 | `GitKraken` vs (removed) `github` | `GitKraken` covers all git and PR/issue ops |
 | `adg_sqlite` vs `memory` | `adg_sqlite` for structural/code graph; `memory` for episodic/session context |

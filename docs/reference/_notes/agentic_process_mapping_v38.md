@@ -1,12 +1,18 @@
 ==============================================================================================================================
-                            AGENTIC SYSTEM — PROCESS MAP v36 (CANONICAL SEMANTICS & LOOP)
+                            AGENTIC SYSTEM — PROCESS MAP v38 (CANONICAL SEMANTICS & LOOP)
  PRIMARY RUNTIME PATH: L1 ───> L0 ───> [opt L3] ───> L2 | L0 routing (R3) invokes C0 context assembly
          00A/L5 = governance certification | 00B/L4+UWG = durable state/write | 00C = live runtime gates
 ==============================================================================================================================
 
 [ 00A L5 POLICY / GOVERNANCE CERTIFICATION PLANE ] ──(cross-cutting certification evidence over [1], [2], [3], [4], [5], [6], EXIT, UWG)──
-[ 00C RUNTIME GATES / CURRENT-RUN CONTROL MESH ] ────(cross-cutting live GateVerdict law over current-run proceed/stop points)──────────────
 [ 00B L4 STATE ARCHIVE + UWG WRITE GATE ] ───────────(cross-cutting durable state + only durable write admission path into L4)──────────────
+[ 00C RUNTIME GATES / CURRENT-RUN CONTROL MESH ] ────(cross-cutting live GateVerdict law over current-run proceed/stop points)──────────────
+
+TOP ORIENTATION ONLY
+- 00A/L5 = governance certification evidence.
+- 00B/L4+UWG = durable state plus only durable write path.
+- 00C = live current-run GateVerdict mesh.
+- Full ownership and no-overlap detail remains in CROSS-CUTTING CONTROL PLANES below.
 
 ----------------------------------------------------------------------------------------------------------------------
  MODEL ARCHITECTURE & SIGNAL LEGEND
@@ -44,6 +50,8 @@ CRITICAL SEMANTIC RULES
 - C0 must still verify ACL, freshness, lineage, sparse/BM25 exactness, metadata, contradiction, and support.
 - Decoder output can reason, plan, generate, call tools, or judge, but generated text does not create authority.
 - Authority comes from contracts, gates, policy, registry, capability, sandbox, 00A/L5 certification, Exit disposition, and 00B/UWG write admission.
+- 00A and 00B are cross-cutting foundation folders, not sequential runtime stages.
+- 00A proves governance certification; 00B preserves durable state and admits durable writes.
 
 ===========================================================================================================
 [1] REQUEST INTAKE + ENVELOPE CHECK                                      🧠 classify + 🧱 contract/gate
@@ -203,7 +211,7 @@ CRITICAL SEMANTIC RULES
 │ │ - contextual refinement of the │ │ - break goal into work units  │ │ - does it answer the real goal?      │ │
 │ │   visible request before plan  │ │ - order dependencies          │ │ - is it safe and coherent?           │ │
 │ │ - identify explicit unknowns   │ │ - propose route options only  │ │ - lowest viable agency?              │ │
-│ │ - sharpen what matters most    │ │ - mark grounding / support    │ │ - per-step expected_ground_truth?    │ │
+│ │ - sharpen what matters most    │ │ - fact-grade intent as         │ │ - per-step expected_ground_truth?    │ │
 │ │ - fact-grade intent as         │ │ - declare expected evidence   │ │ - critic persona scores plan;        │ │
 │ │   DIRECTLY_OBSERVED / DERIVED  │ │   each step will return       │ │   emits accept / refine / escalate   │ │
 │ │   / UNRESOLVED                 │ │ - declare assumptions + gaps  │ │ - loop T2↔T3 up to budget cap        │ │
@@ -732,7 +740,7 @@ PROMPT ASSEMBLY
  │   exits, artifacts,       │   │   groundedness, and       │   │   signals into incident   │   │   proposed changes        │
  │   HITL packets, and       │   │   citation support        │   │   patterns and severity   │   │ - Approve or reject       │
  │   UWG receipts            │   │ - Grade trajectories:     │   │ - Perform RCA and drift   │   │   promotion candidates    │
- │ - Normalize evidence and  │   │   tool order, retries,    │   │   investigation           │   │ - Route approved updates  │
+ │ - Normalize evidence and  │   │   tool order, retries,    │   │   budget, execution shape │   │ - Route approved updates  │
  │   preserve lineage /      │   │   budget, execution shape │   │ - Draft prompt / policy / │   │   through UWG to L4       │
  │   replay linkage          │   │ - Detect regressions in   │   │   rubric / config changes │   │ - Publish committed       │
  │ - Observer posture only:  │   │   exact match, schema,    │   │   as proposals only       │   │   next-run updates onto   │
@@ -748,6 +756,13 @@ PROMPT ASSEMBLY
 ========================================================================================================================================
 CROSS-CUTTING CONTROL PLANES                                         🔐 cert vs 🚦 gate vs 🧱 X3 vs 🗄️/✒️ state
 ========================================================================================================================================
+
+00A / 00B EXECUTIVE OWNERSHIP LOCK
+- 00A owns L5 governance certification evidence only: authority, policy, registry, origin trust, capability, sandbox, egress, HITL, replay/audit.
+- 00A does not own live GateVerdict, final X3 disposition, durable write admission, retrieval, prompt assembly, execution, routing, or learning mechanics.
+- 00B owns L4 durable system-of-record state and UWG durable write admission only: state records, read surfaces, commit receipts, rollback, audit, replay.
+- 00B does not own planning, routing, retrieval, prompt assembly, bounded execution, Exit disposition, L5 certification, or L6 learning mechanics.
+- Cheat rule remains: L2 proposes -> Exit clears -> 00B/UWG commits -> 00B/L4 stores.
 
 00A L5 GOVERNANCE / SAFETY CERTIFICATION
 - 🔐 certification evidence plane.
@@ -872,5 +887,5 @@ Minimum proof bundle:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 ==============================================================================================================================
-END OF AGENTIC SYSTEM — PROCESS MAP v36
+END OF AGENTIC SYSTEM — PROCESS MAP v38
 ==============================================================================================================================
