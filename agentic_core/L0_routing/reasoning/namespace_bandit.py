@@ -239,9 +239,20 @@ class NamespaceBandit:
         return applied
 
     def reset(self) -> None:
-        """Clear all posteriors (test / rebuild helper)."""
+        """Clear all posteriors AND any unbound decision handles.
+
+        Bug fix (2026-04-26): the previous implementation cleared
+        ``_posteriors`` but left ``_open_handles`` populated. After
+        reset(), the next ``update()`` would ``pop()`` a stale handle
+        from a pre-reset decision and bind the fresh-prior outcome to
+        the wrong ledger row, polluting the closed-loop telemetry. We
+        now clear both maps under the same lock so the bandit's view
+        of "what has been decided but not yet bound" is consistent
+        with its posterior state.
+        """
         with self._lock:
             self._posteriors.clear()
+            self._open_handles.clear()
 
     def snapshot(self) -> dict[BanditKey, BetaPosterior]:
         """Return a deep-copy snapshot of every posterior."""

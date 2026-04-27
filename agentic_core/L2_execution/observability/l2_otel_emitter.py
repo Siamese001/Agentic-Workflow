@@ -260,14 +260,29 @@ class L2SpanEmitter:
             yield None
             return
 
+        # Bug fix (2026-04-26): the previous implementation wrapped the
+        # entire ``with self._tracer.start_as_current_span(...): yield``
+        # in a try/except for AttributeError/RuntimeError/OSError. That
+        # caught exceptions raised BY USER CODE inside the ``with`` block
+        # (because the OTel context manager re-raises them through our
+        # generator), then attempted a second ``yield None`` — which
+        # raises ``RuntimeError("generator didn't stop after throw()")``
+        # and silently rewrites the user's original exception message.
+        #
+        # Correct behavior: catch ONLY exceptions thrown by
+        # ``start_as_current_span()`` itself (i.e. before the yield).
+        # Once the OTel CM is entered, any exception belongs to user
+        # code and must propagate untouched.
         try:
-            with self._tracer.start_as_current_span(
+            otel_cm = self._tracer.start_as_current_span(
                 name, attributes=dict(attrs)
-            ) as otel_span:
-                yield otel_span
-        except (AttributeError, RuntimeError, OSError) as exc:  # guardian: allow-broad-otel -- emit must never break L2
-            _LOGGER.debug("L2 span emit failed for %s: %s", name, exc)
+            )
+        except (AttributeError, RuntimeError, OSError) as exc:  # guardian: allow-broad-otel -- start_as_current_span failure must not break L2
+            _LOGGER.debug("L2 span start failed for %s: %s", name, exc)
             yield None
+            return
+        with otel_cm as otel_span:
+            yield otel_span
 
 
 # ---------------------------------------------------------------------------

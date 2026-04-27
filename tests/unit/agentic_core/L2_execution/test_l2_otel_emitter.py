@@ -365,6 +365,36 @@ class TestFailClosedValidation:
             ):
                 pass
 
+    def test_user_exception_inside_span_propagates_with_original_message(
+        self, in_memory_tracer
+    ):
+        """Regression guard for 2026-04-26 generator-throw bug.
+
+        The previous implementation wrapped the entire OTel ``with``
+        block in a try/except for ``AttributeError | RuntimeError |
+        OSError``. When user code inside ``with em.span(...): ...``
+        raised one of those, the except caught it and tried a second
+        ``yield None``, which raised
+        ``RuntimeError("generator didn't stop after throw()")`` and
+        silently rewrote the user's original exception message.
+        """
+        tracer, _exporter = in_memory_tracer
+        em = L2SpanEmitter(tracer=tracer)
+        attrs = build_required_attrs(
+            run_id="r-1",
+            route_id="rt-1",
+            step_id="s-1",
+            blueprint_hash="bp-1",
+            policy_hash="pol-1",
+            replay_key="rk-1",
+            capability_token="cap-1",
+            sandbox_envelope_id="sb-1",
+            attempt_seed="seed-1",
+        )
+        with pytest.raises(RuntimeError, match="user_code_error"):
+            with em.span("l2.e1.prep.receive", attrs=attrs):
+                raise RuntimeError("user_code_error")
+
     def test_emitter_is_silent_when_otel_unavailable(self):
         """Explicit no-op mode must not break production — context manager fires."""
         emitter = L2SpanEmitter(tracer=False)

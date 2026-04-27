@@ -135,6 +135,35 @@ def test_reset_clears_all_posteriors() -> None:
     assert p.beta == 1.0
 
 
+def test_reset_also_clears_open_decision_handles() -> None:
+    """Regression guard for 2026-04-26: reset() must purge in-flight handles.
+
+    Before the fix, reset() cleared ``_posteriors`` but left
+    ``_open_handles`` populated. The next ``update()`` after reset would
+    pop a stale handle from a pre-reset decision and bind the
+    fresh-prior outcome to the wrong ledger row, polluting the
+    closed-loop telemetry's "predicted vs actual" cells.
+    """
+    bandit = NamespaceBandit(seed=0)
+    # Plant a fake handle as if choose() had recorded a decision.
+    fake_handle = object()
+    fake_key = list(bandit._posteriors.keys())  # noqa: SLF001 — test access
+    # Use the public API's key shape.
+    from agentic_core.L0_routing.reasoning.namespace_bandit import BanditKey
+
+    bandit._open_handles[BanditKey(namespace="ns_a", route="R3")] = (  # noqa: SLF001
+        fake_handle
+    )
+    assert bandit._open_handles, "test setup failed"  # noqa: SLF001
+    bandit.reset()
+    assert not bandit._open_handles, (  # noqa: SLF001
+        "reset() must clear _open_handles to prevent stale-handle binding"
+    )
+    # Sanity: the existing posterior assertion still holds.
+    assert bandit.posterior("ns_a", "R3").alpha == 1.0
+    _ = fake_key  # keep test deterministic, no functional use
+
+
 def test_beta_posterior_sample_in_unit_interval() -> None:
     import random as _r
 
