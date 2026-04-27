@@ -53,6 +53,11 @@
         "command": "python .windsurf/scripts/pre_user_prompt_hook_health_check.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": true
+      },
+      {
+        "command": "python tools/capture/ledger_staleness_check.py --advisory --quiet",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": true
       }
     ],
     "post_write_code": [

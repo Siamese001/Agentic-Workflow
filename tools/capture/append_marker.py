@@ -27,8 +27,17 @@ import json
 import os
 import re
 import sys
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
+
+# In-process serialization for concurrent append_marker calls. Windows file
+# IO does not provide POSIX-style atomic-append-under-PIPE_BUF, so we serialize
+# explicitly. For multi-process atomicity the OS append-mode write is enough
+# in practice (one process per run_command invocation), but if Cascade ever
+# fans out concurrent run_commands a portalocker-style file lock would be
+# the next step.
+_APPEND_LOCK = threading.Lock()
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 QUEUE_DIR = REPO_ROOT / "artifacts" / "capture"
@@ -74,10 +83,11 @@ def append_marker(raw: str, session_hint: str | None = None) -> tuple[bool, str]
         "pid": os.getpid(),
     }
     line = json.dumps(row, ensure_ascii=False)
-    # Atomic append on POSIX and Windows alike for lines under PIPE_BUF (4096).
-    # Markers are well under that bound. Use binary mode + newline at end.
-    with QUEUE_FILE.open("ab") as f:
-        f.write(line.encode("utf-8") + b"\n")
+    # Serialize in-process appends. POSIX guarantees atomic append-under-PIPE_BUF
+    # but Windows does not; the lock makes concurrent threads safe regardless.
+    with _APPEND_LOCK:
+        with QUEUE_FILE.open("ab") as f:
+            f.write(line.encode("utf-8") + b"\n")
     return True, f"appended {mtype} to {QUEUE_FILE}"
 
 
