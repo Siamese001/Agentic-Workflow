@@ -23,8 +23,7 @@ class TestDiscovery:
     def test_returns_non_empty_list(self) -> None:
         entries = discover_l2_capable_agents()
         assert len(entries) > 0, (
-            "L2-capable agent registry returned empty result — "
-            "ADG snapshot present but query matched nothing"
+            "L2-capable agent registry returned empty result — ADG snapshot present but query matched nothing"
         )
 
     def test_all_entries_have_required_fields(self) -> None:
@@ -65,9 +64,7 @@ class TestSnapshotPresence:
         # When ADG path succeeds, every row's source must be 'adg'.
         # When it falls back, every row's source is 'static'.
         sources = {e.source for e in entries}
-        assert sources in ({"adg"}, {"static"}), (
-            f"mixed sources not allowed: {sources}"
-        )
+        assert sources in ({"adg"}, {"static"}), f"mixed sources not allowed: {sources}"
 
 
 class TestStaticFallback:

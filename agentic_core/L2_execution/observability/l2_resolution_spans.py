@@ -60,7 +60,11 @@ def _record(name: str, attributes: dict[str, Any]) -> None:
                     if value is None:
                         continue
                     span.set_attribute(key, value)
-        except (RuntimeError, ValueError, TypeError):  # guardian: allow-silent-swallow -- OTEL bridge is best-effort observability; never break L2 control flow
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ):  # guardian: allow-silent-swallow -- OTEL bridge is best-effort observability; never break L2 control flow
             pass
 
 

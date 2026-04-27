@@ -158,9 +158,7 @@ class SnapshotMismatchError(Exception):
     """
 
 
-def assert_snapshot_match(
-    expected: DeterminismBundle, actual: DeterminismBundle
-) -> None:
+def assert_snapshot_match(expected: DeterminismBundle, actual: DeterminismBundle) -> None:
     """Assert that two DeterminismBundle instances agree on snapshot fields.
 
     blueprint_hash + policy_hash must be identical. Other fields (prompt_hash,
@@ -169,13 +167,11 @@ def assert_snapshot_match(
     """
     if expected.blueprint_hash != actual.blueprint_hash:
         raise SnapshotMismatchError(
-            f"blueprint_hash mismatch: expected={expected.blueprint_hash!r} "
-            f"actual={actual.blueprint_hash!r}"
+            f"blueprint_hash mismatch: expected={expected.blueprint_hash!r} actual={actual.blueprint_hash!r}"
         )
     if expected.policy_hash != actual.policy_hash:
         raise SnapshotMismatchError(
-            f"policy_hash mismatch: expected={expected.policy_hash!r} "
-            f"actual={actual.policy_hash!r}"
+            f"policy_hash mismatch: expected={expected.policy_hash!r} actual={actual.policy_hash!r}"
         )
 
 

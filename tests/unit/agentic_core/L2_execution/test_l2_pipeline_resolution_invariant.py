@@ -322,10 +322,9 @@ class TestNegativeScenarios:
         # Heal MUST NOT have produced a HealReceipt.
         assert result.heals == ()
         # Terminal class is the new mismatch terminal.
-        assert (
-            result.terminal_stamp
-            is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
-        ), f"scenario {scenario}: unexpected terminal {result.terminal_stamp}"
+        assert result.terminal_stamp is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH, (
+            f"scenario {scenario}: unexpected terminal {result.terminal_stamp}"
+        )
         # Sealed dispatch is present, no commit, not user-visible-safe.
         assert result.dispatch is not None
         assert result.dispatch.has_commit_payload is False
@@ -347,10 +346,7 @@ class TestNegativeScenarios:
             _make_healer(counters, heal_ctx, override_ctx=heal_ctx),
         )
         assert result.heals == ()
-        assert (
-            result.terminal_stamp
-            is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
-        )
+        assert result.terminal_stamp is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
 
     def test_H_direct_heal_without_validation_attempt_fails_closed(self) -> None:
         """Healer that returns no v5 fields under enforcement is treated as
@@ -365,10 +361,7 @@ class TestNegativeScenarios:
         # Healer DID run (we let it run for legacy compat) but the gate
         # caught the missing digest and sealed REJECTED.
         assert result.heals == ()
-        assert (
-            result.terminal_stamp
-            is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
-        )
+        assert result.terminal_stamp is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
         assert "heal_resolution_digest" in result.dispatch.decisive_reason
 
     def test_I_direct_l4_write_during_heal_blocked_by_invariant(self) -> None:
@@ -406,9 +399,7 @@ class TestNegativeScenarios:
             )
             terminals.append(result.terminal_stamp)
         # All four agents fail closed identically.
-        assert all(
-            t is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH for t in terminals
-        )
+        assert all(t is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH for t in terminals)
 
 
 # ---------------------------------------------------------------------------
@@ -468,9 +459,7 @@ class TestOtelEvidence:
             _make_executor(counters, fail_then_succeed=False),
             _make_healer(counters, ctx),
         )
-        validate = next(
-            s for s in recorded_spans() if s.name == "l2.resolution.validate"
-        )
+        validate = next(s for s in recorded_spans() if s.name == "l2.resolution.validate")
         required = {
             "request_id",
             "run_id",
@@ -514,12 +503,8 @@ class TestReplayDeterminism:
                 _make_executor(counters, fail_then_succeed=True),
                 _make_healer(counters, ctx),
             )
-            v_span = next(
-                s for s in recorded_spans() if s.name == "l2.resolution.validate"
-            )
-            h_span = next(
-                s for s in recorded_spans() if s.name == "l2.resolution.heal"
-            )
+            v_span = next(s for s in recorded_spans() if s.name == "l2.resolution.validate")
+            h_span = next(s for s in recorded_spans() if s.name == "l2.resolution.heal")
             runs.append(
                 {
                     "validator_digest": v_span.attributes["validator_resolution_digest"],
@@ -559,11 +544,15 @@ class _AgentMatrixEntry:
 # from agentic_core.L2_execution.healers.healing_router HealTier. If new
 # lanes are added, this list MUST grow — fail-closed by design.
 _L2_AGENT_MATRIX: tuple[_AgentMatrixEntry, ...] = (
-    _AgentMatrixEntry("LocalDeterministicAgent-1", "deterministic", "deterministic", RepairAuthorityClass.LOCAL_SAFE_ONLY),
+    _AgentMatrixEntry(
+        "LocalDeterministicAgent-1", "deterministic", "deterministic", RepairAuthorityClass.LOCAL_SAFE_ONLY
+    ),
     _AgentMatrixEntry("QwenLocalAgent-1", "qwen_vllm", "qwen_local", RepairAuthorityClass.LOCAL_SAFE_ONLY),
     _AgentMatrixEntry("GeminiFlashAgent-1", "gemini_flash", "google", RepairAuthorityClass.LOCAL_SAFE_ONLY),
     _AgentMatrixEntry("GeminiProAgent-1", "gemini_pro", "google", RepairAuthorityClass.ESCALATE_REQUIRED),
-    _AgentMatrixEntry("AnthropicSonnetAgent-1", "anthropic_sonnet", "anthropic", RepairAuthorityClass.LOCAL_SAFE_ONLY),
+    _AgentMatrixEntry(
+        "AnthropicSonnetAgent-1", "anthropic_sonnet", "anthropic", RepairAuthorityClass.LOCAL_SAFE_ONLY
+    ),
     _AgentMatrixEntry("HitlAgent-1", "human_review", "hitl", RepairAuthorityClass.ESCALATE_REQUIRED),
 )
 
@@ -574,9 +563,7 @@ class TestL2CapableAgentMatrix:
         assert len(_L2_AGENT_MATRIX) > 0, "no L2-capable agents in matrix"
 
     @pytest.mark.parametrize("entry", _L2_AGENT_MATRIX, ids=lambda e: e.agent_id)
-    def test_each_agent_passes_with_matching_resolution(
-        self, entry: _AgentMatrixEntry
-    ) -> None:
+    def test_each_agent_passes_with_matching_resolution(self, entry: _AgentMatrixEntry) -> None:
         ctx = _build_context(
             agent_id=entry.agent_id,
             provider_lane=entry.provider_lane,
@@ -592,9 +579,7 @@ class TestL2CapableAgentMatrix:
         assert len(result.heals) == 1
 
     @pytest.mark.parametrize("entry", _L2_AGENT_MATRIX, ids=lambda e: e.agent_id)
-    def test_each_agent_fails_closed_on_mismatch(
-        self, entry: _AgentMatrixEntry
-    ) -> None:
+    def test_each_agent_fails_closed_on_mismatch(self, entry: _AgentMatrixEntry) -> None:
         validator_ctx = _build_context(
             agent_id=entry.agent_id,
             provider_lane=entry.provider_lane,
@@ -611,10 +596,7 @@ class TestL2CapableAgentMatrix:
             _make_executor(counters, fail_then_succeed=True),
             _make_healer(counters, heal_ctx, override_ctx=heal_ctx),
         )
-        assert (
-            result.terminal_stamp
-            is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
-        )
+        assert result.terminal_stamp is TerminalStamp.VALIDATOR_AGENT_RESOLUTION_MISMATCH
         assert result.heals == ()
 
 
@@ -631,9 +613,7 @@ class TestLegacyBackwardCompat:
         def legacy_validator(prep: PrepReceipt) -> ValidatorResult:
             return ValidatorResult(outcome=ValidationOutcome.PASS)
 
-        def legacy_executor(
-            prep: PrepReceipt, validation: Any, attempt_count: int
-        ) -> ExecutorResult:
+        def legacy_executor(prep: PrepReceipt, validation: Any, attempt_count: int) -> ExecutorResult:
             if attempt_count == 1:
                 return ExecutorResult(
                     result_class=ResultClass.SOFT_REPAIRABLE,
@@ -649,9 +629,7 @@ class TestLegacyBackwardCompat:
         def legacy_healer(attempt: AttemptReceipt) -> HealerResult:
             return HealerResult(outcome=HealOutcomeStamp.PASS, reason_code="ok")
 
-        result = _run_pipeline(
-            legacy_validator, legacy_executor, legacy_healer, enforce=False
-        )
+        result = _run_pipeline(legacy_validator, legacy_executor, legacy_healer, enforce=False)
         assert result.terminal_stamp is TerminalStamp.SUCCESS
         # No resolution spans recorded when enforcement is off.
         names = [s.name for s in recorded_spans()]

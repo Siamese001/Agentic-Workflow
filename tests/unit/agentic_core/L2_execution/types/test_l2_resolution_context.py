@@ -211,9 +211,7 @@ class TestDigest:
             ({"max_repair_count": 5}, True),
         ],
     )
-    def test_field_change_changes_digest(
-        self, kwargs: dict[str, object], expect_change: bool
-    ) -> None:
+    def test_field_change_changes_digest(self, kwargs: dict[str, object], expect_change: bool) -> None:
         baseline = _ctx().digest()
         mutated = _ctx(**kwargs).digest()  # type: ignore[arg-type]
         if expect_change:
