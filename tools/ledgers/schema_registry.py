@@ -185,6 +185,36 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="router_l0_path",
+        purpose=(
+            "L0/path router (PathRouter.route_with_confidence) abstain decisions — "
+            "A/B/C/D/R5 path selection per constitutional §29 non-matrix."
+        ),
+        schema_file="router_l0_path_ledger.schema.sql",
+        writer_hook="agentic_core/L0_routing/reasoning/path_router.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l0-path/SKILL.md",
+        wave="W5.5",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
+        name="router_l0_agentic",
+        purpose=(
+            "L0/agentic router (AgenticRouter.route) intent-classified dispatches — "
+            "min_confidence threshold + handler outcome per constitutional §29 non-matrix."
+        ),
+        schema_file="router_l0_agentic_ledger.schema.sql",
+        writer_hook="agentic_core/L0_routing/reasoning/agentic_router.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l0-agentic/SKILL.md",
+        wave="W5.5",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
         name="router_l0_bandit",
         purpose=(
             "L0/bandit router (NamespaceBandit) decisions and outcomes — "

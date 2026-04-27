@@ -314,21 +314,29 @@ class PathRouter:
                 confidence,
                 threshold,
             )
-            return RoutingResult(
+            result = RoutingResult(
                 route=R5_ROUTE,
                 reason=decision["reason"],
                 confidence=decision["confidence"],
                 threshold=decision["threshold"],
                 action=decision["action"],
             )
-        chosen = self.select_path(payload)
-        return RoutingResult(
-            route=chosen.value,
-            reason=decision["reason"],
-            confidence=decision["confidence"],
-            threshold=decision["threshold"],
-            action=decision["action"],
+        else:
+            chosen = self.select_path(payload)
+            result = RoutingResult(
+                route=chosen.value,
+                reason=decision["reason"],
+                confidence=decision["confidence"],
+                threshold=decision["threshold"],
+                action=decision["action"],
+            )
+        _record_path_decision(
+            payload=payload,
+            confidence=confidence,
+            threshold=threshold,
+            result=result,
         )
+        return result
 
     def route_with_gates(
         self,
@@ -576,3 +584,67 @@ class PathRouter:
             r5_triggered_reasons=(),
             r3_reason_code="",
         )
+
+
+# =====================================================================
+# Constitutional §29 — closed-loop wiring (W5.5)
+# =====================================================================
+_PATH_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_path_helper():
+    """Lazy singleton for the L0/path RouterClosedLoopHelper."""
+    global _PATH_HELPER  # noqa: PLW0603
+    if _PATH_HELPER is not None:
+        return _PATH_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _PATH_HELPER = RouterClosedLoopHelper(
+            layer="L0",
+            router="path",
+            ledger_name="router_l0_path",
+            repo_area="agentic_core/L0_routing/reasoning/path_router.py",
+        )
+        return _PATH_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break PathRouter
+        _log.debug("RouterClosedLoopHelper unavailable for L0/path", exc_info=True)
+        return None
+
+
+def _record_path_decision(
+    *,
+    payload: GovernedPayload,
+    confidence: float,
+    threshold: float,
+    result: RoutingResult,
+) -> None:
+    """Constitutional §29 — emit ROUTER_DECISION + write durable ledger row.
+
+    Fail-soft: any helper failure is swallowed so PathRouter never breaks on
+    telemetry. Brier is computed from the confidence (predicted_p) and the
+    fact that any non-R5 path counts as "proceed-success" — this is a
+    cold-start convention; once outcome data is bound from caller-side it
+    will be more meaningful.
+    """
+    helper = _get_path_helper()
+    if helper is None:
+        return
+    try:
+        payload_class = type(payload).__name__
+        # RoutingResult is a TypedDict so use mapping access
+        chosen_route = str(result["route"])
+        reason = str(result.get("reason", ""))
+        is_abstain = chosen_route == R5_ROUTE
+        helper.record_decision(
+            selected=chosen_route,
+            cell={"threshold": float(threshold), "payload_class": payload_class},
+            predicted_p_success=float(confidence),
+            eu_score=float(confidence) - float(threshold),
+            prediction_extras={
+                "abstain": bool(is_abstain),
+                "reason": reason,
+            },
+        )
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; PathRouter must never break
+        _log.debug("path_router ledger emit failed", exc_info=True)

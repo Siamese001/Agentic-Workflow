@@ -361,6 +361,14 @@ class AgenticRouter:
                 RuntimeError,
             ) as _te:  # guardian: allow-log-and-swallow -- telemetry emission: fire-and-forget, non-blocking
                 Logger.debug("agentic_router: telemetry emission failed: %s", _te)
+            # Constitutional §29 — record the abandoned/failed route too.
+            _record_agentic_decision(
+                decision=decision,
+                n_targets=len(self._targets),
+                min_confidence=self.min_confidence,
+                had_classifier=self._classifier is not None and self._classifier.prototype_count() > 0,
+                latency_ms=int((_route_end_tick - _route_start_tick) * 1000.0),
+            )
             return decision
 
         try:
@@ -428,6 +436,14 @@ class AgenticRouter:
             )
             # Continue - performance failure should not block routing
 
+        # Constitutional §29 — closed-loop wiring (W5.5).
+        _record_agentic_decision(
+            decision=decision,
+            n_targets=len(self._targets),
+            min_confidence=self.min_confidence,
+            had_classifier=self._classifier is not None and self._classifier.prototype_count() > 0,
+            latency_ms=int((_get_clock().now_epoch() - _route_start_tick) * 1000.0),
+        )
         return decision
 
     def _classify(self, user_input: str) -> tuple[str, str, float]:
@@ -473,3 +489,73 @@ class AgenticRouter:
 
     def list_targets(self) -> list[str]:
         return list(self._targets.keys())
+
+
+# =====================================================================
+# Constitutional §29 — closed-loop wiring (W5.5)
+# =====================================================================
+_AGENTIC_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_agentic_helper():
+    """Lazy singleton for the L0/agentic RouterClosedLoopHelper."""
+    global _AGENTIC_HELPER  # noqa: PLW0603
+    if _AGENTIC_HELPER is not None:
+        return _AGENTIC_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _AGENTIC_HELPER = RouterClosedLoopHelper(
+            layer="L0",
+            router="agentic",
+            ledger_name="router_l0_agentic",
+            repo_area="agentic_core/L0_routing/reasoning/agentic_router.py",
+        )
+        return _AGENTIC_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break AgenticRouter
+        Logger.debug("RouterClosedLoopHelper unavailable for L0/agentic", exc_info=True)
+        return None
+
+
+def _record_agentic_decision(
+    *,
+    decision: "RoutingDecision",
+    n_targets: int,
+    min_confidence: float,
+    had_classifier: bool,
+    latency_ms: int,
+) -> None:
+    """Record decision + bind outcome (handler dispatch already done).
+
+    AgenticRouter.route() runs the dispatch synchronously inside route(), so
+    by the time we record the decision we already know success/error. We
+    record + bind in one shot via ``record_decision`` plus an immediate
+    ``bind_outcome`` call.
+
+    Fail-soft: any helper failure is swallowed.
+    """
+    helper = _get_agentic_helper()
+    if helper is None:
+        return
+    try:
+        success = decision.error is None
+        handle = helper.record_decision(
+            selected=str(decision.target_name or "unknown"),
+            cell={"intent": str(decision.intent or "unknown"), "n_targets": int(n_targets)},
+            predicted_p_success=float(decision.confidence),
+            eu_score=float(decision.confidence) - float(min_confidence),
+            prediction_extras={
+                "intent": str(decision.intent or "unknown"),
+                "min_confidence": float(min_confidence),
+                "had_classifier": bool(had_classifier),
+                "fallback_to_keywords": not bool(had_classifier),
+            },
+        )
+        helper.bind_outcome(
+            handle,
+            success=success,
+            latency_ms=int(latency_ms),
+            outcome_extras={"error": decision.error if decision.error else None},
+        )
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; AgenticRouter must never break
+        Logger.debug("agentic_router ledger emit failed", exc_info=True)
