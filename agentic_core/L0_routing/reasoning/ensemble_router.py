@@ -549,6 +549,8 @@ class EnsembleRouter:
             },
         )
 
+        # Constitutional §29 — closed-loop wiring (W5.6)
+        _record_ensemble_decision(self, decision)
         return decision
 
     def _weighted_voting(self, predictions: list[RoutingPrediction]) -> tuple[str, float]:
@@ -606,7 +608,12 @@ class EnsembleRouter:
         return top_agent, confidence
 
     def update_outcome(self, decision: EnsembleDecision, success: bool):
-        """Update ensemble based on routing outcome"""
+        """Update ensemble based on routing outcome.
+
+        W5.6 (closed-loop-router-fleet-rollout-d8f2a3 NEXT_STEP): also binds
+        the outcome to the durable router_l0_ensemble ledger row stashed
+        when route() emitted the decision. Fail-soft.
+        """
         self.prediction_count += 1
         if success:
             self.success_count += 1
@@ -645,6 +652,9 @@ class EnsembleRouter:
                 "target": target,
             },
         )
+
+        # Constitutional §29 — bind durable outcome.
+        _bind_ensemble_outcome(self, decision, success)
 
     def get_success_rate(self) -> float:
         """Get current success rate"""
@@ -725,6 +735,90 @@ def create_default_ensemble(embedding_classifier) -> EnsembleRouter:
     )
 
     return ensemble
+
+
+# =====================================================================
+# Constitutional §29 — closed-loop wiring (W5.6 NEXT_STEP fulfillment)
+# =====================================================================
+_ENSEMBLE_HELPER = None  # type: ignore[var-annotated]
+# Map from id(EnsembleDecision) -> RouterDecisionHandle so update_outcome
+# can bind to the correct prediction row. Bounded by live decision count.
+_ENSEMBLE_OPEN_HANDLES: dict[int, object] = {}
+
+
+def _get_ensemble_helper():
+    """Lazy singleton for the L0/ensemble RouterClosedLoopHelper."""
+    global _ENSEMBLE_HELPER  # noqa: PLW0603
+    if _ENSEMBLE_HELPER is not None:
+        return _ENSEMBLE_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _ENSEMBLE_HELPER = RouterClosedLoopHelper(
+            layer="L0",
+            router="ensemble",
+            ledger_name="router_l0_ensemble",
+            repo_area="agentic_core/L0_routing/reasoning/ensemble_router.py",
+        )
+        return _ENSEMBLE_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break ensemble routing
+        logger.debug("RouterClosedLoopHelper unavailable for L0/ensemble", exc_info=True)
+        return None
+
+
+def _record_ensemble_decision(router: "EnsembleRouter", decision: "EnsembleDecision") -> None:
+    """Record the ensemble decision and stash handle for outcome binding."""
+    helper = _get_ensemble_helper()
+    if helper is None:
+        return
+    try:
+        features = decision.ensemble_features
+        # eu_score = mean - std (margin); positive = high consensus
+        eu_score = float(features.mean_confidence - features.std_confidence)
+        handle = helper.record_decision(
+            selected=str(decision.selected_agent),
+            cell={
+                "n_models": int(len(router.base_models)),
+                "decision_strategy": str(router.decision_strategy),
+            },
+            predicted_p_success=float(decision.confidence),
+            eu_score=eu_score,
+            prediction_extras={
+                "decision_strategy": str(router.decision_strategy),
+                "confidence": float(decision.confidence),
+                "uncertainty": float(decision.uncertainty),
+                "agent_agreement_score": float(features.agent_agreement_score),
+                "n_base_models": int(len(router.base_models)),
+            },
+        )
+        _ENSEMBLE_OPEN_HANDLES[id(decision)] = handle
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; ensemble must never break
+        logger.debug("ensemble_router record_decision failed", exc_info=True)
+
+
+def _bind_ensemble_outcome(
+    router: "EnsembleRouter", decision: "EnsembleDecision", success: bool
+) -> None:
+    """Bind outcome to the ensemble decision's prediction row."""
+    helper = _get_ensemble_helper()
+    if helper is None:
+        return
+    handle = _ENSEMBLE_OPEN_HANDLES.pop(id(decision), None)
+    if handle is None:
+        return
+    try:
+        helper.bind_outcome(
+            handle,
+            success=bool(success),
+            outcome_extras={
+                "meta_learner_target": 1.0 if success else 0.0,
+                "model_weights_after": {
+                    name: float(weight) for name, weight in router.model_weights.items()
+                },
+            },
+        )
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- outcome binding is best-effort
+        logger.debug("ensemble_router bind_outcome failed", exc_info=True)
 
 
 __all__ = [

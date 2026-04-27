@@ -185,6 +185,21 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="router_l0_ensemble",
+        purpose=(
+            "L0/ensemble router (EnsembleRouter.route + update_outcome) ensemble decisions — "
+            "durable backing for in-memory MetaLearner per constitutional §29 non-matrix."
+        ),
+        schema_file="router_l0_ensemble_ledger.schema.sql",
+        writer_hook="agentic_core/L0_routing/reasoning/ensemble_router.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l0-ensemble/SKILL.md",
+        wave="W5.6",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
         name="router_l0_path",
         purpose=(
             "L0/path router (PathRouter.route_with_confidence) abstain decisions — "
