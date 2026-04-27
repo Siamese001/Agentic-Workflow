@@ -209,6 +209,21 @@ def main():
         sys.exit(1)
     print("✅ Structure policy gate passed")
 
+    # Gate: Reference doctrine orphans (prevent '*.pre-reqid-rewrite.bak' and
+    # '* exec.md' predecessors from leaking back into docs/reference/ outside
+    # docs/reference/_archive/). RCA 2026-04-27: external bundler + bulk-WIP
+    # sync commits re-add orphans silently; this gate is the durable defense.
+    print("🔍 Running reference doctrine orphans gate...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_reference_orphans.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ Reference doctrine orphans gate passed")
+
     # Gate: LLM-as-Judge calibration (LJH4.3) — non-blocking while gold set
     # is bootstrapping. Gate exits 2 when gold set is too small to enforce
     # kappa and we treat that as a warning so plain-main CI stays green.
