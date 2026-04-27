@@ -254,35 +254,12 @@ CURATED_SOURCES: list[dict] = [
         "score": 0.87,
         "required": True,
     },
-    # ── Internal process mapping (latest + exec only) ──────────────────────
-    {
-        "source_type": "local",
-        "path": "docs/reference/_notes/agentic_system_process_map_exec.md",
-        "title": "Agentic System Process Map — Executive Summary",
-        "doc_type": "markdown",
-        "doc_family": "reference",
-        "topic_bucket": "orchestration",
-        "authority_level": 1.0,
-        "canonical": True,
-        "collapse_group": "repo_process_mapping",
-        "keep_reason": "THE canonical executive process map; dense L0-L5 orchestration diagram, write gate, bounded autonomy rules.",
-        "score": 0.95,
-        "required": True,
-    },
-    {
-        "source_type": "local",
-        "path": "docs/reference/agentic_process_mapping_v29.md",
-        "title": "Agentic System Process Map v29 — Routing & Dispatch Reference",
-        "doc_type": "markdown",
-        "doc_family": "reference",
-        "topic_bucket": "orchestration",
-        "authority_level": 0.90,
-        "canonical": True,
-        "collapse_group": "repo_process_mapping",
-        "keep_reason": "Latest version of the full routing/dispatch process map; collapses all v2-v28 (archived).",
-        "score": 0.91,
-        "required": True,
-    },
+    # ── Internal process mapping ──────────────────────────────────────────
+    # Removed 2026-04-27 (plan a3c9f1 closure): the doctrine notes in
+    # docs/reference/_notes/ (agentic_system_process_map_exec.md,
+    # agentic_process_mapping_v29..v35) are hand-authored scratchpads, NOT
+    # authority. The agent's curated KB is grounded in REQ_ID-validated
+    # Tier A SSOT under docs/reference/00A..06,99 and contracts/step1/.
     # ── Internal governance & eval ────────────────────────────────────────
     {
         "source_type": "local",

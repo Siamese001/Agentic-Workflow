@@ -2,8 +2,7 @@
 
 This module is the single mandatory ingress gate that every inbound request
 MUST pass before reaching L1 reasoning.  It enforces the E1–E7 contract
-described in ``docs/reference/01_Request_Intake/01_request_intake.md`` and
-§[1] of ``docs/reference/_notes/agentic_process_mapping_v34.md``::
+described in ``docs/reference/01_Request_Intake/01_request_intake.md``::
 
     E1  Transport validation     — well-formed request envelope
     E2  Schema + size / nesting  — required fields + oversize / depth guard

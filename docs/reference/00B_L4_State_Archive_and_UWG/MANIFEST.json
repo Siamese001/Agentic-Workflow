@@ -23,20 +23,6 @@
     "00B.9_L4_Blueprint_Policy_Version_Migration.md"
   ],
   "numbering_rationale": "00_ / 00.x prefix used because L4/UWG is a cross-cutting durable state and write-sovereignty plane, not a sequential runtime stage after 06.",
-  "source_files_to_treat_as_authority": [
-    "- docs/reference/_notes/agentic_system_process_map_exec.md",
-    "- docs/reference/00A_L5_Governance_Safety/00A_L5_Governance_Safety.md",
-    "- docs/reference/05_Live_Runtime_Exit_Control_&_Evaluation.md",
-    "- docs/reference/00C_Runtime_Gates_Current_Run_Mesh/",
-    "- docs/reference/04_L2_Execute.md",
-    "- docs/reference/C0_Context_Engine.md",
-    "- docs/reference/Prompt_Assembly.md",
-    "- docs/reference/06_Shadow_Evaluation_System_Learning.md",
-    "- docs/reference/01_request_intake.md",
-    "- docs/reference/02_L1_Reasoning_Plan_Generation.md",
-    "- docs/reference/03_L0_Route_Decision_Switching_L3.md",
-    "- docs/reference/Programmatic Tool Calling (PTC) v2.md"
-  ],
   "global_no_overlap_lock": [
     "- U0 / Intake owns request envelope validation and request identity stamping.",
     "- L1 owns intent interpretation, task_spec, query_spec, ambiguity register, and plan recommendation.",

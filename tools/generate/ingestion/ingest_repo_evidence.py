@@ -144,22 +144,10 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "collapse_group": "repo_adr",
         "required": True,
     },
-    {
-        "path": "docs/reference/_notes/agentic_system_process_map_exec.md",
-        "title": "Agentic System Process Map — Executive Summary",
-        "doc_family": "reference",
-        "topic_bucket": "orchestration",
-        "collapse_group": "repo_process_mapping",
-        "required": True,
-    },
-    {
-        "path": "docs/reference/_notes/agentic_process_mapping_v34.md",
-        "title": "Agentic System Process Map v30 — Routing & Dispatch Reference",
-        "doc_family": "reference",
-        "topic_bucket": "orchestration",
-        "collapse_group": "repo_process_mapping",
-        "required": True,
-    },
+    # Removed 2026-04-27 (plan a3c9f1 closure): the doctrine notes in
+    # docs/reference/_notes/ are scratchpads, not authority. The agent's
+    # runtime KB must be grounded in the REQ_ID-validated Tier A SSOT under
+    # docs/reference/00A..06,99 and docs/reference/contracts/step1/.
     {
         "path": "docs/architecture/governed-app-contract.md",
         "title": "Governed App Contract",
