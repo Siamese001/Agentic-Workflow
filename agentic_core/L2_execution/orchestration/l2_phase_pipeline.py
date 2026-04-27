@@ -35,7 +35,7 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any, Callable, Protocol, runtime_checkable
 
 from agentic_core.L2_execution.observability.l2_otel_emitter import (
     L2SpanEmitter,
@@ -145,6 +145,62 @@ class HealerResult:
     heal_resolution_digest: str = ""
 
 
+@dataclass(frozen=True)
+class HealerResolution:
+    """Returned by the resolve-phase of a `TwoPhaseHealerFn`.
+
+    Carries ONLY the resolution context + digest — NO I/O products,
+    NO repair work. The pipeline calls ``resolve()`` BEFORE any
+    model / tool / agent invocation so the resolution-consistency gate
+    can fail closed at the policy plane (INV-RC-5: "no model/tool/agent
+    call on mismatch") before any side-effecting work happens.
+
+    Implementations MUST keep ``resolve()`` pure: read the approved
+    work order, derive the canonical L2ResolutionContext, compute the
+    digest, return. No outbound I/O. No ledger writes. No clock-bound
+    state. The structural property the pipeline relies on is that
+    ``resolve()`` is replayable and free of side effects.
+    """
+
+    context: L2ResolutionContext
+    digest: str
+
+
+@runtime_checkable
+class TwoPhaseHealerFn(Protocol):
+    """Two-phase healer protocol that makes INV-RC-5 structurally provable.
+
+    Healers that implement this Protocol opt in to a stronger contract:
+      1. ``resolve(attempt)`` returns a ``HealerResolution`` with no I/O
+      2. Pipeline runs the resolution-consistency gate against the
+         validator-side context+digest
+      3. ``execute(attempt)`` is invoked ONLY when the gate compare is
+         clean. On mismatch, ``execute()`` is never called — so any
+         model / tool / agent / network / disk I/O hidden inside it
+         cannot run.
+
+    Healers that DO NOT implement this Protocol are dispatched via the
+    legacy single-callable path (``self._healer(attempt)``). INV-RC-5
+    cannot be structurally enforced for them because their I/O is
+    inseparable from their resolution surface — enforcement is
+    advisory-only on that path. The 04.5a doctrine recommends migrating
+    every L2-capable agent's healer to this Protocol.
+
+    Determined at dispatch via ``isinstance(healer_fn, TwoPhaseHealerFn)``
+    — ``runtime_checkable`` makes this a structural attr check for
+    ``.resolve`` and ``.execute``. Plain ``Callable`` healers (functions)
+    have neither attribute and route to the legacy path automatically.
+    """
+
+    def resolve(self, attempt: AttemptReceipt) -> HealerResolution:
+        """Pure resolution: build context + digest. No I/O."""
+        ...
+
+    def execute(self, attempt: AttemptReceipt) -> HealerResult:
+        """Real repair work. Only invoked after gate compare is clean."""
+        ...
+
+
 # ---------------------------------------------------------------------------
 # Pipeline configuration.
 # ---------------------------------------------------------------------------
@@ -237,7 +293,7 @@ class L2PhasePipeline:
         self,
         validator_fn: Callable[[PrepReceipt], ValidatorResult],
         executor_fn: Callable[[PrepReceipt, ValidationReceipt, int], ExecutorResult],
-        healer_fn: Callable[[AttemptReceipt], HealerResult],
+        healer_fn: Callable[[AttemptReceipt], HealerResult] | TwoPhaseHealerFn,
         config: PipelineConfig | None = None,
         emitter: L2SpanEmitter | None = None,
     ) -> None:
@@ -352,109 +408,67 @@ class L2PhasePipeline:
         validator_resolution_context: L2ResolutionContext | None = None,
         validator_resolution_digest: str = "",
     ) -> HealReceipt:
-        h = self._healer(attempt)
+        # 04.5a Phase 6 — INV-RC-5 enforceability via two-phase healer.
+        #
+        # When ``self._healer`` implements ``TwoPhaseHealerFn`` AND
+        # enforcement is active AND the validator threaded its resolution
+        # surface through, we take the two-phase path:
+        #   1) resolve() — pure, no I/O
+        #   2) gate compare
+        #   3) execute() — only on clean compare; mismatch raises
+        #      BEFORE any model/tool/agent/network/disk I/O can happen.
+        #
+        # Otherwise we fall back to the legacy single-callable path:
+        # call the healer eagerly, then run the gate against whatever
+        # context+digest it surfaced inside its returned HealerResult.
+        # On that path INV-RC-5 is advisory — the healer's I/O has
+        # already happened by the time the gate fires — but the
+        # SEALED REJECTED outcome is still emitted on mismatch so
+        # downstream observability and Exit Eval are unaffected.
+        enforcement_active = (
+            self._config.enforce_resolution_consistency
+            and validator_resolution_context is not None
+            and validator_resolution_digest != ""
+        )
+        is_two_phase = (
+            enforcement_active
+            and isinstance(self._healer, TwoPhaseHealerFn)
+            # A legacy callable bound to a class that ALSO defines
+            # resolve/execute is dispatched via two-phase. A plain
+            # function has neither attribute and falls through.
+        )
+
+        if is_two_phase:
+            # Cast for the type-checker; runtime check above guarantees it.
+            two_phase: TwoPhaseHealerFn = self._healer  # type: ignore[assignment]
+            resolution = two_phase.resolve(attempt)
+            # Gate-FIRST: if compare fails we NEVER call execute().
+            # This is the structural enforcement of INV-RC-5.
+            self._run_resolution_gate(
+                heal_ctx=resolution.context,
+                heal_dig=resolution.digest,
+                validator_resolution_context=validator_resolution_context,
+                validator_resolution_digest=validator_resolution_digest,
+            )
+            # Compare clean — now (and only now) we run real heal work.
+            h = two_phase.execute(attempt)
+        else:
+            # Legacy single-callable path. I/O happens during this call.
+            h = self._healer(attempt)
+
         # E4.4 snapshot guard — heal MUST stay on PREP's snapshot.
         assert_snapshot_match(prep_determinism, attempt.determinism)
 
         # 04.5a INV-RC-1..8 — validator/heal resolution-digest equality.
-        # Only enforced when the pipeline is configured for it AND a validator
-        # context+digest were threaded through. Legacy callers unaffected.
-        if (
-            self._config.enforce_resolution_consistency
-            and validator_resolution_context is not None
-            and validator_resolution_digest != ""
-        ):
-            heal_ctx = h.heal_resolution_context
-            heal_dig = h.heal_resolution_digest
-            # Emit the heal-side resolve span before any compare. Pure
-            # observability; never blocks control flow.
-            if heal_ctx is not None and heal_dig != "":
-                emit_heal_span(
-                    heal_resolution_digest=heal_dig,
-                    request_id=heal_ctx.request_id,
-                    run_id=heal_ctx.run_id,
-                    route_id=heal_ctx.route_id,
-                    step_id=heal_ctx.step_id,
-                    trace_id=heal_ctx.trace_id,
-                    agent_id=heal_ctx.agent_id,
-                    agent_type=heal_ctx.agent_type,
-                    agent_version=heal_ctx.agent_version,
-                    validator_id=heal_ctx.validator_id,
-                    validator_version=heal_ctx.validator_version,
-                    policy_hash=heal_ctx.policy_hash,
-                    blueprint_hash=heal_ctx.blueprint_hash,
-                    replay_key=heal_ctx.replay_key,
-                    capability_scope_hash=heal_ctx.capability_scope_hash,
-                    sandbox_envelope_hash=heal_ctx.sandbox_envelope_hash,
-                    snapshot_manifest_hash=heal_ctx.snapshot_manifest_hash,
-                    provider_lane=heal_ctx.provider_lane,
-                    repair_authority_class=heal_ctx.repair_authority_class.value,
-                )
-
-            # When healer omitted the resolution surface entirely, that is
-            # itself a fail-closed condition under enforcement.
-            if heal_ctx is None or heal_dig == "":
-                emit_compare_span(
-                    validator_resolution_digest=validator_resolution_digest,
-                    heal_resolution_digest=heal_dig,
-                    resolution_match=False,
-                    first_mismatched_field="heal_resolution_digest",
-                    trace_id=validator_resolution_context.trace_id,
-                )
-                # Build a synthetic mismatch context so the gate can produce
-                # full evidence (it requires non-empty fields). We construct
-                # by replacing agent_id with the explicit sentinel.
-                # The gate itself raises on the missing-digest path.
-                from agentic_core.L2_execution.orchestration.resolution_consistency_gate import (
-                    ResolutionMismatchEvidence,
-                )
-
-                ev = ResolutionMismatchEvidence(
-                    decisive_rule_id=MISMATCH_DECISIVE_RULE_ID,
-                    validator_resolution_digest=validator_resolution_digest,
-                    heal_resolution_digest=heal_dig,
-                    first_mismatched_field="heal_resolution_digest",
-                    trace_id=validator_resolution_context.trace_id,
-                    request_id=validator_resolution_context.request_id,
-                    run_id=validator_resolution_context.run_id,
-                    route_id=validator_resolution_context.route_id,
-                    step_id=validator_resolution_context.step_id,
-                    agent_id_validator=validator_resolution_context.agent_id,
-                    agent_id_heal="",
-                    validator_id_validator=validator_resolution_context.validator_id,
-                    validator_id_heal="",
-                    reason=(
-                        "healer_fn returned no heal_resolution_context / "
-                        "heal_resolution_digest while enforcement is on"
-                    ),
-                )
-                raise ResolutionMismatchError(ev)
-
-            # Real gate — raises ResolutionMismatchError on any failure.
-            try:
-                assert_validator_heal_resolution_match(
-                    validator_context=validator_resolution_context,
-                    heal_context=heal_ctx,
-                    validator_digest=validator_resolution_digest,
-                    heal_digest=heal_dig,
-                )
-            except ResolutionMismatchError as exc:
-                emit_compare_span(
-                    validator_resolution_digest=validator_resolution_digest,
-                    heal_resolution_digest=heal_dig,
-                    resolution_match=False,
-                    first_mismatched_field=exc.evidence.first_mismatched_field,
-                    trace_id=validator_resolution_context.trace_id,
-                )
-                raise
-
-            # Match — record the positive compare span and let heal proceed.
-            emit_compare_span(
+        # On the legacy path we still run the gate (advisory enforcement);
+        # on the two-phase path the gate has already run above so we skip
+        # to the receipt build.
+        if enforcement_active and not is_two_phase:
+            self._run_resolution_gate(
+                heal_ctx=h.heal_resolution_context,
+                heal_dig=h.heal_resolution_digest,
+                validator_resolution_context=validator_resolution_context,
                 validator_resolution_digest=validator_resolution_digest,
-                heal_resolution_digest=heal_dig,
-                resolution_match=True,
-                first_mismatched_field="",
-                trace_id=validator_resolution_context.trace_id,
             )
 
         return HealReceipt(
@@ -467,6 +481,121 @@ class L2PhasePipeline:
             lineage=attempt.lineage,
             delta_summary=h.delta_summary,
             outcome=h.outcome,
+        )
+
+    def _run_resolution_gate(
+        self,
+        *,
+        heal_ctx: L2ResolutionContext | None,
+        heal_dig: str,
+        validator_resolution_context: L2ResolutionContext,
+        validator_resolution_digest: str,
+    ) -> None:
+        """Emit l2.resolution.heal/.compare spans and raise on mismatch.
+
+        Shared by the two-phase path (called BEFORE healer.execute()) and
+        the legacy path (called AFTER the legacy healer callable returns).
+
+        On a clean compare: emits l2.resolution.heal + l2.resolution.compare
+        with resolution_match=True and returns normally.
+
+        On any mismatch (missing digest OR field mismatch): emits the
+        l2.resolution.compare span with resolution_match=False and raises
+        ``ResolutionMismatchError``. Caller in ``run()`` catches the error
+        and seals a REJECTED dispatch with terminal_class
+        ``VALIDATOR_AGENT_RESOLUTION_MISMATCH``.
+
+        Caller MUST have verified enforcement_active is True before
+        invoking; this method does not re-check that precondition.
+        """
+        # Emit the heal-side resolve span before any compare. Pure
+        # observability; never blocks control flow.
+        if heal_ctx is not None and heal_dig != "":
+            emit_heal_span(
+                heal_resolution_digest=heal_dig,
+                request_id=heal_ctx.request_id,
+                run_id=heal_ctx.run_id,
+                route_id=heal_ctx.route_id,
+                step_id=heal_ctx.step_id,
+                trace_id=heal_ctx.trace_id,
+                agent_id=heal_ctx.agent_id,
+                agent_type=heal_ctx.agent_type,
+                agent_version=heal_ctx.agent_version,
+                validator_id=heal_ctx.validator_id,
+                validator_version=heal_ctx.validator_version,
+                policy_hash=heal_ctx.policy_hash,
+                blueprint_hash=heal_ctx.blueprint_hash,
+                replay_key=heal_ctx.replay_key,
+                capability_scope_hash=heal_ctx.capability_scope_hash,
+                sandbox_envelope_hash=heal_ctx.sandbox_envelope_hash,
+                snapshot_manifest_hash=heal_ctx.snapshot_manifest_hash,
+                provider_lane=heal_ctx.provider_lane,
+                repair_authority_class=heal_ctx.repair_authority_class.value,
+            )
+
+        # When the healer omitted the resolution surface entirely (legacy
+        # path returning None/empty), that is itself a fail-closed condition.
+        # Two-phase healers cannot reach this branch because
+        # ``HealerResolution`` requires a non-None context; their
+        # ``resolve()`` return-type prevents the missing-digest path.
+        if heal_ctx is None or heal_dig == "":
+            emit_compare_span(
+                validator_resolution_digest=validator_resolution_digest,
+                heal_resolution_digest=heal_dig,
+                resolution_match=False,
+                first_mismatched_field="heal_resolution_digest",
+                trace_id=validator_resolution_context.trace_id,
+            )
+            from agentic_core.L2_execution.orchestration.resolution_consistency_gate import (
+                ResolutionMismatchEvidence,
+            )
+
+            ev = ResolutionMismatchEvidence(
+                decisive_rule_id=MISMATCH_DECISIVE_RULE_ID,
+                validator_resolution_digest=validator_resolution_digest,
+                heal_resolution_digest=heal_dig,
+                first_mismatched_field="heal_resolution_digest",
+                trace_id=validator_resolution_context.trace_id,
+                request_id=validator_resolution_context.request_id,
+                run_id=validator_resolution_context.run_id,
+                route_id=validator_resolution_context.route_id,
+                step_id=validator_resolution_context.step_id,
+                agent_id_validator=validator_resolution_context.agent_id,
+                agent_id_heal="",
+                validator_id_validator=validator_resolution_context.validator_id,
+                validator_id_heal="",
+                reason=(
+                    "healer_fn returned no heal_resolution_context / "
+                    "heal_resolution_digest while enforcement is on"
+                ),
+            )
+            raise ResolutionMismatchError(ev)
+
+        # Real gate — raises ResolutionMismatchError on any failure.
+        try:
+            assert_validator_heal_resolution_match(
+                validator_context=validator_resolution_context,
+                heal_context=heal_ctx,
+                validator_digest=validator_resolution_digest,
+                heal_digest=heal_dig,
+            )
+        except ResolutionMismatchError as exc:
+            emit_compare_span(
+                validator_resolution_digest=validator_resolution_digest,
+                heal_resolution_digest=heal_dig,
+                resolution_match=False,
+                first_mismatched_field=exc.evidence.first_mismatched_field,
+                trace_id=validator_resolution_context.trace_id,
+            )
+            raise
+
+        # Match — record the positive compare span.
+        emit_compare_span(
+            validator_resolution_digest=validator_resolution_digest,
+            heal_resolution_digest=heal_dig,
+            resolution_match=True,
+            first_mismatched_field="",
+            trace_id=validator_resolution_context.trace_id,
         )
 
     # ---- E5 SEAL -------------------------------------------------------
