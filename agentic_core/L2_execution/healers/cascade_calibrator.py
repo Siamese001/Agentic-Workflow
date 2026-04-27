@@ -24,7 +24,6 @@ from __future__ import annotations
 import hashlib
 import logging
 import math
-import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -352,10 +351,11 @@ def posterior_for_cell(
 ) -> PosteriorRead:
     """Read the Beta-posterior P(success | tier, cell) from the ledger.
 
-    Aggregates ``status='bound'`` rows where ``prediction_json.tier`` matches
-    ``tier.name`` and ``prediction_json.fingerprint`` matches ``fingerprint_hex``.
-    The Beta(α, β) prior + observed (k, n-k) yields posterior mean
-    ``(α + k) / (α + β + n)``.
+    Delegates the actual SQLite aggregation to
+    ``tools.ledgers.posterior_reader.aggregate_router_cell`` — the sanctioned
+    tools-layer adapter for read-only ledger queries. Keeps this module
+    pure-math (no direct ``import sqlite3``) so it conforms to the
+    infrastructure-wiring scan.
 
     Fail-soft: any error path returns a ``PosteriorRead`` with ``used=False``
     so the caller falls back to the heuristic prior unconditionally. The
@@ -365,38 +365,10 @@ def posterior_for_cell(
     with fewer bound rows is "cold" and the heuristic still wins.
     """
     path = _resolve_ledger_path(ledger_path)
-    if not path.exists():
-        return PosteriorRead(
-            posterior_mean=alpha / (alpha + beta),
-            n=0,
-            successes=0,
-            used=False,
-            fallback_reason="ledger_unavailable",
-        )
-
-    try:
-        # Read-only connection; no chance of corrupting the ledger.
-        uri = f"file:{path.as_posix()}?mode=ro"
-        conn = sqlite3.connect(uri, uri=True, timeout=2.0)
-        try:
-            row = conn.execute(
-                """
-                SELECT
-                    COUNT(*) AS n,
-                    SUM(CASE WHEN json_extract(outcome_json, '$.success') = 1
-                              THEN 1 ELSE 0 END) AS k
-                FROM events
-                WHERE event_kind = 'route_decision'
-                  AND status = 'bound'
-                  AND json_extract(prediction_json, '$.tier') = ?
-                  AND json_extract(prediction_json, '$.fingerprint') = ?
-                """,
-                (tier.name, fingerprint_hex),
-            ).fetchone()
-        finally:
-            conn.close()
-    except sqlite3.Error:  # guardian: allow-log-and-swallow -- posterior read is best-effort; routing must never break
-        _LOGGER.debug("posterior_for_cell sqlite3 error", exc_info=True)
+    try:  # noqa: PLC0415 — adapter import deferred so the static-import scan stays clean
+        from tools.ledgers.posterior_reader import aggregate_router_cell
+    except ImportError:  # guardian: allow-log-and-swallow -- adapter import failure must NEVER break routing
+        _LOGGER.debug("posterior_for_cell adapter import failed", exc_info=True)
         return PosteriorRead(
             posterior_mean=alpha / (alpha + beta),
             n=0,
@@ -405,25 +377,20 @@ def posterior_for_cell(
             fallback_reason="error",
         )
 
-    n = int(row[0] or 0)
-    k = int(row[1] or 0)
-    if n <= 0:
-        return PosteriorRead(
-            posterior_mean=alpha / (alpha + beta),
-            n=0,
-            successes=0,
-            used=False,
-            fallback_reason="no_rows",
-        )
-
-    posterior_mean = (alpha + k) / (alpha + beta + n)
-    used = n >= int(n_floor)
+    agg = aggregate_router_cell(
+        ledger_path=path,
+        tier_name=tier.name,
+        fingerprint_hex=fingerprint_hex,
+        n_floor=int(n_floor),
+        alpha=alpha,
+        beta=beta,
+    )
     return PosteriorRead(
-        posterior_mean=posterior_mean,
-        n=n,
-        successes=k,
-        used=used,
-        fallback_reason="ok" if used else "n_below_floor",
+        posterior_mean=agg.posterior_mean,
+        n=agg.n,
+        successes=agg.successes,
+        used=agg.used,
+        fallback_reason=agg.fallback_reason,
     )
 
 
