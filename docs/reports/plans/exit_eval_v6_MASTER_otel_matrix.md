@@ -4,7 +4,7 @@ Row-per-requirement matrix re-ingested from **all 14 spec files** in
 `docs/reference/05_Exit_Evaluation_and_Control/`. Every row carries an OTEL-shaped
 evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observation.
 
-**Trace ID** (this run): `ed07a81f75d65ce8775d154f27fceb84`  
+**Trace ID** (this run): `44f5420dab2e250765d5744b168ccf6a`  
 **Probe**: `tools/analysis/exit_v6_master_otel_probe.py`  
 **Registry**: `tools/analysis/exit_v6_requirements_registry.yaml`  
 **Evidence JSON**: `docs/reports/plans/exit_v6_MASTER_otel_evidence.json`
@@ -13,8 +13,8 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Status | Count | Meaning |
 |---|---:|---|
-| **PASS** | 368 | requirement is observed in v6 runtime (passes its validator) |
-| **DESIGN** | 206 | requirement is design-level only (not yet wired into v6 runtime) |
+| **PASS** | 370 | requirement is observed in v6 runtime (passes its validator) |
+| **DESIGN** | 204 | requirement is design-level only (not yet wired into v6 runtime) |
 | **GAP** | 0 | requirement intends a runtime binding but observation does not match spec |
 | **TOTAL** | 574 | requirements across all 14 spec files |
 
@@ -53,7 +53,7 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `05_Live_Runtime_Exit_Control_&_Evaluation_exec.md` | 37 | 37 | 0 | 0 |
 | `05_Live_Runtime_Exit_Control_&_Evaluation.md` | 15 | 13 | 2 | 0 |
 | `ADR-065` | 3 | 3 | 0 | 0 |
-| `gap_analysis_v3_vs_industry_2026.md` | 20 | 3 | 17 | 0 |
+| `gap_analysis_v3_vs_industry_2026.md` | 20 | 5 | 15 | 0 |
 | `grader_composition_spec.md` | 54 | 0 | 54 | 0 |
 | `runtime_to_regression_dataset_flow.md` | 48 | 0 | 48 | 0 |
 | `v4_hardening_addendum.md` | 94 | 9 | 85 | 0 |
@@ -501,12 +501,12 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 |---|---|---|:---:|---|---|
 | `GA.G1.trajectory_eval` | G1 | G1: Trajectory/process eval (closed by X1E) | **PASS** | `2123c99fa71e5a9d` | eval_x1e in v6.__all__ |
 | `GA.G2.passk` | G2 | G2: pass^k consistency (closed by X1G) | **PASS** | `9ebd73ebe58e8e43` | eval_x1g in v6.__all__ |
-| `GA.G3.tracks` | G3 | G3: capability vs regression tracks (closed by X1A track label) | **DESIGN** | `2420a17ae4a8bf20` | design-only, no runtime binding |
+| `GA.G3.tracks` | G3 | G3: capability vs regression tracks (closed by X1A track label) - resolved by ADR-066 | **PASS** | `2420a17ae4a8bf20` | ExitReviewPacket.track_label field at types.py:124 with values capability\|regression\|pr... |
 | `GA.G4.judge_calibration` | G4 | G4: LLM-judge calibration (closed by abstain protocol + grader spec) | **DESIGN** | `70948d07317bd745` | design-only, no runtime binding |
 | `GA.G5.adversarial` | G5 | G5: adversarial pillar (closed by X1F) | **PASS** | `26c9e58344683f20` | eval_x1f in v6.__all__ |
 | `GA.G6.composition` | G6 | G6: grader composition contract (binary/weighted/hybrid) | **DESIGN** | `c277d76b8f3e8d64` | design-only, no runtime binding |
 | `GA.G7.partial_credit` | G7 | G7: partial credit (closed by dimension_vector emission) | **DESIGN** | `87a7993bdf046a11` | design-only, no runtime binding |
-| `GA.G8.trial_isolation` | G8 | G8: per-trial environment isolation invariant | **DESIGN** | `ab068d425749dd0e` | design-only, no runtime binding |
+| `GA.G8.trial_isolation` | G8 | G8: per-trial environment isolation invariant - resolved by ADR-066 (X1C ENV_CONTAMINATED + TRIAL_S... | **PASS** | `ab068d425749dd0e` | eval_x1c emits ENV_CONTAMINATED (env_contaminated, learning_bus_contamination) and TRIAL_... |
 | `GA.G9.bypass_resistance` | G9 | G9: grader bypass resistance | **DESIGN** | `734e8a6fff753975` | design-only, no runtime binding |
 | `GA.G10.runtime_to_regression` | G10 | G10: runtime->regression dataset pipeline | **DESIGN** | `f54365930180f84e` | design-only, no runtime binding |
 | `GA.SEV.G1_P0` | severity | G1 severity P0 | **DESIGN** | `ebb1c0655a7020b2` | design-only, no runtime binding |

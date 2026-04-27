@@ -114,13 +114,11 @@ def score(
     contradiction_risk = min(1.0, 0.25 * contradicts_n)
     high_severity_gaps = sum(1.0 for g in report.unresolved_gaps if g.severity >= 0.7)
     unsupported_inference_risk = min(1.0, 0.30 * high_severity_gaps)
-    # Stricter exactness target for EXACT_QUOTE / POLICY_CLAUSE / CODE_LOCATION
-    if support_target in {
-        SupportTarget.EXACT_QUOTE,
-        SupportTarget.POLICY_CLAUSE,
-        SupportTarget.CODE_LOCATION,
-    }:
-        exactness_score = exactness_score * 1.0  # no penalty
+    # NB: support_target is already enforced upstream via scan_contradictions_and_gaps
+    # (MISSING_EXACT_QUOTE gap fires for EXACT_QUOTE without sparse/metadata/hybrid lane);
+    # downstream that gap drives unsupported_inference_risk + decide_status. No extra
+    # multiplier needed here. (Previous dead `* 1.0` no-op removed 2026-04-26.)
+    _ = support_target  # parameter retained for spec parity / future use
     return ScoreBreakdown(
         direct_support_score=direct_support_score,
         coverage_score=coverage_score,
@@ -167,16 +165,27 @@ def decide_status(
     *,
     blocked: bool = False,
 ) -> SupportStatus:
-    """Decide one of six SupportStatus values per spec."""
+    """Decide one of six SupportStatus values per spec.
+
+    Order matters: BLOCKED ≻ CONFLICTED ≻ EMPTY ≻ PASS/WEAK\_*.
+
+    Per invariant **I7** ("contradictions must be surfaced, not hidden"),
+    a credible contradiction (severity ≥ 0.6) is reported as CONFLICTED
+    even when there is no MUST_USE / SUPPORTING anchor. Returning EMPTY in
+    that case would silently swallow the contradiction (Bug 4 — fixed
+    2026-04-26).
+    """
     if blocked:
         return SupportStatus.BLOCKED
+    # Surface credible contradictions BEFORE evaluating emptiness, so that a
+    # pool of pure CONTRADICTS items still reports CONFLICTED instead of EMPTY.
+    if report.contradiction_flags and any(
+        c.severity >= 0.6 for c in report.contradiction_flags
+    ):
+        return SupportStatus.CONFLICTED
     has_evidence = bool(shaped.must_use or shaped.supporting)
     if not has_evidence:
         return SupportStatus.EMPTY
-    if report.contradiction_flags:
-        # If contradictions are credible (severity >= 0.6), CONFLICTED.
-        if any(c.severity >= 0.6 for c in report.contradiction_flags):
-            return SupportStatus.CONFLICTED
     score_value = aggregate_support_score(breakdown)
     if score_value >= 0.75 and len(shaped.must_use) >= 1:
         return SupportStatus.PASS
@@ -242,16 +251,53 @@ def build_final_contract(
 
 
 def contract_digest(contract: FinalEvidenceContract) -> str:
-    """Stable sha256 digest over the contract for replay-cert."""
+    """Stable sha256 digest over the *content* of the contract for replay-cert.
+
+    Content-addressed, NOT name-addressed: ``contract_id`` is excluded
+    because ``build_final_contract`` mints a fresh uuid each call, which
+    would otherwise make the digest unstable across identical inputs
+    (Bug 2 — fixed 2026-04-26).
+
+    The payload also captures evidence identity (every ``evidence_id`` and
+    ``source_id``, sorted), contradiction flag content, gap content, the
+    full score breakdown, the recommended disposition, and refine attempts.
+    Two contracts with different evidence pools can no longer collapse to
+    the same digest (Bug 3 — fixed 2026-04-26).
+    """
     payload = {
-        "contract_id": contract.contract_id,
+        # Route + policy provenance.
         "route_id": contract.route_id,
+        "route_replay_key": contract.route_replay_key,
         "policy_hash": contract.policy_hash,
+        "blueprint_hash": contract.blueprint_hash,
+        # Decision surface.
         "status": contract.status.value,
+        "recommended_disposition": contract.recommended_disposition.value,
         "support_score": round(contract.support_score, 6),
-        "n_evidence": len(contract.evidence),
-        "n_contradictions": len(contract.contradiction_flags),
-        "n_gaps": len(contract.unresolved_gaps),
+        "refine_attempts": contract.refine_attempts,
+        # Full score breakdown (every dimension, rounded for stability).
+        "score_breakdown": {
+            k: round(v, 6) for k, v in contract.score_breakdown.as_dict().items()
+        },
+        # Evidence content — deterministically ordered for replay stability.
+        "evidence_ids": sorted(it.evidence_id for it in contract.evidence),
+        "evidence_sources": sorted(
+            f"{it.source_id}|{it.span_ref}" for it in contract.evidence
+        ),
+        # Contradiction + gap content — deterministically ordered.
+        "contradiction_flags": sorted(
+            (
+                f.contradiction_type.value,
+                f.source_a,
+                f.source_b,
+                round(f.severity, 6),
+            )
+            for f in contract.contradiction_flags
+        ),
+        "unresolved_gaps": sorted(
+            (g.gap_type.value, round(g.severity, 6))
+            for g in contract.unresolved_gaps
+        ),
     }
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":")).encode(),

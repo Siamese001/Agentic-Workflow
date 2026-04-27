@@ -926,12 +926,18 @@ requirements:
   # ============================================================
   - {id: "GA.G1.trajectory_eval", source: "gap_analysis", line: "G1", text: "G1: Trajectory/process eval (closed by X1E)", check: "v6_export", args: {name: "eval_x1e"}}
   - {id: "GA.G2.passk", source: "gap_analysis", line: "G2", text: "G2: pass^k consistency (closed by X1G)", check: "v6_export", args: {name: "eval_x1g"}}
-  - {id: "GA.G3.tracks", source: "gap_analysis", line: "G3", text: "G3: capability vs regression tracks (closed by X1A track label)", check: "design"}
+  - {id: "GA.G3.tracks", source: "gap_analysis", line: "G3",
+     text: "G3: capability vs regression tracks (closed by X1A track label) - resolved by ADR-066",
+     check: "ok_static",
+     evidence: "ExitReviewPacket.track_label field at types.py:124 with values capability|regression|production|shadow-candidate"}
   - {id: "GA.G4.judge_calibration", source: "gap_analysis", line: "G4", text: "G4: LLM-judge calibration (closed by abstain protocol + grader spec)", check: "design"}
   - {id: "GA.G5.adversarial", source: "gap_analysis", line: "G5", text: "G5: adversarial pillar (closed by X1F)", check: "v6_export", args: {name: "eval_x1f"}}
   - {id: "GA.G6.composition", source: "gap_analysis", line: "G6", text: "G6: grader composition contract (binary/weighted/hybrid)", check: "design"}
   - {id: "GA.G7.partial_credit", source: "gap_analysis", line: "G7", text: "G7: partial credit (closed by dimension_vector emission)", check: "design"}
-  - {id: "GA.G8.trial_isolation", source: "gap_analysis", line: "G8", text: "G8: per-trial environment isolation invariant", check: "design"}
+  - {id: "GA.G8.trial_isolation", source: "gap_analysis", line: "G8",
+     text: "G8: per-trial environment isolation invariant - resolved by ADR-066 (X1C ENV_CONTAMINATED + TRIAL_STATE_LEAK)",
+     check: "ok_static",
+     evidence: "eval_x1c emits ENV_CONTAMINATED (env_contaminated, learning_bus_contamination) and TRIAL_STATE_LEAK reason codes at x1_gates.py:152-161"}
   - {id: "GA.G9.bypass_resistance", source: "gap_analysis", line: "G9", text: "G9: grader bypass resistance", check: "design"}
   - {id: "GA.G10.runtime_to_regression", source: "gap_analysis", line: "G10", text: "G10: runtime->regression dataset pipeline", check: "design"}
 

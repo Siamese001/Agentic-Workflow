@@ -254,8 +254,20 @@ def scan_contradictions_and_gaps(
 
 
 def _has_exact_quote(shaped: ShapedEvidenceSet) -> bool:
+    """True iff the pool contains a stable-anchor item from a lane capable
+    of exact-quote support.
+
+    Per spec invariant **I5** (and ``i5_exact_claims_need_sparse_or_metadata``
+    + ``exactness_score`` in contract.py), exact-quote claims MUST be backed
+    by sparse / hybrid / metadata lanes; dense alone is not enough.
+
+    Bug 1 fix (2026-04-26): the original implementation accepted only
+    ``{sparse, hybrid}`` and would emit MISSING_EXACT_QUOTE even when an
+    item came from the metadata lane with a valid span_ref \u2014 contradicting
+    every other site that treats metadata as a valid exact-quote lane.
+    """
     return any(
-        it.retrieval_lane in {"sparse", "hybrid"} and bool(it.span_ref)
+        it.retrieval_lane in {"sparse", "hybrid", "metadata"} and bool(it.span_ref)
         for it in shaped.must_use + shaped.supporting
     )
 
