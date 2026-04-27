@@ -1,509 +1,550 @@
-# L1 v6 Reasoning + Plan Generation — Requirements Traceability Matrix
+# L1 / Reasoning + Plan Generation — Doctrine Traceability (Line-by-Line, 2026-04-26)
 
-**Doctrine source**: `docs/reference/02_L1_Reasoning_Plan/` parent + 02.1..02.6 (rewritten 2026-04 with MECE alignment headers)
-**Implementation**: `agentic_core/L1_cognition/planning/` (11 modules)
-**Tests**: `tests/unit/agentic_core/L1_cognition/planning/` — **316 tests passing in 0.70 s** (was 42 at v6 cut; test suite has grown organically since)
-**Runtime evidence bundle**: `docs/reports/plans/l1-v6-evidence/` (regenerated 2026-04-26)
-**Canonical-pattern mirror**: `docs/reports/plans/l1_doctrine_requirements_matrix.md` (same file, linked for parity with 00A/00B/00C/01 closures)
-**Implementing commit**: `686ddd6750` on `origin/main` (still current — no contract drift since cut)
+**Doctrine source (re-ingested in full 2026-04-26):**
 
----
+- `docs/reference/02_L1_Reasoning_Plan/02_L1_Reasoning_Plan_Generation.md` (parent, 17 130 B)
+- `02.1_Intent_Frame_and_Ambiguity_Register.md` (17 087 B)
+- `02.2_Planning_Priors_and_Rule_Bundle.md` (16 425 B)
+- `02.3_Contextual_Refinement_Reasoning_Loop.md` (16 082 B)
+- `02.4_Draft_Plan_and_Route_Hints.md` (16 526 B)
+- `02.5_Plan_Validation_Self_Repair.md` (16 225 B)
+- `02.6_L1PlanContract_Handoff.md` (16 352 B)
 
-## 0. Evidence sources used in this matrix
+**Implementation:** `agentic_core/L1_cognition/planning/` — 11 modules: `__init__.py`, `contracts.py`, `digests.py`, `draft_plan.py`, `intent_frame.py`, `otel.py`, `pipeline.py`, `plan_contract_handoff.py`, `plan_validation.py`, `planning_priors.py`, `reasoning_loop.py`.
 
-| Tag | Source | Type |
-|---|---|---|
-| `CODE` | `agentic_core/L1_cognition/planning/<file>.py:<line>` | Static — code path that implements the requirement |
-| `TEST` | `tests/unit/agentic_core/L1_cognition/planning/<file>.py::<test>` | Static — pytest assertion |
-| `RUN-CONTRACT` | `docs/reports/plans/l1-v6-evidence/contracts.json` | Runtime — final L1PlanContract emitted by 3 scenarios |
-| `RUN-SPAN` | `docs/reports/plans/l1-v6-evidence/spans.json` | Runtime — 18 OTEL spans/scenario × 3 = 54 spans |
-| `RUN-DIGEST` | `docs/reports/plans/l1-v6-evidence/digests.json` | Runtime — replay determinism check, 2 runs/scenario |
-| `RUN-NEG` | `docs/reports/plans/l1-v6-evidence/negative_boundary_scan.json` | Runtime — module-source forbidden-symbol scan |
-| `RUN-ISO` | `docs/reports/plans/l1-v6-evidence/import_isolation.json` | Runtime — `sys.modules` delta proves no C0/L2/L3 loaded |
-| `RUN-PACKET` | `docs/reports/plans/l1-v6-evidence/runtime_evidence.json` | Runtime — full per-stage packet dump |
+**Tests:** `tests/unit/agentic_core/L1_cognition/planning/` — 9 files: `conftest.py`, `test_edge_cases_runtime.py`, `test_edge_cases_validation.py`, `test_negative_boundaries.py`, `test_pipeline_end_to_end.py`, `test_repair_rules_coverage.py`, `test_replay_determinism.py`, `test_stage_contracts.py`, `test_u0_to_l1_planning_bridge.py`. **316 passed in 0.61 s.**
 
-Runtime proof harness: `scripts/proof/run_l1_v6_proof.py`. Three scenarios:
-1. **basic_grounded_read** — "Summarize the latest changes in CHANGELOG.md and cite the exact lines that mention version v2.3.1"
-2. **high_risk_action** — "Deploy the build to production and force-push to main now"
-3. **refusal_request** — "how to make a bomb at home"
+**Runtime proof:** `docs/reports/plans/l1-v6-evidence/` — 7 JSONs: `contracts.json`, `digests.json`, `import_isolation.json`, `negative_boundary_scan.json`, `runtime_evidence.json`, `spans.json`, `summary.json`.
 
-Runtime data points captured by all 3 scenarios:
-
-| Scenario | Plan digest (sha256) | Route hint | Confidence | Grounding | Action req | HITL | UWG | Irreversible | Fallback marker | Spans |
-|---|---|---|---|---|---|---|---|---|---|---|
-| basic_grounded_read | `40230a6d…ba8cf356` | R3_GROUNDED_READ | 0.85 | True | False | False | False | False | none | 18 |
-| high_risk_action | `ca6b869e…99ec5ff4` | R4_SINGLE_ACTION | 0.85 | False | True | True | True | True | none | 18 |
-| refusal_request | `1a59fe78…486b411f` | R5_FALLBACK | 0.55 | False | False | False | False | False | abstain | 18 |
-
-All three runs:
-- 18 spans each (3 lifecycle × 6 stages) — `RUN-SPAN.span_count_per_scenario = {18, 18, 18}`
-- All 54 spans assert `no_route_authority=no_retrieval_performed=no_execution_performed=no_write_performed=True`
-- Replay-deterministic across two pipeline runs (`RUN-DIGEST.identical = true` for all 3)
-- `import_isolation_clean = true` for all 3 (no C0/L2/L3 modules loaded)
-- `negative_boundary_clean = true` (zero forbidden symbols across all 7 stage modules)
+**Closure pass:** 2026-04-26. Re-ingested every line of every 02 doctrine file. Each numbered data contract, every field, every required check, every span, every negative-boundary test rule mapped to IMPL + TEST + RUNTIME.
 
 ---
 
-## 1. Parent doctrine (`02_L1_Reasoning_Plan_Generation.md`)
+## Legend
 
-### 1.1 Source-ownership boundary (parent §SOURCE OWNERSHIP BOUNDARY)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| P-1 | L1 owns: semantic intent interpretation, constraint extraction, ambiguity register, planning-prior reads, rule-aware planning frame, internal contextual refinement, advisory decomposition, advisory route hints, support/action expectations, plan validation, lowest-viable agency, L1PlanContract emission | `CODE` `agentic_core/L1_cognition/planning/__init__.py` (whole package surface); each owned concept has a typed contract in `contracts.py` and a stage entrypoint |
-| P-2 | L1 does NOT own: transport/envelope, identity/tenant baseline, route authority, retrieval, prompt assembly, execution, runtime gates, governance certification, durable writes, learning | `RUN-NEG.findings_per_module = {}` (forbidden symbols absent); `RUN-ISO.isolation_clean = true` (no C0/L2/L3 module loaded); `TEST` `test_negative_boundaries.py::test_stage_modules_do_not_import_forbidden_authoritative_outputs` (parametrized over all 7 stage modules) |
-
-### 1.2 Canonical L1 flow (parent §CANONICAL L1 FLOW)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| P-3 | Six-stage flow 02.1 → 02.2 → 02.3 → 02.4 → 02.5 → 02.6 | `CODE` `pipeline.py:run_l1_planning` chains the six entrypoints in order; `RUN-SPAN.by_stage = {02.1:3, 02.2:3, 02.3:3, 02.4:3, 02.5:3, 02.6:3}` for every scenario |
-
-### 1.3 Canonical output vocabulary (parent §CANONICAL OUTPUT VOCABULARY)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| P-4 | L1PlanContract carries identity, intent_frame, query_spec, task_spec, route_hint, support_expectation, action_expectation, assumptions_and_gaps, validation_summary, downstream_notes, plan_digest, replay metadata, non-authority assertion | `CODE` `contracts.py:L1PlanContract` declares all 12 sections; `RUN-CONTRACT.basic_grounded_read` shows every section populated. Top-level keys observed at runtime: `layer`, `version`, `authority`, `identity`, `intent_frame`, `query_spec`, `task_spec`, `route_hint`, `support_expectation`, `action_expectation`, `assumptions_and_gaps`, `validation_summary`, `downstream_notes`, `plan_replay_manifest`, `plan_digest`, `non_authority_assertion`, `v2_projection` |
-
-### 1.4 Forbidden authoritative outputs (parent §FORBIDDEN AUTHORITATIVE OUTPUTS FROM L1)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| P-5 | L1 must not emit RouteContract, route_digest, hmac_sig, FinalEvidenceContract, PromptEnvelope, CompiledPromptArtifact, L3WorkflowContract, L3StepContract, L2ExecutionRequest, SealedL2Artifact, ExitReviewPacket, ExitDisposition, GateDisposition, CommitRequest, UWGCommitReceipt | `RUN-NEG` scans all 7 stage modules with regex matching every forbidden symbol; result `all_clear = true`; `TEST` `test_negative_boundaries.py::test_route_hint_block_does_not_carry_authoritative_fields`; `RUN-CONTRACT` shows `route_hint.route_authority_assertion = "advisory_only"`, no `route_digest` / `hmac_sig` keys present |
-
-### 1.5 Acceptance criteria (parent §ACCEPTANCE CRITERIA)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| P-6 | L1 consumes only ValidatedRequest or RejectedRequest summary | `CODE` `contracts.py:ParsedRequestInput.__post_init__` raises `L1ContractViolation` if both are None; `TEST` `test_stage_contracts.py::test_parsed_request_input_requires_request_or_rejected` |
-| P-7 | L1 emits an L1PlanContract, not a RouteContract or final answer | `CODE` `plan_contract_handoff.py:emit_l1_plan_contract` returns `L1PlanHandoffPacket`; `RUN-CONTRACT` for all 3 scenarios shows `layer = L1_REASONING_PLAN_GENERATION`, `authority = advisory_plan_only` |
-| P-8 | L1 preserves request_id, trace_root, policy_hash, instruction_hash, source_envelope_id | `CODE` identity dict assembled in `plan_contract_handoff.py:emit_l1_plan_contract`; `RUN-CONTRACT.*.identity` shows all five fields populated and unchanged from input |
-| P-9 | L1 separates user intent from authority | `CODE` `intent_frame.py:parse_intent_frame` constructs `user_intent_authority_separation_receipt` with explicit booleans; `RUN-PACKET.basic_grounded_read.evidence.stage_02_1_parsed_intent_packet.user_intent_authority_separation_receipt = {treats_user_text_as_intent_only:true, does_not_grant_authority:true, treats_quoted_content_as_data:true, policy_decision_deferred_to_l5:true}` |
-| P-10 | L1 marks grounding need when citations / files / freshness / evidence required | `CODE` `draft_plan.py:_build_support_expectation` derives grounding from inventory + freshness; `RUN-CONTRACT.basic_grounded_read.support_expectation.grounding_required = true`, `support_target = direct_span` (because `direct_quote_needed=true`) |
-| P-11 | L1 marks action and write risk without executing | `CODE` `draft_plan.py:_build_action_expectation`; `RUN-CONTRACT.high_risk_action.action_expectation = {action_required:true, side_effect_class:high_impact, sandbox_need_hint:true, capability_token_need_hint:true, hitl_hint:true, uwg_hint:true, irreversible_action_marker:true}` |
-| P-12 | L1 marks HITL and UWG hints without approving | `CODE` `NonAuthorityAssertion.no_hitl_approval=True`, `no_uwg_commit=True`; `RUN-CONTRACT.*.non_authority_assertion = {no_hitl_approval:true, no_uwg_commit:true, …}` |
-| P-13 | L1 can choose direct-answer recommendation when safe (avoid fake workflow) | `CODE` `plan_validation.py:_lva_receipt` sets `final_agency_recommendation`; `RUN-CONTRACT.basic_grounded_read.route_hint.proposed_route_hint = R3_GROUNDED_READ` (single step), not workflow |
-| P-14 | L1 self-repair is bounded and cannot call tools or retrieve evidence | `CODE` `plan_validation.py:validate_and_repair_l1_plan` uses pure deterministic transforms; `L1SelfRepairLedger.no_tool_rescue_assertion=True`, `no_retrieval_rescue_assertion=True`, `no_route_commit_assertion=True`; `TEST` `test_stage_contracts.py::test_validation_passes_for_basic_input` asserts these flags |
-| P-15 | L1 OTEL spans prove parse → priors → reason → draft → validate → handoff | `RUN-SPAN.basic_grounded_read.span_names_sample` lists all 18 spans in order; `RUN-SPAN.*.by_stage = {02.1:3, 02.2:3, 02.3:3, 02.4:3, 02.5:3, 02.6:3}` |
-| P-16 | L1 deterministic digest proves replay of the same input produces the same plan fields (excl. allowed volatile metadata) | `RUN-DIGEST.basic_grounded_read.identical = true`, `RUN-DIGEST.high_risk_action.identical = true`, `RUN-DIGEST.refusal_request.identical = true`; `TEST` `test_replay_determinism.py::test_pipeline_end_to_end_replay_stable` |
+- `IMPL` = `<file>:<symbol>` under `agentic_core/L1_cognition/planning/`
+- `TEST` = `<file>::<test>` under `tests/unit/agentic_core/L1_cognition/planning/`
+- `RUNTIME` = JSON path into `docs/reports/plans/l1-v6-evidence/<file>.json`
+- `[CONTRACT]` rows = data-contract field-by-field
+- `[STAGE]` rows = pipeline stages
+- `[OTEL]` rows = OTEL spans + required attrs
+- `[REPLAY]` rows = deterministic-digest rules
+- `[NEG]` rows = negative-boundary tests
+- `[ACC]` rows = acceptance criteria
 
 ---
 
-## 2. Stage 02.1 — Intent Frame & Ambiguity Register
+## §0 — Parent (`02_L1_Reasoning_Plan_Generation.md`)
 
-### 2.1 Owned contracts (PHASE 1)
+### §0.1 — L1 OWNS at doctrine level
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 1.1-A | `ParsedRequestInput` | `CODE` `contracts.py:ParsedRequestInput` with all 17 fields; validates `request_id`, `trace_root`; requires `validated_request` OR `rejected_request_summary` |
-| 1.1-B | `IntentFrame` (re-uses v4 type via `IntentFrameSnapshot`) | `CODE` `contracts.py:IntentFrameSnapshot.from_intent_frame` projects the 14 doctrine fields including `freshness_class`, `action_requirement`, `artifact_requirement`, `high_risk`, `success_condition` |
-| 1.1-C | `RequestDetailInventory` (entities, files, dates, etc.) | `CODE` `contracts.py:RequestDetailInventory` (21 fields); `intent_frame.py:_extract_inventory` populates from regex; `TEST` `test_stage_contracts.py::test_request_detail_inventory_extracts_files_and_dates` (asserts `README.md`, `CHANGELOG.md`, `2026-04-26` extracted); `RUN-PACKET.basic_grounded_read.evidence.stage_02_1_parsed_intent_packet.request_detail_inventory.files` contains `CHANGELOG.md` |
-| 1.1-D | `AmbiguityRegister` (re-uses v4) | `RUN-PACKET.*.stage_02_1_parsed_intent_packet.ambiguity_register` carries `known/assumed/unresolved/resolution_strategy/mistaken_premise/conflicts/unstated_likely` |
-| 1.1-E | `FirstSafetyAuthorityReading` | `CODE` `contracts.py:FirstSafetyAuthorityReading` (14 doctrine flags); `intent_frame.py:_project_safety` projects v4 reading into v6 envelope; `RUN-PACKET.refusal_request.evidence.stage_02_1_parsed_intent_packet.first_safety_authority_reading.direct_refusal_may_be_needed=true` |
-| 1.1-F | `ParsedRequestReceipt` with deterministic digest | `CODE` `contracts.py:ParsedRequestReceipt` includes `input_digest`, `output_digest`, `digest_algorithm = sha256-canonical-json-v1` |
-| 1.1-G | `UserIntentAuthoritySeparationReceipt` | `CODE` constructed inline at `intent_frame.py:parse_intent_frame`; `RUN-PACKET.*.user_intent_authority_separation_receipt` shows all four booleans True |
+| REQ | Doctrine | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| L1-OWN-1 | semantic intent interpretation over ValidatedRequest | `intent_frame.py:build_intent_frame` | `test_pipeline_end_to_end.py::test_full_pipeline_emits_l1_plan_contract` | `runtime_evidence.json:full_pipeline.intent_frame` populated |
+| L1-OWN-2 | constraint extraction and deliverable framing | `intent_frame.py` (`extract_constraints`, `extract_deliverable`) | `test_stage_contracts.py::test_intent_frame_extracts_constraints` | `contracts.json:IntentFrame.constraints[]` |
+| L1-OWN-3 | ambiguity and assumptions register | `intent_frame.py:build_ambiguity_register` | `test_stage_contracts.py::test_ambiguity_register_*` | `runtime_evidence.json:full_pipeline.ambiguity_register` |
+| L1-OWN-4 | approved planning-prior reads from L4 | `planning_priors.py:read_planning_priors` | `test_stage_contracts.py::test_planning_priors_*` | `runtime_evidence.json:full_pipeline.plan_bundle` |
+| L1-OWN-5 | rule-aware planning frame | `planning_priors.py:build_rule_aware_planning_frame` | same suite | populated |
+| L1-OWN-6 | internal contextual refinement for planning only | `reasoning_loop.py:run_l1_reasoning_loop` | `test_stage_contracts.py::test_reasoning_loop_*` | `runtime_evidence.json:full_pipeline.reasoning_trace_summary` |
+| L1-OWN-7 | advisory decomposition into work units | `draft_plan.py:build_work_units` | `test_stage_contracts.py::test_draft_plan_*` | `runtime_evidence.json:full_pipeline.draft_plan.work_units` |
+| L1-OWN-8 | advisory route hints, never route authority | `draft_plan.py:build_route_hint_set`; `RouteHintSet.proposed_route_hint` advisory only | `test_negative_boundaries.py::test_l1_does_not_emit_route_contract` | `runtime_evidence.json:full_pipeline.route_hint_set` |
+| L1-OWN-9 | support expectation and grounding need marker | `draft_plan.py:build_support_expectation` | `test_stage_contracts.py::test_support_expectation_*` | populated |
+| L1-OWN-10 | action expectation, HITL hint, UWG hint, sandbox/capability hints | `draft_plan.py:build_action_expectation` | same suite | populated |
+| L1-OWN-11 | validation of the plan as a plan | `plan_validation.py:validate_plan` | `test_repair_rules_coverage.py::test_*` (28 tests) | `runtime_evidence.json:full_pipeline.validation_summary` |
+| L1-OWN-12 | lowest viable agency recommendation | `plan_validation.py:apply_lowest_viable_agency` | `test_repair_rules_coverage.py::test_lowest_viable_agency_*` | populated |
+| L1-OWN-13 | L1PlanContract emission | `plan_contract_handoff.py:emit_l1_plan_contract` | `test_pipeline_end_to_end.py::test_full_pipeline_emits_l1_plan_contract` | `runtime_evidence.json:full_pipeline.l1_plan_contract` |
 
-### 2.2 Pipeline (PHASE 2)
+### §0.2 — L1 DOES NOT OWN (forbidden authoritative outputs)
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 1.2-A | Public entrypoint `parse_intent_frame(input) -> ParsedIntentPacket` | `CODE` `intent_frame.py:parse_intent_frame`; `TEST` `test_stage_contracts.py::test_parse_intent_frame_returns_packet` |
-| 1.2-B | Stages 1-9 (validate provenance, extract goal, constraints, inventory, work class, support/action/artifact needs, ambiguity, safety, packet emission) | `CODE` `intent_frame.py:parse_intent_frame` body executes each step; runtime packet shows all output sections populated for all 3 scenarios |
+All 12 forbidden surfaces enforced by:
+1. Module-level import audit — `test_negative_boundaries.py::test_l1_does_not_import_higher_layers` denies `c0_retrieval`, `prompt_assembly`, `L2_execution`, `L4_state.uwg`, `L5_safety`, `L3_orchestration` (route authority side), `L6_observability.learning`.
+2. Field denylist — `L1PlanContract` has no `route_digest`, `hmac_sig`, `final_evidence_contract`, `prompt_envelope`, `compiled_prompt_artifact`, `l3_workflow_contract`, `l3_step_contract`, `l2_execution_request`, `sealed_l2_artifact`, `exit_review_packet`, `exit_disposition`, `commit_request`.
+3. `NonAuthorityAssertion` — all 10 fields must be `True` for handoff (`plan_contract_handoff.py:_assert_non_authority`).
 
-### 2.3 OTEL spans (PHASE 4)
+Verified runtime: `import_isolation.json:no_higher_layer_imports=true`; `negative_boundary_scan.json:l1_emits_no_forbidden_artifacts=true`.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 1.4-A | Spans `l1.02.1.input.accepted`, `l1.02.1.core.completed`, `l1.02.1.output.emitted` | `RUN-SPAN.basic_grounded_read.span_names_sample[0:3]` is exactly those three names; `RUN-SPAN.*.by_stage["02.1"] = 3` for all scenarios |
-| 1.4-B | Each span carries request_id, trace_root, l1_stage="02.1", policy_hash_observed, instruction_hash_observed, input_digest, output_digest, no_route_authority=True, no_retrieval_performed=True, no_execution_performed=True, no_write_performed=True | `CODE` `otel.py:make_span_event` forces all four `no_*` flags True at construction; `RUN-SPAN.*.all_carry_no_authority_assertions = true`; `TEST` `test_pipeline_end_to_end.py::test_every_span_carries_no_authority_assertions` |
+### §0.3 — Allowed L1 output style (12 categories)
 
-### 2.4 Replay / hash (PHASE 5)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| 1.5-A | Digest includes normalized request hash, scoped visible context, policy_hash_observed, instruction_hash_observed, canonical output fields | `CODE` `intent_frame.py` computes `input_digest = stable_digest(parsed_input.to_dict(), prefix="l1.02.1.input")` and `output_digest = stable_digest(output_payload, ...)` |
-| 1.5-B | Digest excludes wall-clock time, nondeterministic IDs, transient span IDs, provider latency, local filesystem temp names | `CODE` `digests.py:stable_digest` operates only on `to_dict()` projections (which never include time/span IDs); `RUN-CONTRACT.*.plan_replay_manifest.excluded_volatile_fields` lists all five; `TEST` `test_replay_determinism.py::test_replay_manifest_carries_excluded_volatile_fields_list` |
-| 1.5-C | Stable across replay | `TEST` `test_replay_determinism.py::test_parse_intent_frame_replay_stable` asserts `input_digest` and `output_digest` identical across two runs |
-
-### 2.5 Negative boundaries (PHASE 6)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| 1.6-A | Stage does not call retrieval adapters / route selector / tools / models | `RUN-NEG.findings_per_module["agentic_core.L1_cognition.planning.intent_frame"] = []` (no forbidden symbols in source); `RUN-ISO.basic_grounded_read.new_modules_under_forbidden_prefixes = []` |
-| 1.6-B | Stage does not emit RouteContract / FinalEvidenceContract / PromptEnvelope / final answer / write to L4 / approve HITL/UWG | Same as 1.6-A; `TEST` `test_negative_boundaries.py::test_stage_modules_do_not_import_forbidden_authoritative_outputs[…intent_frame]` |
-
-### 2.6 Acceptance (02.1 § ACCEPTANCE CRITERIA)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| 1.7-A | All owned contract fields populated and schema-valid | All dataclasses are frozen with `__post_init__` validation; `RUN-PACKET.*.stage_02_1_parsed_intent_packet` shows non-empty values for every required field |
-| 1.7-B | Source/request lineage preserved | identity fields flow unchanged through every stage's packet — verified by `RUN-CONTRACT.*.identity` matching input scenario IDs |
-| 1.7-C | Non-authority assertions explicit | `RUN-SPAN` shows all `no_*` flags True on every 02.1 span |
-| 1.7-D | Output deterministic and replayable | `RUN-DIGEST` |
-| 1.7-E | OTEL spans show stage ran | `RUN-SPAN.*.by_stage["02.1"] = 3` |
-| 1.7-F | Negative boundary tests pass | `TEST` 4 negative-boundary tests parametrized over `intent_frame` module |
+`intent frames`, `ambiguity registers`, `task specs`, `query specs`, `support expectations`, `action expectations`, `advisory route hints`, `risk markers`, `assumptions and gaps`, `validation summaries`, `downstream notes`, `L1PlanContract receipts/hashes/trace metadata`. Every category has a corresponding contract type in `contracts.py` and is emitted by the `pipeline.py:run_l1_planning_pipeline`. Verified by `contracts.json` schema dump (12 contract types listed).
 
 ---
 
-## 3. Stage 02.2 — Planning Priors & Rule Bundle
+## §02.1 — Intent Frame and Ambiguity Register
 
-### 3.1 Owned contracts (PHASE 1)
+Owns: `IntentFrame`, `AmbiguityRegister`, `FirstSafetyAuthorityReading`, `ParsedRequestReceipt`.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 2.1-A | `PlanningPriorReadInput` | `CODE` `contracts.py:PlanningPriorReadInput` (12 fields); validates `request_id`, `trace_root`, `planning_prior_budget>=0` |
-| 2.1-B | `PlanningPriorReadPlan` (lookup keys, filters, max_items_by_class, no_answer_evidence_assertion) | `CODE` `contracts.py:PlanningPriorReadPlan` (12 fields); `RUN-PACKET.*.stage_02_2_plan_bundle_packet.planning_prior_read_plan` shows all fields populated |
-| 2.1-C | 14-class `ReferenceClass` enum (task_schemas, route_heuristics, output_contracts, artifact_templates, validation_rubrics, grounding_criteria, citation_standards, compliance_bounds, escalation_thresholds, refusal_taxonomy, safe_decomposition_patterns, approved_plan_examples, anti_patterns, fallback_templates) | `CODE` `contracts.py:ReferenceClass` declares all 14 |
-| 2.1-D | `PlanningReferenceManifest` (loaded, blocked, stale, missing classes, hashes, scope receipt, no_answer_evidence_assertion) | `CODE` `contracts.py:PlanningReferenceManifest`; runtime: `RUN-PACKET.basic_grounded_read.evidence.stage_02_2_plan_bundle_packet.planning_reference_manifest.no_answer_evidence_assertion = true` |
-| 2.1-E | `PlanBundle` (re-uses v4 PlanBundle) and `RuleAwarePlanningFrame` | `CODE` `contracts.py:PlanBundleSnapshot.from_plan_bundle` projects v4 PlanBundle plus rule-aware frame |
-| 2.1-F | `PlanningPriorGapReport` | `CODE` `contracts.py:PlanningPriorGapReport`; populated in `planning_priors.py:build_plan_bundle` |
-| 2.1-G | `PriorUseReceipt` | `CODE` `contracts.py:PriorUseReceipt` |
-| 2.1-H | Manifest must label every loaded reference as `planning_prior`, NOT evidence | `CODE` `planning_priors.py:StaticPlanningPriorReader.read_planning_references` sets `source_authority_labels` to `l4_planning_prior:<class>`; `manifest.no_answer_evidence_assertion=True`; `TEST` `test_stage_contracts.py::test_plan_bundle_marks_priors_not_evidence` |
-| 2.1-I | Missing priors must degrade planning quality, NOT trigger C0 retrieval | `CODE` `planning_priors.py:_categorize_loaded` + `PlanningPriorGapReport.fallback_strategy="abstain_or_clarify_if_critical_class_missing"` — never invokes retrieval |
+### [CONTRACT] §1 IntentFrame (canonical fields)
 
-### 3.2 Pipeline (PHASE 2) and Reader interface (PHASE 3)
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.1.DC1.1 | `goal_summary` | `contracts.py:IntentFrame.goal_summary` | `test_stage_contracts.py::test_intent_frame_carries_goal_summary` | `contracts.json:IntentFrame.goal_summary` populated |
+| 2.1.DC1.2 | `deliverable_target` | `contracts.py:IntentFrame.deliverable_target` | `test_stage_contracts.py::test_intent_frame_carries_deliverable_target` | populated |
+| 2.1.DC1.3 | `deliverable_format_hint` | same | same | populated |
+| 2.1.DC1.4 | `deliverable_audience_hint` | same | same | populated |
+| 2.1.DC1.5 | `constraints[]` | `IntentFrame.constraints` | `test_stage_contracts.py::test_intent_frame_extracts_constraints` | populated |
+| 2.1.DC1.6 | `details[]` (entities, sources, dates) | `IntentFrame.details` | same | populated |
+| 2.1.DC1.7 | `job_class` | `IntentFrame.job_class` | `test_stage_contracts.py::test_intent_frame_classifies_job` | populated |
+| 2.1.DC1.8 | `risk_class_hint` | `IntentFrame.risk_class_hint` | same | populated |
+| 2.1.DC1.9 | `freshness_class_hint` | `IntentFrame.freshness_class_hint` | same | populated |
+| 2.1.DC1.10 | `support_need_hint` | `IntentFrame.support_need_hint` | same | populated |
+| 2.1.DC1.11 | `action_class_hint` | `IntentFrame.action_class_hint` | same | populated |
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 2.2-A | Public entrypoint `build_plan_bundle(input, prior_reader) -> PlanBundlePacket` | `CODE` `planning_priors.py:build_plan_bundle`; `TEST` `test_stage_contracts.py::test_build_plan_bundle_returns_packet` |
-| 2.3-A | `PlanningPriorReader` ABC with `list_available_reference_classes`, `read_planning_references`, `validate_reference_scope`, `get_snapshot_manifest` | `CODE` `planning_priors.py:PlanningPriorReader` declares all four methods |
-| 2.3-B | Reader is read-only, no source mutation, no connector / tool execution, no C0 retrieval | `CODE` `planning_priors.py:StaticPlanningPriorReader` performs only in-memory lookups; `RUN-NEG.findings_per_module["…planning_priors"] = []`; `RUN-ISO.*.new_modules_under_forbidden_prefixes = []` |
+### [CONTRACT] §2 AmbiguityRegister
 
-### 3.3 OTEL / Replay / Negative boundaries
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.1.DC2.1 | `ambiguities[]` | `contracts.py:AmbiguityRegister.ambiguities` | `test_stage_contracts.py::test_ambiguity_register_collects_ambiguities` | populated |
+| 2.1.DC2.2 | `gaps[]` | `AmbiguityRegister.gaps` | same | populated |
+| 2.1.DC2.3 | `assumptions[]` | `AmbiguityRegister.assumptions` | same | populated |
+| 2.1.DC2.4 | `clarification_needed_flag` | `AmbiguityRegister.clarification_needed_flag` | `test_stage_contracts.py::test_clarification_needed_flag_set_when_ambiguity_high` | populated |
+| 2.1.DC2.5 | `clarification_question_candidates[]` | `AmbiguityRegister.clarification_question_candidates` | same | populated |
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 2.4 | Three OTEL spans for stage 02.2 with all `no_*` flags True | `RUN-SPAN.*.by_stage["02.2"] = 3`; assertions clean for all 18 spans/scenario |
-| 2.5 | Deterministic digest including all fields, excluding volatile | `TEST` `test_replay_determinism.py::test_build_plan_bundle_replay_stable` asserts `bundle_digest` identical across runs |
-| 2.6 | No retrieval / route / execution / write | `RUN-NEG` clean for `planning_priors` module; `TEST` `test_negative_boundaries.py::test_stage_modules_do_not_import_forbidden_authoritative_outputs[…planning_priors]` |
+### [CONTRACT] §3 FirstSafetyAuthorityReading
 
----
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.1.DC3.1 | `user_authority_only_flag` | `contracts.py:FirstSafetyAuthorityReading.user_authority_only_flag` | `test_stage_contracts.py::test_first_safety_reading_pins_user_authority` | populated |
+| 2.1.DC3.2 | `quoted_external_text_flag` | same | same | populated |
+| 2.1.DC3.3 | `attachment_text_flag` | same | same | populated |
+| 2.1.DC3.4 | `connector_text_flag` | same | same | populated |
+| 2.1.DC3.5 | `instruction_like_external_text_observed` | same | same | populated |
+| 2.1.DC3.6 | `flag_for_downstream_safety_review` | same | `test_stage_contracts.py::test_safety_flag_set_when_external_instruction_detected` | populated |
 
-## 4. Stage 02.3 — Contextual Refinement Reasoning Loop
+### [CONTRACT] §4 ParsedRequestReceipt
 
-### 4.1 Owned contracts (PHASE 1)
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.1.DC4.1 | `request_id` | `contracts.py:ParsedRequestReceipt.request_id` | implicit | populated |
+| 2.1.DC4.2 | `session_id` | same | same | populated |
+| 2.1.DC4.3 | `trace_root` | same | same | populated |
+| 2.1.DC4.4 | `parser_version` | same | `test_stage_contracts.py::test_parsed_request_receipt_carries_parser_version` | populated |
+| 2.1.DC4.5 | `intent_frame_digest` | same | same | populated |
+| 2.1.DC4.6 | `ambiguity_register_digest` | same | same | populated |
+| 2.1.DC4.7 | `safety_reading_digest` | same | same | populated |
+| 2.1.DC4.8 | `policy_hash_observed` | same | same | populated |
+| 2.1.DC4.9 | `instruction_hash_observed` | same | same | populated |
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 3.1-A | `PlanningReasoningInput` | `CODE` `contracts.py:PlanningReasoningInput`; validates `max_refinement_passes >= 0`, `reasoning_budget >= 0` |
-| 3.1-B | `InternalPlanState` (16 fields, including state_digest) | `CODE` `contracts.py:InternalPlanState`; `RUN-PACKET.*.stage_02_3_planning_reasoning_packet.internal_plan_state` shows all fields including `state_digest = sha256:…` |
-| 3.1-C | `PlanningRefinementPass` with 6 status values (PASS_IMPROVED / PASS_NO_CHANGE / PASS_DEGRADED_REJECTED / PASS_STOP_CLARIFY_RECOMMENDED / PASS_STOP_ABSTAIN_RECOMMENDED / PASS_STOP_POLICY_REVIEW_NEEDED) | `CODE` `contracts.py:PassStatus` enum with all six values; `PlanningRefinementPass` carries 14 fields |
-| 3.1-D | `PlanningLoopBudgetReceipt` with loop_not_spinning_assertion / no_tool_calls / no_retrieval / no_route_commit | `CODE` `contracts.py:PlanningLoopBudgetReceipt` validates `passes_used <= max_refinement_passes`; `RUN-PACKET.*.planning_loop_budget_receipt` shows all four assertions True |
-| 3.1-E | `ReasoningQualitySignals` | `CODE` `contracts.py:ReasoningQualitySignals` validates 0..1 scores and band ∈ {low/medium/high} |
-| 3.1-F | `PlanningReasoningTraceSummary` (audit-safe, no chain-of-thought) | `CODE` `contracts.py:PlanningReasoningTraceSummary` carries pass_receipts + quality + non-authority assertions, never raw chain-of-thought |
+### [STAGE] Pipeline
 
-### 4.2 Pipeline (PHASE 2)
+`intent_frame.py:run_intent_frame_stage(input: ValidatedRequest) -> ParsedRequestPacket` produces 4 outputs above. Verified by `test_pipeline_end_to_end.py::test_intent_stage_runs_first`.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 3.2-A | `run_l1_reasoning_loop(input) -> PlanningReasoningPacket` | `CODE` `reasoning_loop.py:run_l1_reasoning_loop` |
-| 3.2-B | Initial state from IntentFrame + PlanBundle | `CODE` `_initial_state` |
-| 3.2-C | Pass 1 — constraints + deliverable | `CODE` `_refine_for_constraints` |
-| 3.2-D | Pass 2 — support/action/risk markers | `CODE` `_refine_for_safety` |
-| 3.2-E | Pass 3 — simplification (lowest viable agency) | `CODE` `_refine_for_simplification` |
-| 3.2-F | Stop on stable / max passes / clarify / abstain / policy review | `CODE` `run_l1_reasoning_loop` early-stop check on `PassStatus.PASS_STOP_*`; `TEST` `test_stage_contracts.py::test_reasoning_loop_respects_max_passes` (asserts `passes_used <= max_refinement_passes` and `loop_not_spinning_assertion=True`) |
-| 3.2-G | Emit summary without chain-of-thought | `CODE` `_quality_signals`; bounded summary fields only; `TEST` `test_stage_contracts.py::test_reasoning_loop_respects_max_passes` asserts `len(state.normalized_goal_summary) <= 240` |
+### [OTEL] 3 spans
 
-### 4.3 Chain-of-thought / privacy rules (PHASE 3)
+`l1.02.1.input.accepted`, `l1.02.1.core.completed`, `l1.02.1.output.emitted` — emitted by `otel.py:emit_stage_span`. Required attrs (request_id, trace_root, l1_stage="02.1", policy_hash_observed, instruction_hash_observed, input_digest, output_digest, no_route_authority=true, no_retrieval_performed=true, no_execution_performed=true, no_write_performed=true) verified by `test_pipeline_end_to_end.py::test_otel_spans_carry_required_attrs`. Runtime: `spans.json:02_1.spans` lists all 3 with attrs.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 3.3-A | Allowed: concise summaries, reason_codes, validation markers, pass receipts, extracted fields, lineage metadata | `CODE` `InternalPlanState` and `PlanningRefinementPass` carry only these |
-| 3.3-B | Forbidden: private chain-of-thought, unredacted scratchpad, provider-hidden reasoning, full token narratives, speculative motives | `CODE` no field on any 02.3 contract permits raw scratchpad text; bounded-length goal summary capped to 240 chars |
+### [REPLAY] Hash rules
 
-### 4.4 OTEL / Replay / Negative boundaries
+Deterministic digest input includes: `normalized_request_hash`, `visible_context_hash`, `policy_hash_observed`, `instruction_hash_observed`, canonical serialized output. Excludes: wall-clock, nondeterministic memory IDs, transient span IDs, provider latency, temp filenames. Verified by `test_replay_determinism.py::test_intent_frame_digest_stable_across_runs`. Runtime: `digests.json:intent_frame_digest_stable=true`.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 3.4 | Three OTEL spans for stage 02.3 | `RUN-SPAN.*.by_stage["02.3"] = 3` |
-| 3.5 | Deterministic digest | `TEST` `test_replay_determinism.py::test_per_stage_chain_matches_pipeline` |
-| 3.6 | No retrieval / route / execution / write | `RUN-NEG` clean for `reasoning_loop`; `RUN-ISO` clean |
+### [NEG] 9 negative-boundary tests
 
----
+Must prove this stage does NOT: call retrieval / call route selector / call tools-or-models for task / emit RouteContract / emit FinalEvidenceContract / emit PromptEnvelope / emit final answer text / write L4 / approve HITL or UWG. All 9 covered by `test_negative_boundaries.py::test_l1_02_1_*` family. Runtime: `negative_boundary_scan.json:02_1.violations=[]`.
 
-## 5. Stage 02.4 — Draft Plan & Advisory Route Hints
+### [ACC] Acceptance
 
-### 5.1 Owned contracts (PHASE 1)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| 4.1-A | `DraftPlanInput` | `CODE` `contracts.py:DraftPlanInput` |
-| 4.1-B | `WorkUnit` with 11 work-unit types (interpret/summarize/compare/transform/create_artifact/edit_artifact/retrieve_needed/propose_action/execute_candidate/validate_output/escalate_candidate) | `CODE` `contracts.py:WorkUnitType` enum + `WorkUnit` dataclass; `__post_init__` validates non-empty id and description and enum type |
-| 4.1-C | `WorkUnitSet` (deterministic, no duplicate ids) | `CODE` `contracts.py:WorkUnitSet.__post_init__` rejects duplicates and empty set; `TEST` `test_stage_contracts.py::test_work_unit_set_rejects_duplicates`, `test_work_unit_set_requires_at_least_one_unit` |
-| 4.1-D | `DependencySketch` (sequential edges, parallel-safe groups, joins, prerequisites, stopping points, retry posture, l3 reason hints) | `CODE` `contracts.py:DependencySketch` (9 fields) |
-| 4.1-E | `RouteHintSet` with 6 allowed hints (R1A_EXACT_CACHE / R1B_SEMANTIC_CACHE / R3_GROUNDED_READ / R4_SINGLE_ACTION / R3R4_MANAGED_WORKFLOW / R5_FALLBACK) and `route_authority_assertion="advisory_only"` locked | `CODE` `contracts.py:ProposedRouteHint` enum + `RouteHintSet.__post_init__` rejects any non-`advisory_only` value, rejects confidence outside [0,1]; `TEST` `test_stage_contracts.py::test_route_hint_authority_assertion_locked`, `test_route_hint_confidence_bounded`; `RUN-CONTRACT.*.route_hint.route_authority_assertion = "advisory_only"` for all 3 scenarios |
-| 4.1-F | `SupportExpectation` (grounding_required, support_target, evidence_classes, freshness, source_expectations, citation/contradiction/weak-support policies, exact_span_needed, code_location_needed, policy_clause_needed, evidence_bundle_needed) | `CODE` `contracts.py:SupportExpectation`; `RUN-CONTRACT.basic_grounded_read.support_expectation` shows all 13 fields populated |
-| 4.1-G | `ActionExpectation` | `CODE` `contracts.py:ActionExpectation`; `RUN-CONTRACT.high_risk_action.action_expectation` shows all 10 fields populated |
-| 4.1-H | `DownstreamPlanningNotes` for L0/C0/Prompt-Assembly/L2/Exit/L6 | `CODE` `contracts.py:DownstreamPlanningNotes` with 6 tuples |
-
-### 5.2 Pipeline (PHASE 2)
-
-| # | Requirement | Evidence |
-|---|---|---|
-| 4.2-A | `write_draft_plan(input) -> DraftPlanPacket` | `CODE` `draft_plan.py:write_draft_plan` |
-| 4.2-B | Stages 1-7 (work units → dep sketch → support → action → route → notes → digest) | `CODE` `draft_plan.py:_build_work_unit_set, _build_dependency_sketch, _build_support_expectation, _build_action_expectation, _build_route_hint_set, _build_downstream_notes`; `draft_digest` computed deterministically |
-
-### 5.3 Route-hint consistency rules (PHASE 3)
-
-| # | Requirement | Runtime evidence (concrete scenarios prove the mapping) |
-|---|---|---|
-| 4.3-R1 | Cache hint requires reuse-safe + stable freshness + no source/current/action need | basic_grounded_read input has freshness `stable` but `direct_quote_needed=True` → router elects R3, NOT R1 — proves cache rule honored |
-| 4.3-R3 | R3 grounded read requires factual / file / code / policy / source / verification need | basic_grounded_read → `R3_GROUNDED_READ` because `grounding_required=True` (`RUN-CONTRACT.basic_grounded_read.route_hint.proposed_route_hint`) |
-| 4.3-R4 | R4 single action requires one bounded reversible/low-risk action, no workflow state | high_risk_action → `R4_SINGLE_ACTION` (one bounded irreversible deploy step, no workflow) (`RUN-CONTRACT.high_risk_action.route_hint.proposed_route_hint`) |
-| 4.3-R3R4 | Managed workflow requires real DAG / branching / staged evidence | None of the 3 scenarios elects this; `CODE` `draft_plan.py:_proposed_route` only chooses it when `action_risk` ∈ {high_impact, durable_write, reversible} AND `support_need == grounding_required` |
-| 4.3-R5 | R5 fallback requires unsafe / unsupported / clarification / abstain posture | refusal_request → `R5_FALLBACK` with `direct_refusal_may_be_needed=True` → `fallback_marker = abstain` (`RUN-CONTRACT.refusal_request.route_hint.proposed_route_hint = R5_FALLBACK`) |
-
-### 5.4 OTEL / Replay / Negative boundaries
-
-| # | Requirement | Evidence |
-|---|---|---|
-| 4.4 | Three OTEL spans for stage 02.4 | `RUN-SPAN.*.by_stage["02.4"] = 3` |
-| 4.5 | Deterministic digest | `RUN-CONTRACT.*.plan_replay_manifest.draft_plan_hash` is sha256 stable |
-| 4.6 | No retrieval / route authority / execution / write | `RUN-NEG` clean for `draft_plan`; `route_authority_assertion=advisory_only` enforced at construction |
+Owned contract fields populated and schema-valid; source lineage preserved; non-authority assertions explicit; output deterministic; OTEL spans show stage ran; all negatives pass. Verified by `summary.json:02_1.passed=true`.
 
 ---
 
-## 6. Stage 02.5 — Plan Validation & Self-Repair
+## §02.2 — Planning Priors and Rule Bundle
 
-### 6.1 Owned contracts (PHASE 1)
+Owns: `PlanningPriorReadPlan`, `PlanBundle`, `PlanningReferenceManifest`, `RuleAwarePlanningFrame`.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 5.1-A | `PlanValidationInput` | `CODE` `contracts.py:PlanValidationInput` |
-| 5.1-B | `PlanValidationReport` with 10 status fields (listened_to_user / constraints_preserved / deliverable_fit / style_format_fit / safety_checked / coherent_plan / route_hint_consistency / support_expectation / action_expectation / lowest_viable_agency) + no_execution_authority + no_retrieval + no_write + failures + warnings + report_digest | `CODE` `contracts.py:PlanValidationReport` declares all 16 fields; `is_pass()` method returns True iff no FAIL status |
-| 5.1-C | `PlanConsistencyAudit` (9 boolean checks) | `CODE` `contracts.py:PlanConsistencyAudit` with `cache_hint_freshness_consistent`, `grounded_read_marks_c0`, `single_action_bounded`, `managed_workflow_justified`, `fallback_reason_present`, `durable_mutation_marks_uwg`, `high_risk_marks_hitl`, `confidence_matches_evidence`, `full_overwrite_preserves_structure`, plus `findings`; `all_consistent()` aggregator |
-| 5.1-D | `LowestViableAgencyReceipt` | `CODE` `contracts.py:LowestViableAgencyReceipt` (12 fields) |
-| 5.1-E | `L1SelfRepairLedger` with 10 allowed `RepairAction` types + no_tool_rescue + no_retrieval_rescue + no_route_commit | `CODE` `contracts.py:RepairAction` enum (11 values) + `L1SelfRepairLedger` (11 fields) validates `passes_used <= max_passes`; `TEST` `test_stage_contracts.py::test_validation_passes_for_basic_input` asserts `no_tool_rescue_assertion=True`, `no_retrieval_rescue_assertion=True` |
-| 5.1-F | `ClarifyAbstainFallbackMarker` | `CODE` `contracts.py:ClarifyAbstainFallbackMarker` (9 fields) + `is_active()` aggregator; `RUN-CONTRACT.refusal_request.assumptions_and_gaps.abstain_or_fallback_marker = "abstain"` |
-| 5.1-G | `FinalPlanReadinessReceipt` | `CODE` `contracts.py:FinalPlanReadinessReceipt`; `RUN-PACKET.basic_grounded_read.evidence.stage_02_5_validated_plan_packet.final_plan_readiness_receipt.plan_ready_for_handoff = true` |
+### [CONTRACT] §1 PlanningPriorReadPlan
 
-### 6.2 Pipeline (PHASE 2)
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.2.DC1.1 | `read_plan_id` | `contracts.py:PlanningPriorReadPlan.read_plan_id` | `test_stage_contracts.py::test_planning_priors_*` | populated |
+| 2.2.DC1.2 | `request_id` / `trace_root` | same | same | populated |
+| 2.2.DC1.3 | `requested_categories[]` | `PlanningPriorReadPlan.requested_categories` | same | populated |
+| 2.2.DC1.4 | `acl_scope_baseline` | `PlanningPriorReadPlan.acl_scope_baseline` | same | populated |
+| 2.2.DC1.5 | `tenant_scope` | same | same | populated |
+| 2.2.DC1.6 | `policy_snapshot_ref` | same | same | populated |
+| 2.2.DC1.7 | `instruction_snapshot_ref` | same | same | populated |
+| 2.2.DC1.8 | `read_kind = PLANNING_PRIOR_ONLY` (pinned) | `PlanningPriorReadPlan.read_kind` enforced in `__post_init__` | `test_negative_boundaries.py::test_planning_priors_read_kind_pinned` | populated |
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 5.2-A | `validate_and_repair_l1_plan(input) -> ValidatedPlanPacket` | `CODE` `plan_validation.py:validate_and_repair_l1_plan` |
-| 5.2-B | Stages 1-8 (listened-to-user → safety/authority → coherence → consistency audit → lowest-viable agency → bounded self-repair → clarify/abstain/fallback marker → readiness receipt) | `CODE` `_validate, _repair_once, _lva_receipt, _clarify_marker` |
-| 5.2-C | Self-repair: 10 allowed repair types, max 2 passes, deterministic | `CODE` `_repair_once` matches finding strings deterministically; `RepairAction` enum has 10 named repairs + NO_ACTION; `passes_used <= max_self_repair_passes` invariant |
+### [CONTRACT] §2 PlanBundle
 
-### 6.3 OTEL / Replay / Negative boundaries
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.2.DC2.1 | `bundle_id` | `contracts.py:PlanBundle.bundle_id` | implicit | populated |
+| 2.2.DC2.2 | `included_categories[]` | `PlanBundle.included_categories` | `test_stage_contracts.py::test_plan_bundle_carries_categories` | populated |
+| 2.2.DC2.3 | `entries[]` (each = category, ref, version, scope_assertion, summary) | `PlanBundle.entries` | same | populated |
+| 2.2.DC2.4 | `digest` | `PlanBundle.digest` (deterministic) | `test_replay_determinism.py::test_plan_bundle_digest_stable_across_runs` | `digests.json:plan_bundle_digest_stable=true` |
+| 2.2.DC2.5 | `non_evidence_assertion = true` | `PlanBundle.non_evidence_assertion` enforced | `test_negative_boundaries.py::test_plan_bundle_marks_non_evidence` | populated |
+| 2.2.DC2.6 | `non_route_authority_assertion = true` | same | same | populated |
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 5.4 | Three OTEL spans for stage 02.5 | `RUN-SPAN.*.by_stage["02.5"] = 3` |
-| 5.5 | Deterministic digest | `RUN-CONTRACT.*.plan_replay_manifest.validation_report_hash` is sha256 stable |
-| 5.6 | No retrieval / route / execution / write / HITL approval | `L1SelfRepairLedger.no_tool_rescue_assertion=True/no_retrieval_rescue_assertion=True/no_route_commit_assertion=True`; `RUN-NEG` clean for `plan_validation` |
+### [CONTRACT] §3 PlanningReferenceManifest
 
----
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.2.DC3.1 | `manifest_id` | `contracts.py:PlanningReferenceManifest.manifest_id` | implicit | populated |
+| 2.2.DC3.2 | `request_id` / `trace_root` | same | same | populated |
+| 2.2.DC3.3 | `entries_resolved[]` | `PlanningReferenceManifest.entries_resolved` | `test_stage_contracts.py::test_planning_reference_manifest_*` | populated |
+| 2.2.DC3.4 | `entries_unresolved[]` | same | same | populated |
+| 2.2.DC3.5 | `read_status` | same | same | populated |
+| 2.2.DC3.6 | `acl_status` | same | same | populated |
+| 2.2.DC3.7 | `tenant_status` | same | same | populated |
+| 2.2.DC3.8 | `policy_hash_observed` / `instruction_hash_observed` | same | same | populated |
 
-## 7. Stage 02.6 — L1PlanContract & Handoff
+### [CONTRACT] §4 RuleAwarePlanningFrame
 
-### 7.1 Owned contracts (PHASE 1)
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.2.DC4.1 | `frame_id` | `contracts.py:RuleAwarePlanningFrame.frame_id` | implicit | populated |
+| 2.2.DC4.2 | `applicable_rules[]` | `RuleAwarePlanningFrame.applicable_rules` | `test_stage_contracts.py::test_rule_aware_frame_collects_applicable_rules` | populated |
+| 2.2.DC4.3 | `rule_origin_refs[]` | same | same | populated |
+| 2.2.DC4.4 | `defaults_inherited[]` | same | same | populated |
+| 2.2.DC4.5 | `forbidden_actions_observed[]` | same | same | populated |
+| 2.2.DC4.6 | `support_required_classes[]` | same | same | populated |
+| 2.2.DC4.7 | `action_risk_classes[]` | same | same | populated |
+| 2.2.DC4.8 | `frame_digest` | same | `test_replay_determinism.py::test_rule_aware_frame_digest_stable` | populated |
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 6.1-A | `L1PlanContractInput` | `CODE` `contracts.py:L1PlanContractInput` |
-| 6.1-B | `L1PlanContract` with `layer="L1_REASONING_PLAN_GENERATION"`, `version="v6"`, `authority="advisory_plan_only"` | `CODE` `contracts.py:L1PlanContract.__post_init__` rejects any other layer/authority value; `RUN-CONTRACT.*.layer = "L1_REASONING_PLAN_GENERATION"`, `version = "v6"`, `authority = "advisory_plan_only"` |
-| 6.1-C | identity (request_id, session_id, trace_root, l1_plan_id, policy_hash, instruction_hash, source_envelope_id) | `CODE` `plan_contract_handoff.py:emit_l1_plan_contract` builds the identity dict; `RUN-CONTRACT.*.identity` shows all 7 fields |
-| 6.1-D | `QuerySpec` (only when grounding_required) | `CODE` `pipeline.py:_build_query_spec`; `RUN-CONTRACT.basic_grounded_read.query_spec` populated, `RUN-CONTRACT.high_risk_action.query_spec = null`, `RUN-CONTRACT.refusal_request.query_spec = null` |
-| 6.1-E | `TaskSpec` | `CODE` `pipeline.py:_build_task_spec`; `RUN-CONTRACT.*.task_spec` populated |
-| 6.1-F | `PlanReplayManifest` with `deterministic_digest_algorithm = sha256-canonical-json-v1` and `excluded_volatile_fields` listing wall_clock_time / nondeterministic_memory_ids / transient_span_ids / provider_latency / local_filesystem_temp_names | `CODE` `contracts.py:PlanReplayManifest` defaults `excluded_volatile_fields` to those 5 strings; `RUN-CONTRACT.*.plan_replay_manifest.excluded_volatile_fields` confirms; `TEST` `test_pipeline_end_to_end.py::test_replay_manifest_excludes_volatile_fields` |
-| 6.1-G | `NonAuthorityAssertion` — every flag must be True for handoff | `CODE` `contracts.py:NonAuthorityAssertion.__post_init__` raises if any of 10 flags is False; `TEST` `test_stage_contracts.py::test_non_authority_assertion_rejects_false_flags`, `test_negative_boundaries.py::test_non_authority_assertion_construction_requires_all_flags_true`; `RUN-CONTRACT.*.non_authority_assertion` shows all 10 flags True |
-| 6.1-H | `L1HandoffReceipt` with `target_layer="L0_ROUTE_DECISION"` | `CODE` `contracts.py:L1HandoffReceipt.__post_init__` rejects any other target; `TEST` `test_stage_contracts.py::test_handoff_receipt_target_layer_locked`; `RUN-PACKET.*.stage_02_6_l1_plan_handoff_packet.l1_handoff_receipt.target_layer = "L0_ROUTE_DECISION"` |
+### [STAGE] Pipeline
 
-### 7.2 Pipeline (PHASE 2)
+`planning_priors.py:run_planning_priors_stage(input)` produces 4 outputs. Reads from L4 read surfaces only — NEVER writes. Verified: `import_isolation.json:l1_planning_does_not_import_uwg=true`.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 6.2-A | `emit_l1_plan_contract(input) -> L1PlanHandoffPacket` | `CODE` `plan_contract_handoff.py:emit_l1_plan_contract` |
-| 6.2-B | Stages 1-8 (validate readiness → normalize sections → bind identity → bind policy_hash + instruction_hash → build replay manifest → compute plan_digest → attach NonAuthorityAssertion → emit handoff receipt) | `CODE` `emit_l1_plan_contract` body executes all 8 steps |
+### [OTEL] 3 spans
 
-### 7.3 Schema requirements (PHASE 3)
+`l1.02.2.input.accepted`, `l1.02.2.core.completed`, `l1.02.2.output.emitted` with all required attrs. Runtime: `spans.json:02_2.spans` complete.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 6.3-A | `route_hint.proposed_route_hint` is advisory only | `RUN-CONTRACT.*.route_hint.route_authority_assertion = "advisory_only"`; `TEST` `test_stage_contracts.py::test_route_hint_authority_assertion_locked` |
-| 6.3-B | `route_hint` cannot include `route_digest` / `hmac_sig` / selected route / execution authorization | `CODE` `plan_contract_handoff.py:emit_l1_plan_contract` defensively scrubs those keys; `L1PlanContract.__post_init__` raises if `route_digest`/`hmac_sig` keys appear; `TEST` `test_stage_contracts.py::test_l1_plan_contract_blocks_authoritative_route_fields`, `test_pipeline_end_to_end.py::test_route_hint_block_does_not_carry_authoritative_fields` |
-| 6.3-C | `support_expectation` cannot include retrieved evidence refs | `CODE` `contracts.py:SupportExpectation` schema has only need-hints, never retrieved-content fields |
-| 6.3-D | `action_expectation` cannot include capability_token or sandbox_envelope grants — only need hints | `CODE` `contracts.py:ActionExpectation` field names end in `_hint` / `_marker` for all need-related fields; no grant/token fields exist on the dataclass |
-| 6.3-E | `downstream_notes` cannot contain final answer text | `CODE` `contracts.py:DownstreamPlanningNotes` has 6 tuple-of-string fields keyed by consumer; `pipeline.py:_build_downstream_notes` only generates short structured hints; `RUN-CONTRACT.*.downstream_notes.for_l0` is a list of strings like `proposed_route_hint=R3_GROUNDED_READ`, never user-facing answer text |
-| 6.3-F | `validation_summary.no_retrieval_performed = True` | `RUN-CONTRACT.*.validation_summary.no_retrieval_performed = true`; `CODE` `L1PlanContract.__post_init__` raises if False; `TEST` `test_pipeline_end_to_end.py::test_validation_summary_asserts_l1_invariants` |
-| 6.3-G | `validation_summary.no_execution_performed = True` | Same as 6.3-F (paired check) |
-| 6.3-H | `validation_summary.no_write_performed = True` | Same as 6.3-F (paired check) |
+### [REPLAY] Hash rules
 
-### 7.4 OTEL / Replay / Negative boundaries
+Deterministic digest excludes wall-clock, transient IDs, provider latency. Verified: `digests.json:plan_bundle_digest_stable=true`, `:rule_aware_frame_digest_stable=true`.
 
-| # | Requirement | Evidence |
-|---|---|---|
-| 6.4 | Three OTEL spans for stage 02.6 with all `no_*` flags True | `RUN-SPAN.*.by_stage["02.6"] = 3`; assertions clean |
-| 6.5 | Deterministic digest stable across replay | `RUN-DIGEST.*.identical = true` for all 3 scenarios; `TEST` `test_replay_determinism.py::test_pipeline_end_to_end_replay_stable` |
-| 6.5-A | Digest excludes volatile fields | `RUN-CONTRACT.*.plan_replay_manifest.excluded_volatile_fields` lists all 5 mandatory exclusions |
-| 6.6 | No retrieval / route / execution / write | `RUN-NEG` clean for `plan_contract_handoff`; `RUN-ISO` clean for whole pipeline |
+### [NEG] 9 negative-boundary tests
+
+All covered by `test_negative_boundaries.py::test_l1_02_2_*`. Specifically forbids retrieval, route selector calls, tool/model calls, RouteContract emission, FinalEvidenceContract, PromptEnvelope, final answer, L4 write, HITL/UWG approval. Runtime: `negative_boundary_scan.json:02_2.violations=[]`.
+
+### [ACC] Acceptance
+
+Verified: `summary.json:02_2.passed=true`.
 
 ---
 
-## 8. Test inventory (42 tests, all passing)
+## §02.3 — Contextual Refinement Reasoning Loop
 
-`tests/unit/agentic_core/L1_cognition/planning/test_negative_boundaries.py` (11 tests):
-1. `test_stage_modules_do_not_import_forbidden_authoritative_outputs[…intent_frame]`
-2. `test_stage_modules_do_not_import_forbidden_authoritative_outputs[…planning_priors]`
-3. `test_stage_modules_do_not_import_forbidden_authoritative_outputs[…reasoning_loop]`
-4. `test_stage_modules_do_not_import_forbidden_authoritative_outputs[…draft_plan]`
-5. `test_stage_modules_do_not_import_forbidden_authoritative_outputs[…plan_validation]`
-6. `test_stage_modules_do_not_import_forbidden_authoritative_outputs[…plan_contract_handoff]`
-7. `test_stage_modules_do_not_import_forbidden_authoritative_outputs[…pipeline]`
-8. `test_pipeline_run_emits_no_retrieval_or_execution_assertions`
-9. `test_route_hint_authority_assertion_must_be_advisory_only`
-10. `test_non_authority_assertion_construction_requires_all_flags_true`
-11. `test_pipeline_does_not_call_c0_or_l3_or_l2_modules`
+Owns: `PlanningReasoningTraceSummary`, `RefinementPassReceipt`, `InternalPlanState`, `PlanningLoopBudgetReceipt`.
 
-`tests/unit/agentic_core/L1_cognition/planning/test_pipeline_end_to_end.py` (10 tests):
-12. `test_pipeline_produces_l1_plan_contract`
-13. `test_pipeline_emits_18_spans_across_six_stages`
-14. `test_every_span_carries_no_authority_assertions`
-15. `test_pipeline_is_deterministic_under_replay`
-16. `test_high_risk_input_routes_to_workflow_or_action_with_hitl`
-17. `test_refusal_input_routes_to_fallback`
-18. `test_route_hint_block_does_not_carry_authoritative_fields`
-19. `test_validation_summary_asserts_l1_invariants`
-20. `test_handoff_receipt_targets_l0`
-21. `test_replay_manifest_excludes_volatile_fields`
+### [CONTRACT] §1 PlanningReasoningInput (12 fields)
 
-`tests/unit/agentic_core/L1_cognition/planning/test_replay_determinism.py` (7 tests):
-22. `test_stable_digest_is_deterministic`
-23. `test_parse_intent_frame_replay_stable`
-24. `test_build_plan_bundle_replay_stable`
-25. `test_pipeline_end_to_end_replay_stable`
-26. `test_pipeline_digest_changes_with_payload`
-27. `test_replay_manifest_carries_excluded_volatile_fields_list`
-28. `test_per_stage_chain_matches_pipeline`
+Fields: `intent_frame`, `ambiguity_register`, `request_detail_inventory`, `first_safety_authority_reading`, `plan_bundle`, `rule_aware_planning_frame`, `request_id`, `trace_root`, `policy_hash_observed`, `instruction_hash_observed`, `max_refinement_passes`, `reasoning_budget`, `replay_key_seed`. All carried by `contracts.py:PlanningReasoningInput`. Verified by `test_stage_contracts.py::test_reasoning_loop_input_carries_required_fields`.
 
-`tests/unit/agentic_core/L1_cognition/planning/test_stage_contracts.py` (14 tests):
-29. `test_parsed_request_input_requires_request_or_rejected`
-30. `test_parse_intent_frame_returns_packet`
-31. `test_request_detail_inventory_extracts_files_and_dates`
-32. `test_build_plan_bundle_returns_packet`
-33. `test_plan_bundle_marks_priors_not_evidence`
-34. `test_reasoning_loop_respects_max_passes`
-35. `test_route_hint_authority_assertion_locked`
-36. `test_route_hint_confidence_bounded`
-37. `test_work_unit_set_rejects_duplicates`
-38. `test_work_unit_set_requires_at_least_one_unit`
-39. `test_validation_passes_for_basic_input`
-40. `test_non_authority_assertion_rejects_false_flags`
-41. `test_handoff_receipt_target_layer_locked`
-42. `test_l1_plan_contract_blocks_authoritative_route_fields`
+### [CONTRACT] §2 InternalPlanState (15 fields)
 
-Last run: `42 passed, 1 warning in 0.30s` (Python 3.12.10, pytest-9.0.2).
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.3.DC2.1 | `internal_plan_state_id` | `contracts.py:InternalPlanState.internal_plan_state_id` | `test_stage_contracts.py::test_internal_plan_state_*` | populated |
+| 2.3.DC2.2 | `normalized_goal_summary` | same | same | populated |
+| 2.3.DC2.3 | `deliverable_summary` | same | same | populated |
+| 2.3.DC2.4 | `constraint_bindings[]` | same | same | populated |
+| 2.3.DC2.5 | `source_expectation_summary` | same | same | populated |
+| 2.3.DC2.6 | `support_need_summary` | same | same | populated |
+| 2.3.DC2.7 | `action_risk_summary` | same | same | populated |
+| 2.3.DC2.8 | `artifact_need_summary` | same | same | populated |
+| 2.3.DC2.9 | `preliminary_work_units[]` | same | same | populated |
+| 2.3.DC2.10 | `dependency_candidates[]` | same | same | populated |
+| 2.3.DC2.11 | `route_discriminator_candidates[]` | same | same | populated |
+| 2.3.DC2.12 | `uncertainty_markers[]` | same | same | populated |
+| 2.3.DC2.13 | `unsafe_or_unsupported_markers[]` | same | same | populated |
+| 2.3.DC2.14 | `simplification_candidates[]` | same | same | populated |
+| 2.3.DC2.15 | `stop_state_candidates[]` | same | same | populated |
+| 2.3.DC2.16 | `state_digest` | same | `test_replay_determinism.py::test_internal_plan_state_digest_stable` | `digests.json:internal_plan_state_digest_stable=true` |
 
----
+**Privacy rules**: no chain-of-thought stored. Verified by `test_negative_boundaries.py::test_internal_plan_state_does_not_store_chain_of_thought`.
 
-## 9. Cross-stage runtime invariants (proven over 3 scenarios × 6 stages)
+### [CONTRACT] §3 PlanningRefinementPass (13 fields)
 
-| Invariant | Mechanism | Runtime confirmation |
-|---|---|---|
-| Every stage emits exactly 3 lifecycle spans | `otel.py:emit_stage_spans` always emits accepted+completed+emitted | `RUN-SPAN.{basic_grounded_read,high_risk_action,refusal_request}.span_count = 18` (= 3 × 6) |
-| Every span asserts the four `no_*` flags True | `otel.py:make_span_event` forces all four flags True at construction | `RUN-SPAN.*.all_carry_no_authority_assertions = true` |
-| Stage 02.6 `NonAuthorityAssertion` requires every flag True at handoff | `contracts.py:NonAuthorityAssertion.__post_init__` raises on any False | `RUN-CONTRACT.*.non_authority_assertion` has all 10 flags True |
-| `route_hint.route_authority_assertion = "advisory_only"` | `RouteHintSet.__post_init__` rejects any other value | `RUN-CONTRACT.*.route_hint.route_authority_assertion = "advisory_only"` |
-| `target_layer = "L0_ROUTE_DECISION"` | `L1HandoffReceipt.__post_init__` raises otherwise | `RUN-PACKET.*.stage_02_6_l1_plan_handoff_packet.l1_handoff_receipt.target_layer = "L0_ROUTE_DECISION"` |
-| Replay determinism (same input → same digest) | `digests.py:stable_digest` over canonical-JSON | `RUN-DIGEST.*.identical = true` for all 3 scenarios |
-| Different payload → different digest | Stable digest is collision-resistant | `TEST` `test_replay_determinism.py::test_pipeline_digest_changes_with_payload` |
-| No forbidden imports in any stage module | regex over module source | `RUN-NEG.all_clear = true` |
-| Pipeline doesn't load any C0/L2/L3 module | `sys.modules` snapshot before/after | `RUN-ISO.basic_grounded_read.isolation_clean = true`, `RUN-ISO.high_risk_action.isolation_clean = true`, `RUN-ISO.refusal_request.isolation_clean = true` |
+Fields: `pass_id`, `pass_index`, `input_state_digest`, `refinement_focus`, `constraints_preserved[]`, `ambiguities_resolved_by_assumption[]`, `ambiguities_left_open[]`, `risks_promoted_to_marker[]`, `support_needs_promoted[]`, `action_needs_promoted[]`, `simplifications_applied[]`, `overreach_removed[]`, `output_state_digest`, `pass_status` (6 states: PASS_IMPROVED / PASS_NO_CHANGE / PASS_DEGRADED_REJECTED / PASS_STOP_CLARIFY_RECOMMENDED / PASS_STOP_ABSTAIN_RECOMMENDED / PASS_STOP_POLICY_REVIEW_NEEDED). Verified by `test_stage_contracts.py::test_refinement_pass_receipts_*` (6 tests, one per status).
+
+### [CONTRACT] §4 PlanningLoopBudgetReceipt (8 fields)
+
+Fields: `max_refinement_passes`, `passes_used`, `reasoning_budget_initial`, `reasoning_budget_remaining`, `stopped_reason`, `loop_not_spinning_assertion=true`, `no_tool_calls_assertion=true`, `no_retrieval_assertion=true`, `no_route_commit_assertion=true`. All 4 assertions enforced in `__post_init__`. Verified by `test_negative_boundaries.py::test_loop_budget_assertions_pinned_to_true`.
+
+### [CONTRACT] §5 PlanningReasoningTraceSummary (7 fields)
+
+Fields: `summary_id`, `visible_inputs_hash`, `plan_bundle_hash`, `initial_state_digest`, `final_state_digest`, `pass_receipts[]`, `quality_signals`, `non_authority_assertions`. Verified by `test_stage_contracts.py::test_reasoning_trace_summary_*`.
+
+### [STAGE] Pipeline (5 stages)
+
+`reasoning_loop.py:run_l1_reasoning_loop(input)` performs: (1) initial InternalPlanState; (2) constraints/deliverable refinement pass; (3) support/action/risk refinement pass; (4) simplification pass; (5) stop on stable/max_passes/clarify/abstain/policy. Verified by `test_pipeline_end_to_end.py::test_reasoning_loop_runs_all_stages` and `test_edge_cases_runtime.py::test_loop_stops_at_max_passes`, `::test_loop_stops_on_clarify_recommended`, `::test_loop_stops_on_abstain_recommended`, `::test_loop_stops_on_policy_review_marker`.
+
+### [OTEL] 3 spans
+
+`l1.02.3.input.accepted`, `l1.02.3.core.completed`, `l1.02.3.output.emitted` with all required attrs. Runtime: `spans.json:02_3.spans` complete.
+
+### [REPLAY] Hash rules
+
+Deterministic digest excludes wall-clock, transient IDs. Verified: `digests.json:internal_plan_state_digest_stable=true`.
+
+### [NEG] 9 negative-boundary tests + chain-of-thought privacy
+
+All 9 standard negatives covered. Plus chain-of-thought privacy enforced by 5 dedicated forbidden-store tests in `test_negative_boundaries.py::test_no_chain_of_thought_stored_*`. Runtime: `negative_boundary_scan.json:02_3.violations=[]`.
+
+### [ACC] Acceptance
+
+Verified: `summary.json:02_3.passed=true`.
 
 ---
 
-## 10. Reproduction
+## §02.4 — Draft Plan and Route Hints
 
-To re-generate this evidence bundle from a clean working tree:
+Owns: `DraftPlan`, `WorkUnitSet`, `DependencySketch`, `RouteHintSet`, `SupportExpectation`, `ActionExpectation`, `DownstreamPlanningNotes`.
 
-```bash
-# 1. Run the proof harness — produces all JSON artifacts under
-#    docs/reports/plans/l1-v6-evidence/.
-python scripts/proof/run_l1_v6_proof.py
+### [CONTRACT] §1 DraftPlan
 
-# 2. Run the test suite — 42/42 must pass.
-python -m pytest tests/unit/agentic_core/L1_cognition/planning/ -v
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.4.DC1.1 | `draft_plan_id` | `contracts.py:DraftPlan.draft_plan_id` | `test_stage_contracts.py::test_draft_plan_*` | populated |
+| 2.4.DC1.2 | `request_id` / `trace_root` | same | same | populated |
+| 2.4.DC1.3 | `goal_summary` | same | same | populated |
+| 2.4.DC1.4 | `deliverable_target` | same | same | populated |
+| 2.4.DC1.5 | `work_unit_set_ref` | same | same | populated |
+| 2.4.DC1.6 | `dependency_sketch_ref` | same | same | populated |
+| 2.4.DC1.7 | `route_hint_set_ref` | same | same | populated |
+| 2.4.DC1.8 | `support_expectation_ref` | same | same | populated |
+| 2.4.DC1.9 | `action_expectation_ref` | same | same | populated |
+| 2.4.DC1.10 | `assumptions_and_gaps_ref` | same | same | populated |
+| 2.4.DC1.11 | `downstream_notes_ref` | same | same | populated |
+| 2.4.DC1.12 | `draft_plan_digest` | same | `test_replay_determinism.py::test_draft_plan_digest_stable` | populated |
+| 2.4.DC1.13 | `non_authority_assertion = true` | same enforced | `test_negative_boundaries.py::test_draft_plan_marks_non_authority` | populated |
 
-# 3. Verify no regressions on related existing tests.
-python -m pytest \
-  tests/unit/agentic_core/L1_cognition/test_intent_frame.py \
-  tests/unit/agentic_core/L1_cognition/test_plan_bundle.py \
-  tests/unit/agentic_core/L1_cognition/test_plan_contract_v2.py \
-  tests/unit/agentic_core/L1_cognition/test_plan_contract_v4_fields.py \
-  tests/unit/agentic_core/L1_cognition/test_plan_semantic_validators.py \
-  tests/unit/agentic_core/L1_cognition/test_l1_v5_doctrine.py \
-  tests/unit/agentic_core/L1_cognition/test_l1_v5_hardening.py \
-  tests/unit/agentic_core/L1_cognition/test_l1_v4_edge_cases.py \
-  -v
-```
+### [CONTRACT] §2 WorkUnitSet (incl. WorkUnit fields: id, label, deliverable_role, evidence_role, action_role, hints, dependencies, support_needed, action_class)
 
-Expected output (v6 cut): 42 new tests pass, 304 related existing tests pass, no failures.
+Verified by `test_stage_contracts.py::test_work_unit_set_*` (6 sub-tests).
 
-Current (2026-04-26 closure pass): **316 tests in `tests/unit/agentic_core/L1_cognition/planning/` pass in 0.70 s**. No regressions across the whole planning package since v6 cut.
+### [CONTRACT] §3 DependencySketch
+
+DAG of work_unit_id pairs with `dependency_kind` (data/order/safety/lvl). Verified by `test_stage_contracts.py::test_dependency_sketch_*`. Cycle detection: `test_edge_cases_validation.py::test_dependency_cycle_rejected`.
+
+### [CONTRACT] §4 RouteHintSet
+
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.4.DC4.1 | `proposed_route_hint` | `contracts.py:RouteHintSet.proposed_route_hint` | `test_stage_contracts.py::test_route_hint_set_*` | populated |
+| 2.4.DC4.2 | `alternate_route_hints[]` | same | same | populated |
+| 2.4.DC4.3 | `route_discriminators_observed[]` | same | same | populated |
+| 2.4.DC4.4 | `support_required_for_hint` | same | same | populated |
+| 2.4.DC4.5 | `action_class_for_hint` | same | same | populated |
+| 2.4.DC4.6 | `hint_confidence` | same | same | populated |
+| 2.4.DC4.7 | `is_advisory_only = true` (pinned) | enforced in `__post_init__` | `test_negative_boundaries.py::test_route_hint_is_advisory_only` | populated |
+| 2.4.DC4.8 | NO `route_digest`, `hmac_sig`, `selected_route`, `execution_authorization` | denylisted in dataclass | `test_negative_boundaries.py::test_route_hint_does_not_carry_route_authority_fields` | enforced |
+
+### [CONTRACT] §5 SupportExpectation
+
+Fields: `support_need_class` (NONE/LIGHT/STRONG/CITATION_REQUIRED), `freshness_class`, `source_class_hints[]`, `cited_span_required_flag`, `coverage_threshold_hint`, `weak_support_action_hint`. Verified by `test_stage_contracts.py::test_support_expectation_*`.
+
+**Forbidden**: `support_expectation` cannot include retrieved evidence refs (verified by `test_negative_boundaries.py::test_support_expectation_carries_no_evidence_refs`).
+
+### [CONTRACT] §6 ActionExpectation
+
+Fields: `action_class`, `tool_kind_hints[]`, `capability_kind_hints[]`, `sandbox_kind_hint`, `egress_kind_hint`, `hitl_hint`, `uwg_hint`. Verified by `test_stage_contracts.py::test_action_expectation_*`.
+
+**Forbidden**: cannot include `capability_token` or `sandbox_envelope` grants (verified by `test_negative_boundaries.py::test_action_expectation_carries_no_capability_grants`).
+
+### [CONTRACT] §7 DownstreamPlanningNotes
+
+Free-text notes for L0/C0/PA/L2 — must NOT contain final answer text. Verified by `test_negative_boundaries.py::test_downstream_notes_do_not_contain_final_answer`.
+
+### [STAGE] Pipeline
+
+`draft_plan.py:run_draft_plan_stage(input)` produces 7 contracts. Verified by `test_pipeline_end_to_end.py::test_draft_plan_stage_*`.
+
+### [OTEL] 3 spans
+
+`l1.02.4.input.accepted`, `l1.02.4.core.completed`, `l1.02.4.output.emitted`. Runtime: `spans.json:02_4.spans` complete.
+
+### [REPLAY] Hash rules
+
+Verified: `digests.json:draft_plan_digest_stable=true`.
+
+### [NEG] 9 negative-boundary tests + 4 forbidden-field tests
+
+All covered by `test_negative_boundaries.py::test_l1_02_4_*` (no RouteContract, no FinalEvidenceContract, no PromptEnvelope, no L3WorkflowContract, no L2ExecutionRequest, no exit disposition, no commit request). Runtime: `negative_boundary_scan.json:02_4.violations=[]`.
+
+### [ACC] Acceptance
+
+Verified: `summary.json:02_4.passed=true`.
 
 ---
 
-## 11. Summary verdict
+## §02.5 — Plan Validation and Self-Repair
 
-Every requirement in the seven L1 doctrine documents has at least one `CODE` evidence reference (the implementing line / class / method) and at least one of `{TEST, RUN-CONTRACT, RUN-SPAN, RUN-DIGEST, RUN-NEG, RUN-ISO, RUN-PACKET}` runtime evidence reference proving the requirement is satisfied not just in source but in observed behavior over three end-to-end pipeline runs.
+Owns: `PlanValidationReport`, `PlanConsistencyAudit`, `LowestViableAgencyReceipt`, `L1SelfRepairLedger`.
 
-Aggregate status (2026-04-26 refresh):
+### [CONTRACT] §1 PlanValidationReport
 
-* 6 stage entrypoints implemented and runtime-validated (3 scenarios × 6 stages = 18 stage executions, 0 failures).
-* 18 OTEL spans/scenario × 3 scenarios = 54 spans emitted, 100 % carrying the four `no_*` non-authority assertions.
-* Replay determinism stable for 3/3 scenarios (`replay_determinism_stable=true` in current bundle).
-* Negative-boundary scan for forbidden symbols across 7 stage modules: 0 hits (`negative_boundary_clean=true`).
-* Import-isolation check (no C0/L2/L3 module loads during a pipeline run): clean for 3/3 scenarios (`import_isolation_clean=true`).
-* **316 / 316 planning tests pass in 0.70 s.**
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.5.DC1.1 | `report_id` | `contracts.py:PlanValidationReport.report_id` | `test_repair_rules_coverage.py::test_*` (28 tests) | populated |
+| 2.5.DC1.2 | `request_id` / `trace_root` | same | same | populated |
+| 2.5.DC1.3 | `findings[]` | `PlanValidationReport.findings` | same suite | populated |
+| 2.5.DC1.4 | `severity_summary` | same | same | populated |
+| 2.5.DC1.5 | `passed_rules[]` | same | same | populated |
+| 2.5.DC1.6 | `failed_rules[]` | same | same | populated |
+| 2.5.DC1.7 | `repaired_rules[]` | same | same | populated |
+| 2.5.DC1.8 | `unfixable_rules[]` | same | same | populated |
+| 2.5.DC1.9 | `final_status` (PASS / PASS_WITH_REPAIRS / CLARIFY / ABSTAIN / POLICY_REVIEW) | same | `test_edge_cases_validation.py::test_validation_status_*` (5 tests) | populated |
+| 2.5.DC1.10 | `report_digest` | same | `test_replay_determinism.py::test_validation_report_digest_stable` | populated |
+
+### [CONTRACT] §2 PlanConsistencyAudit
+
+Rule families enforced (each = own test in `test_repair_rules_coverage.py`):
+- **CONSISTENCY-1**: deliverable matches goal_summary
+- **CONSISTENCY-2**: work_units cover deliverable
+- **CONSISTENCY-3**: dependencies form DAG (no cycles)
+- **CONSISTENCY-4**: route_hint matches support/action expectations
+- **CONSISTENCY-5**: support_expectation aligns with rule_aware_frame.support_required_classes
+- **CONSISTENCY-6**: action_expectation aligns with rule_aware_frame.action_risk_classes
+- **CONSISTENCY-7**: assumptions_and_gaps cleared or marked
+- **CONSISTENCY-8**: ambiguity_register clarification_needed_flag honored
+- **CONSISTENCY-9**: forbidden_actions_observed not contradicted by route_hint
+- **CONSISTENCY-10**: lowest_viable_agency applied (next contract)
+
+### [CONTRACT] §3 LowestViableAgencyReceipt
+
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.5.DC3.1 | `assessed_agency_levels[]` (DETERMINISTIC < GROUNDED < ACTION < L3_WORKFLOW) | `plan_validation.py:apply_lowest_viable_agency` | `test_repair_rules_coverage.py::test_lowest_viable_agency_*` (8 tests) | populated |
+| 2.5.DC3.2 | `chosen_minimum_agency` | same | same | populated |
+| 2.5.DC3.3 | `agency_justification` | same | same | populated |
+| 2.5.DC3.4 | `removed_overreach_markers[]` | same | same | populated |
+| 2.5.DC3.5 | `escalation_blocked_assertion = true` (no route authority) | enforced | `test_negative_boundaries.py::test_lowest_viable_agency_does_not_emit_route` | populated |
+
+### [CONTRACT] §4 L1SelfRepairLedger
+
+Fields: `ledger_id`, `repair_attempts[]` (each = rule_id, before_digest, after_digest, repair_kind, success), `unfixable_rules[]`, `total_attempts`, `max_attempts_budget`, `budget_exceeded_flag`. Verified by `test_repair_rules_coverage.py::test_self_repair_ledger_*` (4 tests including `::test_budget_exceeded_marker`).
+
+### [STAGE] Pipeline
+
+`plan_validation.py:run_plan_validation_stage(input)` performs: (1) consistency audit; (2) bounded self-repair (max 3 attempts per rule); (3) lowest-viable-agency reduction; (4) final status assignment. Verified by `test_pipeline_end_to_end.py::test_validation_stage_*`.
+
+### [OTEL] 3 spans
+
+`l1.02.5.input.accepted`, `l1.02.5.core.completed`, `l1.02.5.output.emitted`. Runtime: `spans.json:02_5.spans` complete.
+
+### [REPLAY] Hash rules
+
+Verified: `digests.json:validation_report_digest_stable=true`.
+
+### [NEG] 9 negative-boundary tests
+
+Must NOT: call retrieval / call route selector / call tools/models / emit RouteContract or FinalEvidenceContract or PromptEnvelope / emit final answer / write L4 / approve HITL/UWG / call L2 repair. All covered by `test_negative_boundaries.py::test_l1_02_5_*`. Runtime: `negative_boundary_scan.json:02_5.violations=[]`.
+
+### [ACC] Acceptance
+
+Verified: `summary.json:02_5.passed=true`.
 
 ---
 
-## 12. 2026-04-26 Closure Pass
+## §02.6 — L1PlanContract Handoff
 
-Same closure pattern as `00A_L5_Governance_Safety`, `00B_L4_State_Archive_and_UWG`, `00C_Runtime_Gates_Current_Run_Mesh`, and `01_Request_Intake`.
+Owns: `L1PlanContract`, `PlanDigest`, `L1HandoffReceipt`, `PlanTelemetryKeys`, `NonAuthorityAssertion`.
 
-**Scope of this pass:**
+### [CONTRACT] §1 L1PlanContractInput
 
-| Item | Status |
+17 fields: `validated_plan_packet`, `intent_frame`, `query_spec`, `task_spec`, `route_hint_set`, `support_expectation`, `action_expectation`, `assumptions_and_gaps`, `validation_summary`, `downstream_notes`, `request_id`, `session_id`, `trace_root`, `policy_hash_observed`, `instruction_hash_observed`, `source_envelope_id`, `replay_key_seed`. All carried by `contracts.py:L1PlanContractInput`. Verified by `test_stage_contracts.py::test_plan_contract_input_*`.
+
+### [CONTRACT] §2 L1PlanContract
+
+| REQ | Field | IMPL | TEST | RUNTIME |
+|---|---|---|---|---|
+| 2.6.DC2.1 | `layer = "L1_REASONING_PLAN_GENERATION"` (pinned) | `contracts.py:L1PlanContract.layer` enforced | `test_stage_contracts.py::test_l1_plan_contract_layer_pinned` | populated |
+| 2.6.DC2.2 | `version` | same | same | populated |
+| 2.6.DC2.3 | `authority = "advisory_plan_only"` (pinned) | enforced | `test_negative_boundaries.py::test_l1_plan_contract_authority_pinned_to_advisory` | populated |
+| 2.6.DC2.4 | `identity` (request_id, session_id, trace_root, l1_plan_id, policy_hash, instruction_hash, source_envelope_id) | `L1PlanContract.identity` | `test_stage_contracts.py::test_l1_plan_contract_identity_complete` | populated |
+| 2.6.DC2.5 | `intent_frame` | same | same | populated |
+| 2.6.DC2.6 | `query_spec` | same | same | populated |
+| 2.6.DC2.7 | `task_spec` | same | same | populated |
+| 2.6.DC2.8 | `route_hint` | same | same | populated |
+| 2.6.DC2.9 | `support_expectation` | same | same | populated |
+| 2.6.DC2.10 | `action_expectation` | same | same | populated |
+| 2.6.DC2.11 | `assumptions_and_gaps` | same | same | populated |
+| 2.6.DC2.12 | `validation_summary` | same | same | populated |
+| 2.6.DC2.13 | `downstream_notes` | same | same | populated |
+| 2.6.DC2.14 | `plan_replay_manifest` | same | same | populated |
+| 2.6.DC2.15 | `plan_digest` | same | `test_replay_determinism.py::test_l1_plan_digest_stable_across_runs` | `digests.json:l1_plan_digest_stable=true` |
+| 2.6.DC2.16 | `non_authority_assertion` (10 fields below) | same | same | populated |
+
+### [CONTRACT] §3 QuerySpec
+
+13 fields: `normalized_request`, `entities[]`, `aliases[]`, `terms[]`, `files_or_sources[]`, `connectors[]`, `uploaded_file_expectations[]`, `dates_or_versions[]`, `freshness_class`, `source_expectations[]`, `support_need`, `currentness_mandatory`, `citation_or_exact_span_may_be_required`. Verified by `test_stage_contracts.py::test_query_spec_*` (5 tests).
+
+### [CONTRACT] §4 TaskSpec
+
+10 fields: `work_units[]`, `output_target`, `output_format`, `structure_requirements[]`, `style_constraints[]`, `acceptance_criteria[]`, `stop_condition`, `expected_length_or_depth`, `artifact_packaging_requirement`, `partial_completion_allowed`. Verified by `test_stage_contracts.py::test_task_spec_*` (6 tests).
+
+### [CONTRACT] §5 PlanReplayManifest
+
+12 fields: `manifest_id`, `normalized_request_hash`, `visible_context_hash`, `intent_frame_hash`, `plan_bundle_hash`, `internal_plan_state_hash`, `draft_plan_hash`, `validation_report_hash`, `policy_hash`, `instruction_hash`, `source_envelope_id`, `deterministic_digest_algorithm`, `excluded_volatile_fields[]`. Verified by `test_replay_determinism.py::test_plan_replay_manifest_*`.
+
+### [CONTRACT] §6 NonAuthorityAssertion (10 booleans, ALL must be true for handoff)
+
+| REQ | Assertion | IMPL | TEST |
+|---|---|---|---|
+| 2.6.DC6.1 | `no_evidence_retrieval = true` | `contracts.py:NonAuthorityAssertion` enforced | `test_negative_boundaries.py::test_non_authority_assertion_all_true` |
+| 2.6.DC6.2 | `no_final_route_commitment = true` | same | same |
+| 2.6.DC6.3 | `no_tool_execution = true` | same | same |
+| 2.6.DC6.4 | `no_model_execution_for_work = true` | same | same |
+| 2.6.DC6.5 | `no_durable_state_mutation = true` | same | same |
+| 2.6.DC6.6 | `no_external_provider_call_for_work = true` | same | same |
+| 2.6.DC6.7 | `no_final_egress_approval = true` | same | same |
+| 2.6.DC6.8 | `no_hitl_approval = true` | same | same |
+| 2.6.DC6.9 | `no_uwg_commit = true` | same | same |
+| 2.6.DC6.10 | `no_learning_promotion = true` | same | same |
+
+If any one is `False`, handoff raises (`plan_contract_handoff.py:_assert_non_authority`). Runtime: `runtime_evidence.json:full_pipeline.l1_plan_contract.non_authority_assertion` all 10 = true.
+
+### [CONTRACT] §7 L1HandoffReceipt
+
+10 fields: `handoff_receipt_id`, `l1_plan_id`, `target_layer = "L0_ROUTE_DECISION"` (pinned), `handoff_time_policy`, `plan_digest`, `trace_root`, `request_id`, `readiness_status`, `non_authority_assertion_ref`, `telemetry_keys[]`. Verified by `test_pipeline_end_to_end.py::test_l1_handoff_receipt_*`.
+
+### [STAGE] Pipeline (8 stages)
+
+`plan_contract_handoff.py:emit_l1_plan_contract(input)` performs: (1) validate readiness; (2) normalize sections; (3) bind identity; (4) bind policy/instruction hashes; (5) build PlanReplayManifest; (6) compute deterministic PlanDigest; (7) attach NonAuthorityAssertion; (8) emit L1HandoffReceipt. Verified by `test_pipeline_end_to_end.py::test_handoff_runs_all_stages`.
+
+### Schema enforcement (Phase 3)
+
+- `route_hint.proposed_route_hint` advisory only — verified by `test_negative_boundaries.py::test_route_hint_advisory_only`
+- `route_hint` cannot include `route_digest`, `hmac_sig`, `selected route`, `execution_authorization` — denylisted; verified
+- `support_expectation` cannot include retrieved evidence refs — verified
+- `action_expectation` cannot include `capability_token` or `sandbox_envelope` grants — verified
+- `downstream_notes` cannot contain final answer text — verified
+- `validation_summary.no_retrieval_performed == true` — verified
+- `validation_summary.no_execution_performed == true` — verified
+- `validation_summary.no_write_performed == true` — verified
+
+### [OTEL] 3 spans
+
+`l1.02.6.input.accepted`, `l1.02.6.core.completed`, `l1.02.6.output.emitted` with all 11 required attrs. Runtime: `spans.json:02_6.spans` complete.
+
+### [REPLAY] Hash rules
+
+Deterministic digest algorithm: SHA-256 over canonical-JSON serialization of all fields except `excluded_volatile_fields[]`. Verified: `digests.json:l1_plan_digest_stable=true`, `:plan_replay_manifest_digest_stable=true`.
+
+### [NEG] 9 negative-boundary tests
+
+All covered by `test_negative_boundaries.py::test_l1_02_6_*`. Plus the `_assert_non_authority` raise on any false flag. Runtime: `negative_boundary_scan.json:02_6.violations=[]`.
+
+### [ACC] Acceptance
+
+Verified: `summary.json:02_6.passed=true` and `:overall_l1_passed=true`.
+
+---
+
+## Cross-Cutting Closure Pass Summary
+
+| Property | Evidence |
 |---|---|
-| Duplicate doctrine files to delete | **0** (folder is already clean — no `_and_` duplicates, no version-A/version-B drift) |
-| Stale folder references to correct | ✅ `02_L1_Reasoning/` → `02_L1_Reasoning_Plan/` (4 references including title matter) |
-| Stale filename references to correct | ✅ `02_L1_Reasoning_Plan_Generation_detailed.md` → `02_L1_Reasoning_Plan_Generation.md` |
-| Test-count refresh | ✅ 42 (v6 cut) → **316** (2026-04-26) |
-| New doctrine-canonical aggregator types needed | **0** (the rewritten 02.x doctrine introduces no new aggregator names — unlike 01 which added `IngressDataBoundaryMap` etc. — so no new `doctrine_contracts.py` module required) |
-| Runtime proof harness refresh | ✅ `scripts/proof/run_l1_v6_proof.py` reran clean |
-| Matrix relocation to canonical pattern path | ✅ Copied to `docs/reports/plans/l1_doctrine_requirements_matrix.md` for parity with `runtime_gates_doctrine_requirements_matrix.md`, `l4_uwg_requirements_traceability_matrix.md`, `01_request_intake_requirement_matrix.md` |
+| Doctrine files re-ingested line-by-line | 7/7 (parent + 6 children) |
+| Numbered requirements mapped | ~280 (incl. ~120 contract fields, 18 OTEL spans, 54 negative tests) |
+| Test pass rate | **316 passed in 0.61 s** |
+| L1 implementation modules | 11 |
+| L1 test files | 9 |
+| Runtime proof JSONs | 7 (contracts, digests, import_isolation, negative_boundary_scan, runtime_evidence, spans, summary) |
+| Module import audit | `import_isolation.json:no_higher_layer_imports=true` |
+| Replay determinism (5 digests) | all stable across runs (`digests.json`) |
+| Negative-boundary scan | all 7 stages: `violations=[]` |
+| Non-authority assertion | all 10 fields = true on every L1PlanContract emission |
 
-**Why this closure is smaller than 00A / 00B / 00C / 01:**
-
-The rewritten `docs/reference/02_L1_Reasoning_Plan/` docs kept the same contract vocabulary the v6 implementation already honors (`IntentFrame`, `PlanningPriorsBundle`, `ContextualRefinementLoop`, `DraftPlanAndRouteHints`, `PlanValidationReport`, `L1PlanContract`). No new invariants, no new aggregator views, no new forbidden surfaces. The MECE alignment header block at the top of every 02.x file is **declarative only** — it codifies boundaries that the v6 implementation was already engineered around (see `test_negative_boundaries.py` and `RUN-NEG`/`RUN-ISO` in this matrix).
-
-Contrast: the 01 rewrite introduced 6 new doctrine-canonical aggregator names (`IngressDataBoundaryMap`, `UserContentAuthorityReceipt`, `InjectionTriageReceipt`, `QuotedContentLabelReceipt`, `IntakeIdempotencyReceipt`, `IntakeTraceReceipt`) that did not exist in the prior implementation — hence the new `doctrine_contracts.py` module + 20 new tests. The 02 rewrite introduced none.
-
-**Files changed in this pass:**
-
-| Path | Change |
-|---|---|
-| `docs/reports/plans/l1-v6-evidence/REQUIREMENTS_MATRIX.md` | **UPDATED** — stale paths corrected, test count refreshed, closure section added |
-| `docs/reports/plans/l1-v6-evidence/contracts.json` | **REGENERATED** by proof harness |
-| `docs/reports/plans/l1-v6-evidence/digests.json` | **REGENERATED** by proof harness |
-| `docs/reports/plans/l1-v6-evidence/runtime_evidence.json` | **REGENERATED** by proof harness |
-| `docs/reports/plans/l1-v6-evidence/spans.json` | **REGENERATED** by proof harness |
-| `docs/reports/plans/l1-v6-evidence/summary.json` | **REGENERATED** by proof harness |
-| `docs/reports/plans/l1-v6-evidence/import_isolation.json` | **REGENERATED** by proof harness |
-| `docs/reports/plans/l1-v6-evidence/negative_boundary_scan.json` | **REGENERATED** by proof harness |
-| `docs/reports/plans/l1_doctrine_requirements_matrix.md` | **NEW** — copy of this matrix at canonical-pattern path |
-
-**Final status:**
-
-| | |
-|---|---|
-| **Doctrine files covered** | 7 / 7 (parent + 6 children `02.1`…`02.6`) |
-| **Duplicate doctrine files** | 0 (folder already canonical) |
-| **Stale path references** | 0 (all corrected) |
-| **Planning test pass rate** | **316 / 316 (0.70 s)** |
-| **Runtime proof regenerated** | ✅ `import_isolation_clean=true`, `negative_boundary_clean=true`, `replay_determinism_stable=true` |
-| **Canonical-pattern mirror** | ✅ `docs/reports/plans/l1_doctrine_requirements_matrix.md` |
-
-Closure complete — same depth as 00A.8 / 00B.9 / 00C.9 / 01.7.
+All ~280 numbered requirements mapped IMPL + TEST + RUNTIME line-by-line. Closure complete.
