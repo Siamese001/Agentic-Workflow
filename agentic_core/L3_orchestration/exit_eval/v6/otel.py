@@ -63,6 +63,7 @@ SPAN_X3B_ESCALATE_EMIT: Final[str] = "exit.x3b.escalate_emit"
 SPAN_X3C_COMMIT_REQUEST_EMIT: Final[str] = "exit.x3c.commit_request_disposition_emit"
 SPAN_X3D_ALLOW_EMIT: Final[str] = "exit.x3d.allow_finish_emit"
 SPAN_X3E_ABSTAIN_EMIT: Final[str] = "exit.x3e.safe_abstain_emit"
+SPAN_X3F_BREAK_GLASS_EMIT: Final[str] = "exit.x3f.break_glass_allow_emit"
 
 # HITL
 SPAN_HITL_FREEZE: Final[str] = "exit.hitl.freeze"
@@ -118,6 +119,7 @@ EXIT_V6_SPAN_CATALOG: frozenset[str] = frozenset(
         SPAN_X3C_COMMIT_REQUEST_EMIT,
         SPAN_X3D_ALLOW_EMIT,
         SPAN_X3E_ABSTAIN_EMIT,
+        SPAN_X3F_BREAK_GLASS_EMIT,
         # HITL
         SPAN_HITL_FREEZE,
         SPAN_HITL_PACKET_MATERIALIZE,
@@ -395,6 +397,7 @@ __all__ = [
     "SPAN_X3C_UWG_HANDOFF_EMIT",
     "SPAN_X3D_ALLOW_EMIT",
     "SPAN_X3E_ABSTAIN_EMIT",
+    "SPAN_X3F_BREAK_GLASS_EMIT",
     "SPAN_X3_SELECT",
     "SpanRecord",
     "collected_span_names",

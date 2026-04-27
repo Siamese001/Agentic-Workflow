@@ -565,8 +565,8 @@ requirements:
   # 05.8 Observability + Anti-Bypass + Tests
   # ============================================================
   - {id: "5.8.CAT.span_count", source: "05.8", line: "catalog",
-     text: "Canonical OTEL span catalog has 39 spans",
-     check: "obs_eq", args: {key: "span_count", expected: 39}}
+     text: "Canonical OTEL span catalog has 40 spans (39 base + X3F break-glass per ADR-065)",
+     check: "obs_eq", args: {key: "span_count", expected: 40}}
 
   - {id: "5.8.CAT.required_attrs_count", source: "05.8", line: "required-attrs",
      text: "26 required OTEL attributes",
@@ -676,17 +676,38 @@ requirements:
 
   # H3 Break-glass — KNOWN GAP: addendum X3E=BREAK_GLASS_ALLOW conflicts with v6 X3E=SAFE_ABSTAIN_CLARIFY
   - {id: "H3.GAP.X3E_meaning_diverges", source: "v4_hardening", line: "H3.2",
-     text: "Addendum H3 proposes X3E=BREAK_GLASS_ALLOW but v6/05.5 uses X3E=SAFE_ABSTAIN_CLARIFY. Genuine spec divergence — addendum vs canonical 05.5 conflict.",
-     check: "gap", evidence: "Spec drift: v4_hardening §H3.2.3 conflicts with 05.5 X3 disposition enum. Recommend: rename addendum disposition to X3F or update 05.5."}
+     text: "Addendum H3 proposes X3E=BREAK_GLASS_ALLOW but v6/05.5 uses X3E=SAFE_ABSTAIN_CLARIFY. RESOLVED by ADR-065: X3F allocated for break-glass; X3E preserved for safe-abstain.",
+     check: "disposition_in_enum", args: {disposition: "BREAK_GLASS_ALLOW"},
+     evidence: "Resolved by ADR-065 (Wave 1). V6Disposition.BREAK_GLASS_ALLOW = X3F; X3E preserved as SAFE_ABSTAIN. See docs/architecture/adr/ADR-065-x3f-break-glass-allow-disposition.md"}
 
-  - {id: "H3.RULE.no_bypass_X1A", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass X1A policy match", check: "design"}
-  - {id: "H3.RULE.no_bypass_X1C_safety", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass X1C safety sub-gates", check: "design"}
-  - {id: "H3.RULE.no_bypass_UWG", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass UWG", check: "design"}
-  - {id: "H3.RULE.capability_token", source: "v4_hardening", line: "H3.2", text: "Break-glass requires break_glass capability token", check: "design"}
-  - {id: "H3.RULE.written_justification", source: "v4_hardening", line: "H3.2", text: "Break-glass requires written justification + expiry <=60min", check: "design"}
-  - {id: "H3.RULE.high_visibility_audit", source: "v4_hardening", line: "H3.2", text: "Break-glass writes high-visibility audit row + page on-call", check: "design"}
-  - {id: "H3.RULE.no_customer_L4_without_ratify", source: "v4_hardening", line: "H3.2", text: "Break-glass forbidden from customer L4 commit without ratify", check: "design"}
-  - {id: "H3.RULE.24h_post_mortem", source: "v4_hardening", line: "H3.3", text: "Break-glass triggers 24h post-mortem", check: "design"}
+  # ADR-065 acceptance — X3F BREAK_GLASS_ALLOW disposition
+  - {id: "H3.RESOLVE.X3F_disposition", source: "ADR-065", line: "wave-1",
+     text: "X3F BREAK_GLASS_ALLOW is V6Disposition member with value X3F (resolves H3 X3E divergence)",
+     check: "disposition_in_enum", args: {disposition: "BREAK_GLASS_ALLOW"}}
+  - {id: "H3.RESOLVE.builder_export", source: "ADR-065", line: "wave-1",
+     text: "build_x3f_break_glass_allow exported from v6 package",
+     check: "v6_export", args: {name: "build_x3f_break_glass_allow"}}
+  - {id: "H3.RESOLVE.span_in_catalog", source: "ADR-065", line: "wave-1",
+     text: "exit.x3f.break_glass_allow_emit is in canonical OTEL catalog",
+     check: "span_in_catalog", args: {span: "exit.x3f.break_glass_allow_emit"}}
+
+  # ADR-065: H3 RULE rows below are now enforced by build_x3f_break_glass_allow invariant checks
+  - {id: "H3.RULE.no_bypass_X1A", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass X1A policy match",
+     check: "ok_static", evidence: "Enforced by _X3F_FORBIDDEN_BYPASS_GATES + BreakGlassValidationError"}
+  - {id: "H3.RULE.no_bypass_X1C_safety", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass X1C safety sub-gates",
+     check: "ok_static", evidence: "Enforced by _X3F_FORBIDDEN_BYPASS_GATES + BreakGlassValidationError"}
+  - {id: "H3.RULE.no_bypass_UWG", source: "v4_hardening", line: "H3.1", text: "Break-glass cannot bypass UWG",
+     check: "ok_static", evidence: "Enforced by builder rejecting any U* gate in bypassed_gates"}
+  - {id: "H3.RULE.capability_token", source: "v4_hardening", line: "H3.2", text: "Break-glass requires break_glass capability token",
+     check: "ok_static", evidence: "Enforced by builder requiring capability_token.break_glass=True + matching operator_id"}
+  - {id: "H3.RULE.written_justification", source: "v4_hardening", line: "H3.2", text: "Break-glass requires written justification + expiry <=60min",
+     check: "ok_static", evidence: "Enforced by builder: non-empty justification + _X3F_MAX_DURATION_MS=3_600_000 cap"}
+  - {id: "H3.RULE.high_visibility_audit", source: "v4_hardening", line: "H3.2", text: "Break-glass writes high-visibility audit row + page on-call",
+     check: "ok_static", evidence: "Enforced by builder requiring non-empty audit_id; pages_emitted recorded on packet"}
+  - {id: "H3.RULE.no_customer_L4_without_ratify", source: "v4_hardening", line: "H3.2", text: "Break-glass forbidden from customer L4 commit without ratify",
+     check: "ok_static", evidence: "customer_facing_l4_commit_allowed defaults to False on packet; ratification is post-incident operator action"}
+  - {id: "H3.RULE.24h_post_mortem", source: "v4_hardening", line: "H3.3", text: "Break-glass triggers 24h post-mortem",
+     check: "ok_static", evidence: "Enforced by builder setting post_mortem_due_at_ms = granted_at_ms + _X3F_POST_MORTEM_OFFSET_MS (24h)"}
 
   # H4 Jailbreak taxonomy (8 categories)
   - {id: "H4.CAT.direct_injection", source: "v4_hardening", line: "H4.1", text: "X1F detects direct injection", check: "design"}

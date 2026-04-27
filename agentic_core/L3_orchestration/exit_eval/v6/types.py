@@ -44,6 +44,7 @@ class V6Disposition(str, Enum):
     COMMIT_REQUEST = "X3C"  # hand off to UWG; UWG is sole ink path
     ALLOW = "X3D"  # answer-only, no durable write
     SAFE_ABSTAIN = "X3E"  # safe abstain / clarify — v6 redefines X3E
+    BREAK_GLASS_ALLOW = "X3F"  # operator emergency override per v4_hardening §H3 (resolves X3E naming conflict)
 
 
 @dataclass(slots=True)
@@ -227,6 +228,42 @@ class X3SafeAbstainPacket:
     trace_root: str = ""
 
 
+@dataclass(slots=True)
+class X3BreakGlassAllowPacket:
+    """Spec v4_hardening §H3 break-glass emergency override packet.
+
+    Required invariants enforced by ``build_x3f_break_glass_allow``:
+
+    - capability_token MUST contain ``break_glass=True`` and a non-expired
+      authorization granted to a named on-call operator
+    - written_justification MUST be non-empty
+    - expiry_ms MUST be <= 60 minutes from now (3_600_000 ms)
+    - bypassed_gates MUST NOT include X1A (policy match) or X1C
+      sandbox/mutation hard sub-gates — these never bypass
+    - UWG verification (U1/U2/U3) is NOT bypassed; commit-path break-glass
+      still routes via UWG
+    - audit_id SHOULD link to a high-visibility audit row written
+      synchronously at invocation
+    - customer_facing_l4_commit_allowed MUST be False unless a separate
+      ratification operator approves post-incident
+    - post_mortem_due_at_ms MUST be set (24h after grant)
+    """
+
+    disposition: V6Disposition = V6Disposition.BREAK_GLASS_ALLOW
+    operator_id: str = ""
+    capability_token_ref: str = ""
+    written_justification: str = ""
+    granted_at_ms: int = 0
+    expiry_ms: int = 0  # absolute ms timestamp; <= granted_at_ms + 3_600_000
+    bypassed_gates: list[str] = field(default_factory=list)  # subset of {X1B,X1D,X1E,X1F,X1G}
+    audit_id: str = ""  # high-visibility audit row id
+    pages_emitted: list[str] = field(default_factory=list)  # on-call page targets
+    customer_facing_l4_commit_allowed: bool = False
+    post_mortem_due_at_ms: int = 0  # 24h after grant
+    final_response: str = ""
+    trace_root: str = ""
+
+
 __all__ = [
     "SourceType",
     "GateResult",
@@ -238,4 +275,5 @@ __all__ = [
     "X3CommitRequestPacket",
     "X3AllowPacket",
     "X3SafeAbstainPacket",
+    "X3BreakGlassAllowPacket",
 ]

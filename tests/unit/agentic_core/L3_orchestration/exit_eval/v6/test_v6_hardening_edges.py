@@ -158,6 +158,9 @@ def test_every_catalog_span_reachable_via_union_of_runtime_paths():
     v6_otel.record_span(v6_otel.SPAN_HITL_REENTRY, pkt)
     v6_otel.record_span(v6_otel.SPAN_L6_HANDOFF_ENQUEUE, pkt)
     v6_otel.record_span(v6_otel.SPAN_X3E_ABSTAIN_EMIT, pkt)
+    # X3F break-glass is operator-invoked (not pipeline-dispatched), per
+    # v4_hardening §H3.2.1 — exercise its span via the helper path here.
+    v6_otel.record_span(v6_otel.SPAN_X3F_BREAK_GLASS_EMIT, pkt)
     seen |= set(collected_span_names(pkt) or [])
 
     unreachable = EXIT_V6_SPAN_CATALOG - seen

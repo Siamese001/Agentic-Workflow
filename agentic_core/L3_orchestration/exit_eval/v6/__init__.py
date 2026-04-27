@@ -68,6 +68,7 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     X3CommitRequestPacket,
     X3AllowPacket,
     X3SafeAbstainPacket,
+    X3BreakGlassAllowPacket,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import (
     GATE_EVALUATORS,
@@ -110,11 +111,13 @@ from agentic_core.L3_orchestration.exit_eval.v6.uwg import (
     process_commit_request,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import (
+    BreakGlassValidationError,
     build_x3a_deny,
     build_x3b_escalate,
     build_x3c_commit_request,
     build_x3d_allow,
     build_x3e_safe_abstain,
+    build_x3f_break_glass_allow,
     build_x3_packet,
 )
 
@@ -130,6 +133,7 @@ __all__ = [
     "X3CommitRequestPacket",
     "X3AllowPacket",
     "X3SafeAbstainPacket",
+    "X3BreakGlassAllowPacket",
     # preflight
     "IMMEDIATE_FAIL_CODES",
     "PreflightFailure",
@@ -158,7 +162,9 @@ __all__ = [
     "build_x3c_commit_request",
     "build_x3d_allow",
     "build_x3e_safe_abstain",
+    "build_x3f_break_glass_allow",
     "build_x3_packet",
+    "BreakGlassValidationError",
     # hitl
     "H1_FREEZE_FIELDS",
     "FreezeReceipt",

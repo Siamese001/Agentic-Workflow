@@ -16,12 +16,22 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     GateVerdict,
     V6Disposition,
     X3AllowPacket,
+    X3BreakGlassAllowPacket,
     X3CommitRequestPacket,
     X3DenyPacket,
     X3EscalatePacket,
     X3SafeAbstainPacket,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import AggregateDecision
+
+# v4_hardening §H3.1 — gates that NEVER bypass under break-glass
+_X3F_FORBIDDEN_BYPASS_GATES: frozenset[str] = frozenset({"X1A", "X1C"})
+
+# v4_hardening §H3.2.2 — hard cap on break-glass duration
+_X3F_MAX_DURATION_MS: int = 60 * 60 * 1000  # 60 minutes
+
+# v4_hardening §H3.3 — post-mortem deadline
+_X3F_POST_MORTEM_OFFSET_MS: int = 24 * 60 * 60 * 1000  # 24 hours
 
 
 def _commit_request_id(packet: ExitReviewPacket) -> str:
@@ -157,6 +167,115 @@ def build_x3e_safe_abstain(
     )
 
 
+class BreakGlassValidationError(ValueError):
+    """Raised when a break-glass invocation violates v4_hardening §H3 invariants."""
+
+
+def build_x3f_break_glass_allow(
+    packet: ExitReviewPacket,
+    decision: AggregateDecision,
+    *,
+    operator_id: str,
+    capability_token_ref: str,
+    written_justification: str,
+    bypassed_gates: list[str],
+    audit_id: str,
+    pages_emitted: list[str] | None = None,
+    customer_facing_l4_commit_allowed: bool = False,
+    expiry_ms: int | None = None,
+    granted_at_ms: int | None = None,
+    final_response: str = "",
+) -> X3BreakGlassAllowPacket:
+    """Build an X3F BREAK_GLASS_ALLOW packet (v4_hardening §H3).
+
+    Enforces all H3 invariants synchronously. Any violation raises
+    ``BreakGlassValidationError`` — there is no fail-open path.
+
+    Required:
+        - operator_id: named on-call operator id (non-empty)
+        - capability_token_ref: ref to a token containing ``break_glass=True``
+          AND ``operator_id`` matching ``operator_id`` arg
+        - written_justification: non-empty free-text rationale
+        - bypassed_gates: list of gates being bypassed; MUST exclude X1A and X1C
+        - audit_id: ref to a high-visibility audit row (non-empty)
+
+    The capability_token on the ExitReviewPacket is the source of truth for
+    break-glass authorization. The token MUST have:
+        - ``break_glass=True``
+        - ``operator_id`` == operator_id arg
+        - ``not_expired=True``  (caller verifies; this builder asserts the field)
+    """
+    # H3.1 — non-bypassable gates
+    bypassed = list(bypassed_gates or [])
+    forbidden = _X3F_FORBIDDEN_BYPASS_GATES.intersection(bypassed)
+    if forbidden:
+        raise BreakGlassValidationError(
+            f"break-glass cannot bypass {sorted(forbidden)}; H3.1 invariant"
+        )
+
+    # H3.2.1 — capability token
+    token = packet.capability_token or {}
+    if not token.get("break_glass"):
+        raise BreakGlassValidationError(
+            "capability_token.break_glass=True required; H3.2.1 invariant"
+        )
+    if not operator_id:
+        raise BreakGlassValidationError("operator_id required; H3.2.1 invariant")
+    if token.get("operator_id") and token.get("operator_id") != operator_id:
+        raise BreakGlassValidationError(
+            f"operator_id mismatch: token={token.get('operator_id')!r} arg={operator_id!r}"
+        )
+    if token.get("expired") is True:
+        raise BreakGlassValidationError("capability_token expired; H3.2.1 invariant")
+
+    # H3.2.2 — written justification
+    if not (written_justification or "").strip():
+        raise BreakGlassValidationError(
+            "written_justification required (non-empty); H3.2.2 invariant"
+        )
+
+    # H3.2.2 — expiry hard cap (60 min)
+    now_ms = granted_at_ms if granted_at_ms is not None else int(time.time() * 1000)
+    grant_ms = granted_at_ms if granted_at_ms is not None else now_ms
+    final_expiry = expiry_ms if expiry_ms is not None else grant_ms + _X3F_MAX_DURATION_MS
+    if final_expiry - grant_ms > _X3F_MAX_DURATION_MS:
+        raise BreakGlassValidationError(
+            f"break-glass duration exceeds {_X3F_MAX_DURATION_MS}ms cap; H3.2.2 invariant"
+        )
+    if final_expiry <= grant_ms:
+        raise BreakGlassValidationError(
+            "expiry_ms must be after granted_at_ms; H3.2.2 invariant"
+        )
+
+    # H3.2.4 — audit_id required
+    if not (audit_id or "").strip():
+        raise BreakGlassValidationError(
+            "audit_id required (high-visibility audit row); H3.2.4 invariant"
+        )
+
+    # H3.2.5 — UWG verification not bypassable (cannot include U1/U2/U3 in bypassed_gates)
+    uwg_bypass_attempt = {g for g in bypassed if g.upper().startswith("U")}
+    if uwg_bypass_attempt:
+        raise BreakGlassValidationError(
+            f"break-glass cannot bypass UWG verification gates {sorted(uwg_bypass_attempt)}; H3.1 UWG invariant"
+        )
+
+    return X3BreakGlassAllowPacket(
+        operator_id=operator_id,
+        capability_token_ref=capability_token_ref,
+        written_justification=written_justification,
+        granted_at_ms=grant_ms,
+        expiry_ms=final_expiry,
+        bypassed_gates=bypassed,
+        audit_id=audit_id,
+        pages_emitted=list(pages_emitted or []),
+        customer_facing_l4_commit_allowed=bool(customer_facing_l4_commit_allowed),
+        post_mortem_due_at_ms=grant_ms + _X3F_POST_MORTEM_OFFSET_MS,
+        final_response=final_response or str((packet.output or {}).get("text", "")),
+        trace_root=packet.trace_root,
+    )
+
+
 def build_x3_packet(
     packet: ExitReviewPacket,
     decision: AggregateDecision,
@@ -164,7 +283,12 @@ def build_x3_packet(
     grader_verdict_bundle: list[GateVerdict] | None = None,
     final_response: str = "",
 ):
-    """Dispatch to the right X3* packet builder based on decision.disposition."""
+    """Dispatch to the right X3* packet builder based on decision.disposition.
+
+    Note: BREAK_GLASS_ALLOW (X3F) is NOT dispatched here because it requires
+    capability-token-gated invocation by an operator, not aggregate-decision
+    selection. Call ``build_x3f_break_glass_allow`` directly.
+    """
     if decision.disposition is V6Disposition.DENY:
         return build_x3a_deny(packet, decision)
     if decision.disposition is V6Disposition.ESCALATE:
@@ -175,6 +299,12 @@ def build_x3_packet(
         return build_x3d_allow(packet, decision, final_response=final_response)
     if decision.disposition is V6Disposition.SAFE_ABSTAIN:
         return build_x3e_safe_abstain(packet, decision)
+    if decision.disposition is V6Disposition.BREAK_GLASS_ALLOW:
+        raise ValueError(
+            "X3F BREAK_GLASS_ALLOW must be invoked via build_x3f_break_glass_allow with "
+            "explicit operator_id/capability_token_ref/written_justification; "
+            "not via aggregate-decision dispatch (H3.2.1 invariant)"
+        )
     raise ValueError(f"unknown disposition: {decision.disposition!r}")
 
 
@@ -184,5 +314,7 @@ __all__ = [
     "build_x3c_commit_request",
     "build_x3d_allow",
     "build_x3e_safe_abstain",
+    "build_x3f_break_glass_allow",
     "build_x3_packet",
+    "BreakGlassValidationError",
 ]

@@ -4,7 +4,7 @@ Row-per-requirement matrix re-ingested from **all 14 spec files** in
 `docs/reference/05_Exit_Evaluation_and_Control/`. Every row carries an OTEL-shaped
 evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observation.
 
-**Trace ID** (this run): `37de1d1779684bb92fec113dabbbe114`  
+**Trace ID** (this run): `ed07a81f75d65ce8775d154f27fceb84`  
 **Probe**: `tools/analysis/exit_v6_master_otel_probe.py`  
 **Registry**: `tools/analysis/exit_v6_requirements_registry.yaml`  
 **Evidence JSON**: `docs/reports/plans/exit_v6_MASTER_otel_evidence.json`
@@ -13,10 +13,10 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Status | Count | Meaning |
 |---|---:|---|
-| **PASS** | 356 | requirement is observed in v6 runtime (passes its validator) |
-| **DESIGN** | 214 | requirement is design-level only (not yet wired into v6 runtime) |
-| **GAP** | 1 | requirement intends a runtime binding but observation does not match spec |
-| **TOTAL** | 571 | requirements across all 14 spec files |
+| **PASS** | 368 | requirement is observed in v6 runtime (passes its validator) |
+| **DESIGN** | 206 | requirement is design-level only (not yet wired into v6 runtime) |
+| **GAP** | 0 | requirement intends a runtime binding but observation does not match spec |
+| **TOTAL** | 574 | requirements across all 14 spec files |
 
 ## Live runtime observations (this probe run)
 
@@ -26,9 +26,9 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
   x3b_disposition                      = ESCALATE
   x3a_disposition                      = DENY
   empty_disposition                    = DENY
-  span_catalog_count                   = 39
+  span_catalog_count                   = 40
   required_attributes_count            = 26
-  v6_module_all_count                  = 82
+  v6_module_all_count                  = 85
   return_payload_failure_codes_count   = 10
   determinism_equal                    = True
   permutation_equal                    = True
@@ -52,10 +52,11 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `05.8_Exit_Specific_Observability_Tests_Anti_Bypass.md` | 16 | 16 | 0 | 0 |
 | `05_Live_Runtime_Exit_Control_&_Evaluation_exec.md` | 37 | 37 | 0 | 0 |
 | `05_Live_Runtime_Exit_Control_&_Evaluation.md` | 15 | 13 | 2 | 0 |
+| `ADR-065` | 3 | 3 | 0 | 0 |
 | `gap_analysis_v3_vs_industry_2026.md` | 20 | 3 | 17 | 0 |
 | `grader_composition_spec.md` | 54 | 0 | 54 | 0 |
 | `runtime_to_regression_dataset_flow.md` | 48 | 0 | 48 | 0 |
-| `v4_hardening_addendum.md` | 94 | 0 | 93 | 1 |
+| `v4_hardening_addendum.md` | 94 | 9 | 85 | 0 |
 
 ## 05.1_Exit_Input_Normalization_and_Review_Packet.md
 
@@ -399,9 +400,9 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Req ID | Source line | Requirement | Status | Span ID | Evidence |
 |---|---|---|:---:|---|---|
-| `5.8.CAT.span_count` | catalog | Canonical OTEL span catalog has 39 spans | **PASS** | `d3de11d869bbd2bf` | span_count=39 |
+| `5.8.CAT.span_count` | catalog | Canonical OTEL span catalog has 40 spans (39 base + X3F break-glass per ADR-065) | **PASS** | `d3de11d869bbd2bf` | span_count=40 |
 | `5.8.CAT.required_attrs_count` | required-attrs | 26 required OTEL attributes | **PASS** | `5ed7b46e59cdd18a` | required_attrs_count=26 |
-| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=82 |
+| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=85 |
 | `5.8.DET.equal_runs` | determinism | Two runs of identical receipts produce equal deterministic digest | **PASS** | `c8c927886cd87cf0` | det_equal=True |
 | `5.8.DET.permutation` | determinism | Receipt-key permutation produces identical digest | **PASS** | `b1462e1dc3e6a960` | perm_equal=True |
 | `5.8.AB.empty_fails_closed` | anti-bypass | Empty input fails closed (DENY) | **PASS** | `6c43eb0b4910e2e3` | empty_disposition=DENY |
@@ -481,6 +482,16 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `P3.INV.uwg_sole_ink` | inv | Parent invariant: UWG sole ink path into L4 | **PASS** | `5b70398452d8c07b` | asserted by spec contract |
 | `P3.INV.l5_recleared` | inv | Parent invariant: L5 re-clears every HITL change | **PASS** | `bd756ae762fd53ec` | asserted by spec contract |
 | `P3.INV.async_only` | inv | Parent invariant: learning signals do not mutate current run | **PASS** | `4bae6b7fd00fe245` | asserted by spec contract |
+
+## ADR-065
+
+`ADR-065` — 3 requirements
+
+| Req ID | Source line | Requirement | Status | Span ID | Evidence |
+|---|---|---|:---:|---|---|
+| `H3.RESOLVE.X3F_disposition` | wave-1 | X3F BREAK_GLASS_ALLOW is V6Disposition member with value X3F (resolves H3 X3E divergence) | **PASS** | `d1f15bf8ba9ba727` | V6Disposition.BREAK_GLASS_ALLOW present |
+| `H3.RESOLVE.builder_export` | wave-1 | build_x3f_break_glass_allow exported from v6 package | **PASS** | `6675a228d4fdfa34` | build_x3f_break_glass_allow in v6.__all__ |
+| `H3.RESOLVE.span_in_catalog` | wave-1 | exit.x3f.break_glass_allow_emit is in canonical OTEL catalog | **PASS** | `f15f8f95eece7e26` | exit.x3f.break_glass_allow_emit in EXIT_V6_SPAN_CATALOG |
 
 ## gap_analysis_v3_vs_industry_2026.md
 
@@ -646,15 +657,15 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `H2.CTRL.record_judge_trajectories` | H2.1 | Record judge trajectories on BUS T tagged actor=judge | **DESIGN** | `14cc626d2aa4bcff` | design-only, no runtime binding |
 | `H2.CTRL.version_pin_judge_tools` | H2.1 | Version-pin judge tool inventory | **DESIGN** | `92e2a9d501179074` | design-only, no runtime binding |
 | `H2.CTRL.non_agentic_fallback` | H2.2 | Non-agentic fallback judge for high-stakes dimensions | **DESIGN** | `7d71f6c7fff2e81f` | design-only, no runtime binding |
-| `H3.GAP.X3E_meaning_diverges` | H3.2 | Addendum H3 proposes X3E=BREAK_GLASS_ALLOW but v6/05.5 uses X3E=SAFE_ABSTAIN_CLARIFY. Genuine spec ... | **GAP** | `1db13244001bff37` | Spec drift: v4_hardening §H3.2.3 conflicts with 05.5 X3 disposition enum. Recommend: rena... |
-| `H3.RULE.no_bypass_X1A` | H3.1 | Break-glass cannot bypass X1A policy match | **DESIGN** | `18c47a49359bc2a0` | design-only, no runtime binding |
-| `H3.RULE.no_bypass_X1C_safety` | H3.1 | Break-glass cannot bypass X1C safety sub-gates | **DESIGN** | `06cad60efbdbf6cb` | design-only, no runtime binding |
-| `H3.RULE.no_bypass_UWG` | H3.1 | Break-glass cannot bypass UWG | **DESIGN** | `fe554fc946730404` | design-only, no runtime binding |
-| `H3.RULE.capability_token` | H3.2 | Break-glass requires break_glass capability token | **DESIGN** | `27482ef49e00eef4` | design-only, no runtime binding |
-| `H3.RULE.written_justification` | H3.2 | Break-glass requires written justification + expiry <=60min | **DESIGN** | `44e187e7ef5a6f89` | design-only, no runtime binding |
-| `H3.RULE.high_visibility_audit` | H3.2 | Break-glass writes high-visibility audit row + page on-call | **DESIGN** | `073f4a4b8d1407aa` | design-only, no runtime binding |
-| `H3.RULE.no_customer_L4_without_ratify` | H3.2 | Break-glass forbidden from customer L4 commit without ratify | **DESIGN** | `514431934043f248` | design-only, no runtime binding |
-| `H3.RULE.24h_post_mortem` | H3.3 | Break-glass triggers 24h post-mortem | **DESIGN** | `5ff8ab7021c7ac85` | design-only, no runtime binding |
+| `H3.GAP.X3E_meaning_diverges` | H3.2 | Addendum H3 proposes X3E=BREAK_GLASS_ALLOW but v6/05.5 uses X3E=SAFE_ABSTAIN_CLARIFY. RESOLVED by A... | **PASS** | `1db13244001bff37` | V6Disposition.BREAK_GLASS_ALLOW present |
+| `H3.RULE.no_bypass_X1A` | H3.1 | Break-glass cannot bypass X1A policy match | **PASS** | `18c47a49359bc2a0` | Enforced by _X3F_FORBIDDEN_BYPASS_GATES + BreakGlassValidationError |
+| `H3.RULE.no_bypass_X1C_safety` | H3.1 | Break-glass cannot bypass X1C safety sub-gates | **PASS** | `06cad60efbdbf6cb` | Enforced by _X3F_FORBIDDEN_BYPASS_GATES + BreakGlassValidationError |
+| `H3.RULE.no_bypass_UWG` | H3.1 | Break-glass cannot bypass UWG | **PASS** | `fe554fc946730404` | Enforced by builder rejecting any U* gate in bypassed_gates |
+| `H3.RULE.capability_token` | H3.2 | Break-glass requires break_glass capability token | **PASS** | `27482ef49e00eef4` | Enforced by builder requiring capability_token.break_glass=True + matching operator_id |
+| `H3.RULE.written_justification` | H3.2 | Break-glass requires written justification + expiry <=60min | **PASS** | `44e187e7ef5a6f89` | Enforced by builder: non-empty justification + _X3F_MAX_DURATION_MS=3_600_000 cap |
+| `H3.RULE.high_visibility_audit` | H3.2 | Break-glass writes high-visibility audit row + page on-call | **PASS** | `073f4a4b8d1407aa` | Enforced by builder requiring non-empty audit_id; pages_emitted recorded on packet |
+| `H3.RULE.no_customer_L4_without_ratify` | H3.2 | Break-glass forbidden from customer L4 commit without ratify | **PASS** | `514431934043f248` | customer_facing_l4_commit_allowed defaults to False on packet; ratification is post-incid... |
+| `H3.RULE.24h_post_mortem` | H3.3 | Break-glass triggers 24h post-mortem | **PASS** | `5ff8ab7021c7ac85` | Enforced by builder setting post_mortem_due_at_ms = granted_at_ms + _X3F_POST_MORTEM_OFFS... |
 | `H4.CAT.direct_injection` | H4.1 | X1F detects direct injection | **DESIGN** | `4e82b8940ecd9357` | design-only, no runtime binding |
 | `H4.CAT.indirect_injection` | H4.1 | X1F detects indirect injection (RAG) | **DESIGN** | `18fce65a6df9d7c7` | design-only, no runtime binding |
 | `H4.CAT.role_play_jailbreak` | H4.1 | X1F detects role-play jailbreak | **DESIGN** | `3c9e8a5d37db85c7` | design-only, no runtime binding |
@@ -751,9 +762,7 @@ captured here because user audit benefits from explicit drift tracking.
 
 ## Real GAPs (true divergence — needs fix)
 
-| Req ID | Source | Evidence |
-|---|---|---|
-| `H3.GAP.X3E_meaning_diverges` | v4_hardening:H3.2 | Spec drift: v4_hardening §H3.2.3 conflicts with 05.5 X3 disposition enum. Recommend: rename addendum disposition to X3F or update 05.5. |
+None.
 
 ## How to verify any row
 
