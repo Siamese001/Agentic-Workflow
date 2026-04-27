@@ -37,12 +37,12 @@ Prefer direct on-disk reads over MCP round-trips when the equivalent data is ava
 
 | Need | Forbidden | Preferred |
 |---|---|---|
-| Inspect ADG node by id | `mcp1_adg_node` | `sqlite3.connect("artifacts/adg/adg_indexed_<ts>.sqlite")` then `SELECT * FROM nodes WHERE id=?` |
-| List violations by category | `mcp1_adg_violations` | Same SQLite path, `SELECT ... FROM violations` |
-| Read a file Cascade can reach | `mcp4_read_text_file` | Native `read_file` tool |
-| Cache status spot-check | `mcp9_redis_keys` | Only when live Redis state needed; otherwise use the SQLite source of truth |
-| Persistent memory recall | `mcp5_mem_recall_session_start` | No equivalent — this one MUST go through MCP (and alone in its response) |
-| Notion writeback | `mcp6_API-post-page` | No equivalent — this one MUST go through MCP (and alone in its response) |
+| Inspect ADG node by id | `adg_node` (server: `adg_sqlite`) | `sqlite3.connect("artifacts/adg/adg_indexed_<ts>.sqlite")` then `SELECT * FROM nodes WHERE id=?` |
+| List violations by category | `adg_violations` (server: `adg_sqlite`) | Same SQLite path, `SELECT ... FROM violations` |
+| Read a file Cascade can reach | `read_text_file` (server: `filesystem`) | Native `read_file` tool |
+| Cache status spot-check | `redis_keys` (server: `redis`) | Only when live Redis state needed; otherwise use the SQLite source of truth |
+| Persistent memory recall | `mem_recall_session_start` (server: `memory`) | No equivalent — this one MUST go through MCP (and alone in its response) |
+| Notion writeback | `API-post-page` (server: `notion`) | No equivalent — this one MUST go through MCP (and alone in its response) |
 
 Rule of thumb: if the data lives in `artifacts/`, `.windsurf/`, or the working tree, read it directly. If it lives behind a remote API or a persistent service (Notion, memory graph, live Redis), then — and only then — issue an MCP call in its own isolated response.
 
@@ -51,12 +51,12 @@ Rule of thumb: if the data lives in `artifacts/`, `.windsurf/`, or the working t
 > ⛔ **MCP serialization is NEVER an excuse to fall back to `grep_search` for dependency analysis.** The canonical fallback hierarchy is:
 
 ```
-1. ADG MCP (mcp1_adg_*)              ← preferred when MCP is healthy AND no other MCP call is in flight
+1. ADG MCP (server: adg_sqlite)       ← preferred when MCP is healthy AND no other MCP call is in flight
 2. Direct SQLite (sqlite3 module)     ← REQUIRED fallback when (1) is blocked for ANY reason
 3. grep_search                        ← FORBIDDEN for dependency analysis, regardless of (1) and (2) state
 ```
 
-Rationale: the ADG SQLite snapshot at `artifacts/adg/adg_indexed_<timestamp>.sqlite` is local, deterministic, and serves the same `nodes`/`edges`/materialized-view surface that `mcp1_adg_*` exposes. Grep cannot answer dependency questions correctly (false positives, false negatives, no transitive closure, no layer awareness — see `global_rules.md` ADG-First Retrieval-Tool Decision Tree).
+Rationale: the ADG SQLite snapshot at `artifacts/adg/adg_indexed_<timestamp>.sqlite` is local, deterministic, and serves the same `nodes`/`edges`/materialized-view surface that the `adg_sqlite` MCP exposes. Grep cannot answer dependency questions correctly (false positives, false negatives, no transitive closure, no layer awareness — see `global_rules.md` ADG-First Retrieval-Tool Decision Tree).
 
 If MCP is down OR you cannot make a second MCP call in the current response due to §25 serialization, you MUST use direct SQLite. Specifically:
 
@@ -80,7 +80,7 @@ Falling back from MCP to grep when SQLite is reachable is a **`severity: critica
 
 Acceptable DEGRADED_FALLBACK reasons (must include all of these conditions):
 
-- ADG MCP unhealthy (verified by `mcp1_adg_health` showing red OR sentinel marks Redis cold), AND
+- ADG MCP unhealthy (verified by `adg_health` (server: `adg_sqlite`) showing red OR sentinel marks Redis cold), AND
 - ADG SQLite snapshot file does not exist OR is locked OR schema query failed with explicit error, AND
 - Reason code names BOTH the MCP failure mode AND the SQLite failure mode.
 

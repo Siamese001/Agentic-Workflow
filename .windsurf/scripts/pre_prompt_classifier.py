@@ -140,6 +140,62 @@ _PYTEST_SIGNALS: frozenset[str] = frozenset(
     }
 )
 
+# Keywords that indicate web-search intent — route to tavily (sole web search authority).
+_TAVILY_SIGNALS: frozenset[str] = frozenset(
+    {
+        "search the web",
+        "web search",
+        "google it",
+        "look up online",
+        "look online",
+        "search online",
+        "find online",
+        "latest news",
+        "recent article",
+        "upstream issue",
+        "upstream bug",
+        "github issue for",
+        "search for issue",
+        "what's the latest on",
+        "research this",
+        "look this up",
+    }
+)
+
+# Keywords that indicate external-library-docs intent — route to context7.
+_CONTEXT7_SIGNALS: frozenset[str] = frozenset(
+    {
+        "library docs",
+        "library documentation",
+        "package docs",
+        "package documentation",
+        "api docs for",
+        "documentation for",
+        "how does chromadb",
+        "how does fastmcp",
+        "how does playwright",
+        "how does pytorch",
+        "how does sentence-transformers",
+        "official docs",
+        "upstream docs",
+        "sdk docs",
+        "module docs for",
+        "context7",
+    }
+)
+
+
+def _detect_tavily_intent(prompt: str) -> bool:
+    """Return True when the prompt signals a web-search need that tavily should serve."""
+    lower = prompt.lower()
+    return any(sig in lower for sig in _TAVILY_SIGNALS)
+
+
+def _detect_context7_intent(prompt: str) -> bool:
+    """Return True when the prompt signals external-library-docs need that context7 should serve."""
+    lower = prompt.lower()
+    return any(sig in lower for sig in _CONTEXT7_SIGNALS)
+
 
 def _detect_otel_intent(prompt: str) -> bool:
     """Return True when the prompt signals a runtime observability need that otel_mcp should serve."""
@@ -347,6 +403,24 @@ _otel_sr_hint = (
     "  Note: mcp7_ prefix may shift on server add/remove — server name otel_mcp is the SSOT."
 )
 
+_tavily_sr_hint = (
+    "  WEB-SEARCH INTENT DETECTED: use the tavily MCP for web search.\n"
+    "    Search           \u2192 tavily-search(query=..., max_results=5, topic='general')\n"
+    "    Extract page     \u2192 tavily-extract(urls=[...], extract_depth='advanced')\n"
+    "    Crawl site       \u2192 tavily-crawl(url=..., max_depth=2)\n"
+    "    Sitemap          \u2192 tavily-map(url=..., max_depth=2)\n"
+    "  Auth: TAVILY_API_KEY must be set in OS env (pre_mcp_gate blocks with setup instructions if absent).\n"
+    "  Scope guard: tavily is for EXTERNAL web content only \u2014 use adg_sqlite for this repo's code, deepwiki for GitHub repos, vector_db for semantic code search."
+)
+
+_context7_sr_hint = (
+    "  LIBRARY-DOCS INTENT DETECTED: use the context7 MCP for external-package documentation.\n"
+    "    Step 1 \u2192 resolve-library-id(libraryName='chromadb')  # get Context7-compatible ID\n"
+    "    Step 2 \u2192 get-library-docs(context7CompatibleLibraryID=..., topic=..., tokens=5000)\n"
+    "  Use for: chromadb, FastMCP, sentence-transformers, playwright, pytorch, redis-py, etc.\n"
+    "  Do NOT use for: this repo's own code (adg_sqlite), GitHub repo Q&A (deepwiki), or web search (tavily)."
+)
+
 _pytest_sr_hint = (
     "  PYTEST INTENT DETECTED: use pytest_mcp tools instead of run_command for test operations.\n"
     "    Run tests       \u2192 mcp8_run_tests(path=..., keywords=..., verbose=True)\n"
@@ -427,7 +501,10 @@ def _warn_open_task(tier: str) -> None:
         if not session_state.exists():
             return
         state = json.loads(session_state.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- task lifecycle check: non-fatal, check skipped
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- task lifecycle check: non-fatal, check skipped
         return
     if not state.get("task_created", False):
         return
@@ -580,7 +657,10 @@ def _check_mcp_config_drift() -> None:
     try:
         repo_data = json.loads(repo_cfg.read_text(encoding="utf-8"))
         global_data = json.loads(global_cfg.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallow -- MCP config read: non-fatal, check skipped
+    except (
+        OSError,
+        json.JSONDecodeError,
+    ):  # guardian: allow-silent-swallow -- MCP config read: non-fatal, check skipped
         return
 
     repo_servers = repo_data.get("mcpServers", {})
@@ -659,6 +739,7 @@ def main() -> int:
     try:
         from tools.ledgers.hook_helpers import emit_ledger_event
         import hashlib as _hashlib
+
         prompt_hash = _hashlib.sha256(prompt.encode("utf-8", errors="ignore")).hexdigest()[:16]
         emit_ledger_event(
             ledger="prompt_classifier",
@@ -694,6 +775,28 @@ def main() -> int:
         )
     else:
         print("[pre_prompt_classifier] OTEL_MCP_TRACE: otel_intent=NOT_DETECTED", file=sys.stderr)
+
+    # tavily routing trace: emitted for every prompt so web-search candidate visibility is observable.
+    if _detect_tavily_intent(prompt):
+        print(
+            "[pre_prompt_classifier] TAVILY_TRACE: tavily_intent=DETECTED "
+            "\u2014 candidate: tavily-search / tavily-extract / tavily-crawl / tavily-map. "
+            "Auth: TAVILY_API_KEY required.",
+            file=sys.stderr,
+        )
+    else:
+        print("[pre_prompt_classifier] TAVILY_TRACE: tavily_intent=NOT_DETECTED", file=sys.stderr)
+
+    # context7 routing trace: emitted for every prompt so library-docs candidate visibility is observable.
+    if _detect_context7_intent(prompt):
+        print(
+            "[pre_prompt_classifier] CONTEXT7_TRACE: context7_intent=DETECTED "
+            "\u2014 candidate: resolve-library-id \u2192 get-library-docs. "
+            "No API key required on free tier.",
+            file=sys.stderr,
+        )
+    else:
+        print("[pre_prompt_classifier] CONTEXT7_TRACE: context7_intent=NOT_DETECTED", file=sys.stderr)
 
     # pytest_mcp routing trace: emitted for every prompt so pytest_mcp candidate visibility is observable.
     if _detect_pytest_intent(prompt):
@@ -791,6 +894,10 @@ def main() -> int:
             mandate = mandate + "\n" + _pytest_sr_hint
         if _detect_adg_graph_intent(prompt):
             mandate = mandate + "\n" + _adg_graph_sr_hint
+        if _detect_tavily_intent(prompt):
+            mandate = mandate + "\n" + _tavily_sr_hint
+        if _detect_context7_intent(prompt):
+            mandate = mandate + "\n" + _context7_sr_hint
         print(mandate, file=sys.stderr)
 
     return 0

@@ -82,6 +82,8 @@ otel_mcp_server_name = "otel_mcp"
 deepwiki_server_name = "deepwiki"
 gitkraken_server_name = "GitKraken"
 notion_server_name = "notion"
+tavily_server_name = "tavily"
+context7_server_name = "context7"
 
 # Recovery tools that MUST pass even when MCP is unhealthy.
 # Without this whitelist, the gate blocks the very tools needed to recover.
@@ -1210,6 +1212,45 @@ def check_notion_gate() -> int:
     return 0
 
 
+def check_tavily_gate() -> int:
+    """
+    Check Tavily MCP auth gate.
+
+    The tavily MCP subprocess (tavily-mcp) inherits TAVILY_API_KEY from the OS
+    environment. An empty or absent key causes the server to start normally
+    (green) but every search call returns HTTP 401 — a silent failure. This
+    gate makes the failure loud and actionable before any tool call fires.
+
+    Mirrors check_notion_gate() — same invisibility-failure pattern.
+
+    Return 0 (allow) or 2 (block with actionable message).
+    """
+    token = os.environ.get("TAVILY_API_KEY", "").strip()
+    if not token:
+        return _exit_block(
+            "Tavily MCP auth gate failed: TAVILY_API_KEY is not set or is empty. "
+            "Create an API key at https://app.tavily.com/home (free tier: 1000 "
+            "credits/month) and register it as a Windows environment variable: "
+            "  setx TAVILY_API_KEY tvly-...  (then restart Windsurf). "
+            "Key format: tvly-<alphanumeric>."
+        )
+    return 0
+
+
+def check_context7_gate() -> int:
+    """
+    Check Context7 MCP gate.
+
+    Context7 (upstash/context7-mcp) has a free tier with no API key required,
+    so the gate is fail-open. An optional CONTEXT7_API_KEY (from
+    https://context7.com/dashboard) raises rate limits but is not required for
+    basic resolve-library-id / get-library-docs calls.
+
+    Return 0 always (fail-open — missing optional key is not a failure).
+    """
+    return 0
+
+
 def check_deepwiki_gate() -> int:
     """
     Check DeepWiki MCP health (remote URL MCP).
@@ -1275,9 +1316,7 @@ def check_destructive_preflight(tool_name: str) -> int:
             raw_hb = heartbeat_path.read_text(encoding="utf-8")
             parsed = json.loads(raw_hb) if raw_hb.strip() else {}
             if isinstance(parsed, dict):
-                heartbeat = {
-                    k: float(v) for k, v in parsed.items() if isinstance(v, (int, float))
-                }
+                heartbeat = {k: float(v) for k, v in parsed.items() if isinstance(v, (int, float))}
         except (OSError, ValueError, TypeError):
             heartbeat = {}
     else:
@@ -1445,7 +1484,15 @@ def main() -> int:
     if server_name == notion_server_name:
         return check_notion_gate()
 
-    # All other MCPs (enhanced_http, etc.): fail-open
+    # Tavily MCP: verify TAVILY_API_KEY is set in OS env before any API call
+    if server_name == tavily_server_name:
+        return check_tavily_gate()
+
+    # Context7 MCP: free tier requires no key — fail-open advisory
+    if server_name == context7_server_name:
+        return check_context7_gate()
+
+    # All other MCPs: fail-open
     return 0
 
 

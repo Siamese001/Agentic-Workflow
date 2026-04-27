@@ -32,84 +32,107 @@ AGENTS_MD = agents_md
 NOTION_DATABASES_YAML = notion_databases_yaml
 GLOBAL_BACKUP = global_backup
 
+# Each row: (server_id, use_for, example_tools, notes, skill)
+# `skill` is the slug under .windsurf/skills/<slug>/ that documents the
+# canonical routing/usage for this MCP. Empty string = no dedicated skill yet.
 server_rows = [
     (
         "GitKraken",
         "Git operations, GitLens, pull requests, issues",
         "git_status, git_add_or_commit, git_log_or_diff, pull_request_create",
         "Use as the git/PR authority.",
+        "gitkraken",
     ),
     (
         "adg_sqlite",
         "Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges)",
         "adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan",
         "Primary authority for structural dependencies AND refactoring analysis. Constitutional §22: mv_* materialized views, v_p0_*/v_p1_*/v_p2_*/v_p3_* P-views, and semantic edges (flows_to, reads_from, writes_to, emits_side_effect, controls_flow, resolves_callsite) MUST drive T2/T3 refactoring plans.",
+        "adg-sqlite",
     ),
     (
         "deepwiki",
         "External GitHub repository docs and wiki Q&A",
         "read_wiki_structure, read_wiki_contents, ask_question",
         "Do not use for this repo's own code.",
-    ),
-    (
-        "enhanced_http",
-        "Programmatic HTTP calls, webhooks, endpoint checks",
-        "http_get, http_post, test_connectivity, batch_requests",
-        "Use for autonomous/programmatic HTTP only.",
+        "deepwiki",
     ),
     (
         "filesystem",
         "Filesystem MCP operations and directory traversal",
         "read_text_file, read_multiple_files, directory_tree, write_file",
         "Prefer native reads for ordinary file reads when available.",
+        "filesystem-mcp",
     ),
     (
         "memory",
         "Persistent cross-session knowledge graph",
         "mem_recall_session_start, create_entities, add_observations, search_nodes",
         "Read at session start; write back major decisions.",
+        "memory-mcp",
     ),
     (
         "vector_db",
         "Semantic search and embeddings",
         "semantic_search, query_collection, vector_stats, list_collections",
         "Not for structural dependency analysis.",
+        "vector-db",
     ),
     (
         "otel_mcp",
         "Telemetry, traces, anomalies, runtime ADG ingest",
         "otel_server_info, otel_trace, otel_anomalies, otel_ingest_to_runtime_adg",
         "Check otel_server_info before restart logic.",
+        "otel-telemetry",
     ),
     (
         "task_manager",
         "Task decomposition and task state tracking",
         "create_task, decompose_task, update_task, task_info",
         "Use when the user explicitly wants tracked multi-step work.",
+        "task-manager-mcp",
     ),
     (
         "redis",
         "Redis cache health, keys, TTL, namespace stats",
         "redis_health, redis_keys, redis_hgetall, redis_namespace_stats",
         "Use for hot-cache inspection and invalidation.",
+        "redis-cache",
     ),
     (
         "pytest_mcp",
         "Test discovery, runs, and coverage",
         "discover_tests, run_tests, get_test_details, analyze_test_coverage",
         "Prefer over plain pytest CLI when possible.",
+        "pytest-mcp",
     ),
     (
         "io.windsurf/mcp-playwright",
         "Browser automation, accessibility snapshots, end-to-end UI verification",
         "browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot",
-        "Official Microsoft @playwright/mcp thin npx wrapper. Use for live UI/E2E checks, not for static HTML fetching (use enhanced_http for that). Output lands in repo-root .playwright-mcp/ (gitignored). Always close tabs after use.",
+        "Official Microsoft @playwright/mcp thin npx wrapper. Use for live UI/E2E checks, not for static HTML fetching (use direct httpx in code or read_url_content for one-off fetches). Output lands in repo-root .playwright-mcp/ (gitignored). Always close tabs after use.",
+        "playwright",
     ),
     (
         "notion",
         "Notion pages and project-management databases",
         "API-query-data-source, API-retrieve-a-page, API-patch-page",
         "Use for ADRs, Author-Gate ledgers, MCP registry, and plan/status data.",
+        "notion",
+    ),
+    (
+        "tavily",
+        "AI-optimized web search, extraction, crawling, and site mapping",
+        "tavily-search, tavily-extract, tavily-crawl, tavily-map",
+        "Sole authority for web search. Use for upstream-issue research (Anthropic MCP race, chromadb bugs), ADR background, and domain research not answerable by deepwiki (GitHub-only) or one-off URL fetch via read_url_content. Requires TAVILY_API_KEY OS env var.",
+        "tavily-research",
+    ),
+    (
+        "context7",
+        "Up-to-date, versioned official documentation for external libraries",
+        "resolve-library-id, get-library-docs",
+        "Use for external-package docs (chromadb, FastMCP, sentence-transformers, playwright, pytorch). Distinct from deepwiki (GitHub repo wiki/Q&A) and adg_sqlite (this repo's own code). No API key required; CONTEXT7_API_KEY optional for higher limits.",
+        "context7",
     ),
 ]
 
@@ -144,10 +167,11 @@ def generate_mcp_quick_reference_block() -> str:
     """Inner payload for the MCP-QUICK-REFERENCE autogen block (markers excluded)."""
     lines: list[str] = []
     lines.append("")
-    lines.append("| Server ID | Use For | Example Tools | Notes |")
-    lines.append("|---|---|---|---|")
-    for sid, use_for, tools, notes in server_rows:
-        lines.append(f"| `{sid}` | {use_for} | `{tools}` | {notes} |")
+    lines.append("| Server ID | Use For | Example Tools | Notes | Skill |")
+    lines.append("|---|---|---|---|---|")
+    for sid, use_for, tools, notes, skill in server_rows:
+        skill_cell = f"[`{skill}`](.windsurf/skills/{skill}/SKILL.md)" if skill else "—"
+        lines.append(f"| `{sid}` | {use_for} | `{tools}` | {notes} | {skill_cell} |")
     lines.append("")
     return "\n".join(lines)
 

@@ -50,10 +50,10 @@ Dependency analysis MUST use ADG MCP tools - NOT grep or text search.
 `grep_search` for dependency analysis is FORBIDDEN. Use it only to confirm literals.
 Silent degraded fallback (grep without health check + reason code) = `severity: critical` violation.
 
-**MCP serialization (§25) is NEVER an excuse for grep.** When you cannot make a second `mcp1_adg_*` call due to the one-MCP-per-response rule, the canonical path is direct SQLite, not grep. The fallback hierarchy is:
+**MCP serialization (§25) is NEVER an excuse for grep.** When you cannot make a second `adg_sqlite` MCP call due to the one-MCP-per-response rule, the canonical path is direct SQLite, not grep. The fallback hierarchy is:
 
 ```
-1. mcp1_adg_*           ← preferred when MCP healthy AND no other MCP call in flight
+1. adg_sqlite MCP       ← preferred when MCP healthy AND no other MCP call in flight
 2. sqlite3 (direct)     ← REQUIRED when (1) blocked for ANY reason
 3. grep_search          ← FORBIDDEN for dep analysis regardless of (1) and (2) state
 ```
@@ -156,7 +156,7 @@ Before adding a new MCP, verify no existing MCP covers the capability.
 - Structural dependencies → `adg_sqlite` only. `grep_search` FORBIDDEN for dependency analysis.
 - Persistent memory → `memory` MCP only. NOT Windsurf built-in `create_memory`.
 - Semantic search → `vector_db` only. NOT for structural deps, NOT for episodic recall.
-- Programmatic HTTP → `enhanced_http` only. Use `read_url_content` ONLY when user approval of the URL is required.
+- HTTP routing follows the decision tree (no single authoritative MCP — `enhanced_http` retired 2026-04-27): external content → `tavily`; external library docs → `context7`; GitHub repo Q&A → `deepwiki`; JS-rendered pages → `playwright`; local/internal/agentic_core outbound HTTP → direct `httpx` in code; one-off URL fetch with user approval → Cascade native `read_url_content`.
 - Git state / PRs / issues → `GitKraken` only.
 
 ## Continuous Execution

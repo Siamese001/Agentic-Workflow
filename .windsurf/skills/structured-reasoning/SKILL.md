@@ -203,7 +203,7 @@ When evidence is dense or the task is research-heavy:
 | **pytest_mcp** | Scoped test runs, test discovery, coverage — prefer over `run_command pytest` for structured output | `run_command` with pytest CLI |
 | **gitkraken** | Git status, log, commit, branch, PR/issue ops — prefer over `run_command git` | `run_command` with git CLI |
 | **redis** | ADG hot cache inspection, namespace stats, sentinel key check — primary ADG health path per constitutional §13 | Note `[REDIS UNAVAILABLE]`; fall back to adg_sqlite probe |
-| **enhanced_http** | External API calls, URL fetching with POST/headers/auth, batch HTTP — use when `read_url_content` is insufficient | `read_url_content` native tool |
+| **direct `httpx` in code** | External API calls, URL fetching with POST/headers/auth, batch HTTP — write a small Python helper. The `enhanced_http` MCP was retired 2026-04-27. | `read_url_content` native tool for one-off fetches with user approval |
 | **deepwiki** | Questions about external GitHub repos, third-party lib docs — not for this repo | `read_url_content` as fallback |
 | **vector_db** | Similarity search against ChromaDB embeddings — any retrieval requiring "find facts similar to X" (RAG, duplicate detection) | Note `[VECTOR_DB UNAVAILABLE]`; proceed without semantic retrieval |
 | **otel_mcp** | Runtime observability — query live spans, metrics, anomalies, healing chains, policy decisions. Use when evaluating *what happened at runtime* | Note `[OTEL UNAVAILABLE]`; read runtime_adg SQLite directly |

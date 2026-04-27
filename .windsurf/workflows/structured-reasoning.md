@@ -181,7 +181,7 @@ Update task to done: `task_manager` → `update_task` with status=done and lesso
 | **memory** `mem_recall_session_start` | Session context | Proceed; note `[MEMORY UNAVAILABLE]` |
 | **task_manager** `create_task` | Step tracking | Use `todo_list` native tool |
 | **filesystem** `read_text_file` | File reads | Use `read_file` Windsurf native |
-| **enhanced_http** `http_get` | External lookup / fetch | Use `read_url_content` native tool |
+| direct `httpx` in code | External lookup / fetch (the `enhanced_http` MCP was retired 2026-04-27) | Use `read_url_content` native tool for one-off fetches with user approval |
 | **gitkraken** `git_status` | Git state | Use `run_command` with git CLI |
 | **pytest_mcp** `run_tests` | Test execution | Use `run_command` with pytest CLI |
 

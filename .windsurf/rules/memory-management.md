@@ -15,40 +15,15 @@ description: Use this rule when reading or writing to the persistent memory grap
 
 Define discipline for maintaining a clean, performant memory graph. Prevent accumulation of stale session data that bloats queries and burns context window.
 
+## See First
+
+For lifecycle (when to read, write, maintain) and tool routing, see the **`memory-mcp` skill** at `.windsurf/skills/memory-mcp/SKILL.md`. This rule covers maintenance policy, CI gates, and storage hygiene that are NOT in the skill.
+
+> Note on tool prefixes: live `mcpN_` prefixes shift when server order changes (constitutional Tool Prefix Stability rule). Use bare tool names (`mem_recall_session_start`, `search_nodes`, `mem_cleanup_stale`) and let the runtime resolve the prefix.
+
 ## Knowledge File Hygiene
 
 Memory-linked guidance must stay split by purpose. Avoid giant monolithic reference files that try to carry architecture, procedures, and examples in one place. If a knowledge file grows unwieldy, fragment it into smaller purpose-built documents and keep canonical repo paths explicit so future retrieval stays grounded.
-
-## Rule 0: Session Lifecycle (Read/Write/Maintain)
-
-Memory tools MUST be invoked at these lifecycle points — they are not optional:
-
-### Mandatory Reads
-
-| Trigger | Action |
-|---------|--------|
-| **Start of every conversation** | `mcp5_mem_recall_session_start` — load layers, constitutional rules, architectural decisions. This is the **first tool call** in any session. |
-| User asks about past context | `mcp5_search_nodes(query=...)` or `mcp5_open_nodes(names=[...])` |
-| Before Author-Gate decisions | `mcp5_search_nodes` — check for historical precedent |
-
-### Proactive Writes
-
-| Trigger | Action |
-|---------|--------|
-| Architecture decision made | `mcp5_create_entities` with `entityType="ArchitecturalDecision"` |
-| Author-Gate decision resolved | `mcp5_add_observations` to record chosen option + reasoning |
-| New pattern established | `mcp5_create_entities` with `entityType="ProceduralPattern"` |
-| User says "remember this" | `mcp5_create_entities` or `mcp5_add_observations` |
-| After ADG regeneration | `mcp5_mem_import_adg_context` |
-| Refactor completed | `mcp5_add_observations` with outcome and lessons learned |
-
-### Maintenance
-
-| Trigger | Action |
-|---------|--------|
-| Weekly / after milestones | `mcp5_mem_cleanup_stale(older_than_days=7)` |
-| Health check | `mcp5_mem_get_stats` |
-| After cleanup | `mcp5_mem_import_adg_context` to re-seed |
 
 ## Rule 1: Protected Types Never Deleted
 

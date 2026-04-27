@@ -14,6 +14,8 @@ globs:
 
 # MCP PyTest Enforcement Rule
 
+> **Scope clarification:** This rule governs **testing the MCP servers themselves** (e.g., `tools/mcp/vector_db_server.py`). For **using `pytest_mcp`** to discover/run tests, see `.windsurf/skills/pytest-mcp/SKILL.md`. The two are not the same concern.
+
 ## Constitutional Rule
 
 **All MCP server code changes MUST pass PyTest validation before commit.**

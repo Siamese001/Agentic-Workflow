@@ -53,7 +53,6 @@ _HEALTH_TOOLS: dict[str, str] = {
     "mem_recall_session_start": "memory",
     "otel_status": "otel_mcp",
     "otel_server_info": "otel_mcp",
-    "enhanced_http_health": "enhanced_http",
     "pytest_mcp_health": "pytest_mcp",
 }
 
