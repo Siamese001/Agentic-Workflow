@@ -1,0 +1,28 @@
+{
+  "bug_reverted": {
+    "scenario": "BUG #1 reverted (packet_path=None \u2192 derived from tampered packet.app_id)",
+    "validator_ok": false,
+    "caught": true,
+    "expected_fail_reason_substring": "hash mismatch",
+    "reason_match": false,
+    "fully_caught": false,
+    "fail_reasons": [
+      "packet_hash check failed: missing: C:\\Git\\Agentic-Workflow\\artifacts\\runtime\\apps_proof\\wave1_gate_demo\\contracts\\TAMPERED_APP_ID\\uw_recommendation_only_v1\\evidence_packet.json (path_source=trusted_path_unset)"
+    ],
+    "packet_app_id_after_tamper": "TAMPERED_APP_ID",
+    "packet_hash_msg": "missing: C:\\Git\\Agentic-Workflow\\artifacts\\runtime\\apps_proof\\wave1_gate_demo\\contracts\\TAMPERED_APP_ID\\uw_recommendation_only_v1\\evidence_packet.json"
+  },
+  "fixed": {
+    "scenario": "fixed (trusted packet_path)",
+    "validator_ok": false,
+    "caught": true,
+    "expected_fail_reason_substring": "hash mismatch",
+    "reason_match": true,
+    "fully_caught": true,
+    "fail_reasons": [
+      "packet_hash check failed: hash mismatch: stored=963938975336f268bcad91ba33d225cc6985701e1209402002a972bf7d1fbdb3 recomputed=6ca797881584d4b7e5393ca5da927ff3b7f2a68cc29030d37cd5d951c33ec0ad (path_source=trusted)"
+    ],
+    "packet_app_id_after_tamper": "TAMPERED_APP_ID",
+    "packet_hash_msg": "hash mismatch: stored=963938975336f268bcad91ba33d225cc6985701e1209402002a972bf7d1fbdb3 recomputed=6ca797881584d4b7e5393ca5da927ff3b7f2a68cc29030d37cd5d951c33ec0ad"
+  }
+}

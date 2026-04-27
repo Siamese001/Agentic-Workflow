@@ -83,11 +83,21 @@ STATUS_UNVERIFIED = "UNVERIFIED"
 STATUS_NOT_APPLICABLE = "NOT_APPLICABLE"
 
 ALL_STATUSES = (
-    STATUS_PASS, STATUS_PARTIAL, STATUS_MISSING, STATUS_DOC_ONLY,
-    STATUS_MOCK_ONLY, STATUS_FAKE, STATUS_UNVERIFIED, STATUS_NOT_APPLICABLE,
+    STATUS_PASS,
+    STATUS_PARTIAL,
+    STATUS_MISSING,
+    STATUS_DOC_ONLY,
+    STATUS_MOCK_ONLY,
+    STATUS_FAKE,
+    STATUS_UNVERIFIED,
+    STATUS_NOT_APPLICABLE,
 )
 RELEASE_BLOCKING_STATUSES = (
-    STATUS_MISSING, STATUS_DOC_ONLY, STATUS_MOCK_ONLY, STATUS_FAKE, STATUS_UNVERIFIED,
+    STATUS_MISSING,
+    STATUS_DOC_ONLY,
+    STATUS_MOCK_ONLY,
+    STATUS_FAKE,
+    STATUS_UNVERIFIED,
 )
 
 
@@ -205,7 +215,11 @@ def _section_for_line(headings: list[tuple[int, str]], line_no: int) -> str:
 
 
 def _extract_requirements_from_file(
-    *, doc_path: Path, owning_layer: str, dir_prefix: str, repo_root: Path,
+    *,
+    doc_path: Path,
+    owning_layer: str,
+    dir_prefix: str,
+    repo_root: Path,
 ) -> list[Requirement]:
     """Scan a markdown file and return extracted Requirements."""
     try:
@@ -226,8 +240,10 @@ def _extract_requirements_from_file(
             if pattern.search(line):
                 section = _section_for_line(headings, i)
                 req_id = _stable_req_id(
-                    dir_prefix=dir_prefix, file_slug=file_slug,
-                    line_no=i, sentence=line,
+                    dir_prefix=dir_prefix,
+                    file_slug=file_slug,
+                    line_no=i,
+                    sentence=line,
                 )
                 if req_id in seen_ids:
                     continue
@@ -256,6 +272,136 @@ def _extract_requirements_from_file(
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Binding rules (Wave 2 — explicit req_bindings.json)
+# ---------------------------------------------------------------------------
+#
+# A *binding rule* declares that a documented requirement is provably
+# enforced at runtime by a specific validator + (optional) negative
+# control + test + runtime artifact. When a binding rule matches a
+# requirement, the requirement's status is upgraded:
+#
+#   coverage="full"    → STATUS_PASS (subject to runtime_artifact_glob
+#                        resolving on disk, if declared)
+#   coverage="partial" → STATUS_PARTIAL (with binding-derived actual_*
+#                        fields, more honest than keyword heuristics)
+#
+# Bindings are defined in ``tools/proof/req_bindings.json`` so they can be
+# audited and PR-reviewed independently of compiler logic. A binding can
+# match by:
+#
+#   - ``req_id_pattern`` (fnmatch glob against REQ_ID)
+#   - ``source_doc_pattern`` (fnmatch glob against repo-relative path)
+#   - ``section_pattern`` (fnmatch glob against the most recent heading)
+#   - ``line_no_min`` / ``line_no_max`` (inclusive integer range)
+#
+# When multiple keys are provided on a single binding rule, ALL must
+# match (logical AND). Bindings are checked in declaration order; the
+# FIRST match wins so put narrow rules before broad ones.
+
+import fnmatch as _fnmatch  # noqa: E402  (intentionally below dataclasses)
+
+
+@dataclass
+class Binding:
+    """One req_bindings.json row, post-parse."""
+
+    binding_id: str
+    rationale: str
+    validator: str | None = None
+    negative_control: str | None = None
+    test: str | None = None
+    runtime_artifact_glob: str | None = None
+    coverage: str = "partial"
+    # Match keys
+    req_id_pattern: str | None = None
+    source_doc_pattern: str | None = None
+    section_pattern: str | None = None
+    line_no_min: int | None = None
+    line_no_max: int | None = None
+
+    def matches(self, req: "Requirement") -> bool:
+        if self.req_id_pattern and not _fnmatch.fnmatch(req.req_id, self.req_id_pattern):
+            return False
+        if self.source_doc_pattern and not _fnmatch.fnmatch(req.source_doc, self.source_doc_pattern):
+            return False
+        if self.section_pattern and not _fnmatch.fnmatch(req.source_section or "", self.section_pattern):
+            return False
+        if self.line_no_min is not None and req.line_no < self.line_no_min:
+            return False
+        if self.line_no_max is not None and req.line_no > self.line_no_max:
+            return False
+        # At least ONE match key must be set — otherwise this rule binds
+        # everything, which is almost certainly a config error.
+        any_key = any(
+            v is not None
+            for v in (
+                self.req_id_pattern,
+                self.source_doc_pattern,
+                self.section_pattern,
+                self.line_no_min,
+                self.line_no_max,
+            )
+        )
+        return any_key
+
+
+def load_bindings(path: Path) -> list[Binding]:
+    """Load and validate ``tools/proof/req_bindings.json`` if it exists.
+
+    Missing file is fine (returns empty list). Malformed JSON or invalid
+    rows raise — bindings are auditable contract, not best-effort.
+    """
+    if not path.exists():
+        return []
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict) or "bindings" not in raw:
+        raise ValueError(f"{path}: expected top-level object with a 'bindings' key")
+    out: list[Binding] = []
+    for i, row in enumerate(raw["bindings"]):
+        if not isinstance(row, dict):
+            raise ValueError(f"{path}: bindings[{i}] is not an object")
+        coverage = row.get("coverage", "partial")
+        if coverage not in {"full", "partial"}:
+            raise ValueError(f"{path}: bindings[{i}].coverage must be 'full' or 'partial', got {coverage!r}")
+        binding_id = row.get("binding_id") or f"binding_{i}"
+        out.append(
+            Binding(
+                binding_id=str(binding_id),
+                rationale=str(row.get("rationale", "")),
+                validator=row.get("validator"),
+                negative_control=row.get("negative_control"),
+                test=row.get("test"),
+                runtime_artifact_glob=row.get("runtime_artifact_glob"),
+                coverage=coverage,
+                req_id_pattern=row.get("req_id_pattern"),
+                source_doc_pattern=row.get("source_doc_pattern"),
+                section_pattern=row.get("section_pattern"),
+                line_no_min=row.get("line_no_min"),
+                line_no_max=row.get("line_no_max"),
+            )
+        )
+    return out
+
+
+def _runtime_artifact_resolves(glob: str | None, repo_root: Path) -> tuple[bool, str | None]:
+    """Return (resolved, sample_path) for a runtime_artifact_glob.
+
+    ``glob`` is repo-relative. Resolves to True if at least one file
+    matches and is non-empty.
+    """
+    if not glob:
+        return True, None  # no claim made, no claim to falsify
+    matches = sorted(repo_root.glob(glob))
+    for m in matches:
+        try:
+            if m.is_file() and m.stat().st_size > 0:
+                return True, m.relative_to(repo_root).as_posix()
+        except OSError:
+            continue
+    return False, None
+
+
 # Layer → expected validator hint mapping. Wave 1 is heuristic; later waves
 # can replace this with explicit REQ_BINDING annotations.
 _LAYER_VALIDATOR_HINT: dict[str, str] = {
@@ -274,17 +420,77 @@ _LAYER_VALIDATOR_HINT: dict[str, str] = {
 }
 
 
-def _link_evidence(req: Requirement, *, repo_root: Path) -> None:
-    """Apply heuristic evidence linkage — Wave 1.
+def _link_evidence(
+    req: Requirement,
+    *,
+    repo_root: Path,
+    bindings: list[Binding] | None = None,
+) -> None:
+    """Apply evidence linkage.
 
-    For each requirement, populate ``actual_*`` fields if a mechanical
-    heuristic finds an obvious match. Mark UNVERIFIED otherwise (the
-    honest default).
+    Wave 2: explicit ``Binding`` rules from ``tools/proof/req_bindings.json``
+    take precedence. A matching ``coverage='full'`` binding flips a row to
+    PASS (subject to ``runtime_artifact_glob`` resolving on disk).
+    A matching ``coverage='partial'`` binding flips a row to PARTIAL with
+    binding-derived ``actual_*`` fields (more honest than keyword bins).
+
+    Wave 1 fallback: if no binding matches, the legacy keyword heuristic
+    runs to mark PARTIAL or UNVERIFIED.
     """
     # Expected validator hint based on owning layer
-    req.expected_validator = _LAYER_VALIDATOR_HINT.get(
-        req.owning_layer, "no validator binding declared"
-    )
+    req.expected_validator = _LAYER_VALIDATOR_HINT.get(req.owning_layer, "no validator binding declared")
+
+    # Wave 2 — explicit binding rules (first-match wins)
+    if bindings:
+        for b in bindings:
+            if not b.matches(req):
+                continue
+            req.actual_validator = b.validator
+            req.actual_negative_control = b.negative_control
+            req.actual_test = b.test
+            if b.runtime_artifact_glob:
+                resolved, sample = _runtime_artifact_resolves(
+                    b.runtime_artifact_glob,
+                    repo_root,
+                )
+                req.actual_runtime_artifact = sample or b.runtime_artifact_glob
+                if b.coverage == "full" and resolved:
+                    req.status = STATUS_PASS
+                    req.gap_reason = ""
+                    req.required_fix = ""
+                    return
+                if b.coverage == "full" and not resolved:
+                    req.status = STATUS_PARTIAL
+                    req.gap_reason = (
+                        f"Binding '{b.binding_id}' claims coverage=full but "
+                        f"runtime_artifact_glob={b.runtime_artifact_glob!r} "
+                        f"did not resolve on disk."
+                    )
+                    req.required_fix = (
+                        "Run the harness that produces this artifact and "
+                        "re-run the compiler, OR weaken the binding to "
+                        "coverage='partial'."
+                    )
+                    return
+            else:
+                # No runtime_artifact_glob declared — coverage='full' is
+                # accepted on faith (validator+test+control pinned
+                # explicitly by the binding).
+                if b.coverage == "full":
+                    req.status = STATUS_PASS
+                    req.gap_reason = ""
+                    req.required_fix = ""
+                    return
+            # coverage="partial" path
+            req.status = STATUS_PARTIAL
+            req.gap_reason = f"Binding '{b.binding_id}' claims partial coverage. Rationale: {b.rationale}"
+            req.required_fix = (
+                f"Promote binding '{b.binding_id}' to coverage='full' "
+                "(after writing the validator + negative control + test "
+                "that prove this requirement end-to-end), OR add a more "
+                "specific binding for this REQ_ID."
+            )
+            return
 
     # Heuristic: does the requirement text mention something the harness
     # provably checks? (full-text search of apps_shared/proof/ would be
@@ -292,29 +498,25 @@ def _link_evidence(req: Requirement, *, repo_root: Path) -> None:
     text_lower = req.requirement_text.lower()
 
     # Keyword → harness-binding heuristic
-    bindings: list[tuple[str, str]] = []
+    heuristic: list[tuple[str, str]] = []
     if "trace" in text_lower or "span" in text_lower:
-        bindings.append(("validator", "validate_trace_tree"))
+        heuristic.append(("validator", "validate_trace_tree"))
     if "hash" in text_lower or "tamper" in text_lower or "integrity" in text_lower:
-        bindings.append(("validator", "validate_artifact_inventory"))
-        bindings.append(("negative_control", "T1_packet_hash_mutation, T6, T9, T10, T11"))
+        heuristic.append(("validator", "validate_artifact_inventory"))
+        heuristic.append(("negative_control", "T1_packet_hash_mutation, T6, T9, T10, T11"))
     if "replay" in text_lower or "deterministic" in text_lower or "reproducible" in text_lower:
-        bindings.append(("validator", "validate_replay"))
+        heuristic.append(("validator", "validate_replay"))
     if "uwg" in text_lower or "write" in text_lower or "commit" in text_lower:
-        bindings.append(("validator", "validate_write_sovereignty"))
+        heuristic.append(("validator", "validate_write_sovereignty"))
     if "policy" in text_lower or "governance" in text_lower:
-        bindings.append(("validator", "L5 customizer assertion (per-app)"))
+        heuristic.append(("validator", "L5 customizer assertion (per-app)"))
     if "evidence" in text_lower or "grounded" in text_lower or "citation" in text_lower:
-        bindings.append(("validator", "C0 grounding assertion"))
+        heuristic.append(("validator", "C0 grounding assertion"))
 
-    if bindings:
+    if heuristic:
         # We have at least one heuristic binding — call it PARTIAL.
-        actual_validators = "; ".join(
-            v for kind, v in bindings if kind == "validator"
-        )
-        actual_controls = "; ".join(
-            v for kind, v in bindings if kind == "negative_control"
-        )
+        actual_validators = "; ".join(v for kind, v in heuristic if kind == "validator")
+        actual_controls = "; ".join(v for kind, v in heuristic if kind == "negative_control")
         req.actual_validator = actual_validators or None
         req.actual_negative_control = actual_controls or None
         req.status = STATUS_PARTIAL
@@ -384,8 +586,17 @@ def compile_requirements(
     *,
     repo_root: Path = REPO_ROOT,
     layer_dirs: tuple[tuple[str, str, str], ...] = DEFAULT_LAYER_DIRS,
+    bindings_path: Path | None = None,
 ) -> CompilationResult:
-    """Walk every layer dir, extract requirements, link evidence."""
+    """Walk every layer dir, extract requirements, link evidence.
+
+    Wave 2: ``bindings_path`` defaults to
+    ``<repo_root>/tools/proof/req_bindings.json`` if not provided. Pass
+    a different path (or a non-existent path) to bypass.
+    """
+    if bindings_path is None:
+        bindings_path = repo_root / "tools" / "proof" / "req_bindings.json"
+    bindings = load_bindings(bindings_path)
     out = CompilationResult(
         generated_at=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         repo_root=str(repo_root),
@@ -397,11 +608,13 @@ def compile_requirements(
             continue
         for md in sorted(dir_path.glob("*.md")):
             reqs = _extract_requirements_from_file(
-                doc_path=md, owning_layer=owning_layer,
-                dir_prefix=dir_prefix, repo_root=repo_root,
+                doc_path=md,
+                owning_layer=owning_layer,
+                dir_prefix=dir_prefix,
+                repo_root=repo_root,
             )
             for req in reqs:
-                _link_evidence(req, repo_root=repo_root)
+                _link_evidence(req, repo_root=repo_root, bindings=bindings)
                 out.requirements.append(req)
     return out
 
@@ -412,7 +625,9 @@ def compile_requirements(
 
 
 def write_matrix(
-    result: CompilationResult, *, out_dir: Path,
+    result: CompilationResult,
+    *,
+    out_dir: Path,
 ) -> tuple[Path, Path]:
     """Write JSON + Markdown matrix files."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -443,11 +658,7 @@ def write_matrix(
     md.append("")
     md.append("## Per-layer breakdown")
     md.append("")
-    md.append(
-        "| Layer | Total | "
-        + " | ".join(ALL_STATUSES)
-        + " |"
-    )
+    md.append("| Layer | Total | " + " | ".join(ALL_STATUSES) + " |")
     md.append("|---|---:|" + "|".join(":---:" for _ in ALL_STATUSES) + "|")
     for layer, counts in sorted(summary["by_layer"].items()):
         layer_total = sum(counts.values())
@@ -461,20 +672,25 @@ def write_matrix(
     for r in result.requirements[:30]:
         snippet = r.requirement_text.replace("|", "\\|")[:120]
         md.append(
-            f"| `{r.req_id}` | {r.owning_layer} | {r.status} | "
-            f"`{r.source_doc}:{r.line_no}` | {snippet} |"
+            f"| `{r.req_id}` | {r.owning_layer} | {r.status} | `{r.source_doc}:{r.line_no}` | {snippet} |"
         )
     md.append("")
     md.append("## How to close gaps")
     md.append("")
     md.append("Every UNVERIFIED / PARTIAL / MISSING / DOC_ONLY / MOCK_ONLY / FAKE row needs ONE of:")
     md.append("")
-    md.append("1. **Real binding**: add a `# REQ_BINDING: <REQ_ID>` comment to the validator + negative control + test that proves it at runtime. The next compiler pass will detect the binding and upgrade the row to PASS.")
-    md.append("2. **Explicit NOT_APPLICABLE**: the requirement is documentation-only and has no runtime obligation. Add a `NOT_APPLICABLE` annotation with rationale in `tools/proof/req_compiler_overrides.json` (created on demand).")
+    md.append(
+        "1. **Real binding**: add a `# REQ_BINDING: <REQ_ID>` comment to the validator + negative control + test that proves it at runtime. The next compiler pass will detect the binding and upgrade the row to PASS."
+    )
+    md.append(
+        "2. **Explicit NOT_APPLICABLE**: the requirement is documentation-only and has no runtime obligation. Add a `NOT_APPLICABLE` annotation with rationale in `tools/proof/req_compiler_overrides.json` (created on demand)."
+    )
     md.append("")
     md.append("## Honest first-pass note")
     md.append("")
-    md.append("This Wave 1 compiler uses keyword heuristics, not explicit REQ_BINDINGs. Most rows will be UNVERIFIED or PARTIAL — that's the correct first signal. The number going down over time is the metric to track.")
+    md.append(
+        "This Wave 1 compiler uses keyword heuristics, not explicit REQ_BINDINGs. Most rows will be UNVERIFIED or PARTIAL — that's the correct first signal. The number going down over time is the metric to track."
+    )
 
     md_path.write_text("\n".join(md) + "\n", encoding="utf-8")
     return json_path, md_path
@@ -514,8 +730,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.strict and summary["release_blocking_count"] > 0:
         print(
-            f"FAIL — {summary['release_blocking_count']} requirements in "
-            f"{list(RELEASE_BLOCKING_STATUSES)}",
+            f"FAIL — {summary['release_blocking_count']} requirements in {list(RELEASE_BLOCKING_STATUSES)}",
             file=sys.stderr,
         )
         return 1

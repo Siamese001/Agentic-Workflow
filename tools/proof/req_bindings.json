@@ -1,0 +1,85 @@
+{
+  "_doc": "Wave 2 binding rules. Each row maps a requirement (matched by req_id_pattern, source_doc_pattern, section_pattern, or line range) to runtime evidence. coverage='full' flips the row to PASS in the matrix (subject to runtime_artifact_glob resolving). coverage='partial' flips it to PARTIAL with binding-derived actual_* fields (more honest than the keyword heuristic). First match wins — put narrow rules first.",
+  "_schema_version": "wave2.1",
+  "bindings": [
+
+    {
+      "binding_id": "E2E_99_4_trace_tree_structural",
+      "rationale": "99.4 OTEL Trace and Span Tree Proof § 'parent IDs form a tree' + 'no false-positive spans on bypassed layers' is directly proven by validate_trace_tree, which enforces exactly-1-root, parent_span_id references emitted span_ids, consistent trace_id across spans, and canonical layer order. T5/T6/T7/T8 negative controls prove the validator catches each tampered case via the EXPECTED mechanism (reason_match=True). Runtime artifact: per-app trace JSON.",
+      "source_doc_pattern": "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.4_E2E_OTEL_Trace_and_Span_Tree_Proof.md",
+      "line_no_min": 80,
+      "line_no_max": 88,
+      "validator": "validate_trace_tree",
+      "negative_control": "T5_trace_root_removed; T6_trace_orphan_parent; T7_trace_inconsistent_trace_id; T8_trace_layer_order_swap",
+      "test": "tests/apps_shared/proof/test_negative_controls.py",
+      "runtime_artifact_glob": "artifacts/runtime/apps_proof/latest/traces/*_trace.json",
+      "coverage": "full"
+    },
+
+    {
+      "binding_id": "E2E_99_4_trace_span_attributes_partial",
+      "rationale": "99.4 lines 89-92 require span-level attributes (capability_token_ref, sandbox_envelope_ref, evidence_contract_ref, commit_request_id, UWG receipt). validate_trace_tree only checks structural tree validity — span-attribute validators are not yet wired. Honest PARTIAL — promote to full when those validators land.",
+      "source_doc_pattern": "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.4_E2E_OTEL_Trace_and_Span_Tree_Proof.md",
+      "line_no_min": 89,
+      "line_no_max": 100,
+      "validator": "validate_trace_tree (structural only); span-attribute validators NOT yet implemented",
+      "test": "tests/apps_shared/proof/test_negative_controls.py",
+      "coverage": "partial"
+    },
+
+    {
+      "binding_id": "E2E_99_5_deterministic_replay",
+      "rationale": "99.5 Deterministic Replay Proof § 'Same ValidatedRequest + same L1PlanContract + same policy/snapshot must produce identical content' is literally what validate_replay does: re-runs the scenario with the registered seed, hashes ValidatedRequest, L1PlanContract, RouteContract (volatile-stripped), and asserts identical content. T9/T10/T11 negative controls prove tamper detection via 'content hash drift' (reason_match=True).",
+      "source_doc_pattern": "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.5_E2E_Deterministic_Replay_Proof.md",
+      "validator": "validate_replay",
+      "negative_control": "T9_contract_content_mutation; T10_contract_added_field; T11_contract_removed_field",
+      "test": "tests/apps_shared/proof/test_validators.py::test_validate_replay; tests/apps_shared/proof/test_negative_controls.py",
+      "runtime_artifact_glob": "artifacts/runtime/apps_proof/latest/replay/*/contracts/**/*.json",
+      "coverage": "full"
+    },
+
+    {
+      "binding_id": "E2E_99_3_contract_handoff_chain",
+      "rationale": "99.3 Contract Emission and Handoff Proof requires every downstream artifact to reference upstream contract IDs and preserve request_id/trace_root/policy_hash/blueprint_hash chain. validate_artifact_inventory walks artifact_inventory.json and recomputes sha256 of every referenced file against the recorded content_hash — any chain break is a fail_reason. T1/T2/T3/T4/T12 controls prove tamper detection.",
+      "source_doc_pattern": "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.3_E2E_Contract_Emission_and_Handoff_Proof.md",
+      "validator": "validate_artifact_inventory",
+      "negative_control": "T1_packet_hash_mutation; T2_packet_field_mutation; T3_inventory_file_deleted; T4_inventory_file_emptied; T12_packet_hash_field_removed",
+      "test": "tests/apps_shared/proof/test_validators.py; tests/apps_shared/proof/test_negative_controls.py",
+      "runtime_artifact_glob": "artifacts/runtime/apps_proof/latest/contracts/*/*/evidence_packet.json",
+      "coverage": "full"
+    },
+
+    {
+      "binding_id": "E2E_99_8_acceptance_commands",
+      "rationale": "99.8 Acceptance Commands and Proof Bundle prescribes the exact shell invocation `python -m apps_shared.proof.proof_runner --full ...` and the proof bundle contents. The harness IS that command and emits proof_summary.json + proof_report.md as the bundle. CI gate check_apps_runtime_proof.py wraps it.",
+      "source_doc_pattern": "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.8_E2E_Acceptance_Commands_and_Proof_Bundle.md",
+      "validator": "apps_shared.proof.proof_runner --full (8 apps, 13 controls each, all fully_caught)",
+      "test": "ops_scripts/ci/check_apps_runtime_proof.py",
+      "runtime_artifact_glob": "artifacts/runtime/apps_proof/latest/proof_summary.json",
+      "coverage": "full"
+    },
+
+    {
+      "binding_id": "E2E_README_ci_acceptance_gates",
+      "rationale": "99 README § CI Acceptance Gates per 99.8. The CI gate ops_scripts/ci/check_apps_runtime_proof.py exists, is wired into pre-commit, and exits non-zero when the harness fails.",
+      "source_doc_pattern": "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/README.md",
+      "section_pattern": "*CI Acceptance Gates*",
+      "validator": "ops_scripts/ci/check_apps_runtime_proof.py",
+      "test": "ops_scripts/ci/check_apps_runtime_proof.py invocation in CI",
+      "runtime_artifact_glob": "ops_scripts/ci/check_apps_runtime_proof.py",
+      "coverage": "full"
+    },
+
+    {
+      "binding_id": "E2E_99_9_mutation_boundary_faults",
+      "rationale": "99.9 Mutation Testing Boundary Faults requires that boundary mutations be caught. The negative-control suite is exactly that: 13 typed mutations × 8 apps = 104 tamper tests, all 104 fully_caught (verdict + mechanism). Hypothesis property test adds ~360 additional corrupted-input cases per run.",
+      "source_doc_pattern": "docs/reference/99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md",
+      "validator": "validate_trace_tree; validate_replay; validate_artifact_inventory",
+      "negative_control": "all 13 controls (T1-T13) per app; 8 apps; Hypothesis property tests",
+      "test": "tests/apps_shared/proof/test_negative_controls.py; tests/apps_shared/proof/test_property_corrupted_inputs.py",
+      "runtime_artifact_glob": "artifacts/runtime/apps_proof/latest/proof_summary.json",
+      "coverage": "full"
+    }
+
+  ]
+}
