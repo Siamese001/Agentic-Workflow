@@ -2,7 +2,7 @@
 
 Renders CompiledPromptArtifact fields into Anthropic-idiomatic shape.
 
-Anthropic best practice (per docs/reference/prompting/anthropic_best_practices_2026.md):
+Anthropic best practice (per docs/reference/_primers/prompting/anthropic_best_practices_2026.md):
 - System prompt uses explicit XML tags: <instructions>, <context>, <examples>,
   <role> — parser-stable, Claude-native.
 - Clean user turn for the actual request (U0 content).

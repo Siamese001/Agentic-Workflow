@@ -5,7 +5,7 @@ trigger: always_on
 # ADG Canonical Invariants — Doctrinal Floor
 
 > ⛔ These are **the non-negotiables** encoded in the ADG doctrine
-> (`docs/reference/AST Dependency Graphs (ADG)/`). Every T1/T2/T3 task that
+> (`docs/reference/_primers/AST Dependency Graphs (ADG)/`). Every T1/T2/T3 task that
 > interacts with the ADG MUST honor these invariants without exception.
 
 ## 1. Source-of-Truth Hierarchy (invariant)
@@ -146,12 +146,12 @@ If `degraded_grep` appears, a `DEGRADED_FALLBACK: reason=<...>` line MUST accomp
 
 ## 12. Doctrinal References
 
-- `docs/reference/AST Dependency Graphs (ADG)/ADG Mental Model.md`
-- `docs/reference/AST Dependency Graphs (ADG)/ADG SQLite Hotspot Cheat Sheet.md`
-- `docs/reference/AST Dependency Graphs (ADG)/ADG - SQLite vs. Redis.md`
-- `docs/reference/AST Dependency Graphs (ADG)/ADG and Blast Radius.md`
-- `docs/reference/AST Dependency Graphs (ADG)/ADG STATIC vs. RUNTIME MENTAL MODEL.md`
-- `docs/reference/AST Dependency Graphs (ADG)/DEPENDENCY GRAPH vs GRAPHDB Design.md`
-- `docs/reference/AST Dependency Graphs (ADG)/ADG vs, Hardcoded String.md`
+- `docs/reference/_primers/AST Dependency Graphs (ADG)/ADG Mental Model.md`
+- `docs/reference/_primers/AST Dependency Graphs (ADG)/ADG SQLite Hotspot Cheat Sheet.md`
+- `docs/reference/_primers/AST Dependency Graphs (ADG)/ADG - SQLite vs. Redis.md`
+- `docs/reference/_primers/AST Dependency Graphs (ADG)/ADG and Blast Radius.md`
+- `docs/reference/_primers/AST Dependency Graphs (ADG)/ADG STATIC vs. RUNTIME MENTAL MODEL.md`
+- `docs/reference/_primers/AST Dependency Graphs (ADG)/DEPENDENCY GRAPH vs GRAPHDB Design.md`
+- `docs/reference/_primers/AST Dependency Graphs (ADG)/ADG vs, Hardcoded String.md`
 
 These invariants are extracted from the above. Updating this rule requires updating the source docs too — **no SSOT drift**.

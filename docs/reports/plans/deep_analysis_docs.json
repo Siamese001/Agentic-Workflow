@@ -1091,7 +1091,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Base Agent Hierarchy v2.md",
+      "path": "docs/reference/_primers/Base Agent Hierarchy v2.md",
       "depth": 2,
       "size_bytes": 7405,
       "total_lines": 79,
@@ -1253,7 +1253,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Context Window Degradation.md",
+      "path": "docs/reference/_primers/Context Window Degradation.md",
       "depth": 2,
       "size_bytes": 4572,
       "total_lines": 58,
@@ -1289,7 +1289,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Import Flow.md",
+      "path": "docs/reference/_primers/Import Flow.md",
       "depth": 2,
       "size_bytes": 7059,
       "total_lines": 75,
@@ -1307,7 +1307,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/JIT Elevator Shaft v2.md",
+      "path": "docs/reference/_primers/JIT Elevator Shaft v2.md",
       "depth": 2,
       "size_bytes": 11481,
       "total_lines": 95,
@@ -1343,7 +1343,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/MRO Mixins v2.md",
+      "path": "docs/reference/_primers/MRO Mixins v2.md",
       "depth": 2,
       "size_bytes": 11717,
       "total_lines": 59,
@@ -1451,7 +1451,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/agentic_process_mapping_exec.md",
+      "path": "docs/reference/_notes/agentic_system_process_map_exec.md",
       "depth": 2,
       "size_bytes": 11473,
       "total_lines": 95,
@@ -2513,7 +2513,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Python/Error & Exception Handling.md",
+      "path": "docs/reference/_primers/Python/Error & Exception Handling.md",
       "depth": 3,
       "size_bytes": 11158,
       "total_lines": 53,
@@ -2531,7 +2531,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Python/Regex vs. Grep vs. AST.md",
+      "path": "docs/reference/_primers/Python/Regex vs. Grep vs. AST.md",
       "depth": 3,
       "size_bytes": 7869,
       "total_lines": 64,
@@ -2549,7 +2549,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Python/STUB vs SHIM.md",
+      "path": "docs/reference/_primers/Python/STUB vs SHIM.md",
       "depth": 3,
       "size_bytes": 7326,
       "total_lines": 77,
@@ -2567,7 +2567,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Python/Silent Swallower vs. Lazy Loader.md",
+      "path": "docs/reference/_primers/Python/Silent Swallower vs. Lazy Loader.md",
       "depth": 3,
       "size_bytes": 2919,
       "total_lines": 47,
@@ -2585,7 +2585,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Python/Static vs. Instance Method.md",
+      "path": "docs/reference/_primers/Python/Static vs. Instance Method.md",
       "depth": 3,
       "size_bytes": 6204,
       "total_lines": 84,
@@ -2621,7 +2621,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Testing/ADG Test Suite Architecture.md",
+      "path": "docs/reference/_primers/Testing/ADG Test Suite Architecture.md",
       "depth": 3,
       "size_bytes": 7293,
       "total_lines": 61,
@@ -2639,7 +2639,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Testing/Agentic Testing.py",
+      "path": "docs/reference/_primers/Testing/Agentic Testing.py",
       "depth": 3,
       "size_bytes": 10401,
       "total_lines": 303,
@@ -2657,7 +2657,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Testing/PyTest/PYTEST EXECUTION DECISION TREE.md",
+      "path": "docs/reference/_primers/Testing/PyTest/PYTEST EXECUTION DECISION TREE.md",
       "depth": 4,
       "size_bytes": 1534,
       "total_lines": 40,
@@ -2675,7 +2675,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Testing/PyTest/PyTest Lifecycle - Collection vs. Execution.md",
+      "path": "docs/reference/_primers/Testing/PyTest/PyTest Lifecycle - Collection vs. Execution.md",
       "depth": 4,
       "size_bytes": 11421,
       "total_lines": 136,
@@ -2693,7 +2693,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Testing/PyTest/PyTest Test System.md",
+      "path": "docs/reference/_primers/Testing/PyTest/PyTest Test System.md",
       "depth": 4,
       "size_bytes": 1996,
       "total_lines": 64,
@@ -2711,7 +2711,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/REASONING_TRANSFORMER_TEMPLATE_v1.3_SUMMARY.md",
+      "path": "docs/reference/_primers/Transformer Templates/REASONING_TRANSFORMER_TEMPLATE_v1.3_SUMMARY.md",
       "depth": 3,
       "size_bytes": 8438,
       "total_lines": 155,
@@ -2729,7 +2729,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/STAGE_0_INITIALIZATION_DETAILED.md",
+      "path": "docs/reference/_primers/Transformer Templates/STAGE_0_INITIALIZATION_DETAILED.md",
       "depth": 3,
       "size_bytes": 13702,
       "total_lines": 302,
@@ -2747,7 +2747,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/STAGE_1_FOUNDATION_DETAILED.md",
+      "path": "docs/reference/_primers/Transformer Templates/STAGE_1_FOUNDATION_DETAILED.md",
       "depth": 3,
       "size_bytes": 7955,
       "total_lines": 181,
@@ -2765,7 +2765,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/STAGE_2_EXPLORATION_DETAILED.md",
+      "path": "docs/reference/_primers/Transformer Templates/STAGE_2_EXPLORATION_DETAILED.md",
       "depth": 3,
       "size_bytes": 11795,
       "total_lines": 206,
@@ -2783,7 +2783,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/STAGE_3_SELECTION_DETAILED.md",
+      "path": "docs/reference/_primers/Transformer Templates/STAGE_3_SELECTION_DETAILED.md",
       "depth": 3,
       "size_bytes": 11941,
       "total_lines": 237,
@@ -2801,7 +2801,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/STAGE_4_GENERATION_DETAILED.md",
+      "path": "docs/reference/_primers/Transformer Templates/STAGE_4_GENERATION_DETAILED.md",
       "depth": 3,
       "size_bytes": 12863,
       "total_lines": 354,
@@ -2819,7 +2819,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/Transformer Layers of Control.md",
+      "path": "docs/reference/_primers/Transformer Templates/Transformer Layers of Control.md",
       "depth": 3,
       "size_bytes": 42184,
       "total_lines": 794,
@@ -2837,7 +2837,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/Transformer Model Evolution.md",
+      "path": "docs/reference/_primers/Transformer Templates/Transformer Model Evolution.md",
       "depth": 3,
       "size_bytes": 4304,
       "total_lines": 49,
@@ -2855,7 +2855,7 @@
       "adg_duplicate_methods": []
     },
     {
-      "path": "docs/reference/Transformer Templates/Transformer Models.md",
+      "path": "docs/reference/_primers/Transformer Templates/Transformer Models.md",
       "depth": 3,
       "size_bytes": 4304,
       "total_lines": 49,

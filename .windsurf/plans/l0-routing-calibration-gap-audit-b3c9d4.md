@@ -2,7 +2,7 @@
 
 Status: **ALL WAVES EXECUTED (W0 + W1 + W1b + W2 + W3 + W4 + W5)** · Tier: **T3** (plan is T2, execution waves are T3)
 Date: 2026-04-23 (audit + W0 + W1) · 2026-04-24 (W2 + W3 + W4 + W1b + W5 runtime wiring) · 267/267 tests pass
-Scope doc: `docs/reference/agentic_process_mapping_v33.md` §[3] Route Decision + Switching
+Scope doc: `docs/reference/_notes/agentic_process_mapping_v34.md` §[3] Route Decision + Switching
 Authoritative doc: `docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v11.md`
 Sibling audit (structural, not this one): `.windsurf/plans/l0-routing-best-practice-audit-1f9180.md`
 ADG Provenance: backend=degraded_grep, snapshot=n/a

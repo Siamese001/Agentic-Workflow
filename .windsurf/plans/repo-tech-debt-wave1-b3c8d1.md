@@ -175,7 +175,7 @@ Execution of the six DEFERRED_SCOPE markers emitted at W4 exit. Ordered by lever
 |---|---|---|---|
 | G1 | ADG MCP transport closed — fallback is direct SQLite read | Use SQLite queries as SSOT per `mcp-serialization.md`; emit `DEGRADED_FALLBACK: reason=adg_mcp_transport_closed` on any grep usage | MCP serialization rule |
 | G2 | 3 HIGH-severity violations may be on guardian-exempt paths | Phase 1.1 reads `disposition` and `disposition_source` columns before touching | §8 guardian gate |
-| G3 | Tier-B `LocationHealerAgent.py` is L5 Safety — narrowing exception types could weaken safety posture | Preserve fail-closed semantics; raise, do not swallow; add specific recovery per Column 5 pattern | `docs/reference/Python/Error & Exception Handling.md` |
+| G3 | Tier-B `LocationHealerAgent.py` is L5 Safety — narrowing exception types could weaken safety posture | Preserve fail-closed semantics; raise, do not swallow; add specific recovery per Column 5 pattern | `docs/reference/_primers/Python/Error & Exception Handling.md` |
 | G4 | Tier-D SSOT migration may create import cycles | Before any edit, verify via `adg_edge_fanout` that target → SSOT edge doesn't already exist backwards | Layer gravity (boundary-enforcement skill) |
 | G5 | Full ADG regen may hit pre-existing SC-1 structural conformance failure (54 violations per prior sessions) | That's a known pre-existing block unrelated to this wave; do not attempt to fix within Wave-1 scope | DEFERRED_SCOPE |
 | G6 | 4514 LOW-severity hygiene long tail NOT addressed by this wave | Emit DEFERRED_SCOPE marker with computed priority band; scheduler will wave it independently | `deferred-scope-capture.md` |

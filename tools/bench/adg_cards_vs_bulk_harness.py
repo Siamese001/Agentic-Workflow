@@ -16,7 +16,7 @@ METHODOLOGY (to be implemented when Chroma has both collections populated)
 1. Build a query set of at least 20 representative retrieval prompts that
    exercise structural, semantic, and layer-aware queries (constitutional §22
    graph-layer primaries should drive selection — see
-   ``docs/reference/AST Dependency Graphs (ADG)/`` for concrete prompt
+   ``docs/reference/_primers/AST Dependency Graphs (ADG)/`` for concrete prompt
    archetypes).
 2. For each query run:
    a. Baseline: retrieve K=10 from ``repo_adg_graph`` (bulk edges).

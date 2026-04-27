@@ -2,7 +2,7 @@
 
 Status: Draft (no code changes yet)
 Owner: Cascade
-Scope: §6 (L6 Shadow Evaluation → Future-Run Learning) of `docs/reference/agentic_process_mapping_v33.md`
+Scope: §6 (L6 Shadow Evaluation → Future-Run Learning) of `docs/reference/_notes/agentic_process_mapping_v34.md`
 ADG snapshot: most-recent `artifacts/adg/adg_indexed_*.sqlite`
 Created: 2026-04-23
 
@@ -10,7 +10,7 @@ Created: 2026-04-23
 
 ## 1. What v33 §6 Claims (SSOT to compare against)
 
-Source lines: `docs/reference/agentic_process_mapping_v33.md:449-474`.
+Source lines: `docs/reference/_notes/agentic_process_mapping_v34.md:449-474`.
 
 - **Four-stage pipeline** 6A INGEST → 6B EVALUATE → 6C RCA/SYNTH → 6D PROMOTE/UPDATE.
 - **Invariants**:
@@ -174,7 +174,7 @@ ADG snapshot for validation work: latest `artifacts/adg/adg_indexed_*.sqlite` at
 | W4.2 | Eval trial isolation contract | `tests/eval/conftest.py`, `docs/architecture/adr/ADR-NNN-eval-trial-isolation.md` | Cross-test fixture state | 6000 | Todo |
 | W4.3 | Saturation detector | `tools/eval/saturation_detector.py` (new) + gauntlet hop | Signal volatility | 6000 | Todo |
 | W4.4 | Prompt-optimizer prototype | `system_learning/engines/prompt_optimizer_engine.py` (new) | Safety of auto-proposals | 4000 | Todo |
-| W5.1 | v33 §6 refresh | `docs/reference/agentic_process_mapping_v33.md` | Keep diagram intact | 4000 | Todo |
+| W5.1 | v33 §6 refresh | `docs/reference/_notes/agentic_process_mapping_v34.md` | Keep diagram intact | 4000 | Todo |
 
 ### Gap Register (cross-ref to §4)
 - W1.1 closes **GAP-1**.

@@ -1,8 +1,8 @@
 """End-to-End Test Suite for Redis L1 Retrieval Gate.
 
 This test suite validates the complete L1-L4 retrieval pipeline as described in:
-- docs/reference/Redis/Redis L1 Retrieval Gate.md
-- docs/reference/Redis/Redis Usage Types.md
+- docs/reference/_primers/Redis/Redis L1 Retrieval Gate.md
+- docs/reference/_primers/Redis/Redis Usage Types.md
 
 Tests cover:
 1. L1 Exact Cache (Redis O(1) SHA256 key lookup)
@@ -357,8 +357,8 @@ class TestRedisL1RetrievalGateE2E(unittest.TestCase):
     End-to-End tests for Redis L1 Retrieval Gate.
 
     Validates the complete flow described in:
-    - docs/reference/Redis/Redis L1 Retrieval Gate.md
-    - docs/reference/Redis/Redis Usage Types.md
+    - docs/reference/_primers/Redis/Redis L1 Retrieval Gate.md
+    - docs/reference/_primers/Redis/Redis Usage Types.md
     """
 
     def setUp(self):

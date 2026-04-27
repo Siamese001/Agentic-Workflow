@@ -95,4 +95,4 @@ Once all three sign-offs complete:
 - Contract: `docs/contracts/L5_exit_control_hitl.md`
 - Plan (blocked): `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md`
 - Related (harness, distinct): `.windsurf/plans/harness-enforcement-rename-a8f21c.md`
-- v30 source: `docs/reference/agentic_process_mapping_v30.md` §[5]
+- v30 source: `docs/reference/_notes/agentic_process_mapping_v34.md` §[5]

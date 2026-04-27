@@ -1,7 +1,7 @@
 """Y1 Synthesis Slot — pattern-analysis content stream for prompt assembly.
 
 Closes the documentation drift identified in
-`docs/reference/prompting/current_architecture_crossmap.md` row 7:
+`docs/reference/_primers/prompting/current_architecture_crossmap.md` row 7:
 
     | 7 | SYNTHESIS (Pattern Analysis) | — | ❌ no slot;
         `SynthesisMixin` bypasses assembler |

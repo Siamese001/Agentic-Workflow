@@ -20,7 +20,7 @@
 
 ## 1. Context
 
-The canonical agentic process map (`docs/reference/agentic_process_mapping_v30.md`) step [5]
+The canonical agentic process map (`docs/reference/_notes/agentic_process_mapping_v34.md`) step [5]
 "LIVE RUNTIME EXIT CONTROL + CURRENT-RUN EVALUATION" defines three mutually exclusive
 dispositions after a sealed L2 artifact arrives:
 
@@ -224,7 +224,7 @@ This ADR is accepted when:
 
 ## 10. References
 
-- `docs/reference/agentic_process_mapping_v30.md` — canonical v30 map (step [5])
+- `docs/reference/_notes/agentic_process_mapping_v34.md` — canonical v30 map (step [5])
 - `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md` — execution plan (waves W0–W7)
 - `.windsurf/plans/harness-enforcement-rename-a8f21c.md` — sibling (distinct concern, do not merge)
 - Fowler, M. "Humans and Agents in Software Engineering Loops" (2026-03) — taxonomy

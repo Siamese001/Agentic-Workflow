@@ -145,7 +145,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": "docs/reference/agentic_process_mapping_exec.md",
+        "path": "docs/reference/_notes/agentic_system_process_map_exec.md",
         "title": "Agentic System Process Map — Executive Summary",
         "doc_family": "reference",
         "topic_bucket": "orchestration",
@@ -153,7 +153,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": "docs/reference/agentic_process_mapping_v30.md",
+        "path": "docs/reference/_notes/agentic_process_mapping_v34.md",
         "title": "Agentic System Process Map v30 — Routing & Dispatch Reference",
         "doc_family": "reference",
         "topic_bucket": "orchestration",

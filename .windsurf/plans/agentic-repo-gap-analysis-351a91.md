@@ -443,7 +443,7 @@ P1.1 (Violation Analysis)
 4. `docs/reference/04_Live_Task_Dispatch_Execution.md` - X3 Stage Requirements
 5. `docs/reference/05_Live_Runtime_Exit_Control.md` - X4 Stage Requirements
 6. `docs/reference/06_Shadow_Evaluation_System_Learning.md` - S1-S6 Requirements
-7. `docs/reference/agentic_process_mapping_exec.md` - Execution Mapping
+7. `docs/reference/_notes/agentic_system_process_map_exec.md` - Execution Mapping
 8. `docs/reference/agentic_process_mapping_v29.md` - Process Mapping v29
 
 ### 6.2 ADG Evidence

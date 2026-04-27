@@ -1,7 +1,7 @@
 # L1 Reasoning & Plan Generation — Best-Practice Gap Analysis + Rectification Plan
 
 - **Plan ID**: `l1-reasoning-bestpractices-gaps-a7b2c9`
-- **Scope target**: `docs/reference/agentic_process_mapping_v33.md` §2 "L1 Reasoning + Plan Generation" AND `agentic_core/L1_cognition/`
+- **Scope target**: `docs/reference/_notes/agentic_process_mapping_v34.md` §2 "L1 Reasoning + Plan Generation" AND `agentic_core/L1_cognition/`
 - **Status**: Draft — no code changes
 - **Tier**: T3 (cross-layer: doc + contracts + L1 engines + L5 policy)
 - **ADG snapshot basis**: most recent `artifacts/adg/adg_indexed_*.sqlite` (gap audit uses ADG later at execution time)
@@ -129,7 +129,7 @@ Each row: **GAP-R#** — code-side divergence, evidence path, fix class (S = sch
 
 | Wave | Phase IDs | Focus | Est. Tokens (UNRESOLVED-ESTIMATE) | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| **W1 — Doctrine lift** | P1.1, P1.2, P1.3 | Rewrite `docs/reference/agentic_process_mapping_v33.md` §2 to close GAP-D1..GAP-D17; add companion ADR for the revised L1 output contract. | 🟡 ~12k | Single doc + one ADR; no code. | **Done 2026-04-23** | §2 explicitly covers all 17 BP rows; ADR-043 created + registered in Notion ADR Registry; no §3–6 edits required yet. |
+| **W1 — Doctrine lift** | P1.1, P1.2, P1.3 | Rewrite `docs/reference/_notes/agentic_process_mapping_v34.md` §2 to close GAP-D1..GAP-D17; add companion ADR for the revised L1 output contract. | 🟡 ~12k | Single doc + one ADR; no code. | **Done 2026-04-23** | §2 explicitly covers all 17 BP rows; ADR-043 created + registered in Notion ADR Registry; no §3–6 edits required yet. |
 | **W2 — Contract expansion** | P2.1, P2.2, P2.3 | Expand `L1PlanContract` from 7 → 14 typed v2 fields + `ReasoningMode` selection rubric + `ExpectedGroundTruth` per step + thought-redaction canary. Build `L1PlanContractV2` alongside v1 with `from_v1`/`to_v1` shims. CI schema gate added. | 🟡 ~18k | Back-compat shim for 90-day window; CI schema check added. | **Done 2026-04-23** | v2 types land; `L1PlanContractV2` validates all 14 fields; 31 new v2 tests + 32 legacy v1 tests all pass; CI gate `check_l1_plan_contract_fields.py` exits 0. |
 | **W3 — Evaluator-optimizer + clarify/replan** | P3.1, P3.2, P3.3 | Add `evaluator_optimizer.run_evaluator_optimizer_loop` (pure primitive, budget-bounded draft↔critique). Add `plan_clarify` + `ClarifyDecision` + `ACTION_REQUEST_CLARIFICATION` to abstain_contract (SSOT) with L1 `clarify_planner` shim. Add `replan_contract` with `ReplanRequest`, `validate_replan_request`, `advance_replan_depth`, `MAX_REPLAN_DEPTH=3`. | 🟡 ~20k | No new MCP dependency; pure L1 module wiring. | **Done 2026-04-23** | Loop primitive covers ACCEPT/REFINE_EXHAUSTED/BUDGET_EXHAUSTED/ESCALATE with injected clock; clarify decision distinct from abstain; replan depth capped + advance helper; 99/99 new tests pass + 34/34 legacy abstain tests still pass. |
 | **W4 — Budget, overhead, redaction, dev-message** | P4.1, P4.2, P4.3 | Replace `budget_enforcer.py` stub with real iteration/time/token caps. Add `planner_overhead_metric` emitter in `reasoning_chokepoint`. Split dev-msg vs sys-msg in `prompt_template_manager`. Implement thought-redaction at L1→L0 boundary. | 🟡 ~16k | OTel metrics route through existing `meta_observability`. | Todo | All 4 primitives live; baseline A/B (planner-on vs planner-off) captured in OTel; dev/sys split documented. |
@@ -139,7 +139,7 @@ Each row: **GAP-R#** — code-side divergence, evidence path, fix class (S = sch
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens (UNRESOLVED-ESTIMATE) | Status |
 |---|---|---|---|---|---|
-| **P1.1** | Doctrine edit §2 — add BP-O1/O2/O3/O6, BP-G1/G2/G3/G5, BP-A1/A3/A4 | `docs/reference/agentic_process_mapping_v33.md` (§2 only) | Must not silently widen §3–6; keep ASCII-art intact | 🟢 ~5k | Todo |
+| **P1.1** | Doctrine edit §2 — add BP-O1/O2/O3/O6, BP-G1/G2/G3/G5, BP-A1/A3/A4 | `docs/reference/_notes/agentic_process_mapping_v34.md` (§2 only) | Must not silently widen §3–6; keep ASCII-art intact | 🟢 ~5k | Todo |
 | **P1.2** | Clarify / abstain / refine / replan branch diagram | same file, §2 | Risk of diagram drift with §3 route-switch box | 🟡 ~4k | Todo |
 | **P1.3** | ADR for revised L1 output contract (9 fields + thought redaction) | `docs/architecture/adr/ADR-<next>.md` + Notion ADR Registry row | ADR numbering + auto-routing to Notion | 🟢 ~3k | Todo |
 | **P2.1** | Typed-field expansion on `L1PlanContract` (+ `PlanStep.expected_ground_truth`) | `agentic_core/L1_cognition/types/plan_contract_types.py`, `reasoning_plan.py` | Frozen dataclass migration; Author-Gate required (schema change) | 🟡 ~7k | Todo |

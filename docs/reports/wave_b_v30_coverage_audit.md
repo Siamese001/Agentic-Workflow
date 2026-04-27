@@ -2,7 +2,7 @@
 
 **Date**: 2026-04-15
 **Baseline**: Wave B external-only target-state audit — 14/20 adequately grounded, G9 FAIL at 70%
-**Checklist source**: `docs/reference/agentic_process_mapping_v30.md` — used as semantic coverage checklist only
+**Checklist source**: `docs/reference/_notes/agentic_process_mapping_v34.md` — used as semantic coverage checklist only
 **Anti-drift rule**: v30 is a semantic family checklist; it is NOT a target-state authority. Target-state grounding derives exclusively from `ext_authority`. `repo_evidence` and `ext_raw` are excluded.
 **Scope**: Classify every mandatory v30 semantic family as STRONG / ADEQUATE / WEAK / MISSING in `ext_authority`.
 

@@ -30,7 +30,7 @@
 
 ## Policy Document
 
-**Location:** `docs/reference/Python/STUB vs SHIM.md`
+**Location:** `docs/reference/_primers/Python/STUB vs SHIM.md`
 
 **Definition:** Invalid stubs are test doubles that only return success paths and don't simulate failures (low fidelity)
 
@@ -139,7 +139,7 @@
 
 | Component | Location | Purpose | Severity | Blocking | Status |
 |-----------|----------|---------|----------|----------|--------|
-| **Policy Doc** | `docs/reference/Python/STUB vs SHIM.md` | Policy definition | N/A | N/A | ✅ Active |
+| **Policy Doc** | `docs/reference/_primers/Python/STUB vs SHIM.md` | Policy definition | N/A | N/A | ✅ Active |
 | **Validator** | `agentic_core/L5_safety/validators/invalid_stub_validator.py` | AST detection of invalid stubs | P2 (HIGH) | ❌ No (tracking only) | ✅ Implemented |
 | **ADG Integration** | `agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py` | Unified scanner integration | P2 (HIGH) | ❌ No (tracking only) | ✅ Integrated |
 | **Fix Script** | `tools/fix/fix_invalid_stubs.py` | Auto-fix invalid stubs | P2 (HIGH) | N/A (auto-run) | ✅ Implemented |
@@ -238,7 +238,7 @@ python tools/fix/fix_invalid_stubs.py --dry-run
 ## Key Files Reference
 
 ### Policy
-- `docs/reference/Python/STUB vs SHIM.md`
+- `docs/reference/_primers/Python/STUB vs SHIM.md`
 
 ### Validators
 - `agentic_core/L5_safety/validators/invalid_stub_validator.py` ✅

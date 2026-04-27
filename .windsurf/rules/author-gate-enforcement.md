@@ -10,7 +10,7 @@ trigger: always_on
 
 # Author-Gate Decision Core Pipeline
 
-> **Terminology (important — per ADR-023 and `docs/reference/agentic_process_mapping_v30.md`):**
+> **Terminology (important — per ADR-023 and `docs/reference/_notes/agentic_process_mapping_v34.md`):**
 >
 > This rule governs **Author-Gate Decisions** (developer-loop / harness-side — Fowler's "humans in the loop" at the code-gen level). It applies whenever Cascade is about to write code and a decision has genuine ambiguity.
 >

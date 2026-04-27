@@ -4,8 +4,8 @@
 against the current agentic_core prompt assembly pipeline, and score the gap.
 
 **Sources**:
-- `@c:/Git/Agentic-Workflow/docs/reference/prompting/anthropic_best_practices_2026.md`
-- `@c:/Git/Agentic-Workflow/docs/reference/prompting/openai_best_practices_2026.md`
+- `@c:/Git/Agentic-Workflow/docs/reference/_primers/prompting/anthropic_best_practices_2026.md`
+- `@c:/Git/Agentic-Workflow/docs/reference/_primers/prompting/openai_best_practices_2026.md`
 - `@c:/Git/Agentic-Workflow/docs/reference/03_L0_Routing/Prompt Assembly/Agentic Prompt Categories.txt` (9-row SSOT)
 
 **Reviewed artifacts**:

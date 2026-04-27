@@ -118,7 +118,7 @@ Tier 1 enforcement: `pre_run_gate.py` blocks PowerShell commands.
 
 Exception handling MUST follow the Column 5 Precise Exceptions pattern.
 Catch specific types with specific recovery - never `except Exception: pass`.
-Reference: `docs/reference/Python/Error & Exception Handling.md`
+Reference: `docs/reference/_primers/Python/Error & Exception Handling.md`
 Guardian exemptions require explicit Author-Gate approval. See Constitutional Section 8.
 
 ---

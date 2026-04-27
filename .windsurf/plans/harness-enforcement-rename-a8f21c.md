@@ -95,7 +95,7 @@ plan_type: governance
 Prior design work (conversations 2026-04-21 T03:24–04:33) produced a detailed plan labeled
 "Author-Gate enforcement" covering gating of Cascade-authored code changes, decision ledger,
 precedent lookup, and outcome binding. Web research + review of
-`@docs/reference/agentic_process_mapping_v30.md` step [5] established that this is **not**
+`@docs/reference/_notes/agentic_process_mapping_v34.md` step [5] established that this is **not**
 runtime Author-Gate. It is **harness enforcement** in Martin Fowler's taxonomy — the developer-loop
 / author-side gate that sits outside the v30 runtime system entirely.
 

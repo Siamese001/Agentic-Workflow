@@ -29,7 +29,7 @@ o-series) prompting best practice architecturally impossible:
 - No structured-output (`response_format` / JSON schema) binding.
 
 Scorecard: 22 of 30 best-practice techniques missing, 5 partial, 3 present.
-Full cross-map: `@c:/Git/Agentic-Workflow/docs/reference/prompting/current_architecture_crossmap.md`.
+Full cross-map: `@c:/Git/Agentic-Workflow/docs/reference/_primers/prompting/current_architecture_crossmap.md`.
 
 Additionally, 5 of 9 SSOT prompt categories
 (`@c:/Git/Agentic-Workflow/docs/reference/03_L0_Routing/Prompt Assembly/Agentic Prompt Categories.txt`)
@@ -142,8 +142,8 @@ Executed in 5 waves per
 
 ## References
 
-- Anthropic best practices (distilled): `docs/reference/prompting/anthropic_best_practices_2026.md`
-- OpenAI best practices (distilled): `docs/reference/prompting/openai_best_practices_2026.md`
-- Current-architecture cross-map: `docs/reference/prompting/current_architecture_crossmap.md`
+- Anthropic best practices (distilled): `docs/reference/_primers/prompting/anthropic_best_practices_2026.md`
+- OpenAI best practices (distilled): `docs/reference/_primers/prompting/openai_best_practices_2026.md`
+- Current-architecture cross-map: `docs/reference/_primers/prompting/current_architecture_crossmap.md`
 - SSOT prompt categories: `docs/reference/03_L0_Routing/Prompt Assembly/Agentic Prompt Categories.txt`
 - Related: `agentic_process_mapping_v32.md` (overall L0-L6 mental model)

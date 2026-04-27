@@ -2,7 +2,7 @@
 
 **Plan ID:** `exit-eval-spine-gap-ce683b`
 **Scope:** v33 Process Map §5 "EXIT EVAL & CONTROL" (+ §6 Shadow Eval where it touches the exit spine)
-**Source doc:** `docs/reference/agentic_process_mapping_v33.md` (lines 377–474)
+**Source doc:** `docs/reference/_notes/agentic_process_mapping_v34.md` (lines 377–474)
 **Status:** EXECUTED — doc+schema+ADR artifacts delivered; no code merged (per §6 Out of Scope). Code execution plans for each ADR are follow-ups.
 **Tier:** T3 (cross-layer: L5 exit, L2 sealing, L6 shadow, apps_eval, UWG)
 
@@ -142,7 +142,7 @@ Rules of engagement:
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| W1.1 | Rewrite v33 §5 to name metrics | `docs/reference/agentic_process_mapping_v33.md` §5 | Prose→contract language without expanding scope | 5k | Todo |
+| W1.1 | Rewrite v33 §5 to name metrics | `docs/reference/_notes/agentic_process_mapping_v34.md` §5 | Prose→contract language without expanding scope | 5k | Todo |
 | W1.2 | `ExitDecision` schema | `config/schemas/exit_decision.schema.json` (new) | Enum fidelity across disposition + reason_code + safety + budget | 5k | Todo |
 | W1.3 | `EscalationPacket` schema | `config/schemas/escalation_packet.schema.json` (new) | Must align with ADR-023 HITL classes | 4k | Todo |
 | W1.4 | `EvalEvent` exhaust schema | `config/schemas/eval_event.schema.json` (new) | Must cover Traces / Artifacts / Outcomes / reason / commit | 4k | Todo |
@@ -200,7 +200,7 @@ ADG Provenance: backend=sqlite, snapshot=artifacts/adg/adg_indexed_<latest>.sqli
 
 | Wave | Artifact | Path | Status |
 |---|---|---|---|
-| W1.1 | v33 §5 rewrite (prose → canonical metric spine) | `docs/reference/agentic_process_mapping_v33.md` §5 | ✅ committed |
+| W1.1 | v33 §5 rewrite (prose → canonical metric spine) | `docs/reference/_notes/agentic_process_mapping_v34.md` §5 | ✅ committed |
 | W1.2 | ExitDecision schema | `config/schemas/exit_decision.schema.json` | ✅ JSON-valid |
 | W1.3 | EscalationPacket schema | `config/schemas/escalation_packet.schema.json` | ✅ JSON-valid |
 | W1.4 | EvalEvent exhaust schema | `config/schemas/eval_event.schema.json` | ✅ JSON-valid |
@@ -262,4 +262,4 @@ ADG Provenance: backend=sqlite, snapshot=artifacts/adg/adg_indexed_<latest>.sqli
 - OpenAI — https://developers.openai.com/api/docs/guides/agent-evals
 - Industry guardrails — Akira / Codebridge / Medium practitioner guides (2025–2026)
 - Repo SSOT — `config/judges/rubrics.yaml`, `apps_eval/`, `agentic_core/L5_safety/exit_control/`, `docs/architecture/adr/ADR-023-runtime-hitl-exit-control.md`
-- Canonical v33 — `docs/reference/agentic_process_mapping_v33.md` §5 lines 377–474
+- Canonical v33 — `docs/reference/_notes/agentic_process_mapping_v34.md` §5 lines 377–474

@@ -7,7 +7,7 @@
 - **Supersedes**: partial of `L1PlanContract` v1 at `agentic_core/L1_cognition/types/plan_contract_types.py`
 - **Related**: `ADR-023-runtime-hitl-exit-control.md` (orthogonal — runtime exit control, not planner output), `ADR-038-budget-envelope.md`, `ADR-039-output-contract-validator.md`
 - **Plan**: `.windsurf/plans/l1-reasoning-bestpractices-gaps-a7b2c9.md`
-- **Source doc**: `docs/reference/agentic_process_mapping_v33.md` §2
+- **Source doc**: `docs/reference/_notes/agentic_process_mapping_v34.md` §2
 
 ---
 
@@ -125,7 +125,7 @@ A replan from `[5] EXIT EVAL` produces a **successor** `L1PlanContract` with a n
 
 ## References
 
-- `docs/reference/agentic_process_mapping_v33.md` §2 (revised)
+- `docs/reference/_notes/agentic_process_mapping_v34.md` §2 (revised)
 - Anthropic — *Building Effective Agents* — evaluator-optimizer, workflow vs agent, stopping conditions
 - Anthropic — *Claude's Constitution* — clarify in ambiguity, abstain as first-class
 - OpenAI — *Reasoning Best Practices* — planner/doer split, simple prompts, developer vs system message

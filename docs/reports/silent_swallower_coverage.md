@@ -33,7 +33,7 @@
 
 ## Policy Document
 
-**Location:** `docs/reference/Python/Error & Exception Handling.md`
+**Location:** `docs/reference/_primers/Python/Error & Exception Handling.md`
 
 **Definition:** Column 3 (BROAD SWALLOW/SILENT SWALLOWER) - Exception handling that catches errors but hides the truth, preventing proper error reporting and recovery.
 
@@ -359,7 +359,7 @@
 
 | Component | Location | Purpose | Severity | Blocking | Status |
 |-----------|----------|---------|----------|----------|--------|
-| **Policy Doc** | `docs/reference/Python/Error & Exception Handling.md` | Policy definition | N/A | N/A | ✅ Active |
+| **Policy Doc** | `docs/reference/_primers/Python/Error & Exception Handling.md` | Policy definition | N/A | N/A | ✅ Active |
 | **Validator 1** | `agentic_core/L5_safety/validators/silent_swallower_validator.py` | AST detection | P2 (HIGH) | ❌ No (tracking only) | ✅ Active |
 | **Validator 2** | `agentic_core/L5_safety/validators/silent_degradation_validator.py` | Degradation detection | P2 (HIGH) | ❌ No (tracking only) | ✅ Active |
 | **Validator 3** | `agentic_core/L5_safety/validators/utility_silent_swallower_validator.py` | Utility script detection | P2 (HIGH) | ❌ No (tracking only) | ✅ Active |
@@ -437,4 +437,4 @@
 - `tools/medium_severity_fixes_report.json`
 
 ### Documentation
-- `docs/reference/Python/Error & Exception Handling.md`
+- `docs/reference/_primers/Python/Error & Exception Handling.md`

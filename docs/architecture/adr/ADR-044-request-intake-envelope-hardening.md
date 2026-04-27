@@ -10,7 +10,7 @@
 
 ## Context
 
-`docs/reference/agentic_process_mapping_v33.md` §[1] and
+`docs/reference/_notes/agentic_process_mapping_v34.md` §[1] and
 `docs/reference/01_Request_Intake/01_request_intake.md` specify the "front desk"
 stage of the agentic loop: every inbound request MUST pass an envelope check
 before L1 reasoning sees it. The prior implementation at
@@ -117,7 +117,7 @@ Negative / follow-ups:
 
 * `.windsurf/plans/request-intake-envelope-gaps-3f9a12.md` — gap register and
   wave plan this ADR closes.
-* `docs/reference/agentic_process_mapping_v33.md` §[1]
+* `docs/reference/_notes/agentic_process_mapping_v34.md` §[1]
 * `docs/reference/01_Request_Intake/01_request_intake.md`
 * Anthropic — *Building Effective Agents*
   (https://www.anthropic.com/research/building-effective-agents)

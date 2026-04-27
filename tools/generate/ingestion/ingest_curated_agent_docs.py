@@ -36,7 +36,7 @@ RANKED KEEP / EXCLUDE DECISIONS
   ────  ─────  ──────────────────────────────────────────────────────────────────────────
    1    0.97   docs/architecture/adr/adr-0043-structural-agentic-checks.md
    2    0.93   docs/architecture/adr/adr-002-interface-protocol-first.md
-   3    0.95   docs/reference/agentic_process_mapping_exec.md
+   3    0.95   docs/reference/_notes/agentic_system_process_map_exec.md
    4    0.92   docs/architecture/governed-app-contract.md
    5    0.91   docs/reference/agentic_process_mapping_v29.md
    6    0.90   docs/architecture/adr/adr-0042-skills-consolidation.md
@@ -257,7 +257,7 @@ CURATED_SOURCES: list[dict] = [
     # ── Internal process mapping (latest + exec only) ──────────────────────
     {
         "source_type": "local",
-        "path": "docs/reference/agentic_process_mapping_exec.md",
+        "path": "docs/reference/_notes/agentic_system_process_map_exec.md",
         "title": "Agentic System Process Map — Executive Summary",
         "doc_type": "markdown",
         "doc_family": "reference",

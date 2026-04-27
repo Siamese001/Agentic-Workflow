@@ -4,7 +4,7 @@ Developer-facing index for the 14 additive L2 modules landed by plan `@c:/Git/Ag
 
 **All primitives are additive.** No existing consumer breaks. Call sites opt in by passing a `ToolContract` (W1-P1.3) or by directly importing a registry / class (W2-W5). Default-safe lookups ensure that tools without registered metadata behave as they did before.
 
-Canonical v33 process phase mapping: `@c:/Git/Agentic-Workflow/docs/reference/agentic_process_mapping_v33.md` → `[APPENDIX A]`.
+Canonical v33 process phase mapping: `@c:/Git/Agentic-Workflow/docs/reference/_notes/agentic_process_mapping_v34.md` → `[APPENDIX A]`.
 
 ---
 

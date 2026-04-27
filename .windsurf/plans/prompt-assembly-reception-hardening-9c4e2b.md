@@ -7,9 +7,9 @@
 
 ## Research Basis
 
-- `@c:/Git/Agentic-Workflow/docs/reference/prompting/anthropic_best_practices_2026.md` — XML tagging, long-context at top, `<thinking>`/`<answer>`, adaptive thinking, `<example>` wrapping, role priming.
-- `@c:/Git/Agentic-Workflow/docs/reference/prompting/openai_best_practices_2026.md` — instruction hierarchy (developer > system > user), GPT-4.1 recommended skeleton (Role → Instructions → Reasoning → Output Format → Examples → Context → Final), o-series diverging rules, Structured Outputs.
-- `@c:/Git/Agentic-Workflow/docs/reference/prompting/current_architecture_crossmap.md` — 30-technique scorecard; 22 of 30 currently missing.
+- `@c:/Git/Agentic-Workflow/docs/reference/_primers/prompting/anthropic_best_practices_2026.md` — XML tagging, long-context at top, `<thinking>`/`<answer>`, adaptive thinking, `<example>` wrapping, role priming.
+- `@c:/Git/Agentic-Workflow/docs/reference/_primers/prompting/openai_best_practices_2026.md` — instruction hierarchy (developer > system > user), GPT-4.1 recommended skeleton (Role → Instructions → Reasoning → Output Format → Examples → Context → Final), o-series diverging rules, Structured Outputs.
+- `@c:/Git/Agentic-Workflow/docs/reference/_primers/prompting/current_architecture_crossmap.md` — 30-technique scorecard; 22 of 30 currently missing.
 
 ## Author-Gate Decisions (locked 2026-04-23)
 

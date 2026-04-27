@@ -37,7 +37,7 @@ F25-ext is grounded by external sources (e.g. OpenAI `running_agents.md` HITL se
 
 The project has two concept-documented artifacts describing healing dispatch behavior, neither of which is an ADR:
 
-- `docs/reference/agentic_process_mapping_v30.md` describes a `dispatch_healing()` entry point and names three healing tiers: **LOCAL_AGENT**, **COORDINATED**, **ESCALATED**. It also names two components: `healing_tier_router.py` (tier-based routing via `route_by_confidence()`) and `healing_tier_dispatcher.py` (healing dispatch via `dispatch_healing()`). Neither module exists yet under `agentic_core/base_agents/`.
+- `docs/reference/_notes/agentic_process_mapping_v34.md` describes a `dispatch_healing()` entry point and names three healing tiers: **LOCAL_AGENT**, **COORDINATED**, **ESCALATED**. It also names two components: `healing_tier_router.py` (tier-based routing via `route_by_confidence()`) and `healing_tier_dispatcher.py` (healing dispatch via `dispatch_healing()`). Neither module exists yet under `agentic_core/base_agents/`.
 - `docs/specs/hardening/HEALER_RETRY_HARDENING_SPEC.md` defines `RetryConfig.strictness_escalation = [0.7, 0.85, 0.95]` with `max_attempts = 3` and `timeout_escalation = [30, 20, 10]` seconds per attempt, managed by a `HealerRetryManager` class that is already referenced in existing healing call-sites.
 
 ### 2.2 Why an ADR is needed
@@ -128,7 +128,7 @@ Deterministic abort (no further escalation) is required when:
 
 | Prior artifact | Relationship to this ADR |
 |----------------|--------------------------|
-| `docs/reference/agentic_process_mapping_v30.md` | Describes `dispatch_healing()` entry point and names the three tiers; this ADR promotes those names to a canonical contract |
+| `docs/reference/_notes/agentic_process_mapping_v34.md` | Describes `dispatch_healing()` entry point and names the three tiers; this ADR promotes those names to a canonical contract |
 | `docs/specs/hardening/HEALER_RETRY_HARDENING_SPEC.md` | Defines `RetryConfig.strictness_escalation = [0.7, 0.85, 0.95]`, `max_attempts = 3`, `timeout_escalation = [30, 20, 10]`, `scope_lock = True`; this ADR binds these values to tier boundaries |
 | `docs/reference/_archive/Healing & Escalation Loop.md` | Archived predecessor; superseded by this ADR |
 | `docs/requirements/wave_b_target_state_registry.md` §F25 split | Records the F25-int / F25-ext classification and the F25-int OUT OF SCOPE disposition for ext_authority |
@@ -161,7 +161,7 @@ This ADR is accepted into `repo_evidence` Lane C when:
 
 ## 8. References
 
-- `docs/reference/agentic_process_mapping_v30.md` (tier names `LOCAL_AGENT`, `COORDINATED`, `ESCALATED`; `dispatch_healing()`; `healing_tier_router`)
+- `docs/reference/_notes/agentic_process_mapping_v34.md` (tier names `LOCAL_AGENT`, `COORDINATED`, `ESCALATED`; `dispatch_healing()`; `healing_tier_router`)
 - `docs/specs/hardening/HEALER_RETRY_HARDENING_SPEC.md` (`RetryConfig`, `strictness_escalation`, `HealerRetryManager`, `scope_lock`)
 - `docs/requirements/wave_b_target_state_registry.md` (F25 split; F25-int OUT OF SCOPE for ext_authority)
 - `docs/requirements/wave_c_handoff_contract.md` (repo_evidence Lane C constraint; ext_authority prohibition for F25-int)

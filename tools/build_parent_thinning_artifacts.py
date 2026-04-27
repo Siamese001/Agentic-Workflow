@@ -15,7 +15,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 REF = REPO / "docs" / "reference"
-SKIP_DIRS = {"_archive", "__pycache__"}
+SKIP_DIRS = {"_archive", "_notes", "_primers", "__pycache__"}
 
 MANIFEST = REF / "UPDATED_MANIFEST.json"
 ZIP_OUT = REF / "Agentic_Requirements_MECE_ParentThinned_ZeroLoss.zip"

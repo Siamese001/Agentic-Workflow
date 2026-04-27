@@ -169,7 +169,7 @@ queries:
     intent: semantic
     expected_chunk_ids:
       - ".windsurf/rules/adg-canonical-invariants.md::sec_8_static_vs_runtime"
-      - "docs/reference/AST Dependency Graphs (ADG)/ADG STATIC vs. RUNTIME MENTAL MODEL.md::overview"
+      - "docs/reference/_primers/AST Dependency Graphs (ADG)/ADG STATIC vs. RUNTIME MENTAL MODEL.md::overview"
     notes: "Answer must distinguish adg_sqlite MCP vs otel_mcp, AST-scan vs OTEL spans."
 
 # Eval axes actually computed. retrieval_benchmark.py must emit all of

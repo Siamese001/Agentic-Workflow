@@ -68,7 +68,7 @@ Each row asks: did the overlay detector and the canonical audit agree on what's 
 - examples in audit but missed by overlay (sample):
     - `('tools/archive/interfaces_dead_code_20260405/IOrchestratorProtocol.py', 'b263da5883e3')`
     - `('agentic_core/adg/analysis/confidence.py', '3743018c926a')`
-    - `('docs/reference/Testing/Agentic Testing.py', 'be8ff07e1716')`
+    - `('docs/reference/_primers/Testing/Agentic Testing.py', 'be8ff07e1716')`
     - `('agentic_core/adg/analysis/EdgeConfidence.py', '3743018c926a')`
     - `('tools/reference/Testing/Agentic Testing.py', 'be8ff07e1716')`
 - examples in overlay but missed by audit (sample):

@@ -2,8 +2,8 @@
   "manifest_version": "2026-04-26.parent-thinning",
   "generated_utc": "2026-04-26T19:25:00Z",
   "root": "docs/reference/",
-  "file_count": 242,
-  "total_bytes": 3923587,
+  "file_count": 163,
+  "total_bytes": 2955957,
   "files": [
     {
       "path": "00A_L5_Governance_Safety/00A.1_L5_Safety_Enforcement_Plane.md",
@@ -41,14 +41,24 @@
       "sha256": "8961533adff2a42a214cc4f421dc3ec4408d2ee2cfdce43e975da9a3ff812e24"
     },
     {
+      "path": "00A_L5_Governance_Safety/00A.7a_L5_Governance_Context_Invariant.md",
+      "size": 19093,
+      "sha256": "d5cb35f7301e673797c6b04ea3f0a2e919d4d95d28e9aa490d130337e7ec9cbf"
+    },
+    {
       "path": "00A_L5_Governance_Safety/00A.8_L5_Runtime_Certification_Binding.md",
       "size": 6779,
       "sha256": "fa890e0cc77797b17234a4595836ed73d8b374a8d7709517e3b04de94bb61b3a"
     },
     {
+      "path": "00A_L5_Governance_Safety/00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "size": 11703,
+      "sha256": "eeac29452f0457d489eeb98f19f7b38f89d785812efa13da082bad80437d17b9"
+    },
+    {
       "path": "00A_L5_Governance_Safety/00A_L5_Governance_Safety.md",
-      "size": 17313,
-      "sha256": "97d3d447a05d950b204936a5cb870d9655bee08308587dc4c5167a97453a20f4"
+      "size": 14952,
+      "sha256": "42232b58592dbc76afc0c1ba75b52d496d0fff5caa2a94dbc747959d67c7d62c"
     },
     {
       "path": "00A_L5_Governance_Safety/calibration_assurance_planes.md",
@@ -77,8 +87,8 @@
     },
     {
       "path": "00A_L5_Governance_Safety/v5_coverage_matrix.md",
-      "size": 19634,
-      "sha256": "9bdbee44d1024df89e2df8c486e4258d2f33ac880d96d2e083aaceb5bdafb9bb"
+      "size": 45483,
+      "sha256": "04bf2d1c97ee5a39222c108eae17bed80139dc588b7da80b5b2a9ad8a528c05f"
     },
     {
       "path": "00B_L4_State_Archive_and_UWG/00B.1_L4_Policy_Blueprint_and_Registry_State.md",
@@ -116,9 +126,19 @@
       "sha256": "546ea243ded5042c2e6d2364fcf12887282134859b3b4b53239f771eddca90c2"
     },
     {
+      "path": "00B_L4_State_Archive_and_UWG/00B.7a_L4_UWG_Durable_Write_Context_Invariant.md",
+      "size": 20972,
+      "sha256": "2bef3dd08ea4bd373a9e0b823cd8232bb3bc19141ac0a16bb8a2374dc90eb7fb"
+    },
+    {
       "path": "00B_L4_State_Archive_and_UWG/00B.8_L4_UWG_Observability_Tests_and_Anti_Bypass.md",
       "size": 16139,
       "sha256": "40bac5e052c4a752fe29e2ca959e994e8993469fbe223fcad19558343bc3f112"
+    },
+    {
+      "path": "00B_L4_State_Archive_and_UWG/00B.8a_L4_UWG_State_Audit_Replay_Consistency_Tests.md",
+      "size": 15733,
+      "sha256": "d929b3fe8956bb7fcda252e911cd4595e0d0ab39a5588a3b6ea10043c8b74b97"
     },
     {
       "path": "00B_L4_State_Archive_and_UWG/00B.9_L4_Blueprint_Policy_Version_Migration.md",
@@ -127,13 +147,13 @@
     },
     {
       "path": "00B_L4_State_Archive_and_UWG/00B_L4_State_Archive_and_UWG.md",
-      "size": 15940,
-      "sha256": "2c4ea03fad95d9cc313edd94855b1cc6e6ca0d7a8933e31a234c68f459f866aa"
+      "size": 15565,
+      "sha256": "375e998918177e7d1706cb2302c32198e12fcfba39465fc49af7f3b4b5a86374"
     },
     {
       "path": "00B_L4_State_Archive_and_UWG/MANIFEST.json",
-      "size": 4128,
-      "sha256": "ffb98196873454f36e59337b18a02364188997e2f970bd7007098e4ac1f040ee"
+      "size": 4061,
+      "sha256": "c8060c73e1db8cc4c22af5dc7ac8dac4169ee82024f2bcd605e1fa266bb95d30"
     },
     {
       "path": "00C_Runtime_Gates_Current_Run_Mesh/00C.1_Runtime_Gates_G01_G05_Ingress_Identity_Intent_Safety_Risk.md",
@@ -182,23 +202,13 @@
     },
     {
       "path": "00C_Runtime_Gates_Current_Run_Mesh/00C_Runtime_Gates_Current_Run_Mesh.md",
-      "size": 14021,
-      "sha256": "dcf652efac591b1a53b6eba20942133e9b7642362f88c271c9885d746e166c42"
+      "size": 24610,
+      "sha256": "e7691f1273315f74382e13c5df5be3ef2d105e0a1335e0083841cfd766d7e20d"
     },
     {
       "path": "00X_Requirements_Traceability_and_No_Loss_Map.md",
-      "size": 24625,
-      "sha256": "03f26049cbe04de008c0b4b5a93d9ee517838615fa39732c975aab966d7a54a8"
-    },
-    {
-      "path": "00Y_April2026_Gap_Closure_Reconciliation.md",
-      "size": 2721,
-      "sha256": "68179294381611384efba1ada0d028b035b8eb7a4a3eab6a6489749a951f0097"
-    },
-    {
-      "path": "00Z_Source_Alignment_Best_Practices.md",
-      "size": 3573,
-      "sha256": "2ffec4cd18569f5abe49197238d074d30edce3fc0389e57f90f73af8b8894673"
+      "size": 25703,
+      "sha256": "adcf787c6d1c513de1adc380527b108b4d659c48530b0017162502e8feedb1de"
     },
     {
       "path": "01_Request_Intake/01.1_Intake_Transport_Envelope_and_Channel_Validation.md",
@@ -252,8 +262,8 @@
     },
     {
       "path": "01_Request_Intake/01_request_intake.md",
-      "size": 14976,
-      "sha256": "e65b98bbbea1179edc57e85e26ce7a90a0c66d4d1eb1bff54e169cbdb6a08de8"
+      "size": 12493,
+      "sha256": "08b7f87b7c916308356a264c00790f30613801b80cffdd30a0a0be4af324032f"
     },
     {
       "path": "02_L1_Reasoning_Plan/02.1_Intent_Frame_and_Ambiguity_Register.md",
@@ -287,8 +297,8 @@
     },
     {
       "path": "02_L1_Reasoning_Plan/02_L1_Reasoning_Plan_Generation.md",
-      "size": 17130,
-      "sha256": "ee43c2a7e53d3878e6b178c49fd17fdbb9c7ae0305ec9c86e3beef22337cdf9b"
+      "size": 10910,
+      "sha256": "d23e6a6e1e53980c0116eaa7c24668a226d11292debb4d34cf40d775212325b2"
     },
     {
       "path": "03_L0_Route_Decision_and_L3_Orchestration/03.1_L0_Route_Input_and_Preflight.md",
@@ -336,14 +346,9 @@
       "sha256": "28757635c8d4a2604668d6fe343cd4eeb89ff6317129705ce6be181664ac42e5"
     },
     {
-      "path": "03_L0_Route_Decision_and_L3_Orchestration/03_L0_Route_Decision_Switching_L3 exec.md",
-      "size": 42487,
-      "sha256": "e24ff4add5fe35ba0b13565d72f92742216bb72a5df120a68a9a183d89756125"
-    },
-    {
       "path": "03_L0_Route_Decision_and_L3_Orchestration/03_L0_Route_Decision_Switching_L3.md",
-      "size": 14553,
-      "sha256": "e41cd9617f339872564204cad9d84e4752fc5e1d39154cd8f4a7045c5084ab53"
+      "size": 14382,
+      "sha256": "07f99b1d31686d9dac8e60a1e13357d4c7c0c05cb8fcaa91ccfd7ea39dfdc207"
     },
     {
       "path": "03_L0_Route_Decision_and_L3_Orchestration/GAP_ANALYSIS_v11_vs_best_practices.md",
@@ -354,21 +359,6 @@
       "path": "03_L0_Route_Decision_and_L3_Orchestration/R1B Semantic Cache v2.md",
       "size": 13035,
       "sha256": "bb4812d99ea4323b2f522ece38e859ff4af81e895d5e80bc717240d326f8b4c7"
-    },
-    {
-      "path": "03A_03B_FOLDER_SHIFT_REPORT.md",
-      "size": 759,
-      "sha256": "1522666ee01863e40a8c596b9822456de3e289ae7e2a4b72a534d106553ce363"
-    },
-    {
-      "path": "03A_C0_Context_Engine/Anthropic Contextual Retrieval Architecture.md",
-      "size": 17453,
-      "sha256": "508b5f7524fa7f59620511a418f5db7fe90052630546222f87954fc2f2bdaf6d"
-    },
-    {
-      "path": "03A_C0_Context_Engine/Anthropic RAG Best Practices.md",
-      "size": 15880,
-      "sha256": "eb8cb006a3ab40d07fb4e39259c33eea585f107062ccdc66e41e3b041cfd514d"
     },
     {
       "path": "03A_C0_Context_Engine/C0.0_Preflight_Grounding_Eligibility.md",
@@ -412,8 +402,8 @@
     },
     {
       "path": "03A_C0_Context_Engine/C0_Context_Engine.md",
-      "size": 40035,
-      "sha256": "cae0f1c917316e00263a5f0044aadfd0c278527058895ad38699e398675db01d"
+      "size": 13745,
+      "sha256": "9fa03033cbbf6764d9e1ae1283acd28309ff231bc0d09a2b9029b83913c6ef4b"
     },
     {
       "path": "03A_C0_Context_Engine/C0_Context_Engine_example.md",
@@ -421,9 +411,24 @@
       "sha256": "a1e23041aa7e3c0f8dd56ea00a3451dd198cdc4b2f49809b89df3567cb750975"
     },
     {
-      "path": "03A_C0_Context_Engine/C0_Context_Engine_exec.md",
-      "size": 45872,
-      "sha256": "df3a588ae7a2a7ae0d10a0c858a2a005f8968d63496cb662aa8d6a8c3b3ed550"
+      "path": "03A_C0_Context_Engine/C0_Requirements_Traceability_Matrix.md",
+      "size": 68557,
+      "sha256": "cdf3bc62beee477ccd4fca21aa8fbd4f126d1c595fb9c9dc596b3486ccbd2ce5"
+    },
+    {
+      "path": "03A_C0_Context_Engine/Docs/Anthropic Contextual Retrieval Architecture.md",
+      "size": 17453,
+      "sha256": "508b5f7524fa7f59620511a418f5db7fe90052630546222f87954fc2f2bdaf6d"
+    },
+    {
+      "path": "03A_C0_Context_Engine/Docs/Anthropic RAG Best Practices.md",
+      "size": 15880,
+      "sha256": "eb8cb006a3ab40d07fb4e39259c33eea585f107062ccdc66e41e3b041cfd514d"
+    },
+    {
+      "path": "03A_C0_Context_Engine/Docs/Retrieval Pipeline.md",
+      "size": 25291,
+      "sha256": "4d2fe9d8ff0853d8189c99339cd116ae642d6977a4daeedb9c532ae42c1ecfba"
     },
     {
       "path": "03A_C0_Context_Engine/GraphDB/Graph DB vs. Dependency Graph.md",
@@ -439,11 +444,6 @@
       "path": "03A_C0_Context_Engine/GraphRAG/GraphRAG vs. RAG - Semantic Similarity.md",
       "size": 8456,
       "sha256": "8704e6e21a8a4cc74e94bc5162d2b6bc6d4152136715d1097453d02f0ca2a3e3"
-    },
-    {
-      "path": "03A_C0_Context_Engine/Retrieval Pipeline.md",
-      "size": 25291,
-      "sha256": "4d2fe9d8ff0853d8189c99339cd116ae642d6977a4daeedb9c532ae42c1ecfba"
     },
     {
       "path": "03B_PA_Prompt_Assembly/PA.0_Boundary_Check.md",
@@ -491,14 +491,14 @@
       "sha256": "56099ecb236ee57280d45c7b908813b464a0c84ca26526596215defba6a2d9da"
     },
     {
-      "path": "03B_PA_Prompt_Assembly/Prompt Assembly_exec.md",
-      "size": 15413,
-      "sha256": "a4d0f4b32a0dad324ada26a5261a09ca102cb4a3f940dfd39605d9dfd3fc3b7a"
+      "path": "03B_PA_Prompt_Assembly/PA_Prompt_Assembly.md",
+      "size": 12273,
+      "sha256": "ed8082086c50a1d372148cdc02a77fdfbecc275772745a9dc146c5361a87e099"
     },
     {
-      "path": "03B_PA_Prompt_Assembly/Prompt_Assembly.md",
-      "size": 17941,
-      "sha256": "3e7eb444778bfb51897c75862713e101775c20ab5c227769184d29ef14e063ce"
+      "path": "03B_PA_Prompt_Assembly/REQUIREMENT_TRACEABILITY_MATRIX.md",
+      "size": 6324,
+      "sha256": "5c2c4a26fb9a09ec4673bc66b2fcf99981217619e06f700e25a3f989de83fdf8"
     },
     {
       "path": "04_L2_Execute/04.0_L2_Sequencer_Orchestrator_Contract.md",
@@ -522,8 +522,8 @@
     },
     {
       "path": "04_L2_Execute/04.3_L2_E2_Valid_Work_Order_and_Gate_Check.md",
-      "size": 34988,
-      "sha256": "5426c4338c33b51c571dc1aefa83113f6045583ba9c8c5016fb37011376d5927"
+      "size": 38054,
+      "sha256": "7e76270c1e049e9b43ce0578145edeb0b7c4db1773781ac46f755ff83efa8673"
     },
     {
       "path": "04_L2_Execute/04.4_L2_E3_Exec_Attempt_Lanes_and_Sandbox_Run.md",
@@ -532,8 +532,13 @@
     },
     {
       "path": "04_L2_Execute/04.5_L2_E4_Heal_Same_Authority_Repair_Governor.md",
-      "size": 34381,
-      "sha256": "8f55331c52fa3db238fd2172c36724e4ab2c6dfed3c5e84df2f471cbae1f808c"
+      "size": 37504,
+      "sha256": "b8fafc1f75997bc73c13add80bd55b6c665dccb10da55c6956590d924a39580c"
+    },
+    {
+      "path": "04_L2_Execute/04.5a_L2_Resolution_Context_Invariant.md",
+      "size": 14796,
+      "sha256": "5814c876b75f6813d6eb86e4d9c9328c7e5e88dced3202781d8e59d8d946d786"
     },
     {
       "path": "04_L2_Execute/04.6_L2_E5_Seal_Artifact_and_Dispatch.md",
@@ -557,13 +562,18 @@
     },
     {
       "path": "04_L2_Execute/04_L2_Execute.md",
-      "size": 29340,
-      "sha256": "b7202c88a5411ed3f8fc356a211d559d53454e15b3592f71ff0b855ccac72bdc"
+      "size": 15071,
+      "sha256": "91ad93a2eefc565cc1a921670a2f458e2b413916d3c1e249e8570015531cad90"
     },
     {
-      "path": "04_L2_Execute/04_L2_Execute_exec.md",
-      "size": 19548,
-      "sha256": "e2f3cf3a179e35e43737533ed098d2d79e0c3d8da2ab7513712e6a21ea5a8868"
+      "path": "04_L2_Execute/COVERAGE_MATRIX.md",
+      "size": 199863,
+      "sha256": "04896bc72c5a047d07a95c1d10240180e74aded03c5539a58f2e30335440bf17"
+    },
+    {
+      "path": "04_L2_Execute/EVIDENCE_AUDIT.md",
+      "size": 13401,
+      "sha256": "0485987317e910a69b47f9aba0cda087f405adc5861844e628d503bf405a7549"
     },
     {
       "path": "05_Exit_Evaluation_and_Control/05.1_Exit_Input_Normalization_and_Review_Packet.md",
@@ -607,13 +617,8 @@
     },
     {
       "path": "05_Exit_Evaluation_and_Control/05_Live_Runtime_Exit_Control_&_Evaluation.md",
-      "size": 24820,
-      "sha256": "058cb6f48296c3841691939d8b7a74a6045c20de3e15bf31e1c28de852a29425"
-    },
-    {
-      "path": "05_Exit_Evaluation_and_Control/05_Live_Runtime_Exit_Control_&_Evaluation_exec.md",
-      "size": 25123,
-      "sha256": "8bcbaac2ce6a6ea7001452e82f78d056b242344302b678924186695559deb57c"
+      "size": 16339,
+      "sha256": "779d89bfdfbd7897f65bfb831678a689f1f6eeac383b1c7edc717349b6c8a3c4"
     },
     {
       "path": "05_Exit_Evaluation_and_Control/gap_analysis_v3_vs_industry_2026.md",
@@ -697,523 +702,123 @@
     },
     {
       "path": "06_L6_Shadow_Evaluation_System_Learning/06_Shadow_Evaluation_System_Learning.md",
-      "size": 13193,
-      "sha256": "0385831570ca0a3245558ad65ad142405f698f668825849db52e0e6b4283513c"
+      "size": 15476,
+      "sha256": "4c4847c25a8464856dede8b7157b44fc7aa913668677a02d1a5e1af4afb40de2"
     },
     {
-      "path": "06_L6_Shadow_Evaluation_System_Learning/06_Shadow_Evaluation_System_Learning_exec.md",
-      "size": 12342,
-      "sha256": "0d04870e538f7c29065006deda3deeb11d7bf5081f5c52315e4f7fd8712f8598"
-    },
-    {
-      "path": "98_Contextual_Refinement_Model_Primers/Contextual Refinement in Transformer Models - Drill Down v7.md",
-      "size": 37925,
-      "sha256": "f72c799238c3f8a382df321c546930c52bede2fb6b91cf4f57ba6d518a9c93c0"
-    },
-    {
-      "path": "98_Contextual_Refinement_Model_Primers/Contextual Refinement in Transformer Models v4.md",
-      "size": 16810,
-      "sha256": "d7497d5a1e1acf31eb70faf96a518afcc646c8121896e32ede27d6d3e3c0ae29"
-    },
-    {
-      "path": "98_Contextual_Refinement_Model_Primers/README.md",
-      "size": 2157,
-      "sha256": "caa1b38c5b386250c77b3c2e34d87bc47e37d2c8419319a844b0b3465b61545a"
-    },
-    {
-      "path": "98_Contextual_Refinement_Model_Primers/Transformer Self Attention - Token Contextualization Pipeline.md",
-      "size": 4595,
-      "sha256": "d348d6d6cb24c1c54025d7aa498ed98528d605ee18b4bdf416166fa46362b0a3"
+      "path": "06_L6_Shadow_Evaluation_System_Learning/v6_coverage_matrix.md",
+      "size": 34629,
+      "sha256": "f8a7e45b929523e92dd30f2f1bd310cff797a7e3c5b5506627a0c2e7dcff8bd1"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.10_E2E_Fixtures_Replay_Harness_Commands.md",
-      "size": 6472,
-      "sha256": "0471e76b0fc5ee257786ecb6dab6c3c872307ee9eaa858477ff2fff4d7fce0a1"
+      "size": 6678,
+      "sha256": "b2906d74cffe82ce6fbf2ec7d684b5cabe4dbf8dbc4f0aa9f56df7fc953575be"
+    },
+    {
+      "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.11_E2E_Requirements_To_Runtime_Evidence_Compiler.md",
+      "size": 30480,
+      "sha256": "9a8632767836833dca17923992af4cd75741f2199c76b5ffccff7631fbb6ab37"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.1_E2E_Golden_Path_Runtime_Proof.md",
-      "size": 5010,
-      "sha256": "08016978852ba7420cb66c68757f176b8027090220438390b2f6ea74cd741d25"
+      "size": 4869,
+      "sha256": "197ea81e43d547c598ca057a7b6b878f33f5271086aab50e01957fed33f10f47"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.2_E2E_Route_Path_Coverage_Proof.md",
-      "size": 4844,
-      "sha256": "3c2e0949958fe1e0bda689d225fc022bc131058d1c7cab4abb66c26aecac4b07"
+      "size": 4714,
+      "sha256": "957cf5a0475a495ce2037acc4ee19b5b46d614e56f8145483068dda46a92fad0"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.3_E2E_Contract_Emission_and_Handoff_Proof.md",
-      "size": 5158,
-      "sha256": "838eef429b6703985b1bcf761a9c86a9e347aceca9852646f3136740082e3ca1"
+      "size": 5017,
+      "sha256": "3ad743b769f7e7da00f8e61b57d003c303d7c7983f00c3b040a4dde9d20cc2ba"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.4_E2E_OTEL_Trace_and_Span_Tree_Proof.md",
-      "size": 5197,
-      "sha256": "c4da2ac169958f2acc1b9ea056407c7cf859e54c8980e01e91be40d720887dbf"
+      "size": 5051,
+      "sha256": "9baa62dcce412e7ec8b36874834fe187f3c64aadd48a01eb54c17392e3e73f54"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.5_E2E_Deterministic_Replay_Proof.md",
-      "size": 5106,
-      "sha256": "c3adec69fbe2f1163799b2c00da5348625a7f97e65f7fd17030e4727a89eeac1"
+      "size": 4956,
+      "sha256": "181dfb7a5ffc384116067cc53b2576caf0f93a8cceb77530a58dc2a7dcd0615c"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.6_E2E_No_Bypass_and_Sovereignty_Proof.md",
-      "size": 5275,
-      "sha256": "474f53291e7c0263fc3888582488835103f2664f44587f8310117b03e46e1d4e"
+      "size": 5130,
+      "sha256": "de744f04341d2d6a67621930bef75e7add4c36c12308e049a8f64216cc4da5bd"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.7_E2E_Evidence_Prompt_Output_Groundedness_Proof.md",
-      "size": 5184,
-      "sha256": "c1f6e423289b3b15ee52e78353aae4abf7a8b433255576503f769c94418ce605"
+      "size": 5055,
+      "sha256": "95e62eb3ac4271f91afcd764ed6a2904afd5a6492afce8640f03f0bf3f4c8154"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.8_E2E_Acceptance_Commands_and_Proof_Bundle.md",
-      "size": 6572,
-      "sha256": "4d5ecb244b2daf59971fd3443d3b0dcf977a6445d65bf90dba9d89b2581c25b5"
+      "size": 6529,
+      "sha256": "28695bdd2cb5ec096b43414799871669961a79150d8cc756a37e3a38b13b883d"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99.9_E2E_Mutation_Testing_Boundary_Faults.md",
-      "size": 5760,
-      "sha256": "b758c59f16ce97cd10e2217608c31cb84bd1e5549e7cb6402f26bd88290542c5"
+      "size": 5838,
+      "sha256": "bb7c55ff509b7d43c06305689c64d5bbb5b0a59f299bcd5efc79e748314b683c"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/99_End_to_End_Runtime_Proof_and_Acceptance.md",
-      "size": 6812,
-      "sha256": "7900128a575e341d842b94eb1c428e8ea8237ce24959ba6991715f3ab6de25b5"
+      "size": 17473,
+      "sha256": "4f96059c2df81fe2c731981a5198055b098416b01c871c98196a5175e2a758cf"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/MANIFEST.json",
-      "size": 1249,
-      "sha256": "1c22b3f122db551f6d043a729e39e19a3fcc3aff070e42ec920272bd97f1467f"
+      "size": 1711,
+      "sha256": "d5f68d1af2aa087cb53bb406b4d767a78ed048aa323e556b32274ef9339fc1d2"
     },
     {
       "path": "99_End_to_End_Runtime_Proof_and_Acceptance/README.md",
-      "size": 2501,
-      "sha256": "86782aa3153821de47ac6aadb7c38b06276ef9497515bcfade80a6c43414da6b"
+      "size": 45792,
+      "sha256": "fab37778b7379474c9bac7bfc140a31508ff71b13b53b387db3b54fe669db329"
     },
     {
-      "path": "agentic_process_mapping_v34.md",
-      "size": 81728,
-      "sha256": "d2206d1a844c71ad8e1ceba9c62e93aecb09b9e13e9f5d1f22271ec228d515f1"
+      "path": "contracts/step1/00A_L5_REQ_MATRIX.md",
+      "size": 7600,
+      "sha256": "2bedc16668e0b7b1bfc41d6d91df923f31482e8069f6fb0badbe01267721956c"
     },
     {
-      "path": "agentic_system_process_map_exec.md",
-      "size": 13203,
-      "sha256": "06387ab8ee71e39b0f946907dcbc715cb932e848b988794701555b94004e929f"
+      "path": "contracts/step1/00B_L4_UWG_REQ_MATRIX.md",
+      "size": 7052,
+      "sha256": "a34ebf086e977a000e0e2eb26acc74505658b4e9dc423f066654977cb5210bc4"
     },
     {
-      "path": "AST Dependency Graphs (ADG)/ADG - SQLite vs. Redis.md",
-      "size": 7389,
-      "sha256": "2c0e45ae67636c923f9d2fe13eca34849b2212dd813a32f98d20604c2eb4816f"
+      "path": "contracts/step1/00C_RUNTIME_GATES_REQ_MATRIX.md",
+      "size": 6664,
+      "sha256": "a203f0b7d4321c8dca0c8dec0d8f0bceb921dda6963199d7424c83e71451f61e"
     },
     {
-      "path": "AST Dependency Graphs (ADG)/ADG 101.md",
-      "size": 16393,
-      "sha256": "50e51a4318aafa82c483bcd2670af6500d3006c1973009fd79b5408d8a8cbdfc"
+      "path": "contracts/step1/01_U0_INTAKE_REQ_MATRIX.md",
+      "size": 6166,
+      "sha256": "faf9c0cb5a226e90e866f8e70827cc92dc13e47069145c01d727187edfcfdaab"
     },
     {
-      "path": "AST Dependency Graphs (ADG)/ADG and Blast Radius.md",
-      "size": 4574,
-      "sha256": "7617874c635571629a1cb5a0ad5ab296437eea08aca882dee37a7acd664f909b"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG Architecture Maturity Model v1.md",
-      "size": 11458,
-      "sha256": "c5926b58233da1284894a28c9f29f8c7d8d1a6be582f43f0d469af604fdd0cee"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG ChromaDB Antipattern.md",
-      "size": 1063,
-      "sha256": "5d42f09a7a5ad4da1f0cd649ccd4700aa992f26ef0c3618e9732b82fbac8617f"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG Convergence.md",
-      "size": 29631,
-      "sha256": "44896ed5405aafb00b5fdf7fb49e9e9bea9d8502348c8615f96d2d088b7a6a41"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG Mental Model.md",
-      "size": 10363,
-      "sha256": "40a090ef5ef65df105a4fa8583bf68425d870591ed23a2df9b57b3cfafbe0cba"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG SQLite Hotspot Cheat Sheet.md",
-      "size": 24226,
-      "sha256": "1051517ee0ad8862bb0e5303215f81b04eee724796b26c7e68d412a3f8086358"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG STATIC vs. RUNTIME MENTAL MODEL.md",
-      "size": 7796,
-      "sha256": "19107aa13c808b0f8e7b9ca6ced6fc51e165d7d6456f5db5f03353e9827fa4c6"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG vs, Hardcoded String.md",
-      "size": 15504,
-      "sha256": "f4c30da9c0243a92bf10a2ba9df7f25e6000c50386e050b0113d7c46b944f47c"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/ADG vs. Key Value.md",
-      "size": 7653,
-      "sha256": "71db62ee05f87c97799dd82a32fc3f7454ef89ae408b899905d18cc7d7f166da"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/archive/ADG Convergence.md",
-      "size": 29631,
-      "sha256": "44896ed5405aafb00b5fdf7fb49e9e9bea9d8502348c8615f96d2d088b7a6a41"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/archive/Runtime ADG and MCP.md",
-      "size": 7480,
-      "sha256": "7b867adc426482462dbc70ae619a29029c10977d1b64fa5d5bc76bb3ed079d82"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/AST Scan vs. ADG v2.md",
-      "size": 5757,
-      "sha256": "14745f9228f756199e348bc4efbbb3d93f12a95cf7d7463c2cf2b9a5e53f0df2"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/DEPENDENCY GRAPH vs GRAPHDB Design.md",
-      "size": 16786,
-      "sha256": "0daf8cbb2edf8f324ad1045f22923b0d8f888d9980f6a9b4c4624015fb5237c7"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/Runtime ADG and MCP.md",
-      "size": 7480,
-      "sha256": "7b867adc426482462dbc70ae619a29029c10977d1b64fa5d5bc76bb3ed079d82"
-    },
-    {
-      "path": "AST Dependency Graphs (ADG)/Runtime ADG.md",
-      "size": 11159,
-      "sha256": "b516dc898bc66b37c5b577d793fd6a0f471cec3d5c9afb3f81369a82ab2d5579"
-    },
-    {
-      "path": "Base Agent Hierarchy v2.md",
-      "size": 7405,
-      "sha256": "a9683c36d9839ff527c34f750853dc1c49f36c9d9f23a9d387524c72fd87f7e1"
-    },
-    {
-      "path": "CI/Git 101.md",
-      "size": 10462,
-      "sha256": "a7d7d43302dded2f239254f5a89faa9564db40e021dee8b097f893b55d4f27f5"
-    },
-    {
-      "path": "CI/Pre-Commit vs. CI.md",
-      "size": 1872,
-      "sha256": "46db1d89e3c460fdccbdbde53baa2cee2aa7e2655d324071f522a650335a768a"
-    },
-    {
-      "path": "Context Window Degradation.md",
-      "size": 4572,
-      "sha256": "69140ca87aeab0f0b5d65745146c2fc509e184f4da95adf3629d8096e63dfa4f"
-    },
-    {
-      "path": "DuckDB.md",
-      "size": 7585,
-      "sha256": "168b62137804d54828439e226c6f4f122519d7c69417e2afc9ab1fa854d4ebe0"
-    },
-    {
-      "path": "GAP_CLOSED_TEST_REPORT.md",
-      "size": 227,
-      "sha256": "9f9537739f887cd8fc7cdf9639cb532831dcf80709ad65ae49bf3705effb0095"
-    },
-    {
-      "path": "HITL v4.md",
-      "size": 16385,
-      "sha256": "c904495861b843879051c831ec764042fc8bb7888448c7a8ee0f123fb561634e"
-    },
-    {
-      "path": "Import Flow.md",
-      "size": 7059,
-      "sha256": "4799f86e368adc7d90d7026fbc4ff137ea58ef98541d7426376e6de576d2cc5a"
-    },
-    {
-      "path": "Ingestion Pipeline/00_ingestion_pipeline_index_build.md",
-      "size": 19978,
-      "sha256": "f3eae968d284559adbb50f712f51f350d157b7f66ba0a2473b9489bfea2ab075"
-    },
-    {
-      "path": "Ingestion Pipeline/00A_ingestion_embedding_implementation.md",
-      "size": 12211,
-      "sha256": "318b775c8cdaf501588119f343556247d3ac05cc7ed46f66b87a58c4d755201a"
-    },
-    {
-      "path": "Ingestion Pipeline/00B_token_vector_mechanics.md",
-      "size": 11165,
-      "sha256": "13c521e136f21fc9e5a80d8faa4d34a8ce6400a170ff43d87a3ec93a51999ad0"
-    },
-    {
-      "path": "Ingestion Pipeline/00C_index_materialization_runtime_handoff.md",
-      "size": 14206,
-      "sha256": "2ebf7633ba5c87d67fec134fb67e5e2925467aa13797f06b32d1828728de0b2b"
-    },
-    {
-      "path": "Ingestion Pipeline/00D_sparse_index_hybrid_merge.md",
-      "size": 9247,
-      "sha256": "ef5c68622d8686d85f242a6807538c83abda113e2d75aa434c53b99d09742d08"
-    },
-    {
-      "path": "Ingestion Pipeline/Ingestion Pipeline.md",
-      "size": 9794,
-      "sha256": "852d910003dba424074dc511642365192054d85f6c1899400f99516106ef487c"
-    },
-    {
-      "path": "JIT Elevator Shaft v2.md",
-      "size": 11481,
-      "sha256": "0166d2398fa3f6de228cb797132fb959056cd7944c4ab2597230f95326d0ffa1"
-    },
-    {
-      "path": "LLM as a Judge.md",
-      "size": 2268,
-      "sha256": "114dbf8e52f761b804f3fc4617c5e59d67c0e7b737455256ecae26f83f754f95"
+      "path": "contracts/step1/02_L1_PLAN_REQ_MATRIX.md",
+      "size": 5476,
+      "sha256": "af64047472916d3581973ac5efb8debb5e5f53ff8a0d447feaef53f3f967f076"
     },
     {
       "path": "MANIFEST.json",
-      "size": 30239,
-      "sha256": "26ba7d2e376343d9f7e0066d344410492408440399c4b21408cd4c8267d4ac7d"
-    },
-    {
-      "path": "MCP/MCP_Caller_Server.md",
-      "size": 3599,
-      "sha256": "ff5613c26e12476c5d3a76cf55d23b2b362e359141326649b5502cf3f7164a23"
-    },
-    {
-      "path": "MCP/SDK vs. MCP.md",
-      "size": 12088,
-      "sha256": "c50bae0d46843651db4195839bf039643a7966173124a3e83ae640ac2883310d"
-    },
-    {
-      "path": "MCP/Serial vs. Parallel MCP Calls.md",
-      "size": 4518,
-      "sha256": "499befc5a6e965d8c73a7459eaedbcc7790bb6fa5429d46e39431c78cc5f2806"
-    },
-    {
-      "path": "MCP/Unified MCP Architecture.md",
-      "size": 9442,
-      "sha256": "6ec17f10183e9bbf5f6c3f3d9e3a3178d479af84f4842bfd638d6def8b371529"
-    },
-    {
-      "path": "MCP/Vector_DB MCP Debugging.md",
-      "size": 22037,
-      "sha256": "c6206387259d019e3c8db6850b0635dfd9cf3037c1cc1fefa1aad7649d8a8674"
-    },
-    {
-      "path": "MRO Mixins v2.md",
-      "size": 11717,
-      "sha256": "4540965e36e60f7fd184e4863203faa4872430657a650fc4cca48cde22aec5b4"
-    },
-    {
-      "path": "nvm vs. npm vs. npx.md",
-      "size": 4736,
-      "sha256": "d119221b4df85c21401a09200156355dec674110162dde688e502ce93c9c3a47"
-    },
-    {
-      "path": "PARENT_THINNING_ZERO_LOSS_REPORT.md",
-      "size": 19158,
-      "sha256": "04a53760f6a78fe0e5674ccecf32331186030af9ab0ab395bd0764544c074d59"
-    },
-    {
-      "path": "practices-for-governing-agentic-ai-systems.pdf",
-      "size": 378267,
-      "sha256": "22b3a8607ed781a848b82b0bfe8e638b16cd027aac90a19b2aecf236063d0e7c"
-    },
-    {
-      "path": "prompting/anthropic_best_practices_2026.md",
-      "size": 6958,
-      "sha256": "e5e472dd397d4813f4b003bbaf56fffa3b9eee9a92094f5bdea7179934edd366"
-    },
-    {
-      "path": "prompting/current_architecture_crossmap.md",
-      "size": 11739,
-      "sha256": "ed39041e854321df9ef9b8462990f7744d7b7d550539ddf869c00becafcb8c44"
-    },
-    {
-      "path": "prompting/gemini_best_practices_2026.md",
-      "size": 2949,
-      "sha256": "ef3835b22a4214913676e8977d46b6e26e83b0aab248b1c5ec01244974b7b771"
-    },
-    {
-      "path": "prompting/openai_best_practices_2026.md",
-      "size": 7137,
-      "sha256": "09178f26ad73bb4b6c0000f8f8b1c3f835ec63306243e0e141b28687269c5ff1"
-    },
-    {
-      "path": "Python/Archive/Error & Exception Handling.md",
-      "size": 11454,
-      "sha256": "d69b5bddb89d3e6bb9812adb44bbdac86e7c00f769d59299817eacaaf795fa75"
-    },
-    {
-      "path": "Python/CLI Hooks vs. Imports.md",
-      "size": 3842,
-      "sha256": "340b55ad7ab3556ee397f7c7ba22dbb2887c671fdbb7bfacbe9645578c6093f0"
-    },
-    {
-      "path": "Python/Edge Types.md",
-      "size": 9185,
-      "sha256": "e41aa3159f56407b0c3934f3e68a3919c4be48045224eb7326931348e4cb4160"
-    },
-    {
-      "path": "Python/Error & Exception Handling exec.md",
-      "size": 9077,
-      "sha256": "3e797f8177dd6a13f68feee7b97faaf0ade64d07b1b8c130ae50b6b6f6d75a91"
-    },
-    {
-      "path": "Python/Error & Exception Handling Patterns and Fixes v1.md",
-      "size": 32507,
-      "sha256": "b31e6a927810ea9eb68883db3a7015dc591db3960ed66b5395f44c500d088237"
-    },
-    {
-      "path": "Python/Error & Exception Handling v2.md",
-      "size": 19540,
-      "sha256": "ac72815bb22edddb0e01bfaed8a1360ccced52f03bdf12b59b8da7ea460377e7"
-    },
-    {
-      "path": "Python/Error & Exception Handling v3.md",
-      "size": 38023,
-      "sha256": "126483c3fa0fa20b92d7bfdd40d02ba3354b2417e528ed2a2078284e0bc47304"
-    },
-    {
-      "path": "Python/Error & Exception Handling v4.md",
-      "size": 38577,
-      "sha256": "a0a325cbcc5c3a206266cf7a422109e2ee771fce7577fb5b76e010a69a8eb51e"
-    },
-    {
-      "path": "Python/Exception Handling Anti-Patterns v1.md",
-      "size": 7129,
-      "sha256": "fa8ac6b89ceb5f7b2425447f8858d367528fd7494582b74ff3dd28f15d9d0788"
-    },
-    {
-      "path": "Python/Exceptions vs. P1 reduction.md",
-      "size": 3209,
-      "sha256": "5d69c58de95a042fd9d967cc98c50074343b0a8a1f4855dd70e38e9de3e5e5e2"
-    },
-    {
-      "path": "Python/Regex vs. Grep vs. AST.md",
-      "size": 7869,
-      "sha256": "b78c45e02f11227af9c0a387103c5410b632db8fbe2b2a6c2b061c80cbffed86"
-    },
-    {
-      "path": "Python/Silent Swallower vs. Lazy Loader.md",
-      "size": 2919,
-      "sha256": "dbeec996c7da8afc519d2f8dc16264963c593b1581190a672d1115bd7d31fa5b"
-    },
-    {
-      "path": "Python/Static vs. Instance Method.md",
-      "size": 6204,
-      "sha256": "bbcc0284d0c870f9a7a41c6f23f8ffc728604fc39865aa231bc7a341171663f1"
-    },
-    {
-      "path": "Python/STUB vs SHIM.md",
-      "size": 7326,
-      "sha256": "5ecde8756a315c9197f31a1d98c40fc09b5934475fb9e4601060d02603016ad5"
-    },
-    {
-      "path": "Python/Tunnel vs. Seam.md",
-      "size": 3122,
-      "sha256": "7e096bce8e8cc92644e2015f95989aae815cbd096e8a0b8489fd90e82884329f"
+      "size": 65203,
+      "sha256": "1502145e30241bc6882e7f0095a1ca171d2b64f247e9f9195c8a8aba857fbac0"
     },
     {
       "path": "README.md",
-      "size": 1698,
-      "sha256": "f9fc5b62d840f252ceccb56c9145419f40bde0bc2573056d9966326a11d452a3"
+      "size": 8613,
+      "sha256": "26182d34db3c7c89835c1467adca9eae443e0dde721ab0d6fc5d8f8fe52b7bf9"
     },
     {
-      "path": "Redis/Redis Usage Types.md",
-      "size": 3338,
-      "sha256": "1ec900d6a33e75f72417b3664cab4e171d823d4726e365aefa345083963e31d4"
-    },
-    {
-      "path": "Similarity Metrics and Use Cases.md",
-      "size": 5719,
-      "sha256": "10d21cc28dfb5e350779acd80fefe704ad6d8c59d4b0beb9e1f5b6b914747bc0"
-    },
-    {
-      "path": "Telemetry Generation vs. Utilization.md",
-      "size": 4174,
-      "sha256": "bdc3bc0ff4a402e15d3ebeb81a734393416c72228c49c484ccc49da0f958894a"
-    },
-    {
-      "path": "Testing/ADG Test Suite Architecture.md",
-      "size": 7293,
-      "sha256": "2538fba86d4ac9a65f767c64d8b25ad53ca2caa49871cfb5b469f3cecafb8c1d"
-    },
-    {
-      "path": "Testing/Agentic Testing.py",
-      "size": 10401,
-      "sha256": "de547aa98c3a7010aed7b996a61b7c5ae33277b27c419acec03e902342bbd396"
-    },
-    {
-      "path": "Testing/PyTest/PYTEST EXECUTION DECISION TREE.md",
-      "size": 1534,
-      "sha256": "2c0b727d3140ca38e9d9c5785ef120d26ff2c87bcb13c792337d3bac021d2d55"
-    },
-    {
-      "path": "Testing/PyTest/PyTest Lifecycle - Collection vs. Execution.md",
-      "size": 11421,
-      "sha256": "02e7e1b5e1848774fd658eb57c08eb70c2912ff044027e250927c1b1d553e624"
-    },
-    {
-      "path": "Testing/PyTest/PyTest Test System.md",
-      "size": 1996,
-      "sha256": "efcfb14562935df55b4de370e68de7683017ae4551d69738635ada149e371893"
-    },
-    {
-      "path": "Transformer Templates/REASONING_TRANSFORMER_TEMPLATE_v1.3_SUMMARY.md",
-      "size": 8438,
-      "sha256": "ea4fd0ea6201141038b1ced76c5d51d16b0cad1dfb78c6e77e77779d333999d8"
-    },
-    {
-      "path": "Transformer Templates/STAGE_0_INITIALIZATION_DETAILED.md",
-      "size": 13702,
-      "sha256": "e08e22c6e2ae1b5a8af789074aaa6fba55b3f0cf09f67f5199685153e953e584"
-    },
-    {
-      "path": "Transformer Templates/STAGE_1_FOUNDATION_DETAILED.md",
-      "size": 7955,
-      "sha256": "f66d97f33b90b12b65d4f31bd6585b3c7656274aa40b46c8d0af39e25dcedb1c"
-    },
-    {
-      "path": "Transformer Templates/STAGE_2_EXPLORATION_DETAILED.md",
-      "size": 11795,
-      "sha256": "9d4342a71ceef297f9ea2355ace1486853ccd2be90558f312b364528be9a709c"
-    },
-    {
-      "path": "Transformer Templates/STAGE_3_SELECTION_DETAILED.md",
-      "size": 11941,
-      "sha256": "54ae44d5dc993ceac1c4e38171ade7231e9c3769348f6f95ad9491953eeed540"
-    },
-    {
-      "path": "Transformer Templates/STAGE_4_GENERATION_DETAILED.md",
-      "size": 12863,
-      "sha256": "e789e92d0f64241fdf6f2e326435221b26d70c2b00b30071a70dc6fae7bbd99e"
-    },
-    {
-      "path": "Transformer Templates/Transformer Layers of Control.md",
-      "size": 42184,
-      "sha256": "43cadf2625fb5d2588dac2183ea1733a568adf15628b2605e1c1cd1933c36197"
-    },
-    {
-      "path": "Transformer Templates/Transformer Models v2.md",
-      "size": 19019,
-      "sha256": "15cb9c4d38e35a237e2ad80b022d4e664a72626057096f5faa220e501986cadb"
-    },
-    {
-      "path": "Transformer Templates/Transformer Models.md",
-      "size": 4304,
-      "sha256": "561fd0ee28a353891e18bd014879b5d0c572efcc985b063c022826c2b790265e"
-    },
-    {
-      "path": "WINDOWS_EXPLORER_SAFE_TEST_REPORT.md",
-      "size": 487,
-      "sha256": "8ed8821489113b4680cc135deab924c23075f6bc5cd9e3abb3700b8e3934902e"
-    },
-    {
-      "path": "WINDOWS_PATH_MAP.md",
-      "size": 328,
-      "sha256": "c398f0343ff7e9fa90480b9230ec3ff3b6b85e9cfc1023f69793fb7f854b445c"
-    },
-    {
-      "path": "ZIP_FINAL_VALIDATION.md",
-      "size": 544,
-      "sha256": "fd8fe510cbdc9cc40ae2aa5ff46a0537fb425c1243212fdb0523339f55bdfa0e"
+      "path": "UPDATED_MANIFEST.json",
+      "size": 46986,
+      "sha256": "36a5ee8fb66264cb66bca127cf077f18af38fab943e915a005220cc7553e3a91"
     }
   ]
 }

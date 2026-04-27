@@ -319,6 +319,6 @@ Executed under parent plan `.windsurf/plans/prompt-assembly-best-practices-gap-b
 - Parent plan: `.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md`
 - Sibling ADR: `docs/architecture/adr/ADR-PROMPT-ASSEMBLY-001-provider-aware-structured-prompt-rendering.md`
 - Sibling plan: `.windsurf/plans/prompt-assembly-reception-hardening-9c4e2b.md`
-- Vendor best-practices: `docs/reference/prompting/{anthropic,openai,gemini}_best_practices_2026.md`
-- Cross-map: `docs/reference/prompting/current_architecture_crossmap.md`
+- Vendor best-practices: `docs/reference/_primers/prompting/{anthropic,openai,gemini}_best_practices_2026.md`
+- Cross-map: `docs/reference/_primers/prompting/current_architecture_crossmap.md`
 - Refreshed prompt-assembly doc: `docs/reference/03_L0_Routing/Prompt Assembly/Prompt Assembly.md`

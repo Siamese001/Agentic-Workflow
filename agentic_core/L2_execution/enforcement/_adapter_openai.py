@@ -2,7 +2,7 @@
 
 Renders CompiledPromptArtifact fields into OpenAI-idiomatic shape.
 
-OpenAI best practice (per docs/reference/prompting/openai_best_practices_2026.md):
+OpenAI best practice (per docs/reference/_primers/prompting/openai_best_practices_2026.md):
 - System prompt uses clear markdown-sectioned hierarchy: "# Role", "# Goal",
   "# Instructions", "# Output Format", "# Examples". Hashtag headings parse
   cleanly for GPT-4 series and o1 family.

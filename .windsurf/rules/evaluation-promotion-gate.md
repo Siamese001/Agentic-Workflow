@@ -65,7 +65,7 @@ override under SVP engineering authority.
 
 ## References
 
-- v33 §6D — `docs/reference/agentic_process_mapping_v33.md`
+- v33 §6D — `docs/reference/_notes/agentic_process_mapping_v34.md`
 - Taxonomy — `config/judges/rubrics.yaml → eval_taxonomy`
 - Plan — `.windsurf/plans/exit-eval-spine-gap-ce683b.md` §W5.1
 - Anthropic — https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
