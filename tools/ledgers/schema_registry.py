@@ -154,6 +154,21 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
             "AND 4 consecutive in-band weekly calibration reports"
         ),
     ),
+    LedgerSpec(
+        name="router_l1_c0",
+        purpose=(
+            "L1/c0 router (RetrievalRouter) decisions and outcomes — "
+            "intent_class/dim_tier/Brier vs SLO budget per constitutional §29 row #3."
+        ),
+        schema_file="router_l1_c0_ledger.schema.sql",
+        writer_hook="agentic_core/L1_cognition/reasoning/retrieval_router.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l1-c0/SKILL.md",
+        wave="W5.2",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
 )
 
 

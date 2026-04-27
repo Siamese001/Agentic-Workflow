@@ -57,22 +57,28 @@ def aggregate_router_cell(
     n_floor: int,
     alpha: float = 1.0,
     beta: float = 1.0,
+    selected_field: str = "tier",
 ) -> PosteriorAggregate:
-    """Read the Beta-posterior over (tier, cell) from a router ledger DB.
+    """Read the Beta-posterior over (selected, cell) from a router ledger DB.
 
     Aggregates ``status='bound'`` rows with ``event_kind='route_decision'``
-    where ``prediction_json.tier`` matches ``tier_name`` and
+    where ``prediction_json.<selected_field>`` matches ``tier_name`` and
     ``prediction_json.fingerprint`` matches ``fingerprint_hex``. Returns a
     structured aggregate that callers stamp into telemetry.
 
     Args:
         ledger_path: Path to the SQLite ledger (typically
             ``artifacts/ledgers/router_<layer>_<router>.sqlite``).
-        tier_name: Tier label as stored in ``prediction_json.tier`` (e.g. "HIGH").
+        tier_name: Value to match against the ``selected_field`` JSON path
+            (e.g. "HIGH" for L2/cascade or "tier_a" for L1/c0).
         fingerprint_hex: 12-hex SHA-256 prefix identifying the routing cell.
         n_floor: Minimum bound rows required before the result is "used".
             Below this floor the caller should fall back to its heuristic.
         alpha, beta: Beta prior shape parameters (default Beta(1,1) uniform).
+        selected_field: JSON field name in ``prediction_json`` carrying the
+            chosen action label. Defaults to ``"tier"`` for back-compat with
+            L2/cascade; the generic ``RouterClosedLoopHelper`` passes
+            ``"selected"`` to match its prediction shape.
 
     Returns:
         PosteriorAggregate with provenance fields. ``used=False`` whenever the
@@ -94,10 +100,16 @@ def aggregate_router_cell(
         # Read-only URI — the router ledger surface is canonical-write,
         # callers-read; never mutate from the read path.
         uri = f"file:{path.as_posix()}?mode=ro"
+        # Whitelist the JSON field name to keep this query injection-safe
+        # despite needing string interpolation (sqlite3 won't parameterize
+        # JSON paths, only values).
+        if not selected_field.replace("_", "").isalnum():
+            raise sqlite3.Error(f"invalid selected_field: {selected_field!r}")
+        json_path_selected = f"$.{selected_field}"
         conn = sqlite3.connect(uri, uri=True, timeout=2.0)
         try:
             row = conn.execute(
-                """
+                f"""
                 SELECT
                     COUNT(*) AS n,
                     SUM(CASE WHEN json_extract(outcome_json, '$.success') = 1
@@ -105,7 +117,7 @@ def aggregate_router_cell(
                 FROM events
                 WHERE event_kind = 'route_decision'
                   AND status = 'bound'
-                  AND json_extract(prediction_json, '$.tier') = ?
+                  AND json_extract(prediction_json, '{json_path_selected}') = ?
                   AND json_extract(prediction_json, '$.fingerprint') = ?
                 """,
                 (tier_name, fingerprint_hex),

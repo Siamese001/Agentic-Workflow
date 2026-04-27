@@ -18,10 +18,18 @@ but that is a separate stage.
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Final
+from typing import Any, Final
+
+_LOGGER = logging.getLogger(__name__)
+
+# Constitutional §29 closed-loop wiring is added below in RetrievalRouter.
+# The helper itself is imported lazily inside __init__ to keep this module
+# importable in environments where tools.ledgers may be unavailable (e.g.
+# isolated unit tests).
 
 
 # ---------------------------------------------------------------------------
@@ -374,6 +382,24 @@ class RetrievalRouter:
         # the deterministic defaults from ADR-064 §3.
         self._weights: dict[str, dict[str, dict[str, float]]] = {}
 
+        # Constitutional §29 — closed-loop wiring. Imported lazily so the
+        # router module remains importable when tools.ledgers is absent
+        # (it always SHOULD be present, but routing must not break on import
+        # error per the §29 fail-soft contract).
+        self._closed_loop: Any = None
+        try:
+            from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+            self._closed_loop = RouterClosedLoopHelper(
+                layer="L1",
+                router="c0",
+                ledger_name="router_l1_c0",
+                repo_area="agentic_core/L1_cognition/reasoning/retrieval_router.py",
+            )
+        except ImportError:  # guardian: allow-log-and-swallow -- helper import failure must not break routing
+            _LOGGER.debug("RouterClosedLoopHelper unavailable", exc_info=True)
+            self._closed_loop = None
+
     def route(
         self,
         query: str,
@@ -424,7 +450,7 @@ class RetrievalRouter:
                 )
             # Fall through: degraded plan still emitted.
 
-        return RetrievalPlan(
+        plan = RetrievalPlan(
             intent_class=intent,
             query_transform=str(plan_dict["query_transform"]),
             reranker_mode=str(plan_dict["reranker_mode"]),
@@ -436,6 +462,104 @@ class RetrievalRouter:
             route_reason=f"intent={intent.value}",
             downgrades=tuple(downgrades),
         )
+
+        # Constitutional §29 — record the decision via the closed-loop helper.
+        # The handle is stashed on the plan as a private side-channel so callers
+        # who measure end-to-end retrieval latency can call bind_outcome().
+        # Fail-soft: any helper failure leaves the plan with handle=None.
+        if self._closed_loop is not None:
+            try:
+                cell = {
+                    "intent_class": intent.value,
+                    "slo": hints.slo.value,
+                    "has_filters": bool(hints.allowed_collections or hints.allowed_tiers),
+                    "reflective": bool(plan_dict["reflective"]),
+                }
+                # Bootstrap prior: 0.85 if no downgrades fit the budget, lower
+                # when we had to degrade. The router has no direct evidence of
+                # success at decision time, so this is a heuristic until the
+                # ledger accumulates n>=30 per cell.
+                implied = _implied_budget_ms(plan_dict)
+                budget_headroom = max(0, slo_budget - implied) / max(1, slo_budget)
+                heuristic_p = 0.85 if not downgrades else max(0.4, 0.85 - 0.1 * len(downgrades))
+
+                handle = self._closed_loop.record_decision(
+                    selected=str(plan_dict["dim_tier"]),
+                    cell=cell,
+                    predicted_p_success=heuristic_p,
+                    eu_score=budget_headroom,
+                    prediction_extras={
+                        "plan": {
+                            "query_transform": plan.query_transform,
+                            "reranker_mode": plan.reranker_mode,
+                            "reflective": plan.reflective,
+                            "dim_tier": plan.dim_tier,
+                            "collections": list(plan.collections),
+                            "hydration_mode": plan.hydration_mode,
+                            "implied_budget_ms": implied,
+                            "slo_budget_ms": slo_budget,
+                            "downgrades": list(downgrades),
+                        }
+                    },
+                )
+                # Stamp on plan via private attribute (RetrievalPlan is non-frozen).
+                object.__setattr__(plan, "_decision_handle", handle)
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                RuntimeError,
+            ):  # guardian: allow-log-and-swallow -- closed-loop is best-effort; routing must not break
+                _LOGGER.debug("RetrievalRouter record_decision failed", exc_info=True)
+                object.__setattr__(plan, "_decision_handle", None)
+        else:
+            object.__setattr__(plan, "_decision_handle", None)
+
+        return plan
+
+    def bind_outcome(
+        self,
+        plan: RetrievalPlan,
+        *,
+        success: bool,
+        latency_ms: int,
+        results_returned: int = 0,
+    ) -> None:
+        """Bind a retrieval-plan outcome to its prediction row.
+
+        Callers SHOULD invoke this after the retrieval pipeline returns so the
+        ledger can compute Brier components and the per-cell posterior. Common
+        outcome semantics:
+
+        - ``success=True``: the plan's implied budget was honored at runtime
+          (``latency_ms <= plan.latency_budget_ms``) AND results_returned > 0.
+        - ``success=False``: SLO miss OR empty result set OR pipeline error.
+
+        Fail-soft: any error inside the helper is swallowed.
+        """
+        if self._closed_loop is None:
+            return
+        handle = getattr(plan, "_decision_handle", None)
+        if handle is None:
+            return
+        try:
+            self._closed_loop.bind_outcome(
+                handle,
+                success=bool(success),
+                latency_ms=int(latency_ms),
+                outcome_extras={
+                    "results_returned": int(results_returned),
+                    "implied_budget_ms": int(plan.latency_budget_ms),
+                    "downgraded": bool(plan.downgrades),
+                },
+            )
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            RuntimeError,
+        ):  # guardian: allow-log-and-swallow -- outcome binding is best-effort
+            _LOGGER.debug("RetrievalRouter bind_outcome failed", exc_info=True)
 
 
 __all__ = [
