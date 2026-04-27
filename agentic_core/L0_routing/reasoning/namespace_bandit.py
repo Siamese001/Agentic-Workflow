@@ -24,10 +24,36 @@ Design:
 
 from __future__ import annotations
 
+import logging
 import random
 import sqlite3
 import threading
 from dataclasses import dataclass, field
+
+_LOGGER = logging.getLogger(__name__)
+
+# Constitutional §29 closed-loop wiring (W5.4). Lazy singleton so this module
+# stays importable when `tools.ledgers` is absent.
+_BANDIT_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_bandit_helper():
+    global _BANDIT_HELPER  # noqa: PLW0603
+    if _BANDIT_HELPER is not None:
+        return _BANDIT_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _BANDIT_HELPER = RouterClosedLoopHelper(
+            layer="L0",
+            router="bandit",
+            ledger_name="router_l0_bandit",
+            repo_area="agentic_core/L0_routing/reasoning/namespace_bandit.py",
+        )
+        return _BANDIT_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break bandit
+        _LOGGER.debug("RouterClosedLoopHelper unavailable for L0/bandit", exc_info=True)
+        return None
 
 
 @dataclass(frozen=True)
@@ -79,13 +105,38 @@ class NamespaceBandit:
         self._posteriors: dict[BanditKey, BetaPosterior] = {}
         self._lock = threading.Lock()
         self._rng = random.Random(seed)
+        # W5.4: most recent open decision handle per (namespace, route) so
+        # update() can bind outcomes. Bounded by number of distinct cells
+        # touched in a session. None when telemetry is unavailable.
+        self._open_handles: dict[BanditKey, object] = {}
 
     def update(self, namespace: str, route: str, *, success: bool) -> None:
-        """Update posterior for ``(namespace, route)`` with Bernoulli outcome."""
+        """Update posterior for ``(namespace, route)`` with Bernoulli outcome.
+
+        W5.4 (closed-loop-l0-bandit-wiring): also binds the outcome to the
+        most recent open ROUTER_DECISION row for this (namespace, route) cell.
+        Fail-soft: telemetry never breaks the bandit update.
+        """
         key = BanditKey(namespace=namespace, route=route)
         with self._lock:
             posterior = self._posteriors.setdefault(key, BetaPosterior())
             posterior.update(success)
+            alpha_after = posterior.alpha
+            beta_after = posterior.beta
+            handle = self._open_handles.pop(key, None)
+        helper = _get_bandit_helper()
+        if helper is not None and handle is not None:
+            try:
+                helper.bind_outcome(
+                    handle,
+                    success=success,
+                    outcome_extras={
+                        "posterior_alpha_after": float(alpha_after),
+                        "posterior_beta_after": float(beta_after),
+                    },
+                )
+            except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- telemetry is best-effort
+                _LOGGER.debug("namespace_bandit bind_outcome failed", exc_info=True)
 
     def posterior(self, namespace: str, route: str) -> BetaPosterior:
         """Read-only snapshot of the posterior. Fresh prior if unseen."""
@@ -115,6 +166,9 @@ class NamespaceBandit:
         with self._lock:
             best_route: str | None = None
             best_sample = float("-inf")
+            best_alpha = 1.0
+            best_beta = 1.0
+            best_mean = 0.5
             for route in admissible:
                 key = BanditKey(namespace=namespace, route=route)
                 posterior = self._posteriors.setdefault(key, BetaPosterior())
@@ -122,8 +176,31 @@ class NamespaceBandit:
                 if sampled > best_sample:
                     best_sample = sampled
                     best_route = route
+                    best_alpha = posterior.alpha
+                    best_beta = posterior.beta
+                    best_mean = posterior.alpha / (posterior.alpha + posterior.beta)
             assert best_route is not None  # admissible non-empty above
-            return best_route
+            chosen_key = BanditKey(namespace=namespace, route=best_route)
+        # W5.4: record decision via helper (outside the lock so ledger I/O
+        # never serializes routing). Stash the handle for update() to bind.
+        helper = _get_bandit_helper()
+        if helper is not None:
+            try:
+                handle = helper.record_decision(
+                    selected=best_route,
+                    cell={"namespace": namespace, "admissible": sorted(admissible)},
+                    predicted_p_success=float(best_mean),
+                    eu_score=float(best_sample),
+                    prediction_extras={
+                        "posterior_alpha": float(best_alpha),
+                        "posterior_beta": float(best_beta),
+                    },
+                )
+                with self._lock:
+                    self._open_handles[chosen_key] = handle
+            except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- telemetry is best-effort
+                _LOGGER.debug("namespace_bandit record_decision failed", exc_info=True)
+        return best_route
 
     def rebuild_from_decision_events(
         self,

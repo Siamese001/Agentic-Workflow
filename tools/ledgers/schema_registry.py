@@ -185,6 +185,21 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="router_l0_bandit",
+        purpose=(
+            "L0/bandit router (NamespaceBandit) decisions and outcomes — "
+            "Thompson sampling per (namespace, route) per constitutional §29 row #1."
+        ),
+        schema_file="router_l0_bandit_ledger.schema.sql",
+        writer_hook="agentic_core/L0_routing/reasoning/namespace_bandit.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l0-bandit/SKILL.md",
+        wave="W5.4",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
         name="router_l6_regret",
         purpose=(
             "L6/regret router (RegretLedger.record) per-decision regret samples "

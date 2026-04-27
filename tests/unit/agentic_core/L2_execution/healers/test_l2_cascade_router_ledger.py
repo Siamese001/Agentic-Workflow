@@ -312,7 +312,10 @@ class TestCascadeCalibrator:
 # HealingRouter.route() — §29 marker emission and ledger row
 # =========================================================================== #
 class TestHealingRouterClosedLoop:
-    def test_route_assigns_decision_id_and_evidence_fields(self):
+    def test_route_assigns_decision_id_and_evidence_fields(self, monkeypatch):
+        # W5.4 — disable the live posterior path so the heuristic prior wins
+        # regardless of accumulated rows in the on-disk ledger.
+        monkeypatch.setenv("ROUTING_POSTERIOR_DISABLED", "1")
         router = HealingRouter()
         decision = router.route(_score(HealTier.HIGH), _signal())
         assert decision.decision_id != ""
@@ -377,7 +380,9 @@ class TestHealingRouterClosedLoop:
     # ------------------------------------------------------------------ #
     # dispatch_to_executor() outcome binding
     # ------------------------------------------------------------------ #
-    def test_dispatch_high_binds_outcome_with_tp_band(self, temp_ledger):
+    def test_dispatch_high_binds_outcome_with_tp_band(self, temp_ledger, monkeypatch):
+        # W5.4 — disable the live posterior path so the heuristic prior wins.
+        monkeypatch.setenv("ROUTING_POSTERIOR_DISABLED", "1")
         router = HealingRouter()
         decision = router.route(_score(HealTier.HIGH, value=0.95), _signal())
         result = router.dispatch_to_executor(decision, prompt="noop")
