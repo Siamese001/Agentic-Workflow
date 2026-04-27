@@ -1,0 +1,24 @@
+{
+  "intake_body": "Research the topic of agentic AI runtime governance from approved sources, score credibility, synthesize findings with citations, surface contradictions, and produce a source-grounded research report.",
+  "task_spec": "research.cited_brief",
+  "query_spec": "agentic ai runtime governance and proof harnesses",
+  "grounding_required": true,
+  "extra_payload": {
+    "research_id": "RES-PROOF-GOLDEN-001",
+    "topic": "Agentic AI runtime governance and proof harnesses",
+    "approved_sources": [
+      {"source_id": "SRC-001", "title": "OpenDev — Behavior Shaping for Tool-Calling Agents", "publisher": "OpenDev", "year": 2026, "credibility_score": 0.88, "uri": "fixture://research/opendev_2026.pdf"},
+      {"source_id": "SRC-002", "title": "Fowler — Building LLM-Powered Software", "publisher": "martinfowler.com", "year": 2025, "credibility_score": 0.85, "uri": "fixture://research/fowler_2025.html"},
+      {"source_id": "SRC-003", "title": "Anthropic — Constitutional AI Methods", "publisher": "Anthropic", "year": 2025, "credibility_score": 0.92, "uri": "fixture://research/anthropic_constitutional.pdf"},
+      {"source_id": "SRC-004", "title": "MCP Specification v2.0", "publisher": "Anthropic / Microsoft", "year": 2026, "credibility_score": 0.90, "uri": "fixture://research/mcp_spec_v2.md"}
+    ],
+    "claims": [
+      {"claim_id": "CLM-001", "text": "Behavior shaping via system-prompt rules reduces tool-routing errors", "supporting_source_ids": ["SRC-001"], "support_score": 0.88},
+      {"claim_id": "CLM-002", "text": "Author-Gate decision points improve architectural decision quality", "supporting_source_ids": ["SRC-002", "SRC-001"], "support_score": 0.78},
+      {"claim_id": "CLM-003", "text": "Constitutional AI approaches enforce non-negotiable safety constraints", "supporting_source_ids": ["SRC-003"], "support_score": 0.92}
+    ],
+    "potential_contradictions": [
+      {"contradiction_id": "CON-001", "topic": "concurrent MCP calls", "left_source_id": "SRC-004", "left_position": "concurrent dispatch supported", "right_source_id": "SRC-001", "right_position": "concurrent dispatch causes Stream closed errors"}
+    ]
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "intake_body": "Review the borrower package for Acme Manufacturing LLC, reconcile all submitted financial statements against policy thresholds, identify any stale, missing, or contradicting documents, and produce an audit-ready underwriting decision packet with conditions and covenants.",
+  "task_spec": "uw.recommendation_assembly",
+  "query_spec": "underwriting policy version POL-2024-Q1-v2 thresholds and exception rules",
+  "grounding_required": true,
+  "extra_payload": {
+    "borrower_package": {
+      "request_id": "UW-PROOF-GOLDEN-001",
+      "submission_ts": "2024-03-15T09:30:00Z",
+      "product_type": "term_loan",
+      "decision_type": "new",
+      "requested_amount": 2500000.00,
+      "requested_term_months": 60,
+      "requested_structure": {
+        "amortization_months": 60,
+        "interest_type": "floating",
+        "collateral_required": true,
+        "guarantor_required": true
+      },
+      "borrower": {
+        "legal_name": "Acme Manufacturing LLC",
+        "entity_type": "llc",
+        "industry_code": "332710",
+        "industry_description": "Machine Shops",
+        "years_in_business": 12.5,
+        "state_of_incorporation": "DE",
+        "operating_states": ["PA", "OH", "WV"],
+        "employee_count": 145,
+        "ownership": [
+          {"owner_name": "John Smith", "ownership_pct": 60.0, "role": "CEO", "fico": 745, "guarantor": true},
+          {"owner_name": "Jane Doe", "ownership_pct": 40.0, "role": "CFO", "fico": 720, "guarantor": true}
+        ],
+        "naics_risk_flags": [],
+        "sanctions_or_watchlist_hits": []
+      },
+      "financials": {
+        "periods": [
+          {
+            "period_end": "2023-12-31", "fiscal_type": "annual",
+            "revenue": 12500000.00, "cogs": 8750000.00, "gross_profit": 3750000.00,
+            "ebitda": 1875000.00, "net_income": 875000.00,
+            "cash": 850000.00, "ar": 2100000.00, "inventory": 1250000.00, "ap": 950000.00,
+            "total_assets": 8750000.00, "total_debt": 3500000.00, "tangible_net_worth": 4250000.00,
+            "interest_expense": 175000.00, "debt_service": 525000.00
+          },
+          {
+            "period_end": "2022-12-31", "fiscal_type": "annual",
+            "revenue": 11000000.00, "ebitda": 1540000.00,
+            "total_debt": 3250000.00, "debt_service": 487500.00
+          }
+        ],
+        "calculated_metrics": {
+          "revenue_cagr_2y": 0.136, "ebitda_margin_ttm": 0.15,
+          "debt_to_ebitda_ttm": 1.87, "dscr_ttm": 3.57,
+          "current_ratio": 2.16, "quick_ratio": 1.63, "debt_to_tnw": 0.82
+        },
+        "quality_flags": []
+      },
+      "collateral": {
+        "collateral_type": "ar", "estimated_value": 3200000.00,
+        "advance_rate_pct": 80.0, "borrowing_base_value": 2560000.00,
+        "lien_position": "first", "appraisal_date": "2024-02-15",
+        "field_exam_date": "2024-01-20", "collateral_quality_flags": []
+      },
+      "credit": {
+        "business_bureau_score": 78, "personal_fico_scores": [745, 720],
+        "delinquencies_24m": 0, "defaults_ever": 0,
+        "bankruptcies_ever": 0, "judgments_or_liens": 0,
+        "tradeline_utilization_pct": 23.5, "credit_narrative_flags": []
+      },
+      "banking": {
+        "avg_monthly_deposits_12m": 980000.00, "avg_ending_balance_12m": 425000.00,
+        "nsf_count_12m": 2, "overdraft_days_12m": 8,
+        "cash_volatility_score": 0.23, "deposit_trend": "up",
+        "bank_statement_flags": []
+      },
+      "documents": {
+        "financial_statements": [{"doc_id": "DOC-001", "doc_type": "financial_statement",
+          "source_uri": "fixture://docs/acme/fs_2023.pdf", "hash": "abc123",
+          "extracted_text_available": false, "parsed_structured_fields": {}, "document_flags": []}],
+        "tax_returns": [{"doc_id": "DOC-002", "doc_type": "tax_return",
+          "source_uri": "fixture://docs/acme/tr_2023.pdf", "hash": "def456",
+          "extracted_text_available": false, "parsed_structured_fields": {}, "document_flags": []}],
+        "bank_statements": [], "ar_aging": [], "ap_aging": [], "debt_schedule": [],
+        "entity_docs": [], "insurance_certificates": [], "appraisals": [],
+        "management_comments": []
+      },
+      "policy_context": {
+        "policy_version": "POL-2024-Q1-v2",
+        "min_dscr": 1.25, "max_debt_to_ebitda": 3.5, "min_fico": 680,
+        "restricted_industries": ["7132", "7211"],
+        "prohibited_jurisdictions": [],
+        "max_single_customer_concentration_pct": 30.0,
+        "collateral_rules": {
+          "min_ltv": null, "max_ltv": 0.85,
+          "eligible_collateral": ["ar", "inventory", "equipment", "real_estate"]
+        },
+        "exception_rules": ["DSCR_1.15_to_1.25_with_strong_collateral"],
+        "human_review_triggers": ["dscr_below_1.25", "debt_to_ebitda_above_3.5", "fico_below_680"]
+      },
+      "external_signals": {
+        "industry_outlook": "stable", "macro_flags": [],
+        "fraud_or_identity_signals": [], "litigation_hits": [], "news_reputation_flags": []
+      },
+      "relationship_context": {
+        "existing_customer": true, "tenure_years": 5.5,
+        "prior_exposure": 1500000.00, "deposit_relationship": true,
+        "historical_exceptions": [], "past_due_history": []
+      },
+      "decision_constraints": {
+        "turnaround_sla_hours": 72, "max_auto_approval_amount": 5000000.00,
+        "require_human_if_policy_exception": true,
+        "require_human_if_docs_missing": true,
+        "require_human_if_risk_score_borderline": true
+      }
+    },
+    "recommended_decision": "APPROVE_WITH_CONDITIONS",
+    "conditions_precedent": [
+      "Monthly borrowing base certificates required",
+      "First lien UCC filing on AR required",
+      "Unlimited personal guaranty from all 20%+ owners required",
+      "Evidence of insurance naming Lender as loss payee required"
+    ],
+    "covenants": [
+      "Minimum quarterly DSCR of 1.15x tested quarterly",
+      "Maximum Debt/EBITDA of 2.25x tested quarterly",
+      "Quarterly financial reporting and annual CPA-reviewed financials required"
+    ],
+    "key_strengths": [
+      "DSCR of 3.57x materially exceeds policy minimum of 1.25x",
+      "Debt/EBITDA of 1.87x well within max of 3.5x",
+      "Both guarantors carry strong personal FICO (745, 720)"
+    ],
+    "key_risks": [
+      "Industry concentration risk in machine shops segment",
+      "Floating rate exposure if Fed policy tightens"
+    ],
+    "policy_exceptions": [],
+    "missing_info": [],
+    "human_review_reason": null,
+    "confidence_score": 0.82
+  }
+}

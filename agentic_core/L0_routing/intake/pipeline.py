@@ -19,7 +19,12 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Callable, Mapping
+from typing import TYPE_CHECKING, Callable, Mapping, Optional
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.otel_emitter import (
+        RuntimeSpanEmitter,
+    )
 
 from agentic_core.L0_routing.intake.correlation import bind_trace_and_replay
 from agentic_core.L0_routing.intake.envelope import (
@@ -163,7 +168,42 @@ class IntakePipeline:
     # public api
     # ------------------------------------------------------------------
 
-    def run(self, env: RawIngressEnvelope) -> IntakeOutcome:
+    def run(
+        self,
+        env: RawIngressEnvelope,
+        *,
+        emitter: Optional["RuntimeSpanEmitter"] = None,
+    ) -> IntakeOutcome:
+        """Execute the E1..E6 intake pipeline.
+
+        Args:
+            env: Raw ingress envelope to validate.
+            emitter: Optional ``RuntimeSpanEmitter`` (W10 live wire-up). When
+                provided, the entire E1..E6 pipeline is recorded as a
+                ``u0.intake`` proof-OTEL span. Default ``None`` keeps the
+                historical behavior (no proof emission).
+
+        Returns:
+            IntakeOutcome (validated XOR rejected).
+        """
+        if emitter is None:
+            return self._run_uninstrumented(env)
+
+        # W10 live wire-up. The whole pipeline is one ingest span; reason_codes
+        # and status are filled in based on the outcome before the span exits.
+        with emitter.span(
+            "u0.intake",
+            reason_codes=["intake_started"],
+        ):
+            outcome = self._run_uninstrumented(env)
+            # Note: the recorder API does not expose post-hoc attribute
+            # mutation, so the span's reason_codes/status reflect what was
+            # supplied at entry. Outcome detail is available via the
+            # IntakeOutcome the caller receives. A future emitter upgrade
+            # could add `set_attr_on_active_span()` to enrich the live trace.
+            return outcome
+
+    def _run_uninstrumented(self, env: RawIngressEnvelope) -> IntakeOutcome:
         events: list[IngressEventRecord] = []
         start = time.time()
         request_id = "pre-e1"

@@ -6,6 +6,13 @@ Spec: docs/reference/03_L0_Routing/C0 - Retrieval/C0 Context Engine.md
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.otel_emitter import (
+        RuntimeSpanEmitter,
+    )
+
 from dataclasses import dataclass
 from enum import Enum
 
@@ -85,6 +92,8 @@ def _derive_budget_floor(route: RouteContract, std: EvidenceStandard) -> int:
 def run_preflight(
     route: RouteContract,
     plan: L1PlanContract,
+    *,
+    emitter: "Optional[RuntimeSpanEmitter]" = None,
 ) -> C0PreflightStatus:
     """C0.0 entry point. Pure function; deterministic given inputs.
 
@@ -96,7 +105,26 @@ def run_preflight(
     - no blocked data class is requested
     - budget is sufficient for at least one bounded retrieval pass
     - high-impact / sensitive support target gets stricter evidence standard
+
+    W12 live wire-up: when ``emitter`` is provided, wraps the entire
+    preflight check in a ``c0.0.preflight`` proof-OTEL span carrying the
+    incoming ``route_id``. Default ``None`` keeps the historical behavior.
     """
+    if emitter is None:
+        return _run_preflight_impl(route, plan)
+    with emitter.span(
+        "c0.0.preflight",
+        reason_codes=["preflight_started"],
+        route_id=route.route_id,
+    ):
+        return _run_preflight_impl(route, plan)
+
+
+def _run_preflight_impl(
+    route: RouteContract,
+    plan: L1PlanContract,
+) -> C0PreflightStatus:
+    """Original C0.0 preflight implementation (W12 split)."""
 
     # 1. grounding_required gate
     if not route.grounding_required or not plan.grounding_required:

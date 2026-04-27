@@ -1,0 +1,24 @@
+{
+  "intake_body": "Build an executive brief from evidence, separate facts from recommendations, preserve claim provenance, and produce decision-ready next steps with confidence and caveats.",
+  "task_spec": "exec.grounded_brief",
+  "query_spec": "Q4 platform investment recommendations with risk and confidence",
+  "grounding_required": true,
+  "extra_payload": {
+    "brief_id": "BRIEF-PROOF-GOLDEN-001",
+    "audience": "CEO + Board",
+    "topic": "Q4 platform investment options",
+    "factual_claims": [
+      {"claim_id": "FACT-001", "text": "Platform A processed 12.5M transactions in Q3 with 99.94% uptime", "evidence_source": "ops/Q3_uptime_report.json", "support_score": 0.98},
+      {"claim_id": "FACT-002", "text": "Customer churn for cohorts using Platform A is 3.2% lower than baseline", "evidence_source": "analytics/churn_cohort_2026Q3.csv", "support_score": 0.85},
+      {"claim_id": "FACT-003", "text": "Platform A's marginal cost per transaction is $0.018", "evidence_source": "finance/platform_a_unit_economics.xlsx", "support_score": 0.91}
+    ],
+    "recommendations": [
+      {"rec_id": "REC-001", "text": "Increase Platform A capacity by 40% before Q1 to meet projected demand", "labeled_as": "recommendation", "confidence": 0.78, "depends_on_claims": ["FACT-001", "FACT-002"]},
+      {"rec_id": "REC-002", "text": "Begin migration of Platform B workloads to Platform A starting Q1", "labeled_as": "recommendation", "confidence": 0.62, "depends_on_claims": ["FACT-003"]}
+    ],
+    "caveats": [
+      {"caveat_id": "CAV-001", "text": "Platform A capacity expansion requires hardware procurement lead-time of 8-12 weeks", "severity": "medium"},
+      {"caveat_id": "CAV-002", "text": "Migration costs not yet quantified — REC-002 confidence is provisional", "severity": "high"}
+    ]
+  }
+}

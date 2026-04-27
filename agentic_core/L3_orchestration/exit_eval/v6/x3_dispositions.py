@@ -9,6 +9,12 @@ from __future__ import annotations
 
 import hashlib
 import time
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.otel_emitter import (
+        RuntimeSpanEmitter,
+    )
 from typing import Any
 
 from agentic_core.L3_orchestration.exit_eval.v6.types import (
@@ -276,19 +282,71 @@ def build_x3f_break_glass_allow(
     )
 
 
+# W13 live wire-up: map V6Disposition -> proof-OTEL span status.
+# DENY -> BLOCKED is the security-critical mapping that Scenario D's
+# anti-bypass test asserts. ESCALATE/SAFE_ABSTAIN are not hard blocks
+# but are not OK either; they map to ABSTAINED.
+_DISPOSITION_TO_SPAN_STATUS: dict[V6Disposition, str] = {
+    V6Disposition.DENY: "BLOCKED",
+    V6Disposition.ESCALATE: "ABSTAINED",
+    V6Disposition.SAFE_ABSTAIN: "ABSTAINED",
+    V6Disposition.ALLOW: "OK",
+    V6Disposition.COMMIT_REQUEST: "OK",
+    # BREAK_GLASS_ALLOW is intentionally absent -- build_x3_packet rejects it.
+}
+
+
 def build_x3_packet(
     packet: ExitReviewPacket,
     decision: AggregateDecision,
     *,
     grader_verdict_bundle: list[GateVerdict] | None = None,
     final_response: str = "",
+    emitter: "Optional[RuntimeSpanEmitter]" = None,
 ):
     """Dispatch to the right X3* packet builder based on decision.disposition.
 
     Note: BREAK_GLASS_ALLOW (X3F) is NOT dispatched here because it requires
     capability-token-gated invocation by an operator, not aggregate-decision
     selection. Call ``build_x3f_break_glass_allow`` directly.
+
+    W13 live wire-up: when ``emitter`` is provided, emits an
+    ``exit.x3.disposition`` proof-OTEL span. Status is precomputed from
+    ``decision.disposition`` so DENY -> BLOCKED, ESCALATE/SAFE_ABSTAIN ->
+    ABSTAINED, ALLOW/COMMIT_REQUEST -> OK. This is the security-critical
+    mapping anchored by the Scenario D anti-bypass test.
     """
+    if emitter is None:
+        return _build_x3_packet_impl(
+            packet,
+            decision,
+            grader_verdict_bundle=grader_verdict_bundle,
+            final_response=final_response,
+        )
+
+    span_status = _DISPOSITION_TO_SPAN_STATUS.get(decision.disposition, "OK")
+    with emitter.span(
+        "exit.x3.disposition",
+        status=span_status,
+        reason_codes=[decision.disposition.value],
+        replay_key=packet.replay_key,
+    ):
+        return _build_x3_packet_impl(
+            packet,
+            decision,
+            grader_verdict_bundle=grader_verdict_bundle,
+            final_response=final_response,
+        )
+
+
+def _build_x3_packet_impl(
+    packet: ExitReviewPacket,
+    decision: AggregateDecision,
+    *,
+    grader_verdict_bundle: list[GateVerdict] | None = None,
+    final_response: str = "",
+):
+    """Original build_x3_packet dispatcher (W13 split)."""
     if decision.disposition is V6Disposition.DENY:
         return build_x3a_deny(packet, decision)
     if decision.disposition is V6Disposition.ESCALATE:

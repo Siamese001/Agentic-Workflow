@@ -29,6 +29,13 @@ so it stays testable without spinning up cache infra.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.otel_emitter import (
+        RuntimeSpanEmitter,
+    )
+
 import logging
 from dataclasses import dataclass, field
 
@@ -203,17 +210,36 @@ class RouteSignalsV15:
 # ---------------------------------------------------------------------------
 
 
-def select_route_v15(signals: RouteSignalsV15) -> V15RouteContract:
+def select_route_v15(
+    signals: RouteSignalsV15,
+    *,
+    emitter: "Optional[RuntimeSpanEmitter]" = None,
+) -> V15RouteContract:
     """Apply v15 §FIXED DECISION ORDER and return an unsigned contract.
 
     The returned contract has ``signatures.hmac_sig == ""``. The caller is
     responsible for signing via :meth:`V15RouteContract.sign` before
     persistence or downstream dispatch.
 
+    W11 live wire-up: when ``emitter`` is provided, wraps the entire
+    decision computation in an ``l0.route_decision`` proof-OTEL span.
+    Default ``None`` keeps the historical behavior.
+
     Raises:
         V15RouteContractError: when ``signals`` violates a v15 invariant
             (e.g., managed-workflow path requested without a blueprint id).
     """
+    if emitter is None:
+        return _select_route_v15_impl(signals)
+    with emitter.span(
+        "l0.route_decision",
+        reason_codes=["route_decision_started"],
+    ):
+        return _select_route_v15_impl(signals)
+
+
+def _select_route_v15_impl(signals: RouteSignalsV15) -> V15RouteContract:
+    """Original v15 §FIXED DECISION ORDER implementation (W11 split)."""
     _validate_signals(signals)
 
     # ---- step 0: ingress reject / unsafe ----

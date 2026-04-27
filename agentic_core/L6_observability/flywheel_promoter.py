@@ -6,6 +6,15 @@ matches one or more promotion signals. Candidate events are written to
 
 Observer posture only — never mutates runtime state; never writes directly
 to ``data/eval/golden/`` (that step requires human review per §6D).
+
+W8 live wire-up (2026-04-26): ``promote_candidate`` accepts an optional
+``RuntimeSpanEmitter`` from
+``agentic_core.runtime.prove_requirements.otel_emitter``. When supplied,
+the call is wrapped in an ``l6.promotion_attempt`` span carrying
+reason_codes from the candidate-detection signals. Default behavior is
+unchanged when no emitter is passed (every existing call site continues
+to work). See `.windsurf/plans/runtime-proof-system-*.md` Author-Gate
+``architecture_choice`` decision (W8) for context.
 """
 
 from __future__ import annotations
@@ -13,7 +22,12 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Mapping
+from typing import TYPE_CHECKING, Any, Mapping, Optional
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.otel_emitter import (
+        RuntimeSpanEmitter,
+    )
 
 _TRIAGE_ROOT = Path("data/eval/triage")
 
@@ -138,14 +152,46 @@ def promote_candidate(
     *,
     triage_root: Path | None = None,
     stage_to_disk: bool = False,
+    emitter: Optional["RuntimeSpanEmitter"] = None,
 ) -> TriageRecord | None:
-    """End-to-end: analyze + optionally stage to triage directory."""
-    record = analyze(event)
-    if record is None:
-        return None
-    if stage_to_disk:
-        stage(record, triage_root=triage_root)
-    return record
+    """End-to-end: analyze + optionally stage to triage directory.
+
+    Args:
+        event: EvalEvent dict (see ADR-040).
+        triage_root: Override default ``data/eval/triage/`` location.
+        stage_to_disk: If True, write the TriageRecord to disk.
+        emitter: Optional ``RuntimeSpanEmitter`` from the proof system.
+            When supplied, the analyze+stage operation is recorded as an
+            ``l6.promotion_attempt`` OTEL span. Default ``None`` keeps the
+            historical behavior (silent observer posture).
+
+    Returns:
+        A ``TriageRecord`` when the event qualifies, else ``None``.
+    """
+    if emitter is None:
+        record = analyze(event)
+        if record is None:
+            return None
+        if stage_to_disk:
+            stage(record, triage_root=triage_root)
+        return record
+
+    # W8 live wire-up: emit l6.promotion_attempt with reason_codes derived
+    # from the actual analysis result. The span surrounds analyze + stage so
+    # latency_ms reflects the full promotion attempt.
+    with emitter.span(
+        "l6.promotion_attempt",
+        reason_codes=["promotion_candidate_evaluated"],
+    ):
+        record = analyze(event)
+        if record is None:
+            # Status remains OK -- abstain is a valid outcome of the
+            # promotion attempt, not a failure. Caller can read the
+            # absence of a returned record as the "no candidate" signal.
+            return None
+        if stage_to_disk:
+            stage(record, triage_root=triage_root)
+        return record
 
 
 __all__ = [

@@ -15,7 +15,7 @@ Doctrine corpus:
 
 **Tally:** 1426 PASS / 0 FAIL (of 1426 line-level requirements)
 
-**Generated:** 2026-04-27T01:05:59.902283+00:00
+**Generated:** 2026-04-27T02:03:56.144041+00:00
 
 ## Per-stage roll-up
 

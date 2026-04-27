@@ -22,7 +22,12 @@ import time
 import uuid as _uuid_mod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any, Optional
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.otel_emitter import (
+        RuntimeSpanEmitter,
+    )
 
 _log = logging.getLogger(__name__)
 
@@ -338,31 +343,59 @@ def _register_in_eval_index(record: ObservabilityRecord) -> None:
 def record_execution_observability(
     execution_context: ExecutionContext,
     observability_context: ExecutionObservabilityContext,
+    *,
+    emitter: Optional["RuntimeSpanEmitter"] = None,
     **kwargs: Any,
 ) -> ObservabilityRecord:
     """Record successful execution with full governance fields.
 
     Builds a deterministic ObservabilityRecord, publishes to BUS T, and
     registers in the L6 EvaluationIndex for exit analysis and replay linkage.
+
+    W9 live wire-up: when ``emitter`` is provided, emits ``l6.ingest`` >
+    ``l6.evaluate`` spans tying this record to the proof-OTEL contract.
     """
-    record = _build_record(
-        execution_context,
-        observability_context,
-        failure_classification="",
-        failure_reason="",
-        block_reason="",
-    )
-    _publish_to_bus_t(record, "execution_observability")
-    _register_in_eval_index(record)
-    _log.debug(
-        "EXECUTION_OBSERVABILITY_RECORDED obs_id=%s req=%s target=%s status=%s dur=%.2fms",
-        record.execution_observability_id,
-        record.execution_request_id[:12] if record.execution_request_id else "",
-        record.execution_target,
-        record.execution_status,
-        record.duration_ms,
-    )
-    return record
+    if emitter is None:
+        record = _build_record(
+            execution_context,
+            observability_context,
+            failure_classification="",
+            failure_reason="",
+            block_reason="",
+        )
+        _publish_to_bus_t(record, "execution_observability")
+        _register_in_eval_index(record)
+        _log.debug(
+            "EXECUTION_OBSERVABILITY_RECORDED obs_id=%s req=%s target=%s status=%s dur=%.2fms",
+            record.execution_observability_id,
+            record.execution_request_id[:12] if record.execution_request_id else "",
+            record.execution_target,
+            record.execution_status,
+            record.duration_ms,
+        )
+        return record
+
+    with emitter.span(
+        "l6.ingest",
+        reason_codes=["execution_observability"],
+        replay_key=None,  # filled below once record is built
+    ):
+        record = _build_record(
+            execution_context,
+            observability_context,
+            failure_classification="",
+            failure_reason="",
+            block_reason="",
+        )
+        _publish_to_bus_t(record, "execution_observability")
+        with emitter.span(
+            "l6.evaluate",
+            reason_codes=["clean_execution_observed"],
+            replay_key=record.replay_key,
+            policy_hash=record.policy_hash or None,
+        ):
+            _register_in_eval_index(record)
+        return record
 
 
 def record_execution_failure(
@@ -370,35 +403,103 @@ def record_execution_failure(
     observability_context: ExecutionObservabilityContext,
     failure_classification: FailureClassification = FailureClassification.UNKNOWN_FAILURE,
     failure_reason: str = "",
+    *,
+    emitter: Optional["RuntimeSpanEmitter"] = None,
     **kwargs: Any,
 ) -> ObservabilityRecord:
-    """Record execution failure with full governance fields."""
-    record = _build_record(
-        execution_context,
-        observability_context,
-        failure_classification=_failure_class_value(failure_classification),
-        failure_reason=failure_reason,
-        block_reason="",
-    )
-    _publish_to_bus_t(record, "execution_failure")
-    _register_in_eval_index(record)
-    return record
+    """Record execution failure with full governance fields.
+
+    W9 live wire-up: when ``emitter`` is provided, emits ``l6.ingest`` >
+    ``l6.evaluate`` > ``l6.rca_or_proposal`` because a failure event always
+    triggers root-cause-analysis regardless of disposition.
+    """
+    if emitter is None:
+        record = _build_record(
+            execution_context,
+            observability_context,
+            failure_classification=_failure_class_value(failure_classification),
+            failure_reason=failure_reason,
+            block_reason="",
+        )
+        _publish_to_bus_t(record, "execution_failure")
+        _register_in_eval_index(record)
+        return record
+
+    fc_value = _failure_class_value(failure_classification)
+    with emitter.span(
+        "l6.ingest",
+        reason_codes=["execution_failure", fc_value],
+    ):
+        record = _build_record(
+            execution_context,
+            observability_context,
+            failure_classification=fc_value,
+            failure_reason=failure_reason,
+            block_reason="",
+        )
+        _publish_to_bus_t(record, "execution_failure")
+        with emitter.span(
+            "l6.evaluate",
+            reason_codes=["failure_observed", fc_value],
+            replay_key=record.replay_key,
+            policy_hash=record.policy_hash or None,
+        ):
+            _register_in_eval_index(record)
+            with emitter.span(
+                "l6.rca_or_proposal",
+                reason_codes=["rca_pending", fc_value],
+            ):
+                # RCA span is emitted as a marker; downstream tooling
+                # picks up the failure_classification and reasons from
+                # the record itself.
+                pass
+        return record
 
 
 def record_policy_block(
     execution_context: ExecutionContext,
     observability_context: ExecutionObservabilityContext,
     block_reason: str = "",
+    *,
+    emitter: Optional["RuntimeSpanEmitter"] = None,
     **kwargs: Any,
 ) -> ObservabilityRecord:
-    """Record policy block observability with full governance fields."""
-    record = _build_record(
-        execution_context,
-        observability_context,
-        failure_classification="",
-        failure_reason="",
-        block_reason=block_reason,
-    )
-    _publish_to_bus_t(record, "policy_block")
-    _register_in_eval_index(record)
-    return record
+    """Record policy block observability with full governance fields.
+
+    W9 live wire-up: when ``emitter`` is provided, emits ``l6.ingest`` >
+    ``l6.evaluate`` with a ``policy_block`` reason. RCA is NOT emitted
+    here because policy blocks are governance decisions, not failures
+    requiring root-cause analysis.
+    """
+    if emitter is None:
+        record = _build_record(
+            execution_context,
+            observability_context,
+            failure_classification="",
+            failure_reason="",
+            block_reason=block_reason,
+        )
+        _publish_to_bus_t(record, "policy_block")
+        _register_in_eval_index(record)
+        return record
+
+    with emitter.span(
+        "l6.ingest",
+        reason_codes=["policy_block"],
+    ):
+        record = _build_record(
+            execution_context,
+            observability_context,
+            failure_classification="",
+            failure_reason="",
+            block_reason=block_reason,
+        )
+        _publish_to_bus_t(record, "policy_block")
+        with emitter.span(
+            "l6.evaluate",
+            reason_codes=["policy_block_observed"],
+            replay_key=record.replay_key,
+            policy_hash=record.policy_hash or None,
+        ):
+            _register_in_eval_index(record)
+        return record

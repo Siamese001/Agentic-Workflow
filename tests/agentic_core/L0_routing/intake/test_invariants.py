@@ -262,8 +262,24 @@ def test_all_11_event_types_present() -> None:
 
 def test_pipeline_run_signature() -> None:
     sig = inspect.signature(IntakePipeline.run)
-    # (self, env) -> IntakeOutcome
-    assert list(sig.parameters.keys()) == ["self", "env"]
+    params = sig.parameters
+    # Positional surface: (self, env). Anything else MUST be keyword-only.
+    positional_or_kw = [
+        name
+        for name, p in params.items()
+        if p.kind in (inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.POSITIONAL_ONLY)
+    ]
+    assert positional_or_kw == ["self", "env"], (
+        f"Pipeline.run positional surface drifted: {positional_or_kw}"
+    )
+    # Optional keyword-only kwargs are allowed (W10 added emitter=None).
+    # Just verify they all have defaults so existing callers stay valid.
+    for name, p in params.items():
+        if p.kind == inspect.Parameter.KEYWORD_ONLY:
+            assert p.default is not inspect.Parameter.empty, (
+                f"Pipeline.run kwarg {name!r} must be optional to preserve "
+                f"backward compatibility"
+            )
 
 
 def test_pipeline_module_does_not_call_l1_or_l2() -> None:

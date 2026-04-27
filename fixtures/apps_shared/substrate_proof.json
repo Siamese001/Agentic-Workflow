@@ -1,0 +1,28 @@
+{
+  "intake_body": "Verify that apps_shared substrate provides the runtime spine, contract schema, trace helpers, and replay helpers required by every per-app proof scenario.",
+  "task_spec": "shared.meta_proof",
+  "query_spec": "apps_shared substrate verification",
+  "grounding_required": false,
+  "extra_payload": {
+    "substrate_id": "SHARED-SUBSTRATE-PROOF-001",
+    "expected_modules": [
+      "apps_shared.proof.proof_runner",
+      "apps_shared.proof.proof_contracts",
+      "apps_shared.proof.scenario_base",
+      "apps_shared.proof.scenarios",
+      "apps_shared.proof.validators",
+      "apps_shared.proof.negative_controls",
+      "apps_shared.proof.adg_queries",
+      "apps_shared.proof.app_inventory",
+      "apps_shared.proof.write_sovereignty",
+      "apps_shared.proof.runtime_drivers"
+    ],
+    "expected_contract_classes": [
+      "AppRunEvidencePacket",
+      "SpanRecord",
+      "ContractRecord",
+      "GateVerdictRecord",
+      "ArtifactRecord"
+    ]
+  }
+}

@@ -2,15 +2,15 @@
 
 Source-of-truth doctrine files:
 
-- **PARENT** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/Prompt_Assembly_detailed.md`
-- **PA.0** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.0_Boundary_Check_detailed.md`
-- **PA.1** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.1_Load_Resolve_Prompt_BOM_detailed.md`
-- **PA.2** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.2_Slot_Composition_detailed.md`
-- **PA.3** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.3_Airlock_Security_Pass_detailed.md`
-- **PA.4** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.4_Validate_Slot_Contract_detailed.md`
-- **PA.5** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.5_Token_Budget_Determinism_detailed.md`
-- **PA.6** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.6_Provider_Aware_Rendering_detailed.md`
-- **PA.7** — `docs/reference/03_L0_Routing_&_L3_Orch/Prompt Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact_detailed.md`
+- **PARENT** — `docs/reference/03B_PA_Prompt_Assembly/Prompt_Assembly.md`
+- **PA.0** — `docs/reference/03B_PA_Prompt_Assembly/PA.0_Boundary_Check.md`
+- **PA.1** — `docs/reference/03B_PA_Prompt_Assembly/PA.1_Load_Resolve_Prompt_BOM.md`
+- **PA.2** — `docs/reference/03B_PA_Prompt_Assembly/PA.2_Slot_Composition.md`
+- **PA.3** — `docs/reference/03B_PA_Prompt_Assembly/PA.3_Airlock_Security_Pass.md`
+- **PA.4** — `docs/reference/03B_PA_Prompt_Assembly/PA.4_Validate_Slot_Contract.md`
+- **PA.5** — `docs/reference/03B_PA_Prompt_Assembly/PA.5_Token_Budget_Determinism.md`
+- **PA.6** — `docs/reference/03B_PA_Prompt_Assembly/PA.6_Provider_Aware_Rendering.md`
+- **PA.7** — `docs/reference/03B_PA_Prompt_Assembly/PA.7_Final_Emit_Compiled_Prompt_Artifact.md`
 
 Runtime artifacts being verified:
 
@@ -21,7 +21,7 @@ Runtime artifacts being verified:
 
 **Tally:** 387 PASS / 0 FAIL (of 387 requirements)
 
-**Generated:** 2026-04-27T00:58:59.469203+00:00
+**Generated:** 2026-04-27T02:03:49.791137+00:00
 
 ## Category roll-up
 
@@ -408,10 +408,10 @@ Runtime artifacts being verified:
 
 | # | Stage | ID | Requirement | Status | Evidence (truncated) |
 |---:|---|---|---|:---:|---|
-| 1 | PA.8 | `PA8_RULE::C0` | PA.8 rule `C0`: C0/tool/human text are data-only slots | **PASS** | `{"rule_keyword": "C0", "runtime_symbol": "detect_authority_violations", "present_in_doctrine": true, "present_in_runtime": true}` |
-| 2 | PA.8 | `PA8_RULE::R0` | PA.8 rule `R0`: R0 schema is bound to provider-native fields | **PASS** | `{"rule_keyword": "R0", "runtime_symbol": "R0SchemaBinding", "present_in_doctrine": true, "present_in_runtime": true}` |
+| 1 | PA.8 | `PA8_RULE::C0` | PA.8 rule `C0`: C0/tool/human text are data-only slots (instructions never promoted) | **PASS** | `{"rule_keyword": "C0", "runtime_symbol": "detect_authority_violations", "present_in_doctrine": true, "present_in_runtime": true}` |
+| 2 | PA.8 | `PA8_RULE::R0` | PA.8 rule `R0`: R0 schema is bound to provider-native fields, not merely prose | **PASS** | `{"rule_keyword": "R0", "runtime_symbol": "R0SchemaBinding", "present_in_doctrine": true, "present_in_runtime": true}` |
 | 3 | PA.8 | `PA8_RULE::Provider` | PA.8 rule `Provider`: Provider rendering must not silently reorder authority slots | **PASS** | `{"rule_keyword": "Provider", "runtime_symbol": "render_for_provider", "present_in_doctrine": true, "present_in_runtime": true}` |
-| 4 | PA.8 | `PA8_RULE::Token` | PA.8 rule `Token`: Token trimming must never drop S0/D0/required policy refs/R0 | **PASS** | `{"rule_keyword": "Token", "runtime_symbol": "BUDGET_TRIM_ORDER", "present_in_doctrine": true, "present_in_runtime": true}` |
+| 4 | PA.8 | `PA8_RULE::Token` | PA.8 rule `Token`: Token trimming must never drop S0/D0/required policy refs/R0 binding | **PASS** | `{"rule_keyword": "Token", "runtime_symbol": "BUDGET_TRIM_ORDER", "present_in_doctrine": true, "present_in_runtime": true}` |
 
 ## PA8_TESTS
 
@@ -456,7 +456,7 @@ Runtime artifacts being verified:
 |---:|---|---|---|:---:|---|
 | 1 | PARENT | `PARSER_EDGE::trailing_colon_heading` | PARSER_EDGE/trailing_colon_heading: Heading with trailing colon is recognised | **PASS** | `{"case": "trailing_colon_heading", "args": ["STATUS VALUES"], "expected": ["One", "Two"], "actual": ["One", "Two"], "description": "Headi…` |
 | 2 | PARENT | `PARSER_EDGE::tab_indented_bullet` | PARSER_EDGE/tab_indented_bullet: Tab-indented bullets are captured | **PASS** | `{"case": "tab_indented_bullet", "args": ["STATUS VALUES"], "expected": ["TabOne", "TabTwo"], "actual": ["TabOne", "TabTwo"], "description…` |
-| 3 | PARENT | `PARSER_EDGE::asterisk_marker` | PARSER_EDGE/asterisk_marker: Asterisk-style bullets are captured | **PASS** | `{"case": "asterisk_marker", "args": ["STATUS VALUES"], "expected": ["Star1", "Star2"], "actual": ["Star1", "Star2"], "description": "Aste…` |
+| 3 | PARENT | `PARSER_EDGE::asterisk_marker` | PARSER_EDGE/asterisk_marker: Asterisk-style bullets are captured (mixed marker tolerance) | **PASS** | `{"case": "asterisk_marker", "args": ["STATUS VALUES"], "expected": ["Star1", "Star2"], "actual": ["Star1", "Star2"], "description": "Aste…` |
 | 4 | PARENT | `PARSER_EDGE::unicode_bullet_marker` | PARSER_EDGE/unicode_bullet_marker: Unicode-bullet (U+2022) markers are captured | **PASS** | `{"case": "unicode_bullet_marker", "args": ["STATUS VALUES"], "expected": ["UniOne", "UniTwo"], "actual": ["UniOne", "UniTwo"], "descripti…` |
 | 5 | PARENT | `PARSER_EDGE::heading_lookalike_in_prose` | PARSER_EDGE/heading_lookalike_in_prose: `STATUS VALUES` mid-prose does not start a section | **PASS** | `{"case": "heading_lookalike_in_prose", "args": ["STATUS VALUES"], "expected": [], "actual": [], "description": "`STATUS VALUES` mid-prose…` |
 | 6 | PARENT | `PARSER_EDGE::heading_with_no_underline` | PARSER_EDGE/heading_with_no_underline: Heading without underline separator still captures bullets | **PASS** | `{"case": "heading_with_no_underline", "args": ["STATUS VALUES"], "expected": ["HeadOne", "HeadTwo"], "actual": ["HeadOne", "HeadTwo"], "d…` |

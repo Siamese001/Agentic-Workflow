@@ -227,6 +227,29 @@ class ScenarioContext:
         self.contracts.append(rec)
         return rec
 
+    def register_contract(
+        self, *, kind: str, payload: Any, span_id: str, existing_rel_path: str
+    ) -> ContractRecord:
+        """Register a contract that was ALREADY written to disk (e.g. by an app
+        runtime driver). Computes the digest, appends a ``ContractRecord`` to
+        ``self.contracts``, and returns it — but does NOT re-write the file
+        under a digest-suffixed name.
+
+        This avoids the W9 dedup pathology where every driver-emitted artifact
+        was being copied to ``<kind>_<digest8>.json`` in addition to its
+        canonical filename, doubling the contract count and confusing the
+        contract inventory.
+        """
+        digest = sha256_of(_safe(payload))
+        rec = ContractRecord(
+            contract_kind=kind,
+            digest=digest,
+            emitted_by_span_id=span_id,
+            payload_path=existing_rel_path.replace("\\", "/"),
+        )
+        self.contracts.append(rec)
+        return rec
+
     def emit_gate(
         self,
         *,
@@ -832,6 +855,80 @@ class ScenarioContext:
             span_id=sp.span_id,
         )
         self.layer_status["L2"] = "PASS" if not sealed.failure else "FAIL"
+
+        # W2: Real-app runtime driver hook. If a per-app driver is registered,
+        # run it AFTER the spine's bounded executor has succeeded. The driver
+        # invokes the app's actual engines and writes app-specific artifacts
+        # (decision_packet, evidence_register, audit_trace, ...) under
+        # ctx.scenario_dir. This converts spine-proof into app-proof per the
+        # anti-cheat spec — without it, the spine alone can "look like it
+        # ran" without actually exercising the app's code path.
+        if not sealed.failure:
+            try:
+                from apps_shared.proof.runtime_drivers import get_driver
+                driver = get_driver(self.spec.app_id)
+            except ImportError:
+                driver = None
+            if driver is not None:
+                drv_started = _utcnow_iso()
+                try:
+                    artifacts = driver.invoke(self)
+                except (
+                    RuntimeError, ValueError, TypeError, AttributeError,
+                    ImportError, KeyError, OSError,
+                ) as exc:
+                    drv_ended = _utcnow_iso()
+                    self.emit_span(
+                        layer="L2",
+                        name=f"l2.driver.{self.spec.app_id}",
+                        parent_span_id=sp.span_id,
+                        status="FAIL",
+                        started_at=drv_started,
+                        ended_at=drv_ended,
+                        attrs={"error": repr(exc), "driver_app_id": driver.app_id},
+                    )
+                    # Driver failure does not collapse L2 status — the spine
+                    # still produced a sealed artifact. The verifier surfaces
+                    # the absence of expected app-specific files in W7 tests.
+                else:
+                    drv_ended = _utcnow_iso()
+                    drv_span = self.emit_span(
+                        layer="L2",
+                        name=f"l2.driver.{self.spec.app_id}",
+                        parent_span_id=sp.span_id,
+                        status="PASS",
+                        started_at=drv_started,
+                        ended_at=drv_ended,
+                        attrs={
+                            "driver_app_id": driver.app_id,
+                            "artifact_count": len(artifacts),
+                            "artifact_kinds": sorted(artifacts.keys()),
+                        },
+                    )
+                    # W9 dedup: register driver-emitted artifacts as contracts
+                    # WITHOUT rewriting them under digest-suffixed names. The
+                    # driver already wrote each file with its trace-link
+                    # envelope; ``register_contract`` just appends a
+                    # ContractRecord pointing at the existing path.
+                    for kind, rel_path in artifacts.items():
+                        full = self.scenario_dir / rel_path
+                        if not full.exists():
+                            continue
+                        try:
+                            payload = json.loads(full.read_text(encoding="utf-8"))
+                        except (OSError, json.JSONDecodeError):
+                            continue
+                        try:
+                            rel_to_export = str(full.relative_to(self.export_root)).replace("\\", "/")
+                        except ValueError:
+                            rel_to_export = rel_path.replace("\\", "/")
+                        self.register_contract(
+                            kind=kind,
+                            payload=payload,
+                            span_id=drv_span.span_id,
+                            existing_rel_path=rel_to_export,
+                        )
+
         return self.layer_status["L2"], sp
 
     def run_exit(self, parent: SpanRecord | None) -> tuple[str, SpanRecord]:

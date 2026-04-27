@@ -1,0 +1,13 @@
+{
+  "intake_body": "Run a read-only smoke proof for apps_rg — confirm engine imports succeed, lifecycle traces emit, and ATS-compatibility scan runs without writing durable state.",
+  "task_spec": "rg.readonly_smoke",
+  "query_spec": "apps_rg readonly proof — no mutations",
+  "grounding_required": false,
+  "extra_payload": {
+    "rg_id": "RG-PROOF-READONLY-001",
+    "mode": "readonly_smoke",
+    "test_resume_text": "Senior Software Engineer with 12 years of experience in distributed systems. Built a real-time fraud detection pipeline at Acme processing 50K events/sec with 99.99% uptime. Led a team of 8 engineers migrating monolith to microservices, reducing deployment time from 4 hours to 12 minutes.",
+    "ats_check_required": true,
+    "no_mutation_required": true
+  }
+}

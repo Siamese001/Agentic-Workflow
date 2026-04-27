@@ -1,0 +1,28 @@
+{
+  "intake_body": "Parse this enterprise RFP, extract requirements, map each requirement to product evidence, draft response sections, flag unsupported claims, and produce a submission risk packet.",
+  "task_spec": "rfp.compliance_response",
+  "query_spec": "enterprise rfp requirements vs product capability map",
+  "grounding_required": true,
+  "extra_payload": {
+    "rfp_id": "RFP-PROOF-GOLDEN-001",
+    "client_name": "Globex Industries",
+    "industry": "manufacturing",
+    "rfp_text": "Globex Industries seeks proposals for a manufacturing analytics platform with the following requirements: (1) real-time KPI dashboards with sub-second query latency; (2) predictive maintenance models with measurable accuracy targets; (3) ISO 27001 certified data handling; (4) on-prem deployment option; (5) SLA-backed 99.9% uptime; (6) integration with SAP S/4HANA and OPC-UA OT systems; (7) role-based access control with SSO via SAML 2.0.",
+    "requirements": [
+      {"id": "REQ-001", "category": "performance", "text": "Real-time KPI dashboards with sub-second query latency"},
+      {"id": "REQ-002", "category": "ml", "text": "Predictive maintenance with measurable accuracy targets"},
+      {"id": "REQ-003", "category": "security", "text": "ISO 27001 certified data handling"},
+      {"id": "REQ-004", "category": "deployment", "text": "On-prem deployment option"},
+      {"id": "REQ-005", "category": "sla", "text": "99.9% uptime SLA"},
+      {"id": "REQ-006", "category": "integration", "text": "SAP S/4HANA and OPC-UA integration"},
+      {"id": "REQ-007", "category": "security", "text": "Role-based access control with SAML 2.0 SSO"}
+    ],
+    "capability_evidence": [
+      {"capability": "real_time_dashboards", "evidence_id": "EV-PERF-001", "evidence_type": "benchmark", "supports_req": "REQ-001", "support_score": 0.92},
+      {"capability": "predictive_models", "evidence_id": "EV-ML-014", "evidence_type": "case_study", "supports_req": "REQ-002", "support_score": 0.78},
+      {"capability": "iso_27001", "evidence_id": "EV-CERT-007", "evidence_type": "certification", "supports_req": "REQ-003", "support_score": 1.00},
+      {"capability": "onprem_deployment", "evidence_id": "EV-DEPLOY-003", "evidence_type": "architecture_doc", "supports_req": "REQ-004", "support_score": 0.85},
+      {"capability": "saml_sso", "evidence_id": "EV-SEC-022", "evidence_type": "implementation", "supports_req": "REQ-007", "support_score": 0.95}
+    ]
+  }
+}

@@ -189,10 +189,43 @@ def score_coverage(
     return result, bool(result.should_rerank)
 
 
+# ---------------------------------------------------------------------------
+# E1 bind: wire coverage scorer version into the replay envelope.
+# ---------------------------------------------------------------------------
+
+# Canonical version string bound to the replay envelope as the
+# `coverage_scorer` ml-model role. Tracks `HeuristicCoverageScorer.evaluator_version`
+# so a change in scorer logic invalidates the envelope hash (C1 determinism).
+_EVALUATOR_VERSION: str = (
+    f"{HeuristicCoverageScorer.evaluator_name}-"
+    f"{HeuristicCoverageScorer.evaluator_version}"
+)
+
+
+def wire_coverage_scorer_to_envelope(builder: Any) -> None:
+    """Bind the retrieval coverage scorer version into the replay envelope.
+
+    Mode-aware: reads ``COVERAGE_SCORER_MODE`` and binds the scorer version
+    via ``builder.with_coverage_scorer(_EVALUATOR_VERSION)`` when the mode is
+    one of ``shadow`` or ``advisory_active``. ``off`` mode and a ``None``
+    builder are explicit no-ops so callers may invoke this unconditionally
+    from E1 prep.
+
+    Spec: docs/reference/04_L2_Execute/04.2 §E1.4 Determinism bind — the
+    coverage scorer is part of the replay-bound model surface when active.
+    """
+    if builder is None:
+        return
+    mode = get_coverage_scorer_mode()
+    if mode in ("shadow", "advisory_active"):
+        builder.with_coverage_scorer(_EVALUATOR_VERSION)
+
+
 __all__ = [
     "HeuristicCoverageScorer",
     "RetrievalCoverageResult",
     "drain_shadow_buffer",
     "get_coverage_scorer_mode",
     "score_coverage",
+    "wire_coverage_scorer_to_envelope",
 ]
