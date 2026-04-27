@@ -320,3 +320,45 @@ This RCA is RESOLVED when:
 5. ⏳ The pre-session ledger-staleness gate is documented as an always-on constitutional requirement (§29 or equivalent)
 
 **Status as of 2026-04-27**: 3/5 closed, 2/5 pending observation/ratification (criteria 3 and 5 are post-close monitoring rather than blockers). RCA marked RESOLVED with caveats noted.
+
+## 10. Backfill — top-10 hand curated (2026-04-27)
+
+The 96-hour outage produced a 186-commit gap (after filtering pre-commit-hook noise).
+Rather than accept total signal loss, the 10 highest-architectural-weight refactor
+decisions were hand-curated and replayed through the hardened pipeline
+(`append_marker.py --stdin` → `queue_to_ledger.py`). Each row carries
+`principle_at_stake LIKE 'backfill-<sha8>-<short>'` so backfilled inferences are
+filterable from live captures.
+
+| # | Commit | Type | What was decided |
+|---|---|---|---|
+| 1 | `074c6ad356` | architecture_choice | REQ_ID-first overwrite of reference foundation + 12 layer parents + E2E compiler |
+| 2 | `5c762a9e01` | architecture_choice | Close `SovereignMcpRouter` loop — final fleet rollout of constitutional §29 ten-router matrix |
+| 3 | `14dfd732d2` | architecture_choice | Close `RerouteCeiling` + `HITLApprovalGate` loops (rule 29 rows 6, 8) |
+| 4 | `31c9440953` | architecture_choice | exit-eval-v6 Wave 4 final — BUS P/T pipeline runtime types (ADR-069) |
+| 5 | `0dadd9938a` | error_handling | Two-phase healer Protocol structurally enforces INV-RC-5 |
+| 6 | `e65fe5773d` | error_handling | X3F BREAK_GLASS_ALLOW resolves H3 X3E divergence (ADR-065) |
+| 7 | `344452b61c` | architecture_choice | Close `NamespaceBandit` (§29 row 1, first router in matrix) |
+| 8 | `a7b1e1e45b` | deletion_strategy | Archive 121 `agentic_core/adg/_compat/` shim files (wave A) |
+| 9 | `f139019176` | architecture_choice | New always-on MCP serialization rule + constitutional §25 |
+| 10 | `bd19273286` | architecture_choice | Durable SQLite backing for `EnsembleRouter` MetaLearner |
+
+Type breakdown: `architecture_choice=7`, `error_handling=2`, `deletion_strategy=1`.
+
+Drain stats: `total=10 captured=10 skipped_dup=0 deferred_scope=0 next_step=0 failed=0`.
+Ledger size: **51 → 61 rows**. The remaining 176 commits in the gap are accepted as
+statistical noise (the meta-learner's calibration windows recover within ~2-3 weeks
+of normal use).
+
+Source markers (gitignored under `artifacts/capture/backfill_top10_20260427.txt`)
+are preserved on disk for audit; the canonical durable record is the SQLite ledger
+itself, queryable via:
+
+```sql
+SELECT d.decision_type, s.repo_area, d.principle_at_stake
+FROM decisions d
+LEFT JOIN decision_scope s ON s.decision_id = d.decision_id
+WHERE d.principle_at_stake LIKE 'backfill-%'
+ORDER BY d.created_at;
+```
+
