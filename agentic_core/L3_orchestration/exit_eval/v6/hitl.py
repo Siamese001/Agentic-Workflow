@@ -316,7 +316,20 @@ def build_freeze_receipt(
 ) -> FreezeReceipt:
     """Spec §5.6 H1 — produce a ``FreezeReceipt`` for a packet entering review."""
     freeze_id = f"frz-{_digest(packet.replay_key, packet.run_id, 'freeze')}"
-    digest = _digest(freeze_id, packet.policy_hash, packet.blueprint_hash, packet.replay_key)
+    # Hardening 2026-04-26: include reason_codes + the three ref lists in the
+    # content digest so two freezes with different reasons/artifacts on the
+    # same packet do not collide. freeze_id stays packet-bound (it identifies
+    # this freeze instance); freeze_digest is the content hash.
+    digest = _digest(
+        freeze_id,
+        packet.policy_hash,
+        packet.blueprint_hash,
+        packet.replay_key,
+        ",".join(reason_codes),
+        ",".join(frozen_artifact_refs or []),
+        ",".join(pending_state_diff_refs or []),
+        ",".join(suspended_capability_refs or []),
+    )
     return FreezeReceipt(
         freeze_id=freeze_id,
         exit_review_packet_id=f"erp-{_digest(packet.replay_key, packet.run_id)}",

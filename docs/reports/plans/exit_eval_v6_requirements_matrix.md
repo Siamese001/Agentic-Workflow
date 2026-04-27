@@ -1,42 +1,106 @@
 # Exit Eval v6 — Requirements Matrix
 
 **Generated**: 2026-04-26 (commit `7abe696466`)
-**Scope**: every requirement enumerated in `docs/reference/05_Exit_Evaluation_&_Control/05*.md` (parent + 5.1–5.8)
+**Re-verified**: 2026-04-26 20:31 UTC-04 (HEAD `246ed0d047`) — every row re-checked against live runtime; all pass.
+**Hardened**: 2026-04-26 20:35 UTC-04 — added 25 hardening edge-case tests (`test_v6_hardening_edges.py`); exposed and fixed one real digest-collision bug in `build_freeze_receipt` (see "Bug Fixes Found by Hardening" below). Total tests now **369 / 369 passing**.
+**Scope**: every requirement enumerated in `docs/reference/05_Exit_Evaluation_and_Control/05*.md` (parent + 5.1–5.8)
 **Implementation**: `agentic_core/L3_orchestration/exit_eval/v6/`
 **Tests**: `tests/unit/agentic_core/L3_orchestration/exit_eval/v6/`
 
 ---
 
+## Re-Verification Run (2026-04-26, HEAD `246ed0d047`)
+
+Live runtime evidence captured this turn against current `main`:
+
+| Check | Expected (from matrix) | Observed (fresh run) | Pass? |
+|---|---|---|:---:|
+| `pytest tests/unit/.../exit_eval/v6 -q` exit code | 0 | 0 | ✅ |
+| Test count | ≥ 205 | **344 passed** (139 new since matrix — commits `5ccd68118b` + `8d4fa143aa`) | ✅ |
+| Disposition on `base_receipts()` | X3D / ALLOW | `ALLOW` | ✅ |
+| Spans emitted per X3D run | 23 | **23** | ✅ |
+| All 23 span names prefixed `exit.*` | yes | yes (6 input + 10 x1 + x2 + x3 + x3d_allow + 2 return + seal + close) | ✅ |
+| Deterministic digest prefix | `d6e4cc298600e910` | `d6e4cc298600e910` | ✅ |
+| Digest equal across two runs | True | True | ✅ |
+| Runtime boundary closed | True | True | ✅ |
+| `len(EXIT_V6_SPAN_CATALOG)` | 39 | 39 | ✅ |
+| `len(REQUIRED_ATTRIBUTES)` | 26 | 26 | ✅ |
+| `len(RETURN_PAYLOAD_FAILURE_CODES)` | 10 | 10 | ✅ |
+| `len(GATE_EVALUATORS)` | 10 (X1A–X1J) | 10 | ✅ |
+| `len(V6Disposition)` | 5 | 5 | ✅ |
+| `len(SourceType)` | 6 | 6 | ✅ |
+| `len(v6.__all__)` | 82 | 82 | ✅ |
+| `return_payload_failures` on baseline | `[]` | `[]` | ✅ |
+| Static audit: `subprocess`/`urllib`/`requests`/`http` imports in `v6/*.py` | 0 | 0 | ✅ |
+| Static audit: `c0_retrieval` import | 0 | 0 (only field-name strings) | ✅ |
+| Static audit: `prompt_assembly` import | 0 | 0 (only field-name strings) | ✅ |
+| Static audit: `pass_at_k` references | 0 | 0 | ✅ |
+
+**Verdict**: 19/19 headline checks pass. Every row in every detailed table below remains valid; the only drift from initial generation was *additive* — 139 additional passing tests from exhaustive-edge-case work landed on the same day. No regression. No unmapped requirement.
+
+Probe script: `_exit_runtime_probe.py` (temp); raw output captured in `_exitv6_pytest.txt` (344 passed, 1 warning in 0.56s).
+
+---
+
 ## Headline Runtime Numbers
 
-| Metric | Value | Source |
+| Metric | Value (2026-04-26 re-verify) | Source |
 |---|---:|---|
-| **Tests passing** | **205 / 205** | `pytest tests/unit/agentic_core/L3_orchestration/exit_eval/v6 -q` |
-| Test files | 11 | collect-only |
+| **Tests passing** | **344 / 344** | `pytest tests/unit/agentic_core/L3_orchestration/exit_eval/v6 -q` |
+| Test files | 12 | collect-only |
 | Implementation modules | 13 | `v6/` |
-| Implementation LOC | 3,748 | sum of `.py` line counts |
+| Implementation LOC | **4,377** | sum of `.py` line counts (grew from 3,748 as rollback/sqlite_ledger/uwg expanded) |
 | OTEL spans in catalog | **39** | `len(EXIT_V6_SPAN_CATALOG)` |
 | Required OTEL attributes | **26** | `len(REQUIRED_ATTRIBUTES)` |
 | Return-payload failure codes | **10** | `len(RETURN_PAYLOAD_FAILURE_CODES)` |
 | X1 gate evaluators | **10** (X1A–X1J) | `len(GATE_EVALUATORS)` |
-| Spans emitted per X3D run | **23** | `collected_span_names()` on baseline run |
+| Spans emitted per X3D run | **23** | `packet.otel_spans["v6"]` on baseline run |
 | Pipeline steps | 10 | preflight → identity → normalize → X1 → X2 → X3 → UWG → return → seal → close |
+| `v6.__all__` exports | 82 | `len(v6.__all__)` |
 
-### Per-module test counts
+### Per-module test counts (re-collected 2026-04-26)
 
 | Tests | File | Spec covered |
 |---:|---|---|
-| 20 | `test_preflight.py` | §5.1 (existing) |
-| 43 | `test_x1_gates.py` | §5.2/5.3/X1J (existing) |
-| 21 | `test_x2_x3_hitl.py` | §5.5/5.6 (existing) |
-| 11 | `test_pipeline.py` | end-to-end (existing) |
-| 24 | `test_uwg.py` | §5.4 X3C (existing) |
-| 14 | `test_rollback.py` | §5.4 rollback (existing) |
-| 13 | `test_sqlite_ledger.py` | persistence (existing) |
-| 7 | **`test_hitl_contracts.py`** | **§5.6 named contracts (NEW)** |
-| 21 | **`test_return_payload.py`** | **§5.7 (NEW)** |
-| 12 | **`test_otel_emission.py`** | **§5.8 spans (NEW)** |
-| 19 | **`test_anti_bypass.py`** | **§5.8 anti-bypass + cases A–J (NEW)** |
+| 20 | `test_preflight.py` | §5.1 |
+| 43 | `test_x1_gates.py` | §5.2/5.3/X1J |
+| 21 | `test_x2_x3_hitl.py` | §5.5/5.6 |
+| 11 | `test_pipeline.py` | end-to-end |
+| 24 | `test_uwg.py` | §5.4 X3C |
+| 14 | `test_rollback.py` | §5.4 rollback |
+| 13 | `test_sqlite_ledger.py` | persistence |
+| 7 | `test_hitl_contracts.py` | §5.6 named contracts |
+| 21 | `test_return_payload.py` | §5.7 |
+| 12 | `test_otel_emission.py` | §5.8 spans |
+| 22 | `test_anti_bypass.py` | §5.8 anti-bypass + cases A–J (was 19; +3 edge cases) |
+| **110** | **`test_v6_exhaustive_edges.py`** | **exhaustive edge-case coverage across §5.1–§5.8 (NEW since matrix, commit `8d4fa143aa`)** |
+
+Sum of test-function count: 318; parametrized expansions → 344 passing tests at runtime.
+
+### Hardening pass — `test_v6_hardening_edges.py` (NEW this turn, +25 tests)
+
+| Tests | Target gap closed |
+|---:|---|
+| 1 | Full-catalog span reachability — every name in `EXIT_V6_SPAN_CATALOG` (39) is provably emitted by some pipeline scenario or helper invocation (X3A/B/C/D/E paths plus HITL/evidence-seal/L6-handoff helpers). |
+| 5 | Every `V6Disposition` value (X3A/B/C/D/E) reaches `ExitEvalPipeline.run` — strictly stronger than the prior `aggregate_decision`/`build_x3*` builder coverage. |
+| 6 | Every `SourceType` enum value round-trips through `classify_source` (parametrized). |
+| 3 | Runtime assertion of the matrix's static-audit claims: zero forbidden imports (`subprocess`/`urllib`/`requests`/`http`/`c0_retrieval`/`prompt_assembly`) at source level AND transitively at import time; zero `pass_at_k` references. |
+| 1 | Receipt-key permutation preserves `deterministic_digest` (stronger than "two identical-input runs"). |
+| 1 | Pipeline run 10× produces identical digests (idempotency). |
+| 2 | HITL contract digest collision-resistance + stability-for-identical-input. |
+| 1 | `validate_return_payload` is pure (3 calls → identical results). |
+| 1 | `ExitReviewPacket(source_type=...)` minimal constructor works. |
+| 2 | Empty / route-contract-missing receipts fail closed to X3A (no hang). |
+| 1 | `close_runtime_boundary` is idempotent under double-call. |
+| 1 | L6 handoff disallows live mutation across X3D and X3A dispositions. |
+
+**Total this hardening pass: 25 tests, 25 passing.**
+
+### Bug Fixes Found by Hardening (this turn)
+
+| Defect | File:Line | Symptom | Fix |
+|---|---|---|---|
+| `build_freeze_receipt.freeze_digest` collision when `reason_codes` / `frozen_artifact_refs` / `pending_state_diff_refs` / `suspended_capability_refs` differ on the same packet | `agentic_core/L3_orchestration/exit_eval/v6/hitl.py:319` | Two freezes with completely different reason codes and refs produced identical `freeze_digest` (`019a60649b1b4c46`). Audit-log integrity claim broken. | Include all four input lists in the SHA256 input. `freeze_id` (packet-bound) unchanged; `freeze_digest` (content-bound) now distinct. Verified by `test_hitl_contract_digests_differ_when_inputs_differ`. |
 
 ---
 
@@ -425,6 +489,10 @@ Every requirement in the 9 spec docs has at least one of:
 2. A unit test asserting the behavior
 3. A static-audit grep proving absence
 
-**Test verdict**: 205 / 205 passing. **Coverage gaps**: 0 unmapped requirements.
+**Test verdict** (2026-04-26 hardened): **369 / 369 passing** (344 prior + 25 new hardening edge-case tests). **Coverage gaps**: 0 unmapped requirements. **Bugs found and fixed by hardening**: 1 (digest collision in `build_freeze_receipt`).
 
-Commit `7abe696466` on `origin/main`.
+Original generation: commit `7abe696466`. Additive work since (same day, same day of matrix authoring):
+- `5ccd68118b` — 3 fixes + 6 tightenings + 3 new tests
+- `8d4fa143aa` — 136 new exhaustive edge-case tests (new file `test_v6_exhaustive_edges.py`)
+
+No row of the detailed matrix regressed. Every row verified in the re-verification table at the top of this file.
