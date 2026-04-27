@@ -22,7 +22,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.prove_requirements import tier0_runtime_proof_gate
+from agentic_core.runtime.prove_requirements import (
+    tier0_runtime_proof_gate,
+    tier_fixture_bootstrap,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -61,6 +64,7 @@ def _run_targeted_tests() -> str:
 
 
 def main() -> int:
+    tier_fixture_bootstrap.materialize()
     metadata_status = _run_metadata_gate()
     tests_status = _run_targeted_tests()
 
