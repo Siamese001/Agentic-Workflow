@@ -569,8 +569,8 @@ requirements:
      check: "obs_eq", args: {key: "span_count", expected: 40}}
 
   - {id: "5.8.CAT.required_attrs_count", source: "05.8", line: "required-attrs",
-     text: "26 required OTEL attributes",
-     check: "obs_eq", args: {key: "required_attrs_count", expected: 26}}
+     text: "39 required OTEL attributes (26 base 05.8 + 13 H5 hardening per Wave 2)",
+     check: "obs_eq", args: {key: "required_attrs_count", expected: 39}}
 
   - {id: "5.8.CAT.v6_module_all_count", source: "05.8", line: "module",
      text: "v6 __all__ exports >= 80 symbols (catalog of public API)",
@@ -725,24 +725,40 @@ requirements:
   - {id: "H5.SPAN.exit_control_gate", source: "v4_hardening", line: "H5.1",
      text: "Per-gate span name pattern: v6 uses exit.x1{a..j}.{check_name}; addendum proposes unified exit_control.gate",
      check: "design", evidence: "v6 emits per-gate-named spans; addendum's unified-name proposal is implementation choice"}
-  - {id: "H5.ATTR.gate", source: "v4_hardening", line: "H5.1", text: "Span attr: gate", check: "design"}
-  - {id: "H5.ATTR.run_id", source: "v4_hardening", line: "H5.1", text: "Span attr: run_id", check: "design"}
-  - {id: "H5.ATTR.track", source: "v4_hardening", line: "H5.1", text: "Span attr: track", check: "design"}
-  - {id: "H5.ATTR.trajectory_class", source: "v4_hardening", line: "H5.1", text: "Span attr: trajectory_class", check: "design"}
-  - {id: "H5.ATTR.rubric_version", source: "v4_hardening", line: "H5.1", text: "Span attr: rubric_version", check: "design"}
-  - {id: "H5.ATTR.composition", source: "v4_hardening", line: "H5.1", text: "Span attr: composition (binary/weighted/hybrid)", check: "design"}
-  - {id: "H5.ATTR.aggregate_score", source: "v4_hardening", line: "H5.1", text: "Span attr: aggregate_score", check: "design"}
-  - {id: "H5.ATTR.aggregate_threshold", source: "v4_hardening", line: "H5.1", text: "Span attr: aggregate_threshold", check: "design"}
-  - {id: "H5.ATTR.passed", source: "v4_hardening", line: "H5.1", text: "Span attr: passed", check: "design"}
-  - {id: "H5.ATTR.abstain", source: "v4_hardening", line: "H5.1", text: "Span attr: abstain", check: "design"}
-  - {id: "H5.ATTR.disposition_hint", source: "v4_hardening", line: "H5.1", text: "Span attr: disposition_hint", check: "design"}
-  - {id: "H5.ATTR.reason_codes", source: "v4_hardening", line: "H5.1", text: "Span attr: reason_codes", check: "design"}
-  - {id: "H5.ATTR.bypass_audit_id", source: "v4_hardening", line: "H5.1", text: "Span attr: bypass_audit_id", check: "design"}
+  # Wave 2: H5 attributes added to REQUIRED_ATTRIBUTES tuple
+  - {id: "H5.ATTR.gate", source: "v4_hardening", line: "H5.1", text: "Span attr: gate",
+     check: "attr_in_required", args: {attribute: "gate"}}
+  - {id: "H5.ATTR.run_id", source: "v4_hardening", line: "H5.1", text: "Span attr: run_id",
+     check: "attr_in_required", args: {attribute: "run_id"}}
+  - {id: "H5.ATTR.track", source: "v4_hardening", line: "H5.1", text: "Span attr: track",
+     check: "attr_in_required", args: {attribute: "track"}}
+  - {id: "H5.ATTR.trajectory_class", source: "v4_hardening", line: "H5.1", text: "Span attr: trajectory_class",
+     check: "attr_in_required", args: {attribute: "trajectory_class"}}
+  - {id: "H5.ATTR.rubric_version", source: "v4_hardening", line: "H5.1", text: "Span attr: rubric_version",
+     check: "attr_in_required", args: {attribute: "rubric_version"}}
+  - {id: "H5.ATTR.composition", source: "v4_hardening", line: "H5.1", text: "Span attr: composition (binary/weighted/hybrid)",
+     check: "attr_in_required", args: {attribute: "composition"}}
+  - {id: "H5.ATTR.aggregate_score", source: "v4_hardening", line: "H5.1", text: "Span attr: aggregate_score",
+     check: "attr_in_required", args: {attribute: "aggregate_score"}}
+  - {id: "H5.ATTR.aggregate_threshold", source: "v4_hardening", line: "H5.1", text: "Span attr: aggregate_threshold",
+     check: "attr_in_required", args: {attribute: "aggregate_threshold"}}
+  - {id: "H5.ATTR.passed", source: "v4_hardening", line: "H5.1", text: "Span attr: passed",
+     check: "attr_in_required", args: {attribute: "passed"}}
+  - {id: "H5.ATTR.abstain", source: "v4_hardening", line: "H5.1", text: "Span attr: abstain",
+     check: "attr_in_required", args: {attribute: "abstain"}}
+  - {id: "H5.ATTR.disposition_hint", source: "v4_hardening", line: "H5.1", text: "Span attr: disposition_hint",
+     check: "attr_in_required", args: {attribute: "disposition_hint"}}
+  - {id: "H5.ATTR.reason_codes", source: "v4_hardening", line: "H5.1", text: "Span attr: reason_codes",
+     check: "attr_in_required", args: {attribute: "reason_codes"}}
+  - {id: "H5.ATTR.bypass_audit_id", source: "v4_hardening", line: "H5.1", text: "Span attr: bypass_audit_id",
+     check: "attr_in_required", args: {attribute: "bypass_audit_id"}}
   - {id: "H5.SPAN.disposition_links_x1", source: "v4_hardening", line: "H5.2", text: "X3 disposition span links to X1 spans", check: "design"}
   - {id: "H5.RUNTIME_ADG_INGEST", source: "v4_hardening", line: "H5.3", text: "Spans ingested by otel_ingest_to_runtime_adg", check: "design"}
 
   # H6 pass^k threshold math
-  - {id: "H6.MATH.threshold_table", source: "v4_hardening", line: "H6.1", text: "Per-trial reliability table (theta=0.95 k=5 -> p~=0.9898)", check: "design"}
+  - {id: "H6.MATH.threshold_table", source: "v4_hardening", line: "H6.1",
+     text: "Per-trial reliability table (theta=0.95 k=5 -> p~=0.9898) - Wave 2 codified in hardening.PASS_K_THRESHOLD_TABLE",
+     check: "v6_export", args: {name: "PASS_K_THRESHOLD_TABLE"}}
   - {id: "H6.OP.deny_path_early", source: "v4_hardening", line: "H6.2", text: "X1G routes commit candidates to X3B early", check: "design"}
   - {id: "H6.NON_IID.bucket_reset", source: "v4_hardening", line: "H6.3", text: "Bucket reset on (trajectory_class, rubric_version, agent_version, policy_version) change", check: "design"}
   - {id: "H6.SMALL_SAMPLE.X3B_route", source: "v4_hardening", line: "H6.4", text: "Small-sample (<k) routes to X3B with INSUFFICIENT_HISTORY", check: "design"}
@@ -761,15 +777,54 @@ requirements:
   - {id: "H7.SHADOW.1week_or_500", source: "v4_hardening", line: "H7.3", text: "New rubric versions shadow-deploy 1 week / 500 runs, <=5% disagreement", check: "design"}
 
   # H8 Fault-injection matrix (9 modes)
-  - {id: "H8.FM.judge_timeout", source: "v4_hardening", line: "H8", text: "Judge timeout -> abstain + X3B + JUDGE_TIMEOUT", check: "design"}
-  - {id: "H8.FM.judge_4xx_5xx", source: "v4_hardening", line: "H8", text: "Judge 4xx/5xx -> abstain + X3B + JUDGE_ERROR", check: "design"}
-  - {id: "H8.FM.code_grader_exception", source: "v4_hardening", line: "H8", text: "Code grader exception -> X3A + GRADER_EXCEPTION", check: "design"}
-  - {id: "H8.FM.rubric_corrupt", source: "v4_hardening", line: "H8", text: "Rubric corrupt -> X3A + RUBRIC_UNAVAILABLE + page on-call", check: "design"}
-  - {id: "H8.FM.bus_p_write_failure", source: "v4_hardening", line: "H8", text: "BUS P write failure -> X3B + AUDIT_UNAVAILABLE", check: "design"}
-  - {id: "H8.FM.bus_t_write_failure", source: "v4_hardening", line: "H8", text: "BUS T write failure -> X3B + AUDIT_UNAVAILABLE", check: "design"}
-  - {id: "H8.FM.x1g_history_unavailable", source: "v4_hardening", line: "H8", text: "X1G history unavailable -> X3B + CONSISTENCY_HISTORY_UNAVAILABLE", check: "design"}
-  - {id: "H8.FM.uwg_unavailable", source: "v4_hardening", line: "H8", text: "UWG unavailable -> freeze + X3B + COMMIT_UNAVAILABLE", check: "design"}
-  - {id: "H8.FM.l5_reclear_failure", source: "v4_hardening", line: "H8", text: "L5 reclear failure -> FROZEN hold + page on-call", check: "design"}
+  # Wave 2: H8 fault-injection codes codified as FaultInjectionReasonCode enum
+  - {id: "H8.FM.judge_timeout", source: "v4_hardening", line: "H8",
+     text: "Judge timeout -> abstain + X3B + JUDGE_TIMEOUT",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.judge_4xx_5xx", source: "v4_hardening", line: "H8",
+     text: "Judge 4xx/5xx -> abstain + X3B + JUDGE_ERROR",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.code_grader_exception", source: "v4_hardening", line: "H8",
+     text: "Code grader exception -> X3A + GRADER_EXCEPTION",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.rubric_corrupt", source: "v4_hardening", line: "H8",
+     text: "Rubric corrupt -> X3A + RUBRIC_UNAVAILABLE + page on-call",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.bus_p_write_failure", source: "v4_hardening", line: "H8",
+     text: "BUS P write failure -> X3B + AUDIT_UNAVAILABLE",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.bus_t_write_failure", source: "v4_hardening", line: "H8",
+     text: "BUS T write failure -> X3B + AUDIT_UNAVAILABLE",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.x1g_history_unavailable", source: "v4_hardening", line: "H8",
+     text: "X1G history unavailable -> X3B + CONSISTENCY_HISTORY_UNAVAILABLE",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.uwg_unavailable", source: "v4_hardening", line: "H8",
+     text: "UWG unavailable -> freeze + X3B + COMMIT_UNAVAILABLE",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+  - {id: "H8.FM.l5_reclear_failure", source: "v4_hardening", line: "H8",
+     text: "L5 reclear failure -> FROZEN hold + page on-call (L5_RECLEARANCE_UNAVAILABLE)",
+     check: "v6_export", args: {name: "FaultInjectionReasonCode"}}
+
+  # Wave 2 ADR-067 acceptance — fault-injection disposition map + helpers
+  - {id: "H8.RESOLVE.disposition_map", source: "ADR-067", line: "wave-2",
+     text: "FAULT_INJECTION_DISPOSITION_HINT covers all 9 H8 codes",
+     check: "v6_export", args: {name: "FAULT_INJECTION_DISPOSITION_HINT"}}
+  - {id: "H8.RESOLVE.frozen_set", source: "ADR-067", line: "wave-2",
+     text: "FAULT_INJECTION_CODES frozen set for membership tests",
+     check: "v6_export", args: {name: "FAULT_INJECTION_CODES"}}
+  - {id: "H8.RESOLVE.is_fault_injection_helper", source: "ADR-067", line: "wave-2",
+     text: "is_fault_injection_code helper exported",
+     check: "v6_export", args: {name: "is_fault_injection_code"}}
+  - {id: "H6.RESOLVE.required_p_helper", source: "ADR-067", line: "wave-2",
+     text: "pass_k_required_p inverse helper exported",
+     check: "v6_export", args: {name: "pass_k_required_p"}}
+  - {id: "H6.RESOLVE.observed_helper", source: "ADR-067", line: "wave-2",
+     text: "pass_k_observed forward helper exported",
+     check: "v6_export", args: {name: "pass_k_observed"}}
+  - {id: "H6.RESOLVE.insufficient_history_constant", source: "ADR-067", line: "wave-2",
+     text: "PASS_K_INSUFFICIENT_HISTORY_REASON constant exported",
+     check: "v6_export", args: {name: "PASS_K_INSUFFICIENT_HISTORY_REASON"}}
 
   # H9 Operator runbook (9 steps)
   - {id: "H9.STEP.triage", source: "v4_hardening", line: "H9.1", text: "Step 1: triage gate / trajectory_class / track via otel_mcp", check: "design"}

@@ -4,7 +4,7 @@ Row-per-requirement matrix re-ingested from **all 14 spec files** in
 `docs/reference/05_Exit_Evaluation_and_Control/`. Every row carries an OTEL-shaped
 evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observation.
 
-**Trace ID** (this run): `44f5420dab2e250765d5744b168ccf6a`  
+**Trace ID** (this run): `ebf2fde5663732b26c37180d085b8786`  
 **Probe**: `tools/analysis/exit_v6_master_otel_probe.py`  
 **Registry**: `tools/analysis/exit_v6_requirements_registry.yaml`  
 **Evidence JSON**: `docs/reports/plans/exit_v6_MASTER_otel_evidence.json`
@@ -13,10 +13,10 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Status | Count | Meaning |
 |---|---:|---|
-| **PASS** | 370 | requirement is observed in v6 runtime (passes its validator) |
-| **DESIGN** | 204 | requirement is design-level only (not yet wired into v6 runtime) |
+| **PASS** | 399 | requirement is observed in v6 runtime (passes its validator) |
+| **DESIGN** | 181 | requirement is design-level only (not yet wired into v6 runtime) |
 | **GAP** | 0 | requirement intends a runtime binding but observation does not match spec |
-| **TOTAL** | 574 | requirements across all 14 spec files |
+| **TOTAL** | 580 | requirements across all 14 spec files |
 
 ## Live runtime observations (this probe run)
 
@@ -27,8 +27,8 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
   x3a_disposition                      = DENY
   empty_disposition                    = DENY
   span_catalog_count                   = 40
-  required_attributes_count            = 26
-  v6_module_all_count                  = 85
+  required_attributes_count            = 39
+  v6_module_all_count                  = 93
   return_payload_failure_codes_count   = 10
   determinism_equal                    = True
   permutation_equal                    = True
@@ -53,10 +53,11 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `05_Live_Runtime_Exit_Control_&_Evaluation_exec.md` | 37 | 37 | 0 | 0 |
 | `05_Live_Runtime_Exit_Control_&_Evaluation.md` | 15 | 13 | 2 | 0 |
 | `ADR-065` | 3 | 3 | 0 | 0 |
+| `ADR-067` | 6 | 6 | 0 | 0 |
 | `gap_analysis_v3_vs_industry_2026.md` | 20 | 5 | 15 | 0 |
 | `grader_composition_spec.md` | 54 | 0 | 54 | 0 |
 | `runtime_to_regression_dataset_flow.md` | 48 | 0 | 48 | 0 |
-| `v4_hardening_addendum.md` | 94 | 9 | 85 | 0 |
+| `v4_hardening_addendum.md` | 94 | 32 | 62 | 0 |
 
 ## 05.1_Exit_Input_Normalization_and_Review_Packet.md
 
@@ -103,7 +104,7 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `5.1.OTEL.input.bind_identity` | 398 | Span exit.input.bind_identity emitted | **PASS** | `3529f362b9800718` | exit.input.bind_identity in EXIT_V6_SPAN_CATALOG |
 | `5.1.OTEL.input.preserve_authority_labels` | 399 | Span exit.input.preserve_authority_labels emitted | **PASS** | `0b9575ec5a1eb4e5` | exit.input.preserve_authority_labels in EXIT_V6_SPAN_CATALOG |
 | `5.1.OTEL.input.normalize_review_packet` | 400 | Span exit.input.normalize_review_packet emitted | **PASS** | `fc5b39e4eace41a1` | exit.input.normalize_review_packet in EXIT_V6_SPAN_CATALOG |
-| `5.1.OTEL.required_attrs` | 402-403 | Every span must include request_id, run_id, trace_root, source_type, route_id, policy_hash, bluepri... | **PASS** | `006f2cc294e3d65f` | required_attrs_count=26 |
+| `5.1.OTEL.required_attrs` | 402-403 | Every span must include request_id, run_id, trace_root, source_type, route_id, policy_hash, bluepri... | **PASS** | `006f2cc294e3d65f` | required_attrs_count=39 |
 | `5.1.TR.unknown_source_fails` | 407 | Unknown source type fails closed | **PASS** | `e997795b18ff3bd8` | asserted by spec contract |
 | `5.1.TR.missing_policy_fails` | 408 | Missing policy_hash fails before X1 | **PASS** | `3a3a430af7f9e101` | preflight[policy_hash_missing] emitted POLICY_HASH_MISSING |
 | `5.1.TR.missing_replay_fails` | 409 | Missing replay_key fails before X1 | **PASS** | `b979ba888da8280b` | preflight[replay_key_missing] emitted REPLAY_KEY_MISSING |
@@ -401,8 +402,8 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | Req ID | Source line | Requirement | Status | Span ID | Evidence |
 |---|---|---|:---:|---|---|
 | `5.8.CAT.span_count` | catalog | Canonical OTEL span catalog has 40 spans (39 base + X3F break-glass per ADR-065) | **PASS** | `d3de11d869bbd2bf` | span_count=40 |
-| `5.8.CAT.required_attrs_count` | required-attrs | 26 required OTEL attributes | **PASS** | `5ed7b46e59cdd18a` | required_attrs_count=26 |
-| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=85 |
+| `5.8.CAT.required_attrs_count` | required-attrs | 39 required OTEL attributes (26 base 05.8 + 13 H5 hardening per Wave 2) | **PASS** | `5ed7b46e59cdd18a` | required_attrs_count=39 |
+| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=93 |
 | `5.8.DET.equal_runs` | determinism | Two runs of identical receipts produce equal deterministic digest | **PASS** | `c8c927886cd87cf0` | det_equal=True |
 | `5.8.DET.permutation` | determinism | Receipt-key permutation produces identical digest | **PASS** | `b1462e1dc3e6a960` | perm_equal=True |
 | `5.8.AB.empty_fails_closed` | anti-bypass | Empty input fails closed (DENY) | **PASS** | `6c43eb0b4910e2e3` | empty_disposition=DENY |
@@ -492,6 +493,19 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `H3.RESOLVE.X3F_disposition` | wave-1 | X3F BREAK_GLASS_ALLOW is V6Disposition member with value X3F (resolves H3 X3E divergence) | **PASS** | `d1f15bf8ba9ba727` | V6Disposition.BREAK_GLASS_ALLOW present |
 | `H3.RESOLVE.builder_export` | wave-1 | build_x3f_break_glass_allow exported from v6 package | **PASS** | `6675a228d4fdfa34` | build_x3f_break_glass_allow in v6.__all__ |
 | `H3.RESOLVE.span_in_catalog` | wave-1 | exit.x3f.break_glass_allow_emit is in canonical OTEL catalog | **PASS** | `f15f8f95eece7e26` | exit.x3f.break_glass_allow_emit in EXIT_V6_SPAN_CATALOG |
+
+## ADR-067
+
+`ADR-067` — 6 requirements
+
+| Req ID | Source line | Requirement | Status | Span ID | Evidence |
+|---|---|---|:---:|---|---|
+| `H8.RESOLVE.disposition_map` | wave-2 | FAULT_INJECTION_DISPOSITION_HINT covers all 9 H8 codes | **PASS** | `bcf5bf3480b6cecb` | FAULT_INJECTION_DISPOSITION_HINT in v6.__all__ |
+| `H8.RESOLVE.frozen_set` | wave-2 | FAULT_INJECTION_CODES frozen set for membership tests | **PASS** | `cc0c78b25364e195` | FAULT_INJECTION_CODES in v6.__all__ |
+| `H8.RESOLVE.is_fault_injection_helper` | wave-2 | is_fault_injection_code helper exported | **PASS** | `0b87d5aae57359ce` | is_fault_injection_code in v6.__all__ |
+| `H6.RESOLVE.required_p_helper` | wave-2 | pass_k_required_p inverse helper exported | **PASS** | `a73277d54ffdf435` | pass_k_required_p in v6.__all__ |
+| `H6.RESOLVE.observed_helper` | wave-2 | pass_k_observed forward helper exported | **PASS** | `c8fbaf49fa742ec7` | pass_k_observed in v6.__all__ |
+| `H6.RESOLVE.insufficient_history_constant` | wave-2 | PASS_K_INSUFFICIENT_HISTORY_REASON constant exported | **PASS** | `afd79726180b6c0d` | PASS_K_INSUFFICIENT_HISTORY_REASON in v6.__all__ |
 
 ## gap_analysis_v3_vs_industry_2026.md
 
@@ -677,22 +691,22 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `H4.PROBE.20_per_category` | H4.2 | 20 cases per category in adversarial probe set | **DESIGN** | `2e68879f88aeaa5a` | design-only, no runtime binding |
 | `H4.MULTI_TURN.history_aware` | H4.3 | X1F multi-turn awareness using full history | **DESIGN** | `3b5eef053e6eb1d6` | design-only, no runtime binding |
 | `H5.SPAN.exit_control_gate` | H5.1 | Per-gate span name pattern: v6 uses exit.x1{a..j}.{check_name}; addendum proposes unified exit_cont... | **DESIGN** | `a26799da8d388c95` | v6 emits per-gate-named spans; addendum's unified-name proposal is implementation choice |
-| `H5.ATTR.gate` | H5.1 | Span attr: gate | **DESIGN** | `da83326c2e3b7b17` | design-only, no runtime binding |
-| `H5.ATTR.run_id` | H5.1 | Span attr: run_id | **DESIGN** | `b6533ebce19b1736` | design-only, no runtime binding |
-| `H5.ATTR.track` | H5.1 | Span attr: track | **DESIGN** | `f0720bd3e104d326` | design-only, no runtime binding |
-| `H5.ATTR.trajectory_class` | H5.1 | Span attr: trajectory_class | **DESIGN** | `98df619f8708369e` | design-only, no runtime binding |
-| `H5.ATTR.rubric_version` | H5.1 | Span attr: rubric_version | **DESIGN** | `ab92b4e4986e9061` | design-only, no runtime binding |
-| `H5.ATTR.composition` | H5.1 | Span attr: composition (binary/weighted/hybrid) | **DESIGN** | `4ccd1543cad3cab2` | design-only, no runtime binding |
-| `H5.ATTR.aggregate_score` | H5.1 | Span attr: aggregate_score | **DESIGN** | `62127c85759701b3` | design-only, no runtime binding |
-| `H5.ATTR.aggregate_threshold` | H5.1 | Span attr: aggregate_threshold | **DESIGN** | `173cf50aa31ef2bc` | design-only, no runtime binding |
-| `H5.ATTR.passed` | H5.1 | Span attr: passed | **DESIGN** | `3980628a45e41b4b` | design-only, no runtime binding |
-| `H5.ATTR.abstain` | H5.1 | Span attr: abstain | **DESIGN** | `786cafc44b6c9d68` | design-only, no runtime binding |
-| `H5.ATTR.disposition_hint` | H5.1 | Span attr: disposition_hint | **DESIGN** | `b19a49935b7dfe67` | design-only, no runtime binding |
-| `H5.ATTR.reason_codes` | H5.1 | Span attr: reason_codes | **DESIGN** | `3834de487801abba` | design-only, no runtime binding |
-| `H5.ATTR.bypass_audit_id` | H5.1 | Span attr: bypass_audit_id | **DESIGN** | `c645368895b2beea` | design-only, no runtime binding |
+| `H5.ATTR.gate` | H5.1 | Span attr: gate | **PASS** | `da83326c2e3b7b17` | gate in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.run_id` | H5.1 | Span attr: run_id | **PASS** | `b6533ebce19b1736` | run_id in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.track` | H5.1 | Span attr: track | **PASS** | `f0720bd3e104d326` | track in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.trajectory_class` | H5.1 | Span attr: trajectory_class | **PASS** | `98df619f8708369e` | trajectory_class in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.rubric_version` | H5.1 | Span attr: rubric_version | **PASS** | `ab92b4e4986e9061` | rubric_version in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.composition` | H5.1 | Span attr: composition (binary/weighted/hybrid) | **PASS** | `4ccd1543cad3cab2` | composition in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.aggregate_score` | H5.1 | Span attr: aggregate_score | **PASS** | `62127c85759701b3` | aggregate_score in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.aggregate_threshold` | H5.1 | Span attr: aggregate_threshold | **PASS** | `173cf50aa31ef2bc` | aggregate_threshold in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.passed` | H5.1 | Span attr: passed | **PASS** | `3980628a45e41b4b` | passed in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.abstain` | H5.1 | Span attr: abstain | **PASS** | `786cafc44b6c9d68` | abstain in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.disposition_hint` | H5.1 | Span attr: disposition_hint | **PASS** | `b19a49935b7dfe67` | disposition_hint in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.reason_codes` | H5.1 | Span attr: reason_codes | **PASS** | `3834de487801abba` | reason_codes in REQUIRED_ATTRIBUTES |
+| `H5.ATTR.bypass_audit_id` | H5.1 | Span attr: bypass_audit_id | **PASS** | `c645368895b2beea` | bypass_audit_id in REQUIRED_ATTRIBUTES |
 | `H5.SPAN.disposition_links_x1` | H5.2 | X3 disposition span links to X1 spans | **DESIGN** | `e6828bef9fbbdf4b` | design-only, no runtime binding |
 | `H5.RUNTIME_ADG_INGEST` | H5.3 | Spans ingested by otel_ingest_to_runtime_adg | **DESIGN** | `f0a88c4e76259ca2` | design-only, no runtime binding |
-| `H6.MATH.threshold_table` | H6.1 | Per-trial reliability table (theta=0.95 k=5 -> p~=0.9898) | **DESIGN** | `e11850431a1f8e76` | design-only, no runtime binding |
+| `H6.MATH.threshold_table` | H6.1 | Per-trial reliability table (theta=0.95 k=5 -> p~=0.9898) - Wave 2 codified in hardening.PASS_K_THR... | **PASS** | `e11850431a1f8e76` | PASS_K_THRESHOLD_TABLE in v6.__all__ |
 | `H6.OP.deny_path_early` | H6.2 | X1G routes commit candidates to X3B early | **DESIGN** | `53fd8fdedb7611be` | design-only, no runtime binding |
 | `H6.NON_IID.bucket_reset` | H6.3 | Bucket reset on (trajectory_class, rubric_version, agent_version, policy_version) change | **DESIGN** | `4d72b6ee76b3d338` | design-only, no runtime binding |
 | `H6.SMALL_SAMPLE.X3B_route` | H6.4 | Small-sample (<k) routes to X3B with INSUFFICIENT_HISTORY | **DESIGN** | `fa2199ebd6ec83fa` | design-only, no runtime binding |
@@ -707,15 +721,15 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `H7.AUTO.threshold_loosening_justified` | H7.2 | Auto-check: threshold loosening requires written justification | **DESIGN** | `f698a4f0cfa199c3` | design-only, no runtime binding |
 | `H7.AUTO.dimension_removal_adr` | H7.2 | Auto-check: dimension removal requires ADR | **DESIGN** | `617a34784832c391` | design-only, no runtime binding |
 | `H7.SHADOW.1week_or_500` | H7.3 | New rubric versions shadow-deploy 1 week / 500 runs, <=5% disagreement | **DESIGN** | `1170654f05e4e963` | design-only, no runtime binding |
-| `H8.FM.judge_timeout` | H8 | Judge timeout -> abstain + X3B + JUDGE_TIMEOUT | **DESIGN** | `af564c1627328165` | design-only, no runtime binding |
-| `H8.FM.judge_4xx_5xx` | H8 | Judge 4xx/5xx -> abstain + X3B + JUDGE_ERROR | **DESIGN** | `44db51d9677a702d` | design-only, no runtime binding |
-| `H8.FM.code_grader_exception` | H8 | Code grader exception -> X3A + GRADER_EXCEPTION | **DESIGN** | `c5b5c4e462314301` | design-only, no runtime binding |
-| `H8.FM.rubric_corrupt` | H8 | Rubric corrupt -> X3A + RUBRIC_UNAVAILABLE + page on-call | **DESIGN** | `f68e5ee2b30fb820` | design-only, no runtime binding |
-| `H8.FM.bus_p_write_failure` | H8 | BUS P write failure -> X3B + AUDIT_UNAVAILABLE | **DESIGN** | `c5b4ad54f7afeaa1` | design-only, no runtime binding |
-| `H8.FM.bus_t_write_failure` | H8 | BUS T write failure -> X3B + AUDIT_UNAVAILABLE | **DESIGN** | `1b6591ffa6ebdd92` | design-only, no runtime binding |
-| `H8.FM.x1g_history_unavailable` | H8 | X1G history unavailable -> X3B + CONSISTENCY_HISTORY_UNAVAILABLE | **DESIGN** | `6a6ff09f709bcae8` | design-only, no runtime binding |
-| `H8.FM.uwg_unavailable` | H8 | UWG unavailable -> freeze + X3B + COMMIT_UNAVAILABLE | **DESIGN** | `d164975e8c24f4f2` | design-only, no runtime binding |
-| `H8.FM.l5_reclear_failure` | H8 | L5 reclear failure -> FROZEN hold + page on-call | **DESIGN** | `1bfb8983f82b7390` | design-only, no runtime binding |
+| `H8.FM.judge_timeout` | H8 | Judge timeout -> abstain + X3B + JUDGE_TIMEOUT | **PASS** | `af564c1627328165` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.judge_4xx_5xx` | H8 | Judge 4xx/5xx -> abstain + X3B + JUDGE_ERROR | **PASS** | `44db51d9677a702d` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.code_grader_exception` | H8 | Code grader exception -> X3A + GRADER_EXCEPTION | **PASS** | `c5b5c4e462314301` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.rubric_corrupt` | H8 | Rubric corrupt -> X3A + RUBRIC_UNAVAILABLE + page on-call | **PASS** | `f68e5ee2b30fb820` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.bus_p_write_failure` | H8 | BUS P write failure -> X3B + AUDIT_UNAVAILABLE | **PASS** | `c5b4ad54f7afeaa1` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.bus_t_write_failure` | H8 | BUS T write failure -> X3B + AUDIT_UNAVAILABLE | **PASS** | `1b6591ffa6ebdd92` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.x1g_history_unavailable` | H8 | X1G history unavailable -> X3B + CONSISTENCY_HISTORY_UNAVAILABLE | **PASS** | `6a6ff09f709bcae8` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.uwg_unavailable` | H8 | UWG unavailable -> freeze + X3B + COMMIT_UNAVAILABLE | **PASS** | `d164975e8c24f4f2` | FaultInjectionReasonCode in v6.__all__ |
+| `H8.FM.l5_reclear_failure` | H8 | L5 reclear failure -> FROZEN hold + page on-call (L5_RECLEARANCE_UNAVAILABLE) | **PASS** | `1bfb8983f82b7390` | FaultInjectionReasonCode in v6.__all__ |
 | `H9.STEP.triage` | H9.1 | Step 1: triage gate / trajectory_class / track via otel_mcp | **DESIGN** | `18c3c444d002e6fb` | design-only, no runtime binding |
 | `H9.STEP.policy_change` | H9.2 | Step 2: check policy / rubric-version bump; rollback if regressed | **DESIGN** | `33ebf11322d6b5b3` | design-only, no runtime binding |
 | `H9.STEP.agent_change` | H9.3 | Step 3: check agent_version bucket reset | **DESIGN** | `9a8435a70539fb74` | design-only, no runtime binding |

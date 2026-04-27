@@ -13,6 +13,16 @@ see plan ``exit-eval-v6-gaps-d7a3f1.md``.
 
 from __future__ import annotations
 
+from agentic_core.L3_orchestration.exit_eval.v6.hardening import (
+    FAULT_INJECTION_CODES,
+    FAULT_INJECTION_DISPOSITION_HINT,
+    PASS_K_INSUFFICIENT_HISTORY_REASON,
+    PASS_K_THRESHOLD_TABLE,
+    FaultInjectionReasonCode,
+    is_fault_injection_code,
+    pass_k_observed,
+    pass_k_required_p,
+)
 from agentic_core.L3_orchestration.exit_eval.v6.hitl import (
     H1_FREEZE_FIELDS,
     FreezeReceipt,
@@ -219,4 +229,13 @@ __all__ = [
     "ExitEvalPipeline",
     "ExitEvalResult",
     "run_exit_eval",
+    # hardening (Wave 2: H5/H6/H8)
+    "FAULT_INJECTION_CODES",
+    "FAULT_INJECTION_DISPOSITION_HINT",
+    "PASS_K_INSUFFICIENT_HISTORY_REASON",
+    "PASS_K_THRESHOLD_TABLE",
+    "FaultInjectionReasonCode",
+    "is_fault_injection_code",
+    "pass_k_observed",
+    "pass_k_required_p",
 ]

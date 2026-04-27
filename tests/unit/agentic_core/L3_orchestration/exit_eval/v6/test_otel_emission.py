@@ -72,8 +72,11 @@ def test_catalog_covers_every_spec_listed_span():
 
 
 def test_required_attributes_match_spec():
-    """Spec §5.8 REQUIRED TRACE ATTRIBUTES — every Exit span must include these keys."""
-    expected = {
+    """Spec §5.8 + v4_hardening §H5.1 REQUIRED TRACE ATTRIBUTES.
+
+    Base 26 from 05.8 + 13 H5 hardening attrs added by Wave 2 deferred-scope.
+    """
+    base_05_8 = {
         "trace_id",
         "span_id",
         "parent_span_id",
@@ -101,7 +104,26 @@ def test_required_attributes_match_spec():
         "latency_ms",
         "deterministic_digest",
     }
-    assert expected == set(REQUIRED_ATTRIBUTES)
+    h5_hardening = {
+        "gate",
+        "track",
+        "trajectory_class",
+        "rubric_version",
+        "composition",
+        "aggregate_score",
+        "aggregate_threshold",
+        "passed",
+        "abstain",
+        "disposition_hint",
+        "bypass_audit_id",
+        "grader_class",
+        "rubric_id",
+    }
+    expected = base_05_8 | h5_hardening
+    assert expected == set(REQUIRED_ATTRIBUTES), (
+        f"missing: {expected - set(REQUIRED_ATTRIBUTES)}; "
+        f"extra: {set(REQUIRED_ATTRIBUTES) - expected}"
+    )
 
 
 def test_unknown_span_name_rejected():

@@ -174,6 +174,22 @@ REQUIRED_ATTRIBUTES: tuple[str, ...] = (
     "reason_codes",
     "latency_ms",
     "deterministic_digest",
+    # v4_hardening §H5.1 — per-gate span attributes (Wave 2 of deferred-scope)
+    # These extend the base 26 with the addendum-mandated 13 hardening attributes
+    # so dashboards / runtime ADG ingest / SLO panels can group by them.
+    "gate",
+    "track",  # capability | regression | production | shadow-candidate
+    "trajectory_class",
+    "rubric_version",
+    "composition",  # binary | weighted | hybrid
+    "aggregate_score",
+    "aggregate_threshold",
+    "passed",
+    "abstain",
+    "disposition_hint",  # X3A | X3B | X3C_pending | X3D
+    "bypass_audit_id",  # links to H3 break-glass row when applicable
+    "grader_class",  # code_based | model_based | human-calibrated
+    "rubric_id",
 )
 
 
