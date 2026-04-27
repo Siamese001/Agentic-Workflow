@@ -185,6 +185,21 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="router_l4_uwg",
+        purpose=(
+            "L4/uwg router (DurableWriteGateway.commit) commit/blocked decisions — "
+            "validation/lock-contention/happy-path attribution per constitutional §29 row #7."
+        ),
+        schema_file="router_l4_uwg_ledger.schema.sql",
+        writer_hook="agentic_core/L4_state/uwg/durable_write_gateway.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l4-uwg/SKILL.md",
+        wave="W5.7",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
         name="router_l0_ensemble",
         purpose=(
             "L0/ensemble router (EnsembleRouter.route + update_outcome) ensemble decisions — "

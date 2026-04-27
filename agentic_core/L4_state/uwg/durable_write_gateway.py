@@ -253,7 +253,15 @@ class DurableWriteGateway:
 
         Returns ``(commit_receipt, blocked_receipt, refresh_receipts)``.
         Exactly one of ``commit_receipt`` / ``blocked_receipt`` is non-None.
+
+        W5.7 (closed-loop-router-fleet-rollout-d8f2a3 NEXT_STEP): every
+        commit/blocked verdict is durably recorded to router_l4_uwg ledger
+        with stage attribution (validation / lock_contention / happy-path).
+        Fail-soft.
         """
+        import time as _time  # noqa: PLC0415
+
+        _t_start = _time.time()
         emit_uwg_span(
             "uwg.commit.request_received",
             policy_hash=commit_request.policy_hash,
@@ -290,6 +298,17 @@ class DurableWriteGateway:
         validation = self._validate(commit_request, state_diffs, rollback_plan, refresh_plan)
         if validation.validation_status == "FAIL":
             blocked = self._emit_blocked(commit_request, validation)
+            _record_uwg_decision(
+                commit_request=commit_request,
+                state_diffs=state_diffs,
+                validation_status=validation.validation_status,
+                block_stage="validation",
+                commit_receipt=None,
+                blocked_receipt=blocked,
+                refresh_receipts=[],
+                latency_ms=int((_time.time() - _t_start) * 1000.0),
+                snapshot_after=None,
+            )
             return (None, blocked, [])
 
         # Stage 5: write lock
@@ -313,6 +332,17 @@ class DurableWriteGateway:
                     failed_rules=tuple(validation.failed_rules) + ("write_lock_contention",),
                     reason_codes=tuple(validation.reason_codes) + ("write_lock_contention",),
                 ),
+            )
+            _record_uwg_decision(
+                commit_request=commit_request,
+                state_diffs=state_diffs,
+                validation_status=validation.validation_status,
+                block_stage="lock_contention",
+                commit_receipt=None,
+                blocked_receipt=blocked,
+                refresh_receipts=[],
+                latency_ms=int((_time.time() - _t_start) * 1000.0),
+                snapshot_after=None,
             )
             return (None, blocked, [])
 
@@ -386,6 +416,17 @@ class DurableWriteGateway:
             )
             bound_plan = stamp_digest(bound_plan)
             refresh_receipts = self._refresh.execute(plan=bound_plan, commit_receipt=commit_receipt)
+            _record_uwg_decision(
+                commit_request=commit_request,
+                state_diffs=state_diffs,
+                validation_status=validation.validation_status,
+                block_stage="",
+                commit_receipt=commit_receipt,
+                blocked_receipt=None,
+                refresh_receipts=refresh_receipts,
+                latency_ms=int((_time.time() - _t_start) * 1000.0),
+                snapshot_after=snapshot_after,
+            )
             return (commit_receipt, None, refresh_receipts)
         finally:
             self._lock_mgr.release(target_surfaces=target_surfaces, owner=lock_owner)
@@ -685,6 +726,105 @@ def reset_default_gateway() -> None:
     global _DEFAULT_GATEWAY  # noqa: PLW0603
     with _DEFAULT_LOCK:
         _DEFAULT_GATEWAY = DurableWriteGateway()
+
+
+# =====================================================================
+# Constitutional §29 — closed-loop wiring (W5.7)
+# =====================================================================
+import logging as _logging  # noqa: E402  -- module-bottom helpers
+
+_UWG_LOGGER = _logging.getLogger(__name__)
+_UWG_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_uwg_helper():
+    """Lazy singleton for the L4/uwg RouterClosedLoopHelper."""
+    global _UWG_HELPER  # noqa: PLW0603
+    if _UWG_HELPER is not None:
+        return _UWG_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _UWG_HELPER = RouterClosedLoopHelper(
+            layer="L4",
+            router="uwg",
+            ledger_name="router_l4_uwg",
+            repo_area="agentic_core/L4_state/uwg/durable_write_gateway.py",
+        )
+        return _UWG_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break UWG commit pipeline
+        _UWG_LOGGER.debug("RouterClosedLoopHelper unavailable for L4/uwg", exc_info=True)
+        return None
+
+
+def _record_uwg_decision(
+    *,
+    commit_request: CommitRequest,
+    state_diffs: List[StateDiff],
+    validation_status: str,
+    block_stage: str,
+    commit_receipt: Optional[UWGCommitReceipt],
+    blocked_receipt: Optional[UWGBlockedCommitReceipt],
+    refresh_receipts: List,
+    latency_ms: int,
+    snapshot_after: Optional[str],
+) -> None:
+    """Record commit/blocked verdict + bind outcome in one shot.
+
+    UWG's commit() returns synchronously after the full pipeline executes,
+    so the outcome is known at decision-emission time. We use the
+    decision-and-outcome-in-one-shot pattern (same shape as L0/agentic and
+    L6/promo). Fail-soft: any helper failure is swallowed so the commit
+    pipeline is never broken by telemetry.
+    """
+    helper = _get_uwg_helper()
+    if helper is None:
+        return
+    try:
+        success = commit_receipt is not None
+        selected = "commit" if success else "blocked"
+        target_surfaces = tuple(commit_request.affected_state_surfaces) or tuple(
+            sd.target_surface for sd in state_diffs
+        )
+        # Heuristic prior: validation expected pass at request-receive time
+        # since callers should pre-check; lower prior on a pre-failed request.
+        predicted_p = 1.0 if validation_status == "PASS" else 0.5
+        eu_score = 1.0 if success else 0.0
+
+        handle = helper.record_decision(
+            selected=selected,
+            cell={
+                "source_surface": str(commit_request.source_surface or "unknown"),
+                "blast_radius": str(commit_request.blast_radius or "unknown"),
+            },
+            predicted_p_success=predicted_p,
+            eu_score=eu_score,
+            decision_id=str(commit_request.commit_request_id),
+            prediction_extras={
+                "validation_status": str(validation_status),
+                "block_stage": str(block_stage),
+                "n_state_diffs": int(len(state_diffs)),
+                "n_target_surfaces": int(len(target_surfaces)),
+                "tenant_id": str(commit_request.tenant_id or ""),
+            },
+        )
+        helper.bind_outcome(
+            handle,
+            success=success,
+            latency_ms=int(latency_ms),
+            outcome_extras={
+                "commit_receipt_id": (
+                    commit_receipt.commit_receipt_id if commit_receipt else None
+                ),
+                "blocked_receipt_id": (
+                    blocked_receipt.blocked_commit_receipt_id if blocked_receipt else None
+                ),
+                "n_refresh_receipts": int(len(refresh_receipts)),
+                "snapshot_after": snapshot_after,
+            },
+        )
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; UWG commit must never break
+        _UWG_LOGGER.debug("durable_write_gateway ledger emit failed", exc_info=True)
 
 
 __all__ = [
