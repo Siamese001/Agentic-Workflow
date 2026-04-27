@@ -5888,7 +5888,7 @@
     "req_id": "PA8_RULE::C0",
     "stage": "PA.8",
     "category": "PA8_RULES",
-    "requirement": "PA.8 rule `C0`: C0/tool/human text are data-only slots",
+    "requirement": "PA.8 rule `C0`: C0/tool/human text are data-only slots (instructions never promoted)",
     "status": "PASS",
     "evidence": {
       "rule_keyword": "C0",
@@ -5901,7 +5901,7 @@
     "req_id": "PA8_RULE::R0",
     "stage": "PA.8",
     "category": "PA8_RULES",
-    "requirement": "PA.8 rule `R0`: R0 schema is bound to provider-native fields",
+    "requirement": "PA.8 rule `R0`: R0 schema is bound to provider-native fields, not merely prose",
     "status": "PASS",
     "evidence": {
       "rule_keyword": "R0",
@@ -5927,7 +5927,7 @@
     "req_id": "PA8_RULE::Token",
     "stage": "PA.8",
     "category": "PA8_RULES",
-    "requirement": "PA.8 rule `Token`: Token trimming must never drop S0/D0/required policy refs/R0",
+    "requirement": "PA.8 rule `Token`: Token trimming must never drop S0/D0/required policy refs/R0 binding",
     "status": "PASS",
     "evidence": {
       "rule_keyword": "Token",
@@ -6262,7 +6262,7 @@
     "req_id": "PARSER_EDGE::asterisk_marker",
     "stage": "PARENT",
     "category": "PARSER_EDGE_HARDENING",
-    "requirement": "PARSER_EDGE/asterisk_marker: Asterisk-style bullets are captured",
+    "requirement": "PARSER_EDGE/asterisk_marker: Asterisk-style bullets are captured (mixed marker tolerance)",
     "status": "PASS",
     "evidence": {
       "case": "asterisk_marker",
@@ -6277,7 +6277,7 @@
         "Star1",
         "Star2"
       ],
-      "description": "Asterisk-style bullets are captured"
+      "description": "Asterisk-style bullets are captured (mixed marker tolerance)"
     }
   },
   {
