@@ -19,15 +19,16 @@ Runtime artifacts being verified:
 - `agentic_core/prompt_governance/prompt_assembly/doctrine_receipts.py`
 - `agentic_core/prompt_governance/prompt_assembly/pipeline.py`
 
-**Tally:** 240 PASS / 0 FAIL (of 240 requirements)
+**Tally:** 387 PASS / 0 FAIL (of 387 requirements)
 
-**Generated:** 2026-04-26T18:42:20.988111+00:00
+**Generated:** 2026-04-27T00:58:59.469203+00:00
 
 ## Category roll-up
 
 | Category | Total | PASS | FAIL |
 |---|---:|---:|---:|
 | AGGREGATION | 5 | 5 | 0 |
+| CHILD_FORBID_DOCTRINE | 24 | 24 | 0 |
 | DETERMINISM | 8 | 8 | 0 |
 | DOCTRINE_DRIFT | 16 | 16 | 0 |
 | E2E | 4 | 4 | 0 |
@@ -36,8 +37,14 @@ Runtime artifacts being verified:
 | FORBID_RD | 24 | 24 | 0 |
 | INVARIANT | 12 | 12 | 0 |
 | MUST_EMIT | 48 | 48 | 0 |
+| MUST_NOT_DOCTRINE | 72 | 72 | 0 |
 | MUST_NOT_FENCE | 11 | 11 | 0 |
 | NEGATIVE_PATH | 36 | 36 | 0 |
+| PA8_CONTRACTS | 13 | 13 | 0 |
+| PA8_RULES | 4 | 4 | 0 |
+| PA8_TESTS | 7 | 7 | 0 |
+| PARENT_VOCAB | 20 | 20 | 0 |
+| PARSER_EDGE_HARDENING | 7 | 7 | 0 |
 | PARSER_ROBUSTNESS | 5 | 5 | 0 |
 | PIPELINE_NEG | 3 | 3 | 0 |
 | SLOT_MAP | 11 | 11 | 0 |
@@ -53,6 +60,35 @@ Runtime artifacts being verified:
 | 3 | PARENT | `AGG::all_ready` | All-PA_READY receipt list aggregates to PA_READY | **PASS** | `{"result": "PA_READY"}` |
 | 4 | PARENT | `AGG::worst_wins` | Mixed-status input does NOT aggregate to PA_READY | **PASS** | `{"result": "PA_BUDGET_OVERFLOW", "non_ready": true}` |
 | 5 | PARENT | `AGG::deterministic` | Aggregator is deterministic on identical input | **PASS** | `{"first": "PA_BUDGET_TRIMMED", "second": "PA_BUDGET_TRIMMED"}` |
+
+## CHILD_FORBID_DOCTRINE
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PA.0 | `CHILD_FORBID::PA.0::parsed` | PA.0 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.0", "parsed_count": 22, "parent_master_count": 22}` |
+| 2 | PA.0 | `CHILD_FORBID::PA.0::subset_of_parent` | PA.0 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.0", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 3 | PA.0 | `CHILD_FORBID::PA.0::no_silent_drop` | PA.0 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.0", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
+| 4 | PA.1 | `CHILD_FORBID::PA.1::parsed` | PA.1 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.1", "parsed_count": 22, "parent_master_count": 22}` |
+| 5 | PA.1 | `CHILD_FORBID::PA.1::subset_of_parent` | PA.1 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.1", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 6 | PA.1 | `CHILD_FORBID::PA.1::no_silent_drop` | PA.1 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.1", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
+| 7 | PA.2 | `CHILD_FORBID::PA.2::parsed` | PA.2 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.2", "parsed_count": 22, "parent_master_count": 22}` |
+| 8 | PA.2 | `CHILD_FORBID::PA.2::subset_of_parent` | PA.2 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.2", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 9 | PA.2 | `CHILD_FORBID::PA.2::no_silent_drop` | PA.2 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.2", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
+| 10 | PA.3 | `CHILD_FORBID::PA.3::parsed` | PA.3 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.3", "parsed_count": 22, "parent_master_count": 22}` |
+| 11 | PA.3 | `CHILD_FORBID::PA.3::subset_of_parent` | PA.3 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.3", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 12 | PA.3 | `CHILD_FORBID::PA.3::no_silent_drop` | PA.3 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.3", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
+| 13 | PA.4 | `CHILD_FORBID::PA.4::parsed` | PA.4 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.4", "parsed_count": 22, "parent_master_count": 22}` |
+| 14 | PA.4 | `CHILD_FORBID::PA.4::subset_of_parent` | PA.4 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.4", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 15 | PA.4 | `CHILD_FORBID::PA.4::no_silent_drop` | PA.4 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.4", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
+| 16 | PA.5 | `CHILD_FORBID::PA.5::parsed` | PA.5 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.5", "parsed_count": 22, "parent_master_count": 22}` |
+| 17 | PA.5 | `CHILD_FORBID::PA.5::subset_of_parent` | PA.5 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.5", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 18 | PA.5 | `CHILD_FORBID::PA.5::no_silent_drop` | PA.5 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.5", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
+| 19 | PA.6 | `CHILD_FORBID::PA.6::parsed` | PA.6 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.6", "parsed_count": 22, "parent_master_count": 22}` |
+| 20 | PA.6 | `CHILD_FORBID::PA.6::subset_of_parent` | PA.6 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.6", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 21 | PA.6 | `CHILD_FORBID::PA.6::no_silent_drop` | PA.6 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.6", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
+| 22 | PA.7 | `CHILD_FORBID::PA.7::parsed` | PA.7 forbidden-outputs block parses at least one token | **PASS** | `{"stage": "PA.7", "parsed_count": 22, "parent_master_count": 22}` |
+| 23 | PA.7 | `CHILD_FORBID::PA.7::subset_of_parent` | PA.7 forbidden tokens are subset of parent master set | **PASS** | `{"stage": "PA.7", "parsed_count": 22, "parent_master_count": 22, "unknown_tokens": []}` |
+| 24 | PA.7 | `CHILD_FORBID::PA.7::no_silent_drop` | PA.7 inherits every parent forbidden token (no silent drop) | **PASS** | `{"stage": "PA.7", "parsed_count": 22, "parent_master_count": 22, "missing_from_child": []}` |
 
 ## DETERMINISM
 
@@ -216,6 +252,83 @@ Runtime artifacts being verified:
 | 47 | PA.7 | `EMIT::PA.7::l2_handoff_envelope` | PA.7 receipt emits doctrine output `l2_handoff_envelope` | **PASS** | `{"doctrine_field": "l2_handoff_envelope", "present_in_receipt": true, "match_kind": "direct", "matched_via_aliases": [], "receipt_keys": …` |
 | 48 | PA.7 | `EMIT::PA.7::final_artifact_gap_report` | PA.7 receipt emits doctrine output `final_artifact_gap_report` | **PASS** | `{"doctrine_field": "final_artifact_gap_report", "present_in_receipt": true, "match_kind": "direct", "matched_via_aliases": [], "receipt_k…` |
 
+## MUST_NOT_DOCTRINE
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PA.0 | `MUST_NOT::PA.0::parsed` | PA.0 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.0", "parsed_count": 8}` |
+| 2 | PA.0 | `MUST_NOT::PA.0::retrieve` | PA.0 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 3 | PA.0 | `MUST_NOT::PA.0::route` | PA.0 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 4 | PA.0 | `MUST_NOT::PA.0::call` | PA.0 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 5 | PA.0 | `MUST_NOT::PA.0::execute` | PA.0 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 6 | PA.0 | `MUST_NOT::PA.0::approve` | PA.0 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 7 | PA.0 | `MUST_NOT::PA.0::commit` | PA.0 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 8 | PA.0 | `MUST_NOT::PA.0::emit` | PA.0 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 9 | PA.0 | `MUST_NOT::PA.0::silently` | PA.0 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+| 10 | PA.1 | `MUST_NOT::PA.1::parsed` | PA.1 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.1", "parsed_count": 8}` |
+| 11 | PA.1 | `MUST_NOT::PA.1::retrieve` | PA.1 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 12 | PA.1 | `MUST_NOT::PA.1::route` | PA.1 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 13 | PA.1 | `MUST_NOT::PA.1::call` | PA.1 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 14 | PA.1 | `MUST_NOT::PA.1::execute` | PA.1 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 15 | PA.1 | `MUST_NOT::PA.1::approve` | PA.1 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 16 | PA.1 | `MUST_NOT::PA.1::commit` | PA.1 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 17 | PA.1 | `MUST_NOT::PA.1::emit` | PA.1 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 18 | PA.1 | `MUST_NOT::PA.1::silently` | PA.1 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+| 19 | PA.2 | `MUST_NOT::PA.2::parsed` | PA.2 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.2", "parsed_count": 8}` |
+| 20 | PA.2 | `MUST_NOT::PA.2::retrieve` | PA.2 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 21 | PA.2 | `MUST_NOT::PA.2::route` | PA.2 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 22 | PA.2 | `MUST_NOT::PA.2::call` | PA.2 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 23 | PA.2 | `MUST_NOT::PA.2::execute` | PA.2 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 24 | PA.2 | `MUST_NOT::PA.2::approve` | PA.2 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 25 | PA.2 | `MUST_NOT::PA.2::commit` | PA.2 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 26 | PA.2 | `MUST_NOT::PA.2::emit` | PA.2 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 27 | PA.2 | `MUST_NOT::PA.2::silently` | PA.2 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+| 28 | PA.3 | `MUST_NOT::PA.3::parsed` | PA.3 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.3", "parsed_count": 8}` |
+| 29 | PA.3 | `MUST_NOT::PA.3::retrieve` | PA.3 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 30 | PA.3 | `MUST_NOT::PA.3::route` | PA.3 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 31 | PA.3 | `MUST_NOT::PA.3::call` | PA.3 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 32 | PA.3 | `MUST_NOT::PA.3::execute` | PA.3 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 33 | PA.3 | `MUST_NOT::PA.3::approve` | PA.3 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 34 | PA.3 | `MUST_NOT::PA.3::commit` | PA.3 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 35 | PA.3 | `MUST_NOT::PA.3::emit` | PA.3 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 36 | PA.3 | `MUST_NOT::PA.3::silently` | PA.3 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+| 37 | PA.4 | `MUST_NOT::PA.4::parsed` | PA.4 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.4", "parsed_count": 8}` |
+| 38 | PA.4 | `MUST_NOT::PA.4::retrieve` | PA.4 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 39 | PA.4 | `MUST_NOT::PA.4::route` | PA.4 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 40 | PA.4 | `MUST_NOT::PA.4::call` | PA.4 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 41 | PA.4 | `MUST_NOT::PA.4::execute` | PA.4 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 42 | PA.4 | `MUST_NOT::PA.4::approve` | PA.4 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 43 | PA.4 | `MUST_NOT::PA.4::commit` | PA.4 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 44 | PA.4 | `MUST_NOT::PA.4::emit` | PA.4 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 45 | PA.4 | `MUST_NOT::PA.4::silently` | PA.4 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+| 46 | PA.5 | `MUST_NOT::PA.5::parsed` | PA.5 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.5", "parsed_count": 8}` |
+| 47 | PA.5 | `MUST_NOT::PA.5::retrieve` | PA.5 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 48 | PA.5 | `MUST_NOT::PA.5::route` | PA.5 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 49 | PA.5 | `MUST_NOT::PA.5::call` | PA.5 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 50 | PA.5 | `MUST_NOT::PA.5::execute` | PA.5 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 51 | PA.5 | `MUST_NOT::PA.5::approve` | PA.5 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 52 | PA.5 | `MUST_NOT::PA.5::commit` | PA.5 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 53 | PA.5 | `MUST_NOT::PA.5::emit` | PA.5 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 54 | PA.5 | `MUST_NOT::PA.5::silently` | PA.5 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+| 55 | PA.6 | `MUST_NOT::PA.6::parsed` | PA.6 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.6", "parsed_count": 8}` |
+| 56 | PA.6 | `MUST_NOT::PA.6::retrieve` | PA.6 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 57 | PA.6 | `MUST_NOT::PA.6::route` | PA.6 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 58 | PA.6 | `MUST_NOT::PA.6::call` | PA.6 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 59 | PA.6 | `MUST_NOT::PA.6::execute` | PA.6 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 60 | PA.6 | `MUST_NOT::PA.6::approve` | PA.6 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 61 | PA.6 | `MUST_NOT::PA.6::commit` | PA.6 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 62 | PA.6 | `MUST_NOT::PA.6::emit` | PA.6 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 63 | PA.6 | `MUST_NOT::PA.6::silently` | PA.6 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+| 64 | PA.7 | `MUST_NOT::PA.7::parsed` | PA.7 MUST NOT block parses at least one keyword | **PASS** | `{"stage": "PA.7", "parsed_count": 8}` |
+| 65 | PA.7 | `MUST_NOT::PA.7::retrieve` | PA.7 MUST NOT `retrieve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "retrieve", "mapped_to": ["call_provider", "execute_tool"], "covered_by_parent_master": ["call_provider", "execute_tool"]}` |
+| 66 | PA.7 | `MUST_NOT::PA.7::route` | PA.7 MUST NOT `route` maps to runtime forbidden tokens | **PASS** | `{"keyword": "route", "mapped_to": ["REROUTE"], "covered_by_parent_master": ["REROUTE"]}` |
+| 67 | PA.7 | `MUST_NOT::PA.7::call` | PA.7 MUST NOT `call` maps to runtime forbidden tokens | **PASS** | `{"keyword": "call", "mapped_to": ["call_provider"], "covered_by_parent_master": ["call_provider"]}` |
+| 68 | PA.7 | `MUST_NOT::PA.7::execute` | PA.7 MUST NOT `execute` maps to runtime forbidden tokens | **PASS** | `{"keyword": "execute", "mapped_to": ["approve_execution", "execute_tool"], "covered_by_parent_master": ["approve_execution", "execute_too…` |
+| 69 | PA.7 | `MUST_NOT::PA.7::approve` | PA.7 MUST NOT `approve` maps to runtime forbidden tokens | **PASS** | `{"keyword": "approve", "mapped_to": ["approve_execution", "approve_output", "approve_write"], "covered_by_parent_master": ["approve_execu…` |
+| 70 | PA.7 | `MUST_NOT::PA.7::commit` | PA.7 MUST NOT `commit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "commit", "mapped_to": ["COMMIT_REQUEST", "approve_write", "mutate_l4"], "covered_by_parent_master": ["COMMIT_REQUEST", "appr…` |
+| 71 | PA.7 | `MUST_NOT::PA.7::emit` | PA.7 MUST NOT `emit` maps to runtime forbidden tokens | **PASS** | `{"keyword": "emit", "mapped_to": ["ALLOW", "ALLOW_FINISH", "BLOCK_COMMIT", "COMMIT_REQUEST", "DENY", "ESCALATE_HITL", "REROUTE"], "covere…` |
+| 72 | PA.7 | `MUST_NOT::PA.7::silently` | PA.7 MUST NOT `silently` maps to runtime forbidden tokens | **PASS** | `{"keyword": "silently", "mapped_to": ["MARK_DEGRADED", "SAFE_FALLBACK"], "covered_by_parent_master": ["MARK_DEGRADED", "SAFE_FALLBACK"]}` |
+
 ## MUST_NOT_FENCE
 
 | # | Stage | ID | Requirement | Status | Evidence (truncated) |
@@ -272,6 +385,82 @@ Runtime artifacts being verified:
 | 34 | PA.7 | `NEG::PA.7::PA_L2_HANDOFF_READY` | PA.7 aggregator round-trips PA_L2_HANDOFF_READY | **PASS** | `{"stage": "PA.7", "input_status": "PA_L2_HANDOFF_READY", "aggregated_status": "PA_L2_HANDOFF_READY", "round_trip": true}` |
 | 35 | PA.7 | `NEG::PA.7::PA_MANIFEST_HASH_GAP` | PA.7 aggregator round-trips PA_MANIFEST_HASH_GAP | **PASS** | `{"stage": "PA.7", "input_status": "PA_MANIFEST_HASH_GAP", "aggregated_status": "PA_MANIFEST_HASH_GAP", "round_trip": true}` |
 | 36 | PA.7 | `NEG::PA.7::PA_SIGNATURE_GAP` | PA.7 aggregator round-trips PA_SIGNATURE_GAP | **PASS** | `{"stage": "PA.7", "input_status": "PA_SIGNATURE_GAP", "aggregated_status": "PA_SIGNATURE_GAP", "round_trip": true}` |
+
+## PA8_CONTRACTS
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PA.8 | `PA8_CONTRACTS::parsed` | PA.8 CONTRACTS TO IMPLEMENT block parses at least one field | **PASS** | `{"parsed_count": 12}` |
+| 2 | PA.8 | `PA8_CONTRACT::proof_id` | PA.8 contract field `proof_id` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "proof_id", "absorbed_by": "compiled_prompt_artifact_id", "present_on_pa_surface": false, "present_in_pa_receipt_union…` |
+| 3 | PA.8 | `PA8_CONTRACT::prompt_bom_ref` | PA.8 contract field `prompt_bom_ref` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "prompt_bom_ref", "absorbed_by": "prompt_bom_id", "present_on_pa_surface": false, "present_in_pa_receipt_union": true}` |
+| 4 | PA.8 | `PA8_CONTRACT::compiled_prompt_artifact_ref` | PA.8 contract field `compiled_prompt_artifact_ref` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "compiled_prompt_artifact_ref", "absorbed_by": "CompiledPromptArtifact", "present_on_pa_surface": false, "present_in_p…` |
+| 5 | PA.8 | `PA8_CONTRACT::slot_order` | PA.8 contract field `slot_order` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "slot_order", "absorbed_by": "SLOT_ORDER", "present_on_pa_surface": true, "present_in_pa_receipt_union": false}` |
+| 6 | PA.8 | `PA8_CONTRACT::slot_hashes` | PA.8 contract field `slot_hashes` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "slot_hashes", "absorbed_by": "structured_slots_hash_receipt", "present_on_pa_surface": false, "present_in_pa_receipt_…` |
+| 7 | PA.8 | `PA8_CONTRACT::higher_authority_override_map` | PA.8 contract field `higher_authority_override_map` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "higher_authority_override_map", "absorbed_by": "slot_authority_map", "present_on_pa_surface": false, "present_in_pa_r…` |
+| 8 | PA.8 | `PA8_CONTRACT::lower_authority_override_attempts` | PA.8 contract field `lower_authority_override_attempts` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "lower_authority_override_attempts", "absorbed_by": "slot_conflict_map", "present_on_pa_surface": false, "present_in_p…` |
+| 9 | PA.8 | `PA8_CONTRACT::blocked_attempts` | PA.8 contract field `blocked_attempts` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "blocked_attempts", "absorbed_by": "rejected_slot_payload_report", "present_on_pa_surface": false, "present_in_pa_rece…` |
+| 10 | PA.8 | `PA8_CONTRACT::provider_render_hash` | PA.8 contract field `provider_render_hash` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "provider_render_hash", "absorbed_by": "ProviderRenderManifest", "present_on_pa_surface": false, "present_in_pa_receip…` |
+| 11 | PA.8 | `PA8_CONTRACT::response_schema_binding_ref` | PA.8 contract field `response_schema_binding_ref` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "response_schema_binding_ref", "absorbed_by": "R0SchemaBinding", "present_on_pa_surface": true, "present_in_pa_receipt…` |
+| 12 | PA.8 | `PA8_CONTRACT::hmac_sig` | PA.8 contract field `hmac_sig` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "hmac_sig", "absorbed_by": "hmac_signature_receipt", "present_on_pa_surface": false, "present_in_pa_receipt_union": true}` |
+| 13 | PA.8 | `PA8_CONTRACT::deterministic_digest` | PA.8 contract field `deterministic_digest` absorbed by runtime symbol or receipt key | **PASS** | `{"contract_field": "deterministic_digest", "absorbed_by": "manifest_hash_receipt", "present_on_pa_surface": false, "present_in_pa_receipt…` |
+
+## PA8_RULES
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PA.8 | `PA8_RULE::C0` | PA.8 rule `C0`: C0/tool/human text are data-only slots | **PASS** | `{"rule_keyword": "C0", "runtime_symbol": "detect_authority_violations", "present_in_doctrine": true, "present_in_runtime": true}` |
+| 2 | PA.8 | `PA8_RULE::R0` | PA.8 rule `R0`: R0 schema is bound to provider-native fields | **PASS** | `{"rule_keyword": "R0", "runtime_symbol": "R0SchemaBinding", "present_in_doctrine": true, "present_in_runtime": true}` |
+| 3 | PA.8 | `PA8_RULE::Provider` | PA.8 rule `Provider`: Provider rendering must not silently reorder authority slots | **PASS** | `{"rule_keyword": "Provider", "runtime_symbol": "render_for_provider", "present_in_doctrine": true, "present_in_runtime": true}` |
+| 4 | PA.8 | `PA8_RULE::Token` | PA.8 rule `Token`: Token trimming must never drop S0/D0/required policy refs/R0 | **PASS** | `{"rule_keyword": "Token", "runtime_symbol": "BUDGET_TRIM_ORDER", "present_in_doctrine": true, "present_in_runtime": true}` |
+
+## PA8_TESTS
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PA.8 | `PA8_TESTS::parsed` | PA.8 TEST REQUIREMENTS block parses at least one test name | **PASS** | `{"parsed_count": 6}` |
+| 2 | PA.8 | `PA8_TEST::test_pa_blocks_c0_instruction_promotion` | PA.8 test `test_pa_blocks_c0_instruction_promotion` is covered (literal or equivalent) | **PASS** | `{"test_name": "test_pa_blocks_c0_instruction_promotion", "literal_present": true, "equivalents_matched": ["c0_instruction", "detect_autho…` |
+| 3 | PA.8 | `PA8_TEST::test_pa_blocks_human_text_as_authority` | PA.8 test `test_pa_blocks_human_text_as_authority` is covered (literal or equivalent) | **PASS** | `{"test_name": "test_pa_blocks_human_text_as_authority", "literal_present": true, "equivalents_matched": ["human_text", "test_pa3_u0_airlo…` |
+| 4 | PA.8 | `PA8_TEST::test_pa_schema_bound_native_not_only_prose` | PA.8 test `test_pa_schema_bound_native_not_only_prose` is covered (literal or equivalent) | **PASS** | `{"test_name": "test_pa_schema_bound_native_not_only_prose", "literal_present": true, "equivalents_matched": ["R0", "schema_binding", "tes…` |
+| 5 | PA.8 | `PA8_TEST::test_pa_provider_render_preserves_slot_order` | PA.8 test `test_pa_provider_render_preserves_slot_order` is covered (literal or equivalent) | **PASS** | `{"test_name": "test_pa_provider_render_preserves_slot_order", "literal_present": true, "equivalents_matched": ["render_for_provider", "sl…` |
+| 6 | PA.8 | `PA8_TEST::test_pa_token_trim_preserves_required_authority_slots` | PA.8 test `test_pa_token_trim_preserves_required_authority_slots` is covered (literal or equivalent) | **PASS** | `{"test_name": "test_pa_token_trim_preserves_required_authority_slots", "literal_present": true, "equivalents_matched": ["BUDGET_TRIM_ORDE…` |
+| 7 | PA.8 | `PA8_TEST::test_pa_never_calls_retrieval_or_execution` | PA.8 test `test_pa_never_calls_retrieval_or_execution` is covered (literal or equivalent) | **PASS** | `{"test_name": "test_pa_never_calls_retrieval_or_execution", "literal_present": true, "equivalents_matched": ["MUST_NOT_FENCE", "test_doct…` |
+
+## PARENT_VOCAB
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PARENT | `PARENT_VOCAB::parsed` | Parent doctrine STATUS VOCABULARY parsed at least one entry | **PASS** | `{"parsed_count": 19}` |
+| 2 | PARENT | `PARENT_VOCAB::PA_READY` | Parent status `PA_READY` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_READY", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 3 | PARENT | `PARENT_VOCAB::PA_INPUT_INCOMPLETE` | Parent status `PA_INPUT_INCOMPLETE` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_INPUT_INCOMPLETE", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 4 | PARENT | `PARENT_VOCAB::PA_BOUNDARY_MISMATCH` | Parent status `PA_BOUNDARY_MISMATCH` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_BOUNDARY_MISMATCH", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 5 | PARENT | `PARENT_VOCAB::PA_BOM_RESOLVED` | Parent status `PA_BOM_RESOLVED` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_BOM_RESOLVED", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 6 | PARENT | `PARENT_VOCAB::PA_BOM_GAP` | Parent status `PA_BOM_GAP` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_BOM_GAP", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 7 | PARENT | `PARENT_VOCAB::PA_SLOTS_COMPOSED` | Parent status `PA_SLOTS_COMPOSED` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_SLOTS_COMPOSED", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 8 | PARENT | `PARENT_VOCAB::PA_SECURITY_PASS` | Parent status `PA_SECURITY_PASS` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_SECURITY_PASS", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 9 | PARENT | `PARENT_VOCAB::PA_SECURITY_GAP` | Parent status `PA_SECURITY_GAP` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_SECURITY_GAP", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 10 | PARENT | `PARENT_VOCAB::PA_SLOT_CONTRACT_VALID` | Parent status `PA_SLOT_CONTRACT_VALID` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_SLOT_CONTRACT_VALID", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 11 | PARENT | `PARENT_VOCAB::PA_SLOT_CONTRACT_INVALID` | Parent status `PA_SLOT_CONTRACT_INVALID` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_SLOT_CONTRACT_INVALID", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 12 | PARENT | `PARENT_VOCAB::PA_BUDGET_FIT` | Parent status `PA_BUDGET_FIT` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_BUDGET_FIT", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 13 | PARENT | `PARENT_VOCAB::PA_BUDGET_TRIMMED` | Parent status `PA_BUDGET_TRIMMED` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_BUDGET_TRIMMED", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 14 | PARENT | `PARENT_VOCAB::PA_BUDGET_OVERFLOW` | Parent status `PA_BUDGET_OVERFLOW` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_BUDGET_OVERFLOW", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 15 | PARENT | `PARENT_VOCAB::PA_RENDERED` | Parent status `PA_RENDERED` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_RENDERED", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 16 | PARENT | `PARENT_VOCAB::PA_RENDER_GAP` | Parent status `PA_RENDER_GAP` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_RENDER_GAP", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 17 | PARENT | `PARENT_VOCAB::PA_ARTIFACT_SIGNED` | Parent status `PA_ARTIFACT_SIGNED` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_ARTIFACT_SIGNED", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 18 | PARENT | `PARENT_VOCAB::PA_ARTIFACT_NOT_SIGNED` | Parent status `PA_ARTIFACT_NOT_SIGNED` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_ARTIFACT_NOT_SIGNED", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 19 | PARENT | `PARENT_VOCAB::PA_L2_HANDOFF_READY` | Parent status `PA_L2_HANDOFF_READY` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_L2_HANDOFF_READY", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+| 20 | PARENT | `PARENT_VOCAB::PA_REQUIRES_UPSTREAM_REPAIR` | Parent status `PA_REQUIRES_UPSTREAM_REPAIR` exists in PAStatus and is claimed by at least one stage | **PASS** | `{"status": "PA_REQUIRES_UPSTREAM_REPAIR", "in_runtime_PAStatus": true, "claimed_by_stage": true}` |
+
+## PARSER_EDGE_HARDENING
+
+| # | Stage | ID | Requirement | Status | Evidence (truncated) |
+|---:|---|---|---|:---:|---|
+| 1 | PARENT | `PARSER_EDGE::trailing_colon_heading` | PARSER_EDGE/trailing_colon_heading: Heading with trailing colon is recognised | **PASS** | `{"case": "trailing_colon_heading", "args": ["STATUS VALUES"], "expected": ["One", "Two"], "actual": ["One", "Two"], "description": "Headi…` |
+| 2 | PARENT | `PARSER_EDGE::tab_indented_bullet` | PARSER_EDGE/tab_indented_bullet: Tab-indented bullets are captured | **PASS** | `{"case": "tab_indented_bullet", "args": ["STATUS VALUES"], "expected": ["TabOne", "TabTwo"], "actual": ["TabOne", "TabTwo"], "description…` |
+| 3 | PARENT | `PARSER_EDGE::asterisk_marker` | PARSER_EDGE/asterisk_marker: Asterisk-style bullets are captured | **PASS** | `{"case": "asterisk_marker", "args": ["STATUS VALUES"], "expected": ["Star1", "Star2"], "actual": ["Star1", "Star2"], "description": "Aste…` |
+| 4 | PARENT | `PARSER_EDGE::unicode_bullet_marker` | PARSER_EDGE/unicode_bullet_marker: Unicode-bullet (U+2022) markers are captured | **PASS** | `{"case": "unicode_bullet_marker", "args": ["STATUS VALUES"], "expected": ["UniOne", "UniTwo"], "actual": ["UniOne", "UniTwo"], "descripti…` |
+| 5 | PARENT | `PARSER_EDGE::heading_lookalike_in_prose` | PARSER_EDGE/heading_lookalike_in_prose: `STATUS VALUES` mid-prose does not start a section | **PASS** | `{"case": "heading_lookalike_in_prose", "args": ["STATUS VALUES"], "expected": [], "actual": [], "description": "`STATUS VALUES` mid-prose…` |
+| 6 | PARENT | `PARSER_EDGE::heading_with_no_underline` | PARSER_EDGE/heading_with_no_underline: Heading without underline separator still captures bullets | **PASS** | `{"case": "heading_with_no_underline", "args": ["STATUS VALUES"], "expected": ["HeadOne", "HeadTwo"], "actual": ["HeadOne", "HeadTwo"], "d…` |
+| 7 | PARENT | `PARSER_EDGE::csv_forbidden_block_split` | PARSER_EDGE/csv_forbidden_block_split: CSV-style forbidden bullet returns every comma-split token | **PASS** | `{"case": "csv_forbidden_block_split", "args": ["FORBIDDEN OUTPUTS FROM THIS CHILD"], "expected": ["ALPHA", "BETA", "GAMMA", "DELTA"], "ac…` |
 
 ## PARSER_ROBUSTNESS
 

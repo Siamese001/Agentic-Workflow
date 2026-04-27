@@ -15,6 +15,8 @@ import pytest
 
 from tools.prompt_assembly.runtime_evidence import (
     check_aggregation,
+    check_child_forbidden_doctrine,
+    check_child_must_not_doctrine,
     check_determinism,
     check_doctrine_drift,
     check_forbid_deep,
@@ -24,6 +26,11 @@ from tools.prompt_assembly.runtime_evidence import (
     check_must_emit,
     check_must_not_fence,
     check_negative_paths,
+    check_pa8_contracts,
+    check_pa8_rules,
+    check_pa8_test_coverage,
+    check_parent_status_vocabulary,
+    check_parser_edge_hardening,
     check_parser_robustness,
     check_pipeline_endtoend,
     check_pipeline_negative_paths,
@@ -57,13 +64,39 @@ _REPO_ROOT = Path(__file__).resolve().parents[5]
         ("PARSER_ROBUSTNESS", check_parser_robustness),
         ("E2E", check_pipeline_endtoend),
         ("PIPELINE_NEG", check_pipeline_negative_paths),
+        # Hardening categories (added by the harden-pass).
+        ("PARENT_VOCAB", check_parent_status_vocabulary),
+        ("CHILD_FORBID_DOCTRINE", check_child_forbidden_doctrine),
+        ("MUST_NOT_DOCTRINE", check_child_must_not_doctrine),
+        ("PA8_RULES", check_pa8_rules),
+        ("PA8_TESTS", check_pa8_test_coverage),
+        ("PA8_CONTRACTS", check_pa8_contracts),
+        ("PARSER_EDGE_HARDENING", check_parser_edge_hardening),
     ],
     ids=[
-        "status_set", "doctrine_drift", "status_partition_complete",
-        "must_emit", "forbid_rd", "forbid_deep", "forbid_false_positive",
-        "must_not_fence", "invariant", "slot_map",
-        "negative_path", "determinism", "aggregation", "parser_robustness",
-        "e2e", "pipeline_neg",
+        "status_set",
+        "doctrine_drift",
+        "status_partition_complete",
+        "must_emit",
+        "forbid_rd",
+        "forbid_deep",
+        "forbid_false_positive",
+        "must_not_fence",
+        "invariant",
+        "slot_map",
+        "negative_path",
+        "determinism",
+        "aggregation",
+        "parser_robustness",
+        "e2e",
+        "pipeline_neg",
+        "parent_vocab",
+        "child_forbid_doctrine",
+        "must_not_doctrine",
+        "pa8_rules",
+        "pa8_tests",
+        "pa8_contracts",
+        "parser_edge_hardening",
     ],
 )
 def test_runtime_evidence_category_all_pass(category: str, fn) -> None:
@@ -72,13 +105,8 @@ def test_runtime_evidence_category_all_pass(category: str, fn) -> None:
     assert rows, f"category {category} produced no rows"
     failures = [r for r in rows if r.status != "PASS"]
     if failures:
-        details = "\n".join(
-            f"  - {r.req_id}: {r.requirement}\n    evidence={r.evidence}"
-            for r in failures
-        )
-        pytest.fail(
-            f"{category} has {len(failures)} failing rows out of {len(rows)}:\n{details}"
-        )
+        details = "\n".join(f"  - {r.req_id}: {r.requirement}\n    evidence={r.evidence}" for r in failures)
+        pytest.fail(f"{category} has {len(failures)} failing rows out of {len(rows)}:\n{details}")
 
 
 def test_doctrine_parser_finds_all_eight_stages() -> None:
@@ -89,12 +117,10 @@ def test_doctrine_parser_finds_all_eight_stages() -> None:
     assert set(parsed.keys()) == expected_stages
     for stage, data in parsed.items():
         assert data["status_values"], (
-            f"{stage} parser returned 0 STATUS VALUES — doctrine file missing or "
-            f"section heading changed"
+            f"{stage} parser returned 0 STATUS VALUES — doctrine file missing or section heading changed"
         )
         assert data["must_emit"], (
-            f"{stage} parser returned 0 MUST EMIT items — doctrine file missing or "
-            f"section heading changed"
+            f"{stage} parser returned 0 MUST EMIT items — doctrine file missing or section heading changed"
         )
 
 
@@ -115,6 +141,4 @@ def test_doctrine_status_values_resolve_to_PAStatus() -> None:
         gone = [s for s in data["status_values"] if s not in runtime]
         if gone:
             missing[stage] = gone
-    assert not missing, (
-        f"Doctrine STATUS VALUES not found in PAStatus enum: {missing}"
-    )
+    assert not missing, f"Doctrine STATUS VALUES not found in PAStatus enum: {missing}"
