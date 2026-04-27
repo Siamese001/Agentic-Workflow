@@ -150,10 +150,68 @@ TEST_REFERENCES: Mapping[str, Sequence[str]] = {
         "tests/unit/agentic_core/L5_safety/v5/test_governance_plane.py",
     ),
 }
+_E2E = "artifacts/e2e/h3/scenarios"
+
 ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": _ANTI_BYPASS_ARTIFACTS,
     "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": _ANTI_BYPASS_ARTIFACTS,
     "REQ-UWG-OBS-ANTI-BYPASS-001": _ANTI_BYPASS_ARTIFACTS,
+    "REQ-GATE-OBS-ANTI-BYPASS-001": (
+        f"{_E2E}/RC-UWG/rc_uwg_no_bypass_receipt.json",
+        f"{_E2E}/GP-001/gp_001_no_bypass_receipt.json",
+        f"{_PROOF}/anti_bypass_results.json",
+        f"{_TRACES}/scenario_D_anti_bypass.json",
+    ),
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": (
+        f"{_E2E}/GP-001/gp_001_groundedness_receipt.json",
+        f"{_E2E}/GP-001/gp_001_no_bypass_receipt.json",
+        f"{_E2E}/GP-001/gp_001_exit_review_packet.json",
+    ),
+    "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": (
+        f"{_E2E}/GP-001/gp_001_prompt_envelope.json",
+        f"{_E2E}/RC-R3/rc_r3_prompt_envelope.json",
+    ),
+    "REQ-PA-AUTHORITY-REDTEAM-001": (
+        f"{_E2E}/GP-001/gp_001_sealed_l2_artifact.json",
+        f"{_E2E}/GP-001/gp_001_prompt_envelope.json",
+    ),
+    "REQ-C0-OBS-ANTI-BYPASS-001": (
+        f"{_E2E}/RC-R3/rc_r3_final_evidence_contract.json",
+        f"{_E2E}/RC-R3/rc_r3_groundedness_receipt.json",
+        f"{_PROOF}/anti_bypass_results.json",
+    ),
+    "REQ-L2-OBS-ANTI-BYPASS-001": (
+        f"{_E2E}/RC-R3/rc_r3_runtime_exhaust_bundle.json",
+        f"{_E2E}/RC-R3/rc_r3_no_bypass_receipt.json",
+        f"{_PROOF}/anti_bypass_results.json",
+    ),
+    "REQ-PA-FINAL-EMIT-ARTIFACT-001": (
+        f"{_E2E}/RC-R3/rc_r3_sealed_l2_artifact.json",
+        f"{_E2E}/RC-HITL/rc_hitl_sealed_l2_artifact.json",
+        f"{_E2E}/GP-001/gp_001_sealed_l2_artifact.json",
+        f"{_E2E}/RC-R3/rc_r3_prompt_envelope.json",
+    ),
+    "REQ-EXIT-X1G-X1I-REPLAY-001": (
+        f"{_E2E}/RC-R3/rc_r3_replay_receipt.json",
+        f"{_E2E}/RC-R3/rc_r3_exit_review_packet.json",
+        f"{_E2E}/RC-R3/rc_r3_otel_trace.json",
+    ),
+    "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": (
+        f"{_E2E}/RC-UWG/rc_uwg_replay_receipt.json",
+        f"{_E2E}/RC-UWG/rc_uwg_uwg_commit_receipt.json",
+        f"{_E2E}/RC-UWG/rc_uwg_uwg_receipt.json",
+    ),
+    "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
+        f"{_E2E}/RC-R3/rc_r3_l6_exhaust_receipt.json",
+        f"{_E2E}/GP-001/gp_001_l6_exhaust_receipt.json",
+        f"{_E2E}/RC-UWG/rc_uwg_l6_exhaust_receipt.json",
+    ),
+    "REQ-EXIT-OBS-ANTI-BYPASS-001": (
+        f"{_E2E}/RC-R3/rc_r3_x3_disposition.json",
+        f"{_E2E}/RC-R3/rc_r3_disposition.json",
+        f"{_E2E}/RC-R3/rc_r3_no_bypass_receipt.json",
+        f"{_PROOF}/anti_bypass_results.json",
+    ),
 }
 REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": _ANTI_BYPASS_REPLAY,
@@ -447,6 +505,7 @@ def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
         "test_refs": test_refs,
         "test_executed": False,
         "artifact_refs": artifact_refs,
+        "artifact_verified": False,
         "replay_refs": replay_refs,
         "otel_span_refs": otel_span_refs,
         "negative_control_refs": negative_control_refs,
