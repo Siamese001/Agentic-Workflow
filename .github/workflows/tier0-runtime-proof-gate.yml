@@ -1,0 +1,30 @@
+name: Tier 0 Runtime Proof Gate
+
+# Runs the Tier 0 runtime-proof gate: metadata gate + 2 targeted runtime
+# test files + static-artifact / replay-pair JSON validation. Static
+# inspection only — no replay machinery, no OTEL exporter, no proof
+# harness, no runtime services.
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  tier0-runtime-proof-gate:
+    name: "Tier 0 runtime proof gate (targeted)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pytest (targeted runner only)
+        run: pip install pytest
+      - name: Run Tier 0 runtime proof gate
+        run: |
+          python scripts/verify_tier0_runtime_proof_gate.py
