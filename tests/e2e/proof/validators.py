@@ -40,6 +40,7 @@ def validate_contracts(scenario: Scenario, run: RunArtifacts) -> tuple[ProofStat
         "ValidatedRequest",
         "L1PlanContract",
         "RouteContract",
+        "SealedL2Artifact",
         "ExitReviewPacket",
         "X3DispositionReceipt",
         "RuntimeExhaustBundle",
@@ -52,6 +53,7 @@ def validate_contracts(scenario: Scenario, run: RunArtifacts) -> tuple[ProofStat
     }:
         required.append("FinalEvidenceContract")
         required.append("PromptEnvelope")
+        required.append("L2ExecutionRequest")
     if scenario.route_id == RouteId.R3R4_MANAGED_WORKFLOW:
         required.append("L3WorkflowContract")
     if scenario.route_id == RouteId.UWG_COMMIT_PATH:

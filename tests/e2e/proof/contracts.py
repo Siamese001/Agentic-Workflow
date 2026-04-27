@@ -93,7 +93,9 @@ class ProofStatus(str, Enum):
 
 @dataclass(frozen=True)
 class ContractRoot:
-    """Authority fields preserved across the full contract chain (99.3)."""
+    """Authority fields preserved across the full contract chain (99.3) and
+    propagated as OTEL trace-root attributes (99.4 §TRACE TREE REQUIREMENTS).
+    """
 
     request_id: str
     run_id: str
@@ -103,6 +105,11 @@ class ContractRoot:
     replay_key: str
     tenant_id: str = "default"
     session_id: str = ""
+    # 99.4 §TRACE TREE REQUIREMENTS — risk_tier and execution_form are required
+    # root attributes. Set at root-build time from the scenario so every span
+    # carries them.
+    risk_tier: str = "LOW"
+    execution_form: str = "SINGLE_STEP"
     # 99.3 CHECK 3 — optional HMAC/signature seal. Empty in unsigned/test mode;
     # populated by signing emitters in production. The validator verifies the
     # signature against the canonical contract digest using a keyed blake2b.
@@ -118,6 +125,8 @@ class ContractRoot:
             "replay_key": self.replay_key,
             "tenant_id": self.tenant_id,
             "session_id": self.session_id,
+            "risk_tier": self.risk_tier,
+            "execution_form": self.execution_form,
             "signature": self.signature,
         }
 

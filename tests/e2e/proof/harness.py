@@ -254,6 +254,32 @@ def emit_run(scenario: Scenario, *, seed: int = 0) -> RunArtifacts:
 # ---------------------------------------------------------------------------
 
 
+_TERMINAL_RET_ROUTES = {
+    RouteId.R1A_EXACT_CACHE,
+    RouteId.R1B_SEMANTIC_CACHE,
+    RouteId.R5_FALLBACK,
+    RouteId.HITL_POSTURE,
+}
+
+
+def _execution_form_for(scenario: Scenario) -> str:
+    """Compute the trace-root execution_form attribute (99.4) from scenario."""
+    if scenario.route_id in _TERMINAL_RET_ROUTES:
+        return "TERMINAL_RET"
+    if scenario.route_id == RouteId.R3R4_MANAGED_WORKFLOW:
+        return "MULTI_STEP"
+    return "SINGLE_STEP"
+
+
+def _risk_tier_for(scenario: Scenario) -> str:
+    """Compute the trace-root risk_tier attribute (99.4) from scenario."""
+    if scenario.route_id in {RouteId.HITL_POSTURE, RouteId.UWG_COMMIT_PATH}:
+        return "HIGH"
+    if scenario.route_id in {RouteId.R3R4_MANAGED_WORKFLOW, RouteId.R5_FALLBACK}:
+        return "MEDIUM"
+    return "LOW"
+
+
 def _build_root(scenario: Scenario, *, seed: int) -> ContractRoot:
     base = f"{scenario.scenario_id}|{seed}"
     return ContractRoot(
@@ -265,6 +291,8 @@ def _build_root(scenario: Scenario, *, seed: int) -> ContractRoot:
         replay_key="replay-" + short_id(base + "|replay"),
         tenant_id="tenant-default",
         session_id="sess-" + short_id(base + "|sess"),
+        risk_tier=_risk_tier_for(scenario),
+        execution_form=_execution_form_for(scenario),
     )
 
 
@@ -539,6 +567,8 @@ def _add_span(
         "policy_hash": root.policy_hash,
         "blueprint_hash": root.blueprint_hash,
         "replay_key": root.replay_key,
+        "risk_tier": root.risk_tier,
+        "execution_form": root.execution_form,
     }
     if attributes:
         base_attrs.update(attributes)
