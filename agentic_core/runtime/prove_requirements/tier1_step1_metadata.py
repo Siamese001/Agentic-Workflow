@@ -43,6 +43,7 @@ EXPECTED_FAIL_REASONS: Mapping[str, str] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": "DIRECT_L4_WRITE_BLOCKED",
     "REQ-UWG-OBS-ANTI-BYPASS-001": "UWG_BYPASS_WRITE_BLOCKED",
     "REQ-GATE-OBS-ANTI-BYPASS-001": "RUNTIME_GATE_BYPASS_BLOCKED",
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": "L5_LIVE_RUNTIME_DISPOSITION_BLOCKED",
     "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": "PROMPT_BOUNDARY_VIOLATION_BLOCKED",
     "REQ-PA-AUTHORITY-REDTEAM-001": "PROMPT_BOUNDARY_VIOLATION_BLOCKED",
     "REQ-C0-OBS-ANTI-BYPASS-001": "C0_EVIDENCE_CONTRACT_BYPASS_BLOCKED",
@@ -52,11 +53,7 @@ EXPECTED_FAIL_REASONS: Mapping[str, str] = {
     "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": "REPLAY_INTEGRITY_MISMATCH",
     "REQ-L6-GAUNTLET-FUTURE-RUN-001": "L6_CURRENT_RUN_MUTATION_BLOCKED",
     "REQ-EXIT-OBS-ANTI-BYPASS-001": "ANTI_BYPASS_CONTROL_MISSING",
-    # The following are intentionally OMITTED because their failure code is
-    # not obvious from the requirement text alone — they keep the
-    # NEEDS_EXPECTED_FAIL_REASON blocker:
-    #   REQ-L5-SAFETY-ENFORCE-PLANE-001
-    #   REQ-L5-STATIC-GOV-DRIFT-001
+    "REQ-L5-STATIC-GOV-DRIFT-001": "STATIC_GOVERNANCE_DRIFT_DETECTED",
 }
 
 # ---------------------------------------------------------------------------
@@ -107,11 +104,193 @@ NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-UWG-OBS-ANTI-BYPASS-001": _ANTI_BYPASS_NEGATIVE_CONTROLS,
 }
 
-# Code references, validator references, and OTEL span refs are not yet
-# mapped for any Tier 1 row — those gaps are tracked via blockers.
-CODE_REFERENCES: Mapping[str, Sequence[str]] = {}
-VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {}
-OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {}
+# Code, validator, and OTEL-span references. Every path is verified to exist
+# on disk via _filter_existing(); paths that vanish later degrade gracefully
+# rather than poisoning the metadata.
+CODE_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": (
+        "agentic_core/L2_execution/enforcement/durable_write_wrapper.py",
+        "agentic_core/L4_state/uwg/durable_write_gateway.py",
+    ),
+    "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": (
+        "agentic_core/L4_state/uwg/durable_write_gateway.py",
+        "agentic_core/L6_observability/utils/evaluation/promotion_gauntlet.py",
+        "agentic_core/L6_observability/shadow_eval/gauntlet.py",
+    ),
+    "REQ-UWG-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L4_state/uwg/durable_write_gateway.py",
+        "agentic_core/L4_state/uwg/durable_write_consistency_gate.py",
+        "agentic_core/runtime/prove_requirements/anti_bypass_negatives.py",
+    ),
+    "REQ-GATE-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L5_safety/runtime_gates/orchestrator.py",
+        "agentic_core/L5_safety/runtime_gates/dispatch.py",
+    ),
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": (
+        "agentic_core/L0_routing/enforcement/safety_enforcement_seam.py",
+        "agentic_core/L5_safety/runtime_gates/orchestrator.py",
+    ),
+    "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": (
+        "agentic_core/L0_routing/intake/origin_labels.py",
+        "agentic_core/L5_safety/v5/g2a_origin_trust.py",
+    ),
+    "REQ-PA-AUTHORITY-REDTEAM-001": (
+        "agentic_core/prompt_governance/prompt_assembly/assembly_injection_neutralizer.py",
+        "agentic_core/prompt_governance/prompt_assembly/injection_detector.py",
+        "agentic_core/L5_safety/reasoning/RedTeamAgent.py",
+        "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py",
+    ),
+    "REQ-C0-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L0_routing/c0_retrieval/evidence_contract.py",
+        "agentic_core/knowledge/retrieval/evidence_contract_builder.py",
+    ),
+    "REQ-L2-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L2_execution/orchestration/l2_sequencer_adapter.py",
+        "agentic_core/L2_execution/types/l2_sequencer_contract.py",
+        "agentic_core/L2_execution/enforcement/preventative_sandbox.py",
+    ),
+    "REQ-PA-FINAL-EMIT-ARTIFACT-001": (
+        "agentic_core/prompt_governance/prompt_assembly/prompt_assembler.py",
+        "agentic_core/prompt_governance/prompt_assembly/compiled_artifact_types.py",
+        "agentic_core/prompt_governance/prompt_assembly/pa7_dispatch_states.py",
+        "agentic_core/prompt_governance/prompt_assembly/pa7_signature.py",
+    ),
+    "REQ-EXIT-X1G-X1I-REPLAY-001": (
+        "agentic_core/L3_orchestration/exit_eval/v6/x1_gates.py",
+        "agentic_core/L5_safety/runtime_gates/g24_determinism_replay.py",
+    ),
+    "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": (
+        "agentic_core/L4_state/audit/audit_ledger.py",
+        "agentic_core/L4_state/uwg/durable_write_gateway.py",
+    ),
+    "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
+        "agentic_core/L6_observability/shadow_eval/gauntlet.py",
+        "agentic_core/L6_observability/utils/evaluation/promotion_gauntlet.py",
+    ),
+    "REQ-EXIT-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L3_orchestration/exit_eval/v6/x3_dispositions.py",
+        "agentic_core/L3_orchestration/exit_eval/disposition.py",
+    ),
+    "REQ-L5-STATIC-GOV-DRIFT-001": (
+        "agentic_core/L2_execution/audit/drift_detector.py",
+        "agentic_core/L6_observability/utils/engines/drift_detector.py",
+        "agentic_core/prompt_governance/scripts/detect_template_drift.py",
+    ),
+}
+
+VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": (
+        "agentic_core/L4_state/enforcement/uwg_verifier.py",
+        "agentic_core/adg/applications/uwg_write_authority_validator.py",
+        "agentic_core/L5_safety/runtime_gates/g27_durable_write_sovereignty.py",
+    ),
+    "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": (
+        "agentic_core/L5_safety/runtime_gates/g27_durable_write_sovereignty.py",
+        "agentic_core/L5_safety/runtime_gates/g29_learning_firewall.py",
+        "agentic_core/adg/applications/uwg_write_authority_validator.py",
+    ),
+    "REQ-UWG-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L2_execution/enforcement/anti_bypass_guards.py",
+        "agentic_core/L4_state/enforcement/uwg_verifier.py",
+        "agentic_core/L5_safety/runtime_gates/g27_durable_write_sovereignty.py",
+    ),
+    "REQ-GATE-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L5_safety/runtime_gates/enforcement.py",
+        "agentic_core/L2_execution/enforcement/anti_bypass_guards.py",
+    ),
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": (
+        "agentic_core/L5_safety/runtime_gates/enforcement.py",
+    ),
+    "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": (
+        "agentic_core/L5_safety/v5/g2a_origin_trust.py",
+    ),
+    "REQ-PA-AUTHORITY-REDTEAM-001": (
+        "agentic_core/prompt_governance/prompt_assembly/pa4_validation.py",
+        "agentic_core/prompt_governance/prompt_assembly/validate_assembly.py",
+        "agentic_core/prompt_governance/prompt_assembly/slot_contracts.py",
+    ),
+    "REQ-C0-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L2_execution/enforcement/anti_bypass_guards.py",
+        "agentic_core/runtime/prove_requirements/anti_bypass_negatives.py",
+    ),
+    "REQ-L2-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L2_execution/enforcement/anti_bypass_guards.py",
+    ),
+    "REQ-PA-FINAL-EMIT-ARTIFACT-001": (
+        "agentic_core/prompt_governance/prompt_assembly/output_schema_validator.py",
+        "agentic_core/prompt_governance/prompt_assembly/l2_handoff.py",
+    ),
+    "REQ-EXIT-X1G-X1I-REPLAY-001": (
+        "agentic_core/L5_safety/runtime_gates/g24_determinism_replay.py",
+    ),
+    "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": (
+        "agentic_core/L5_safety/runtime_gates/g28_audit_trace_completeness.py",
+    ),
+    "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
+        "agentic_core/L5_safety/runtime_gates/g29_learning_firewall.py",
+    ),
+    "REQ-EXIT-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L5_safety/runtime_gates/g26_exit_disposition.py",
+        "agentic_core/L2_execution/enforcement/anti_bypass_guards.py",
+    ),
+    "REQ-L5-STATIC-GOV-DRIFT-001": (
+        "agentic_core/prompt_governance/scripts/detect_template_drift.py",
+    ),
+}
+
+OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": (
+        "agentic_core/L4_state/otel/uwg_write_spans.py",
+    ),
+    "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": (
+        "agentic_core/L4_state/otel/uwg_write_spans.py",
+    ),
+    "REQ-UWG-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L4_state/otel/uwg_write_spans.py",
+    ),
+    "REQ-GATE-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L5_safety/runtime_gates/otel_spans.py",
+        "agentic_core/L5_safety/runtime_gates/otel_feed.py",
+    ),
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": (
+        "agentic_core/L5_safety/v5/governance_spans.py",
+        "agentic_core/L5_safety/v5/otel_spans.py",
+    ),
+    "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": (
+        "agentic_core/L5_safety/enforcement/ingress_telemetry_otel.py",
+    ),
+    "REQ-PA-AUTHORITY-REDTEAM-001": (
+        "agentic_core/prompt_governance/prompt_assembly/trace_spans.py",
+    ),
+    "REQ-C0-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/otel.py",
+    ),
+    "REQ-L2-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L2_execution/observability/l2_spans.py",
+        "agentic_core/L2_execution/observability/l2_otel_emitter.py",
+    ),
+    "REQ-PA-FINAL-EMIT-ARTIFACT-001": (
+        "agentic_core/prompt_governance/prompt_assembly/trace_spans.py",
+    ),
+    "REQ-EXIT-X1G-X1I-REPLAY-001": (
+        "agentic_core/L3_orchestration/exit_eval/otel_spans.py",
+        "agentic_core/L3_orchestration/exit_eval/v6/otel.py",
+    ),
+    "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": (
+        "agentic_core/L4_state/otel/spans.py",
+        "agentic_core/L4_state/otel/uwg_write_spans.py",
+    ),
+    "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
+        "agentic_core/L6_observability/shadow_eval/otel_spans.py",
+    ),
+    "REQ-EXIT-OBS-ANTI-BYPASS-001": (
+        "agentic_core/L3_orchestration/exit_eval/otel_spans.py",
+        "agentic_core/L3_orchestration/exit_eval/v6/otel.py",
+    ),
+    "REQ-L5-STATIC-GOV-DRIFT-001": (
+        "agentic_core/L5_safety/v5/governance_spans.py",
+    ),
+}
 
 
 def _utc_now_iso() -> str:
