@@ -131,6 +131,20 @@ Forbidden: emitting the marker when there was no decision at all (e.g. plain que
 
 The capture hook (`post_cascade_author_gate_capture.py`) already accepts standalone markers — no code change required. The miss-detector (`post_cascade_author_gate_miss_detector.py`) is updated to allow marker-without-packet-header without flagging a violation.
 
+## Hook-Independent Capture Pipeline (added 2026-04-27)
+
+> ⛔ When the Windsurf post-Cascade hook chain is unhealthy (heartbeat older than ~1h), Cascade MUST emit markers via the inline `run_command` capture pipeline instead of relying solely on the in-prose marker.
+
+Cascade ends every refactor-class response with a single `run_command` invocation per marker:
+
+```
+python tools/capture/append_marker.py --marker "DECISION_CAPTURED: type=<type>, repo_area=<path>, selected=<chosen>, outcome=executed, principle=<short>, precedent=<verdict>"
+```
+
+This appends the marker to `artifacts/capture/markers.jsonl`. A separate drain (`python tools/capture/queue_to_ledger.py`) consumes the queue and writes structured rows into the canonical SQLite ledger by reusing the existing `detect_and_capture()` logic from the hook script. The drain is idempotent (decision_id dedup) and rotates the queue file on success.
+
+Recovery: when Windsurf hooks are restored, this pipeline can stay (markers continue to land via the inline path) or be retired by stopping the drain — the markers in prose still feed the post_cascade hook for the same dedup-protected ledger row. Both paths are compatible.
+
 ## Calibration-Driven Triggers (meta-learning W5, plan c8f4a2)
 
 Empirical Wilson CI evidence in the weekly report at
