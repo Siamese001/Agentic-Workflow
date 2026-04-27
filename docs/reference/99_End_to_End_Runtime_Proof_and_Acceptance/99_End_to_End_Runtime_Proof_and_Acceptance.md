@@ -18,8 +18,8 @@ GLOBAL NO-OVERLAP LAW
 - 01 Intake owns request envelope validation and identity/session/tenant baseline only.
 - 02 L1 owns advisory interpretation and planning only.
 - 03 L0/L3 owns deterministic route selection and optional workflow orchestration only.
-- C0 owns retrieval/evidence contracts only.
-- PA owns prompt packet construction only.
+- 03A C0 owns retrieval/evidence contracts only.
+- 03B PA owns prompt packet construction only.
 - 04 L2 owns bounded execution and sealing only.
 - 05 Exit owns current-run checkout aggregation and exactly one X3 disposition only.
 - 06 L6 owns completed-run evaluation, RCA, and future-run learning proposals only.
@@ -93,6 +93,8 @@ CHILD FILE MAP
 - 99.6_E2E_No_Bypass_and_Sovereignty_Proof.md
 - 99.7_E2E_Evidence_Prompt_Output_Groundedness_Proof.md
 - 99.8_E2E_Acceptance_Commands_and_Proof_Bundle.md
+- 99.9_E2E_Mutation_Testing_Boundary_Faults.md
+- 99.10_E2E_Fixtures_Replay_Harness_Commands.md
 
 PROOF BUNDLE MINIMUM STANDARD
 ------------------------------------------------------------------------------------------------------------------------
