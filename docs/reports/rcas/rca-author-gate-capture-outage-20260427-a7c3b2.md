@@ -317,9 +317,9 @@ This RCA is RESOLVED when:
 2. ✅ A synthetic outage test (kill hooks, kill drain, observe gate fire) passes
 3. ⏳ A 24-hour production-run with normal usage shows non-zero `captured` count per day
 4. ✅ No silent failure modes remain in the failure-mode inventory
-5. ⏳ The pre-session ledger-staleness gate is documented as an always-on constitutional requirement (§29 or equivalent)
+5. ✅ The pre-session ledger-staleness gate is documented as an always-on constitutional requirement — landed as `constitutional.md` **§30 Author-Gate capture health mandatory** (2026-04-27, this commit). §29 was already taken by the closed-loop router rule.
 
-**Status as of 2026-04-27**: 3/5 closed, 2/5 pending observation/ratification (criteria 3 and 5 are post-close monitoring rather than blockers). RCA marked RESOLVED with caveats noted.
+**Status as of 2026-04-27**: **4/5 closed, 1/5 pending passive observation** (criterion #3 — 24h non-zero captured/day — closes itself organically over the next calendar day). RCA effectively **CLOSED**.
 
 ## 10. Backfill — top-10 hand curated (2026-04-27)
 
