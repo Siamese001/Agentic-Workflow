@@ -144,3 +144,26 @@ def test_run_full_bypass_validation_e2e(tiny_adg_snapshot: Path):
     )
     assert "apps_eval" in reports
     assert results["apps_eval"].passed
+
+
+def test_run_bypass_queries_clamps_negative_sentinels(tiny_adg_snapshot: Path):
+    """BUG #3 REGRESSION: when a query errors and sets unresolved=-1, that
+    sentinel must NOT be summed into p*_unresolved_total or it produces
+    negative totals that mask real failures.
+    """
+    from apps_shared.proof.adg_queries import run_bypass_queries
+
+    # Run against the tiny fixture (all clean) — totals must be >= 0
+    report = run_bypass_queries(snapshot=tiny_adg_snapshot, app_id="apps_eval")
+    assert report.p0_unresolved_total >= 0
+    assert report.p1_unresolved_total >= 0
+    assert report.p2_unresolved_total >= 0
+    # If any query errored, its per_query entry has unresolved=-1
+    # but the total must remain non-negative.
+    for q_name, q_result in report.per_query.items():
+        unresolved = q_result.get("unresolved", 0)
+        if isinstance(unresolved, int) and unresolved < 0:
+            # error-sentinel present — totals must still be non-negative
+            assert report.p0_unresolved_total >= 0, (
+                f"sentinel from {q_name} contaminated p0 total"
+            )

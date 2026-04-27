@@ -82,6 +82,36 @@ def test_validate_trace_tree_inconsistent_trace_id(tmp_path: Path):
     assert not v.ok
 
 
+def test_validate_trace_tree_all_none_trace_id_fails(tmp_path: Path):
+    """BUG #2 REGRESSION: a trace where every span has trace_id=None
+    previously passed because {None} has len=1. Must now fail explicitly."""
+    p = tmp_path / "t.json"
+    _write_trace(
+        p,
+        [
+            {"span_id": "s1", "parent_span_id": None, "layer": "U0", "trace_id": None},
+            {"span_id": "s2", "parent_span_id": "s1", "layer": "L1", "trace_id": None},
+        ],
+    )
+    v = validate_trace_tree(p)
+    assert not v.ok
+    assert any("trace_id" in r and "None" in r for r in v.fail_reasons)
+
+
+def test_validate_trace_tree_mixed_none_and_real_trace_id_fails(tmp_path: Path):
+    """BUG #2 REGRESSION: mixed None + real trace_id must fail."""
+    p = tmp_path / "t.json"
+    _write_trace(
+        p,
+        [
+            {"span_id": "s1", "parent_span_id": None, "layer": "U0", "trace_id": "T1"},
+            {"span_id": "s2", "parent_span_id": "s1", "layer": "L1", "trace_id": None},
+        ],
+    )
+    v = validate_trace_tree(p)
+    assert not v.ok
+
+
 def test_validate_trace_tree_layer_order_violation(tmp_path: Path):
     p = tmp_path / "t.json"
     _write_trace(
@@ -173,3 +203,48 @@ def test_validate_artifact_inventory_catches_missing(tmp_path: Path):
     write_packet(pkt, tmp_path / "contracts" / "apps_test" / "s1" / "evidence_packet.json")
     v = validate_artifact_inventory(packet=pkt, export_root=tmp_path)
     assert not v.ok
+
+
+def test_validate_artifact_inventory_uses_trusted_path_when_provided(tmp_path: Path):
+    """BUG #1 REGRESSION: when a trusted packet_path is provided, the
+    validator MUST hash-check against it even if the loaded packet's
+    app_id has been mutated to a non-existent value."""
+    # Write a real packet at a known path
+    real_pkt = AppRunEvidencePacket(
+        app_id="apps_real", scenario_id="s1", command="c", cwd="/", process_id=1,
+        python_executable="/p", git_commit_or_snapshot_ref="x", adg_snapshot_ref="x",
+        request_id="rq", session_id="ss", run_id="rn", trace_root="t", trace_id="t",
+    )
+    real_path = tmp_path / "contracts" / "apps_real" / "s1" / "evidence_packet.json"
+    write_packet(real_pkt, real_path)
+
+    # Now construct a "tampered" packet with a different app_id but reuse
+    # the trusted path. The hash check MUST pass because the file at the
+    # trusted path is unmodified.
+    tampered = AppRunEvidencePacket(
+        app_id="MUTATED_APP_ID", scenario_id="s1",
+        command="c", cwd="/", process_id=1,
+        python_executable="/p", git_commit_or_snapshot_ref="x", adg_snapshot_ref="x",
+        request_id="rq", session_id="ss", run_id="rn", trace_root="t", trace_id="t",
+    )
+    v = validate_artifact_inventory(
+        packet=tampered, export_root=tmp_path, packet_path=real_path,
+    )
+    # The hash check on the real (untampered) file passes
+    assert v.details.get("packet_hash_ok") is True
+
+
+def test_validate_artifact_inventory_legacy_path_falls_back(tmp_path: Path):
+    """BUG #1 REGRESSION: when packet_path is omitted, the validator falls
+    back to deriving from packet fields and signals 'trusted_path_unset'
+    in any failure reason."""
+    pkt = AppRunEvidencePacket(
+        app_id="MUTATED", scenario_id="s1", command="c", cwd="/", process_id=1,
+        python_executable="/p", git_commit_or_snapshot_ref="x", adg_snapshot_ref="x",
+        request_id="rq", session_id="ss", run_id="rn", trace_root="t", trace_id="t",
+        # Note: no packet at the MUTATED path
+    )
+    v = validate_artifact_inventory(packet=pkt, export_root=tmp_path)
+    # MUTATED path doesn't exist — fail surfaces the path source
+    assert not v.ok
+    assert any("trusted_path_unset" in r for r in v.fail_reasons)

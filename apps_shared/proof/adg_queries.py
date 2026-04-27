@@ -268,12 +268,18 @@ def run_bypass_queries(*, snapshot: Path, app_id: str, sample_limit: int = 200) 
                 "unresolved": total,
                 "sample": sample,
             }
+            # BUG-FIX (2026-04-26): the error path of this method (sqlite3.Error
+            # branch above) sets unresolved=-1 as a sentinel. That sentinel must
+            # NOT be summed into p*_unresolved_total or it produces negative
+            # totals in the per-app summary that mask real failures. Clamp to
+            # zero — the sentinel is recorded in per_query for diagnostics.
+            sanitized = max(int(total), 0)
             if q.severity == "P0":
-                report.p0_unresolved_total += total
+                report.p0_unresolved_total += sanitized
             elif q.severity == "P1":
-                report.p1_unresolved_total += total
+                report.p1_unresolved_total += sanitized
             else:
-                report.p2_unresolved_total += total
+                report.p2_unresolved_total += sanitized
     finally:
         con.close()
     return report

@@ -141,8 +141,20 @@ class ScenarioContext:
         self.trace_root = f"trace-{_det('trace_root', 32)}"
         self.trace_id = self.trace_root  # alias for span emission
 
-        # Per-scenario artifact dir — every spec gets its own subdir under contracts/
+        # Per-scenario artifact dir — every spec gets its own subdir under contracts/.
+        #
+        # BUG-FIX (2026-04-26): wipe the dir before each run. Without this,
+        # repeated invocations with the same export_root accumulate stale
+        # contract files (volatile fields like *_receipt_ref change between
+        # runs, producing different content hashes → different filenames →
+        # both files coexist). The replay validator's
+        # ``_read_contract_payload`` uses ``sorted(...)[-1]`` and could pick
+        # the wrong one. Wiping here keeps each run pinned to its own
+        # contracts.
         self.scenario_dir = export_root / "contracts" / spec.app_id / spec.scenario_id
+        if self.scenario_dir.exists():
+            import shutil  # local import to avoid module-load cost when unused
+            shutil.rmtree(self.scenario_dir, ignore_errors=True)
         self.scenario_dir.mkdir(parents=True, exist_ok=True)
 
         self.spans: list[SpanRecord] = []
@@ -1063,16 +1075,23 @@ def run_app_scenario(
         ctx._otel_export_result = None
 
     if customizer is not None:
+        # BUG-FIX (2026-04-26): the previous (RuntimeError, ValueError,
+        # TypeError, AttributeError) tuple was too narrow. Customizers
+        # invoke sandbox_writer / request_uwg_commit which can raise
+        # ImportError (missing optional deps), OSError (filesystem), or
+        # KeyError (payload shape). An uncaught exception here would crash
+        # the entire proof_runner and fail all subsequent apps.
         try:
             customizer(ctx)
-        except (RuntimeError, ValueError, TypeError, AttributeError) as exc:
+        except (
+            RuntimeError, ValueError, TypeError, AttributeError,
+            ImportError, OSError, KeyError,
+        ) as exc:
             # Customizer failure is recorded as a span, not silently swallowed.
             ts = _utcnow_iso()
             ctx.emit_span(
-                layer="customizer",
-                name=f"{spec.app_id}.customizer",
-                parent_span_id=None,
-                status="FAIL",
+                layer="customizer", name=f"{spec.app_id}.customizer",
+                parent_span_id=None, status="FAIL",
                 started_at=ts,
                 ended_at=ts,
                 attrs={"error": repr(exc)},

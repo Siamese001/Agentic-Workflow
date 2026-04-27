@@ -1,0 +1,114 @@
+{
+  "band_monotonicity_holds": true,
+  "determinism_ok": true,
+  "determinism_violations": [],
+  "fixture_count": 3,
+  "generated_at": "2026-04-27T01:58:59.208260+00:00",
+  "high_band_is_strict": true,
+  "invariants_ok": true,
+  "out_of_band_invariant_holds": true,
+  "pass1": [
+    {
+      "compliance_hash": "0578989d4d6934ad5939858b1fef44180349be13276fda28af194a8034893766",
+      "decision": "REJECT",
+      "name": "read_review_minimal",
+      "reason_codes": [
+        "hard_constraint_breach",
+        "injection_detected",
+        "missing_authority",
+        "policy_violation"
+      ],
+      "span_sequence": [
+        "l5.governance.certify_packet",
+        "l5.governance.g0_validate"
+      ]
+    },
+    {
+      "compliance_hash": "d4f72a0822f89cfdcc1160ff5187faade78be7fc4f07edbc673b87594fdcb721",
+      "decision": "REJECT",
+      "name": "model_call_low_band",
+      "reason_codes": [
+        "hard_constraint_breach",
+        "injection_detected",
+        "missing_authority",
+        "policy_violation",
+        "registry_mismatch"
+      ],
+      "span_sequence": [
+        "l5.governance.certify_packet",
+        "l5.governance.g0_validate"
+      ]
+    },
+    {
+      "compliance_hash": "b595af74f3aa98cebc43c2b93e69f279e25e8c7f848f5a5fde7e0088d4352798",
+      "decision": "REJECT",
+      "name": "hitl_modify_no_widening",
+      "reason_codes": [
+        "hard_constraint_breach",
+        "injection_detected",
+        "missing_authority",
+        "policy_violation"
+      ],
+      "span_sequence": [
+        "l5.governance.certify_packet",
+        "l5.governance.g0_validate"
+      ]
+    }
+  ],
+  "pass2": [
+    {
+      "compliance_hash": "0578989d4d6934ad5939858b1fef44180349be13276fda28af194a8034893766",
+      "decision": "REJECT",
+      "name": "read_review_minimal",
+      "reason_codes": [
+        "hard_constraint_breach",
+        "injection_detected",
+        "missing_authority",
+        "policy_violation"
+      ],
+      "span_sequence": [
+        "l5.governance.certify_packet",
+        "l5.governance.g0_validate"
+      ]
+    },
+    {
+      "compliance_hash": "d4f72a0822f89cfdcc1160ff5187faade78be7fc4f07edbc673b87594fdcb721",
+      "decision": "REJECT",
+      "name": "model_call_low_band",
+      "reason_codes": [
+        "hard_constraint_breach",
+        "injection_detected",
+        "missing_authority",
+        "policy_violation",
+        "registry_mismatch"
+      ],
+      "span_sequence": [
+        "l5.governance.certify_packet",
+        "l5.governance.g0_validate"
+      ]
+    },
+    {
+      "compliance_hash": "b595af74f3aa98cebc43c2b93e69f279e25e8c7f848f5a5fde7e0088d4352798",
+      "decision": "REJECT",
+      "name": "hitl_modify_no_widening",
+      "reason_codes": [
+        "hard_constraint_breach",
+        "injection_detected",
+        "missing_authority",
+        "policy_violation"
+      ],
+      "span_sequence": [
+        "l5.governance.certify_packet",
+        "l5.governance.g0_validate"
+      ]
+    }
+  ],
+  "runtime_binding_deterministic": true,
+  "snapshot_drift_detected": true,
+  "span_coverage_ratio": 0.15384615384615385,
+  "spans_catalog_size": 13,
+  "spans_observed": [
+    "l5.governance.certify_packet",
+    "l5.governance.g0_validate"
+  ]
+}

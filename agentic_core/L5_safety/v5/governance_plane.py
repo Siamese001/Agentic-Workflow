@@ -26,6 +26,15 @@ from agentic_core.L5_safety.v5.g0_entry import (
 )
 from agentic_core.L5_safety.v5.g1_triage import triage_request
 from agentic_core.L5_safety.v5.g2a_origin_trust import classify_origins
+from agentic_core.L5_safety.v5.otel_spans import (
+    SPAN_CERTIFY_PACKET,
+    SPAN_DECISION_RAIL_EMIT,
+    SPAN_G0_VALIDATE,
+    SPAN_G1_TRIAGE,
+    SPAN_G2A_ORIGIN_TRUST,
+    SPAN_REPLAY_AUDIT_SEAL,
+    emit_event,
+)
 from agentic_core.L5_safety.v5.replay_audit import (
     build_audit_log_event,
     seal_replay_envelope,
@@ -190,7 +199,15 @@ def certify_packet(
     )
     timestamp_iso = timestamp_iso or _utc_now_iso()
 
+    # Top-level span: every certify_packet call emits exactly one
+    # SPAN_CERTIFY_PACKET so trace completeness can detect a missing run.
+    emit_event(
+        SPAN_CERTIFY_PACKET,
+        {"actor": actor, "route_id": route_id, "span_id": span_id},
+    )
+
     # G0 -----------------------------------------------------------
+    emit_event(SPAN_G0_VALIDATE, {"declared_read_only": declared_read_only})
     entry = validate_entry_packet(raw_packet, declared_read_only=declared_read_only)
     if not entry.accepted or entry.request is None:
         return _empty_govresult_for_failed_entry(
@@ -206,6 +223,7 @@ def certify_packet(
     request = entry.request
 
     # G1 -----------------------------------------------------------
+    emit_event(SPAN_G1_TRIAGE, {"risk_tier_hint": risk_tier_hint.value})
     triage = triage_request(
         request,
         risk_tier_hint=risk_tier_hint,
@@ -217,6 +235,7 @@ def certify_packet(
     )
 
     # G2a ----------------------------------------------------------
+    emit_event(SPAN_G2A_ORIGIN_TRUST, {"raw_label_count": len(request.origin_trust_manifest_raw)})
     origin = classify_origins(
         raw_labels=request.origin_trust_manifest_raw,
         field_payloads=field_payloads,
@@ -225,6 +244,7 @@ def certify_packet(
     # Replay sealing (R12) ----------------------------------------
     # Provisional verdict so we can hash it; the rail may downgrade and we
     # re-seal once. This double-seal is cheap (deterministic JSON sha256).
+    emit_event(SPAN_REPLAY_AUDIT_SEAL, {"phase": "provisional"})
     provisional = DecisionVerdict.CERTIFY  # placeholder
     replay = seal_replay_envelope(
         request=request,
@@ -326,6 +346,7 @@ def certify_packet(
     if hitl_disposition is not None and hitl_disposition.decision == "REJECT":
         runtime_final_action = "reject"
 
+    emit_event(SPAN_DECISION_RAIL_EMIT, {"reason_code_count": len(additional_reason_codes)})
     result = emit_verdict(
         review_request=request,
         triage=triage,

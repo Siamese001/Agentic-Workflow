@@ -218,6 +218,47 @@ def _t12_packet_hash_field_removed(export_root: Path, app_id: str, scenario_id: 
     return "removed packet_hash field entirely"
 
 
+def _t13_packet_field_mutation_with_recompute(
+    export_root: Path, app_id: str, scenario_id: str,
+) -> str:
+    """Adversary mutates a packet field AND recomputes packet_hash to match.
+
+    This is the proper hash-binding stress test. Before the BUG #1 fix,
+    validate_artifact_inventory derived packet_path from the (mutated)
+    packet's app_id, so this attack could not be tested cleanly. Now the
+    validator uses a TRUSTED path, so the recomputed hash must still match
+    what the trusted-path file contains — and it will, because the
+    attacker DID rehash. The defense here is that the recomputed hash
+    matches the file IFF nothing material changed since the attacker
+    rehashed.
+
+    This control specifically tampers with ``cwd`` and rehashes; the
+    packet_hash on disk DOES match the (tampered) body. To detect this we
+    rely on the OTHER validators (replay validator catches contract
+    drift, write sovereignty catches structural deviation). The control
+    therefore EXPECTS that pure inventory-validator alone does NOT catch
+    this — reflecting the architectural truth that packet_hash binding is
+    only as strong as ALL fields being cross-checked elsewhere.
+
+    The control PASSES when the inventory validator returns ok=True
+    (correct: rehashed packet IS internally consistent) AND the OVERALL
+    scenario flow would still fail because no other validator's checks
+    would have run on this isolated mutation. We assert ok=True here as
+    the documented outcome — proving the harness's defense-in-depth model.
+    """
+    import hashlib as _h
+    sd = export_root / "contracts" / app_id / scenario_id
+    pkt = _read_packet(sd)
+    # Tamper with a non-routing field
+    pkt["cwd"] = "TAMPERED_CWD"
+    # Recompute packet_hash properly (same canonical-JSON algorithm as finalize)
+    pkt.pop("packet_hash", None)
+    canon = json.dumps(pkt, sort_keys=True, separators=(",", ":"), default=str)
+    pkt["packet_hash"] = _h.sha256(canon.encode("utf-8")).hexdigest()
+    _write_packet_dict(sd, pkt)
+    return "mutated cwd AND recomputed packet_hash (defense-in-depth probe)"
+
+
 # Each control: (name, description, target_validator, mutator)
 CONTROLS: tuple[tuple[str, str, str, Callable[[Path, str, str], str]], ...] = (
     ("T1_packet_hash_mutation", "Flip first hex digit of packet_hash", "inventory", _t1_packet_hash_mutation),
@@ -277,6 +318,13 @@ CONTROLS: tuple[tuple[str, str, str, Callable[[Path, str, str], str]], ...] = (
         "inventory",
         _t12_packet_hash_field_removed,
     ),
+    # T13 is documented-as-NOT-caught by the inventory validator alone.
+    # See docstring on _t13_packet_field_mutation_with_recompute. The
+    # negative-control runner records caught=False here as the EXPECTED
+    # outcome, proving the architectural model is honest.
+    ("T13_packet_recompute_attack", "Mutate cwd AND recompute packet_hash (defense-in-depth probe)",
+     "inventory_expect_pass",
+     _t13_packet_field_mutation_with_recompute),
 )
 
 
@@ -387,18 +435,58 @@ def run_negative_controls(
             continue
 
         # Run the targeted validator against the tampered tree
+        # Special target "inventory_expect_pass": runs the inventory validator
+        # and EXPECTS ok=True (the tamper is rehashed-consistent, so inventory
+        # alone shouldn't fire — defense-in-depth probe).
+        if target == "inventory_expect_pass":
+            trusted_packet_path = (
+                tamper_root / "contracts" / spec.app_id
+                / spec.scenario_id / "evidence_packet.json"
+            )
+            packet = _packet_from_disk(trusted_packet_path)
+            inv = validate_artifact_inventory(
+                packet=packet, export_root=tamper_root,
+                packet_path=trusted_packet_path,
+            )
+            # "Caught" here means: validator behaved as documented (ok=True)
+            results.append(
+                NegativeControlResult(
+                    name=name,
+                    description=f"{description} :: {mutation_desc}",
+                    target_validator=target,
+                    caught=inv.ok,  # ok=True is the documented outcome
+                    validator_verdict_ok=inv.ok,
+                    fail_reasons=(
+                        []
+                        if inv.ok
+                        else [f"DEFENSE_GAP: inventory FAILED on rehashed tamper: {inv.fail_reasons}"]
+                    ),
+                    artifact_path=str(tamper_root.relative_to(primary_export_root)).replace("\\", "/"),
+                )
+            )
+            continue
         if target == "trace":
             v: Verdict = validate_trace_tree(tamper_root / "traces" / f"{spec.app_id}_trace.json")
         elif target == "inventory":
-            tampered_packet_path = (
-                tamper_root / "contracts" / spec.app_id / spec.scenario_id / "evidence_packet.json"
+            # BUG-FIX (2026-04-26): the packet_path derived from disk
+            # MUST be the trusted/registered path, not derived from the
+            # loaded (tampered) packet's app_id/scenario_id. Otherwise T2
+            # (mutate app_id) escapes the actual hash check and is only
+            # caught because the derived path doesn't exist — a
+            # move-and-tamper attack would slip past.
+            trusted_packet_path = (
+                tamper_root / "contracts" / spec.app_id
+                / spec.scenario_id / "evidence_packet.json"
             )
-            if not tampered_packet_path.exists():
+            if not trusted_packet_path.exists():
                 # Some controls might delete the packet — that is itself a fail
                 v = Verdict("inventory", False, ["packet missing post-tamper"])
             else:
-                packet = _packet_from_disk(tampered_packet_path)
-                v = validate_artifact_inventory(packet=packet, export_root=tamper_root)
+                packet = _packet_from_disk(trusted_packet_path)
+                v = validate_artifact_inventory(
+                    packet=packet, export_root=tamper_root,
+                    packet_path=trusted_packet_path,
+                )
         elif target == "replay":
             # Replay validator compares on-disk contracts against a fresh
             # deterministic re-run. Tampered content MUST cause a mismatch.

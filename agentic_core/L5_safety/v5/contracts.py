@@ -10,17 +10,33 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 from agentic_core.L5_safety.v5.types import (
+    AuditDetailLevel,
     BoundaryClassification,
+    CalibrationCadence,
+    ConnectorAllowlistWidth,
     DecisionVerdict,
+    EgressKind,
+    EvaluatorKind,
     GovernanceMode,
+    GrantMode,
+    GuardrailBank,
+    GuardrailFamilyId,
+    GuardrailStage,
+    LifecycleState,
+    MatchStatus,
     NextLane,
     OriginLabel,
     PacketKind,
+    PermissionLadderEntry,
+    PromotionPlane,
     ReasonCode,
+    RetentionBand,
     ReviewDepth,
     RiskTierBandV5,
+    SandboxIsolationTier,
     SideEffectClass,
     StandardsTag,
+    StaticDriftKind,
     TriageFlag,
 )
 
@@ -150,8 +166,22 @@ class CapabilityTokenV5:
     evidence_contract_id: str
     permission_ladder: tuple[str, ...]
     allowed_args_hash: str
-    revocation_posture: str
+    revocation_posture: str = "none"
     v4_token_id: str = ""
+
+    # --- G6: v4 capability_token.schema.md additions ----------------------------
+    permission_ladder_entry: PermissionLadderEntry = PermissionLadderEntry.READ
+    step_up_required_for: tuple[str, ...] = field(default_factory=tuple)
+    persistent_grant_ref: str = ""
+    grant_mode: GrantMode = GrantMode.ONE_TIME
+    plan_stream_endpoint: str = ""
+    lifecycle_state: LifecycleState = LifecycleState.ISSUED
+    hard_constraints_active: tuple[str, ...] = field(default_factory=tuple)
+    delegation_depth: int = 0
+    tool_allowlist: tuple[str, ...] = field(default_factory=tuple)
+    revoked: bool = False
+    revoked_at: str = ""
+    revocation_reason: str = ""
 
     def __post_init__(self) -> None:
         if not self.token_id:
@@ -164,21 +194,46 @@ class CapabilityTokenV5:
             raise ValueError(
                 "CapabilityTokenV5: single_use implies max_invocations==1",
             )
+        if self.delegation_depth < 0:
+            raise ValueError("CapabilityTokenV5: delegation_depth must be >= 0")
+        if (
+            self.permission_ladder_entry == PermissionLadderEntry.EXTERNAL
+            and not self.single_use
+            and not self.persistent_grant_ref
+        ):
+            raise ValueError(
+                "CapabilityTokenV5: EXTERNAL rung requires single_use=True or "
+                "persistent_grant_ref (capability_token.schema.md §2)",
+            )
+        if self.revoked and not self.revoked_at:
+            raise ValueError("CapabilityTokenV5: revoked=True requires revoked_at")
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "allowed_args_hash": self.allowed_args_hash,
             "connector_allowlist": _sorted_strings(self.connector_allowlist),
+            "delegation_depth": self.delegation_depth,
             "evidence_contract_id": self.evidence_contract_id,
+            "grant_mode": self.grant_mode.value,
+            "hard_constraints_active": _sorted_strings(self.hard_constraints_active),
+            "lifecycle_state": self.lifecycle_state.value,
             "max_invocations": self.max_invocations,
             "permission_ladder": list(self.permission_ladder),
+            "permission_ladder_entry": self.permission_ladder_entry.value,
+            "persistent_grant_ref": self.persistent_grant_ref,
             "plan_digest": self.plan_digest,
+            "plan_stream_endpoint": self.plan_stream_endpoint,
             "principal_chain_id": self.principal_chain_id,
             "revocation_posture": self.revocation_posture,
+            "revocation_reason": self.revocation_reason,
+            "revoked": self.revoked,
+            "revoked_at": self.revoked_at,
             "route_contract_digest": self.route_contract_digest,
             "scope": _sorted_strings(self.scope),
             "single_use": self.single_use,
+            "step_up_required_for": _sorted_strings(self.step_up_required_for),
             "token_id": self.token_id,
+            "tool_allowlist": _sorted_strings(self.tool_allowlist),
             "ttl_seconds": self.ttl_seconds,
             "v4_token_id": self.v4_token_id,
         }
@@ -480,15 +535,232 @@ class GovernanceResult:
         }
 
 
+# =============================================================================
+# G8 — Replay/Audit packet shape: AuditManifest + 4 completeness reports
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class AuditManifest:
+    """`00A.6` audit_manifest (full evidence record, not a single string).
+
+    Promotes ``GovernanceResult.audit_log`` from string to a structured manifest
+    with required identifiers, hashes, reason codes, retention class, access
+    class, and redaction policy.
+    """
+
+    request_id: str
+    trace_id: str
+    run_id: str
+    tenant_id: str
+    caller_id: str
+    decision_verdict: DecisionVerdict
+    reason_codes: tuple[ReasonCode, ...]
+    compliance_hash: str
+    policy_hash: str
+    blueprint_hash: str
+    registry_digest_set: tuple[str, ...]
+    retention_class: RetentionBand
+    access_class: str  # internal|operator|forensic
+    redaction_policy: str  # none|secrets|pii|full
+    detail_level: AuditDetailLevel
+    generated_at: str
+    audit_event_hash: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "access_class": self.access_class,
+            "audit_event_hash": self.audit_event_hash,
+            "blueprint_hash": self.blueprint_hash,
+            "caller_id": self.caller_id,
+            "compliance_hash": self.compliance_hash,
+            "decision_verdict": self.decision_verdict.value,
+            "detail_level": self.detail_level.value,
+            "generated_at": self.generated_at,
+            "policy_hash": self.policy_hash,
+            "reason_codes": sorted(c.value for c in self.reason_codes),
+            "redaction_policy": self.redaction_policy,
+            "registry_digest_set": _sorted_strings(self.registry_digest_set),
+            "request_id": self.request_id,
+            "retention_class": self.retention_class.value,
+            "run_id": self.run_id,
+            "tenant_id": self.tenant_id,
+            "trace_id": self.trace_id,
+        }
+
+
+@dataclass(frozen=True)
+class ReceiptChainCompletenessReport:
+    """`00A.6` §15 — detects missing/stale/orphaned/cross-principal receipts."""
+
+    expected_receipts: tuple[str, ...]
+    present_receipts: tuple[str, ...]
+    missing_receipts: tuple[str, ...]
+    orphan_receipts: tuple[str, ...]
+    stale_receipts: tuple[str, ...]
+    cross_principal_receipts: tuple[str, ...]
+
+    @property
+    def complete(self) -> bool:
+        return not (
+            self.missing_receipts
+            or self.orphan_receipts
+            or self.stale_receipts
+            or self.cross_principal_receipts
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "complete": self.complete,
+            "cross_principal_receipts": _sorted_strings(self.cross_principal_receipts),
+            "expected_receipts": _sorted_strings(self.expected_receipts),
+            "missing_receipts": _sorted_strings(self.missing_receipts),
+            "orphan_receipts": _sorted_strings(self.orphan_receipts),
+            "present_receipts": _sorted_strings(self.present_receipts),
+            "stale_receipts": _sorted_strings(self.stale_receipts),
+        }
+
+
+@dataclass(frozen=True)
+class HashBindingReport:
+    """`00A.6` §15 — detects missing hashes, mismatches, canonical-serialization errors."""
+
+    expected_hashes: Mapping[str, str]  # name → expected
+    actual_hashes: Mapping[str, str]  # name → actual
+    missing: tuple[str, ...] = field(default_factory=tuple)
+    mismatched: tuple[str, ...] = field(default_factory=tuple)
+    canonical_serialization_errors: tuple[str, ...] = field(default_factory=tuple)
+
+    @property
+    def passed(self) -> bool:
+        return not (self.missing or self.mismatched or self.canonical_serialization_errors)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "actual_hashes": dict(self.actual_hashes),
+            "canonical_serialization_errors": _sorted_strings(
+                self.canonical_serialization_errors,
+            ),
+            "expected_hashes": dict(self.expected_hashes),
+            "mismatched": _sorted_strings(self.mismatched),
+            "missing": _sorted_strings(self.missing),
+            "passed": self.passed,
+        }
+
+
+@dataclass(frozen=True)
+class TraceCompletenessReport:
+    """`00A.6` §15 — detects missing trace, missing span, orphan span, parent gap."""
+
+    expected_spans: tuple[str, ...]
+    present_spans: tuple[str, ...]
+    missing_spans: tuple[str, ...]
+    orphan_spans: tuple[str, ...]
+    parent_gap: tuple[str, ...]
+
+    @property
+    def complete(self) -> bool:
+        return not (self.missing_spans or self.orphan_spans or self.parent_gap)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "complete": self.complete,
+            "expected_spans": _sorted_strings(self.expected_spans),
+            "missing_spans": _sorted_strings(self.missing_spans),
+            "orphan_spans": _sorted_strings(self.orphan_spans),
+            "parent_gap": _sorted_strings(self.parent_gap),
+            "present_spans": _sorted_strings(self.present_spans),
+        }
+
+
+@dataclass(frozen=True)
+class ReconstructionReadinessReport:
+    """`00A.6` §15 — composite reconstruction readiness over receipt + hash + trace."""
+
+    receipt_chain: ReceiptChainCompletenessReport
+    hash_binding: HashBindingReport
+    trace_completeness: TraceCompletenessReport
+    readiness_score: float = 0.0
+
+    def __post_init__(self) -> None:
+        complete = sum(
+            (
+                int(self.receipt_chain.complete),
+                int(self.hash_binding.passed),
+                int(self.trace_completeness.complete),
+            )
+        )
+        # Frozen — use object.__setattr__ to write the computed score.
+        object.__setattr__(self, "readiness_score", complete / 3.0)
+
+    @property
+    def reconstructable(self) -> bool:
+        return self.readiness_score == 1.0
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "hash_binding": self.hash_binding.to_dict(),
+            "readiness_score": self.readiness_score,
+            "receipt_chain": self.receipt_chain.to_dict(),
+            "reconstructable": self.reconstructable,
+            "trace_completeness": self.trace_completeness.to_dict(),
+        }
+
+
+# =============================================================================
+# G9 — Guardrail family taxonomy: GuardrailFamilyRecord
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class GuardrailFamilyRecord:
+    """`guardrail_families.md` §4 — 12-field family record schema."""
+
+    id: GuardrailFamilyId
+    name: str
+    stage: GuardrailStage
+    bank: GuardrailBank
+    evaluator_kind: EvaluatorKind
+    risk_tier_activation: Mapping[str, bool]  # {LOW: bool, MODERATE: bool, HIGH: bool}
+    hard_constraint: bool
+    remediable_when_false: bool
+    owner: str
+    eval_dataset_ref: str
+    version: str
+    threshold: float
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "bank": self.bank.value,
+            "eval_dataset_ref": self.eval_dataset_ref,
+            "evaluator_kind": self.evaluator_kind.value,
+            "hard_constraint": self.hard_constraint,
+            "id": self.id.value,
+            "name": self.name,
+            "owner": self.owner,
+            "remediable_when_false": self.remediable_when_false,
+            "risk_tier_activation": dict(self.risk_tier_activation),
+            "stage": self.stage.value,
+            "threshold": self.threshold,
+            "version": self.version,
+        }
+
+
 __all__ = [
+    "AuditManifest",
     "CapabilityTokenV5",
     "GovernanceResult",
     "GovernanceReviewRequest",
+    "GuardrailFamilyRecord",
+    "HashBindingReport",
     "HITLDispositionPacket",
     "OriginTrustManifest",
+    "ReceiptChainCompletenessReport",
+    "ReconstructionReadinessReport",
     "ReplayEnvelope",
     "RuntimeRegressionReport",
     "SandboxEnvelope",
     "StandardsFingerprint",
+    "TraceCompletenessReport",
     "TriageReport",
 ]

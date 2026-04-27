@@ -398,6 +398,7 @@ def main(argv: list[str] | None = None) -> int:
                     validation_results[app_id] = {"ok": False, "reason": "packet_missing"}
                     continue
                 packet_dict = json.loads(packet_path.read_text(encoding="utf-8"))
+                trusted_packet_path = packet_path  # captured before tampering
 
                 # Reconstruct packet — only the fields validators consume
                 packet_obj = AppRunEvidencePacket(

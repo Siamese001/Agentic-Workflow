@@ -117,8 +117,16 @@ def validate_trace_tree(trace_path: Path | str) -> Verdict:
             fail.append(f"span {s.get('span_id')} references missing parent {pid}")
 
     trace_ids = {s.get("trace_id") for s in spans}
-    if len(trace_ids) != 1:
-        fail.append(f"inconsistent trace_id values: {sorted(trace_ids)}")
+    # BUG-FIX (2026-04-26): if every span has trace_id=None, the set is {None}
+    # with len=1, which previously passed this check. A trace with no
+    # trace_id is structurally invalid — fail explicitly.
+    if None in trace_ids:
+        fail.append(f"span(s) missing trace_id (None present): {sorted(s.get('span_id', '?') for s in spans if s.get('trace_id') is None)[:5]}")
+    if len(trace_ids - {None}) > 1:
+        fail.append(f"inconsistent trace_id values: {sorted(t for t in trace_ids if t is not None)}")
+    elif len(trace_ids) > 1 and None in trace_ids:
+        # mixed: some spans have trace_id, some have None
+        fail.append("trace_id mixed: some spans missing, others present")
 
     # Layer order check
     canonical_index = {layer: i for i, layer in enumerate(_CANONICAL_LAYER_ORDER)}
@@ -303,10 +311,23 @@ def validate_artifact_inventory(
     *,
     packet: AppRunEvidencePacket,
     export_root: Path,
+    packet_path: Path | None = None,
 ) -> Verdict:
     """Every path in the inventories must exist on disk and be non-empty.
 
     Also re-verifies the packet hash on disk binds the JSON content (anti-tamper).
+
+    BUG-FIX (2026-04-26): the packet's ``app_id`` / ``scenario_id`` fields
+    are TAMPER-MUTABLE and must NOT be used to derive the on-disk packet
+    path. Doing so let T2 (mutate-app_id-without-rehash) escape the actual
+    hash check — the validator caught the tamper only because the derived
+    path didn't exist. A move-and-tamper attack would have slipped past.
+
+    Callers MUST pass an explicit ``packet_path`` derived from a trusted
+    source (e.g. the registered scenario_id from disk discovery, not the
+    loaded packet object). When ``packet_path`` is None the validator falls
+    back to the legacy derivation but emits a ``trusted_path_unset`` reason
+    code so the caller knows it's running in degraded mode.
     """
     fail: list[str] = []
     checked: list[dict[str, Any]] = []
@@ -335,11 +356,20 @@ def validate_artifact_inventory(
                 entry["sha256"] = sha256_of_file(fp)
             checked.append(entry)
 
-    # Re-verify packet hash as a separate check
-    packet_path = export_root / "contracts" / packet.app_id / packet.scenario_id / "evidence_packet.json"
+    # Re-verify packet hash as a separate check.
+    # BUG-FIX: prefer the trusted packet_path provided by the caller. Only
+    # fall back to deriving from packet fields if no trusted path is given.
+    if packet_path is None:
+        packet_path = (
+            export_root / "contracts" / packet.app_id / packet.scenario_id
+            / "evidence_packet.json"
+        )
+        fail_path_source = "trusted_path_unset"
+    else:
+        fail_path_source = "trusted"
     hash_ok, hash_msg = verify_packet_hash(packet_path)
     if not hash_ok:
-        fail.append(f"packet_hash check failed: {hash_msg}")
+        fail.append(f"packet_hash check failed: {hash_msg} (path_source={fail_path_source})")
 
     return Verdict(
         name="artifact_inventory",
@@ -393,18 +423,23 @@ def validate_scenario(
 ) -> ScenarioValidationResult:
     spec = registered.spec
     trace_path = export_root / "traces" / f"{spec.app_id}_trace.json"
+    # BUG-FIX (2026-04-26): pass the TRUSTED packet_path (derived from the
+    # registered scenario, not the loaded packet) so a tampered packet
+    # cannot redirect the hash check to a non-existent path and slip past.
+    trusted_packet_path = (
+        export_root / "contracts" / spec.app_id / spec.scenario_id
+        / "evidence_packet.json"
+    )
     return ScenarioValidationResult(
         app_id=spec.app_id,
         scenario_id=spec.scenario_id,
         trace_verdict=validate_trace_tree(trace_path),
         replay_verdict=validate_replay(
-            registered=registered,
-            export_root=export_root,
-            adg_snapshot=adg_snapshot,
+            registered=registered, export_root=export_root, adg_snapshot=adg_snapshot,
         ),
         inventory_verdict=validate_artifact_inventory(
-            packet=packet,
-            export_root=export_root,
+            packet=packet, export_root=export_root,
+            packet_path=trusted_packet_path,
         ),
     )
 
