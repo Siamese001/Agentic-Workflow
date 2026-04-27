@@ -174,9 +174,17 @@ def _read_contract_payload(scenario_dir: Path, contract_kind: str) -> dict[str, 
     if not matches:
         return None
     try:
-        return json.loads(matches[-1].read_text(encoding="utf-8"))
+        parsed = json.loads(matches[-1].read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return None
+    # BUG-FIX (audit pass 3 / BUG #13, found by Hypothesis): json.loads
+    # can legitimately return a list / string / number / null when the file
+    # is valid JSON but the wrong shape. Returning a non-dict here later
+    # crashes _strip_volatile / sha256_of with TypeError. Treat any non-dict
+    # result as a missing contract — caller handles None gracefully.
+    if not isinstance(parsed, dict):
+        return None
+    return parsed
 
 
 def _strip_volatile(payload: Any) -> Any:

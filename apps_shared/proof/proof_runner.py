@@ -472,16 +472,27 @@ def main(argv: list[str] | None = None) -> int:
             )
             nc_summary: dict[str, dict[str, object]] = {}
             for app_id, controls in nc.items():
+                # INSTALL 1 (RC-1 prevention): the bar is now ``fully_caught``
+                # which requires BOTH verdict (caught=True) AND mechanism
+                # (reason_match=True for typed controls). A wrong-reason
+                # catch is no longer counted as a real catch.
                 caught = sum(1 for c in controls if c.caught)
+                fully_caught = sum(1 for c in controls if c.fully_caught)
                 total = len(controls)
+                wrong_reason = [
+                    c.name for c in controls if c.caught and not c.fully_caught
+                ]
                 nc_summary[app_id] = {
                     "caught": caught,
+                    "fully_caught": fully_caught,
                     "total": total,
                     "all_caught": caught == total,
+                    "all_fully_caught": fully_caught == total,
+                    "wrong_reason_catches": wrong_reason,
                     "controls": [c.to_dict() for c in controls],
                 }
             summary["negative_controls"] = nc_summary
-            nc_all_caught = all(s["all_caught"] for s in nc_summary.values())
+            nc_all_caught = all(s["all_fully_caught"] for s in nc_summary.values())
             summary["overall_pass"] = bool(summary["overall_pass"]) and nc_all_caught
             overall_pass = summary["overall_pass"]
 
@@ -558,14 +569,18 @@ def main(argv: list[str] | None = None) -> int:
         md.append("")
 
     if "negative_controls" in summary:
-        md.append("## Negative controls (W4 — tampering must be caught)")
+        md.append("## Negative controls (W4 — tampering must be caught for the right reason)")
         md.append("")
-        md.append("| App | Caught | Total | All Caught |")
-        md.append("|---|---:|---:|---|")
+        md.append("| App | Caught | Fully Caught | Total | Wrong-reason | Verdict |")
+        md.append("|---|---:|---:|---:|---|---|")
         for app_id, s in summary["negative_controls"].items():
+            wrong = s.get("wrong_reason_catches") or []
+            wrong_str = ",".join(wrong) if wrong else "—"
             md.append(
-                f"| `{app_id}` | {s.get('caught', '?')} | {s.get('total', '?')} | "
-                f"{'PASS' if s.get('all_caught') else 'FAIL'} |"
+                f"| `{app_id}` | {s.get('caught', '?')} | "
+                f"{s.get('fully_caught', '?')} | {s.get('total', '?')} | "
+                f"{wrong_str} | "
+                f"{'PASS' if s.get('all_fully_caught') else 'FAIL'} |"
             )
         md.append("")
 

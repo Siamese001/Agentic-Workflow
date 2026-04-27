@@ -11,14 +11,22 @@ def test_thirteen_controls_registered():
 
 
 def test_each_control_is_well_formed():
-    for name, desc, target, mutator in CONTROLS:
+    for name, desc, target, mutator, expected_reason in CONTROLS:
         assert isinstance(name, str) and name.startswith("T")
         assert isinstance(desc, str) and desc
-        # inventory_expect_pass is the documented "rehashed tamper not caught
-        # by inventory validator alone" probe — the architectural truth
-        # that hash-binding is content-integrity, not authentication.
         assert target in {"trace", "inventory", "replay", "inventory_expect_pass"}
         assert callable(mutator)
+        # INSTALL 1: every typed control MUST declare an expected_fail_reason.
+        # Only inventory_expect_pass (T13) may declare None.
+        if target == "inventory_expect_pass":
+            assert expected_reason is None, (
+                f"{name}: inventory_expect_pass controls must have None expected_reason"
+            )
+        else:
+            assert isinstance(expected_reason, str) and expected_reason, (
+                f"{name}: typed controls must declare a non-empty expected_fail_reason "
+                "(prevents wrong-mechanism catches from passing silently)"
+            )
 
 
 def test_control_names_unique():

@@ -52,8 +52,18 @@ from apps_shared.proof.validators import (
 class NegativeControlResult:
     """Outcome of one tamper test.
 
+    INSTALL 1 (RC-1 prevention) — verdict-and-mechanism cross-check
+    --------------------------------------------------------------
     ``caught`` is True iff the validator returned ``ok=False`` on tampered
-    artifacts (the desired behavior). ``caught=False`` is a detection gap.
+    artifacts. ``reason_match`` is True iff the validator's fail_reasons
+    contain the expected substring for THIS specific tamper. The pair
+    matters because a control that catches via the WRONG mechanism
+    (T2 caught via "missing path" instead of "hash mismatch", per
+    audit-pass-1 BUG #1) is a hidden defense gap — equal verdict, totally
+    different defense.
+
+    The bar for an actual catch is now ``caught AND reason_match``.
+    Either alone is a yellow flag.
     """
 
     name: str
@@ -61,8 +71,23 @@ class NegativeControlResult:
     target_validator: str
     caught: bool
     validator_verdict_ok: bool  # what the validator returned (False = caught)
+    expected_fail_reason: str | None = None  # substring expected in fail_reasons
+    reason_match: bool = False  # True iff expected_fail_reason found in fail_reasons
     fail_reasons: list[str] = field(default_factory=list)
     artifact_path: str | None = None
+
+    @property
+    def fully_caught(self) -> bool:
+        """A control is FULLY caught only when verdict + mechanism both match.
+
+        For ``inventory_expect_pass`` controls (T13 family), the bar is
+        flipped: documented-not-caught means caught=True with no
+        expected_fail_reason; this still counts as fully_caught.
+        """
+        if self.expected_fail_reason is None:
+            # Documented-not-caught probe (e.g. T13). caught is the only signal.
+            return self.caught
+        return self.caught and self.reason_match
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -71,6 +96,9 @@ class NegativeControlResult:
             "target_validator": self.target_validator,
             "caught": self.caught,
             "validator_verdict_ok": self.validator_verdict_ok,
+            "expected_fail_reason": self.expected_fail_reason,
+            "reason_match": self.reason_match,
+            "fully_caught": self.fully_caught,
             "fail_reasons": list(self.fail_reasons),
             "artifact_path": self.artifact_path,
         }
@@ -259,72 +287,61 @@ def _t13_packet_field_mutation_with_recompute(
     return "mutated cwd AND recomputed packet_hash (defense-in-depth probe)"
 
 
-# Each control: (name, description, target_validator, mutator)
-CONTROLS: tuple[tuple[str, str, str, Callable[[Path, str, str], str]], ...] = (
-    ("T1_packet_hash_mutation", "Flip first hex digit of packet_hash", "inventory", _t1_packet_hash_mutation),
-    ("T2_packet_field_mutation", "Alter app_id without rehashing", "inventory", _t2_packet_field_mutation),
-    (
-        "T3_inventory_file_deleted",
-        "Delete referenced span trace file",
-        "inventory",
-        _t3_inventory_file_deleted,
-    ),
-    (
-        "T4_inventory_file_emptied",
-        "Truncate referenced trace file to zero bytes",
-        "inventory",
-        _t4_inventory_file_emptied,
-    ),
-    ("T5_trace_root_removed", "Set all root parent_span_ids to fake parent", "trace", _t5_trace_root_removed),
-    (
-        "T6_trace_orphan_parent",
-        "Point a span at a non-existent parent_span_id",
-        "trace",
-        _t6_trace_orphan_parent,
-    ),
-    (
-        "T7_trace_inconsistent_trace_id",
-        "Give one span a foreign trace_id",
-        "trace",
-        _t7_trace_inconsistent_trace_id,
-    ),
-    (
-        "T8_trace_layer_order_swap",
-        "Reverse span order to break canonical layer sequence",
-        "trace",
-        _t8_trace_layer_order_swap,
-    ),
-    (
-        "T9_contract_content_mutation",
-        "Alter L1PlanContract.task_spec",
-        "replay",
-        _t9_contract_content_mutation,
-    ),
-    (
-        "T10_contract_added_field",
-        "Inject a new field into RouteContract",
-        "replay",
-        _t10_contract_added_field,
-    ),
-    (
-        "T11_contract_removed_field",
-        "Remove route_id from RouteContract",
-        "replay",
-        _t11_contract_removed_field,
-    ),
-    (
-        "T12_packet_hash_field_removed",
-        "Remove packet_hash field entirely",
-        "inventory",
-        _t12_packet_hash_field_removed,
-    ),
-    # T13 is documented-as-NOT-caught by the inventory validator alone.
-    # See docstring on _t13_packet_field_mutation_with_recompute. The
-    # negative-control runner records caught=False here as the EXPECTED
-    # outcome, proving the architectural model is honest.
-    ("T13_packet_recompute_attack", "Mutate cwd AND recompute packet_hash (defense-in-depth probe)",
+# Each control: (name, description, target_validator, mutator, expected_fail_reason).
+#
+# ``expected_fail_reason`` is a substring that MUST appear in at least one
+# of the validator's fail_reasons strings. Using a substring rather than a
+# full regex keeps the contract readable and stable across diagnostic
+# message tweaks while still pinning the *mechanism* (RC-1 fix).
+#
+# For ``inventory_expect_pass`` (T13), expected_fail_reason is None — the
+# documented outcome is ok=True (no fail_reasons at all).
+CONTROLS: tuple[
+    tuple[str, str, str, Callable[[Path, str, str], str], str | None], ...
+] = (
+    ("T1_packet_hash_mutation", "Flip first hex digit of packet_hash",
+     "inventory", _t1_packet_hash_mutation,
+     "hash mismatch"),
+    ("T2_packet_field_mutation", "Alter app_id without rehashing",
+     "inventory", _t2_packet_field_mutation,
+     # After BUG #1 fix, T2 catches via the trusted-path hash recompute
+     # NOT via path-missing. The expected mechanism is "hash mismatch".
+     "hash mismatch"),
+    ("T3_inventory_file_deleted", "Delete referenced span trace file",
+     "inventory", _t3_inventory_file_deleted,
+     "inventory missing"),
+    ("T4_inventory_file_emptied", "Truncate referenced trace file to zero bytes",
+     "inventory", _t4_inventory_file_emptied,
+     "inventory empty"),
+    ("T5_trace_root_removed", "Set all root parent_span_ids to fake parent",
+     "trace", _t5_trace_root_removed,
+     "expected exactly 1 root"),
+    ("T6_trace_orphan_parent", "Point a span at a non-existent parent_span_id",
+     "trace", _t6_trace_orphan_parent,
+     "missing parent"),
+    ("T7_trace_inconsistent_trace_id", "Give one span a foreign trace_id",
+     "trace", _t7_trace_inconsistent_trace_id,
+     "inconsistent trace_id values"),
+    ("T8_trace_layer_order_swap", "Reverse span order to break canonical layer sequence",
+     "trace", _t8_trace_layer_order_swap,
+     "appears after later layer"),
+    ("T9_contract_content_mutation", "Alter L1PlanContract.task_spec",
+     "replay", _t9_contract_content_mutation,
+     "L1PlanContract: content hash drift"),
+    ("T10_contract_added_field", "Inject a new field into RouteContract",
+     "replay", _t10_contract_added_field,
+     "RouteContract: content hash drift"),
+    ("T11_contract_removed_field", "Remove route_id from RouteContract",
+     "replay", _t11_contract_removed_field,
+     "RouteContract: content hash drift"),
+    ("T12_packet_hash_field_removed", "Remove packet_hash field entirely",
+     "inventory", _t12_packet_hash_field_removed,
+     "no packet_hash field"),
+    # T13 documented-as-NOT-caught by inventory alone (defense-in-depth probe).
+    ("T13_packet_recompute_attack", "Mutate cwd AND recompute packet_hash",
      "inventory_expect_pass",
-     _t13_packet_field_mutation_with_recompute),
+     _t13_packet_field_mutation_with_recompute,
+     None),
 )
 
 
@@ -350,25 +367,51 @@ def _packet_from_disk(packet_path: Path) -> AppRunEvidencePacket:
         d = {}
     if not isinstance(d, dict):
         d = {}
+
+    # BUG-FIX (audit pass 3 / BUG #12, found by Hypothesis): .get(k, default)
+    # only returns default when the key is MISSING. If the key is PRESENT
+    # with value None (e.g. JSON ``"app_id": null``), .get returns None
+    # and the dataclass field gets None — violating its declared str type.
+    # Wrap with a coercer that maps None to the default for required fields.
+    def _str(key: str, default: str = "") -> str:
+        v = d.get(key)
+        return v if isinstance(v, str) else default
+
+    def _int(key: str, default: int = 0) -> int:
+        v = d.get(key)
+        if isinstance(v, int) and not isinstance(v, bool):
+            return v
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except (ValueError, TypeError):
+                return default
+        return default
+
+    def _list(key: str) -> list:
+        v = d.get(key)
+        return list(v) if isinstance(v, list) else []
+
     return AppRunEvidencePacket(
-        app_id=d.get("app_id", ""),
-        scenario_id=d.get("scenario_id", ""),
-        command=d.get("command", ""),
-        cwd=d.get("cwd", ""),
-        process_id=int(d.get("process_id", 0)),
-        python_executable=d.get("python_executable", ""),
-        git_commit_or_snapshot_ref=d.get("git_commit_or_snapshot_ref"),
-        adg_snapshot_ref=d.get("adg_snapshot_ref", ""),
-        request_id=d.get("request_id", ""),
-        session_id=d.get("session_id", ""),
-        run_id=d.get("run_id", ""),
-        trace_root=d.get("trace_root", ""),
-        trace_id=d.get("trace_id", ""),
-        span_inventory=list(d.get("span_inventory", [])),
-        contract_inventory=list(d.get("contract_inventory", [])),
-        gate_verdict_inventory=list(d.get("gate_verdict_inventory", [])),
-        artifact_inventory=list(d.get("artifact_inventory", [])),
-        packet_hash=d.get("packet_hash"),
+        app_id=_str("app_id"),
+        scenario_id=_str("scenario_id"),
+        command=_str("command"),
+        cwd=_str("cwd"),
+        process_id=_int("process_id"),
+        python_executable=_str("python_executable"),
+        git_commit_or_snapshot_ref=d.get("git_commit_or_snapshot_ref")
+        if isinstance(d.get("git_commit_or_snapshot_ref"), str) else None,
+        adg_snapshot_ref=_str("adg_snapshot_ref"),
+        request_id=_str("request_id"),
+        session_id=_str("session_id"),
+        run_id=_str("run_id"),
+        trace_root=_str("trace_root"),
+        trace_id=_str("trace_id"),
+        span_inventory=_list("span_inventory"),
+        contract_inventory=_list("contract_inventory"),
+        gate_verdict_inventory=_list("gate_verdict_inventory"),
+        artifact_inventory=_list("artifact_inventory"),
+        packet_hash=d.get("packet_hash") if isinstance(d.get("packet_hash"), str) else None,
     )
 
 
@@ -408,7 +451,7 @@ def run_negative_controls(
     src_uwg_pending = primary_export_root / "uwg_pending" / spec.app_id
 
     results: list[NegativeControlResult] = []
-    for name, description, target, mutator in CONTROLS:
+    for name, description, target, mutator, expected_reason in CONTROLS:
         # Use only the short prefix (e.g. "T9") in the path to keep it under
         # Windows MAX_PATH (260 chars). The full descriptive name is preserved
         # in the NegativeControlResult.description field.
@@ -463,6 +506,8 @@ def run_negative_controls(
                     target_validator=target,
                     caught=False,
                     validator_verdict_ok=True,
+                    expected_fail_reason=expected_reason,
+                    reason_match=False,
                     fail_reasons=[f"mutator raised: {exc!r}"],
                     artifact_path=str(tamper_root.relative_to(primary_export_root)),
                 )
@@ -483,7 +528,9 @@ def run_negative_controls(
                 packet=packet, export_root=tamper_root,
                 packet_path=trusted_packet_path,
             )
-            # "Caught" here means: validator behaved as documented (ok=True)
+            # "Caught" here means: validator behaved as documented (ok=True).
+            # expected_reason is None for this control type; reason_match
+            # is irrelevant. fully_caught uses caught alone.
             results.append(
                 NegativeControlResult(
                     name=name,
@@ -491,6 +538,8 @@ def run_negative_controls(
                     target_validator=target,
                     caught=inv.ok,  # ok=True is the documented outcome
                     validator_verdict_ok=inv.ok,
+                    expected_fail_reason=expected_reason,  # None
+                    reason_match=False,
                     fail_reasons=(
                         []
                         if inv.ok
@@ -534,6 +583,13 @@ def run_negative_controls(
             v = Verdict(target, False, [f"unknown target_validator: {target}"])
 
         caught = not v.ok
+        # INSTALL 1 (RC-1 prevention): cross-check that the validator caught
+        # via the EXPECTED mechanism, not just any mechanism. A control that
+        # reaches caught=True via the wrong fail_reason is a hidden defense
+        # gap (this is exactly how audit-pass-1 BUG #1 hid for 2 waves).
+        reason_match = False
+        if expected_reason is not None:
+            reason_match = any(expected_reason in r for r in v.fail_reasons)
         results.append(
             NegativeControlResult(
                 name=name,
@@ -541,6 +597,8 @@ def run_negative_controls(
                 target_validator=target,
                 caught=caught,
                 validator_verdict_ok=v.ok,
+                expected_fail_reason=expected_reason,
+                reason_match=reason_match,
                 fail_reasons=list(v.fail_reasons),
                 artifact_path=str(tamper_root.relative_to(primary_export_root)).replace("\\", "/"),
             )
