@@ -44,6 +44,10 @@ class RerouteCeiling:
     def attempt_reroute(self, request_id: str) -> int:
         """Register one reroute attempt for ``request_id``.
 
+        W5.8 (closed-loop-router-fleet-rollout-d8f2a3 NEXT_STEP): every
+        attempt is durably recorded to router_l3_reroute ledger
+        (allow|ceiling_exceeded). Fail-soft.
+
         Returns:
             The new reroute count (1-indexed).
 
@@ -54,12 +58,25 @@ class RerouteCeiling:
         with self._lock:
             current = self._counts.get(request_id, 0)
             if current >= self.max_reroutes:
+                _record_reroute_decision(
+                    request_id=request_id,
+                    current_count=current,
+                    max_reroutes=self.max_reroutes,
+                    allowed=False,
+                )
                 raise RerouteCeilingExceededError(
                     f"request_id={request_id!r} exceeded reroute ceiling "
                     f"({self.max_reroutes}); force R5",
                 )
             self._counts[request_id] = current + 1
-            return self._counts[request_id]
+            new_count = self._counts[request_id]
+        _record_reroute_decision(
+            request_id=request_id,
+            current_count=new_count,
+            max_reroutes=self.max_reroutes,
+            allowed=True,
+        )
+        return new_count
 
     def reroute_count(self, request_id: str) -> int:
         with self._lock:
@@ -141,6 +158,73 @@ def evaluate_judge_disagreement(
         threshold=alarm_threshold,
         alarm=rate > alarm_threshold,
     )
+
+
+# =====================================================================
+# Constitutional §29 — closed-loop wiring (W5.8)
+# =====================================================================
+import logging as _logging  # noqa: E402
+
+_REROUTE_LOGGER = _logging.getLogger(__name__)
+_REROUTE_HELPER = None  # type: ignore[var-annotated]
+
+
+def _get_reroute_helper():
+    """Lazy singleton for the L3/reroute RouterClosedLoopHelper."""
+    global _REROUTE_HELPER  # noqa: PLW0603
+    if _REROUTE_HELPER is not None:
+        return _REROUTE_HELPER
+    try:
+        from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+
+        _REROUTE_HELPER = RouterClosedLoopHelper(
+            layer="L3",
+            router="reroute",
+            ledger_name="router_l3_reroute",
+            repo_area="agentic_core/L3_orchestration/exit_control/reroute_governance.py",
+        )
+        return _REROUTE_HELPER
+    except ImportError:  # guardian: allow-log-and-swallow -- helper unavailable must not break reroute ceiling
+        _REROUTE_LOGGER.debug("RouterClosedLoopHelper unavailable for L3/reroute", exc_info=True)
+        return None
+
+
+def _record_reroute_decision(
+    *,
+    request_id: str,
+    current_count: int,
+    max_reroutes: int,
+    allowed: bool,
+) -> None:
+    """Record reroute attempt + bind outcome.
+
+    Decision-and-outcome-in-one-shot pattern. The "outcome" is whether the
+    attempt was allowed (the ceiling was not exceeded). Fail-soft.
+    """
+    helper = _get_reroute_helper()
+    if helper is None:
+        return
+    try:
+        # Predict-success = headroom remaining: 1.0 when far from ceiling, 0 when at it.
+        headroom = max(0, max_reroutes - current_count)
+        predicted_p = float(headroom) / max(1, max_reroutes) if max_reroutes > 0 else 1.0
+        eu_score = float(headroom)
+
+        handle = helper.record_decision(
+            selected="allow" if allowed else "ceiling_exceeded",
+            cell={"max_reroutes": int(max_reroutes)},
+            predicted_p_success=predicted_p,
+            eu_score=eu_score,
+            decision_id=str(request_id) or None,  # uuid fallback if empty
+            prediction_extras={
+                "request_id": str(request_id),
+                "current_count": int(current_count),
+                "max_reroutes": int(max_reroutes),
+            },
+        )
+        helper.bind_outcome(handle, success=bool(allowed))
+    except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- ledger emission is best-effort; reroute ceiling must never break
+        _REROUTE_LOGGER.debug("reroute_governance ledger emit failed", exc_info=True)
 
 
 __all__ = [

@@ -185,6 +185,36 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="router_l3_reroute",
+        purpose=(
+            "L3/reroute router (RerouteCeiling.attempt_reroute) ceiling decisions — "
+            "allow/exceeded attribution per constitutional §29 row #6."
+        ),
+        schema_file="router_l3_reroute_ledger.schema.sql",
+        writer_hook="agentic_core/L3_orchestration/exit_control/reroute_governance.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l3-reroute/SKILL.md",
+        wave="W5.8",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
+        name="router_l5_hitl",
+        purpose=(
+            "L5/hitl router (HITLApprovalGate.evaluate) human-approval decisions — "
+            "approve/modify/reject/escalate per constitutional §29 row #8."
+        ),
+        schema_file="router_l5_hitl_ledger.schema.sql",
+        writer_hook="agentic_core/L5_safety/runtime_gates/g06_hitl_approval.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-router-l5-hitl/SKILL.md",
+        wave="W5.8",
+        sunset_criterion=(
+            "90 consecutive days with zero §29 router-enforcement violations "
+            "AND 4 consecutive in-band weekly calibration reports"
+        ),
+    ),
+    LedgerSpec(
         name="router_l4_uwg",
         purpose=(
             "L4/uwg router (DurableWriteGateway.commit) commit/blocked decisions — "
