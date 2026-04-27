@@ -251,6 +251,11 @@ def verify_packet_hash(packet_path: Path | str) -> tuple[bool, str]:
         data = json.loads(p.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         return False, f"invalid json: {exc}"
+    # BUG-FIX (2026-04-26 audit pass 2 / #7): json.loads can return a list,
+    # string, number, or null. data.pop("packet_hash", None) raises
+    # AttributeError on non-dict types. Validate shape before popping.
+    if not isinstance(data, dict):
+        return False, f"packet root is not an object: got {type(data).__name__}"
     stored = data.pop("packet_hash", None)
     if stored is None:
         return False, "no packet_hash field"

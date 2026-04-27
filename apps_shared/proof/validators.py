@@ -160,11 +160,23 @@ def validate_trace_tree(trace_path: Path | str) -> Verdict:
 
 
 def _read_contract_payload(scenario_dir: Path, contract_kind: str) -> dict[str, Any] | None:
-    """Find the latest contract of the given kind in scenario_dir."""
+    """Find the latest contract of the given kind in scenario_dir.
+
+    BUG-FIX (2026-04-26 audit pass 2 / #11): if a contract file exists but
+    contains malformed JSON (e.g. truncated by a tamper, partial write
+    interrupted by a crash), ``json.loads`` raises ``JSONDecodeError`` and
+    propagates up out of ``validate_replay``. Caller-side try/except in
+    proof_runner doesn't catch it. Defensive: return None on parse error
+    so the replay validator surfaces a clean "missing in primary or replay"
+    fail reason instead of crashing the whole run.
+    """
     matches = sorted(scenario_dir.glob(f"{contract_kind}_*.json"))
     if not matches:
         return None
-    return json.loads(matches[-1].read_text(encoding="utf-8"))
+    try:
+        return json.loads(matches[-1].read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
 
 
 def _strip_volatile(payload: Any) -> Any:
@@ -355,6 +367,48 @@ def validate_artifact_inventory(
                 entry["size_bytes"] = fp.stat().st_size
                 entry["sha256"] = sha256_of_file(fp)
             checked.append(entry)
+
+    # BUG-FIX (2026-04-26 audit pass 2 / #6): the inventory loop above only
+    # checks that the INDEX files (artifact_inventory.json, gates JSON,
+    # spans JSON) exist and are non-empty. The individual artifact files
+    # they reference (sandbox/<app>/<id>.json, uwg_pending/<app>/<id>.json)
+    # were NOT validated. An attacker could mutate
+    # sandbox/apps_underwriting_ai/recommendation_v1.json (changing
+    # "approve" → "reject") with no detection. Fix: walk INTO the
+    # artifact_inventory.json, recompute sha256 of every referenced file,
+    # compare against the recorded content_hash.
+    for rel in packet.artifact_inventory:
+        fp = export_root / rel
+        if not fp.exists() or fp.stat().st_size == 0:
+            continue  # already flagged in the loop above
+        try:
+            records = json.loads(fp.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            fail.append(f"artifact_inventory parse error in {rel}: {exc}")
+            continue
+        if not isinstance(records, list):
+            fail.append(f"artifact_inventory in {rel} is not a list")
+            continue
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            artifact_path = record.get("path")
+            recorded_hash = record.get("content_hash")
+            if not artifact_path or not recorded_hash:
+                continue
+            artifact_fp = export_root / artifact_path
+            if not artifact_fp.exists():
+                fail.append(
+                    f"artifact file missing: {artifact_path} "
+                    f"(referenced from {rel})"
+                )
+                continue
+            actual_hash = sha256_of_file(artifact_fp)
+            if actual_hash != recorded_hash:
+                fail.append(
+                    f"artifact content_hash drift: {artifact_path} "
+                    f"recorded={recorded_hash[:8]} actual={actual_hash[:8]}"
+                )
 
     # Re-verify packet hash as a separate check.
     # BUG-FIX: prefer the trusted packet_path provided by the caller. Only

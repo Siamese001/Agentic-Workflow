@@ -63,6 +63,35 @@ class CommitRequest:
         }
 
 
+_SAFE_ARTIFACT_ID_CHARS = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
+)
+
+
+def _validate_artifact_id(artifact_id: str) -> str:
+    """Reject path-traversal attempts in artifact_id.
+
+    BUG-FIX (2026-04-26 audit pass 2 / #8): pathlib's ``/`` operator
+    blindly joins, so ``sandbox_dir / "../../etc/passwd"`` resolves
+    outside the sandbox. The current callers pass hardcoded ids, but the
+    function signature is public and callers may eventually feed
+    request-derived strings. Reject anything that isn't a tight allowlist.
+    """
+    if not artifact_id:
+        raise ValueError("artifact_id must be non-empty")
+    if len(artifact_id) > 128:
+        raise ValueError(f"artifact_id too long: {len(artifact_id)} > 128")
+    if any(ch not in _SAFE_ARTIFACT_ID_CHARS for ch in artifact_id):
+        bad = [ch for ch in set(artifact_id) if ch not in _SAFE_ARTIFACT_ID_CHARS]
+        raise ValueError(
+            f"artifact_id contains forbidden characters: {bad!r}; "
+            "allowed: [A-Za-z0-9._-]"
+        )
+    if artifact_id.startswith(".") or ".." in artifact_id:
+        raise ValueError(f"artifact_id may not start with '.' or contain '..': {artifact_id!r}")
+    return artifact_id
+
+
 def write_sandbox_artifact(
     *,
     app_id: str,
@@ -81,6 +110,7 @@ def write_sandbox_artifact(
       * Are NEVER part of system-of-record state
       * MUST be classified ``SANDBOX_OUTPUT``
     """
+    artifact_id = _validate_artifact_id(artifact_id)
     sandbox_dir = export_root / "sandbox" / app_id
     sandbox_dir.mkdir(parents=True, exist_ok=True)
     path = sandbox_dir / f"{artifact_id}.json"
@@ -121,7 +151,11 @@ def request_uwg_commit(
       * exit gates can verify the request was authorized
       * negative controls can prove tampering with the commit body changes
         the content_hash
+
+    Records a :class:`CommitRequest` to prove that any future durable write
+    must route through the documented path.
     """
+    artifact_id = _validate_artifact_id(artifact_id)
     pending_dir = export_root / "uwg_pending" / app_id
     pending_dir.mkdir(parents=True, exist_ok=True)
     path = pending_dir / f"{artifact_id}.json"

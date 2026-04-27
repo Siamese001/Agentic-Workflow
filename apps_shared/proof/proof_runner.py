@@ -397,30 +397,47 @@ def main(argv: list[str] | None = None) -> int:
                 if not packet_path.exists():
                     validation_results[app_id] = {"ok": False, "reason": "packet_missing"}
                     continue
-                packet_dict = json.loads(packet_path.read_text(encoding="utf-8"))
-                trusted_packet_path = packet_path  # captured before tampering
-
-                # Reconstruct packet — only the fields validators consume
-                packet_obj = AppRunEvidencePacket(
-                    app_id=packet_dict["app_id"],
-                    scenario_id=packet_dict["scenario_id"],
-                    command=packet_dict["command"],
-                    cwd=packet_dict["cwd"],
-                    process_id=packet_dict["process_id"],
-                    python_executable=packet_dict["python_executable"],
-                    git_commit_or_snapshot_ref=packet_dict.get("git_commit_or_snapshot_ref"),
-                    adg_snapshot_ref=packet_dict["adg_snapshot_ref"],
-                    request_id=packet_dict["request_id"],
-                    session_id=packet_dict["session_id"],
-                    run_id=packet_dict["run_id"],
-                    trace_root=packet_dict["trace_root"],
-                    trace_id=packet_dict["trace_id"],
-                    span_inventory=list(packet_dict.get("span_inventory", [])),
-                    contract_inventory=list(packet_dict.get("contract_inventory", [])),
-                    gate_verdict_inventory=list(packet_dict.get("gate_verdict_inventory", [])),
-                    artifact_inventory=list(packet_dict.get("artifact_inventory", [])),
-                    packet_hash=packet_dict.get("packet_hash"),
-                )
+                # BUG-FIX (2026-04-26 audit pass 2 / #9): json.loads can raise
+                # JSONDecodeError; packet_dict["app_id"] etc. can raise
+                # KeyError if the on-disk packet is malformed/truncated.
+                # Neither is in the outer (RuntimeError, ValueError, TypeError,
+                # AttributeError, ImportError) tuple, so they would crash
+                # the whole proof_runner. Catch them here so this app falls
+                # to validator_exception and the others continue.
+                try:
+                    packet_dict = json.loads(packet_path.read_text(encoding="utf-8"))
+                    if not isinstance(packet_dict, dict):
+                        raise TypeError(
+                            f"packet root is not an object: {type(packet_dict).__name__}"
+                        )
+                    # Reconstruct packet — only the fields validators consume.
+                    # Use .get() defaults so a partial JSON doesn't raise KeyError.
+                    packet_obj = AppRunEvidencePacket(
+                        app_id=packet_dict.get("app_id", ""),
+                        scenario_id=packet_dict.get("scenario_id", ""),
+                        command=packet_dict.get("command", ""),
+                        cwd=packet_dict.get("cwd", ""),
+                        process_id=int(packet_dict.get("process_id", 0)),
+                        python_executable=packet_dict.get("python_executable", ""),
+                        git_commit_or_snapshot_ref=packet_dict.get("git_commit_or_snapshot_ref"),
+                        adg_snapshot_ref=packet_dict.get("adg_snapshot_ref", ""),
+                        request_id=packet_dict.get("request_id", ""),
+                        session_id=packet_dict.get("session_id", ""),
+                        run_id=packet_dict.get("run_id", ""),
+                        trace_root=packet_dict.get("trace_root", ""),
+                        trace_id=packet_dict.get("trace_id", ""),
+                        span_inventory=list(packet_dict.get("span_inventory", [])),
+                        contract_inventory=list(packet_dict.get("contract_inventory", [])),
+                        gate_verdict_inventory=list(packet_dict.get("gate_verdict_inventory", [])),
+                        artifact_inventory=list(packet_dict.get("artifact_inventory", [])),
+                        packet_hash=packet_dict.get("packet_hash"),
+                    )
+                except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+                    validation_results[app_id] = {
+                        "ok": False,
+                        "reason": f"packet_load_failed: {exc!r}",
+                    }
+                    continue
                 try:
                     vr = validate_scenario(
                         registered=registered,

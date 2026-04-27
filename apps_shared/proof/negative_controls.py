@@ -334,22 +334,36 @@ CONTROLS: tuple[tuple[str, str, str, Callable[[Path, str, str], str]], ...] = (
 
 
 def _packet_from_disk(packet_path: Path) -> AppRunEvidencePacket:
-    """Reconstruct an AppRunEvidencePacket from on-disk JSON."""
-    d = json.loads(packet_path.read_text(encoding="utf-8"))
+    """Reconstruct an AppRunEvidencePacket from on-disk JSON.
+
+    BUG-FIX (2026-04-26 audit pass 2 / #10): use ``.get()`` with sane
+    defaults instead of ``d["app_id"]``-style indexing. A negative-control
+    mutator that strips a required field would otherwise crash the whole
+    run via KeyError, taking down all subsequent controls for the app.
+    Defaults align with the dataclass defaults so a malformed packet
+    still produces a usable AppRunEvidencePacket the validator can reject
+    cleanly via its hash check or inventory walk.
+    """
+    try:
+        d = json.loads(packet_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        d = {}
+    if not isinstance(d, dict):
+        d = {}
     return AppRunEvidencePacket(
-        app_id=d["app_id"],
-        scenario_id=d["scenario_id"],
-        command=d["command"],
-        cwd=d["cwd"],
-        process_id=d["process_id"],
-        python_executable=d["python_executable"],
+        app_id=d.get("app_id", ""),
+        scenario_id=d.get("scenario_id", ""),
+        command=d.get("command", ""),
+        cwd=d.get("cwd", ""),
+        process_id=int(d.get("process_id", 0)),
+        python_executable=d.get("python_executable", ""),
         git_commit_or_snapshot_ref=d.get("git_commit_or_snapshot_ref"),
-        adg_snapshot_ref=d["adg_snapshot_ref"],
-        request_id=d["request_id"],
-        session_id=d["session_id"],
-        run_id=d["run_id"],
-        trace_root=d["trace_root"],
-        trace_id=d["trace_id"],
+        adg_snapshot_ref=d.get("adg_snapshot_ref", ""),
+        request_id=d.get("request_id", ""),
+        session_id=d.get("session_id", ""),
+        run_id=d.get("run_id", ""),
+        trace_root=d.get("trace_root", ""),
+        trace_id=d.get("trace_id", ""),
         span_inventory=list(d.get("span_inventory", [])),
         contract_inventory=list(d.get("contract_inventory", [])),
         gate_verdict_inventory=list(d.get("gate_verdict_inventory", [])),
@@ -384,6 +398,14 @@ def run_negative_controls(
     src_traces = primary_export_root / "traces"
     src_gates = primary_export_root / "gates"
     src_artifacts = primary_export_root / "artifacts"
+    # BUG-FIX (2026-04-26 audit pass 2): the artifact-content-hash check
+    # added in validators.py walks artifact_inventory.json and looks up
+    # each referenced sandbox/UWG file in the tamper_root. Those files
+    # were NOT being copied — the inventory validator then raised
+    # "artifact file missing", which T13 (defense-in-depth probe) recorded
+    # as a DEFENSE_GAP. Fix: mirror sandbox/ and uwg_pending/ subtrees too.
+    src_sandbox = primary_export_root / "sandbox" / spec.app_id
+    src_uwg_pending = primary_export_root / "uwg_pending" / spec.app_id
 
     results: list[NegativeControlResult] = []
     for name, description, target, mutator in CONTROLS:
@@ -416,6 +438,19 @@ def run_negative_controls(
             dst.mkdir(parents=True, exist_ok=True)
             for fp in src_dir.glob(name_glob):
                 shutil.copy2(fp, dst / fp.name)
+        # Mirror sandbox/ and uwg_pending/ per-app subtrees so the
+        # artifact-content-hash walk in validate_artifact_inventory can
+        # locate every file referenced from artifact_inventory.json.
+        if src_sandbox.exists():
+            shutil.copytree(
+                src_sandbox, tamper_root / "sandbox" / spec.app_id,
+                dirs_exist_ok=True,
+            )
+        if src_uwg_pending.exists():
+            shutil.copytree(
+                src_uwg_pending, tamper_root / "uwg_pending" / spec.app_id,
+                dirs_exist_ok=True,
+            )
 
         # Apply the mutation
         try:
