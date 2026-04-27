@@ -1,6 +1,0 @@
-﻿apps_lic: exit=0
-apps_rg: exit=0
-apps_eval: exit=1
-apps_exec: exit=1
-apps_research: exit=1
-apps_rfp: exit=1

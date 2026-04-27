@@ -105,7 +105,18 @@ tools/archive/
 .coverage.*/
 Thumbs.db/
 repo_root.txt/
-runtime_adg//
+# runtime_adg// (broken pattern — double-slash; superseded by anchored rule below)
+
+# Runtime ADG content-addressed cache (regenerated every run; never commit)
+# Added 2026-04-27 after triage found 1,558 untracked sha-named JSON cache files.
+agentic_core/L4_state/memory/runtime_adg/
+
+# Root-level scratch / debug session files (anchored to repo root via leading /)
+# Added 2026-04-27 — pattern catches transient pipe captures and probe scripts.
+/_*.txt
+/_*.md
+/_*.py
+/output_*.json
 
 # .env file (added 2026-04-23 after secret push-block incident)
 .env
