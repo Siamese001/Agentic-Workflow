@@ -87,6 +87,68 @@ TEST_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": _ANTI_BYPASS_TESTS,
     "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": _ANTI_BYPASS_TESTS,
     "REQ-UWG-OBS-ANTI-BYPASS-001": _ANTI_BYPASS_TESTS,
+    "REQ-GATE-OBS-ANTI-BYPASS-001": (
+        "tests/runtime_gates/test_runtime_gates_hardening.py",
+        "tests/runtime_gates/test_runtime_gates_edge_cases.py",
+        "tests/runtime/test_runtime_gates_g01_g29.py",
+    ),
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": (
+        "tests/agentic_core/L0_routing/enforcement/test_safety_enforcement_seam.py",
+        "tests/unit/agentic_core/L0_routing/enforcement/test_safety_enforcement_seam_behavior.py",
+    ),
+    "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": (
+        "tests/unit/agentic_core/L5_safety/v5/test_g2a_origin_trust.py",
+    ),
+    "REQ-PA-AUTHORITY-REDTEAM-001": (
+        "tests/unit/agentic_core/L5_safety/reasoning/test_AdversarialRedTeamerAgent.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_RedTeamAgent.py",
+        "tests/agentic_core/prompt_governance/security/test_assembly_injection_neutralizer.py",
+        "tests/unit/agentic_core/prompt_governance/security/detectors/test_injection_detector.py",
+        "tests/unit/agentic_core/L5_safety/enforcement/security/test_injection_regression_gate.py",
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa4_validation.py",
+    ),
+    "REQ-C0-OBS-ANTI-BYPASS-001": (
+        "tests/unit/agentic_core/L1_cognition/c0_context/test_c0_anti_bypass.py",
+        "tests/runtime/test_c0_evidence_contract.py",
+        "tests/agentic_core/L0_routing/c0_retrieval/test_evidence_contract.py",
+    ),
+    "REQ-L2-OBS-ANTI-BYPASS-001": (
+        "tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py",
+        "tests/unit/agentic_core/L2_execution/test_l2_sequencer_adapter.py",
+        "tests/unit/agentic_core/L2_execution/test_l2_sequencer_contract.py",
+        "tests/agentic_core/L2_execution/enforcement/test_preventative_sandbox.py",
+    ),
+    "REQ-PA-FINAL-EMIT-ARTIFACT-001": (
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa7_dispatch_states.py",
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa7_signature.py",
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa4_validation.py",
+    ),
+    "REQ-EXIT-X1G-X1I-REPLAY-001": (
+        "tests/unit/agentic_core/L3_orchestration/exit_eval/v6/test_x1_gates.py",
+        "tests/agentic_core/L3_orchestration/exit_eval/test_factory_x1g.py",
+        "tests/runtime_gates/00c_5/test_g21_g24_gates.py",
+        "tests/unit/agentic_core/L5_safety/runtime_gates/test_g19_g24.py",
+    ),
+    "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": (
+        "tests/l4/test_audit_ledger.py",
+        "tests/e2e/data/test_uwg_determinism_e2e.py",
+    ),
+    "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
+        "tests/unit/L6_observability/shadow_eval/test_06_7_gauntlet.py",
+        "tests/runtime/test_l6_learning_firewall.py",
+        "tests/agentic_core/L6_observability/utils/evaluation/test_promotion_gauntlet.py",
+    ),
+    "REQ-EXIT-OBS-ANTI-BYPASS-001": (
+        "tests/unit/agentic_core/L3_orchestration/exit_eval/v6/test_anti_bypass.py",
+        "tests/runtime/test_exit_x3_disposition_wireup.py",
+        "tests/agentic_core/L5_safety/types/test_exit_disposition_types.py",
+        "tests/runtime_gates/00c_6/test_g25_g29_gates.py",
+    ),
+    "REQ-L5-STATIC-GOV-DRIFT-001": (
+        "tests/unit/agentic_core/L5_safety/v5/test_static_drift.py",
+        "tests/unit/agentic_core/L5_safety/utils/test_structure_drift_writer.py",
+        "tests/unit/agentic_core/L5_safety/v5/test_governance_plane.py",
+    ),
 }
 ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": _ANTI_BYPASS_ARTIFACTS,
@@ -383,6 +445,7 @@ def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
         "code_refs": code_refs,
         "validator_refs": validator_refs,
         "test_refs": test_refs,
+        "test_executed": False,
         "artifact_refs": artifact_refs,
         "replay_refs": replay_refs,
         "otel_span_refs": otel_span_refs,
