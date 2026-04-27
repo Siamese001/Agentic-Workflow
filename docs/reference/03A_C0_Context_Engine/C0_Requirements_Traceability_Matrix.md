@@ -389,3 +389,232 @@ python -m pytest tests/unit/agentic_core/L1_cognition/c0_context/test_c0_anti_by
 ```
 
 A failure in any row should (a) be investigated as a regression against this matrix, and (b) mark the corresponding row in §3 from PASS back to GAP with a fresh recovery path.
+
+
+---
+
+## 9. Atomic Runtime Evidence — Line-by-Line (Live Probe Output)
+
+This section is the **literal output of `scripts/c0_evidence_harness.py`** —
+198 atomic probes, each one a real Python call against the live
+`agentic_core.L1_cognition.c0_context` package. Every row carries:
+
+  * **Req ID** — atomic identifier for the requirement
+  * **Doc §** — exact source-doc location of the clause
+  * **Probe** — the Python expression executed
+  * **Expected** — value the spec mandates
+  * **Observed** — actual value returned (or exception raised) at runtime
+  * **Status** — PASS only when observed == expected
+
+To regenerate (auditor-friendly, captures UTF-8 correctly on Windows):
+
+```bash
+python -c "import sys,io,runpy; sys.stdout=io.open('_c0_evidence.md','w',encoding='utf-8'); runpy.run_path('scripts/c0_evidence_harness.py',run_name='__main__')"
+```
+
+The harness exits 0 only when all 198 probes return their spec-mandated value.
+
+<!-- 198 probes — 198 PASS, 0 FAIL -->
+
+**Total atomic probes**: 198 | **PASS**: 198 | **FAIL**: 0
+
+| # | Req ID | Doc § | Requirement / Probe | Expected | Observed | Status |
+|---|--------|-------|---------------------|----------|----------|--------|
+| 1 | `C0.I1.pos` | C0_Context_Engine.md §CORE INVARIANTS | i1_retrieval_only(contract w/o final_answer) == True | True | True | **PASS** |
+| 2 | `C0.I1.neg` | C0_Context_Engine.md §CORE INVARIANTS | i1_retrieval_only(contract WITH final_answer) == False | False | False | **PASS** |
+| 3 | `C0.I2.pos` | C0_Context_Engine.md §CORE INVARIANTS | i2_retrieved_data_not_instruction({'content_classification':'data'}) == True | True | True | **PASS** |
+| 4 | `C0.I2.neg` | C0_Context_Engine.md §CORE INVARIANTS | i2_retrieved_data_not_instruction({'content_classification':'instruction'}) == False | False | False | **PASS** |
+| 5 | `C0.I3.pos` | C0_Context_Engine.md §CORE INVARIANTS | i3_lineage_preserved(item w/ source_id+acl+lane) == True | True | True | **PASS** |
+| 6 | `C0.I3.neg` | C0_Context_Engine.md §CORE INVARIANTS | i3_lineage_preserved(item w/ empty lane) == False | False | False | **PASS** |
+| 7 | `C0.I4.pos` | C0_Context_Engine.md §CORE INVARIANTS | i4_dense_alone_not_enough_for_high_stakes(high=True, lanes={dense,sparse}) == True | True | True | **PASS** |
+| 8 | `C0.I4.neg` | C0_Context_Engine.md §CORE INVARIANTS | i4_dense_alone_not_enough_for_high_stakes(high=True, lanes={dense}) == False | False | False | **PASS** |
+| 9 | `C0.I5.pos` | C0_Context_Engine.md §CORE INVARIANTS | i5_exact_claims_need_sparse_or_metadata(exact=True, lanes={sparse}) == True | True | True | **PASS** |
+| 10 | `C0.I5.neg` | C0_Context_Engine.md §CORE INVARIANTS | i5_exact_claims_need_sparse_or_metadata(exact=True, lanes={dense}) == False | False | False | **PASS** |
+| 11 | `C0.I6.pos` | C0_Context_Engine.md §CORE INVARIANTS | i6_graph_bounded(hops=2,max=3) == True | True | True | **PASS** |
+| 12 | `C0.I6.neg` | C0_Context_Engine.md §CORE INVARIANTS | i6_graph_bounded(hops=5,max=3) == False | False | False | **PASS** |
+| 13 | `C0.I7.pos` | C0_Context_Engine.md §CORE INVARIANTS | i7_contradictions_surfaced(CONFLICTED w/ flags) == True | True | True | **PASS** |
+| 14 | `C0.I7.neg` | C0_Context_Engine.md §CORE INVARIANTS | i7_contradictions_surfaced(CONFLICTED w/o flags) == False | False | False | **PASS** |
+| 15 | `C0.I8.pos` | C0_Context_Engine.md §CORE INVARIANTS | i8_weak_evidence_stays_weak(WEAK,score=0.40) == True | True | True | **PASS** |
+| 16 | `C0.I8.neg` | C0_Context_Engine.md §CORE INVARIANTS | i8_weak_evidence_stays_weak(WEAK,score=0.95) == False  (no inflation) | False | False | **PASS** |
+| 17 | `C0.I9.pos` | C0_Context_Engine.md §CORE INVARIANTS | i9_one_refine_loop(refine=1,max=1) == True | True | True | **PASS** |
+| 18 | `C0.I9.neg` | C0_Context_Engine.md §CORE INVARIANTS | i9_one_refine_loop(refine=2,max=1) == False | False | False | **PASS** |
+| 19 | `C0.I10.pos` | C0_Context_Engine.md §CORE INVARIANTS | i10_no_self_authorize_route(contract w/o flag) == True | True | True | **PASS** |
+| 20 | `C0.I10.neg` | C0_Context_Engine.md §CORE INVARIANTS | i10_no_self_authorize_route(contract w/ self_authorized_route_change) == False | False | False | **PASS** |
+| 21 | `C0.I11.pos` | C0_Context_Engine.md §CORE INVARIANTS | i11_output_is_contract_not_answer(plain contract) == True | True | True | **PASS** |
+| 22 | `C0.I11.neg` | C0_Context_Engine.md §CORE INVARIANTS | i11_output_is_contract_not_answer(contract w/ final_answer_text) == False | False | False | **PASS** |
+| 23 | `C0.I12.pos` | C0_Context_Engine.md §CORE INVARIANTS | i12_only_verified_to_prompt_assembly(all items have acl) == True | True | True | **PASS** |
+| 24 | `C0.I12.neg` | C0_Context_Engine.md §CORE INVARIANTS | i12_only_verified_to_prompt_assembly(item w/ empty acl) == False | False | False | **PASS** |
+| 25 | `C0.G0.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g0({'route_allows_retrieval': True}).passed == True | True | True | **PASS** |
+| 26 | `C0.G0.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g0({'route_allows_retrieval': False}).passed == False | False | False | **PASS** |
+| 27 | `C0.G1.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g1({'all_sources_acl_cleared': True}).passed == True | True | True | **PASS** |
+| 28 | `C0.G1.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g1({'all_sources_acl_cleared': False}).passed == False | False | False | **PASS** |
+| 29 | `C0.G2.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g2({'freshness_satisfied': True}).passed == True | True | True | **PASS** |
+| 30 | `C0.G2.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g2({'freshness_satisfied': False}).passed == False | False | False | **PASS** |
+| 31 | `C0.G3.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g3({'has_exact_claim': True, 'sparse_or_metadata_present': True}).passed == True | True | True | **PASS** |
+| 32 | `C0.G3.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g3({'has_exact_claim': True, 'sparse_or_metadata_present': False}).passed == False | False | False | **PASS** |
+| 33 | `C0.G4.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g4({'dense_relevance_score': 0.5}).passed == True | True | True | **PASS** |
+| 34 | `C0.G4.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g4({'dense_relevance_score': 0.1}).passed == False | False | False | **PASS** |
+| 35 | `C0.G5.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g5({'hops_used': 1, 'max_hops': 3}).passed == True | True | True | **PASS** |
+| 36 | `C0.G5.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g5({'hops_used': 10, 'max_hops': 3}).passed == False | False | False | **PASS** |
+| 37 | `C0.G6.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g6({'all_anchors_resolve': True}).passed == True | True | True | **PASS** |
+| 38 | `C0.G6.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g6({'all_anchors_resolve': False}).passed == False | False | False | **PASS** |
+| 39 | `C0.G7.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g7({'contradictions_surfaced': True}).passed == True | True | True | **PASS** |
+| 40 | `C0.G7.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g7({'contradictions_surfaced': False}).passed == False | False | False | **PASS** |
+| 41 | `C0.G8.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g8({'coverage_score': 0.8}).passed == True | True | True | **PASS** |
+| 42 | `C0.G8.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g8({'coverage_score': 0.1}).passed == False | False | False | **PASS** |
+| 43 | `C0.G9.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g9({'must_use_fits_budget': True}).passed == True | True | True | **PASS** |
+| 44 | `C0.G9.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g9({'must_use_fits_budget': False}).passed == False | False | False | **PASS** |
+| 45 | `C0.G10.pos` | C0.7.md §PHASE 1 quality-gate matrix | gate_g10({'retrieved_text_classified_data': True}).passed == True | True | True | **PASS** |
+| 46 | `C0.G10.neg` | C0.7.md §PHASE 1 quality-gate matrix | gate_g10({'retrieved_text_classified_data': False}).passed == False | False | False | **PASS** |
+| 47 | `C0.5.MAP.PASS` | C0.5.md §recommend_disposition | recommend_disposition(PASS) is PROCEED | <RecommendedDisposition.PROCEED: 'proceed'> | <RecommendedDisposition.PROCEED: 'proceed'> | **PASS** |
+| 48 | `C0.5.MAP.WEAK_WITH_CAVEATS` | C0.5.md §recommend_disposition | recommend_disposition(WEAK_WITH_CAVEATS) is PROCEED_WITH_CAVEAT | <RecommendedDisposition.PROCEED_WITH_CAVEAT: 'proceed_wit... | <RecommendedDisposition.PROCEED_WITH_CAVEAT: 'proceed_with_caveat'> | **PASS** |
+| 49 | `C0.5.MAP.WEAK` | C0.5.md §recommend_disposition | recommend_disposition(WEAK) is REROUTE | <RecommendedDisposition.REROUTE: 'reroute'> | <RecommendedDisposition.REROUTE: 'reroute'> | **PASS** |
+| 50 | `C0.5.MAP.CONFLICTED` | C0.5.md §recommend_disposition | recommend_disposition(CONFLICTED) is HUMAN_REVIEW | <RecommendedDisposition.HUMAN_REVIEW: 'human_review'> | <RecommendedDisposition.HUMAN_REVIEW: 'human_review'> | **PASS** |
+| 51 | `C0.5.MAP.EMPTY` | C0.5.md §recommend_disposition | recommend_disposition(EMPTY) is ABSTAIN | <RecommendedDisposition.ABSTAIN: 'abstain'> | <RecommendedDisposition.ABSTAIN: 'abstain'> | **PASS** |
+| 52 | `C0.5.MAP.BLOCKED` | C0.5.md §recommend_disposition | recommend_disposition(BLOCKED) is FALLBACK_R5 | <RecommendedDisposition.FALLBACK_R5: 'fallback_R5'> | <RecommendedDisposition.FALLBACK_R5: 'fallback_R5'> | **PASS** |
+| 53 | `C0.0.BR.grounding_not_required` | C0.0.md PHASE 1 §2 blocked_reason | preflight(grounding=False).blocked_reason == 'grounding_not_required' | 'grounding_not_required' | 'grounding_not_required' | **PASS** |
+| 54 | `C0.0.BR.route_disallows` | C0.0.md PHASE 1 §2 blocked_reason | preflight(R5).blocked_reason contains 'does not allow' | True | True | **PASS** |
+| 55 | `C0.0.BR.no_allowed_source` | C0.0.md PHASE 1 §2 blocked_reason | preflight(allowed=disallowed=docs).blocked_reason contains 'no allowed source' | True | True | **PASS** |
+| 56 | `C0.0.BR.data_class_restricted` | C0.0.md PHASE 1 §2 blocked_reason | preflight(data_class='restricted').blocked_reason contains 'data_class' | True | True | **PASS** |
+| 57 | `C0.0.BR.data_class_blocked` | C0.0.md PHASE 1 §2 blocked_reason | preflight(data_class='blocked').blocked_reason contains 'data_class' | True | True | **PASS** |
+| 58 | `C0.0.BR.budget_floor` | C0.0.md PHASE 1 §2 blocked_reason | preflight(budget=511).blocked_reason contains 'token_budget' | True | True | **PASS** |
+| 59 | `C0.0.BR.happy` | C0.0.md PHASE 1 §2 blocked_reason | preflight(default route).eligible == True | True | True | **PASS** |
+| 60 | `C0.0.BR.standard.strict` | C0.0.md PHASE 1 §2 evidence_standard | preflight(POLICY_CLAUSE).evidence_standard == 'strict' | 'strict' | 'strict' | **PASS** |
+| 61 | `C0.0.BR.standard.default` | C0.0.md PHASE 1 §2 evidence_standard | preflight(SOURCE_SUMMARY).evidence_standard == 'default' | 'default' | 'default' | **PASS** |
+| 62 | `C0.1.V.support_target` | C0.1.md §support targets | len(SupportTarget) == 8 | 8 | 8 | **PASS** |
+| 63 | `C0.1.V.source_classes` | C0.1.md §source classes | len(SOURCE_CLASSES) == 7 | 7 | 7 | **PASS** |
+| 64 | `C0.1.V.retrieval_modes` | C0.1.md §retrieval modes | len(RETRIEVAL_MODES) == 6 | 6 | 6 | **PASS** |
+| 65 | `C0.1.V.bound_params` | C0.1.md §bounds | len(BOUND_PARAMS) == 9 | 9 | 9 | **PASS** |
+| 66 | `C0.1.V.bound_params_set` | C0.1.md §bounds | BOUND_PARAMS contains max_k, max_graph_hops, max_refine_attempts | True | True | **PASS** |
+| 67 | `C0.1.V.modes_known` | C0.1.md §retrieval modes | RETRIEVAL_MODES == {dense,sparse,metadata,graph,cache,hybrid} | frozenset({'graph', 'dense', 'cache', 'metadata', 'hybrid... | frozenset({'graph', 'dense', 'cache', 'metadata', 'hybrid', 'sparse'}) | **PASS** |
+| 68 | `C0.1.PLAN.bounds_complete` | C0.1.md PHASE 2 §plan | build_retrieval_plan(default).bounds covers every BOUND_PARAM | True | True | **PASS** |
+| 69 | `C0.1.PLAN.unknown_mode_rejected` | C0.1.md PHASE 2 §plan | build_retrieval_plan(modes={vibes}) raises ValueError | raises ValueError | raised ValueError(unknown retrieval_modes: ['vibes']) | **PASS** |
+| 70 | `C0.1.PLAN.blocked_preflight` | C0.1.md PHASE 2 §plan | build_retrieval_plan(blocked preflight) raises ValueError | raises ValueError | raised ValueError(cannot build retrieval plan; preflight blocked: grounding_n... | **PASS** |
+| 71 | `C0.4.CLS.MUST_USE` | C0.4.md §evidence strata | stratify pre-labeled MUST_USE ends in correct bucket | True | True | **PASS** |
+| 72 | `C0.4.CLS.SUPPORTING` | C0.4.md §evidence strata | stratify pre-labeled SUPPORTING ends in correct bucket | True | True | **PASS** |
+| 73 | `C0.4.CLS.CONTRADICTS` | C0.4.md §evidence strata | stratify pre-labeled CONTRADICTS ends in correct bucket | True | True | **PASS** |
+| 74 | `C0.4.CLS.BACKGROUND` | C0.4.md §evidence strata | stratify pre-labeled BACKGROUND ends in correct bucket | True | True | **PASS** |
+| 75 | `C0.4.CLS.DEFINITIONS` | C0.4.md §evidence strata | stratify pre-labeled DEFINITIONS ends in correct bucket | True | True | **PASS** |
+| 76 | `C0.4.CLS.LINEAGE` | C0.4.md §evidence strata | stratify pre-labeled LINEAGE ends in correct bucket | True | True | **PASS** |
+| 77 | `C0.4.CLS.EXCLUDED` | C0.4.md §evidence strata | stratify pre-labeled EXCLUDED ends in correct bucket | True | True | **PASS** |
+| 78 | `C0.3.CT.CODE` | C0.3.md §contradiction types | docs+code → CODE | <ContradictionType.CODE: 'code'> | <ContradictionType.CODE: 'code'> | **PASS** |
+| 79 | `C0.3.CT.RUNTIME.logs_contra` | C0.3.md §contradiction types | docs+logs → RUNTIME | <ContradictionType.RUNTIME: 'runtime'> | <ContradictionType.RUNTIME: 'runtime'> | **PASS** |
+| 80 | `C0.3.CT.RUNTIME.logs_anchor` | C0.3.md §contradiction types | logs+docs → RUNTIME | <ContradictionType.RUNTIME: 'runtime'> | <ContradictionType.RUNTIME: 'runtime'> | **PASS** |
+| 81 | `C0.3.CT.POLICY` | C0.3.md §contradiction types | docs+policy → POLICY | <ContradictionType.POLICY: 'policy'> | <ContradictionType.POLICY: 'policy'> | **PASS** |
+| 82 | `C0.3.CT.TIME` | C0.3.md §contradiction types | fresh vs stale (same class) → TIME | <ContradictionType.TIME: 'time'> | <ContradictionType.TIME: 'time'> | **PASS** |
+| 83 | `C0.3.CT.SOURCE` | C0.3.md §contradiction types | docs+docs (same fresh) → SOURCE | <ContradictionType.SOURCE: 'source'> | <ContradictionType.SOURCE: 'source'> | **PASS** |
+| 84 | `C0.3.CT.orphan` | C0.3.md §contradiction types | CONTRADICTS w/o anchor → source_b='unknown' | 'unknown' | 'unknown' | **PASS** |
+| 85 | `C0.3.CT.enum_size` | C0.3.md §contradiction types | len(ContradictionType) == 8 | 8 | 8 | **PASS** |
+| 86 | `C0.4A.GAP.enum_size` | C0.4.md §gap types | len(GapType) == 9 | 9 | 9 | **PASS** |
+| 87 | `C0.4A.GAP.MISSING_EXACT_QUOTE` | C0.4.md §gap types | EXACT_QUOTE target + dense-only → MISSING_EXACT_QUOTE | True | True | **PASS** |
+| 88 | `C0.4A.GAP.MISSING_DIRECT_SUPPORT.partial` | C0.4.md §gap types | Only SUPPORTING (no MUST_USE) → MISSING_DIRECT_SUPPORT | True | True | **PASS** |
+| 89 | `C0.4A.GAP.MISSING_DIRECT_SUPPORT.empty` | C0.4.md §gap types | Empty pool → MISSING_DIRECT_SUPPORT (severe) | True | True | **PASS** |
+| 90 | `C0.4A.GAP.MISSING_SOURCE_DIVERSITY` | C0.4.md §gap types | high_stakes + single source → MISSING_SOURCE_DIVERSITY | True | True | **PASS** |
+| 91 | `C0.4A.GAP.MISSING_TENANT_ACL_PROOF` | C0.4.md §gap types | uncleared ACL on must-use → MISSING_TENANT_ACL_PROOF | True | True | **PASS** |
+| 92 | `C0.5.SCORE.direct_support_score.empty` | C0.5.md §11-dimension score | score(empty pool).direct_support_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 93 | `C0.5.SCORE.coverage_score.empty` | C0.5.md §11-dimension score | score(empty pool).coverage_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 94 | `C0.5.SCORE.source_authority_score.empty` | C0.5.md §11-dimension score | score(empty pool).source_authority_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 95 | `C0.5.SCORE.freshness_score.empty` | C0.5.md §11-dimension score | score(empty pool).freshness_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 96 | `C0.5.SCORE.citation_stability_score.empty` | C0.5.md §11-dimension score | score(empty pool).citation_stability_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 97 | `C0.5.SCORE.lineage_quality_score.empty` | C0.5.md §11-dimension score | score(empty pool).lineage_quality_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 98 | `C0.5.SCORE.source_diversity_score.empty` | C0.5.md §11-dimension score | score(empty pool).source_diversity_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 99 | `C0.5.SCORE.exactness_score.empty` | C0.5.md §11-dimension score | score(empty pool).exactness_score == 0.0 | 0.0 | 0.0 | **PASS** |
+| 100 | `C0.5.SCORE.ACL_confidence.empty` | C0.5.md §11-dimension score | score(empty pool).ACL_confidence == 0.0 | 0.0 | 0.0 | **PASS** |
+| 101 | `C0.5.SCORE.contradiction_risk.empty` | C0.5.md §11-dimension score | score(empty pool).contradiction_risk == 0.0 | 0.0 | 0.0 | **PASS** |
+| 102 | `C0.5.SCORE.unsupported_inference_risk.empty` | C0.5.md §11-dimension score | score(empty pool).unsupported_inference_risk == 0.30 (severe gap present) | 0.3 | 0.3 | **PASS** |
+| 103 | `C0.5.SCORE.unsupported_inference_risk.no_gap` | C0.5.md §11-dimension score | score(must_use pool, no gaps).unsupported_inference_risk == 0.0 | 0.0 | 0.0 | **PASS** |
+| 104 | `C0.5.SCORE.aggregate.zeros` | C0.5.md §aggregate | aggregate_support_score(all-zero breakdown) == 0.0 | 0.0 | 0.0 | **PASS** |
+| 105 | `C0.5.SCORE.as_dict.size` | C0.5.md §ScoreBreakdown.as_dict | len(ScoreBreakdown().as_dict()) == 11 | 11 | 11 | **PASS** |
+| 106 | `C0.6.TAC.enum_size` | C0.6.md §RefineTactic | len(RefineTactic) == 8 | 8 | 8 | **PASS** |
+| 107 | `C0.6.TAC.REWRITE` | C0.6.md §RefineTactic | is_refinement_allowed(REWRITE) == True | True | True | **PASS** |
+| 108 | `C0.6.TAC.BROADEN` | C0.6.md §RefineTactic | is_refinement_allowed(BROADEN) == True | True | True | **PASS** |
+| 109 | `C0.6.TAC.NARROW` | C0.6.md §RefineTactic | is_refinement_allowed(NARROW) == True | True | True | **PASS** |
+| 110 | `C0.6.TAC.DECOMPOSE` | C0.6.md §RefineTactic | is_refinement_allowed(DECOMPOSE) == True | True | True | **PASS** |
+| 111 | `C0.6.TAC.GRAPH_HOP` | C0.6.md §RefineTactic | is_refinement_allowed(GRAPH_HOP) == True | True | True | **PASS** |
+| 112 | `C0.6.TAC.HYBRIDIZE` | C0.6.md §RefineTactic | is_refinement_allowed(HYBRIDIZE) == True | True | True | **PASS** |
+| 113 | `C0.6.TAC.FRESHEN` | C0.6.md §RefineTactic | is_refinement_allowed(FRESHEN) == True | True | True | **PASS** |
+| 114 | `C0.6.TAC.ABSTAIN` | C0.6.md §RefineTactic | is_refinement_allowed(ABSTAIN) == True | True | True | **PASS** |
+| 115 | `C0.6.DIS.size` | C0.6.md §DISALLOWED_REFINEMENTS | len(DISALLOWED_REFINEMENTS) == 7 | 7 | 7 | **PASS** |
+| 116 | `C0.6.DIS.change_route` | C0.6.md §DISALLOWED_REFINEMENTS | rationale containing 'change_route' raises DisallowedRefinementError | 'change_route' | 'change_route' | **PASS** |
+| 117 | `C0.6.DIS.change_user_task` | C0.6.md §DISALLOWED_REFINEMENTS | rationale containing 'change_user_task' raises DisallowedRefinementError | 'change_user_task' | 'change_user_task' | **PASS** |
+| 118 | `C0.6.DIS.convert_read_to_action` | C0.6.md §DISALLOWED_REFINEMENTS | rationale containing 'convert_read_to_action' raises DisallowedRefinementError | 'convert_read_to_action' | 'convert_read_to_action' | **PASS** |
+| 119 | `C0.6.DIS.expand_tenant_acl_region` | C0.6.md §DISALLOWED_REFINEMENTS | rationale containing 'expand_tenant_acl_region' raises DisallowedRefinementError | 'expand_tenant_acl_region' | 'expand_tenant_acl_region' | **PASS** |
+| 120 | `C0.6.DIS.ignore_contradictions` | C0.6.md §DISALLOWED_REFINEMENTS | rationale containing 'ignore_contradictions' raises DisallowedRefinementError | 'ignore_contradictions' | 'ignore_contradictions' | **PASS** |
+| 121 | `C0.6.DIS.invent_source_authority` | C0.6.md §DISALLOWED_REFINEMENTS | rationale containing 'invent_source_authority' raises DisallowedRefinementError | 'invent_source_authority' | 'invent_source_authority' | **PASS** |
+| 122 | `C0.6.DIS.modify_durable_memory` | C0.6.md §DISALLOWED_REFINEMENTS | rationale containing 'modify_durable_memory' raises DisallowedRefinementError | 'modify_durable_memory' | 'modify_durable_memory' | **PASS** |
+| 123 | `C0.6.ENT.PASS_blocks` | C0.6.md §entry conditions | request_refinement(status=PASS) raises DisallowedRefinementError | raises DisallowedRefinementError | raised DisallowedRefinementError(refinement disallowed when status=PASS (entr... | **PASS** |
+| 124 | `C0.6.ENT.budget_zero` | C0.6.md §budget | request_refinement(max_refine=0) raises RefinementBudgetExhaustedError | raises RefinementBudgetExhaustedError | raised RefinementBudgetExhaustedError(already attempted 0 refinements (max=0)) | **PASS** |
+| 125 | `C0.4.BAND.must_use_at_0.85` | C0.4.md §authority bands | auth=0.85 → must_use | 'must_use' | 'must_use' | **PASS** |
+| 126 | `C0.4.BAND.supporting_below_must` | C0.4.md §authority bands | auth=0.84 → supporting | 'supporting' | 'supporting' | **PASS** |
+| 127 | `C0.4.BAND.supporting_at_0.50` | C0.4.md §authority bands | auth=0.50 → supporting | 'supporting' | 'supporting' | **PASS** |
+| 128 | `C0.4.BAND.background_below_supp` | C0.4.md §authority bands | auth=0.49 → background | 'background' | 'background' | **PASS** |
+| 129 | `C0.4.BAND.background_at_0.25` | C0.4.md §authority bands | auth=0.25 → background | 'background' | 'background' | **PASS** |
+| 130 | `C0.4.BAND.excluded_below_bg` | C0.4.md §authority bands | auth=0.24 → excluded | 'excluded' | 'excluded' | **PASS** |
+| 131 | `C0.4.COMP.zero_budget_raises` | C0.4.md §compress | compress_to_budget(max=0) raises ValueError | raises ValueError | raised ValueError(max_token_context must be > 0) | **PASS** |
+| 132 | `C0.4.COMP.must_use_oversize_raises` | C0.4.md §compress | compress_to_budget(must=200, max=50) raises ValueError | raises ValueError | raised ValueError(must-keep evidence (200 tokens) exceeds budget 50; G9 budge... | **PASS** |
+| 133 | `C0.4.COMP.bg_trimmed_must_kept` | C0.4.md §compress | compress trims background while keeping must_use | True | True | **PASS** |
+| 134 | `C0.5.VER.missing_source_id` | C0.5.md §verify | verify_evidence(item w/ no source_id) → 'source_id_missing' | 'source_id_missing' | 'source_id_missing' | **PASS** |
+| 135 | `C0.5.VER.missing_span_ref` | C0.5.md §verify | verify_evidence(item w/ empty span_ref) → 'span_ref_missing' | 'span_ref_missing' | 'span_ref_missing' | **PASS** |
+| 136 | `C0.5.VER.unknown_acl` | C0.5.md §verify | verify_evidence(item w/ unknown acl) starts with 'acl_status=' | True | True | **PASS** |
+| 137 | `C0.5.VER.default_allow_passes` | C0.5.md §verify | verify_evidence(default-allow ACL) is verified | 'default-allow' | 'default-allow' | **PASS** |
+| 138 | `C0.5.DIG.replay_stable` | C0.5.md §replay | contract_digest(c1) == contract_digest(same_inputs) | True | True | **PASS** |
+| 139 | `C0.5.DIG.changes_with_status` | C0.5.md §replay | contract_digest changes when status flips PASS↔WEAK | True | True | **PASS** |
+| 140 | `C0.5.DIG.length` | C0.5.md §replay | len(contract_digest(...)) == 32 hex chars | 32 | 32 | **PASS** |
+| 141 | `C0.5.DEC.BLOCKED` | C0.5.md §decide_status | decide_status(blocked=True) → BLOCKED | <SupportStatus.BLOCKED: 'BLOCKED'> | <SupportStatus.BLOCKED: 'BLOCKED'> | **PASS** |
+| 142 | `C0.5.DEC.EMPTY` | C0.5.md §decide_status | decide_status(no evidence) → EMPTY | <SupportStatus.EMPTY: 'EMPTY'> | <SupportStatus.EMPTY: 'EMPTY'> | **PASS** |
+| 143 | `C0.5.DEC.CONFLICTED` | C0.5.md §decide_status | decide_status(must+contra severity≥0.6) → CONFLICTED | <SupportStatus.CONFLICTED: 'CONFLICTED'> | <SupportStatus.CONFLICTED: 'CONFLICTED'> | **PASS** |
+| 144 | `C0.AB.dispositions_disjoint_from_runtime_vocab` | C0.7.md §anti-bypass | RecommendedDisposition values ∩ {ALLOW,DENY,COMMIT_REQUEST,...} == ∅ | set() | set() | **PASS** |
+| 145 | `C0.AB.no_L4_writes_imported` | C0.7.md §anti-bypass | c0_context/*.py contains zero L4 write imports | [] | [] | **PASS** |
+| 146 | `C0.AB.change_route_in_DISALLOWED` | C0.7.md §anti-bypass | 'change_route' is in DISALLOWED_REFINEMENTS | True | True | **PASS** |
+| 147 | `C0.AB.modify_durable_memory_in_DISALLOWED` | C0.7.md §anti-bypass | 'modify_durable_memory' is in DISALLOWED_REFINEMENTS | True | True | **PASS** |
+| 148 | `C0.AB.expand_acl_in_DISALLOWED` | C0.7.md §anti-bypass | 'expand_tenant_acl_region' is in DISALLOWED_REFINEMENTS | True | True | **PASS** |
+| 149 | `C0.7.OTEL.parent_name` | C0.7.md PHASE 3 | C0_PARENT_SPAN_NAME == 'c0.stage' | 'c0.stage' | 'c0.stage' | **PASS** |
+| 150 | `C0.7.OTEL.children_count` | C0.7.md PHASE 3 | len(C0_CHILD_SPAN_NAMES) == 14 | 14 | 14 | **PASS** |
+| 151 | `C0.7.OTEL.required_attrs_count` | C0.7.md PHASE 3 | len(C0_PARENT_REQUIRED_ATTRS) == 15 | 15 | 15 | **PASS** |
+| 152 | `C0.7.OTEL.first_child_is_preflight` | C0.7.md PHASE 3 | C0_CHILD_SPAN_NAMES[0] == 'c0.0.preflight' | 'c0.0.preflight' | 'c0.0.preflight' | **PASS** |
+| 153 | `C0.7.OTEL.last_child_is_refinement` | C0.7.md PHASE 3 | C0_CHILD_SPAN_NAMES[-1] == 'c0.6.refinement' | 'c0.6.refinement' | 'c0.6.refinement' | **PASS** |
+| 154 | `C0.7.OTEL.validate_default_passes` | C0.7.md PHASE 3 | validate_span_tree(build_default_span_tree(...)) returns None | None | None | **PASS** |
+| 155 | `C0.7.OTEL.replay_stable` | C0.7.md PHASE 3 | aggregate_span_tree_hash stable across two builds | True | True | **PASS** |
+| 156 | `C0.7.OTEL.disposition_change_changes_hash` | C0.7.md PHASE 3 | aggregate hash differs when disposition changes | True | True | **PASS** |
+| 157 | `C0.7.OTEL.invalid_disposition_rejected` | C0.7.md PHASE 3 | validate_span_tree rejects 'ALLOW' as recommended_disposition | raises SpanContractError | raised SpanContractError(recommended_disposition='ALLOW' is not a valid C0 di... | **PASS** |
+| 158 | `C0.7.OTEL.silent_omission_rejected` | C0.7.md PHASE 3 | validate_span_tree rejects tree missing required stages | raises SpanContractError | raised SpanContractError(required stages silently omitted (must appear with i... | **PASS** |
+| 159 | `C0.3.REL.count` | C0.3.md §relations | len(GraphRelation) == 13 | 13 | 13 | **PASS** |
+| 160 | `C0.3.REL.DEFINES` | C0.3.md §relations | GraphRelation.DEFINES value present | True | True | **PASS** |
+| 161 | `C0.3.REL.REFERENCES` | C0.3.md §relations | GraphRelation.REFERENCES value present | True | True | **PASS** |
+| 162 | `C0.3.REL.IMPORTS` | C0.3.md §relations | GraphRelation.IMPORTS value present | True | True | **PASS** |
+| 163 | `C0.3.REL.CALLS` | C0.3.md §relations | GraphRelation.CALLS value present | True | True | **PASS** |
+| 164 | `C0.3.REL.OWNS` | C0.3.md §relations | GraphRelation.OWNS value present | True | True | **PASS** |
+| 165 | `C0.3.REL.DEPENDS_ON` | C0.3.md §relations | GraphRelation.DEPENDS_ON value present | True | True | **PASS** |
+| 166 | `C0.3.REL.SUPERSEDES` | C0.3.md §relations | GraphRelation.SUPERSEDES value present | True | True | **PASS** |
+| 167 | `C0.3.REL.CONTRADICTS` | C0.3.md §relations | GraphRelation.CONTRADICTS value present | True | True | **PASS** |
+| 168 | `C0.3.REL.DUPLICATES` | C0.3.md §relations | GraphRelation.DUPLICATES value present | True | True | **PASS** |
+| 169 | `C0.3.REL.IMPLEMENTS` | C0.3.md §relations | GraphRelation.IMPLEMENTS value present | True | True | **PASS** |
+| 170 | `C0.3.REL.GOVERNED_BY` | C0.3.md §relations | GraphRelation.GOVERNED_BY value present | True | True | **PASS** |
+| 171 | `C0.3.REL.DERIVED_FROM` | C0.3.md §relations | GraphRelation.DERIVED_FROM value present | True | True | **PASS** |
+| 172 | `C0.3.REL.OBSERVED_IN` | C0.3.md §relations | GraphRelation.OBSERVED_IN value present | True | True | **PASS** |
+| 173 | `C0.3.IN.negative_hops_rejected` | C0.3.md PHASE 1 | GraphTraverseInput(max_hops=-1) raises ValueError | raises ValueError | raised ValueError(max_hops must be >= 0) | **PASS** |
+| 174 | `C0.3.IN.zero_max_nodes_rejected` | C0.3.md PHASE 1 | GraphTraverseInput(max_nodes=0) raises ValueError | raises ValueError | raised ValueError(max_nodes must be positive) | **PASS** |
+| 175 | `C0.3.IN.zero_max_edges_rejected` | C0.3.md PHASE 1 | GraphTraverseInput(max_edges=0) raises ValueError | raises ValueError | raised ValueError(max_edges must be positive) | **PASS** |
+| 176 | `C0.3.IN.unknown_relation_rejected` | C0.3.md PHASE 1 | GraphTraverseInput(allowed_relation_types={'bogus'}) raises ValueError | raises ValueError | raised ValueError(allowed_relation_types contains unknown relations: ['bogus_... | **PASS** |
+| 177 | `C0.3.IN.overlap_rejected` | C0.3.md PHASE 1 | allowed ∩ disallowed relations non-empty raises ValueError | raises ValueError | raised ValueError(allowed_relation_types and disallowed_relation_types overlap) | **PASS** |
+| 178 | `C0.3.TR.max_hops_1_excludes_n2` | C0.3.md PHASE 2 | traverse(max_hops=1) excludes n2 (hop=2) | True | True | **PASS** |
+| 179 | `C0.3.TR.max_nodes_2_strict_bound` | C0.3.md PHASE 2 | traverse(max_nodes=2) accepted_nodes ≤ 2 | True | True | **PASS** |
+| 180 | `C0.3.TR.acl_blocks_n4` | C0.3.md PHASE 2 | traverse blocks ACL-non-cleared neighbor n4 | True | True | **PASS** |
+| 181 | `C0.3.TR.regulated_blocks_stale` | C0.3.md PHASE 2 | traverse(freshness=regulated) blocks stale n5 | True | True | **PASS** |
+| 182 | `C0.3.TR.disallowed_relation_excluded` | C0.3.md PHASE 2 | traverse(disallow contradicts) excludes n3 | True | True | **PASS** |
+| 183 | `C0.3.TR.replay_stable_hash` | C0.3.md PHASE 2 | traverse manifest_hash deterministic across two runs | True | True | **PASS** |
+| 184 | `C0.3.TR.max_hops_0_only_seeds` | C0.3.md PHASE 2 | traverse(max_hops=0) accepted_nodes == {n0} | {'n0'} | {'n0'} | **PASS** |
+| 185 | `C0.3.TR.no_silent_drops` | C0.3.md PHASE 2 | every rejection has explicit reason in manifest | True | True | **PASS** |
+| 186 | `C0.STATUS.size` | C0_Context_Engine.md §EVIDENCE STATUS | len(SupportStatus) == 6 | 6 | 6 | **PASS** |
+| 187 | `C0.STATUS.PASS.round_trip` | C0_Context_Engine.md §EVIDENCE STATUS | SupportStatus('PASS') is PASS | True | True | **PASS** |
+| 188 | `C0.STATUS.WEAK.round_trip` | C0_Context_Engine.md §EVIDENCE STATUS | SupportStatus('WEAK') is WEAK | True | True | **PASS** |
+| 189 | `C0.STATUS.WEAK_WITH_CAVEATS.round_trip` | C0_Context_Engine.md §EVIDENCE STATUS | SupportStatus('WEAK_WITH_CAVEATS') is WEAK_WITH_CAVEATS | True | True | **PASS** |
+| 190 | `C0.STATUS.CONFLICTED.round_trip` | C0_Context_Engine.md §EVIDENCE STATUS | SupportStatus('CONFLICTED') is CONFLICTED | True | True | **PASS** |
+| 191 | `C0.STATUS.EMPTY.round_trip` | C0_Context_Engine.md §EVIDENCE STATUS | SupportStatus('EMPTY') is EMPTY | True | True | **PASS** |
+| 192 | `C0.STATUS.BLOCKED.round_trip` | C0_Context_Engine.md §EVIDENCE STATUS | SupportStatus('BLOCKED') is BLOCKED | True | True | **PASS** |
+| 193 | `C0.7.MAP.gates_count` | C0.7.md §gate matrix | len(QUALITY_GATES) == 11 | 11 | 11 | **PASS** |
+| 194 | `C0.7.MAP.invariants_count` | C0_Context_Engine.md §invariants | len(INVARIANTS) == 12 | 12 | 12 | **PASS** |
+| 195 | `C0.7.MAP.failure_modes_count` | C0.7.md §failure-mode register | len(FAILURE_MODES) == 14 | 14 | 14 | **PASS** |
+| 196 | `C0.7.MAP.failure_prevention_complete` | C0.7.md §failure-mode register | every FAILURE_MODE has a prevention entry | True | True | **PASS** |
+| 197 | `C0.7.MAP.gates_complete` | C0.7.md §gate matrix | GATE_FUNCTIONS keys == QUALITY_GATES set | True | True | **PASS** |
+| 198 | `C0.E2E.PASS_path` | C0.5.md §build_final_contract | build_final_contract(5×MUST_USE/sparse).status == PASS | <SupportStatus.PASS: 'PASS'> | <SupportStatus.PASS: 'PASS'> | **PASS** |
