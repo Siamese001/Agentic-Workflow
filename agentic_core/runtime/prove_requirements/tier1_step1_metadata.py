@@ -286,10 +286,69 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
         f"{_DET2}/RC-R3/rc_r3_replay_receipt.json",
     ),
 }
+_AB_NEG_MOD = "agentic_core/runtime/prove_requirements/anti_bypass_negatives.py"
+_AB_RES = f"{_PROOF}/anti_bypass_results.json"
+
 NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L4-NO-DIRECT-WRITE-FROM-L2-001": _ANTI_BYPASS_NEGATIVE_CONTROLS,
     "REQ-L4-NO-DIRECT-WRITE-FROM-L6-001": _ANTI_BYPASS_NEGATIVE_CONTROLS,
     "REQ-UWG-OBS-ANTI-BYPASS-001": _ANTI_BYPASS_NEGATIVE_CONTROLS,
+    "REQ-GATE-OBS-ANTI-BYPASS-001": (
+        _AB_NEG_MOD,
+        _AB_RES,
+        "tests/runtime/test_anti_bypass_runtime_cheat_proof.py",
+    ),
+    "REQ-L5-SAFETY-ENFORCE-PLANE-001": (
+        "tests/integration/agentic_core/test_authority_boundary.py",
+        "tests/unit/agentic_core/L5_safety/enforcement/test_layer_sovereignty_enforcer.py",
+    ),
+    "REQ-L5-ORIGIN-TRUST-BOUNDARY-001": (
+        "tests/agentic_core/L0_routing/enforcement/test_boundary_contracts.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_BoundaryTestingAgent.py",
+    ),
+    "REQ-PA-AUTHORITY-REDTEAM-001": (
+        "tests/unit/agentic_core/L5_safety/reasoning/test_AdversarialRedTeamerAgent.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_RedTeamAgent.py",
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa0_boundary.py",
+    ),
+    "REQ-C0-OBS-ANTI-BYPASS-001": (
+        _AB_NEG_MOD,
+        _AB_RES,
+        "tests/unit/agentic_core/L1_cognition/c0_context/test_c0_anti_bypass.py",
+    ),
+    "REQ-L2-OBS-ANTI-BYPASS-001": (
+        _AB_NEG_MOD,
+        _AB_RES,
+        "agentic_core/L2_execution/enforcement/anti_bypass_guards.py",
+        "tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py",
+    ),
+    "REQ-PA-FINAL-EMIT-ARTIFACT-001": (
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa0_boundary.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_InterfaceBoundaryAgent.py",
+    ),
+    "REQ-EXIT-X1G-X1I-REPLAY-001": (
+        _AB_NEG_MOD,
+        _AB_RES,
+        "tests/runtime/test_anti_bypass_runtime_cheat_proof.py",
+    ),
+    "REQ-L4-REPLAY-SNAPSHOT-AUDIT-001": (
+        _AB_RES,
+        "tests/runtime/test_uwg_write_sovereignty.py",
+        "tests/unit/apps_shared/proof/test_write_sovereignty.py",
+    ),
+    "REQ-L6-GAUNTLET-FUTURE-RUN-001": (
+        _AB_NEG_MOD,
+        "tests/unit/L6_observability/shadow_eval/test_06_8_anti_bypass.py",
+    ),
+    "REQ-EXIT-OBS-ANTI-BYPASS-001": (
+        _AB_NEG_MOD,
+        _AB_RES,
+        "tests/unit/agentic_core/L3_orchestration/exit_eval/v6/test_anti_bypass.py",
+    ),
+    "REQ-L5-STATIC-GOV-DRIFT-001": (
+        "tests/unit/agentic_core/L5_safety/v5/test_static_drift.py",
+        "tests/unit/agentic_core/L5_safety/utils/test_structure_drift_writer.py",
+    ),
 }
 
 # Code, validator, and OTEL-span references. Every path is verified to exist
@@ -578,6 +637,7 @@ def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
         "replay_executed": False,
         "otel_span_refs": otel_span_refs,
         "negative_control_refs": negative_control_refs,
+        "negative_control_executed": False,
     }
 
 
