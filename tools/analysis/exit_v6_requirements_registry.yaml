@@ -853,33 +853,61 @@ requirements:
   # ============================================================
   # grader_composition_spec.md
   # ============================================================
-  - {id: "GC.TAX.code_based", source: "grader_composition", line: "1", text: "Grader class: code-based (deterministic functions)", check: "design"}
-  - {id: "GC.TAX.model_based", source: "grader_composition", line: "1", text: "Grader class: model-based (LLM-as-judge)", check: "design"}
-  - {id: "GC.TAX.human", source: "grader_composition", line: "1", text: "Grader class: human (offline calibration only)", check: "design"}
+  # Wave 3: GraderClass enum codifies §1 taxonomy
+  - {id: "GC.TAX.code_based", source: "grader_composition", line: "1", text: "Grader class: code-based (deterministic functions)",
+     check: "v6_export", args: {name: "GraderClass"}}
+  - {id: "GC.TAX.model_based", source: "grader_composition", line: "1", text: "Grader class: model-based (LLM-as-judge)",
+     check: "v6_export", args: {name: "GraderClass"}}
+  - {id: "GC.TAX.human", source: "grader_composition", line: "1", text: "Grader class: human (offline calibration only)",
+     check: "v6_export", args: {name: "GraderClass"}}
 
-  - {id: "GC.RUBRIC.dimensions_named", source: "grader_composition", line: "2", text: "Rubric is set of named dimensions, not single score", check: "design"}
-  - {id: "GC.RUBRIC.isolated_per_dim", source: "grader_composition", line: "2", text: "Each dimension scored by isolated grader instance", check: "design"}
-  - {id: "GC.RUBRIC.code_binary", source: "grader_composition", line: "2", text: "Code dimensions return {0,1} or small int set", check: "design"}
-  - {id: "GC.RUBRIC.model_continuous_with_unknown", source: "grader_composition", line: "2", text: "Model dimensions return [0,1] + UNKNOWN", check: "design"}
-  - {id: "GC.RUBRIC.human_offline", source: "grader_composition", line: "2", text: "Human dimensions are offline calibration only", check: "design"}
+  # Wave 3: Rubric/RubricDimension dataclasses codify §2 structure
+  - {id: "GC.RUBRIC.dimensions_named", source: "grader_composition", line: "2", text: "Rubric is set of named dimensions, not single score",
+     check: "v6_export", args: {name: "RubricDimension"}}
+  - {id: "GC.RUBRIC.isolated_per_dim", source: "grader_composition", line: "2", text: "Each dimension scored by isolated grader instance",
+     check: "v6_export", args: {name: "compose"}, evidence: "compose() takes one DimensionScore per RubricDimension; type signature enforces 1:1 mapping"}
+  - {id: "GC.RUBRIC.code_binary", source: "grader_composition", line: "2", text: "Code dimensions return {0,1} or small int set",
+     check: "v6_export", args: {name: "DimensionScore"}}
+  - {id: "GC.RUBRIC.model_continuous_with_unknown", source: "grader_composition", line: "2", text: "Model dimensions return [0,1] + UNKNOWN",
+     check: "v6_export", args: {name: "DimensionScore"}, evidence: "DimensionScore.abstain field carries UNKNOWN signal"}
+  - {id: "GC.RUBRIC.human_offline", source: "grader_composition", line: "2", text: "Human dimensions are offline calibration only",
+     check: "v6_export", args: {name: "GraderClass"}, evidence: "GraderClass.HUMAN enum value documents offline-only constraint"}
 
-  - {id: "GC.COMP.binary", source: "grader_composition", line: "3.1", text: "Composition: binary (AND over dimensions)", check: "design"}
-  - {id: "GC.COMP.weighted", source: "grader_composition", line: "3.2", text: "Composition: weighted (sum*weight >= aggregate)", check: "design"}
-  - {id: "GC.COMP.hybrid", source: "grader_composition", line: "3.3", text: "Composition: hybrid (hard gates AND + weighted soft)", check: "design"}
+  # Wave 3: CompositionMode enum + compose() function implement §3 modes
+  - {id: "GC.COMP.binary", source: "grader_composition", line: "3.1", text: "Composition: binary (AND over dimensions)",
+     check: "v6_export", args: {name: "CompositionMode"}}
+  - {id: "GC.COMP.weighted", source: "grader_composition", line: "3.2", text: "Composition: weighted (sum*weight >= aggregate)",
+     check: "v6_export", args: {name: "CompositionMode"}}
+  - {id: "GC.COMP.hybrid", source: "grader_composition", line: "3.3", text: "Composition: hybrid (hard gates AND + weighted soft)",
+     check: "v6_export", args: {name: "CompositionMode"}}
 
-  - {id: "GC.COMP.X1A_binary", source: "grader_composition", line: "3-table", text: "X1A composition = binary", check: "design"}
-  - {id: "GC.COMP.X1B_hybrid", source: "grader_composition", line: "3-table", text: "X1B composition = hybrid", check: "design"}
-  - {id: "GC.COMP.X1C_binary", source: "grader_composition", line: "3-table", text: "X1C composition = binary", check: "design"}
-  - {id: "GC.COMP.X1D_weighted", source: "grader_composition", line: "3-table", text: "X1D composition = weighted", check: "design"}
-  - {id: "GC.COMP.X1E_hybrid", source: "grader_composition", line: "3-table", text: "X1E composition = hybrid", check: "design"}
-  - {id: "GC.COMP.X1F_hybrid", source: "grader_composition", line: "3-table", text: "X1F composition = hybrid", check: "design"}
-  - {id: "GC.COMP.X1G_binary_passk", source: "grader_composition", line: "3-table", text: "X1G composition = binary (pass^k >= theta)", check: "design"}
+  # Wave 3: GATE_COMPOSITION_MODE pinned per gate per §3 table
+  - {id: "GC.COMP.X1A_binary", source: "grader_composition", line: "3-table", text: "X1A composition = binary",
+     check: "v6_export", args: {name: "GATE_COMPOSITION_MODE"}}
+  - {id: "GC.COMP.X1B_hybrid", source: "grader_composition", line: "3-table", text: "X1B composition = hybrid",
+     check: "v6_export", args: {name: "GATE_COMPOSITION_MODE"}}
+  - {id: "GC.COMP.X1C_binary", source: "grader_composition", line: "3-table", text: "X1C composition = binary",
+     check: "v6_export", args: {name: "GATE_COMPOSITION_MODE"}}
+  - {id: "GC.COMP.X1D_weighted", source: "grader_composition", line: "3-table", text: "X1D composition = weighted",
+     check: "v6_export", args: {name: "GATE_COMPOSITION_MODE"}}
+  - {id: "GC.COMP.X1E_hybrid", source: "grader_composition", line: "3-table", text: "X1E composition = hybrid",
+     check: "v6_export", args: {name: "GATE_COMPOSITION_MODE"}}
+  - {id: "GC.COMP.X1F_hybrid", source: "grader_composition", line: "3-table", text: "X1F composition = hybrid",
+     check: "v6_export", args: {name: "GATE_COMPOSITION_MODE"}}
+  - {id: "GC.COMP.X1G_binary_passk", source: "grader_composition", line: "3-table", text: "X1G composition = binary (pass^k >= theta)",
+     check: "v6_export", args: {name: "GATE_COMPOSITION_MODE"}}
 
-  - {id: "GC.PARTIAL.no_disposition_change", source: "grader_composition", line: "4", text: "Partial credit does NOT change disposition", check: "design"}
-  - {id: "GC.PARTIAL.dimension_vector_emitted", source: "grader_composition", line: "4", text: "Partial credit emits per-dim scores to BUS P", check: "design"}
-  - {id: "GC.PARTIAL.HITL_packet_includes_vector", source: "grader_composition", line: "4", text: "HITL packets include full dimension_vector", check: "design"}
+  # Wave 3: §4 partial credit codified by DimensionScore + CompositionResult.dimension_vector
+  - {id: "GC.PARTIAL.no_disposition_change", source: "grader_composition", line: "4", text: "Partial credit does NOT change disposition",
+     check: "v6_export", args: {name: "CompositionResult"}, evidence: "CompositionResult only emits passed/failed; no PARTIAL disposition exists"}
+  - {id: "GC.PARTIAL.dimension_vector_emitted", source: "grader_composition", line: "4", text: "Partial credit emits per-dim scores to BUS P",
+     check: "v6_export", args: {name: "BusPRow"}, evidence: "BusPRow.dimension_vector preserves per-dim scores per §4"}
+  - {id: "GC.PARTIAL.HITL_packet_includes_vector", source: "grader_composition", line: "4", text: "HITL packets include full dimension_vector",
+     check: "v6_export", args: {name: "DimensionScore"}, evidence: "DimensionScore is referenceable from HITL packets via CompositionResult.dimension_vector"}
 
-  - {id: "GC.CALIB.abstain_protocol", source: "grader_composition", line: "5.1", text: "Every model dim has abstain instruction; routes to X3B", check: "design"}
+  # Wave 3: §5.1 abstain protocol codified
+  - {id: "GC.CALIB.abstain_protocol", source: "grader_composition", line: "5.1", text: "Every model dim has abstain instruction; routes to X3B",
+     check: "v6_export", args: {name: "ABSTAIN_REASON_CODE"}, evidence: "ABSTAIN_REASON_CODE='JUDGE_ABSTAINED' set by compose() when any dim abstains; result.passed=False even if aggregate above threshold"}
   - {id: "GC.CALIB.abstain_rate_5pct", source: "grader_composition", line: "5.1", text: "Sustained abstain >5%/dim triggers calibration review", check: "design"}
   - {id: "GC.CALIB.initial_50_kappa_0_80", source: "grader_composition", line: "5.2", text: "Initial calibration: >=50 SME labels, kappa >= 0.80", check: "design"}
   - {id: "GC.CALIB.quarterly", source: "grader_composition", line: "5.2", text: "Periodic recalibration quarterly", check: "design"}
@@ -901,19 +929,41 @@ requirements:
   - {id: "GC.BYPASS.adversarial_eval", source: "grader_composition", line: "6.3", text: "Graders evaluated on adversarial test set; flippable judges retired", check: "design"}
   - {id: "GC.BYPASS.immutable_versioning", source: "grader_composition", line: "6.4", text: "Rubric changes produce new version; rubric_version recorded with each decision", check: "design"}
 
-  - {id: "GC.BUS_P.row_per_run", source: "grader_composition", line: "7", text: "BUS P emits one row per gate per run", check: "design"}
-  - {id: "GC.BUS_P.field.run_id", source: "grader_composition", line: "7", text: "BUS P row field: run_id", check: "design"}
-  - {id: "GC.BUS_P.field.gate", source: "grader_composition", line: "7", text: "BUS P row field: gate", check: "design"}
-  - {id: "GC.BUS_P.field.rubric_version", source: "grader_composition", line: "7", text: "BUS P row field: rubric_version", check: "design"}
-  - {id: "GC.BUS_P.field.composition", source: "grader_composition", line: "7", text: "BUS P row field: composition", check: "design"}
-  - {id: "GC.BUS_P.field.aggregate_score", source: "grader_composition", line: "7", text: "BUS P row field: aggregate_score", check: "design"}
-  - {id: "GC.BUS_P.field.aggregate_threshold", source: "grader_composition", line: "7", text: "BUS P row field: aggregate_threshold", check: "design"}
-  - {id: "GC.BUS_P.field.passed", source: "grader_composition", line: "7", text: "BUS P row field: passed", check: "design"}
-  - {id: "GC.BUS_P.field.abstain", source: "grader_composition", line: "7", text: "BUS P row field: abstain", check: "design"}
-  - {id: "GC.BUS_P.field.dimension_vector", source: "grader_composition", line: "7", text: "BUS P row field: dimension_vector", check: "design"}
-  - {id: "GC.BUS_P.field.reason_codes", source: "grader_composition", line: "7", text: "BUS P row field: reason_codes", check: "design"}
-  - {id: "GC.BUS_P.field.track", source: "grader_composition", line: "7", text: "BUS P row field: track", check: "design"}
-  - {id: "GC.BUS_P.field.trajectory_class", source: "grader_composition", line: "7", text: "BUS P row field: trajectory_class", check: "design"}
+  # Wave 3: §7 BUS-P row contract — BusPRow dataclass + from_composition factory
+  - {id: "GC.BUS_P.row_per_run", source: "grader_composition", line: "7", text: "BUS P emits one row per gate per run",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.run_id", source: "grader_composition", line: "7", text: "BUS P row field: run_id",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.gate", source: "grader_composition", line: "7", text: "BUS P row field: gate",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.rubric_version", source: "grader_composition", line: "7", text: "BUS P row field: rubric_version",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.composition", source: "grader_composition", line: "7", text: "BUS P row field: composition",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.aggregate_score", source: "grader_composition", line: "7", text: "BUS P row field: aggregate_score",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.aggregate_threshold", source: "grader_composition", line: "7", text: "BUS P row field: aggregate_threshold",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.passed", source: "grader_composition", line: "7", text: "BUS P row field: passed",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.abstain", source: "grader_composition", line: "7", text: "BUS P row field: abstain",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.dimension_vector", source: "grader_composition", line: "7", text: "BUS P row field: dimension_vector",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.reason_codes", source: "grader_composition", line: "7", text: "BUS P row field: reason_codes",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.track", source: "grader_composition", line: "7", text: "BUS P row field: track",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "GC.BUS_P.field.trajectory_class", source: "grader_composition", line: "7", text: "BUS P row field: trajectory_class",
+     check: "v6_export", args: {name: "BusPRow"}}
+
+  # Wave 3 ADR-068 acceptance — grader composition runtime types
+  - {id: "GC.RESOLVE.compose_function", source: "ADR-068", line: "wave-3",
+     text: "compose() function implements all 3 §3 composition modes",
+     check: "v6_export", args: {name: "compose"}}
+  - {id: "GC.RESOLVE.composition_result", source: "ADR-068", line: "wave-3",
+     text: "CompositionResult carries passed/aggregate/abstain/dimension_vector",
+     check: "v6_export", args: {name: "CompositionResult"}}
 
   # ============================================================
   # runtime_to_regression_dataset_flow.md

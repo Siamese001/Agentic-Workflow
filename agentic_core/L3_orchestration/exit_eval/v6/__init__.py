@@ -13,6 +13,18 @@ see plan ``exit-eval-v6-gaps-d7a3f1.md``.
 
 from __future__ import annotations
 
+from agentic_core.L3_orchestration.exit_eval.v6.grader_composition import (
+    ABSTAIN_REASON_CODE,
+    GATE_COMPOSITION_MODE,
+    BusPRow,
+    CompositionMode,
+    CompositionResult,
+    DimensionScore,
+    GraderClass,
+    Rubric,
+    RubricDimension,
+    compose,
+)
 from agentic_core.L3_orchestration.exit_eval.v6.hardening import (
     FAULT_INJECTION_CODES,
     FAULT_INJECTION_DISPOSITION_HINT,
@@ -238,4 +250,15 @@ __all__ = [
     "is_fault_injection_code",
     "pass_k_observed",
     "pass_k_required_p",
+    # grader composition (Wave 3)
+    "ABSTAIN_REASON_CODE",
+    "GATE_COMPOSITION_MODE",
+    "BusPRow",
+    "CompositionMode",
+    "CompositionResult",
+    "DimensionScore",
+    "GraderClass",
+    "Rubric",
+    "RubricDimension",
+    "compose",
 ]

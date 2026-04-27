@@ -4,7 +4,7 @@ Row-per-requirement matrix re-ingested from **all 14 spec files** in
 `docs/reference/05_Exit_Evaluation_and_Control/`. Every row carries an OTEL-shaped
 evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observation.
 
-**Trace ID** (this run): `ebf2fde5663732b26c37180d085b8786`  
+**Trace ID** (this run): `8ea9978c9dea5bbd3f07e60bd9aa9728`  
 **Probe**: `tools/analysis/exit_v6_master_otel_probe.py`  
 **Registry**: `tools/analysis/exit_v6_requirements_registry.yaml`  
 **Evidence JSON**: `docs/reports/plans/exit_v6_MASTER_otel_evidence.json`
@@ -13,10 +13,10 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Status | Count | Meaning |
 |---|---:|---|
-| **PASS** | 399 | requirement is observed in v6 runtime (passes its validator) |
-| **DESIGN** | 181 | requirement is design-level only (not yet wired into v6 runtime) |
+| **PASS** | 436 | requirement is observed in v6 runtime (passes its validator) |
+| **DESIGN** | 146 | requirement is design-level only (not yet wired into v6 runtime) |
 | **GAP** | 0 | requirement intends a runtime binding but observation does not match spec |
-| **TOTAL** | 580 | requirements across all 14 spec files |
+| **TOTAL** | 582 | requirements across all 14 spec files |
 
 ## Live runtime observations (this probe run)
 
@@ -28,7 +28,7 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
   empty_disposition                    = DENY
   span_catalog_count                   = 40
   required_attributes_count            = 39
-  v6_module_all_count                  = 93
+  v6_module_all_count                  = 103
   return_payload_failure_codes_count   = 10
   determinism_equal                    = True
   permutation_equal                    = True
@@ -54,8 +54,9 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `05_Live_Runtime_Exit_Control_&_Evaluation.md` | 15 | 13 | 2 | 0 |
 | `ADR-065` | 3 | 3 | 0 | 0 |
 | `ADR-067` | 6 | 6 | 0 | 0 |
+| `ADR-068` | 2 | 2 | 0 | 0 |
 | `gap_analysis_v3_vs_industry_2026.md` | 20 | 5 | 15 | 0 |
-| `grader_composition_spec.md` | 54 | 0 | 54 | 0 |
+| `grader_composition_spec.md` | 54 | 35 | 19 | 0 |
 | `runtime_to_regression_dataset_flow.md` | 48 | 0 | 48 | 0 |
 | `v4_hardening_addendum.md` | 94 | 32 | 62 | 0 |
 
@@ -403,7 +404,7 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 |---|---|---|:---:|---|---|
 | `5.8.CAT.span_count` | catalog | Canonical OTEL span catalog has 40 spans (39 base + X3F break-glass per ADR-065) | **PASS** | `d3de11d869bbd2bf` | span_count=40 |
 | `5.8.CAT.required_attrs_count` | required-attrs | 39 required OTEL attributes (26 base 05.8 + 13 H5 hardening per Wave 2) | **PASS** | `5ed7b46e59cdd18a` | required_attrs_count=39 |
-| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=93 |
+| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=103 |
 | `5.8.DET.equal_runs` | determinism | Two runs of identical receipts produce equal deterministic digest | **PASS** | `c8c927886cd87cf0` | det_equal=True |
 | `5.8.DET.permutation` | determinism | Receipt-key permutation produces identical digest | **PASS** | `b1462e1dc3e6a960` | perm_equal=True |
 | `5.8.AB.empty_fails_closed` | anti-bypass | Empty input fails closed (DENY) | **PASS** | `6c43eb0b4910e2e3` | empty_disposition=DENY |
@@ -507,6 +508,15 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `H6.RESOLVE.observed_helper` | wave-2 | pass_k_observed forward helper exported | **PASS** | `c8fbaf49fa742ec7` | pass_k_observed in v6.__all__ |
 | `H6.RESOLVE.insufficient_history_constant` | wave-2 | PASS_K_INSUFFICIENT_HISTORY_REASON constant exported | **PASS** | `afd79726180b6c0d` | PASS_K_INSUFFICIENT_HISTORY_REASON in v6.__all__ |
 
+## ADR-068
+
+`ADR-068` — 2 requirements
+
+| Req ID | Source line | Requirement | Status | Span ID | Evidence |
+|---|---|---|:---:|---|---|
+| `GC.RESOLVE.compose_function` | wave-3 | compose() function implements all 3 §3 composition modes | **PASS** | `df387f711fb18a17` | compose in v6.__all__ |
+| `GC.RESOLVE.composition_result` | wave-3 | CompositionResult carries passed/aggregate/abstain/dimension_vector | **PASS** | `c7007e3e222f8cab` | CompositionResult in v6.__all__ |
+
 ## gap_analysis_v3_vs_industry_2026.md
 
 `gap_analysis` — 20 requirements
@@ -540,28 +550,28 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Req ID | Source line | Requirement | Status | Span ID | Evidence |
 |---|---|---|:---:|---|---|
-| `GC.TAX.code_based` | 1 | Grader class: code-based (deterministic functions) | **DESIGN** | `9c0dcacb394fdbea` | design-only, no runtime binding |
-| `GC.TAX.model_based` | 1 | Grader class: model-based (LLM-as-judge) | **DESIGN** | `9afb1b2d19ba73b2` | design-only, no runtime binding |
-| `GC.TAX.human` | 1 | Grader class: human (offline calibration only) | **DESIGN** | `0ee4a6dd68a47022` | design-only, no runtime binding |
-| `GC.RUBRIC.dimensions_named` | 2 | Rubric is set of named dimensions, not single score | **DESIGN** | `7c6bbab3a1d151aa` | design-only, no runtime binding |
-| `GC.RUBRIC.isolated_per_dim` | 2 | Each dimension scored by isolated grader instance | **DESIGN** | `e22395d75e55ff73` | design-only, no runtime binding |
-| `GC.RUBRIC.code_binary` | 2 | Code dimensions return {0,1} or small int set | **DESIGN** | `49cc4d9a5d935345` | design-only, no runtime binding |
-| `GC.RUBRIC.model_continuous_with_unknown` | 2 | Model dimensions return [0,1] + UNKNOWN | **DESIGN** | `ee46c3ca0be6d7d1` | design-only, no runtime binding |
-| `GC.RUBRIC.human_offline` | 2 | Human dimensions are offline calibration only | **DESIGN** | `71dba27940fb2915` | design-only, no runtime binding |
-| `GC.COMP.binary` | 3.1 | Composition: binary (AND over dimensions) | **DESIGN** | `015337578f694362` | design-only, no runtime binding |
-| `GC.COMP.weighted` | 3.2 | Composition: weighted (sum*weight >= aggregate) | **DESIGN** | `dd8c1af25d13a027` | design-only, no runtime binding |
-| `GC.COMP.hybrid` | 3.3 | Composition: hybrid (hard gates AND + weighted soft) | **DESIGN** | `89d96800401aea0b` | design-only, no runtime binding |
-| `GC.COMP.X1A_binary` | 3-table | X1A composition = binary | **DESIGN** | `14d644102da5c374` | design-only, no runtime binding |
-| `GC.COMP.X1B_hybrid` | 3-table | X1B composition = hybrid | **DESIGN** | `61562ff764dff7ef` | design-only, no runtime binding |
-| `GC.COMP.X1C_binary` | 3-table | X1C composition = binary | **DESIGN** | `072bd7f87417407b` | design-only, no runtime binding |
-| `GC.COMP.X1D_weighted` | 3-table | X1D composition = weighted | **DESIGN** | `115cac8200a10939` | design-only, no runtime binding |
-| `GC.COMP.X1E_hybrid` | 3-table | X1E composition = hybrid | **DESIGN** | `79b24859e84065d6` | design-only, no runtime binding |
-| `GC.COMP.X1F_hybrid` | 3-table | X1F composition = hybrid | **DESIGN** | `d83f0b6229222532` | design-only, no runtime binding |
-| `GC.COMP.X1G_binary_passk` | 3-table | X1G composition = binary (pass^k >= theta) | **DESIGN** | `98f66e6131b9da7f` | design-only, no runtime binding |
-| `GC.PARTIAL.no_disposition_change` | 4 | Partial credit does NOT change disposition | **DESIGN** | `2b5ddaaeb6aa00c0` | design-only, no runtime binding |
-| `GC.PARTIAL.dimension_vector_emitted` | 4 | Partial credit emits per-dim scores to BUS P | **DESIGN** | `a11b14f59ab28028` | design-only, no runtime binding |
-| `GC.PARTIAL.HITL_packet_includes_vector` | 4 | HITL packets include full dimension_vector | **DESIGN** | `49aa6130be92e058` | design-only, no runtime binding |
-| `GC.CALIB.abstain_protocol` | 5.1 | Every model dim has abstain instruction; routes to X3B | **DESIGN** | `7ebd2dc94af8c8ce` | design-only, no runtime binding |
+| `GC.TAX.code_based` | 1 | Grader class: code-based (deterministic functions) | **PASS** | `9c0dcacb394fdbea` | GraderClass in v6.__all__ |
+| `GC.TAX.model_based` | 1 | Grader class: model-based (LLM-as-judge) | **PASS** | `9afb1b2d19ba73b2` | GraderClass in v6.__all__ |
+| `GC.TAX.human` | 1 | Grader class: human (offline calibration only) | **PASS** | `0ee4a6dd68a47022` | GraderClass in v6.__all__ |
+| `GC.RUBRIC.dimensions_named` | 2 | Rubric is set of named dimensions, not single score | **PASS** | `7c6bbab3a1d151aa` | RubricDimension in v6.__all__ |
+| `GC.RUBRIC.isolated_per_dim` | 2 | Each dimension scored by isolated grader instance | **PASS** | `e22395d75e55ff73` | compose in v6.__all__ |
+| `GC.RUBRIC.code_binary` | 2 | Code dimensions return {0,1} or small int set | **PASS** | `49cc4d9a5d935345` | DimensionScore in v6.__all__ |
+| `GC.RUBRIC.model_continuous_with_unknown` | 2 | Model dimensions return [0,1] + UNKNOWN | **PASS** | `ee46c3ca0be6d7d1` | DimensionScore in v6.__all__ |
+| `GC.RUBRIC.human_offline` | 2 | Human dimensions are offline calibration only | **PASS** | `71dba27940fb2915` | GraderClass in v6.__all__ |
+| `GC.COMP.binary` | 3.1 | Composition: binary (AND over dimensions) | **PASS** | `015337578f694362` | CompositionMode in v6.__all__ |
+| `GC.COMP.weighted` | 3.2 | Composition: weighted (sum*weight >= aggregate) | **PASS** | `dd8c1af25d13a027` | CompositionMode in v6.__all__ |
+| `GC.COMP.hybrid` | 3.3 | Composition: hybrid (hard gates AND + weighted soft) | **PASS** | `89d96800401aea0b` | CompositionMode in v6.__all__ |
+| `GC.COMP.X1A_binary` | 3-table | X1A composition = binary | **PASS** | `14d644102da5c374` | GATE_COMPOSITION_MODE in v6.__all__ |
+| `GC.COMP.X1B_hybrid` | 3-table | X1B composition = hybrid | **PASS** | `61562ff764dff7ef` | GATE_COMPOSITION_MODE in v6.__all__ |
+| `GC.COMP.X1C_binary` | 3-table | X1C composition = binary | **PASS** | `072bd7f87417407b` | GATE_COMPOSITION_MODE in v6.__all__ |
+| `GC.COMP.X1D_weighted` | 3-table | X1D composition = weighted | **PASS** | `115cac8200a10939` | GATE_COMPOSITION_MODE in v6.__all__ |
+| `GC.COMP.X1E_hybrid` | 3-table | X1E composition = hybrid | **PASS** | `79b24859e84065d6` | GATE_COMPOSITION_MODE in v6.__all__ |
+| `GC.COMP.X1F_hybrid` | 3-table | X1F composition = hybrid | **PASS** | `d83f0b6229222532` | GATE_COMPOSITION_MODE in v6.__all__ |
+| `GC.COMP.X1G_binary_passk` | 3-table | X1G composition = binary (pass^k >= theta) | **PASS** | `98f66e6131b9da7f` | GATE_COMPOSITION_MODE in v6.__all__ |
+| `GC.PARTIAL.no_disposition_change` | 4 | Partial credit does NOT change disposition | **PASS** | `2b5ddaaeb6aa00c0` | CompositionResult in v6.__all__ |
+| `GC.PARTIAL.dimension_vector_emitted` | 4 | Partial credit emits per-dim scores to BUS P | **PASS** | `a11b14f59ab28028` | BusPRow in v6.__all__ |
+| `GC.PARTIAL.HITL_packet_includes_vector` | 4 | HITL packets include full dimension_vector | **PASS** | `49aa6130be92e058` | DimensionScore in v6.__all__ |
+| `GC.CALIB.abstain_protocol` | 5.1 | Every model dim has abstain instruction; routes to X3B | **PASS** | `7ebd2dc94af8c8ce` | ABSTAIN_REASON_CODE in v6.__all__ |
 | `GC.CALIB.abstain_rate_5pct` | 5.1 | Sustained abstain >5%/dim triggers calibration review | **DESIGN** | `b34d1587a1dde9af` | design-only, no runtime binding |
 | `GC.CALIB.initial_50_kappa_0_80` | 5.2 | Initial calibration: >=50 SME labels, kappa >= 0.80 | **DESIGN** | `b5e6c64cc5b6c6f0` | design-only, no runtime binding |
 | `GC.CALIB.quarterly` | 5.2 | Periodic recalibration quarterly | **DESIGN** | `a3bd8b5c09ca2df9` | design-only, no runtime binding |
@@ -581,19 +591,19 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `GC.BYPASS.injection_classifier` | 6.2 | Lightweight prompt-injection classifier on agent output | **DESIGN** | `228adba315e5e4d1` | design-only, no runtime binding |
 | `GC.BYPASS.adversarial_eval` | 6.3 | Graders evaluated on adversarial test set; flippable judges retired | **DESIGN** | `b514e985c960bc3a` | design-only, no runtime binding |
 | `GC.BYPASS.immutable_versioning` | 6.4 | Rubric changes produce new version; rubric_version recorded with each decision | **DESIGN** | `09e9248ecd0757eb` | design-only, no runtime binding |
-| `GC.BUS_P.row_per_run` | 7 | BUS P emits one row per gate per run | **DESIGN** | `bcbd7f37b0925cb8` | design-only, no runtime binding |
-| `GC.BUS_P.field.run_id` | 7 | BUS P row field: run_id | **DESIGN** | `9a5a537564467748` | design-only, no runtime binding |
-| `GC.BUS_P.field.gate` | 7 | BUS P row field: gate | **DESIGN** | `807191650e38478d` | design-only, no runtime binding |
-| `GC.BUS_P.field.rubric_version` | 7 | BUS P row field: rubric_version | **DESIGN** | `438865f2135d89ab` | design-only, no runtime binding |
-| `GC.BUS_P.field.composition` | 7 | BUS P row field: composition | **DESIGN** | `03bfbd6ff71bd3e6` | design-only, no runtime binding |
-| `GC.BUS_P.field.aggregate_score` | 7 | BUS P row field: aggregate_score | **DESIGN** | `c2aae1624dbc533b` | design-only, no runtime binding |
-| `GC.BUS_P.field.aggregate_threshold` | 7 | BUS P row field: aggregate_threshold | **DESIGN** | `00c86e39f33af2a6` | design-only, no runtime binding |
-| `GC.BUS_P.field.passed` | 7 | BUS P row field: passed | **DESIGN** | `21d5976fc8acff05` | design-only, no runtime binding |
-| `GC.BUS_P.field.abstain` | 7 | BUS P row field: abstain | **DESIGN** | `71e8020b4aa80eec` | design-only, no runtime binding |
-| `GC.BUS_P.field.dimension_vector` | 7 | BUS P row field: dimension_vector | **DESIGN** | `5b19c1bfe40b32a6` | design-only, no runtime binding |
-| `GC.BUS_P.field.reason_codes` | 7 | BUS P row field: reason_codes | **DESIGN** | `7d44a55e14baa902` | design-only, no runtime binding |
-| `GC.BUS_P.field.track` | 7 | BUS P row field: track | **DESIGN** | `ea8a9536b45cc452` | design-only, no runtime binding |
-| `GC.BUS_P.field.trajectory_class` | 7 | BUS P row field: trajectory_class | **DESIGN** | `618f77f5d3d49d44` | design-only, no runtime binding |
+| `GC.BUS_P.row_per_run` | 7 | BUS P emits one row per gate per run | **PASS** | `bcbd7f37b0925cb8` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.run_id` | 7 | BUS P row field: run_id | **PASS** | `9a5a537564467748` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.gate` | 7 | BUS P row field: gate | **PASS** | `807191650e38478d` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.rubric_version` | 7 | BUS P row field: rubric_version | **PASS** | `438865f2135d89ab` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.composition` | 7 | BUS P row field: composition | **PASS** | `03bfbd6ff71bd3e6` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.aggregate_score` | 7 | BUS P row field: aggregate_score | **PASS** | `c2aae1624dbc533b` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.aggregate_threshold` | 7 | BUS P row field: aggregate_threshold | **PASS** | `00c86e39f33af2a6` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.passed` | 7 | BUS P row field: passed | **PASS** | `21d5976fc8acff05` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.abstain` | 7 | BUS P row field: abstain | **PASS** | `71e8020b4aa80eec` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.dimension_vector` | 7 | BUS P row field: dimension_vector | **PASS** | `5b19c1bfe40b32a6` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.reason_codes` | 7 | BUS P row field: reason_codes | **PASS** | `7d44a55e14baa902` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.track` | 7 | BUS P row field: track | **PASS** | `ea8a9536b45cc452` | BusPRow in v6.__all__ |
+| `GC.BUS_P.field.trajectory_class` | 7 | BUS P row field: trajectory_class | **PASS** | `618f77f5d3d49d44` | BusPRow in v6.__all__ |
 
 ## runtime_to_regression_dataset_flow.md
 
