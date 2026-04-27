@@ -31,9 +31,13 @@ from agentic_core.L6_observability.heal_router_otel import (  # guardian: allow-
 )
 
 from .cascade_calibrator import (
+    DEFAULT_POSTERIOR_N_FLOOR,
     DecisionEvidence,
+    PosteriorRead,
     brier_component,
     compute_decision_evidence,
+    fingerprint as _cell_fingerprint,
+    posterior_for_cell,
     score_band_for,
 )
 from .confidence_scorer import ConfidenceScore, HealTier
@@ -45,6 +49,31 @@ _LOGGER = logging.getLogger(__name__)
 
 # Constitutional §29: closed-loop router enforcement marker name.
 _ROUTER_LEDGER_NAME: str = "router_l2_cascade"
+
+# W2 — Beta-posterior replacement of heuristic ``ConfidenceScore.score`` as
+# the predicted_p_success input. The posterior is consulted per (tier, cell)
+# from the router_l2_cascade ledger; when the cell is "cold" (n < floor) the
+# heuristic prior wins. Set the floor via env so operators can experiment with
+# tighter / looser thresholds without code edits.
+_POSTERIOR_N_FLOOR_ENV: str = "ROUTING_POSTERIOR_N_FLOOR"
+_POSTERIOR_DISABLE_ENV: str = "ROUTING_POSTERIOR_DISABLED"
+
+
+def _posterior_n_floor() -> int:
+    """Resolve the posterior n-floor (defaults to constitutional §29's n=30)."""
+    raw = os.getenv(_POSTERIOR_N_FLOOR_ENV, "")
+    if not raw:
+        return DEFAULT_POSTERIOR_N_FLOOR
+    try:
+        value = int(raw)
+        return value if value > 0 else DEFAULT_POSTERIOR_N_FLOOR
+    except ValueError:
+        return DEFAULT_POSTERIOR_N_FLOOR
+
+
+def _posterior_disabled() -> bool:
+    """Operators can hard-disable the posterior path (forces heuristic-only)."""
+    return os.getenv(_POSTERIOR_DISABLE_ENV, "").lower() in {"1", "true", "yes", "on"}
 
 # Wave 1 (qwen-confidence-routing-hardening-d4e7b1): cascade-fallback toggle.
 # When set to a truthy value, _dispatch_qwen will NOT fall through to Gemini
@@ -233,17 +262,51 @@ class HealingRouter:
         # decision can carry its own decision_id / predicted_p_success / eu_score.
         # Failure of the evidence path must NEVER break routing — fall back to
         # zero-valued fields so legacy callers continue to work.
+        #
+        # W2 — Beta posterior consultation: when the (tier, cell) has accrued
+        # n ≥ floor bound rows in the ledger, replace the heuristic
+        # ``ConfidenceScore.score`` with the empirical posterior mean. Below
+        # the floor, the heuristic prior remains authoritative.
+        heuristic_p = float(getattr(score, "score", 0.0))
+        failure_class_name = getattr(
+            getattr(signal, "failure_class", None), "name", "UNKNOWN"
+        )
+        source_layer = getattr(signal, "source_layer", "") or "unknown"
+        error_code = getattr(signal, "error_code", "") or "unknown"
+        retry_count = getattr(signal, "retry_count", 0) or 0
+
+        posterior: PosteriorRead | None = None
+        confidence_input = heuristic_p
+        if not _posterior_disabled():
+            try:
+                cell_fp = _cell_fingerprint(
+                    failure_class=failure_class_name,
+                    source_layer=source_layer,
+                    error_code=error_code,
+                    retry_count=retry_count,
+                )
+                posterior = posterior_for_cell(
+                    tier=final_tier,
+                    fingerprint_hex=cell_fp,
+                    n_floor=_posterior_n_floor(),
+                )
+                if posterior.used:
+                    confidence_input = posterior.posterior_mean
+            except (AttributeError, TypeError, ValueError, OSError):  # guardian: allow-log-and-swallow -- posterior read is best-effort; heuristic remains
+                _LOGGER.debug("posterior_for_cell failed", exc_info=True)
+                posterior = None
+
         evidence: DecisionEvidence | None = None
         try:
             evidence = compute_decision_evidence(
                 tier=final_tier,
                 gemini_subtier=gemini_subtier,
                 target_model=target_model,
-                confidence_input=getattr(score, "score", 0.0),
-                failure_class=getattr(getattr(signal, "failure_class", None), "name", "UNKNOWN"),
-                source_layer=getattr(signal, "source_layer", "") or "unknown",
-                error_code=getattr(signal, "error_code", "") or "unknown",
-                retry_count=getattr(signal, "retry_count", 0),
+                confidence_input=confidence_input,
+                failure_class=failure_class_name,
+                source_layer=source_layer,
+                error_code=error_code,
+                retry_count=retry_count,
             )
         except (
             AttributeError,
@@ -297,6 +360,8 @@ class HealingRouter:
                 signal=signal,
                 cost_budget_remaining_usd=budget,
                 app_name="healing_router",
+                heuristic_p=heuristic_p,
+                posterior=posterior,
             )
             decision.ledger_event_id = ledger_event_id
 
@@ -313,6 +378,8 @@ class HealingRouter:
         signal: FailureSignal,
         cost_budget_remaining_usd: float | None,
         app_name: str,
+        heuristic_p: float = 0.0,
+        posterior: PosteriorRead | None = None,
     ) -> str:
         """Write the ``route_decision`` row + emit the ``ROUTER_DECISION:`` marker.
 
@@ -347,6 +414,19 @@ class HealingRouter:
             app_name=app_name,
             vllm_healthy=vllm_healthy,
         )
+        # W2 — annotate prediction with posterior provenance so calibration
+        # can attribute outcomes to "heuristic" vs "posterior-driven" decisions.
+        if posterior is not None:
+            prediction["posterior_used"] = posterior.used
+            prediction["posterior_n"] = posterior.n
+            prediction["posterior_successes"] = posterior.successes
+            prediction["posterior_mean"] = posterior.posterior_mean
+            prediction["posterior_fallback_reason"] = posterior.fallback_reason
+            prediction["heuristic_p"] = float(heuristic_p)
+        else:
+            prediction["posterior_used"] = False
+            prediction["posterior_fallback_reason"] = "disabled_or_unread"
+            prediction["heuristic_p"] = float(heuristic_p)
 
         # Emit the §29 marker FIRST so the audit trail exists even if the
         # ledger write fails on this turn.

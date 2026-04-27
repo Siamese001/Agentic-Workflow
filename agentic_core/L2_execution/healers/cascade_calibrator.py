@@ -22,11 +22,27 @@ Rule: .windsurf/rules/closed-loop-router-enforcement.md (row #4 L2/cascade)
 from __future__ import annotations
 
 import hashlib
+import logging
 import math
+import sqlite3
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from .confidence_scorer import HealTier
+
+_LOGGER = logging.getLogger(__name__)
+
+# Posterior reader configuration. Constitutional §29 promotion gate is n≥30
+# AND wilson_lower≥0.60; we use the same n-floor for the routing posterior so
+# routing and promotion share calibration semantics.
+DEFAULT_POSTERIOR_N_FLOOR: int = 30
+
+# Beta(1,1) uniform prior. The Laplace-rule posterior mean = (1+k)/(2+n).
+# Tunable via env if a stronger prior is desired (e.g., expert prior on a
+# specific cell). Today the prior is universal so each cell starts neutral.
+_BETA_PRIOR_ALPHA: float = 1.0
+_BETA_PRIOR_BETA: float = 1.0
 
 # ---------------------------------------------------------------------------
 # Default cost / value table (bootstrap prior — env-overridable in HealingRouter)
@@ -289,13 +305,138 @@ def compute_decision_evidence(
     )
 
 
+# ---------------------------------------------------------------------------
+# Beta posterior reader — direct SQLite query of router_l2_cascade ledger
+# ---------------------------------------------------------------------------
+# Default ledger path. Resolved relative to the repo root at import time so a
+# unit-test that monkey-patches it can redirect to a tmp DB.
+_DEFAULT_LEDGER_PATH: Path = (
+    Path(__file__).resolve().parents[3] / "artifacts" / "ledgers" / "router_l2_cascade.sqlite"
+)
+
+
+@dataclass(frozen=True)
+class PosteriorRead:
+    """Result of a Beta-posterior lookup for one routing cell."""
+
+    posterior_mean: float  # (α + k) / (α + β + n)
+    n: int                 # bound rows in the cell
+    successes: int         # successful rows in the cell
+    used: bool             # True iff caller may consume this read (n ≥ floor)
+    fallback_reason: str   # "ok", "n_below_floor", "ledger_unavailable", "no_rows", "error"
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "posterior_mean": float(self.posterior_mean),
+            "n": int(self.n),
+            "successes": int(self.successes),
+            "used": bool(self.used),
+            "fallback_reason": self.fallback_reason,
+        }
+
+
+def _resolve_ledger_path(override: Path | str | None) -> Path:
+    if override is not None:
+        return Path(override)
+    return _DEFAULT_LEDGER_PATH
+
+
+def posterior_for_cell(
+    *,
+    tier: HealTier,
+    fingerprint_hex: str,
+    n_floor: int = DEFAULT_POSTERIOR_N_FLOOR,
+    ledger_path: Path | str | None = None,
+    alpha: float = _BETA_PRIOR_ALPHA,
+    beta: float = _BETA_PRIOR_BETA,
+) -> PosteriorRead:
+    """Read the Beta-posterior P(success | tier, cell) from the ledger.
+
+    Aggregates ``status='bound'`` rows where ``prediction_json.tier`` matches
+    ``tier.name`` and ``prediction_json.fingerprint`` matches ``fingerprint_hex``.
+    The Beta(α, β) prior + observed (k, n-k) yields posterior mean
+    ``(α + k) / (α + β + n)``.
+
+    Fail-soft: any error path returns a ``PosteriorRead`` with ``used=False``
+    so the caller falls back to the heuristic prior unconditionally. The
+    ``fallback_reason`` field carries the short cause for telemetry stamping.
+
+    The ``n_floor`` defaults to 30 to mirror the §29 promotion gate. A cell
+    with fewer bound rows is "cold" and the heuristic still wins.
+    """
+    path = _resolve_ledger_path(ledger_path)
+    if not path.exists():
+        return PosteriorRead(
+            posterior_mean=alpha / (alpha + beta),
+            n=0,
+            successes=0,
+            used=False,
+            fallback_reason="ledger_unavailable",
+        )
+
+    try:
+        # Read-only connection; no chance of corrupting the ledger.
+        uri = f"file:{path.as_posix()}?mode=ro"
+        conn = sqlite3.connect(uri, uri=True, timeout=2.0)
+        try:
+            row = conn.execute(
+                """
+                SELECT
+                    COUNT(*) AS n,
+                    SUM(CASE WHEN json_extract(outcome_json, '$.success') = 1
+                              THEN 1 ELSE 0 END) AS k
+                FROM events
+                WHERE event_kind = 'route_decision'
+                  AND status = 'bound'
+                  AND json_extract(prediction_json, '$.tier') = ?
+                  AND json_extract(prediction_json, '$.fingerprint') = ?
+                """,
+                (tier.name, fingerprint_hex),
+            ).fetchone()
+        finally:
+            conn.close()
+    except sqlite3.Error:  # guardian: allow-log-and-swallow -- posterior read is best-effort; routing must never break
+        _LOGGER.debug("posterior_for_cell sqlite3 error", exc_info=True)
+        return PosteriorRead(
+            posterior_mean=alpha / (alpha + beta),
+            n=0,
+            successes=0,
+            used=False,
+            fallback_reason="error",
+        )
+
+    n = int(row[0] or 0)
+    k = int(row[1] or 0)
+    if n <= 0:
+        return PosteriorRead(
+            posterior_mean=alpha / (alpha + beta),
+            n=0,
+            successes=0,
+            used=False,
+            fallback_reason="no_rows",
+        )
+
+    posterior_mean = (alpha + k) / (alpha + beta + n)
+    used = n >= int(n_floor)
+    return PosteriorRead(
+        posterior_mean=posterior_mean,
+        n=n,
+        successes=k,
+        used=used,
+        fallback_reason="ok" if used else "n_below_floor",
+    )
+
+
 __all__ = [
+    "DEFAULT_POSTERIOR_N_FLOOR",
     "DEFAULT_VALUE_PER_SUCCESS_USD",
     "DecisionEvidence",
+    "PosteriorRead",
     "brier_component",
     "compute_decision_evidence",
     "compute_eu",
     "fingerprint",
+    "posterior_for_cell",
     "provider_label",
     "score_band_for",
     "wilson_lower_bound",
