@@ -13,6 +13,25 @@ see plan ``exit-eval-v6-gaps-d7a3f1.md``.
 
 from __future__ import annotations
 
+from agentic_core.L3_orchestration.exit_eval.v6.bus_pt_pipeline import (
+    BUS_PT_DEFAULT_RETENTION_DAYS,
+    CANDIDATE_POOL_RETENTION_DAYS,
+    GOLDEN_SET_RETENTION_INDEFINITE,
+    GRADUATION_K,
+    GRADUATION_PASSK_THRESHOLD,
+    GRADUATION_WINDOW,
+    PROMOTION_HEURISTIC_WEIGHTS,
+    BusTRow,
+    CandidatePoolEntry,
+    CurationDecision,
+    CurationVerdict,
+    GoldenSetTrack,
+    GoldenSetVersion,
+    assert_anonymization_fail_closed,
+    assert_no_runtime_mutation,
+    graduates_to_regression,
+    promotion_score,
+)
 from agentic_core.L3_orchestration.exit_eval.v6.grader_composition import (
     ABSTAIN_REASON_CODE,
     GATE_COMPOSITION_MODE,
@@ -261,4 +280,22 @@ __all__ = [
     "Rubric",
     "RubricDimension",
     "compose",
+    # BUS P/T pipeline (Wave 4)
+    "BUS_PT_DEFAULT_RETENTION_DAYS",
+    "CANDIDATE_POOL_RETENTION_DAYS",
+    "GOLDEN_SET_RETENTION_INDEFINITE",
+    "GRADUATION_K",
+    "GRADUATION_PASSK_THRESHOLD",
+    "GRADUATION_WINDOW",
+    "PROMOTION_HEURISTIC_WEIGHTS",
+    "BusTRow",
+    "CandidatePoolEntry",
+    "CurationDecision",
+    "CurationVerdict",
+    "GoldenSetTrack",
+    "GoldenSetVersion",
+    "assert_anonymization_fail_closed",
+    "assert_no_runtime_mutation",
+    "graduates_to_regression",
+    "promotion_score",
 ]

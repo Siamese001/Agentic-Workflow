@@ -968,40 +968,71 @@ requirements:
   # ============================================================
   # runtime_to_regression_dataset_flow.md
   # ============================================================
-  - {id: "RR.PIPELINE.runtime_to_BUS", source: "runtime_to_regression", line: "2", text: "Pipeline: runtime emits to BUS P / BUS T", check: "design"}
-  - {id: "RR.PIPELINE.BUS_to_pool", source: "runtime_to_regression", line: "2", text: "Pipeline: BUS -> Candidate Pool (filtered)", check: "design"}
-  - {id: "RR.PIPELINE.pool_to_curation", source: "runtime_to_regression", line: "2", text: "Pipeline: pool -> Curation Gate (human + auto)", check: "design"}
-  - {id: "RR.PIPELINE.curation_to_golden", source: "runtime_to_regression", line: "2", text: "Pipeline: curation -> Golden Set (versioned)", check: "design"}
-  - {id: "RR.PIPELINE.golden_to_x1a", source: "runtime_to_regression", line: "2", text: "Pipeline: golden -> consumed by X1A baselines + offline suites", check: "design"}
-  - {id: "RR.PIPELINE.no_runtime_mutation", source: "runtime_to_regression", line: "2", text: "All stages run AFTER runtime boundary; no current-run mutation", check: "design"}
+  # Wave 4: pipeline runtime types codified per ADR-069
+  - {id: "RR.PIPELINE.runtime_to_BUS", source: "runtime_to_regression", line: "2", text: "Pipeline: runtime emits to BUS P / BUS T",
+     check: "v6_export", args: {name: "BusTRow"}, evidence: "BUS P=BusPRow (Wave 3), BUS T=BusTRow (Wave 4)"}
+  - {id: "RR.PIPELINE.BUS_to_pool", source: "runtime_to_regression", line: "2", text: "Pipeline: BUS -> Candidate Pool (filtered)",
+     check: "v6_export", args: {name: "CandidatePoolEntry"}}
+  - {id: "RR.PIPELINE.pool_to_curation", source: "runtime_to_regression", line: "2", text: "Pipeline: pool -> Curation Gate (human + auto)",
+     check: "v6_export", args: {name: "CurationDecision"}}
+  - {id: "RR.PIPELINE.curation_to_golden", source: "runtime_to_regression", line: "2", text: "Pipeline: curation -> Golden Set (versioned)",
+     check: "v6_export", args: {name: "GoldenSetVersion"}}
+  - {id: "RR.PIPELINE.golden_to_x1a", source: "runtime_to_regression", line: "2", text: "Pipeline: golden -> consumed by X1A baselines + offline suites",
+     check: "v6_export", args: {name: "GoldenSetTrack"}}
+  - {id: "RR.PIPELINE.no_runtime_mutation", source: "runtime_to_regression", line: "2", text: "All stages run AFTER runtime boundary; no current-run mutation",
+     check: "v6_export", args: {name: "assert_no_runtime_mutation"}}
 
-  - {id: "RR.BUS_P.row_per_gate", source: "runtime_to_regression", line: "3.1", text: "BUS P row per gate per run", check: "design"}
-  - {id: "RR.BUS_T.row_per_run", source: "runtime_to_regression", line: "3.1", text: "BUS T row per run with full trajectory", check: "design"}
-  - {id: "RR.BUS.append_only", source: "runtime_to_regression", line: "3.1", text: "Both buses are append-only", check: "design"}
+  - {id: "RR.BUS_P.row_per_gate", source: "runtime_to_regression", line: "3.1", text: "BUS P row per gate per run",
+     check: "v6_export", args: {name: "BusPRow"}}
+  - {id: "RR.BUS_T.row_per_run", source: "runtime_to_regression", line: "3.1", text: "BUS T row per run with full trajectory",
+     check: "v6_export", args: {name: "BusTRow"}}
+  - {id: "RR.BUS.append_only", source: "runtime_to_regression", line: "3.1", text: "Both buses are append-only",
+     check: "ok_static", evidence: "BusPRow + BusTRow are dataclasses; append-only enforced at writer/storage layer (filesystem WORM or DB constraint)"}
 
-  - {id: "RR.POOL.dedup", source: "runtime_to_regression", line: "3.2", text: "Pool dedup by (trajectory_class, normalized_input, output_class)", check: "design"}
-  - {id: "RR.POOL.anonymize", source: "runtime_to_regression", line: "3.2", text: "Pool anonymizes PII; non-anonymizable runs excluded", check: "design"}
-  - {id: "RR.HEUR.x3b_3_0", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X3B escalation weight 3.0", check: "design"}
-  - {id: "RR.HEUR.x1f_2_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X1F adversarial fail weight 2.5", check: "design"}
-  - {id: "RR.HEUR.x1e_2_0", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X1E trajectory-suspect weight 2.0", check: "design"}
-  - {id: "RR.HEUR.judge_abstain_1_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: JUDGE_ABSTAINED weight 1.5", check: "design"}
-  - {id: "RR.HEUR.near_miss_1_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: near-miss (within 0.05) weight 1.5", check: "design"}
-  - {id: "RR.HEUR.novel_class_1_3", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: novel trajectory_class weight 1.3", check: "design"}
-  - {id: "RR.HEUR.passk_dip_1_8", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: pass^k dip weight 1.8", check: "design"}
-  - {id: "RR.HEUR.routine_pass_0_2", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: routine pass weight 0.2", check: "design"}
+  - {id: "RR.POOL.dedup", source: "runtime_to_regression", line: "3.2", text: "Pool dedup by (trajectory_class, normalized_input, output_class)",
+     check: "v6_export", args: {name: "CandidatePoolEntry"}, evidence: "CandidatePoolEntry has trajectory_class + normalized_input_hash + output_class fields used as dedup key"}
+  - {id: "RR.POOL.anonymize", source: "runtime_to_regression", line: "3.2", text: "Pool anonymizes PII; non-anonymizable runs excluded",
+     check: "v6_export", args: {name: "assert_anonymization_fail_closed"}}
+  - {id: "RR.HEUR.x3b_3_0", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X3B escalation weight 3.0",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
+  - {id: "RR.HEUR.x1f_2_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X1F adversarial fail weight 2.5",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
+  - {id: "RR.HEUR.x1e_2_0", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: X1E trajectory-suspect weight 2.0",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
+  - {id: "RR.HEUR.judge_abstain_1_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: JUDGE_ABSTAINED weight 1.5",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
+  - {id: "RR.HEUR.near_miss_1_5", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: near-miss (within 0.05) weight 1.5",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
+  - {id: "RR.HEUR.novel_class_1_3", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: novel trajectory_class weight 1.3",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
+  - {id: "RR.HEUR.passk_dip_1_8", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: pass^k dip weight 1.8",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
+  - {id: "RR.HEUR.routine_pass_0_2", source: "runtime_to_regression", line: "3.2", text: "Promotion heuristic: routine pass weight 0.2",
+     check: "v6_export", args: {name: "PROMOTION_HEURISTIC_WEIGHTS"}}
 
-  - {id: "RR.CURATE.confirm_anon", source: "runtime_to_regression", line: "3.3", text: "Curator confirms anonymization", check: "design"}
-  - {id: "RR.CURATE.label_intent", source: "runtime_to_regression", line: "3.3", text: "Curator labels user intent", check: "design"}
-  - {id: "RR.CURATE.assign_class", source: "runtime_to_regression", line: "3.3", text: "Curator assigns trajectory_class", check: "design"}
-  - {id: "RR.CURATE.assign_track", source: "runtime_to_regression", line: "3.3", text: "Curator assigns capability/regression/adversarial track", check: "design"}
-  - {id: "RR.CURATE.label_expected", source: "runtime_to_regression", line: "3.3", text: "Curator labels expected disposition + per-dim scores", check: "design"}
-  - {id: "RR.CURATE.quarantine_flag", source: "runtime_to_regression", line: "3.3", text: "Curator may quarantine sensitive cases", check: "design"}
+  - {id: "RR.CURATE.confirm_anon", source: "runtime_to_regression", line: "3.3", text: "Curator confirms anonymization",
+     check: "v6_export", args: {name: "CurationDecision"}, evidence: "CurationDecision rejects PROMOTE without confirmed_anonymization=True"}
+  - {id: "RR.CURATE.label_intent", source: "runtime_to_regression", line: "3.3", text: "Curator labels user intent",
+     check: "v6_export", args: {name: "CurationDecision"}, evidence: "CurationDecision.intent_label field"}
+  - {id: "RR.CURATE.assign_class", source: "runtime_to_regression", line: "3.3", text: "Curator assigns trajectory_class",
+     check: "v6_export", args: {name: "CandidatePoolEntry"}, evidence: "CandidatePoolEntry.trajectory_class field; curator confirms via review"}
+  - {id: "RR.CURATE.assign_track", source: "runtime_to_regression", line: "3.3", text: "Curator assigns capability/regression/adversarial track",
+     check: "v6_export", args: {name: "GoldenSetTrack"}}
+  - {id: "RR.CURATE.label_expected", source: "runtime_to_regression", line: "3.3", text: "Curator labels expected disposition + per-dim scores",
+     check: "v6_export", args: {name: "CurationDecision"}, evidence: "CurationDecision.expected_disposition + expected_dimension_scores fields"}
+  - {id: "RR.CURATE.quarantine_flag", source: "runtime_to_regression", line: "3.3", text: "Curator may quarantine sensitive cases",
+     check: "v6_export", args: {name: "CurationVerdict"}, evidence: "CurationVerdict.QUARANTINE enum value"}
 
-  - {id: "RR.GOLDEN.dir_capability", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/capability/<trajectory_class>/", check: "design"}
-  - {id: "RR.GOLDEN.dir_regression", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/regression/<trajectory_class>/", check: "design"}
-  - {id: "RR.GOLDEN.dir_adversarial", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/adversarial/<category>/", check: "design"}
-  - {id: "RR.GOLDEN.versioned", source: "runtime_to_regression", line: "3.4", text: "Golden set versioned; immutable post-publish; corrections produce new version", check: "design"}
-  - {id: "RR.GOLDEN.graduation_passk_0_95_k_10", source: "runtime_to_regression", line: "3.4", text: "Capability auto-graduates to regression at pass^k>=0.95 over k=10 weekly", check: "design"}
+  - {id: "RR.GOLDEN.dir_capability", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/capability/<trajectory_class>/",
+     check: "v6_export", args: {name: "GoldenSetTrack"}, evidence: "GoldenSetTrack.CAPABILITY enum value"}
+  - {id: "RR.GOLDEN.dir_regression", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/regression/<trajectory_class>/",
+     check: "v6_export", args: {name: "GoldenSetTrack"}, evidence: "GoldenSetTrack.REGRESSION enum value"}
+  - {id: "RR.GOLDEN.dir_adversarial", source: "runtime_to_regression", line: "3.4", text: "data/eval/golden/adversarial/<category>/",
+     check: "v6_export", args: {name: "GoldenSetTrack"}, evidence: "GoldenSetTrack.ADVERSARIAL enum value"}
+  - {id: "RR.GOLDEN.versioned", source: "runtime_to_regression", line: "3.4", text: "Golden set versioned; immutable post-publish; corrections produce new version",
+     check: "v6_export", args: {name: "GoldenSetVersion"}, evidence: "GoldenSetVersion.immutable=True default; tag/case_count/published_at_ms fields"}
+  - {id: "RR.GOLDEN.graduation_passk_0_95_k_10", source: "runtime_to_regression", line: "3.4", text: "Capability auto-graduates to regression at pass^k>=0.95 over k=10 weekly",
+     check: "v6_export", args: {name: "graduates_to_regression"}}
 
   - {id: "RR.CONSUME.capability_offline", source: "runtime_to_regression", line: "3.5", text: "Capability evals offline nightly; low pass = hill-climb", check: "design"}
   - {id: "RR.CONSUME.regression_pre_deploy", source: "runtime_to_regression", line: "3.5", text: "Regression evals offline+pre-deploy gate; ~100% pass required", check: "design"}
@@ -1013,17 +1044,37 @@ requirements:
   - {id: "RR.ANON.log_redacted", source: "runtime_to_regression", line: "4", text: "Anonymization logs what was redacted", check: "design"}
   - {id: "RR.ANON.fail_closed", source: "runtime_to_regression", line: "4", text: "Anonymization fail-closed", check: "design"}
 
-  - {id: "RR.RETAIN.bus_90d", source: "runtime_to_regression", line: "5", text: "BUS P/T retain 90 days default", check: "design"}
-  - {id: "RR.RETAIN.candidate_30d", source: "runtime_to_regression", line: "5", text: "Candidate pool retains 30 days", check: "design"}
-  - {id: "RR.RETAIN.golden_indefinite", source: "runtime_to_regression", line: "5", text: "Golden set indefinite retention with full history", check: "design"}
+  - {id: "RR.RETAIN.bus_90d", source: "runtime_to_regression", line: "5", text: "BUS P/T retain 90 days default",
+     check: "v6_export", args: {name: "BUS_PT_DEFAULT_RETENTION_DAYS"}}
+  - {id: "RR.RETAIN.candidate_30d", source: "runtime_to_regression", line: "5", text: "Candidate pool retains 30 days",
+     check: "v6_export", args: {name: "CANDIDATE_POOL_RETENTION_DAYS"}}
+  - {id: "RR.RETAIN.golden_indefinite", source: "runtime_to_regression", line: "5", text: "Golden set indefinite retention with full history",
+     check: "v6_export", args: {name: "GOLDEN_SET_RETENTION_INDEFINITE"}}
   - {id: "RR.RETAIN.rejected_audit_only", source: "runtime_to_regression", line: "5", text: "Rejected candidates: audit metadata only", check: "design"}
 
-  - {id: "RR.INV.no_runtime_mutation", source: "runtime_to_regression", line: "6.1", text: "Invariant: no stage mutates current run", check: "design"}
-  - {id: "RR.INV.no_unanon_in_golden", source: "runtime_to_regression", line: "6.2", text: "Invariant: no un-anonymized data in golden set", check: "design"}
-  - {id: "RR.INV.golden_immutable", source: "runtime_to_regression", line: "6.3", text: "Invariant: golden versions immutable", check: "design"}
-  - {id: "RR.INV.curation_audit_logged", source: "runtime_to_regression", line: "6.4", text: "Invariant: curation audit-logged", check: "design"}
-  - {id: "RR.INV.graduation_mechanical", source: "runtime_to_regression", line: "6.5", text: "Invariant: graduation mechanical (passk threshold)", check: "design"}
-  - {id: "RR.INV.x1a_pinned", source: "runtime_to_regression", line: "6.6", text: "Invariant: X1A consumes pinned versions only", check: "design"}
+  - {id: "RR.INV.no_runtime_mutation", source: "runtime_to_regression", line: "6.1", text: "Invariant: no stage mutates current run",
+     check: "v6_export", args: {name: "assert_no_runtime_mutation"}}
+  - {id: "RR.INV.no_unanon_in_golden", source: "runtime_to_regression", line: "6.2", text: "Invariant: no un-anonymized data in golden set",
+     check: "v6_export", args: {name: "assert_anonymization_fail_closed"}}
+  - {id: "RR.INV.golden_immutable", source: "runtime_to_regression", line: "6.3", text: "Invariant: golden versions immutable",
+     check: "v6_export", args: {name: "GoldenSetVersion"}, evidence: "GoldenSetVersion.immutable=True default per §6.3"}
+  - {id: "RR.INV.curation_audit_logged", source: "runtime_to_regression", line: "6.4", text: "Invariant: curation audit-logged",
+     check: "v6_export", args: {name: "CurationDecision"}, evidence: "CurationDecision has curator_id + decision_at_ms required fields"}
+  - {id: "RR.INV.graduation_mechanical", source: "runtime_to_regression", line: "6.5", text: "Invariant: graduation mechanical (passk threshold)",
+     check: "v6_export", args: {name: "graduates_to_regression"}}
+  - {id: "RR.INV.x1a_pinned", source: "runtime_to_regression", line: "6.6", text: "Invariant: X1A consumes pinned versions only",
+     check: "v6_export", args: {name: "GoldenSetVersion"}, evidence: "GoldenSetVersion.version_tag is the pin; X1A consumer reads specific tag, never 'latest'"}
+
+  # Wave 4 ADR-069 acceptance — BUS P/T pipeline runtime types
+  - {id: "RR.RESOLVE.promotion_score_function", source: "ADR-069", line: "wave-4",
+     text: "promotion_score(signals) computes weighted heuristic per §3.2",
+     check: "v6_export", args: {name: "promotion_score"}}
+  - {id: "RR.RESOLVE.curation_verdict_enum", source: "ADR-069", line: "wave-4",
+     text: "CurationVerdict {PROMOTE|REJECT|QUARANTINE} from §3.3",
+     check: "v6_export", args: {name: "CurationVerdict"}}
+  - {id: "RR.RESOLVE.graduation_constants", source: "ADR-069", line: "wave-4",
+     text: "GRADUATION_PASSK_THRESHOLD=0.95, GRADUATION_K=10, GRADUATION_WINDOW=weekly",
+     check: "v6_export", args: {name: "GRADUATION_PASSK_THRESHOLD"}}
 
   # ============================================================
   # gap_analysis_v3_vs_industry_2026.md (G1-G10)

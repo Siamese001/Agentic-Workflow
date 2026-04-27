@@ -4,7 +4,7 @@ Row-per-requirement matrix re-ingested from **all 14 spec files** in
 `docs/reference/05_Exit_Evaluation_and_Control/`. Every row carries an OTEL-shaped
 evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observation.
 
-**Trace ID** (this run): `8ea9978c9dea5bbd3f07e60bd9aa9728`  
+**Trace ID** (this run): `f2f000bcb81d15727ec925dce3ca7ac6`  
 **Probe**: `tools/analysis/exit_v6_master_otel_probe.py`  
 **Registry**: `tools/analysis/exit_v6_requirements_registry.yaml`  
 **Evidence JSON**: `docs/reports/plans/exit_v6_MASTER_otel_evidence.json`
@@ -13,10 +13,10 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Status | Count | Meaning |
 |---|---:|---|
-| **PASS** | 436 | requirement is observed in v6 runtime (passes its validator) |
-| **DESIGN** | 146 | requirement is design-level only (not yet wired into v6 runtime) |
+| **PASS** | 478 | requirement is observed in v6 runtime (passes its validator) |
+| **DESIGN** | 107 | requirement is design-level only (not yet wired into v6 runtime) |
 | **GAP** | 0 | requirement intends a runtime binding but observation does not match spec |
-| **TOTAL** | 582 | requirements across all 14 spec files |
+| **TOTAL** | 585 | requirements across all 14 spec files |
 
 ## Live runtime observations (this probe run)
 
@@ -28,7 +28,7 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
   empty_disposition                    = DENY
   span_catalog_count                   = 40
   required_attributes_count            = 39
-  v6_module_all_count                  = 103
+  v6_module_all_count                  = 120
   return_payload_failure_codes_count   = 10
   determinism_equal                    = True
   permutation_equal                    = True
@@ -55,9 +55,10 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `ADR-065` | 3 | 3 | 0 | 0 |
 | `ADR-067` | 6 | 6 | 0 | 0 |
 | `ADR-068` | 2 | 2 | 0 | 0 |
+| `ADR-069` | 3 | 3 | 0 | 0 |
 | `gap_analysis_v3_vs_industry_2026.md` | 20 | 5 | 15 | 0 |
 | `grader_composition_spec.md` | 54 | 35 | 19 | 0 |
-| `runtime_to_regression_dataset_flow.md` | 48 | 0 | 48 | 0 |
+| `runtime_to_regression_dataset_flow.md` | 48 | 39 | 9 | 0 |
 | `v4_hardening_addendum.md` | 94 | 32 | 62 | 0 |
 
 ## 05.1_Exit_Input_Normalization_and_Review_Packet.md
@@ -404,7 +405,7 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 |---|---|---|:---:|---|---|
 | `5.8.CAT.span_count` | catalog | Canonical OTEL span catalog has 40 spans (39 base + X3F break-glass per ADR-065) | **PASS** | `d3de11d869bbd2bf` | span_count=40 |
 | `5.8.CAT.required_attrs_count` | required-attrs | 39 required OTEL attributes (26 base 05.8 + 13 H5 hardening per Wave 2) | **PASS** | `5ed7b46e59cdd18a` | required_attrs_count=39 |
-| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=103 |
+| `5.8.CAT.v6_module_all_count` | module | v6 __all__ exports >= 80 symbols (catalog of public API) | **PASS** | `2adbf861530f23a9` | v6_all_count=120 |
 | `5.8.DET.equal_runs` | determinism | Two runs of identical receipts produce equal deterministic digest | **PASS** | `c8c927886cd87cf0` | det_equal=True |
 | `5.8.DET.permutation` | determinism | Receipt-key permutation produces identical digest | **PASS** | `b1462e1dc3e6a960` | perm_equal=True |
 | `5.8.AB.empty_fails_closed` | anti-bypass | Empty input fails closed (DENY) | **PASS** | `6c43eb0b4910e2e3` | empty_disposition=DENY |
@@ -517,6 +518,16 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `GC.RESOLVE.compose_function` | wave-3 | compose() function implements all 3 §3 composition modes | **PASS** | `df387f711fb18a17` | compose in v6.__all__ |
 | `GC.RESOLVE.composition_result` | wave-3 | CompositionResult carries passed/aggregate/abstain/dimension_vector | **PASS** | `c7007e3e222f8cab` | CompositionResult in v6.__all__ |
 
+## ADR-069
+
+`ADR-069` — 3 requirements
+
+| Req ID | Source line | Requirement | Status | Span ID | Evidence |
+|---|---|---|:---:|---|---|
+| `RR.RESOLVE.promotion_score_function` | wave-4 | promotion_score(signals) computes weighted heuristic per §3.2 | **PASS** | `a045ec44f0afe65d` | promotion_score in v6.__all__ |
+| `RR.RESOLVE.curation_verdict_enum` | wave-4 | CurationVerdict {PROMOTE\|REJECT\|QUARANTINE} from §3.3 | **PASS** | `f959047a0d4d9fe5` | CurationVerdict in v6.__all__ |
+| `RR.RESOLVE.graduation_constants` | wave-4 | GRADUATION_PASSK_THRESHOLD=0.95, GRADUATION_K=10, GRADUATION_WINDOW=weekly | **PASS** | `bd42ed011d9ecb60` | GRADUATION_PASSK_THRESHOLD in v6.__all__ |
+
 ## gap_analysis_v3_vs_industry_2026.md
 
 `gap_analysis` — 20 requirements
@@ -611,36 +622,36 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 
 | Req ID | Source line | Requirement | Status | Span ID | Evidence |
 |---|---|---|:---:|---|---|
-| `RR.PIPELINE.runtime_to_BUS` | 2 | Pipeline: runtime emits to BUS P / BUS T | **DESIGN** | `8e9e64c0a4d8abf3` | design-only, no runtime binding |
-| `RR.PIPELINE.BUS_to_pool` | 2 | Pipeline: BUS -> Candidate Pool (filtered) | **DESIGN** | `7503293e5d92af2c` | design-only, no runtime binding |
-| `RR.PIPELINE.pool_to_curation` | 2 | Pipeline: pool -> Curation Gate (human + auto) | **DESIGN** | `bcc87e81e26b4664` | design-only, no runtime binding |
-| `RR.PIPELINE.curation_to_golden` | 2 | Pipeline: curation -> Golden Set (versioned) | **DESIGN** | `985e595d9103216d` | design-only, no runtime binding |
-| `RR.PIPELINE.golden_to_x1a` | 2 | Pipeline: golden -> consumed by X1A baselines + offline suites | **DESIGN** | `686c97610028b1e0` | design-only, no runtime binding |
-| `RR.PIPELINE.no_runtime_mutation` | 2 | All stages run AFTER runtime boundary; no current-run mutation | **DESIGN** | `4304a5c397886d60` | design-only, no runtime binding |
-| `RR.BUS_P.row_per_gate` | 3.1 | BUS P row per gate per run | **DESIGN** | `b1d71b216f70dc96` | design-only, no runtime binding |
-| `RR.BUS_T.row_per_run` | 3.1 | BUS T row per run with full trajectory | **DESIGN** | `c58ce0de2e8b8d63` | design-only, no runtime binding |
-| `RR.BUS.append_only` | 3.1 | Both buses are append-only | **DESIGN** | `3814deb6c2e57d14` | design-only, no runtime binding |
-| `RR.POOL.dedup` | 3.2 | Pool dedup by (trajectory_class, normalized_input, output_class) | **DESIGN** | `c0fe4974c6b3a2c9` | design-only, no runtime binding |
-| `RR.POOL.anonymize` | 3.2 | Pool anonymizes PII; non-anonymizable runs excluded | **DESIGN** | `da2cb96b6d55f712` | design-only, no runtime binding |
-| `RR.HEUR.x3b_3_0` | 3.2 | Promotion heuristic: X3B escalation weight 3.0 | **DESIGN** | `1be52ecae7870075` | design-only, no runtime binding |
-| `RR.HEUR.x1f_2_5` | 3.2 | Promotion heuristic: X1F adversarial fail weight 2.5 | **DESIGN** | `3e2a205fcc4845ab` | design-only, no runtime binding |
-| `RR.HEUR.x1e_2_0` | 3.2 | Promotion heuristic: X1E trajectory-suspect weight 2.0 | **DESIGN** | `ca5a3ce3ad93d731` | design-only, no runtime binding |
-| `RR.HEUR.judge_abstain_1_5` | 3.2 | Promotion heuristic: JUDGE_ABSTAINED weight 1.5 | **DESIGN** | `25e1abee0d85e925` | design-only, no runtime binding |
-| `RR.HEUR.near_miss_1_5` | 3.2 | Promotion heuristic: near-miss (within 0.05) weight 1.5 | **DESIGN** | `a7b06571a1cbc6ac` | design-only, no runtime binding |
-| `RR.HEUR.novel_class_1_3` | 3.2 | Promotion heuristic: novel trajectory_class weight 1.3 | **DESIGN** | `d57f7a3461737c8f` | design-only, no runtime binding |
-| `RR.HEUR.passk_dip_1_8` | 3.2 | Promotion heuristic: pass^k dip weight 1.8 | **DESIGN** | `3b4aec24096a66f4` | design-only, no runtime binding |
-| `RR.HEUR.routine_pass_0_2` | 3.2 | Promotion heuristic: routine pass weight 0.2 | **DESIGN** | `5f9b07dd439816e3` | design-only, no runtime binding |
-| `RR.CURATE.confirm_anon` | 3.3 | Curator confirms anonymization | **DESIGN** | `9e9b4af0003c4769` | design-only, no runtime binding |
-| `RR.CURATE.label_intent` | 3.3 | Curator labels user intent | **DESIGN** | `a90a9be3918be7a9` | design-only, no runtime binding |
-| `RR.CURATE.assign_class` | 3.3 | Curator assigns trajectory_class | **DESIGN** | `4036791dcd066eba` | design-only, no runtime binding |
-| `RR.CURATE.assign_track` | 3.3 | Curator assigns capability/regression/adversarial track | **DESIGN** | `dcafd9b39e5dce4b` | design-only, no runtime binding |
-| `RR.CURATE.label_expected` | 3.3 | Curator labels expected disposition + per-dim scores | **DESIGN** | `759ed3d9f2d44f50` | design-only, no runtime binding |
-| `RR.CURATE.quarantine_flag` | 3.3 | Curator may quarantine sensitive cases | **DESIGN** | `75ce0b5400cec13a` | design-only, no runtime binding |
-| `RR.GOLDEN.dir_capability` | 3.4 | data/eval/golden/capability/<trajectory_class>/ | **DESIGN** | `68fbafcd5a9464b5` | design-only, no runtime binding |
-| `RR.GOLDEN.dir_regression` | 3.4 | data/eval/golden/regression/<trajectory_class>/ | **DESIGN** | `adf7f4b7136e6da2` | design-only, no runtime binding |
-| `RR.GOLDEN.dir_adversarial` | 3.4 | data/eval/golden/adversarial/<category>/ | **DESIGN** | `cf8c454cfcc6e296` | design-only, no runtime binding |
-| `RR.GOLDEN.versioned` | 3.4 | Golden set versioned; immutable post-publish; corrections produce new version | **DESIGN** | `4c438876ab2b5387` | design-only, no runtime binding |
-| `RR.GOLDEN.graduation_passk_0_95_k_10` | 3.4 | Capability auto-graduates to regression at pass^k>=0.95 over k=10 weekly | **DESIGN** | `1b2059a1155077a2` | design-only, no runtime binding |
+| `RR.PIPELINE.runtime_to_BUS` | 2 | Pipeline: runtime emits to BUS P / BUS T | **PASS** | `8e9e64c0a4d8abf3` | BusTRow in v6.__all__ |
+| `RR.PIPELINE.BUS_to_pool` | 2 | Pipeline: BUS -> Candidate Pool (filtered) | **PASS** | `7503293e5d92af2c` | CandidatePoolEntry in v6.__all__ |
+| `RR.PIPELINE.pool_to_curation` | 2 | Pipeline: pool -> Curation Gate (human + auto) | **PASS** | `bcc87e81e26b4664` | CurationDecision in v6.__all__ |
+| `RR.PIPELINE.curation_to_golden` | 2 | Pipeline: curation -> Golden Set (versioned) | **PASS** | `985e595d9103216d` | GoldenSetVersion in v6.__all__ |
+| `RR.PIPELINE.golden_to_x1a` | 2 | Pipeline: golden -> consumed by X1A baselines + offline suites | **PASS** | `686c97610028b1e0` | GoldenSetTrack in v6.__all__ |
+| `RR.PIPELINE.no_runtime_mutation` | 2 | All stages run AFTER runtime boundary; no current-run mutation | **PASS** | `4304a5c397886d60` | assert_no_runtime_mutation in v6.__all__ |
+| `RR.BUS_P.row_per_gate` | 3.1 | BUS P row per gate per run | **PASS** | `b1d71b216f70dc96` | BusPRow in v6.__all__ |
+| `RR.BUS_T.row_per_run` | 3.1 | BUS T row per run with full trajectory | **PASS** | `c58ce0de2e8b8d63` | BusTRow in v6.__all__ |
+| `RR.BUS.append_only` | 3.1 | Both buses are append-only | **PASS** | `3814deb6c2e57d14` | BusPRow + BusTRow are dataclasses; append-only enforced at writer/storage layer (filesyst... |
+| `RR.POOL.dedup` | 3.2 | Pool dedup by (trajectory_class, normalized_input, output_class) | **PASS** | `c0fe4974c6b3a2c9` | CandidatePoolEntry in v6.__all__ |
+| `RR.POOL.anonymize` | 3.2 | Pool anonymizes PII; non-anonymizable runs excluded | **PASS** | `da2cb96b6d55f712` | assert_anonymization_fail_closed in v6.__all__ |
+| `RR.HEUR.x3b_3_0` | 3.2 | Promotion heuristic: X3B escalation weight 3.0 | **PASS** | `1be52ecae7870075` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.HEUR.x1f_2_5` | 3.2 | Promotion heuristic: X1F adversarial fail weight 2.5 | **PASS** | `3e2a205fcc4845ab` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.HEUR.x1e_2_0` | 3.2 | Promotion heuristic: X1E trajectory-suspect weight 2.0 | **PASS** | `ca5a3ce3ad93d731` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.HEUR.judge_abstain_1_5` | 3.2 | Promotion heuristic: JUDGE_ABSTAINED weight 1.5 | **PASS** | `25e1abee0d85e925` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.HEUR.near_miss_1_5` | 3.2 | Promotion heuristic: near-miss (within 0.05) weight 1.5 | **PASS** | `a7b06571a1cbc6ac` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.HEUR.novel_class_1_3` | 3.2 | Promotion heuristic: novel trajectory_class weight 1.3 | **PASS** | `d57f7a3461737c8f` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.HEUR.passk_dip_1_8` | 3.2 | Promotion heuristic: pass^k dip weight 1.8 | **PASS** | `3b4aec24096a66f4` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.HEUR.routine_pass_0_2` | 3.2 | Promotion heuristic: routine pass weight 0.2 | **PASS** | `5f9b07dd439816e3` | PROMOTION_HEURISTIC_WEIGHTS in v6.__all__ |
+| `RR.CURATE.confirm_anon` | 3.3 | Curator confirms anonymization | **PASS** | `9e9b4af0003c4769` | CurationDecision in v6.__all__ |
+| `RR.CURATE.label_intent` | 3.3 | Curator labels user intent | **PASS** | `a90a9be3918be7a9` | CurationDecision in v6.__all__ |
+| `RR.CURATE.assign_class` | 3.3 | Curator assigns trajectory_class | **PASS** | `4036791dcd066eba` | CandidatePoolEntry in v6.__all__ |
+| `RR.CURATE.assign_track` | 3.3 | Curator assigns capability/regression/adversarial track | **PASS** | `dcafd9b39e5dce4b` | GoldenSetTrack in v6.__all__ |
+| `RR.CURATE.label_expected` | 3.3 | Curator labels expected disposition + per-dim scores | **PASS** | `759ed3d9f2d44f50` | CurationDecision in v6.__all__ |
+| `RR.CURATE.quarantine_flag` | 3.3 | Curator may quarantine sensitive cases | **PASS** | `75ce0b5400cec13a` | CurationVerdict in v6.__all__ |
+| `RR.GOLDEN.dir_capability` | 3.4 | data/eval/golden/capability/<trajectory_class>/ | **PASS** | `68fbafcd5a9464b5` | GoldenSetTrack in v6.__all__ |
+| `RR.GOLDEN.dir_regression` | 3.4 | data/eval/golden/regression/<trajectory_class>/ | **PASS** | `adf7f4b7136e6da2` | GoldenSetTrack in v6.__all__ |
+| `RR.GOLDEN.dir_adversarial` | 3.4 | data/eval/golden/adversarial/<category>/ | **PASS** | `cf8c454cfcc6e296` | GoldenSetTrack in v6.__all__ |
+| `RR.GOLDEN.versioned` | 3.4 | Golden set versioned; immutable post-publish; corrections produce new version | **PASS** | `4c438876ab2b5387` | GoldenSetVersion in v6.__all__ |
+| `RR.GOLDEN.graduation_passk_0_95_k_10` | 3.4 | Capability auto-graduates to regression at pass^k>=0.95 over k=10 weekly | **PASS** | `1b2059a1155077a2` | graduates_to_regression in v6.__all__ |
 | `RR.CONSUME.capability_offline` | 3.5 | Capability evals offline nightly; low pass = hill-climb | **DESIGN** | `f1072d00adf9747f` | design-only, no runtime binding |
 | `RR.CONSUME.regression_pre_deploy` | 3.5 | Regression evals offline+pre-deploy gate; ~100% pass required | **DESIGN** | `b9a929bcacb70a7a` | design-only, no runtime binding |
 | `RR.CONSUME.adversarial_offline` | 3.5 | Adversarial evals offline+periodic; gates X1F policy updates | **DESIGN** | `499cb02ac7f49d38` | design-only, no runtime binding |
@@ -649,16 +660,16 @@ evidence span (`trace_id` + `span_id` + `attributes`) bound to runtime observati
 | `RR.ANON.deterministic` | 4 | Anonymization deterministic per run (stable dedup) | **DESIGN** | `9d8857e0796ed856` | design-only, no runtime binding |
 | `RR.ANON.log_redacted` | 4 | Anonymization logs what was redacted | **DESIGN** | `27af80debad6d6ff` | design-only, no runtime binding |
 | `RR.ANON.fail_closed` | 4 | Anonymization fail-closed | **DESIGN** | `6acd39e956d1313b` | design-only, no runtime binding |
-| `RR.RETAIN.bus_90d` | 5 | BUS P/T retain 90 days default | **DESIGN** | `a71581fe69d80ef7` | design-only, no runtime binding |
-| `RR.RETAIN.candidate_30d` | 5 | Candidate pool retains 30 days | **DESIGN** | `1db4cf006639c388` | design-only, no runtime binding |
-| `RR.RETAIN.golden_indefinite` | 5 | Golden set indefinite retention with full history | **DESIGN** | `38773c1a22e0944c` | design-only, no runtime binding |
+| `RR.RETAIN.bus_90d` | 5 | BUS P/T retain 90 days default | **PASS** | `a71581fe69d80ef7` | BUS_PT_DEFAULT_RETENTION_DAYS in v6.__all__ |
+| `RR.RETAIN.candidate_30d` | 5 | Candidate pool retains 30 days | **PASS** | `1db4cf006639c388` | CANDIDATE_POOL_RETENTION_DAYS in v6.__all__ |
+| `RR.RETAIN.golden_indefinite` | 5 | Golden set indefinite retention with full history | **PASS** | `38773c1a22e0944c` | GOLDEN_SET_RETENTION_INDEFINITE in v6.__all__ |
 | `RR.RETAIN.rejected_audit_only` | 5 | Rejected candidates: audit metadata only | **DESIGN** | `5b14c2a59dd400d7` | design-only, no runtime binding |
-| `RR.INV.no_runtime_mutation` | 6.1 | Invariant: no stage mutates current run | **DESIGN** | `f2bbfabc8bd1159b` | design-only, no runtime binding |
-| `RR.INV.no_unanon_in_golden` | 6.2 | Invariant: no un-anonymized data in golden set | **DESIGN** | `d4fd66e2290f18a3` | design-only, no runtime binding |
-| `RR.INV.golden_immutable` | 6.3 | Invariant: golden versions immutable | **DESIGN** | `d138d9b8319bec1b` | design-only, no runtime binding |
-| `RR.INV.curation_audit_logged` | 6.4 | Invariant: curation audit-logged | **DESIGN** | `ffaed218f6b52558` | design-only, no runtime binding |
-| `RR.INV.graduation_mechanical` | 6.5 | Invariant: graduation mechanical (passk threshold) | **DESIGN** | `522a1c76393b3694` | design-only, no runtime binding |
-| `RR.INV.x1a_pinned` | 6.6 | Invariant: X1A consumes pinned versions only | **DESIGN** | `c8b6fec3179206ea` | design-only, no runtime binding |
+| `RR.INV.no_runtime_mutation` | 6.1 | Invariant: no stage mutates current run | **PASS** | `f2bbfabc8bd1159b` | assert_no_runtime_mutation in v6.__all__ |
+| `RR.INV.no_unanon_in_golden` | 6.2 | Invariant: no un-anonymized data in golden set | **PASS** | `d4fd66e2290f18a3` | assert_anonymization_fail_closed in v6.__all__ |
+| `RR.INV.golden_immutable` | 6.3 | Invariant: golden versions immutable | **PASS** | `d138d9b8319bec1b` | GoldenSetVersion in v6.__all__ |
+| `RR.INV.curation_audit_logged` | 6.4 | Invariant: curation audit-logged | **PASS** | `ffaed218f6b52558` | CurationDecision in v6.__all__ |
+| `RR.INV.graduation_mechanical` | 6.5 | Invariant: graduation mechanical (passk threshold) | **PASS** | `522a1c76393b3694` | graduates_to_regression in v6.__all__ |
+| `RR.INV.x1a_pinned` | 6.6 | Invariant: X1A consumes pinned versions only | **PASS** | `c8b6fec3179206ea` | GoldenSetVersion in v6.__all__ |
 
 ## v4_hardening_addendum.md
 
