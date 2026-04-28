@@ -21,6 +21,7 @@ import pytest
 from tools.generate.core.helpers import (
     _artifact_locations,
     _artifact_present,
+    _probe_run_zip_for_member,
     _verify_artifacts,
 )
 
@@ -73,6 +74,67 @@ class TestArtifactPresent:
 
     def test_returns_none_when_truly_missing(self, tmp_path: Path) -> None:
         found = _artifact_present(tmp_path, TS, f"adg_run_{TS}.zip")
+        assert found is None
+
+
+class TestProbeRunZipForMember:
+    """Reports get bundled into ``adg_run_<ts>.zip`` (often gzipped to
+    ``.zip.gz`` and moved into the archive month-dir). The verifier must
+    be able to find them inside that bundle.
+    """
+
+    def _build_archived_run_zip_with_reports(self, root: Path) -> Path:
+        """Create artifacts/adg/_archive/<YYYY-MM>/adg_run_<ts>.zip.gz
+        containing four canonical reports under ``adg/<name>``.
+        """
+        import io
+        import zipfile
+
+        archive_dir = root / ARCHIVE_MONTH_DIR
+        archive_dir.mkdir(parents=True)
+        # Build the inner zip in memory
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for rname in (
+                "layer_coverage_report",
+                "edge_density_report",
+                "provenance_report",
+                "closure_validation_report",
+            ):
+                zf.writestr(f"adg/{rname}_{TS}.json", json.dumps({"stub": True}))
+        buf.seek(0)
+        target_gz = archive_dir / f"adg_run_{TS}.zip.gz"
+        with gzip.open(target_gz, "wb") as fh:
+            fh.write(buf.getvalue())
+        return target_gz
+
+    def test_finds_report_inside_archived_gzipped_zip(self, tmp_path: Path) -> None:
+        target_gz = self._build_archived_run_zip_with_reports(tmp_path)
+        found = _probe_run_zip_for_member(
+            tmp_path, TS, f"layer_coverage_report_{TS}.json"
+        )
+        assert found == target_gz
+
+    def test_returns_none_when_member_absent_from_zip(self, tmp_path: Path) -> None:
+        self._build_archived_run_zip_with_reports(tmp_path)
+        found = _probe_run_zip_for_member(tmp_path, TS, "missing_report.json")
+        assert found is None
+
+    def test_artifact_present_finds_zip_bundled_report(self, tmp_path: Path) -> None:
+        target_gz = self._build_archived_run_zip_with_reports(tmp_path)
+        # The full _artifact_present flow should fall through to the zip probe
+        # when no on-disk match exists.
+        found = _artifact_present(
+            tmp_path, TS, f"layer_coverage_report_{TS}.json"
+        )
+        assert found == target_gz
+
+    def test_corrupt_archive_treated_as_absent(self, tmp_path: Path) -> None:
+        archive_dir = tmp_path / ARCHIVE_MONTH_DIR
+        archive_dir.mkdir(parents=True)
+        # Write garbage bytes that are neither a valid zip nor a valid gzip
+        (archive_dir / f"adg_run_{TS}.zip.gz").write_bytes(b"not a real archive")
+        found = _probe_run_zip_for_member(tmp_path, TS, "anything.json")
         assert found is None
 
 

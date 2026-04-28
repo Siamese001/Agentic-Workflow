@@ -127,10 +127,81 @@ def _artifact_locations(adg_artifacts_dir: Path, ts: str, name: str) -> list[Pat
 
 
 def _artifact_present(adg_artifacts_dir: Path, ts: str, name: str) -> Path | None:
-    """Return the first existing path for ``name`` across all candidate locations."""
+    """Return the first existing path for ``name`` across all candidate locations.
+
+    Search order:
+      1. ``adg_artifacts_dir/<name>`` (root, fresh-out-of-pipeline state)
+      2. ``adg_artifacts_dir/<name>.gz`` (root, post-gzip)
+      3. ``adg_artifacts_dir/_archive/<YYYY-MM>/<name>`` (archive month-dir)
+      4. ``adg_artifacts_dir/_archive/<YYYY-MM>/<name>.gz`` (archive, gzipped)
+      5. ``adg_artifacts_dir/_archive/<YYYY-MM>/adg_run_<ts>.zip[.gz]``
+         opened as a zip and probed for ``adg/<name>`` inside (reports go
+         here when the archiver bundles them into the run zip).
+
+    Returns the FIRST match. For zip-bundled reports the returned path is
+    the zip itself — callers treat that as "present", which is the only
+    promise the verifier needs.
+    """
     for candidate in _artifact_locations(adg_artifacts_dir, ts, name):
         if candidate.exists():
             return candidate
+
+    # Step 5: probe inside the archived run zip(s).
+    return _probe_run_zip_for_member(adg_artifacts_dir, ts, name)
+
+
+def _probe_run_zip_for_member(
+    adg_artifacts_dir: Path, ts: str, name: str
+) -> Path | None:
+    """Open the archived run zip(s) for ``ts`` and check for ``adg/<name>``.
+
+    Both ``adg_run_<ts>.zip`` and ``adg_run_<ts>.zip.gz`` are tried (root
+    and archive month-dir). Returns the path to the *zip* file when the
+    requested member is present inside it, or ``None`` otherwise. Errors
+    are non-fatal — a corrupt/locked archive simply means "not present"
+    here, and the caller's existing missing-artifact path takes over.
+
+    Plan: NEXT_STEP `adg-pipeline-artifact-packaging` follow-up — after
+    the W3.1 run on 04282026_1230 surfaced 4 missing-report deferred
+    failures whose reports were verifiably present inside the archived
+    ``adg_run_04282026_1230.zip.gz``.
+    """
+    import gzip  # noqa: PLC0415
+    import io  # noqa: PLC0415
+    import zipfile  # noqa: PLC0415
+
+    # Build candidate zip paths: root + archive month-dir, both .zip and .zip.gz.
+    zip_basename = f"adg_run_{ts}.zip"
+    zip_candidates: list[Path] = [
+        adg_artifacts_dir / zip_basename,
+        adg_artifacts_dir / f"{zip_basename}.gz",
+    ]
+    try:
+        dt = datetime.strptime(ts, "%m%d%Y_%H%M")
+        archive_month = adg_artifacts_dir / "_archive" / dt.strftime("%Y-%m")
+        zip_candidates.append(archive_month / zip_basename)
+        zip_candidates.append(archive_month / f"{zip_basename}.gz")
+    except ValueError:  # guardian: allow-broad-exception -- ts format degraded; skip month-dir probe
+        pass
+
+    member_name = f"adg/{name}"
+    for zp in zip_candidates:
+        if not zp.exists():
+            continue
+        try:
+            if zp.suffix == ".gz":
+                with gzip.open(zp, "rb") as fh:
+                    raw = fh.read()
+                buf = io.BytesIO(raw)
+                with zipfile.ZipFile(buf) as zf:
+                    if member_name in zf.namelist():
+                        return zp
+            else:
+                with zipfile.ZipFile(zp) as zf:
+                    if member_name in zf.namelist():
+                        return zp
+        except (OSError, zipfile.BadZipFile, gzip.BadGzipFile, EOFError):  # guardian: allow-broad-exception -- corrupt or locked archive treated as "not present"; verifier fails closed
+            continue
     return None
 
 
