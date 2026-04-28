@@ -80,6 +80,22 @@ _SCENARIO_EXTRAS: Dict[str, Tuple[str, str]] = {
         "REQ-U0-ORIGIN-TRUST-INJECTION-001",
         "ORIGIN_TRUST_LABEL_MISSING",
     ),
+    "S_l4_retrieval_surface": (
+        "REQ-L4-RETRIEVAL-SURFACE-001",
+        "L4_RETRIEVAL_SURFACE_VIOLATION",
+    ),
+    "T_l0_no_retrieval": (
+        "REQ-L0-NO-RETRIEVAL-001",
+        "L0_RETRIEVAL_BLOCKED",
+    ),
+    "U_l1_no_retrieval": (
+        "REQ-L1-NO-RETRIEVAL-001",
+        "L1_RETRIEVAL_BLOCKED",
+    ),
+    "V_l1_no_execute": (
+        "REQ-L1-NO-EXECUTE-001",
+        "L1_EXECUTION_BLOCKED",
+    ),
 }
 
 # Per-scenario rich-trace extras for Tier 2 Batch B/C trace fixtures. These
@@ -149,6 +165,50 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
         "origin": "scenario_R_origin_external",
         "trust_label_present": False,
         "quarantined_or_rejected": True,
+    },
+    "S_l4_retrieval_surface": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L4-RETRIEVAL-SURFACE-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l4_retrieval_surface_guard.py",
+        ),
+        "retrieval_surface_read_only": True,
+        "non_uwg_mutation_attempted": True,
+        "rejected": True,
+    },
+    "T_l0_no_retrieval": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L0-NO-RETRIEVAL-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l0_no_retrieval_guard.py",
+            "agentic_core/runtime/prove_requirements/tier2_otel_refs/l0_no_retrieval_spans.py",
+        ),
+        "retrieval_attempted": True,
+        "rejected": True,
+        "retrieval_span_count": 0,
+    },
+    "U_l1_no_retrieval": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L1-NO-RETRIEVAL-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l1_no_retrieval_guard.py",
+            "agentic_core/runtime/prove_requirements/tier2_otel_refs/l1_no_retrieval_spans.py",
+        ),
+        "retrieval_attempted": True,
+        "rejected": True,
+        "retrieval_span_count": 0,
+    },
+    "V_l1_no_execute": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L1-NO-EXECUTE-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l1_no_execute_guard.py",
+            "agentic_core/runtime/prove_requirements/tier2_otel_refs/l1_no_execute_spans.py",
+        ),
+        "execution_attempted": True,
+        "rejected": True,
+        "tool_invocation_count": 0,
+        "model_invocation_count": 0,
     },
 }
 

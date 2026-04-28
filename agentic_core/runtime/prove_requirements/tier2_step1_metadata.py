@@ -92,9 +92,15 @@ CODE_REFERENCES: Mapping[str, Sequence[str]] = {
         "agentic_core/L1_cognition/planning/plan_contract_handoff.py",
         "agentic_core/L1_cognition/types/plan_contract_types.py",
     ),
-    "REQ-L1-NO-RETRIEVAL-001": (),
-    "REQ-L1-NO-EXECUTE-001": (),
-    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-RETRIEVAL-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l1_no_retrieval_guard.py",
+    ),
+    "REQ-L1-NO-EXECUTE-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l1_no_execute_guard.py",
+    ),
+    "REQ-L0-NO-RETRIEVAL-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l0_no_retrieval_guard.py",
+    ),
     "REQ-L3-L2-STEP-HANDOFF-001": (
         "agentic_core/L3_orchestration/types/orchestration_handoff_contract.py",
         "agentic_core/L3_orchestration/types/agent_handoff.py",
@@ -131,7 +137,9 @@ CODE_REFERENCES: Mapping[str, Sequence[str]] = {
         "agentic_core/L3_orchestration/exit_eval/disposition.py",
         "agentic_core/L5_safety/runtime_gates/dispatch.py",
     ),
-    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l4_retrieval_surface_guard.py",
+    ),
     "REQ-L4-CACHE-STATE-001": (
         "agentic_core/L4_state/cache/cache_key_builders.py",
         "agentic_core/L4_state/cache/redis_cache_client.py",
@@ -178,9 +186,15 @@ VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
         "agentic_core/L1_cognition/types/plan_contract_types.py",
     ),
-    "REQ-L1-NO-RETRIEVAL-001": (),
-    "REQ-L1-NO-EXECUTE-001": (),
-    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-RETRIEVAL-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l1_no_retrieval_guard.py",
+    ),
+    "REQ-L1-NO-EXECUTE-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l1_no_execute_guard.py",
+    ),
+    "REQ-L0-NO-RETRIEVAL-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l0_no_retrieval_guard.py",
+    ),
     "REQ-L3-L2-STEP-HANDOFF-001": (
         "agentic_core/L3_orchestration/types/orchestration_handoff_contract.py",
     ),
@@ -208,7 +222,9 @@ VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {
         "agentic_core/L3_orchestration/exit_eval/gates.py",
         "agentic_core/L5_safety/runtime_gates/enforcement.py",
     ),
-    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (
+        "agentic_core/runtime/prove_requirements/tier2_boundary_guards/l4_retrieval_surface_guard.py",
+    ),
     "REQ-L4-CACHE-STATE-001": (
         "agentic_core/L4_state/cache/cache_key_builders.py",
     ),
@@ -247,9 +263,15 @@ TEST_REFERENCES: Mapping[str, Sequence[str]] = {
         "tests/unit/agentic_core/L1_cognition/test_plan_contract_v2.py",
         "tests/unit/agentic_core/L1_cognition/test_plan_contract_types.py",
     ),
-    "REQ-L1-NO-RETRIEVAL-001": (),
-    "REQ-L1-NO-EXECUTE-001": (),
-    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-RETRIEVAL-001": (
+        "tests/runtime/test_tier2_batch_d_e_fixtures.py",
+    ),
+    "REQ-L1-NO-EXECUTE-001": (
+        "tests/runtime/test_tier2_batch_d_e_fixtures.py",
+    ),
+    "REQ-L0-NO-RETRIEVAL-001": (
+        "tests/runtime/test_tier2_batch_d_e_fixtures.py",
+    ),
     "REQ-L3-L2-STEP-HANDOFF-001": (
         "tests/agentic_core/L3_orchestration/types/test_orchestration_handoff_contract.py",
         "tests/unit/agentic_core/L3_orchestration/types/test_orchestration_handoff_contract_behavior.py",
@@ -283,7 +305,9 @@ TEST_REFERENCES: Mapping[str, Sequence[str]] = {
         "tests/runtime_gates/test_gate_mesh_no_bypass.py",
         "tests/runtime_gates/test_gate_mesh_result.py",
     ),
-    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (
+        "tests/runtime/test_tier2_batch_d_e_fixtures.py",
+    ),
     "REQ-L4-CACHE-STATE-001": (
         "tests/unit/agentic_core/L4_state/cache/test_cache_key_builders.py",
         "tests/unit/agentic_core/L4_state/cache/test_cache_init.py",
@@ -329,9 +353,15 @@ ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/e2e/_smoke_all/scenarios/RC-R1A/rc_r1a_L1PlanContract.json",
         "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_L1PlanContract.json",
     ),
-    "REQ-L1-NO-RETRIEVAL-001": (),
-    "REQ-L1-NO-EXECUTE-001": (),
-    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-RETRIEVAL-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_U_l1_no_retrieval.json",
+    ),
+    "REQ-L1-NO-EXECUTE-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_V_l1_no_execute.json",
+    ),
+    "REQ-L0-NO-RETRIEVAL-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_T_l0_no_retrieval.json",
+    ),
     "REQ-L3-L2-STEP-HANDOFF-001": (
         "artifacts/e2e/_smoke_all/scenarios/RC-R3R4-MANAGED/rc_r3r4_managed_L3WorkflowContract.json",
     ),
@@ -364,7 +394,9 @@ ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_ExitReviewPacket.json",
         "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_X3DispositionReceipt.json",
     ),
-    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_S_l4_retrieval_surface.json",
+    ),
     "REQ-L4-CACHE-STATE-001": (
         "artifacts/runtime/requirements_proof/traces/scenario_P_l4_cache_state.json",
     ),
@@ -406,9 +438,18 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/e2e/det1/scenarios/GP-001/gp_001_l1_plan.json",
         "artifacts/e2e/det2/scenarios/GP-001/gp_001_l1_plan.json",
     ),
-    "REQ-L1-NO-RETRIEVAL-001": (),
-    "REQ-L1-NO-EXECUTE-001": (),
-    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-RETRIEVAL-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_U_l1_no_retrieval_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_U_l1_no_retrieval_run_2.json",
+    ),
+    "REQ-L1-NO-EXECUTE-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_V_l1_no_execute_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_V_l1_no_execute_run_2.json",
+    ),
+    "REQ-L0-NO-RETRIEVAL-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_T_l0_no_retrieval_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_T_l0_no_retrieval_run_2.json",
+    ),
     "REQ-L3-L2-STEP-HANDOFF-001": (
         "artifacts/runtime/requirements_proof/replay/replay_O_l3_l2_step_handoff_run_1.json",
         "artifacts/runtime/requirements_proof/replay/replay_O_l3_l2_step_handoff_run_2.json",
@@ -441,7 +482,10 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/e2e/det1/scenarios/GP-001/gp_001_disposition.json",
         "artifacts/e2e/det2/scenarios/GP-001/gp_001_disposition.json",
     ),
-    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_S_l4_retrieval_surface_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_S_l4_retrieval_surface_run_2.json",
+    ),
     "REQ-L4-CACHE-STATE-001": (
         "artifacts/runtime/requirements_proof/replay/replay_P_l4_cache_state_run_1.json",
         "artifacts/runtime/requirements_proof/replay/replay_P_l4_cache_state_run_2.json",
@@ -481,9 +525,15 @@ OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
         "agentic_core/L1_cognition/planning/otel.py",
     ),
-    "REQ-L1-NO-RETRIEVAL-001": (),
-    "REQ-L1-NO-EXECUTE-001": (),
-    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-RETRIEVAL-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/l1_no_retrieval_spans.py",
+    ),
+    "REQ-L1-NO-EXECUTE-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/l1_no_execute_spans.py",
+    ),
+    "REQ-L0-NO-RETRIEVAL-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/l0_no_retrieval_spans.py",
+    ),
     "REQ-L3-L2-STEP-HANDOFF-001": (
         "agentic_core/runtime/prove_requirements/tier2_otel_refs/l3_l2_step_handoff_spans.py",
     ),
@@ -548,9 +598,15 @@ NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
         "tests/unit/agentic_core/L1_cognition/planning/test_negative_boundaries.py",
     ),
-    "REQ-L1-NO-RETRIEVAL-001": (),
-    "REQ-L1-NO-EXECUTE-001": (),
-    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-RETRIEVAL-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_U_l1_no_retrieval.json",
+    ),
+    "REQ-L1-NO-EXECUTE-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_V_l1_no_execute.json",
+    ),
+    "REQ-L0-NO-RETRIEVAL-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_T_l0_no_retrieval.json",
+    ),
     "REQ-L3-L2-STEP-HANDOFF-001": (
         "artifacts/runtime/requirements_proof/traces/scenario_O_l3_l2_step_handoff.json",
     ),
