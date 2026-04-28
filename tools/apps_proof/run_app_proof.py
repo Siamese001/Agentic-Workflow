@@ -46,6 +46,8 @@ import sys
 import tempfile
 import uuid
 from dataclasses import dataclass
+
+from tqdm import tqdm
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -145,9 +147,7 @@ def _spec_with_fixture(spec: ScenarioSpec, fixture: dict[str, Any] | None) -> Sc
         intake_body=str(fixture.get("intake_body", spec.intake_body)),
         task_spec=str(fixture.get("task_spec", spec.task_spec)),
         query_spec=str(fixture.get("query_spec", spec.query_spec)),
-        grounding_required=bool(
-            fixture.get("grounding_required", spec.grounding_required)
-        ),
+        grounding_required=bool(fixture.get("grounding_required", spec.grounding_required)),
         extra_payload={**spec.extra_payload, **fixture.get("extra_payload", {})},
     )
 
@@ -190,13 +190,9 @@ def _adg_snapshot_for_app(adg_path: Path, app_id: str) -> dict[str, Any]:
                 (f"{app_id}/%",),
             ).fetchone()[0]
         )
-        for table in ("violations", "overlay_violations"):
-            cols = [
-                r[1] for r in cur.execute(f"PRAGMA table_info({table})").fetchall()
-            ]
-            file_col = next(
-                (c for c in ("file", "file_path", "resolved_path") if c in cols), None
-            )
+        for table in tqdm(("violations", "overlay_violations"), desc="adg-tables", unit="tbl"):
+            cols = [r[1] for r in cur.execute(f"PRAGMA table_info({table})").fetchall()]
+            file_col = next((c for c in ("file", "file_path", "resolved_path") if c in cols), None)
             if file_col:
                 out[table] = int(
                     cur.execute(
@@ -205,21 +201,18 @@ def _adg_snapshot_for_app(adg_path: Path, app_id: str) -> dict[str, Any]:
                     ).fetchone()[0]
                 )
         # Per P-view hit counts (best-effort)
-        for view in (
+        _p_views = (
             "v_p0_apps_direct_infra",
             "v_p0_write_bypass_uwg",
             "v_p0_provider_bypass",
-        ):
+        )
+        for view in tqdm(_p_views, desc="adg-pviews", unit="view"):
             try:
-                cols = [
-                    r[1] for r in cur.execute(f"PRAGMA table_info({view})").fetchall()
-                ]
+                cols = [r[1] for r in cur.execute(f"PRAGMA table_info({view})").fetchall()]
             except sqlite3.OperationalError:
                 out["per_p_view"][view] = -1
                 continue
-            file_col = next(
-                (c for c in ("file", "file_path", "resolved_path") if c in cols), None
-            )
+            file_col = next((c for c in ("file", "file_path", "resolved_path") if c in cols), None)
             if file_col:
                 try:
                     out["per_p_view"][view] = int(
@@ -250,12 +243,8 @@ def _adg_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
         "p0_increased": False,
     }
     p0_views = ("v_p0_apps_direct_infra", "v_p0_write_bypass_uwg", "v_p0_provider_bypass")
-    p0_before = sum(
-        max(0, int(before.get("per_p_view", {}).get(v, 0))) for v in p0_views
-    )
-    p0_after = sum(
-        max(0, int(after.get("per_p_view", {}).get(v, 0))) for v in p0_views
-    )
+    p0_before = sum(max(0, int(before.get("per_p_view", {}).get(v, 0))) for v in p0_views)
+    p0_after = sum(max(0, int(after.get("per_p_view", {}).get(v, 0))) for v in p0_views)
     delta["delta_p0"] = p0_after - p0_before
     delta["p0_increased"] = (p0_after - p0_before) > 0
     return delta
@@ -289,8 +278,13 @@ def _drive_scenario(
         try:
             customizer(ctx)
         except (
-            RuntimeError, ValueError, TypeError, AttributeError,
-            ImportError, OSError, KeyError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+            ImportError,
+            OSError,
+            KeyError,
         ) as exc:
             ctx.emit_span(
                 layer="customizer",
@@ -303,6 +297,7 @@ def _drive_scenario(
             )
     packet = ctx.build_packet()
     from apps_shared.proof.proof_contracts import write_packet
+
     packet_path = ctx.scenario_dir / "evidence_packet.json"
     write_packet(packet, packet_path)
     return ctx.scenario_dir, ctx
@@ -378,7 +373,7 @@ def _materialize_user_layout(
 
     # 1. Contracts: scenario_base writes <Kind>_<digest8>.json. Wrap each in
     #    the trace-link envelope and write under canonical filename.
-    for src in sorted(scenario_dir.glob("*.json")):
+    for src in tqdm(sorted(scenario_dir.glob("*.json")), desc="contracts", unit="file"):
         kind = _kind_from_stem(src.stem)
         if kind == "evidence_packet":
             # The harness's hash-chained packet is preserved alongside, intact.
@@ -449,9 +444,7 @@ def _materialize_user_layout(
 
     def _walk(node, depth: int) -> None:
         marker = f"[{node.status}]"
-        lines.append(
-            f"{'  ' * depth}- {node.layer}/{node.name} {marker} span_id={node.span_id}"
-        )
+        lines.append(f"{'  ' * depth}- {node.layer}/{node.name} {marker} span_id={node.span_id}")
         for child in children.get(node.span_id, []):
             _walk(child, depth + 1)
 
@@ -471,9 +464,7 @@ def _materialize_user_layout(
     for s in ctx.spans:
         layer_bucket = coverage["by_layer_status"].setdefault(s.layer, {})
         layer_bucket[s.status] = layer_bucket.get(s.status, 0) + 1
-    paths.span_coverage.write_text(
-        json.dumps(coverage, indent=2, sort_keys=True), encoding="utf-8"
-    )
+    paths.span_coverage.write_text(json.dumps(coverage, indent=2, sort_keys=True), encoding="utf-8")
 
     # 5. Gates JSONL + summary
     gates_path = paths.gate_verdicts_jsonl
@@ -492,9 +483,7 @@ def _materialize_user_layout(
         "|---|---|---|",
     ]
     for g in ctx.gates:
-        summary_lines.append(
-            f"| `{g.gate_id}` | {g.verdict} | {', '.join(g.reason_codes) or '-'} |"
-        )
+        summary_lines.append(f"| `{g.gate_id}` | {g.verdict} | {', '.join(g.reason_codes) or '-'} |")
     paths.gate_summary.write_text("\n".join(summary_lines) + "\n", encoding="utf-8")
 
 
@@ -554,7 +543,7 @@ def _replay_compare(run1_dir: Path, run2_dir: Path, paths: ProofRunPaths) -> dic
         "l2_sealed_artifact.json",
         "exit_disposition.json",
     )
-    for k in keys_to_compare:
+    for k in tqdm(keys_to_compare, desc="compare-deterministic", unit="key"):
         a = run1_dir / k
         b = run2_dir / k
         if not a.exists() and not b.exists():
@@ -585,7 +574,7 @@ def _replay_compare(run1_dir: Path, run2_dir: Path, paths: ProofRunPaths) -> dic
 
     # Best-effort: log drift on nonce-bearing contracts but do not fail.
     drift_log: list[dict[str, Any]] = []
-    for k in keys_to_log_only:
+    for k in tqdm(keys_to_log_only, desc="compare-best-effort", unit="key"):
         a = run1_dir / k
         b = run2_dir / k
         if not a.exists() or not b.exists():
@@ -604,7 +593,7 @@ def _replay_compare(run1_dir: Path, run2_dir: Path, paths: ProofRunPaths) -> dic
         "deterministic_three": {},
         "best_effort_set": drift_log,
     }
-    for k in keys_to_compare:
+    for k in tqdm(keys_to_compare, desc="digest-report", unit="key"):
         a = run1_dir / k
         b = run2_dir / k
         rec: dict[str, str] = {}
@@ -683,9 +672,7 @@ def _build_run_manifest(
     return manifest
 
 
-def _stamp_proof_manifest_hash(
-    manifest: dict[str, Any], paths: ProofRunPaths
-) -> str:
+def _stamp_proof_manifest_hash(manifest: dict[str, Any], paths: ProofRunPaths) -> str:
     """Compute proof_manifest_hash exactly as verify_app_proof recomputes."""
     body_for_hash = {k: v for k, v in manifest.items() if k != "proof_manifest_hash"}
     artifact_hashes: dict[str, str] = {}
@@ -762,8 +749,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.app not in SCENARIOS:
         print(
-            f"ERROR: no registered scenario for app={args.app!r}. "
-            f"Known: {sorted(SCENARIOS.keys())}",
+            f"ERROR: no registered scenario for app={args.app!r}. Known: {sorted(SCENARIOS.keys())}",
             file=sys.stderr,
         )
         return 2
@@ -810,9 +796,7 @@ def main(argv: list[str] | None = None) -> int:
     # ADG before
     if args.require_adg:
         before = _adg_snapshot_for_app(adg_snapshot, args.app)
-        paths.adg_before.write_text(
-            json.dumps(before, indent=2, sort_keys=True), encoding="utf-8"
-        )
+        paths.adg_before.write_text(json.dumps(before, indent=2, sort_keys=True), encoding="utf-8")
 
     # Drive scenario — Run 1
     seed = args.seed or spec.scenario_id
@@ -847,9 +831,7 @@ def main(argv: list[str] | None = None) -> int:
                     run_id=run_id,
                 )
                 _materialize_user_layout(paths=run2_paths, scenario_dir=sdir2, ctx=ctx2)
-                rcomparison = _replay_compare(
-                    paths.contracts_dir, run2_paths.contracts_dir, paths
-                )
+                rcomparison = _replay_compare(paths.contracts_dir, run2_paths.contracts_dir, paths)
                 paths.replay_comparison.write_text(
                     json.dumps(rcomparison, indent=2, sort_keys=True), encoding="utf-8"
                 )
@@ -888,14 +870,10 @@ def main(argv: list[str] | None = None) -> int:
     # ADG after + delta
     if args.require_adg:
         after = _adg_snapshot_for_app(adg_snapshot, args.app)
-        paths.adg_after.write_text(
-            json.dumps(after, indent=2, sort_keys=True), encoding="utf-8"
-        )
+        paths.adg_after.write_text(json.dumps(after, indent=2, sort_keys=True), encoding="utf-8")
         before_obj = json.loads(paths.adg_before.read_text(encoding="utf-8"))
         delta = _adg_delta(before_obj, after)
-        paths.adg_delta.write_text(
-            json.dumps(delta, indent=2, sort_keys=True), encoding="utf-8"
-        )
+        paths.adg_delta.write_text(json.dumps(delta, indent=2, sort_keys=True), encoding="utf-8")
 
     # Build & stamp the run_manifest
     manifest = _build_run_manifest(
