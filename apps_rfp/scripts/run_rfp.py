@@ -34,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Architecture posture",
     )
     parser.add_argument("--timeline-weeks", type=int, default=0, help="Delivery timeline in weeks")
-    parser.add_argument("--out", default="rfp", help="Output directory")
+    parser.add_argument("--out", default="artifacts/rfp", help="Output directory")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--trace-id", default="")
     parser.add_argument("--json-output", action="store_true")

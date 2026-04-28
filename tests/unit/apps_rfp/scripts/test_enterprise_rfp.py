@@ -162,7 +162,7 @@ async def test_with_sample_rfp():
     result = await generate_proposal_from_rfp(
         rfp_path=str(rfp_path),
         industry="financial_services",
-        output_dir="rfp/test_output",
+        output_dir="artifacts/rfp/test_output",
     )
 
     _assert(result.proposal_path != "", "Proposal path is empty")
@@ -209,7 +209,7 @@ async def test_with_problem_statement():
     result = await generate_proposal_from_text(
         problem_statement=problem.strip(),
         industry="technology",
-        output_dir="rfp/test_output",
+        output_dir="artifacts/rfp/test_output",
     )
 
     _assert(result.proposal_path != "", "Proposal path is empty")
@@ -242,7 +242,7 @@ async def test_full_pipeline():
         industry="healthcare",
         company_name="Metro Health System",
         our_company_name="Agentic AI Solutions",
-        output_dir="rfp/test_output",
+        output_dir="artifacts/rfp/test_output",
     )
 
     result = await orchestrator.process(request)

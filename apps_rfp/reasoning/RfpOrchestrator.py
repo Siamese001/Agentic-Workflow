@@ -200,7 +200,7 @@ class RfpOrchestrator:
     """Orchestrate end-to-end AI Proposal generation."""
 
     dry_run: bool = False
-    output_dir: str = "rfp"
+    output_dir: str = "artifacts/rfp"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
     qwen_enabled: bool = True

@@ -60,7 +60,7 @@ class AssemblyResult:
 @dataclass
 class RfpOrchestrator:
     dry_run: bool = False
-    output_dir: str = "rfp"
+    output_dir: str = "artifacts/rfp"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict] = field(default_factory=list)
 

@@ -213,7 +213,7 @@ class RiskMatrixConfig(BaseModel):
 class ProposalOutputConfig(BaseModel):
     """Output configuration for RFP proposals."""
 
-    output_dir: str = Field(default="rfp")
+    output_dir: str = Field(default="artifacts/rfp")
     artifact_prefix: str = Field(default="proposal")
     emit_run_summary: bool = True
     emit_json_manifest: bool = True
