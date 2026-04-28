@@ -550,6 +550,100 @@ def render(snapshot_dir: Path, source: str) -> str:
       "backward compatibility with `adg_burndown_table.json` consumers.)_")
     a("")
 
+    # ============ Unified defect pane (one table, every non-zero defect)
+    a("### One-Pane-of-Glass Defect Table")
+    a("")
+    a("Every non-zero defect surface in the snapshot, in one rank-ordered table. "
+      "Combines failing dispatcher gates (§2), non-zero materialized views (§3), "
+      "non-zero P-views (§4), and severity-band totals (§1 — shown as `S*` rows). "
+      "Sorted by **action band**, then by **count descending**.")
+    a("")
+    a("**Action bands:**")
+    a("- 🔴 **BLOCK** — gate is `block`-class AND failing → ADG run fails (unless `ADG_CONTINUE_ON_GATE_FAILURE=1`)")
+    a("- 🟠 **REGRESSED** — gate is `ratchet`-class AND violation count grew past baseline")
+    a("- 🟡 **MONITOR** — non-zero MV / P-view that is NOT directly a failing gate (informational signal)")
+    a("- 🔵 **TREND** — §1 severity tally (long-running debt counter, not a green-light signal)")
+    a("- ⚪ **OK** — passing gate with non-zero ratchet baseline (counted but at-or-below ceiling)")
+    a("")
+    a("| # | Action | Source | Item | Count | Tier | Status | Backed By |")
+    a("|---|:------:|:------:|------|------:|:----:|:------:|-----------|")
+
+    rows: list[tuple[int, int, str, str, str, int, str, str, str]] = []
+    # action_rank, count_neg, action_emoji, source_label, item, count, tier, status, backed_by
+
+    # 1) §1 severity tallies (TREND)
+    band_to_severity = {"P0": "S0", "P1": "S1", "P2": "S2", "P3": "S3"}
+    for band in ("P0", "P1", "P2", "P3"):
+        row = burndown.get("summary", {}).get(band, {})
+        net = int(row.get("net", 0) or 0)
+        if net <= 0:
+            continue
+        rows.append((
+            3, -net, "🔵 TREND", "§1",
+            f"`{row.get('label', band)}` (severity {band_to_severity[band]})",
+            net, band_to_severity[band], "—", "`violations` table",
+        ))
+
+    # 2) §2 dispatcher gates — separate FAIL / REGR / passing-with-count
+    for g in gate_doc.get("gates", []):
+        gid = g.get("gate_id", "?")
+        cnt = int(g.get("violation_count", 0) or 0)
+        cls = g.get("classification", "?")
+        enf = g.get("enforcement", "?")
+        band = g.get("band", "?")
+        owner = g.get("owner", "?")
+        if cls == "blocked":
+            rows.append((0, -cnt, "🔴 BLOCK", "§2",
+                         f"`{gid}`", cnt, band, "FAIL", f"gate ({owner}, {enf})"))
+        elif cls == "regressed":
+            rows.append((1, -cnt, "🟠 REGR", "§2",
+                         f"`{gid}`", cnt, band, "REGR", f"gate ({owner}, {enf})"))
+        elif cls == "pass" and cnt > 0:
+            rows.append((4, -cnt, "⚪ OK",  "§2",
+                         f"`{gid}` (at/under ratchet ceiling)", cnt, band, "PASS",
+                         f"gate ({owner}, {enf})"))
+
+    # 3) §3 MV non-zero rows that are NOT already represented as a failing gate
+    failing_gate_ids = {g.get("gate_id") for g in gate_doc.get("gates", [])
+                        if g.get("classification") in ("blocked", "regressed")}
+    for m in mvs:
+        n = _row_count(cur, m)
+        if not n:
+            continue
+        # Skip if this MV's content is already represented by a failing dispatcher gate.
+        # Heuristic: gate_id substrings often match MV name fragments.
+        skip = any(
+            (m.replace("mv_", "") in gid.lower() or gid.lower().replace("_", "") in m.replace("mv_", "").replace("_", ""))
+            for gid in failing_gate_ids
+        )
+        if skip:
+            continue
+        desc, _ = MV_DESCRIPTIONS.get(m, (m, ""))
+        rows.append((2, -n, "🟡 MONITOR", "§3",
+                     f"`{m}` — {desc[:70]}", n, "—", "—", "MV (informational)"))
+
+    # 4) §4 P-views non-zero
+    for p in p_views:
+        n = _row_count(cur, p)
+        if not n:
+            continue
+        desc, _ = PVIEW_DESCRIPTIONS.get(p, (p, ""))
+        # P-views encode their own band in the name (v_p0_*, v_p1_*, etc.)
+        pv_band = p.split("_")[1].upper().replace("V", "")  # p0 -> P0
+        action = "🔴 BLOCK" if pv_band == "P0" else "🟡 MONITOR"
+        action_rank = 0 if pv_band == "P0" else 2
+        rows.append((action_rank, -n, action, "§4",
+                     f"`{p}` — {desc[:70]}", n, pv_band, "—", "P-view (graph layer)"))
+
+    # Sort: action_rank asc, count desc (count_neg asc)
+    rows.sort(key=lambda r: (r[0], r[1]))
+
+    for i, (_, _, action, src, item, cnt, tier, status, backed) in enumerate(rows, 1):
+        a(f"| {i} | {action} | {src} | {item} | {_human(cnt)} | {tier} | {status} | {backed} |")
+    a("")
+    a(f"_Total: {len(rows)} non-zero defect surfaces across all four tier-systems._")
+    a("")
+
     if summary:
         a("**Dispatcher gates** (from `adg_gate_results_*.json`):")
         a("")

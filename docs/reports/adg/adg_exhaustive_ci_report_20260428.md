@@ -1,6 +1,6 @@
 # Exhaustive ADG CI Report
 
-- **Generated:** 2026-04-28T20:02:32+00:00
+- **Generated:** 2026-04-28T20:04:57+00:00
 - **Snapshot SQLite:** `adg_indexed_04282026_1505.sqlite` (412,590,080 bytes)
 - **Snapshot source:** extracted
 - **Gate results:** `artifacts\adg\adg_gate_results_20260428_191222.json`
@@ -32,6 +32,105 @@
 | **S3** | style_warnings | 1 | 0 | 1 | +0 |
 
 _(`S0..S3` is this renderer's display label; the JSON keys remain `P0..P3` for backward compatibility with `adg_burndown_table.json` consumers.)_
+
+### One-Pane-of-Glass Defect Table
+
+Every non-zero defect surface in the snapshot, in one rank-ordered table. Combines failing dispatcher gates (§2), non-zero materialized views (§3), non-zero P-views (§4), and severity-band totals (§1 — shown as `S*` rows). Sorted by **action band**, then by **count descending**.
+
+**Action bands:**
+- 🔴 **BLOCK** — gate is `block`-class AND failing → ADG run fails (unless `ADG_CONTINUE_ON_GATE_FAILURE=1`)
+- 🟠 **REGRESSED** — gate is `ratchet`-class AND violation count grew past baseline
+- 🟡 **MONITOR** — non-zero MV / P-view that is NOT directly a failing gate (informational signal)
+- 🔵 **TREND** — §1 severity tally (long-running debt counter, not a green-light signal)
+- ⚪ **OK** — passing gate with non-zero ratchet baseline (counted but at-or-below ceiling)
+
+| # | Action | Source | Item | Count | Tier | Status | Backed By |
+|---|:------:|:------:|------|------:|:----:|:------:|-----------|
+| 1 | 🔴 BLOCK | §2 | `3_write_sovereignty` | 1,454 | P0 | FAIL | gate (adg_gates, block) |
+| 2 | 🔴 BLOCK | §2 | `2_authority_boundary` | 17 | P0 | FAIL | gate (adg_gates, block) |
+| 3 | 🔴 BLOCK | §2 | `10_infra_wiring` | 9 | P0 | FAIL | gate (adg_gates, block) |
+| 4 | 🔴 BLOCK | §2 | `J1_canonical_pipeline_wiring` | 6 | P0 | FAIL | gate (wiring_ci, block) |
+| 5 | 🔴 BLOCK | §2 | `G2_seam_test_export_coherence` | 6 | P1 | FAIL | gate (wiring_ci, block) |
+| 6 | 🔴 BLOCK | §4 | `v_p0_l0_raw_execution` — P0: L0 invokes raw execution without going through the orchestrator. | 3 | P0 | — | P-view (graph layer) |
+| 7 | 🔴 BLOCK | §2 | `4_capability_egress` | 2 | P0 | FAIL | gate (adg_gates, block) |
+| 8 | 🔴 BLOCK | §2 | `C1_uwg_bypass_pview` | 1 | P0 | FAIL | gate (wiring_ci, block) |
+| 9 | 🔴 BLOCK | §2 | `C2_l5_bypass_pview` | 1 | P0 | FAIL | gate (wiring_ci, block) |
+| 10 | 🔴 BLOCK | §4 | `v_p0_write_bypass_uwg` — P0: state write that does not flow through the L4 UWG. | 1 | P0 | — | P-view (graph layer) |
+| 11 | 🟠 REGR | §2 | `8_trace_replay_eval` | 593 | P1 | REGR | gate (adg_gates, ratchet) |
+| 12 | 🟡 MONITOR | §3 | `mv_snapshot_integrity_anomalies` — Anomalies in the snapshot itself (orphan ids, dup rows, schema drift). | 261,552 | — | — | MV (informational) |
+| 13 | 🟡 MONITOR | §3 | `mv_dependency_cone_risk` — Forward dependency cone (transitive imports) per node, weighted by cri | 8,085 | — | — | MV (informational) |
+| 14 | 🟡 MONITOR | §3 | `mv_hotspot_centrality` — Hotspot ranking by graph centrality (PageRank / betweenness blend). | 8,085 | — | — | MV (informational) |
+| 15 | 🟡 MONITOR | §3 | `mv_path_criticality_rollup` — Rolled-up criticality score per node across all critical-path membersh | 8,085 | — | — | MV (informational) |
+| 16 | 🟡 MONITOR | §3 | `mv_high_fan_in_out_with_defects` — Symbols with high fan-in OR fan-out AND at least one SC/AP defect. | 7,163 | — | — | MV (informational) |
+| 17 | 🟡 MONITOR | §3 | `mv_newly_introduced_critical_paths` — Critical-path edges introduced since previous snapshot baseline. | 5,407 | — | — | MV (informational) |
+| 18 | 🟡 MONITOR | §3 | `mv_determinism_provenance_drift` — Trace_root emit sites missing determinism digest or replay key. | 4,821 | — | — | MV (informational) |
+| 19 | 🟡 MONITOR | §3 | `mv_unknown_taxonomy_and_orphans` — Symbols that did not classify into any taxonomy bucket. | 4,821 | — | — | MV (informational) |
+| 20 | 🟡 MONITOR | §3 | `mv_hotspot_coverage_risk` — Hotspots × test-coverage cross-join with priority bands (P1..P5). | 3,433 | — | — | MV (informational) |
+| 21 | 🟡 MONITOR | §3 | `mv_modified_area_regressions` — SC/AP defects whose source location intersects this run's modified fil | 2,699 | — | — | MV (informational) |
+| 22 | 🟡 MONITOR | §3 | `mv_debt_concentration_hotspots` — Modules with concentrated technical debt (multiple SC/AP defects in on | 2,647 | — | — | MV (informational) |
+| 23 | 🟡 MONITOR | §3 | `mv_agent_specialization_overlap` — Agent classes whose specializations overlap (potential dedup target). | 2,497 | — | — | MV (informational) |
+| 24 | 🟡 MONITOR | §3 | `mv_exemptions_near_critical_paths` — Guardian exemptions located on or adjacent to critical paths. | 2,148 | — | — | MV (informational) |
+| 25 | 🟡 MONITOR | §3 | `mv_graph_chokepoint_bridges` — Edges whose removal would disconnect a layer subgraph. | 1,857 | — | — | MV (informational) |
+| 26 | 🟡 MONITOR | §3 | `mv_hitl_reclearance_gaps` — Author-Gate / runtime HITL flows missing the modify-then-reclear edge. | 1,597 | — | — | MV (informational) |
+| 27 | 🟡 MONITOR | §3 | `mv_write_sovereignty_paths` — Every state-write path with severity classification. | 1,521 | — | — | MV (informational) |
+| 28 | 🟡 MONITOR | §3 | `mv_new_write_bypass_paths` — Write-bypass paths flagged as 'new' (severity ∈ {critical, warning}). | 1,454 | — | — | MV (informational) |
+| 29 | 🟡 MONITOR | §3 | `mv_replay_surface_gaps` — Replay-surface coverage gaps (state reads/writes not observable). | 1,109 | — | — | MV (informational) |
+| 30 | 🟡 MONITOR | §3 | `mv_task_contract_gaps` — Task contracts (entry → exit shape) that are incomplete. | 1,109 | — | — | MV (informational) |
+| 31 | 🟡 MONITOR | §3 | `mv_repeated_p3_near_critical_paths` — P3 style warnings that repeatedly land on or near critical paths. | 967 | — | — | MV (informational) |
+| 32 | 🟡 MONITOR | §3 | `mv_exit_disposition_coverage` — Tier-1 Exit.disposition emit-site coverage per layer. | 768 | — | — | MV (informational) |
+| 33 | 🟡 MONITOR | §3 | `mv_trace_replay_eval_gaps` — Trace-replay eval coverage gaps (paths where replay would skip). | 580 | — | — | MV (informational) |
+| 34 | 🟡 MONITOR | §3 | `mv_actionable_surface_without_schema` — Action-class tools published without a JSON Schema contract. | 457 | — | — | MV (informational) |
+| 35 | 🟡 MONITOR | §3 | `mv_critical_path_segments` — Edges that participate in any critical execution path (run → seal → di | 183 | — | — | MV (informational) |
+| 36 | 🟡 MONITOR | §3 | `mv_new_cross_layer_dependencies` — Cross-layer imports introduced since the previous snapshot baseline. | 168 | — | — | MV (informational) |
+| 37 | 🟡 MONITOR | §3 | `mv_manager_sprawl` — Manager / Orchestrator class proliferation per layer. | 101 | — | — | MV (informational) |
+| 38 | 🟡 MONITOR | §3 | `mv_heal_retry_exit_gaps` — Healing-loop exit paths missing an Exit.disposition emit site. | 64 | — | — | MV (informational) |
+| 39 | 🟡 MONITOR | §3 | `mv_cross_cutting_witness_tiers` — Tier-1 emit-site witness sites broken down by cross-cutting concern. | 56 | — | — | MV (informational) |
+| 40 | 🟡 MONITOR | §3 | `mv_graph_critical_path_blast_radius` — Per-symbol blast radius if removed from the critical path. | 47 | — | — | MV (informational) |
+| 41 | 🟡 MONITOR | §3 | `mv_graph_reverse_dependency_hotspots` — Top reverse-dependency centrality (most-imported-from symbols). | 38 | — | — | MV (informational) |
+| 42 | 🟡 MONITOR | §3 | `mv_new_provider_surfaces` — Provider/SDK surfaces that appeared since the previous snapshot. | 32 | — | — | MV (informational) |
+| 43 | 🟡 MONITOR | §3 | `mv_provider_surface_sprawl` — Provider SDK surface area (distinct callable symbols per provider). | 26 | — | — | MV (informational) |
+| 44 | 🟡 MONITOR | §3 | `mv_authority_boundary_breaches` — L0/L_PG calls that cross authority boundaries other than UWG/spine. | 17 | — | — | MV (informational) |
+| 45 | 🟡 MONITOR | §3 | `mv_handoff_witness_tiers` — Layer-handoff witness coverage (L1→L2, L2→L3, etc.). | 17 | — | — | MV (informational) |
+| 46 | 🟡 MONITOR | §3 | `mv_prompt_assembly_wiring_gaps` — Wiring gaps in the prompt assembly path (S0/D0/I0/C0/U0 slots). | 17 | — | — | MV (informational) |
+| 47 | 🟡 MONITOR | §3 | `mv_agent_tool_ratio` — Tools-per-agent ratio per agent class. | 16 | — | — | MV (informational) |
+| 48 | 🟡 MONITOR | §3 | `mv_eval_coverage_by_path` — Eval coverage rolled up per repo path. | 13 | — | — | MV (informational) |
+| 49 | 🟡 MONITOR | §3 | `mv_runtime_spine_gaps` — Runtime-spine emit sites missing from the live OTEL pipeline. | 7 | — | — | MV (informational) |
+| 50 | 🟡 MONITOR | §3 | `mv_digest_reconciliation` — Snapshot-to-snapshot digest reconciliation per pipeline phase. | 6 | — | — | MV (informational) |
+| 51 | 🟡 MONITOR | §3 | `mv_l2_phase_coverage` — L2 execution phase coverage (capability / call / seal / dispatch). | 5 | — | — | MV (informational) |
+| 52 | 🟡 MONITOR | §4 | `v_p3_isolated_experimental` — P3: experimental code with no production reach. | 4 | P3 | — | P-view (graph layer) |
+| 53 | 🟡 MONITOR | §3 | `mv_structured_output_gaps` — Tool calls missing structured-output schema validation. | 3 | — | — | MV (informational) |
+| 54 | 🟡 MONITOR | §4 | `v_p2_duplicated_adapters` — P2: adapters that duplicate each other's capability. | 3 | P2 | — | P-view (graph layer) |
+| 55 | 🟡 MONITOR | §4 | `v_p2_mixed_usage` — P2: symbols used both inside and outside their declared layer. | 3 | P2 | — | P-view (graph layer) |
+| 56 | 🟡 MONITOR | §3 | `mv_capability_and_egress_gaps` — Outbound provider/SDK calls that bypass the sanctioned capability adap | 1 | — | — | MV (informational) |
+| 57 | 🟡 MONITOR | §3 | `mv_gateway_bypass_paths` — Code paths that mutate state without crossing the L4 UWG. | 1 | — | — | MV (informational) |
+| 58 | 🟡 MONITOR | §3 | `mv_graph_vs_report_mismatches` — Disagreements between graph-derived facts and downstream reports. | 1 | — | — | MV (informational) |
+| 59 | 🟡 MONITOR | §3 | `mv_snapshot_baseline` — Anchor row for the current snapshot (one row per run). | 1 | — | — | MV (informational) |
+| 60 | 🟡 MONITOR | §3 | `mv_snapshot_regression_summary` — Aggregate delta vs previous baseline (one row). | 1 | — | — | MV (informational) |
+| 61 | 🟡 MONITOR | §4 | `v_p1_not_on_spine` — P1: emit site or seam declared but not reachable from the spine. | 1 | P1 | — | P-view (graph layer) |
+| 62 | 🟡 MONITOR | §4 | `v_p1_zero_caller_infra` — P1: infrastructure module with zero callers (dead infra). | 1 | P1 | — | P-view (graph layer) |
+| 63 | 🔵 TREND | §1 | `style_warnings` (severity S3) | 1 | S3 | — | `violations` table |
+| 64 | ⚪ OK | §2 | `S4_unused_imports_ratchet` (at/under ratchet ceiling) | 7,937 | P3 | PASS | gate (wiring_ci, ratchet) |
+| 65 | ⚪ OK | §2 | `S2_uwg_bypass_ratchet` (at/under ratchet ceiling) | 2,728 | P0 | PASS | gate (wiring_ci, ratchet) |
+| 66 | ⚪ OK | §2 | `G_REACH_l0_reachability` (at/under ratchet ceiling) | 2,181 | P0 | PASS | gate (wiring_ci, ratchet) |
+| 67 | ⚪ OK | §2 | `C3_silent_writes_ratchet` (at/under ratchet ceiling) | 1,630 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 68 | ⚪ OK | §2 | `E1_trace_stub_module` (at/under ratchet ceiling) | 1,143 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 69 | ⚪ OK | §2 | `I2_replay_surface_gaps_ratchet` (at/under ratchet ceiling) | 1,109 | P2 | PASS | gate (wiring_ci, ratchet) |
+| 70 | ⚪ OK | §2 | `F1_untyped_seam_ratchet` (at/under ratchet ceiling) | 981 | P2 | PASS | gate (wiring_ci, ratchet) |
+| 71 | ⚪ OK | §2 | `B2_layer_skip_ratchet` (at/under ratchet ceiling) | 871 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 72 | ⚪ OK | §2 | `I1_exit_disposition_ratchet` (at/under ratchet ceiling) | 692 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 73 | ⚪ OK | §2 | `Q2_cyclomatic_complexity_ratchet` (at/under ratchet ceiling) | 481 | P3 | PASS | gate (wiring_ci, ratchet) |
+| 74 | ⚪ OK | §2 | `N_guardrail_separation_ratchet` (at/under ratchet ceiling) | 464 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 75 | ⚪ OK | §2 | `M_taint_actionable_ratchet` (at/under ratchet ceiling) | 373 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 76 | ⚪ OK | §2 | `M1_module_loc_ratchet` (at/under ratchet ceiling) | 356 | P3 | PASS | gate (wiring_ci, ratchet) |
+| 77 | ⚪ OK | §2 | `O_tool_call_parity_ratchet` (at/under ratchet ceiling) | 182 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 78 | ⚪ OK | §2 | `D2_role_duplication_warn` (at/under ratchet ceiling) | 76 | P2 | PASS | gate (wiring_ci, warn) |
+| 79 | ⚪ OK | §2 | `L2_lpg_drift_ratchet` (at/under ratchet ceiling) | 20 | P0 | PASS | gate (wiring_ci, ratchet) |
+| 80 | ⚪ OK | §2 | `D1_layer_doc_binding` (at/under ratchet ceiling) | 3 | P3 | PASS | gate (wiring_ci, warn) |
+| 81 | ⚪ OK | §2 | `A3_dead_public_symbol_ratchet` (at/under ratchet ceiling) | 1 | P2 | PASS | gate (wiring_ci, ratchet) |
+| 82 | ⚪ OK | §2 | `C4_policy_without_audit_ratchet` (at/under ratchet ceiling) | 1 | P1 | PASS | gate (wiring_ci, ratchet) |
+| 83 | ⚪ OK | §2 | `P_structured_output_ratchet` (at/under ratchet ceiling) | 1 | P1 | PASS | gate (wiring_ci, ratchet) |
+
+_Total: 83 non-zero defect surfaces across all four tier-systems._
 
 **Dispatcher gates** (from `adg_gate_results_*.json`):
 
@@ -235,7 +334,7 @@ Per-gate ceiling files in `ops_scripts/ci/baselines/wiring_*_ratchet.json`. `cou
 | Baseline | Gate ID | Count | Last Tightened | Last Loosened |
 |----------|---------|------:|----------------|---------------|
 | `wiring_broken_contract_ratchet.json` | `F2_broken_contract_ratchet` | 0 | — | — |
-| `wiring_cyclomatic_complexity_ratchet.json` | `Q2_cyclomatic_complexity_ratchet` | 491 | 2026-04-23T22:21:59.251540+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_cyclomatic_complexity_ratchet.json` | `Q2_cyclomatic_complexity_ratchet` | 481 | 2026-04-28T19:12:10.886420+00:00 | 2026-04-28T19:05:38+00:00 |
 | `wiring_dead_folder_detector_ratchet.json` | `D_dead_folder_detector` | 0 | 2026-04-24T02:32:21.534650+00:00 | — |
 | `wiring_dead_methods_ratchet.json` | `A3B_dead_methods_in_live_classes_ratchet` | 606 | 2026-04-24T02:32:20.533778+00:00 | — |
 | `wiring_dead_symbol_ratchet.json` | `A3_dead_public_symbol_ratchet` | 1 | — | 2026-04-28T18:49:35+00:00 |
@@ -252,16 +351,16 @@ Per-gate ceiling files in `ops_scripts/ci/baselines/wiring_*_ratchet.json`. `cou
 | `wiring_mv_staleness_ratchet.json` | `H4_mv_staleness_ratchet` | 0 | — | — |
 | `wiring_new_orphans_delta_ratchet.json` | `H1_new_orphans_delta_ratchet` | 0 | — | — |
 | `wiring_policy_without_audit_ratchet.json` | `C4_policy_without_audit_ratchet` | 1 | — | — |
-| `wiring_replay_surface_gaps_ratchet.json` | `I2_replay_surface_gaps_ratchet` | 1,119 | 2026-04-23T22:30:14.652276+00:00 | 2026-04-28T19:05:38+00:00 |
-| `wiring_silent_writes_ratchet.json` | `C3_silent_writes_ratchet` | 1,640 | — | 2026-04-28T19:05:38+00:00 |
+| `wiring_replay_surface_gaps_ratchet.json` | `I2_replay_surface_gaps_ratchet` | 1,109 | 2026-04-28T19:12:11.029859+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_silent_writes_ratchet.json` | `C3_silent_writes_ratchet` | 1,630 | 2026-04-28T19:12:10.922189+00:00 | 2026-04-28T19:05:38+00:00 |
 | `wiring_structured_output_ratchet.json` | `P_structured_output_ratchet` | 1 | — | — |
-| `wiring_taint_actionable_ratchet.json` | `M_taint_actionable_ratchet` | 383 | 2026-04-23T22:30:14.755151+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_taint_actionable_ratchet.json` | `M_taint_actionable_ratchet` | 373 | 2026-04-28T19:12:11.180065+00:00 | 2026-04-28T19:05:38+00:00 |
 | `wiring_tool_call_parity_ratchet.json` | `O_tool_call_parity_ratchet` | 182 | 2026-04-23T18:44:02.430696+00:00 | 2026-04-28T18:49:35+00:00 |
 | `wiring_trace_stub_ratchet.json` | `E1_trace_stub_module` | 1,143 | 2026-04-28T10:59:54.822861+00:00 | — |
 | `wiring_unresolved_callsites_ratchet.json` | `C5_unresolved_callsites_ratchet` | 0 | — | — |
 | `wiring_untyped_seam_ratchet.json` | `F1_untyped_seam_ratchet` | 981 | 2026-04-23T22:30:14.799626+00:00 | 2026-04-28T18:49:35+00:00 |
-| `wiring_unused_imports_ratchet.json` | `S4_unused_imports_ratchet` | 7,947 | 2026-04-23T22:30:08.647185+00:00 | 2026-04-28T19:05:38+00:00 |
-| `wiring_uwg_bypass_ratchet.json` | `S2_uwg_bypass_ratchet` | 2,738 | — | 2026-04-28T19:05:38+00:00 |
+| `wiring_unused_imports_ratchet.json` | `S4_unused_imports_ratchet` | 7,937 | 2026-04-28T19:12:03.380676+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_uwg_bypass_ratchet.json` | `S2_uwg_bypass_ratchet` | 2,728 | 2026-04-28T19:12:03.338352+00:00 | 2026-04-28T19:05:38+00:00 |
 
 ## 8. File-Counter Gate Baselines
 
