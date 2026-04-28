@@ -30,13 +30,48 @@ _HEARTBEAT_PATH = _ARTIFACTS_DIR / "post_cascade_heartbeat.jsonl"
 _MAX_LINES = 500
 
 
+def _previous_timestamp() -> float | None:
+    """Return unix ts of the prior heartbeat, or None when none exists.
+
+    P5 (2026-04-28) — latency telemetry. The gap between the current
+    heartbeat and the prior one approximates the end-to-end duration of
+    the preceding Cascade turn (including the full post-cascade hook
+    chain). When this gap drifts above the 500 ms budget documented in
+    the industry best-practice article (Kumar), the weekly calibration
+    report surfaces the regression.
+    """
+    if not _HEARTBEAT_PATH.exists():
+        return None
+    try:
+        tail = _HEARTBEAT_PATH.read_text(encoding="utf-8").splitlines()[-1]
+        obj = json.loads(tail)
+        ts = obj.get("timestamp_unix")
+        if isinstance(ts, (int, float)):
+            return float(ts)
+    except (OSError, ValueError, IndexError):
+        return None
+    return None
+
+
 def _record() -> dict[str, object]:
+    now = time.time()
+    prev = _previous_timestamp()
+    chain_latency_ms: float | None = None
+    if prev is not None and now > prev:
+        # Clamp to 1 hour — anything larger is a session boundary, not a
+        # hook-chain latency measurement.
+        delta_s = min(now - prev, 3600.0)
+        if delta_s > 0:
+            chain_latency_ms = round(delta_s * 1000.0, 1)
     return {
-        "timestamp_unix": time.time(),
+        "timestamp_unix": now,
         "timestamp_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "pid": os.getpid(),
         "hook": "post_cascade_heartbeat",
         "script": str(Path(__file__).name),
+        # P5 fields — absent on first heartbeat or if tail unreadable.
+        "prev_timestamp_unix": prev,
+        "chain_latency_ms": chain_latency_ms,
     }
 
 

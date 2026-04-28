@@ -355,12 +355,14 @@ def main() -> int:
             return 0
 
         violations = detect_violations(text)
+        critical_count = sum(1 for v in violations if v.get("severity") == "critical")
         if violations:
             _append_violations(violations)
             # Log to stderr for debugging (show_output: false in hooks.json,
             # so this won't clutter the user view)
             print(
-                f"[adg_audit] DETECTED {len(violations)} grep-for-deps violation(s). "
+                f"[adg_audit] DETECTED {len(violations)} grep-for-deps violation(s)"
+                f" ({critical_count} critical). "
                 f"See: artifacts/windsurf/adg_first_violations.jsonl",
                 file=sys.stderr,
             )
@@ -396,6 +398,23 @@ def main() -> int:
 
     except (OSError, ValueError):  # guardian: allow-silent-swallow -- audit log flush: non-fatal, fail-open
         pass
+
+    # P1 (2026-04-28): Block the response when a critical §28 violation is
+    # detected (grep-for-deps used while an ADG SQLite snapshot was locally
+    # reachable — the required fallback tier was skipped). Advisory for all
+    # other severities (warning/error/info). The ADG_SQLITE_FALLBACK_BYPASS
+    # env var, if set, downgrades any "critical" severity to "info" earlier
+    # in detect_violations(), so a blocking exit never fires when bypass is
+    # active. See constitutional §28.
+    if critical_count > 0 and not __import__("os").environ.get(_BYPASS_ENV):
+        print(
+            f"[adg_audit] BLOCKING: {critical_count} critical §28 violation(s). "
+            f"ADG SQLite snapshot was reachable but grep was used for dependency "
+            f"analysis. Use sqlite3.connect() against artifacts/adg/adg_indexed_*.sqlite "
+            f"or call the adg_sqlite MCP. Set ADG_SQLITE_FALLBACK_BYPASS=1 to override.",
+            file=sys.stderr,
+        )
+        return 2
 
     return 0
 

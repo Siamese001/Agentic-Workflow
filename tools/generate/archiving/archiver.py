@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import re
 import sqlite3
 import shutil
+import time
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +13,39 @@ from pathlib import Path
 from tqdm import tqdm
 
 from tools.generate.utils.file_utils import _is_file_locked
+
+# ---------------------------------------------------------------------------
+# Session scratch cleanup (P1 of RCA 2026-04-28: generator never cleaned
+# up ad-hoc `python ... > _foo.log` redirect outputs or manual wave-queue
+# TSV/TXT files sitting in artifacts/adg/). These patterns target files that
+# are NOT produced by the generator but accumulate indefinitely because
+# they live in the same directory. Deletion is age-gated (default 3 days)
+# so in-flight work is never touched.
+# ---------------------------------------------------------------------------
+_SESSION_SCRATCH_GLOBS: tuple[str, ...] = (
+    # Ad-hoc redirect logs (e.g. `python tools/generate_full_adg.py > _w1_regen.log`)
+    "_*.log",
+    "_*.txt",
+    "_*.py",
+    # Wave queue and triage artifacts (manually generated during burndown waves)
+    "wave_*.tsv",
+    "wave_*.txt",
+    "wave_queue_*.tsv",
+    "tech_debt_*.txt",
+    "dead_*scan*.txt",
+    "*_scan_*.txt",
+    # Stub / archival candidate manifests (manual triage outputs)
+    "stub_archive_candidates.json",
+)
+
+# Bare-SHA256 JSON filenames produced by the scan-result fingerprint cache
+# (64 hex chars + ``.json``). These accumulate one per distinct scan config.
+_SHA256_JSON_RE = re.compile(r"^[0-9a-f]{64}\.json$")
+
+# Sentinel SQLite files (e.g. ``adg_indexed_99999999_9999.sqlite``) whose
+# timestamp cannot be parsed. Age-gated deletion default.
+_STALE_UNPARSEABLE_AGE_DAYS_DEFAULT = 7
+_SCRATCH_AGE_DAYS_DEFAULT = 3
 
 
 def _extract_timestamp(filename: str) -> str | None:
@@ -195,6 +230,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         "repair_log_*.json",
         "p1_ratchet.json",
         "p2_ratchet.json",
+        "archive_skipped_*.txt",
     ]:
         for path in adg_dir.glob(pattern):  # tqdm: pre-scan accumulation, no display needed
             if "LATEST" in path.name or "latest" in path.name:
@@ -214,11 +250,20 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         return
 
     valid_timestamps = []
+    unparseable_ts: list[str] = []
     for ts in runs.keys():
         try:
             valid_timestamps.append((ts, _parse_timestamp(ts)))
         except ValueError as exc:
-            print(f"[ADG] Archive: skipping malformed timestamp {ts}: {exc}")
+            print(f"[ADG] Archive: malformed timestamp {ts}: {exc} (will age-check)")
+            unparseable_ts.append(ts)
+
+    # P2 of RCA 2026-04-28: files with unparseable timestamps (e.g. the
+    # sentinel ``adg_indexed_99999999_9999.sqlite``) used to be silently
+    # skipped forever. Now age-gated: if every file in the bucket is older
+    # than _STALE_UNPARSEABLE_AGE_DAYS_DEFAULT, delete it.
+    _purge_unparseable_buckets(runs, unparseable_ts, _STALE_UNPARSEABLE_AGE_DAYS_DEFAULT)
+
     sorted_timestamps = [ts for ts, _dt in sorted(valid_timestamps, key=lambda item: item[1], reverse=True)]
     to_archive = sorted_timestamps[keep_runs:]
 
@@ -300,3 +345,103 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     from tools.generate.reporting.analysis import _cleanup_validation_files
 
     _cleanup_validation_files(adg_dir, current_ts)
+
+    # P1 of RCA 2026-04-28: age-gated cleanup of session scratch (ad-hoc
+    # redirect logs, wave queue files, triage outputs). Runs AFTER the
+    # main retention pass so it can't race the current-run zip or delete
+    # anything the generator touched this cycle.
+    _cleanup_session_scratch(adg_dir, max_age_days=_SCRATCH_AGE_DAYS_DEFAULT)
+
+
+def _purge_unparseable_buckets(
+    runs: dict[str, list[Path]],
+    unparseable_ts: list[str],
+    max_age_days: int,
+) -> None:
+    """Delete artifact buckets whose timestamp could not be parsed, if stale.
+
+    A bucket is purged only when **every** file in it is older than
+    ``max_age_days``. This prevents accidental deletion of in-flight work
+    while still retiring long-lived sentinels like
+    ``adg_indexed_99999999_9999.sqlite``.
+    """
+    if not unparseable_ts:
+        return
+
+    cutoff = time.time() - (max_age_days * 86400)
+    for ts in unparseable_ts:
+        files = runs.get(ts, [])
+        if not files:
+            continue
+        try:
+            all_stale = all(p.exists() and p.stat().st_mtime < cutoff for p in files)
+        except OSError:
+            continue
+        if not all_stale:
+            continue
+        for path in files:
+            try:
+                _remove_artifact_path(path)
+                print(f"[ADG] Archive: purged stale unparseable artifact {path.name}")
+            except OSError as exc:
+                print(f"[ADG] Archive: failed to purge {path.name}: {exc}")
+
+
+def _cleanup_session_scratch(adg_dir: Path, max_age_days: int = _SCRATCH_AGE_DAYS_DEFAULT) -> None:
+    """Delete ad-hoc session scratch files older than ``max_age_days``.
+
+    Targets files that accumulate in ``artifacts/adg/`` but are NOT produced
+    by the generator (manual redirect logs, wave queue TSVs, triage TXTs,
+    bare-SHA256 cache fingerprints). See module-level ``_SESSION_SCRATCH_GLOBS``
+    for the canonical pattern list.
+
+    Age-gating ensures the current session's files are never deleted: a 3-day
+    floor is a conservative default that survives multi-day wave execution.
+    """
+    if not adg_dir.exists():
+        return
+
+    cutoff = time.time() - (max_age_days * 86400)
+    candidates: set[Path] = set()
+
+    for pattern in _SESSION_SCRATCH_GLOBS:
+        for path in adg_dir.glob(pattern):
+            if not path.is_file():
+                continue
+            if "_archive" in path.parts:
+                continue
+            candidates.add(path)
+
+    # Bare-SHA256 json files (scan fingerprint cache)
+    for path in adg_dir.glob("*.json"):
+        if not path.is_file():
+            continue
+        if "_archive" in path.parts:
+            continue
+        if _SHA256_JSON_RE.match(path.name):
+            candidates.add(path)
+
+    if not candidates:
+        return
+
+    deleted = 0
+    bytes_freed = 0
+    for path in candidates:
+        try:
+            st = path.stat()
+        except OSError:
+            continue
+        if st.st_mtime >= cutoff:
+            continue  # too fresh — likely current session
+        try:
+            path.unlink()
+            deleted += 1
+            bytes_freed += st.st_size
+        except OSError as exc:
+            print(f"[ADG] Archive: failed to delete scratch {path.name}: {exc}")
+
+    if deleted:
+        mb = bytes_freed / (1024 * 1024)
+        print(
+            f"[ADG] Archive: cleaned {deleted} session scratch files ({mb:.1f} MB freed, >{max_age_days}d old)"
+        )

@@ -1,18 +1,24 @@
 {
   "gate_id": "M_taint_actionable_ratchet",
-  "count": 383,
+  "count": 373,
   "seeded_at": "2026-04-23T16:11:23.838170+00:00",
-  "snapshot": "adg_indexed_04232026_1828.sqlite",
+  "snapshot": "adg_indexed_04282026_1505.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-28T19:05:38+00:00",
-  "last_run_snapshot": "unknown",
-  "tightened_at": "2026-04-23T22:30:14.755151+00:00",
+  "last_run_at": "2026-04-28T19:12:11.180593+00:00",
+  "last_run_snapshot": "adg_indexed_04282026_1505.sqlite",
+  "tightened_at": "2026-04-28T19:12:11.180065+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T22:30:14.755151+00:00",
       "snapshot": "adg_indexed_04232026_1828.sqlite",
       "from": 327,
       "to": 326
+    },
+    {
+      "at": "2026-04-28T19:12:11.180065+00:00",
+      "snapshot": "adg_indexed_04282026_1505.sqlite",
+      "from": 383,
+      "to": 373
     }
   ],
   "loosen_history": [

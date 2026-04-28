@@ -116,6 +116,26 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: ADG enforcement violation log delta gate (P3)
+        # Fails the build when artifacts/windsurf/adg_first_violations.jsonl,
+        # graph_layer_violations.jsonl, or plan_evidence_violations.jsonl
+        # grew relative to the base branch. Converts the append-only audit
+        # trail into a PR-level deterrent. Override: ADG_VIOLATION_LOG_DELTA_BYPASS=1.
+        run: python ops_scripts/ci/check_adg_violation_log_delta.py
+        env:
+          PYTHONPATH: .
+          ADG_VIOLATION_LOG_BASE_BRANCH: ${{ github.base_ref || 'main' }}
+
+      - name: Test concentration ratchet gate (advisory)
+        # Reports test-investment drift vs ratchet baseline:
+        #   - over-invested: density > 50.0 (test_count / fan_in)
+        #   - under-invested: fan_in >= 15, tests = 0, has semantic edges
+        # Default mode advisory (exit 0); set TEST_CONCENTRATION_GATE_STRICT=1
+        # in CI env to enforce. Bypass: TEST_CONCENTRATION_GATE_BYPASS=1.
+        run: python ops_scripts/ci/check_test_concentration_ratio.py
+        env:
+          PYTHONPATH: .
+
       - name: Install MCP test dependencies
         run: pip install fakeredis --quiet 2>/dev/null || true
 

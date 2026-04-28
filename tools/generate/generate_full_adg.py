@@ -87,6 +87,7 @@ from agentic_core.adg.extraction.static_scanner import (  # noqa: E402
 )
 from tools.generate.archiving import (  # noqa: E402  # M.2 modularization
     _archive_old_artifacts,
+    _cleanup_session_scratch,
     _create_zip_archive,
 )
 from tools.generate.core import (  # noqa: E402  # M.6 modularization
@@ -1378,11 +1379,32 @@ def generate_full_adg(
         print(f"[ADG] WARNING: Zip creation failed: {e}")
         print("[ADG] Individual files will be archived using legacy path")
         zip_created = False
+        # P2b of RCA 2026-04-28: leave a breadcrumb so the next run (and
+        # any operator triaging an overgrown artifacts/adg/ directory) can
+        # see *why* the prior cleanup was skipped instead of only a single
+        # WARNING line buried in stdout.
+        try:
+            breadcrumb = adg_artifacts_dir / f"archive_skipped_{ts}.txt"
+            breadcrumb.write_text(
+                f"[ADG] Archive skipped for run {ts}\n"
+                f"Reason: zip creation failed\n"
+                f"Error: {e}\n"
+                "Likely cause: an MCP or other process holds a .sqlite open.\n"
+                "Fix: call adg_close_connections() then re-run generate_full_adg.py.\n",
+                encoding="utf-8",
+            )
+        except OSError:
+            pass  # breadcrumb is best-effort
 
     # --- Archive old artifacts AFTER successful current-run zip creation ---
     # This ensures keep_runs=1 retains exactly one total run (the current run).
     if archive_old and zip_created:
         _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
+    elif archive_old:
+        # P1 of RCA 2026-04-28: even when zip creation fails (current run's
+        # files stay in place), session scratch cleanup should still run so
+        # ad-hoc log files do not accumulate forever.
+        _cleanup_session_scratch(adg_artifacts_dir)
 
     # --- Closure validation check ---
     # W2.2 (plan adg-pipeline-simplification-e2e-9b4c27): data-driven

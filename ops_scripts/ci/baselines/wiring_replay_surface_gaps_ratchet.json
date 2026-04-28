@@ -1,9 +1,9 @@
 {
   "gate_id": "I2_replay_surface_gaps_ratchet",
-  "count": 1119,
+  "count": 1109,
   "seeded_at": "2026-04-23T16:07:25.584500+00:00",
-  "snapshot": "adg_indexed_04232026_1828.sqlite",
-  "tightened_at": "2026-04-23T22:30:14.652276+00:00",
+  "snapshot": "adg_indexed_04282026_1505.sqlite",
+  "tightened_at": "2026-04-28T19:12:11.029859+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T18:19:25.880354+00:00",
@@ -16,11 +16,17 @@
       "snapshot": "adg_indexed_04232026_1828.sqlite",
       "from": 999,
       "to": 986
+    },
+    {
+      "at": "2026-04-28T19:12:11.029859+00:00",
+      "snapshot": "adg_indexed_04282026_1505.sqlite",
+      "from": 1119,
+      "to": 1109
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-28T19:05:38+00:00",
-  "last_run_snapshot": "unknown",
+  "last_run_at": "2026-04-28T19:12:11.030901+00:00",
+  "last_run_snapshot": "adg_indexed_04282026_1505.sqlite",
   "loosen_history": [
     {
       "at": "2026-04-28T18:49:35+00:00",
