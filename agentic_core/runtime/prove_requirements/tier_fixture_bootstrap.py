@@ -182,10 +182,11 @@ def _collect_referenced_paths() -> List[str]:
     from agentic_core.runtime.prove_requirements import (  # noqa: WPS433
         tier0_step1_metadata as t0,
         tier1_step1_metadata as t1,
+        tier2_step1_metadata as t2,
     )
 
     paths: set[str] = set()
-    for module in (t0, t1):
+    for module in (t0, t1, t2):
         for attr in (
             "ARTIFACT_REFERENCES",
             "REPLAY_REFERENCES",

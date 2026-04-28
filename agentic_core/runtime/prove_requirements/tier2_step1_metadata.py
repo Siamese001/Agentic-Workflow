@@ -429,10 +429,13 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L5-RISK-TIER-BANDS-001": (),
     "REQ-L5-HITL-RECLEARANCE-001": (),
     "REQ-L6-SIGNAL-FUSION-RCA-001": (
-        "artifacts/runtime/requirements_proof/replay/replay_J_l6_gauntlet_future_run_run_1.json",
-        "artifacts/runtime/requirements_proof/replay/replay_J_l6_gauntlet_future_run_run_2.json",
+        "artifacts/runtime/requirements_proof/replay/replay_K_l6_signal_fusion_rca_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_K_l6_signal_fusion_rca_run_2.json",
     ),
-    "REQ-E2E-MUTATION-BOUNDARY-001": (),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_L_e2e_mutation_boundary_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_L_e2e_mutation_boundary_run_2.json",
+    ),
     "REQ-E2E-CONTRACT-EMISSION-001": (
         "artifacts/e2e/det1/bundle.json",
         "artifacts/e2e/det2/bundle.json",
@@ -463,10 +466,18 @@ OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-C0-NO-EXECUTE-001": (
         "agentic_core/L1_cognition/c0_context/observability.py",
     ),
-    "REQ-PA-PROVIDER-AWARE-RENDER-001": (),
-    "REQ-PA-AIRLOCK-SECURITY-001": (),
-    "REQ-L2-PTC-SANDBOX-001": (),
-    "REQ-L2-VERIFY-THEN-EXECUTE-001": (),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/pa_provider_aware_render_spans.py",
+    ),
+    "REQ-PA-AIRLOCK-SECURITY-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/pa_airlock_security_spans.py",
+    ),
+    "REQ-L2-PTC-SANDBOX-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/l2_ptc_sandbox_spans.py",
+    ),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/l2_verify_then_execute_spans.py",
+    ),
     "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
         "agentic_core/L3_orchestration/exit_eval/otel_spans.py",
     ),
