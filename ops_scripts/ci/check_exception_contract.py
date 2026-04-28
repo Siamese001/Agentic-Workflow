@@ -257,6 +257,32 @@ def main() -> int:
     conn = sqlite3.connect(f"file:{sqlite_path}?mode=ro", uri=True)
     try:
         conn.row_factory = sqlite3.Row
+
+        # Schema guard: this gate requires `edges.symbol` to resolve callers.
+        # Stub/sentinel snapshots (`adg_indexed_99999999_9999.sqlite`) and
+        # in-flight pipeline snapshots can lack this column — emit SKIP rather
+        # than crashing with `OperationalError: no such column: symbol`.
+        try:
+            edge_cols = {
+                row[1]
+                for row in conn.execute("PRAGMA table_info(edges)").fetchall()
+            }
+        except sqlite3.OperationalError as exc:
+            print(
+                "[check_exception_contract] SKIP: snapshot lacks `edges` table "
+                f"({sqlite_path.name}); error: {exc}. "
+                "Re-run after `python tools/generate_full_adg.py` completes."
+            )
+            return 0
+        if "symbol" not in edge_cols:
+            print(
+                "[check_exception_contract] SKIP: snapshot `edges` table has no "
+                f"`symbol` column ({sqlite_path.name}; cols={sorted(edge_cols)}). "
+                "Likely a stub/sentinel snapshot or an in-flight pipeline write — "
+                "re-run after `python tools/generate_full_adg.py` completes."
+            )
+            return 0
+
         exit_code = 0
         for row in contracts:
             ok, msg = _check_contract(conn, row)

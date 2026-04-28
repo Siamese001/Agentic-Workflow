@@ -102,6 +102,38 @@ def _generate_timestamp() -> str:
     return now_est.strftime("%m%d%Y_%H%M")  # e.g., 03132026_0512
 
 
+def _artifact_locations(adg_artifacts_dir: Path, ts: str, name: str) -> list[Path]:
+    """Return all plausible locations an artifact may exist post-pipeline.
+
+    Plan NEXT_STEP `adg-pipeline-artifact-packaging`: ``_verify_artifacts``
+    runs AFTER ``_archive_old_artifacts``, which (with ``keep_runs=1``)
+    can move the freshly-created run files into
+    ``_archive/<YYYY-MM>/`` and gzip the zip into ``<name>.gz``. The
+    verifier therefore must check the root, the timestamped archive
+    month-dir, AND the gzipped variants.
+    """
+    candidates: list[Path] = [adg_artifacts_dir / name]
+    # Compressed variant for zip artifacts (archiver gzips zip files).
+    candidates.append(adg_artifacts_dir / f"{name}.gz")
+    # Archive month directory derived from the run's timestamp (MMDDYYYY_HHMM).
+    try:
+        dt = datetime.strptime(ts, "%m%d%Y_%H%M")
+        archive_month = adg_artifacts_dir / "_archive" / dt.strftime("%Y-%m")
+        candidates.append(archive_month / name)
+        candidates.append(archive_month / f"{name}.gz")
+    except ValueError:  # guardian: allow-broad-exception -- ts format degraded; root-level check still applies
+        pass
+    return candidates
+
+
+def _artifact_present(adg_artifacts_dir: Path, ts: str, name: str) -> Path | None:
+    """Return the first existing path for ``name`` across all candidate locations."""
+    for candidate in _artifact_locations(adg_artifacts_dir, ts, name):
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports: bool) -> None:
     """Verify that requested artifacts were created.
 
@@ -110,20 +142,32 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
     its deferred-failure registry and emit the aggregated summary table
     before exiting non-zero. Default behaviour (env var unset) is
     unchanged: missing artifact = immediate ``sys.exit(1)``.
+
+    Plan NEXT_STEP `adg-pipeline-artifact-packaging`: also accept artifacts
+    that have been moved into the archive month-dir or gzipped by the
+    archive step (which runs BEFORE this verifier in the pipeline).
     """
     from tools.generate.integration.deferred_failures import record_or_exit  # noqa: PLC0415
 
     if not no_zip:
-        zip_path = adg_artifacts_dir / f"adg_run_{ts}.zip"
-        if not zip_path.exists():
-            print(f"[ERROR] Zip archive not found: {zip_path}")
+        zip_name = f"adg_run_{ts}.zip"
+        found_zip = _artifact_present(adg_artifacts_dir, ts, zip_name)
+        if found_zip is None:
+            print(
+                f"[ERROR] Zip archive not found: {zip_name} "
+                f"(checked root + _archive month dir + .gz variants)"
+            )
             record_or_exit(
                 "verify_artifacts.zip",
                 1,
-                message=f"missing {zip_path.name}",
+                message=f"missing {zip_name}",
             )
         else:
-            print(f"[ADG] Zip archive verification: {zip_path.name} exists")
+            try:
+                rel = found_zip.relative_to(adg_artifacts_dir)
+            except ValueError:
+                rel = found_zip
+            print(f"[ADG] Zip archive verification: {rel.as_posix()} exists")
 
     if not no_reports:
         report_files = [
@@ -132,11 +176,16 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
             f"provenance_report_{ts}.json",
             f"closure_validation_report_{ts}.json",
         ]
-        missing_reports = [rf for rf in report_files if not (adg_artifacts_dir / rf).exists()]
+        missing_reports = [
+            rf for rf in report_files if _artifact_present(adg_artifacts_dir, ts, rf) is None
+        ]
         if missing_reports:
             print(f"\n[ERROR] ADG generation incomplete: {len(missing_reports)} report(s) missing")
             print(f"[ERROR] Missing: {', '.join(missing_reports)}")
-            print("[ERROR] This is a critical failure for full ADG generation")
+            print(
+                "[ERROR] Checked: artifacts/adg/, artifacts/adg/_archive/<YYYY-MM>/, and .gz variants. "
+                "This is a critical failure for full ADG generation."
+            )
             record_or_exit(
                 "verify_artifacts.reports",
                 1,

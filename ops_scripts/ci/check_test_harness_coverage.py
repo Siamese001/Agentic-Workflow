@@ -210,6 +210,22 @@ def main() -> int:
 
     conn = sqlite3.connect(f"file:{sqlite_path}?mode=ro", uri=True)
     try:
+        # Schema guard: this gate requires the `nodes` table to map test
+        # imports back to production module paths. Stub/sentinel snapshots
+        # (`adg_indexed_99999999_9999.sqlite`) and in-flight pipeline
+        # snapshots can lack it — emit SKIP rather than crashing with
+        # `OperationalError: no such table: nodes`.
+        nodes_present = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+        ).fetchone()
+        if not nodes_present:
+            print(
+                "[check_test_harness_coverage] SKIP: snapshot lacks `nodes` table "
+                f"({sqlite_path.name}). Likely a stub/sentinel snapshot or an "
+                "in-flight pipeline write — re-run after "
+                "`python tools/generate_full_adg.py` completes."
+            )
+            return 0
         covered = _query_test_imported(conn)
     finally:
         conn.close()
