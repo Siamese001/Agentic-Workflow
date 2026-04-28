@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-04-27T02:23:58.123489+00:00",
+  "timestamp": "2026-04-28T00:00:16.048418+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 79,
+    "total_tests": 80,
     "passed_tests": 0,
-    "failed_tests": 79,
+    "failed_tests": 80,
     "skipped_tests": 0,
     "exit_status": 1,
     "failed_by_category": {
@@ -89,6 +89,7 @@
         "tests/ops_scripts/pre_commit/test_pre_commit_issue_schema.py",
         "tests/performance/test_hardened_vllm.py",
         "tests/performance/test_qwen_vllm_performance.py",
+        "tests/runtime/test_exit_x3_disposition_wireup.py",
         "tests/smoke/runtime/test_prompt_lifecycle_e2e.py",
         "tests/system_learning/integration/test_system_integrity_audit.py",
         "tests/system_learning/unit/test_heal_classifier_activation.py",
