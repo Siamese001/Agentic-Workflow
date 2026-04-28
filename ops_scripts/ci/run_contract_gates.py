@@ -311,6 +311,35 @@ def main():
         print(f"⚠️  P3 runner import failed — {exc} (non-blocking)")
 
     # ==================================================================
+    # Assurance P1 gate plane (plan assurance-p1-gates-ab4758)
+    # Runtime trace, replay digest, and requirements crosswalk.
+    # ==================================================================
+    print("\n[ASSURANCE-P1 GATE PLANE]")
+    assurance_gates = [
+        ("§27 windsurf config schema purity", "ops_scripts/ci/check_windsurf_config_schema.py"),
+        ("W1 runtime trace contract", "ops_scripts/ci/check_runtime_trace_contract.py"),
+        ("W3 replay determinism proof", "ops_scripts/ci/check_replay_proof.py"),
+        ("W4 requirements ↔ ADG crosswalk", "ops_scripts/ci/check_requirements_adg_crosswalk.py"),
+    ]
+    for label, script in assurance_gates:
+        if not (ROOT / script).is_file():
+            # Optional gate not yet shipped — skip without blocking.
+            print(f"⚠️  {label}: script missing ({script}) — skipped")
+            continue
+        returncode, stdout, stderr = run_cmd(
+            [sys.executable, str(_script(script))], cwd=ROOT
+        )
+        if returncode != 0:
+            print(f"❌ {label} failed (exit={returncode})")
+            if stdout:
+                print(stdout)
+            if stderr:
+                print(stderr, file=sys.stderr)
+            sys.exit(1)
+        else:
+            print(f"✅ {label} passed")
+
+    # ==================================================================
     # Wiring-CI gate plane (plan adg-wiring-ci-hardening-7a5d84)
     # Exit 1 on any failure. Ratchet gates pass when count <= baseline.
     # ==================================================================

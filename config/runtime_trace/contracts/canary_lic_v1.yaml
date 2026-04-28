@@ -1,0 +1,82 @@
+# Runtime Trace Contract — LIC canary route v1
+#
+# Validates that an LIC (Loan-Issuance Coordinator) canary run emits the
+# expected span DAG: U0 → L0 → C0 → PA → L2 → Exit → UWG.
+#
+# Consumed by: ops_scripts/ci/check_runtime_trace_contract.py
+# Producer:    scripts/proof/run_runtime_trace_proof.py
+# Schema:      see config/runtime_trace/README.md
+
+contract_id: canary.lic.v1
+version: 1
+description: |
+  Proves a canary LIC run walked the canonical agentic path from intake (U0)
+  through routing (L0), retrieval (C0), prompt assembly (PA), execution (L2),
+  exit disposition, and durable write through the Universal Write Gateway (UWG).
+
+  Failure modes this catches:
+    - Missing layer (e.g., PA skipped, UWG bypassed)
+    - Wrong parent (e.g., L2 calling UWG without going through Exit)
+    - Layer-skip violations (e.g., L0 → L2 without L1)
+    - Direct L4 writes outside UWG sovereignty
+    - Trace ID inconsistency (split traces masquerading as one)
+
+required_spans:
+  - name: u0.intake
+    layer: L0
+    parent: null
+    attributes: [trace_id, route_id, tier]
+
+  - name: l0.route
+    layer: L0
+    parent: u0.intake
+    attributes: [trace_id, route_id, selected_route]
+
+  - name: c0.retrieval
+    layer: L1
+    parent: l0.route
+    attributes: [trace_id, route_id, retrieval_mode, k]
+
+  - name: pa.assemble
+    layer: L1
+    parent: c0.retrieval
+    attributes: [trace_id, route_id, prompt_packet_id]
+
+  - name: l2.execute
+    layer: L2
+    parent: pa.assemble
+    attributes: [trace_id, route_id, tool_call_count]
+
+  - name: exit.disposition
+    layer: L2
+    parent: l2.execute
+    attributes: [trace_id, route_id, disposition, evidence_packet_id]
+
+  - name: uwg.commit
+    layer: L4
+    parent: exit.disposition
+    attributes: [trace_id, route_id, evidence_hash, actor, reason]
+
+required_edges:
+  # Durability semantic — distinct from parent_child. L2 must explicitly
+  # mark its commit target so the contract proves the runtime emitted the
+  # write intent, not just the structural call edge.
+  - from: l2.execute
+    to: uwg.commit
+    kind: writes_to
+  # The exit -> commit boundary is the architectural seam — assert it
+  # explicitly via parent_child so a misrouted commit (e.g., l2.execute
+  # committing without going through Exit) is caught.
+  - from: exit.disposition
+    to: uwg.commit
+    kind: parent_child
+
+forbidden:
+  - direct_l4_write_outside_uwg
+  - cross_layer_skip
+  - swallowed_exception
+  - missing_trace_id_attribute
+
+invariant_attributes:
+  - trace_id
+  - route_id

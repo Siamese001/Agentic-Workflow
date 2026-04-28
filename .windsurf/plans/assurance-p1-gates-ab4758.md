@@ -1,6 +1,6 @@
 # Assurance P1 Gates — Runtime Trace, Negative Controls, Replay, Crosswalk
 
-Status: Active
+Status: Done
 Tier: T3 (cross-layer; L1/L2/L4/L6 + CI)
 Created: 2026-04-28
 Plan slug: `assurance-p1-gates-ab4758`
@@ -18,24 +18,24 @@ Close the four highest-leverage gaps in the 16-axis agentic assurance model, on 
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W1 | W1.1, W1.2, W1.3 | Runtime trace proof gate | ~14000 | otel_mcp healthy; runtime ADG store reachable; canary route contract definable | Todo | CI gate fails when canary span graph missing required spans/attributes |
-| W2 | W2.1, W2.2 | Negative-control library | ~10000 | Existing gates have identifiable fail-closed paths; pytest collects `tests/negative_controls/` | Todo | One negative test per gate in `.windsurf/scripts/pre_*_gate.py` and `ops_scripts/ci/check_*.py`; all assert exit≠0 |
-| W3 | W3.1, W3.2 | Deterministic replay proof gate | ~12000 | Canary input deterministic; evidence digest schema stable | Todo | Two replays produce identical `(route, gate_decisions, evidence_hash, disposition)` tuple |
-| W4 | W4.1, W4.2 | ADG ↔ requirements crosswalk | ~9000 | Tier metadata enumerable; ADG node IDs stable across snapshots | Todo | Every obligation row has `adg_node_id` + `test_id`; CI fails on unmapped obligation |
+| W1 | W1.1, W1.2, W1.3 | Runtime trace proof gate | ~14000 | otel_mcp healthy; runtime ADG store reachable; canary route contract definable | Done | CI gate fails when canary span graph missing required spans/attributes |
+| W2 | W2.1, W2.2 | Negative-control library | ~10000 | Existing gates have identifiable fail-closed paths; pytest collects `tests/negative_controls/` | Done | One negative test per gate in `.windsurf/scripts/pre_*_gate.py` and `ops_scripts/ci/check_*.py`; all assert exit≠0 |
+| W3 | W3.1, W3.2 | Deterministic replay proof gate | ~12000 | Canary input deterministic; evidence digest schema stable | Done | Two replays produce identical `(route, gate_decisions, evidence_hash, disposition)` tuple |
+| W4 | W4.1, W4.2 | ADG ↔ requirements crosswalk | ~9000 | Tier metadata enumerable; ADG node IDs stable across snapshots | Done | Every obligation row has `adg_node_id` + `test_id`; CI fails on unmapped obligation |
 
 ## Phase-Level Summary
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| W1.1 | Define route contract schema | `config/contracts/runtime_trace_contract.yaml` (new), `agentic_core/L6_observability/runtime_trace/contract.py` (new) | Span attribute drift; canary route stability | ~4000 | Todo |
-| W1.2 | Build canary runner + ingest hook | `scripts/proof/run_runtime_trace_proof.py` (new); reuses `otel_ingest_to_runtime_adg` | Canary input determinism; fixture isolation | ~5000 | Todo |
-| W1.3 | CI gate + test coverage | `ops_scripts/ci/check_runtime_trace_contract.py` (new); `tests/unit/ops_scripts/ci/test_check_runtime_trace_contract.py` (new); wire into `run_contract_gates.py` | Flaky OTEL ingestion timing | ~5000 | Todo |
-| W2.1 | Negative-control directory + harness | `tests/negative_controls/__init__.py`, `tests/negative_controls/conftest.py`, `tests/negative_controls/README.md` (all new) | Directory layout; subprocess invocation pattern | ~3000 | Todo |
-| W2.2 | Per-gate negative tests | `tests/negative_controls/test_pre_run_gate_*.py`, `tests/negative_controls/test_check_*.py` (≥15 files new); each gate gets one valid + one invalid case | Coverage discipline; not duplicating existing unit tests | ~7000 | Todo |
-| W3.1 | Replay invariant digest spec | `tools/proof/replay_digest.py` (new) — canonical hash of `(route_id, gate_decisions, evidence_packet_ids, final_disposition)` | Digest stability across PA randomness; seed control | ~5000 | Todo |
-| W3.2 | Replay proof gate + CI | `scripts/proof/run_replay_proof.py` (new), `ops_scripts/ci/check_replay_proof.py` (new), `tests/unit/tools/proof/test_replay_digest.py` (new) | Two-run orchestration; isolation | ~7000 | Todo |
-| W4.1 | Crosswalk schema + extractor | `tools/crosswalk/build_requirements_crosswalk.py` (new), `artifacts/crosswalk/requirements_crosswalk.json` (output) | Tier metadata heterogeneity; ADG node ID resolution | ~4000 | Todo |
-| W4.2 | Crosswalk CI gate | `ops_scripts/ci/check_requirements_adg_crosswalk.py` (new), `tests/unit/ops_scripts/ci/test_check_requirements_adg_crosswalk.py` (new) | Surfacing unmapped obligations without false positives | ~5000 | Todo |
+| W1.1 | Define route contract schema | `config/runtime_trace/contracts/canary_lic_v1.yaml`, `agentic_core/L6_observability/runtime_trace/contract.py` | Span attribute drift; canary route stability | ~4000 | Done |
+| W1.2 | Build canary runner + ingest hook | `scripts/proof/run_runtime_trace_proof.py`; reuses runtime-ADG materializer (in-process, hermetic) | Canary input determinism; fixture isolation | ~5000 | Done |
+| W1.3 | CI gate + test coverage | `ops_scripts/ci/check_runtime_trace_contract.py`; `tests/unit/ops_scripts/ci/test_check_runtime_trace_contract.py`; wired into `run_contract_gates.py` | Flaky OTEL ingestion timing | ~5000 | Done |
+| W2.1 | Negative-control directory + harness | `tests/negative_controls/__init__.py`, `tests/negative_controls/conftest.py`, `tests/negative_controls/README.md` | Directory layout; subprocess invocation pattern | ~3000 | Done |
+| W2.2 | Per-gate negative tests | `tests/negative_controls/test_constitutional_negatives.py` (15+ parametrized cases — pre_run_gate fail modes + runtime trace gate); also added missing `_check_python_dash_c_quote_hazard` to pre_run_gate.py per constitutional rule | Coverage discipline; not duplicating existing unit tests | ~7000 | Done |
+| W3.1 | Replay invariant digest spec | `tools/proof/replay_digest.py` — SHA-256 over canonical JSON of `(route_id, gate_decisions, evidence_packet_ids, final_disposition)` | Digest stability across PA randomness; seed control | ~5000 | Done |
+| W3.2 | Replay proof gate + CI | `scripts/proof/run_replay_proof.py`, `ops_scripts/ci/check_replay_proof.py`, `tests/unit/tools/proof/test_replay_digest.py` | Two-run orchestration; isolation | ~7000 | Done |
+| W4.1 | Crosswalk schema + extractor | `config/crosswalk/obligations.yaml`, `tools/crosswalk/build_requirements_crosswalk.py`, `artifacts/crosswalk/requirements_crosswalk.json` | Tier metadata heterogeneity; ADG node ID resolution | ~4000 | Done |
+| W4.2 | Crosswalk CI gate | `ops_scripts/ci/check_requirements_adg_crosswalk.py`, `tests/unit/ops_scripts/ci/test_check_requirements_adg_crosswalk.py`; also added missing `test_check_windsurf_config_schema.py` for §27 coverage | Surfacing unmapped obligations without false positives | ~5000 | Done |
 
 ## ADG_HOTSPOT_REPORT
 

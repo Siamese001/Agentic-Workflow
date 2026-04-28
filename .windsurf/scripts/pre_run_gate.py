@@ -125,6 +125,52 @@ def _check_interactive(command_line: str) -> str | None:
     return None
 
 
+# `python -c "..."` quote-hazard — see python-dash-c-quote-hazard.md.
+# On pwsh, escaped double-quotes (\") and triple-quotes ("""/\"\"\") inside
+# the outer double-quoted body confuse the shell tokenizer and the outer
+# string is left unterminated → command hangs forever waiting for the user
+# to "finish typing." Python-level timeout cannot rescue: the SHELL is the
+# blocking entity, not the python process.
+_PYTHON_DASH_C_RE = re.compile(
+    r"""
+    (?:^|[;&|])\s*
+    "?
+    (?:[^\s"]*[/\\])?                  # optional path prefix
+    (?:python|python3|python\.exe)
+    "?
+    \s+-c\s+
+    "                                  # opening double-quote of -c body
+    (?P<body>.*?)
+    "                                  # closing double-quote
+    (?:\s|$|[;&|])
+    """,
+    re.IGNORECASE | re.VERBOSE | re.DOTALL,
+)
+
+
+def _check_python_dash_c_quote_hazard(command_line: str) -> str | None:
+    """Return a description of the quote hazard if present, else None.
+
+    Hazardous patterns inside the outer-double-quoted ``-c`` body:
+
+    - Escaped double-quote ``\\"`` — pwsh tokenizer confusion.
+    - Escaped triple-quote ``\\"\\"\\"`` — same, more reliably broken.
+    - Literal triple-quote ``\"\"\"`` — also ambiguous.
+    """
+    match = _PYTHON_DASH_C_RE.search(command_line)
+    if match is None:
+        return None
+    body = match.group("body")
+    # Order matters: check triple-escaped first so the message is precise.
+    if r"\"\"\"" in body or r"\\\"\\\"\\\"" in body:
+        return "escaped triple-quote inside outer double-quoted -c body"
+    if '"""' in body:
+        return "literal triple-quote inside outer double-quoted -c body"
+    if r"\"" in body:
+        return "escaped double-quote inside outer double-quoted -c body"
+    return None
+
+
 _POWERSHELL_EXEC_RE = re.compile(
     r"""
     (?:^|(?<=\s))           # start of string or preceded by whitespace
@@ -172,6 +218,18 @@ def check_command(command_line: str) -> int:
                 f"PowerShell is forbidden (matched '{matched}'). "
                 "Use argv list with shell=False per constitutional §0.",
             )
+
+    quote_hazard = _check_python_dash_c_quote_hazard(command_line)
+    if quote_hazard is not None:
+        return _exit_block(
+            f"python -c quote hazard: {quote_hazard}. "
+            "On pwsh the outer double-quoted body is parsed by the shell "
+            "BEFORE Python sees it; escaped/triple quotes leave the outer "
+            "string unterminated and the command hangs forever. Recovery: "
+            "(a) write a temp .py file and run `python tmp.py`; "
+            "(b) use grep_search / read_file when the task is a search; "
+            "(c) base64-encode the body. See python-dash-c-quote-hazard.md.",
+        )
 
     interactive_kind = _check_interactive(command_line)
     if interactive_kind is not None:

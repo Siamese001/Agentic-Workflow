@@ -1,0 +1,84 @@
+# Requirements ↔ ADG ↔ Test crosswalk registry
+#
+# Every constitutional / tier obligation listed here MUST resolve to:
+#   - source         a doctrine reference (constitutional rule, ADR, plan)
+#   - gate_script    a CI gate or pre-Cascade hook that enforces it
+#   - test_ids       at least one pytest node id that exercises the gate
+#
+# The CI gate `ops_scripts/ci/check_requirements_adg_crosswalk.py` will:
+#   1. Build a JSON crosswalk artifact from this file
+#   2. Validate every gate_script and test_ids[*] file exists on disk
+#   3. Fail if any obligation has an unresolved reference
+#
+# Adding a new obligation: append a row. Removing one: delete the row AND
+# the gate it points to (deletion of a constitutional rule should be rare
+# and ADR-tracked).
+#
+# W4.1 of plan assurance-p1-gates-ab4758.
+
+schema_version: 1
+
+obligations:
+  - id: const_0_no_powershell
+    source: ".windsurf/rules/constitutional.md §0"
+    description: "PowerShell forbidden; subprocess.run(argv, shell=False, timeout=...)"
+    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    test_ids:
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[powershell_explicit]"
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pwsh_explicit]"
+
+  - id: const_14_subprocess_timeout
+    source: ".windsurf/rules/constitutional.md §14"
+    description: "Subprocess calls must specify timeout"
+    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    test_ids:
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[bare_python_repl]"
+
+  - id: const_26_no_interactive_pagers
+    source: ".windsurf/rules/constitutional.md §26"
+    description: "Interactive pagers (more, less, vim, top) hang Cascade — block at run_command"
+    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    test_ids:
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pipe_to_more]"
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pipe_to_less]"
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[bare_more_with_file]"
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[vim_editor]"
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[top_watcher]"
+
+  - id: const_python_dash_c_quote_hazard
+    source: ".windsurf/rules/python-dash-c-quote-hazard.md"
+    description: "python -c with escaped triple-quote hangs pwsh"
+    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    test_ids:
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[python_dash_c_escaped_triple_quote]"
+      - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[python_dash_c_escaped_dquote]"
+
+  - id: const_27_windsurf_config_schema_purity
+    source: ".windsurf/rules/constitutional.md §27"
+    description: "hooks.json + mcp_config.json contain only documented fields"
+    gate_script: "ops_scripts/ci/check_windsurf_config_schema.py"
+    test_ids:
+      - "tests/unit/ops_scripts/ci/test_check_windsurf_config_schema.py"
+
+  - id: assurance_p1_runtime_trace
+    source: ".windsurf/plans/assurance-p1-gates-ab4758.md (W1)"
+    description: "Canary run emits required span graph U0→L0→C0→PA→L2→Exit→UWG"
+    gate_script: "ops_scripts/ci/check_runtime_trace_contract.py"
+    test_ids:
+      - "tests/unit/agentic_core/L6_observability/runtime_trace/test_contract.py"
+      - "tests/unit/scripts/proof/test_run_runtime_trace_proof.py"
+      - "tests/unit/ops_scripts/ci/test_check_runtime_trace_contract.py"
+
+  - id: assurance_p1_replay_determinism
+    source: ".windsurf/plans/assurance-p1-gates-ab4758.md (W3)"
+    description: "Two canary replays produce identical (route, gates, evidence, disposition) digest"
+    gate_script: "ops_scripts/ci/check_replay_proof.py"
+    test_ids:
+      - "tests/unit/tools/proof/test_replay_digest.py"
+
+  - id: assurance_p1_negative_controls
+    source: ".windsurf/plans/assurance-p1-gates-ab4758.md (W2)"
+    description: "Each gate proves fail-closed on at least one known-bad input"
+    gate_script: "tests/negative_controls/test_constitutional_negatives.py"
+    test_ids:
+      - "tests/negative_controls/test_constitutional_negatives.py::test_negative_control_count_meets_minimum"
