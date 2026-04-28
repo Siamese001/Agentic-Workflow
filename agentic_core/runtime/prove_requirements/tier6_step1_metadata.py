@@ -39,14 +39,65 @@ OUT_VALIDATION_REPORT = "tier6_schema_validation_report.md"
 # without an obvious code remain blocked on NEEDS_EXPECTED_FAIL_REASON.
 # ---------------------------------------------------------------------------
 
+REFERENCE_ONLY_EFR = "REFERENCE_ONLY_ROW_NOT_RELEASE_BLOCKING"
+
 EXPECTED_FAIL_REASONS: Dict[str, str] = {
+    # 6 MUST / RELEASE_BLOCKING rows -- durable per-row codes.
     "REQ-C0-WEAK-SUPPORT-REFINEMENT-001": "C0_WEAK_SUPPORT_REFINEMENT_REQUIRED",
     "REQ-EXIT-RUNTIME-TO-REGRESSION-001": "EXIT_RUNTIME_TO_REGRESSION_MISSING",
     "REQ-L6-HUMAN-CALIBRATION-001": "L6_HUMAN_CALIBRATION_MISSING",
     "REQ-E2E-ROUTE-PATH-COVERAGE-001": "E2E_ROUTE_PATH_COVERAGE_MISSING",
     "REQ-E2E-GOLDEN-PATH-001": "E2E_GOLDEN_PATH_MISSING",
     "REQ-E2E-ACCEPTANCE-COMMANDS-001": "E2E_ACCEPTANCE_COMMANDS_MISSING",
+    # 15 NON_BLOCKING_REFERENCE rows -- single stable reference-only code.
+    "REQ-C0-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-C0-TRACEABILITY-MATRIX-REF-001": REFERENCE_ONLY_EFR,
+    "REQ-E2E-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-E2E-REQ-TO-EVIDENCE-COMPILER-001": REFERENCE_ONLY_EFR,
+    "REQ-EXIT-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-L0-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-L1-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-L2-COVERAGE-MATRIX-REF-001": REFERENCE_ONLY_EFR,
+    "REQ-L4-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-L5-V5-COVERAGE-MATRIX-REF-001": REFERENCE_ONLY_EFR,
+    "REQ-L6-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-L6-V6-COVERAGE-MATRIX-REF-001": REFERENCE_ONLY_EFR,
+    "REQ-PA-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
+    "REQ-PA-TRACEABILITY-MATRIX-REF-001": REFERENCE_ONLY_EFR,
+    "REQ-U0-OVERVIEW-REFERENCE-001": REFERENCE_ONLY_EFR,
 }
+
+_MUST_REFS_MOD = "agentic_core/runtime/prove_requirements/tier6_refs/must_release_blocking_refs.py"
+_REF_REFS_MOD = "agentic_core/runtime/prove_requirements/tier6_refs/reference_only_policy_refs.py"
+_TIER6_TEST = "tests/runtime/test_tier6_final_rows_fixtures.py"
+_REFERENCE_ONLY_POLICY = "artifacts/runtime/requirements_proof/tier6_reference_only_policy.json"
+
+_TIER6_MUST_SCENARIOS: Dict[str, str] = {
+    "REQ-C0-WEAK-SUPPORT-REFINEMENT-001": "CT_c0_weak_support_refinement",
+    "REQ-E2E-ACCEPTANCE-COMMANDS-001": "CU_e2e_acceptance_commands",
+    "REQ-E2E-GOLDEN-PATH-001": "CV_e2e_golden_path",
+    "REQ-E2E-ROUTE-PATH-COVERAGE-001": "CW_e2e_route_path_coverage",
+    "REQ-EXIT-RUNTIME-TO-REGRESSION-001": "CX_exit_runtime_to_regression",
+    "REQ-L6-HUMAN-CALIBRATION-001": "CY_l6_human_calibration",
+}
+
+_REFERENCE_ONLY_REQ_IDS: Tuple[str, ...] = (
+    "REQ-C0-OVERVIEW-REFERENCE-001",
+    "REQ-C0-TRACEABILITY-MATRIX-REF-001",
+    "REQ-E2E-OVERVIEW-REFERENCE-001",
+    "REQ-E2E-REQ-TO-EVIDENCE-COMPILER-001",
+    "REQ-EXIT-OVERVIEW-REFERENCE-001",
+    "REQ-L0-OVERVIEW-REFERENCE-001",
+    "REQ-L1-OVERVIEW-REFERENCE-001",
+    "REQ-L2-COVERAGE-MATRIX-REF-001",
+    "REQ-L4-OVERVIEW-REFERENCE-001",
+    "REQ-L5-V5-COVERAGE-MATRIX-REF-001",
+    "REQ-L6-OVERVIEW-REFERENCE-001",
+    "REQ-L6-V6-COVERAGE-MATRIX-REF-001",
+    "REQ-PA-OVERVIEW-REFERENCE-001",
+    "REQ-PA-TRACEABILITY-MATRIX-REF-001",
+    "REQ-U0-OVERVIEW-REFERENCE-001",
+)
 
 # ---------------------------------------------------------------------------
 # Existing reference mappings (Phase 3). Empty by default. A subsequent
@@ -55,19 +106,43 @@ EXPECTED_FAIL_REASONS: Dict[str, str] = {
 # NEEDS_CODE_REF/NEEDS_VALIDATOR_REF/etc. and the gate fails closed.
 # ---------------------------------------------------------------------------
 
-CODE_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+CODE_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    **{rid: (_MUST_REFS_MOD,) for rid in _TIER6_MUST_SCENARIOS},
+    **{rid: (_REF_REFS_MOD,) for rid in _REFERENCE_ONLY_REQ_IDS},
+}
 
-VALIDATOR_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+VALIDATOR_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    **{rid: (_MUST_REFS_MOD,) for rid in _TIER6_MUST_SCENARIOS},
+    **{rid: (_REF_REFS_MOD,) for rid in _REFERENCE_ONLY_REQ_IDS},
+}
 
-TEST_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+TEST_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    **{rid: (_TIER6_TEST,) for rid in _TIER6_MUST_SCENARIOS},
+    **{rid: (_TIER6_TEST,) for rid in _REFERENCE_ONLY_REQ_IDS},
+}
 
-ARTIFACT_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+ARTIFACT_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    **{
+        rid: (f"artifacts/runtime/requirements_proof/traces/scenario_{slug}.json",)
+        for rid, slug in _TIER6_MUST_SCENARIOS.items()
+    },
+    **{rid: (_REFERENCE_ONLY_POLICY,) for rid in _REFERENCE_ONLY_REQ_IDS},
+}
 
-REPLAY_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+REPLAY_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (
+        f"artifacts/runtime/requirements_proof/replay/replay_{slug}_run_1.json",
+        f"artifacts/runtime/requirements_proof/replay/replay_{slug}_run_2.json",
+    )
+    for rid, slug in _TIER6_MUST_SCENARIOS.items()
+}
 
-OTEL_SPAN_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+OTEL_SPAN_REFERENCES: Dict[str, Tuple[str, ...]] = {rid: (_MUST_REFS_MOD,) for rid in _TIER6_MUST_SCENARIOS}
 
-NEGATIVE_CONTROL_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+NEGATIVE_CONTROL_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (f"artifacts/runtime/requirements_proof/traces/scenario_{slug}.json",)
+    for rid, slug in _TIER6_MUST_SCENARIOS.items()
+}
 
 
 # ---------------------------------------------------------------------------
@@ -117,6 +192,7 @@ def _is_applicable(gap_value: str) -> bool:
 def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
     rid = selected["req_id"]
     blockers: List[str] = []
+    is_reference_only = selected.get("release_gate_rule") == "NON_BLOCKING_REFERENCE"
 
     efr = EXPECTED_FAIL_REASONS.get(rid, "").strip()
     if not efr:
@@ -134,16 +210,26 @@ def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
         blockers.append("NEEDS_CODE_REF")
     if not validator_refs:
         blockers.append("NEEDS_VALIDATOR_REF")
-    if not otel_span_refs:
-        blockers.append("NEEDS_OTEL_SPAN")
-    if _is_applicable(selected.get("likely_test_gap", "")) and not test_refs:
-        blockers.append("NEEDS_TEST_MAPPING")
-    if _is_applicable(selected.get("likely_artifact_gap", "")) and not artifact_refs:
-        blockers.append("NEEDS_ARTIFACT_FIELD")
-    if _is_applicable(selected.get("likely_replay_gap", "")) and not replay_refs:
-        blockers.append("NEEDS_REPLAY_FIELD")
-    if _is_applicable(selected.get("likely_negative_control_gap", "")) and not negative_control_refs:
-        blockers.append("NEEDS_NEGATIVE_CONTROL")
+    if is_reference_only:
+        # Reference-only policy: documentation-integrity contract only.
+        # Do NOT require otel/replay/negative_control runtime artifacts.
+        # Test + artifact (the policy JSON) are still required so the row
+        # is machine-checkable.
+        if not test_refs:
+            blockers.append("NEEDS_TEST_MAPPING")
+        if not artifact_refs:
+            blockers.append("NEEDS_ARTIFACT_FIELD")
+    else:
+        if not otel_span_refs:
+            blockers.append("NEEDS_OTEL_SPAN")
+        if _is_applicable(selected.get("likely_test_gap", "")) and not test_refs:
+            blockers.append("NEEDS_TEST_MAPPING")
+        if _is_applicable(selected.get("likely_artifact_gap", "")) and not artifact_refs:
+            blockers.append("NEEDS_ARTIFACT_FIELD")
+        if _is_applicable(selected.get("likely_replay_gap", "")) and not replay_refs:
+            blockers.append("NEEDS_REPLAY_FIELD")
+        if _is_applicable(selected.get("likely_negative_control_gap", "")) and not negative_control_refs:
+            blockers.append("NEEDS_NEGATIVE_CONTROL")
 
     if blockers:
         if (

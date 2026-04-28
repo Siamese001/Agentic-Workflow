@@ -131,11 +131,17 @@ _SCENARIO_EXTRAS: Dict[str, Tuple[str, str]] = {
     ),
     # Tier 3 non-RuntimeGates subsystem batches (AE..AU).
     "AE_l0_no_execute": ("REQ-L0-NO-EXECUTE-001", "L0_EXECUTION_BLOCKED"),
-    "AF_l0_grounded_action_handoff": ("REQ-L0-GROUNDED-ACTION-HANDOFF-001", "L0_GROUNDED_ACTION_HANDOFF_REQUIRED"),
+    "AF_l0_grounded_action_handoff": (
+        "REQ-L0-GROUNDED-ACTION-HANDOFF-001",
+        "L0_GROUNDED_ACTION_HANDOFF_REQUIRED",
+    ),
     "AG_u0_obs_replay": ("REQ-U0-OBS-REPLAY-001", "U0_OBS_REPLAY_MISSING"),
     "AH_u0_channel_validation": ("REQ-U0-CHANNEL-VALIDATION-001", "U0_CHANNEL_VALIDATION_REJECTED"),
     "AI_l1_obs_otel": ("REQ-L1-OBS-OTEL-001", "L1_OBS_OTEL_MISSING"),
-    "AJ_l1_plan_validation_self_repair": ("REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001", "L1_PLAN_VALIDATION_REQUIRED"),
+    "AJ_l1_plan_validation_self_repair": (
+        "REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001",
+        "L1_PLAN_VALIDATION_REQUIRED",
+    ),
     "AK_l1_ambiguity_evidence": ("REQ-L1-AMBIGUITY-EVIDENCE-001", "L1_AMBIGUITY_EVIDENCE_MISSING"),
     "AL_c0_no_write": ("REQ-C0-NO-WRITE-001", "C0_DURABLE_WRITE_BLOCKED"),
     "AM_c0_preflight_grounding": ("REQ-C0-PREFLIGHT-GROUNDING-001", "C0_PREFLIGHT_GROUNDING_REQUIRED"),
@@ -146,7 +152,10 @@ _SCENARIO_EXTRAS: Dict[str, Tuple[str, str]] = {
     "AR_uwg_audit_replay_consistency": ("REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001", "UWG_AUDIT_REPLAY_MISMATCH"),
     "AS_l5_replay_audit_cert": ("REQ-L5-REPLAY-AUDIT-CERT-001", "L5_REPLAY_AUDIT_CERT_MISSING"),
     "AT_l5_egress_provider_gov": ("REQ-L5-EGRESS-PROVIDER-GOV-001", "L5_EGRESS_PROVIDER_GOV_MISSING"),
-    "AU_e2e_fixtures_replay_harness": ("REQ-E2E-FIXTURES-REPLAY-HARNESS-001", "E2E_REPLAY_HARNESS_BOUNDARY_BLOCKED"),
+    "AU_e2e_fixtures_replay_harness": (
+        "REQ-E2E-FIXTURES-REPLAY-HARNESS-001",
+        "E2E_REPLAY_HARNESS_BOUNDARY_BLOCKED",
+    ),
 }
 
 # Per-scenario rich-trace extras for Tier 2 Batch B/C trace fixtures. These
@@ -159,9 +168,7 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "M_c0_no_execute": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-C0-NO-EXECUTE-001",
-        "evidence_refs": (
-            "agentic_core/L1_cognition/c0_context/observability.py",
-        ),
+        "evidence_refs": ("agentic_core/L1_cognition/c0_context/observability.py",),
         "tool_invocation_count": 0,
         "model_invocation_count": 0,
         "c0_final_answer_emitted": False,
@@ -169,9 +176,7 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "N_l5_hitl_reclearance": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L5-HITL-RECLEARANCE-001",
-        "evidence_refs": (
-            "agentic_core/L3_orchestration/exit_control/hitl_spans.py",
-        ),
+        "evidence_refs": ("agentic_core/L3_orchestration/exit_control/hitl_spans.py",),
         "reclearance_required": True,
         "reclearance_present": False,
         "rejected": True,
@@ -189,9 +194,7 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "P_l4_cache_state": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L4-CACHE-STATE-001",
-        "evidence_refs": (
-            "agentic_core/L4_state/otel/spans.py",
-        ),
+        "evidence_refs": ("agentic_core/L4_state/otel/spans.py",),
         "contract_id": "scenario_P_contract_001",
         "ad_hoc_invalidation_attempted": True,
         "rejected": True,
@@ -199,9 +202,7 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "Q_l5_risk_tier_bands": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L5-RISK-TIER-BANDS-001",
-        "evidence_refs": (
-            "agentic_core/L5_safety/v5/governance_spans.py",
-        ),
+        "evidence_refs": ("agentic_core/L5_safety/v5/governance_spans.py",),
         "published_band_id": "L5_BAND_TIER_3",
         "ad_hoc_score_attempted": True,
         "rejected": True,
@@ -272,7 +273,11 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
             "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g01_g05_ingress_refs.py",
         ),
         "ingress_gate_ids": (
-            "G01_IDENTITY", "G02_INTENT", "G03_SAFETY", "G04_ABUSE", "G05_REQUEST_SCHEMA",
+            "G01_IDENTITY",
+            "G02_INTENT",
+            "G03_SAFETY",
+            "G04_ABUSE",
+            "G05_REQUEST_SCHEMA",
         ),
         "ingress_validated": True,
     },
@@ -285,7 +290,11 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
             "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g06_g10_hitl_route_refs.py",
         ),
         "hitl_route_gate_ids": (
-            "G06_HITL", "G07_ROUTE", "G08_RETRIEVAL", "G09_EVIDENCE", "G10_GROUNDING",
+            "G06_HITL",
+            "G07_ROUTE",
+            "G08_RETRIEVAL",
+            "G09_EVIDENCE",
+            "G10_GROUNDING",
         ),
         "hitl_or_route_validated": True,
     },
@@ -298,7 +307,11 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
             "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g11_g15_tool_model_refs.py",
         ),
         "tool_model_gate_ids": (
-            "G11_TOOL", "G12_MODEL", "G13_ARGS", "G14_EGRESS", "G15_SANDBOX",
+            "G11_TOOL",
+            "G12_MODEL",
+            "G13_ARGS",
+            "G14_EGRESS",
+            "G15_SANDBOX",
         ),
         "tool_model_validated": True,
     },
@@ -311,7 +324,11 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
             "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g16_g20_memory_workflow_refs.py",
         ),
         "memory_workflow_gate_ids": (
-            "G16_MEMORY", "G17_PRIVACY", "G18_WORKFLOW", "G19_LOOP", "G20_BUDGET",
+            "G16_MEMORY",
+            "G17_PRIVACY",
+            "G18_WORKFLOW",
+            "G19_LOOP",
+            "G20_BUDGET",
         ),
         "memory_workflow_validated": True,
     },
@@ -324,7 +341,10 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
             "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g21_g24_output_replay_refs.py",
         ),
         "output_replay_gate_ids": (
-            "G21_OUTPUT", "G22_SECURITY", "G23_REPLAY", "G24_SURFACE",
+            "G21_OUTPUT",
+            "G22_SECURITY",
+            "G23_REPLAY",
+            "G24_SURFACE",
         ),
         "output_replay_validated": True,
     },
@@ -337,7 +357,11 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
             "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g25_g29_exit_write_refs.py",
         ),
         "exit_write_gate_ids": (
-            "G25_ANOMALY", "G26_EXIT", "G27_WRITE", "G28_AUDIT", "G29_LEARN",
+            "G25_ANOMALY",
+            "G26_EXIT",
+            "G27_WRITE",
+            "G28_AUDIT",
+            "G29_LEARN",
         ),
         "exit_write_validated": True,
     },
@@ -367,9 +391,7 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "AE_l0_no_execute": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L0-NO-EXECUTE-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",),
         "rejected": True,
         "tool_invocation_count": 0,
         "model_invocation_count": 0,
@@ -378,9 +400,7 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "AF_l0_grounded_action_handoff": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L0-GROUNDED-ACTION-HANDOFF-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",),
         "handoff_grounded": True,
         "evidence_present": True,
         "dispatch_blocked_when_ungrounded": True,
@@ -388,36 +408,28 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "AG_u0_obs_replay": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-U0-OBS-REPLAY-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",),
         "replay_observed": True,
         "obs_span_emitted_present": True,
     },
     "AH_u0_channel_validation": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-U0-CHANNEL-VALIDATION-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",),
         "channel_validated": True,
         "invalid_channel_rejected": True,
     },
     "AI_l1_obs_otel": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L1-OBS-OTEL-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",),
         "otel_span_declared": True,
         "replay_observed": True,
     },
     "AJ_l1_plan_validation_self_repair": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",),
         "plan_validation_present": True,
         "self_repair_attempted": True,
         "repaired_or_rejected": True,
@@ -425,9 +437,7 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "AK_l1_ambiguity_evidence": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-L1-AMBIGUITY-EVIDENCE-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",),
         "ambiguity_detected": True,
         "evidence_present": True,
         "action_blocked": True,
@@ -436,45 +446,35 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
     "AL_c0_no_write": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-C0-NO-WRITE-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",),
         "no_write_attempt_rejected": True,
         "write_count": 0,
     },
     "AM_c0_preflight_grounding": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-C0-PREFLIGHT-GROUNDING-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",),
         "preflight_grounding_present": True,
         "grounding_evidence_present": True,
     },
     "AN_c0_graph_rag": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-C0-GRAPH-RAG-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",),
         "graph_rag_used": True,
         "retrieval_surface_only": True,
     },
     "AO_pa_validate_slot_contract": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-PA-VALIDATE-SLOT-CONTRACT-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",),
         "slot_contract_validated": True,
         "contract_violation_rejected": True,
     },
     "AP_exit_x1a_x1f_checks": {
         "gate_result": "BLOCKED",
         "blocker_target": "REQ-EXIT-X1A-X1F-CHECKS-001",
-        "evidence_refs": (
-            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
-        ),
+        "evidence_refs": ("agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",),
         "exit_checks_applied": True,
         "x1a_x1f_check_ids": ("X1A", "X1B", "X1C", "X1D", "X1E", "X1F"),
         "all_checks_required": True,
@@ -533,36 +533,209 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
 # cluster module and a single demonstration boolean field. Static metadata.
 # ---------------------------------------------------------------------------
 
-_TIER4_CLUSTER_REFS_DIR = (
-    "agentic_core/runtime/prove_requirements/tier4_cluster_refs"
-)
+_TIER4_CLUSTER_REFS_DIR = "agentic_core/runtime/prove_requirements/tier4_cluster_refs"
 _TIER4_BOOTSTRAP_ROWS: Tuple[Tuple[str, str, str, str, str, str], ...] = (
     # (scenario_key, req_id, expected_fail_reason, cluster_module, span_name, demo_field)
-    ("AV_l5_authority_registry_bind",      "REQ-L5-AUTHORITY-REGISTRY-BIND-001",      "L5_AUTHORITY_REGISTRY_BIND_REQUIRED",   "governance_state_refs.py",  "tier4.l5.authority_registry_bind",      "authority_registry_bound"),
-    ("AW_l5_runtime_cert_bind",            "REQ-L5-RUNTIME-CERT-BIND-001",            "L5_RUNTIME_CERT_BIND_MISSING",          "governance_state_refs.py",  "tier4.l5.runtime_cert_bind",            "runtime_cert_bound"),
-    ("AX_l5_guardrail_families",           "REQ-L5-GUARDRAIL-FAMILIES-001",           "L5_GUARDRAIL_FAMILY_MISSING",           "governance_state_refs.py",  "tier4.l5.guardrail_families",           "guardrail_family_declared"),
-    ("AY_l5_gov_context_invariant",        "REQ-L5-GOV-CONTEXT-INVARIANT-001",        "L5_GOV_CONTEXT_DRIFT_DETECTED",         "governance_state_refs.py",  "tier4.l5.gov_context_invariant",        "governance_context_preserved"),
-    ("AZ_uwg_durable_write_ctx_invariant", "REQ-UWG-DURABLE-WRITE-CTX-INVARIANT-001", "UWG_DURABLE_WRITE_CTX_VIOLATION",       "governance_state_refs.py",  "tier4.l4.uwg_durable_write_ctx_invariant", "durable_write_context_preserved"),
-    ("BA_l4_policy_blueprint_state",       "REQ-L4-POLICY-BLUEPRINT-STATE-001",       "L4_POLICY_BLUEPRINT_MUTATION_REJECTED", "governance_state_refs.py",  "tier4.l4.policy_blueprint_state",       "policy_blueprint_state_bound"),
-    ("BB_gate_layer_invocation_map",       "REQ-GATE-LAYER-INVOCATION-MAP-001",       "GATE_LAYER_INVOCATION_MAP_MISSING",     "governance_state_refs.py",  "tier4.rg.layer_invocation_map",         "layer_invocation_map_validated"),
-    ("BC_u0_identity_tenant_session",      "REQ-U0-IDENTITY-TENANT-SESSION-001",      "U0_IDENTITY_TENANT_SESSION_REQUIRED",   "planning_routing_refs.py",  "tier4.u0.identity_tenant_session",      "identity_tenant_session_validated"),
-    ("BD_u0_quota_baseline",               "REQ-U0-QUOTA-BASELINE-001",               "U0_QUOTA_BASELINE_DRIFT_DETECTED",      "planning_routing_refs.py",  "tier4.u0.quota_baseline",               "quota_baseline_applied"),
-    ("BE_u0_schema_normalization",         "REQ-U0-SCHEMA-NORMALIZATION-001",         "U0_SCHEMA_NORMALIZATION_REJECTED",      "planning_routing_refs.py",  "tier4.u0.schema_normalization",         "schema_normalized"),
-    ("BF_l1_intent_frame",                 "REQ-L1-INTENT-FRAME-001",                 "L1_INTENT_FRAME_MISSING",               "planning_routing_refs.py",  "tier4.l1.intent_frame",                 "intent_frame_present"),
-    ("BG_l1_planning_priors",              "REQ-L1-PLANNING-PRIORS-001",              "L1_PLANNING_PRIORS_DRIFT_DETECTED",     "planning_routing_refs.py",  "tier4.l1.planning_priors",              "planning_priors_applied"),
-    ("BH_l0_route_input_preflight",        "REQ-L0-ROUTE-INPUT-PREFLIGHT-001",        "L0_ROUTE_INPUT_PREFLIGHT_REJECTED",     "planning_routing_refs.py",  "tier4.l0.route_input_preflight",        "route_input_preflight_validated"),
-    ("BI_l0_cache_fallback_hitl",          "REQ-L0-CACHE-FALLBACK-HITL-001",          "L0_CACHE_FALLBACK_HITL_VIOLATION",      "planning_routing_refs.py",  "tier4.l0.cache_fallback_hitl",          "cache_fallback_hitl_declared"),
-    ("BJ_l0_routecontract_telemetry",      "REQ-L0-ROUTECONTRACT-TELEMETRY-001",      "L0_ROUTECONTRACT_TELEMETRY_MISSING",    "planning_routing_refs.py",  "tier4.l0.routecontract_telemetry",      "routecontract_telemetry_emitted"),
-    ("BK_l3_managed_workflow",             "REQ-L3-MANAGED-WORKFLOW-001",             "L3_MANAGED_WORKFLOW_REJECTED",          "planning_routing_refs.py",  "tier4.l3.managed_workflow",             "managed_workflow_contract_declared"),
-    ("BL_c0_retrieval_plan",               "REQ-C0-RETRIEVAL-PLAN-001",               "C0_RETRIEVAL_PLAN_VIOLATION",           "execution_output_refs.py",  "tier4.c0.retrieval_plan",               "retrieval_plan_declared"),
-    ("BM_pa_load_resolve_bom",             "REQ-PA-LOAD-RESOLVE-BOM-001",             "PA_BOM_RESOLUTION_REJECTED",            "execution_output_refs.py",  "tier4.pa.load_resolve_bom",             "prompt_bom_resolved"),
-    ("BN_pa_token_budget_determinism",     "REQ-PA-TOKEN-BUDGET-DETERMINISM-001",     "PA_TOKEN_BUDGET_DRIFT_DETECTED",        "execution_output_refs.py",  "tier4.pa.token_budget_determinism",     "token_budget_deterministic"),
-    ("BO_l2_e1_frozen_room",               "REQ-L2-E1-FROZEN-ROOM-001",               "L2_FROZEN_ROOM_MUTATION_REJECTED",      "execution_output_refs.py",  "tier4.l2.e1_frozen_room",               "frozen_room_entered"),
-    ("BP_l2_e5_seal_dispatch",             "REQ-L2-E5-SEAL-DISPATCH-001",             "L2_SEAL_DISPATCH_VIOLATION",            "execution_output_refs.py",  "tier4.l2.e5_seal_dispatch",             "dispatch_sealed"),
-    ("BQ_l2_sequencer_contract",           "REQ-L2-SEQUENCER-CONTRACT-001",           "L2_SEQUENCER_CONTRACT_VIOLATION",       "execution_output_refs.py",  "tier4.l2.sequencer_contract",           "sequencer_contract_declared"),
-    ("BR_exit_hitl_freeze",                "REQ-EXIT-HITL-FREEZE-001",                "EXIT_HITL_FREEZE_BYPASS_BLOCKED",       "execution_output_refs.py",  "tier4.exit.hitl_freeze",                "hitl_freeze_applied"),
-    ("BS_l6_runtime_exhaust_ingest",       "REQ-L6-RUNTIME-EXHAUST-INGEST-001",       "L6_RUNTIME_EXHAUST_INGEST_LOSSY",       "execution_output_refs.py",  "tier4.l6.runtime_exhaust_ingest",       "runtime_exhaust_ingested"),
-    ("BT_e2e_evidence_groundedness",       "REQ-E2E-EVIDENCE-GROUNDEDNESS-001",       "E2E_EVIDENCE_GROUNDEDNESS_MISSING",     "execution_output_refs.py",  "tier4.e2e.evidence_groundedness",       "evidence_groundedness_validated"),
+    (
+        "AV_l5_authority_registry_bind",
+        "REQ-L5-AUTHORITY-REGISTRY-BIND-001",
+        "L5_AUTHORITY_REGISTRY_BIND_REQUIRED",
+        "governance_state_refs.py",
+        "tier4.l5.authority_registry_bind",
+        "authority_registry_bound",
+    ),
+    (
+        "AW_l5_runtime_cert_bind",
+        "REQ-L5-RUNTIME-CERT-BIND-001",
+        "L5_RUNTIME_CERT_BIND_MISSING",
+        "governance_state_refs.py",
+        "tier4.l5.runtime_cert_bind",
+        "runtime_cert_bound",
+    ),
+    (
+        "AX_l5_guardrail_families",
+        "REQ-L5-GUARDRAIL-FAMILIES-001",
+        "L5_GUARDRAIL_FAMILY_MISSING",
+        "governance_state_refs.py",
+        "tier4.l5.guardrail_families",
+        "guardrail_family_declared",
+    ),
+    (
+        "AY_l5_gov_context_invariant",
+        "REQ-L5-GOV-CONTEXT-INVARIANT-001",
+        "L5_GOV_CONTEXT_DRIFT_DETECTED",
+        "governance_state_refs.py",
+        "tier4.l5.gov_context_invariant",
+        "governance_context_preserved",
+    ),
+    (
+        "AZ_uwg_durable_write_ctx_invariant",
+        "REQ-UWG-DURABLE-WRITE-CTX-INVARIANT-001",
+        "UWG_DURABLE_WRITE_CTX_VIOLATION",
+        "governance_state_refs.py",
+        "tier4.l4.uwg_durable_write_ctx_invariant",
+        "durable_write_context_preserved",
+    ),
+    (
+        "BA_l4_policy_blueprint_state",
+        "REQ-L4-POLICY-BLUEPRINT-STATE-001",
+        "L4_POLICY_BLUEPRINT_MUTATION_REJECTED",
+        "governance_state_refs.py",
+        "tier4.l4.policy_blueprint_state",
+        "policy_blueprint_state_bound",
+    ),
+    (
+        "BB_gate_layer_invocation_map",
+        "REQ-GATE-LAYER-INVOCATION-MAP-001",
+        "GATE_LAYER_INVOCATION_MAP_MISSING",
+        "governance_state_refs.py",
+        "tier4.rg.layer_invocation_map",
+        "layer_invocation_map_validated",
+    ),
+    (
+        "BC_u0_identity_tenant_session",
+        "REQ-U0-IDENTITY-TENANT-SESSION-001",
+        "U0_IDENTITY_TENANT_SESSION_REQUIRED",
+        "planning_routing_refs.py",
+        "tier4.u0.identity_tenant_session",
+        "identity_tenant_session_validated",
+    ),
+    (
+        "BD_u0_quota_baseline",
+        "REQ-U0-QUOTA-BASELINE-001",
+        "U0_QUOTA_BASELINE_DRIFT_DETECTED",
+        "planning_routing_refs.py",
+        "tier4.u0.quota_baseline",
+        "quota_baseline_applied",
+    ),
+    (
+        "BE_u0_schema_normalization",
+        "REQ-U0-SCHEMA-NORMALIZATION-001",
+        "U0_SCHEMA_NORMALIZATION_REJECTED",
+        "planning_routing_refs.py",
+        "tier4.u0.schema_normalization",
+        "schema_normalized",
+    ),
+    (
+        "BF_l1_intent_frame",
+        "REQ-L1-INTENT-FRAME-001",
+        "L1_INTENT_FRAME_MISSING",
+        "planning_routing_refs.py",
+        "tier4.l1.intent_frame",
+        "intent_frame_present",
+    ),
+    (
+        "BG_l1_planning_priors",
+        "REQ-L1-PLANNING-PRIORS-001",
+        "L1_PLANNING_PRIORS_DRIFT_DETECTED",
+        "planning_routing_refs.py",
+        "tier4.l1.planning_priors",
+        "planning_priors_applied",
+    ),
+    (
+        "BH_l0_route_input_preflight",
+        "REQ-L0-ROUTE-INPUT-PREFLIGHT-001",
+        "L0_ROUTE_INPUT_PREFLIGHT_REJECTED",
+        "planning_routing_refs.py",
+        "tier4.l0.route_input_preflight",
+        "route_input_preflight_validated",
+    ),
+    (
+        "BI_l0_cache_fallback_hitl",
+        "REQ-L0-CACHE-FALLBACK-HITL-001",
+        "L0_CACHE_FALLBACK_HITL_VIOLATION",
+        "planning_routing_refs.py",
+        "tier4.l0.cache_fallback_hitl",
+        "cache_fallback_hitl_declared",
+    ),
+    (
+        "BJ_l0_routecontract_telemetry",
+        "REQ-L0-ROUTECONTRACT-TELEMETRY-001",
+        "L0_ROUTECONTRACT_TELEMETRY_MISSING",
+        "planning_routing_refs.py",
+        "tier4.l0.routecontract_telemetry",
+        "routecontract_telemetry_emitted",
+    ),
+    (
+        "BK_l3_managed_workflow",
+        "REQ-L3-MANAGED-WORKFLOW-001",
+        "L3_MANAGED_WORKFLOW_REJECTED",
+        "planning_routing_refs.py",
+        "tier4.l3.managed_workflow",
+        "managed_workflow_contract_declared",
+    ),
+    (
+        "BL_c0_retrieval_plan",
+        "REQ-C0-RETRIEVAL-PLAN-001",
+        "C0_RETRIEVAL_PLAN_VIOLATION",
+        "execution_output_refs.py",
+        "tier4.c0.retrieval_plan",
+        "retrieval_plan_declared",
+    ),
+    (
+        "BM_pa_load_resolve_bom",
+        "REQ-PA-LOAD-RESOLVE-BOM-001",
+        "PA_BOM_RESOLUTION_REJECTED",
+        "execution_output_refs.py",
+        "tier4.pa.load_resolve_bom",
+        "prompt_bom_resolved",
+    ),
+    (
+        "BN_pa_token_budget_determinism",
+        "REQ-PA-TOKEN-BUDGET-DETERMINISM-001",
+        "PA_TOKEN_BUDGET_DRIFT_DETECTED",
+        "execution_output_refs.py",
+        "tier4.pa.token_budget_determinism",
+        "token_budget_deterministic",
+    ),
+    (
+        "BO_l2_e1_frozen_room",
+        "REQ-L2-E1-FROZEN-ROOM-001",
+        "L2_FROZEN_ROOM_MUTATION_REJECTED",
+        "execution_output_refs.py",
+        "tier4.l2.e1_frozen_room",
+        "frozen_room_entered",
+    ),
+    (
+        "BP_l2_e5_seal_dispatch",
+        "REQ-L2-E5-SEAL-DISPATCH-001",
+        "L2_SEAL_DISPATCH_VIOLATION",
+        "execution_output_refs.py",
+        "tier4.l2.e5_seal_dispatch",
+        "dispatch_sealed",
+    ),
+    (
+        "BQ_l2_sequencer_contract",
+        "REQ-L2-SEQUENCER-CONTRACT-001",
+        "L2_SEQUENCER_CONTRACT_VIOLATION",
+        "execution_output_refs.py",
+        "tier4.l2.sequencer_contract",
+        "sequencer_contract_declared",
+    ),
+    (
+        "BR_exit_hitl_freeze",
+        "REQ-EXIT-HITL-FREEZE-001",
+        "EXIT_HITL_FREEZE_BYPASS_BLOCKED",
+        "execution_output_refs.py",
+        "tier4.exit.hitl_freeze",
+        "hitl_freeze_applied",
+    ),
+    (
+        "BS_l6_runtime_exhaust_ingest",
+        "REQ-L6-RUNTIME-EXHAUST-INGEST-001",
+        "L6_RUNTIME_EXHAUST_INGEST_LOSSY",
+        "execution_output_refs.py",
+        "tier4.l6.runtime_exhaust_ingest",
+        "runtime_exhaust_ingested",
+    ),
+    (
+        "BT_e2e_evidence_groundedness",
+        "REQ-E2E-EVIDENCE-GROUNDEDNESS-001",
+        "E2E_EVIDENCE_GROUNDEDNESS_MISSING",
+        "execution_output_refs.py",
+        "tier4.e2e.evidence_groundedness",
+        "evidence_groundedness_validated",
+    ),
 )
 
 for _key, _rid, _efr, _mod, _span, _demo in _TIER4_BOOTSTRAP_ROWS:
@@ -576,42 +749,214 @@ for _key, _rid, _efr, _mod, _span, _demo in _TIER4_BOOTSTRAP_ROWS:
     }
 
 
-
 # ---------------------------------------------------------------------------
 # Tier 5 Prompt B additions (25 rows: scenarios BU..CS). Each row maps to its
 # cluster module and a single demonstration boolean field. Static metadata.
 # ---------------------------------------------------------------------------
 
-_TIER5_CLUSTER_REFS_DIR = (
-    "agentic_core/runtime/prove_requirements/tier5_cluster_refs"
-)
+_TIER5_CLUSTER_REFS_DIR = "agentic_core/runtime/prove_requirements/tier5_cluster_refs"
 _TIER5_BOOTSTRAP_ROWS: Tuple[Tuple[str, str, str, str, str, str], ...] = (
     # (scenario_key, req_id, expected_fail_reason, cluster_module, span_name, demo_field)
-    ('BU_l5_capability_token_schema', 'REQ-L5-CAPABILITY-TOKEN-SCHEMA-001', 'L5_CAPABILITY_TOKEN_SCHEMA_VIOLATION', 'governance_migration_refs.py', 'tier5.l5.capability_token_schema', 'capability_token_schema_validated'),
-    ('BV_l5_cross_child_cert_consistency', 'REQ-L5-CROSS-CHILD-CERT-CONSISTENCY-001', 'L5_CROSS_CHILD_CERT_INCONSISTENCY', 'governance_migration_refs.py', 'tier5.l5.cross_child_cert_consistency', 'cross_child_cert_consistent'),
-    ('BW_l5_calibration_assurance', 'REQ-L5-CALIBRATION-ASSURANCE-001', 'L5_CALIBRATION_ASSURANCE_MISSING', 'governance_migration_refs.py', 'tier5.l5.calibration_assurance', 'calibration_assurance_checked'),
-    ('BX_l4_blueprint_version_migration', 'REQ-L4-BLUEPRINT-VERSION-MIGRATION-001', 'L4_BLUEPRINT_VERSION_MIGRATION_REJECTED', 'governance_migration_refs.py', 'tier5.l4.blueprint_version_migration', 'blueprint_version_migration_validated'),
-    ('BY_l4_memory_promotion_state', 'REQ-L4-MEMORY-PROMOTION-STATE-001', 'L4_MEMORY_PROMOTION_STATE_VIOLATION', 'governance_migration_refs.py', 'tier5.l4.memory_promotion_state', 'memory_promotion_state_preserved'),
-    ('BZ_l4_read_surface_refresh', 'REQ-L4-READ-SURFACE-REFRESH-001', 'L4_READ_SURFACE_REFRESH_REJECTED', 'governance_migration_refs.py', 'tier5.l4.read_surface_refresh', 'read_surface_refresh_applied'),
-    ('CA_u0_transport_envelope', 'REQ-U0-TRANSPORT-ENVELOPE-001', 'U0_TRANSPORT_ENVELOPE_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.u0.transport_envelope', 'transport_envelope_validated'),
-    ('CB_u0_data_labeling', 'REQ-U0-DATA-LABELING-001', 'U0_DATA_LABELING_MISSING', 'planning_retrieval_prompt_refs.py', 'tier5.u0.data_labeling', 'data_labeling_applied'),
-    ('CC_u0_rejection_path', 'REQ-U0-REJECTION-PATH-001', 'U0_REJECTION_PATH_VIOLATION', 'planning_retrieval_prompt_refs.py', 'tier5.u0.rejection_path', 'rejection_path_taken'),
-    ('CD_l1_contextual_refinement', 'REQ-L1-CONTEXTUAL-REFINEMENT-001', 'L1_CONTEXTUAL_REFINEMENT_DRIFT_DETECTED', 'planning_retrieval_prompt_refs.py', 'tier5.l1.contextual_refinement', 'contextual_refinement_applied'),
-    ('CE_l1_draft_plan_route_hints', 'REQ-L1-DRAFT-PLAN-ROUTE-HINTS-001', 'L1_DRAFT_PLAN_ROUTE_HINTS_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.l1.draft_plan_route_hints', 'draft_plan_route_hints_present'),
-    ('CF_l3_concurrency_fallback', 'REQ-L3-CONCURRENCY-FALLBACK-001', 'L3_CONCURRENCY_FALLBACK_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.l3.concurrency_fallback', 'concurrency_fallback_declared'),
-    ('CG_l3_step_readiness_ledger', 'REQ-L3-STEP-READINESS-LEDGER-001', 'L3_STEP_READINESS_LEDGER_VIOLATION', 'planning_retrieval_prompt_refs.py', 'tier5.l3.step_readiness_ledger', 'step_readiness_ledger_recorded'),
-    ('CH_c0_shape_rerank_stratify', 'REQ-C0-SHAPE-RERANK-STRATIFY-001', 'C0_SHAPE_RERANK_STRATIFY_DRIFT_DETECTED', 'planning_retrieval_prompt_refs.py', 'tier5.c0.shape_rerank_stratify', 'shape_rerank_stratify_applied'),
-    ('CI_pa_slot_composition', 'REQ-PA-SLOT-COMPOSITION-001', 'PA_SLOT_COMPOSITION_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.pa.slot_composition', 'slot_composition_validated'),
-    ('CJ_l2_e2_valid_work_order', 'REQ-L2-E2-VALID-WORK-ORDER-001', 'L2_VALID_WORK_ORDER_REJECTED', 'execution_evaluation_learning_refs.py', 'tier5.l2.e2_valid_work_order', 'valid_work_order_present'),
-    ('CK_l2_e3_exec_lanes_sandbox', 'REQ-L2-E3-EXEC-LANES-SANDBOX-001', 'L2_EXEC_LANES_SANDBOX_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l2.e3_exec_lanes_sandbox', 'exec_lane_sandbox_enforced'),
-    ('CL_l2_e4_heal_same_authority', 'REQ-L2-E4-HEAL-SAME-AUTHORITY-001', 'L2_HEAL_AUTHORITY_DRIFT_DETECTED', 'execution_evaluation_learning_refs.py', 'tier5.l2.e4_heal_same_authority', 'heal_same_authority_enforced'),
-    ('CM_l2_resolution_context_invariant', 'REQ-L2-RESOLUTION-CONTEXT-INVARIANT-001', 'L2_RESOLUTION_CONTEXT_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l2.resolution_context_invariant', 'resolution_context_preserved'),
-    ('CN_exit_input_normalization', 'REQ-EXIT-INPUT-NORMALIZATION-001', 'EXIT_INPUT_NORMALIZATION_REJECTED', 'execution_evaluation_learning_refs.py', 'tier5.exit.input_normalization', 'exit_input_normalized'),
-    ('CO_exit_grader_composition', 'REQ-EXIT-GRADER-COMPOSITION-001', 'EXIT_GRADER_COMPOSITION_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.exit.grader_composition', 'grader_composition_validated'),
-    ('CP_exit_return_response', 'REQ-EXIT-RETURN-RESPONSE-001', 'EXIT_RETURN_RESPONSE_DISPOSITION_MISSING', 'execution_evaluation_learning_refs.py', 'tier5.exit.return_response', 'return_response_contract_applied'),
-    ('CQ_l6_outcome_trajectory', 'REQ-L6-OUTCOME-TRAJECTORY-001', 'L6_OUTCOME_TRAJECTORY_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l6.outcome_trajectory', 'outcome_trajectory_recorded'),
-    ('CR_l6_proposal_admission', 'REQ-L6-PROPOSAL-ADMISSION-001', 'L6_PROPOSAL_ADMISSION_REJECTED', 'execution_evaluation_learning_refs.py', 'tier5.l6.proposal_admission', 'proposal_admission_gated'),
-    ('CS_l6_memory_promotion_iface', 'REQ-L6-MEMORY-PROMOTION-IFACE-001', 'L6_MEMORY_PROMOTION_IFACE_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l6.memory_promotion_iface', 'memory_promotion_iface_used'),
+    (
+        "BU_l5_capability_token_schema",
+        "REQ-L5-CAPABILITY-TOKEN-SCHEMA-001",
+        "L5_CAPABILITY_TOKEN_SCHEMA_VIOLATION",
+        "governance_migration_refs.py",
+        "tier5.l5.capability_token_schema",
+        "capability_token_schema_validated",
+    ),
+    (
+        "BV_l5_cross_child_cert_consistency",
+        "REQ-L5-CROSS-CHILD-CERT-CONSISTENCY-001",
+        "L5_CROSS_CHILD_CERT_INCONSISTENCY",
+        "governance_migration_refs.py",
+        "tier5.l5.cross_child_cert_consistency",
+        "cross_child_cert_consistent",
+    ),
+    (
+        "BW_l5_calibration_assurance",
+        "REQ-L5-CALIBRATION-ASSURANCE-001",
+        "L5_CALIBRATION_ASSURANCE_MISSING",
+        "governance_migration_refs.py",
+        "tier5.l5.calibration_assurance",
+        "calibration_assurance_checked",
+    ),
+    (
+        "BX_l4_blueprint_version_migration",
+        "REQ-L4-BLUEPRINT-VERSION-MIGRATION-001",
+        "L4_BLUEPRINT_VERSION_MIGRATION_REJECTED",
+        "governance_migration_refs.py",
+        "tier5.l4.blueprint_version_migration",
+        "blueprint_version_migration_validated",
+    ),
+    (
+        "BY_l4_memory_promotion_state",
+        "REQ-L4-MEMORY-PROMOTION-STATE-001",
+        "L4_MEMORY_PROMOTION_STATE_VIOLATION",
+        "governance_migration_refs.py",
+        "tier5.l4.memory_promotion_state",
+        "memory_promotion_state_preserved",
+    ),
+    (
+        "BZ_l4_read_surface_refresh",
+        "REQ-L4-READ-SURFACE-REFRESH-001",
+        "L4_READ_SURFACE_REFRESH_REJECTED",
+        "governance_migration_refs.py",
+        "tier5.l4.read_surface_refresh",
+        "read_surface_refresh_applied",
+    ),
+    (
+        "CA_u0_transport_envelope",
+        "REQ-U0-TRANSPORT-ENVELOPE-001",
+        "U0_TRANSPORT_ENVELOPE_REJECTED",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.u0.transport_envelope",
+        "transport_envelope_validated",
+    ),
+    (
+        "CB_u0_data_labeling",
+        "REQ-U0-DATA-LABELING-001",
+        "U0_DATA_LABELING_MISSING",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.u0.data_labeling",
+        "data_labeling_applied",
+    ),
+    (
+        "CC_u0_rejection_path",
+        "REQ-U0-REJECTION-PATH-001",
+        "U0_REJECTION_PATH_VIOLATION",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.u0.rejection_path",
+        "rejection_path_taken",
+    ),
+    (
+        "CD_l1_contextual_refinement",
+        "REQ-L1-CONTEXTUAL-REFINEMENT-001",
+        "L1_CONTEXTUAL_REFINEMENT_DRIFT_DETECTED",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.l1.contextual_refinement",
+        "contextual_refinement_applied",
+    ),
+    (
+        "CE_l1_draft_plan_route_hints",
+        "REQ-L1-DRAFT-PLAN-ROUTE-HINTS-001",
+        "L1_DRAFT_PLAN_ROUTE_HINTS_REJECTED",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.l1.draft_plan_route_hints",
+        "draft_plan_route_hints_present",
+    ),
+    (
+        "CF_l3_concurrency_fallback",
+        "REQ-L3-CONCURRENCY-FALLBACK-001",
+        "L3_CONCURRENCY_FALLBACK_REJECTED",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.l3.concurrency_fallback",
+        "concurrency_fallback_declared",
+    ),
+    (
+        "CG_l3_step_readiness_ledger",
+        "REQ-L3-STEP-READINESS-LEDGER-001",
+        "L3_STEP_READINESS_LEDGER_VIOLATION",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.l3.step_readiness_ledger",
+        "step_readiness_ledger_recorded",
+    ),
+    (
+        "CH_c0_shape_rerank_stratify",
+        "REQ-C0-SHAPE-RERANK-STRATIFY-001",
+        "C0_SHAPE_RERANK_STRATIFY_DRIFT_DETECTED",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.c0.shape_rerank_stratify",
+        "shape_rerank_stratify_applied",
+    ),
+    (
+        "CI_pa_slot_composition",
+        "REQ-PA-SLOT-COMPOSITION-001",
+        "PA_SLOT_COMPOSITION_REJECTED",
+        "planning_retrieval_prompt_refs.py",
+        "tier5.pa.slot_composition",
+        "slot_composition_validated",
+    ),
+    (
+        "CJ_l2_e2_valid_work_order",
+        "REQ-L2-E2-VALID-WORK-ORDER-001",
+        "L2_VALID_WORK_ORDER_REJECTED",
+        "execution_evaluation_learning_refs.py",
+        "tier5.l2.e2_valid_work_order",
+        "valid_work_order_present",
+    ),
+    (
+        "CK_l2_e3_exec_lanes_sandbox",
+        "REQ-L2-E3-EXEC-LANES-SANDBOX-001",
+        "L2_EXEC_LANES_SANDBOX_VIOLATION",
+        "execution_evaluation_learning_refs.py",
+        "tier5.l2.e3_exec_lanes_sandbox",
+        "exec_lane_sandbox_enforced",
+    ),
+    (
+        "CL_l2_e4_heal_same_authority",
+        "REQ-L2-E4-HEAL-SAME-AUTHORITY-001",
+        "L2_HEAL_AUTHORITY_DRIFT_DETECTED",
+        "execution_evaluation_learning_refs.py",
+        "tier5.l2.e4_heal_same_authority",
+        "heal_same_authority_enforced",
+    ),
+    (
+        "CM_l2_resolution_context_invariant",
+        "REQ-L2-RESOLUTION-CONTEXT-INVARIANT-001",
+        "L2_RESOLUTION_CONTEXT_VIOLATION",
+        "execution_evaluation_learning_refs.py",
+        "tier5.l2.resolution_context_invariant",
+        "resolution_context_preserved",
+    ),
+    (
+        "CN_exit_input_normalization",
+        "REQ-EXIT-INPUT-NORMALIZATION-001",
+        "EXIT_INPUT_NORMALIZATION_REJECTED",
+        "execution_evaluation_learning_refs.py",
+        "tier5.exit.input_normalization",
+        "exit_input_normalized",
+    ),
+    (
+        "CO_exit_grader_composition",
+        "REQ-EXIT-GRADER-COMPOSITION-001",
+        "EXIT_GRADER_COMPOSITION_VIOLATION",
+        "execution_evaluation_learning_refs.py",
+        "tier5.exit.grader_composition",
+        "grader_composition_validated",
+    ),
+    (
+        "CP_exit_return_response",
+        "REQ-EXIT-RETURN-RESPONSE-001",
+        "EXIT_RETURN_RESPONSE_DISPOSITION_MISSING",
+        "execution_evaluation_learning_refs.py",
+        "tier5.exit.return_response",
+        "return_response_contract_applied",
+    ),
+    (
+        "CQ_l6_outcome_trajectory",
+        "REQ-L6-OUTCOME-TRAJECTORY-001",
+        "L6_OUTCOME_TRAJECTORY_VIOLATION",
+        "execution_evaluation_learning_refs.py",
+        "tier5.l6.outcome_trajectory",
+        "outcome_trajectory_recorded",
+    ),
+    (
+        "CR_l6_proposal_admission",
+        "REQ-L6-PROPOSAL-ADMISSION-001",
+        "L6_PROPOSAL_ADMISSION_REJECTED",
+        "execution_evaluation_learning_refs.py",
+        "tier5.l6.proposal_admission",
+        "proposal_admission_gated",
+    ),
+    (
+        "CS_l6_memory_promotion_iface",
+        "REQ-L6-MEMORY-PROMOTION-IFACE-001",
+        "L6_MEMORY_PROMOTION_IFACE_VIOLATION",
+        "execution_evaluation_learning_refs.py",
+        "tier5.l6.memory_promotion_iface",
+        "memory_promotion_iface_used",
+    ),
 )
 
 for _key, _rid, _efr, _mod, _span, _demo in _TIER5_BOOTSTRAP_ROWS:
@@ -622,6 +967,114 @@ for _key, _rid, _efr, _mod, _span, _demo in _TIER5_BOOTSTRAP_ROWS:
         "evidence_refs": (f"{_TIER5_CLUSTER_REFS_DIR}/{_mod}",),
         "spans": (_span,),
         _demo: True,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Tier 6 Prompt B additions (6 MUST rows: scenarios CT..CY). The 15
+# NON_BLOCKING_REFERENCE rows do NOT get runtime fixtures -- they are
+# governed by the reference-only policy (tier6_reference_only_policy.json,
+# materialized below as a special-case payload).
+# ---------------------------------------------------------------------------
+
+_TIER6_REFS_DIR = "agentic_core/runtime/prove_requirements/tier6_refs"
+_TIER6_BOOTSTRAP_ROWS: Tuple[Tuple[str, str, str, str, str, str], ...] = (
+    # (scenario_key, req_id, expected_fail_reason, module, span_name, demo_field)
+    (
+        "CT_c0_weak_support_refinement",
+        "REQ-C0-WEAK-SUPPORT-REFINEMENT-001",
+        "C0_WEAK_SUPPORT_REFINEMENT_REQUIRED",
+        "must_release_blocking_refs.py",
+        "tier6.c0.weak_support_refinement",
+        "weak_support_refinement_required",
+    ),
+    (
+        "CU_e2e_acceptance_commands",
+        "REQ-E2E-ACCEPTANCE-COMMANDS-001",
+        "E2E_ACCEPTANCE_COMMANDS_MISSING",
+        "must_release_blocking_refs.py",
+        "tier6.e2e.acceptance_commands",
+        "acceptance_commands_declared",
+    ),
+    (
+        "CV_e2e_golden_path",
+        "REQ-E2E-GOLDEN-PATH-001",
+        "E2E_GOLDEN_PATH_MISSING",
+        "must_release_blocking_refs.py",
+        "tier6.e2e.golden_path",
+        "golden_path_validated",
+    ),
+    (
+        "CW_e2e_route_path_coverage",
+        "REQ-E2E-ROUTE-PATH-COVERAGE-001",
+        "E2E_ROUTE_PATH_COVERAGE_MISSING",
+        "must_release_blocking_refs.py",
+        "tier6.e2e.route_path_coverage",
+        "route_path_coverage_validated",
+    ),
+    (
+        "CX_exit_runtime_to_regression",
+        "REQ-EXIT-RUNTIME-TO-REGRESSION-001",
+        "EXIT_RUNTIME_TO_REGRESSION_MISSING",
+        "must_release_blocking_refs.py",
+        "tier6.exit.runtime_to_regression",
+        "runtime_to_regression_recorded",
+    ),
+    (
+        "CY_l6_human_calibration",
+        "REQ-L6-HUMAN-CALIBRATION-001",
+        "L6_HUMAN_CALIBRATION_MISSING",
+        "must_release_blocking_refs.py",
+        "tier6.l6.human_calibration",
+        "human_calibration_required",
+    ),
+)
+
+for _key, _rid, _efr, _mod, _span, _demo in _TIER6_BOOTSTRAP_ROWS:
+    _SCENARIO_EXTRAS[_key] = (_rid, _efr)
+    _TRACE_RICH_EXTRAS[_key] = {
+        "gate_result": "BLOCKED",
+        "blocker_target": _rid,
+        "evidence_refs": (f"{_TIER6_REFS_DIR}/{_mod}",),
+        "spans": (_span,),
+        _demo: True,
+    }
+
+_TIER6_REFERENCE_ONLY_POLICY_REL = "artifacts/runtime/requirements_proof/tier6_reference_only_policy.json"
+_TIER6_REFERENCE_ONLY_REQ_IDS: Tuple[str, ...] = (
+    "REQ-C0-OVERVIEW-REFERENCE-001",
+    "REQ-C0-TRACEABILITY-MATRIX-REF-001",
+    "REQ-E2E-OVERVIEW-REFERENCE-001",
+    "REQ-E2E-REQ-TO-EVIDENCE-COMPILER-001",
+    "REQ-EXIT-OVERVIEW-REFERENCE-001",
+    "REQ-L0-OVERVIEW-REFERENCE-001",
+    "REQ-L1-OVERVIEW-REFERENCE-001",
+    "REQ-L2-COVERAGE-MATRIX-REF-001",
+    "REQ-L4-OVERVIEW-REFERENCE-001",
+    "REQ-L5-V5-COVERAGE-MATRIX-REF-001",
+    "REQ-L6-OVERVIEW-REFERENCE-001",
+    "REQ-L6-V6-COVERAGE-MATRIX-REF-001",
+    "REQ-PA-OVERVIEW-REFERENCE-001",
+    "REQ-PA-TRACEABILITY-MATRIX-REF-001",
+    "REQ-U0-OVERVIEW-REFERENCE-001",
+)
+
+
+def _tier6_reference_only_policy_payload() -> Dict[str, object]:
+    return {
+        "tier": "TIER6",
+        "policy_name": "TIER6_NON_BLOCKING_REFERENCE_POLICY",
+        "reference_only_req_ids": list(_TIER6_REFERENCE_ONLY_REQ_IDS),
+        "total_reference_only_rows": len(_TIER6_REFERENCE_ONLY_REQ_IDS),
+        "rule": (
+            "NON_BLOCKING_REFERENCE rows are machine-checked for reference "
+            "integrity only and do not claim runtime proof."
+        ),
+        "caveat": ("no real replay execution, no real OTEL emission, no runtime proof claim for these rows."),
+        "contract_module": (
+            "agentic_core/runtime/prove_requirements/tier6_refs/reference_only_policy_refs.py"
+        ),
+        "schema_version": "1.0",
     }
 
 
@@ -653,9 +1106,9 @@ def _scenario_key(rel_path: str) -> str:
     """
     name = Path(rel_path).stem
     if name.startswith("scenario_"):
-        return name[len("scenario_"):]
+        return name[len("scenario_") :]
     if name.startswith("replay_"):
-        rest = name[len("replay_"):]
+        rest = name[len("replay_") :]
         for suffix in ("_run_1", "_run_2", "_run_3"):
             if rest.endswith(suffix):
                 return rest[: -len(suffix)]
@@ -749,6 +1202,9 @@ def _generic_payload(rel_path: str) -> Dict[str, object]:
 
 
 def _payload_for(rel_path: str) -> Dict[str, object]:
+    norm = rel_path.replace("\\", "/")
+    if norm == _TIER6_REFERENCE_ONLY_POLICY_REL:
+        return _tier6_reference_only_policy_payload()
     if _is_replay_path(rel_path):
         idx = _replay_run_index(rel_path)
         if idx in (1, 2, 3):
@@ -774,10 +1230,11 @@ def _collect_referenced_paths() -> List[str]:
         tier3_step1_metadata as t3,
         tier4_step1_metadata as t4,
         tier5_step1_metadata as t5,
+        tier6_step1_metadata as t6,
     )
 
     paths: set[str] = set()
-    for module in (t0, t1, t2, t3, t4, t5):
+    for module in (t0, t1, t2, t3, t4, t5, t6):
         for attr in (
             "ARTIFACT_REFERENCES",
             "REPLAY_REFERENCES",
