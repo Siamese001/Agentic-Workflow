@@ -1,0 +1,35 @@
+name: Tier Gate Hardening
+
+# Runs the Tier 0 / Tier 1 gate fail-closed hardening tests. Verifies
+# that each gate returns BLOCKED under controlled corruptions of
+# generated metadata, missing artifact / replay / negative-control /
+# test / code / validator / OTEL-span refs, and replay invariant-digest
+# mismatches. Static-only: does NOT execute replay machinery, OTEL
+# exporters, or the proof harness, and does NOT run the full pytest
+# suite.
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  tier-gate-hardening:
+    name: "Tier 0 / Tier 1 gate hardening (fail-closed)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pytest
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+      - name: Run gate-hardening verifier
+        run: |
+          python scripts/verify_tier_gate_hardening.py
