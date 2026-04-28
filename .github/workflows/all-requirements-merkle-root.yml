@@ -1,0 +1,39 @@
+name: all-requirements-merkle-root
+
+# Master Merkle-root attestation gate. Builds a deterministic SHA-256
+# Merkle tree over the full 150-row Step 1 requirement evidence graph
+# (one leaf per REQ_ID, signed by tier metadata + per-file hashes + gate
+# verdicts) and verifies the root by recomputing it from the written
+# leaves. Internally invokes the master all-requirements gate, which is
+# static-only.
+#
+# Static-only: does NOT execute replay machinery, OTEL exporters, proof
+# harnesses, or the full pytest suite. Does NOT claim real replay
+# execution, real OTEL emission, full production runtime proof, or full
+# architecture proof.
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  all-requirements-merkle-root:
+    name: "All-requirements Merkle root attestation"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pytest (targeted-tests harness for downstream verifiers)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+      - name: Run master all-requirements Merkle root verifier
+        run: |
+          python scripts/verify_all_requirements_merkle_root.py

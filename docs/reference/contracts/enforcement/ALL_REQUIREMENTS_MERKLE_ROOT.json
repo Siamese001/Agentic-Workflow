@@ -1,0 +1,76 @@
+{
+  "baseline_name": "ALL_REQUIREMENTS_MERKLE_ROOT",
+  "schema_version": "1.0",
+  "merkle_scheme": "REQ_MERKLE_V1",
+  "hash_algorithm": "SHA-256",
+  "language_phrase": "100% requirements enforcement baseline complete",
+  "summary": "This Merkle root attests the exact file and requirement-evidence state of the 100% requirements enforcement baseline complete snapshot. One SHA-256 leaf per Step 1 REQ_ID (150 total), each binding tier metadata, gate verdicts, and per-file evidence hashes; pairs hashed with versioned prefixes (REQ_LEAF_V1 for leaves, REQ_NODE_V1 for parents) up to a single root.",
+  "requirements_merkle_root_first_observed": "31fe535c374712e7553f6f81e17c1b8bdfb1f24b38445e7d3671f1572b51a089",
+  "requirements_merkle_root_authoritative_path": "artifacts/runtime/requirements_proof/all_requirements_merkle_root.json",
+  "leaf_count": 150,
+  "tier_counts": {
+    "tier0": 17,
+    "tier1": 15,
+    "tier2": 22,
+    "tier3": 25,
+    "tier4": 25,
+    "tier5": 25,
+    "tier6": 21,
+    "total": 150
+  },
+  "coverage_validation": {
+    "step1_universe_count": 150,
+    "total_tiered_req_ids": 150,
+    "distinct_tiered_req_ids": 150,
+    "duplicate_req_ids": 0,
+    "missing_step1_req_ids": 0
+  },
+  "evidence_mode_counts": {
+    "STANDARD_STATIC_EVIDENCE": 135,
+    "REFERENCE_ONLY_POLICY": 15
+  },
+  "tier6_split_mode": {
+    "must_rows": 6,
+    "reference_only_rows": 15,
+    "reference_only_attestation_path": "artifacts/runtime/requirements_proof/tier6_reference_only_policy.json",
+    "rule": "Tier 6 NON_BLOCKING_REFERENCE rows are attested through the reference-only policy artifact, not through fake runtime proof. The Merkle leaf for each such row records evidence_mode=REFERENCE_ONLY_POLICY and the SHA-256 of the policy artifact, but does not require replay_refs, otel_span_refs, or negative_control_refs."
+  },
+  "master_gate_result": "READY",
+  "hardening_case_count": 79,
+  "hardening_result": "PASSED",
+  "baseline_tag": "all-requirements-enforcement-baseline",
+  "baseline_commit": "67bc5af2031a2bf3a7c748472fd05b5460eadf5d",
+  "merkle_tag": "all-requirements-merkle-root-baseline",
+  "verifier": {
+    "script": "scripts/verify_all_requirements_merkle_root.py",
+    "ci_workflow": ".github/workflows/all-requirements-merkle-root.yml",
+    "outputs": [
+      "artifacts/runtime/requirements_proof/all_requirements_merkle_leaves.json",
+      "artifacts/runtime/requirements_proof/all_requirements_merkle_tree.json",
+      "artifacts/runtime/requirements_proof/all_requirements_merkle_root.json",
+      "artifacts/runtime/requirements_proof/all_requirements_merkle_report.md"
+    ]
+  },
+  "validation_commands": [
+    "python scripts/verify_all_requirements_merkle_root.py",
+    "python scripts/verify_all_requirements_gates.py"
+  ],
+  "caveat": "This Merkle root attests the exact file and requirement-evidence state of the 100% requirements enforcement baseline. It does not claim real replay execution, real OTEL emission, full production runtime proof, or full architecture proof.",
+  "explicit_caveats": [
+    "No full pytest run is performed by this attestation.",
+    "No proof harness is invoked.",
+    "No replay machinery is executed.",
+    "No OTEL exporter is run.",
+    "This Merkle root does not claim real replay execution.",
+    "This Merkle root does not claim real OTEL emission.",
+    "This Merkle root does not claim full production runtime proof.",
+    "This Merkle root does not claim full architecture proof."
+  ],
+  "next_phase_roadmap": [
+    "Optional: real replay execution proof (replay machinery in CI binding actual run outputs to the Merkle leaf evidence set).",
+    "Optional: real OTEL emission proof (exporter-in-CI verifying live span shapes against otel_span_refs).",
+    "Optional: production runtime integration proof.",
+    "Optional: evidence freshness / drift monitor (recompute the Merkle root nightly and alert on unexpected drift).",
+    "Optional: release dashboard surfacing the latest Merkle root + tier verdicts in one human view."
+  ]
+}
