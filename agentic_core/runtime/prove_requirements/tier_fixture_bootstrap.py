@@ -129,6 +129,24 @@ _SCENARIO_EXTRAS: Dict[str, Tuple[str, str]] = {
         "REQ-GATE-NO-OVERLAP-WITH-L5-001",
         "GATE_L5_OVERLAP_BLOCKED",
     ),
+    # Tier 3 non-RuntimeGates subsystem batches (AE..AU).
+    "AE_l0_no_execute": ("REQ-L0-NO-EXECUTE-001", "L0_EXECUTION_BLOCKED"),
+    "AF_l0_grounded_action_handoff": ("REQ-L0-GROUNDED-ACTION-HANDOFF-001", "L0_GROUNDED_ACTION_HANDOFF_REQUIRED"),
+    "AG_u0_obs_replay": ("REQ-U0-OBS-REPLAY-001", "U0_OBS_REPLAY_MISSING"),
+    "AH_u0_channel_validation": ("REQ-U0-CHANNEL-VALIDATION-001", "U0_CHANNEL_VALIDATION_REJECTED"),
+    "AI_l1_obs_otel": ("REQ-L1-OBS-OTEL-001", "L1_OBS_OTEL_MISSING"),
+    "AJ_l1_plan_validation_self_repair": ("REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001", "L1_PLAN_VALIDATION_REQUIRED"),
+    "AK_l1_ambiguity_evidence": ("REQ-L1-AMBIGUITY-EVIDENCE-001", "L1_AMBIGUITY_EVIDENCE_MISSING"),
+    "AL_c0_no_write": ("REQ-C0-NO-WRITE-001", "C0_DURABLE_WRITE_BLOCKED"),
+    "AM_c0_preflight_grounding": ("REQ-C0-PREFLIGHT-GROUNDING-001", "C0_PREFLIGHT_GROUNDING_REQUIRED"),
+    "AN_c0_graph_rag": ("REQ-C0-GRAPH-RAG-001", "C0_GRAPH_RAG_BOUNDS_VIOLATION"),
+    "AO_pa_validate_slot_contract": ("REQ-PA-VALIDATE-SLOT-CONTRACT-001", "PA_SLOT_CONTRACT_VIOLATION"),
+    "AP_exit_x1a_x1f_checks": ("REQ-EXIT-X1A-X1F-CHECKS-001", "EXIT_X1A_X1F_CHECKS_REQUIRED"),
+    "AQ_l6_obs_anti_bypass": ("REQ-L6-OBS-ANTI-BYPASS-001", "L6_OBS_BYPASS_BLOCKED"),
+    "AR_uwg_audit_replay_consistency": ("REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001", "UWG_AUDIT_REPLAY_MISMATCH"),
+    "AS_l5_replay_audit_cert": ("REQ-L5-REPLAY-AUDIT-CERT-001", "L5_REPLAY_AUDIT_CERT_MISSING"),
+    "AT_l5_egress_provider_gov": ("REQ-L5-EGRESS-PROVIDER-GOV-001", "L5_EGRESS_PROVIDER_GOV_MISSING"),
+    "AU_e2e_fixtures_replay_harness": ("REQ-E2E-FIXTURES-REPLAY-HARNESS-001", "E2E_REPLAY_HARNESS_BOUNDARY_BLOCKED"),
 }
 
 # Per-scenario rich-trace extras for Tier 2 Batch B/C trace fixtures. These
@@ -344,6 +362,168 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
         "runtime_gate_owns_live_gate_verdict": True,
         "l5_owns_governance_certification": True,
         "overlap_detected": False,
+    },
+    # ----- Tier 3 Batch 1: L0 / L1 / U0 control-boundary rows -----
+    "AE_l0_no_execute": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L0-NO-EXECUTE-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
+        ),
+        "rejected": True,
+        "tool_invocation_count": 0,
+        "model_invocation_count": 0,
+        "no_execute_attempt_rejected": True,
+    },
+    "AF_l0_grounded_action_handoff": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L0-GROUNDED-ACTION-HANDOFF-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
+        ),
+        "handoff_grounded": True,
+        "evidence_present": True,
+        "dispatch_blocked_when_ungrounded": True,
+    },
+    "AG_u0_obs_replay": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-U0-OBS-REPLAY-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
+        ),
+        "replay_observed": True,
+        "obs_span_emitted_present": True,
+    },
+    "AH_u0_channel_validation": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-U0-CHANNEL-VALIDATION-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
+        ),
+        "channel_validated": True,
+        "invalid_channel_rejected": True,
+    },
+    "AI_l1_obs_otel": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L1-OBS-OTEL-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
+        ),
+        "otel_span_declared": True,
+        "replay_observed": True,
+    },
+    "AJ_l1_plan_validation_self_repair": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
+        ),
+        "plan_validation_present": True,
+        "self_repair_attempted": True,
+        "repaired_or_rejected": True,
+    },
+    "AK_l1_ambiguity_evidence": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L1-AMBIGUITY-EVIDENCE-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l0_l1_u0_refs.py",
+        ),
+        "ambiguity_detected": True,
+        "evidence_present": True,
+        "action_blocked": True,
+    },
+    # ----- Tier 3 Batch 2: C0 / PA / Exit rows -----
+    "AL_c0_no_write": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-C0-NO-WRITE-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
+        ),
+        "no_write_attempt_rejected": True,
+        "write_count": 0,
+    },
+    "AM_c0_preflight_grounding": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-C0-PREFLIGHT-GROUNDING-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
+        ),
+        "preflight_grounding_present": True,
+        "grounding_evidence_present": True,
+    },
+    "AN_c0_graph_rag": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-C0-GRAPH-RAG-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
+        ),
+        "graph_rag_used": True,
+        "retrieval_surface_only": True,
+    },
+    "AO_pa_validate_slot_contract": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-PA-VALIDATE-SLOT-CONTRACT-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
+        ),
+        "slot_contract_validated": True,
+        "contract_violation_rejected": True,
+    },
+    "AP_exit_x1a_x1f_checks": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-EXIT-X1A-X1F-CHECKS-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/c0_pa_exit_refs.py",
+        ),
+        "exit_checks_applied": True,
+        "x1a_x1f_check_ids": ("X1A", "X1B", "X1C", "X1D", "X1E", "X1F"),
+        "all_checks_required": True,
+    },
+    # ----- Tier 3 Batch 3: L5 / L6 / UWG / E2E rows -----
+    "AQ_l6_obs_anti_bypass": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L6-OBS-ANTI-BYPASS-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l5_l6_uwg_e2e_refs.py",
+        ),
+        "anti_bypass_check_present": True,
+        "bypass_attempt_rejected": True,
+    },
+    "AR_uwg_audit_replay_consistency": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l5_l6_uwg_e2e_refs.py",
+        ),
+        "audit_replay_consistent": True,
+        "replay_observed": True,
+    },
+    "AS_l5_replay_audit_cert": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L5-REPLAY-AUDIT-CERT-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l5_l6_uwg_e2e_refs.py",
+        ),
+        "replay_audit_cert_present": True,
+        "cert_validated": True,
+    },
+    "AT_l5_egress_provider_gov": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L5-EGRESS-PROVIDER-GOV-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l5_l6_uwg_e2e_refs.py",
+        ),
+        "egress_policy_applied": True,
+        "provider_gov_validated": True,
+    },
+    "AU_e2e_fixtures_replay_harness": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-E2E-FIXTURES-REPLAY-HARNESS-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_subsystem_refs/l5_l6_uwg_e2e_refs.py",
+        ),
+        "e2e_fixtures_present": True,
+        "replay_harness_referenced": True,
     },
 }
 

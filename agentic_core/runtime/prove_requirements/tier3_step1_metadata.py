@@ -127,14 +127,52 @@ _RUNTIME_GATE_MAP: Mapping[str, Mapping[str, str]] = {
 # negative_control_refs for those rows.
 _T3_GATES_FIXTURE_TEST = "tests/runtime/test_tier3_runtime_gates_cluster_fixtures.py"
 
+# Subsystem batches (Batch 1: L0/L1/U0, Batch 2: C0/PA/Exit, Batch 3:
+# L5/L6/UWG/E2E). Each row points at one shared reference module per
+# batch plus its own AE..AU scenario + replay pair. The targeted
+# subsystem fixture test covers all rows via parametrized cases.
+_T3_SUBSYSTEM_REFS_DIR = "agentic_core/runtime/prove_requirements/tier3_subsystem_refs"
+_T3_SUBSYSTEM_FIXTURE_TEST = "tests/runtime/test_tier3_remaining_subsystem_fixtures.py"
+
+_BATCH1_MOD = f"{_T3_SUBSYSTEM_REFS_DIR}/l0_l1_u0_refs.py"
+_BATCH2_MOD = f"{_T3_SUBSYSTEM_REFS_DIR}/c0_pa_exit_refs.py"
+_BATCH3_MOD = f"{_T3_SUBSYSTEM_REFS_DIR}/l5_l6_uwg_e2e_refs.py"
+
+# REQ_ID -> (subsystem_ref_module_path, scenario_key).
+_SUBSYSTEM_MAP: Mapping[str, Mapping[str, str]] = {
+    # Batch 1 -- L0 / L1 / U0 (7 rows).
+    "REQ-L0-NO-EXECUTE-001":                   {"ref_module": _BATCH1_MOD, "scenario_key": "AE_l0_no_execute"},
+    "REQ-L0-GROUNDED-ACTION-HANDOFF-001":      {"ref_module": _BATCH1_MOD, "scenario_key": "AF_l0_grounded_action_handoff"},
+    "REQ-U0-OBS-REPLAY-001":                   {"ref_module": _BATCH1_MOD, "scenario_key": "AG_u0_obs_replay"},
+    "REQ-U0-CHANNEL-VALIDATION-001":           {"ref_module": _BATCH1_MOD, "scenario_key": "AH_u0_channel_validation"},
+    "REQ-L1-OBS-OTEL-001":                     {"ref_module": _BATCH1_MOD, "scenario_key": "AI_l1_obs_otel"},
+    "REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001":  {"ref_module": _BATCH1_MOD, "scenario_key": "AJ_l1_plan_validation_self_repair"},
+    "REQ-L1-AMBIGUITY-EVIDENCE-001":           {"ref_module": _BATCH1_MOD, "scenario_key": "AK_l1_ambiguity_evidence"},
+    # Batch 2 -- C0 / PA / Exit (5 rows).
+    "REQ-C0-NO-WRITE-001":                     {"ref_module": _BATCH2_MOD, "scenario_key": "AL_c0_no_write"},
+    "REQ-C0-PREFLIGHT-GROUNDING-001":          {"ref_module": _BATCH2_MOD, "scenario_key": "AM_c0_preflight_grounding"},
+    "REQ-C0-GRAPH-RAG-001":                    {"ref_module": _BATCH2_MOD, "scenario_key": "AN_c0_graph_rag"},
+    "REQ-PA-VALIDATE-SLOT-CONTRACT-001":       {"ref_module": _BATCH2_MOD, "scenario_key": "AO_pa_validate_slot_contract"},
+    "REQ-EXIT-X1A-X1F-CHECKS-001":             {"ref_module": _BATCH2_MOD, "scenario_key": "AP_exit_x1a_x1f_checks"},
+    # Batch 3 -- L5 / L6 / UWG / E2E (5 rows).
+    "REQ-L6-OBS-ANTI-BYPASS-001":              {"ref_module": _BATCH3_MOD, "scenario_key": "AQ_l6_obs_anti_bypass"},
+    "REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001":    {"ref_module": _BATCH3_MOD, "scenario_key": "AR_uwg_audit_replay_consistency"},
+    "REQ-L5-REPLAY-AUDIT-CERT-001":            {"ref_module": _BATCH3_MOD, "scenario_key": "AS_l5_replay_audit_cert"},
+    "REQ-L5-EGRESS-PROVIDER-GOV-001":          {"ref_module": _BATCH3_MOD, "scenario_key": "AT_l5_egress_provider_gov"},
+    "REQ-E2E-FIXTURES-REPLAY-HARNESS-001":     {"ref_module": _BATCH3_MOD, "scenario_key": "AU_e2e_fixtures_replay_harness"},
+}
+
 
 def _gate_code_refs(rid: str) -> Tuple[str, ...]:
     info = _RUNTIME_GATE_MAP.get(rid)
+    if info:
+        return (info["ref_module"],)
+    info = _SUBSYSTEM_MAP.get(rid)
     return (info["ref_module"],) if info else ()
 
 
 def _gate_artifact_refs(rid: str) -> Tuple[str, ...]:
-    info = _RUNTIME_GATE_MAP.get(rid)
+    info = _RUNTIME_GATE_MAP.get(rid) or _SUBSYSTEM_MAP.get(rid)
     if not info:
         return ()
     sk = info["scenario_key"]
@@ -142,7 +180,7 @@ def _gate_artifact_refs(rid: str) -> Tuple[str, ...]:
 
 
 def _gate_replay_refs(rid: str) -> Tuple[str, ...]:
-    info = _RUNTIME_GATE_MAP.get(rid)
+    info = _RUNTIME_GATE_MAP.get(rid) or _SUBSYSTEM_MAP.get(rid)
     if not info:
         return ()
     sk = info["scenario_key"]
@@ -153,13 +191,22 @@ def _gate_replay_refs(rid: str) -> Tuple[str, ...]:
 
 
 def _gate_test_refs(rid: str) -> Tuple[str, ...]:
-    return (_T3_GATES_FIXTURE_TEST,) if rid in _RUNTIME_GATE_MAP else ()
+    if rid in _RUNTIME_GATE_MAP:
+        return (_T3_GATES_FIXTURE_TEST,)
+    if rid in _SUBSYSTEM_MAP:
+        return (_T3_SUBSYSTEM_FIXTURE_TEST,)
+    return ()
 
 
 def _gate_negative_control_refs(rid: str) -> Tuple[str, ...]:
-    # The reference module declares NEGATIVE_CONTROL_NAME; the targeted
-    # fixture test exercises the negative control case for each gate band.
-    return (_T3_GATES_FIXTURE_TEST,) if rid in _RUNTIME_GATE_MAP else ()
+    # Each subsystem ref module declares NEGATIVE_CONTROL_BY_REQ_ID; the
+    # targeted fixture test exercises a corrupted-payload negative
+    # control per row.
+    if rid in _RUNTIME_GATE_MAP:
+        return (_T3_GATES_FIXTURE_TEST,)
+    if rid in _SUBSYSTEM_MAP:
+        return (_T3_SUBSYSTEM_FIXTURE_TEST,)
+    return ()
 
 
 _T3_REQ_IDS: Tuple[str, ...] = (
