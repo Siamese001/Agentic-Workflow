@@ -73,12 +73,300 @@ EXPECTED_FAIL_REASONS: Mapping[str, str] = {
 # file names. Only paths verified to exist on disk are included; paths
 # that do not exist are silently dropped via _filter_existing.
 # ---------------------------------------------------------------------------
-CODE_REFERENCES: Mapping[str, Sequence[str]] = {}
-VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {}
-TEST_REFERENCES: Mapping[str, Sequence[str]] = {}
+CODE_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
+        "agentic_core/L0_routing/intake/validated_request.py",
+        "agentic_core/L0_routing/intake/handoff.py",
+        "agentic_core/L0_routing/intake/pipeline.py",
+    ),
+    "REQ-U0-ANTI-BYPASS-001": (
+        "agentic_core/L0_routing/intake/pipeline.py",
+        "agentic_core/L0_routing/intake/stages.py",
+        "agentic_core/L0_routing/intake/verdicts.py",
+    ),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (
+        "agentic_core/L0_routing/intake/origin_labels.py",
+        "agentic_core/L5_safety/v5/g2a_origin_trust.py",
+    ),
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
+        "agentic_core/L1_cognition/planning/plan_contract_handoff.py",
+        "agentic_core/L1_cognition/types/plan_contract_types.py",
+    ),
+    "REQ-L1-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-EXECUTE-001": (),
+    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (
+        "agentic_core/L3_orchestration/types/orchestration_handoff_contract.py",
+        "agentic_core/L3_orchestration/types/agent_handoff.py",
+    ),
+    "REQ-C0-EVIDENCE-FETCH-001": (
+        "agentic_core/L0_routing/c0_retrieval/evidence_contract.py",
+        "agentic_core/L0_routing/c0_retrieval/evidence_projections.py",
+        "agentic_core/knowledge/retrieval/retrieval_plan.py",
+    ),
+    "REQ-C0-NO-EXECUTE-001": (
+        "agentic_core/L1_cognition/c0_context/contract.py",
+        "agentic_core/L1_cognition/c0_context/safety.py",
+    ),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (
+        "agentic_core/prompt_governance/prompt_assembly/pa6_provider_rendering.py",
+        "agentic_core/prompt_governance/core/sovereign_prompt_renderer.py",
+    ),
+    "REQ-PA-AIRLOCK-SECURITY-001": (
+        "agentic_core/prompt_governance/prompt_assembly/pa3_u0_airlock.py",
+        "agentic_core/L5_safety/enforcement/airlock_guardrail.py",
+        "agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py",
+    ),
+    "REQ-L2-PTC-SANDBOX-001": (
+        "agentic_core/L2_execution/utils/ptc_contract.py",
+        "agentic_core/L2_execution/types/ptc_execution_profile.py",
+        "agentic_core/L2_execution/types/sandbox_envelope_types.py",
+        "agentic_core/L2_execution/enforcement/preventative_sandbox.py",
+    ),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (
+        "agentic_core/L2_execution/types/l2_local_critique.py",
+    ),
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
+        "agentic_core/L3_orchestration/exit_eval/gates.py",
+        "agentic_core/L3_orchestration/exit_eval/disposition.py",
+        "agentic_core/L5_safety/runtime_gates/dispatch.py",
+    ),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-CACHE-STATE-001": (
+        "agentic_core/L4_state/cache/cache_key_builders.py",
+        "agentic_core/L4_state/cache/redis_cache_client.py",
+    ),
+    "REQ-L5-RISK-TIER-BANDS-001": (
+        "agentic_core/L5_safety/runtime_gates/g05_risk_tier.py",
+        "agentic_core/L5_safety/v5/risk_tier_controls.py",
+    ),
+    "REQ-L5-HITL-RECLEARANCE-001": (
+        "agentic_core/L5_safety/contracts/hitl.py",
+        "agentic_core/L5_safety/enforcement/exit_control_hitl.py",
+        "agentic_core/L5_safety/runtime_gates/g06_hitl_approval.py",
+        "agentic_core/L3_orchestration/exit_control/runtime_hitl_ledger.py",
+    ),
+    "REQ-L6-SIGNAL-FUSION-RCA-001": (
+        "agentic_core/L6_observability/shadow_eval/rca.py",
+        "agentic_core/L6_observability/utils/evaluation/rca_aggregator.py",
+    ),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (
+        "agentic_core/L0_routing/enforcement/mutation_prohibition.py",
+        "agentic_core/L0_routing/enforcement/runtime_mutation_guard.py",
+        "agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py",
+        "agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py",
+        "agentic_core/L5_safety/validators/global_mutation_validator.py",
+    ),
+    "REQ-E2E-CONTRACT-EMISSION-001": (
+        "agentic_core/L3_orchestration/types/orchestration_handoff_contract.py",
+        "agentic_core/L1_cognition/planning/plan_contract_handoff.py",
+        "agentic_core/L0_routing/intake/handoff.py",
+    ),
+}
+VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
+        "agentic_core/L0_routing/intake/verdicts.py",
+        "agentic_core/L0_routing/intake/doctrine_contracts.py",
+    ),
+    "REQ-U0-ANTI-BYPASS-001": (
+        "agentic_core/L0_routing/intake/verdicts.py",
+        "agentic_core/L0_routing/intake/doctrine_contracts.py",
+    ),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (
+        "agentic_core/L5_safety/v5/g2a_origin_trust.py",
+    ),
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
+        "agentic_core/L1_cognition/types/plan_contract_types.py",
+    ),
+    "REQ-L1-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-EXECUTE-001": (),
+    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (
+        "agentic_core/L3_orchestration/types/orchestration_handoff_contract.py",
+    ),
+    "REQ-C0-EVIDENCE-FETCH-001": (
+        "agentic_core/L0_routing/c0_retrieval/evidence_contract.py",
+        "agentic_core/L1_cognition/c0_context/contract.py",
+    ),
+    "REQ-C0-NO-EXECUTE-001": (
+        "agentic_core/L1_cognition/c0_context/safety.py",
+    ),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (
+        "agentic_core/prompt_governance/prompt_assembly/pa6_provider_rendering.py",
+    ),
+    "REQ-PA-AIRLOCK-SECURITY-001": (
+        "agentic_core/L5_safety/enforcement/airlock_guardrail.py",
+        "agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py",
+    ),
+    "REQ-L2-PTC-SANDBOX-001": (
+        "agentic_core/L2_execution/enforcement/preventative_sandbox.py",
+    ),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (
+        "agentic_core/L2_execution/types/l2_local_critique.py",
+    ),
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
+        "agentic_core/L3_orchestration/exit_eval/gates.py",
+        "agentic_core/L5_safety/runtime_gates/enforcement.py",
+    ),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-CACHE-STATE-001": (
+        "agentic_core/L4_state/cache/cache_key_builders.py",
+    ),
+    "REQ-L5-RISK-TIER-BANDS-001": (
+        "agentic_core/L5_safety/runtime_gates/g05_risk_tier.py",
+    ),
+    "REQ-L5-HITL-RECLEARANCE-001": (
+        "agentic_core/L5_safety/runtime_gates/g06_hitl_approval.py",
+        "agentic_core/L5_safety/enforcement/exit_control_hitl.py",
+    ),
+    "REQ-L6-SIGNAL-FUSION-RCA-001": (
+        "agentic_core/L6_observability/utils/evaluation/rca_aggregator.py",
+    ),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (
+        "agentic_core/L5_safety/validators/global_mutation_validator.py",
+        "agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py",
+    ),
+    "REQ-E2E-CONTRACT-EMISSION-001": (
+        "agentic_core/L3_orchestration/types/orchestration_handoff_contract.py",
+    ),
+}
+TEST_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
+        "tests/agentic_core/L0_routing/intake/test_01_5_correlation_replay.py",
+        "tests/agentic_core/L0_routing/intake/test_01_4_schema_origin_security.py",
+    ),
+    "REQ-U0-ANTI-BYPASS-001": (
+        "tests/agentic_core/L0_routing/intake/test_01_5_correlation_replay.py",
+    ),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (
+        "tests/agentic_core/L0_routing/intake/test_01_4_schema_origin_security.py",
+        "tests/unit/agentic_core/L5_safety/v5/test_g2a_origin_trust.py",
+    ),
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
+        "tests/unit/agentic_core/L1_cognition/test_plan_contract_v4_fields.py",
+        "tests/unit/agentic_core/L1_cognition/test_plan_contract_v2.py",
+        "tests/unit/agentic_core/L1_cognition/test_plan_contract_types.py",
+    ),
+    "REQ-L1-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-EXECUTE-001": (),
+    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (
+        "tests/agentic_core/L3_orchestration/types/test_orchestration_handoff_contract.py",
+        "tests/unit/agentic_core/L3_orchestration/types/test_orchestration_handoff_contract_behavior.py",
+    ),
+    "REQ-C0-EVIDENCE-FETCH-001": (
+        "tests/agentic_core/L0_routing/c0_retrieval/test_evidence_contract.py",
+        "tests/runtime/test_c0_evidence_contract.py",
+        "tests/agentic_core/knowledge/retrieval/test_retrieval_plan.py",
+    ),
+    "REQ-C0-NO-EXECUTE-001": (
+        "tests/unit/agentic_core/L0_routing/policy/test_c0_authority_leak.py",
+    ),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa6_provider_rendering.py",
+    ),
+    "REQ-PA-AIRLOCK-SECURITY-001": (
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa3_u0_airlock.py",
+        "tests/unit/agentic_core/L5_safety/enforcement/test_airlock_guardrail.py",
+        "tests/unit/agentic_core/L5_safety/enforcement/test_final_airlock_trimmer_enforcer.py",
+    ),
+    "REQ-L2-PTC-SANDBOX-001": (
+        "tests/agentic_core/L2_execution/enforcement/test_preventative_sandbox.py",
+        "tests/agentic_core/L2_execution/utils/test_ptc_contract.py",
+        "tests/integration/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py",
+        "tests/unit/agentic_core/L2_execution/test_ptc_execution_contracts.py",
+    ),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (
+        "tests/unit/agentic_core/L2_execution/test_l2_local_critique.py",
+    ),
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
+        "tests/runtime_gates/test_gate_mesh_no_bypass.py",
+        "tests/runtime_gates/test_gate_mesh_result.py",
+    ),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-CACHE-STATE-001": (
+        "tests/unit/agentic_core/L4_state/cache/test_cache_key_builders.py",
+        "tests/unit/agentic_core/L4_state/cache/test_cache_init.py",
+    ),
+    "REQ-L5-RISK-TIER-BANDS-001": (
+        "tests/unit/agentic_core/L5_safety/runtime_gates/test_g01_g06.py",
+    ),
+    "REQ-L5-HITL-RECLEARANCE-001": (
+        "tests/unit/agentic_core/L5_safety/runtime_gates/test_g01_g06.py",
+        "tests/agentic_core/L3_orchestration/exit_control/test_hitl_spans.py",
+    ),
+    "REQ-L6-SIGNAL-FUSION-RCA-001": (
+        "tests/unit/L6_observability/shadow_eval/test_06_5_rca.py",
+        "tests/agentic_core/L6_observability/utils/evaluation/test_rca_aggregator.py",
+    ),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (
+        "tests/runtime_gates/test_gate_mutation_forbidden.py",
+        "tests/agentic_core/L0_routing/enforcement/test_mutation_prohibition.py",
+        "tests/unit/agentic_core/L0_routing/enforcement/test_runtime_mutation_guard.py",
+        "tests/unit/agentic_core/L5_safety/enforcement/test_mutation_prohibition_enforcer.py",
+        "tests/unit/agentic_core/L5_safety/validators/test_global_mutation_validator.py",
+    ),
+    "REQ-E2E-CONTRACT-EMISSION-001": (
+        "tests/agentic_core/L3_orchestration/types/test_orchestration_handoff_contract.py",
+    ),
+}
 ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {}
 REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {}
-OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {}
+OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
+        "agentic_core/L0_routing/intake/events.py",
+    ),
+    "REQ-U0-ANTI-BYPASS-001": (
+        "agentic_core/L0_routing/intake/events.py",
+    ),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (
+        "agentic_core/L0_routing/intake/events.py",
+        "agentic_core/L5_safety/v5/governance_spans.py",
+    ),
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
+        "agentic_core/L1_cognition/planning/otel.py",
+    ),
+    "REQ-L1-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-EXECUTE-001": (),
+    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (),
+    "REQ-C0-EVIDENCE-FETCH-001": (
+        "agentic_core/L1_cognition/c0_context/observability.py",
+        "agentic_core/L0_routing/c0_retrieval/events.py",
+    ),
+    "REQ-C0-NO-EXECUTE-001": (
+        "agentic_core/L1_cognition/c0_context/observability.py",
+    ),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (),
+    "REQ-PA-AIRLOCK-SECURITY-001": (),
+    "REQ-L2-PTC-SANDBOX-001": (),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (),
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
+        "agentic_core/L3_orchestration/exit_eval/otel_spans.py",
+    ),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (
+        "agentic_core/L4_state/otel/spans.py",
+    ),
+    "REQ-L4-CACHE-STATE-001": (
+        "agentic_core/L4_state/otel/spans.py",
+    ),
+    "REQ-L5-RISK-TIER-BANDS-001": (
+        "agentic_core/L5_safety/v5/governance_spans.py",
+    ),
+    "REQ-L5-HITL-RECLEARANCE-001": (
+        "agentic_core/L3_orchestration/exit_control/hitl_spans.py",
+    ),
+    "REQ-L6-SIGNAL-FUSION-RCA-001": (
+        "agentic_core/L6_observability/shadow_eval/otel_spans.py",
+    ),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (
+        "agentic_core/L4_state/otel/spans.py",
+    ),
+    "REQ-E2E-CONTRACT-EMISSION-001": (
+        "agentic_core/L1_cognition/planning/otel.py",
+        "agentic_core/L0_routing/intake/events.py",
+    ),
+}
 NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {}
 
 
