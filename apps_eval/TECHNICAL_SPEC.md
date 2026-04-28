@@ -80,7 +80,7 @@ Overall score = `sum(score_d * weight_d) / sum(weight_d)`.
 @dataclass
 class EvalOrchestrator:
     dry_run: bool = False
-    output_dir: str = "eval"
+    output_dir: str = "artifacts/eval"
     baseline_dir: str = "eval_baselines"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict] = field(default_factory=list)

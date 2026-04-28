@@ -68,7 +68,7 @@ class EnterpriseEvalRequest:
     enable_validation: bool = True
     enable_repo_signals: bool = True
     update_baseline: bool = False
-    output_dir: str = "eval/enterprise"
+    output_dir: str = "artifacts/eval/enterprise"
     trace_id: str = ""
 
     def __post_init__(self) -> None:
@@ -543,7 +543,7 @@ class EnterpriseEvalOrchestrator:
 async def run_enterprise_evaluation(
     suite_ids: list[str],
     criteria_items: list[dict[str, Any]] | None = None,
-    output_dir: str = "eval/enterprise",
+    output_dir: str = "artifacts/eval/enterprise",
 ) -> EnterpriseEvalResult:
     """Run an enterprise evaluation."""
     orchestrator = EnterpriseEvalOrchestrator()

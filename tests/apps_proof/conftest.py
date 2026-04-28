@@ -21,10 +21,7 @@ def _latest_run(app_name: str) -> Path | None:
     app_dir = PROOF_ROOT / app_name
     if not app_dir.exists():
         return None
-    runs = [
-        d for d in app_dir.iterdir()
-        if d.is_dir() and not d.name.startswith("_")
-    ]
+    runs = [d for d in app_dir.iterdir() if d.is_dir() and not d.name.startswith("_")]
     if not runs:
         return None
     return max(runs, key=lambda d: d.stat().st_mtime)
@@ -39,7 +36,7 @@ def proof_dir() -> Path:
             "No proof run exists at "
             f"{PROOF_ROOT / 'apps_underwriting_ai'}. Run "
             "`python -m tools.apps_proof.run_app_proof --app apps_underwriting_ai "
-            "--fixture fixtures/apps_underwriting_ai/golden_borrower_package.json "
+            "--fixture tests/fixtures/apps_underwriting_ai/golden_borrower_package.json "
             "--require-otel --require-replay --require-adg` first."
         )
     return p
@@ -63,7 +60,5 @@ def otel_trace(proof_dir: Path) -> list[dict]:
 @pytest.fixture(scope="session")
 def proof_verdict(proof_dir: Path) -> dict:
     """Loaded proof_verdict.json — should report PASS."""
-    body = json.loads(
-        (proof_dir / "verifier" / "proof_verdict.json").read_text(encoding="utf-8")
-    )
+    body = json.loads((proof_dir / "verifier" / "proof_verdict.json").read_text(encoding="utf-8"))
     return body

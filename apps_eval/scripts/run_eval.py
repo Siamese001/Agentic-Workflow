@@ -3,7 +3,7 @@ run_eval.py — CLI entrypoint for apps_eval Evaluation Lab.
 
 Usage:
     python -m apps_eval --suites routing_enforcement,determinism_contracts
-    python -m apps_eval.scripts.run_eval --all --out eval/ --json-output
+    python -m apps_eval.scripts.run_eval --all --out artifacts/eval/ --json-output
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Comma-separated suite IDs to run. Leave empty to run all.",
     )
     parser.add_argument("--all", action="store_true", help="Run all configured suites")
-    parser.add_argument("--out", default="eval", help="Output directory for artifacts")
+    parser.add_argument("--out", default="artifacts/eval", help="Output directory for artifacts")
     parser.add_argument("--baseline-dir", default="eval_baselines", help="Baseline directory")
     parser.add_argument("--no-regression", action="store_true", help="Skip regression detection")
     parser.add_argument("--update-baseline", action="store_true", help="Update baseline after run")

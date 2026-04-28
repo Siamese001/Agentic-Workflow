@@ -7,7 +7,7 @@ Produces weighted scorecards, regression detection, and audit-grade reports.
 
 ```bash
 # Run all configured suites
-python -m apps_eval --all --out eval/
+python -m apps_eval --all --out artifacts/eval/
 
 # Run specific suites
 python -m apps_eval --suites routing_enforcement,determinism_contracts

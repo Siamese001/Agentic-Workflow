@@ -210,7 +210,7 @@ class EvalOrchestrator:
     """Orchestrate end-to-end evaluation lab run."""
 
     dry_run: bool = False
-    output_dir: str = "eval"
+    output_dir: str = "artifacts/eval"
     baseline_dir: str = "eval_baselines"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)

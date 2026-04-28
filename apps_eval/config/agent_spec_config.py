@@ -202,7 +202,7 @@ class RegressionConfig(BaseModel):
 class EvalOutputConfig(BaseModel):
     """Output configuration for evaluation lab."""
 
-    output_dir: str = Field(default="eval")
+    output_dir: str = Field(default="artifacts/eval")
     artifact_prefix: str = Field(default="eval_report")
     emit_run_summary: bool = True
     emit_scorecard_csv: bool = True
