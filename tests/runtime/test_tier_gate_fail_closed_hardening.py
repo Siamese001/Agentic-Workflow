@@ -25,11 +25,13 @@ from agentic_core.runtime.prove_requirements import (
     tier0_runtime_proof_gate,
     tier1_enforcement_gate,
     tier1_runtime_proof_gate,
+    tier2_runtime_proof_gate,
     tier_fixture_bootstrap,
 )
 from agentic_core.runtime.prove_requirements import (
     tier0_step1_metadata as _t0meta,
     tier1_step1_metadata as _t1meta,
+    tier2_step1_metadata as _t2meta,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -47,6 +49,12 @@ T1_FILES = [
     "tier1_implementation_map.generated.json",
     "tier1_artifact_linkage.generated.json",
 ]
+T2_FILES = [
+    "tier2_requirements_index.generated.json",
+    "tier2_coverage_matrix.generated.json",
+    "tier2_implementation_map.generated.json",
+    "tier2_artifact_linkage.generated.json",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -61,6 +69,7 @@ def _ensure_baseline() -> None:
     tier_fixture_bootstrap.materialize()
     _t0meta.generate()
     _t1meta.generate()
+    _t2meta.generate()
 
 
 # ---------------------------------------------------------------------------
@@ -267,6 +276,10 @@ def _patch_runtime_t1(monkeypatch, metadata_dir: Path) -> None:
     monkeypatch.setattr(tier1_runtime_proof_gate, "ARTIFACTS_DIR", metadata_dir)
 
 
+def _patch_runtime_t2(monkeypatch, metadata_dir: Path) -> None:
+    monkeypatch.setattr(tier2_runtime_proof_gate, "ARTIFACTS_DIR", metadata_dir)
+
+
 def _set_index_row_field(metadata_dir: Path, index_file: str, rid: str, field: str, value) -> None:
     p = metadata_dir / index_file
     data = _load(p)
@@ -453,3 +466,109 @@ class TestTier1RuntimeProofGateFailsClosed:
             d, T1_FILES[0], rid, "otel_span_refs", [str(tmp_path / "_no_otel.py")]
         )
         assert tier1_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+
+# ---------------------------------------------------------------------------
+# Tier 2 runtime proof gate (10 anti-cheat cases).
+# ---------------------------------------------------------------------------
+
+
+class TestTier2RuntimeProofGateFailsClosed:
+    def _setup(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, str, dict]:
+        d = _copy_metadata(tmp_path, T2_FILES)
+        _patch_runtime_t2(monkeypatch, d)
+        data = _load(d / T2_FILES[0])
+        row = next(
+            r
+            for r in data["rows"]
+            if r.get("artifact_refs")
+            and any(rr.endswith("_run_1.json") for rr in (r.get("replay_refs") or []))
+            and r.get("negative_control_refs")
+            and r.get("test_refs")
+            and r.get("code_refs")
+            and r.get("validator_refs")
+            and r.get("otel_span_refs")
+        )
+        return d, row["step1_req_id"], dict(row)
+
+    def test_missing_artifact_file_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = self._setup(tmp_path, monkeypatch)
+        bad = list(row["artifact_refs"]) + [str(tmp_path / "_no_t2_artifact.json")]
+        _set_index_row_field(d, T2_FILES[0], rid, "artifact_refs", bad)
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_artifact_step1_req_id_mismatch_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = self._setup(tmp_path, monkeypatch)
+        bad = _write_artifact_stub(
+            tmp_path, "_t2_mismatch_id.json", step1_req_id="REQ-T2-WRONG-XYZ"
+        )
+        _set_index_row_field(d, T2_FILES[0], rid, "artifact_refs", [bad])
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_artifact_efr_mismatch_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = self._setup(tmp_path, monkeypatch)
+        bad = _write_artifact_stub(
+            tmp_path,
+            "_t2_mismatch_efr.json",
+            step1_req_id=rid,
+            expected_fail_reason="WRONG_T2_EFR",
+        )
+        _set_index_row_field(d, T2_FILES[0], rid, "artifact_refs", [bad])
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_replay_pair_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = self._setup(tmp_path, monkeypatch)
+        ghost = [
+            str(tmp_path / "_t2_ghost_run_1.json"),
+            str(tmp_path / "_t2_ghost_run_2.json"),
+        ]
+        _set_index_row_field(d, T2_FILES[0], rid, "replay_refs", ghost)
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_replay_invariant_digest_mismatch_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = self._setup(tmp_path, monkeypatch)
+        run1 = tmp_path / "_t2_replay_mismatch_run_1.json"
+        run2 = tmp_path / "_t2_replay_mismatch_run_2.json"
+        run1.write_text(
+            json.dumps({"step1_req_id": rid, "invariant_digest": _digest("t2a")}),
+            encoding="utf-8",
+        )
+        run2.write_text(
+            json.dumps({"step1_req_id": rid, "invariant_digest": _digest("t2b")}),
+            encoding="utf-8",
+        )
+        _set_index_row_field(
+            d, T2_FILES[0], rid, "replay_refs", [str(run1), str(run2)]
+        )
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_negative_control_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = self._setup(tmp_path, monkeypatch)
+        bad = list(row["negative_control_refs"]) + [str(tmp_path / "_no_t2_negctrl.json")]
+        _set_index_row_field(d, T2_FILES[0], rid, "negative_control_refs", bad)
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_test_ref_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = self._setup(tmp_path, monkeypatch)
+        bad = list(row["test_refs"]) + [str(tmp_path / "_no_t2_test.py")]
+        _set_index_row_field(d, T2_FILES[0], rid, "test_refs", bad)
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_code_ref_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = self._setup(tmp_path, monkeypatch)
+        bad = list(row["code_refs"]) + [str(tmp_path / "_no_t2_code.py")]
+        _set_index_row_field(d, T2_FILES[0], rid, "code_refs", bad)
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_validator_ref_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = self._setup(tmp_path, monkeypatch)
+        bad = list(row["validator_refs"]) + [str(tmp_path / "_no_t2_validator.py")]
+        _set_index_row_field(d, T2_FILES[0], rid, "validator_refs", bad)
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_otel_span_ref_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = self._setup(tmp_path, monkeypatch)
+        _set_index_row_field(
+            d, T2_FILES[0], rid, "otel_span_refs", [str(tmp_path / "_no_t2_otel.py")]
+        )
+        assert tier2_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
