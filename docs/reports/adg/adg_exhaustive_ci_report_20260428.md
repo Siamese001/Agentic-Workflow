@@ -1,33 +1,37 @@
 # Exhaustive ADG CI Report
 
-- **Generated:** 2026-04-28T19:32:39+00:00
+- **Generated:** 2026-04-28T20:02:32+00:00
 - **Snapshot SQLite:** `adg_indexed_04282026_1505.sqlite` (412,590,080 bytes)
-- **Snapshot source:** archive:adg_run_04282026_1505.zip.gz
+- **Snapshot source:** extracted
 - **Gate results:** `artifacts\adg\adg_gate_results_20260428_191222.json`
-- **Burndown table:** `C:\Users\amita\AppData\Local\Temp\adg_extract_d6h1z_7h\run\adg\adg_burndown_table.json`
+- **Burndown table:** `C:\Git\Agentic-Workflow\_tmp_extract\run\adg\adg_burndown_table.json`
 - **Dispatcher overall verdict:** **BLOCKED**
 
 ## 1. Executive Summary
 
-> ℹ️ **Two `P` namespaces in this report** — they look the same but mean different things:
+> ℹ️ **Two independent dashboards in this report. They do NOT talk to each other.**
 > 
-> | Where | `P0` means | Counts |
+> | Section | Question it answers | Tier prefix used |
 > |---|---|---|
-> | §1 burndown band table | **severity** of an individual SC/AP defect row | per-defect severity tier |
-> | §2 dispatcher gates    | **priority/enforcement** of a gate            | gate-level priority |
+> | §1 (this section)        | *How many graded code-defects exist?*    | **`S0`/`S1`/`S2`/`S3`** (Severity) |
+> | §2 (Dispatcher Gates)    | *Which CI gates are angry right now?*    | **`P0`/`P1`/`P2`/`P3`** (Priority of gate) |
 > 
-> A `P0` gate failing in §2 does NOT increment §1's `P0=layer_violations` count — they tabulate from different MVs. Specifically, §1 reads SC/AP violation rows from the `violations` table; §2 P0 gates such as `2_authority_boundary` / `3_write_sovereignty` read from `mv_authority_boundary_breaches`, `mv_write_sovereignty_paths`, etc.
+> **Renamed in this report**: the burndown band column was previously labelled `P0..P3` and conflicted visually with the gate priorities in §2. To eliminate the collision, §1 now uses `S` (Severity) and §2 keeps `P` (Priority). **The underlying JSON is unchanged** — `adg_burndown_table.json` still uses `P0..P3` keys; this renderer translates them at display time.
 > 
-> **Does a §2 P0 fail block the ADG run?** Yes by default — `generate_full_adg.py` exits non-zero on any `block`-class fail. The override is `ADG_CONTINUE_ON_GATE_FAILURE=1`, which lets the run finish so the SQLite + report JSONs land regardless. The verdict is still recorded.
+> **Which one tells me if the run is healthy?** §2 — always §2. A green run = §2 shows `block_fail=0` AND `ratchet_regressed=0`. §1 is a debt-burndown trend, not a green-light signal.
+> 
+> **Does a §2 `P0` block-fail block the ADG run?** Yes by default — `generate_full_adg.py` exits non-zero on any `block`-class fail. The override is `ADG_CONTINUE_ON_GATE_FAILURE=1`, which lets the run finish so the SQLite + report JSONs land regardless; the verdict is still recorded.
 
-**Severity bands** (from `adg_burndown_table.json`):
+**Defect severities** (§1 — counts of rule-violation rows in the `violations` table):
 
-| Band | Label | Gross | Guardian | Net | Diff |
-|------|-------|------:|---------:|----:|-----:|
-| P0 | layer_violations | 0 | 0 | 0 | +0 |
-| P1 | anti_patterns_high | 0 | 0 | 0 | +0 |
-| P2 | anti_patterns_medium | 0 | 0 | 0 | +0 |
-| P3 | style_warnings | 1 | 0 | 1 | +0 |
+| Severity | Label | Gross | Guardian | Net | Diff |
+|----------|-------|------:|---------:|----:|-----:|
+| **S0** | layer_violations | 0 | 0 | 0 | +0 |
+| **S1** | anti_patterns_high | 0 | 0 | 0 | +0 |
+| **S2** | anti_patterns_medium | 0 | 0 | 0 | +0 |
+| **S3** | style_warnings | 1 | 0 | 1 | +0 |
+
+_(`S0..S3` is this renderer's display label; the JSON keys remain `P0..P3` for backward compatibility with `adg_burndown_table.json` consumers.)_
 
 **Dispatcher gates** (from `adg_gate_results_*.json`):
 
@@ -231,7 +235,7 @@ Per-gate ceiling files in `ops_scripts/ci/baselines/wiring_*_ratchet.json`. `cou
 | Baseline | Gate ID | Count | Last Tightened | Last Loosened |
 |----------|---------|------:|----------------|---------------|
 | `wiring_broken_contract_ratchet.json` | `F2_broken_contract_ratchet` | 0 | — | — |
-| `wiring_cyclomatic_complexity_ratchet.json` | `Q2_cyclomatic_complexity_ratchet` | 481 | 2026-04-28T19:12:10.886420+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_cyclomatic_complexity_ratchet.json` | `Q2_cyclomatic_complexity_ratchet` | 491 | 2026-04-23T22:21:59.251540+00:00 | 2026-04-28T19:05:38+00:00 |
 | `wiring_dead_folder_detector_ratchet.json` | `D_dead_folder_detector` | 0 | 2026-04-24T02:32:21.534650+00:00 | — |
 | `wiring_dead_methods_ratchet.json` | `A3B_dead_methods_in_live_classes_ratchet` | 606 | 2026-04-24T02:32:20.533778+00:00 | — |
 | `wiring_dead_symbol_ratchet.json` | `A3_dead_public_symbol_ratchet` | 1 | — | 2026-04-28T18:49:35+00:00 |
@@ -248,16 +252,16 @@ Per-gate ceiling files in `ops_scripts/ci/baselines/wiring_*_ratchet.json`. `cou
 | `wiring_mv_staleness_ratchet.json` | `H4_mv_staleness_ratchet` | 0 | — | — |
 | `wiring_new_orphans_delta_ratchet.json` | `H1_new_orphans_delta_ratchet` | 0 | — | — |
 | `wiring_policy_without_audit_ratchet.json` | `C4_policy_without_audit_ratchet` | 1 | — | — |
-| `wiring_replay_surface_gaps_ratchet.json` | `I2_replay_surface_gaps_ratchet` | 1,109 | 2026-04-28T19:12:11.029859+00:00 | 2026-04-28T19:05:38+00:00 |
-| `wiring_silent_writes_ratchet.json` | `C3_silent_writes_ratchet` | 1,630 | 2026-04-28T19:12:10.922189+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_replay_surface_gaps_ratchet.json` | `I2_replay_surface_gaps_ratchet` | 1,119 | 2026-04-23T22:30:14.652276+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_silent_writes_ratchet.json` | `C3_silent_writes_ratchet` | 1,640 | — | 2026-04-28T19:05:38+00:00 |
 | `wiring_structured_output_ratchet.json` | `P_structured_output_ratchet` | 1 | — | — |
-| `wiring_taint_actionable_ratchet.json` | `M_taint_actionable_ratchet` | 373 | 2026-04-28T19:12:11.180065+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_taint_actionable_ratchet.json` | `M_taint_actionable_ratchet` | 383 | 2026-04-23T22:30:14.755151+00:00 | 2026-04-28T19:05:38+00:00 |
 | `wiring_tool_call_parity_ratchet.json` | `O_tool_call_parity_ratchet` | 182 | 2026-04-23T18:44:02.430696+00:00 | 2026-04-28T18:49:35+00:00 |
 | `wiring_trace_stub_ratchet.json` | `E1_trace_stub_module` | 1,143 | 2026-04-28T10:59:54.822861+00:00 | — |
 | `wiring_unresolved_callsites_ratchet.json` | `C5_unresolved_callsites_ratchet` | 0 | — | — |
 | `wiring_untyped_seam_ratchet.json` | `F1_untyped_seam_ratchet` | 981 | 2026-04-23T22:30:14.799626+00:00 | 2026-04-28T18:49:35+00:00 |
-| `wiring_unused_imports_ratchet.json` | `S4_unused_imports_ratchet` | 7,937 | 2026-04-28T19:12:03.380676+00:00 | 2026-04-28T19:05:38+00:00 |
-| `wiring_uwg_bypass_ratchet.json` | `S2_uwg_bypass_ratchet` | 2,728 | 2026-04-28T19:12:03.338352+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_unused_imports_ratchet.json` | `S4_unused_imports_ratchet` | 7,947 | 2026-04-23T22:30:08.647185+00:00 | 2026-04-28T19:05:38+00:00 |
+| `wiring_uwg_bypass_ratchet.json` | `S2_uwg_bypass_ratchet` | 2,738 | — | 2026-04-28T19:05:38+00:00 |
 
 ## 8. File-Counter Gate Baselines
 

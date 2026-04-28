@@ -512,32 +512,42 @@ def render(snapshot_dir: Path, source: str) -> str:
     # ============ §2 Executive summary
     a("## 1. Executive Summary")
     a("")
-    a("> ℹ️ **Two `P` namespaces in this report** — they look the same but mean different things:")
+    a("> ℹ️ **Two independent dashboards in this report. They do NOT talk to each other.**")
     a("> ")
-    a("> | Where | `P0` means | Counts |")
+    a("> | Section | Question it answers | Tier prefix used |")
     a("> |---|---|---|")
-    a("> | §1 burndown band table | **severity** of an individual SC/AP defect row | per-defect severity tier |")
-    a("> | §2 dispatcher gates    | **priority/enforcement** of a gate            | gate-level priority |")
+    a("> | §1 (this section)        | *How many graded code-defects exist?*    | **`S0`/`S1`/`S2`/`S3`** (Severity) |")
+    a("> | §2 (Dispatcher Gates)    | *Which CI gates are angry right now?*    | **`P0`/`P1`/`P2`/`P3`** (Priority of gate) |")
     a("> ")
-    a("> A `P0` gate failing in §2 does NOT increment §1's `P0=layer_violations` count — "
-      "they tabulate from different MVs. Specifically, §1 reads SC/AP violation rows from the "
-      "`violations` table; §2 P0 gates such as `2_authority_boundary` / `3_write_sovereignty` "
-      "read from `mv_authority_boundary_breaches`, `mv_write_sovereignty_paths`, etc.")
+    a("> **Renamed in this report**: the burndown band column was previously labelled "
+      "`P0..P3` and conflicted visually with the gate priorities in §2. To eliminate the "
+      "collision, §1 now uses `S` (Severity) and §2 keeps `P` (Priority). "
+      "**The underlying JSON is unchanged** — `adg_burndown_table.json` still uses `P0..P3` keys; "
+      "this renderer translates them at display time.")
     a("> ")
-    a("> **Does a §2 P0 fail block the ADG run?** Yes by default — `generate_full_adg.py` "
+    a("> **Which one tells me if the run is healthy?** §2 — always §2. "
+      "A green run = §2 shows `block_fail=0` AND `ratchet_regressed=0`. "
+      "§1 is a debt-burndown trend, not a green-light signal.")
+    a("> ")
+    a("> **Does a §2 `P0` block-fail block the ADG run?** Yes by default — `generate_full_adg.py` "
       "exits non-zero on any `block`-class fail. The override is "
       "`ADG_CONTINUE_ON_GATE_FAILURE=1`, which lets the run finish so the SQLite + report "
-      "JSONs land regardless. The verdict is still recorded.")
+      "JSONs land regardless; the verdict is still recorded.")
     a("")
-    a("**Severity bands** (from `adg_burndown_table.json`):")
+    a("**Defect severities** (§1 — counts of rule-violation rows in the `violations` table):")
     a("")
-    a("| Band | Label | Gross | Guardian | Net | Diff |")
-    a("|------|-------|------:|---------:|----:|-----:|")
+    a("| Severity | Label | Gross | Guardian | Net | Diff |")
+    a("|----------|-------|------:|---------:|----:|-----:|")
+    _band_to_severity = {"P0": "S0", "P1": "S1", "P2": "S2", "P3": "S3"}
     for band in ("P0", "P1", "P2", "P3"):
         row = burndown.get("summary", {}).get(band, {})
-        a(f"| {band} | {row.get('label', '?')} | {_human(row.get('gross', 0))} | "
+        sev = _band_to_severity[band]
+        a(f"| **{sev}** | {row.get('label', '?')} | {_human(row.get('gross', 0))} | "
           f"{_human(row.get('guardian', 0))} | {_human(row.get('net', 0))} | "
           f"{row.get('diff', 0):+d} |")
+    a("")
+    a("_(`S0..S3` is this renderer's display label; the JSON keys remain `P0..P3` for "
+      "backward compatibility with `adg_burndown_table.json` consumers.)_")
     a("")
 
     if summary:
