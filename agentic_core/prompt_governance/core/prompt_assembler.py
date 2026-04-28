@@ -346,7 +346,7 @@ class PromptAssembler:
 
     def _load_templates(self) -> None:
         """Load custom XML templates from file."""
-        template_dir = Path("./templates/prompts").resolve()
+        template_dir = Path("agentic_core/prompt_governance/templates/custom_xml").resolve()
         template_dir.mkdir(parents=True, exist_ok=True)
         xml_files = sorted(template_dir.rglob("*.xml"))
         for file_path in tqdm(xml_files, desc="Processing", unit="item"):
@@ -740,7 +740,7 @@ class PromptAssembler:
         if errors:
             raise ValueError(f"Invalid template: {errors}")
         safe_name = self._validate_template_name(name)
-        template_dir = Path("./templates/prompts").resolve()
+        template_dir = Path("agentic_core/prompt_governance/templates/custom_xml").resolve()
         template_dir.mkdir(parents=True, exist_ok=True)
         file_path = (template_dir / f"{safe_name}.xml").resolve()
         try:
