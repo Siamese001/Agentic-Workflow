@@ -1,0 +1,70 @@
+{
+  "baseline_name": "tier0-tier2-enforcement-baseline",
+  "frozen_at_utc": "2026-04-28",
+  "scope": {
+    "tier0_row_count": 17,
+    "tier1_row_count": 15,
+    "tier2_row_count": 22,
+    "total_selected_rows_protected": 54,
+    "total_step1_rows": 150,
+    "remaining_step1_rows_not_yet_tiered": 96
+  },
+  "verifier_scripts": [
+    "scripts/verify_tier0_enforcement_gate.py",
+    "scripts/verify_tier0_runtime_proof_gate.py",
+    "scripts/verify_tier1_enforcement_gate.py",
+    "scripts/verify_tier1_runtime_proof_gate.py",
+    "scripts/verify_tier2_enforcement_gate.py",
+    "scripts/verify_tier2_runtime_proof_gate.py",
+    "scripts/verify_tier_gate_hardening.py"
+  ],
+  "ci_workflows": [
+    ".github/workflows/tier0-enforcement-gate.yml",
+    ".github/workflows/tier0-runtime-proof-gate.yml",
+    ".github/workflows/tier1-enforcement-gate.yml",
+    ".github/workflows/tier1-runtime-proof-gate.yml",
+    ".github/workflows/tier2-enforcement-gate.yml",
+    ".github/workflows/tier2-runtime-proof-gate.yml",
+    ".github/workflows/tier-gate-hardening.yml"
+  ],
+  "hardening_test_count": 33,
+  "hardening_breakdown": {
+    "tier0_enforcement": 4,
+    "tier1_enforcement": 4,
+    "tier0_runtime_proof": 5,
+    "tier1_runtime_proof": 10,
+    "tier2_runtime_proof": 10
+  },
+  "exact_local_commands": [
+    "python scripts/verify_tier0_enforcement_gate.py",
+    "python scripts/verify_tier0_runtime_proof_gate.py",
+    "python scripts/verify_tier1_enforcement_gate.py",
+    "python scripts/verify_tier1_runtime_proof_gate.py",
+    "python scripts/verify_tier2_enforcement_gate.py",
+    "python scripts/verify_tier2_runtime_proof_gate.py",
+    "python scripts/verify_tier_gate_hardening.py"
+  ],
+  "expected_results": {
+    "tier0_enforcement_gate": "READY",
+    "tier0_runtime_proof_gate": "READY",
+    "tier1_enforcement_gate": "READY",
+    "tier1_runtime_proof_gate": "READY",
+    "tier2_enforcement_gate": "READY",
+    "tier2_runtime_proof_gate": "READY",
+    "tier_gate_hardening": "PASSED"
+  },
+  "relevant_commit_hashes": {
+    "tier2_batch_a_close": "d23fdd881a",
+    "tier2_batch_b_c_close": "72fc88261f",
+    "tier2_batch_d_e_close": "f278bd02e1",
+    "tier2_runtime_proof_gate_added": "c596c188f3"
+  },
+  "caveat": "Tier 0–2 enforcement baseline means selected requirements are linked to machine-checkable metadata, static evidence consistency gates, fail-closed hardening, and CI workflows. It does not mean all 150 requirements are enforced, and it does not claim real replay execution, real OTEL emission, or full production runtime proof.",
+  "roadmap": {
+    "tier3": "Next selection wave from the remaining 96 Step 1 rows.",
+    "tier4": "Subsequent selection wave with the same metadata + static-evidence pattern.",
+    "tier5": "Subsequent selection wave with the same metadata + static-evidence pattern.",
+    "tier6": "Subsequent selection wave with the same metadata + static-evidence pattern.",
+    "master_all_requirements_gate": "Aggregate gate covering all Step 1 rows once Tiers 3–6 are closed; fail-closed if any tier is BLOCKED."
+  }
+}

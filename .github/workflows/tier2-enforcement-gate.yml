@@ -1,0 +1,28 @@
+name: Tier 2 Enforcement Gate
+
+# Runs the Tier 2 requirements-proof metadata generator and fail-closed
+# enforcement gate on every PR and push to main. Fails if the gate is not
+# READY. Metadata-only: no runtime behavior, pytest, proof harness, replay,
+# or OTEL exporter is executed.
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  tier2-enforcement-gate:
+    name: "Tier 2 enforcement gate (metadata-only)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run Tier 2 enforcement gate
+        run: |
+          python scripts/verify_tier2_enforcement_gate.py
