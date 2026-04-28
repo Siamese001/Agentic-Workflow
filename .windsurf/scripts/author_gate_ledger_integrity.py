@@ -404,6 +404,114 @@ def backfill_chain(db_path: Path = DB_PATH, dry_run: bool = False) -> ChainResul
     )
 
 
+def rebuild_chain(db_path: Path = DB_PATH, confirm: bool = False) -> ChainResult:
+    """DESTRUCTIVE — null every seal, then re-seal chronologically from genesis.
+
+    Use ONLY when --backfill cannot recover the chain (typical cause: stale
+    row_hash values written by a prior compute_row_hash algorithm version).
+    The append-only triggers are bypassed via ``PRAGMA user_version = 99999``,
+    the documented W4.1 repair escape. Caller MUST pass ``confirm=True`` (CLI:
+    ``--rebuild --confirm``) — otherwise this is a no-op that returns the
+    current verify_chain result so the user can see what would be rewritten.
+
+    After nulling all seals, this function delegates to ``backfill_chain`` to
+    re-seal every row from GENESIS_PREV_HASH using the current algorithm.
+    """
+    if not confirm:
+        # Dry preview — return current state without touching anything
+        res = verify_chain(db_path)
+        return ChainResult(
+            ok=res.ok,
+            total_rows=res.total_rows,
+            verified_rows=res.verified_rows,
+            first_broken_id=res.first_broken_id,
+            reason=(
+                f"rebuild dry-run — would null {res.total_rows} row(s) and re-seal "
+                f"from genesis. Re-run with --confirm to execute."
+            ),
+        )
+
+    conn = _open_db(db_path)
+    if conn is None:
+        return ChainResult(
+            ok=True,
+            total_rows=0,
+            verified_rows=0,
+            first_broken_id=None,
+            reason="ledger db not present — nothing to rebuild",
+        )
+    conn.isolation_level = None
+    total = 0
+    sealed = 0
+    prev_uv = 0
+    try:
+        total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+        prev_uv = conn.execute("PRAGMA user_version").fetchone()[0]
+        # W4.1 documented trigger bypass — kept active for the entire null+seal
+        # operation so backfill UPDATEs are also permitted. Restored in finally.
+        conn.execute("PRAGMA user_version = 99999")
+
+        # Pass 1: null every seal so the chain re-seals from genesis chronologically
+        conn.execute("BEGIN IMMEDIATE")
+        conn.execute(
+            "UPDATE decisions SET row_hash=NULL, prev_hash=NULL, "
+            "sig_alg=NULL, signature=NULL"
+        )
+        conn.execute("COMMIT")
+
+        # Pass 2: walk chronologically and seal every row from genesis
+        conn.execute("BEGIN IMMEDIATE")
+        prev_hash = GENESIS_PREV_HASH
+        key = _get_signing_key()
+        for row in _iter_rows(conn):
+            row_dict = dict(row)
+            decision_id = row_dict.get("decision_id")
+            new_hash = compute_row_hash(row_dict, prev_hash)
+            if key is not None:
+                sig_alg_val = SIG_ALG_HMAC
+                sig_val: str | None = compute_signature(new_hash, key)
+            else:
+                sig_alg_val = SIG_ALG_NONE
+                sig_val = None
+            conn.execute(
+                """
+                UPDATE decisions
+                   SET prev_hash = ?, row_hash = ?, sig_alg = ?, signature = ?
+                 WHERE decision_id = ?
+                """,
+                (prev_hash, new_hash, sig_alg_val, sig_val, decision_id),
+            )
+            sealed += 1
+            prev_hash = new_hash
+        conn.execute("COMMIT")
+    except sqlite3.Error as exc:
+        try:
+            conn.execute("ROLLBACK")
+        except sqlite3.Error:  # guardian: allow-rollback-failure -- best-effort cleanup
+            pass
+        return ChainResult(
+            ok=False,
+            total_rows=total,
+            verified_rows=sealed,
+            first_broken_id=None,
+            reason=f"rebuild sqlite error after sealing {sealed}/{total}: {exc}",
+        )
+    finally:
+        try:
+            conn.execute(f"PRAGMA user_version = {prev_uv}")
+        except sqlite3.Error:  # guardian: allow-pragma-restore-failure -- best-effort restore
+            pass
+        conn.close()
+
+    return ChainResult(
+        ok=True,
+        total_rows=total,
+        verified_rows=sealed,
+        first_broken_id=None,
+        reason=f"rebuilt chain — nulled {total} row(s), re-sealed {sealed} from genesis",
+    )
+
+
 def resign_chain(db_path: Path = DB_PATH) -> ChainResult:
     """Resign every sealed row under the current AUTHOR_GATE_SIGNING_KEY.
 
@@ -557,7 +665,17 @@ def main() -> int:
         action="store_true",
         help=f"Resign sealed rows under ${SIGNING_KEY_ENV} (for initial enablement / key rotation)",
     )
+    mode.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="DESTRUCTIVE: null all seals + re-seal chain from genesis (requires --confirm)",
+    )
     mode.add_argument("--report", action="store_true", help="Verify + print chain summary")
+    parser.add_argument(
+        "--confirm",
+        action="store_true",
+        help="Required with --rebuild to execute (otherwise dry-run preview)",
+    )
     args = parser.parse_args()
 
     if args.verify or args.report:
@@ -578,6 +696,10 @@ def main() -> int:
     if args.resign:
         res = resign_chain()
         return _print_result("ledger_resign", res)
+
+    if args.rebuild:
+        res = rebuild_chain(confirm=args.confirm)
+        return _print_result("ledger_rebuild", res)
 
     return 0
 
