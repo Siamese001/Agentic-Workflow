@@ -388,7 +388,7 @@ class RetrievalRouter:
         # error per the §29 fail-soft contract).
         self._closed_loop: Any = None
         try:
-            from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415
+            from tools.ledgers.router_helper import RouterClosedLoopHelper  # noqa: PLC0415  # guardian: allow-layer-violation -- §29 fail-soft contract requires lazy import inside try-block; routing module must remain importable when tools.ledgers is absent (constitutional §28-bis)
 
             self._closed_loop = RouterClosedLoopHelper(
                 layer="L1",

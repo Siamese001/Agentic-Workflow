@@ -50,7 +50,7 @@ from agentic_core.L3_orchestration.exit_eval.v6 import otel as v6_otel
 from agentic_core.L3_orchestration.exit_eval.v6.return_payload import (
     RETURN_PAYLOAD_FAILURE_CODES,
 )
-from tests.unit.agentic_core.L3_orchestration.exit_eval.v6._fixtures import (
+from tests.unit.agentic_core.L3_orchestration.exit_eval.v6._fixtures import (  # guardian: allow-layer-violation -- diagnostic probe script (tools/analysis/) intentionally reuses the v6 exit-eval test fixtures to drive line-by-line OTEL probes against the same canonical inputs the test suite uses; not a production code path
     base_packet,
     base_receipts,
 )

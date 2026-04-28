@@ -1,17 +1,25 @@
-"""Shared pipeline constants for apps_rg, apps_lic, and apps_shared.
+"""Backward-compatibility re-export shim.
 
-Single source of truth for module-level constants duplicated across ~25 files.
-All apps_* modules MUST import from here instead of defining inline.
+The canonical SSOT for these constants moved to
+``agentic_core.L0_routing.config.pipeline_constants`` to fix a P0 layer
+violation: agentic_core modules cannot import from L_APP. This shim
+preserves every ``apps_*`` callsite that still imports from the old
+location.
+
+New code should import directly from
+``agentic_core.L0_routing.config.pipeline_constants``.
 """
 
-MAX_RETRIES: int = 3
-DEFAULT_SLEEP: float = 1.0
-THRESHOLD: float = 0.95
-BUFFER_SIZE: int = 8192
-BATCH_SIZE: int = 32
-MAX_DEPTH: int = 6
-MAX_FILES: int = 1000
-DEFAULT_TIMEOUT: int = 300  # 5 minutes
+from agentic_core.L0_routing.config.pipeline_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 
 __all__ = [
     "MAX_RETRIES",

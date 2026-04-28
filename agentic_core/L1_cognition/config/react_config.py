@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
-from apps_shared.config.pipeline_constants_config import (
+from agentic_core.L0_routing.config.pipeline_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,

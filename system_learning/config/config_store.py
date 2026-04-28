@@ -15,7 +15,7 @@ from typing import Any
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
 )
-from apps_shared.config.pipeline_constants_config import (
+from agentic_core.L0_routing.config.pipeline_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,

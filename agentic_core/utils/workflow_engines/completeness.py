@@ -20,7 +20,7 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
-from apps_shared.config.pipeline_constants_config import BATCH_SIZE, MAX_RETRIES
+from agentic_core.L0_routing.config.pipeline_constants import BATCH_SIZE, MAX_RETRIES
 
 # Configuration constants
 BUFFER_SIZE = 4096

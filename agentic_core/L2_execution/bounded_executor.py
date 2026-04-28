@@ -28,9 +28,15 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
-from agentic_core.prompt_governance.orchestrator import CompiledPromptEnvelope
+if TYPE_CHECKING:
+    # Plan: adg-p0-wave1-protected-plane-fixes (Group B). The L2 executor
+    # only references ``CompiledPromptEnvelope`` as a type annotation (no
+    # runtime construction), so a ``TYPE_CHECKING``-gated import removes
+    # the L2 → L_PG runtime layer-violation edge while preserving the
+    # exact same static-typing surface for callers and IDEs.
+    from agentic_core.prompt_governance.orchestrator import CompiledPromptEnvelope
 
 
 class L2ExecutorError(RuntimeError):
@@ -207,7 +213,7 @@ def build_sandbox_from_envelope(
 # Public API
 # ---------------------------------------------------------------------------
 
-ModelInvokeFn = Callable[[CompiledPromptEnvelope], "ModelInvokeResult"]
+ModelInvokeFn = Callable[["CompiledPromptEnvelope"], "ModelInvokeResult"]
 
 
 @dataclass(frozen=True)

@@ -19,7 +19,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
-from apps_shared.config.pipeline_constants_config import (
+from agentic_core.L0_routing.config.pipeline_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,

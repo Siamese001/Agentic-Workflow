@@ -248,7 +248,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     files = manifest["files"]
     reporter = None
     try:
-        from tools.progress_display import ProgressReporter
+        from tools.progress_display import ProgressReporter  # guardian: allow-layer-violation -- CLI entry point legitimately imports operator-facing progress UI from tools/; keeps the prove_requirements core free of UI dependencies
 
         reporter = ProgressReporter(
             total=len(files),

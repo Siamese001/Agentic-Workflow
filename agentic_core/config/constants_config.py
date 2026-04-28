@@ -10,7 +10,7 @@ SSOT Location: agentic_core/config/core/constants.py
 import logging
 import os
 from pathlib import Path
-from apps_shared.config.pipeline_constants_config import (
+from agentic_core.L0_routing.config.pipeline_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,

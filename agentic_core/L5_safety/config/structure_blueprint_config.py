@@ -111,7 +111,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (  # noqa: F4
     get_sovereign_territories,
     get_subfolder_metadata,
 )
-from apps_shared.config.pipeline_constants_config import (
+from agentic_core.L0_routing.config.pipeline_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,

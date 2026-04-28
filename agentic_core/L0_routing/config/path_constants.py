@@ -18,7 +18,7 @@ from functools import lru_cache
 from pathlib import Path
 from re import Pattern
 from typing import Any, Final
-from apps_shared.config.pipeline_constants_config import (
+from agentic_core.L0_routing.config.pipeline_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,

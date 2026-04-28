@@ -60,7 +60,7 @@ from agentic_core.L5_safety.reasoning.hitl_calibration import (
     AdversarialProbeSuite,
     HITLCalibrationLedger,
 )
-from agentic_core.L6_observability.decision_events_schema import (
+from agentic_core.L6_observability.decision_events_schema import (  # guardian: allow-layer-violation -- demo script intentionally imports L6 observability schema to render routing-decision evidence; production code paths use the ledger helper, not direct schema access
     DecisionEventRow,
     ensure_schema,
     insert_decision_event,
