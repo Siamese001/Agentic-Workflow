@@ -414,6 +414,20 @@ class OpenTelemetryTracingAdapter:
     def trace_orchestrator(self, mission: str, metadata: dict[str, Any] | None = None):
         """Trace orchestrator execution (L3 - Root span).
 
+        Tier-1 emit-site fix (plan runtime-adg-tier1-emit-corpus-refresh):
+        every orchestrator trace now emits the three required Tier-1 spans
+        — ``runtime.trace_root`` at entry and ``Exit.disposition`` at exit
+        — and installs the adapter as the ambient context-var so any
+        nested code can call ``seal_step()`` to emit ``L2.step.seal``
+        without explicit adapter plumbing. The emits are additive and
+        observability-only: they never raise (fail-open in the helper).
+
+        Mirrors the pattern already in
+        ``system_learning/runtime_adg/auto_persistence.py:trace_orchestrator``;
+        lifting it into the parent class closes the gap surfaced by
+        ``tools/debug/_runtime_adg_coverage_audit.py`` (3 of 5 categories
+        previously reported as ``emit_site_gap``).
+
         Args:
             mission: Mission being executed
             metadata: Additional metadata
@@ -430,14 +444,87 @@ class OpenTelemetryTracingAdapter:
             "OpenTelemetryTracingAdapter.trace_orchestrator",
         )
 
+        # Tier-1 emit fixture: lazy import so module-load stays cheap
+        # and circular-import safe (runtime_span_emitter does not depend
+        # on this module). All three calls fail-open by contract.
+        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+            back_patch_trace_id,
+            emit_exit_disposition,
+            emit_trace_root,
+            reset_current_adapter,
+            set_current_adapter,
+        )
+
+        # 1) Emit runtime.trace_root BEFORE the OTel root span exists so
+        # it is first in the drained buffer. We reconcile its trace_id
+        # to the real OTel trace_id below once the span stack is live.
+        staging_trace_id = ""
+        try:
+            staging_trace_id = emit_trace_root(
+                self,
+                mission=mission,
+                input_envelope=metadata,
+                metadata={"service": getattr(self, "service_name", "unknown")},
+            )
+        except (OSError, ValueError, TypeError, RuntimeError) as exc:
+            logger.debug("tier1_trace_root_emit_failed: %s", exc)
+
+        # 2) Install adapter as ambient context-var so any nested
+        # caller can use seal_step() without adapter plumbing.
+        adapter_token = set_current_adapter(self)
+
+        disposition = "allow"  # default unless inner block raises
+        unified_trace_id = staging_trace_id
         span_metadata = SpanMetadata(
             span_type=SpanType.ORCHESTRATOR,
             component="NervousSystem",
             layer="L3_Orchestration",
             attributes={"mission": mission, **(metadata or {})},
         )
-        with self._create_span(name="orchestrator.execute", metadata=span_metadata) as span:
-            yield span
+        try:
+            with self._create_span(name="orchestrator.execute", metadata=span_metadata) as span:
+                # 3) Reconcile the staged trace_root span to the real
+                # OTel trace_id once the span stack is populated.
+                try:
+                    otel_trace_id = getattr(self, "_span_stack", None) and self._span_stack[-1][0] or ""
+                    if otel_trace_id and otel_trace_id != staging_trace_id:
+                        back_patch_trace_id(self, staging_trace_id, otel_trace_id)
+                        unified_trace_id = otel_trace_id
+                except (
+                    AttributeError,
+                    IndexError,
+                    TypeError,
+                ):  # guardian: allow-silent-swallow -- best-effort trace_id reconciliation; staging id is the safe default when the OTel span stack is absent
+                    pass
+                try:
+                    yield span
+                except (OSError, ValueError, TypeError, RuntimeError):
+                    disposition = "deny"
+                    raise
+        finally:
+            # 4) Restore adapter context-var.
+            try:
+                reset_current_adapter(adapter_token)
+            except (ValueError, LookupError) as exc:
+                logger.debug("tier1_adapter_reset_failed: %s", exc)
+
+            # 5) Emit Exit.disposition at run close, using unified
+            # trace_id so it correlates with trace_root + children.
+            try:
+                emit_exit_disposition(
+                    self,
+                    trace_id=unified_trace_id,
+                    disposition=disposition,
+                    policy_hash="otel_adapter_v1",
+                    reason_codes=(
+                        ("trace_orchestrator_ok",)
+                        if disposition == "allow"
+                        else ("trace_orchestrator_error",)
+                    ),
+                    metadata={"mission": mission},
+                )
+            except (OSError, ValueError, TypeError, RuntimeError) as exc:
+                logger.debug("tier1_exit_disposition_emit_failed: %s", exc)
 
     @contextmanager
     def trace_cognitive(
@@ -609,9 +696,7 @@ class OpenTelemetryTracingAdapter:
                 layer="L2_Execution",
                 attributes={"claude_code.tool.name": tool_name},
             )
-            with self._create_span(
-                name="claude_code.tool.execution", metadata=inner_meta
-            ) as span:
+            with self._create_span(name="claude_code.tool.execution", metadata=inner_meta) as span:
                 yield span
 
     @contextmanager
@@ -633,9 +718,7 @@ class OpenTelemetryTracingAdapter:
             layer="L5_Safety",
             attributes=attributes,
         )
-        with self._create_span(
-            name="claude_code.tool.blocked_on_user", metadata=span_metadata
-        ) as span:
+        with self._create_span(name="claude_code.tool.blocked_on_user", metadata=span_metadata) as span:
             yield span
 
     @contextmanager
