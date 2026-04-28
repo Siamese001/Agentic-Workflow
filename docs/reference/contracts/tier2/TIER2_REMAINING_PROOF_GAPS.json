@@ -1,0 +1,199 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Tier 2 remaining-proof-gap inventory. Lists only the Tier 2 rows still blocked after the negative-control mapping pass, with per-row minimum-missing-proof detail and suggested batch grouping. Selection + linkage metadata only — no proof, coverage, or readiness claims.",
+  "disclaimer": "Static inventory. No runtime behavior, tests, proof harness, replay machinery, or OTEL exporter were executed. Rows listed here are NOT closed.",
+  "tier2_total": 22,
+  "tier2_linked_literal": 6,
+  "tier2_blocked": 16,
+  "blocker_counts_after_negctrl_mapping": {
+    "NEEDS_ARTIFACT_FIELD": 8,
+    "NEEDS_REPLAY_FIELD": 12,
+    "NEEDS_NEGATIVE_CONTROL": 8,
+    "NEEDS_OTEL_SPAN": 8,
+    "NEEDS_CODE_REF": 4,
+    "NEEDS_VALIDATOR_REF": 4,
+    "NEEDS_TEST_MAPPING": 4,
+    "NEEDS_EXPECTED_FAIL_REASON": 0,
+    "NEEDS_STEP1_ROW": 0,
+    "NO_LINK": 0
+  },
+  "linked_literal_rows": [
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001",
+    "REQ-U0-ANTI-BYPASS-001",
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001",
+    "REQ-C0-EVIDENCE-FETCH-001",
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001",
+    "REQ-E2E-CONTRACT-EMISSION-001"
+  ],
+  "blocked_rows": [
+    {
+      "step1_req_id": "REQ-L2-PTC-SANDBOX-001",
+      "blockers": ["NEEDS_OTEL_SPAN"],
+      "minimum_missing_proof": "Dedicated OTEL spans module for PTC sandbox entry/exit (e.g., agentic_core/L2_execution/otel/ptc_sandbox_spans.py) — none exists today.",
+      "batch": "A"
+    },
+    {
+      "step1_req_id": "REQ-L2-VERIFY-THEN-EXECUTE-001",
+      "blockers": ["NEEDS_OTEL_SPAN"],
+      "minimum_missing_proof": "Dedicated OTEL spans module for L2 local-critique / verify-then-execute verdict — none exists today.",
+      "batch": "A"
+    },
+    {
+      "step1_req_id": "REQ-PA-PROVIDER-AWARE-RENDER-001",
+      "blockers": ["NEEDS_OTEL_SPAN"],
+      "minimum_missing_proof": "Dedicated OTEL spans module for PA provider-aware rendering (template id, provider id) — none exists today.",
+      "batch": "A"
+    },
+    {
+      "step1_req_id": "REQ-PA-AIRLOCK-SECURITY-001",
+      "blockers": ["NEEDS_OTEL_SPAN"],
+      "minimum_missing_proof": "Dedicated OTEL spans module for PA airlock verdict / score — none exists today.",
+      "batch": "A"
+    },
+    {
+      "step1_req_id": "REQ-L6-SIGNAL-FUSION-RCA-001",
+      "blockers": ["NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "Replay pair tagged for L6 signal-fusion / RCA input determinism (the existing replay_J_l6_gauntlet_future_run_run_* pair covers the future-run firewall, not the fusion-input boundary).",
+      "batch": "A"
+    },
+    {
+      "step1_req_id": "REQ-E2E-MUTATION-BOUNDARY-001",
+      "blockers": ["NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "Replay pair for boundary_faults/proof_bundle.json (two deterministic runs of the mutation matrix).",
+      "batch": "A"
+    },
+    {
+      "step1_req_id": "REQ-C0-NO-EXECUTE-001",
+      "blockers": ["NEEDS_ARTIFACT_FIELD", "NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "C0-no-execute attestation artifact + replay pair proving C0 spans carry zero tool/model invocations.",
+      "batch": "B"
+    },
+    {
+      "step1_req_id": "REQ-L5-HITL-RECLEARANCE-001",
+      "blockers": ["NEEDS_NEGATIVE_CONTROL", "NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "Negative-control test that drives a governance-flagged input to L2 without reclearance and asserts rejection; replay pair on the RC-HITL scenario.",
+      "batch": "B"
+    },
+    {
+      "step1_req_id": "REQ-L3-L2-STEP-HANDOFF-001",
+      "blockers": ["NEEDS_NEGATIVE_CONTROL", "NEEDS_OTEL_SPAN", "NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "Dedicated OTEL spans module for L3->L2 step checkpoint; replay-from-checkpoint determinism pair; negative-control asserting resume aborts when checkpoint is missing.",
+      "batch": "C"
+    },
+    {
+      "step1_req_id": "REQ-L4-CACHE-STATE-001",
+      "blockers": ["NEEDS_ARTIFACT_FIELD", "NEEDS_NEGATIVE_CONTROL", "NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "Cache-invalidation audit artifact carrying contract_id per event; replay pair with identical contract_ids; negative-control proving ad-hoc invalidation is rejected.",
+      "batch": "C"
+    },
+    {
+      "step1_req_id": "REQ-L5-RISK-TIER-BANDS-001",
+      "blockers": ["NEEDS_ARTIFACT_FIELD", "NEEDS_NEGATIVE_CONTROL", "NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "Risk-tier assignment audit artifact (every value maps to a published band id); replay pair; negative-control proving ad-hoc score is rejected.",
+      "batch": "C"
+    },
+    {
+      "step1_req_id": "REQ-U0-ORIGIN-TRUST-INJECTION-001",
+      "blockers": ["NEEDS_ARTIFACT_FIELD", "NEEDS_NEGATIVE_CONTROL", "NEEDS_REPLAY_FIELD"],
+      "minimum_missing_proof": "U0 origin-trust injection receipt artifact carrying origin + trust label; replay pair; negative-control proving missing trust-label is rejected or quarantined.",
+      "batch": "C"
+    },
+    {
+      "step1_req_id": "REQ-L4-RETRIEVAL-SURFACE-001",
+      "blockers": [
+        "NEEDS_ARTIFACT_FIELD",
+        "NEEDS_CODE_REF",
+        "NEEDS_REPLAY_FIELD",
+        "NEEDS_TEST_MAPPING",
+        "NEEDS_VALIDATOR_REF"
+      ],
+      "minimum_missing_proof": "Dedicated retrieval-surface read-only guard module (e.g., agentic_core/L4_state/retrieval_surface/*.py) + its validator/test + a scan artifact proving no non-UWG path mutates the surface + replay pair. Today no retrieval-surface module exists in L4_state.",
+      "batch": "D"
+    },
+    {
+      "step1_req_id": "REQ-L0-NO-RETRIEVAL-001",
+      "blockers": [
+        "NEEDS_ARTIFACT_FIELD",
+        "NEEDS_CODE_REF",
+        "NEEDS_NEGATIVE_CONTROL",
+        "NEEDS_OTEL_SPAN",
+        "NEEDS_REPLAY_FIELD",
+        "NEEDS_TEST_MAPPING",
+        "NEEDS_VALIDATOR_REF"
+      ],
+      "minimum_missing_proof": "Dedicated L0 no-retrieval boundary guard module + validator + test + OTEL spans + scan artifact proving zero retrieval spans at L0 + replay pair + synthetic negative-control (L0 retrieval attempt rejected). Today the contract exists only implicitly by module topology.",
+      "batch": "E"
+    },
+    {
+      "step1_req_id": "REQ-L1-NO-RETRIEVAL-001",
+      "blockers": [
+        "NEEDS_ARTIFACT_FIELD",
+        "NEEDS_CODE_REF",
+        "NEEDS_NEGATIVE_CONTROL",
+        "NEEDS_OTEL_SPAN",
+        "NEEDS_REPLAY_FIELD",
+        "NEEDS_TEST_MAPPING",
+        "NEEDS_VALIDATOR_REF"
+      ],
+      "minimum_missing_proof": "Dedicated L1 no-retrieval boundary guard module + validator + test + OTEL spans + scan artifact + replay pair + synthetic negative-control. L1 cognition contract is topological today, not explicit.",
+      "batch": "E"
+    },
+    {
+      "step1_req_id": "REQ-L1-NO-EXECUTE-001",
+      "blockers": [
+        "NEEDS_ARTIFACT_FIELD",
+        "NEEDS_CODE_REF",
+        "NEEDS_NEGATIVE_CONTROL",
+        "NEEDS_OTEL_SPAN",
+        "NEEDS_REPLAY_FIELD",
+        "NEEDS_TEST_MAPPING",
+        "NEEDS_VALIDATOR_REF"
+      ],
+      "minimum_missing_proof": "Dedicated L1 no-execute boundary guard module + validator + test + OTEL spans + scan artifact + replay pair + synthetic negative-control. L1 never-executes contract is topological today, not explicit.",
+      "batch": "E"
+    }
+  ],
+  "suggested_batch_grouping": [
+    {
+      "batch": "A",
+      "description": "Single-blocker rows — lowest-effort wins (5 OTEL-only rows + 2 replay-only rows).",
+      "rows": [
+        "REQ-L2-PTC-SANDBOX-001",
+        "REQ-L2-VERIFY-THEN-EXECUTE-001",
+        "REQ-PA-PROVIDER-AWARE-RENDER-001",
+        "REQ-PA-AIRLOCK-SECURITY-001",
+        "REQ-L6-SIGNAL-FUSION-RCA-001",
+        "REQ-E2E-MUTATION-BOUNDARY-001"
+      ]
+    },
+    {
+      "batch": "B",
+      "description": "Two-blocker rows — artifact + replay or negctrl + replay pairs on existing surfaces.",
+      "rows": ["REQ-C0-NO-EXECUTE-001", "REQ-L5-HITL-RECLEARANCE-001"]
+    },
+    {
+      "batch": "C",
+      "description": "Three-blocker rows — need artifact + negctrl + replay, plus one OTEL spans module (L3 step handoff).",
+      "rows": [
+        "REQ-L3-L2-STEP-HANDOFF-001",
+        "REQ-L4-CACHE-STATE-001",
+        "REQ-L5-RISK-TIER-BANDS-001",
+        "REQ-U0-ORIGIN-TRUST-INJECTION-001"
+      ]
+    },
+    {
+      "batch": "D",
+      "description": "Five-blocker row — needs a dedicated retrieval-surface module in L4_state plus the full evidence chain around it (code/validator/test/artifact/replay).",
+      "rows": ["REQ-L4-RETRIEVAL-SURFACE-001"]
+    },
+    {
+      "batch": "E",
+      "description": "Seven-blocker rows — currently enforced only by module topology. Need explicit boundary-guard modules, dedicated tests, OTEL spans, scan artifacts, replay pairs, and synthetic attempt negative-controls.",
+      "rows": [
+        "REQ-L0-NO-RETRIEVAL-001",
+        "REQ-L1-NO-RETRIEVAL-001",
+        "REQ-L1-NO-EXECUTE-001"
+      ]
+    }
+  ]
+}

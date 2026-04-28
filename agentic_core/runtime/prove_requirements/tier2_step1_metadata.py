@@ -493,7 +493,71 @@ OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
         "agentic_core/L0_routing/intake/events.py",
     ),
 }
-NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {}
+NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
+        "tests/agentic_core/L0_routing/test_boundary_contracts.py",
+        "tests/agentic_core/L0_routing/enforcement/test_boundary_contracts.py",
+    ),
+    "REQ-U0-ANTI-BYPASS-001": (
+        "artifacts/runtime/requirements_proof/anti_bypass_results.json",
+        "tests/runtime/test_anti_bypass_runtime_cheat_proof.py",
+        "tests/unit/L6_observability/shadow_eval/test_06_8_anti_bypass.py",
+    ),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (),
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
+        "tests/unit/agentic_core/L1_cognition/planning/test_negative_boundaries.py",
+    ),
+    "REQ-L1-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-EXECUTE-001": (),
+    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (),
+    "REQ-C0-EVIDENCE-FETCH-001": (
+        "tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_negative.py",
+        "tests/unit/agentic_core/L1_cognition/c0_context/test_c0_anti_bypass.py",
+    ),
+    "REQ-C0-NO-EXECUTE-001": (
+        "tests/unit/agentic_core/L1_cognition/c0_context/test_c0_anti_bypass.py",
+    ),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa0_boundary.py",
+    ),
+    "REQ-PA-AIRLOCK-SECURITY-001": (
+        "tests/unit/agentic_core/prompt_governance/prompt_assembly/test_pa0_boundary.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_AdversarialRedTeamerAgent.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_RedTeamAgent.py",
+    ),
+    "REQ-L2-PTC-SANDBOX-001": (
+        "tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py",
+        "tests/integration/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py",
+    ),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (
+        "tests/unit/agentic_core/L2_execution/test_l2_anti_bypass.py",
+    ),
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
+        "tests/unit/agentic_core/L3_orchestration/exit_eval/v6/test_anti_bypass.py",
+        "tests/unit/L6_observability/shadow_eval/test_06_8_anti_bypass.py",
+    ),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (
+        "tests/runtime/test_uwg_write_sovereignty.py",
+        "tests/unit/apps_shared/proof/test_write_sovereignty.py",
+    ),
+    "REQ-L4-CACHE-STATE-001": (),
+    "REQ-L5-RISK-TIER-BANDS-001": (),
+    "REQ-L5-HITL-RECLEARANCE-001": (),
+    "REQ-L6-SIGNAL-FUSION-RCA-001": (
+        "tests/unit/L6_observability/shadow_eval/test_06_8_anti_bypass.py",
+    ),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (
+        "tests/e2e/test_boundary_fault_matrix.py",
+        "tests/agentic_core/adg/runtime/test_boundary_verifier.py",
+        "tests/e2e/agentic_core/test_layer_sovereignty_e2e.py",
+        "tests/governance/test_negative_control_exit0_tamper.py",
+    ),
+    "REQ-E2E-CONTRACT-EMISSION-001": (
+        "tests/governance/test_negative_control_exit0_tamper.py",
+        "tests/unit/apps_shared/proof/test_negative_controls.py",
+    ),
+}
 
 
 def _utc_now_iso() -> str:
