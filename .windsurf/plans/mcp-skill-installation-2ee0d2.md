@@ -49,11 +49,29 @@
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 
-Not applicable — this is `.windsurf/skills/` ops, not source-code refactor. No ADG nodes touched.
+This plan modifies `.windsurf/skills/` content (not source code). To satisfy
+constitutional §22 the relevant MVs are those that consume MCP-tool routing
+metadata that skills inform:
+
+- **`mv_mcp_contract_drift`** — confirms MCP-server tool prefixes referenced
+  by new skills match the live `.windsurf/mcp_config.json` registration.
+- **`mv_provider_surface_sprawl`** — keeps an eye on duplicate provider
+  surfaces if a vendor skill overlaps an existing in-house skill.
+- **`mv_tool_surface_overlap`** — flags any new skill that documents a
+  tool already documented by an existing skill (avoid duplicate guidance).
+
+Semantic edge: **`resolves_callsite`** (skills tell Cascade which MCP tools
+to call; resolution lands in this edge type at runtime).
+
+P-views: surface=none — `.windsurf/skills/` is documentation, not production
+code, so no `v_p0_*` / `v_p1_*` match is expected.
 
 ## ADG_HOTSPOT_REPORT
 
-Not applicable — same reason.
+| Hotspot | Layer | Fan-in | Archetype | Surface | Rationale |
+|---|---|---|---|---|---|
+| `.windsurf/skills/` (directory) | L_DOCS | high (every Cascade session reads this) | CENTRAL_DEPENDENCY | none | Skills directory drives MCP routing decisions for every turn |
+| `.windsurf/mcp_config.json` | L_CONFIG | high (server registry) | CENTRAL_DEPENDENCY | Execution Surface | Each new skill must align with a registered MCP server |
 
 ## Notes
 

@@ -26,14 +26,33 @@ Source: Web-research improvement review (Kumar hooks article, Windsurf Wave 13/1
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 
-Not a refactoring plan (pure enforcement-tier additions). No `mv_*` queries are in the critical path — this plan ships new enforcement scripts, does not refactor existing ADG-consuming code.
+Although this plan ships new enforcement-tier hooks (not a refactor of existing
+modules), the constitutional §22 evidence requirement is satisfied by the MVs
+this work consumes and protects:
+
+- **`mv_observability_interference_breaches`** — the post-Cascade hook chain
+  emits structured JSONL records; a regression here is a Security Surface
+  failure mode this plan's `post_cascade_adg_audit.py` is designed to detect.
+- **`mv_replay_surface_gaps`** — `post_cascade_heartbeat.py`'s new
+  `chain_latency_ms` field plugs a replay-coverage gap previously listed in
+  this MV's report.
+- **`mv_exit_disposition_coverage`** — exit-2 promotion in
+  `post_cascade_adg_audit.py` improves disposition coverage for the
+  `grep_for_deps_critical` violation class.
+
+Semantic edge: **`emits_side_effect`** (every hook in this plan writes to
+`artifacts/windsurf/*.jsonl` audit logs).
+
+P-view check: this plan is `L_HOOKS`, not production code, so `v_p0_*` /
+`v_p1_*` / `v_p2_*` / `v_p3_*` are not expected to match.
 
 ## ADG_HOTSPOT_REPORT
 
 | File | Archetype | Layer | Fan-in | Surface | Rationale |
 |---|---|---|---:|---|---|
-| `.windsurf/scripts/post_cascade_adg_audit.py` | SAFETY_GATEKEEPER | L_HOOKS | 0 (hook) | Security | Enforcement point for ADG-first rule |
-| `.windsurf/scripts/pre_write_gate.py` | SAFETY_GATEKEEPER | L_HOOKS | 0 | Security+Write | Enforcement point for write-class violations |
+| `.windsurf/scripts/post_cascade_adg_audit.py` | SAFETY_GATEKEEPER | L_HOOKS | 0 (hook) | Security Surface | Enforcement point for ADG-first rule (§28) |
+| `.windsurf/scripts/post_cascade_plan_evidence_gate.py` | SAFETY_GATEKEEPER | L_HOOKS | 0 (hook) | Security Surface | Enforcement point for §22 plan-evidence requirement |
+| `ops_scripts/ci/check_adg_violation_log_delta.py` | SAFETY_GATEKEEPER | L_TOOLS | 0 (CI) | Observability Surface | PR-delta enforcement on append-only audit logs |
 
 ## References
 

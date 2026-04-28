@@ -115,7 +115,7 @@ A single `python tools/generate_full_adg.py` run produces:
 
 ---
 
-## 8. ADG_HOTSPOT_REPORT
+## ADG_HOTSPOT_REPORT
 
 (Required per constitutional §22 / §23. Computed before W2 execution.)
 
@@ -124,26 +124,26 @@ on import topology:
 
 | Rank | File | Layer | Fan-In | Surface | Archetype | Impact (est.) |
 |---:|---|:---:|---:|---|---|---:|
-| 1 | `tools/generate/validation/gates.py` | L_TOOLS | TBD | Observability | CENTRAL_DEPENDENCY | TBD |
-| 2 | `tools/generate/integration/deferred_failures.py` | L_TOOLS | TBD | Observability | STATE_NODE | TBD |
-| 3 | `tools/generate/generate_full_adg.py` | L_TOOLS | TBD | Execution | ORCHESTRATOR | TBD |
+| 1 | `tools/generate/validation/gates.py` | L_TOOLS | TBD | Observability Surface | CENTRAL_DEPENDENCY | TBD |
+| 2 | `tools/generate/integration/deferred_failures.py` | L_TOOLS | TBD | Observability Surface | STATE_NODE | TBD |
+| 3 | `tools/generate/generate_full_adg.py` | L_TOOLS | TBD | Execution Surface | ORCHESTRATOR | TBD |
 
 (Will be filled in by W0.1 from `mcp1_adg_edge_fanin` queries.)
 
 ---
 
-## 9. ADG_GRAPH_LAYER_EVIDENCE
+## ADG_GRAPH_LAYER_EVIDENCE
 
-(Required per constitutional §22. Plan author MUST cite ≥3 materialized views,
-≥1 semantic edge type, and any P-view matches before W2 execution begins.)
+(Required per constitutional §22. ≥3 materialized views, ≥1 semantic edge.)
 
-To be populated in W0.1. Anticipated evidence sources:
+- **`mv_hotspot_centrality`** — confirm `gates.py` is high-fan-in within `L_TOOLS`
+- **`mv_dependency_cone_risk`** — show blast radius if `gates.py` API changes
+- **`mv_path_criticality_rollup`** — confirm gate-chain is on critical path
 
-- `mv_hotspot_centrality` — confirm `gates.py` is high-fan-in
-- `mv_dependency_cone_risk` — show blast radius if `gates.py` API changes
-- `mv_path_criticality_rollup` — confirm gate-chain is on critical path
-- Semantic edges: `flows_to` (from gates → main), `controls_flow` (gate exit → process termination)
-- P-views: `v_p2_*` not expected to match (this is L_TOOLS, not production)
+Semantic edges: **`flows_to`** (from gates → `main()` drain), **`controls_flow`**
+(gate exit code → process termination).
+
+P-views: `v_p2_*` not expected to match (this is L_TOOLS, not production).
 
 ---
 

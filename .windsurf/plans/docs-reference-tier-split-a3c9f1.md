@@ -131,3 +131,35 @@ Single-commit-per-wave structure makes rollback trivial: `git revert <wave-commi
 - **MANIFEST.json policy** (RCA Step 3) — gitignore vs bundler-reconfigure decision pending
 - **ADR for the tier-split convention** — write after execution proves the model works
 - **Tier C cleanup of duplicate primers** (e.g. `Error & Exception Handling v1..v4.md` could collapse) — separate plan
+
+## ADG_HOTSPOT_REPORT
+
+This plan is documentation-only (no source-code refactor); per constitutional
+§22 a hotspot row is still required. The "hotspot" here is the docs reference
+directory itself, treated as a CENTRAL_DEPENDENCY of the operator-facing
+documentation surface:
+
+| Hotspot | Layer | Fan-in | Archetype | Surface | Rationale |
+|---|---|---|---|---|---|
+| `docs/reference/` (directory) | L_DOCS | high (cited by AGENTS.md, rules, skills) | CENTRAL_DEPENDENCY | none | Docs reorganization — no code execution path touched |
+
+ADG Surface intersection: **none** (this plan does not touch the Execution
+Surface, Write Surface, Security Surface, State Surface, or Observability
+Surface — it is a pure documentation reorganization).
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+This is a documentation-tier-split plan; no code refactor. To satisfy
+constitutional §22 the relevant MVs are those that consume docs references:
+
+- **`mv_unresolved_config_refs`** — any docs path cited by `agentic_core/`
+  config that becomes stale after a `git mv` would surface here.
+- **`mv_dependency_cone_risk`** — sanity-check that no production module
+  imports anything under `docs/` (it must not).
+- **`mv_overlay_debt_summary`** — track docs-debt overlay removal as moves
+  consolidate per-tier folders.
+
+Semantic edges: **`reads_from`** (rules + skills `reads_from` doc paths
+mentioned in their frontmatter `references:` blocks).
+
+P-views: surface=none — no P-view match expected for a docs-only refactor.

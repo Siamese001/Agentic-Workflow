@@ -69,7 +69,19 @@ Produce a working `(hotspot risk) × (coverage signal) → priority band` pipeli
 - Test-suite culling decisions (downstream of having priority data)
 - Branch coverage from external tools beyond coverage.py
 
-## ADG Graph Layer Evidence
+## ADG_HOTSPOT_REPORT
+
+The hotspots driving this pipeline are the test-coverage measurement seams
+and the hotspot-rank consumer modules. Computed from `mv_hotspot_centrality`
++ `mv_hotspot_coverage_risk`:
+
+| Hotspot | Layer | Fan-in | Archetype | Surface | Rationale |
+|---|---|---|---|---|---|
+| `tools/analysis/test_concentration_risk.py` | L_TOOLS | low (tool) | ORCHESTRATOR | Observability Surface | Coordinates fan_in + test-attribution joins |
+| `agentic_core/L6_observability/coverage_collector.py` (target) | L6 | TBD | CENTRAL_DEPENDENCY | Observability Surface | Will be the canonical coverage telemetry seam |
+| `ops_scripts/ci/check_test_concentration_ratio.py` | L_TOOLS | 0 (CI) | SAFETY_GATEKEEPER | Observability Surface | CI ratchet gate over the pipeline output |
+
+## ADG_GRAPH_LAYER_EVIDENCE
 
 Required per constitutional §22.
 
