@@ -48,7 +48,122 @@ _SCENARIO_EXTRAS: Dict[str, Tuple[str, str]] = {
         "REQ-L6-GAUNTLET-FUTURE-RUN-001",
         "L6_CURRENT_RUN_MUTATION_BLOCKED",
     ),
+    "K_l6_signal_fusion_rca": (
+        "REQ-L6-SIGNAL-FUSION-RCA-001",
+        "L6_SIGNAL_FUSION_FROM_UNSEALED_RECORD_BLOCKED",
+    ),
+    "L_e2e_mutation_boundary": (
+        "REQ-E2E-MUTATION-BOUNDARY-001",
+        "E2E_MUTATION_BOUNDARY_FAULT_MISSING",
+    ),
+    "M_c0_no_execute": (
+        "REQ-C0-NO-EXECUTE-001",
+        "C0_EXECUTION_BLOCKED",
+    ),
+    "N_l5_hitl_reclearance": (
+        "REQ-L5-HITL-RECLEARANCE-001",
+        "HITL_RECLEARANCE_REQUIRED",
+    ),
+    "O_l3_l2_step_handoff": (
+        "REQ-L3-L2-STEP-HANDOFF-001",
+        "L3_L2_HANDOFF_CHECKPOINT_MISSING",
+    ),
+    "P_l4_cache_state": (
+        "REQ-L4-CACHE-STATE-001",
+        "L4_CACHE_STATE_VIOLATION",
+    ),
+    "Q_l5_risk_tier_bands": (
+        "REQ-L5-RISK-TIER-BANDS-001",
+        "L5_RISK_TIER_POLICY_MISMATCH",
+    ),
+    "R_u0_origin_trust_injection": (
+        "REQ-U0-ORIGIN-TRUST-INJECTION-001",
+        "ORIGIN_TRUST_LABEL_MISSING",
+    ),
 }
+
+# Per-scenario rich-trace extras for Tier 2 Batch B/C trace fixtures. These
+# scenarios serve as both artifact and negative-control references for their
+# REQ_IDs, so the trace payload carries gate_result, blocker_target,
+# evidence_refs, and the requirement-specific demonstration fields listed in
+# TIER2_REMAINING_PROOF_GAPS.md. Replay payloads keep the lean shape and only
+# pull from _SCENARIO_EXTRAS.
+_TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
+    "M_c0_no_execute": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-C0-NO-EXECUTE-001",
+        "evidence_refs": (
+            "agentic_core/L1_cognition/c0_context/observability.py",
+        ),
+        "tool_invocation_count": 0,
+        "model_invocation_count": 0,
+        "c0_final_answer_emitted": False,
+    },
+    "N_l5_hitl_reclearance": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L5-HITL-RECLEARANCE-001",
+        "evidence_refs": (
+            "agentic_core/L3_orchestration/exit_control/hitl_spans.py",
+        ),
+        "reclearance_required": True,
+        "reclearance_present": False,
+        "rejected": True,
+    },
+    "O_l3_l2_step_handoff": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L3-L2-STEP-HANDOFF-001",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier2_otel_refs/l3_l2_step_handoff_spans.py",
+        ),
+        "checkpoint_required": True,
+        "checkpoint_present": False,
+        "resume_aborted": True,
+    },
+    "P_l4_cache_state": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L4-CACHE-STATE-001",
+        "evidence_refs": (
+            "agentic_core/L4_state/otel/spans.py",
+        ),
+        "contract_id": "scenario_P_contract_001",
+        "ad_hoc_invalidation_attempted": True,
+        "rejected": True,
+    },
+    "Q_l5_risk_tier_bands": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-L5-RISK-TIER-BANDS-001",
+        "evidence_refs": (
+            "agentic_core/L5_safety/v5/governance_spans.py",
+        ),
+        "published_band_id": "L5_BAND_TIER_3",
+        "ad_hoc_score_attempted": True,
+        "rejected": True,
+    },
+    "R_u0_origin_trust_injection": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-U0-ORIGIN-TRUST-INJECTION-001",
+        "evidence_refs": (
+            "agentic_core/L0_routing/intake/events.py",
+            "agentic_core/L5_safety/v5/governance_spans.py",
+        ),
+        "origin": "scenario_R_origin_external",
+        "trust_label_present": False,
+        "quarantined_or_rejected": True,
+    },
+}
+
+
+def _maybe_trace_rich_extras(scenario_key: str) -> Dict[str, object]:
+    extras = _TRACE_RICH_EXTRAS.get(scenario_key)
+    if not extras:
+        return {}
+    out: Dict[str, object] = {}
+    for k, v in extras.items():
+        if isinstance(v, tuple):
+            out[k] = list(v)
+        else:
+            out[k] = v
+    return out
 
 
 def _deterministic_digest(seed: str) -> str:
@@ -123,6 +238,7 @@ def _trace_payload(scenario_key: str) -> Dict[str, object]:
         "schema_version": "1.0",
     }
     payload.update(_maybe_static_drift_extras(scenario_key))
+    payload.update(_maybe_trace_rich_extras(scenario_key))
     return payload
 
 

@@ -321,7 +321,9 @@ ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/runtime/requirements_proof/traces/scenario_D_anti_bypass.json",
         "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_no_bypass_receipt.json",
     ),
-    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_R_u0_origin_trust_injection.json",
+    ),
     "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
         "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_L1PlanContract.json",
         "artifacts/e2e/_smoke_all/scenarios/RC-R1A/rc_r1a_L1PlanContract.json",
@@ -338,7 +340,9 @@ ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/e2e/_smoke_all/scenarios/RC-UWG/rc_uwg_FinalEvidenceContract.json",
         "artifacts/runtime/requirements_proof/traces/scenario_C_weak_evidence.json",
     ),
-    "REQ-C0-NO-EXECUTE-001": (),
+    "REQ-C0-NO-EXECUTE-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_M_c0_no_execute.json",
+    ),
     "REQ-PA-PROVIDER-AWARE-RENDER-001": (
         "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_PromptEnvelope.json",
         "artifacts/e2e/_smoke_all/scenarios/RC-UWG/rc_uwg_PromptEnvelope.json",
@@ -361,8 +365,12 @@ ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_X3DispositionReceipt.json",
     ),
     "REQ-L4-RETRIEVAL-SURFACE-001": (),
-    "REQ-L4-CACHE-STATE-001": (),
-    "REQ-L5-RISK-TIER-BANDS-001": (),
+    "REQ-L4-CACHE-STATE-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_P_l4_cache_state.json",
+    ),
+    "REQ-L5-RISK-TIER-BANDS-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_Q_l5_risk_tier_bands.json",
+    ),
     "REQ-L5-HITL-RECLEARANCE-001": (
         "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_ValidatedRequest.json",
         "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_X3DispositionReceipt.json",
@@ -390,7 +398,10 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/runtime/requirements_proof/replay/replay_D_anti_bypass_run_1.json",
         "artifacts/runtime/requirements_proof/replay/replay_D_anti_bypass_run_2.json",
     ),
-    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_R_u0_origin_trust_injection_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_R_u0_origin_trust_injection_run_2.json",
+    ),
     "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
         "artifacts/e2e/det1/scenarios/GP-001/gp_001_l1_plan.json",
         "artifacts/e2e/det2/scenarios/GP-001/gp_001_l1_plan.json",
@@ -398,12 +409,18 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L1-NO-RETRIEVAL-001": (),
     "REQ-L1-NO-EXECUTE-001": (),
     "REQ-L0-NO-RETRIEVAL-001": (),
-    "REQ-L3-L2-STEP-HANDOFF-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_O_l3_l2_step_handoff_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_O_l3_l2_step_handoff_run_2.json",
+    ),
     "REQ-C0-EVIDENCE-FETCH-001": (
         "artifacts/e2e/det1/scenarios/GP-001/gp_001_final_evidence_contract.json",
         "artifacts/e2e/det2/scenarios/GP-001/gp_001_final_evidence_contract.json",
     ),
-    "REQ-C0-NO-EXECUTE-001": (),
+    "REQ-C0-NO-EXECUTE-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_M_c0_no_execute_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_M_c0_no_execute_run_2.json",
+    ),
     "REQ-PA-PROVIDER-AWARE-RENDER-001": (
         "artifacts/e2e/det1/scenarios/GP-001/gp_001_prompt_envelope.json",
         "artifacts/e2e/det2/scenarios/GP-001/gp_001_prompt_envelope.json",
@@ -425,9 +442,18 @@ REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
         "artifacts/e2e/det2/scenarios/GP-001/gp_001_disposition.json",
     ),
     "REQ-L4-RETRIEVAL-SURFACE-001": (),
-    "REQ-L4-CACHE-STATE-001": (),
-    "REQ-L5-RISK-TIER-BANDS-001": (),
-    "REQ-L5-HITL-RECLEARANCE-001": (),
+    "REQ-L4-CACHE-STATE-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_P_l4_cache_state_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_P_l4_cache_state_run_2.json",
+    ),
+    "REQ-L5-RISK-TIER-BANDS-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_Q_l5_risk_tier_bands_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_Q_l5_risk_tier_bands_run_2.json",
+    ),
+    "REQ-L5-HITL-RECLEARANCE-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_N_l5_hitl_reclearance_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_N_l5_hitl_reclearance_run_2.json",
+    ),
     "REQ-L6-SIGNAL-FUSION-RCA-001": (
         "artifacts/runtime/requirements_proof/replay/replay_K_l6_signal_fusion_rca_run_1.json",
         "artifacts/runtime/requirements_proof/replay/replay_K_l6_signal_fusion_rca_run_2.json",
@@ -458,7 +484,9 @@ OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-L1-NO-RETRIEVAL-001": (),
     "REQ-L1-NO-EXECUTE-001": (),
     "REQ-L0-NO-RETRIEVAL-001": (),
-    "REQ-L3-L2-STEP-HANDOFF-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (
+        "agentic_core/runtime/prove_requirements/tier2_otel_refs/l3_l2_step_handoff_spans.py",
+    ),
     "REQ-C0-EVIDENCE-FETCH-001": (
         "agentic_core/L1_cognition/c0_context/observability.py",
         "agentic_core/L0_routing/c0_retrieval/events.py",
@@ -514,14 +542,18 @@ NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
         "tests/runtime/test_anti_bypass_runtime_cheat_proof.py",
         "tests/unit/L6_observability/shadow_eval/test_06_8_anti_bypass.py",
     ),
-    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_R_u0_origin_trust_injection.json",
+    ),
     "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
         "tests/unit/agentic_core/L1_cognition/planning/test_negative_boundaries.py",
     ),
     "REQ-L1-NO-RETRIEVAL-001": (),
     "REQ-L1-NO-EXECUTE-001": (),
     "REQ-L0-NO-RETRIEVAL-001": (),
-    "REQ-L3-L2-STEP-HANDOFF-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_O_l3_l2_step_handoff.json",
+    ),
     "REQ-C0-EVIDENCE-FETCH-001": (
         "tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_negative.py",
         "tests/unit/agentic_core/L1_cognition/c0_context/test_c0_anti_bypass.py",
@@ -552,9 +584,15 @@ NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
         "tests/runtime/test_uwg_write_sovereignty.py",
         "tests/unit/apps_shared/proof/test_write_sovereignty.py",
     ),
-    "REQ-L4-CACHE-STATE-001": (),
-    "REQ-L5-RISK-TIER-BANDS-001": (),
-    "REQ-L5-HITL-RECLEARANCE-001": (),
+    "REQ-L4-CACHE-STATE-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_P_l4_cache_state.json",
+    ),
+    "REQ-L5-RISK-TIER-BANDS-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_Q_l5_risk_tier_bands.json",
+    ),
+    "REQ-L5-HITL-RECLEARANCE-001": (
+        "artifacts/runtime/requirements_proof/traces/scenario_N_l5_hitl_reclearance.json",
+    ),
     "REQ-L6-SIGNAL-FUSION-RCA-001": (
         "tests/unit/L6_observability/shadow_eval/test_06_8_anti_bypass.py",
     ),
