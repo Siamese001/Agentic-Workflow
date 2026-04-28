@@ -528,6 +528,54 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Tier 4 Prompt B additions (25 rows: scenarios AV..BT). Each row maps to its
+# cluster module and a single demonstration boolean field. Static metadata.
+# ---------------------------------------------------------------------------
+
+_TIER4_CLUSTER_REFS_DIR = (
+    "agentic_core/runtime/prove_requirements/tier4_cluster_refs"
+)
+_TIER4_BOOTSTRAP_ROWS: Tuple[Tuple[str, str, str, str, str, str], ...] = (
+    # (scenario_key, req_id, expected_fail_reason, cluster_module, span_name, demo_field)
+    ("AV_l5_authority_registry_bind",      "REQ-L5-AUTHORITY-REGISTRY-BIND-001",      "L5_AUTHORITY_REGISTRY_BIND_REQUIRED",   "governance_state_refs.py",  "tier4.l5.authority_registry_bind",      "authority_registry_bound"),
+    ("AW_l5_runtime_cert_bind",            "REQ-L5-RUNTIME-CERT-BIND-001",            "L5_RUNTIME_CERT_BIND_MISSING",          "governance_state_refs.py",  "tier4.l5.runtime_cert_bind",            "runtime_cert_bound"),
+    ("AX_l5_guardrail_families",           "REQ-L5-GUARDRAIL-FAMILIES-001",           "L5_GUARDRAIL_FAMILY_MISSING",           "governance_state_refs.py",  "tier4.l5.guardrail_families",           "guardrail_family_declared"),
+    ("AY_l5_gov_context_invariant",        "REQ-L5-GOV-CONTEXT-INVARIANT-001",        "L5_GOV_CONTEXT_DRIFT_DETECTED",         "governance_state_refs.py",  "tier4.l5.gov_context_invariant",        "governance_context_preserved"),
+    ("AZ_uwg_durable_write_ctx_invariant", "REQ-UWG-DURABLE-WRITE-CTX-INVARIANT-001", "UWG_DURABLE_WRITE_CTX_VIOLATION",       "governance_state_refs.py",  "tier4.l4.uwg_durable_write_ctx_invariant", "durable_write_context_preserved"),
+    ("BA_l4_policy_blueprint_state",       "REQ-L4-POLICY-BLUEPRINT-STATE-001",       "L4_POLICY_BLUEPRINT_MUTATION_REJECTED", "governance_state_refs.py",  "tier4.l4.policy_blueprint_state",       "policy_blueprint_state_bound"),
+    ("BB_gate_layer_invocation_map",       "REQ-GATE-LAYER-INVOCATION-MAP-001",       "GATE_LAYER_INVOCATION_MAP_MISSING",     "governance_state_refs.py",  "tier4.rg.layer_invocation_map",         "layer_invocation_map_validated"),
+    ("BC_u0_identity_tenant_session",      "REQ-U0-IDENTITY-TENANT-SESSION-001",      "U0_IDENTITY_TENANT_SESSION_REQUIRED",   "planning_routing_refs.py",  "tier4.u0.identity_tenant_session",      "identity_tenant_session_validated"),
+    ("BD_u0_quota_baseline",               "REQ-U0-QUOTA-BASELINE-001",               "U0_QUOTA_BASELINE_DRIFT_DETECTED",      "planning_routing_refs.py",  "tier4.u0.quota_baseline",               "quota_baseline_applied"),
+    ("BE_u0_schema_normalization",         "REQ-U0-SCHEMA-NORMALIZATION-001",         "U0_SCHEMA_NORMALIZATION_REJECTED",      "planning_routing_refs.py",  "tier4.u0.schema_normalization",         "schema_normalized"),
+    ("BF_l1_intent_frame",                 "REQ-L1-INTENT-FRAME-001",                 "L1_INTENT_FRAME_MISSING",               "planning_routing_refs.py",  "tier4.l1.intent_frame",                 "intent_frame_present"),
+    ("BG_l1_planning_priors",              "REQ-L1-PLANNING-PRIORS-001",              "L1_PLANNING_PRIORS_DRIFT_DETECTED",     "planning_routing_refs.py",  "tier4.l1.planning_priors",              "planning_priors_applied"),
+    ("BH_l0_route_input_preflight",        "REQ-L0-ROUTE-INPUT-PREFLIGHT-001",        "L0_ROUTE_INPUT_PREFLIGHT_REJECTED",     "planning_routing_refs.py",  "tier4.l0.route_input_preflight",        "route_input_preflight_validated"),
+    ("BI_l0_cache_fallback_hitl",          "REQ-L0-CACHE-FALLBACK-HITL-001",          "L0_CACHE_FALLBACK_HITL_VIOLATION",      "planning_routing_refs.py",  "tier4.l0.cache_fallback_hitl",          "cache_fallback_hitl_declared"),
+    ("BJ_l0_routecontract_telemetry",      "REQ-L0-ROUTECONTRACT-TELEMETRY-001",      "L0_ROUTECONTRACT_TELEMETRY_MISSING",    "planning_routing_refs.py",  "tier4.l0.routecontract_telemetry",      "routecontract_telemetry_emitted"),
+    ("BK_l3_managed_workflow",             "REQ-L3-MANAGED-WORKFLOW-001",             "L3_MANAGED_WORKFLOW_REJECTED",          "planning_routing_refs.py",  "tier4.l3.managed_workflow",             "managed_workflow_contract_declared"),
+    ("BL_c0_retrieval_plan",               "REQ-C0-RETRIEVAL-PLAN-001",               "C0_RETRIEVAL_PLAN_VIOLATION",           "execution_output_refs.py",  "tier4.c0.retrieval_plan",               "retrieval_plan_declared"),
+    ("BM_pa_load_resolve_bom",             "REQ-PA-LOAD-RESOLVE-BOM-001",             "PA_BOM_RESOLUTION_REJECTED",            "execution_output_refs.py",  "tier4.pa.load_resolve_bom",             "prompt_bom_resolved"),
+    ("BN_pa_token_budget_determinism",     "REQ-PA-TOKEN-BUDGET-DETERMINISM-001",     "PA_TOKEN_BUDGET_DRIFT_DETECTED",        "execution_output_refs.py",  "tier4.pa.token_budget_determinism",     "token_budget_deterministic"),
+    ("BO_l2_e1_frozen_room",               "REQ-L2-E1-FROZEN-ROOM-001",               "L2_FROZEN_ROOM_MUTATION_REJECTED",      "execution_output_refs.py",  "tier4.l2.e1_frozen_room",               "frozen_room_entered"),
+    ("BP_l2_e5_seal_dispatch",             "REQ-L2-E5-SEAL-DISPATCH-001",             "L2_SEAL_DISPATCH_VIOLATION",            "execution_output_refs.py",  "tier4.l2.e5_seal_dispatch",             "dispatch_sealed"),
+    ("BQ_l2_sequencer_contract",           "REQ-L2-SEQUENCER-CONTRACT-001",           "L2_SEQUENCER_CONTRACT_VIOLATION",       "execution_output_refs.py",  "tier4.l2.sequencer_contract",           "sequencer_contract_declared"),
+    ("BR_exit_hitl_freeze",                "REQ-EXIT-HITL-FREEZE-001",                "EXIT_HITL_FREEZE_BYPASS_BLOCKED",       "execution_output_refs.py",  "tier4.exit.hitl_freeze",                "hitl_freeze_applied"),
+    ("BS_l6_runtime_exhaust_ingest",       "REQ-L6-RUNTIME-EXHAUST-INGEST-001",       "L6_RUNTIME_EXHAUST_INGEST_LOSSY",       "execution_output_refs.py",  "tier4.l6.runtime_exhaust_ingest",       "runtime_exhaust_ingested"),
+    ("BT_e2e_evidence_groundedness",       "REQ-E2E-EVIDENCE-GROUNDEDNESS-001",       "E2E_EVIDENCE_GROUNDEDNESS_MISSING",     "execution_output_refs.py",  "tier4.e2e.evidence_groundedness",       "evidence_groundedness_validated"),
+)
+
+for _key, _rid, _efr, _mod, _span, _demo in _TIER4_BOOTSTRAP_ROWS:
+    _SCENARIO_EXTRAS[_key] = (_rid, _efr)
+    _TRACE_RICH_EXTRAS[_key] = {
+        "gate_result": "BLOCKED",
+        "blocker_target": _rid,
+        "evidence_refs": (f"{_TIER4_CLUSTER_REFS_DIR}/{_mod}",),
+        "spans": (_span,),
+        _demo: True,
+    }
+
+
 def _maybe_trace_rich_extras(scenario_key: str) -> Dict[str, object]:
     extras = _TRACE_RICH_EXTRAS.get(scenario_key)
     if not extras:
@@ -675,10 +723,11 @@ def _collect_referenced_paths() -> List[str]:
         tier1_step1_metadata as t1,
         tier2_step1_metadata as t2,
         tier3_step1_metadata as t3,
+        tier4_step1_metadata as t4,
     )
 
     paths: set[str] = set()
-    for module in (t0, t1, t2, t3):
+    for module in (t0, t1, t2, t3, t4):
         for attr in (
             "ARTIFACT_REFERENCES",
             "REPLAY_REFERENCES",

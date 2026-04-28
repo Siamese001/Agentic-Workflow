@@ -74,13 +74,84 @@ EXPECTED_FAIL_REASONS: Dict[str, str] = {
 # NEEDS_CODE_REF/NEEDS_VALIDATOR_REF/etc. and the gate fails closed.
 # ---------------------------------------------------------------------------
 
-CODE_REFERENCES: Dict[str, Tuple[str, ...]] = {}
-VALIDATOR_REFERENCES: Dict[str, Tuple[str, ...]] = {}
-TEST_REFERENCES: Dict[str, Tuple[str, ...]] = {}
-ARTIFACT_REFERENCES: Dict[str, Tuple[str, ...]] = {}
-REPLAY_REFERENCES: Dict[str, Tuple[str, ...]] = {}
-OTEL_SPAN_REFERENCES: Dict[str, Tuple[str, ...]] = {}
-NEGATIVE_CONTROL_REFERENCES: Dict[str, Tuple[str, ...]] = {}
+# ---------------------------------------------------------------------------
+# Cluster mapping (Tier 4 Prompt B). Each REQ_ID maps to its cluster's
+# static reference module. The same module is used for code/validator/
+# otel_span/negative_control because it declares all four kinds of
+# static metadata. Trace + replay fixtures live under traces/ and replay/.
+# ---------------------------------------------------------------------------
+
+_CLUSTER_REFS_DIR = "agentic_core/runtime/prove_requirements/tier4_cluster_refs"
+_TRACES_DIR = "artifacts/runtime/requirements_proof/traces"
+_REPLAY_DIR = "artifacts/runtime/requirements_proof/replay"
+_TIER4_TEST = "tests/runtime/test_tier4_cluster_fixtures.py"
+
+# (req_id, scenario_letters, scenario_slug, cluster_module_basename)
+_TIER4_ROW_MAP: Tuple[Tuple[str, str, str, str], ...] = (
+    ("REQ-L5-AUTHORITY-REGISTRY-BIND-001",        "AV", "l5_authority_registry_bind",      "governance_state_refs.py"),
+    ("REQ-L5-RUNTIME-CERT-BIND-001",              "AW", "l5_runtime_cert_bind",            "governance_state_refs.py"),
+    ("REQ-L5-GUARDRAIL-FAMILIES-001",             "AX", "l5_guardrail_families",           "governance_state_refs.py"),
+    ("REQ-L5-GOV-CONTEXT-INVARIANT-001",          "AY", "l5_gov_context_invariant",        "governance_state_refs.py"),
+    ("REQ-UWG-DURABLE-WRITE-CTX-INVARIANT-001",   "AZ", "uwg_durable_write_ctx_invariant", "governance_state_refs.py"),
+    ("REQ-L4-POLICY-BLUEPRINT-STATE-001",         "BA", "l4_policy_blueprint_state",       "governance_state_refs.py"),
+    ("REQ-GATE-LAYER-INVOCATION-MAP-001",         "BB", "gate_layer_invocation_map",       "governance_state_refs.py"),
+    ("REQ-U0-IDENTITY-TENANT-SESSION-001",        "BC", "u0_identity_tenant_session",      "planning_routing_refs.py"),
+    ("REQ-U0-QUOTA-BASELINE-001",                 "BD", "u0_quota_baseline",               "planning_routing_refs.py"),
+    ("REQ-U0-SCHEMA-NORMALIZATION-001",           "BE", "u0_schema_normalization",         "planning_routing_refs.py"),
+    ("REQ-L1-INTENT-FRAME-001",                   "BF", "l1_intent_frame",                 "planning_routing_refs.py"),
+    ("REQ-L1-PLANNING-PRIORS-001",                "BG", "l1_planning_priors",              "planning_routing_refs.py"),
+    ("REQ-L0-ROUTE-INPUT-PREFLIGHT-001",          "BH", "l0_route_input_preflight",        "planning_routing_refs.py"),
+    ("REQ-L0-CACHE-FALLBACK-HITL-001",            "BI", "l0_cache_fallback_hitl",          "planning_routing_refs.py"),
+    ("REQ-L0-ROUTECONTRACT-TELEMETRY-001",        "BJ", "l0_routecontract_telemetry",      "planning_routing_refs.py"),
+    ("REQ-L3-MANAGED-WORKFLOW-001",               "BK", "l3_managed_workflow",             "planning_routing_refs.py"),
+    ("REQ-C0-RETRIEVAL-PLAN-001",                 "BL", "c0_retrieval_plan",               "execution_output_refs.py"),
+    ("REQ-PA-LOAD-RESOLVE-BOM-001",               "BM", "pa_load_resolve_bom",             "execution_output_refs.py"),
+    ("REQ-PA-TOKEN-BUDGET-DETERMINISM-001",       "BN", "pa_token_budget_determinism",     "execution_output_refs.py"),
+    ("REQ-L2-E1-FROZEN-ROOM-001",                 "BO", "l2_e1_frozen_room",               "execution_output_refs.py"),
+    ("REQ-L2-E5-SEAL-DISPATCH-001",               "BP", "l2_e5_seal_dispatch",             "execution_output_refs.py"),
+    ("REQ-L2-SEQUENCER-CONTRACT-001",             "BQ", "l2_sequencer_contract",           "execution_output_refs.py"),
+    ("REQ-EXIT-HITL-FREEZE-001",                  "BR", "exit_hitl_freeze",                "execution_output_refs.py"),
+    ("REQ-L6-RUNTIME-EXHAUST-INGEST-001",         "BS", "l6_runtime_exhaust_ingest",       "execution_output_refs.py"),
+    ("REQ-E2E-EVIDENCE-GROUNDEDNESS-001",         "BT", "e2e_evidence_groundedness",       "execution_output_refs.py"),
+)
+
+
+def _cluster_module_path(basename: str) -> str:
+    return f"{_CLUSTER_REFS_DIR}/{basename}"
+
+
+def _trace_path(letters: str, slug: str) -> str:
+    return f"{_TRACES_DIR}/scenario_{letters}_{slug}.json"
+
+
+def _replay_pair(letters: str, slug: str) -> Tuple[str, str]:
+    return (
+        f"{_REPLAY_DIR}/replay_{letters}_{slug}_run_1.json",
+        f"{_REPLAY_DIR}/replay_{letters}_{slug}_run_2.json",
+    )
+
+
+CODE_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (_cluster_module_path(mod),) for rid, _l, _s, mod in _TIER4_ROW_MAP
+}
+VALIDATOR_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (_cluster_module_path(mod),) for rid, _l, _s, mod in _TIER4_ROW_MAP
+}
+OTEL_SPAN_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (_cluster_module_path(mod),) for rid, _l, _s, mod in _TIER4_ROW_MAP
+}
+NEGATIVE_CONTROL_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (_cluster_module_path(mod),) for rid, _l, _s, mod in _TIER4_ROW_MAP
+}
+TEST_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (_TIER4_TEST,) for rid, _l, _s, _m in _TIER4_ROW_MAP
+}
+ARTIFACT_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: (_trace_path(letters, slug),) for rid, letters, slug, _m in _TIER4_ROW_MAP
+}
+REPLAY_REFERENCES: Dict[str, Tuple[str, ...]] = {
+    rid: _replay_pair(letters, slug) for rid, letters, slug, _m in _TIER4_ROW_MAP
+}
 
 
 # ---------------------------------------------------------------------------
@@ -193,6 +264,10 @@ def _build_row(selected: Mapping[str, Any]) -> Dict[str, Any]:
         "release_gate_rule": selected["release_gate_rule"],
         "risk_category": selected["risk_category"],
         "why_tier4": selected["why_tier4"],
+        "_tier4_cluster_module": next(
+            (mod for rid_, _l, _s, mod in _TIER4_ROW_MAP if rid_ == rid),
+            "",
+        ),
         "expected_fail_reason": efr,
         "linkage_status": linkage_status,
         "blockers": blockers,
