@@ -1,0 +1,105 @@
+{
+  "baseline_name": "ALL_REQUIREMENTS_ENFORCEMENT_BASELINE",
+  "schema_version": "1.0",
+  "summary": "The full 150-row Step 1 requirement set is tier-assigned and protected by machine-checkable metadata enforcement, static evidence consistency gates, fail-closed hardening, and CI workflows. This does not claim real replay execution, real OTEL emission, full production runtime proof, or full architecture proof.",
+  "tier_counts": {
+    "tier0": 17,
+    "tier1": 15,
+    "tier2": 22,
+    "tier3": 25,
+    "tier4": 25,
+    "tier5": 25,
+    "tier6": 21,
+    "total": 150
+  },
+  "coverage_validation": {
+    "step1_universe": 150,
+    "total_tiered_req_ids": 150,
+    "distinct_tiered_req_ids": 150,
+    "duplicate_req_ids": 0,
+    "missing_step1_req_ids": 0
+  },
+  "tier6_split_mode": {
+    "must_rows": 6,
+    "must_rows_policy": "Normal static evidence consistency checks (code/validator/test/artifact/replay/negative-control/OTEL refs exist on disk; artifact + replay JSONs match step1_req_id / expected_fail_reason; replay pairs share invariant_digest).",
+    "reference_only_rows": 15,
+    "reference_only_rows_policy": "Reference-only policy contract (release_gate_rule=NON_BLOCKING_REFERENCE, requirement_strength=REFERENCE, policy artifact membership). Reference-only rows do not claim runtime proof. No real replay execution, no real OTEL emission, no runtime proof claim for these rows."
+  },
+  "gates": {
+    "metadata_enforcement_gates": [
+      "scripts/verify_tier0_enforcement_gate.py",
+      "scripts/verify_tier1_enforcement_gate.py",
+      "scripts/verify_tier2_enforcement_gate.py",
+      "scripts/verify_tier3_enforcement_gate.py",
+      "scripts/verify_tier4_enforcement_gate.py",
+      "scripts/verify_tier5_enforcement_gate.py",
+      "scripts/verify_tier6_enforcement_gate.py"
+    ],
+    "runtime_static_proof_gates": [
+      "scripts/verify_tier0_runtime_proof_gate.py",
+      "scripts/verify_tier1_runtime_proof_gate.py",
+      "scripts/verify_tier2_runtime_proof_gate.py",
+      "scripts/verify_tier3_runtime_proof_gate.py",
+      "scripts/verify_tier4_runtime_proof_gate.py",
+      "scripts/verify_tier5_runtime_proof_gate.py",
+      "scripts/verify_tier6_runtime_proof_gate.py"
+    ],
+    "hardening_gate": "scripts/verify_tier_gate_hardening.py",
+    "master_gate": "scripts/verify_all_requirements_gates.py"
+  },
+  "hardening_case_count": 79,
+  "ci_workflows": [
+    "tier0-enforcement-gate.yml",
+    "tier0-runtime-proof-gate.yml",
+    "tier1-enforcement-gate.yml",
+    "tier1-runtime-proof-gate.yml",
+    "tier2-enforcement-gate.yml",
+    "tier2-runtime-proof-gate.yml",
+    "tier3-runtime-proof-gate.yml",
+    "tier4-runtime-proof-gate.yml",
+    "tier5-runtime-proof-gate.yml",
+    "tier6-runtime-proof-gate.yml",
+    "tier-gate-hardening.yml",
+    "all-requirements-gate.yml"
+  ],
+  "ci_workflows_note": "Tier 0-2 metadata-gate workflows exist (tier0/1/2-enforcement-gate.yml). Tier 3-6 metadata-gate CI is invoked transitively by tier3/4/5/6-runtime-proof-gate.yml (the runtime-proof verifier subprocess-runs the metadata gate). The master all-requirements-gate.yml also runs every metadata gate.",
+  "validation_commands": [
+    "python scripts/verify_all_requirements_gates.py",
+    "python scripts/verify_tier0_enforcement_gate.py",
+    "python scripts/verify_tier0_runtime_proof_gate.py",
+    "python scripts/verify_tier1_enforcement_gate.py",
+    "python scripts/verify_tier1_runtime_proof_gate.py",
+    "python scripts/verify_tier2_enforcement_gate.py",
+    "python scripts/verify_tier2_runtime_proof_gate.py",
+    "python scripts/verify_tier3_enforcement_gate.py",
+    "python scripts/verify_tier3_runtime_proof_gate.py",
+    "python scripts/verify_tier4_enforcement_gate.py",
+    "python scripts/verify_tier4_runtime_proof_gate.py",
+    "python scripts/verify_tier5_enforcement_gate.py",
+    "python scripts/verify_tier5_runtime_proof_gate.py",
+    "python scripts/verify_tier6_enforcement_gate.py",
+    "python scripts/verify_tier6_runtime_proof_gate.py",
+    "python scripts/verify_tier_gate_hardening.py"
+  ],
+  "latest_commit_hashes": {
+    "tier6_runtime_proof_gate_and_hardening": "aa2befcb43",
+    "tier6_21_rows_closed": "391265fb7b"
+  },
+  "caveats": [
+    "No full pytest run is performed by any gate.",
+    "No proof harness is invoked.",
+    "No replay machinery is executed.",
+    "No OTEL exporter is run.",
+    "This baseline does not claim real replay execution.",
+    "This baseline does not claim real OTEL emission.",
+    "This baseline does not claim full production runtime proof.",
+    "This baseline does not claim full architecture proof."
+  ],
+  "next_phase_roadmap": [
+    "Optional: real replay execution proof (run replay machinery and bind JSON outputs to ledger).",
+    "Optional: real OTEL emission proof (exporter-in-CI verifying span shapes).",
+    "Optional: production runtime integration proof.",
+    "Optional: evidence freshness / drift monitor (detect stale fixtures, stale policy, outdated selection).",
+    "Optional: release dashboard aggregating Tier 0-6 status + hardening + coverage in one view."
+  ]
+}

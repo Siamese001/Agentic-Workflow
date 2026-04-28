@@ -1,0 +1,37 @@
+name: all-requirements-gate
+
+# Master gate aggregating every Tier 0-6 metadata enforcement gate, every
+# Tier 0-6 runtime/static proof gate, and the cross-tier fail-closed
+# hardening gate. Also validates the full 150-row Step 1 coverage:
+# tier assignment sums to 150, distinct REQ_IDs == 150, duplicates == 0.
+#
+# Static-only: does NOT execute replay machinery, OTEL exporters, proof
+# harnesses, or the full pytest suite. Does NOT claim real replay
+# execution, real OTEL emission, full production runtime proof, or
+# full architecture proof.
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  all-requirements-gate:
+    name: "All requirements gate (Tier 0-6 + hardening + coverage)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pytest (targeted-tests harness for downstream verifiers)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+      - name: Run master all-requirements gate
+        run: |
+          python scripts/verify_all_requirements_gates.py
