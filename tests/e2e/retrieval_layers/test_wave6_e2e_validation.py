@@ -96,7 +96,7 @@ def test_full_pipeline_integration() -> bool:
 
         print("  Step 6: Store snapshot for meta-learning (Wave 4)")
         bridge = L6MetaLearningBridge(
-            storage_path="test_artifacts/meta_learning_e2e",
+            storage_path="artifacts/test_artifacts/meta_learning_e2e",
             enable_persistence=True,
         )
 
@@ -318,7 +318,9 @@ def main() -> int:
     ]
 
     results = []
-    for name, test_func in tests:
+    from tqdm import tqdm
+
+    for name, test_func in tqdm(tests, desc="Wave6 tests", unit="test"):
         print(f"\n--- {name} ---")
         try:
             result = test_func()

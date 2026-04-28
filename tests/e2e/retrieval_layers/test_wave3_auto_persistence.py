@@ -34,13 +34,13 @@ def test_adapter_initialization() -> bool:
             service_name="test-service",
             auto_persist=True,
             uwg_endpoint="http://localhost:8000",
-            adg_storage_path="test_artifacts/adg",
+            adg_storage_path="artifacts/test_artifacts/adg",
         )
 
         # Verify initialization
         assert adapter.auto_persist is True
         assert adapter.uwg_endpoint == "http://localhost:8000"
-        assert adapter.adg_storage_path == "test_artifacts/adg"
+        assert adapter.adg_storage_path == "artifacts/test_artifacts/adg"
 
         print("✓ AutoPersistenceTracingAdapter initializes correctly")
         return True
@@ -171,7 +171,7 @@ def test_get_persistence_status() -> bool:
             service_name="test-service",
             auto_persist=True,
             uwg_endpoint="http://localhost:8000",
-            adg_storage_path="test_artifacts/adg",
+            adg_storage_path="artifacts/test_artifacts/adg",
             enable_logging=False,
         )
 
@@ -331,7 +331,9 @@ def main() -> int:
     ]
 
     results = []
-    for name, test_func in tests:
+    from tqdm import tqdm
+
+    for name, test_func in tqdm(tests, desc="Wave3 tests", unit="test"):
         print(f"\n--- {name} ---")
         try:
             result = test_func()
