@@ -96,6 +96,39 @@ _SCENARIO_EXTRAS: Dict[str, Tuple[str, str]] = {
         "REQ-L1-NO-EXECUTE-001",
         "L1_EXECUTION_BLOCKED",
     ),
+    # Tier 3 Runtime Gates cluster (W..AD).
+    "W_gate_g01_g05_ingress": (
+        "REQ-GATE-G01-G05-INGRESS-001",
+        "GATE_G01_G05_INGRESS_REQUIRED",
+    ),
+    "X_gate_g06_g10_hitl_route": (
+        "REQ-GATE-G06-G10-HITL-ROUTE-001",
+        "GATE_G06_G10_HITL_ROUTE_REQUIRED",
+    ),
+    "Y_gate_g11_g15_tool_model": (
+        "REQ-GATE-G11-G15-TOOL-MODEL-001",
+        "GATE_G11_G15_TOOL_MODEL_REQUIRED",
+    ),
+    "Z_gate_g16_g20_memory_workflow": (
+        "REQ-GATE-G16-G20-MEMORY-WORKFLOW-001",
+        "GATE_G16_G20_MEMORY_WORKFLOW_REQUIRED",
+    ),
+    "AA_gate_g21_g24_output_replay": (
+        "REQ-GATE-G21-G24-OUTPUT-REPLAY-001",
+        "GATE_G21_G24_OUTPUT_REPLAY_REQUIRED",
+    ),
+    "AB_gate_g25_g29_exit_write": (
+        "REQ-GATE-G25-G29-EXIT-WRITE-001",
+        "GATE_G25_G29_EXIT_WRITE_REQUIRED",
+    ),
+    "AC_gate_no_overlap_exit": (
+        "REQ-GATE-NO-OVERLAP-WITH-EXIT-001",
+        "GATE_EXIT_OVERLAP_BLOCKED",
+    ),
+    "AD_gate_no_overlap_l5": (
+        "REQ-GATE-NO-OVERLAP-WITH-L5-001",
+        "GATE_L5_OVERLAP_BLOCKED",
+    ),
 }
 
 # Per-scenario rich-trace extras for Tier 2 Batch B/C trace fixtures. These
@@ -209,6 +242,108 @@ _TRACE_RICH_EXTRAS: Dict[str, Mapping[str, object]] = {
         "rejected": True,
         "tool_invocation_count": 0,
         "model_invocation_count": 0,
+    },
+    # Tier 3 Runtime Gates cluster (W..AD). Each carries the requirement-
+    # specific demonstration fields named in the prompt.
+    "W_gate_g01_g05_ingress": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-G01-G05-INGRESS-001",
+        "gate_family": "G01..G05",
+        "gate_range": "G01..G05",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g01_g05_ingress_refs.py",
+        ),
+        "ingress_gate_ids": (
+            "G01_IDENTITY", "G02_INTENT", "G03_SAFETY", "G04_ABUSE", "G05_REQUEST_SCHEMA",
+        ),
+        "ingress_validated": True,
+    },
+    "X_gate_g06_g10_hitl_route": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-G06-G10-HITL-ROUTE-001",
+        "gate_family": "G06..G10",
+        "gate_range": "G06..G10",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g06_g10_hitl_route_refs.py",
+        ),
+        "hitl_route_gate_ids": (
+            "G06_HITL", "G07_ROUTE", "G08_RETRIEVAL", "G09_EVIDENCE", "G10_GROUNDING",
+        ),
+        "hitl_or_route_validated": True,
+    },
+    "Y_gate_g11_g15_tool_model": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-G11-G15-TOOL-MODEL-001",
+        "gate_family": "G11..G15",
+        "gate_range": "G11..G15",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g11_g15_tool_model_refs.py",
+        ),
+        "tool_model_gate_ids": (
+            "G11_TOOL", "G12_MODEL", "G13_ARGS", "G14_EGRESS", "G15_SANDBOX",
+        ),
+        "tool_model_validated": True,
+    },
+    "Z_gate_g16_g20_memory_workflow": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-G16-G20-MEMORY-WORKFLOW-001",
+        "gate_family": "G16..G20",
+        "gate_range": "G16..G20",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g16_g20_memory_workflow_refs.py",
+        ),
+        "memory_workflow_gate_ids": (
+            "G16_MEMORY", "G17_PRIVACY", "G18_WORKFLOW", "G19_LOOP", "G20_BUDGET",
+        ),
+        "memory_workflow_validated": True,
+    },
+    "AA_gate_g21_g24_output_replay": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-G21-G24-OUTPUT-REPLAY-001",
+        "gate_family": "G21..G24",
+        "gate_range": "G21..G24",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g21_g24_output_replay_refs.py",
+        ),
+        "output_replay_gate_ids": (
+            "G21_OUTPUT", "G22_SECURITY", "G23_REPLAY", "G24_SURFACE",
+        ),
+        "output_replay_validated": True,
+    },
+    "AB_gate_g25_g29_exit_write": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-G25-G29-EXIT-WRITE-001",
+        "gate_family": "G25..G29",
+        "gate_range": "G25..G29",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/g25_g29_exit_write_refs.py",
+        ),
+        "exit_write_gate_ids": (
+            "G25_ANOMALY", "G26_EXIT", "G27_WRITE", "G28_AUDIT", "G29_LEARN",
+        ),
+        "exit_write_validated": True,
+    },
+    "AC_gate_no_overlap_exit": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-NO-OVERLAP-WITH-EXIT-001",
+        "gate_family": "NO_OVERLAP_WITH_EXIT",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/gate_no_overlap_exit_refs.py",
+        ),
+        "runtime_gate_owns_runtime_verdict": True,
+        "exit_owns_x3_disposition": True,
+        "overlap_detected": False,
+    },
+    "AD_gate_no_overlap_l5": {
+        "gate_result": "BLOCKED",
+        "blocker_target": "REQ-GATE-NO-OVERLAP-WITH-L5-001",
+        "gate_family": "NO_OVERLAP_WITH_L5",
+        "evidence_refs": (
+            "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs/gate_no_overlap_l5_refs.py",
+        ),
+        "runtime_gate_owns_live_gate_verdict": True,
+        "l5_owns_governance_certification": True,
+        "overlap_detected": False,
     },
 }
 
@@ -359,10 +494,11 @@ def _collect_referenced_paths() -> List[str]:
         tier0_step1_metadata as t0,
         tier1_step1_metadata as t1,
         tier2_step1_metadata as t2,
+        tier3_step1_metadata as t3,
     )
 
     paths: set[str] = set()
-    for module in (t0, t1, t2):
+    for module in (t0, t1, t2, t3):
         for attr in (
             "ARTIFACT_REFERENCES",
             "REPLAY_REFERENCES",

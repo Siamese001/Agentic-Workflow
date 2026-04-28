@@ -78,50 +78,144 @@ EXPECTED_FAIL_REASONS: Mapping[str, str] = {
 # acceptable and preferred over fake readiness.
 # ---------------------------------------------------------------------------
 
-CODE_REFERENCES: Mapping[str, Sequence[str]] = {
-    "REQ-L6-OBS-ANTI-BYPASS-001": (),
-    "REQ-C0-NO-WRITE-001": (),
-    "REQ-L0-NO-EXECUTE-001": (),
-    "REQ-L0-GROUNDED-ACTION-HANDOFF-001": (),
-    "REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001": (),
-    "REQ-GATE-G01-G05-INGRESS-001": (),
-    "REQ-GATE-G06-G10-HITL-ROUTE-001": (),
-    "REQ-GATE-G11-G15-TOOL-MODEL-001": (),
-    "REQ-GATE-G16-G20-MEMORY-WORKFLOW-001": (),
-    "REQ-GATE-G21-G24-OUTPUT-REPLAY-001": (),
-    "REQ-GATE-G25-G29-EXIT-WRITE-001": (),
-    "REQ-GATE-NO-OVERLAP-WITH-EXIT-001": (),
-    "REQ-GATE-NO-OVERLAP-WITH-L5-001": (),
-    "REQ-L5-REPLAY-AUDIT-CERT-001": (),
-    "REQ-U0-OBS-REPLAY-001": (),
-    "REQ-L1-OBS-OTEL-001": (),
-    "REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001": (),
-    "REQ-L1-AMBIGUITY-EVIDENCE-001": (),
-    "REQ-U0-CHANNEL-VALIDATION-001": (),
-    "REQ-EXIT-X1A-X1F-CHECKS-001": (),
-    "REQ-PA-VALIDATE-SLOT-CONTRACT-001": (),
-    "REQ-L5-EGRESS-PROVIDER-GOV-001": (),
-    "REQ-E2E-FIXTURES-REPLAY-HARNESS-001": (),
-    "REQ-C0-PREFLIGHT-GROUNDING-001": (),
-    "REQ-C0-GRAPH-RAG-001": (),
+# Runtime Gates cluster: each row maps to its own static reference module
+# under tier3_runtime_gate_refs/ plus a deterministic scenario fixture pair.
+# All 8 modules + scenario JSON files are created in this prompt; their
+# paths exist on disk and are filtered through _filter_existing at runtime.
+
+_T3_REFS_DIR = "agentic_core/runtime/prove_requirements/tier3_runtime_gate_refs"
+_T3_TRACES_DIR = "artifacts/runtime/requirements_proof/traces"
+_T3_REPLAY_DIR = "artifacts/runtime/requirements_proof/replay"
+
+_RUNTIME_GATE_MAP: Mapping[str, Mapping[str, str]] = {
+    "REQ-GATE-G01-G05-INGRESS-001": {
+        "ref_module": f"{_T3_REFS_DIR}/g01_g05_ingress_refs.py",
+        "scenario_key": "W_gate_g01_g05_ingress",
+    },
+    "REQ-GATE-G06-G10-HITL-ROUTE-001": {
+        "ref_module": f"{_T3_REFS_DIR}/g06_g10_hitl_route_refs.py",
+        "scenario_key": "X_gate_g06_g10_hitl_route",
+    },
+    "REQ-GATE-G11-G15-TOOL-MODEL-001": {
+        "ref_module": f"{_T3_REFS_DIR}/g11_g15_tool_model_refs.py",
+        "scenario_key": "Y_gate_g11_g15_tool_model",
+    },
+    "REQ-GATE-G16-G20-MEMORY-WORKFLOW-001": {
+        "ref_module": f"{_T3_REFS_DIR}/g16_g20_memory_workflow_refs.py",
+        "scenario_key": "Z_gate_g16_g20_memory_workflow",
+    },
+    "REQ-GATE-G21-G24-OUTPUT-REPLAY-001": {
+        "ref_module": f"{_T3_REFS_DIR}/g21_g24_output_replay_refs.py",
+        "scenario_key": "AA_gate_g21_g24_output_replay",
+    },
+    "REQ-GATE-G25-G29-EXIT-WRITE-001": {
+        "ref_module": f"{_T3_REFS_DIR}/g25_g29_exit_write_refs.py",
+        "scenario_key": "AB_gate_g25_g29_exit_write",
+    },
+    "REQ-GATE-NO-OVERLAP-WITH-EXIT-001": {
+        "ref_module": f"{_T3_REFS_DIR}/gate_no_overlap_exit_refs.py",
+        "scenario_key": "AC_gate_no_overlap_exit",
+    },
+    "REQ-GATE-NO-OVERLAP-WITH-L5-001": {
+        "ref_module": f"{_T3_REFS_DIR}/gate_no_overlap_l5_refs.py",
+        "scenario_key": "AD_gate_no_overlap_l5",
+    },
 }
 
-VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {rid: () for rid in CODE_REFERENCES}
-TEST_REFERENCES: Mapping[str, Sequence[str]] = {rid: () for rid in CODE_REFERENCES}
-ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {rid: () for rid in CODE_REFERENCES}
-REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {rid: () for rid in CODE_REFERENCES}
-OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {rid: () for rid in CODE_REFERENCES}
-NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {rid: () for rid in CODE_REFERENCES}
+# Optional targeted fixture test (created in this prompt) covers all 8
+# Runtime Gates rows via parametrized cases; serves as test_refs and
+# negative_control_refs for those rows.
+_T3_GATES_FIXTURE_TEST = "tests/runtime/test_tier3_runtime_gates_cluster_fixtures.py"
 
-# ---------------------------------------------------------------------------
-# Phase 3: Existing-reference enrichment. Only paths that already exist on
-# disk and clearly map to the requirement may be added below. Inventing
-# file names is forbidden by the prompt. Any ref added here is also gated
-# at runtime by _filter_existing — stale paths are silently dropped.
-# ---------------------------------------------------------------------------
 
-# (Reserved for future enrichment passes. Empty for first-pass: gate is
-# expected to be BLOCKED.)
+def _gate_code_refs(rid: str) -> Tuple[str, ...]:
+    info = _RUNTIME_GATE_MAP.get(rid)
+    return (info["ref_module"],) if info else ()
+
+
+def _gate_artifact_refs(rid: str) -> Tuple[str, ...]:
+    info = _RUNTIME_GATE_MAP.get(rid)
+    if not info:
+        return ()
+    sk = info["scenario_key"]
+    return (f"{_T3_TRACES_DIR}/scenario_{sk}.json",)
+
+
+def _gate_replay_refs(rid: str) -> Tuple[str, ...]:
+    info = _RUNTIME_GATE_MAP.get(rid)
+    if not info:
+        return ()
+    sk = info["scenario_key"]
+    return (
+        f"{_T3_REPLAY_DIR}/replay_{sk}_run_1.json",
+        f"{_T3_REPLAY_DIR}/replay_{sk}_run_2.json",
+    )
+
+
+def _gate_test_refs(rid: str) -> Tuple[str, ...]:
+    return (_T3_GATES_FIXTURE_TEST,) if rid in _RUNTIME_GATE_MAP else ()
+
+
+def _gate_negative_control_refs(rid: str) -> Tuple[str, ...]:
+    # The reference module declares NEGATIVE_CONTROL_NAME; the targeted
+    # fixture test exercises the negative control case for each gate band.
+    return (_T3_GATES_FIXTURE_TEST,) if rid in _RUNTIME_GATE_MAP else ()
+
+
+_T3_REQ_IDS: Tuple[str, ...] = (
+    "REQ-L6-OBS-ANTI-BYPASS-001",
+    "REQ-C0-NO-WRITE-001",
+    "REQ-L0-NO-EXECUTE-001",
+    "REQ-L0-GROUNDED-ACTION-HANDOFF-001",
+    "REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001",
+    "REQ-GATE-G01-G05-INGRESS-001",
+    "REQ-GATE-G06-G10-HITL-ROUTE-001",
+    "REQ-GATE-G11-G15-TOOL-MODEL-001",
+    "REQ-GATE-G16-G20-MEMORY-WORKFLOW-001",
+    "REQ-GATE-G21-G24-OUTPUT-REPLAY-001",
+    "REQ-GATE-G25-G29-EXIT-WRITE-001",
+    "REQ-GATE-NO-OVERLAP-WITH-EXIT-001",
+    "REQ-GATE-NO-OVERLAP-WITH-L5-001",
+    "REQ-L5-REPLAY-AUDIT-CERT-001",
+    "REQ-U0-OBS-REPLAY-001",
+    "REQ-L1-OBS-OTEL-001",
+    "REQ-L1-PLAN-VALIDATION-SELF-REPAIR-001",
+    "REQ-L1-AMBIGUITY-EVIDENCE-001",
+    "REQ-U0-CHANNEL-VALIDATION-001",
+    "REQ-EXIT-X1A-X1F-CHECKS-001",
+    "REQ-PA-VALIDATE-SLOT-CONTRACT-001",
+    "REQ-L5-EGRESS-PROVIDER-GOV-001",
+    "REQ-E2E-FIXTURES-REPLAY-HARNESS-001",
+    "REQ-C0-PREFLIGHT-GROUNDING-001",
+    "REQ-C0-GRAPH-RAG-001",
+)
+
+# Reference dicts. Runtime Gates rows are populated; non-Runtime-Gates
+# rows remain empty (no existing references found via the on-disk REQ_ID
+# scan; deferred to subsequent Tier 3 prompts).
+CODE_REFERENCES: Mapping[str, Sequence[str]] = {
+    rid: _gate_code_refs(rid) for rid in _T3_REQ_IDS
+}
+VALIDATOR_REFERENCES: Mapping[str, Sequence[str]] = {
+    # Same module declares validate_gate_contract() — used as validator.
+    rid: _gate_code_refs(rid) for rid in _T3_REQ_IDS
+}
+OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
+    # Same module declares SPAN_NAMES — used as static span declaration ref.
+    rid: _gate_code_refs(rid) for rid in _T3_REQ_IDS
+}
+TEST_REFERENCES: Mapping[str, Sequence[str]] = {
+    rid: _gate_test_refs(rid) for rid in _T3_REQ_IDS
+}
+ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
+    rid: _gate_artifact_refs(rid) for rid in _T3_REQ_IDS
+}
+REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
+    rid: _gate_replay_refs(rid) for rid in _T3_REQ_IDS
+}
+NEGATIVE_CONTROL_REFERENCES: Mapping[str, Sequence[str]] = {
+    rid: _gate_negative_control_refs(rid) for rid in _T3_REQ_IDS
+}
 
 
 def _utc_now_iso() -> str:
