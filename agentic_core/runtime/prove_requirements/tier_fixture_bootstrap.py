@@ -576,6 +576,55 @@ for _key, _rid, _efr, _mod, _span, _demo in _TIER4_BOOTSTRAP_ROWS:
     }
 
 
+
+# ---------------------------------------------------------------------------
+# Tier 5 Prompt B additions (25 rows: scenarios BU..CS). Each row maps to its
+# cluster module and a single demonstration boolean field. Static metadata.
+# ---------------------------------------------------------------------------
+
+_TIER5_CLUSTER_REFS_DIR = (
+    "agentic_core/runtime/prove_requirements/tier5_cluster_refs"
+)
+_TIER5_BOOTSTRAP_ROWS: Tuple[Tuple[str, str, str, str, str, str], ...] = (
+    # (scenario_key, req_id, expected_fail_reason, cluster_module, span_name, demo_field)
+    ('BU_l5_capability_token_schema', 'REQ-L5-CAPABILITY-TOKEN-SCHEMA-001', 'L5_CAPABILITY_TOKEN_SCHEMA_VIOLATION', 'governance_migration_refs.py', 'tier5.l5.capability_token_schema', 'capability_token_schema_validated'),
+    ('BV_l5_cross_child_cert_consistency', 'REQ-L5-CROSS-CHILD-CERT-CONSISTENCY-001', 'L5_CROSS_CHILD_CERT_INCONSISTENCY', 'governance_migration_refs.py', 'tier5.l5.cross_child_cert_consistency', 'cross_child_cert_consistent'),
+    ('BW_l5_calibration_assurance', 'REQ-L5-CALIBRATION-ASSURANCE-001', 'L5_CALIBRATION_ASSURANCE_MISSING', 'governance_migration_refs.py', 'tier5.l5.calibration_assurance', 'calibration_assurance_checked'),
+    ('BX_l4_blueprint_version_migration', 'REQ-L4-BLUEPRINT-VERSION-MIGRATION-001', 'L4_BLUEPRINT_VERSION_MIGRATION_REJECTED', 'governance_migration_refs.py', 'tier5.l4.blueprint_version_migration', 'blueprint_version_migration_validated'),
+    ('BY_l4_memory_promotion_state', 'REQ-L4-MEMORY-PROMOTION-STATE-001', 'L4_MEMORY_PROMOTION_STATE_VIOLATION', 'governance_migration_refs.py', 'tier5.l4.memory_promotion_state', 'memory_promotion_state_preserved'),
+    ('BZ_l4_read_surface_refresh', 'REQ-L4-READ-SURFACE-REFRESH-001', 'L4_READ_SURFACE_REFRESH_REJECTED', 'governance_migration_refs.py', 'tier5.l4.read_surface_refresh', 'read_surface_refresh_applied'),
+    ('CA_u0_transport_envelope', 'REQ-U0-TRANSPORT-ENVELOPE-001', 'U0_TRANSPORT_ENVELOPE_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.u0.transport_envelope', 'transport_envelope_validated'),
+    ('CB_u0_data_labeling', 'REQ-U0-DATA-LABELING-001', 'U0_DATA_LABELING_MISSING', 'planning_retrieval_prompt_refs.py', 'tier5.u0.data_labeling', 'data_labeling_applied'),
+    ('CC_u0_rejection_path', 'REQ-U0-REJECTION-PATH-001', 'U0_REJECTION_PATH_VIOLATION', 'planning_retrieval_prompt_refs.py', 'tier5.u0.rejection_path', 'rejection_path_taken'),
+    ('CD_l1_contextual_refinement', 'REQ-L1-CONTEXTUAL-REFINEMENT-001', 'L1_CONTEXTUAL_REFINEMENT_DRIFT_DETECTED', 'planning_retrieval_prompt_refs.py', 'tier5.l1.contextual_refinement', 'contextual_refinement_applied'),
+    ('CE_l1_draft_plan_route_hints', 'REQ-L1-DRAFT-PLAN-ROUTE-HINTS-001', 'L1_DRAFT_PLAN_ROUTE_HINTS_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.l1.draft_plan_route_hints', 'draft_plan_route_hints_present'),
+    ('CF_l3_concurrency_fallback', 'REQ-L3-CONCURRENCY-FALLBACK-001', 'L3_CONCURRENCY_FALLBACK_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.l3.concurrency_fallback', 'concurrency_fallback_declared'),
+    ('CG_l3_step_readiness_ledger', 'REQ-L3-STEP-READINESS-LEDGER-001', 'L3_STEP_READINESS_LEDGER_VIOLATION', 'planning_retrieval_prompt_refs.py', 'tier5.l3.step_readiness_ledger', 'step_readiness_ledger_recorded'),
+    ('CH_c0_shape_rerank_stratify', 'REQ-C0-SHAPE-RERANK-STRATIFY-001', 'C0_SHAPE_RERANK_STRATIFY_DRIFT_DETECTED', 'planning_retrieval_prompt_refs.py', 'tier5.c0.shape_rerank_stratify', 'shape_rerank_stratify_applied'),
+    ('CI_pa_slot_composition', 'REQ-PA-SLOT-COMPOSITION-001', 'PA_SLOT_COMPOSITION_REJECTED', 'planning_retrieval_prompt_refs.py', 'tier5.pa.slot_composition', 'slot_composition_validated'),
+    ('CJ_l2_e2_valid_work_order', 'REQ-L2-E2-VALID-WORK-ORDER-001', 'L2_VALID_WORK_ORDER_REJECTED', 'execution_evaluation_learning_refs.py', 'tier5.l2.e2_valid_work_order', 'valid_work_order_present'),
+    ('CK_l2_e3_exec_lanes_sandbox', 'REQ-L2-E3-EXEC-LANES-SANDBOX-001', 'L2_EXEC_LANES_SANDBOX_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l2.e3_exec_lanes_sandbox', 'exec_lane_sandbox_enforced'),
+    ('CL_l2_e4_heal_same_authority', 'REQ-L2-E4-HEAL-SAME-AUTHORITY-001', 'L2_HEAL_AUTHORITY_DRIFT_DETECTED', 'execution_evaluation_learning_refs.py', 'tier5.l2.e4_heal_same_authority', 'heal_same_authority_enforced'),
+    ('CM_l2_resolution_context_invariant', 'REQ-L2-RESOLUTION-CONTEXT-INVARIANT-001', 'L2_RESOLUTION_CONTEXT_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l2.resolution_context_invariant', 'resolution_context_preserved'),
+    ('CN_exit_input_normalization', 'REQ-EXIT-INPUT-NORMALIZATION-001', 'EXIT_INPUT_NORMALIZATION_REJECTED', 'execution_evaluation_learning_refs.py', 'tier5.exit.input_normalization', 'exit_input_normalized'),
+    ('CO_exit_grader_composition', 'REQ-EXIT-GRADER-COMPOSITION-001', 'EXIT_GRADER_COMPOSITION_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.exit.grader_composition', 'grader_composition_validated'),
+    ('CP_exit_return_response', 'REQ-EXIT-RETURN-RESPONSE-001', 'EXIT_RETURN_RESPONSE_DISPOSITION_MISSING', 'execution_evaluation_learning_refs.py', 'tier5.exit.return_response', 'return_response_contract_applied'),
+    ('CQ_l6_outcome_trajectory', 'REQ-L6-OUTCOME-TRAJECTORY-001', 'L6_OUTCOME_TRAJECTORY_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l6.outcome_trajectory', 'outcome_trajectory_recorded'),
+    ('CR_l6_proposal_admission', 'REQ-L6-PROPOSAL-ADMISSION-001', 'L6_PROPOSAL_ADMISSION_REJECTED', 'execution_evaluation_learning_refs.py', 'tier5.l6.proposal_admission', 'proposal_admission_gated'),
+    ('CS_l6_memory_promotion_iface', 'REQ-L6-MEMORY-PROMOTION-IFACE-001', 'L6_MEMORY_PROMOTION_IFACE_VIOLATION', 'execution_evaluation_learning_refs.py', 'tier5.l6.memory_promotion_iface', 'memory_promotion_iface_used'),
+)
+
+for _key, _rid, _efr, _mod, _span, _demo in _TIER5_BOOTSTRAP_ROWS:
+    _SCENARIO_EXTRAS[_key] = (_rid, _efr)
+    _TRACE_RICH_EXTRAS[_key] = {
+        "gate_result": "BLOCKED",
+        "blocker_target": _rid,
+        "evidence_refs": (f"{_TIER5_CLUSTER_REFS_DIR}/{_mod}",),
+        "spans": (_span,),
+        _demo: True,
+    }
+
+
 def _maybe_trace_rich_extras(scenario_key: str) -> Dict[str, object]:
     extras = _TRACE_RICH_EXTRAS.get(scenario_key)
     if not extras:
@@ -724,10 +773,11 @@ def _collect_referenced_paths() -> List[str]:
         tier2_step1_metadata as t2,
         tier3_step1_metadata as t3,
         tier4_step1_metadata as t4,
+        tier5_step1_metadata as t5,
     )
 
     paths: set[str] = set()
-    for module in (t0, t1, t2, t3, t4):
+    for module in (t0, t1, t2, t3, t4, t5):
         for attr in (
             "ARTIFACT_REFERENCES",
             "REPLAY_REFERENCES",

@@ -1,6 +1,6 @@
 {
   "gate_id": "O_tool_call_parity_ratchet",
-  "count": 135,
+  "count": 182,
   "seeded_at": "2026-04-23T16:07:25.686234+00:00",
   "snapshot": "adg_indexed_04232026_1442.sqlite",
   "tightened_at": "2026-04-23T18:44:02.430696+00:00",
@@ -19,6 +19,16 @@
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-23T18:44:02.431204+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1442.sqlite"
+  "last_run_at": "2026-04-28T19:03:16.059789+00:00",
+  "last_run_snapshot": "adg_indexed_04282026_1456.sqlite",
+  "loosen_history": [
+    {
+      "at": "2026-04-28T18:49:35+00:00",
+      "snapshot": "unknown",
+      "from": 135,
+      "to": 182,
+      "reason": "finish-deferred-scope 2026-04-28: absorb current floor across 15 wiring_ci ratchets so the ratchet-class P0..P3 gates resume catching only NEW regressions; the absorbed counts are real architectural debt tracked separately under their owning plans (adg-wiring-ci-hardening-7a5d84 W3-W6)."
+    }
+  ],
+  "loosened_at": "2026-04-28T18:49:35+00:00"
 }

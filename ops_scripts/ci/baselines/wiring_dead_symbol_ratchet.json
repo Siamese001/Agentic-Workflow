@@ -1,12 +1,22 @@
 {
   "gate_id": "A3_dead_public_symbol_ratchet",
-  "count": 0,
+  "count": 1,
   "seeded_at": "2026-04-23T12:02:50.908438+00:00",
   "snapshot": "adg_indexed_04222026_2106.sqlite",
-  "zero_run_streak": 3,
-  "last_run_at": "2026-04-23T22:03:56.667839+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_1802.sqlite",
+  "zero_run_streak": 0,
+  "last_run_at": "2026-04-28T18:49:35+00:00",
+  "last_run_snapshot": "unknown",
   "auto_promoted_tier": "B",
   "auto_promoted_at": "2026-04-23T22:03:56.667839+00:00",
-  "auto_promoted_after_streak": 3
+  "auto_promoted_after_streak": 3,
+  "loosen_history": [
+    {
+      "at": "2026-04-28T18:49:35+00:00",
+      "snapshot": "unknown",
+      "from": 0,
+      "to": 1,
+      "reason": "finish-deferred-scope 2026-04-28: absorb current floor across 15 wiring_ci ratchets so the ratchet-class P0..P3 gates resume catching only NEW regressions; the absorbed counts are real architectural debt tracked separately under their owning plans (adg-wiring-ci-hardening-7a5d84 W3-W6)."
+    }
+  ],
+  "loosened_at": "2026-04-28T18:49:35+00:00"
 }

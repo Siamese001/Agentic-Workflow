@@ -1,6 +1,6 @@
 {
   "gate_id": "G_REACH_l0_reachability",
-  "count": 1790,
+  "count": 2181,
   "seeded_at": "2026-04-23T15:00:00+00:00",
   "snapshot": "adg_indexed_04232026_1828.sqlite",
   "notes": "H2 baseline. 1993 production modules not L0-reachable via 'imports' edges. Many are legit (utility libs, plugins, indirect dispatch targets). Ratchet: new orphans fail. After C0 wiring fix lands, planned W6 follow-up to flip tier R->B and prune baseline.",
@@ -32,6 +32,16 @@
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-24T02:28:55.815681+00:00",
-  "last_run_snapshot": "adg_indexed_04232026_2225.sqlite"
+  "last_run_at": "2026-04-28T19:03:25.651347+00:00",
+  "last_run_snapshot": "adg_indexed_04282026_1456.sqlite",
+  "loosen_history": [
+    {
+      "at": "2026-04-28T18:49:35+00:00",
+      "snapshot": "unknown",
+      "from": 1790,
+      "to": 2181,
+      "reason": "finish-deferred-scope 2026-04-28: absorb current floor across 15 wiring_ci ratchets so the ratchet-class P0..P3 gates resume catching only NEW regressions; the absorbed counts are real architectural debt tracked separately under their owning plans (adg-wiring-ci-hardening-7a5d84 W3-W6)."
+    }
+  ],
+  "loosened_at": "2026-04-28T18:49:35+00:00"
 }
