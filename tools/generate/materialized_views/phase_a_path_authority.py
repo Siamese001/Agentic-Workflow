@@ -97,6 +97,21 @@ _UWG_PATH_FRAGMENTS = (
     "durable_write",
 )
 
+# Symbol-pattern fragments matching canonical UWG call sites (e.g. ``_wg.write_text(...)``,
+# ``self._wg.commit(...)``, ``write_gateway.commit(...)``). A write whose ``e.symbol``
+# matches any of these is UWG-routed regardless of which file makes the call.
+# Without this, ~117/1483 violations on the 04282026_1853 snapshot were false positives
+# because callers using the ``_wg`` abbreviation were misclassified by path-only detection.
+_UWG_SYMBOL_FRAGMENTS = (
+    "_wg.",
+    "self._wg.",
+    "self.uwg.",
+    "self.write_gateway.",
+    "write_gateway.",
+    "uwg.",
+    "UniversalWrite",
+)
+
 _L2_PHASE_KEYWORDS: list[tuple[str, str]] = [
     ("pre_audit", "pre_audit"),
     ("discovery", "discovery"),
@@ -124,6 +139,23 @@ def _build_forbidden_pairs_clause() -> str:
 def _build_uwg_path_clause(col: str) -> str:
     frags = " OR ".join(f"{col} LIKE '%{f}%'" for f in _UWG_PATH_FRAGMENTS)
     return f"({frags})"
+
+
+def _build_uwg_symbol_clause(col: str) -> str:
+    """Return SQL fragment matching ``col`` against any UWG call-site symbol pattern.
+
+    Companion to ``_build_uwg_path_clause``: path-based detection sees only the
+    SOURCE FILE's location, not the call's symbol. Many callers correctly route
+    writes through UWG via the ``_wg`` abbreviation but live outside ``uwg/``
+    package paths; symbol-based detection catches those.
+    """
+    frags = " OR ".join(f"{col} LIKE '{f}%'" for f in _UWG_SYMBOL_FRAGMENTS)
+    return f"({frags})"
+
+
+def _build_uwg_routed_clause(path_col: str, symbol_col: str) -> str:
+    """Combined UWG-routed predicate: caller path OR symbol matches a UWG fragment."""
+    return f"({_build_uwg_path_clause(path_col)} OR {_build_uwg_symbol_clause(symbol_col)})"
 
 
 def _spine_layers_in() -> str:
@@ -370,19 +402,19 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
             e.symbol              AS write_symbol,
             e.line_no             AS write_line,
             e.source_file         AS source_file,
-            CASE WHEN {_build_uwg_path_clause("src.resolved_path")}
+            CASE WHEN {_build_uwg_routed_clause("src.resolved_path", "e.symbol")}
                  THEN 1 ELSE 0 END AS is_uwg_routed,
             CASE WHEN EXISTS (
                 SELECT 1 FROM t_infra_importers ti
                 WHERE ti.resolved_path = src.resolved_path
             ) THEN 1 ELSE 0 END   AS is_direct_infra_write,
             CASE
-                WHEN NOT ({_build_uwg_path_clause("src.resolved_path")})
+                WHEN NOT ({_build_uwg_routed_clause("src.resolved_path", "e.symbol")})
                      AND EXISTS (
                          SELECT 1 FROM t_infra_importers ti
                          WHERE ti.resolved_path = src.resolved_path
                      ) THEN 'critical'
-                WHEN NOT ({_build_uwg_path_clause("src.resolved_path")})
+                WHEN NOT ({_build_uwg_routed_clause("src.resolved_path", "e.symbol")})
                      THEN 'warning'
                 ELSE 'ok'
             END AS severity

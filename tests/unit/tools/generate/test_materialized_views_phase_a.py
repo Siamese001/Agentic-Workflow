@@ -301,6 +301,64 @@ class TestPhaseAAuthority:
         assert row is not None
         assert row[0] == 0  # not UWG routed
 
+    def test_write_sovereignty_uwg_detected_by_symbol(self, tmp_path: Path) -> None:
+        """A caller that lives outside any uwg/* path is still UWG-routed when its
+        write call symbol matches a UWG fragment (``_wg.write_text``,
+        ``self._wg.commit``, ``write_gateway.commit``, ``UniversalWrite*``).
+
+        Regression for the 2026-04-28 finding where 117/1483 raw write_sovereignty
+        violations were callers correctly using the ``_wg`` abbreviation but
+        flagged as bypasses by path-only detection.
+        """
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        # Writer outside uwg/ path — would fail under path-only detection
+        _node(conn, 1, "healer", "L5", "agentic_core/L5_safety/utils/healer_util.py")
+        _node(conn, 2, "target", "L4", "agentic_core/L4_state/store.py")
+        # Symbol = `_wg.write_text` => canonical UWG abbreviation
+        _edge(conn, 1, 2, "writes_to", symbol="_wg.write_text")
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        row = conn.execute(
+            "SELECT is_uwg_routed, severity FROM mv_write_sovereignty_paths "
+            "WHERE writer_file LIKE '%healer%'"
+        ).fetchone()
+        conn.close()
+        assert row is not None
+        assert row[0] == 1, "_wg.write_text MUST be UWG-routed (symbol-based detection)"
+        assert row[1] == "ok", "is_uwg_routed=1 implies severity=ok, not warning"
+
+    def test_write_sovereignty_uwg_symbol_variants(self, tmp_path: Path) -> None:
+        """Validate every documented UWG symbol fragment is detected."""
+        variants = [
+            ("_wg.write_text", "agentic_core/L5_safety/utils/a.py"),
+            ("self._wg.commit", "agentic_core/L5_safety/utils/b.py"),
+            ("self.uwg.commit", "agentic_core/L3_orchestration/c.py"),
+            ("write_gateway.commit", "agentic_core/L2_execution/d.py"),
+            ("UniversalWriteGateway.commit", "agentic_core/L0_routing/e.py"),
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for i, (symbol, path) in enumerate(variants, start=1):
+            _node(conn, i, f"caller{i}", "L5", path)
+            _edge(conn, i, 99, "writes_to", symbol=symbol)
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol, is_uwg_routed FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        # Every variant must come back is_uwg_routed=1
+        for symbol, _path in variants:
+            matched = [r for r in rows if r[0] == symbol]
+            assert matched, f"missing row for symbol {symbol!r}"
+            assert matched[0][1] == 1, f"symbol {symbol!r} should be UWG-routed"
+
     def test_hitl_reclearance_gap_write_no_guardrail(self, tmp_path: Path) -> None:
         db = _create_minimal_db(tmp_path)
         conn = sqlite3.connect(str(db))
