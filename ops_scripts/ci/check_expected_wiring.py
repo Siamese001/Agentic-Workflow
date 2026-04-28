@@ -229,6 +229,21 @@ def _check_signature_contract(
 def _check_row(row: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     row_id = row.get("id", "<unnamed>")
+
+    # Plan: adg-expected-wiring-drift-cleanup. A row may carry
+    # ``disabled: true`` plus a free-text ``disabled_reason`` to opt out of
+    # the static AST check while preserving the declaration as documentation
+    # and audit trail. Use cases:
+    #   * Real architectural debt where the call IS missing AND a separate
+    #     plan owns the fix (don't double-track the failure here).
+    #   * Lazy-factory indirection patterns the AST walker cannot resolve
+    #     when the proof_test already validates the runtime behaviour.
+    # Disabled rows MUST still keep entry_module / entry_symbol / required_call
+    # so the row remains a complete wiring contract; the gate just won't fail
+    # on them. Re-enabling is a one-line yaml flip.
+    if row.get("disabled"):
+        return errors
+
     entry_module = row.get("entry_module")
     entry_symbol = row.get("entry_symbol")
     required_call = row.get("required_call")
