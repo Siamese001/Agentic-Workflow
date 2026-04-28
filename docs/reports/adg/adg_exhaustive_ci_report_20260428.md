@@ -1,13 +1,24 @@
 # Exhaustive ADG CI Report
 
-- **Generated:** 2026-04-28T19:29:02+00:00
+- **Generated:** 2026-04-28T19:32:39+00:00
 - **Snapshot SQLite:** `adg_indexed_04282026_1505.sqlite` (412,590,080 bytes)
-- **Snapshot source:** extracted
+- **Snapshot source:** archive:adg_run_04282026_1505.zip.gz
 - **Gate results:** `artifacts\adg\adg_gate_results_20260428_191222.json`
-- **Burndown table:** `C:\Git\Agentic-Workflow\_tmp_extract\run\adg\adg_burndown_table.json`
+- **Burndown table:** `C:\Users\amita\AppData\Local\Temp\adg_extract_d6h1z_7h\run\adg\adg_burndown_table.json`
 - **Dispatcher overall verdict:** **BLOCKED**
 
 ## 1. Executive Summary
+
+> ℹ️ **Two `P` namespaces in this report** — they look the same but mean different things:
+> 
+> | Where | `P0` means | Counts |
+> |---|---|---|
+> | §1 burndown band table | **severity** of an individual SC/AP defect row | per-defect severity tier |
+> | §2 dispatcher gates    | **priority/enforcement** of a gate            | gate-level priority |
+> 
+> A `P0` gate failing in §2 does NOT increment §1's `P0=layer_violations` count — they tabulate from different MVs. Specifically, §1 reads SC/AP violation rows from the `violations` table; §2 P0 gates such as `2_authority_boundary` / `3_write_sovereignty` read from `mv_authority_boundary_breaches`, `mv_write_sovereignty_paths`, etc.
+> 
+> **Does a §2 P0 fail block the ADG run?** Yes by default — `generate_full_adg.py` exits non-zero on any `block`-class fail. The override is `ADG_CONTINUE_ON_GATE_FAILURE=1`, which lets the run finish so the SQLite + report JSONs land regardless. The verdict is still recorded.
 
 **Severity bands** (from `adg_burndown_table.json`):
 

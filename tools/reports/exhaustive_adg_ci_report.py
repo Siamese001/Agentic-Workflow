@@ -512,6 +512,23 @@ def render(snapshot_dir: Path, source: str) -> str:
     # ============ §2 Executive summary
     a("## 1. Executive Summary")
     a("")
+    a("> ℹ️ **Two `P` namespaces in this report** — they look the same but mean different things:")
+    a("> ")
+    a("> | Where | `P0` means | Counts |")
+    a("> |---|---|---|")
+    a("> | §1 burndown band table | **severity** of an individual SC/AP defect row | per-defect severity tier |")
+    a("> | §2 dispatcher gates    | **priority/enforcement** of a gate            | gate-level priority |")
+    a("> ")
+    a("> A `P0` gate failing in §2 does NOT increment §1's `P0=layer_violations` count — "
+      "they tabulate from different MVs. Specifically, §1 reads SC/AP violation rows from the "
+      "`violations` table; §2 P0 gates such as `2_authority_boundary` / `3_write_sovereignty` "
+      "read from `mv_authority_boundary_breaches`, `mv_write_sovereignty_paths`, etc.")
+    a("> ")
+    a("> **Does a §2 P0 fail block the ADG run?** Yes by default — `generate_full_adg.py` "
+      "exits non-zero on any `block`-class fail. The override is "
+      "`ADG_CONTINUE_ON_GATE_FAILURE=1`, which lets the run finish so the SQLite + report "
+      "JSONs land regardless. The verdict is still recorded.")
+    a("")
     a("**Severity bands** (from `adg_burndown_table.json`):")
     a("")
     a("| Band | Label | Gross | Guardian | Net | Diff |")
