@@ -1,0 +1,13 @@
+{
+  "over_invested_count": 127,
+  "under_invested_subjects": [
+    "agentic_core/L0_routing/types/guardian_contract_types.py",
+    "agentic_core/L2_execution/utils/execution_proof_emitter.py",
+    "agentic_core/L4_state/config/chroma_paths.py",
+    "agentic_core/cache/redis_cache_client.py",
+    "agentic_core/runtime/types/execution_trace.py",
+    "ops_scripts/dev_tools/L0_routing/project_root_util.py",
+    "system_learning/enforcement/determinism.py",
+    "tools/progress_display.py"
+  ]
+}
