@@ -310,8 +310,134 @@ TEST_REFERENCES: Mapping[str, Sequence[str]] = {
         "tests/agentic_core/L3_orchestration/types/test_orchestration_handoff_contract.py",
     ),
 }
-ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {}
-REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {}
+ARTIFACT_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_ValidatedRequest.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R1A/rc_r1a_ValidatedRequest.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_ValidatedRequest.json",
+    ),
+    "REQ-U0-ANTI-BYPASS-001": (
+        "artifacts/runtime/requirements_proof/anti_bypass_results.json",
+        "artifacts/runtime/requirements_proof/traces/scenario_D_anti_bypass.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_no_bypass_receipt.json",
+    ),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (),
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_L1PlanContract.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R1A/rc_r1a_L1PlanContract.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_L1PlanContract.json",
+    ),
+    "REQ-L1-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-EXECUTE-001": (),
+    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3R4-MANAGED/rc_r3r4_managed_L3WorkflowContract.json",
+    ),
+    "REQ-C0-EVIDENCE-FETCH-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_FinalEvidenceContract.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-UWG/rc_uwg_FinalEvidenceContract.json",
+        "artifacts/runtime/requirements_proof/traces/scenario_C_weak_evidence.json",
+    ),
+    "REQ-C0-NO-EXECUTE-001": (),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_PromptEnvelope.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-UWG/rc_uwg_PromptEnvelope.json",
+    ),
+    "REQ-PA-AIRLOCK-SECURITY-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_PromptEnvelope.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-UWG/rc_uwg_PromptEnvelope.json",
+    ),
+    "REQ-L2-PTC-SANDBOX-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_L2ExecutionRequest.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_SealedL2Artifact.json",
+    ),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_L2ExecutionRequest.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3R4-MANAGED/rc_r3r4_managed_L2ExecutionRequest.json",
+    ),
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_disposition.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_ExitReviewPacket.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_X3DispositionReceipt.json",
+    ),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-CACHE-STATE-001": (),
+    "REQ-L5-RISK-TIER-BANDS-001": (),
+    "REQ-L5-HITL-RECLEARANCE-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_ValidatedRequest.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_X3DispositionReceipt.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-HITL/rc_hitl_disposition.json",
+    ),
+    "REQ-L6-SIGNAL-FUSION-RCA-001": (
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_l6_exhaust_receipt.json",
+        "artifacts/e2e/_smoke_all/scenarios/RC-R3/rc_r3_RuntimeExhaustBundle.json",
+    ),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (
+        "artifacts/e2e/boundary_faults/proof_bundle.json",
+    ),
+    "REQ-E2E-CONTRACT-EMISSION-001": (
+        "artifacts/e2e/det1/bundle.json",
+        "artifacts/e2e/det2/bundle.json",
+        "artifacts/e2e/evidence/bundle.json",
+    ),
+}
+REPLAY_REFERENCES: Mapping[str, Sequence[str]] = {
+    "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_request.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_request.json",
+    ),
+    "REQ-U0-ANTI-BYPASS-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_D_anti_bypass_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_D_anti_bypass_run_2.json",
+    ),
+    "REQ-U0-ORIGIN-TRUST-INJECTION-001": (),
+    "REQ-L1-PLAN-CONTRACT-HANDOFF-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_l1_plan.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_l1_plan.json",
+    ),
+    "REQ-L1-NO-RETRIEVAL-001": (),
+    "REQ-L1-NO-EXECUTE-001": (),
+    "REQ-L0-NO-RETRIEVAL-001": (),
+    "REQ-L3-L2-STEP-HANDOFF-001": (),
+    "REQ-C0-EVIDENCE-FETCH-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_final_evidence_contract.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_final_evidence_contract.json",
+    ),
+    "REQ-C0-NO-EXECUTE-001": (),
+    "REQ-PA-PROVIDER-AWARE-RENDER-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_prompt_envelope.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_prompt_envelope.json",
+    ),
+    "REQ-PA-AIRLOCK-SECURITY-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_prompt_envelope.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_prompt_envelope.json",
+    ),
+    "REQ-L2-PTC-SANDBOX-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_sealed_l2_artifact.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_sealed_l2_artifact.json",
+    ),
+    "REQ-L2-VERIFY-THEN-EXECUTE-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_l2_execution_request.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_l2_execution_request.json",
+    ),
+    "REQ-EXIT-NO-OVERLAP-RUNTIME-GATES-001": (
+        "artifacts/e2e/det1/scenarios/GP-001/gp_001_disposition.json",
+        "artifacts/e2e/det2/scenarios/GP-001/gp_001_disposition.json",
+    ),
+    "REQ-L4-RETRIEVAL-SURFACE-001": (),
+    "REQ-L4-CACHE-STATE-001": (),
+    "REQ-L5-RISK-TIER-BANDS-001": (),
+    "REQ-L5-HITL-RECLEARANCE-001": (),
+    "REQ-L6-SIGNAL-FUSION-RCA-001": (
+        "artifacts/runtime/requirements_proof/replay/replay_J_l6_gauntlet_future_run_run_1.json",
+        "artifacts/runtime/requirements_proof/replay/replay_J_l6_gauntlet_future_run_run_2.json",
+    ),
+    "REQ-E2E-MUTATION-BOUNDARY-001": (),
+    "REQ-E2E-CONTRACT-EMISSION-001": (
+        "artifacts/e2e/det1/bundle.json",
+        "artifacts/e2e/det2/bundle.json",
+    ),
+}
 OTEL_SPAN_REFERENCES: Mapping[str, Sequence[str]] = {
     "REQ-U0-VALIDATED-REQUEST-HANDOFF-001": (
         "agentic_core/L0_routing/intake/events.py",
