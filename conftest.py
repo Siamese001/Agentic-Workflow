@@ -1,11 +1,118 @@
 # Root-level conftest.py — loaded by pytest BEFORE any test collection
 # This ensures the repo root is on sys.path so tools.adg, apps_*, etc. are importable
+from __future__ import annotations
+
+import json
 import sys
 from pathlib import Path
+from typing import Any
 
-_REPO_ROOT = str(Path(__file__).resolve().parent)
+import pytest
+
+_REPO_ROOT_PATH = Path(__file__).resolve().parent
+_REPO_ROOT = str(_REPO_ROOT_PATH)
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
+
+# ---------------------------------------------------------------------------
+# ADG-driven test marker hook
+# ---------------------------------------------------------------------------
+# Reads `artifacts/test_inventory/test_adg_classification.json` (produced by
+# `python tools/analysis/test_adg_classifier.py`) and applies markers to every
+# collected test item based on its file's classification:
+#
+#   - adg_runtime    : file touches L2/L3 production AND has semantic edges
+#   - adg_behavioral : file imports production AND has semantic edges
+#   - adg_contract   : file imports production but only via `imports` edges
+#   - adg_tooling    : file imports tools/ or ops_scripts/ only
+#   - adg_stdlib     : file has no production or tooling imports
+#   - adg_otel       : file imports an OTel/telemetry/trace node
+#   - adg_safety     : file imports an L5 safety node
+#
+# These markers let you run signal-first slices without deleting any tests:
+#
+#   pytest -m adg_runtime                  # ~42 files, the strongest signal
+#   pytest -m "adg_runtime or adg_behavioral"  # 97 files of real exercise
+#   pytest -m "not adg_stdlib"             # everything except pure stdlib/fixtures
+#   pytest -m adg_otel                     # OTel-touching tests only
+#
+# The hook is fail-soft: if the classification JSON is missing or malformed
+# the suite collects normally without markers — discovery never breaks.
+_ADG_CLASSIFICATION_PATH = _REPO_ROOT_PATH / "artifacts" / "test_inventory" / "test_adg_classification.json"
+_ADG_FILE_MARKERS_CACHE: dict[str, list[str]] | None = None
+
+
+def _load_adg_file_markers() -> dict[str, list[str]]:
+    """Build {test_file_relpath: [marker_name, ...]} from the ADG classification JSON."""
+    global _ADG_FILE_MARKERS_CACHE  # noqa: PLW0603 — module-level cache is intentional
+    if _ADG_FILE_MARKERS_CACHE is not None:
+        return _ADG_FILE_MARKERS_CACHE
+    cache: dict[str, list[str]] = {}
+    if not _ADG_CLASSIFICATION_PATH.is_file():
+        _ADG_FILE_MARKERS_CACHE = cache
+        return cache
+    try:
+        rows: list[dict[str, Any]] = json.loads(_ADG_CLASSIFICATION_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, json.JSONDecodeError):
+        _ADG_FILE_MARKERS_CACHE = cache
+        return cache
+
+    cls_to_marker = {
+        "production_runtime": "adg_runtime",
+        "production_behavioral": "adg_behavioral",
+        "production_contract": "adg_contract",
+        "tooling_only": "adg_tooling",
+        "stdlib_only": "adg_stdlib",
+    }
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        rel = row.get("file")
+        if not isinstance(rel, str) or not rel:
+            continue
+        markers: list[str] = []
+        primary = cls_to_marker.get(row.get("test_class", ""))
+        if primary:
+            markers.append(primary)
+        if row.get("touches_otel_node"):
+            markers.append("adg_otel")
+        if row.get("touches_safety_node"):
+            markers.append("adg_safety")
+        # Per-layer markers (adg_l0 .. adg_l6) from agentic_core/L<N>_* imports
+        layers = row.get("agentic_core_layers", [])
+        if isinstance(layers, list):
+            for layer in layers:
+                if (
+                    isinstance(layer, str)
+                    and len(layer) == 2
+                    and layer.startswith("L")
+                    and layer[1].isdigit()
+                ):
+                    markers.append(f"adg_{layer.lower()}")
+        # Per-app markers (adg_apps_<name>) from apps_<name>/ imports
+        apps = row.get("apps_targets", [])
+        if isinstance(apps, list):
+            for app in apps:
+                if isinstance(app, str) and app.startswith("apps_"):
+                    markers.append(f"adg_{app}")
+        if markers:
+            cache[rel] = markers
+    _ADG_FILE_MARKERS_CACHE = cache
+    return cache
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    """Apply ADG-derived markers to every collected test item by file."""
+    file_markers = _load_adg_file_markers()
+    if not file_markers:
+        return
+    for item in items:
+        # item.nodeid is "tests/path/test_file.py::TestClass::test_fn[param]" or
+        # "tests/path/test_file.py::test_fn"
+        file_rel = item.nodeid.split("::", 1)[0]
+        for marker_name in file_markers.get(file_rel, ()):
+            item.add_marker(getattr(pytest.mark, marker_name))
+
 
 # ---------------------------------------------------------------------------
 # Discovery-time ignore list (now empty)

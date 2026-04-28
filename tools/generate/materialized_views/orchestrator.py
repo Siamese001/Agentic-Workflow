@@ -14,12 +14,14 @@ try:
     from tools.generate.materialized_views.phase_c_trace_drift_debt import materialize_phase_c
     from tools.generate.materialized_views.phase_d_snapshot_regression import materialize_phase_d
     from tools.generate.materialized_views.phase_e_graph_intelligence import materialize_phase_e
+    from tools.generate.materialized_views.phase_f_hotspot_coverage import materialize_phase_f
 except ImportError:
     from materialized_views.phase_a_path_authority import materialize_phase_a
     from materialized_views.phase_b_capability_tool_task import materialize_phase_b
     from materialized_views.phase_c_trace_drift_debt import materialize_phase_c
     from materialized_views.phase_d_snapshot_regression import materialize_phase_d
     from materialized_views.phase_e_graph_intelligence import materialize_phase_e
+    from materialized_views.phase_f_hotspot_coverage import materialize_phase_f
 
 
 def _validate_sqlite_path(sqlite_path: Path) -> Path:
@@ -62,6 +64,13 @@ def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
     # Phase E: Graph-native intelligence (Prompt 5)
     counts_e = materialize_phase_e(sqlite_path)
     all_counts.update(counts_e)
+
+    # Phase F: Hotspot × Coverage risk join (plan hotspot-coverage-pipeline-c4e8d2)
+    # Depends on Phase C (debt) + Phase E (criticality, fan-in/out with defects)
+    # + the `coverage_by_path` table written by `tools/adg/ingest_coverage_py.py`
+    # ahead of this call. LEFT JOINs make missing data fail-soft.
+    counts_f = materialize_phase_f(sqlite_path)
+    all_counts.update(counts_f)
 
     _log_summary(all_counts)
     return all_counts

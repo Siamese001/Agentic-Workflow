@@ -816,6 +816,32 @@ def generate_full_adg(
     # MV materialization is a pure derivation over nodes/edges/violations — no
     # coupling to gate outcomes — so moving it ahead of gates is always safe.
     _enrich_infra_views(paths.sqlite)
+
+    # --- Coverage.py ingest (plan hotspot-coverage-pipeline-c4e8d2 W1.2) ---
+    # Reads <repo>/.coverage and writes `coverage_by_path` table.
+    # MUST run BEFORE _materialize_adg_views so phase_f (hotspot × coverage)
+    # has data to join. Fail-soft: missing/empty .coverage produces an empty
+    # table and the pipeline continues — downstream MV uses LEFT JOIN.
+    try:
+        from tools.adg.ingest_coverage_py import ingest as _ingest_coverage
+
+        _coverage_summary = _ingest_coverage(
+            adg_path=Path(paths.sqlite),
+            coverage_path=None,  # default <repo>/.coverage
+            progress=False,
+        )
+        if _coverage_summary["warnings"]:
+            for _w in _coverage_summary["warnings"][:5]:
+                logger.info("coverage_ingest: %s", _w)
+        logger.info(
+            "coverage_ingest: rows=%s files_seen=%s mode=%s",
+            _coverage_summary["rows_written"],
+            _coverage_summary["files_seen"],
+            _coverage_summary["mode"],
+        )
+    except Exception as _coverage_exc:  # guardian: allow-broad-exception -- enrichment fail-soft
+        logger.warning("coverage_ingest failed (continuing): %s", _coverage_exc)
+
     _materialize_adg_views(paths.sqlite)
 
     # --- Overlay enrichment (RCA 2026-04-24, R1-R4 upstream) ---
