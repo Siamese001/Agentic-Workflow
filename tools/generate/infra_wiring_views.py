@@ -108,6 +108,12 @@ _PROCESS_BOUNDARY_ADAPTERS = (
     "agentic_core/L4_state/utils/memory/semantic_cache_manager.py",
     "agentic_core/L4_state/utils/memory/sovereign_semantic_cache.py",
     "agentic_core/L4_state/cache/gptcache_client.py",
+    # 2026-04-28 plan assurance-p1-gates-ab4758 W-cleanup:
+    # neo4j_store.py is EXPERIMENTAL_ISOLATED with zero callers BY DESIGN
+    # (per existing comment in _APPROVED_ADAPTER_PATHS). Promoting it to
+    # process-boundary suppresses both v_p1_zero_caller_infra and
+    # v_p1_not_on_spine without weakening the spine check for real adapters.
+    "agentic_core/L4_state/enforcement/neo4j_store.py",
 )
 
 # Provider SDKs that must route through infrastructure/sdks_mcps
@@ -278,6 +284,10 @@ WHERE e.relation_type IN ('writes_to', 'writes_through')
   -- writes only to its own ledger db file under the per-run artifacts dir.
   -- Added 2026-04-24 by plan adg-architectural-p0-violations-cleanup-bced9c.
   AND n_src.resolved_path NOT LIKE '%/exit_eval/consistency_sqlite%'
+  -- L0 C0.3 substrate guard — uses path.open('r') for line counting (read-only),
+  -- not a durable write. Sanctioned per plan assurance-p1-gates-ab4758 W-cleanup
+  -- and infra_ownership_matrix.md §SQLite/L_APP.
+  AND n_src.resolved_path NOT LIKE '%/c0_3_enhanced/substrate.py'
   AND n_src.resolved_path NOT LIKE 'tools/%'
   AND n_src.resolved_path NOT LIKE 'tests/%'
   AND n_src.resolved_path NOT LIKE 'ops_scripts/%'
@@ -354,6 +364,16 @@ JOIN nodes n_dst ON e.dst_id = n_dst.id
 WHERE e.relation_type = 'imports'
   AND n_src.layer = 'L0'
   AND n_dst.adg_name IN ({infra_adg_names})
+  -- Sanctioned L0 SQLite-backed adapters — per plan
+  -- routing-decision-process-enhancement-9c7e4d (W4/W5) and the C0.3
+  -- substrate guard. namespace_bandit owns the per-namespace Beta-Bernoulli
+  -- posterior store; r5_reason_calibration owns per-reason Brier calibration
+  -- over decision_events; substrate.py monkey-patches sqlite3.connect AS the
+  -- substrate-violation guard (the import IS the guard mechanism). Each is
+  -- listed in SANCTIONED_ADAPTER_FILES in ops_scripts/ci/infra_wiring_scan.py.
+  AND n_src.resolved_path NOT LIKE '%/reasoning/namespace_bandit.py'
+  AND n_src.resolved_path NOT LIKE '%/reasoning/r5_reason_calibration.py'
+  AND n_src.resolved_path NOT LIKE '%/c0_3_enhanced/substrate.py'
 """
 
 

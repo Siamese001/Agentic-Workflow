@@ -106,6 +106,16 @@ SANCTIONED_ADAPTER_FILES = {
     # SQLite adapters surfaced during plan adg-architectural-p0-violations-cleanup-bced9c (2026-04-24)
     "adg_span_annotator.py",  # L6 ADG-snapshot reader for runtime span annotation; read-only consumer of artifacts/adg/*.sqlite (delegated from L3 RuntimeADGQuery)
     "consistency_sqlite.py",  # L3 exit-eval consistency-check ledger; sqlite-backed per-run hash-chain (peer of ledger_integrity.py and runtime_hitl_ledger.py per ADR-023 §5)
+    # Adapters surfaced during plan assurance-p1-gates-ab4758 final gate sweep (2026-04-28)
+    "decision_events_schema.py",  # L6 unified routing/decision events schema (supersedes routing_decision_events_schema.py per plan routing-decision-process-enhancement-9c7e4d W1) — owns artifacts/decisions/decision_events.sqlite
+    "decision_outcome_backfill.py",  # L6 outcome backfill API + observability over decision_events ledger (peer of decision_events_schema; same plan W2)
+    "namespace_bandit.py",  # L0 per-namespace Beta-Bernoulli posterior store (Thompson sampling); sqlite-backed (plan routing-decision-process-enhancement-9c7e4d W4)
+    "r5_reason_calibration.py",  # L0 per-reason Brier calibration over decision_events (read-only consumer + auto-demote ledger; same plan W5)
+    "substrate.py",  # L0 C0.3 substrate guard — monkey-patches sqlite3.connect to enforce no-direct-traversal invariant; sqlite3 import IS the guard mechanism
+    "gemini_gateway_provisioner.py",  # L2 minimal Gemini gateway adapter (google.generativeai SDK); sanctioned per plan qwen-confidence-routing-hardening-d4e7b1 W1
+    "l2_capable_agent_registry.py",  # L2 ADG-snapshot reader for L2-capable agent discovery (read-only consumer of artifacts/adg/*.sqlite per constitutional §28)
+    "sqlite_ledger.py",  # L3 exit-eval v6 hash-chain ledger (drop-in replacement for InMemoryLedger; implements LedgerProtocol from v6.uwg)
+    "assembly_stage.py",  # L0 GAP-03 assembly stage — anthropic SDK lazy-loaded inside try/except for token-budget computation (peer of openai/google branches in same function)
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling
