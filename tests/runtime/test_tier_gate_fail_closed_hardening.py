@@ -29,6 +29,7 @@ from agentic_core.runtime.prove_requirements import (
     tier3_runtime_proof_gate,
     tier4_runtime_proof_gate,
     tier5_runtime_proof_gate,
+    tier6_runtime_proof_gate,
     tier_fixture_bootstrap,
 )
 from agentic_core.runtime.prove_requirements import (
@@ -315,6 +316,10 @@ def _patch_runtime_t4(monkeypatch, metadata_dir: Path) -> None:
 
 def _patch_runtime_t5(monkeypatch, metadata_dir: Path) -> None:
     monkeypatch.setattr(tier5_runtime_proof_gate, "ARTIFACTS_DIR", metadata_dir)
+
+
+def _patch_runtime_t6(monkeypatch, metadata_dir: Path) -> None:
+    monkeypatch.setattr(tier6_runtime_proof_gate, "ARTIFACTS_DIR", metadata_dir)
 
 
 def _set_index_row_field(metadata_dir: Path, index_file: str, rid: str, field: str, value) -> None:
@@ -901,3 +906,204 @@ class TestTier5RuntimeProofGateFailsClosed:
         d, rid, _row = self._setup(tmp_path, monkeypatch)
         _set_index_row_field(d, T5_FILES[0], rid, "otel_span_refs", [str(tmp_path / "_no_t5_otel.py")])
         assert tier5_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+
+# ---------------------------------------------------------------------------
+# Tier 6 runtime/static proof gate hardening (split-mode).
+#
+# Tier 6 has two evidence modes:
+#   * MUST / RELEASE_BLOCKING (6 rows) -- normal static evidence checks.
+#   * NON_BLOCKING_REFERENCE (15 rows) -- reference-only policy checks.
+#
+# The hardening covers both modes via tmp_path copies; no real artifact
+# or metadata is mutated.
+# ---------------------------------------------------------------------------
+
+
+T6_FILES = [
+    "tier6_requirements_index.generated.json",
+    "tier6_coverage_matrix.generated.json",
+    "tier6_implementation_map.generated.json",
+    "tier6_artifact_linkage.generated.json",
+]
+
+
+def _t6_must_setup(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, str, dict]:
+    """Pick a MUST row and patch ARTIFACTS_DIR to tmp."""
+    d = _copy_metadata(tmp_path, T6_FILES)
+    _patch_runtime_t6(monkeypatch, d)
+    data = _load(d / T6_FILES[0])
+    row = next(
+        r
+        for r in data["rows"]
+        if r.get("release_gate_rule") == "RELEASE_BLOCKING"
+        and r.get("artifact_refs")
+        and r.get("replay_refs")
+        and r.get("negative_control_refs")
+        and r.get("test_refs")
+        and r.get("code_refs")
+        and r.get("validator_refs")
+        and r.get("otel_span_refs")
+    )
+    return d, row["step1_req_id"], row
+
+
+def _t6_ref_setup(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, str, dict]:
+    """Pick a NON_BLOCKING_REFERENCE row and patch ARTIFACTS_DIR to tmp."""
+    d = _copy_metadata(tmp_path, T6_FILES)
+    _patch_runtime_t6(monkeypatch, d)
+    data = _load(d / T6_FILES[0])
+    row = next(r for r in data["rows"] if r.get("release_gate_rule") == "NON_BLOCKING_REFERENCE")
+    return d, row["step1_req_id"], row
+
+
+class TestTier6RuntimeProofGateMustRowsFailClosed:
+    def test_missing_artifact_file_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = _t6_must_setup(tmp_path, monkeypatch)
+        bad = list(row["artifact_refs"]) + [str(tmp_path / "_no_t6_artifact.json")]
+        _set_index_row_field(d, T6_FILES[0], rid, "artifact_refs", bad)
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_artifact_step1_req_id_mismatch_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_must_setup(tmp_path, monkeypatch)
+        bad = _write_artifact_stub(tmp_path, "_t6_mismatch_id.json", step1_req_id="REQ-T6-WRONG-XYZ")
+        _set_index_row_field(d, T6_FILES[0], rid, "artifact_refs", [bad])
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_artifact_efr_mismatch_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_must_setup(tmp_path, monkeypatch)
+        bad = _write_artifact_stub(
+            tmp_path,
+            "_t6_efr_mismatch.json",
+            step1_req_id=rid,
+            expected_fail_reason="WRONG_T6_EFR",
+        )
+        _set_index_row_field(d, T6_FILES[0], rid, "artifact_refs", [bad])
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_replay_pair_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_must_setup(tmp_path, monkeypatch)
+        ghost = [
+            str(tmp_path / "_t6_ghost_run_1.json"),
+            str(tmp_path / "_t6_ghost_run_2.json"),
+        ]
+        _set_index_row_field(d, T6_FILES[0], rid, "replay_refs", ghost)
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_replay_invariant_digest_mismatch_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_must_setup(tmp_path, monkeypatch)
+        run1 = tmp_path / "_t6_drifted_run_1.json"
+        run2 = tmp_path / "_t6_drifted_run_2.json"
+        run1.write_text(
+            json.dumps({"step1_req_id": rid, "invariant_digest": _digest("t6a")}),
+            encoding="utf-8",
+        )
+        run2.write_text(
+            json.dumps({"step1_req_id": rid, "invariant_digest": _digest("t6b")}),
+            encoding="utf-8",
+        )
+        _set_index_row_field(d, T6_FILES[0], rid, "replay_refs", [str(run1), str(run2)])
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_negative_control_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = _t6_must_setup(tmp_path, monkeypatch)
+        bad = list(row["negative_control_refs"]) + [str(tmp_path / "_no_t6_negctrl.json")]
+        _set_index_row_field(d, T6_FILES[0], rid, "negative_control_refs", bad)
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_test_ref_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = _t6_must_setup(tmp_path, monkeypatch)
+        bad = list(row["test_refs"]) + [str(tmp_path / "_no_t6_test.py")]
+        _set_index_row_field(d, T6_FILES[0], rid, "test_refs", bad)
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_code_ref_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = _t6_must_setup(tmp_path, monkeypatch)
+        bad = list(row["code_refs"]) + [str(tmp_path / "_no_t6_code.py")]
+        _set_index_row_field(d, T6_FILES[0], rid, "code_refs", bad)
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_missing_validator_ref_blocks(self, tmp_path, monkeypatch):
+        d, rid, row = _t6_must_setup(tmp_path, monkeypatch)
+        bad = list(row["validator_refs"]) + [str(tmp_path / "_no_t6_validator.py")]
+        _set_index_row_field(d, T6_FILES[0], rid, "validator_refs", bad)
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+
+class TestTier6RuntimeProofGateReferenceRowsFailClosed:
+    def test_missing_policy_artifact_blocks(self, tmp_path, monkeypatch):
+        d, _rid, _row = _t6_ref_setup(tmp_path, monkeypatch)
+        # Point gate at a non-existent absolute policy path.
+        ghost = tmp_path / "_no_policy.json"
+        monkeypatch.setattr(tier6_runtime_proof_gate, "POLICY_ARTIFACT_REL", str(ghost))
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_policy_missing_req_id_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_ref_setup(tmp_path, monkeypatch)
+        bad_policy = tmp_path / "_t6_policy_missing_rid.json"
+        bad_policy.write_text(
+            json.dumps(
+                {
+                    "tier": "TIER6",
+                    "policy_name": "TIER6_NON_BLOCKING_REFERENCE_POLICY",
+                    "reference_only_req_ids": [],
+                    "total_reference_only_rows": 15,
+                    "rule": "reference integrity only no runtime proof",
+                    "caveat": "no real replay execution, no real otel emission, no runtime",
+                }
+            ),
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(tier6_runtime_proof_gate, "POLICY_ARTIFACT_REL", str(bad_policy))
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_policy_wrong_total_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_ref_setup(tmp_path, monkeypatch)
+        bad_policy = tmp_path / "_t6_policy_wrong_total.json"
+        bad_policy.write_text(
+            json.dumps(
+                {
+                    "tier": "TIER6",
+                    "policy_name": "TIER6_NON_BLOCKING_REFERENCE_POLICY",
+                    "reference_only_req_ids": [rid],
+                    "total_reference_only_rows": 99,  # wrong
+                    "rule": "reference integrity only no runtime proof",
+                    "caveat": "no real replay execution, no real otel emission, no runtime",
+                }
+            ),
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(tier6_runtime_proof_gate, "POLICY_ARTIFACT_REL", str(bad_policy))
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_ref_row_wrong_release_gate_rule_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_ref_setup(tmp_path, monkeypatch)
+        _set_index_row_field(d, T6_FILES[0], rid, "release_gate_rule", "RELEASE_BLOCKING")
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_ref_row_wrong_requirement_strength_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_ref_setup(tmp_path, monkeypatch)
+        _set_index_row_field(d, T6_FILES[0], rid, "requirement_strength", "MUST")
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_ref_row_with_fake_replay_refs_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_ref_setup(tmp_path, monkeypatch)
+        _set_index_row_field(
+            d,
+            T6_FILES[0],
+            rid,
+            "replay_refs",
+            [str(tmp_path / "_fake_replay_run_1.json"), str(tmp_path / "_fake_replay_run_2.json")],
+        )
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
+
+    def test_ref_row_with_fake_otel_claim_blocks(self, tmp_path, monkeypatch):
+        d, rid, _row = _t6_ref_setup(tmp_path, monkeypatch)
+        _set_index_row_field(
+            d,
+            T6_FILES[0],
+            rid,
+            "otel_span_refs",
+            ["agentic_core/runtime/prove_requirements/tier6_refs/reference_only_policy_refs.py"],
+        )
+        assert tier6_runtime_proof_gate.evaluate()["result"] == "BLOCKED"
