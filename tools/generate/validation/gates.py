@@ -108,13 +108,20 @@ def _check_p0_violations(
 
             p0_count = len(unapproved)
             if p0_count > 0:
+                from tools.generate.integration.deferred_failures import record_or_exit
+
                 print(f"\n[ERROR] P0 layer violations detected: {p0_count}")
                 for sf, ln in unapproved[:10]:
                     print(f"[ERROR]   {sf}:{ln}")
                 print("[ERROR] ADG generation failed - P0 layer violations present")
                 print("[ERROR] Fix layer violations before regenerating ADG")
                 _print_plan_hint()
-                sys.exit(1)
+                record_or_exit(
+                    "P0_layer_violations",
+                    1,
+                    message=f"{p0_count} unapproved P0 layer violations",
+                    plan_path=str(plan_path) if plan_path else None,
+                )
         except SystemExit:
             raise
         except sqlite3.Error as exc:
@@ -122,11 +129,18 @@ def _check_p0_violations(
     else:
         p0_count = routing_summary.get("by_severity", {}).get("critical", 0)
         if p0_count > 0:
+            from tools.generate.integration.deferred_failures import record_or_exit
+
             print(f"\n[ERROR] P0 layer violations detected: {p0_count}")
             print("[ERROR] ADG generation failed - P0 layer violations present")
             print("[ERROR] Fix layer violations before regenerating ADG")
             _print_plan_hint()
-            sys.exit(1)
+            record_or_exit(
+                "P0_layer_violations_summary",
+                1,
+                message=f"{p0_count} critical severity rows (no SQLite path)",
+                plan_path=str(plan_path) if plan_path else None,
+            )
 
     if sqlite_path is not None and sqlite_path.exists():
         try:
@@ -135,11 +149,18 @@ def _check_p0_violations(
                 cursor.execute("SELECT COUNT(*) FROM edges WHERE relation_type='in_cycle'")
                 in_cycle_count = cursor.fetchone()[0]
                 if in_cycle_count > 0:
+                    from tools.generate.integration.deferred_failures import record_or_exit
+
                     print(f"\n[ERROR] P0 Tier 1A: Circular imports detected: {in_cycle_count}")
                     print("[ERROR] ADG generation failed - graph topology corrupted by cycles")
                     print("[ERROR] Fix circular imports before regenerating ADG")
                     _print_plan_hint()
-                    sys.exit(1)
+                    record_or_exit(
+                        "P0_circular_imports",
+                        1,
+                        message=f"{in_cycle_count} in_cycle edges",
+                        plan_path=str(plan_path) if plan_path else None,
+                    )
         except sqlite3.Error as exc:
             _fail_closed_gate("P0 Tier 1A circular import query", exc)
 
@@ -150,11 +171,18 @@ def _check_p0_violations(
                 cursor.execute("SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'")
                 dynamic_exec_count = cursor.fetchone()[0]
                 if dynamic_exec_count > 0:
+                    from tools.generate.integration.deferred_failures import record_or_exit
+
                     print(f"\n[ERROR] P0 Tier 1B: Dynamic execution detected: {dynamic_exec_count}")
                     print("[ERROR] ADG generation failed - graph is provably incomplete")
                     print("[ERROR] Replace eval/exec/dynamic imports with static alternatives")
                     _print_plan_hint()
-                    sys.exit(1)
+                    record_or_exit(
+                        "P0_dynamic_exec",
+                        1,
+                        message=f"{dynamic_exec_count} dynamic_exec edges",
+                        plan_path=str(plan_path) if plan_path else None,
+                    )
         except sqlite3.Error as exc:
             _fail_closed_gate("P0 Tier 1B dynamic execution query", exc)
 
@@ -1826,11 +1854,25 @@ def _check_witness_tier_gates(sqlite_path: Path | None = None) -> dict[str, Any]
             print(f"  Class B breach-surface gaps  : {b_insufficient}")
 
             if req_violations:
+                from tools.generate.integration.deferred_failures import record_or_exit  # noqa: PLC0415
+
                 print()
                 print("[ERROR] Class A required-live violations -- gate FAILED:")
                 for v in req_violations:
                     print(f"  [x] {v['family']} (orphaned={v['orphaned_count']})")
-                sys.exit(1)
+                # Plan adg-fail-aggregating-gate-chain-9d4e1f W2.2: route
+                # witness-tier Class A rule violations through the shared
+                # registry so the drain block can render them alongside
+                # other rule findings. Schema/table-missing sites in this
+                # function (above) stay fail-fast since they're integrity
+                # boundaries — downstream witness queries would produce
+                # garbage without those tables.
+                families = ", ".join(v["family"] for v in req_violations)
+                record_or_exit(
+                    "witness_class_a",
+                    1,
+                    message=f"{len(req_violations)} required-live violation(s): {families}"[:160],
+                )
             else:
                 print("[ADG-WITNESS] Class A gate: PASSED")
 

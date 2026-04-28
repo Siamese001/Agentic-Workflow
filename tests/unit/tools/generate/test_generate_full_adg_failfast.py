@@ -778,7 +778,13 @@ class TestP0TwoPassRunnerIntegration:
         assert exc_info.value.code == 1
 
     def test_runner_unexpected_rc_blocks(self, tmp_path, monkeypatch):
-        """Any unexpected non-zero/non-one rc must fail-closed with SystemExit(1)."""
+        """Any unexpected non-zero rc must fail-closed with SystemExit propagating that rc.
+
+        Plan adg-fail-aggregating-gate-chain-9d4e1f W2.3 changed the contract:
+        the unexpected rc is now propagated verbatim (was: normalized to 1) so
+        operators see the real signal from the underlying runner. Only rc==0
+        is normalized to 1 (the "weird success-but-blocked" case).
+        """
         from tools.generate.integration.p0_runner import _run_p0_two_pass_runner
 
         sqlite_path = tmp_path / "adg.sqlite"
@@ -796,7 +802,7 @@ class TestP0TwoPassRunnerIntegration:
 
         with pytest.raises(SystemExit) as exc_info:
             _run_p0_two_pass_runner(sqlite_path)
-        assert exc_info.value.code == 1
+        assert exc_info.value.code == 42
 
 
 # ---------------------------------------------------------------------------

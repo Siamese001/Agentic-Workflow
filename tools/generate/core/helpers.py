@@ -103,13 +103,27 @@ def _generate_timestamp() -> str:
 
 
 def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports: bool) -> None:
-    """Verify that requested artifacts were created."""
+    """Verify that requested artifacts were created.
+
+    Plan adg-fail-aggregating-gate-chain-9d4e1f W2.3: artifact-verification
+    failures route through ``record_or_exit`` so the run can still drain
+    its deferred-failure registry and emit the aggregated summary table
+    before exiting non-zero. Default behaviour (env var unset) is
+    unchanged: missing artifact = immediate ``sys.exit(1)``.
+    """
+    from tools.generate.integration.deferred_failures import record_or_exit  # noqa: PLC0415
+
     if not no_zip:
         zip_path = adg_artifacts_dir / f"adg_run_{ts}.zip"
         if not zip_path.exists():
             print(f"[ERROR] Zip archive not found: {zip_path}")
-            sys.exit(1)
-        print(f"[ADG] Zip archive verification: {zip_path.name} exists")
+            record_or_exit(
+                "verify_artifacts.zip",
+                1,
+                message=f"missing {zip_path.name}",
+            )
+        else:
+            print(f"[ADG] Zip archive verification: {zip_path.name} exists")
 
     if not no_reports:
         report_files = [
@@ -123,7 +137,12 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
             print(f"\n[ERROR] ADG generation incomplete: {len(missing_reports)} report(s) missing")
             print(f"[ERROR] Missing: {', '.join(missing_reports)}")
             print("[ERROR] This is a critical failure for full ADG generation")
-            sys.exit(1)
-        print(f"[ADG] Reports verification: {len(report_files)} reports exist")
+            record_or_exit(
+                "verify_artifacts.reports",
+                1,
+                message=f"{len(missing_reports)} missing: {', '.join(missing_reports)}"[:160],
+            )
+        else:
+            print(f"[ADG] Reports verification: {len(report_files)} reports exist")
 
     print("[ADG] Full ADG generation verification: all artifacts present")

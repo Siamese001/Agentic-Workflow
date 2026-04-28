@@ -54,13 +54,16 @@ def _run_p0_two_pass_runner(
     architectural P0 violation in the codebase.
     """
     # Resolve the defer-exit flag from arg → env → default.
+    # Plan adg-fail-aggregating-gate-chain-9d4e1f W3.2: delegate to the
+    # shared resolver so both legacy ADG_CONTINUE_ON_P0 and canonical
+    # ADG_CONTINUE_ON_GATE_FAILURE activate defer consistently across
+    # every gate. Preserves back-compat for the legacy flag.
     if defer_exit is None:
-        defer_exit = os.environ.get("ADG_CONTINUE_ON_P0", "").strip().lower() in (
-            "1",
-            "true",
-            "yes",
-            "on",
+        from tools.generate.integration.deferred_failures import (  # noqa: PLC0415
+            _resolve_defer_flag,
         )
+
+        defer_exit = _resolve_defer_flag(None)
 
     if sqlite_path is None or not sqlite_path.exists():
         print("[ERROR] P0 runner blocked: no production SQLite snapshot found")

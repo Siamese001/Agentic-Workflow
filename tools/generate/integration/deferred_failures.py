@@ -48,20 +48,26 @@ from typing import Final
 _DEFERRED_FAILURES: dict[str, dict[str, object]] = {}
 
 _DEFER_ENV_VAR: Final[str] = "ADG_CONTINUE_ON_P0"
+_DEFER_ENV_VAR_NEW: Final[str] = "ADG_CONTINUE_ON_GATE_FAILURE"
 _DEFER_ENV_TRUTHY: Final[frozenset[str]] = frozenset({"1", "true", "yes", "on"})
 
 
 def _resolve_defer_flag(defer_exit: bool | None) -> bool:
     """Resolve the defer-exit flag from arg → env → default.
 
-    The env var is named ``ADG_CONTINUE_ON_P0`` for back-compat with the
-    original W8 implementation. Despite the "P0" suffix in the name, it
-    governs ALL opting-in gates (P0/P1/SC-1/agentic-antipattern/dead-prod
-    imports). The name is preserved to avoid breaking downstream tooling
-    and CI scripts that already set it.
+    Plan adg-fail-aggregating-gate-chain-9d4e1f W3.2: the canonical env
+    var is ``ADG_CONTINUE_ON_GATE_FAILURE`` because defer governs ALL
+    opting-in gates (P0/P1/P2/P3/SC/agentic-antipattern/dead-prod-imports/
+    witness/integrity), not just P0. The legacy ``ADG_CONTINUE_ON_P0``
+    name is preserved as an alias for back-compat with downstream tooling
+    and CI scripts. Either flag activates defer mode; both being set is
+    equivalent to either being set.
     """
     if defer_exit is not None:
         return defer_exit
+    raw_new = os.environ.get(_DEFER_ENV_VAR_NEW, "").strip().lower()
+    if raw_new in _DEFER_ENV_TRUTHY:
+        return True
     raw = os.environ.get(_DEFER_ENV_VAR, "").strip().lower()
     return raw in _DEFER_ENV_TRUTHY
 
@@ -151,6 +157,50 @@ def record_or_exit(
     record_failure(gate_name, rc, message=message, plan_path=plan_path)
     if message:
         print(f"[WARN] {gate_name} BLOCKED (deferred — ADG_CONTINUE_ON_P0 set): {message}")
+
+
+def format_summary_table() -> str:
+    """Return a human-readable markdown table of all deferred failures.
+
+    Rendered at the end of an ADG generation run so operators see every
+    gate's outcome in one place instead of grep-ing the full build log.
+    Returns the empty string when no failures are recorded.
+
+    Plan adg-fail-aggregating-gate-chain-9d4e1f W3.1.
+    """
+    if not _DEFERRED_FAILURES:
+        return ""
+    rows = deferred_failure_summary()
+    # Determine column widths based on content (with sensible minimums).
+    name_w = max(10, max(len(str(r["gate_name"])) for r in rows))
+    msg_w = max(20, min(80, max(len(str(r.get("message") or "")) for r in rows)))
+    sep = f"+{'-' * (name_w + 2)}+----+{'-' * (msg_w + 2)}+"
+    lines = [
+        "",
+        "=" * 78,
+        "[ADG] DEFERRED FAILURE SUMMARY",
+        "=" * 78,
+        sep,
+        f"| {'gate_name'.ljust(name_w)} | rc | {'message'.ljust(msg_w)} |",
+        sep,
+    ]
+    for r in rows:
+        name = str(r["gate_name"]).ljust(name_w)
+        rc = str(r["rc"]).rjust(2)
+        msg = str(r.get("message") or "")[:msg_w].ljust(msg_w)
+        lines.append(f"| {name} | {rc} | {msg} |")
+    lines.append(sep)
+    # Surface remediation plan paths separately so the table stays clean.
+    plan_paths = [r for r in rows if r.get("plan_path")]
+    if plan_paths:
+        lines.append("")
+        lines.append("Remediation plans:")
+        for r in plan_paths:
+            lines.append(f"  - {r['gate_name']}: {r['plan_path']}")
+    lines.append("")
+    lines.append(f"Total deferred failures: {len(rows)}  |  Final exit code: {deferred_exit_code()}")
+    lines.append("=" * 78)
+    return "\n".join(lines)
 
 
 def reset_for_tests() -> None:

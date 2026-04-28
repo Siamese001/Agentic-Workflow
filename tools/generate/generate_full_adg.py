@@ -832,15 +832,13 @@ def generate_full_adg(
         )
         if _coverage_summary["warnings"]:
             for _w in _coverage_summary["warnings"][:5]:
-                logger.info("coverage_ingest: %s", _w)
-        logger.info(
-            "coverage_ingest: rows=%s files_seen=%s mode=%s",
-            _coverage_summary["rows_written"],
-            _coverage_summary["files_seen"],
-            _coverage_summary["mode"],
+                print(f"[ADG] coverage_ingest: {_w}")
+        print(
+            f"[ADG] coverage_ingest: rows={_coverage_summary['rows_written']} "
+            f"files_seen={_coverage_summary['files_seen']} mode={_coverage_summary['mode']}"
         )
     except Exception as _coverage_exc:  # guardian: allow-broad-exception -- enrichment fail-soft
-        logger.warning("coverage_ingest failed (continuing): %s", _coverage_exc)
+        print(f"[WARN] coverage_ingest failed (continuing): {_coverage_exc}")
 
     _materialize_adg_views(paths.sqlite)
 
@@ -1754,19 +1752,25 @@ def main() -> None:
     from tools.generate.integration.deferred_failures import (  # noqa: E402, PLC0415
         deferred_exit_code as _shared_deferred_exit_code,
         deferred_failure_summary as _shared_deferred_summary,
+        format_summary_table as _shared_format_summary_table,
         is_failure_deferred as _shared_is_failure_deferred,
     )
 
     p0_deferred = is_p0_failure_deferred()
     shared_deferred = _shared_is_failure_deferred()
     if p0_deferred or shared_deferred:
-        # Cascade Wave B summary line.
+        # Cascade Wave B summary line + W3.1 markdown table for full visibility.
         if shared_deferred:
             shared_rows = _shared_deferred_summary()
             print(
                 f"[ADG] Deferred failure registry: {len(shared_rows)} gate(s) recorded — "
                 + ", ".join(f"{r['gate_name']}(rc={r['rc']})" for r in shared_rows)
             )
+            # W3.1 (plan adg-fail-aggregating-gate-chain-9d4e1f): render the
+            # full-aggregated markdown table so operators see every failed
+            # gate's name, rc, and message in one place instead of grep-ing
+            # the multi-thousand-line build log.
+            print(_shared_format_summary_table())
         # Choose exit code: prefer the shared registry's first non-zero rc
         # if present (covers P1/SC/agentic), otherwise fall back to the
         # legacy p0_runner-only signal.
@@ -1896,6 +1900,8 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
         key=lambda r: labels.index(str(r["label"])),
     )
     first_failure_rc: int | None = None
+    first_failure_label: str | None = None
+    first_failure_hint: str | None = None
     for r in results:
         # progress_bar: bounded by number of post-ADG gate scripts (~5-10 — §16 exempt)
         label = str(r["label"])
@@ -1913,10 +1919,24 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
             print(f"[ADG] [{label}] FAIL — {r['fail_hint']}")
             if first_failure_rc is None:
                 first_failure_rc = rc
+                first_failure_label = label
+                first_failure_hint = str(r["fail_hint"])
         else:
             print(f"[ADG] [{label}] PASS")
     if first_failure_rc is not None:
-        sys.exit(first_failure_rc)
+        # Plan adg-fail-aggregating-gate-chain-9d4e1f W4.1: route Stage-2
+        # parallel-gate failures through record_or_exit so the drain block
+        # in main() can render the full aggregated summary table covering
+        # both Stage-1 ratchet/integrity gates AND Stage-2 subprocess
+        # gates. Default behaviour (env var unset) is unchanged: first
+        # non-zero rc still exits immediately.
+        from tools.generate.integration.deferred_failures import record_or_exit  # noqa: PLC0415
+
+        record_or_exit(
+            f"post_adg_gate.{first_failure_label or 'unknown'}",
+            first_failure_rc,
+            message=(first_failure_hint or "")[:160],
+        )
 
 
 if __name__ == "__main__":
