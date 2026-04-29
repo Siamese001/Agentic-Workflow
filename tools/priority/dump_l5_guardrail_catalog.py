@@ -28,13 +28,20 @@ TAXONOMY: list[tuple[str, str, str]] = [
     ("v5",            "G16", "v5 governance plane"),
     ("adapters",      "G02", "Approval adapters (HITL channels)"),
     ("config",        "G14", "Config/blueprint"),
+    # 2026-04-29 W2 extension — covers the 212 previously G-UNCLASSIFIED modules
+    ("L5_safety/reasoning", "G17", "Healer/Classifier reasoning agents"),
+    ("L5_safety/utils",     "G18", "Safety utilities (file ops, dedup, gates)"),
+    ("L5_safety/validators","G19", "Validators (location, truth, schema)"),
+    ("L5_safety/eval_spine","G20", "Exit-eval grading spine"),
+    ("L5_safety/contracts", "G21", "Internal contracts (vocab, status enums)"),
+    ("L5_safety/exit_control","G22", "Exit control HITL"),
 ]
 
 
 def classify(path: str) -> tuple[str, str]:
     p = path.lower()
     for frag, gid, desc in TAXONOMY:
-        if frag in p:
+        if frag.lower() in p:
             return gid, desc
     return "G-UNCLASSIFIED", "Needs human triage"
 

@@ -17,7 +17,7 @@ The ADG hot-cache scan of `agentic_core/L5_safety/` (447 modules excluding `__in
 
 Adopt the G01–G29 guardrail family taxonomy as the canonical concern decomposition for L5. Each existing L5 module is assigned exactly one G-id by path-fragment classification; modules that fit multiple concerns are tagged by primary concern.
 
-## Initial Mapping (auto-classified, 53% coverage)
+## Final Mapping (100% coverage as of 2026-04-29 W2 extension)
 
 | G-id | Concern | Module count | Primary path fragment |
 |------|---------|-------------:|------------------------|
@@ -33,9 +33,21 @@ Adopt the G01–G29 guardrail family taxonomy as the canonical concern decomposi
 | G12 | Enforcement chokepoint | 106 | `enforcement/` |
 | G14 | Structure blueprint (config) | 11 | `blueprint/`, `config/` |
 | G16 | v5 governance plane | 17 | `v5/` |
-| **G-UNCLASSIFIED** | **Needs human triage** | **212** | (mixed) |
+| G17 | Healer/Classifier reasoning agents | 80 | `L5_safety/reasoning/` |
+| G18 | Safety utilities (file ops, dedup, gates) | 57 | `L5_safety/utils/` |
+| G19 | Validators (location, truth, schema) | 49 | `L5_safety/validators/` |
+| G20 | Exit-eval grading spine | 14 | `L5_safety/eval_spine/` |
+| G21 | Internal contracts (vocab, status enums) | 11 | `L5_safety/contracts/` |
+| G22 | Exit control HITL | 1 | `L5_safety/exit_control/` |
+
+**Total: 447 modules — 100% classified.**
 
 **Authoritative inventory CSV**: `docs/reports/maintenance/l5_guardrail_family_catalog.csv`
+
+### Classification History
+
+- **2026-04-29 W1**: 235/447 (53%) auto-classified via path-fragment matching
+- **2026-04-29 W2**: 212 G-UNCLASSIFIED modules drained by extending taxonomy with G17–G22 (six new G-ids capturing the `reasoning/`, `utils/`, `validators/`, `eval_spine/`, `contracts/`, `exit_control/` buckets). Result: 447/447 (100%).
 
 ## What's Missing (driver of subsequent W4 phases)
 

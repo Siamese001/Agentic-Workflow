@@ -9,23 +9,23 @@ G16,v5 governance plane,agentic_core/L5_safety/v5/contracts.py,44,33,0.18
 G04,End-user identity propagation,agentic_core/L5_safety/identity/registries.py,39,11,0.05
 G04,End-user identity propagation,agentic_core/L5_safety/identity/guardrail_bank.py,38,8,0.04
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/escalation/human_escalation.py,36,87,0.38
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/exit_control/hitl_classes.py,33,3,0.01
+G22,Exit control HITL,agentic_core/L5_safety/exit_control/hitl_classes.py,33,3,0.01
 G04,End-user identity propagation,agentic_core/L5_safety/identity/principal_verifier.py,29,9,0.03
 G04,End-user identity propagation,agentic_core/L5_safety/identity/front_door_resolver.py,27,5,0.02
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/dispatch.py,27,5,0.02
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/otel_spans.py,27,9,0.03
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/FileClassificationAgent.py,26,157,0.50
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/FileClassificationAgent.py,26,157,0.50
 G10,Policy plane,agentic_core/L5_safety/exit_control/hitl_policy.py,24,8,0.02
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint/_constants.py,23,71,0.20
 G16,v5 governance plane,agentic_core/L5_safety/v5/otel_spans.py,23,8,0.02
 G04,End-user identity propagation,agentic_core/L5_safety/identity/runtime_entry_sweep.py,22,16,0.04
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/base_detector_validator.py,22,92,0.25
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/exit_decision.py,21,10,0.03
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/base_detector_validator.py,22,92,0.25
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/exit_decision.py,21,10,0.03
 G04,End-user identity propagation,agentic_core/L5_safety/identity/runtime_rails.py,21,9,0.02
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/hitl/hitl_escalation_activator.py,19,89,0.21
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/hitl/hitl_graph.py,18,74,0.16
 G04,End-user identity propagation,agentic_core/L5_safety/identity/data_authority_loader.py,18,7,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/hierarchy_healer.py,16,127,0.25
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/hierarchy_healer.py,16,127,0.25
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint/derived.py,15,85,0.16
 G09,Audit emission (cross-cutting),agentic_core/L5_safety/enforcement/audit/safety_audit_registry.py,15,22,0.04
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/escalation/escalation_orchestrator.py,15,73,0.13
@@ -35,82 +35,82 @@ G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/circuit_breaker_ga
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/orchestrator.py,14,19,0.03
 G02,Layered guardrail banks (client+agent),agentic_core/L5_safety/adapters/notion_approval_adapter.py,13,12,0.02
 G02,Layered guardrail banks (client+agent),agentic_core/L5_safety/adapters/orkes_approval_adapter.py,13,10,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/exit_eval.py,13,33,0.05
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/trace_grader.py,13,9,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CodeHealerAgent.py,13,109,0.17
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/exit_eval.py,13,33,0.05
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/trace_grader.py,13,9,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CodeHealerAgent.py,13,109,0.17
 G04,End-user identity propagation,agentic_core/L5_safety/identity/registry_loader.py,12,10,0.01
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/ctx_builders.py,12,5,0.01
 G12,Enforcement chokepoint,agentic_core/L5_safety/config/structure_enforcement_util.py,11,14,0.02
 G09,Audit emission (cross-cutting),agentic_core/L5_safety/enforcement/audit/safety_audit_emitter.py,11,13,0.02
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/hitl_gate.py,11,85,0.11
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/core_kernel/classification_kernel.py,11,21,0.03
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/location_validator.py,11,126,0.17
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/core_kernel/classification_kernel.py,11,21,0.03
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/location_validator.py,11,126,0.17
 G02,Layered guardrail banks (client+agent),agentic_core/L5_safety/adapters/slack_approval_adapter.py,10,11,0.01
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint/territories.py,10,80,0.10
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/adg_hitl_enricher.py,10,5,0.01
 G04,End-user identity propagation,agentic_core/L5_safety/enforcement/identity_verifier.py,10,9,0.01
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/registry_verification_enforcer.py,10,97,0.12
 G04,End-user identity propagation,agentic_core/L5_safety/identity/audit_binding_lane.py,10,10,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py,10,116,0.14
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py,10,116,0.14
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/baseline_registry.py,10,9,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/canonical_truth_validator.py,10,2,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/canonical_truth_validator.py,10,2,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/rate_limit.py,9,8,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/budget_envelope.py,9,7,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/location_healer_util.py,9,142,0.16
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/budget_envelope.py,9,7,0.01
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/location_healer_util.py,9,142,0.16
 G08,Output-side AI firewall,agentic_core/L5_safety/v5/egress_receipts.py,9,5,0.01
 G02,Client-side guardrail bank,agentic_core/L5_safety/enforcement/ingress_telemetry.py,8,8,0.01
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/payload_normalizer.py,8,4,0.00
 G04,End-user identity propagation,agentic_core/L5_safety/identity/guardrail_adapter.py,8,8,0.01
 G04,End-user identity propagation,agentic_core/L5_safety/identity/pre_l5_sweep.py,8,12,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py,8,99,0.10
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py,8,99,0.10
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/layer_invocation_map.py,8,3,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/fca_safety_gates_util.py,8,89,0.09
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/fca_safety_gates_util.py,8,89,0.09
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/input_safety_screen.py,7,6,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py,7,90,0.08
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py,7,112,0.10
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py,7,90,0.08
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py,7,112,0.10
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/digest.py,7,6,0.01
 G16,v5 governance plane,agentic_core/L5_safety/v5/governance_spans.py,7,6,0.01
 G16,v5 governance plane,agentic_core/L5_safety/v5/hitl_receipts.py,7,5,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/report_location_validator.py,7,89,0.08
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/report_location_validator.py,7,89,0.08
 G02,Approval adapters (HITL channels),agentic_core/L5_safety/adapters/email_magic_link_adapter.py,6,12,0.01
 G10,Policy plane,agentic_core/L5_safety/enforcement/policy_action_contract.py,6,77,0.06
 G04,End-user identity propagation,agentic_core/L5_safety/identity/egress_adapter_gated.py,6,9,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py,6,94,0.07
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/code_deduplication_util.py,6,11,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/code_validator_util.py,6,12,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py,6,94,0.07
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/code_deduplication_util.py,6,11,0.01
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/code_validator_util.py,6,12,0.01
 G16,v5 governance plane,agentic_core/L5_safety/v5/bridges.py,6,12,0.01
 G16,v5 governance plane,agentic_core/L5_safety/v5/g0_entry.py,6,9,0.01
 G16,v5 governance plane,agentic_core/L5_safety/v5/runtime_binding.py,6,10,0.01
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint/classification.py,5,87,0.05
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/hitl/decision_logger.py,5,85,0.05
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py,5,84,0.05
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/escalation_packet.py,5,17,0.01
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/escalation_packet.py,5,17,0.01
 G04,End-user identity propagation,agentic_core/L5_safety/identity/action_pipeline.py,5,15,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py,5,101,0.06
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py,5,101,0.06
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/mesh_result.py,5,11,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/code_enforcer_util.py,5,14,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/code_janitor_util.py,5,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/credential_scanner_util.py,5,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/location_constants_util.py,5,62,0.04
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/subprocess_security_util.py,5,84,0.05
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/code_enforcer_util.py,5,14,0.01
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/code_janitor_util.py,5,8,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/credential_scanner_util.py,5,8,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/location_constants_util.py,5,62,0.04
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/subprocess_security_util.py,5,84,0.05
 G16,v5 governance plane,agentic_core/L5_safety/v5/static_drift.py,5,5,0.00
 G09,Audit emission (cross-cutting),agentic_core/L5_safety/audit/safety_audit_emitter.py,4,9,0.00
 G03,Risk-tier proportionate enforcement,agentic_core/L5_safety/config/severity.py,4,4,0.00
 G07,Capability token TTL & single-use,agentic_core/L5_safety/enforcement/capability_token_rotation.py,4,4,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/replay_cache.py,4,6,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/kill_switch.py,4,10,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/shadow_observer.py,4,15,0.01
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/kill_switch.py,4,10,0.00
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/shadow_observer.py,4,15,0.01
 G04,End-user identity propagation,agentic_core/L5_safety/identity/audit_binding.py,4,11,0.01
 G04,End-user identity propagation,agentic_core/L5_safety/identity/write_adapter.py,4,7,0.00
 G04,End-user identity propagation,agentic_core/L5_safety/identity/write_adapter_gated.py,4,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/NamingAgent.py,4,84,0.04
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/file_classification/classification_core.py,4,13,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/hitl_calibration.py,4,5,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/NamingAgent.py,4,84,0.04
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/file_classification/classification_core.py,4,13,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/hitl_calibration.py,4,5,0.00
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/enforcement.py,4,10,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/code_formatter_util.py,4,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/complexity_analyzer_util.py,4,9,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/code_formatter_util.py,4,7,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/complexity_analyzer_util.py,4,9,0.00
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint/yaml_loader.py,3,3,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/_vocab.py,3,2,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/_vocab.py,3,2,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/exit_control_gate.py,3,42,0.02
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/governance_consistency_gate.py,3,8,0.00
 G10,Policy plane,agentic_core/L5_safety/enforcement/policy_enforcement_point.py,3,85,0.03
@@ -119,15 +119,15 @@ G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/verification_gate.
 G12,Enforcement chokepoint,agentic_core/L5_safety/eval_spine/enforcement_bridge.py,3,6,0.00
 G04,End-user identity propagation,agentic_core/L5_safety/identity/llm_gateway_v4.py,3,11,0.00
 G04,End-user identity propagation,agentic_core/L5_safety/identity/runtime_entry.py,3,16,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/GovernanceAgent.py,3,109,0.04
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py,3,89,0.03
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/root_hygiene_healer.py,3,108,0.04
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/GovernanceAgent.py,3,109,0.04
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py,3,89,0.03
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/root_hygiene_healer.py,3,108,0.04
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/otel_feed.py,3,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/architecture_governor_validator_util.py,3,6,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/benchmarking_util.py,3,11,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/bootstrap_util.py,3,6,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/code_detector_util.py,3,15,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/dependency_pruning_util.py,3,12,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/architecture_governor_validator_util.py,3,6,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/benchmarking_util.py,3,11,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/bootstrap_util.py,3,6,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/code_detector_util.py,3,15,0.01
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/dependency_pruning_util.py,3,12,0.00
 G16,v5 governance plane,agentic_core/L5_safety/v5/guardrail_registry.py,3,7,0.00
 G09,Audit emission (cross-cutting),agentic_core/L5_safety/v5/replay_audit.py,3,10,0.00
 G16,v5 governance plane,agentic_core/L5_safety/v5/risk_tier_controls.py,3,9,0.00
@@ -142,100 +142,100 @@ G08,Output-side AI firewall,agentic_core/L5_safety/enforcement/security/injectio
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py,2,86,0.02
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py,2,76,0.02
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/three_tier_compliance_enforcer.py,2,74,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/claim_extractor.py,2,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/judge_backends/base.py,2,2,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/judge_backends/null.py,2,5,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/output_contract_validator.py,2,9,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/trajectory_metrics.py,2,5,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CodeJanitorAgent.py,2,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/ResourceManagerAgent.py,2,89,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SystemArchitectAgent.py,2,105,0.03
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/file_classification/validation_rules.py,2,5,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/graph_aware_safety_monitor.py,2,14,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/guardian_decision.py,2,81,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/location_utils_util.py,2,91,0.02
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/claim_extractor.py,2,7,0.00
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/judge_backends/base.py,2,2,0.00
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/judge_backends/null.py,2,5,0.00
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/output_contract_validator.py,2,9,0.00
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/trajectory_metrics.py,2,5,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CodeJanitorAgent.py,2,8,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/ResourceManagerAgent.py,2,89,0.02
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SystemArchitectAgent.py,2,105,0.03
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/file_classification/validation_rules.py,2,5,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/graph_aware_safety_monitor.py,2,14,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/guardian_decision.py,2,81,0.02
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/location_utils_util.py,2,91,0.02
 G16,v5 governance plane,agentic_core/L5_safety/v5/decision_rail.py,2,19,0.00
 G16,v5 governance plane,agentic_core/L5_safety/v5/g1_triage.py,2,13,0.00
 G16,v5 governance plane,agentic_core/L5_safety/v5/g2a_origin_trust.py,2,6,0.00
 G16,v5 governance plane,agentic_core/L5_safety/v5/out_of_band_invariants.py,2,3,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/HygieneGuardianAgent.py,2,94,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/chaos_healing_integration_types.py,2,84,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/dependency_healing_integration_types.py,2,84,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/invalid_stub_validator.py,2,86,0.02
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/silent_degradation_validator.py,2,73,0.02
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/HygieneGuardianAgent.py,2,94,0.02
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/chaos_healing_integration_types.py,2,84,0.02
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/dependency_healing_integration_types.py,2,84,0.02
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/invalid_stub_validator.py,2,86,0.02
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/silent_degradation_validator.py,2,73,0.02
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint/semantics.py,1,67,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/_status_enums.py,1,3,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/_status_enums.py,1,3,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py,1,12,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/error_recovery_strategy.py,1,62,0.01
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/gates/tool_safety_gate.py,1,88,0.01
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/mcp_sovereign_authority_enforcer.py,1,85,0.01
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/pii_vault_enforcer.py,1,76,0.01
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/retrieval/retrieval_safety_gate.py,1,2,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/judge_backends/anthropic_stub.py,1,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/eval_spine/tool_call_canonicalizer.py,1,6,0.00
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/judge_backends/anthropic_stub.py,1,7,0.00
+G20,Exit-eval grading spine,agentic_core/L5_safety/eval_spine/tool_call_canonicalizer.py,1,6,0.00
 G04,End-user identity propagation,agentic_core/L5_safety/identity/hitl_sweep_bridge.py,1,5,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py,1,84,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py,1,98,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/DocumentationAgent.py,1,81,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/DynamicSealAgent.py,1,84,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/GitHygieneAgent.py,1,90,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/GospelSyncAgent.py,1,83,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py,1,63,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/InspectorExecutor.py,1,67,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py,1,86,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py,1,97,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py,1,83,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py,1,84,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py,1,98,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/DocumentationAgent.py,1,81,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/DynamicSealAgent.py,1,84,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/GitHygieneAgent.py,1,90,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/GospelSyncAgent.py,1,83,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py,1,63,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/InspectorExecutor.py,1,67,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py,1,86,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py,1,97,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py,1,83,0.01
 G10,Policy plane,agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py,1,87,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py,1,93,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py,1,93,0.01
 G09,Audit emission (cross-cutting),agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py,1,90,0.01
 G11,Continuous red-team assurance,agentic_core/L5_safety/reasoning/RedTeamAgent.py,1,88,0.01
 G08,Output-side AI firewall,agentic_core/L5_safety/reasoning/RegressionOracleAgent.py,1,89,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/ReportLocationAgent.py,1,95,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py,1,89,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py,1,90,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SecurityManagerAgent.py,1,90,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py,1,109,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py,1,90,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py,1,92,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py,1,89,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/TestGeneratorAgent.py,1,91,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py,1,83,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/TypeMechanicAgent.py,1,80,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/ReportLocationAgent.py,1,95,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py,1,89,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py,1,90,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SecurityManagerAgent.py,1,90,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py,1,109,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py,1,90,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py,1,92,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py,1,89,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/TestGeneratorAgent.py,1,91,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py,1,83,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/TypeMechanicAgent.py,1,80,0.01
 G10,Policy plane,agentic_core/L5_safety/reasoning/file_classification/naming_policy.py,1,4,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/filesystem_ssot_validator.py,1,80,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/gravity_validator.py,1,88,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/filesystem_ssot_validator.py,1,80,0.01
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/gravity_validator.py,1,88,0.01
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g25_runtime_anomaly.py,1,7,0.00
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g29_learning_firewall.py,1,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/canonical_truth_util.py,1,82,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/code_tool_runner_core_util.py,1,84,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/cognitive_batch_processor_util.py,1,85,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/cost_governor_util.py,1,6,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/canonical_truth_util.py,1,82,0.01
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/code_tool_runner_core_util.py,1,84,0.01
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/cognitive_batch_processor_util.py,1,85,0.01
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/cost_governor_util.py,1,6,0.00
 G16,v5 governance plane,agentic_core/L5_safety/v5/governance_plane.py,1,42,0.01
 G16,v5 governance plane,agentic_core/L5_safety/v5/promotion_receipt.py,1,5,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py,1,108,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py,1,108,0.01
 G14,Config/blueprint,agentic_core/L5_safety/validators/config_with_logic_validator.py,1,84,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/context_validator.py,1,84,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/direct_prompt_compilation_validator.py,1,83,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/global_mutation_validator.py,1,68,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/hollow_file_detector_validator.py,1,18,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/magic_validator.py,1,69,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/path_fragility_validator.py,1,68,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/silent_swallower_validator.py,1,83,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/test_skip_detector_validator.py,1,85,0.01
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/type_erasure_validator.py,1,68,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/context_validator.py,1,84,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/direct_prompt_compilation_validator.py,1,83,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/global_mutation_validator.py,1,68,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/hollow_file_detector_validator.py,1,18,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/magic_validator.py,1,69,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/path_fragility_validator.py,1,68,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/silent_swallower_validator.py,1,83,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/test_skip_detector_validator.py,1,85,0.01
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/type_erasure_validator.py,1,68,0.01
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint/territories_loader.py,0,3,0.00
 G14,Structure blueprint (config),agentic_core/L5_safety/config/structure_blueprint_config.py,0,49,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/_base.py,0,6,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/authority.py,0,27,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/_base.py,0,6,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/authority.py,0,27,0.00
 G08,Output-side AI firewall,agentic_core/L5_safety/contracts/egress.py,0,27,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/contracts/enforcement.py,0,24,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/hitl.py,0,25,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/origin.py,0,25,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/parent.py,0,18,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/registry.py,0,809,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/replay.py,0,24,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/runtime_binding.py,0,19,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/contracts/static.py,0,26,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/hitl.py,0,25,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/origin.py,0,25,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/parent.py,0,18,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/registry.py,0,809,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/replay.py,0,24,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/runtime_binding.py,0,19,0.00
+G21,"Internal contracts (vocab, status enums)",agentic_core/L5_safety/contracts/static.py,0,26,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/AdapterBase.py,0,24,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/DomainPlannerAdapter.py,0,84,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/HealingStrategy.py,0,94,0.00
@@ -318,40 +318,40 @@ G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/tool_safety_contra
 G09,Audit emission (cross-cutting),agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py,0,83,0.00
 G12,Enforcement chokepoint,agentic_core/L5_safety/enforcement/vector_healing_strategy.py,0,82,0.00
 G04,End-user identity propagation,agentic_core/L5_safety/identity/out_of_band_planes.py,0,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py,0,87,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py,0,87,0.00
 G11,Continuous red-team assurance,agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py,0,89,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/ArchitectureGovernorValidatorAgent.py,0,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py,0,89,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py,0,100,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/BenchmarkingAgent.py,0,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/BootstrapAgent.py,0,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py,0,88,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py,0,89,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py,0,11,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CodeDetectorAgent.py,0,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py,0,6,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CodeFormatterAgent.py,0,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CodeValidatorAgent.py,0,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py,0,10,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CostGovernorAgent.py,0,4,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/CredentialScannerAgent.py,0,10,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/DependencyPruningAgent.py,0,8,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py,0,88,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py,0,104,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py,0,110,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py,0,92,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py,0,90,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/LocationHealerAgent.py,0,3,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/RedSentinelAgent.py,0,93,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py,0,93,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py,0,95,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/StructureHealerAgent.py,0,93,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py,0,84,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/ArchitectureGovernorValidatorAgent.py,0,7,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py,0,89,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py,0,100,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/BenchmarkingAgent.py,0,7,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/BootstrapAgent.py,0,8,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py,0,88,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py,0,89,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py,0,11,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CodeDetectorAgent.py,0,7,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py,0,6,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CodeFormatterAgent.py,0,8,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CodeValidatorAgent.py,0,8,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py,0,10,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CostGovernorAgent.py,0,4,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/CredentialScannerAgent.py,0,10,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/DependencyPruningAgent.py,0,8,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py,0,88,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py,0,104,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py,0,110,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py,0,92,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py,0,90,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/LocationHealerAgent.py,0,3,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/RedSentinelAgent.py,0,93,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py,0,93,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py,0,95,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/StructureHealerAgent.py,0,93,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py,0,84,0.00
 G10,Policy plane,agentic_core/L5_safety/reasoning/adaptation/policy_adaptation_loop.py,0,14,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/file_classification/models.py,0,3,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/file_classification_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/hierarchy_validator.py,0,80,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/reasoning/root_hygiene_validator.py,0,80,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/file_classification/models.py,0,3,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/file_classification_validator.py,0,81,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/hierarchy_validator.py,0,80,0.00
+G17,Healer/Classifier reasoning agents,agentic_core/L5_safety/reasoning/root_hygiene_validator.py,0,80,0.00
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g01_request_ingress.py,0,10,0.00
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g02_identity_session.py,0,9,0.00
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g03_intent_ambiguity.py,0,7,0.00
@@ -379,70 +379,70 @@ G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g24_dete
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g26_exit_disposition.py,0,7,0.00
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g27_durable_write_sovereignty.py,0,7,0.00
 G01,Named guardrail family catalog,agentic_core/L5_safety/runtime_gates/g28_audit_trace_completeness.py,0,7,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/ConstitutionalOverseer_util.py,0,79,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/agent_categorizer_util.py,0,82,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/cache_invalidation_util.py,0,85,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/capability_extractor_util.py,0,78,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/check_output_quality_util.py,0,64,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/cst_transformers_types_util.py,0,143,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/decorators_util.py,0,66,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/enforce_length_limits_util.py,0,64,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/extract_pattern_util.py,0,84,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/fix_inherited_invocation_util.py,0,85,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/force_app_depth_util.py,0,90,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/forge_fortress_util.py,0,89,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/gravity_visitor_util.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/guard_ddd_alignment_util.py,0,84,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/guard_observability_footprint_util.py,0,84,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/location_path_util.py,0,88,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/pre_deploy_check_util.py,0,68,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/register_all_validators_util.py,0,93,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/runners/agent_roster_runner.py,0,94,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/runners/arch_governor_runner.py,0,87,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/runners/code_validator_runner.py,0,87,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/runners/hierarchy_runner.py,0,87,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/runners/orchestrator_runner.py,0,89,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/security_controls_util.py,0,82,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/set_complexity_health_100_util.py,0,84,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/sovereign_lock_util.py,0,88,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/ssot_folder_check_util.py,0,79,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/structure_drift_writer.py,0,83,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/surgical_context_types_util.py,0,65,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/tiered_batch_util.py,0,86,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/unified_cst_healer_util.py,0,99,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/validate_generated_content_util.py,0,64,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/validate_path_ssot_util.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/validation_utils_util.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/verify_no_mock_data_util.py,0,84,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py,0,84,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/CodeJanitorAgent.py,0,65,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/GovernanceAgent.py,0,66,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/PascalSovereigntyAgent.py,0,67,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/achv_bullet_synthesizer_validator.py,0,82,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/agentthoughtprocess_validator.py,0,83,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/ats_validator.py,0,82,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/budget_profile_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/campaign_balance_validator.py,0,79,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/consensus_verdict_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/content_quality_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/ddd_alignment_validator.py,0,89,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/deliverability_validator.py,0,79,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/dependencygraph_validator.py,0,93,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/golden_state_test_case_validator.py,0,85,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/governance_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/gravity_leak_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/gravity_validator.py,0,91,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/hop_validator.py,0,90,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/hypothesis_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/intelligence_query_validator.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/intervention_server_validator.py,0,92,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,0,81,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/lead_quality_validator.py,0,79,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/migration_helper_validator.py,0,82,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/mission_preflight_validator.py,0,88,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/read_file_args_validator.py,0,94,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/reasoning_pattern_validator.py,0,84,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/structure_drift_validator.py,0,85,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/test_quality_detector_validator.py,0,88,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/utility_silent_swallower_validator.py,0,88,0.00
-G-UNCLASSIFIED,Needs human triage,agentic_core/L5_safety/validators/verb_canonicalizer_validator.py,0,83,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/ConstitutionalOverseer_util.py,0,79,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/agent_categorizer_util.py,0,82,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/cache_invalidation_util.py,0,85,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/capability_extractor_util.py,0,78,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/check_output_quality_util.py,0,64,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/cst_transformers_types_util.py,0,143,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/decorators_util.py,0,66,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/enforce_length_limits_util.py,0,64,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/extract_pattern_util.py,0,84,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/fix_inherited_invocation_util.py,0,85,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/force_app_depth_util.py,0,90,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/forge_fortress_util.py,0,89,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/gravity_visitor_util.py,0,81,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/guard_ddd_alignment_util.py,0,84,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/guard_observability_footprint_util.py,0,84,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/location_path_util.py,0,88,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/pre_deploy_check_util.py,0,68,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/register_all_validators_util.py,0,93,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/runners/agent_roster_runner.py,0,94,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/runners/arch_governor_runner.py,0,87,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/runners/code_validator_runner.py,0,87,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/runners/hierarchy_runner.py,0,87,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/runners/orchestrator_runner.py,0,89,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/security_controls_util.py,0,82,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/set_complexity_health_100_util.py,0,84,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/sovereign_lock_util.py,0,88,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/ssot_folder_check_util.py,0,79,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/structure_drift_writer.py,0,83,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/surgical_context_types_util.py,0,65,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/tiered_batch_util.py,0,86,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/unified_cst_healer_util.py,0,99,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/validate_generated_content_util.py,0,64,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/validate_path_ssot_util.py,0,81,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/validation_utils_util.py,0,81,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/verify_no_mock_data_util.py,0,84,0.00
+G18,"Safety utilities (file ops, dedup, gates)",agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py,0,84,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/CodeJanitorAgent.py,0,65,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/GovernanceAgent.py,0,66,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/PascalSovereigntyAgent.py,0,67,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/achv_bullet_synthesizer_validator.py,0,82,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/agentthoughtprocess_validator.py,0,83,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/ats_validator.py,0,82,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/budget_profile_validator.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/campaign_balance_validator.py,0,79,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/consensus_verdict_validator.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/content_quality_validator.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/ddd_alignment_validator.py,0,89,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/deliverability_validator.py,0,79,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/dependencygraph_validator.py,0,93,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/golden_state_test_case_validator.py,0,85,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/governance_validator.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/gravity_leak_validator.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/gravity_validator.py,0,91,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/hop_validator.py,0,90,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/hypothesis_validator.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/intelligence_query_validator.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/intervention_server_validator.py,0,92,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,0,81,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/lead_quality_validator.py,0,79,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/migration_helper_validator.py,0,82,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/mission_preflight_validator.py,0,88,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/read_file_args_validator.py,0,94,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/reasoning_pattern_validator.py,0,84,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/structure_drift_validator.py,0,85,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/test_quality_detector_validator.py,0,88,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/utility_silent_swallower_validator.py,0,88,0.00
+G19,"Validators (location, truth, schema)",agentic_core/L5_safety/validators/verb_canonicalizer_validator.py,0,83,0.00
