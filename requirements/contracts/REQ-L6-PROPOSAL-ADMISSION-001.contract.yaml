@@ -1,8 +1,6 @@
 req_id: REQ-L6-PROPOSAL-ADMISSION-001
 description: |
-  Proposal admission — every governed run must record at least one
-  proposal-admission span attesting that proposals were vetted by the
-  admission control surface.
+  Proposal admission — every governed run must record at least one proposal-admission span attesting that proposals were vetted by the admission control surface.
 status: experimental
 owner: agentic-workflow
 created: 2026-04-28
@@ -13,6 +11,11 @@ expects_spans:
     - L6_OBSERVABILITY
   apps:
     - apps_rg
+    - apps_eval
+    - apps_exec
+    - apps_lic
+    - apps_research
+    - apps_rfp
   edge_kinds:
     - proposal_admission
   min_count_per_run: 1

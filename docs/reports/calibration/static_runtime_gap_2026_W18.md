@@ -1,6 +1,6 @@
 # Static↔Runtime ADG Gap Report
 
-- **Generated:** 2026-04-29 01:02:10 UTC
+- **Generated:** 2026-04-29 01:10:10 UTC
 - **Static snapshot:** `C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04282026_2058.sqlite`
 - **Lookback:** 30 days
 - **Static L5/L6 nodes scanned:** 200

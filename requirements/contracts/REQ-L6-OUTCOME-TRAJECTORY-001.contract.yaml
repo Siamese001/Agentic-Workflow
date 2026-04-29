@@ -1,8 +1,6 @@
 req_id: REQ-L6-OUTCOME-TRAJECTORY-001
 description: |
-  Outcome trajectory — every governed run must record outcome trajectory
-  spans so downstream regret-accounting and meta-learner ledgers can
-  attribute success / failure across decisions.
+  Outcome trajectory — every governed run must record outcome trajectory spans so downstream regret-accounting and meta-learner ledgers can attribute success / failure across decisions.
 status: experimental
 owner: agentic-workflow
 created: 2026-04-28
@@ -13,6 +11,11 @@ expects_spans:
     - L6_OBSERVABILITY
   apps:
     - apps_rg
+    - apps_eval
+    - apps_exec
+    - apps_lic
+    - apps_research
+    - apps_rfp
   edge_kinds:
     - outcome_trajectory
   min_count_per_run: 1

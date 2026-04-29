@@ -57,8 +57,14 @@ CREATE INDEX IF NOT EXISTS idx_layer    ON req_emission (layer, observed_at DESC
 """
 
 
-def ensure_schema(db_path: Path = DEFAULT_LEDGER_PATH) -> None:
-    """Create the ledger DB and indices if they don't exist. Idempotent."""
+def ensure_schema(db_path: Path | str = DEFAULT_LEDGER_PATH) -> None:
+    """Create the ledger DB and indices if they don't exist. Idempotent.
+
+    Accepts either ``Path`` or ``str`` for ``db_path``; strings are coerced
+    so callers from subprocess scripts (where paths are interpolated as
+    strings) work without surprises.
+    """
+    db_path = Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     with closing(sqlite3.connect(db_path)) as con:
         con.executescript(_SCHEMA_DDL)
@@ -135,14 +141,16 @@ def write_emissions(
     *,
     app_id: str,
     source: str,
-    db_path: Path = DEFAULT_LEDGER_PATH,
+    db_path: Path | str = DEFAULT_LEDGER_PATH,
 ) -> dict[str, Any]:
     """Persist REQ exemplars from buffered spans.
 
     Fail-soft: catches sqlite errors and returns ``{"success": False, ...}``
     instead of raising. Returns ``{"success": True, "rows_written": N,
-    "distinct_req_ids": M}`` on success.
+    "distinct_req_ids": M}`` on success. Accepts ``str`` or ``Path`` for
+    ``db_path`` (coerced internally).
     """
+    db_path = Path(db_path)
     rows: list[tuple] = []
     for span in spans:
         try:

@@ -1,10 +1,7 @@
 req_id: REQ-L6-OBS-ANTI-BYPASS-001
 description: |
-  Observability anti-bypass — every governed run must emit at least one
-  L6_OBSERVABILITY span confirming the audit/observability surface was
-  exercised. Closes the documented gap from
-  ALL_REQUIREMENTS_ENFORCEMENT_BASELINE.md:181-185.
-status: experimental         # experimental | stable | deprecated  (OTel lifecycle)
+  Observability anti-bypass — every governed run must emit at least one L6_OBSERVABILITY span confirming the audit/observability surface was exercised. Closes the documented gap from ALL_REQUIREMENTS_ENFORCEMENT_BASELINE.md:181-185.
+status: experimental
 owner: agentic-workflow
 created: 2026-04-28
 last_promoted: null
@@ -14,11 +11,14 @@ expects_spans:
     - L6_OBSERVABILITY
   apps:
     - apps_rg
+    - apps_eval
+    - apps_exec
+    - apps_lic
+    - apps_research
+    - apps_rfp
   edge_kinds:
     - anti_bypass_observation
   min_count_per_run: 1
   must_carry_trace_id: true
 references:
-  - docs/reference/contracts/enforcement/ALL_REQUIREMENTS_ENFORCEMENT_BASELINE.md
-  - .windsurf/plans/runtime-evidence-foundation-54ad39.md
   - agentic_core/runtime/contracts/req_evidence.py::emit_anti_bypass_observation

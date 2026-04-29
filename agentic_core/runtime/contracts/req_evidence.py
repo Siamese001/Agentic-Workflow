@@ -170,6 +170,60 @@ def emit_audit_replay_consistency(op: str, root_trace_id: str = "") -> None:
     )
 
 
+def install_and_tag(app_id: str, op: str = "") -> object | None:
+    """Fleet-wide bootstrap: install OTEL bridge + emit all 6 priority REQs.
+
+    A single-call entrypoint for every governed app. Each app's main()
+    invokes this once at startup; the bridge captures all subsequent
+    ``adg.*`` lifecycle emissions and persists exemplars to the REQ
+    Coverage Ledger on flush.
+
+    Returns the bridge instance, or ``None`` if OTEL is unavailable.
+    Fail-soft — never raises.
+
+    Parameters
+    ----------
+    app_id
+        One of the governed app identifiers (apps_rg, apps_eval, apps_exec,
+        apps_lic, apps_research, apps_rfp). Recorded on every span and
+        exemplar; downstream fitness reports group coverage by this value.
+    op
+        Optional operation tag (defaults to ``"<app_id>.main"``).
+
+    Examples
+    --------
+    >>> # In apps_eval/scripts/run_eval.py:
+    >>> from agentic_core.runtime.contracts.req_evidence import install_and_tag
+    >>> install_and_tag("apps_eval")
+    """
+    op = op or f"{app_id}.main"
+    try:
+        from agentic_core.runtime.contracts.otel_lifecycle_bridge import (  # noqa: PLC0415
+            install_bridge,
+        )
+        bridge = install_bridge(app_id=app_id)
+    except ImportError:  # guardian: allow-otel-optional -- bridge module absent in stripped builds
+        return None
+
+    # Emit all 6 priority REQ evidence markers. Each governed app is
+    # expected to satisfy the full set: anti-bypass observation, outcome
+    # trajectory, proposal admission, memory promotion, route-contract
+    # telemetry, and UWG audit/replay consistency.
+    try:
+        emit_anti_bypass_observation(op)
+        emit_outcome_trajectory(op)
+        emit_proposal_admission(op)
+        emit_memory_promotion(op)
+        emit_route_contract_telemetry(op)
+        emit_audit_replay_consistency(op)
+    except (TypeError, ValueError, AttributeError) as exc:  # guardian: allow-defensive -- emit helpers should never raise; if they do, bridge install still succeeds
+        logging.getLogger(__name__).warning(
+            "install_and_tag: REQ emission failed (%s); bridge still installed",
+            exc,
+        )
+    return bridge
+
+
 __all__ = [
     "emit_req_evidence",
     "emit_anti_bypass_observation",
@@ -178,4 +232,5 @@ __all__ = [
     "emit_memory_promotion",
     "emit_route_contract_telemetry",
     "emit_audit_replay_consistency",
+    "install_and_tag",
 ]

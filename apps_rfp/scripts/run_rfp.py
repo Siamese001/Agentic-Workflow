@@ -67,7 +67,7 @@ def main() -> int:
     from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
     from apps_rfp.types.rfp_types import ArchitecturePosture, RfpRequest
 
-    with otel_lifecycle_capture(mission="apps_rfp.run_rfp"):
+    with otel_lifecycle_capture(mission="apps_rfp.run_rfp", app_id="apps_rfp"):
         return _run_rfp(args, problem, RfpOrchestrator, RfpRequest)
 
 

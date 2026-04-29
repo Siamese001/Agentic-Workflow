@@ -78,7 +78,7 @@ def main() -> int:
     from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
     from apps_exec.types.exec_types import AudiencePersona, BriefTone, EmphasisArea, ExecBriefRequest
 
-    with otel_lifecycle_capture(mission="apps_exec.run_exec"):
+    with otel_lifecycle_capture(mission="apps_exec.run_exec", app_id="apps_exec"):
         return _run_exec(args, ExecOrchestrator, ExecBriefRequest)
 
 

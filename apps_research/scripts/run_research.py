@@ -66,7 +66,7 @@ def main() -> int:
     from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
     from apps_research.types.research_types import ResearchRequest
 
-    with otel_lifecycle_capture(mission="apps_research.run_research"):
+    with otel_lifecycle_capture(mission="apps_research.run_research", app_id="apps_research"):
         return _run_research(args, ResearchOrchestrator, ResearchRequest)
 
 

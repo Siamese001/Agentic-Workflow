@@ -191,9 +191,13 @@ def main() -> None:
     _adg_bootstrap()
     import asyncio
 
+    from agentic_core.runtime.contracts.otel_lifecycle_bridge import (
+        otel_lifecycle_capture,
+    )
     from apps_lic.tools.run_workflow_lic import main as _run
 
-    asyncio.run(_run())
+    with otel_lifecycle_capture(mission="apps_lic.run_workflow_lic", app_id="apps_lic"):
+        asyncio.run(_run())
 
 
 if __name__ == "__main__":

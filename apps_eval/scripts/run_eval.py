@@ -48,7 +48,7 @@ def main() -> int:
     from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
     from apps_eval.types.eval_types import EvalRequest
 
-    with otel_lifecycle_capture(mission="apps_eval.run_eval"):
+    with otel_lifecycle_capture(mission="apps_eval.run_eval", app_id="apps_eval"):
         return _run_eval(args, EvalOrchestrator, EvalRequest)
 
 

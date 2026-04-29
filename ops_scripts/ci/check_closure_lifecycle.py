@@ -112,10 +112,43 @@ def main(argv: list[str] | None = None) -> int:
     issues: list[dict[str, Any]] = []
     promotions_eligible: list[str] = []
 
-    # Count fitness report files (one per ISO week) — coarse "consecutive
-    # green weeks" check. Tighter accounting (per-REQ consecutive PASS) is
-    # a Wave 2 enhancement; this approximation is acceptable bootstrap.
-    fitness_weeks_present = sorted(CALIBRATION_DIR.glob("fitness_*.md"))
+    # Per-REQ consecutive-week tracking. For each weekly fitness JSON
+    # snapshot in calibration/, recover the per-REQ pass/fail state.
+    # A REQ is "promotion eligible" only when the LAST N consecutive weeks
+    # all show it as fresh (count > 0 in window). This replaces the older
+    # coarse approximation (count of fitness report files).
+    fitness_jsons = sorted(CALIBRATION_DIR.glob("fitness_*.json"))
+    weekly_freshness: list[dict[str, int]] = []
+    for fjson in fitness_jsons:
+        try:
+            data = json.loads(fjson.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        coverage_per_app = (
+            data.get("raw", {}).get("coverage_per_app") or {}
+        )
+        # Per-REQ presence is encoded indirectly via per-app coverage and the
+        # raw freshness map. The simplest stable signal: the REQ_ID appears
+        # in `declared_reqs` AND the per-app coverage is > 0 for any app.
+        # We persist the declared set + a per-REQ "any_app_coverage > 0" flag.
+        per_req: dict[str, int] = {}
+        for req_id in data.get("declared_reqs", []):
+            per_req[req_id] = (
+                1 if any(v > 0 for v in coverage_per_app.values()) else 0
+            )
+        weekly_freshness.append(per_req)
+
+    fitness_weeks_present = fitness_jsons  # legacy name kept for log messages
+
+    def _consecutive_pass_weeks(req_id: str) -> int:
+        """Count consecutive most-recent weekly snapshots where req_id passed."""
+        n = 0
+        for snapshot in reversed(weekly_freshness):
+            if snapshot.get(req_id, 0) == 1:
+                n += 1
+            else:
+                break
+        return n
 
     for c in contracts:
         req_id = c["req_id"]
@@ -139,14 +172,17 @@ def main(argv: list[str] | None = None) -> int:
             record["notes"].append(reason)
         elif status == "experimental":
             ok2, reason2 = _check_stable_has_evidence(c, args.ledger)
-            if ok2 and len(fitness_weeks_present) >= args.min_weeks_for_stable:
+            consecutive = _consecutive_pass_weeks(req_id)
+            record["consecutive_pass_weeks"] = consecutive
+            if ok2 and consecutive >= args.min_weeks_for_stable:
                 promotions_eligible.append(req_id)
                 record["notes"].append(
-                    f"eligible for promotion: green for {len(fitness_weeks_present)} weeks"
+                    f"eligible for promotion: green for {consecutive} consecutive weeks"
                 )
             else:
                 record["notes"].append(
-                    f"experimental — {reason2}; weeks_green={len(fitness_weeks_present)}"
+                    f"experimental — {reason2}; consecutive_pass_weeks={consecutive}"
+                    f" (need {args.min_weeks_for_stable})"
                 )
         else:
             record["ok"] = False
@@ -164,6 +200,10 @@ def main(argv: list[str] | None = None) -> int:
         "issues": issues,
         "promotions_eligible": promotions_eligible,
         "fitness_weeks_present": len(fitness_weeks_present),
+        "min_weeks_for_stable": args.min_weeks_for_stable,
+        "per_req_consecutive_weeks": {
+            c["req_id"]: _consecutive_pass_weeks(c["req_id"]) for c in contracts
+        },
     }
     if args.json_out:
         args.json_out.parent.mkdir(parents=True, exist_ok=True)

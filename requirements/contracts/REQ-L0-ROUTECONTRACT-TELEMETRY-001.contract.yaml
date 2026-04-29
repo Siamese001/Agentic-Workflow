@@ -1,8 +1,6 @@
 req_id: REQ-L0-ROUTECONTRACT-TELEMETRY-001
 description: |
-  L0 route-contract telemetry — every governed run must emit at least one
-  L0_ROUTING route-contract span so router decisions, namespace bandit
-  posteriors, and ensemble routing are auditable.
+  L0 route-contract telemetry — every governed run must emit at least one L0_ROUTING route-contract span so router decisions, namespace bandit posteriors, and ensemble routing are auditable.
 status: experimental
 owner: agentic-workflow
 created: 2026-04-28
@@ -13,6 +11,11 @@ expects_spans:
     - L0_ROUTING
   apps:
     - apps_rg
+    - apps_eval
+    - apps_exec
+    - apps_lic
+    - apps_research
+    - apps_rfp
   edge_kinds:
     - route_contract_telemetry
   min_count_per_run: 1

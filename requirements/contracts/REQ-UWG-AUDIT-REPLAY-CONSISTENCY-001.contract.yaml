@@ -1,8 +1,6 @@
 req_id: REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001
 description: |
-  UWG audit/replay consistency — every governed write must produce an
-  audit/replay span so the durable-write gateway log can be replayed
-  deterministically.
+  UWG audit/replay consistency — every governed write must produce an audit/replay span so the durable-write gateway log can be replayed deterministically.
 status: experimental
 owner: agentic-workflow
 created: 2026-04-28
@@ -13,6 +11,11 @@ expects_spans:
     - L4_STATE
   apps:
     - apps_rg
+    - apps_eval
+    - apps_exec
+    - apps_lic
+    - apps_research
+    - apps_rfp
   edge_kinds:
     - audit_replay_consistency
   min_count_per_run: 1
