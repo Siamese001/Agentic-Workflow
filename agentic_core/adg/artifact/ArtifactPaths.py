@@ -292,14 +292,49 @@ CREATE TABLE IF NOT EXISTS edges (
     target_span_column INTEGER DEFAULT 0,
     dynamic_resolution TEXT DEFAULT '',
 
-    -- 2026-04-28 Graph Authority axis. SSOT: agentic_core/adg/artifact/edge_authority.py
+    -- 2026-04-28 Graph Authority axis (legacy single-axis enum).
+    -- SSOT: agentic_core/adg/artifact/edge_authority.py
     -- Closed enum: verified | unresolved | dynamic | external | test_only | runtime_observed
-    authority          TEXT DEFAULT NULL
+    -- Kept for back-compat; superseded by the (bucket, resolution_status,
+    -- authority_status) triplet below.
+    authority          TEXT DEFAULT NULL,
+
+    -- 2026-04-29 Three-bucket authority model (the canonical model).
+    -- SSOT: agentic_core/adg/artifact/edge_authority.py
+    -- Closed enums:
+    --   bucket            ∈ {static, runtime, registry}
+    --   resolution_status ∈ {VERIFIED_MODULE, VERIFIED_SYMBOL, UNRESOLVED_MODULE,
+    --                        UNRESOLVED_SYMBOL, UNRESOLVED_DYNAMIC, PARTIAL,
+    --                        NOT_CHECKED, NOT_APPLICABLE, UNKNOWN,
+    --                        VERIFIED_RUNTIME, VERIFIED_TRACE, VERIFIED_RECEIPT,
+    --                        PARTIAL_TRACE, MISSING_TRACE, VERIFIED_REGISTRY,
+    --                        VERIFIED_CONFIG, UNRESOLVED_REGISTRY, STALE_REGISTRY,
+    --                        MISMATCHED_REGISTRY, SUBSTITUTED_REGISTRY}
+    --   authority_status  ∈ {AUTHORITATIVE, AUTHORITATIVE_RUNTIME,
+    --                        AUTHORITATIVE_REGISTRY, PARTIAL,
+    --                        NON_AUTHORITATIVE_HINT, RISK_SIGNAL_ONLY,
+    --                        EXCLUDED_TEST_ONLY, EXCLUDED_TYPE_ONLY,
+    --                        EXTERNAL_ONLY, UNKNOWN_NOT_PROOF}
+    --   evidence_refs     JSON array of evidence pointers
+    --                     (source_file:line for static, run_id+trace_id for
+    --                      runtime, registry_digest for registry).
+    -- Nullable in W1 (Phase 1). Graduates to NOT NULL in W5 once
+    -- ADG_CERTIFIED gate passes.
+    bucket             TEXT DEFAULT NULL,
+    resolution_status  TEXT DEFAULT NULL,
+    authority_status   TEXT DEFAULT NULL,
+    evidence_refs      TEXT DEFAULT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_edges_src  ON edges(src_id);
 CREATE INDEX IF NOT EXISTS idx_edges_dst  ON edges(dst_id);
 CREATE INDEX IF NOT EXISTS idx_edges_authority ON edges(authority)
     WHERE authority IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_edges_bucket ON edges(bucket)
+    WHERE bucket IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_edges_authority_status ON edges(authority_status)
+    WHERE authority_status IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_edges_resolution_status ON edges(resolution_status)
+    WHERE resolution_status IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_edges_rel  ON edges(relation_type);
 CREATE INDEX IF NOT EXISTS idx_edges_semantic_type ON edges(semantic_type)
     WHERE semantic_type != '';
@@ -793,12 +828,24 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         # ------------------------------------------------------------------
         from agentic_core.adg.artifact.edge_authority import (  # noqa: PLC0415
             SQL_AUTHORITY_BACKFILL,
+            SQL_INVENTORY_VIEW,
             SQL_MV_GOVERNANCE,
             SQL_MV_UNRESOLVED,
             SQL_MV_VERIFIED,
+            SQL_PROOF_VIEW,
+            SQL_RISK_VIEW,
+            SQL_TRIPLET_BACKFILL,
         )
 
+        # 1) Legacy single-axis backfill (2026-04-28)
         conn.executescript(SQL_AUTHORITY_BACKFILL + ";")
+        # 2) Three-bucket triplet backfill (2026-04-29)
+        conn.executescript(SQL_TRIPLET_BACKFILL + ";")
+        # 3) Canonical three views (proof / risk / inventory)
+        conn.executescript(SQL_PROOF_VIEW)
+        conn.executescript(SQL_RISK_VIEW)
+        conn.executescript(SQL_INVENTORY_VIEW)
+        # 4) Legacy aliases (kept for back-compat — retire in W4)
         conn.executescript(SQL_MV_VERIFIED)
         conn.executescript(SQL_MV_UNRESOLVED)
         conn.executescript(SQL_MV_GOVERNANCE)

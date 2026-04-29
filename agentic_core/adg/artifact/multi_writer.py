@@ -295,13 +295,20 @@ CREATE TABLE IF NOT EXISTS edges (
     target_span_column   INTEGER DEFAULT 0,
     dynamic_resolution   TEXT DEFAULT NULL,
 
-    -- 2026-04-28 Graph Authority axis (SSOT: agentic_core/adg/artifact/edge_authority.py).
+    -- 2026-04-28 Graph Authority axis (legacy single-axis enum).
+    -- SSOT: agentic_core/adg/artifact/edge_authority.py
     -- Closed enum: verified | unresolved | dynamic | external | test_only | runtime_observed.
-    -- NULL is permitted only transiently between INSERT and the post-write
-    -- backfill UPDATE (SQL_AUTHORITY_BACKFILL); CI gate
-    -- check_edge_authority_well_formed asserts every edge in shipped snapshots
-    -- has a non-NULL value drawn from the closed enum.
-    authority            TEXT DEFAULT NULL
+    authority            TEXT DEFAULT NULL,
+
+    -- 2026-04-29 Three-bucket authority model (canonical).
+    -- SSOT: agentic_core/adg/artifact/edge_authority.py
+    -- Closed enums: bucket ∈ {static, runtime, registry}; resolution_status,
+    -- authority_status per the spec; evidence_refs is a JSON array.
+    -- Nullable in W1 (Phase 1); graduates to NOT NULL in W5.
+    bucket               TEXT DEFAULT NULL,
+    resolution_status    TEXT DEFAULT NULL,
+    authority_status     TEXT DEFAULT NULL,
+    evidence_refs        TEXT DEFAULT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_edges_src  ON edges(src_id);
 CREATE INDEX IF NOT EXISTS idx_edges_dst  ON edges(dst_id);
@@ -310,6 +317,12 @@ CREATE INDEX IF NOT EXISTS idx_edges_semantic_type ON edges(semantic_type)
     WHERE semantic_type IS NOT NULL AND semantic_type != '';
 CREATE INDEX IF NOT EXISTS idx_edges_authority ON edges(authority)
     WHERE authority IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_edges_bucket ON edges(bucket)
+    WHERE bucket IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_edges_authority_status ON edges(authority_status)
+    WHERE authority_status IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_edges_resolution_status ON edges(resolution_status)
+    WHERE resolution_status IS NOT NULL;
 
 -- Precision hardening metadata tables (Sections 3-12)
 CREATE TABLE IF NOT EXISTS precision_type_surfaces (
@@ -1162,12 +1175,22 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         # ------------------------------------------------------------------
         from agentic_core.adg.artifact.edge_authority import (  # noqa: PLC0415
             SQL_AUTHORITY_BACKFILL,
+            SQL_INVENTORY_VIEW,
             SQL_MV_GOVERNANCE,
             SQL_MV_UNRESOLVED,
             SQL_MV_VERIFIED,
+            SQL_PROOF_VIEW,
+            SQL_RISK_VIEW,
+            SQL_TRIPLET_BACKFILL,
         )
 
+        # Legacy single-axis backfill, three-bucket triplet backfill, then
+        # canonical three views + legacy alias views.
         conn.executescript(SQL_AUTHORITY_BACKFILL + ";")
+        conn.executescript(SQL_TRIPLET_BACKFILL + ";")
+        conn.executescript(SQL_PROOF_VIEW)
+        conn.executescript(SQL_RISK_VIEW)
+        conn.executescript(SQL_INVENTORY_VIEW)
         conn.executescript(SQL_MV_VERIFIED)
         conn.executescript(SQL_MV_UNRESOLVED)
         conn.executescript(SQL_MV_GOVERNANCE)

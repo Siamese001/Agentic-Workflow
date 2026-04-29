@@ -949,14 +949,22 @@ def generate_full_adg(
     try:
         from agentic_core.adg.artifact.edge_authority import (
             SQL_AUTHORITY_BACKFILL,
+            SQL_INVENTORY_VIEW,
             SQL_MV_GOVERNANCE,
             SQL_MV_UNRESOLVED,
             SQL_MV_VERIFIED,
+            SQL_PROOF_VIEW,
+            SQL_RISK_VIEW,
+            SQL_TRIPLET_BACKFILL,
         )
 
         _con = _phase2_sqlite3.connect(paths.sqlite)
         try:
             _con.executescript(SQL_AUTHORITY_BACKFILL + ";")
+            _con.executescript(SQL_TRIPLET_BACKFILL + ";")
+            _con.executescript(SQL_PROOF_VIEW)
+            _con.executescript(SQL_RISK_VIEW)
+            _con.executescript(SQL_INVENTORY_VIEW)
             _con.executescript(SQL_MV_VERIFIED)
             _con.executescript(SQL_MV_UNRESOLVED)
             _con.executescript(SQL_MV_GOVERNANCE)

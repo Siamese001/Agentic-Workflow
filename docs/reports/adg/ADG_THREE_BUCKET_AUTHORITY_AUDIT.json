@@ -1,0 +1,190 @@
+{
+  "model": "ADG Three-Bucket Authority",
+  "phase": "W1 — Foundation",
+  "certification_status": "ADG_NOT_CERTIFIED",
+  "certification_blockers": [
+    "evidence_refs not yet populated for static edges (W2 work)",
+    "runtime resolver not implemented; bucket=runtime count=0 in current snapshot (W2 work)",
+    "registry resolver not implemented; bucket=registry count=0 in current snapshot (W3 work)",
+    "consumer mode declarations not enforced (W4 work)",
+    "consumer-mode CI gate (check_consumer_mode_declared.py) not written (W4 work)",
+    "deterministic-digest test not implemented (W5 work)",
+    "bucket / resolution_status / authority_status columns are NULLABLE; cannot graduate to NOT NULL until W5"
+  ],
+
+  "schema_fields_added": [
+    {"column": "bucket", "type": "TEXT", "nullable": true, "enum": ["static", "runtime", "registry"]},
+    {"column": "resolution_status", "type": "TEXT", "nullable": true, "enum_size": 21, "see": "agentic_core/adg/artifact/edge_authority.py STATIC_RESOLUTION_STATUSES + RUNTIME_RESOLUTION_STATUSES + REGISTRY_RESOLUTION_STATUSES"},
+    {"column": "authority_status", "type": "TEXT", "nullable": true, "enum": ["AUTHORITATIVE", "AUTHORITATIVE_RUNTIME", "AUTHORITATIVE_REGISTRY", "PARTIAL", "NON_AUTHORITATIVE_HINT", "RISK_SIGNAL_ONLY", "EXCLUDED_TEST_ONLY", "EXCLUDED_TYPE_ONLY", "EXTERNAL_ONLY", "UNKNOWN_NOT_PROOF"]},
+    {"column": "evidence_refs", "type": "TEXT (JSON array)", "nullable": true, "purpose": "source AST node, run/trace/span ids, registry digest"}
+  ],
+  "schema_indexes_added": [
+    "idx_edges_bucket WHERE bucket IS NOT NULL",
+    "idx_edges_authority_status WHERE authority_status IS NOT NULL",
+    "idx_edges_resolution_status WHERE resolution_status IS NOT NULL"
+  ],
+
+  "views_added": {
+    "proof_view": {
+      "filter": "authority_status IN ('AUTHORITATIVE', 'AUTHORITATIVE_RUNTIME', 'AUTHORITATIVE_REGISTRY')",
+      "purpose": "governance / hotspot / coverage / refactor-impact / layer-boundary proof"
+    },
+    "risk_view": {
+      "filter": "authority_status IN ('RISK_SIGNAL_ONLY', 'UNKNOWN_NOT_PROOF', 'PARTIAL')",
+      "purpose": "cleanup backlog / risk triage / missing-instrumentation"
+    },
+    "inventory_view": {
+      "filter": "(none — every edge)",
+      "purpose": "debugging / audits / migrations / before-after"
+    }
+  },
+  "views_kept_as_aliases": ["mv_edges_verified", "mv_edges_unresolved", "mv_edges_governance"],
+
+  "producers": {
+    "static_bucket": {
+      "implemented": true,
+      "writers": [
+        "agentic_core/adg/artifact/ArtifactPaths.py (canonical schema + initial backfill)",
+        "agentic_core/adg/artifact/multi_writer.py (mirror schema + backfill)",
+        "tools/generate/generate_full_adg.py (final-stage backfill after late scanners)",
+        "agentic_core/adg/extraction/visitors/dynamic.py (synthetic dynamic_import emission)"
+      ],
+      "edge_kinds_supported": ["static_import", "from_import", "dynamic_import", "imports", "flows_to", "emits_side_effect", "controls_flow", "reads_from", "writes_to", "resolves_callsite"],
+      "edge_kinds_per_spec_pending": ["STATIC_IMPORT (rename)", "STATIC_FROM_IMPORT (rename)", "TYPE_CHECKING_REFERENCE", "OPTIONAL_IMPORT", "UNKNOWN_STATIC_REFERENCE"]
+    },
+    "runtime_bucket": {
+      "implemented": false,
+      "blocker": "tools/generate/generate_runtime_adg.py emits to a separate SQLite; not yet lifted into the unified edges table with bucket=runtime",
+      "wave": "W2"
+    },
+    "registry_bucket": {
+      "implemented": false,
+      "blocker": "no resolver yet; agent_specs.json / .windsurf/mcp_config.json / apps_*/config/*.yaml are the source registries",
+      "wave": "W3"
+    }
+  },
+
+  "consumers_static_grep": {
+    "total_files_with_adg_edge_access": 416,
+    "live_files_estimate": 80,
+    "archived_files_excluded": 336,
+    "tier_a_high_impact_count": 11,
+    "tier_b_analysis_count": 6,
+    "fully_audited": 4,
+    "fully_audited_list": [
+      "ops_scripts/ci/check_edge_authority_well_formed.py (proof_mode)",
+      "ops_scripts/ci/check_unresolved_edges_ratchet.py (risk_mode)",
+      "ops_scripts/ci/check_dangling_imports.py (risk_mode)",
+      "ops_scripts/ci/check_call_multiplicity.py (inventory_mode)"
+    ],
+    "see": "docs/reports/adg/downstream_consumer_mode_matrix.md"
+  },
+
+  "tests_added": {
+    "test_three_bucket_authority.py": 33,
+    "test_edge_authority.py (preserved)": 43,
+    "total_passing": 76,
+    "test_classes": [
+      "TestClosedEnums",
+      "TestAuthorityLaw",
+      "TestLegacyMapping",
+      "TestTripletClassifier",
+      "TestSQLTripletBackfill",
+      "TestThreeViews",
+      "TestEndToEnd"
+    ]
+  },
+
+  "counts_before": {
+    "snapshot": "adg_indexed_04292026_0533.sqlite",
+    "total_edges": 725903,
+    "single_axis_authority_histogram": {
+      "verified": 199989,
+      "external": 349174,
+      "test_only": 162160,
+      "unresolved": 14483,
+      "dynamic": 97,
+      "runtime_observed": 0
+    }
+  },
+  "counts_after_projected": {
+    "comment": "Projected via mechanical mapping; not yet shipped (next snapshot regen will populate columns directly).",
+    "by_bucket": {"static": 725903, "runtime": 0, "registry": 0},
+    "by_authority_status": {
+      "AUTHORITATIVE": 199989,
+      "EXTERNAL_ONLY": 349174,
+      "EXCLUDED_TEST_ONLY": 162160,
+      "RISK_SIGNAL_ONLY": 14483,
+      "UNKNOWN_NOT_PROOF": 97,
+      "AUTHORITATIVE_RUNTIME": 0,
+      "AUTHORITATIVE_REGISTRY": 0,
+      "PARTIAL": 0,
+      "EXCLUDED_TYPE_ONLY": 0,
+      "NON_AUTHORITATIVE_HINT": 0
+    },
+    "by_law_subset": {
+      "proof": 199989,
+      "risk": 14580,
+      "inventory_only": 511334
+    },
+    "proof_share_pct": 27.55,
+    "risk_share_pct": 2.01,
+    "inventory_only_share_pct": 70.44
+  },
+
+  "limitations": {
+    "runtime_bucket_coverage": "0% — no runtime ingestion lifted into unified edges table yet (W2)",
+    "registry_bucket_coverage": "0% — no registry resolvers implemented yet (W3)",
+    "evidence_refs_population": "0% — column added but not populated (static evidence is implicit via source_file + line_no in existing schema; runtime/registry evidence requires W2/W3)",
+    "type_only_detection": "not implemented — TYPE_CHECKING imports currently classify as static/AUTHORITATIVE",
+    "optional_import_detection": "not implemented — try/except optional imports currently classify as static/AUTHORITATIVE",
+    "symbol_level_partial_resolution": "not implemented — only module-level resolution; PARTIAL count = 0",
+    "consumer_mode_enforcement": "static-grep only; no CI gate; no per-file mode declarations enforced",
+    "deterministic_digest_test": "not implemented (W5)",
+    "schema_columns_nullable": "bucket / resolution_status / authority_status are TEXT DEFAULT NULL until W5 graduates them to NOT NULL"
+  },
+
+  "deliverables": {
+    "ADG_THREE_BUCKET_AUTHORITY_MODEL.md": "docs/architecture/adr/ADG_THREE_BUCKET_AUTHORITY_MODEL.md",
+    "ADG_THREE_BUCKET_AUTHORITY_AUDIT.json": "artifacts/adg/audit/ADG_THREE_BUCKET_AUTHORITY_AUDIT.json",
+    "downstream_consumer_mode_matrix.md": "docs/reports/adg/downstream_consumer_mode_matrix.md",
+    "before_after_adg_authority_counts.json": "artifacts/adg/audit/before_after_adg_authority_counts.json"
+  },
+
+  "files_changed_phase_1": [
+    "agentic_core/adg/artifact/edge_authority.py (rewritten with 3 closed enums + law functions + triplet classifier + SQL backfill + 3 views)",
+    "agentic_core/adg/artifact/ArtifactPaths.py (schema: 4 new columns + 3 new indexes; writer wires triplet backfill + 3 views)",
+    "agentic_core/adg/artifact/multi_writer.py (mirror schema + writer changes)",
+    "tools/generate/generate_full_adg.py (final-stage backfill: triplet + 3 views)",
+    "tests/unit/agentic_core/adg/artifact/test_three_bucket_authority.py (33 new tests)",
+    ".windsurf/plans/adg-three-bucket-authority-model-7e2a91.md (plan)",
+    "tools/adg/audit_three_bucket_counts.py (audit utility)",
+    "docs/architecture/adr/ADG_THREE_BUCKET_AUTHORITY_MODEL.md",
+    "docs/reports/adg/downstream_consumer_mode_matrix.md",
+    "artifacts/adg/audit/before_after_adg_authority_counts.json",
+    "artifacts/adg/audit/ADG_THREE_BUCKET_AUTHORITY_AUDIT.json (this file)"
+  ],
+
+  "next_waves": {
+    "W2_runtime_hardening": {
+      "scope": "Lift tools/generate/generate_runtime_adg.py outputs into bucket=runtime with run_id/trace_id/span_id evidence_refs",
+      "estimated_effort": "~15,000 tokens",
+      "blocks_certification": true
+    },
+    "W3_registry_resolvers": {
+      "scope": "Implement registry resolvers for agent_specs / MCP config / tool registry / prompt slots / route registry",
+      "estimated_effort": "~20,000 tokens",
+      "blocks_certification": true
+    },
+    "W4_consumer_audit": {
+      "scope": "~80 live consumers each declare adg-mode comment; CI gate check_consumer_mode_declared.py",
+      "estimated_effort": "~30,000 tokens",
+      "blocks_certification": true
+    },
+    "W5_certification_gate": {
+      "scope": "ADG_CERTIFIED check + deterministic-digest test + schema graduation NULLABLE→NOT NULL",
+      "estimated_effort": "~12,000 tokens",
+      "blocks_certification": true
+    }
+  }
+}

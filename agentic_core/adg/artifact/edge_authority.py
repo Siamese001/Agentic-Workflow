@@ -1,42 +1,195 @@
-"""Edge-authority classifier (SSOT).
+"""Edge-authority classifier (SSOT) — three-bucket model.
 
-Every edge in the canonical ADG ``edges`` table MUST carry an explicit
-``authority`` value drawn from the closed enum:
+This module is the SSOT for ADG edge classification under the 2026-04-29
+**three-bucket authority model**:
 
-| Authority           | Meaning                                                    |
-|---------------------|------------------------------------------------------------|
-| ``verified``        | Target node has a real ``resolved_path`` on disk.          |
-| ``unresolved``      | Target node is internal-prefixed but has no resolved_path. |
-| ``dynamic``         | Edge originated from importlib.import_module(...) /        |
-|                     | __import__(...) / getattr(module, "...") literal-string    |
-|                     | resolution. Cannot be statically guaranteed.               |
-| ``external``        | Target is a third-party / stdlib package — no expectation  |
-|                     | of in-repo resolution.                                     |
-| ``test_only``       | Edge originates from a test file (under ``tests/``).       |
-|                     | Should not feed production hotspot/governance analyses.    |
-| ``runtime_observed``| Edge was emitted by the runtime ADG ingest path (otel),    |
-|                     | not by static AST scanning.                                |
+    bucket ∈ {static, runtime, registry}
+    resolution_status ∈ {VERIFIED_MODULE, ..., UNKNOWN}
+    authority_status ∈ {AUTHORITATIVE, AUTHORITATIVE_RUNTIME, AUTHORITATIVE_REGISTRY,
+                        PARTIAL, NON_AUTHORITATIVE_HINT, RISK_SIGNAL_ONLY,
+                        EXCLUDED_TEST_ONLY, EXCLUDED_TYPE_ONLY, EXTERNAL_ONLY,
+                        UNKNOWN_NOT_PROOF}
 
-Precedence (highest to lowest) when multiple categories apply:
+Three buckets:
 
-    runtime_observed > test_only > dynamic > external > verified > unresolved
+* **static** — what the code can reference (AST imports, calls, type-only
+  refs, dynamic literal-string imports, etc.)
+* **runtime** — what actually happened during execution (OTel traces,
+  receipts, sealed L2 artifacts)
+* **registry** — what configuration/registries declare (agent_specs.json,
+  MCP config, tool registries, prompt slots, route declarations)
 
-Rationale: provenance of the edge dominates. A test-file edge is test_only
-even if its target resolves on disk; a dynamic-string import is dynamic even
-if the literal happens to resolve today.
+Authority law:
 
-Doctrinal source: 2026-04-28 user directive — "The ADG generator must stop
-emitting unqualified edges. Every edge must be typed as verified, unresolved,
-dynamic, external, test-only, or runtime-observed. Any downstream hotspot,
-coverage, or governance analysis must exclude or downgrade unresolved edges."
+* **proof** = ``authority_status ∈ {AUTHORITATIVE, AUTHORITATIVE_RUNTIME,
+  AUTHORITATIVE_REGISTRY}``. Only these may be used as proof for
+  governance/hotspot/coverage/refactor-impact claims.
+* **risk** = ``authority_status ∈ {RISK_SIGNAL_ONLY, UNKNOWN_NOT_PROOF,
+  PARTIAL}``. Used for cleanup backlog, risk triage. Never proof.
+* **inventory_only** = anything else (``EXCLUDED_*``, ``EXTERNAL_ONLY``,
+  ``NON_AUTHORITATIVE_HINT``). Used for debugging/audits. Never proof,
+  not flagged as risk.
+
+Back-compat with the 2026-04-28 single-axis ``authority`` column:
+
+| Legacy ``authority`` | New ``bucket`` | New ``resolution_status``  | New ``authority_status``     |
+|----------------------|----------------|----------------------------|------------------------------|
+| ``verified``         | ``static``     | ``VERIFIED_MODULE``        | ``AUTHORITATIVE``            |
+| ``unresolved``       | ``static``     | ``UNRESOLVED_MODULE``      | ``RISK_SIGNAL_ONLY``         |
+| ``dynamic``          | ``static``     | ``UNRESOLVED_DYNAMIC``     | ``UNKNOWN_NOT_PROOF``        |
+| ``external``         | ``static``     | ``NOT_APPLICABLE``         | ``EXTERNAL_ONLY``            |
+| ``test_only``        | ``static``     | ``VERIFIED_MODULE``        | ``EXCLUDED_TEST_ONLY``       |
+| ``runtime_observed`` | ``runtime``    | ``VERIFIED_RUNTIME``       | ``AUTHORITATIVE_RUNTIME``    |
+
+Tests in ``tests/unit/agentic_core/adg/artifact/test_edge_authority.py``
+assert this mapping holds in lockstep across the Python and SQL paths.
+
+Doctrinal source: 2026-04-29 user directive — "Redesign and harden ADG
+around the correct three-bucket graph authority model."
 """
 
 from __future__ import annotations
 
 from typing import Final, Literal
 
-# Closed enum — DO NOT extend without coordinating with downstream consumers
-# (mv_edges_verified, mv_edges_unresolved, check_edge_authority_well_formed).
+# ---------------------------------------------------------------------------
+# Closed enum: bucket
+# ---------------------------------------------------------------------------
+
+Bucket = Literal["static", "runtime", "registry"]
+
+ALL_BUCKETS: Final[frozenset[str]] = frozenset({"static", "runtime", "registry"})
+
+# ---------------------------------------------------------------------------
+# Closed enum: resolution_status (per spec Section 1)
+# ---------------------------------------------------------------------------
+
+STATIC_RESOLUTION_STATUSES: Final[frozenset[str]] = frozenset(
+    {
+        "VERIFIED_MODULE",
+        "VERIFIED_SYMBOL",
+        "UNRESOLVED_MODULE",
+        "UNRESOLVED_SYMBOL",
+        "UNRESOLVED_DYNAMIC",
+        "PARTIAL",
+        "NOT_CHECKED",
+        "NOT_APPLICABLE",
+        "UNKNOWN",
+    }
+)
+
+RUNTIME_RESOLUTION_STATUSES: Final[frozenset[str]] = frozenset(
+    {
+        "VERIFIED_RUNTIME",
+        "VERIFIED_TRACE",
+        "VERIFIED_RECEIPT",
+        "PARTIAL_TRACE",
+        "MISSING_TRACE",
+        "NOT_APPLICABLE",
+        "UNKNOWN",
+    }
+)
+
+REGISTRY_RESOLUTION_STATUSES: Final[frozenset[str]] = frozenset(
+    {
+        "VERIFIED_REGISTRY",
+        "VERIFIED_CONFIG",
+        "UNRESOLVED_REGISTRY",
+        "STALE_REGISTRY",
+        "MISMATCHED_REGISTRY",
+        "SUBSTITUTED_REGISTRY",
+        "NOT_APPLICABLE",
+        "UNKNOWN",
+    }
+)
+
+ALL_RESOLUTION_STATUSES: Final[frozenset[str]] = (
+    STATIC_RESOLUTION_STATUSES | RUNTIME_RESOLUTION_STATUSES | REGISTRY_RESOLUTION_STATUSES
+)
+
+# ---------------------------------------------------------------------------
+# Closed enum: authority_status (per spec Section 2)
+# ---------------------------------------------------------------------------
+
+AuthorityStatus = Literal[
+    "AUTHORITATIVE",
+    "AUTHORITATIVE_RUNTIME",
+    "AUTHORITATIVE_REGISTRY",
+    "PARTIAL",
+    "NON_AUTHORITATIVE_HINT",
+    "RISK_SIGNAL_ONLY",
+    "EXCLUDED_TEST_ONLY",
+    "EXCLUDED_TYPE_ONLY",
+    "EXTERNAL_ONLY",
+    "UNKNOWN_NOT_PROOF",
+]
+
+ALL_AUTHORITY_STATUSES: Final[frozenset[str]] = frozenset(
+    {
+        "AUTHORITATIVE",
+        "AUTHORITATIVE_RUNTIME",
+        "AUTHORITATIVE_REGISTRY",
+        "PARTIAL",
+        "NON_AUTHORITATIVE_HINT",
+        "RISK_SIGNAL_ONLY",
+        "EXCLUDED_TEST_ONLY",
+        "EXCLUDED_TYPE_ONLY",
+        "EXTERNAL_ONLY",
+        "UNKNOWN_NOT_PROOF",
+    }
+)
+
+PROOF_STATUSES: Final[frozenset[str]] = frozenset(
+    {"AUTHORITATIVE", "AUTHORITATIVE_RUNTIME", "AUTHORITATIVE_REGISTRY"}
+)
+
+RISK_STATUSES: Final[frozenset[str]] = frozenset({"RISK_SIGNAL_ONLY", "UNKNOWN_NOT_PROOF", "PARTIAL"})
+
+INVENTORY_ONLY_STATUSES: Final[frozenset[str]] = frozenset(
+    {"EXCLUDED_TEST_ONLY", "EXCLUDED_TYPE_ONLY", "EXTERNAL_ONLY", "NON_AUTHORITATIVE_HINT"}
+)
+
+# Sanity invariants — every authority_status is in exactly one law-bucket.
+assert PROOF_STATUSES.isdisjoint(RISK_STATUSES)
+assert PROOF_STATUSES.isdisjoint(INVENTORY_ONLY_STATUSES)
+assert RISK_STATUSES.isdisjoint(INVENTORY_ONLY_STATUSES)
+assert PROOF_STATUSES | RISK_STATUSES | INVENTORY_ONLY_STATUSES == ALL_AUTHORITY_STATUSES
+
+
+def is_proof(authority_status: str) -> bool:
+    """True iff this status may be used as proof.
+
+    Proof statuses: AUTHORITATIVE, AUTHORITATIVE_RUNTIME, AUTHORITATIVE_REGISTRY.
+    Used by ``proof_view`` / proof_mode consumers (governance, hotspot,
+    coverage, refactor-impact, layer-boundary claims).
+    """
+    return authority_status in PROOF_STATUSES
+
+
+def is_risk(authority_status: str) -> bool:
+    """True iff this status is a risk signal — NOT proof.
+
+    Risk statuses: RISK_SIGNAL_ONLY, UNKNOWN_NOT_PROOF, PARTIAL. Used by
+    ``risk_view`` / risk_mode consumers (cleanup backlog, missing-trace,
+    incomplete instrumentation).
+    """
+    return authority_status in RISK_STATUSES
+
+
+def is_inventory_only(authority_status: str) -> bool:
+    """True iff this status is inventory-only — NOT proof, NOT risk.
+
+    Inventory-only statuses: EXCLUDED_TEST_ONLY, EXCLUDED_TYPE_ONLY,
+    EXTERNAL_ONLY, NON_AUTHORITATIVE_HINT. Visible only in
+    ``inventory_view`` / inventory_mode consumers.
+    """
+    return authority_status in INVENTORY_ONLY_STATUSES
+
+
+# ---------------------------------------------------------------------------
+# Legacy ``authority`` enum (2026-04-28) — kept for back-compat
+# ---------------------------------------------------------------------------
+
 Authority = Literal[
     "verified",
     "unresolved",
@@ -47,18 +200,32 @@ Authority = Literal[
 ]
 
 ALL_AUTHORITIES: Final[frozenset[str]] = frozenset(
-    {
-        "verified",
-        "unresolved",
-        "dynamic",
-        "external",
-        "test_only",
-        "runtime_observed",
-    }
+    {"verified", "unresolved", "dynamic", "external", "test_only", "runtime_observed"}
 )
 
-# Internal package roots — anything imported from one of these MUST resolve.
-# Anything outside is `external` by definition.
+LEGACY_AUTHORITY_TO_TRIPLET: Final[dict[str, tuple[str, str, str]]] = {
+    "verified": ("static", "VERIFIED_MODULE", "AUTHORITATIVE"),
+    "unresolved": ("static", "UNRESOLVED_MODULE", "RISK_SIGNAL_ONLY"),
+    "dynamic": ("static", "UNRESOLVED_DYNAMIC", "UNKNOWN_NOT_PROOF"),
+    "external": ("static", "NOT_APPLICABLE", "EXTERNAL_ONLY"),
+    "test_only": ("static", "VERIFIED_MODULE", "EXCLUDED_TEST_ONLY"),
+    "runtime_observed": ("runtime", "VERIFIED_RUNTIME", "AUTHORITATIVE_RUNTIME"),
+}
+
+
+def map_legacy_authority(legacy: str) -> tuple[str, str, str]:
+    """Return ``(bucket, resolution_status, authority_status)`` for a legacy
+    ``authority`` value. Raises ``KeyError`` for unknown values — that is
+    the SSOT signal that a downstream caller has fabricated an out-of-enum
+    value.
+    """
+    return LEGACY_AUTHORITY_TO_TRIPLET[legacy]
+
+
+# ---------------------------------------------------------------------------
+# Static-bucket classifier (the original 2026-04-28 work, preserved verbatim)
+# ---------------------------------------------------------------------------
+
 INTERNAL_PACKAGE_ROOTS: Final[tuple[str, ...]] = (
     "agentic_core.",
     "apps_eval.",
@@ -76,13 +243,9 @@ INTERNAL_PACKAGE_ROOTS: Final[tuple[str, ...]] = (
     "scripts.",
 )
 
-# Antipattern relation_types whose authority is derived from the source edge.
-# These are synthetic projections; we mark them based on context.
-_ANTIPATTERN_RELATION = "antipattern"
-
 
 def is_internal_module_name(name: str) -> bool:
-    """Return True if a module/symbol path is rooted at a production package."""
+    """Return True iff a module/symbol path is rooted at a production package."""
     return any(name == root.rstrip(".") or name.startswith(root) for root in INTERNAL_PACKAGE_ROOTS)
 
 
@@ -94,24 +257,10 @@ def classify_authority(
     is_dynamic: bool = False,
     is_runtime_observed: bool = False,
 ) -> Authority:
-    """Compute edge authority from edge + target-node metadata.
+    """Compute legacy ``authority`` value (preserved for back-compat).
 
-    Args:
-        source_file: ``edges.source_file`` (repo-relative, forward-slash).
-        dst_resolved_path: ``nodes.resolved_path`` for the dst node. Empty/None
-            is the unresolved signal.
-        dst_adg_name: ``nodes.adg_name`` of the dst node. Used to decide
-            internal-vs-external when ``dst_resolved_path`` is empty.
-        is_dynamic: True if the edge was emitted from a dynamic-resolution AST
-            site (``importlib.import_module``, ``__import__``, ``getattr`` on
-            a module). The static scanner sets this on emission.
-        is_runtime_observed: True if the edge came from runtime ADG ingest
-            (otel telemetry), not static scanning.
-
-    Returns:
-        One of the six closed-enum values.
+    See ``classify_triplet`` for the new three-bucket classifier.
     """
-    # Highest precedence: provenance overrides target-state.
     if is_runtime_observed:
         return "runtime_observed"
 
@@ -121,9 +270,7 @@ def classify_authority(
     if is_dynamic:
         return "dynamic"
 
-    # Target-state classification.
     name = (dst_adg_name or "").strip()
-    # Strip the canonical prefix for matching.
     if name.startswith("ADG::Symbol::"):
         name_body = name[len("ADG::Symbol::") :]
     elif name.startswith("ADG::Module::"):
@@ -135,27 +282,50 @@ def classify_authority(
     is_internal = is_internal_module_name(name_body) if name_body else False
 
     if not is_internal and not has_resolved:
-        # Third-party / stdlib import.
         return "external"
 
     if has_resolved:
         return "verified"
 
-    # Internal-prefixed name with no resolved path → broken target.
     return "unresolved"
 
 
+def classify_triplet(
+    *,
+    source_file: str,
+    dst_resolved_path: str | None,
+    dst_adg_name: str | None,
+    is_dynamic: bool = False,
+    is_runtime_observed: bool = False,
+) -> tuple[str, str, str]:
+    """Compute the (bucket, resolution_status, authority_status) triplet.
+
+    This is the canonical Python classifier under the 2026-04-29 model.
+    Internally derives the legacy authority and runs ``map_legacy_authority``,
+    guaranteeing the two paths agree.
+    """
+    legacy = classify_authority(
+        source_file=source_file,
+        dst_resolved_path=dst_resolved_path,
+        dst_adg_name=dst_adg_name,
+        is_dynamic=is_dynamic,
+        is_runtime_observed=is_runtime_observed,
+    )
+    return map_legacy_authority(legacy)
+
+
 def _is_test_source(source_file: str) -> bool:
-    """Return True if the source file lives under a tests/ tree."""
+    """Return True iff the source file lives under a tests/ tree."""
     if not source_file:
         return False
     sf = source_file.replace("\\", "/")
     return sf.startswith("tests/") or "/tests/" in sf or sf.endswith("/conftest.py") or sf == "conftest.py"
 
 
-# SQL CASE expression mirror of ``classify_authority`` for use by SQL-backfill
-# paths (synthetic antipattern edges, runtime ADG ingest). Keep in lockstep
-# with the Python implementation; tests assert the two paths agree.
+# ---------------------------------------------------------------------------
+# SQL: legacy backfill (preserved verbatim from 2026-04-28)
+# ---------------------------------------------------------------------------
+
 SQL_AUTHORITY_CASE: Final[str] = """\
 CASE
     WHEN :is_runtime_observed = 1 THEN 'runtime_observed'
@@ -186,10 +356,6 @@ CASE
 END
 """
 
-# Backfill UPDATE: sets ``authority`` on every edge whose value is NULL by
-# joining to the dst node and applying the SQL classifier above. Used after
-# bulk insertion AND after synthetic antipattern emissions, since those are
-# inserted without authority and must be backfilled.
 SQL_AUTHORITY_BACKFILL: Final[str] = """\
 UPDATE edges
 SET authority = (
@@ -228,8 +394,89 @@ SET authority = (
 WHERE authority IS NULL
 """
 
-# Materialized-view DDL: verified edges only. Downstream hotspot, coverage,
-# and governance analyses MUST query this view (or filter authority directly).
+# ---------------------------------------------------------------------------
+# SQL: triplet backfill (the new 2026-04-29 path)
+# ---------------------------------------------------------------------------
+
+# After ``SQL_AUTHORITY_BACKFILL`` populates ``edges.authority``, this UPDATE
+# fans the legacy value out into ``bucket`` / ``resolution_status`` /
+# ``authority_status``. Keep the CASE in lockstep with ``LEGACY_AUTHORITY_TO_TRIPLET``.
+SQL_TRIPLET_BACKFILL: Final[str] = """\
+UPDATE edges
+SET
+    bucket = CASE authority
+        WHEN 'runtime_observed' THEN 'runtime'
+        ELSE 'static'
+    END,
+    resolution_status = CASE authority
+        WHEN 'verified'         THEN 'VERIFIED_MODULE'
+        WHEN 'unresolved'       THEN 'UNRESOLVED_MODULE'
+        WHEN 'dynamic'          THEN 'UNRESOLVED_DYNAMIC'
+        WHEN 'external'         THEN 'NOT_APPLICABLE'
+        WHEN 'test_only'        THEN 'VERIFIED_MODULE'
+        WHEN 'runtime_observed' THEN 'VERIFIED_RUNTIME'
+        ELSE 'UNKNOWN'
+    END,
+    authority_status = CASE authority
+        WHEN 'verified'         THEN 'AUTHORITATIVE'
+        WHEN 'unresolved'       THEN 'RISK_SIGNAL_ONLY'
+        WHEN 'dynamic'          THEN 'UNKNOWN_NOT_PROOF'
+        WHEN 'external'         THEN 'EXTERNAL_ONLY'
+        WHEN 'test_only'        THEN 'EXCLUDED_TEST_ONLY'
+        WHEN 'runtime_observed' THEN 'AUTHORITATIVE_RUNTIME'
+        ELSE 'UNKNOWN_NOT_PROOF'
+    END
+WHERE bucket IS NULL OR resolution_status IS NULL OR authority_status IS NULL
+"""
+
+# ---------------------------------------------------------------------------
+# Materialized views — proof_view / risk_view / inventory_view (canonical)
+# ---------------------------------------------------------------------------
+
+# proof_view — only AUTHORITATIVE / AUTHORITATIVE_RUNTIME / AUTHORITATIVE_REGISTRY.
+# Governance / hotspot / coverage / refactor-impact / layer-boundary claims
+# MUST consume this view.
+SQL_PROOF_VIEW: Final[str] = """\
+DROP VIEW IF EXISTS proof_view;
+CREATE VIEW proof_view AS
+SELECT *
+FROM edges
+WHERE authority_status IN (
+    'AUTHORITATIVE',
+    'AUTHORITATIVE_RUNTIME',
+    'AUTHORITATIVE_REGISTRY'
+);
+"""
+
+# risk_view — RISK_SIGNAL_ONLY / UNKNOWN_NOT_PROOF / PARTIAL. The cleanup-
+# backlog / missing-trace / incomplete-instrumentation surface. Consumers
+# MUST label output as risk, not proof.
+SQL_RISK_VIEW: Final[str] = """\
+DROP VIEW IF EXISTS risk_view;
+CREATE VIEW risk_view AS
+SELECT *
+FROM edges
+WHERE authority_status IN (
+    'RISK_SIGNAL_ONLY',
+    'UNKNOWN_NOT_PROOF',
+    'PARTIAL'
+);
+"""
+
+# inventory_view — every edge regardless of authority. Used for debugging,
+# audits, migrations, before/after comparison. Consumers MUST label output
+# as inventory, not proof.
+SQL_INVENTORY_VIEW: Final[str] = """\
+DROP VIEW IF EXISTS inventory_view;
+CREATE VIEW inventory_view AS
+SELECT *
+FROM edges;
+"""
+
+# ---------------------------------------------------------------------------
+# Legacy materialized views (2026-04-28) — kept as deprecation aliases.
+# ---------------------------------------------------------------------------
+
 SQL_MV_VERIFIED: Final[str] = """\
 DROP VIEW IF EXISTS mv_edges_verified;
 CREATE VIEW mv_edges_verified AS
@@ -238,8 +485,6 @@ FROM edges
 WHERE authority = 'verified';
 """
 
-# Materialized-view DDL: unresolved edges (governance bucket — "broken target"
-# signal). Use to drive the unresolved-edges ratchet and dangling-import RCA.
 SQL_MV_UNRESOLVED: Final[str] = """\
 DROP VIEW IF EXISTS mv_edges_unresolved;
 CREATE VIEW mv_edges_unresolved AS
@@ -257,14 +502,6 @@ JOIN nodes n ON n.id = e.dst_id
 WHERE e.authority = 'unresolved';
 """
 
-# Materialized-view DDL: GOVERNANCE-grade edges. Per the 2026-04-28 directive
-# ("downstream hotspot, coverage, or governance analysis must exclude or
-# downgrade unresolved edges"), this is the canonical projection downstream
-# consumers join on. Excludes BOTH unresolved AND dynamic — unresolved targets
-# are broken; dynamic targets are statically unverifiable. test_only and
-# external are INCLUDED because they are valid graph citizens (test_only is a
-# test edge, external is a third-party dependency edge); consumers that want
-# only-production-only-resolved should JOIN on mv_edges_verified instead.
 SQL_MV_GOVERNANCE: Final[str] = """\
 DROP VIEW IF EXISTS mv_edges_governance;
 CREATE VIEW mv_edges_governance AS
@@ -276,4 +513,10 @@ WHERE authority IN ('verified', 'external', 'test_only', 'runtime_observed');
 # Authority distribution snapshot — quick health signal.
 SQL_AUTHORITY_HISTOGRAM: Final[str] = (
     "SELECT authority, COUNT(*) AS n FROM edges GROUP BY authority ORDER BY n DESC"
+)
+
+# Three-bucket histogram — health signal under the new model.
+SQL_TRIPLET_HISTOGRAM: Final[str] = (
+    "SELECT bucket, authority_status, COUNT(*) AS n FROM edges "
+    "GROUP BY bucket, authority_status ORDER BY n DESC"
 )
