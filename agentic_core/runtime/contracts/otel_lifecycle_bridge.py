@@ -41,6 +41,9 @@ logger = logging.getLogger(__name__)
 # ── Regex to pull layer/op/source/target hints out of message body ──────────
 _LAYER_RE = re.compile(r"layer=(L[0-6]_[A-Z]+|U0_[A-Z]+|C0_[A-Z]+|PA_[A-Z]+)")
 _KV_RE = re.compile(r"(\w+)=(\S+)")
+# Matches `req_ids=REQ-A,REQ-B,REQ-C` — comma-separated, no spaces.
+# REQ_IDs follow the pattern REQ-<LAYER>-<TOKEN>-<NNN>.
+_REQ_IDS_RE = re.compile(r"req_ids=([A-Z][A-Z0-9_\-,]+)")
 
 
 class AdgEmissionToOtelBridge(logging.Handler):
@@ -48,14 +51,26 @@ class AdgEmissionToOtelBridge(logging.Handler):
 
     Buffer is bounded — older spans are dropped silently when the cap is hit
     (default 50_000 spans, ~10 MB at typical attribute sizes).
+
+    Spans carry ``attributes["agentic.req.ids"]`` (list[str]) extracted from
+    the log message, following OTel SemConv namespacing for custom attributes.
+    See refs: OpenTelemetry Attribute Registry, F5/Datadog SRECon '25 talk on
+    SemConv governance.
     """
 
     DEFAULT_MAX_BUFFER = 50_000
 
-    def __init__(self, root_trace_id: str | None = None, max_buffer: int = DEFAULT_MAX_BUFFER) -> None:
+    def __init__(
+        self,
+        root_trace_id: str | None = None,
+        max_buffer: int = DEFAULT_MAX_BUFFER,
+        *,
+        app_id: str = "unknown",
+    ) -> None:
         super().__init__(level=logging.DEBUG)
         self.root_trace_id = root_trace_id or uuid.uuid4().hex
         self.max_buffer = max_buffer
+        self.app_id = app_id
         self._spans: list[dict[str, Any]] = []
         self._dropped = 0
         self._start_ns = time.time_ns()
@@ -77,9 +92,18 @@ class AdgEmissionToOtelBridge(logging.Handler):
         m = _LAYER_RE.search(msg)
         if m:
             attrs["layer"] = m.group(1)
+            attrs["agentic.req.layer"] = m.group(1)
+        attrs["agentic.req.edge_kind"] = edge_kind
+        attrs["agentic.req.app"] = self.app_id
+        # Extract REQ_IDs (OTel-namespaced custom attribute).
+        rm = _REQ_IDS_RE.search(msg)
+        if rm:
+            req_ids = [r for r in rm.group(1).split(",") if r]
+            if req_ids:
+                attrs["agentic.req.ids"] = req_ids
         # Pull k=v pairs from the formatted message body (root_trace_id, source, etc.)
         for k, v in _KV_RE.findall(msg):
-            if k not in attrs and len(attrs) < 16:  # cap attrs/span
+            if k not in attrs and len(attrs) < 24 and k != "req_ids":  # cap attrs/span
                 attrs[k] = v
         attrs["module"] = record.module
         attrs["pathname"] = record.pathname
@@ -200,12 +224,35 @@ class AdgEmissionToOtelBridge(logging.Handler):
                         "spans_buffered": len(self._spans),
                     }
                 total_ingested += len(chunk)
+
+            # Also write REQ exemplars to the coverage ledger (fail-soft —
+            # ledger errors must NOT fail the OTEL flush).
+            ledger_result: dict[str, Any] = {"success": True, "rows_written": 0}
+            try:
+                from tools.runtime_evidence.ledger_writer import (  # noqa: PLC0415
+                    write_emissions,
+                )
+
+                ledger_result = write_emissions(
+                    self._spans,
+                    app_id=self.app_id,
+                    source=mission or f"lifecycle_trace_{self.root_trace_id}",
+                )
+            except ImportError as exc:  # guardian: allow-evidence-ledger-unavailable -- ledger module optional during bootstrap
+                logger.warning(
+                    "otel_lifecycle_bridge.flush: ledger writer unavailable (%s)", exc,
+                )
+                ledger_result = {"success": False, "error": str(exc)}
+
             return {
                 "success": True,
                 "spans_ingested": total_ingested,
                 "trace_id": self.root_trace_id,
                 "snapshot_id": last_result.get("snapshot_id"),
                 "version_id": last_result.get("version_id"),
+                "ledger_rows_written": ledger_result.get("rows_written", 0),
+                "ledger_distinct_req_ids": ledger_result.get("distinct_req_ids", 0),
+                "ledger_success": ledger_result.get("success", False),
             }
         except ImportError as exc:  # guardian: allow-otel-unavailable -- otel optional; skip silently
             import traceback as _tb  # noqa: PLC0415
@@ -235,16 +282,22 @@ class AdgEmissionToOtelBridge(logging.Handler):
 _INSTALLED_BRIDGE: AdgEmissionToOtelBridge | None = None
 
 
-def install_bridge(root_trace_id: str | None = None) -> AdgEmissionToOtelBridge:
+def install_bridge(
+    root_trace_id: str | None = None,
+    *,
+    app_id: str = "unknown",
+) -> AdgEmissionToOtelBridge:
     """Install the bridge as a root-logger handler. Idempotent.
 
     Returns the active bridge instance. Subsequent calls return the existing
-    instance unchanged so callers can grab the buffer.
+    instance unchanged so callers can grab the buffer. ``app_id`` is recorded
+    on every span and exemplar (used by the coverage ledger and weekly fitness
+    function reports).
     """
     global _INSTALLED_BRIDGE
     if _INSTALLED_BRIDGE is not None:
         return _INSTALLED_BRIDGE
-    bridge = AdgEmissionToOtelBridge(root_trace_id=root_trace_id)
+    bridge = AdgEmissionToOtelBridge(root_trace_id=root_trace_id, app_id=app_id)
     root = logging.getLogger()
     root.addHandler(bridge)
     # Elevate adg.* loggers to DEBUG so their records actually reach handlers.

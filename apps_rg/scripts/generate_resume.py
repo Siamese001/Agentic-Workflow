@@ -192,9 +192,32 @@ async def main():
     try:
         from agentic_core.runtime.contracts.otel_lifecycle_bridge import install_bridge  # noqa: PLC0415
 
-        _otel_bridge = install_bridge()
+        _otel_bridge = install_bridge(app_id="apps_rg")
     except ImportError:  # guardian: allow-otel-optional -- bridge module absent in stripped builds
         _otel_bridge = None
+
+    # Tag this run with the 6 priority REQs that apps_rg satisfies. Each emit
+    # produces one DEBUG record on `adg.req_evidence`; the bridge promotes it
+    # to a span with `attributes["agentic.req.ids"]` and the ledger writer
+    # persists one exemplar row per REQ.
+    try:
+        from agentic_core.runtime.contracts.req_evidence import (  # noqa: PLC0415
+            emit_anti_bypass_observation,
+            emit_audit_replay_consistency,
+            emit_memory_promotion,
+            emit_outcome_trajectory,
+            emit_proposal_admission,
+            emit_route_contract_telemetry,
+        )
+        _op = "apps_rg.scripts.generate_resume.main"
+        emit_anti_bypass_observation(_op)
+        emit_outcome_trajectory(_op)
+        emit_proposal_admission(_op)
+        emit_memory_promotion(_op)
+        emit_route_contract_telemetry(_op)
+        emit_audit_replay_consistency(_op)
+    except ImportError:  # guardian: allow-req-evidence-optional -- module absent in stripped builds
+        pass
     start_time = datetime.now()
     jd_data = load_data_file("job_description.json")
     resume_data = load_data_file("your_resume_updated.json")
