@@ -12,6 +12,12 @@ by ``TraceCompletenessReport`` to validate span presence.
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits OTel spans that are
+# infrastructure / governance / state-write events, not GenAI agent /
+# workflow / tool / model invocations. GenAI semconv attributes do
+# not apply. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L5 safety v5 spans — guardrail + boundary checks, not GenAI invocations"
+
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Iterator, Mapping

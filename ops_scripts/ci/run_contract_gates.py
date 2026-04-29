@@ -348,10 +348,22 @@ def main():
         #   GENAI_SEMCONV_STRICT=1
         ("3B1 runtime proof view well-formed", "ops_scripts/ci/check_runtime_proof_view_well_formed.py"),
         ("3B2 OTel GenAI semconv coverage", "ops_scripts/ci/check_otel_genai_semconv_coverage.py"),
+        # W5 of three-bucket-gap-remediation-069806: per-class threshold gate
+        # over the gap report. Bypass: THREE_BUCKET_GAP_BYPASS=1.
+        ("3B3 three-bucket gap thresholds", "ops_scripts/ci/check_three_bucket_gap_thresholds.py"),
+        # W6 of three-bucket-gap-remediation-069806: in-toto/SLSA signing of
+        # the snapshot. Verifies Ed25519 signature + file SHA-256 +
+        # three-bucket content digest. Bypass: ADG_SIGNATURE_BYPASS=1.
+        ("3B4 ADG snapshot signed (in-toto/SLSA)", "ops_scripts/ci/check_adg_snapshot_signed.py"),
+        # W7 of three-bucket-gap-remediation-069806: schema-graduation
+        # readiness — advisory by default, reports remaining NULL counts on
+        # closed-enum columns. Flip via SCHEMA_GRADUATION_READINESS_STRICT=1
+        # once a 4-week green window of 3B1..3B4 closes cleanly.
+        ("3B5 schema graduation readiness (advisory)", "ops_scripts/ci/check_schema_graduation_readiness.py"),
         # Aggregate three-bucket certification gate (plan three-bucket-otel-view-5db409 W7).
         # Advisory by default; flip via ADG_CERTIFIED_STRICT=1 once the consumer-mode
         # gate is permanently strict-mode and runtime evidence is consistently flowing.
-        ("3B3 ADG_CERTIFIED aggregate gate", "ops_scripts/ci/check_adg_certified.py"),
+        ("3B6 ADG_CERTIFIED aggregate gate", "ops_scripts/ci/check_adg_certified.py"),
     ]
     for label, script in assurance_gates:
         if not (ROOT / script).is_file():

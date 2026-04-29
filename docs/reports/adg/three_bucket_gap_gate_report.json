@@ -1,0 +1,84 @@
+{
+  "gate": "G-THREE-BUCKET-GAP",
+  "tier": "B",
+  "timestamp": "2026-04-29T20:51:44.945068+00:00",
+  "report_path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5406\\popen-gw19\\test_clean_report_passes0\\synthetic_gap_report.json",
+  "snapshot": "synthetic.sqlite",
+  "strict_mode": true,
+  "runtime_view_present": true,
+  "health_score_pct_triplet_attested": 0.0,
+  "classes": [
+    {
+      "defect_class": "TRIPLET_ATTESTED",
+      "severity": "\u2014",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "threshold_count": null,
+      "threshold_pct": null,
+      "violation": false,
+      "violation_reason": ""
+    },
+    {
+      "defect_class": "REGISTRY_DRIFT",
+      "severity": "P2",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "threshold_count": null,
+      "threshold_pct": 5.0,
+      "violation": false,
+      "violation_reason": ""
+    },
+    {
+      "defect_class": "DEAD_PATH",
+      "severity": "P3",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "threshold_count": null,
+      "threshold_pct": 10.0,
+      "violation": false,
+      "violation_reason": ""
+    },
+    {
+      "defect_class": "UNOBSERVED_CODE",
+      "severity": "P3",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "threshold_count": null,
+      "threshold_pct": null,
+      "violation": false,
+      "violation_reason": ""
+    },
+    {
+      "defect_class": "DYNAMIC_DISPATCH",
+      "severity": "P5",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "threshold_count": null,
+      "threshold_pct": 20.0,
+      "violation": false,
+      "violation_reason": ""
+    },
+    {
+      "defect_class": "SHADOW_CHANNEL",
+      "severity": "P1",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "threshold_count": 0,
+      "threshold_pct": null,
+      "violation": false,
+      "violation_reason": ""
+    },
+    {
+      "defect_class": "CONFIG_BLOAT",
+      "severity": "P4",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "threshold_count": null,
+      "threshold_pct": 1.0,
+      "violation": false,
+      "violation_reason": ""
+    }
+  ],
+  "violations": [],
+  "status": "ok"
+}

@@ -1,35 +1,61 @@
 {
   "gate": "G-OTEL-GENAI-SEMCONV-COVERAGE",
   "tier": "B",
-  "timestamp": "2026-04-29T16:38:48.790798+00:00",
-  "threshold_pct": 80.0,
-  "strict_mode": false,
+  "timestamp": "2026-04-29T20:51:48.329075+00:00",
+  "threshold_pct": 101.0,
+  "strict_mode": true,
   "files_scanned": 20,
-  "emitters_detected": 20,
-  "emitters_aligned": 0,
-  "emitters_unaligned": 20,
-  "coverage_pct": 0.0,
+  "emitters_detected": 9,
+  "emitters_aligned": 9,
+  "emitters_unaligned": 0,
+  "emitters_opted_out": 11,
+  "coverage_pct": 100.0,
   "status": "below_threshold",
-  "unaligned_files": [
-    "agentic_core/L0_routing/intake/events.py",
-    "agentic_core/L2_execution/observability/l2_otel_emitter.py",
-    "agentic_core/L2_execution/observability/l2_resolution_spans.py",
-    "agentic_core/L3_orchestration/exit_control/hitl_spans.py",
-    "agentic_core/L3_orchestration/exit_eval/otel_sdk_sink.py",
-    "agentic_core/L3_orchestration/exit_eval/v6/otel.py",
-    "agentic_core/L4_state/otel/uwg_write_spans.py",
-    "agentic_core/L5_safety/eval_spine/escalation_packet.py",
-    "agentic_core/L5_safety/runtime_gates/otel_spans.py",
-    "agentic_core/L5_safety/v5/governance_spans.py",
-    "agentic_core/L5_safety/v5/otel_spans.py",
-    "agentic_core/L6_observability/consensus_otel.py",
-    "agentic_core/L6_observability/heal_router_otel.py",
-    "agentic_core/L6_observability/otel_runtime_ingest.py",
-    "agentic_core/L6_observability/runtime_trace/canary_emitter.py",
-    "agentic_core/L6_observability/utils/engines/meta_learning_bridge.py",
-    "agentic_core/adg/extraction/visitors/core.py",
-    "system_learning/_tracing.py",
-    "system_learning/runtime_adg/runtime_span_emitter.py",
-    "system_learning/runtime_adg/runtime_span_emitter_tier2.py"
+  "unaligned_files": [],
+  "opted_out_files": [
+    {
+      "path": "agentic_core/L0_routing/intake/events.py",
+      "reason": "L0 intake envelope spans \u2014 request-level facts, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L3_orchestration/exit_control/hitl_spans.py",
+      "reason": "L3 HITL escalation spans \u2014 governance boundary, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L3_orchestration/exit_eval/otel_sdk_sink.py",
+      "reason": "L3 OTel SDK sink infrastructure \u2014 exporter, not span producer"
+    },
+    {
+      "path": "agentic_core/L3_orchestration/exit_eval/v6/otel.py",
+      "reason": "L3 exit-evaluation governance spans \u2014 verdict + disposition, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L4_state/otel/uwg_write_spans.py",
+      "reason": "L4 UWG state-write spans \u2014 durable write attestation, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L5_safety/eval_spine/escalation_packet.py",
+      "reason": "L5 safety escalation spans \u2014 governance handoff, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L5_safety/runtime_gates/otel_spans.py",
+      "reason": "L5 runtime safety gate spans \u2014 policy enforcement, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L5_safety/v5/governance_spans.py",
+      "reason": "L5 governance spans \u2014 policy + verdict, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L5_safety/v5/otel_spans.py",
+      "reason": "L5 safety v5 spans \u2014 guardrail + boundary checks, not GenAI invocations"
+    },
+    {
+      "path": "agentic_core/L6_observability/otel_runtime_ingest.py",
+      "reason": "L6 OTel ingest infrastructure \u2014 span sink, not span producer"
+    },
+    {
+      "path": "agentic_core/adg/extraction/visitors/core.py",
+      "reason": "ADG AST extraction visitor \u2014 build-time graph extraction, no runtime spans emitted"
+    }
   ]
 }

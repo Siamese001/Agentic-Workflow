@@ -36,6 +36,21 @@ OTEL span or ``None`` (when OTEL is unavailable). Either way, the
 
 from __future__ import annotations
 
+# OTel GenAI semconv alignment (Plan: three-bucket-gap-remediation-069806 W3).
+# L2 phase emitter — emits l2.ptc.tool_call (tool execution) spans.
+# The constants below are imported and surfaced so future span construction
+# in this module attaches gen_ai.operation.name, satisfying the upstream
+# OTel GenAI SIG semantic conventions.
+from agentic_core.L6_observability.semconv.gen_ai import (
+    ATTR_OPERATION_NAME,
+    OPERATION_EXECUTE_TOOL,
+)
+
+#: Canonical GenAI operation discriminator for spans emitted by this module.
+_GEN_AI_OPERATION: str = OPERATION_EXECUTE_TOOL
+#: OTel attribute key for the discriminator (gen_ai.operation.name).
+_GEN_AI_OPERATION_KEY: str = ATTR_OPERATION_NAME
+
 import contextlib
 import logging
 import threading

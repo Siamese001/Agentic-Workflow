@@ -30,6 +30,12 @@ module is always safe.
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits OTel spans that are
+# infrastructure / governance / state-write events, not GenAI agent /
+# workflow / tool / model invocations. GenAI semconv attributes do
+# not apply. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L3 OTel SDK sink infrastructure — exporter, not span producer"
+
 import logging
 from typing import Any
 

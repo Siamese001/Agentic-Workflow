@@ -1,9 +1,14 @@
 {
   "gate": "G-RUNTIME-PROOF-VIEW-WELL-FORMED",
   "tier": "B",
-  "timestamp": "2026-04-29T16:38:45.289896+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04292026_0825.sqlite",
-  "strict_mode": false,
-  "status": "skip",
-  "reason": "v_runtime_proof table missing \u2014 W1 schema not applied"
+  "timestamp": "2026-04-29T20:16:44.344958+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04292026_1606.sqlite",
+  "strict_mode": true,
+  "total_rows": 127,
+  "by_authority_status": {
+    "AUTHORITATIVE_RUNTIME": 127
+  },
+  "violations": [],
+  "violation_count": 0,
+  "status": "ok"
 }

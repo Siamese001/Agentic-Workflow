@@ -338,5 +338,44 @@
       "estimated_effort": "~12,000 tokens",
       "blocks_certification": true
     }
+  },
+  "post_remediation_2026_04_29": {
+    "plan": ".windsurf/plans/three-bucket-gap-remediation-069806.md",
+    "status": "Done — W1..W7 landed end-to-end; W8 close-out captured in plan",
+    "shipped": {
+      "W1_registry_lift": "tools/adg/registry_bucket_lift.py wired into generate_full_adg.py after r6 enrichment",
+      "W2_synthetic_traces": "tools/otel/seed_synthetic_traces.py — 50 synth traces -> 127 attested rows in v_runtime_proof",
+      "W3_genai_semconv": "9 GenAI emitters import from gen_ai semconv module; 11 infra emitters opt-out via __non_genai_emitter__; coverage 100% strict",
+      "W4_strict_default": "consumer-mode + runtime-proof + otel-genai gates flipped to strict-by-default",
+      "W5_gap_threshold_gate": "ops_scripts/ci/check_three_bucket_gap_thresholds.py + 14 tests; per-class thresholds with config override",
+      "W6_intoto_signing": "tools/adg/sign_snapshot.py + ops_scripts/ci/check_adg_snapshot_signed.py; Ed25519 DSSE envelope; 9 tests; auto-signing wired into generate_full_adg.py",
+      "W7_schema_graduation": "tools/adg/graduate_schema_not_null.py + ops_scripts/ci/check_schema_graduation_readiness.py; 12 tests; advisory until 4-week green window"
+    },
+    "test_count": 53,
+    "incidental_bug_fixes": {
+      "runtime_view_builder_iter_snapshots": "json.loads on bytes that are canonical_bytes (binary delimiter format) -> always 0 snapshots; fixed to use store.load_snapshot() + to_dict()",
+      "runtime_view_builder_resolve_static_edge_id": "only matched call/invokes/calls/tool_call relations -> all imports/controls_flow runtime edges had static_edge_id=NULL; fixed with exact-triple match strategy",
+      "registry_bucket_lift_ensure_static_node": "did not populate 5 NOT NULL columns on nodes; fixed with sensible defaults"
+    },
+    "gap_report_state_post_remediation": {
+      "snapshot": "adg_indexed_04292026_1606.sqlite",
+      "TRIPLET_ATTESTED": 0,
+      "REGISTRY_DRIFT": 127,
+      "DEAD_PATH": 0,
+      "UNOBSERVED_CODE": 400302,
+      "DYNAMIC_DISPATCH": 0,
+      "SHADOW_CHANNEL": 0,
+      "CONFIG_BLOAT": 33,
+      "all_thresholds_satisfied_strict_mode": true,
+      "snapshot_signed_intoto": true,
+      "snapshot_signature_verified_e2e": true,
+      "public_key": "artifacts/adg/keys/ed25519_a6bba89e9ddc2442.pub",
+      "content_digest_sha256": "074d06d055e1411b"
+    },
+    "deferred_to_future_waves": {
+      "registry_consumer_edge_resolvers": "registry resolvers currently emit ANCHOR-only nodes; consumer->registry edges (apps_eval/X.py imports -> Registry::Agent::Y) would convert REGISTRY_DRIFT -> TRIPLET_ATTESTED. Captured separately.",
+      "real_otel_emitter_traces_in_production": "synthetic traces unblock pipeline today; replace with real production OTel spans once W3-migrated emitters run in execution paths.",
+      "schema_not_null_graduation_flip": "32 NULL rows remain in closed-enum columns; graduation script ready, advisory readiness gate ships. Flip after the 4-week green window."
+    }
   }
 }

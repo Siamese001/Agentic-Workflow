@@ -203,7 +203,10 @@ def main(argv: list[str] | None = None) -> int:
         print("[runtime_proof_view] bypass active (RUNTIME_PROOF_VIEW_BYPASS=1)")
         return 0
 
-    strict = args.strict or os.environ.get("RUNTIME_PROOF_VIEW_STRICT") == "1"
+    # W4 of plan three-bucket-gap-remediation-069806: strict mode is now the
+    # default. Set RUNTIME_PROOF_VIEW_STRICT=0 to revert to advisory.
+    _env = os.environ.get("RUNTIME_PROOF_VIEW_STRICT", "1")
+    strict = args.strict or _env == "1"
 
     snapshot = args.snapshot or _latest_snapshot()
     report: dict[str, object] = {

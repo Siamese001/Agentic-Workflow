@@ -15,6 +15,11 @@ module still imports — callers need not branch on availability.
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits L3 HITL-escalation governance
+# spans (escalation gate, decision capture, return-to-L1) \u2014 not GenAI agent /
+# workflow / tool invocations. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L3 HITL escalation spans — governance boundary, not GenAI invocations"
+
 from typing import Any
 
 try:

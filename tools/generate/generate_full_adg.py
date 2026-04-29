@@ -1590,6 +1590,26 @@ def generate_full_adg(
     else:
         print("[ADG] Pipeline skips: none")
 
+    # --- W6 of three-bucket-gap-remediation-069806: in-toto/SLSA signing ---
+    # Sign the canonical snapshot with an Ed25519 keypair so downstream
+    # consumers can verify supply-chain provenance via DSSE envelope.
+    # Fail-soft: a missing `cryptography` install or signing failure must
+    # NOT break the snapshot pipeline; the signature gate
+    # (check_adg_snapshot_signed.py) catches an unsigned snapshot at CI
+    # time. Same fail-soft pattern as runtime_view_builder above.
+    try:
+        from tools.adg.sign_snapshot import sign_snapshot as _sign_snapshot  # noqa: PLC0415
+
+        _sig_stats = _sign_snapshot(snapshot=paths.sqlite)
+        print(
+            f"[ADG] in-toto sign: verified={_sig_stats.verified} "
+            f"sha256={_sig_stats.snapshot_sha256[:16]} "
+            f"content_digest={_sig_stats.content_digest_sha256[:16]} "
+            f"envelope={_sig_stats.envelope_path}"
+        )
+    except Exception as _sig_exc:  # guardian: allow-broad-exception -- in-toto signing fail-soft
+        print(f"[WARN] in-toto sign failed (continuing): {_sig_exc}")
+
     _adg_elapsed = _time.time() - _adg_start
     print(f"[ADG] Total generation time: {_adg_elapsed:.2f}s")
 

@@ -1,0 +1,16 @@
+{
+  "gate": "G-ADG-SNAPSHOT-SIGNED",
+  "tier": "B",
+  "timestamp": "2026-04-29T20:51:41.426244+00:00",
+  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5406\\popen-gw7\\test_gate_detects_file_tamperi0\\adg_indexed_TEST.sqlite",
+  "envelope_path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5406\\popen-gw7\\test_gate_detects_file_tamperi0\\adg_indexed_TEST.sqlite.intoto.jsonl",
+  "public_key_path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5406\\popen-gw7\\test_gate_detects_file_tamperi0\\ed25519_test.pub",
+  "verified": true,
+  "file_sha256_match": false,
+  "content_digest_match": true,
+  "strict_mode": true,
+  "violations": [
+    "snapshot file SHA-256 mismatch: attested=e091b094c43903a7... actual=55b12d4989ccfe92... (snapshot may have been modified after signing)"
+  ],
+  "status": "violations"
+}

@@ -2,9 +2,9 @@
   "gate": "G-ADG-CERTIFIED",
   "tier": "B",
   "verdict": "ADG_NOT_CERTIFIED",
-  "strict_mode": true,
-  "timestamp": "2026-04-29T16:34:27.072664+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04292026_0825.sqlite",
+  "strict_mode": false,
+  "timestamp": "2026-04-29T20:05:34.506821+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04292026_1513.sqlite",
   "blockers": [
     "graph-layer evidence (snapshot)"
   ],
@@ -12,15 +12,15 @@
     {
       "label": "triplet completeness (read-time)",
       "ok": true,
-      "details": "all 728814 edges have populated triplet",
+      "details": "all 730468 edges have populated triplet",
       "null_triplet_count": 0,
-      "total_edges": 728814
+      "total_edges": 730468
     },
     {
       "ok": false,
-      "exit_code": 2,
+      "exit_code": 1,
       "details": "",
-      "stdout_tail": "[ERROR] snapshot not found: C:\\Git\\Agentic-Workflow-FRESH\\--strict\n",
+      "stdout_tail": "igest=5585c019ae92\n\nREMEDIATION:\n  1. Regenerate ADG: `python tools/generate_full_adg.py`\n  2. Verify `_enrich_infra_views` + `_materialize_adg_views` run\n     BEFORE P0/P1/dead-import gates in tools/generate/generate_full_adg.py\n     (plan adg-pipeline-e2e-5287a1 W1, commit 9fb93f698c).\n  3. See: .windsurf/rules/adg-graph-layer-enforcement.md\n\nLog: artifacts\\windsurf\\snapshot_mv_violations.jsonl\n",
       "label": "graph-layer evidence (snapshot)",
       "script": "ops_scripts/ci/check_snapshot_has_mvs.py",
       "contributes_to_certification": true
@@ -29,16 +29,16 @@
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "[runtime_proof_view] v_runtime_proof table missing \u2014 W1 schema not applied\n",
+      "stdout_tail": "[runtime_proof_view] snapshot=adg_indexed_04292026_1513.sqlite rows=127 violations=0 strict=False\n",
       "label": "runtime proof view well-formed",
       "script": "ops_scripts/ci/check_runtime_proof_view_well_formed.py",
       "contributes_to_certification": true
     },
     {
-      "ok": false,
-      "exit_code": 1,
+      "ok": true,
+      "exit_code": 0,
       "details": "",
-      "stdout_tail": " (\\bstart_as_current_span\\b)\n  - agentic_core/L2_execution/observability/l2_resolution_spans.py (\\bstart_as_current_span\\b)\n  - agentic_core/L3_orchestration/exit_control/hitl_spans.py (\\bstart_as_current_span\\b)\n  - agentic_core/L3_orchestration/exit_eval/otel_sdk_sink.py (\\bstart_as_current_span\\b)\n  - agentic_core/L3_orchestration/exit_eval/v6/otel.py (\\bstart_as_current_span\\b)\n  ... +10 more\n",
+      "stdout_tail": "[otel_genai_semconv] emitters=9 aligned=9 unaligned=0 opted_out=11 coverage=100.0% threshold=80.0% strict=False\n",
       "label": "OTel GenAI semconv coverage",
       "script": "ops_scripts/ci/check_otel_genai_semconv_coverage.py",
       "contributes_to_certification": false
@@ -47,7 +47,7 @@
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "[INFO] consumers_scanned=131  declared=131  missing=0  invalid=0  mode_mismatch=0\n[OK] every detected ADG consumer declares __adg_consumer_mode__\n",
+      "stdout_tail": "[INFO] consumers_scanned=132  declared=132  missing=0  invalid=0  mode_mismatch=0\n[OK] every detected ADG consumer declares __adg_consumer_mode__\n",
       "label": "consumer mode declared",
       "script": "ops_scripts/ci/check_consumer_mode_declared.py",
       "contributes_to_certification": true

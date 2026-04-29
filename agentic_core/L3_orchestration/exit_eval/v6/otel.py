@@ -21,6 +21,12 @@ Design choices:
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits OTel spans that are
+# infrastructure / governance / state-write events, not GenAI agent /
+# workflow / tool / model invocations. GenAI semconv attributes do
+# not apply. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L3 exit-evaluation governance spans — verdict + disposition, not GenAI invocations"
+
 import contextlib
 import logging
 import time

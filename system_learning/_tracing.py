@@ -16,6 +16,21 @@ Wave W-D2 (L_SL / L6 tracer wiring).
 
 from __future__ import annotations
 
+# OTel GenAI semconv alignment (Plan: three-bucket-gap-remediation-069806 W3).
+# system_learning generic tracer — defaults to workflow-level emission.
+# The constants below are imported and surfaced so future span construction
+# in this module attaches gen_ai.operation.name, satisfying the upstream
+# OTel GenAI SIG semantic conventions.
+from agentic_core.L6_observability.semconv.gen_ai import (
+    ATTR_OPERATION_NAME,
+    OPERATION_INVOKE_WORKFLOW,
+)
+
+#: Canonical GenAI operation discriminator for spans emitted by this module.
+_GEN_AI_OPERATION: str = OPERATION_INVOKE_WORKFLOW
+#: OTel attribute key for the discriminator (gen_ai.operation.name).
+_GEN_AI_OPERATION_KEY: str = ATTR_OPERATION_NAME
+
 import logging
 import time
 import uuid

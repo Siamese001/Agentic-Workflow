@@ -94,7 +94,7 @@ SUB_GATES: Final[tuple[tuple[str, str, bool, bool], ...]] = (
     (
         "OTel GenAI semconv coverage",
         "ops_scripts/ci/check_otel_genai_semconv_coverage.py",
-        False,  # Advisory until W3 migration completes
+        True,  # W3 of three-bucket-gap-remediation-069806: migration complete (100%).
         True,
     ),
     (
@@ -102,6 +102,24 @@ SUB_GATES: Final[tuple[tuple[str, str, bool, bool], ...]] = (
         "ops_scripts/ci/check_consumer_mode_declared.py",
         True,
         False,  # Activated via env var, not flag
+    ),
+    (
+        "three-bucket gap thresholds",
+        "ops_scripts/ci/check_three_bucket_gap_thresholds.py",
+        True,  # W5 of three-bucket-gap-remediation-069806.
+        True,
+    ),
+    (
+        "ADG snapshot signed (in-toto/SLSA)",
+        "ops_scripts/ci/check_adg_snapshot_signed.py",
+        True,  # W6 of three-bucket-gap-remediation-069806.
+        True,
+    ),
+    (
+        "schema graduation readiness",
+        "ops_scripts/ci/check_schema_graduation_readiness.py",
+        False,  # W7 — advisory until 4-week green window closes.
+        True,
     ),
 )
 
@@ -179,6 +197,8 @@ def _run_subgate(
         env.setdefault("CONSUMER_MODE_GATE_STRICT", "1")
         env.setdefault("RUNTIME_PROOF_VIEW_STRICT", "1")
         env.setdefault("GENAI_SEMCONV_STRICT", "1")
+        env.setdefault("THREE_BUCKET_GAP_STRICT", "1")
+        env.setdefault("ADG_SIGNATURE_GATE_STRICT", "1")
     try:
         proc = subprocess.run(
             cmd,

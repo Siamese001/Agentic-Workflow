@@ -134,3 +134,8 @@ agentic_core/L4_state/memory/runtime_adg/
 
 # External bundler regenerates this on every run; UPDATED_MANIFEST.json (built by tools/build_parent_thinning_artifacts.py) is the canonical local manifest.
 docs/reference/MANIFEST.json
+
+# W6 of three-bucket-gap-remediation-069806: signing keypairs are local-only.
+artifacts/adg/keys/*.key
+!artifacts/adg/keys/*.pub
+

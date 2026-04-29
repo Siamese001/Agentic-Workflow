@@ -7,6 +7,12 @@ Visitors in this module extract:
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits OTel spans that are
+# infrastructure / governance / state-write events, not GenAI agent /
+# workflow / tool / model invocations. GenAI semconv attributes do
+# not apply. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "ADG AST extraction visitor — build-time graph extraction, no runtime spans emitted"
+
 import ast
 from typing import TYPE_CHECKING
 

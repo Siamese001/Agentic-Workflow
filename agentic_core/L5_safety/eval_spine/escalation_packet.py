@@ -6,6 +6,12 @@ whenever disposition==escalate_hitl.
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits OTel spans that are
+# infrastructure / governance / state-write events, not GenAI agent /
+# workflow / tool / model invocations. GenAI semconv attributes do
+# not apply. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L5 safety escalation spans — governance handoff, not GenAI invocations"
+
 import json
 import uuid
 from dataclasses import dataclass, field

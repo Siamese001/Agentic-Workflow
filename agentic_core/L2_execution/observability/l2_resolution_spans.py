@@ -22,6 +22,21 @@ calls only the `emit_*_span` functions.
 
 from __future__ import annotations
 
+# OTel GenAI semconv alignment (Plan: three-bucket-gap-remediation-069806 W3).
+# L2 resolution emitter — agent-level resolution spans.
+# The constants below are imported and surfaced so future span construction
+# in this module attaches gen_ai.operation.name, satisfying the upstream
+# OTel GenAI SIG semantic conventions.
+from agentic_core.L6_observability.semconv.gen_ai import (
+    ATTR_OPERATION_NAME,
+    OPERATION_INVOKE_AGENT,
+)
+
+#: Canonical GenAI operation discriminator for spans emitted by this module.
+_GEN_AI_OPERATION: str = OPERATION_INVOKE_AGENT
+#: OTel attribute key for the discriminator (gen_ai.operation.name).
+_GEN_AI_OPERATION_KEY: str = ATTR_OPERATION_NAME
+
 import threading
 from dataclasses import dataclass, field
 from typing import Any

@@ -103,6 +103,19 @@ EXCLUDE_PATH_PATTERNS: Final[tuple[re.Pattern[str], ...]] = (
     re.compile(r"[/\\]\.windsurf[/\\]"),
 )
 
+# Module-level opt-out marker. A file may declare
+#     __non_genai_emitter__ = "<reason>"
+# at module scope to assert that, while it emits OTel spans, those spans are
+# infrastructure (state writes, safety gates, intake events, AST extraction)
+# and not GenAI agent/workflow/tool/model spans. Such files are excluded
+# from the coverage denominator. Reason MUST be a non-empty string — the
+# gate refuses bare ``= None`` / ``= ""`` opt-outs to keep the marker
+# auditable. Plan: three-bucket-gap-remediation-069806 (W3).
+OPT_OUT_RE: Final[re.Pattern[str]] = re.compile(
+    r"^__non_genai_emitter__\s*=\s*[\"']([^\"']+)[\"']\s*(?:#.*)?$",
+    re.MULTILINE,
+)
+
 
 @dataclass
 class FileResult:
@@ -111,6 +124,7 @@ class FileResult:
     is_aligned: bool
     matched_marker: str = ""
     reason_emitter: str = ""
+    opt_out_reason: str = ""
 
 
 @dataclass
@@ -124,9 +138,11 @@ class GateResult:
     emitters_detected: int = 0
     emitters_aligned: int = 0
     emitters_unaligned: int = 0
+    emitters_opted_out: int = 0
     coverage_pct: float = 0.0
     status: str = "ok"
     unaligned_files: list[str] = field(default_factory=list)
+    opted_out_files: list[dict[str, str]] = field(default_factory=list)
 
 
 def _excluded(path: Path) -> bool:
@@ -146,6 +162,19 @@ def _is_emitter_by_content(text: str) -> str:
         if rx.search(text):
             return rx.pattern
     return ""
+
+
+def _check_opt_out(text: str) -> str:
+    """Return the opt-out reason if the file declares ``__non_genai_emitter__``.
+
+    Returns the empty string when the marker is absent. The marker MUST
+    appear at module scope (start-of-line, no indentation) and MUST carry
+    a non-empty string reason — we deliberately reject bare
+    ``__non_genai_emitter__ = None`` / ``= ""`` opt-outs so every
+    exclusion is auditable.
+    """
+    m = OPT_OUT_RE.search(text)
+    return m.group(1).strip() if m else ""
 
 
 def _is_aligned(text: str) -> tuple[bool, str]:
@@ -170,6 +199,21 @@ def _scan(root: Path) -> list[FileResult]:
         content_match = _is_emitter_by_content(text)
         is_emitter = bool(path_match or content_match)
         if not is_emitter:
+            continue
+
+        opt_out_reason = _check_opt_out(text)
+        if opt_out_reason:
+            # Infrastructure emitter — emits OTel spans but not GenAI spans.
+            # Recorded for the report but excluded from the coverage denominator.
+            results.append(
+                FileResult(
+                    rel_path=rel,
+                    is_emitter=False,
+                    is_aligned=False,
+                    reason_emitter=path_match or content_match,
+                    opt_out_reason=opt_out_reason,
+                )
+            )
             continue
 
         is_aligned, marker = _is_aligned(text)
@@ -198,13 +242,22 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Force strict mode (override GENAI_SEMCONV_STRICT env)",
     )
+    parser.add_argument(
+        "--report-path",
+        type=Path,
+        default=None,
+        help="Override default report path (mainly for test isolation under xdist)",
+    )
     args = parser.parse_args(argv)
 
     if os.environ.get("GENAI_SEMCONV_BYPASS") == "1":
         print("[otel_genai_semconv] bypass active (GENAI_SEMCONV_BYPASS=1)")
         return 0
 
-    strict = args.strict or os.environ.get("GENAI_SEMCONV_STRICT") == "1"
+    # W4 of plan three-bucket-gap-remediation-069806: strict mode is now the
+    # default. Set GENAI_SEMCONV_STRICT=0 to revert to advisory.
+    _env = os.environ.get("GENAI_SEMCONV_STRICT", "1")
+    strict = args.strict or _env == "1"
 
     all_results: list[FileResult] = []
     for root_name in SCAN_ROOTS:
@@ -214,6 +267,7 @@ def main(argv: list[str] | None = None) -> int:
         all_results.extend(_scan(root))
 
     detected = [r for r in all_results if r.is_emitter]
+    opted_out = [r for r in all_results if r.opt_out_reason]
     aligned = [r for r in detected if r.is_aligned]
     unaligned = [r for r in detected if not r.is_aligned]
     total = len(detected)
@@ -227,19 +281,26 @@ def main(argv: list[str] | None = None) -> int:
         emitters_detected=total,
         emitters_aligned=len(aligned),
         emitters_unaligned=len(unaligned),
+        emitters_opted_out=len(opted_out),
         coverage_pct=round(coverage_pct, 2),
         status="ok" if coverage_pct >= args.threshold else "below_threshold",
         unaligned_files=sorted(r.rel_path for r in unaligned),
+        opted_out_files=sorted(
+            ({"path": r.rel_path, "reason": r.opt_out_reason} for r in opted_out),
+            key=lambda d: d["path"],
+        ),
     )
 
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(
+    report_path = args.report_path or REPORT_PATH
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(
         json.dumps(asdict(result), indent=2, default=str), encoding="utf-8"
     )
 
     print(
         f"[otel_genai_semconv] emitters={total} aligned={len(aligned)} "
-        f"unaligned={len(unaligned)} coverage={coverage_pct:.1f}% "
+        f"unaligned={len(unaligned)} opted_out={len(opted_out)} "
+        f"coverage={coverage_pct:.1f}% "
         f"threshold={args.threshold:.1f}% strict={strict}"
     )
     if unaligned:

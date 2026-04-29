@@ -27,6 +27,12 @@ not take down the producer it is instrumenting.
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits OTel spans that are
+# infrastructure / governance / state-write events, not GenAI agent /
+# workflow / tool / model invocations. GenAI semconv attributes do
+# not apply. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L6 OTel ingest infrastructure — span sink, not span producer"
+
 import logging
 import time
 from typing import Any

@@ -177,13 +177,30 @@ def _iter_runtime_snapshots(
     payloads: list[dict[str, Any]] = []
     try:
         for version_id in store.list_snapshots():
-            raw = store.get_by_version(version_id)
-            if not raw:
+            # Use the store's typed load_snapshot() rather than reading raw
+            # bytes — the persistence layer uses a custom canonical_bytes
+            # format (binary delimiters, NOT JSON) so json.loads() on the
+            # raw bytes silently drops every snapshot. load_snapshot()
+            # invokes _deserialise_snapshot() which correctly parses the
+            # canonical format back into a RuntimeADGSnapshot, and to_dict()
+            # produces the JSON-shaped payload the aggregator expects.
+            #
+            # Bug fix (2026-04-29 plan three-bucket-gap-remediation-069806 W2):
+            # the prior implementation called store.get_by_version() and ran
+            # json.loads() on the bytes — every snapshot fell into the
+            # except (ValueError, TypeError) branch, so snapshots_read was
+            # always 0 even with a populated store.
+            try:
+                snap = store.load_snapshot(version_id)
+            except (OSError, ValueError, TypeError) as exc:
+                logger.debug("runtime_view_builder.load_snapshot_failed: %s", exc)
+                continue
+            if snap is None:
                 continue
             try:
-                payloads.append(json.loads(raw))
-            except (ValueError, TypeError) as exc:
-                logger.debug("runtime_view_builder.snapshot_decode_failed: %s", exc)
+                payloads.append(snap.to_dict())
+            except (AttributeError, TypeError) as exc:
+                logger.debug("runtime_view_builder.to_dict_failed: %s", exc)
                 continue
     except (OSError, AttributeError, RuntimeError) as exc:
         logger.warning("runtime_view_builder.snapshot_iter_failed: %s", exc)
@@ -301,16 +318,28 @@ def _resolve_static_edge_id(
 ) -> int | None:
     """Best-effort lookup: does a static edge exist with the same triple?
 
-    Returns the static ``edges.id`` if a row with matching node names + the
-    relation_type ``'imports'`` (the canonical reference relation) exists.
-    Runtime ``parent_child`` does not have a 1:1 static counterpart, so we
-    only try to resolve when the runtime relation is ``call`` /
-    ``invokes`` / ``calls``. Otherwise we return ``None`` (which is fine
-    — runtime evidence without a static counterpart is still authoritative
-    runtime evidence).
+    Resolution strategy (broadest match first):
+
+      1. Skip if the relation is the runtime-only ``parent_child`` /
+         ``temporal_sequence`` sentinel \u2014 those have no static counterpart
+         by construction.
+      2. **Exact triple match**: try ``(src_name, dst_name, relation_type)``.
+         This is the strongest correlation \u2014 same nodes, same relation.
+      3. **Reference-class fallback**: if ``relation_type`` is one of the
+         invocation-class relations (``call`` / ``invokes`` / ``calls`` /
+         ``tool_call``), try matching against any of the static
+         reference-class relations (``imports`` / ``calls`` / ``invokes``).
+         This handles the common case where a runtime ``invokes`` trace
+         maps to a static ``imports`` edge.
+
+    Returns the static ``edges.id`` if any strategy hits, else ``None``.
+    Runtime evidence without a static counterpart is still authoritative
+    runtime evidence \u2014 ``None`` is fine.
     """
-    if relation_type not in {"call", "invokes", "calls", "tool_call"}:
+    if relation_type in {"parent_child", "temporal_sequence"}:
         return None
+
+    # Strategy 1 \u2014 exact triple match.
     cur = static_con.execute(
         """
         SELECT e.id
@@ -318,13 +347,34 @@ def _resolve_static_edge_id(
           JOIN nodes s ON s.id = e.src_id
           JOIN nodes d ON d.id = e.dst_id
          WHERE s.adg_name = ? AND d.adg_name = ?
-           AND e.relation_type IN ('imports', 'calls', 'invokes')
+           AND e.relation_type = ?
          LIMIT 1
         """,
-        (src_name, dst_name),
+        (src_name, dst_name, relation_type),
     )
     row = cur.fetchone()
-    return int(row[0]) if row else None
+    if row:
+        return int(row[0])
+
+    # Strategy 2 \u2014 invocation-class fallback.
+    if relation_type in {"call", "invokes", "calls", "tool_call"}:
+        cur = static_con.execute(
+            """
+            SELECT e.id
+              FROM edges e
+              JOIN nodes s ON s.id = e.src_id
+              JOIN nodes d ON d.id = e.dst_id
+             WHERE s.adg_name = ? AND d.adg_name = ?
+               AND e.relation_type IN ('imports', 'calls', 'invokes')
+             LIMIT 1
+            """,
+            (src_name, dst_name),
+        )
+        row = cur.fetchone()
+        if row:
+            return int(row[0])
+
+    return None
 
 
 # ---------------------------------------------------------------------------

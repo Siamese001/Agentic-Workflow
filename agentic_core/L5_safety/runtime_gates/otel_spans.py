@@ -18,6 +18,12 @@ recorder to assert span coverage without needing the OTEL toolchain.
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits OTel spans that are
+# infrastructure / governance / state-write events, not GenAI agent /
+# workflow / tool / model invocations. GenAI semconv attributes do
+# not apply. Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L5 runtime safety gate spans — policy enforcement, not GenAI invocations"
+
 import logging
 import threading
 from collections.abc import Iterator

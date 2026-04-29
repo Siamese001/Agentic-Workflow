@@ -341,7 +341,10 @@ def main(argv: list[str] | None = None) -> int:
             json.dump(report.as_json(), f, indent=2)
         print(f"[OK] wrote report → {args.report_path}")
 
-    strict = args.strict or os.environ.get("CONSUMER_MODE_GATE_STRICT") == "1"
+    # W4 of plan three-bucket-gap-remediation-069806: strict mode is now the
+    # default. Set CONSUMER_MODE_GATE_STRICT=0 to revert to advisory.
+    _env = os.environ.get("CONSUMER_MODE_GATE_STRICT", "1")
+    strict = args.strict or _env == "1"
     if not report.violations:
         print("[OK] every detected ADG consumer declares __adg_consumer_mode__")
         return 0
@@ -353,7 +356,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     print(
         "[ADVISORY] gate is in advisory-only mode (export "
-        "CONSUMER_MODE_GATE_STRICT=1 to enforce); violations listed above"
+        "CONSUMER_MODE_GATE_STRICT=1 to re-enable strict, or unset "
+        "CONSUMER_MODE_GATE_STRICT=0); violations listed above"
     )
     return 0
 

@@ -14,6 +14,13 @@ Events are facts about the envelope, not judgments about the semantic task.
 
 from __future__ import annotations
 
+# OTel GenAI semconv opt-out: this module emits L0 *intake* envelope spans
+# (request received, auth evaluated, quota verdict, schema verdict, etc.) —
+# request-level facts, NOT agent / workflow / tool / model invocations.
+# GenAI semconv attributes (gen_ai.operation.name etc.) do not apply here.
+# Plan: three-bucket-gap-remediation-069806 (W3).
+__non_genai_emitter__ = "L0 intake envelope spans — request-level facts, not GenAI invocations"
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Mapping
