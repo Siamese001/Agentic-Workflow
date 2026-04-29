@@ -10,9 +10,11 @@ author_gate_decision: architecture_choice — "Refactor through UWG over multipl
 
 # ADG Write-Sovereignty Cleanup — Route 1502 P0 Violations Through UWG
 
-> **Status**: W1.1 + W1.2 COMPLETE (2026-04-28). User selected option D at
-> revisited Author-Gate. Cumulative violation count: **1483 → 905** (−578, −39%).
-> See `## W1.2 Outcome` section below. W2 (refactor residue) ready for next session.
+> **Status**: W1.1 + W1.2 + W2 COMPLETE (2026-04-28). Cumulative violation
+> count: **1483 → 795** (−688, −46%). W2 added ArchivalGatekeeper canonical
+> L5 file-op authority detection + scanner false-positive cleanups.
+> See `## W2 Outcome` section. Residue mostly genuine — Group B refactor
+> tractable in a focused session.
 >
 > **Why this plan exists**: `run_contract_gates.py` is fully unblocked through
 > line 280 (wiring scan, structure policy, graph-layer evidence, snapshot
@@ -339,3 +341,63 @@ W2 should:
    - Group B: L0/L2/L3 utility-layer file IO — refactor through UWG
    - Group C: L_APP `path.write_text` — investigate per-site whether
      destination is a report (further MV exclusion) or genuine state write
+
+---
+
+## W2 Outcome (2026-04-28) — ArchivalGatekeeper + scanner false-positive cleanups
+
+W2 continued MV scope tightening after the W1.2 triage discovered Group A
+(L5 healers) was actually misclassified — `safe_move`/`safe_archive`/
+`safe_delete` calls go through `ArchivalGatekeeper`, the singleton service
+documented as "Single point of control for all file operations" at
+`agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py`. Same
+pattern as `_wg.*` for UWG.
+
+### Filters added (commit `975570c`)
+
+| W2 sub | Filter | Mechanism | Net violation drop |
+|---|---|---|---:|
+| W2.1 | ArchivalGatekeeper symbols | `_ARCHIVAL_GATEKEEPER_SYMBOL_FRAGMENTS` matching `.safe_move`, `.safe_archive`, `.safe_delete`, `ArchivalGatekeeper` | (combined) |
+| W2.1 | `.run` method dispatch | `e.symbol NOT LIKE '%.run' AND e.symbol != 'run'` (orchestrator/runner dispatch ≠ writes) | **−100** |
+| W2.2 | Bare `mkdir` symbol | `e.symbol != 'mkdir'` (existing `%.mkdir` missed bare-form scanner output) | **−10** |
+
+### Cumulative numerical impact (snapshot `04282026_2000`)
+
+| Stage | is_new=1 violations | Δ |
+|---|---:|---:|
+| Pre-W1.1 baseline | 1483 | — |
+| Post-W1.1 (commit `ad0ee4f`) | 1370 | −113 |
+| Post-W1.2 option D (commit `69d22c9`) | 905 | −465 |
+| Post-W2.1 + W2.2 (commit `975570c`) | **795** | −110 |
+| **Total reduction** | | **−688 (−46%)** |
+
+### Regression test coverage (10/10 passing in `TestPhaseAWriteSovereignty`)
+
+Two new tests added:
+- `test_write_sovereignty_excludes_archival_gatekeeper` — validates 5 gatekeeper symbol patterns
+- `test_write_sovereignty_excludes_run_method_calls` — validates 4 `.run` dispatch patterns
+
+### Top remaining 795 are genuine candidates
+
+After 4 rounds of MV scope tightening, residue clusters on:
+
+1. **Utility-layer `open()`** — L3/L2/L_PG/L_SL file IO mixing reads and
+   writes. The scanner emits `writes_to` for ALL `open()` regardless of mode;
+   a fraction are genuine writes that should route through UWG. Cannot be
+   distinguished MV-side without scanner mode-awareness improvements.
+2. **L0 `GOLDEN_SEAL_FILE.write_text`** — integrity-sealing pattern
+   (6 occurrences). Design decision: should integrity seals route through UWG?
+3. **L_APP enterprise orchestrators `path.write_text`** — write reports
+   (markdown/JSON manifests/baselines) to dynamic `out_dir` paths.
+   Could add an orchestrator-pattern path exclusion or refactor through
+   a thin app-layer ReportWriter wrapping UWG.
+4. **L5 `ViolationConstraint(...)`** — class-instantiation false positive;
+   scanner emits `writes_to` for PascalCase Call targets. Scanner-level fix.
+
+### Out-of-scope without scanner improvements
+
+Going further requires either:
+- AST scanner enhancements (open() mode awareness, class-instantiation detection)
+- Or per-site refactor of the genuine subset
+
+Both are tractable in a focused W3 session but warrant their own scope.
