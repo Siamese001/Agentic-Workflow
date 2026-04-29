@@ -78,8 +78,9 @@ def test_g13_sanitization_imports() -> None:
     assert result.findings == ()
     assert result.quarantined is False
 
-    with pytest.raises(NotImplementedError, match=r"ADR-070"):
-        default_sanitizer()
+    # default_sanitizer now returns a real sanitizer
+    sanitizer = default_sanitizer()
+    assert sanitizer is not None
 
 
 def test_g15_rule_tagging_disposition_check() -> None:
