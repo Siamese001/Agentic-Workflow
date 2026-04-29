@@ -1,9 +1,20 @@
 # L0 Authority Boundary & Raw Execution Burndown Wave
 
 **Plan ID**: `l0-authority-burndown-3a7b21`
-**Status**: Todo
+**Status**: **Mostly OBSOLETE — superseded by ADR-071 (2026-04-29)**
 **Created**: 2026-04-28
 **Source**: Backlog snapshot — items #2 (676.6), #19 (416.5), #20 (416.1) all L0 + Execution/Security
+**Disposition ADR**: `docs/architecture/adr/ADR-071-l0-authority-boundary-disposition.md`
+
+## 2026-04-29 Update (ADG Evidence + ADR-071)
+
+ADG snapshot `adg_indexed_04282026_2152.sqlite` reveals:
+
+- **W1.1 (17 authority breaches)**: Confirmed in `mv_authority_boundary_breaches`. **All 17 breaches are in ONE file** — `apps_shared/proof/scenario_base.py`. Disposition: **guardian exemption** (proof harness — cross-layer imports are the harness's purpose). See ADR-071.
+- **W2.1 (3 raw exec sites)**: `v_p0_l0_raw_execution` returns **0 rows** — already fixed in upstream commits. **OBSOLETE**.
+- **W4.1 (PathRouter dispatch)**: Unrelated to authority boundary; re-scoped to W5 routing-unification plan.
+
+**Net remaining work**: Wave 1 only — apply guardian exemption header to `scenario_base.py` (done in commit accompanying ADR-071) + close the 2 stale Notion rows.
 
 ## Context
 

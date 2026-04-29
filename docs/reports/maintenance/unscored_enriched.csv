@@ -1,0 +1,56 @@
+page_id,title,inferred_layer,inferred_surface,inferred_fan_in,coverage_gap_pct,band,impact_score,new_title
+34c27693-f55c-8144-bee1-dcc2cba96ebb,[SCORING] Wave 5 — Apply filled worksheet to Notion,L_OPS,None,1,100.0,P3,130.1,[SCORING] Wave 5 — Apply filled worksheet to Notion
+34c27693-f55c-8165-bdcc-ea13ef820433,[SCORING] Wave 4 — Score 22 singleton rows (H/B/EQ/ENH/misc),L_OPS,None,1,100.0,P3,130.1,[SCORING] Wave 4 — Score 22 singleton rows (H/B/EQ/ENH/misc)
+34c27693-f55c-8100-940f-ffb19249fd64,[SCORING] Wave 3 — Score 8 baseline-burndown rows (GAP/W1-P0/W3-P2/W4-P3),L_OPS,None,1,100.0,P3,130.1,[SCORING] Wave 3 — Score 8 baseline-burndown rows (GAP/W1-P0/W3-P2/W4-P3)
+34c27693-f55c-8143-a615-e98fa5f2895c,[SCORING] Wave 2 — Score 22 governance rows (W1.x / W2.x / W2-P1.x),L_OPS,None,1,100.0,P3,130.1,[SCORING] Wave 2 — Score 22 governance rows (W1.x / W2.x / W2-P1.x)
+34c27693-f55c-8193-93c4-d587a736b473,[SCORING] Wave 1 — Score 4 graph-edge rows (W9/W11/W12/W13),L_OPS,None,1,100.0,P3,130.1,[SCORING] Wave 1 — Score 4 graph-edge rows (W9/W11/W12/W13)
+34a27693-f55c-81c6-8bf0-e608d5d8b717,F4.3 — mv_routing_* materialized views for ADG graph-layer,L6,Observability,1,100.0,P3,107.33,[P3] F4.3 — mv_routing_* materialized views for ADG graph-layer
+34a27693-f55c-8172-b948-d45064313407,F4.1 — ADG generator ingestion of routing_decision_events table,L6,Observability,1,100.0,P3,107.33,[P3] F4.1 — ADG generator ingestion of routing_decision_events table
+34a27693-f55c-81f9-bf2d-ee190ada27c1,Pilot L2 agent integration — ExecutionOrchestrator._populate_d2_cache uses blast_radius MV,L2,None,1,100.0,P3,130.1,[P3] Pilot L2 agent integration — ExecutionOrchestrator._populate_d2_cache uses blast_radius MV
+34a27693-f55c-8110-9675-e1c647a75599,ADR — L2 execution agent graph-layer integration contract,L2,Execution,1,100.0,P2,169.13,[P2] ADR — L2 execution agent graph-layer integration contract
+34a27693-f55c-817a-8a4c-e7fd9fee45aa,Expose ADG materialized views + semantic edges via adg_sqlite MCP,L6,Observability,1,100.0,P3,107.33,[P3] Expose ADG materialized views + semantic edges via adg_sqlite MCP
+34a27693-f55c-81b7-9801-c4cc0b48999c,Rewrite weak gates to use graph-layer primitives (MVs + semantic edges),L6,Observability,1,100.0,P3,107.33,[P3] Rewrite weak gates to use graph-layer primitives (MVs + semantic edges)
+34a27693-f55c-81e5-94d5-c33680d1ef05,Gate precision audit — negative-test each post-ADG gate,L6,Observability,1,100.0,P3,107.33,[P3] Gate precision audit — negative-test each post-ADG gate
+34a27693-f55c-8165-bdc0-e8f2a331dc94,Burn down test-harness coverage baseline (1051 uncovered prod modules),L_OPS,None,1,100.0,P3,130.1,[P3] Burn down test-harness coverage baseline (1051 uncovered prod modules)
+34a27693-f55c-81af-a69b-f4f5a35eec94,Burn down config-reference baseline (153 undeclared env flags),L_OPS,None,1,100.0,P3,130.1,[P3] Burn down config-reference baseline (153 undeclared env flags)
+34a27693-f55c-814d-a7b6-f73b819d599f,Burn down lifecycle-pair baseline (142 legacy leaks),L_OPS,None,1,100.0,P3,130.1,[P3] Burn down lifecycle-pair baseline (142 legacy leaks)
+34a27693-f55c-81ec-aac1-e3f124197866,Promote remaining 2 warn-severity exception contracts to error,L_OPS,None,1,100.0,P3,130.1,[P3] Promote remaining 2 warn-severity exception contracts to error
+34a27693-f55c-8186-a3be-ebc8a6a7fc37,Fix pre-commit MM dual-state silent rollback,L_OPS,Write,1,100.0,P2,182.14,[P2] Fix pre-commit MM dual-state silent rollback
+34a27693-f55c-81fb-96a5-cafba9a5297d,Terminal Cleanup Baseline Burndown — 30 violations across 25 files,L_OPS,None,30,100.0,P2,249.14,[P2] Terminal Cleanup Baseline Burndown — 30 violations across 25 files
+34a27693-f55c-8180-98f6-d935727c8361,ssot-sweep: _validate_baseline_integrity test coverage deferred,L_TOOLS,None,1,100.0,P3,130.1,[P3] ssot-sweep: _validate_baseline_integrity test coverage deferred
+34927693-f55c-8151-ba2d-e2239400152a,W7 — P3 long-tail (style) antipattern burndown,L_OPS,None,1,100.0,P3,130.1,[P3] W7 — P3 long-tail (style) antipattern burndown
+34927693-f55c-8195-9405-c7318e67a2be,W5 — Post-W4 resnapshot to refresh ADR-024 Part B promotion counts,L_OPS,None,1,100.0,P3,130.1,[P3] W5 — Post-W4 resnapshot to refresh ADR-024 Part B promotion counts
+33f27693-f55c-8133-ab21-d491c1e074cd,Delete lifecycle trace emit block (import-time side effects),L6,Observability,1,100.0,P3,107.33,[P3] Delete lifecycle trace emit block (import-time side effects)
+33f27693-f55c-8142-b6c6-f75f7cd440a0,Remove LCD subfolder builder pipeline (_build_lcd_subfolders_template),L_OPS,None,1,100.0,P3,130.1,[P3] Remove LCD subfolder builder pipeline (_build_lcd_subfolders_template)
+33f27693-f55c-8167-9b69-ce01e041630b,Remove all *_subfolders keys from LAYER_OVERRIDES,L_OPS,None,1,100.0,P3,130.1,[P3] Remove all *_subfolders keys from LAYER_OVERRIDES
+33f27693-f55c-81af-91de-f9aae7fb21e1,Clean init.py re-exports (remove re-exports of removed symbols),L_OPS,None,1,100.0,P3,130.1,[P3] Clean init.py re-exports (remove re-exports of removed symbols)
+33f27693-f55c-81b7-95f8-d8d3c6ec94c1,Update 2 test files consuming build_sovereign_territories,L_TOOLS,None,1,100.0,P3,130.1,[P3] Update 2 test files consuming build_sovereign_territories
+33f27693-f55c-81cf-b2eb-dea68812d367,"Run tests, pre-commit, regenerate ADG — full verification",L6,Write,1,100.0,P3,136.61,"[P3] Run tests, pre-commit, regenerate ADG — full verification"
+33f27693-f55c-81f5-adc0-d2fc4b4bf966,Clean structure_blueprint_config.py shim (remove deleted symbol refs),L_OPS,None,1,100.0,P3,130.1,[P3] Clean structure_blueprint_config.py shim (remove deleted symbol refs)
+33f27693-f55c-81fb-a7bf-d19d6b4fa018,Delete build_sovereign_territories() + all private helpers,L_OPS,None,1,100.0,P3,130.1,[P3] Delete build_sovereign_territories() + all private helpers
+33f27693-f55c-8115-83d0-c29cca525f3b,Write-path runtime audit (writes_through/writes_to ratio),L_OPS,Write,1,100.0,P2,182.14,[P2] Write-path runtime audit (writes_through/writes_to ratio)
+33f27693-f55c-8116-9f13-f27f97312c36,Dynamic call resolution (static scanner extension),L_OPS,None,1,100.0,P3,130.1,[P3] Dynamic call resolution (static scanner extension)
+33f27693-f55c-8131-9b59-c80fb752a574,P1 layer inversion fix (GovernanceAgent L5→L_OPS),L5,None,1,100.0,P2,260.21,[P2] P1 layer inversion fix (GovernanceAgent L5→L_OPS)
+33f27693-f55c-815a-a883-dbbee3c036dc,Unblock pipeline + MCP (fix build_artifact + sqlite_backend imports),L_OPS,None,1,100.0,P3,130.1,[P3] Unblock pipeline + MCP (fix build_artifact + sqlite_backend imports)
+33f27693-f55c-817d-8910-dfbdbd15c8f3,Layer classification — resolve L_UNKNOWN nodes,L_OPS,None,1,100.0,P3,130.1,[P3] Layer classification — resolve L_UNKNOWN nodes
+33f27693-f55c-8189-9cc2-c4bb09e326a5,Call graph from profiling (profiler-derived calls edges),L_OPS,None,1,100.0,P3,130.1,[P3] Call graph from profiling (profiler-derived calls edges)
+33f27693-f55c-81b1-a367-e468caa7cc4d,OTel span → ADG edge ingestion pipeline,L6,Observability,1,100.0,P3,107.33,[P3] OTel span → ADG edge ingestion pipeline
+33f27693-f55c-81b5-8e25-c094245d1545,Secret access telemetry (reads_secret edge instrumentation),L6,Observability,1,100.0,P3,107.33,[P3] Secret access telemetry (reads_secret edge instrumentation)
+33f27693-f55c-81d4-9aa1-e7f7ee1dac92,M1–M3 enforce-mode promotion,L_OPS,None,1,100.0,P3,130.1,[P3] M1–M3 enforce-mode promotion
+33f27693-f55c-81d7-8096-da6d6099b209,P2 hotspot reduction (lower ratchet ceiling ≥20%),L_OPS,None,1,100.0,P3,130.1,[P3] P2 hotspot reduction (lower ratchet ceiling ≥20%)
+33f27693-f55c-81e7-8fcd-d398aea5e9bc,HITL decision log (hitl_decision edges in SQLite),L5,Security,1,100.0,P1,390.31,[P1] HITL decision log (hitl_decision edges in SQLite)
+33f27693-f55c-81ff-8a26-f82c5629fde6,P1–P4 table augmentation (SQLite-only new rows),L_OPS,None,1,100.0,P3,130.1,[P3] P1–P4 table augmentation (SQLite-only new rows)
+33f27693-f55c-8112-a296-dbda401f5bdd,Pre-Run Gate (HARD),L_OPS,None,1,100.0,P3,130.1,[P3] Pre-Run Gate (HARD)
+33f27693-f55c-8130-8d4b-fe2d3274f710,MCP Config Simplification,L_OPS,None,1,100.0,P3,130.1,[P3] MCP Config Simplification
+33f27693-f55c-8134-b730-d12879026c76,Post-Cascade Cleanup (ADVISORY),L_OPS,None,1,100.0,P3,130.1,[P3] Post-Cascade Cleanup (ADVISORY)
+33f27693-f55c-8138-bb80-fafe491ba60d,MCP Registry SSOT,L_OPS,None,1,100.0,P3,130.1,[P3] MCP Registry SSOT
+33f27693-f55c-814a-83cc-fadf5fb2e765,Pre-MCP Gate (HARD),L_OPS,None,1,100.0,P3,130.1,[P3] Pre-MCP Gate (HARD)
+33f27693-f55c-816c-a7b4-f310ccb617f9,Post-MCP Audit (ADVISORY),L_OPS,None,1,100.0,P3,130.1,[P3] Post-MCP Audit (ADVISORY)
+33f27693-f55c-8176-abc0-dba9dfcabad0,Fix Rules (Policy),L5,None,1,100.0,P2,260.21,[P2] Fix Rules (Policy)
+33f27693-f55c-81a3-8cb9-e2a17b47f2f9,Pre-Write Gate (HARD),L_OPS,Write,1,100.0,P2,182.14,[P2] Pre-Write Gate (HARD)
+33f27693-f55c-81d4-99ca-fe05e5bd9574,Policy Cleanup,L5,None,1,100.0,P2,260.21,[P2] Policy Cleanup
+33f27693-f55c-81d7-80bc-fa3f68272a66,Post-Write Audit (ADVISORY),L_OPS,Write,1,100.0,P2,182.14,[P2] Post-Write Audit (ADVISORY)
+33f27693-f55c-81e2-adfa-c7d21272de9f,HITL SVP Calibration,L5,Security,1,100.0,P1,390.31,[P1] HITL SVP Calibration
+33f27693-f55c-81f6-b780-cac7e92fafd3,Post-Run Audit (ADVISORY),L_OPS,None,1,100.0,P3,130.1,[P3] Post-Run Audit (ADVISORY)
+33f27693-f55c-81f9-820e-e33bad17f17a,Pre-Prompt Classifier (ADVISORY),L_OPS,None,1,100.0,P3,130.1,[P3] Pre-Prompt Classifier (ADVISORY)
+33f27693-f55c-81fb-9657-c9724d97a1e3,MCP Config Version Check,L_OPS,None,1,100.0,P3,130.1,[P3] MCP Config Version Check

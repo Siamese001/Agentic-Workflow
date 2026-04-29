@@ -1,9 +1,21 @@
 # W4 P8 Guardrail Family — L5 Security Burndown Wave
 
 **Plan ID**: `w4-p8-guardrail-family-e93f8a`
-**Status**: Todo
+**Status**: W1 P8.01 catalog complete; W2–W6 still Todo
 **Created**: 2026-04-28
 **Source**: Backlog snapshot top-25 (14 P1 rows clustered in L5/Security)
+**Foundation ADR**: `docs/architecture/adr/ADR-070-l5-guardrail-family-catalog.md`
+
+## 2026-04-29 Update (ADG Evidence + W1 P8.01 Complete)
+
+W1 P8.01 (catalog & ADR) executed against ADG snapshot `adg_indexed_04282026_2152.sqlite`:
+
+- **447 L5 modules inventoried** to `docs/reports/maintenance/l5_guardrail_family_catalog.csv`
+- **53% auto-classified** to G01–G29 taxonomy via path-fragment matching; 212 unclassified deferred to follow-up wave
+- **Top hotspot**: `L5_safety/runtime_gates/types.py` (fan_in=198, G01) — drives Wave 2 prioritization
+- **Missing concerns identified**: G05 (A2A), G06 (permission ladder), G13 (SAIF sanitization), G15 (rule tagging) have **no matching modules** today — these phases (P8.05, P8.06, P8.13, P8.15) build net-new code
+
+ADG_GRAPH_LAYER_EVIDENCE section below populated. Subsequent W2–W6 phases now have a real starting point.
 
 ## Context
 

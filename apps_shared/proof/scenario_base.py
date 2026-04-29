@@ -4,6 +4,13 @@ Drives the governed spine layer-by-layer. Each layer is REAL when the wiring
 exists (imports succeed and the layer module returns a contract); marked
 ``NOT_IMPLEMENTED`` honestly otherwise. No fabrication.
 
+# guardian: allow-cross-layer-imports -- proof/test harness; constructs
+# full-trajectory scenarios that intentionally exercise L0 routing, L1
+# cognition, and L2 execution. The 17 L_APP_core_bypass authority-boundary
+# breaches in mv_authority_boundary_breaches are ALL attributed to this
+# file and are the *purpose* of the harness — refactoring would defeat
+# its function. Author-Gate approval: ADR-071 (2026-04-29).
+
 A scenario is described by a :class:`ScenarioSpec`. :func:`run_app_scenario`
 threads the spec through:
 
