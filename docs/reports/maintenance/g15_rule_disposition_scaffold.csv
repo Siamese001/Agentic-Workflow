@@ -1,0 +1,139 @@
+rule_id,module,function_name,line,family_guess,disposition_guess,rationale
+G01-enforcement-enforce_layer,agentic_core/L5_safety/runtime_gates/enforcement.py,enforce_layer,100,G01,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-AdapterBase-verify_healing_target,agentic_core/L5_safety/enforcement/AdapterBase.py,verify_healing_target,390,G02,REMEDIABLE,"Name/doc contains remediation keyword in ('warn', 'redact', 'sanitize', 'repair', 'heal', 'remediate', 'quarantine', 'soft_fail', 'advisory')"
+G02-HumanReviewAdapter-check_status,agentic_core/L5_safety/enforcement/HumanReviewAdapter.py,check_status,284,G02,UNTAGGED,No keyword match — human must decide
+G02-activation_gate-assert_activation_allowed,agentic_core/L5_safety/enforcement/activation_gate.py,assert_activation_allowed,47,G02,UNTAGGED,No keyword match — human must decide
+G02-artifact_emission_prohibition_enforcer-assert_layer_may_emit,agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py,assert_layer_may_emit,29,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-ai_check_audit-check_ci_invariant,agentic_core/L5_safety/enforcement/audit/ai_check_audit.py,check_ci_invariant,144,G02,UNTAGGED,No keyword match — human must decide
+G02-hash_chain_audit_log-verify_hash,agentic_core/L5_safety/enforcement/audit/hash_chain_audit_log.py,verify_hash,80,G02,UNTAGGED,No keyword match — human must decide
+G02-hash_chain_audit_log-verify_chain_integrity,agentic_core/L5_safety/enforcement/audit/hash_chain_audit_log.py,verify_chain_integrity,195,G02,UNTAGGED,No keyword match — human must decide
+G02-safety_audit_registry-verify_audit_exists,agentic_core/L5_safety/enforcement/audit/safety_audit_registry.py,verify_audit_exists,303,G02,UNTAGGED,No keyword match — human must decide
+G02-safety_audit_registry-verify_policy_hash_present,agentic_core/L5_safety/enforcement/audit/safety_audit_registry.py,verify_policy_hash_present,308,G02,UNTAGGED,No keyword match — human must decide
+G02-safety_audit_registry-verify_decision_outcome_present,agentic_core/L5_safety/enforcement/audit/safety_audit_registry.py,verify_decision_outcome_present,314,G02,UNTAGGED,No keyword match — human must decide
+G02-safety_audit_registry-verify_human_review_metadata,agentic_core/L5_safety/enforcement/audit/safety_audit_registry.py,verify_human_review_metadata,320,G02,UNTAGGED,No keyword match — human must decide
+G02-safety_audit_trail-record_guardrail_check,agentic_core/L5_safety/enforcement/audit/safety_audit_trail.py,record_guardrail_check,117,G02,UNTAGGED,No keyword match — human must decide
+G02-canary_token_defense_strategy-validate_input_structure,agentic_core/L5_safety/enforcement/canary_token_defense_strategy.py,validate_input_structure,149,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-validate_all,agentic_core/L5_safety/enforcement/data_enforcer.py,validate_all,215,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-check_base_agent_uniqueness,agentic_core/L5_safety/enforcement/data_enforcer.py,check_base_agent_uniqueness,240,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-check_layer_consistency,agentic_core/L5_safety/enforcement/data_enforcer.py,check_layer_consistency,277,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-check_path_integrity,agentic_core/L5_safety/enforcement/data_enforcer.py,check_path_integrity,301,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-check_metric_sanity,agentic_core/L5_safety/enforcement/data_enforcer.py,check_metric_sanity,321,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-check_inheritance_patterns,agentic_core/L5_safety/enforcement/data_enforcer.py,check_inheritance_patterns,349,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-check_naming_conventions,agentic_core/L5_safety/enforcement/data_enforcer.py,check_naming_conventions,373,G02,UNTAGGED,No keyword match — human must decide
+G02-data_enforcer-check_data_completeness,agentic_core/L5_safety/enforcement/data_enforcer.py,check_data_completeness,402,G02,UNTAGGED,No keyword match — human must decide
+G02-embedding_non_interference_guardrail-assert_c0_context_clean,agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py,assert_c0_context_clean,217,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-embedding_non_interference_guardrail-assert_no_c0_influence,agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py,assert_no_c0_influence,257,G02,UNTAGGED,No keyword match — human must decide
+G02-embedding_non_interference_guardrail-verify_routing_decision_clean,agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py,verify_routing_decision_clean,294,G02,UNTAGGED,No keyword match — human must decide
+G02-embedding_non_interference_guardrail-assert_routing_decision_clean,agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py,assert_routing_decision_clean,311,G02,UNTAGGED,No keyword match — human must decide
+G02-human_escalation-verify_policy_designated_escalation,agentic_core/L5_safety/enforcement/escalation/human_escalation.py,verify_policy_designated_escalation,523,G02,UNTAGGED,No keyword match — human must decide
+G02-human_escalation-verify_reviewer_outcome_present,agentic_core/L5_safety/enforcement/escalation/human_escalation.py,verify_reviewer_outcome_present,529,G02,UNTAGGED,No keyword match — human must decide
+G02-exit_control_hitl-validate_and_reclear,agentic_core/L5_safety/enforcement/exit_control_hitl.py,validate_and_reclear,288,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-tool_safety_gate-check_tool,agentic_core/L5_safety/enforcement/gates/tool_safety_gate.py,check_tool,271,G02,UNTAGGED,No keyword match — human must decide
+G02-tool_safety_gate-validate_by_safety_plane,agentic_core/L5_safety/enforcement/gates/tool_safety_gate.py,validate_by_safety_plane,389,G02,UNTAGGED,No keyword match — human must decide
+G02-git_health_sensor_enforcer-check_repository_health,agentic_core/L5_safety/enforcement/git_health_sensor_enforcer.py,check_repository_health,300,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-git_health_sensor_enforcer-check_git_health,agentic_core/L5_safety/enforcement/git_health_sensor_enforcer.py,check_git_health,393,G02,REMEDIABLE,"Name/doc contains remediation keyword in ('warn', 'redact', 'sanitize', 'repair', 'heal', 'remediate', 'quarantine', 'soft_fail', 'advisory')"
+G02-governance_consistency_gate-assert_l5_cross_child_match,agentic_core/L5_safety/enforcement/governance_consistency_gate.py,assert_l5_cross_child_match,76,G02,UNTAGGED,No keyword match — human must decide
+G02-patch_validator-validate_patch,agentic_core/L5_safety/enforcement/hitl/patch_validator.py,validate_patch,191,G02,UNTAGGED,No keyword match — human must decide
+G02-review_queue_api-health_check,agentic_core/L5_safety/enforcement/hitl/review_queue_api.py,health_check,89,G02,REMEDIABLE,"Name/doc contains remediation keyword in ('warn', 'redact', 'sanitize', 'repair', 'heal', 'remediate', 'quarantine', 'soft_fail', 'advisory')"
+G02-import_boundary_check_enforcer-_check,agentic_core/L5_safety/enforcement/import_boundary_check_enforcer.py,_check,119,G02,UNTAGGED,No keyword match — human must decide
+G02-import_boundary_check_enforcer-check_file_import_boundaries,agentic_core/L5_safety/enforcement/import_boundary_check_enforcer.py,check_file_import_boundaries,149,G02,UNTAGGED,No keyword match — human must decide
+G02-import_boundary_check_enforcer-check_agentic_core_boundaries,agentic_core/L5_safety/enforcement/import_boundary_check_enforcer.py,check_agentic_core_boundaries,160,G02,UNTAGGED,No keyword match — human must decide
+G02-ingress_envelope_check-check_blocking,agentic_core/L5_safety/enforcement/ingress_envelope_check.py,check_blocking,345,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-ingress_envelope_check-_do_check,agentic_core/L5_safety/enforcement/ingress_envelope_check.py,_do_check,369,G02,UNTAGGED,No keyword match — human must decide
+G02-input_validation_guardrail-_apply_rule,agentic_core/L5_safety/enforcement/input_validation_guardrail.py,_apply_rule,236,G02,UNTAGGED,No keyword match — human must decide
+G02-layer_sovereignty_enforcer-check_upward_mutation,agentic_core/L5_safety/enforcement/layer_sovereignty_enforcer.py,check_upward_mutation,424,G02,UNTAGGED,No keyword match — human must decide
+G02-mock_context_enforcer-validate_l2_l3_structure,agentic_core/L5_safety/enforcement/mock_context_enforcer.py,validate_l2_l3_structure,188,G02,UNTAGGED,No keyword match — human must decide
+G02-mock_context_enforcer-validate_depth_precision,agentic_core/L5_safety/enforcement/mock_context_enforcer.py,validate_depth_precision,222,G02,UNTAGGED,No keyword match — human must decide
+G02-mock_context_enforcer-validate_tests_depth,agentic_core/L5_safety/enforcement/mock_context_enforcer.py,validate_tests_depth,243,G02,UNTAGGED,No keyword match — human must decide
+G02-mock_context_enforcer-validate_universal_depth,agentic_core/L5_safety/enforcement/mock_context_enforcer.py,validate_universal_depth,264,G02,UNTAGGED,No keyword match — human must decide
+G02-module_collision_guardrail-check_against_baseline,agentic_core/L5_safety/enforcement/module_collision_guardrail.py,check_against_baseline,357,G02,UNTAGGED,No keyword match — human must decide
+G02-mutation_prohibition_enforcer-assert_no_persistent_write,agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py,assert_no_persistent_write,196,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-oscillation_firewall_gate-assert_no_oscillation,agentic_core/L5_safety/enforcement/oscillation_firewall_gate.py,assert_no_oscillation,255,G02,UNTAGGED,No keyword match — human must decide
+G02-oscillation_firewall_gate-validate_threshold,agentic_core/L5_safety/enforcement/oscillation_firewall_gate.py,validate_threshold,290,G02,UNTAGGED,No keyword match — human must decide
+G02-phase_acceptance_guardrail-check_testpaths_contract_sync,agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py,check_testpaths_contract_sync,185,G02,UNTAGGED,No keyword match — human must decide
+G02-phase_acceptance_guardrail-check_evidence_files_protocol,agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py,check_evidence_files_protocol,238,G02,UNTAGGED,No keyword match — human must decide
+G02-phase_acceptance_guardrail-check_phase_evidence_completeness,agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py,check_phase_evidence_completeness,286,G02,UNTAGGED,No keyword match — human must decide
+G02-policy_action_contract-_apply_guardrail_check,agentic_core/L5_safety/enforcement/policy_action_contract.py,_apply_guardrail_check,386,G02,UNTAGGED,No keyword match — human must decide
+G02-policy_action_contract-enforce_policy_before_action,agentic_core/L5_safety/enforcement/policy_action_contract.py,enforce_policy_before_action,488,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-process_guardrail-validate_command,agentic_core/L5_safety/enforcement/process_guardrail.py,validate_command,335,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-pytest_config_guardrail-validate_pytest_configuration,agentic_core/L5_safety/enforcement/pytest_config_guardrail.py,validate_pytest_configuration,185,G02,UNTAGGED,No keyword match — human must decide
+G02-rag_guardrail-validate_citation_custody,agentic_core/L5_safety/enforcement/rag_guardrail.py,validate_citation_custody,203,G02,UNTAGGED,No keyword match — human must decide
+G02-registry_verification_enforcer-verify_registry,agentic_core/L5_safety/enforcement/registry_verification_enforcer.py,verify_registry,363,G02,UNTAGGED,No keyword match — human must decide
+G02-retrieval_safety_gate-validate_retrieval_request,agentic_core/L5_safety/enforcement/retrieval/retrieval_safety_gate.py,validate_retrieval_request,23,G02,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G02-safety_guardrail-verify_change,agentic_core/L5_safety/enforcement/safety_guardrail.py,verify_change,189,G02,UNTAGGED,No keyword match — human must decide
+G02-safety_layer_enforcer-validate_action,agentic_core/L5_safety/enforcement/safety_layer_enforcer.py,validate_action,203,G02,UNTAGGED,No keyword match — human must decide
+G02-sealed_interface_check_enforcer-check_file,agentic_core/L5_safety/enforcement/sealed_interface_check_enforcer.py,check_file,207,G02,UNTAGGED,No keyword match — human must decide
+G02-sealed_interface_check_enforcer-run_check,agentic_core/L5_safety/enforcement/sealed_interface_check_enforcer.py,run_check,237,G02,UNTAGGED,No keyword match — human must decide
+G02-signature_verifier-verify_instruction_packet,agentic_core/L5_safety/enforcement/security/signature_verifier.py,verify_instruction_packet,256,G02,UNTAGGED,No keyword match — human must decide
+G02-signature_verifier-verify_sandbox_envelope,agentic_core/L5_safety/enforcement/security/signature_verifier.py,verify_sandbox_envelope,298,G02,UNTAGGED,No keyword match — human must decide
+G02-signature_verifier-verify_instruction_packet,agentic_core/L5_safety/enforcement/security/signature_verifier.py,verify_instruction_packet,347,G02,UNTAGGED,No keyword match — human must decide
+G02-signature_verifier-verify_sandbox_envelope,agentic_core/L5_safety/enforcement/security/signature_verifier.py,verify_sandbox_envelope,352,G02,UNTAGGED,No keyword match — human must decide
+G02-ssot_structure_validation_enforcer-validate_agent,agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py,validate_agent,446,G02,UNTAGGED,No keyword match — human must decide
+G02-ssot_structure_validation_enforcer-validate_structure,agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py,validate_structure,479,G02,UNTAGGED,No keyword match — human must decide
+G02-system_enforcer-check_has_healing,agentic_core/L5_safety/enforcement/system_enforcer.py,check_has_healing,262,G02,REMEDIABLE,"Name/doc contains remediation keyword in ('warn', 'redact', 'sanitize', 'repair', 'heal', 'remediate', 'quarantine', 'soft_fail', 'advisory')"
+G02-system_enforcer-check_has_testing,agentic_core/L5_safety/enforcement/system_enforcer.py,check_has_testing,266,G02,UNTAGGED,No keyword match — human must decide
+G02-system_enforcer-check_external_touch,agentic_core/L5_safety/enforcement/system_enforcer.py,check_external_touch,270,G02,UNTAGGED,No keyword match — human must decide
+G02-system_enforcer-check_mcp_hardened,agentic_core/L5_safety/enforcement/system_enforcer.py,check_mcp_hardened,289,G02,UNTAGGED,No keyword match — human must decide
+G02-system_enforcer-validate_syntax,agentic_core/L5_safety/enforcement/system_enforcer.py,validate_syntax,295,G02,UNTAGGED,No keyword match — human must decide
+G02-system_enforcer-validate_agent,agentic_core/L5_safety/enforcement/system_enforcer.py,validate_agent,307,G02,UNTAGGED,No keyword match — human must decide
+G02-test_rigor_enforcer-validate_pre_code_generation,agentic_core/L5_safety/enforcement/test_rigor_enforcer.py,validate_pre_code_generation,247,G02,UNTAGGED,No keyword match — human must decide
+G02-test_rigor_enforcer-validate_post_code_generation,agentic_core/L5_safety/enforcement/test_rigor_enforcer.py,validate_post_code_generation,284,G02,UNTAGGED,No keyword match — human must decide
+G02-three_tier_compliance_enforcer-check_compliance,agentic_core/L5_safety/enforcement/three_tier_compliance_enforcer.py,check_compliance,440,G02,UNTAGGED,No keyword match — human must decide
+G02-three_tier_compliance_enforcer-run_compliance_check,agentic_core/L5_safety/enforcement/three_tier_compliance_enforcer.py,run_compliance_check,554,G02,UNTAGGED,No keyword match — human must decide
+G02-verification_gate-verify_action,agentic_core/L5_safety/enforcement/verification_gate.py,verify_action,207,G02,UNTAGGED,No keyword match — human must decide
+G02-verification_gate-verify_modification,agentic_core/L5_safety/enforcement/verification_gate.py,verify_modification,342,G02,UNTAGGED,No keyword match — human must decide
+G08-injection_regression_gate-check_regression_compliance,agentic_core/L5_safety/enforcement/security/injection_regression_gate.py,check_regression_compliance,255,G08,UNTAGGED,No keyword match — human must decide
+G16-g0_entry-validate_entry_packet,agentic_core/L5_safety/v5/g0_entry.py,validate_entry_packet,81,G16,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G16-out_of_band_invariants-assert_no_current_run_mutation,agentic_core/L5_safety/v5/out_of_band_invariants.py,assert_no_current_run_mutation,20,G16,UNTAGGED,No keyword match — human must decide
+G16-risk_tier_controls-assert_band_monotonicity,agentic_core/L5_safety/v5/risk_tier_controls.py,assert_band_monotonicity,128,G16,UNTAGGED,No keyword match — human must decide
+G16-runtime_binding-verify_snapshot,agentic_core/L5_safety/v5/runtime_binding.py,verify_snapshot,325,G16,UNTAGGED,No keyword match — human must decide
+G18-agentthoughtprocess_validator-validate_args,agentic_core/L5_safety/validators/agentthoughtprocess_validator.py,validate_args,206,G18,UNTAGGED,No keyword match — human must decide
+G18-ats_validator-validate_ats_compatibility,agentic_core/L5_safety/validators/ats_validator.py,validate_ats_compatibility,220,G18,UNTAGGED,No keyword match — human must decide
+G18-ats_validator-validate_formatting,agentic_core/L5_safety/validators/ats_validator.py,validate_formatting,331,G18,UNTAGGED,No keyword match — human must decide
+G18-budget_profile_validator-validate_latency,agentic_core/L5_safety/validators/budget_profile_validator.py,validate_latency,178,G18,UNTAGGED,No keyword match — human must decide
+G18-campaign_balance_validator-validate_campaign_balance,agentic_core/L5_safety/validators/campaign_balance_validator.py,validate_campaign_balance,209,G18,UNTAGGED,No keyword match — human must decide
+G18-canonical_truth_validator-validate_canonical_truth,agentic_core/L5_safety/validators/canonical_truth_validator.py,validate_canonical_truth,29,G18,UNTAGGED,No keyword match — human must decide
+G18-consensus_verdict_validator-validate_risk_assessment,agentic_core/L5_safety/validators/consensus_verdict_validator.py,validate_risk_assessment,202,G18,UNTAGGED,No keyword match — human must decide
+G18-content_quality_validator-validate_content_quality,agentic_core/L5_safety/validators/content_quality_validator.py,validate_content_quality,231,G18,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G18-ddd_alignment_validator-check_bounded_contexts,agentic_core/L5_safety/validators/ddd_alignment_validator.py,check_bounded_contexts,197,G18,UNTAGGED,No keyword match — human must decide
+G18-ddd_alignment_validator-validate_ddd_alignment,agentic_core/L5_safety/validators/ddd_alignment_validator.py,validate_ddd_alignment,260,G18,UNTAGGED,No keyword match — human must decide
+G18-deliverability_validator-validate_deliverability,agentic_core/L5_safety/validators/deliverability_validator.py,validate_deliverability,219,G18,UNTAGGED,No keyword match — human must decide
+G18-deliverability_validator-check_single_message,agentic_core/L5_safety/validators/deliverability_validator.py,check_single_message,317,G18,UNTAGGED,No keyword match — human must decide
+G18-dependencygraph_validator-check_budget,agentic_core/L5_safety/validators/dependencygraph_validator.py,check_budget,314,G18,UNTAGGED,No keyword match — human must decide
+G18-golden_state_test_case_validator-validate_required_text,agentic_core/L5_safety/validators/golden_state_test_case_validator.py,validate_required_text,188,G18,UNTAGGED,No keyword match — human must decide
+G18-golden_state_test_case_validator-validate_non_empty,agentic_core/L5_safety/validators/golden_state_test_case_validator.py,validate_non_empty,220,G18,UNTAGGED,No keyword match — human must decide
+G18-governance_validator-check_forbidden_patterns,agentic_core/L5_safety/validators/governance_validator.py,check_forbidden_patterns,320,G18,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
+G18-gravity_validator-validate_all,agentic_core/L5_safety/validators/gravity_validator.py,validate_all,386,G18,REMEDIABLE,"Name/doc contains remediation keyword in ('warn', 'redact', 'sanitize', 'repair', 'heal', 'remediate', 'quarantine', 'soft_fail', 'advisory')"
+G18-hop_validator-check_conditions,agentic_core/L5_safety/validators/hop_validator.py,check_conditions,355,G18,UNTAGGED,No keyword match — human must decide
+G18-hop_validator-validate_placeholders,agentic_core/L5_safety/validators/hop_validator.py,validate_placeholders,427,G18,UNTAGGED,No keyword match — human must decide
+G18-hop_validator-validate_hop1_profile,agentic_core/L5_safety/validators/hop_validator.py,validate_hop1_profile,540,G18,UNTAGGED,No keyword match — human must decide
+G18-hop_validator-validate_hop3_extraction,agentic_core/L5_safety/validators/hop_validator.py,validate_hop3_extraction,544,G18,UNTAGGED,No keyword match — human must decide
+G18-hop_validator-validate_hop4_conditions,agentic_core/L5_safety/validators/hop_validator.py,validate_hop4_conditions,548,G18,UNTAGGED,No keyword match — human must decide
+G18-hop_validator-validate_hop6_placeholders,agentic_core/L5_safety/validators/hop_validator.py,validate_hop6_placeholders,552,G18,UNTAGGED,No keyword match — human must decide
+G18-hop_validator-validate_hop7_decision,agentic_core/L5_safety/validators/hop_validator.py,validate_hop7_decision,556,G18,UNTAGGED,No keyword match — human must decide
+G18-hypothesis_validator-validate_content,agentic_core/L5_safety/validators/hypothesis_validator.py,validate_content,189,G18,UNTAGGED,No keyword match — human must decide
+G18-intelligence_query_validator-validate_query,agentic_core/L5_safety/validators/intelligence_query_validator.py,validate_query,221,G18,UNTAGGED,No keyword match — human must decide
+G18-intervention_server_validator-check_telepathy,agentic_core/L5_safety/validators/intervention_server_validator.py,check_telepathy,412,G18,UNTAGGED,No keyword match — human must decide
+G18-intervention_server_validator-check_intervention_required,agentic_core/L5_safety/validators/intervention_server_validator.py,check_intervention_required,459,G18,UNTAGGED,No keyword match — human must decide
+G18-runtime_invariant_checker-assert_mutation_source_is_l2,agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,assert_mutation_source_is_l2,183,G18,UNTAGGED,No keyword match — human must decide
+G18-runtime_invariant_checker-assert_mutation_in_ledger,agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,assert_mutation_in_ledger,191,G18,UNTAGGED,No keyword match — human must decide
+G18-runtime_invariant_checker-assert_state_read_source_is_l4,agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,assert_state_read_source_is_l4,205,G18,UNTAGGED,No keyword match — human must decide
+G18-runtime_invariant_checker-assert_c0_no_authority_fields,agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,assert_c0_no_authority_fields,213,G18,UNTAGGED,No keyword match — human must decide
+G18-runtime_invariant_checker-assert_telemetry_no_config_mutation,agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,assert_telemetry_no_config_mutation,222,G18,UNTAGGED,No keyword match — human must decide
+G18-runtime_invariant_checker-assert_human_patch_l5_clearance,agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py,assert_human_patch_l5_clearance,235,G18,UNTAGGED,No keyword match — human must decide
+G18-lead_quality_validator-validate_lead_quality,agentic_core/L5_safety/validators/lead_quality_validator.py,validate_lead_quality,219,G18,UNTAGGED,No keyword match — human must decide
+G18-lead_quality_validator-validate_single_lead,agentic_core/L5_safety/validators/lead_quality_validator.py,validate_single_lead,336,G18,UNTAGGED,No keyword match — human must decide
+G18-migration_helper_validator-check_agent_compliance,agentic_core/L5_safety/validators/migration_helper_validator.py,check_agent_compliance,240,G18,UNTAGGED,No keyword match — human must decide
+G18-migration_helper_validator-check_agent_compliance,agentic_core/L5_safety/validators/migration_helper_validator.py,check_agent_compliance,388,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_path,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_path,184,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_path,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_path,208,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_paths,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_paths,231,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_path,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_path,254,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_path,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_path,275,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_path,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_path,297,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_timeout,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_timeout,324,G18,UNTAGGED,No keyword match — human must decide
+G18-read_file_args_validator-validate_cwd,agentic_core/L5_safety/validators/read_file_args_validator.py,validate_cwd,347,G18,UNTAGGED,No keyword match — human must decide
+G18-reasoning_pattern_validator-validate_plan,agentic_core/L5_safety/validators/reasoning_pattern_validator.py,validate_plan,200,G18,UNTAGGED,No keyword match — human must decide
+G18-report_location_validator-validate_file,agentic_core/L5_safety/validators/report_location_validator.py,validate_file,346,G18,UNTAGGED,No keyword match — human must decide
+G18-report_location_validator-validate_report_location,agentic_core/L5_safety/validators/report_location_validator.py,validate_report_location,485,G18,UNTAGGED,No keyword match — human must decide
+G18-verb_canonicalizer_validator-check_for_forbidden_verbs,agentic_core/L5_safety/validators/verb_canonicalizer_validator.py,check_for_forbidden_verbs,226,G18,HARD,"Name/doc contains hard-fail keyword in ('block', 'deny', 'reject', 'forbid', 'halt', 'fail_closed', 'must_not', 'abort', 'panic', 'kill')"
