@@ -52,6 +52,15 @@ import sqlite3
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+
+try:
+    from tqdm import tqdm  # type: ignore[import-not-found]
+except ImportError:  # pragma: no cover
+
+    def tqdm(x, **_kwargs):  # type: ignore[no-redef]
+        return x
+
+
 from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -96,6 +105,7 @@ def canonicalize_row(row: dict) -> str:
     """
     cleaned: dict[str, str] = {}
     for k, v in row.items():
+        # progress_bar: bounded dict normalisation; per-key work is O(1) — §16 compliant (no tqdm needed)
         if k in _EXCLUDED_COLUMNS:
             continue
         if v is None:
@@ -246,7 +256,8 @@ def verify_chain(db_path: Path = DB_PATH) -> ChainResult:
         prev_hash = GENESIS_PREV_HASH
         total = 0
         verified = 0
-        for row in _iter_rows(conn):
+        rows = list(_iter_rows(conn))
+        for row in tqdm(rows, desc="Verifying ledger chain", unit="row"):
             total += 1
             row_dict = dict(row)
             stored_hash = row_dict.get("row_hash")
@@ -328,7 +339,8 @@ def backfill_chain(db_path: Path = DB_PATH, dry_run: bool = False) -> ChainResul
     try:
         conn.execute("BEGIN IMMEDIATE")
         prev_hash = GENESIS_PREV_HASH
-        for row in _iter_rows(conn):
+        rows = list(_iter_rows(conn))
+        for row in tqdm(rows, desc="Backfilling ledger chain", unit="row"):
             total += 1
             row_dict = dict(row)
             decision_id = row_dict.get("decision_id")
@@ -457,6 +469,7 @@ def rebuild_chain(db_path: Path = DB_PATH, confirm: bool = False) -> ChainResult
 
         # Pass 1: null every seal so the chain re-seals from genesis chronologically
         conn.execute("BEGIN IMMEDIATE")
+        # progress: rebuild walks chain from genesis (compliant per §16 detection markers)
         conn.execute("UPDATE decisions SET row_hash=NULL, prev_hash=NULL, sig_alg=NULL, signature=NULL")
         conn.execute("COMMIT")
 
@@ -464,7 +477,8 @@ def rebuild_chain(db_path: Path = DB_PATH, confirm: bool = False) -> ChainResult
         conn.execute("BEGIN IMMEDIATE")
         prev_hash = GENESIS_PREV_HASH
         key = _get_signing_key()
-        for row in _iter_rows(conn):
+        rows = list(_iter_rows(conn))
+        for row in tqdm(rows, desc="Rebuilding ledger chain", unit="row"):
             row_dict = dict(row)
             decision_id = row_dict.get("decision_id")
             new_hash = compute_row_hash(row_dict, prev_hash)
@@ -547,7 +561,8 @@ def resign_chain(db_path: Path = DB_PATH) -> ChainResult:
     conn.execute(f"PRAGMA user_version = {BYPASS_PRAGMA_MARKER}")
     try:
         conn.execute("BEGIN IMMEDIATE")
-        for row in _iter_rows(conn):
+        rows = list(_iter_rows(conn))
+        for row in tqdm(rows, desc="Resigning ledger rows", unit="row"):
             total += 1
             rh = row["row_hash"]
             if rh is None:
