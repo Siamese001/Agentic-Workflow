@@ -957,6 +957,9 @@ def generate_full_adg(
             SQL_RISK_VIEW,
             SQL_TRIPLET_BACKFILL,
         )
+        from agentic_core.adg.artifact.ssot_decision_record import (
+            SQL_CREATE_SSOT_DECISION_RECORDS,
+        )
 
         _con = _phase2_sqlite3.connect(paths.sqlite)
         try:
@@ -965,6 +968,7 @@ def generate_full_adg(
             _con.executescript(SQL_PROOF_VIEW)
             _con.executescript(SQL_RISK_VIEW)
             _con.executescript(SQL_INVENTORY_VIEW)
+            _con.executescript(SQL_CREATE_SSOT_DECISION_RECORDS)
             _con.executescript(SQL_MV_VERIFIED)
             _con.executescript(SQL_MV_UNRESOLVED)
             _con.executescript(SQL_MV_GOVERNANCE)

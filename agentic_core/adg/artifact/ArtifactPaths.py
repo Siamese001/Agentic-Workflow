@@ -836,6 +836,9 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             SQL_RISK_VIEW,
             SQL_TRIPLET_BACKFILL,
         )
+        from agentic_core.adg.artifact.ssot_decision_record import (  # noqa: PLC0415
+            SQL_CREATE_SSOT_DECISION_RECORDS,
+        )
 
         # 1) Legacy single-axis backfill (2026-04-28)
         conn.executescript(SQL_AUTHORITY_BACKFILL + ";")
@@ -845,7 +848,9 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.executescript(SQL_PROOF_VIEW)
         conn.executescript(SQL_RISK_VIEW)
         conn.executescript(SQL_INVENTORY_VIEW)
-        # 4) Legacy aliases (kept for back-compat — retire in W4)
+        # 4) SSOTDecisionRecord table (W2: cross-bucket reconciliation ledger)
+        conn.executescript(SQL_CREATE_SSOT_DECISION_RECORDS)
+        # 5) Legacy aliases (kept for back-compat — retire in W4)
         conn.executescript(SQL_MV_VERIFIED)
         conn.executescript(SQL_MV_UNRESOLVED)
         conn.executescript(SQL_MV_GOVERNANCE)

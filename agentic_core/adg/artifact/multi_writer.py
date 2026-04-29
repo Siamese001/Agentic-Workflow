@@ -1183,14 +1183,18 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             SQL_RISK_VIEW,
             SQL_TRIPLET_BACKFILL,
         )
+        from agentic_core.adg.artifact.ssot_decision_record import (  # noqa: PLC0415
+            SQL_CREATE_SSOT_DECISION_RECORDS,
+        )
 
         # Legacy single-axis backfill, three-bucket triplet backfill, then
-        # canonical three views + legacy alias views.
+        # canonical three views + SSOTDecisionRecord table + legacy alias views.
         conn.executescript(SQL_AUTHORITY_BACKFILL + ";")
         conn.executescript(SQL_TRIPLET_BACKFILL + ";")
         conn.executescript(SQL_PROOF_VIEW)
         conn.executescript(SQL_RISK_VIEW)
         conn.executescript(SQL_INVENTORY_VIEW)
+        conn.executescript(SQL_CREATE_SSOT_DECISION_RECORDS)
         conn.executescript(SQL_MV_VERIFIED)
         conn.executescript(SQL_MV_UNRESOLVED)
         conn.executescript(SQL_MV_GOVERNANCE)

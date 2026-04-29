@@ -1,16 +1,37 @@
 {
   "model": "ADG Three-Bucket Authority",
-  "phase": "W1 — Foundation",
+  "phase": "W2 — Runtime hardening + SSOTDecisionRecord (landed 2026-04-29)",
   "certification_status": "ADG_NOT_CERTIFIED",
   "certification_blockers": [
-    "evidence_refs not yet populated for static edges (W2 work)",
-    "runtime resolver not implemented; bucket=runtime count=0 in current snapshot (W2 work)",
     "registry resolver not implemented; bucket=registry count=0 in current snapshot (W3 work)",
     "consumer mode declarations not enforced (W4 work)",
     "consumer-mode CI gate (check_consumer_mode_declared.py) not written (W4 work)",
     "deterministic-digest test not implemented (W5 work)",
     "bucket / resolution_status / authority_status columns are NULLABLE; cannot graduate to NOT NULL until W5"
   ],
+
+  "w2_landed": {
+    "ssot_decision_record": {
+      "module": "agentic_core/adg/artifact/ssot_decision_record.py",
+      "table": "ssot_decision_records",
+      "outcomes_supported": 8,
+      "outcome_enum": ["VALID_USE", "ALLOWED_NOT_USED", "POLICY_BYPASS", "BLOCKED_UNUSED", "HIDDEN_PATH", "REGISTRY_DRIFT", "SEVERE_BYPASS", "CLEAN_ABSENCE"],
+      "required_fields": ["request_id", "run_id", "trace_id", "route_contract_id", "policy_hash", "blueprint_hash", "registry_digest_set", "static_refs", "runtime_refs", "registry_refs", "replay_key", "manifest_hash", "hmac_sig", "outcome"],
+      "optional_fields": ["evidence_contract_ref", "prompt_artifact_ref", "sealed_l2_artifact_ref", "exit_review_packet_ref", "x3_disposition", "uwg_commit_receipt_ref"],
+      "tamper_evidence": "manifest_hash (SHA-256) + hmac_sig (HMAC-SHA256 with ADG_SSOT_HMAC_KEY env var)"
+    },
+    "runtime_bucket_lift": {
+      "utility": "tools/adg/runtime_bucket_lift.py",
+      "purpose": "lift edges from artifacts/runtime_adg/runtime_adg_*.sqlite into static snapshot's edges table with bucket=runtime + evidence_refs={run_id, trace_id, span_id}",
+      "classifier": {
+        "full_trace_context": "VERIFIED_RUNTIME / AUTHORITATIVE_RUNTIME",
+        "partial_trace_context": "PARTIAL_TRACE / PARTIAL",
+        "missing_trace_context": "MISSING_TRACE / UNKNOWN_NOT_PROOF"
+      },
+      "idempotency": "duplicate-row check on (src_id, dst_id, relation_type, source_file, line_no, authority='runtime_observed')",
+      "hidden_path_handling": "stub static node with empty resolved_path when runtime references node not in static graph"
+    }
+  },
 
   "schema_fields_added": [
     {"column": "bucket", "type": "TEXT", "nullable": true, "enum": ["static", "runtime", "registry"]},
@@ -83,7 +104,10 @@
   "tests_added": {
     "test_three_bucket_authority.py": 33,
     "test_edge_authority.py (preserved)": 43,
-    "total_passing": 76,
+    "test_ssot_decision_record.py (W2)": 45,
+    "test_runtime_bucket_lift.py (W2)": 10,
+    "total_authority_surface_passing": 131,
+    "total_in_artifact_dir_passing": 183,
     "test_classes": [
       "TestClosedEnums",
       "TestAuthorityLaw",
@@ -91,7 +115,18 @@
       "TestTripletClassifier",
       "TestSQLTripletBackfill",
       "TestThreeViews",
-      "TestEndToEnd"
+      "TestEndToEnd",
+      "TestOutcomeEnum (W2)",
+      "TestDecisionMatrix (W2 — exhaustive 8-cell coverage)",
+      "TestReconcilerFromRefs (W2)",
+      "TestManifestHash (W2)",
+      "TestReplayKey (W2)",
+      "TestHmacSig (W2)",
+      "TestRecordBuild (W2)",
+      "TestPersistence (W2 — schema round-trip)",
+      "TestTamperDetection (W2)",
+      "TestRuntimeBucketLift (W2)",
+      "TestRuntimeEdgeClassifier (W2)"
     ]
   },
 

@@ -225,6 +225,121 @@ the Python classifier.
 * Test-only / type-only / external edges cannot drive production hotspot
   reports.
 
+## SSOTDecisionRecord (cross-bucket reconciliation primitive — W2)
+
+When a claim requires reconciling evidence across all three buckets, the
+answer is a **`SSOTDecisionRecord`** (`agentic_core/adg/artifact/ssot_decision_record.py`).
+
+### Question answered
+
+> "For this exact run, under this exact policy and registry snapshot, did
+> the thing exist (static), was it allowed (registry), did it happen
+> (runtime), and was the result sealed?"
+
+### 8-cell decision matrix
+
+The matrix is the cross-product of three axes, each derived from one
+ADG bucket:
+
+| FOUND | ALLOWED | USED | Outcome | Severity |
+|:---:|:---:|:---:|---|---|
+| ✓ | ✓ | ✓ | `VALID_USE` | gold |
+| ✓ | ✓ | ✗ | `ALLOWED_NOT_USED` | benign |
+| ✓ | ✗ | ✓ | `POLICY_BYPASS` | **INCIDENT** |
+| ✓ | ✗ | ✗ | `BLOCKED_UNUSED` | benign |
+| ✗ | ✓ | ✓ | `HIDDEN_PATH` | **INTEGRITY** |
+| ✗ | ✓ | ✗ | `REGISTRY_DRIFT` | hygiene |
+| ✗ | ✗ | ✓ | `SEVERE_BYPASS` | **CRITICAL** |
+| ✗ | ✗ | ✗ | `CLEAN_ABSENCE` | benign |
+
+Where:
+- **FOUND** = `static_refs` is non-empty (proof the thing exists in the codebase)
+- **NOT FOUND** = `static_refs` is empty
+- **ALLOWED** = `registry_refs` is non-empty AND every ref is `AUTHORITATIVE_REGISTRY`
+- **BLOCKED** = `registry_refs` is empty OR any ref is stale/mismatched/unresolved
+- **USED** = `runtime_refs` is non-empty AND at least one ref is `AUTHORITATIVE_RUNTIME`
+- **NOT USED** = `runtime_refs` is empty OR no ref is authoritative
+
+### Required fields (per spec Section 2)
+
+```python
+@dataclass(frozen=True)
+class SSOTDecisionRecord:
+    # Required scalar identifiers
+    request_id:          str
+    run_id:              str
+    trace_id:            str
+    route_contract_id:   str
+    policy_hash:         str
+    blueprint_hash:      str
+    # Required bucket evidence
+    registry_digest_set: tuple[str, ...]
+    static_refs:         tuple[str, ...]
+    runtime_refs:        tuple[str, ...]
+    registry_refs:       tuple[str, ...]
+    # Required determinism / signing
+    replay_key:          str   # SHA-256 over (request_id, run_id, route, policy)
+    manifest_hash:       str   # SHA-256 over sorted bucket evidence + hashes
+    hmac_sig:            str   # HMAC-SHA256(manifest_hash, secret)
+    outcome:             str   # one of the 8 matrix cells
+    # Optional context refs
+    evidence_contract_ref:  str | None = None
+    prompt_artifact_ref:    str | None = None
+    sealed_l2_artifact_ref: str | None = None
+    exit_review_packet_ref: str | None = None
+    x3_disposition:         str | None = None
+    uwg_commit_receipt_ref: str | None = None
+```
+
+### Construction
+
+The canonical path is `SSOTDecisionRecord.build(...)` which:
+
+1. Computes `outcome` via the reconciler from `static_refs` / `runtime_refs` / `registry_refs`
+2. Computes deterministic `manifest_hash` over sorted bucket evidence
+3. Computes `replay_key` from `(request_id, run_id, route_contract_id, policy_hash)`
+4. Computes `hmac_sig` via HMAC-SHA256 with secret from `ADG_SSOT_HMAC_KEY`
+5. Returns a frozen dataclass instance
+
+```python
+rec = SSOTDecisionRecord.build(
+    request_id="req-001",
+    run_id="run-001",
+    trace_id="trace-001",
+    route_contract_id="route-001",
+    policy_hash="policy-abc",
+    blueprint_hash="blueprint-def",
+    registry_digest_set=["digest-1"],
+    static_refs=["edge:42"],
+    runtime_refs=["edge:99"],
+    registry_refs=["edge:55"],
+)
+# rec.outcome = "VALID_USE"
+# rec.manifest_hash, rec.replay_key, rec.hmac_sig populated
+```
+
+### Persistence
+
+Schema lives in `ssot_decision_records` table (created in same backfill
+transaction as the three views). Indexes on `run_id`, `trace_id`,
+`request_id`, `outcome`, `replay_key`, `manifest_hash` for forensic
+queries.
+
+### Tamper evidence
+
+`manifest_hash` is SHA-256 over the JSON-canonicalized constituent
+evidence (sorted refs, normalized order). Any later mutation of the
+record's bucket evidence produces a different hash. `hmac_sig` provides
+the secondary signature so a tampered record cannot pass authenticity
+verification.
+
+### Consumer rule
+
+Any claim that mixes evidence from two or more buckets (e.g. "tool T was
+configured AND was actually called") MUST emit an SSOTDecisionRecord
+rather than infer from one bucket alone. Single-bucket claims continue
+to use `proof_view` directly.
+
 ## ADG certification
 
 A snapshot is **ADG_CERTIFIED** when ALL of the following hold:
