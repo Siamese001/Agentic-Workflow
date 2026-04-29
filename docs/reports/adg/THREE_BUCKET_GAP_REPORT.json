@@ -1,0 +1,107 @@
+{
+  "report_kind": "ADG_THREE_BUCKET_GAP_REPORT",
+  "generated_at": "2026-04-29T17:03:20.695361+00:00",
+  "snapshot": "adg_indexed_04292026_0825.sqlite",
+  "snapshot_path": "artifacts\\adg\\adg_indexed_04292026_0825.sqlite",
+  "runtime_view_present": false,
+  "runtime_attested_edges": 0,
+  "total_edges_classified": 399637,
+  "health_score_pct_triplet_attested": 0.0,
+  "summary_by_class": [
+    {
+      "defect_class": "TRIPLET_ATTESTED",
+      "severity": "\u2014",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "description": "Edge present in all three graphs \u2014 fully proven. NOT a defect."
+    },
+    {
+      "defect_class": "REGISTRY_DRIFT",
+      "severity": "P2",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "description": "Used in code AND observed at runtime, but not declared in any registry. Undocumented coupling / accidental API."
+    },
+    {
+      "defect_class": "DEAD_PATH",
+      "severity": "P3",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "description": "Wired in code AND declared in registry, but never traced at runtime. Untested code path or vestigial policy."
+    },
+    {
+      "defect_class": "UNOBSERVED_CODE",
+      "severity": "P3",
+      "edge_count": 399637,
+      "edge_pct": 100.0,
+      "description": "Static-only \u2014 orphan import, dead code, or never-traced path."
+    },
+    {
+      "defect_class": "DYNAMIC_DISPATCH",
+      "severity": "P5",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "description": "No static link, but declared + verified at runtime. Plugin / DI / lazy import \u2014 usually fine."
+    },
+    {
+      "defect_class": "SHADOW_CHANNEL",
+      "severity": "P1",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "description": "Runtime-only undeclared edge \u2014 monkey-patch, side-effect coupling, hidden import. SECURITY-CRITICAL."
+    },
+    {
+      "defect_class": "CONFIG_BLOAT",
+      "severity": "P4",
+      "edge_count": 0,
+      "edge_pct": 0.0,
+      "description": "Declared in registry but never used in code or runtime. Dead policy / config drift."
+    }
+  ],
+  "samples_by_class": {
+    "TRIPLET_ATTESTED": [],
+    "REGISTRY_DRIFT": [],
+    "DEAD_PATH": [],
+    "UNOBSERVED_CODE": [
+      {
+        "src": "<id=4>",
+        "dst": "<id=13233>",
+        "relation": "reads_from"
+      },
+      {
+        "src": "<id=4>",
+        "dst": "<id=13996>",
+        "relation": "reads_from"
+      },
+      {
+        "src": "<id=4>",
+        "dst": "<id=15808>",
+        "relation": "exports"
+      },
+      {
+        "src": "<id=4>",
+        "dst": "<id=15808>",
+        "relation": "reads_from"
+      },
+      {
+        "src": "<id=4>",
+        "dst": "<id=21000>",
+        "relation": "imports"
+      }
+    ],
+    "DYNAMIC_DISPATCH": [],
+    "SHADOW_CHANNEL": [],
+    "CONFIG_BLOAT": []
+  },
+  "static_only_classes": [
+    "REGISTRY_DRIFT",
+    "CONFIG_BLOAT"
+  ],
+  "requires_runtime_classes": [
+    "TRIPLET_ATTESTED",
+    "DEAD_PATH",
+    "DYNAMIC_DISPATCH",
+    "SHADOW_CHANNEL",
+    "UNOBSERVED_CODE"
+  ]
+}
