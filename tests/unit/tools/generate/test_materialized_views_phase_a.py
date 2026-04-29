@@ -499,6 +499,82 @@ class TestPhaseAAuthority:
                 f"`.run` symbol {symbol!r} MUST be excluded (scanner false positive)"
             )
 
+    def test_write_sovereignty_excludes_pascalcase_class_instantiation(
+        self, tmp_path: Path
+    ) -> None:
+        """`writes_through` edges with a single PascalCase identifier (no dot)
+        are class instantiations of governance dataclass types — NOT writes.
+
+        `_GovernancePlaneVisitor` emits `writes_through` for any Call to a
+        symbol in `GOVERNANCE_WRITE_SYMBOLS`, which intentionally includes 22
+        PascalCase dataclass types like ViolationConstraint, CorpusRecord,
+        ExecutionContext, etc., for governance-symbol-traffic tracking. These
+        are type instantiations returning new objects, not write side effects.
+
+        The MV must exclude these while still flagging:
+          - `writes_through` for real write methods (has dot, e.g. `.write_text`)
+          - `writes_through` for top-level write functions (lowercase start,
+            e.g. `execute_write`, `commit_write`)
+          - `writes_to` for any symbol (unaffected)
+
+        2026-04-28 W4 regression.
+        """
+        # PascalCase no-dot class-instantiations — must be excluded
+        excluded_pascalcase = [
+            ("ViolationConstraint", "agentic_core/L5_safety/reasoning/CodeHealerAgent.py"),
+            ("CorpusRecord", "system_learning/buses/some.py"),
+            ("ExecutionContext", "agentic_core/L3_orchestration/types/orchestrator_types.py"),
+            ("SurgicalContext", "agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py"),
+            ("ProposalCommitter", "system_learning/governance/some.py"),
+            ("HealingInput", "agentic_core/L5_safety/reasoning/healer.py"),
+            ("KeyRecord", "agentic_core/L4_state/store.py"),
+        ]
+        # PascalCase WITH dot — still a real write (e.g. `obj.write_text`),
+        # NOT excluded
+        kept_dotted = [
+            ("self.path.write_text", "apps_eval/reasoning/orchestrator.py"),
+        ]
+        # Lowercase top-level write functions — still a real write, NOT excluded
+        kept_lowercase = [
+            ("execute_write", "apps_eval/utils/util.py"),
+            ("commit_write", "apps_exec/utils/util.py"),
+        ]
+        # ALL_CAPS — also excluded by the heuristic (acceptable; constants
+        # don't appear in real GOVERNANCE_WRITE_SYMBOLS)
+
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        idx = 1
+        for symbol, path in excluded_pascalcase:
+            _node(conn, idx, f"caller{idx}", "L_APP", path)
+            _edge(conn, idx, 99, "writes_through", symbol=symbol)
+            idx += 1
+        for symbol, path in kept_dotted + kept_lowercase:
+            _node(conn, idx, f"caller{idx}", "L_APP", path)
+            _edge(conn, idx, 99, "writes_through", symbol=symbol)
+            idx += 1
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for symbol, _path in excluded_pascalcase:
+            assert symbol not in flagged, (
+                f"PascalCase class-instantiation symbol {symbol!r} MUST be "
+                f"excluded from mv_write_sovereignty_paths (writes_through is a "
+                f"semantic-tracking edge, not a real write)"
+            )
+        for symbol, _path in kept_dotted + kept_lowercase:
+            assert symbol in flagged, (
+                f"Real-write symbol {symbol!r} MUST still be flagged "
+                f"(only single-PascalCase identifiers are excluded)"
+            )
+
     def test_write_sovereignty_uwg_symbol_variants(self, tmp_path: Path) -> None:
         """Validate every documented UWG symbol fragment is detected."""
         variants = [

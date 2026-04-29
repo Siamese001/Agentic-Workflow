@@ -545,6 +545,27 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           -- the canonical L5 file-operation authority — same pattern as
           -- routing through UWG for L4 state. NOT bypasses.
           AND NOT {_build_archival_gatekeeper_clause("e.symbol")}
+          -- 2026-04-28 W4 PascalCase class-instantiation exclusion:
+          -- _GovernancePlaneVisitor emits writes_through for any call to a
+          -- symbol in GOVERNANCE_WRITE_SYMBOLS, which includes 22 PascalCase
+          -- dataclass types (ViolationConstraint, CorpusRecord, ExecutionContext,
+          -- SurgicalContext, ProposalCommitter, TraceFeatureRecord, KeyRecord,
+          -- MutationDiffRecord, ReplayFailureRecord, PromptOutcomeRecord,
+          -- HealingOutcomeIntakeRecord, PolicyUpdateProposal, HealingInput,
+          -- HealingSuccessRateStore, InMemoryHealingOutcomeIntakeStore, etc.).
+          -- These are type instantiations returning new objects, not writes.
+          -- Heuristic: writes_through with a single PascalCase identifier
+          -- (no dot, starts uppercase, has lowercase) is a class instantiation.
+          -- writes_through for real write methods like `.write_text` (has dot)
+          -- or top-level write functions like `execute_write` (lowercase start)
+          -- are unaffected.
+          AND NOT (
+              e.relation_type = 'writes_through'
+              AND e.symbol NOT LIKE '%.%'
+              AND substr(e.symbol, 1, 1) BETWEEN 'A' AND 'Z'
+              AND lower(e.symbol) != e.symbol
+              AND upper(e.symbol) != e.symbol
+          )
         ORDER BY severity, writer_layer
     """)
 
