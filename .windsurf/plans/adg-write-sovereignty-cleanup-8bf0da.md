@@ -188,3 +188,77 @@ W1.2 must:
 3. Pick the top-10 above (or fresh equivalents) and route each through
    `agentic_core.L4_state.uwg.UniversalWriteGateway` per
    `docs/contracts/identity_propagation.md`
+
+---
+
+## W1.2 Investigation Block (2026-04-28) — additional MV scope findings
+
+> ⚠️ Before ANY refactor work, the next session MUST resolve the **MV scope
+> question** below. The 2026-04-28 W1.2 attempt was halted after surfacing
+> evidence that a substantial fraction of the remaining 1370 "violations"
+> are MV scope errors, not genuine bypasses. Refactoring them through
+> heavyweight UWG `commit()` ceremony would be over-engineering.
+
+### Evidence — `agentic_core/runtime/prove_requirements/writers.py` (rank 1, 16 violations)
+
+This is a **runtime-proof writer** — produces test/proof artifacts. Per
+`docs/reference/00B_L4_State_Archive_and_UWG/00B.7a_L4_UWG_Durable_Write_Context_Invariant.md`
+the canonical "durable write" pipeline binds Exit CommitRequest → UWG →
+L4 state store → audit ledger → replay snapshot → retrieval/cache
+invalidation. A proof artifact written by a test harness is NOT a
+durable mutation in this sense.
+
+### Evidence — `system_learning/engines/l4_state_writer.py` (rank 2, 15 violations)
+
+This file IS the L4 state writer abstraction. `InMemoryL4StateWriter._write()`
+writes to an in-memory `dict` (single-process pipeline / test fixture).
+`FileBackedL4StateWriter._write()` writes to disk but as the legitimate
+backing for L4 state. In both cases the writer's class is at L4 / is the
+L4 implementation; flagging its internals as "non-UWG L4 writes" is a
+within-layer false positive — UWG sits inside L4 and authorizes upstream
+callers, not L4's own state-store implementation.
+
+### Evidence — `apps_eval/reasoning/enterprise_eval_orchestrator.py` (rank 10, 6 violations)
+
+Reviewed all 3 visible `path.write_text` calls (lines 485, 509, 522):
+
+| Line | Writes | Content type |
+|---:|---|---|
+| 485 | eval brief markdown | Human-readable output report |
+| 509 | manifest JSON | Output artifact (run summary) |
+| 522 | baseline JSON | Output artifact (regression baseline) |
+
+These are **report artifacts**, not durable state. Routing markdown/JSON
+output writes through `UWGCommitRequest + StateDiff + RollbackPlan +
+ReadSurfaceRefreshPlan` is over-engineering — UWG is for L4 state
+mutations needing authorization, locks, audit, refresh propagation; it is
+not the right hammer for "write a markdown report to disk".
+
+### Three distinct MV scope problems (in addition to W1.1's symbol-detection bug)
+
+| # | MV problem | Approx false-positive count |
+|---|---|---:|
+| 1 | ✅ FIXED — symbol-based UWG detection | 117 (resolved in `ad0ee4f`) |
+| 2 | Within-L4 writes (L4 source layer writing to L4 surfaces) | ~64 (L4 layer) + ~126 (L_SL) = **~190** |
+| 3 | Report artifact writes (markdown/JSON to reports/ outputs/) | ~414 (L_APP layer, mostly orchestrator output renderers) |
+| 4 | Healer self-rename writes (L5 file movers) | ~20 (`safe_move`, `resolve_collision_and_rename`) — design intent ambiguous |
+
+### Architectural decision needed
+
+The original 2026-04-28 Author-Gate offered options A=accept-as-debt /
+B=refactor / C=hybrid under the assumption of "1502 genuine bypasses".
+With evidence that ≥50% are MV scope errors, the choice deserves
+revisiting. The refactor-class options remain open BUT a new option
+emerges:
+
+- **D — Tighten MV scope** to match the canonical durable-write definition
+  (DurableWriteContext digest pipeline). Filter `mv_write_sovereignty_paths`
+  to exclude (a) within-layer writes where `src.layer == dst.layer` AND the
+  caller is the layer's canonical writer abstraction, (b) report artifact
+  writes targeting `reports/`, `outputs/`, `proof/`, `prove_requirements/`,
+  (c) test-fixture in-memory dict mutations. Estimated post-fix violation
+  count: **~50–200 genuine bypasses** (sized for a single-wave refactor
+  rather than a multi-week one).
+
+Option D may obviate W1/W2/W3 of this plan. Surface to user before
+continuing.
