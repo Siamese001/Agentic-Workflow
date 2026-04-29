@@ -467,6 +467,102 @@ class TestPhaseAAuthority:
                 f"mv_write_sovereignty_paths (canonical L5 file-op authority)"
             )
 
+    def test_write_sovereignty_excludes_sanctioned_bridge_paths(self, tmp_path: Path) -> None:
+        """Writes from SANCTIONED BRIDGE paths are EXCLUDED. The authority-
+        boundary MV (`mv_authority_boundary_breaches`) already accepts these
+        paths as sanctioned import bridges; this regression locks the parallel
+        exemption in `mv_write_sovereignty_paths`.
+
+        2026-04-29 W5.3 Author-Gate (architecture_choice, conf=0.84).
+        """
+        bridge_writes = [
+            ("save_decision_memo",
+             "apps_underwriting_ai/integrations/storage_adapter.py"),
+            ("save_audit_trace",
+             "apps_underwriting_ai/services/some_service.py"),
+            ("provenance_write",
+             "apps_shared/enforcement/ProvenancetrackerStrategy.py"),
+            ("auto_persist",
+             "agentic_core/L6_observability/utils/engines/auto_persistence_adapter.py"),
+            ("curate_save",
+             "system_learning/adapters/golden_curation_adapter.py"),
+            ("util_write",
+             "agentic_core/some_path/some_adapter_util.py"),
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for i, (symbol, path) in enumerate(bridge_writes, start=1):
+            _node(conn, i, f"caller{i}", "L_APP", path)
+            _edge(conn, i, 99, "writes_to", symbol=symbol)
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT writer_file FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged_files = {r[0] for r in rows}
+        for _symbol, path in bridge_writes:
+            assert path not in flagged_files, (
+                f"Sanctioned-bridge file {path!r} MUST be excluded from "
+                f"mv_write_sovereignty_paths (authority-boundary MV already "
+                f"accepts the same pattern set \u2014 see _SANCTIONED_BRIDGE_PATH_PATTERNS)"
+            )
+
+    def test_write_sovereignty_excludes_layer_self_authority_files(self, tmp_path: Path) -> None:
+        """Writes from LAYER SELF-AUTHORITY files are EXCLUDED. These files
+        ARE their layer's own internal authority for files they own end-to-
+        end — two subcategories share this principle:
+
+          1. Integrity attestation (e.g., L0 Golden Seal Merkle hash) cannot
+             route through cross-layer authority because that authority is
+             downstream of the layer being attested.
+
+          2. Self-validation / self-healing (e.g., L5 dependencygraph_
+             validator) where the layer validates and auto-fixes the files
+             it owns. The validator IS the layer's authority.
+
+        2026-04-29 W5.2/W5.4 Author-Gate (architecture_choice, conf=0.82/0.78).
+        """
+        self_authority_writes = [
+            # W5.2 — L0 Sovereign Core integrity attestation
+            ("cls.GOLDEN_SEAL_FILE.write_text",
+             "agentic_core/L0_routing/utils/core_integrity_util.py"),
+            ("self.GOLDEN_SEAL_FILE.write_text",
+             "agentic_core/L0_routing/utils/core_integrity_util.py"),
+            ("write_text",
+             "agentic_core/L0_routing/utils/core_integrity_util.py"),
+            # W5.4 — L5 Safety self-validator/healer
+            ("self.memory_file.write_text",
+             "agentic_core/L5_safety/validators/dependencygraph_validator.py"),
+            ("Path(path).write_text",
+             "agentic_core/L5_safety/validators/dependencygraph_validator.py"),
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for i, (symbol, path) in enumerate(self_authority_writes, start=1):
+            layer = "L0" if "L0_routing" in path else "L5"
+            _node(conn, i, f"caller{i}", layer, path)
+            _edge(conn, i, 99, "writes_to", symbol=symbol)
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT writer_file FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged_files = {r[0] for r in rows}
+        for _symbol, path in self_authority_writes:
+            assert path not in flagged_files, (
+                f"Layer self-authority file {path!r} MUST be excluded from "
+                f"mv_write_sovereignty_paths — the file IS its layer's own "
+                f"internal authority. See _LAYER_SELF_AUTHORITY_FILES."
+            )
+
     def test_write_sovereignty_excludes_run_method_calls(self, tmp_path: Path) -> None:
         """`.run` method calls are scanner false positives — orchestrator and
         runner dispatch calls match the AST write heuristic but are NOT writes.

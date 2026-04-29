@@ -155,6 +155,53 @@ _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS = (
     "/L4_state/uwg/",     # UWG itself sits inside L4
 )
 
+# 2026-04-29 W5.2/W5.4 (Author-Gate): LAYER SELF-AUTHORITY FILES.
+# Files that ARE their layer's own internal authority for the files they own
+# end-to-end. Two subcategories share this principle:
+#
+#   1. Integrity attestation (W5.2, conf=0.82) — files that self-attest the
+#      layer they belong to. Cannot route through cross-layer authority
+#      because that authority is downstream of the layer being attested
+#      (e.g., L0 Golden Seal cannot route through UWG; UWG sits in L4).
+#
+#   2. Self-validation / self-healing (W5.4, conf=0.78) — files where a
+#      layer validates and auto-fixes the files it owns. The validator/
+#      healer IS the layer's authority for these operations; routing
+#      through cross-layer write authority would invert the relationship.
+#
+# Both are durable AND sovereign, distinct from non-durable writers
+# (proof/, outputs/) and from canonical layer writers (L4 state-store impls).
+#
+# Adding a file here is a Author-Gate-class decision — each entry must be a
+# layer's own internal authority, not a generic write site.
+_LAYER_SELF_AUTHORITY_FILES = (
+    # L0 Sovereign Core: Merkle-hash self-attestation of base_agents/ (W5.2)
+    "agentic_core/L0_routing/utils/core_integrity_util.py",
+    # L5 Safety self-validator/healer: validates+auto-fixes Python source
+    # for L5-owned style/structure invariants. write_compliant_file is L5's
+    # own constructive-healing primitive (analog to ArchivalGatekeeper for
+    # destructive ops); _save_memory caches the validator's hash state. (W5.4)
+    "agentic_core/L5_safety/validators/dependencygraph_validator.py",
+)
+
+# 2026-04-29 W5.3 (Author-Gate, conf=0.84): SANCTIONED BRIDGE PATH PATTERNS.
+# Files at these paths are sanctioned bridges between layers — the same
+# pattern set already accepted by `mv_authority_boundary_breaches` for
+# import-side authority (line 493-499 of this module). Without parity in
+# `mv_write_sovereignty_paths`, the two authority MVs disagree on what is
+# a sanctioned bridge: imports OK, writes flagged. This pattern set fixes
+# that inconsistency.
+#
+# These are SQL LIKE patterns, not path fragments — evaluated against
+# `src.resolved_path` with the % wildcard.
+_SANCTIONED_BRIDGE_PATH_PATTERNS = (
+    "apps_%/integrations/%",   # documented adapter modules
+    "apps_%/services/%",       # service bridges with their own contracts
+    "apps_%/enforcement/%",    # app-local guardrail gates
+    "%_adapter.py",            # explicit adapter naming convention
+    "%_adapter_util.py",       # adapter util naming convention
+)
+
 _L2_PHASE_KEYWORDS: list[tuple[str, str]] = [
     ("pre_audit", "pre_audit"),
     ("discovery", "discovery"),
@@ -222,6 +269,33 @@ def _build_canonical_layer_writer_clause(col: str) -> str:
     L4 surfaces is a within-layer false positive.
     """
     frags = " OR ".join(f"{col} LIKE '%{f}%'" for f in _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS)
+    return f"({frags})"
+
+
+def _build_sanctioned_bridge_clause(col: str) -> str:
+    """SQL fragment matching ``col`` against any SANCTIONED BRIDGE path pattern.
+
+    A row matched by this clause is a sanctioned bridge between layers
+    (per the same set already accepted by `mv_authority_boundary_breaches`
+    for import authority). The two authority MVs (boundary-breach for
+    imports, write-sovereignty for writes) MUST agree on what is a
+    sanctioned bridge. See ``_SANCTIONED_BRIDGE_PATH_PATTERNS``.
+    """
+    frags = " OR ".join(f"{col} LIKE '{f}'" for f in _SANCTIONED_BRIDGE_PATH_PATTERNS)
+    return f"({frags})"
+
+
+def _build_layer_self_authority_clause(col: str) -> str:
+    """SQL fragment matching ``col`` against any LAYER SELF-AUTHORITY file.
+
+    A row matched by this clause is a layer's own internal-authority write
+    (e.g. L0 Golden Seal Merkle root, L5 dependencygraph_validator) and
+    should be EXCLUDED from ``mv_write_sovereignty_paths``. The file IS
+    its layer's authority for its own internal operations; routing such
+    writes through cross-layer write authority would invert the
+    relationship. See ``_LAYER_SELF_AUTHORITY_FILES`` for the canonical list.
+    """
+    frags = " OR ".join(f"{col} LIKE '%{f}%'" for f in _LAYER_SELF_AUTHORITY_FILES)
     return f"({frags})"
 
 
@@ -540,6 +614,18 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           -- _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS for the canonical lists.
           AND NOT {_build_non_durable_target_clause("src.resolved_path")}
           AND NOT {_build_canonical_layer_writer_clause("src.resolved_path")}
+          -- 2026-04-29 W5.2/W5.4 Author-Gate: layer self-authority files ARE
+          -- their layer's own internal authority for files owned end-to-end
+          -- (integrity attestation, self-validation/healing). Routing such
+          -- writes through cross-layer write authority would invert the
+          -- relationship. See _LAYER_SELF_AUTHORITY_FILES.
+          AND NOT {_build_layer_self_authority_clause("src.resolved_path")}
+          -- 2026-04-29 W5.3 Author-Gate: mirror the authority-boundary MV's
+          -- sanctioned-bridge exemption (apps_*/integrations/, apps_*/services/,
+          -- apps_*/enforcement/, *_adapter.py, *_adapter_util.py). Without
+          -- this clause the two authority MVs disagreed: imports OK, writes
+          -- flagged. See _SANCTIONED_BRIDGE_PATH_PATTERNS.
+          AND NOT {_build_sanctioned_bridge_clause("src.resolved_path")}
           -- 2026-04-28 W2.1 ArchivalGatekeeper exclusion: writes routed through
           -- ArchivalGatekeeper.safe_move/safe_archive/safe_delete go through
           -- the canonical L5 file-operation authority — same pattern as
