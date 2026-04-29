@@ -939,6 +939,49 @@ def generate_full_adg(
     except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
         print(f"[ADG] r6 enrichment: SKIPPED ({type(_e).__name__}: {_e})")
 
+    # --- Final edge-authority backfill (2026-04-28 graph-authority directive) ---
+    # The supplementary scanners above (entrypoint, gate_self_test, r6) insert
+    # edges into the canonical `edges` table AFTER ArtifactPaths._write_sqlite
+    # ran its initial backfill, leaving those new rows with NULL authority. We
+    # re-run the idempotent backfill here so every shipped snapshot satisfies
+    # the closed-enum invariant. SSOT: agentic_core/adg/artifact/edge_authority.py
+    # CI gate: ops_scripts/ci/check_edge_authority_well_formed.py
+    try:
+        from agentic_core.adg.artifact.edge_authority import (
+            SQL_AUTHORITY_BACKFILL,
+            SQL_MV_GOVERNANCE,
+            SQL_MV_UNRESOLVED,
+            SQL_MV_VERIFIED,
+        )
+
+        _con = _phase2_sqlite3.connect(paths.sqlite)
+        try:
+            _con.executescript(SQL_AUTHORITY_BACKFILL + ";")
+            _con.executescript(SQL_MV_VERIFIED)
+            _con.executescript(SQL_MV_UNRESOLVED)
+            _con.executescript(SQL_MV_GOVERNANCE)
+            _con.commit()
+            _hist = dict(
+                _con.execute(
+                    "SELECT COALESCE(authority,'<NULL>'), COUNT(*) FROM edges GROUP BY authority"
+                ).fetchall()
+            )
+            _null = _hist.get("<NULL>", 0)
+            print(
+                f"[ADG] edge-authority backfill: "
+                f"verified={_hist.get('verified', 0)}, "
+                f"unresolved={_hist.get('unresolved', 0)}, "
+                f"external={_hist.get('external', 0)}, "
+                f"test_only={_hist.get('test_only', 0)}, "
+                f"dynamic={_hist.get('dynamic', 0)}, "
+                f"runtime_observed={_hist.get('runtime_observed', 0)}, "
+                f"NULL={_null}"
+            )
+        finally:
+            _con.close()
+    except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
+        print(f"[ADG] edge-authority backfill: SKIPPED ({type(_e).__name__}: {_e})")
+
     # --- P6: Derived graph projection (adg_graph_<ts>.sqlite) ---
     # Plan adg-pipeline-e2e-5287a1 W3: catch narrowed to ImportError only.
     # graph_projection.build_graph_projection()'s documented failure contract

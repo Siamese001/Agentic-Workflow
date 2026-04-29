@@ -224,6 +224,9 @@ def create_runtime_adg() -> None:
             symbol TEXT,
             timestamp TEXT,
             execution_context TEXT,
+            -- 2026-04-28 Graph Authority axis. Runtime ADG always = 'runtime_observed'.
+            -- SSOT: agentic_core/adg/artifact/edge_authority.py
+            authority TEXT NOT NULL DEFAULT 'runtime_observed',
             FOREIGN KEY (src_id) REFERENCES nodes(id),
             FOREIGN KEY (dst_id) REFERENCES nodes(id)
         )
@@ -267,8 +270,8 @@ def create_runtime_adg() -> None:
         dst_id = node_id_map[edge.to_name]
         cursor.execute(
             """
-            INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol, timestamp, execution_context)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol, timestamp, execution_context, authority)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'runtime_observed')
             """,
             (
                 src_id,

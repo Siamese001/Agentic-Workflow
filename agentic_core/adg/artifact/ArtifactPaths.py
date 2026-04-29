@@ -290,10 +290,16 @@ CREATE TABLE IF NOT EXISTS edges (
     target_span_end    INTEGER DEFAULT 0,
     target_span_line   INTEGER DEFAULT 0,
     target_span_column INTEGER DEFAULT 0,
-    dynamic_resolution TEXT DEFAULT ''
+    dynamic_resolution TEXT DEFAULT '',
+
+    -- 2026-04-28 Graph Authority axis. SSOT: agentic_core/adg/artifact/edge_authority.py
+    -- Closed enum: verified | unresolved | dynamic | external | test_only | runtime_observed
+    authority          TEXT DEFAULT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_edges_src  ON edges(src_id);
 CREATE INDEX IF NOT EXISTS idx_edges_dst  ON edges(dst_id);
+CREATE INDEX IF NOT EXISTS idx_edges_authority ON edges(authority)
+    WHERE authority IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_edges_rel  ON edges(relation_type);
 CREATE INDEX IF NOT EXISTS idx_edges_semantic_type ON edges(semantic_type)
     WHERE semantic_type != '';
@@ -340,7 +346,8 @@ CREATE VIEW IF NOT EXISTS edge_view AS
         src.precision_type AS from_precision_type,
         dst.precision_type AS to_precision_type,
         src.logical_sequence_id AS from_sequence_id,
-        dst.logical_sequence_id AS to_sequence_id
+        dst.logical_sequence_id AS to_sequence_id,
+        e.authority     AS authority   -- 2026-04-28 Graph Authority axis
     FROM edges e
     JOIN nodes src ON src.id = e.src_id
     JOIN nodes dst ON dst.id = e.dst_id;
@@ -775,7 +782,33 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         if guardian_exempted:
             print(f"[ADG] Guardian exemptions applied: {guardian_exempted} violations filtered")
 
+        # ------------------------------------------------------------------
+        # 2026-04-28 Edge-Authority Axis (Graph Authority Bug fix)
+        # Backfill `authority` column on EVERY edge using the closed-enum
+        # classifier (verified | unresolved | dynamic | external | test_only |
+        # runtime_observed). Synthetic antipattern edges inserted earlier
+        # without authority are caught here. Then build the verified/
+        # unresolved materialized views downstream consumers must use.
+        # SSOT: agentic_core/adg/artifact/edge_authority.py
+        # ------------------------------------------------------------------
+        from agentic_core.adg.artifact.edge_authority import (  # noqa: PLC0415
+            SQL_AUTHORITY_BACKFILL,
+            SQL_MV_GOVERNANCE,
+            SQL_MV_UNRESOLVED,
+            SQL_MV_VERIFIED,
+        )
+
+        conn.executescript(SQL_AUTHORITY_BACKFILL + ";")
+        conn.executescript(SQL_MV_VERIFIED)
+        conn.executescript(SQL_MV_UNRESOLVED)
+        conn.executescript(SQL_MV_GOVERNANCE)
+
         # Meta
+        authority_hist = dict(
+            conn.execute(
+                "SELECT COALESCE(authority,'<NULL>'), COUNT(*) FROM edges GROUP BY authority"
+            ).fetchall()
+        )
         meta_rows = [
             ("schema_version", ng_full.schema_version),
             ("commit_sha", ng_full.commit_sha),
@@ -784,6 +817,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             ("artifact_digest", ng_full.artifact_digest),
             ("total_nodes", str(len(ng_full.nodes))),
             ("total_edges", str(len(ng_full.edges))),
+            ("authority_distribution", json.dumps(authority_hist, sort_keys=True)),
         ]
         conn.executemany("INSERT OR REPLACE INTO meta(key,value) VALUES (?,?)", meta_rows)
 

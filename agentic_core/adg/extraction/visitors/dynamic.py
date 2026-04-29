@@ -19,7 +19,29 @@ if TYPE_CHECKING:
 
 @register_visitor("dynamic_execution")
 class _DynamicExecutionVisitor(BaseStructuralVisitor):
-    """S3/RULE_F: Detect dynamic execution (eval/exec/importlib.import_module)."""
+    """S3/RULE_F: Detect dynamic execution (eval/exec/importlib.import_module).
+
+    2026-04-28 (Graph Authority axis Wave 2): when the dynamic call is an
+    import-resolution call with a literal-string argument
+    (``importlib.import_module("x.y")``, ``__import__("x.y")``,
+    ``importlib.util.find_spec("x.y")``), this visitor ALSO emits a
+    synthetic ``imports`` edge with ``edge_kind='dynamic_import'`` so the
+    edge-authority backfill can classify it as ``authority='dynamic'``.
+    Variable-arg dynamic imports are emitted as ``invokes_dynamic`` only
+    (the literal target is unknowable at static-scan time).
+    """
+
+    # Calls whose first positional arg is a module-path literal.
+    # Mapped here so the resolution rule is local to this visitor.
+    _IMPORT_RESOLUTION_CALLS: frozenset[str] = frozenset(
+        {
+            "importlib.import_module",
+            "import_module",
+            "__import__",
+            "importlib.util.find_spec",
+            "find_spec",
+        }
+    )
 
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
@@ -39,7 +61,40 @@ class _DynamicExecutionVisitor(BaseStructuralVisitor):
                 symbol=func_name,
             )
             self.edges.append(edge)
+
+        # Wave 2: literal-string dynamic-import emission.
+        if func_name in self._IMPORT_RESOLUTION_CALLS:
+            literal = self._extract_literal_module_arg(node)
+            if literal:
+                from agentic_core.adg.contracts.schema_util import canonical_name
+                from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+
+                self.edges.append(
+                    _Edge(
+                        from_name=self._module_adg_name,
+                        relation_type="imports",
+                        to_name=canonical_name("Symbol", literal),
+                        edge_kind="dynamic_import",
+                        source_file=self._source_file,
+                        line_no=node.lineno,
+                        symbol=f"{func_name}({literal!r})",
+                    ),
+                )
         self.generic_visit(node)
+
+    @staticmethod
+    def _extract_literal_module_arg(node: ast.Call) -> str | None:
+        """Return the string literal first positional arg, or None.
+
+        Variable args, f-strings, and concat expressions return None — these
+        cannot be statically resolved and must remain ``invokes_dynamic`` only.
+        """
+        if not node.args:
+            return None
+        first = node.args[0]
+        if isinstance(first, ast.Constant) and isinstance(first.value, str):
+            return first.value or None
+        return None
 
     def _get_call_name(self, node: ast.expr) -> str:
         """Extract function name from call expression."""
