@@ -74,9 +74,16 @@ def main() -> int:
         handlers=[logging.StreamHandler(sys.stdout)],
     )
 
+    from agentic_core.runtime.contracts.otel_lifecycle_bridge import otel_lifecycle_capture
     from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
     from apps_exec.types.exec_types import AudiencePersona, BriefTone, EmphasisArea, ExecBriefRequest
 
+    with otel_lifecycle_capture(mission="apps_exec.run_exec"):
+        return _run_exec(args, ExecOrchestrator, ExecBriefRequest)
+
+
+def _run_exec(args, ExecOrchestrator, ExecBriefRequest) -> int:
+    _log = logging.getLogger("apps_exec.run_exec")
     source_dirs = [s.strip() for s in args.source_dirs.split(",") if s.strip()]
     _VALID_EMPHASIS = {"governance", "orchestration", "rag", "safety", "observability"}
     _VALID_TONE = {"board-ready", "cto-ready", "recruiter-friendly", "technical"}

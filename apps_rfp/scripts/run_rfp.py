@@ -63,9 +63,15 @@ def main() -> int:
         _log.error("No problem statement provided. Use --brief or --brief-file.")
         return 1
 
+    from agentic_core.runtime.contracts.otel_lifecycle_bridge import otel_lifecycle_capture
     from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
     from apps_rfp.types.rfp_types import ArchitecturePosture, RfpRequest
 
+    with otel_lifecycle_capture(mission="apps_rfp.run_rfp"):
+        return _run_rfp(args, problem, RfpOrchestrator, RfpRequest)
+
+
+def _run_rfp(args, problem, RfpOrchestrator, RfpRequest) -> int:
     _VALID_POSTURE = {"cloud-first", "hybrid", "sovereign", "regulated"}
     if args.posture in _VALID_POSTURE:
         posture = args.posture

@@ -62,9 +62,15 @@ def main() -> int:
         handlers=[logging.StreamHandler(sys.stdout)],
     )
 
+    from agentic_core.runtime.contracts.otel_lifecycle_bridge import otel_lifecycle_capture
     from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
     from apps_research.types.research_types import ResearchRequest
 
+    with otel_lifecycle_capture(mission="apps_research.run_research"):
+        return _run_research(args, ResearchOrchestrator, ResearchRequest)
+
+
+def _run_research(args, ResearchOrchestrator, ResearchRequest) -> int:
     comparison_subjects = [s.strip() for s in args.compare.split(",") if s.strip()]
 
     request = ResearchRequest(

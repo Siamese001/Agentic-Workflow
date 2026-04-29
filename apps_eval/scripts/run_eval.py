@@ -44,9 +44,15 @@ def main() -> int:
         handlers=[logging.StreamHandler(sys.stdout)],
     )
 
+    from agentic_core.runtime.contracts.otel_lifecycle_bridge import otel_lifecycle_capture
     from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
     from apps_eval.types.eval_types import EvalRequest
 
+    with otel_lifecycle_capture(mission="apps_eval.run_eval"):
+        return _run_eval(args, EvalOrchestrator, EvalRequest)
+
+
+def _run_eval(args, EvalOrchestrator, EvalRequest) -> int:
     suite_ids: list[str] = []
     if args.suites:
         suite_ids = [s.strip() for s in args.suites.split(",") if s.strip()]
