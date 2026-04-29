@@ -10,9 +10,9 @@ author_gate_decision: architecture_choice — "Refactor through UWG over multipl
 
 # ADG Write-Sovereignty Cleanup — Route 1502 P0 Violations Through UWG
 
-> **Status**: W1.1 COMPLETE (2026-04-28). Genuine violation count revised
-> from 1483 → 1366 after symbol-based UWG-routed bug fix landed in
-> commit `ad0ee4f`. Wave breakdown below carries forward at the new scope.
+> **Status**: W1.1 + W1.2 COMPLETE (2026-04-28). User selected option D at
+> revisited Author-Gate. Cumulative violation count: **1483 → 905** (−578, −39%).
+> See `## W1.2 Outcome` section below. W2 (refactor residue) ready for next session.
 >
 > **Why this plan exists**: `run_contract_gates.py` is fully unblocked through
 > line 280 (wiring scan, structure policy, graph-layer evidence, snapshot
@@ -262,3 +262,80 @@ emerges:
 
 Option D may obviate W1/W2/W3 of this plan. Surface to user before
 continuing.
+
+---
+
+## W1.2 Outcome (2026-04-28) — option D selected, MV scope tightened
+
+User selected **option D** at the revisited Author-Gate. Three new MV
+scope filters landed in commit `69d22c9`:
+
+| Filter | Mechanism | Net violation drop |
+|---|---|---:|
+| Non-durable target paths | `_NON_DURABLE_WRITER_PATH_FRAGMENTS` matching `/runtime/prove_requirements/`, `/proof/`, `/outputs/`, `/reports/` | (combined) |
+| Canonical layer-writer abstractions | `_CANONICAL_LAYER_WRITER_PATH_FRAGMENTS` matching `/L4_state/`, `system_learning/engines/l4_state_writer`, `/L4_state/uwg/` | **−256** |
+| Nested tests + scripts | `src.resolved_path NOT LIKE '%/tests/%' AND NOT LIKE '%/scripts/%'` | **−209** |
+
+### Cumulative numerical impact (snapshot `04282026_2000`)
+
+| Stage | is_new=1 violations | Δ from prior |
+|---|---:|---:|
+| Pre-W1.1 (initial baseline) | 1483 | — |
+| Post-W1.1 symbol-detection fix | 1370 | −113 |
+| Post-W1.2 filters #1+#2 (non-durable + canonical) | 1114 | −256 |
+| Post-W1.2 filter #3 (nested tests/scripts) | **905** | −209 |
+| **Total reduction** | **−578 (−39%)** | |
+
+### Regression test coverage (8/8 passing in `TestPhaseAWriteSovereignty`)
+
+- `test_write_sovereignty_non_uwg_flagged` (existing baseline)
+- `test_write_sovereignty_uwg_detected_by_symbol` (W1.1)
+- `test_write_sovereignty_uwg_symbol_variants` (W1.1)
+- `test_write_sovereignty_excludes_non_durable_targets` (W1.2 D)
+- `test_write_sovereignty_excludes_canonical_layer_writers` (W1.2 D)
+- `test_write_sovereignty_excludes_nested_tests_and_scripts` (W1.2 D)
+- 2 additional pre-existing tests in the group
+
+### Top-15 GENUINE residual hotspots after W1.2 (ready for W2 refactor)
+
+| Rank | Count | Layer | Symbol | File |
+|---:|---:|---|---|---|
+| 1 | 11 | L5 | `self.safe_move` | `agentic_core/L5_safety/utils/location_healer_util.py` |
+| 2 | 8 | L3 | `open` | `agentic_core/L3_orchestration/utils/state_management_util.py` |
+| 3 | 7 | L2 | `open` | `agentic_core/L2_execution/utils/async_file_ops.py` |
+| 4 | 6 | L0 | `cls.GOLDEN_SEAL_FILE.write_text` | `agentic_core/L0_routing/utils/core_integrity_util.py` |
+| 5 | 6 | L5 | `self.resolve_collision_and_rename` | `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` |
+| 6 | 6 | L5 | `self.gatekeeper.safe_move` | `agentic_core/L5_safety/reasoning/hierarchy_healer.py` |
+| 7 | 6 | L_PG | `open` | `agentic_core/knowledge/canonical/canonical_store.py` |
+| 8 | 6 | L_APP | `path.write_text` | `apps_eval/reasoning/enterprise_eval_orchestrator.py` |
+| 9 | 6 | L_APP | `path.write_text` | `apps_rfp/reasoning/enterprise_orchestrator.py` |
+| 10 | 6 | L_SL | `open` | `system_learning/ml_integration/training_pipeline.py` |
+| 11 | 5 | L1 | `open` | `agentic_core/L1_cognition/reasoning/ml_decision_support/inference/shadow_logger.py` |
+| 12 | 5 | L_APP | `orch.run` | `apps_eval/engines/scenario_runner.py` |
+| 13 | 4 | L2 | `open` | `agentic_core/L2_execution/utils/analysis_ops_util.py` |
+| 14 | 4 | L3 | `mkdir` | `agentic_core/L3_orchestration/utils/state_management_util.py` |
+| 15 | 4 | L5 | `gatekeeper.safe_move` | `agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py` |
+
+These are the genuine durable-write candidates. Most cluster into 3 themes:
+
+1. **L5 file-system healers** (`safe_move`, `resolve_collision_and_rename`,
+   `gatekeeper.safe_move`) — file relocation operations that ARE writes; design
+   intent ambiguous (do file movers need UWG ceremony?).
+2. **L0/L2/L3 utility-layer `open`/`mkdir`** — direct file IO from utility
+   modules. These are genuine bypass candidates.
+3. **L_APP enterprise orchestrators `path.write_text`** — write to dynamic
+   destination paths; the destination MAY be a report/output (excluded by
+   target path filter at runtime resolution time, but ADG sees only the
+   compile-time symbol).
+
+### W2 entry conditions (next session)
+
+W2 should:
+1. Regenerate full ADG (`python tools/generate_full_adg.py` ~15min) so the
+   tightened MV reaches downstream consumers
+2. Triage the 905 residue:
+   - Group A: L5 file-system healers — surface to user; design decision
+     whether file-movers need UWG ceremony
+   - Group B: L0/L2/L3 utility-layer file IO — refactor through UWG
+   - Group C: L_APP `path.write_text` — investigate per-site whether
+     destination is a report (further MV exclusion) or genuine state write
