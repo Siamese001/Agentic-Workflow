@@ -112,6 +112,22 @@ _UWG_SYMBOL_FRAGMENTS = (
     "UniversalWrite",
 )
 
+# Symbol fragments identifying writes that go through the canonical L5
+# ArchivalGatekeeper file-operation authority. Per
+# agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py docstring:
+# "Singleton/Static Service - Single point of control for all file operations
+# (move, delete, archive) across the entire codebase". Routing through
+# ArchivalGatekeeper IS the design-correct path for file-system operations,
+# analogous to routing through UWG for L4 state mutations. These symbols are
+# NOT bypasses and MUST be excluded from mv_write_sovereignty_paths.
+# 2026-04-28 W2.1 finding.
+_ARCHIVAL_GATEKEEPER_SYMBOL_FRAGMENTS = (
+    ".safe_move",
+    ".safe_archive",
+    ".safe_delete",
+    "ArchivalGatekeeper",
+)
+
 # Path fragments identifying NON-DURABLE WRITE TARGETS — writes to these locations
 # produce report artifacts, proof bundles, or output renderings, not durable
 # state mutations per the canonical DurableWriteContext definition in
@@ -206,6 +222,19 @@ def _build_canonical_layer_writer_clause(col: str) -> str:
     L4 surfaces is a within-layer false positive.
     """
     frags = " OR ".join(f"{col} LIKE '%{f}%'" for f in _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS)
+    return f"({frags})"
+
+
+def _build_archival_gatekeeper_clause(symbol_col: str) -> str:
+    """SQL fragment matching ``symbol_col`` against ArchivalGatekeeper symbols.
+
+    Writes routed through ArchivalGatekeeper are EXCLUDED from
+    ``mv_write_sovereignty_paths`` because the gatekeeper IS the canonical L5
+    file-system authority (analog to UWG for L4 state). 2026-04-28 W2.1 finding.
+    """
+    frags = " OR ".join(
+        f"{symbol_col} LIKE '%{f}%'" for f in _ARCHIVAL_GATEKEEPER_SYMBOL_FRAGMENTS
+    )
     return f"({frags})"
 
 
@@ -493,8 +522,15 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           -- .copy() on dict/list returns a new collection, does not mutate source.
           -- .create factory methods return new instances, do not mutate existing state.
           AND e.symbol NOT LIKE '%.mkdir'
+          AND e.symbol != 'mkdir'
           AND e.symbol NOT LIKE '%.copy'
           AND e.symbol NOT LIKE '%.create'
+          -- 2026-04-28 W2.1 scanner-false-positive exemptions: orchestrator
+          -- and runner method calls (.run, orch.run, runner.run, etc) match
+          -- the AST scanner's write heuristic but are dispatch calls, not
+          -- writes. These produce execution side effects, not state mutations.
+          AND e.symbol NOT LIKE '%.run'
+          AND e.symbol != 'run'
           -- 2026-04-28 W1.2 Author-Gate option D: tighten MV scope to canonical
           -- durable-write definition. Exclude (a) writes from non-durable target
           -- paths (proof/, outputs/, reports/, runtime/prove_requirements/) and
@@ -504,6 +540,11 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           -- _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS for the canonical lists.
           AND NOT {_build_non_durable_target_clause("src.resolved_path")}
           AND NOT {_build_canonical_layer_writer_clause("src.resolved_path")}
+          -- 2026-04-28 W2.1 ArchivalGatekeeper exclusion: writes routed through
+          -- ArchivalGatekeeper.safe_move/safe_archive/safe_delete go through
+          -- the canonical L5 file-operation authority — same pattern as
+          -- routing through UWG for L4 state. NOT bypasses.
+          AND NOT {_build_archival_gatekeeper_clause("e.symbol")}
         ORDER BY severity, writer_layer
     """)
 

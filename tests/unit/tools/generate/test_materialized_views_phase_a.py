@@ -431,6 +431,74 @@ class TestPhaseAAuthority:
                 f"mv_write_sovereignty_paths (within-layer false positive)"
             )
 
+    def test_write_sovereignty_excludes_archival_gatekeeper(self, tmp_path: Path) -> None:
+        """Writes routed through ArchivalGatekeeper.safe_move / safe_archive /
+        safe_delete are EXCLUDED. ArchivalGatekeeper IS the canonical L5 file-
+        operation authority (singleton service for ALL destructive file ops),
+        analog to UWG for L4 state.
+
+        2026-04-28 W2.1 regression.
+        """
+        gatekeeper_symbols = [
+            ("self.gatekeeper.safe_move", "agentic_core/L5_safety/reasoning/hierarchy_healer.py"),
+            ("self.gatekeeper.safe_archive", "agentic_core/L5_safety/reasoning/a.py"),
+            ("self.gatekeeper.safe_delete", "agentic_core/L5_safety/reasoning/b.py"),
+            ("ArchivalGatekeeper.safe_move", "agentic_core/L5_safety/utils/c.py"),
+            ("self.safe_move", "agentic_core/L5_safety/utils/location_healer_util.py"),
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for i, (symbol, path) in enumerate(gatekeeper_symbols, start=1):
+            _node(conn, i, f"caller{i}", "L5", path)
+            _edge(conn, i, 99, "writes_to", symbol=symbol)
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for symbol, _path in gatekeeper_symbols:
+            assert symbol not in flagged, (
+                f"ArchivalGatekeeper symbol {symbol!r} MUST be excluded from "
+                f"mv_write_sovereignty_paths (canonical L5 file-op authority)"
+            )
+
+    def test_write_sovereignty_excludes_run_method_calls(self, tmp_path: Path) -> None:
+        """`.run` method calls are scanner false positives — orchestrator and
+        runner dispatch calls match the AST write heuristic but are NOT writes.
+
+        2026-04-28 W2.1 regression.
+        """
+        run_symbols = [
+            ("orch.run", "apps_eval/engines/scenario_runner.py"),
+            ("self.runner.run", "apps_exec/engines/some_engine.py"),
+            ("pipeline.run", "system_learning/engines/some_pipeline.py"),
+            ("run", "apps_research/engines/dispatcher.py"),
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for i, (symbol, path) in enumerate(run_symbols, start=1):
+            _node(conn, i, f"caller{i}", "L_APP", path)
+            _edge(conn, i, 99, "writes_to", symbol=symbol)
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for symbol, _path in run_symbols:
+            assert symbol not in flagged, (
+                f"`.run` symbol {symbol!r} MUST be excluded (scanner false positive)"
+            )
+
     def test_write_sovereignty_uwg_symbol_variants(self, tmp_path: Path) -> None:
         """Validate every documented UWG symbol fragment is detected."""
         variants = [
