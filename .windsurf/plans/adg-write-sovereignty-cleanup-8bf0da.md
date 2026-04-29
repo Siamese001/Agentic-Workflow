@@ -10,11 +10,11 @@ author_gate_decision: architecture_choice — "Refactor through UWG over multipl
 
 # ADG Write-Sovereignty Cleanup — Route 1502 P0 Violations Through UWG
 
-> **Status**: W1.1 + W1.2 + W2 COMPLETE (2026-04-28). Cumulative violation
-> count: **1483 → 795** (−688, −46%). W2 added ArchivalGatekeeper canonical
-> L5 file-op authority detection + scanner false-positive cleanups.
-> See `## W2 Outcome` section. Residue mostly genuine — Group B refactor
-> tractable in a focused session.
+> **Status**: W1.1 + W1.2 + W2 + W3 COMPLETE (2026-04-28). Cumulative violation
+> count: **1483 → 345** (−1138, **−77%**). W3 fixed the AST scanner itself
+> (open() mode-awareness + two-tier write classification) — biggest single
+> reduction in the entire series. See `## W3 Outcome`. Residue 345 mostly
+> genuine — single-wave Group B refactor tractable.
 >
 > **Why this plan exists**: `run_contract_gates.py` is fully unblocked through
 > line 280 (wiring scan, structure policy, graph-layer evidence, snapshot
@@ -401,3 +401,115 @@ Going further requires either:
 - Or per-site refactor of the genuine subset
 
 Both are tractable in a focused W3 session but warrant their own scope.
+
+---
+
+## W3 Outcome (2026-04-28) — AST scanner mode-awareness + two-tier write classification
+
+W3 fixed the **AST scanner itself** (not just the MV layer) — the biggest
+single reduction in the series. Root cause: `_classify_call` in
+`agentic_core/adg/extraction/visitors/core.py` used
+`sym.endswith(write_symbol.split('.')[-1])` for tail matching. Tails like
+`run`, `call`, `copy`, `move` are too generic — `orch.run`, `cb.call`,
+`dict.copy`, `list.move` were ALL classified as writes.
+
+Also: `open(path)` defaulted to mode=`r` (read), but the scanner classified
+ALL `open()` calls — read or write — as `writes_to`.
+
+### Scanner changes (commit `520ee86`)
+
+1. New `WRITE_SIDE_EFFECT_TAIL_SYMBOLS` curated narrow list — only
+   unambiguous tails: `write_text`, `write_bytes`, `writelines`,
+   `makedirs`, `rmtree`. Excludes `run`, `call`, `copy`, `move`, `write`,
+   `open` (handled via special case).
+2. Two-tier write classification in `_CallVisitor._classify_call`:
+   - Tier 1: exact full-symbol match (`subprocess.run`, `os.remove`, …)
+   - Tier 2: curated tail match
+   - Special case: `open(...)` mode-aware via new `_open_call_is_write(node)`
+3. `_open_call_is_write` handles 3 call shapes:
+   - builtin `open(path, mode)` → mode at positional index 1
+   - `aiofiles.open(path, mode)` → mode at positional index 1
+   - `Path.open(mode)` instance method → mode at positional index 0
+   - `mode=` kwarg always wins
+   - `+` in mode (read+write) treated as write (CAN write)
+   - Variable mode treated as write (conservative)
+
+### Edge-level scanner impact
+
+| Metric | Pre-W3 | Post-W3 | Δ |
+|---|---:|---:|---:|
+| `writes_to` edges | 5901 | 2176 | **−3725 (−63%)** |
+| `writes_through` edges | 1781 | 1784 | +3 (unchanged) |
+| `mv_write_sovereignty_paths` rows | 976 | 492 | −484 (−50%) |
+| `mv_new_write_bypass_paths.is_new=1` | 795 | **345** | **−450 (−57%)** |
+
+### Cumulative across full series
+
+| Stage | is_new=1 violations | Δ |
+|---|---:|---:|
+| Pre-W1.1 baseline | 1483 | — |
+| Post-W1.1 (commit `ad0ee4f`) | 1370 | −113 |
+| Post-W1.2 (commit `69d22c9`) | 905 | −465 |
+| Post-W2 (commit `975570c`) | 795 | −110 |
+| Post-W3 (commit `520ee86`) | **345** | −450 |
+| **Total reduction** | | **−1138 (−77%)** |
+
+### Regression test coverage
+
+- **43/43** W3 visitor tests in
+  `tests/unit/agentic_core/adg/extraction/visitors/test_core_call_visitor.py`
+  - 9 read-mode `open()` variants → no write
+  - 10 write-mode `open()` variants → write
+  - 7 ambiguous-tail variants → no write
+  - 11 exact symbols still emit write
+  - 5 curated tails still emit write
+  - + variable-mode + edge cases
+- **46/46** phase A MV tests (W1+W2 not regressed)
+
+### Top-15 GENUINE residue after W3
+
+| Rank | Count | Layer | Symbol | File |
+|---:|---:|---|---|---|
+| 1 | 6 | L0 | `cls.GOLDEN_SEAL_FILE.write_text` | `agentic_core/L0_routing/utils/core_integrity_util.py` |
+| 2 | 6 | L_APP | `path.write_text` | `apps_eval/reasoning/enterprise_eval_orchestrator.py` |
+| 3 | 6 | L_APP | `path.write_text` | `apps_rfp/reasoning/enterprise_orchestrator.py` |
+| 4 | 4 | L2 | `open` | `agentic_core/L2_execution/utils/async_file_ops.py` |
+| 5 | 4 | L5 | `ViolationConstraint` | `agentic_core/L5_safety/reasoning/CodeHealerAgent.py` |
+| 6 | 4 | L5 | `ViolationConstraint` | `agentic_core/L5_safety/utils/unified_cst_healer_util.py` |
+| 7 | 4 | L5 | `write_text` | `agentic_core/L5_safety/validators/dependencygraph_validator.py` |
+| 8 | 4 | L_APP | `path.write_text` | `apps_exec/reasoning/enterprise_brief_orchestrator.py` |
+| 9 | 4 | L_APP | `path.write_text` | `apps_research/reasoning/enterprise_research_orchestrator.py` |
+| 10 | 4 | L_UNKNOWN | `open` | `apps_underwriting_ai/integrations/storage_adapter.py` |
+| 11 | 3 | L0 | `get_validated_project_root` | `agentic_core/L0_routing/config/path_constants.py` |
+| 12 | 3 | L3 | `ExecutionContext` | `agentic_core/L3_orchestration/types/orchestrator_types.py` |
+| 13 | 3 | L_PG | `open` | `agentic_core/knowledge/canonical/canonical_store.py` |
+| 14 | 3 | L_SHARED | `create_artifact` | `agentic_core/utils/workflow_engines/drift_monitor.py` |
+| 15 | 3 | L_APP | `self.log_event` | `apps_shared/utils/security_config_util.py` |
+
+### Layer rollup post-W3
+
+| Layer | Count |
+|---|---:|
+| L_APP | 79 |
+| L5 | 75 |
+| L_SL | 70 |
+| L0 | 41 |
+| L2 | 25 |
+| L_SHARED | 17 |
+| L3 | 13 |
+| L6 | 9 |
+| L_PG | 7 |
+| L_UNKNOWN | 5 |
+| L1 | 3 |
+| L_RUNTIME | 1 |
+
+### Next: W4 — single-wave Group B refactor
+
+The 345 residue is now small enough for a single-wave refactor session:
+- L_APP enterprise orchestrators (4 files × 4-6 violations) — wrap report
+  writes in a thin `ReportWriter` adapter that internally uses UWG
+- L0 `GOLDEN_SEAL_FILE.write_text` — design decision (integrity sealing)
+- L5 `ViolationConstraint` (residual class-instantiation false positive
+  not caught by W3) — needs visitor change to skip PascalCase Call targets
+- L_APP `apps_underwriting_ai/integrations/storage_adapter.py` — genuine
+  refactor through UWG
